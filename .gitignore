@@ -1,0 +1,7 @@
+# Frontend
+node_modules/
+apps/web/node_modules/
+apps/web/node_modules/.vite/
+
+# Backend storage
+backend/api/storage/*.json
