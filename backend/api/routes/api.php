@@ -4,7 +4,12 @@ declare(strict_types=1);
 
 $router->add('POST', '/api/v1/guest/session', function () {
     $guestId = bin2hex(random_bytes(16));
-    $nickname = NicknameGenerator::generate();
+
+    $body = Request::json();
+    $custom = trim(strip_tags($body['nickname'] ?? ''));
+    $nickname = ($custom !== '' && mb_strlen($custom) <= 20)
+        ? $custom
+        : NicknameGenerator::generate();
 
     $_SESSION['guests'][$guestId] = [
         'nickname' => $nickname,

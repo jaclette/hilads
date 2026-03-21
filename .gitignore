@@ -5,3 +5,11 @@ apps/web/node_modules/.vite/
 
 # Backend storage
 backend/api/storage/*.json
+# Frontend
+node_modules/
+apps/web/node_modules/
+apps/web/node_modules/.vite/
+
+# Backend runtime data
+backend/api/storage/*.json
+

@@ -1,7 +1,11 @@
-const BASE = '/api/v1'
+const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
 
-export async function createGuestSession() {
-  const res = await fetch(`${BASE}/guest/session`, { method: 'POST' })
+export async function createGuestSession(nickname) {
+  const res = await fetch(`${BASE}/guest/session`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nickname }),
+  })
   if (!res.ok) throw new Error('Failed to create session')
   return res.json()
 }
