@@ -697,9 +697,16 @@ export default function App() {
               {channelsLoading ? (
                 <div className="city-picker-loading">Loading cities...</div>
               ) : [...channels].sort((a, b) => {
-                if (a.channelId === channelId) return -1
-                if (b.channelId === channelId) return 1
-                return 0
+                const aCurrent = a.channelId === channelId
+                const bCurrent = b.channelId === channelId
+                if (aCurrent) return -1
+                if (bCurrent) return 1
+                // highest active users first
+                if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
+                // then highest message count
+                if (b.messageCount !== a.messageCount) return b.messageCount - a.messageCount
+                // finally alphabetical
+                return a.city.localeCompare(b.city)
               }).map((ch) => {
                 const isActive = ch.channelId === channelId
                 const hasActivity = ch.activeUsers > 0
