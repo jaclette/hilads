@@ -97,13 +97,39 @@ html, body, #root {
   margin-top: 4px;
 }
 
+/* ── Logo component ───────────────────────────────────── */
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+}
+
+.logo svg {
+  /* keeps SVG pixel-crisp at any display density */
+  shape-rendering: crispEdges;
+}
+
+.logo-wordmark {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
 /* ── Onboarding ───────────────────────────────────────── */
 
 .ob-screen {
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: radial-gradient(ellipse 100% 60% at 50% 20%, #1a1a30 0%, var(--bg) 70%);
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(124, 106, 255, 0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 35% at 85% 85%, rgba(255, 106, 159, 0.07) 0%, transparent 55%),
+    var(--bg);
 }
 
 .ob-card {
@@ -111,18 +137,26 @@ html, body, #root {
   max-width: 360px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 28px;
+  padding: 36px 28px 32px;
+  background: rgba(26, 26, 36, 0.75);
+  border: 1px solid rgba(124, 106, 255, 0.2);
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    0 24px 64px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .ob-brand {
-  text-align: center;
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  display: flex;
+  justify-content: center;
+}
+
+.ob-sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124, 106, 255, 0.35), rgba(6, 182, 212, 0.2), transparent);
+  margin: -6px 0;
 }
 
 .ob-city-block {
@@ -152,9 +186,16 @@ html, body, #root {
 }
 
 .ob-locating {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--muted2);
+  font-family: 'SF Mono', ui-monospace, monospace;
+  letter-spacing: 0.02em;
   animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
 }
 
 .ob-form {
@@ -227,18 +268,27 @@ html, body, #root {
   font-weight: 700;
   cursor: pointer;
   margin-top: 4px;
-  transition: opacity 0.15s, transform 0.1s;
+  transition: opacity 0.15s, transform 0.12s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(124, 106, 255, 0.25);
+}
+
+.ob-btn:hover {
+  box-shadow: 0 6px 28px rgba(124, 106, 255, 0.45);
+  transform: translateY(-1px);
 }
 
 .ob-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.98) translateY(0);
   opacity: 0.9;
+  box-shadow: 0 2px 10px rgba(124, 106, 255, 0.2);
 }
 
 .ob-hint {
   text-align: center;
-  font-size: 0.73rem;
+  font-size: 0.72rem;
   color: var(--muted);
+  font-family: 'SF Mono', ui-monospace, monospace;
+  letter-spacing: 0.01em;
 }
 
 /* ── Header ───────────────────────────────────────────── */
@@ -247,16 +297,44 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  padding: 12px 18px;
+  border-bottom: none;
+  background: linear-gradient(180deg, var(--surface) 0%, rgba(26, 26, 36, 0.97) 100%);
   flex-shrink: 0;
+  position: relative;
+}
+
+.chat-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    rgba(124, 106, 255, 0.5) 0%,
+    rgba(6, 182, 212, 0.35) 40%,
+    rgba(255, 106, 159, 0.2) 75%,
+    transparent 100%
+  );
 }
 
 .header-left {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.header-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* Logo glow in header context */
+.chat-header .logo svg {
+  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
 }
 
 .online-dot {
@@ -672,8 +750,9 @@ html, body, #root {
 }
 
 .change-city-btn:hover {
-  color: var(--text);
-  border-color: var(--accent);
+  color: var(--accent);
+  border-color: rgba(124, 106, 255, 0.45);
+  background: rgba(124, 106, 255, 0.08);
 }
 
 /* ── City Picker Modal ────────────────────────────────── */
@@ -695,8 +774,8 @@ html, body, #root {
 }
 
 .city-picker-panel {
-  background: var(--surface);
-  border-top: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 56px);
+  border-top: 1px solid rgba(124, 106, 255, 0.25);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 640px;
@@ -704,6 +783,15 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   animation: slideUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.city-picker-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 10px auto 0;
+  flex-shrink: 0;
 }
 
 @keyframes slideUp {
@@ -717,9 +805,14 @@ html, body, #root {
   }
   .city-picker-panel {
     border-radius: 20px;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(124, 106, 255, 0.2);
     max-width: 400px;
     max-height: 60vh;
+    background: linear-gradient(160deg, var(--surface2) 0%, var(--surface) 80px);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.3);
+  }
+  .city-picker-handle {
+    display: none;
   }
 }
 
@@ -733,8 +826,11 @@ html, body, #root {
 }
 
 .city-picker-title {
-  font-size: 1rem;
+  font-size: 0.78rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted2);
 }
 
 .city-picker-close {
@@ -780,17 +876,19 @@ html, body, #root {
   color: var(--text);
   cursor: pointer;
   text-align: left;
-  transition: background 0.12s;
+  transition: background 0.12s, box-shadow 0.12s;
   gap: 8px;
 }
 
 .city-row:hover {
-  background: var(--surface2);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 2px 0 0 rgba(124, 106, 255, 0.3);
 }
 
 .city-row.active {
-  background: rgba(124, 106, 255, 0.1);
-  border-color: rgba(124, 106, 255, 0.25);
+  background: rgba(124, 106, 255, 0.09);
+  border-color: rgba(124, 106, 255, 0.22);
+  box-shadow: inset 2px 0 0 var(--accent);
 }
 
 .city-row-left {
@@ -816,7 +914,7 @@ html, body, #root {
 
 .city-row-name {
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

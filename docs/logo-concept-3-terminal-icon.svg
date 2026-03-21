@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" fill="none">
+
+  <!-- Favicon / icon-only version: "> h_" compressed -->
+  <rect width="56" height="56" rx="10" fill="#0a0a0f"/>
+
+  <!-- Prompt line: two diagonal strokes forming "›" -->
+  <line x1="10" y1="18" x2="19" y2="28" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round"/>
+  <line x1="19" y1="28" x2="10" y2="38" stroke="#8b5cf6" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- "H" letter, bold geometric -->
+  <rect x="24" y="16" width="5" height="24" rx="1" fill="#f8f8fc"/>
+  <rect x="37" y="16" width="5" height="24" rx="1" fill="#f8f8fc"/>
+  <rect x="29" y="26" width="8" height="3.5" rx="1" fill="#f8f8fc"/>
+
+  <!-- Cursor: vertical bar -->
+  <rect x="45" y="16" width="5" height="24" rx="1" fill="#06b6d4" opacity="0.9"/>
+
+</svg>

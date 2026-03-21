@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 56" fill="none">
+
+  <!-- Favicon / icon-only version -->
+  <!-- Background -->
+  <rect width="56" height="56" rx="10" fill="#0a0a0f"/>
+
+  <!-- H left bar -->
+  <rect x="9" y="11" width="8" height="34" rx="1.5" fill="#f8f8fc"/>
+  <!-- H right bar -->
+  <rect x="39" y="11" width="8" height="34" rx="1.5" fill="#f8f8fc"/>
+  <!-- H crossbar: left half, muted -->
+  <rect x="17" y="26.5" width="7" height="2" fill="#2a2a3a"/>
+  <!-- H crossbar: right half, muted -->
+  <rect x="32" y="26.5" width="7" height="2" fill="#2a2a3a"/>
+
+  <!-- Beacon glow layers -->
+  <circle cx="28" cy="27.5" r="9" fill="#8b5cf6" opacity="0.15"/>
+  <circle cx="28" cy="27.5" r="5.5" fill="#8b5cf6" opacity="0.30"/>
+  <!-- Beacon core -->
+  <circle cx="28" cy="27.5" r="3" fill="#a855f7"/>
+
+</svg>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels } from './api'
+import Logo from './components/Logo'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -311,7 +312,11 @@ export default function App() {
     return (
       <div className="screen ob-screen">
         <div className="ob-card">
-          <div className="ob-brand">hilads</div>
+          <div className="ob-brand">
+            <Logo variant="wordmark" size="lg" />
+          </div>
+
+          <div className="ob-sep" />
 
           <div className="ob-city-block">
             {city ? (
@@ -320,7 +325,7 @@ export default function App() {
                 <span className="ob-city-sub">people are chatting live right now</span>
               </>
             ) : (
-              <span className="ob-locating">📍 Finding your city...</span>
+              <span className="ob-locating">› locating...</span>
             )}
           </div>
 
@@ -348,7 +353,7 @@ export default function App() {
               {city ? `Join ${city}` : 'Join Chat'} →
             </button>
 
-            <p className="ob-hint">anonymous · no sign-up needed</p>
+            <p className="ob-hint">// anonymous · no sign-up</p>
           </form>
         </div>
       </div>
@@ -410,6 +415,8 @@ export default function App() {
       <div className="screen chat">
         <header className="chat-header">
           <div className="header-left">
+            <Logo variant="icon" size="sm" />
+            <div className="header-divider" />
             <div className="online-dot" />
             <div className="header-city">
               <span className="city-name">{city}</span>
@@ -505,6 +512,7 @@ export default function App() {
       {showCityPicker && (
         <div className="city-picker-overlay" onClick={() => setShowCityPicker(false)}>
           <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="city-picker-handle" />
             <div className="city-picker-header">
               <span className="city-picker-title">Switch city</span>
               <button className="city-picker-close" onClick={() => setShowCityPicker(false)}>✕</button>

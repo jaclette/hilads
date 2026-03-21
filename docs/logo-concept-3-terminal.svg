@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+
+  <!-- Dark background for preview -->
+  <rect width="240" height="60" fill="#0a0a0f"/>
+
+  <!-- Prompt arrow -->
+  <text x="12" y="42"
+    font-family="'Fira Code', 'Courier New', monospace"
+    font-weight="400"
+    font-size="28"
+    fill="#8b5cf6">›</text>
+
+  <!-- "hilads" in monospace, white -->
+  <text x="36" y="42"
+    font-family="'Fira Code', 'Courier New', monospace"
+    font-weight="700"
+    font-size="28"
+    fill="#f8f8fc"
+    letter-spacing="0">hilads</text>
+
+  <!-- Cursor block — blinks in use, static in logo -->
+  <rect x="178" y="16" width="16" height="26" rx="1.5" fill="#06b6d4" opacity="0.85"/>
+
+</svg>

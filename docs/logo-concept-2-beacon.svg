@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" fill="none">
+
+  <!-- Dark background for preview -->
+  <rect width="280" height="64" fill="#0a0a0f"/>
+
+  <!-- ═══ ICON MARK (left) ═══ -->
+  <!-- H left bar -->
+  <rect x="10" y="14" width="7" height="36" rx="1.5" fill="#f8f8fc"/>
+  <!-- H right bar -->
+  <rect x="39" y="14" width="7" height="36" rx="1.5" fill="#f8f8fc"/>
+  <!-- H crossbar: thin line left half -->
+  <rect x="17" y="30.5" width="8" height="1.5" fill="#3a3a4a"/>
+  <!-- H crossbar: thin line right half -->
+  <rect x="31" y="30.5" width="8" height="1.5" fill="#3a3a4a"/>
+  <!-- Center beacon dot — glow -->
+  <circle cx="28" cy="31.5" r="7" fill="#8b5cf6" opacity="0.20"/>
+  <circle cx="28" cy="31.5" r="4" fill="#8b5cf6" opacity="0.40"/>
+  <!-- Center beacon dot — core -->
+  <circle cx="28" cy="31.5" r="2.5" fill="#a855f7"/>
+
+  <!-- ═══ WORDMARK (right) ═══ -->
+  <text x="66" y="45"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-weight="900"
+    font-size="32"
+    fill="#f8f8fc"
+    letter-spacing="-1">hilads</text>
+
+  <!-- Thin separator between icon and wordmark -->
+  <rect x="58" y="18" width="1" height="28" fill="#1f1f2e"/>
+
+</svg>
