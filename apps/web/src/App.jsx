@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel } from './api'
 import Logo from './components/Logo'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -93,6 +93,7 @@ export default function App() {
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])
   const [channelsLoading, setChannelsLoading] = useState(false)
+  const [fadingIds, setFadingIds] = useState(new Set())
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
   const fluctuateRef = useRef(null)
@@ -167,6 +168,16 @@ export default function App() {
     }, delay)
   }
 
+  function scheduleEphemeral(id) {
+    setTimeout(() => {
+      setFadingIds((prev) => new Set([...prev, id]))
+      setTimeout(() => {
+        setFeed((prev) => prev.filter((f) => f.id !== id))
+        setFadingIds((prev) => { const next = new Set(prev); next.delete(id); return next })
+      }, 600)
+    }, 5000)
+  }
+
   async function handleJoin(e) {
     e.preventDefault()
     const name = nickname.trim() || generateNickname()
@@ -183,6 +194,10 @@ export default function App() {
         setOnlineCount((n) => Math.max(5, n + Math.floor(Math.random() * 5) - 2))
       }, 8000)
 
+      // Emit join event before fetching messages so it's included
+      const joinData = await joinChannel(location.channelId, session.guestId, name)
+      const joinKey = messageKey(joinData.message)
+
       const data = await fetchMessages(location.channelId)
       knownIdsRef.current = new Set(data.messages.map(messageKey))
 
@@ -195,6 +210,7 @@ export default function App() {
 
       setFeed(initialItems)
       setStatus('ready')
+      scheduleEphemeral(joinKey)
 
       activeRef.current = true
       scheduleActivity(true)
@@ -206,7 +222,9 @@ export default function App() {
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
           newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
-          setFeed((prev) => [...prev, ...newMsgs.map((m) => toFeedItem(m))])
+          const newItems = newMsgs.map((m) => toFeedItem(m))
+          setFeed((prev) => [...prev, ...newItems])
+          newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
       }, 3000)
     } catch (err) {
@@ -274,6 +292,14 @@ export default function App() {
     }, 8000)
 
     try {
+      // Emit join event (also handles leaving previous channel) before fetching
+      const joinData = await joinChannel(newChannelId, guest.guestId, nickname, channelId)
+
+      // another switch happened while we were joining — discard
+      if (activeChannelRef.current !== newChannelId) return
+
+      const joinKey = messageKey(joinData.message)
+
       const data = await fetchMessages(newChannelId)
 
       // another switch happened while we were fetching — discard this result
@@ -287,6 +313,7 @@ export default function App() {
         return toFeedItem(m, delay)
       })
       setFeed(initialItems)
+      scheduleEphemeral(joinKey)
 
       activeRef.current = true
       scheduleActivity(true)
@@ -297,7 +324,9 @@ export default function App() {
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
           newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
-          setFeed((prev) => [...prev, ...newMsgs.map((m) => toFeedItem(m))])
+          const newItems = newMsgs.map((m) => toFeedItem(m))
+          setFeed((prev) => [...prev, ...newItems])
+          newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
       }, 3000)
     } catch {
@@ -455,7 +484,9 @@ export default function App() {
               return (
                 <div
                   key={item.id}
-                  className={item.subtype === 'join' ? 'feed-join' : 'feed-activity'}
+                  className={item.subtype === 'join'
+                    ? `feed-join${fadingIds.has(item.id) ? ' feed-join--exit' : ''}`
+                    : 'feed-activity'}
                 >
                   {item.text}
                 </div>

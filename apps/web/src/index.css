@@ -612,6 +612,17 @@ html, body, #root {
   }
 }
 
+.feed-join--exit {
+  animation: joinExit 0.5s ease-in forwards;
+}
+
+@keyframes joinExit {
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+  }
+}
+
 /* ── Online users — shared avatar ────────────────────── */
 
 .online-avatar {

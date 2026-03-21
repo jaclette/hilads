@@ -30,6 +30,19 @@ export async function fetchMessages(channelId) {
   return res.json()
 }
 
+export async function joinChannel(channelId, guestId, nickname, previousChannelId = null) {
+  const body = { guestId, nickname }
+  if (previousChannelId) body.previousChannelId = previousChannelId
+  const res = await fetch(`${BASE}/channels/${channelId}/join`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error('Failed to join channel')
+  return res.json()
+}
+
 export async function fetchChannels() {
   const res = await fetch(`${BASE}/channels`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch channels')
