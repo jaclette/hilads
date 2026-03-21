@@ -30,7 +30,7 @@ class MessageRepository
         $lastActivityAt = null;
 
         foreach ($messages as $msg) {
-            if ($msg['createdAt'] >= $activeWindow) {
+            if (isset($msg['guestId']) && $msg['createdAt'] >= $activeWindow) {
                 $activeGuests[$msg['guestId']] = true;
             }
             if ($lastActivityAt === null || $msg['createdAt'] > $lastActivityAt) {
@@ -43,6 +43,24 @@ class MessageRepository
             'activeUsers'    => count($activeGuests),
             'lastActivityAt' => $lastActivityAt,
         ];
+    }
+
+    public static function addJoinEvent(int $channelId, string $nickname): array
+    {
+        $messages = self::getByChannel($channelId);
+
+        $message = [
+            'type'      => 'system',
+            'event'     => 'join',
+            'nickname'  => $nickname,
+            'createdAt' => time(),
+        ];
+
+        $messages[] = $message;
+
+        file_put_contents(self::filePath($channelId), json_encode($messages), LOCK_EX);
+
+        return $message;
     }
 
     public static function add(int $channelId, string $guestId, string $nickname, string $content): array

@@ -70,6 +70,45 @@ $router->add('GET', '/api/v1/channels', function () {
     Response::json(['channels' => $channels]);
 });
 
+$router->add('POST', '/api/v1/channels/{channelId}/join', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId  = $body['guestId']  ?? null;
+    $nickname = $body['nickname'] ?? null;
+
+    if (empty($guestId) || !is_string($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($nickname) || !is_string($nickname)) {
+        Response::json(['error' => 'nickname is required'], 400);
+    }
+
+    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+
+    if ($nickname === '') {
+        Response::json(['error' => 'nickname must not be empty'], 400);
+    }
+
+    $message = MessageRepository::addJoinEvent($channelId, $nickname);
+
+    Response::json($message, 201);
+});
+
 $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 

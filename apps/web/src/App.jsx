@@ -45,17 +45,26 @@ const PLACEHOLDERS = [
   (city) => `Drop a message for ${city}...`,
 ]
 
-const FAKE_NAMES = ['Alex', 'Maya', 'Tom', 'Sora', 'Leo', 'Zara', 'Kai', 'Nina', 'Felix', 'Mia', 'Sam', 'Yuki', 'Ryo', 'Cleo', 'Jude']
+function randomActivity() {
+  const count = 15 + Math.floor(Math.random() * 35)
+  return { subtype: 'crowd', text: `🔥 ${count} people are here right now` }
+}
 
-function randomActivity(lastJoinTs) {
-  const now = Date.now()
-  const canJoin = now - lastJoinTs > 25000
-  if (!canJoin || Math.random() < 0.35) {
-    const count = 15 + Math.floor(Math.random() * 35)
-    return { subtype: 'crowd', text: `🔥 ${count} people are here right now` }
+function messageKey(m) {
+  if (m.type === 'system' && m.event === 'join') return `system_${m.createdAt}_${m.nickname}`
+  return m.id
+}
+
+function toFeedItem(m, staggerDelay) {
+  if (m.type === 'system' && m.event === 'join') {
+    return {
+      type: 'activity',
+      subtype: 'join',
+      id: messageKey(m),
+      text: `👋 ${m.nickname} just joined`,
+    }
   }
-  const name = FAKE_NAMES[Math.floor(Math.random() * FAKE_NAMES.length)]
-  return { subtype: 'join', text: `👋 ${name} just joined`, name }
+  return { type: 'message', staggerDelay, ...m }
 }
 
 const NB_ADJECTIVES = ['Swift', 'Cool', 'Bright', 'Bold', 'Wild', 'Calm', 'Soft', 'Sharp', 'Quick', 'Zen', 'Lucky', 'Brave']
@@ -90,7 +99,6 @@ export default function App() {
   const activeRef = useRef(false)
   const knownIdsRef = useRef(new Set())
   const locPromiseRef = useRef(null)
-  const lastJoinRef = useRef(0)
 
   // Derive online users from recent message senders — real participants, always in sync
   const onlineUsers = useMemo(() => {
@@ -148,8 +156,7 @@ export default function App() {
     const delay = isFirst ? 6000 + Math.random() * 6000 : 22000 + Math.random() * 38000
     activityRef.current = setTimeout(() => {
       if (!activeRef.current) return
-      const activity = randomActivity(lastJoinRef.current)
-      if (activity.subtype === 'join') lastJoinRef.current = Date.now()
+      const activity = randomActivity()
       setFeed((prev) => [
         ...prev,
         { type: 'activity', id: `act-${Date.now()}`, subtype: activity.subtype, text: activity.text },
@@ -174,16 +181,13 @@ export default function App() {
       }, 8000)
 
       const data = await fetchMessages(location.channelId)
-      knownIdsRef.current = new Set(data.messages.map((m) => m.id))
+      knownIdsRef.current = new Set(data.messages.map(messageKey))
 
       const total = data.messages.length
       const initialItems = data.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
-        return {
-          type: 'message',
-          staggerDelay: staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined,
-          ...m,
-        }
+        const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
+        return toFeedItem(m, delay)
       })
 
       setFeed(initialItems)
@@ -196,10 +200,10 @@ export default function App() {
       pollRef.current = setInterval(async () => {
         if (document.hidden) return
         const latest = await fetchMessages(location.channelId)
-        const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(m.id))
+        const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
-          newMsgs.forEach((m) => knownIdsRef.current.add(m.id))
-          setFeed((prev) => [...prev, ...newMsgs.map((m) => ({ type: 'message', ...m }))])
+          newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
+          setFeed((prev) => [...prev, ...newMsgs.map((m) => toFeedItem(m))])
         }
       }, 3000)
     } catch (err) {
@@ -253,17 +257,17 @@ export default function App() {
     // reset feed for new city
     setFeed([])
     knownIdsRef.current = new Set()
-    lastJoinRef.current = 0
     setCity(newCityName)
     setChannelId(newChannelId)
 
     try {
       const data = await fetchMessages(newChannelId)
-      knownIdsRef.current = new Set(data.messages.map((m) => m.id))
+      knownIdsRef.current = new Set(data.messages.map(messageKey))
       const total = data.messages.length
       const initialItems = data.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
-        return { type: 'message', staggerDelay: staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined, ...m }
+        const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
+        return toFeedItem(m, delay)
       })
       setFeed(initialItems)
 
@@ -273,10 +277,10 @@ export default function App() {
       pollRef.current = setInterval(async () => {
         if (document.hidden) return
         const latest = await fetchMessages(newChannelId)
-        const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(m.id))
+        const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
-          newMsgs.forEach((m) => knownIdsRef.current.add(m.id))
-          setFeed((prev) => [...prev, ...newMsgs.map((m) => ({ type: 'message', ...m }))])
+          newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
+          setFeed((prev) => [...prev, ...newMsgs.map((m) => toFeedItem(m))])
         }
       }, 3000)
     } catch {
