@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon } from './api'
 import { createSocket } from './socket'
+import { cityFlag } from './cityMeta'
 import Logo from './components/Logo'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -487,7 +488,10 @@ export default function App() {
           <div className="ob-city-block">
             {city ? (
               <>
-                <span className="ob-city-name">{city}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <span style={{ fontSize: '2rem', lineHeight: 1 }}>{cityFlag(city)}</span>
+                  <span className="ob-city-name">{city}</span>
+                </div>
                 <span className="ob-city-sub">people are chatting live right now</span>
               </>
             ) : (
@@ -585,7 +589,10 @@ export default function App() {
             <div className="header-divider" />
             <div className="online-dot" />
             <div className="header-city">
-              <span className="city-name">{city}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>{cityFlag(city)}</span>
+                <span className="city-name">{city}</span>
+              </div>
               <span className="online-label">
                 {onlineCount != null ? `${onlineCount} people online` : 'live now'}
               </span>
@@ -719,6 +726,7 @@ export default function App() {
                   >
                     <div className="city-row-left">
                       <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
+                      <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
                       <span className="city-row-name">{ch.city}</span>
                       {isActive && <span className="city-row-current">you're here</span>}
                     </div>
