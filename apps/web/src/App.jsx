@@ -99,6 +99,7 @@ export default function App() {
   const activeRef = useRef(false)
   const knownIdsRef = useRef(new Set())
   const locPromiseRef = useRef(null)
+  const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
 
   // Derive online users from recent message senders — real participants, always in sync
   const onlineUsers = useMemo(() => {
@@ -175,6 +176,7 @@ export default function App() {
       const session = await createGuestSession(name)
       setGuest(session)
       setChannelId(location.channelId)
+      activeChannelRef.current = location.channelId
 
       fluctuateRef.current = setInterval(() => {
         setOnlineCount((n) => Math.max(5, n + Math.floor(Math.random() * 5) - 2))
@@ -249,19 +251,33 @@ export default function App() {
     }
     setShowCityPicker(false)
 
-    // stop current polling & activity
+    // stop everything tied to the previous room
     activeRef.current = false
     clearTimeout(activityRef.current)
     clearInterval(pollRef.current)
+    clearInterval(fluctuateRef.current)
 
-    // reset feed for new city
+    // mark which channel we're switching to — used to discard stale async results
+    activeChannelRef.current = newChannelId
+
+    // reset all room-specific state immediately so UI never shows stale data
     setFeed([])
     knownIdsRef.current = new Set()
     setCity(newCityName)
     setChannelId(newChannelId)
+    setOnlineCount(((newChannelId * 37 + 5) % 43) + 12)
+
+    // restart count fluctuation for new room
+    fluctuateRef.current = setInterval(() => {
+      setOnlineCount((n) => Math.max(5, n + Math.floor(Math.random() * 5) - 2))
+    }, 8000)
 
     try {
       const data = await fetchMessages(newChannelId)
+
+      // another switch happened while we were fetching — discard this result
+      if (activeChannelRef.current !== newChannelId) return
+
       knownIdsRef.current = new Set(data.messages.map(messageKey))
       const total = data.messages.length
       const initialItems = data.messages.map((m, idx) => {
@@ -496,7 +512,11 @@ export default function App() {
             <div className="city-picker-list">
               {channelsLoading ? (
                 <div className="city-picker-loading">Loading cities...</div>
-              ) : channels.map((ch) => {
+              ) : [...channels].sort((a, b) => {
+                if (a.channelId === channelId) return -1
+                if (b.channelId === channelId) return 1
+                return 0
+              }).map((ch) => {
                 const isActive = ch.channelId === channelId
                 const hasActivity = ch.activeUsers > 0
                 return (

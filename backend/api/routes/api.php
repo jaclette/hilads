@@ -104,9 +104,83 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         Response::json(['error' => 'nickname must not be empty'], 400);
     }
 
-    $message = MessageRepository::addJoinEvent($channelId, $nickname);
+    // If the user was in a previous room, leave it first
+    $previousChannelId = isset($body['previousChannelId'])
+        ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+        : false;
 
-    Response::json($message, 201);
+    if ($previousChannelId !== false && $previousChannelId !== $channelId) {
+        PresenceRepository::leave($previousChannelId, $guestId);
+    }
+
+    PresenceRepository::join($channelId, $guestId, $nickname);
+
+    $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
+
+    Response::json([
+        'message'     => $message,
+        'onlineUsers' => PresenceRepository::getOnline($channelId),
+        'onlineCount' => PresenceRepository::getCount($channelId),
+    ], 201);
+});
+
+$router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId = $body['guestId'] ?? null;
+
+    if (empty($guestId) || !is_string($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    PresenceRepository::leave($channelId, $guestId);
+
+    Response::json([
+        'onlineUsers' => PresenceRepository::getOnline($channelId),
+        'onlineCount' => PresenceRepository::getCount($channelId),
+    ]);
+});
+
+$router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId = $body['guestId'] ?? null;
+
+    if (empty($guestId) || !is_string($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    PresenceRepository::heartbeat($channelId, $guestId);
+
+    Response::json(['ok' => true]);
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
@@ -122,7 +196,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
 
     $messages = MessageRepository::getByChannel($channelId);
 
-    Response::json(['messages' => $messages]);
+    Response::json([
+        'messages'    => $messages,
+        'onlineUsers' => PresenceRepository::getOnline($channelId),
+        'onlineCount' => PresenceRepository::getCount($channelId),
+    ]);
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $params) {
@@ -167,6 +245,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     if (strlen($content) > 1000) {
         Response::json(['error' => 'content must not exceed 1000 characters'], 400);
     }
+
+    // Sending a message also refreshes presence
+    PresenceRepository::heartbeat($channelId, $guestId);
 
     $message = MessageRepository::add($channelId, $guestId, $nickname, $content);
 

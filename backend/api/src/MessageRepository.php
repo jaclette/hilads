@@ -25,14 +25,9 @@ class MessageRepository
     public static function getStats(int $channelId): array
     {
         $messages = self::getByChannel($channelId);
-        $activeWindow = time() - 15 * 60;
-        $activeGuests = [];
         $lastActivityAt = null;
 
         foreach ($messages as $msg) {
-            if (isset($msg['guestId']) && $msg['createdAt'] >= $activeWindow) {
-                $activeGuests[$msg['guestId']] = true;
-            }
             if ($lastActivityAt === null || $msg['createdAt'] > $lastActivityAt) {
                 $lastActivityAt = $msg['createdAt'];
             }
@@ -40,18 +35,19 @@ class MessageRepository
 
         return [
             'messageCount'   => count($messages),
-            'activeUsers'    => count($activeGuests),
+            'activeUsers'    => PresenceRepository::getCount($channelId),
             'lastActivityAt' => $lastActivityAt,
         ];
     }
 
-    public static function addJoinEvent(int $channelId, string $nickname): array
+    public static function addJoinEvent(int $channelId, string $guestId, string $nickname): array
     {
         $messages = self::getByChannel($channelId);
 
         $message = [
             'type'      => 'system',
             'event'     => 'join',
+            'guestId'   => $guestId,
             'nickname'  => $nickname,
             'createdAt' => time(),
         ];
