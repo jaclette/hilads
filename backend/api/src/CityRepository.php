@@ -27,6 +27,11 @@ class CityRepository
         ['id' => 20, 'name' => 'Ho Chi Minh City','lat' =>  10.8231,  'lng' => 106.6297],
     ];
 
+    public static function all(): array
+    {
+        return self::$cities;
+    }
+
     public static function findById(int $id): ?array
     {
         foreach (self::$cities as $city) {

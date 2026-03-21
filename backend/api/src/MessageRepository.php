@@ -22,6 +22,29 @@ class MessageRepository
         return is_array($data) ? $data : [];
     }
 
+    public static function getStats(int $channelId): array
+    {
+        $messages = self::getByChannel($channelId);
+        $activeWindow = time() - 15 * 60;
+        $activeGuests = [];
+        $lastActivityAt = null;
+
+        foreach ($messages as $msg) {
+            if ($msg['createdAt'] >= $activeWindow) {
+                $activeGuests[$msg['guestId']] = true;
+            }
+            if ($lastActivityAt === null || $msg['createdAt'] > $lastActivityAt) {
+                $lastActivityAt = $msg['createdAt'];
+            }
+        }
+
+        return [
+            'messageCount'   => count($messages),
+            'activeUsers'    => count($activeGuests),
+            'lastActivityAt' => $lastActivityAt,
+        ];
+    }
+
     public static function add(int $channelId, string $guestId, string $nickname, string $content): array
     {
         $messages = self::getByChannel($channelId);

@@ -52,6 +52,24 @@ $router->add('POST', '/api/v1/location/resolve', function () {
     ]);
 });
 
+$router->add('GET', '/api/v1/channels', function () {
+    $channels = [];
+
+    foreach (CityRepository::all() as $city) {
+        $stats = MessageRepository::getStats($city['id']);
+
+        $channels[] = [
+            'channelId'      => $city['id'],
+            'city'           => $city['name'],
+            'messageCount'   => $stats['messageCount'],
+            'activeUsers'    => $stats['activeUsers'],
+            'lastActivityAt' => $stats['lastActivityAt'],
+        ];
+    }
+
+    Response::json(['channels' => $channels]);
+});
+
 $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 

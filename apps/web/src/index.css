@@ -653,3 +653,199 @@ html, body, #root {
     margin: 0;
   }
 }
+
+/* ── Change city button ───────────────────────────────── */
+
+.change-city-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 11px 5px 9px;
+  color: var(--muted2);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.change-city-btn:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+/* ── City Picker Modal ────────────────────────────────── */
+
+.city-picker-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.city-picker-panel {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 640px;
+  max-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@media (min-width: 768px) {
+  .city-picker-overlay {
+    align-items: center;
+  }
+  .city-picker-panel {
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    max-width: 400px;
+    max-height: 60vh;
+  }
+}
+
+.city-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.city-picker-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.city-picker-close {
+  background: none;
+  border: none;
+  color: var(--muted2);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.city-picker-close:hover {
+  color: var(--text);
+  background: var(--surface2);
+}
+
+.city-picker-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.city-picker-loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--muted2);
+  font-size: 0.9rem;
+}
+
+.city-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+  gap: 8px;
+}
+
+.city-row:hover {
+  background: var(--surface2);
+}
+
+.city-row.active {
+  background: rgba(124, 106, 255, 0.1);
+  border-color: rgba(124, 106, 255, 0.25);
+}
+
+.city-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.activity-dot.live {
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(61, 220, 132, 0.6);
+  animation: live-pulse 2s ease-out infinite;
+}
+
+.city-row-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.city-row-current {
+  font-size: 0.68rem;
+  color: var(--accent);
+  font-weight: 600;
+  background: rgba(124, 106, 255, 0.12);
+  border-radius: 10px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+}
+
+.city-row-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.city-row-users {
+  font-size: 0.73rem;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.city-row-count {
+  font-size: 0.73rem;
+  color: var(--muted);
+}

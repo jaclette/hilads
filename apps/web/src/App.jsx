@@ -1,7 +1,17 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels } from './api'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+function GlobeIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="2" y1="12" x2="22" y2="12" />
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  )
+}
 
 function SendIcon() {
   return (
@@ -70,6 +80,9 @@ export default function App() {
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [onlineCount, setOnlineCount] = useState(null)
+  const [showCityPicker, setShowCityPicker] = useState(false)
+  const [channels, setChannels] = useState([])
+  const [channelsLoading, setChannelsLoading] = useState(false)
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
   const fluctuateRef = useRef(null)
@@ -212,6 +225,65 @@ export default function App() {
     }
   }
 
+  async function openCityPicker() {
+    setShowCityPicker(true)
+    setChannelsLoading(true)
+    try {
+      const data = await fetchChannels()
+      setChannels(data.channels)
+    } catch {
+      setChannels([])
+    } finally {
+      setChannelsLoading(false)
+    }
+  }
+
+  async function switchCity(newChannelId, newCityName) {
+    if (newChannelId === channelId) {
+      setShowCityPicker(false)
+      return
+    }
+    setShowCityPicker(false)
+
+    // stop current polling & activity
+    activeRef.current = false
+    clearTimeout(activityRef.current)
+    clearInterval(pollRef.current)
+
+    // reset feed for new city
+    setFeed([])
+    knownIdsRef.current = new Set()
+    lastJoinRef.current = 0
+    setCity(newCityName)
+    setChannelId(newChannelId)
+
+    try {
+      const data = await fetchMessages(newChannelId)
+      knownIdsRef.current = new Set(data.messages.map((m) => m.id))
+      const total = data.messages.length
+      const initialItems = data.messages.map((m, idx) => {
+        const staggerIndex = Math.max(0, idx - (total - 8))
+        return { type: 'message', staggerDelay: staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined, ...m }
+      })
+      setFeed(initialItems)
+
+      activeRef.current = true
+      scheduleActivity(true)
+
+      pollRef.current = setInterval(async () => {
+        if (document.hidden) return
+        const latest = await fetchMessages(newChannelId)
+        const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(m.id))
+        if (newMsgs.length > 0) {
+          newMsgs.forEach((m) => knownIdsRef.current.add(m.id))
+          setFeed((prev) => [...prev, ...newMsgs.map((m) => ({ type: 'message', ...m }))])
+        }
+      }, 3000)
+    } catch {
+      // silently fail — user stays with empty feed for new city
+    }
+  }
+
   // ── Onboarding ─────────────────────────────────────────────────────────────
 
   if (status === 'onboarding') {
@@ -327,6 +399,10 @@ export default function App() {
             </div>
           </div>
           <div className="header-right">
+            <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
+              <GlobeIcon />
+              <span>Switch</span>
+            </button>
             <span className="you-badge">{guest?.nickname}</span>
           </div>
         </header>
@@ -404,6 +480,43 @@ export default function App() {
           </button>
         </form>
       </div>
+
+      {/* City picker modal */}
+      {showCityPicker && (
+        <div className="city-picker-overlay" onClick={() => setShowCityPicker(false)}>
+          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="city-picker-header">
+              <span className="city-picker-title">Switch city</span>
+              <button className="city-picker-close" onClick={() => setShowCityPicker(false)}>✕</button>
+            </div>
+            <div className="city-picker-list">
+              {channelsLoading ? (
+                <div className="city-picker-loading">Loading cities...</div>
+              ) : channels.map((ch) => {
+                const isActive = ch.channelId === channelId
+                const hasActivity = ch.activeUsers > 0
+                return (
+                  <button
+                    key={ch.channelId}
+                    className={`city-row${isActive ? ' active' : ''}`}
+                    onClick={() => switchCity(ch.channelId, ch.city)}
+                  >
+                    <div className="city-row-left">
+                      <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
+                      <span className="city-row-name">{ch.city}</span>
+                      {isActive && <span className="city-row-current">you're here</span>}
+                    </div>
+                    <div className="city-row-stats">
+                      {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
+                      <span className="city-row-count">{ch.messageCount} msgs</span>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Desktop-only sidebar */}
       {onlineUsers.length > 0 && (
