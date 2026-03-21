@@ -88,7 +88,7 @@ class PresenceRepository
     public static function disconnect(string $sessionId): void
     {
         $storageDir = __DIR__ . '/../storage/';
-        foreach (glob($storageDir . 'presence_*.json') as $file) {
+        foreach (glob($storageDir . 'presence_*.json') ?: [] as $file) {
             preg_match('/presence_(\d+)\.json$/', $file, $m);
             if (empty($m[1])) continue;
             $channelId = (int) $m[1];
