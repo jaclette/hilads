@@ -2,10 +2,21 @@
 
 declare(strict_types=1);
 
-// Never let PHP warnings or notices bleed into the JSON response body.
-// Errors are logged server-side; the API always returns structured JSON.
 ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
+
+$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+if ($method === 'GET' && $uri === '/health') {
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'ok',
+        'service' => 'hilads-api',
+    ]);
+    exit();
+}
 
 $allowedOrigins = [
     'https://hilads.vercel.app',
@@ -22,16 +33,13 @@ if ($origin !== null && in_array($origin, $allowedOrigins, true)) {
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
+if ($method === 'OPTIONS') {
     http_response_code(204);
     exit();
 }
 
 header('Content-Type: application/json');
 
-// Load .env for local development; in production set vars in the server environment.
-// Use @ to suppress parse warnings — PHP's INI parser chokes on characters like
-// parentheses inside # comment lines, which would otherwise leak HTML into responses.
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
     $vars = @parse_ini_file($envFile);
@@ -65,13 +73,6 @@ session_start();
 
 $router = new Router();
 
-$router->add('GET', '/health', function () {
-    Response::json(['status' => 'ok', 'service' => 'hilads-api']);
-});
-
 require_once __DIR__ . '/../routes/api.php';
-
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 $router->dispatch($method, $uri);
