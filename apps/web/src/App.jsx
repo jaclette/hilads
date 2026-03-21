@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage } from './api'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -37,13 +37,15 @@ const PLACEHOLDERS = [
 
 const FAKE_NAMES = ['Alex', 'Maya', 'Tom', 'Sora', 'Leo', 'Zara', 'Kai', 'Nina', 'Felix', 'Mia', 'Sam', 'Yuki', 'Ryo', 'Cleo', 'Jude']
 
-function randomActivity() {
-  if (Math.random() < 0.35) {
+function randomActivity(lastJoinTs) {
+  const now = Date.now()
+  const canJoin = now - lastJoinTs > 25000
+  if (!canJoin || Math.random() < 0.35) {
     const count = 15 + Math.floor(Math.random() * 35)
-    return `🔥 ${count} people are here right now`
+    return { subtype: 'crowd', text: `🔥 ${count} people are here right now` }
   }
   const name = FAKE_NAMES[Math.floor(Math.random() * FAKE_NAMES.length)]
-  return `👋 ${name} just joined`
+  return { subtype: 'join', text: `👋 ${name} just joined`, name }
 }
 
 const NB_ADJECTIVES = ['Swift', 'Cool', 'Bright', 'Bold', 'Wild', 'Calm', 'Soft', 'Sharp', 'Quick', 'Zen', 'Lucky', 'Brave']
@@ -75,6 +77,24 @@ export default function App() {
   const activeRef = useRef(false)
   const knownIdsRef = useRef(new Set())
   const locPromiseRef = useRef(null)
+  const lastJoinRef = useRef(0)
+
+  // Derive online users from recent message senders — real participants, always in sync
+  const onlineUsers = useMemo(() => {
+    if (!guest) return []
+    const seen = new Set()
+    const users = []
+    seen.add(guest.guestId)
+    users.push({ id: 'me', guestId: guest.guestId, nickname: nickname, isMe: true })
+    for (let i = feed.length - 1; i >= 0; i--) {
+      const item = feed[i]
+      if (item.type !== 'message' || seen.has(item.guestId)) continue
+      seen.add(item.guestId)
+      users.push({ id: item.guestId, guestId: item.guestId, nickname: item.nickname, isMe: false })
+      if (users.length >= 12) break
+    }
+    return users
+  }, [feed, guest, nickname])
 
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
@@ -115,9 +135,11 @@ export default function App() {
     const delay = isFirst ? 6000 + Math.random() * 6000 : 22000 + Math.random() * 38000
     activityRef.current = setTimeout(() => {
       if (!activeRef.current) return
+      const activity = randomActivity(lastJoinRef.current)
+      if (activity.subtype === 'join') lastJoinRef.current = Date.now()
       setFeed((prev) => [
         ...prev,
-        { type: 'activity', id: `act-${Date.now()}`, text: randomActivity() },
+        { type: 'activity', id: `act-${Date.now()}`, subtype: activity.subtype, text: activity.text },
       ])
       scheduleActivity()
     }, delay)
@@ -273,85 +295,139 @@ export default function App() {
     )
   }
 
+  // ── Online users panel (shared between sidebar and mobile strip) ───────────
+
+  function OnlineUserAvatar({ user }) {
+    const [c1, c2] = avatarColors(user.nickname)
+    return (
+      <span
+        className="online-avatar"
+        title={user.isMe ? `${user.nickname} (you)` : user.nickname}
+        style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+        data-me={user.isMe ? 'true' : undefined}
+      >
+        {user.nickname[0].toUpperCase()}
+      </span>
+    )
+  }
+
   // ── Chat ───────────────────────────────────────────────────────────────────
 
   return (
-    <div className="screen chat">
-      <header className="chat-header">
-        <div className="header-left">
-          <div className="online-dot" />
-          <div className="header-city">
-            <span className="city-name">{city}</span>
-            <span className="online-label">
-              {onlineCount != null ? `${onlineCount} people online` : 'live now'}
-            </span>
+    <div className="chat-layout">
+      <div className="screen chat">
+        <header className="chat-header">
+          <div className="header-left">
+            <div className="online-dot" />
+            <div className="header-city">
+              <span className="city-name">{city}</span>
+              <span className="online-label">
+                {onlineCount != null ? `${onlineCount} people online` : 'live now'}
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="header-right">
-          <span className="you-badge">{guest?.nickname}</span>
-        </div>
-      </header>
+          <div className="header-right">
+            <span className="you-badge">{guest?.nickname}</span>
+          </div>
+        </header>
 
-      <div className="messages">
-        {feed.length === 0 && (
-          <div className="empty">
-            <p className="empty-icon">👋</p>
-            <p>Be the first to say something in {city}!</p>
+        {/* Mobile-only online strip */}
+        {onlineUsers.length > 0 && (
+          <div className="online-mobile-strip">
+            {onlineUsers.map((user) => (
+              <OnlineUserAvatar key={user.id} user={user} />
+            ))}
           </div>
         )}
-        {feed.map((item, i) => {
-          if (item.type === 'activity') {
+
+        <div className="messages">
+          {feed.length === 0 && (
+            <div className="empty">
+              <p className="empty-icon">👋</p>
+              <p>Be the first to say something in {city}!</p>
+            </div>
+          )}
+          {feed.map((item, i) => {
+            if (item.type === 'activity') {
+              return (
+                <div
+                  key={item.id}
+                  className={item.subtype === 'join' ? 'feed-join' : 'feed-activity'}
+                >
+                  {item.text}
+                </div>
+              )
+            }
+
+            const isMine = item.guestId === guest?.guestId
+            const prevItem = feed[i - 1]
+            const isGrouped = prevItem?.type === 'message' && prevItem.guestId === item.guestId
+            const [c1, c2] = avatarColors(item.nickname)
+
             return (
-              <div key={item.id} className="feed-activity">
-                {item.text}
+              <div
+                key={item.id}
+                className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate'].filter(Boolean).join(' ')}
+                style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
+              >
+                {!isMine && !isGrouped && (
+                  <div className="msg-meta">
+                    <span
+                      className="msg-avatar"
+                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                    >
+                      {item.nickname[0].toUpperCase()}
+                    </span>
+                    <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
+                  </div>
+                )}
+                <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
+                  <span className="msg-content">{item.content}</span>
+                </div>
               </div>
             )
-          }
+          })}
+          <div ref={bottomRef} />
+        </div>
 
-          const isMine = item.guestId === guest?.guestId
-          const prevItem = feed[i - 1]
-          const isGrouped = prevItem?.type === 'message' && prevItem.guestId === item.guestId
-          const [c1, c2] = avatarColors(item.nickname)
-
-          return (
-            <div
-              key={item.id}
-              className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate'].filter(Boolean).join(' ')}
-              style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
-            >
-              {!isMine && !isGrouped && (
-                <div className="msg-meta">
-                  <span
-                    className="msg-avatar"
-                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                  >
-                    {item.nickname[0].toUpperCase()}
-                  </span>
-                  <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
-                </div>
-              )}
-              <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
-                <span className="msg-content">{item.content}</span>
-              </div>
-            </div>
-          )
-        })}
-        <div ref={bottomRef} />
+        <form className="input-bar" onSubmit={handleSend}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length](city) : ''}
+            maxLength={1000}
+            autoFocus
+          />
+          <button type="submit" disabled={sending || !input.trim()} className="send-btn">
+            <SendIcon />
+          </button>
+        </form>
       </div>
 
-      <form className="input-bar" onSubmit={handleSend}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length](city) : ''}
-          maxLength={1000}
-          autoFocus
-        />
-        <button type="submit" disabled={sending || !input.trim()} className="send-btn">
-          <SendIcon />
-        </button>
-      </form>
+      {/* Desktop-only sidebar */}
+      {onlineUsers.length > 0 && (
+        <aside className="online-sidebar">
+          <p className="online-sidebar-title">Online · {onlineUsers.length}</p>
+          {onlineUsers.map((user) => {
+            const [c1, c2] = avatarColors(user.nickname)
+            return (
+              <div key={user.id} className="sidebar-user">
+                <span
+                  className="online-avatar"
+                  style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                  data-me={user.isMe ? 'true' : undefined}
+                >
+                  {user.nickname[0].toUpperCase()}
+                </span>
+                <span className="sidebar-user-name">
+                  {user.isMe ? <><strong>{user.nickname}</strong> <span className="sidebar-you">(you)</span></> : user.nickname}
+                </span>
+              </div>
+            )
+          })}
+        </aside>
+      )}
     </div>
   )
 }
