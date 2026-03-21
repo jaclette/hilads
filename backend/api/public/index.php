@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 header('Content-Type: application/json');
 
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+require_once __DIR__ . '/../src/Response.php';
+require_once __DIR__ . '/../src/Router.php';
+require_once __DIR__ . '/../src/NicknameGenerator.php';
+
+session_start();
+
+$router = new Router();
+
+$router->add('GET', '/health', function () {
+    Response::json(['status' => 'ok', 'service' => 'hilads-api']);
+});
+
+require_once __DIR__ . '/../routes/api.php';
+
+$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-if ($uri === '/health' && $method === 'GET') {
-    http_response_code(200);
-    echo json_encode([
-        'status' => 'ok',
-        'service' => 'hilads-api',
-    ], JSON_PRETTY_PRINT);
-    exit;
-}
-
-http_response_code(404);
-echo json_encode([
-    'error' => 'Not Found',
-    'path' => $uri,
-], JSON_PRETTY_PRINT);
+$router->dispatch($method, $uri);
