@@ -87,8 +87,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         Response::json(['error' => 'Invalid JSON body'], 400);
     }
 
-    $guestId  = $body['guestId']  ?? null;
-    $nickname = $body['nickname'] ?? null;
+    $sessionId = $body['sessionId'] ?? null;
+    $guestId   = $body['guestId']  ?? null;
+    $nickname  = $body['nickname'] ?? null;
+
+    if (empty($sessionId) || !is_string($sessionId)) {
+        Response::json(['error' => 'sessionId is required'], 400);
+    }
 
     if (empty($guestId) || !is_string($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -110,10 +115,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         : false;
 
     if ($previousChannelId !== false && $previousChannelId !== $channelId) {
-        PresenceRepository::leave($previousChannelId, $guestId);
+        PresenceRepository::leave($previousChannelId, $sessionId);
     }
 
-    PresenceRepository::join($channelId, $guestId, $nickname);
+    PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
 
     $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
 
@@ -141,13 +146,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $para
         Response::json(['error' => 'Invalid JSON body'], 400);
     }
 
-    $guestId = $body['guestId'] ?? null;
+    $sessionId = $body['sessionId'] ?? null;
 
-    if (empty($guestId) || !is_string($guestId)) {
-        Response::json(['error' => 'guestId is required'], 400);
+    if (empty($sessionId) || !is_string($sessionId)) {
+        Response::json(['error' => 'sessionId is required'], 400);
     }
 
-    PresenceRepository::leave($channelId, $guestId);
+    PresenceRepository::leave($channelId, $sessionId);
 
     Response::json([
         'onlineUsers' => PresenceRepository::getOnline($channelId),
@@ -172,15 +177,30 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
         Response::json(['error' => 'Invalid JSON body'], 400);
     }
 
-    $guestId = $body['guestId'] ?? null;
+    $sessionId = $body['sessionId'] ?? null;
+    $guestId   = $body['guestId']  ?? null;
+    $nickname  = $body['nickname'] ?? null;
+
+    if (empty($sessionId) || !is_string($sessionId)) {
+        Response::json(['error' => 'sessionId is required'], 400);
+    }
 
     if (empty($guestId) || !is_string($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
-    PresenceRepository::heartbeat($channelId, $guestId);
+    if (empty($nickname) || !is_string($nickname)) {
+        Response::json(['error' => 'nickname is required'], 400);
+    }
 
-    Response::json(['ok' => true]);
+    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+
+    PresenceRepository::heartbeat($channelId, $sessionId, $guestId, $nickname);
+
+    Response::json([
+        'onlineUsers' => PresenceRepository::getOnline($channelId),
+        'onlineCount' => PresenceRepository::getCount($channelId),
+    ]);
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
@@ -203,6 +223,24 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
     ]);
 });
 
+$router->add('POST', '/api/v1/disconnect', function () {
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $sessionId = $body['sessionId'] ?? null;
+
+    if (empty($sessionId) || !is_string($sessionId)) {
+        Response::json(['error' => 'sessionId is required'], 400);
+    }
+
+    PresenceRepository::disconnect($sessionId);
+
+    Response::json(['ok' => true]);
+});
+
 $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
@@ -220,9 +258,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         Response::json(['error' => 'Invalid JSON body'], 400);
     }
 
-    $guestId  = $body['guestId']  ?? null;
-    $nickname = $body['nickname'] ?? null;
-    $content  = $body['content']  ?? null;
+    $sessionId = $body['sessionId'] ?? null;
+    $guestId   = $body['guestId']  ?? null;
+    $nickname  = $body['nickname'] ?? null;
+    $content   = $body['content']  ?? null;
 
     if (empty($guestId) || !is_string($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -246,8 +285,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         Response::json(['error' => 'content must not exceed 1000 characters'], 400);
     }
 
-    // Sending a message also refreshes presence
-    PresenceRepository::heartbeat($channelId, $guestId);
+    // Sending a message also refreshes presence (sessionId optional for backward compat)
+    if (!empty($sessionId) && is_string($sessionId)) {
+        PresenceRepository::heartbeat($channelId, $sessionId, $guestId, $nickname);
+    }
 
     $message = MessageRepository::add($channelId, $guestId, $nickname, $content);
 

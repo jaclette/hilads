@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel } from './api'
+import { useState, useEffect, useRef } from 'react'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon } from './api'
+import { createSocket } from './socket'
 import Logo from './components/Logo'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -77,6 +78,27 @@ function generateNickname() {
   return `${adj}${noun}`
 }
 
+// Unique per browser tab — stored in sessionStorage so it survives hot reloads but not new tabs
+function getOrCreateSessionId() {
+  let id = sessionStorage.getItem('hilads_sid')
+  if (!id) {
+    id = crypto.randomUUID()
+    sessionStorage.setItem('hilads_sid', id)
+  }
+  return id
+}
+
+// Build the onlineUsers array for the sidebar/strip, marking the current user.
+// Users come from presenceSnapshot (keyed by sessionId).
+function buildOnlineUsers(users, mySessionId) {
+  return users.map(u => ({
+    id: u.sessionId,
+    sessionId: u.sessionId,
+    nickname: u.nickname,
+    isMe: u.sessionId === mySessionId,
+  }))
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -94,40 +116,49 @@ export default function App() {
   const [channels, setChannels] = useState([])
   const [channelsLoading, setChannelsLoading] = useState(false)
   const [fadingIds, setFadingIds] = useState(new Set())
+  const [onlineUsers, setOnlineUsers] = useState([])
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
-  const fluctuateRef = useRef(null)
   const activityRef = useRef(null)
   const activeRef = useRef(false)
   const knownIdsRef = useRef(new Set())
   const locPromiseRef = useRef(null)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
-
-  // Derive online users from recent message senders — real participants, always in sync
-  const onlineUsers = useMemo(() => {
-    if (!guest) return []
-    const seen = new Set()
-    const users = []
-    seen.add(guest.guestId)
-    users.push({ id: 'me', guestId: guest.guestId, nickname: nickname, isMe: true })
-    for (let i = feed.length - 1; i >= 0; i--) {
-      const item = feed[i]
-      if (item.type !== 'message' || seen.has(item.guestId)) continue
-      seen.add(item.guestId)
-      users.push({ id: item.guestId, guestId: item.guestId, nickname: item.nickname, isMe: false })
-      if (users.length >= 12) break
-    }
-    return users
-  }, [feed, guest, nickname])
+  const sessionIdRef = useRef(getOrCreateSessionId())
+  const pollFnRef = useRef(null)   // current room's poll function — called immediately on tab focus
+  const socketRef = useRef(null)   // WebSocket presence client
 
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
     locPromiseRef.current = startGeolocation()
+
+    // Remove this tab from presence on close — sendBeacon survives page unload
+    const handleUnload = () => {
+      if (activeChannelRef.current) {
+        socketRef.current?.leaveRoom(activeChannelRef.current, sessionIdRef.current)
+      }
+      disconnectBeacon(sessionIdRef.current)
+    }
+    window.addEventListener('beforeunload', handleUnload)
+
+    // When returning to a hidden tab: re-assert presence and refresh messages.
+    const handleVisibilityChange = () => {
+      if (!document.hidden && activeRef.current) {
+        if (activeChannelRef.current) {
+          socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
+        }
+        pollFnRef.current?.()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
     return () => {
       clearInterval(pollRef.current)
-      clearInterval(fluctuateRef.current)
       activeRef.current = false
       clearTimeout(activityRef.current)
+      socketRef.current?.disconnect()
+      window.removeEventListener('beforeunload', handleUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
   }, [])
 
@@ -139,7 +170,6 @@ export default function App() {
     const position = await getPosition()
     const location = await resolveLocation(position.coords.latitude, position.coords.longitude)
     setCity(location.city)
-    setOnlineCount(((location.channelId * 37 + 5) % 43) + 12)
     return location
   }
 
@@ -190,12 +220,8 @@ export default function App() {
       setChannelId(location.channelId)
       activeChannelRef.current = location.channelId
 
-      fluctuateRef.current = setInterval(() => {
-        setOnlineCount((n) => Math.max(5, n + Math.floor(Math.random() * 5) - 2))
-      }, 8000)
-
       // Emit join event before fetching messages so it's included
-      const joinData = await joinChannel(location.channelId, session.guestId, name)
+      const joinData = await joinChannel(location.channelId, sessionIdRef.current, session.guestId, name)
       const joinKey = messageKey(joinData.message)
 
       const data = await fetchMessages(location.channelId)
@@ -209,16 +235,49 @@ export default function App() {
       })
 
       setFeed(initialItems)
+      setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
+      setOnlineCount(joinData.onlineCount ?? null)
       setStatus('ready')
       scheduleEphemeral(joinKey)
 
       activeRef.current = true
       scheduleActivity(true)
 
-      clearInterval(pollRef.current)
-      pollRef.current = setInterval(async () => {
-        if (document.hidden) return
+      // ── Socket: real-time presence ───────────────────────────────────────────
+      const socket = socketRef.current ?? createSocket()
+      socketRef.current = socket
+
+      socket.on('presenceSnapshot', ({ cityId, users, count }) => {
+        if (activeChannelRef.current !== cityId) return
+        setOnlineUsers(buildOnlineUsers(users, sessionIdRef.current))
+        setOnlineCount(count)
+      })
+
+      socket.on('userJoined', ({ cityId, user }) => {
+        if (activeChannelRef.current !== cityId) return
+        setOnlineUsers((prev) => {
+          if (prev.some((u) => u.sessionId === user.sessionId)) return prev
+          return [...prev, { id: user.sessionId, sessionId: user.sessionId, nickname: user.nickname, isMe: false }]
+        })
+      })
+
+      socket.on('userLeft', ({ cityId, user }) => {
+        if (activeChannelRef.current !== cityId) return
+        setOnlineUsers((prev) => prev.filter((u) => u.sessionId !== user.sessionId))
+      })
+
+      socket.on('onlineCountUpdated', ({ cityId, count }) => {
+        if (activeChannelRef.current !== cityId) return
+        setOnlineCount(count)
+      })
+
+      socket.joinRoom(location.channelId, sessionIdRef.current, name)
+
+      // ── Poll: messages only ──────────────────────────────────────────────────
+      const doPoll = async () => {
+        if (!activeRef.current) return
         const latest = await fetchMessages(location.channelId)
+        if (activeChannelRef.current !== location.channelId) return // discard if switched away
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
           newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
@@ -226,7 +285,10 @@ export default function App() {
           setFeed((prev) => [...prev, ...newItems])
           newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
-      }, 3000)
+      }
+      pollFnRef.current = doPoll
+      clearInterval(pollRef.current)
+      pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
     } catch (err) {
       setError(err.message)
       setStatus('error')
@@ -239,7 +301,7 @@ export default function App() {
     if (!content || sending) return
     setSending(true)
     try {
-      const msg = await sendMessage(channelId, guest.guestId, nickname, content)
+      const msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, nickname, content)
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { type: 'message', ...msg }])
       setInput('')
@@ -272,28 +334,24 @@ export default function App() {
 
     // stop everything tied to the previous room
     activeRef.current = false
+    pollFnRef.current = null // prevent visibility handler from calling old room's poll
     clearTimeout(activityRef.current)
     clearInterval(pollRef.current)
-    clearInterval(fluctuateRef.current)
+    socketRef.current?.leaveRoom(channelId, sessionIdRef.current)
 
     // mark which channel we're switching to — used to discard stale async results
     activeChannelRef.current = newChannelId
 
     // reset all room-specific state immediately so UI never shows stale data
     setFeed([])
+    setOnlineUsers([])
     knownIdsRef.current = new Set()
     setCity(newCityName)
     setChannelId(newChannelId)
-    setOnlineCount(((newChannelId * 37 + 5) % 43) + 12)
-
-    // restart count fluctuation for new room
-    fluctuateRef.current = setInterval(() => {
-      setOnlineCount((n) => Math.max(5, n + Math.floor(Math.random() * 5) - 2))
-    }, 8000)
 
     try {
       // Emit join event (also handles leaving previous channel) before fetching
-      const joinData = await joinChannel(newChannelId, guest.guestId, nickname, channelId)
+      const joinData = await joinChannel(newChannelId, sessionIdRef.current, guest.guestId, nickname, channelId)
 
       // another switch happened while we were joining — discard
       if (activeChannelRef.current !== newChannelId) return
@@ -313,14 +371,21 @@ export default function App() {
         return toFeedItem(m, delay)
       })
       setFeed(initialItems)
+      setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname, isMe: true }])
+      setOnlineCount(joinData.onlineCount ?? null)
       scheduleEphemeral(joinKey)
 
       activeRef.current = true
       scheduleActivity(true)
 
-      pollRef.current = setInterval(async () => {
-        if (document.hidden) return
+      // Socket: join new room — existing handlers (set up in handleJoin) remain active
+      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, nickname)
+
+      // Poll: messages only
+      const doPoll = async () => {
+        if (!activeRef.current) return
         const latest = await fetchMessages(newChannelId)
+        if (activeChannelRef.current !== newChannelId) return // discard if switched away again
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
           newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
@@ -328,7 +393,9 @@ export default function App() {
           setFeed((prev) => [...prev, ...newItems])
           newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
-      }, 3000)
+      }
+      pollFnRef.current = doPoll
+      pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
     } catch {
       // silently fail — user stays with empty feed for new city
     }

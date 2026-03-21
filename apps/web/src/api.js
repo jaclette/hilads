@@ -30,8 +30,8 @@ export async function fetchMessages(channelId) {
   return res.json()
 }
 
-export async function joinChannel(channelId, guestId, nickname, previousChannelId = null) {
-  const body = { guestId, nickname }
+export async function joinChannel(channelId, sessionId, guestId, nickname, previousChannelId = null) {
+  const body = { sessionId, guestId, nickname }
   if (previousChannelId) body.previousChannelId = previousChannelId
   const res = await fetch(`${BASE}/channels/${channelId}/join`, {
     method: 'POST',
@@ -43,18 +43,46 @@ export async function joinChannel(channelId, guestId, nickname, previousChannelI
   return res.json()
 }
 
+export async function leaveChannel(channelId, sessionId) {
+  const res = await fetch(`${BASE}/channels/${channelId}/leave`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ sessionId }),
+  })
+  if (!res.ok) throw new Error('Failed to leave channel')
+  return res.json()
+}
+
+export async function heartbeat(channelId, sessionId, guestId, nickname) {
+  const res = await fetch(`${BASE}/channels/${channelId}/heartbeat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ sessionId, guestId, nickname }),
+  })
+  if (!res.ok) throw new Error('Failed to send heartbeat')
+  return res.json()
+}
+
+export function disconnectBeacon(sessionId) {
+  // sendBeacon is fire-and-forget, reliable on page unload
+  const payload = new Blob([JSON.stringify({ sessionId })], { type: 'application/json' })
+  navigator.sendBeacon(`${BASE}/disconnect`, payload)
+}
+
 export async function fetchChannels() {
   const res = await fetch(`${BASE}/channels`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch channels')
   return res.json()
 }
 
-export async function sendMessage(channelId, guestId, nickname, content) {
+export async function sendMessage(channelId, sessionId, guestId, nickname, content) {
   const res = await fetch(`${BASE}/channels/${channelId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, nickname, content }),
+    body: JSON.stringify({ sessionId, guestId, nickname, content }),
   })
   if (!res.ok) throw new Error('Failed to send message')
   return res.json()

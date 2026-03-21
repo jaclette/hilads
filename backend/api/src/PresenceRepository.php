@@ -11,7 +11,7 @@ class PresenceRepository
         return __DIR__ . '/../storage/presence_' . $channelId . '.json';
     }
 
-    // Load presence keyed by guestId: { "guestId": { guestId, nickname, lastSeenAt } }
+    // Load presence keyed by sessionId: { "sessionId": { sessionId, guestId, nickname, lastSeenAt } }
     private static function load(int $channelId): array
     {
         $path = self::filePath($channelId);
@@ -42,11 +42,12 @@ class PresenceRepository
         return array_filter($presence, fn($p) => $p['lastSeenAt'] >= $cutoff);
     }
 
-    public static function join(int $channelId, string $guestId, string $nickname): void
+    public static function join(int $channelId, string $sessionId, string $guestId, string $nickname): void
     {
         $presence = self::pruneStale(self::load($channelId));
 
-        $presence[$guestId] = [
+        $presence[$sessionId] = [
+            'sessionId'  => $sessionId,
             'guestId'    => $guestId,
             'nickname'   => $nickname,
             'lastSeenAt' => time(),
@@ -55,35 +56,72 @@ class PresenceRepository
         self::save($channelId, $presence);
     }
 
-    public static function leave(int $channelId, string $guestId): void
+    public static function leave(int $channelId, string $sessionId): void
     {
         $presence = self::pruneStale(self::load($channelId));
 
-        unset($presence[$guestId]);
+        unset($presence[$sessionId]);
 
         self::save($channelId, $presence);
     }
 
-    public static function heartbeat(int $channelId, string $guestId): void
+    public static function heartbeat(int $channelId, string $sessionId, string $guestId, string $nickname): void
     {
         $presence = self::pruneStale(self::load($channelId));
 
-        if (!isset($presence[$guestId])) {
-            return; // user not in this room, ignore
+        if (!isset($presence[$sessionId])) {
+            // Re-insert if expired (e.g. after server restart or TTL lapse while tab was open)
+            $presence[$sessionId] = [
+                'sessionId'  => $sessionId,
+                'guestId'    => $guestId,
+                'nickname'   => $nickname,
+                'lastSeenAt' => time(),
+            ];
+        } else {
+            $presence[$sessionId]['lastSeenAt'] = time();
         }
 
-        $presence[$guestId]['lastSeenAt'] = time();
-
         self::save($channelId, $presence);
     }
 
+    // Remove a session from all channels — used on browser tab close
+    public static function disconnect(string $sessionId): void
+    {
+        $storageDir = __DIR__ . '/../storage/';
+        foreach (glob($storageDir . 'presence_*.json') as $file) {
+            preg_match('/presence_(\d+)\.json$/', $file, $m);
+            if (empty($m[1])) continue;
+            $channelId = (int) $m[1];
+            $presence  = self::pruneStale(self::load($channelId));
+            if (isset($presence[$sessionId])) {
+                unset($presence[$sessionId]);
+                self::save($channelId, $presence);
+            }
+        }
+    }
+
+    // Returns unique online users (deduplicated by guestId — one entry per person even with multiple tabs)
     public static function getOnline(int $channelId): array
     {
-        return array_values(self::pruneStale(self::load($channelId)));
+        $presence = self::pruneStale(self::load($channelId));
+        $seen     = [];
+        $result   = [];
+
+        foreach ($presence as $entry) {
+            if (!isset($seen[$entry['guestId']])) {
+                $seen[$entry['guestId']] = true;
+                $result[] = [
+                    'guestId'  => $entry['guestId'],
+                    'nickname' => $entry['nickname'],
+                ];
+            }
+        }
+
+        return $result;
     }
 
     public static function getCount(int $channelId): int
     {
-        return count(self::pruneStale(self::load($channelId)));
+        return count(self::getOnline($channelId));
     }
 }

@@ -1,0 +1,152 @@
+/**
+ * Hilads WebSocket Presence Server
+ *
+ * Contract
+ * --------
+ * Client → Server  : joinRoom(cityId, sessionId, nickname)
+ *                    leaveRoom(cityId, sessionId)
+ *                    heartbeat(cityId, sessionId)
+ *
+ * Server → Client  : presenceSnapshot(cityId, users, count)
+ *                    userJoined(cityId, user)
+ *                    userLeft(cityId, user)
+ *                    onlineCountUpdated(cityId, count)
+ *
+ * All events are JSON objects with an `event` field.
+ * Presence is scoped by cityId and keyed by sessionId.
+ */
+
+import { WebSocketServer } from 'ws'
+
+const PORT = process.env.PORT || 8081
+const HEARTBEAT_TTL_MS = 60_000   // session expires after 60s without heartbeat
+const CLEANUP_INTERVAL_MS = 30_000 // check for stale sessions every 30s
+const PING_INTERVAL_MS = 30_000   // detect dead TCP connections
+
+// rooms: Map<cityId, Map<sessionId, { sessionId, nickname, ws, lastSeen }>>
+const rooms = new Map()
+
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
+function getRoom(cityId) {
+  if (!rooms.has(cityId)) rooms.set(cityId, new Map())
+  return rooms.get(cityId)
+}
+
+function roomUsers(cityId) {
+  const room = rooms.get(cityId)
+  if (!room) return []
+  return [...room.values()].map(s => ({ sessionId: s.sessionId, nickname: s.nickname }))
+}
+
+function broadcast(cityId, data, exclude = null) {
+  const room = rooms.get(cityId)
+  if (!room) return
+  const msg = JSON.stringify(data)
+  for (const session of room.values()) {
+    if (session.ws !== exclude && session.ws.readyState === 1 /* OPEN */) {
+      session.ws.send(msg)
+    }
+  }
+}
+
+function sendSnapshot(ws, cityId) {
+  const users = roomUsers(cityId)
+  ws.send(JSON.stringify({ event: 'presenceSnapshot', cityId, users, count: users.length }))
+}
+
+// ── Stale session cleanup ──────────────────────────────────────────────────────
+
+setInterval(() => {
+  const now = Date.now()
+  for (const [cityId, room] of rooms) {
+    for (const [sessionId, session] of room) {
+      if (now - session.lastSeen > HEARTBEAT_TTL_MS) {
+        room.delete(sessionId)
+        broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
+        broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
+      }
+    }
+  }
+}, CLEANUP_INTERVAL_MS)
+
+// ── Event handlers ─────────────────────────────────────────────────────────────
+
+function handleJoinRoom(ws, { cityId, sessionId, nickname }) {
+  const room = getRoom(cityId)
+  const isNew = !room.has(sessionId)
+
+  room.set(sessionId, { sessionId, nickname, ws, lastSeen: Date.now() })
+
+  // Always send full snapshot to the joining client (includes themselves)
+  sendSnapshot(ws, cityId)
+
+  if (isNew) {
+    // Notify existing clients of the new user
+    broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname } }, ws)
+    broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size }, ws)
+  }
+}
+
+function handleLeaveRoom(ws, { cityId, sessionId }) {
+  const room = rooms.get(cityId)
+  if (!room) return
+  const session = room.get(sessionId)
+  if (!session) return
+
+  room.delete(sessionId)
+  broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
+  broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
+}
+
+function handleHeartbeat(ws, { cityId, sessionId }) {
+  const session = rooms.get(cityId)?.get(sessionId)
+  if (session) session.lastSeen = Date.now()
+}
+
+// Remove a disconnected ws from all rooms it was part of
+function removeWs(ws) {
+  for (const [cityId, room] of rooms) {
+    for (const [sessionId, session] of room) {
+      if (session.ws === ws) {
+        room.delete(sessionId)
+        broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
+        broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
+      }
+    }
+  }
+}
+
+// ── Server ─────────────────────────────────────────────────────────────────────
+
+const wss = new WebSocketServer({ port: PORT })
+
+wss.on('connection', (ws) => {
+  ws.isAlive = true
+  ws.on('pong', () => { ws.isAlive = true })
+
+  ws.on('message', (raw) => {
+    let msg
+    try { msg = JSON.parse(raw) } catch { return }
+
+    switch (msg.event) {
+      case 'joinRoom':  return handleJoinRoom(ws, msg)
+      case 'leaveRoom': return handleLeaveRoom(ws, msg)
+      case 'heartbeat': return handleHeartbeat(ws, msg)
+    }
+  })
+
+  ws.on('close', () => removeWs(ws))
+  ws.on('error', () => ws.close())
+})
+
+// Detect and terminate dead connections (no pong response)
+setInterval(() => {
+  for (const ws of wss.clients) {
+    if (!ws.isAlive) { ws.terminate(); continue }
+    ws.isAlive = false
+    ws.ping()
+  }
+}, PING_INTERVAL_MS)
+
+console.log(`Hilads WS server listening on ws://localhost:${PORT}`)
