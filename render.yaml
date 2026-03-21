@@ -1,0 +1,21 @@
+services:
+  # PHP REST API
+  - type: web
+    name: hilads-api
+    runtime: docker
+    dockerfilePath: ./backend/api/Dockerfile
+    dockerContext: ./backend/api
+    envVars:
+      - key: PORT
+        value: 8080
+
+  # Node.js WebSocket presence server
+  - type: web
+    name: hilads-ws
+    runtime: node
+    rootDir: backend/ws
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 10000   # Render default — will be overridden automatically
