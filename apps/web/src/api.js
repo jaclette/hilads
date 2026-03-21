@@ -30,12 +30,12 @@ export async function fetchMessages(channelId) {
   return res.json()
 }
 
-export async function sendMessage(channelId, guestId, content) {
+export async function sendMessage(channelId, guestId, nickname, content) {
   const res = await fetch(`${BASE}/channels/${channelId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, content }),
+    body: JSON.stringify({ guestId, nickname, content }),
   })
   if (!res.ok) throw new Error('Failed to send message')
   return res.json()

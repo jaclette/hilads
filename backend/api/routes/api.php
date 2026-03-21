@@ -85,11 +85,22 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         Response::json(['error' => 'Invalid JSON body'], 400);
     }
 
-    $guestId = $body['guestId'] ?? null;
-    $content = $body['content'] ?? null;
+    $guestId  = $body['guestId']  ?? null;
+    $nickname = $body['nickname'] ?? null;
+    $content  = $body['content']  ?? null;
 
     if (empty($guestId) || !is_string($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($nickname) || !is_string($nickname)) {
+        Response::json(['error' => 'nickname is required'], 400);
+    }
+
+    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+
+    if ($nickname === '') {
+        Response::json(['error' => 'nickname must not be empty'], 400);
     }
 
     if (empty($content) || !is_string($content)) {
@@ -100,13 +111,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         Response::json(['error' => 'content must not exceed 1000 characters'], 400);
     }
 
-    $guest = $_SESSION['guests'][$guestId] ?? null;
-
-    if ($guest === null) {
-        Response::json(['error' => 'Unknown guest session'], 401);
-    }
-
-    $message = MessageRepository::add($channelId, $guestId, $guest['nickname'], $content);
+    $message = MessageRepository::add($channelId, $guestId, $nickname, $content);
 
     Response::json($message, 201);
 });

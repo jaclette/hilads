@@ -157,7 +157,9 @@ export default function App() {
       activeRef.current = true
       scheduleActivity(true)
 
+      clearInterval(pollRef.current)
       pollRef.current = setInterval(async () => {
+        if (document.hidden) return
         const latest = await fetchMessages(location.channelId)
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(m.id))
         if (newMsgs.length > 0) {
@@ -177,7 +179,7 @@ export default function App() {
     if (!content || sending) return
     setSending(true)
     try {
-      const msg = await sendMessage(channelId, guest.guestId, content)
+      const msg = await sendMessage(channelId, guest.guestId, nickname, content)
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { type: 'message', ...msg }])
       setInput('')
