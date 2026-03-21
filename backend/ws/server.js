@@ -62,6 +62,13 @@ setInterval(() => {
   for (const [cityId, room] of rooms) {
     for (const [sessionId, session] of room) {
       if (now - session.lastSeen > HEARTBEAT_TTL_MS) {
+        console.log(`[WS] cleanup: evicting ${session.nickname} (${sessionId.slice(0, 8)}) from city ${cityId}`)
+        // Notify the evicted session itself before removing — its WS connection is still alive
+        if (session.ws.readyState === 1 /* OPEN */) {
+          session.ws.send(JSON.stringify({
+            event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname },
+          }))
+        }
         room.delete(sessionId)
         broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
         broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
@@ -76,6 +83,7 @@ function handleJoinRoom(ws, { cityId, sessionId, nickname }) {
   const room = getRoom(cityId)
   const isNew = !room.has(sessionId)
 
+  console.log(`[WS] joinRoom: ${nickname} (${sessionId.slice(0, 8)}) -> city ${cityId} (${isNew ? 'new' : 'rejoin'})`)
   room.set(sessionId, { sessionId, nickname, ws, lastSeen: Date.now() })
 
   // Always send full snapshot to the joining client (includes themselves)
@@ -94,6 +102,7 @@ function handleLeaveRoom(ws, { cityId, sessionId }) {
   const session = room.get(sessionId)
   if (!session) return
 
+  console.log(`[WS] leaveRoom: ${session.nickname} (${sessionId.slice(0, 8)}) <- city ${cityId}`)
   room.delete(sessionId)
   broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
   broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
@@ -101,7 +110,12 @@ function handleLeaveRoom(ws, { cityId, sessionId }) {
 
 function handleHeartbeat(ws, { cityId, sessionId }) {
   const session = rooms.get(cityId)?.get(sessionId)
-  if (session) session.lastSeen = Date.now()
+  if (session) {
+    session.lastSeen = Date.now()
+    console.log(`[WS] heartbeat: ${session.nickname} in city ${cityId}`)
+  } else {
+    console.log(`[WS] heartbeat: unknown session ${sessionId.slice(0, 8)} in city ${cityId} — ignored`)
+  }
 }
 
 // Remove a disconnected ws from all rooms it was part of

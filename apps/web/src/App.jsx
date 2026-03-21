@@ -125,8 +125,10 @@ export default function App() {
   const locPromiseRef = useRef(null)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
   const sessionIdRef = useRef(getOrCreateSessionId())
-  const pollFnRef = useRef(null)   // current room's poll function — called immediately on tab focus
-  const socketRef = useRef(null)   // WebSocket presence client
+  const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
+  const socketRef = useRef(null)      // WebSocket presence client
+  const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
+  const heartbeatRef = useRef(null)   // periodic heartbeat interval
 
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
@@ -142,10 +144,11 @@ export default function App() {
     window.addEventListener('beforeunload', handleUnload)
 
     // When returning to a hidden tab: re-assert presence and refresh messages.
+    // Send joinRoom (not just heartbeat) so the session is re-registered if the TTL expired.
     const handleVisibilityChange = () => {
       if (!document.hidden && activeRef.current) {
         if (activeChannelRef.current) {
-          socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
+          socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current)
         }
         pollFnRef.current?.()
       }
@@ -154,6 +157,7 @@ export default function App() {
 
     return () => {
       clearInterval(pollRef.current)
+      clearInterval(heartbeatRef.current)
       activeRef.current = false
       clearTimeout(activityRef.current)
       socketRef.current?.disconnect()
@@ -212,6 +216,7 @@ export default function App() {
     e.preventDefault()
     const name = nickname.trim() || generateNickname()
     setNickname(name)
+    nicknameRef.current = name
     setStatus('joining')
     try {
       const location = await locPromiseRef.current
@@ -248,12 +253,14 @@ export default function App() {
       socketRef.current = socket
 
       socket.on('presenceSnapshot', ({ cityId, users, count }) => {
+        console.debug('[presence] snapshot', cityId, count, 'users:', users.map(u => u.nickname))
         if (activeChannelRef.current !== cityId) return
         setOnlineUsers(buildOnlineUsers(users, sessionIdRef.current))
         setOnlineCount(count)
       })
 
       socket.on('userJoined', ({ cityId, user }) => {
+        console.debug('[presence] userJoined', cityId, user.nickname)
         if (activeChannelRef.current !== cityId) return
         setOnlineUsers((prev) => {
           if (prev.some((u) => u.sessionId === user.sessionId)) return prev
@@ -262,16 +269,28 @@ export default function App() {
       })
 
       socket.on('userLeft', ({ cityId, user }) => {
+        console.debug('[presence] userLeft', cityId, user.nickname)
         if (activeChannelRef.current !== cityId) return
         setOnlineUsers((prev) => prev.filter((u) => u.sessionId !== user.sessionId))
       })
 
       socket.on('onlineCountUpdated', ({ cityId, count }) => {
+        console.debug('[presence] onlineCountUpdated', cityId, count)
         if (activeChannelRef.current !== cityId) return
         setOnlineCount(count)
       })
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name)
+
+      // ── Periodic heartbeat: keeps session alive while tab is open ────────────
+      // The WS server evicts sessions after 60s without a heartbeat.
+      // We ping every 30s so idle users are never evicted unexpectedly.
+      clearInterval(heartbeatRef.current)
+      heartbeatRef.current = setInterval(() => {
+        if (activeRef.current && !document.hidden && activeChannelRef.current) {
+          socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
+        }
+      }, 30_000)
 
       // ── Poll: messages only ──────────────────────────────────────────────────
       const doPoll = async () => {
@@ -337,6 +356,7 @@ export default function App() {
     pollFnRef.current = null // prevent visibility handler from calling old room's poll
     clearTimeout(activityRef.current)
     clearInterval(pollRef.current)
+    clearInterval(heartbeatRef.current)
     socketRef.current?.leaveRoom(channelId, sessionIdRef.current)
 
     // mark which channel we're switching to — used to discard stale async results
@@ -380,6 +400,13 @@ export default function App() {
 
       // Socket: join new room — existing handlers (set up in handleJoin) remain active
       socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, nickname)
+
+      // Restart heartbeat for the new room
+      heartbeatRef.current = setInterval(() => {
+        if (activeRef.current && !document.hidden && activeChannelRef.current) {
+          socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
+        }
+      }, 30_000)
 
       // Poll: messages only
       const doPoll = async () => {
