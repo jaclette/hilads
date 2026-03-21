@@ -27,6 +27,17 @@ class CityRepository
         ['id' => 20, 'name' => 'Ho Chi Minh City','lat' =>  10.8231,  'lng' => 106.6297],
     ];
 
+    public static function findById(int $id): ?array
+    {
+        foreach (self::$cities as $city) {
+            if ($city['id'] === $id) {
+                return $city;
+            }
+        }
+
+        return null;
+    }
+
     public static function nearest(float $lat, float $lng): array
     {
         $nearest = null;

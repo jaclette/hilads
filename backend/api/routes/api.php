@@ -46,3 +46,62 @@ $router->add('POST', '/api/v1/location/resolve', function () {
         'channelId' => $city['id'],
     ]);
 });
+
+$router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $messages = MessageRepository::getByChannel($channelId);
+
+    Response::json(['messages' => $messages]);
+});
+
+$router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId = $body['guestId'] ?? null;
+    $content = $body['content'] ?? null;
+
+    if (empty($guestId) || !is_string($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($content) || !is_string($content)) {
+        Response::json(['error' => 'content is required'], 400);
+    }
+
+    if (strlen($content) > 1000) {
+        Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+    }
+
+    $guest = $_SESSION['guests'][$guestId] ?? null;
+
+    if ($guest === null) {
+        Response::json(['error' => 'Unknown guest session'], 401);
+    }
+
+    $message = MessageRepository::add($channelId, $guestId, $guest['nickname'], $content);
+
+    Response::json($message, 201);
+});

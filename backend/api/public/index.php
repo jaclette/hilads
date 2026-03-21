@@ -9,6 +9,7 @@ require_once __DIR__ . '/../src/Router.php';
 require_once __DIR__ . '/../src/Request.php';
 require_once __DIR__ . '/../src/NicknameGenerator.php';
 require_once __DIR__ . '/../src/CityRepository.php';
+require_once __DIR__ . '/../src/MessageRepository.php';
 
 session_start();
 
