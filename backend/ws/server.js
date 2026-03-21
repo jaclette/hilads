@@ -19,8 +19,8 @@
 import { WebSocketServer } from 'ws'
 
 const PORT = process.env.PORT || 8081
-const HEARTBEAT_TTL_MS = 60_000   // session expires after 60s without heartbeat
-const CLEANUP_INTERVAL_MS = 30_000 // check for stale sessions every 30s
+const HEARTBEAT_TTL_MS = 120_000  // session expires after 120s without heartbeat
+const CLEANUP_INTERVAL_MS = 60_000 // check for stale sessions every 60s
 const PING_INTERVAL_MS = 30_000   // detect dead TCP connections
 const TYPING_TTL_MS = 8_000       // auto-clear typing if no typingStop within 8s
 

@@ -155,7 +155,7 @@ export default function App() {
     window.addEventListener('beforeunload', handleUnload)
 
     // When returning to a hidden tab: re-assert presence and refresh messages.
-    // Send joinRoom (not just heartbeat) so the session is re-registered if the TTL expired.
+    // Send joinRoom (not just heartbeat) so the session is re-registered if it somehow expired.
     const handleVisibilityChange = () => {
       if (!document.hidden && activeRef.current) {
         if (activeChannelRef.current) {
@@ -299,15 +299,16 @@ export default function App() {
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name)
 
-      // ── Periodic heartbeat: keeps session alive while tab is open ────────────
-      // The WS server evicts sessions after 60s without a heartbeat.
-      // We ping every 30s so idle users are never evicted unexpectedly.
+      // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
+      // Server TTL is 120s. We beat every 20s so the user stays online even when
+      // the browser throttles background timers (worst-case ~60s between beats).
+      // Intentionally no !document.hidden check — presence must stay alive in background tabs.
       clearInterval(heartbeatRef.current)
       heartbeatRef.current = setInterval(() => {
-        if (activeRef.current && !document.hidden && activeChannelRef.current) {
+        if (activeRef.current && activeChannelRef.current) {
           socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
         }
-      }, 30_000)
+      }, 20_000)
 
       // ── Poll: messages only ──────────────────────────────────────────────────
       const doPoll = async () => {
@@ -441,12 +442,12 @@ export default function App() {
       // Socket: join new room — existing handlers (set up in handleJoin) remain active
       socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, nickname)
 
-      // Restart heartbeat for the new room
+      // Restart heartbeat for the new room (same policy — no !document.hidden)
       heartbeatRef.current = setInterval(() => {
-        if (activeRef.current && !document.hidden && activeChannelRef.current) {
+        if (activeRef.current && activeChannelRef.current) {
           socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
         }
-      }, 30_000)
+      }, 20_000)
 
       // Poll: messages only
       const doPoll = async () => {
