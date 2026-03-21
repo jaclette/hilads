@@ -78,6 +78,16 @@ export function createSocket() {
       send({ event: 'leaveRoom', cityId, sessionId })
     },
 
+    /** Notify others that this user started typing. */
+    typingStart(cityId, sessionId, nickname) {
+      send({ event: 'typingStart', cityId, sessionId, nickname })
+    },
+
+    /** Notify others that this user stopped typing. */
+    typingStop(cityId, sessionId) {
+      send({ event: 'typingStop', cityId, sessionId })
+    },
+
     /** Keep presence alive. Call when tab regains focus. */
     heartbeat(cityId, sessionId) {
       console.debug('[socket] → heartbeat', { cityId, sessionId })

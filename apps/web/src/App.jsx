@@ -52,6 +52,14 @@ function randomActivity() {
   return { subtype: 'crowd', text: `🔥 ${count} people are here right now` }
 }
 
+function typingText(users, mySessionId) {
+  const others = users.filter(u => u.sessionId !== mySessionId)
+  if (others.length === 0) return null
+  if (others.length === 1) return `${others[0].nickname} is typing…`
+  if (others.length === 2) return `${others[0].nickname} and ${others[1].nickname} are typing…`
+  return 'Several people are typing…'
+}
+
 function messageKey(m) {
   if (m.type === 'system' && m.event === 'join') return `system_${m.createdAt}_${m.nickname}`
   return m.id
@@ -129,6 +137,9 @@ export default function App() {
   const socketRef = useRef(null)      // WebSocket presence client
   const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
   const heartbeatRef = useRef(null)   // periodic heartbeat interval
+  const [typingUsers, setTypingUsers] = useState([])
+  const typingTimeoutRef = useRef(null) // debounce timer for typingStop
+  const isTypingRef = useRef(false)     // true while typingStart has been sent
 
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
@@ -160,6 +171,7 @@ export default function App() {
       clearInterval(heartbeatRef.current)
       activeRef.current = false
       clearTimeout(activityRef.current)
+      clearTimeout(typingTimeoutRef.current)
       socketRef.current?.disconnect()
       window.removeEventListener('beforeunload', handleUnload)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
@@ -280,6 +292,11 @@ export default function App() {
         setOnlineCount(count)
       })
 
+      socket.on('typingUsers', ({ cityId, users }) => {
+        if (activeChannelRef.current !== cityId) return
+        setTypingUsers(users)
+      })
+
       socket.joinRoom(location.channelId, sessionIdRef.current, name)
 
       // ── Periodic heartbeat: keeps session alive while tab is open ────────────
@@ -314,10 +331,30 @@ export default function App() {
     }
   }
 
+  function stopTyping() {
+    clearTimeout(typingTimeoutRef.current)
+    if (isTypingRef.current) {
+      isTypingRef.current = false
+      socketRef.current?.typingStop(activeChannelRef.current, sessionIdRef.current)
+    }
+  }
+
+  function handleInputChange(e) {
+    setInput(e.target.value)
+    if (!socketRef.current || !activeChannelRef.current) return
+    if (!isTypingRef.current) {
+      isTypingRef.current = true
+      socketRef.current.typingStart(activeChannelRef.current, sessionIdRef.current, nicknameRef.current)
+    }
+    clearTimeout(typingTimeoutRef.current)
+    typingTimeoutRef.current = setTimeout(stopTyping, 1500)
+  }
+
   async function handleSend(e) {
     e.preventDefault()
     const content = input.trim()
     if (!content || sending) return
+    stopTyping()
     setSending(true)
     try {
       const msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, nickname, content)
@@ -355,6 +392,9 @@ export default function App() {
     activeRef.current = false
     pollFnRef.current = null // prevent visibility handler from calling old room's poll
     clearTimeout(activityRef.current)
+    clearTimeout(typingTimeoutRef.current)
+    isTypingRef.current = false
+    setTypingUsers([])
     clearInterval(pollRef.current)
     clearInterval(heartbeatRef.current)
     socketRef.current?.leaveRoom(channelId, sessionIdRef.current)
@@ -427,6 +467,8 @@ export default function App() {
       // silently fail — user stays with empty feed for new city
     }
   }
+
+  const typingLabel = typingText(typingUsers, sessionIdRef.current)
 
   // ── Onboarding ─────────────────────────────────────────────────────────────
 
@@ -618,11 +660,20 @@ export default function App() {
           <div ref={bottomRef} />
         </div>
 
+        {typingLabel && (
+          <div className="typing-indicator">
+            <span className="typing-dots">
+              <span /><span /><span />
+            </span>
+            {typingLabel}
+          </div>
+        )}
+
         <form className="input-bar" onSubmit={handleSend}>
           <input
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleInputChange}
             placeholder={city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length](city) : ''}
             maxLength={1000}
             autoFocus

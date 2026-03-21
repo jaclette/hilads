@@ -22,9 +22,13 @@ const PORT = process.env.PORT || 8081
 const HEARTBEAT_TTL_MS = 60_000   // session expires after 60s without heartbeat
 const CLEANUP_INTERVAL_MS = 30_000 // check for stale sessions every 30s
 const PING_INTERVAL_MS = 30_000   // detect dead TCP connections
+const TYPING_TTL_MS = 8_000       // auto-clear typing if no typingStop within 8s
 
 // rooms: Map<cityId, Map<sessionId, { sessionId, nickname, ws, lastSeen }>>
 const rooms = new Map()
+
+// typing: Map<cityId, Map<sessionId, { sessionId, nickname, timer }>>
+const typing = new Map()
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -55,6 +59,34 @@ function sendSnapshot(ws, cityId) {
   ws.send(JSON.stringify({ event: 'presenceSnapshot', cityId, users, count: users.length }))
 }
 
+// ── Typing helpers ─────────────────────────────────────────────────────────────
+
+function getTypingRoom(cityId) {
+  if (!typing.has(cityId)) typing.set(cityId, new Map())
+  return typing.get(cityId)
+}
+
+// Clears a session's typing entry and its auto-expire timer.
+// Returns true if something was cleared (so caller knows to re-broadcast).
+function clearTyping(cityId, sessionId) {
+  const tRoom = typing.get(cityId)
+  if (!tRoom) return false
+  const entry = tRoom.get(sessionId)
+  if (!entry) return false
+  clearTimeout(entry.timer)
+  tRoom.delete(sessionId)
+  return true
+}
+
+// Sends the current typing list to everyone in the room.
+function broadcastTyping(cityId) {
+  const tRoom = typing.get(cityId)
+  const users = tRoom
+    ? [...tRoom.values()].map(t => ({ sessionId: t.sessionId, nickname: t.nickname }))
+    : []
+  broadcast(cityId, { event: 'typingUsers', cityId, users })
+}
+
 // ── Stale session cleanup ──────────────────────────────────────────────────────
 
 setInterval(() => {
@@ -70,6 +102,7 @@ setInterval(() => {
           }))
         }
         room.delete(sessionId)
+        if (clearTyping(cityId, sessionId)) broadcastTyping(cityId)
         broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
         broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
       }
@@ -104,6 +137,7 @@ function handleLeaveRoom(ws, { cityId, sessionId }) {
 
   console.log(`[WS] leaveRoom: ${session.nickname} (${sessionId.slice(0, 8)}) <- city ${cityId}`)
   room.delete(sessionId)
+  if (clearTyping(cityId, sessionId)) broadcastTyping(cityId)
   broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
   broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
 }
@@ -118,12 +152,35 @@ function handleHeartbeat(ws, { cityId, sessionId }) {
   }
 }
 
+function handleTypingStart(ws, { cityId, sessionId, nickname }) {
+  // Ignore if the session isn't in the room (prevents spoofing from unknown sessions)
+  if (!rooms.get(cityId)?.has(sessionId)) return
+
+  const tRoom = getTypingRoom(cityId)
+  const existing = tRoom.get(sessionId)
+  if (existing) clearTimeout(existing.timer)
+
+  // Auto-clear after TYPING_TTL_MS — safety net for crashed clients
+  const timer = setTimeout(() => {
+    tRoom.delete(sessionId)
+    broadcastTyping(cityId)
+  }, TYPING_TTL_MS)
+
+  tRoom.set(sessionId, { sessionId, nickname, timer })
+  broadcastTyping(cityId)
+}
+
+function handleTypingStop(ws, { cityId, sessionId }) {
+  if (clearTyping(cityId, sessionId)) broadcastTyping(cityId)
+}
+
 // Remove a disconnected ws from all rooms it was part of
 function removeWs(ws) {
   for (const [cityId, room] of rooms) {
     for (const [sessionId, session] of room) {
       if (session.ws === ws) {
         room.delete(sessionId)
+        if (clearTyping(cityId, sessionId)) broadcastTyping(cityId)
         broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
         broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
       }
@@ -144,9 +201,11 @@ wss.on('connection', (ws) => {
     try { msg = JSON.parse(raw) } catch { return }
 
     switch (msg.event) {
-      case 'joinRoom':  return handleJoinRoom(ws, msg)
-      case 'leaveRoom': return handleLeaveRoom(ws, msg)
-      case 'heartbeat': return handleHeartbeat(ws, msg)
+      case 'joinRoom':     return handleJoinRoom(ws, msg)
+      case 'leaveRoom':    return handleLeaveRoom(ws, msg)
+      case 'heartbeat':    return handleHeartbeat(ws, msg)
+      case 'typingStart':  return handleTypingStart(ws, msg)
+      case 'typingStop':   return handleTypingStop(ws, msg)
     }
   })
 
