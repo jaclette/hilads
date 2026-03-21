@@ -24,6 +24,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 
 header('Content-Type: application/json');
 
+// Load .env for local development; in production set vars in the server environment.
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    foreach (parse_ini_file($envFile) ?: [] as $key => $value) {
+        putenv("$key=$value");
+    }
+}
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
 require_once __DIR__ . '/../src/Response.php';
 require_once __DIR__ . '/../src/Router.php';
 require_once __DIR__ . '/../src/Request.php';
@@ -31,6 +41,7 @@ require_once __DIR__ . '/../src/NicknameGenerator.php';
 require_once __DIR__ . '/../src/CityRepository.php';
 require_once __DIR__ . '/../src/PresenceRepository.php';
 require_once __DIR__ . '/../src/MessageRepository.php';
+require_once __DIR__ . '/../src/R2Uploader.php';
 
 session_set_cookie_params([
     'lifetime' => 0,

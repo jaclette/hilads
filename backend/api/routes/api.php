@@ -223,6 +223,52 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
     ]);
 });
 
+$router->add('POST', '/api/v1/uploads', function () {
+    $file = $_FILES['file'] ?? null;
+
+    if ($file === null || $file['error'] !== UPLOAD_ERR_OK) {
+        $errMap = [
+            UPLOAD_ERR_INI_SIZE   => 'File exceeds server upload limit',
+            UPLOAD_ERR_FORM_SIZE  => 'File exceeds form upload limit',
+            UPLOAD_ERR_NO_FILE    => 'No file uploaded',
+        ];
+        $code = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+        Response::json(['error' => $errMap[$code] ?? 'Upload error'], 400);
+    }
+
+    // Size: 5 MB hard limit
+    $maxBytes = 5 * 1024 * 1024;
+    if ($file['size'] > $maxBytes) {
+        Response::json(['error' => 'File size exceeds the 5 MB limit'], 400);
+    }
+
+    // Validate MIME type by inspecting the file content — never trust the client header
+    $finfo    = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($file['tmp_name']);
+
+    $allowed = [
+        'image/jpeg' => 'jpg',
+        'image/png'  => 'png',
+        'image/webp' => 'webp',
+    ];
+
+    if (!array_key_exists($mimeType, $allowed)) {
+        Response::json(['error' => 'Only JPEG, PNG, and WebP images are allowed'], 415);
+    }
+
+    // Cryptographically random filename — client-supplied name is never used
+    $ext      = $allowed[$mimeType];
+    $filename = bin2hex(random_bytes(16)) . '.' . $ext;
+
+    try {
+        $url = R2Uploader::put($file['tmp_name'], $filename, $mimeType);
+    } catch (RuntimeException $e) {
+        Response::json(['error' => $e->getMessage()], 500);
+    }
+
+    Response::json(['url' => $url], 201);
+});
+
 $router->add('POST', '/api/v1/disconnect', function () {
     $body = Request::json();
 
@@ -262,6 +308,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     $guestId   = $body['guestId']  ?? null;
     $nickname  = $body['nickname'] ?? null;
     $content   = $body['content']  ?? null;
+    $type      = $body['type']     ?? 'text';
+    $imageUrl  = $body['imageUrl'] ?? null;
 
     if (empty($guestId) || !is_string($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -277,12 +325,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         Response::json(['error' => 'nickname must not be empty'], 400);
     }
 
-    if (empty($content) || !is_string($content)) {
-        Response::json(['error' => 'content is required'], 400);
-    }
-
-    if (strlen($content) > 1000) {
-        Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+    if (!in_array($type, ['text', 'image'], true)) {
+        Response::json(['error' => 'type must be text or image'], 400);
     }
 
     // Sending a message also refreshes presence (sessionId optional for backward compat)
@@ -290,7 +334,35 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         PresenceRepository::heartbeat($channelId, $sessionId, $guestId, $nickname);
     }
 
-    $message = MessageRepository::add($channelId, $guestId, $nickname, $content);
+    if ($type === 'image') {
+        if (empty($imageUrl) || !is_string($imageUrl)) {
+            Response::json(['error' => 'imageUrl is required for image messages'], 400);
+        }
+
+        // Verify the URL belongs to our R2 bucket — prevents injecting arbitrary image URLs.
+        $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+        if (!str_starts_with($imageUrl, $r2Base)) {
+            Response::json(['error' => 'Invalid image URL'], 400);
+        }
+
+        // Filename must match the pattern we generate — no traversal, no surprises.
+        $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
+        if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
+            Response::json(['error' => 'Invalid image reference'], 400);
+        }
+
+        $message = MessageRepository::addImage($channelId, $guestId, $nickname, $imageUrl);
+    } else {
+        if (empty($content) || !is_string($content)) {
+            Response::json(['error' => 'content is required'], 400);
+        }
+
+        if (strlen($content) > 1000) {
+            Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+        }
+
+        $message = MessageRepository::add($channelId, $guestId, $nickname, $content);
+    }
 
     Response::json($message, 201);
 });

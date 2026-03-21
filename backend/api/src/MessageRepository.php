@@ -78,4 +78,26 @@ class MessageRepository
 
         return $message;
     }
+
+    public static function addImage(int $channelId, string $guestId, string $nickname, string $imageUrl): array
+    {
+        $messages = self::getByChannel($channelId);
+
+        $message = [
+            'id'        => bin2hex(random_bytes(8)),
+            'channelId' => $channelId,
+            'guestId'   => $guestId,
+            'nickname'  => $nickname,
+            'type'      => 'image',
+            'imageUrl'  => $imageUrl,
+            'content'   => '',
+            'createdAt' => time(),
+        ];
+
+        $messages[] = $message;
+
+        file_put_contents(self::filePath($channelId), json_encode($messages), LOCK_EX);
+
+        return $message;
+    }
 }
