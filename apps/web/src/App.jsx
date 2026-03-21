@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage } from './api'
 import { createSocket } from './socket'
 import { cityFlag } from './cityMeta'
 import Logo from './components/Logo'
@@ -21,6 +21,16 @@ function SendIcon() {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <line x1="22" y1="2" x2="11" y2="13" />
       <polygon points="22 2 15 22 11 13 2 9 22 2" />
+    </svg>
+  )
+}
+
+function ImageIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
     </svg>
   )
 }
@@ -141,6 +151,9 @@ export default function App() {
   const [typingUsers, setTypingUsers] = useState([])
   const typingTimeoutRef = useRef(null) // debounce timer for typingStop
   const isTypingRef = useRef(false)     // true while typingStart has been sent
+  const [uploading, setUploading] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState(null)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
@@ -167,6 +180,9 @@ export default function App() {
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
+    const handleKeyDown = (e) => { if (e.key === 'Escape') setLightboxUrl(null) }
+    document.addEventListener('keydown', handleKeyDown)
+
     return () => {
       clearInterval(pollRef.current)
       clearInterval(heartbeatRef.current)
@@ -176,6 +192,7 @@ export default function App() {
       socketRef.current?.disconnect()
       window.removeEventListener('beforeunload', handleUnload)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [])
 
@@ -350,6 +367,37 @@ export default function App() {
     }
     clearTimeout(typingTimeoutRef.current)
     typingTimeoutRef.current = setTimeout(stopTyping, 1500)
+  }
+
+  async function handleImageSelect(e) {
+    const file = e.target.files?.[0]
+    // Reset so selecting the same file again triggers onChange
+    e.target.value = ''
+    if (!file) return
+
+    // Client-side pre-flight — real validation happens on the server too
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowed.includes(file.type)) {
+      alert('Please select a JPEG, PNG, or WebP image.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image must be under 5 MB.')
+      return
+    }
+
+    stopTyping()
+    setUploading(true)
+    try {
+      const { url } = await uploadImage(file)
+      const msg = await sendImageMessage(channelId, sessionIdRef.current, guest.guestId, nickname, url)
+      knownIdsRef.current.add(msg.id)
+      setFeed((prev) => [...prev, { ...msg }])
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setUploading(false)
+    }
   }
 
   async function handleSend(e) {
@@ -639,7 +687,8 @@ export default function App() {
 
             const isMine = item.guestId === guest?.guestId
             const prevItem = feed[i - 1]
-            const isGrouped = prevItem?.type === 'message' && prevItem.guestId === item.guestId
+            // group consecutive messages/images from the same sender
+            const isGrouped = prevItem?.guestId === item.guestId && prevItem?.type !== 'activity'
             const [c1, c2] = avatarColors(item.nickname)
 
             return (
@@ -660,7 +709,16 @@ export default function App() {
                   </div>
                 )}
                 <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
-                  <span className="msg-content">{item.content}</span>
+                  {item.type === 'image' ? (
+                    <img
+                      src={item.imageUrl}
+                      className="msg-image"
+                      alt="shared image"
+                      onClick={() => setLightboxUrl(item.imageUrl)}
+                    />
+                  ) : (
+                    <span className="msg-content">{item.content}</span>
+                  )}
                 </div>
               </div>
             )
@@ -678,6 +736,23 @@ export default function App() {
         )}
 
         <form className="input-bar" onSubmit={handleSend}>
+          {/* Hidden file picker — triggered by the image button */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            style={{ display: 'none' }}
+            onChange={handleImageSelect}
+          />
+          <button
+            type="button"
+            className="upload-btn"
+            title="Send image"
+            disabled={uploading || sending}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {uploading ? <span className="upload-spinner" /> : <ImageIcon />}
+          </button>
           <input
             type="text"
             value={input}
@@ -764,6 +839,19 @@ export default function App() {
             )
           })}
         </aside>
+      )}
+
+      {/* Lightbox */}
+      {lightboxUrl && (
+        <div className="lightbox-overlay" onClick={() => setLightboxUrl(null)}>
+          <button className="lightbox-close" onClick={() => setLightboxUrl(null)}>✕</button>
+          <img
+            src={lightboxUrl}
+            className="lightbox-img"
+            alt="full-size preview"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
       )}
     </div>
   )

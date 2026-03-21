@@ -566,6 +566,76 @@ html, body, #root {
   30%           { transform: translateY(-4px); opacity: 1;    }
 }
 
+/* ── Image messages ───────────────────────────────────── */
+
+.msg-image {
+  display: block;
+  max-width: 260px;
+  max-height: 300px;
+  width: auto;
+  height: auto;
+  border-radius: 4px 16px 16px 16px;
+  object-fit: cover;
+  cursor: zoom-in;
+  transition: opacity 0.15s, transform 0.12s;
+}
+
+.msg-image:hover {
+  opacity: 0.92;
+  transform: scale(1.01);
+}
+
+.msg-bubble-wrap.mine .msg-image {
+  border-radius: 16px 4px 16px 16px;
+}
+
+/* ── Lightbox ─────────────────────────────────────────── */
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.93);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.lightbox-img {
+  max-width: min(92vw, 1100px);
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 10px;
+  cursor: default;
+  box-shadow: 0 32px 96px rgba(0, 0, 0, 0.8);
+  animation: fadeUp 0.18s ease-out both;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
 /* ── Input bar ────────────────────────────────────────── */
 
 .input-bar {
@@ -598,6 +668,42 @@ html, body, #root {
 
 .input-bar input:focus {
   border-color: var(--accent);
+}
+
+.upload-btn {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--muted2);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.upload-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(124, 106, 255, 0.45);
+  background: rgba(124, 106, 255, 0.08);
+}
+
+.upload-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.upload-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: block;
 }
 
 .send-btn {

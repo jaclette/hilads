@@ -87,3 +87,33 @@ export async function sendMessage(channelId, sessionId, guestId, nickname, conte
   if (!res.ok) throw new Error('Failed to send message')
   return res.json()
 }
+
+export async function uploadImage(file) {
+  const form = new FormData()
+  form.append('file', file)
+  // No Content-Type header — browser sets it automatically with the multipart boundary
+  const res = await fetch(`${BASE}/uploads`, {
+    method: 'POST',
+    credentials: 'include',
+    body: form,
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Upload failed')
+  }
+  return res.json() // { url, filename }
+}
+
+export async function sendImageMessage(channelId, sessionId, guestId, nickname, imageUrl) {
+  const res = await fetch(`${BASE}/channels/${channelId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ sessionId, guestId, nickname, type: 'image', imageUrl }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send image')
+  }
+  return res.json()
+}
