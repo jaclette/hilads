@@ -31,6 +31,14 @@ require_once __DIR__ . '/../src/NicknameGenerator.php';
 require_once __DIR__ . '/../src/CityRepository.php';
 require_once __DIR__ . '/../src/MessageRepository.php';
 
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'None',
+]);
+
 session_start();
 
 $router = new Router();
