@@ -2,6 +2,11 @@
 
 declare(strict_types=1);
 
+// Never let PHP warnings or notices bleed into the JSON response body.
+// Errors are logged server-side; the API always returns structured JSON.
+ini_set('display_errors', '0');
+ini_set('display_startup_errors', '0');
+
 $allowedOrigins = [
     'https://hilads.vercel.app',
 ];
@@ -25,10 +30,15 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
 header('Content-Type: application/json');
 
 // Load .env for local development; in production set vars in the server environment.
+// Use @ to suppress parse warnings — PHP's INI parser chokes on characters like
+// parentheses inside # comment lines, which would otherwise leak HTML into responses.
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
-    foreach (parse_ini_file($envFile) ?: [] as $key => $value) {
-        putenv("$key=$value");
+    $vars = @parse_ini_file($envFile);
+    if (is_array($vars)) {
+        foreach ($vars as $key => $value) {
+            putenv("$key=$value");
+        }
     }
 }
 
