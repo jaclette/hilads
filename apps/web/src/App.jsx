@@ -932,7 +932,7 @@ export default function App() {
             )}
             {/* Mobile-only events button */}
             <button className="events-mobile-btn" onClick={() => setShowEventDrawer(true)} title="Events">
-              ⚡
+              🔥 Events{events.length > 0 ? ` (${events.length})` : ''}
             </button>
             <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
               <GlobeIcon />

@@ -23,7 +23,7 @@ export default function EventsSidebar({ events, activeEventId, cityTimezone, eve
   return (
     <aside className="events-sidebar">
       <div className="events-sidebar-header">
-        <span className="events-sidebar-title">Events</span>
+        <span className="events-sidebar-title">🔥 Events{todayEvents.length > 0 ? ` (${todayEvents.length})` : ''}</span>
         <button className="create-event-btn" onClick={onCreateClick} title="Create event">+</button>
       </div>
       <div className="events-list">

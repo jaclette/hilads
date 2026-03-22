@@ -1314,17 +1314,18 @@ html, body, #root {
 .events-mobile-btn {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 50%;
-  width: 34px;
+  border-radius: 20px;
+  padding: 0 10px;
   height: 34px;
   color: var(--muted2);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: color 0.12s, border-color 0.12s, background 0.12s;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .events-mobile-btn:hover {
