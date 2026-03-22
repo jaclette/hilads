@@ -41,9 +41,8 @@ class EventRepository
                 $active[] = $event;
             } else {
                 $msgFile = __DIR__ . '/../storage/messages_' . $event['id'] . '.json';
-                if (file_exists($msgFile)) {
-                    unlink($msgFile);
-                }
+                if (file_exists($msgFile)) unlink($msgFile);
+                ParticipantRepository::delete($event['id']);
             }
         }
 

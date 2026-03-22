@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchEventMessages, sendEventMessage } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchEventMessages, sendEventMessage, fetchEventParticipants, toggleEventParticipation } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel } from './eventUtils'
@@ -662,19 +662,32 @@ export default function App() {
     pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
   }
 
+  // Fetch persistent participation state when active event changes
+  useEffect(() => {
+    if (!activeEvent?.id || !sessionIdRef.current) return
+    fetchEventParticipants(activeEvent.id, sessionIdRef.current).then(({ count, isIn }) => {
+      setEventParticipants(prev => ({ ...prev, [activeEvent.id]: count }))
+      setParticipatedEvents(prev => {
+        const next = new Set(prev)
+        isIn ? next.add(activeEvent.id) : next.delete(activeEvent.id)
+        return next
+      })
+    }).catch(() => {})
+  }, [activeEvent?.id])
+
   // Toggle "I'm in" participation for an event
-  function handleToggleParticipation(eventId) {
-    const isIn = participatedEvents.has(eventId)
-    setParticipatedEvents(prev => {
-      const next = new Set(prev)
-      isIn ? next.delete(eventId) : next.add(eventId)
-      return next
-    })
-    setEventParticipants(prev => ({
-      ...prev,
-      [eventId]: Math.max(0, (prev[eventId] ?? 0) + (isIn ? -1 : 1)),
-    }))
-    socketRef.current?.toggleParticipation(eventId, sessionIdRef.current)
+  async function handleToggleParticipation(eventId) {
+    try {
+      const { count, isIn } = await toggleEventParticipation(eventId, sessionIdRef.current)
+      setEventParticipants(prev => ({ ...prev, [eventId]: count }))
+      setParticipatedEvents(prev => {
+        const next = new Set(prev)
+        isIn ? next.add(eventId) : next.delete(eventId)
+        return next
+      })
+    } catch {
+      // silent — state stays as-is
+    }
   }
 
   // Return to city chat from an event

@@ -146,6 +146,23 @@ export async function fetchEventMessages(eventId) {
   return res.json()
 }
 
+export async function fetchEventParticipants(eventId, sessionId) {
+  const res = await fetch(`${BASE}/events/${eventId}/participants?sessionId=${sessionId}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch participants')
+  return res.json() // { count, isIn }
+}
+
+export async function toggleEventParticipation(eventId, sessionId) {
+  const res = await fetch(`${BASE}/events/${eventId}/participants/toggle`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ sessionId }),
+  })
+  if (!res.ok) throw new Error('Failed to toggle participation')
+  return res.json() // { count, isIn }
+}
+
 export async function sendEventMessage(eventId, guestId, nickname, content) {
   const res = await fetch(`${BASE}/events/${eventId}/messages`, {
     method: 'POST',

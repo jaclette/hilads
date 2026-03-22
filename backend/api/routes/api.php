@@ -422,6 +422,56 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
     Response::json($message, 201);
 });
 
+$router->add('GET', '/api/v1/events/{eventId}/participants', function (array $params) {
+    $eventId = $params['eventId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    if (EventRepository::findById($eventId) === null) {
+        Response::json(['error' => 'Event not found or expired'], 404);
+    }
+
+    $sessionId = trim($_GET['sessionId'] ?? '');
+
+    Response::json([
+        'count' => ParticipantRepository::getCount($eventId),
+        'isIn'  => $sessionId !== '' ? ParticipantRepository::isIn($eventId, $sessionId) : false,
+    ]);
+});
+
+$router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (array $params) {
+    $eventId = $params['eventId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    if (EventRepository::findById($eventId) === null) {
+        Response::json(['error' => 'Event not found or expired'], 404);
+    }
+
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $sessionId = $body['sessionId'] ?? null;
+
+    if (empty($sessionId) || !is_string($sessionId)) {
+        Response::json(['error' => 'sessionId is required'], 400);
+    }
+
+    $isIn  = ParticipantRepository::toggle($eventId, $sessionId);
+    $count = ParticipantRepository::getCount($eventId);
+
+    ParticipantRepository::broadcastToWs($eventId, $count);
+
+    Response::json(['count' => $count, 'isIn' => $isIn]);
+});
+
 $router->add('POST', '/api/v1/disconnect', function () {
     $body = Request::json();
 
