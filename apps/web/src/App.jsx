@@ -9,15 +9,6 @@ import CreateEventModal from './components/CreateEventModal'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function GlobeIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  )
-}
 
 function SendIcon() {
   return (
@@ -935,8 +926,7 @@ export default function App() {
               🔥 Events{events.length > 0 ? ` (${events.length})` : ''}
             </button>
             <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
-              <GlobeIcon />
-              <span>Switch</span>
+              🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
             </button>
             <span className="you-badge">{guest?.nickname}</span>
           </div>

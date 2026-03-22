@@ -924,22 +924,38 @@ html, body, #root {
 .change-city-btn {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 5px 11px 5px 9px;
-  color: var(--muted2);
-  font-size: 0.78rem;
-  font-weight: 600;
+  padding: 5px 10px 5px 9px;
+  color: var(--text2);
+  font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  min-width: 0;
+  max-width: 200px;
+  flex-shrink: 1;
 }
 
 .change-city-btn:hover {
   color: var(--accent);
   border-color: rgba(124, 106, 255, 0.45);
   background: rgba(124, 106, 255, 0.08);
+}
+
+.city-btn-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.city-btn-arrow {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  opacity: 0.6;
 }
 
 /* ── City Picker Modal ────────────────────────────────── */
@@ -1342,10 +1358,10 @@ html, body, #root {
   /* hide "Switch" text label on smaller desktop widths if needed */
 }
 
-/* Hide Switch text on tight mobile headers */
+/* Shrink city name on tight mobile headers */
 @media (max-width: 420px) {
-  .change-city-btn span {
-    display: none;
+  .change-city-btn {
+    max-width: 120px;
   }
 }
 
