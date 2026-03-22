@@ -238,10 +238,10 @@ $router->add('POST', '/api/v1/uploads', function () {
         Response::json(['error' => $errMap[$code] ?? 'Upload error'], 400);
     }
 
-    // Size: 5 MB hard limit
-    $maxBytes = 5 * 1024 * 1024;
+    // Size: 10 MB hard limit
+    $maxBytes = 10 * 1024 * 1024;
     if ($file['size'] > $maxBytes) {
-        Response::json(['error' => 'File size exceeds the 5 MB limit'], 400);
+        Response::json(['error' => 'File size exceeds the 10 MB limit'], 400);
     }
 
     // Validate MIME type by inspecting the file content — never trust the client header

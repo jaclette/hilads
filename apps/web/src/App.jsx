@@ -483,8 +483,8 @@ export default function App() {
       alert('Please select a JPEG, PNG, or WebP image.')
       return
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image must be under 5 MB.')
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image too large. Max size: 10 MB.')
       return
     }
 
