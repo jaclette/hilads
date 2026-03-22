@@ -58,3 +58,24 @@ Create a fun, simple, and engaging experience for solo travelers.
 1. propose simple UI ideas
 2. validate with product constraints
 3. iterate quickly
+
+---
+
+## 🔥 Liveness Principle
+
+The app must feel alive even with low traffic.
+
+Use:
+
+- activity indicators
+- events
+- presence
+- small signals of life
+
+---
+
+## 🧠 Design Rule
+
+Do not add features that require explanation.
+
+Users should instantly understand what is happening.

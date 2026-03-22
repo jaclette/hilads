@@ -76,3 +76,31 @@ Avoid:
 1. Implement feature minimally
 2. Keep structure clean
 3. Ensure easy future migration to DB
+
+---
+
+## 🔒 Abuse & Safety
+
+Because hilads allows anonymous access:
+
+- Always consider spam and abuse risks
+- Add rate limiting when needed
+- Prefer simple protection (cooldowns, limits)
+- Avoid complex auth systems
+
+---
+
+## ⏱️ Ephemeral Data
+
+Some features (like events) are temporary:
+
+- support expiration logic
+- avoid accumulating useless data
+- design for cleanup (cron or TTL)
+
+---
+
+## 🧠 Identity
+
+- Use lightweight identity (session, UUID, nickname)
+- Do not require full user accounts unless necessary

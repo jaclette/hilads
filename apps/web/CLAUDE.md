@@ -63,3 +63,29 @@ Your goal is to build a simple, fast, and intuitive UI.
 1. build simplest UI
 2. connect to API
 3. iterate
+
+---
+
+## ⚡ Real-time Feeling
+
+The UI must always feel:
+
+- alive
+- reactive
+- fast
+
+Avoid:
+
+- empty screens
+- dead states
+
+Always prefer showing something (activity, events, presence).
+
+---
+
+## 🧠 UX Evolution
+
+We are moving beyond MVP:
+
+- small features can be added if they improve engagement
+- but must remain simple and intuitive

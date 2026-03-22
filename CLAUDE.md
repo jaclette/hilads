@@ -94,3 +94,56 @@ When unsure:
 - Be pragmatic
 - Challenge complexity
 - Prioritize shipping
+
+---
+
+## 🚀 Current Product Stage
+
+Hilads is no longer at MVP v0.
+
+Already in production:
+- live chat
+- geolocation
+- photo upload
+- online users
+
+We are now entering MVP v1.
+
+---
+
+## 🎯 Current Priorities
+
+Focus on:
+
+- making the city feel alive
+- increasing user retention
+- reducing empty state feeling
+- preventing spam and abuse
+- improving performance and stability
+
+---
+
+## ⚖️ Product Strategy
+
+- Keep anonymous access as default
+- Introduce lightweight identity when needed (not full auth)
+- Add features only if they reinforce the "live city" feeling
+- Avoid turning the app into a generic social network
+
+---
+
+## 🚫 Still Avoid
+
+- heavy authentication systems
+- complex social features (followers, feeds, etc.)
+- unnecessary infrastructure
+
+---
+
+## 🧠 New Decision Rule
+
+Every feature must answer:
+
+"Does this make the city feel more alive right now?"
+
+If not → do not build it yet.
