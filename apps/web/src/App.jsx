@@ -143,6 +143,7 @@ export default function App() {
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
+  const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
@@ -934,11 +935,13 @@ export default function App() {
 
         {/* Mobile-only online strip */}
         {onlineUsers.length > 0 && (
-          <div className="online-mobile-strip">
+          <button className="online-mobile-strip" onClick={() => setShowPeopleDrawer(true)}>
             {onlineUsers.map((user) => (
               <OnlineUserAvatar key={user.id} user={user} />
             ))}
-          </div>
+            <span className="online-strip-label">👥 {onlineUsers.length} here</span>
+            <span className="online-strip-chevron">›</span>
+          </button>
         )}
 
         <div className="messages">
@@ -1147,6 +1150,39 @@ export default function App() {
                   </button>
                 ))
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile people drawer */}
+      {showPeopleDrawer && (
+        <div className="city-picker-overlay" onClick={() => setShowPeopleDrawer(false)}>
+          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="city-picker-handle" />
+            <div className="city-picker-header">
+              <span className="city-picker-title">People here ({onlineUsers.length})</span>
+              <button className="city-picker-close" onClick={() => setShowPeopleDrawer(false)}>✕</button>
+            </div>
+            <div className="city-picker-list">
+              {onlineUsers.map((user) => {
+                const [c1, c2] = avatarColors(user.nickname)
+                return (
+                  <div key={user.id} className="people-drawer-row">
+                    <span
+                      className="online-avatar"
+                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                      data-me={user.isMe ? 'true' : undefined}
+                    >
+                      {user.nickname[0].toUpperCase()}
+                    </span>
+                    <span className="people-drawer-name">
+                      {user.nickname}
+                      {user.isMe && <span className="people-drawer-you"> (you)</span>}
+                    </span>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>

@@ -840,10 +840,54 @@ html, body, #root {
   background: var(--surface);
   flex-shrink: 0;
   scrollbar-width: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.online-mobile-strip:hover,
+.online-mobile-strip:active {
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .online-mobile-strip::-webkit-scrollbar {
   display: none;
+}
+
+.online-strip-label {
+  margin-left: 4px;
+  font-size: 0.75rem;
+  color: var(--muted2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.online-strip-chevron {
+  margin-left: auto;
+  font-size: 1rem;
+  color: var(--muted2);
+  flex-shrink: 0;
+  padding-right: 4px;
+}
+
+/* ── People drawer ────────────────────────────────────── */
+
+.people-drawer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+}
+
+.people-drawer-name {
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.people-drawer-you {
+  color: var(--muted2);
+  font-size: 0.8rem;
 }
 
 /* ── Desktop sidebar ──────────────────────────────────── */
