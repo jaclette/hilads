@@ -17,21 +17,28 @@ class TicketmasterImporter
     public static function syncIfNeeded(int $channelId, ?float $lat, ?float $lng, string $cityName): void
     {
         if (!self::needsRefresh($channelId)) {
+            error_log("[TM] ch={$channelId}: skipping — cooldown active");
             return;
         }
 
         $apiKey = getenv('TICKETMASTER_API_KEY');
         if (empty($apiKey)) {
+            error_log("[TM] ch={$channelId}: TICKETMASTER_API_KEY is not set — sync skipped");
             return;
         }
 
+        error_log("[TM] ch={$channelId}: syncing city={$cityName} lat={$lat} lng={$lng}");
+
         try {
             $raw    = self::fetch($apiKey, $lat, $lng, $cityName);
+            $items  = $raw['_embedded']['events'] ?? [];
+            error_log("[TM] ch={$channelId}: TM returned " . count($items) . " raw events");
             $events = self::normalize($raw, $channelId);
+            error_log("[TM] ch={$channelId}: normalized to " . count($events) . " valid events");
             EventRepository::upsertPublic($channelId, $events);
             self::markSynced($channelId);
         } catch (RuntimeException $e) {
-            // TM failed — keep whatever events are already stored
+            error_log("[TM] ch={$channelId}: sync failed — " . $e->getMessage());
         }
     }
 

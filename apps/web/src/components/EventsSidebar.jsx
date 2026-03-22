@@ -24,6 +24,8 @@ export default function EventsSidebar({ events, cityEvents, activeEventId, cityT
   const tz = cityTimezone || 'UTC'
   const hiladsEvents = filterAndSort(events, tz)
   const publicEvents = filterAndSort(cityEvents || [], tz)
+  // DEBUG — remove after investigation
+  console.log('[EventsSidebar] tz:', tz, 'cityEvents raw:', cityEvents?.length ?? 0, 'after isToday filter:', publicEvents.length, cityEvents)
   const totalCount = hiladsEvents.length + publicEvents.length
 
   function renderRow(event) {

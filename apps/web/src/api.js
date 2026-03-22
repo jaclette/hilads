@@ -127,7 +127,10 @@ export async function fetchEvents(channelId) {
 export async function fetchCityEvents(channelId) {
   const res = await fetch(`${BASE}/channels/${channelId}/city-events`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch city events')
-  return res.json()
+  const data = await res.json()
+  // DEBUG — remove after investigation
+  console.log('[cityEvents] response for channel', channelId, data)
+  return data
 }
 
 export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, type) {

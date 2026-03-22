@@ -300,7 +300,29 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
 
     TicketmasterImporter::syncIfNeeded($channelId, $lat, $lng, $city['name']);
 
-    Response::json(['events' => EventRepository::getPublicByChannel($channelId)]);
+    // DEBUG — remove after investigation
+    $syncFile    = __DIR__ . '/../storage/city_sync.json';
+    $syncData    = file_exists($syncFile) ? (json_decode(file_get_contents($syncFile), true) ?? []) : [];
+    $evFile      = __DIR__ . '/../storage/events_' . $channelId . '.json';
+    $stored      = file_exists($evFile) ? (json_decode(file_get_contents($evFile), true) ?? []) : [];
+    $tmStored    = array_values(array_filter($stored, fn($e) => ($e['source'] ?? '') === 'ticketmaster'));
+    $lastSync    = $syncData[(string) $channelId] ?? null;
+    $_debug = [
+        'channel_id'          => $channelId,
+        'city'                => $city['name'],
+        'lat_received'        => $lat,
+        'lng_received'        => $lng,
+        'api_key_set'         => !empty(getenv('TICKETMASTER_API_KEY')),
+        'last_synced_at'      => $lastSync,
+        'seconds_since_sync'  => $lastSync !== null ? (time() - $lastSync) : null,
+        'cooldown_seconds'    => 900,
+        'total_stored_events' => count($stored),
+        'tm_stored_count'     => count($tmStored),
+        'tm_sample'           => array_slice($tmStored, 0, 2),
+    ];
+    // END DEBUG
+
+    Response::json(['events' => EventRepository::getPublicByChannel($channelId), '_debug' => $_debug]);
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {
