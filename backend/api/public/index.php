@@ -52,6 +52,14 @@ if (file_exists($envFile)) {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+require_once __DIR__ . '/../src/Storage.php';
+
+// Ensure persistent storage directory exists (creates it on first boot after mounting disk)
+$storageDir = Storage::dir();
+if (!is_dir($storageDir)) {
+    mkdir($storageDir, 0755, true);
+}
+
 require_once __DIR__ . '/../src/Response.php';
 require_once __DIR__ . '/../src/Router.php';
 require_once __DIR__ . '/../src/Request.php';

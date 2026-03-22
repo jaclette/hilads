@@ -7,7 +7,11 @@ class TicketmasterImporter
     private const REFRESH_COOLDOWN = 604800; // 7 days between syncs per city
     private const MAX_EVENTS       = 10;
     private const TIMEOUT          = 5;   // curl timeout in seconds
-    private const SYNC_FILE        = __DIR__ . '/../storage/city_sync.json';
+
+    private static function syncFilePath(): string
+    {
+        return Storage::path('city_sync.json');
+    }
 
     /**
      * Syncs Ticketmaster events for a city channel if the cooldown has passed.
@@ -44,11 +48,11 @@ class TicketmasterImporter
 
     private static function needsRefresh(int $channelId): bool
     {
-        if (!file_exists(self::SYNC_FILE)) {
+        if (!file_exists(self::syncFilePath())) {
             return true;
         }
 
-        $data = json_decode(file_get_contents(self::SYNC_FILE), true);
+        $data = json_decode(file_get_contents(self::syncFilePath()), true);
         $last = $data[(string) $channelId] ?? 0;
 
         return (time() - $last) >= self::REFRESH_COOLDOWN;
@@ -57,12 +61,12 @@ class TicketmasterImporter
     private static function markSynced(int $channelId): void
     {
         $data = [];
-        if (file_exists(self::SYNC_FILE)) {
-            $data = json_decode(file_get_contents(self::SYNC_FILE), true) ?? [];
+        if (file_exists(self::syncFilePath())) {
+            $data = json_decode(file_get_contents(self::syncFilePath()), true) ?? [];
         }
 
         $data[(string) $channelId] = time();
-        file_put_contents(self::SYNC_FILE, json_encode($data), LOCK_EX);
+        file_put_contents(self::syncFilePath(), json_encode($data), LOCK_EX);
     }
 
     private static function fetch(string $apiKey, ?float $lat, ?float $lng, string $cityName): array

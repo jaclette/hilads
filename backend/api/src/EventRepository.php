@@ -9,7 +9,7 @@ class EventRepository
 
     private static function filePath(int $channelId): string
     {
-        return __DIR__ . '/../storage/events_' . $channelId . '.json';
+        return Storage::path('events_' . $channelId . '.json');
     }
 
     private static function load(int $channelId): array
@@ -40,7 +40,7 @@ class EventRepository
             if ($event['expires_at'] >= $now) {
                 $active[] = $event;
             } else {
-                $msgFile = __DIR__ . '/../storage/messages_' . $event['id'] . '.json';
+                $msgFile = Storage::path('messages_' . $event['id'] . '.json');
                 if (file_exists($msgFile)) unlink($msgFile);
                 ParticipantRepository::delete($event['id']);
             }
@@ -136,9 +136,7 @@ class EventRepository
     // Find a non-expired event by its ID across all channels
     public static function findById(string $eventId): ?array
     {
-        $storageDir = __DIR__ . '/../storage/';
-
-        foreach (glob($storageDir . 'events_*.json') ?: [] as $file) {
+        foreach (glob(Storage::dir() . '/events_*.json') ?: [] as $file) {
             $data = json_decode(file_get_contents($file), true);
 
             if (!is_array($data)) {

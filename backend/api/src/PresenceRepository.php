@@ -8,7 +8,7 @@ class PresenceRepository
 
     private static function filePath(int $channelId): string
     {
-        return __DIR__ . '/../storage/presence_' . $channelId . '.json';
+        return Storage::path('presence_' . $channelId . '.json');
     }
 
     // Load presence keyed by sessionId: { "sessionId": { sessionId, guestId, nickname, lastSeenAt } }
@@ -87,8 +87,7 @@ class PresenceRepository
     // Remove a session from all channels — used on browser tab close
     public static function disconnect(string $sessionId): void
     {
-        $storageDir = __DIR__ . '/../storage/';
-        foreach (glob($storageDir . 'presence_*.json') ?: [] as $file) {
+        foreach (glob(Storage::dir() . '/presence_*.json') ?: [] as $file) {
             preg_match('/presence_(\d+)\.json$/', $file, $m);
             if (empty($m[1])) continue;
             $channelId = (int) $m[1];

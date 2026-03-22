@@ -6,7 +6,7 @@ class MessageRepository
 {
     private static function filePath(int|string $channelId): string
     {
-        return __DIR__ . '/../storage/messages_' . $channelId . '.json';
+        return Storage::path('messages_' . $channelId . '.json');
     }
 
     public static function getByChannel(int|string $channelId): array

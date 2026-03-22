@@ -6,7 +6,7 @@ class ParticipantRepository
 {
     private static function filePath(string $eventId): string
     {
-        return __DIR__ . '/../storage/participants_' . $eventId . '.json';
+        return Storage::path('participants_' . $eventId . '.json');
     }
 
     private static function load(string $eventId): array
