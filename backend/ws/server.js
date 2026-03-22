@@ -8,12 +8,14 @@
  *                    heartbeat(cityId, sessionId)
  *                    joinEvent(eventId, sessionId)
  *                    leaveEvent(eventId, sessionId)
+ *                    toggleParticipation(eventId, sessionId)
  *
  * Server → Client  : presenceSnapshot(cityId, users, count)
  *                    userJoined(cityId, user)
  *                    userLeft(cityId, user)
  *                    onlineCountUpdated(cityId, count)
  *                    event_presence_update(eventId, count)
+ *                    event_participants_update(eventId, count)
  *
  * All events are JSON objects with an `event` field.
  * Presence is scoped by cityId and keyed by sessionId.
@@ -36,6 +38,9 @@ const typing = new Map()
 
 // eventRooms: Map<eventId, Map<sessionId, { sessionId, ws }>>
 const eventRooms = new Map()
+
+// eventParticipants: Map<eventId, Set<sessionId>>
+const eventParticipants = new Map()
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -198,6 +203,32 @@ function broadcastEventCount(eventId) {
   }
 }
 
+function broadcastParticipantCount(eventId) {
+  const room = eventRooms.get(eventId)
+  if (!room) return
+  const count = eventParticipants.get(eventId)?.size ?? 0
+  const msg = JSON.stringify({ event: 'event_participants_update', eventId, count })
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+  }
+}
+
+function handleToggleParticipation(ws, { eventId, sessionId }) {
+  if (!eventParticipants.has(eventId)) eventParticipants.set(eventId, new Set())
+  const participants = eventParticipants.get(eventId)
+
+  if (participants.has(sessionId)) {
+    participants.delete(sessionId)
+  } else {
+    participants.add(sessionId)
+  }
+
+  console.log(`[WS] toggleParticipation: ${sessionId.slice(0, 8)} -> event ${eventId} (${participants.size} participants)`)
+
+  if (participants.size === 0) eventParticipants.delete(eventId)
+  broadcastParticipantCount(eventId)
+}
+
 function handleJoinEvent(ws, { eventId, sessionId }) {
   const room = getEventRoom(eventId)
   room.set(sessionId, { sessionId, ws })
@@ -232,6 +263,13 @@ function removeWs(ws) {
         room.delete(sessionId)
         if (room.size === 0) eventRooms.delete(eventId)
         else broadcastEventCount(eventId)
+
+        const participants = eventParticipants.get(eventId)
+        if (participants) {
+          participants.delete(sessionId)
+          if (participants.size === 0) eventParticipants.delete(eventId)
+          else broadcastParticipantCount(eventId)
+        }
       }
     }
   }
@@ -255,8 +293,9 @@ wss.on('connection', (ws) => {
       case 'heartbeat':    return handleHeartbeat(ws, msg)
       case 'typingStart':  return handleTypingStart(ws, msg)
       case 'typingStop':   return handleTypingStop(ws, msg)
-      case 'joinEvent':    return handleJoinEvent(ws, msg)
-      case 'leaveEvent':   return handleLeaveEvent(ws, msg)
+      case 'joinEvent':            return handleJoinEvent(ws, msg)
+      case 'leaveEvent':           return handleLeaveEvent(ws, msg)
+      case 'toggleParticipation':  return handleToggleParticipation(ws, msg)
     }
   })
 

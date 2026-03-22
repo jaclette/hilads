@@ -111,6 +111,11 @@ export function createSocket() {
       send({ event: 'leaveEvent', eventId, sessionId })
     },
 
+    /** Toggle participation in an event. */
+    toggleParticipation(eventId, sessionId) {
+      send({ event: 'toggleParticipation', eventId, sessionId })
+    },
+
     /** Keep presence alive. Call when tab regains focus. */
     heartbeat(cityId, sessionId) {
       console.debug('[socket] → heartbeat', { cityId, sessionId })

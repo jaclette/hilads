@@ -1337,6 +1337,36 @@ html, body, #root {
   }
 }
 
+/* ── I'm in button ────────────────────────────────────── */
+
+.im-in-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.im-in-btn:hover {
+  color: var(--accent);
+  border-color: rgba(124, 106, 255, 0.45);
+  background: rgba(124, 106, 255, 0.08);
+}
+
+.im-in-btn--active {
+  color: var(--accent);
+  border-color: rgba(124, 106, 255, 0.45);
+  background: rgba(124, 106, 255, 0.1);
+}
+
 /* ── Mobile events drawer content ─────────────────────── */
 
 .create-event-row {

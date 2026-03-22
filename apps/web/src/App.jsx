@@ -153,6 +153,8 @@ export default function App() {
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
+  const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
+  const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
 
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
@@ -347,6 +349,10 @@ export default function App() {
 
       socket.on('event_presence_update', ({ eventId, count }) => {
         setEventPresence(prev => ({ ...prev, [eventId]: count }))
+      })
+
+      socket.on('event_participants_update', ({ eventId, count }) => {
+        setEventParticipants(prev => ({ ...prev, [eventId]: count }))
       })
 
       // Socket: handle newEvent for real-time events list refresh
@@ -632,6 +638,21 @@ export default function App() {
     pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
   }
 
+  // Toggle "I'm in" participation for an event
+  function handleToggleParticipation(eventId) {
+    const isIn = participatedEvents.has(eventId)
+    setParticipatedEvents(prev => {
+      const next = new Set(prev)
+      isIn ? next.delete(eventId) : next.add(eventId)
+      return next
+    })
+    setEventParticipants(prev => ({
+      ...prev,
+      [eventId]: Math.max(0, (prev[eventId] ?? 0) + (isIn ? -1 : 1)),
+    }))
+    socketRef.current?.toggleParticipation(eventId, sessionIdRef.current)
+  }
+
   // Return to city chat from an event
   function handleBackToCity() {
     if (activeEventIdRef.current) {
@@ -817,6 +838,7 @@ export default function App() {
         activeEventId={activeEventId}
         cityTimezone={cityTimezone}
         eventPresence={eventPresence}
+        eventParticipants={eventParticipants}
         onSelectEvent={handleSelectEvent}
         onCreateClick={() => setShowCreateEvent(true)}
       />
@@ -838,7 +860,7 @@ export default function App() {
                   <span className="online-label">
                     {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
                     {activeEvent.location_hint && ` · 📍 ${activeEvent.location_hint}`}
-                    {eventPresence[activeEvent.id] != null && ` · ${eventPresence[activeEvent.id]} here`}
+                    {` · 🔥 ${eventPresence[activeEvent.id] ?? 0} here · 👍 ${eventParticipants[activeEvent.id] ?? 0} going`}
                   </span>
                 </div>
               </>
@@ -858,6 +880,14 @@ export default function App() {
             )}
           </div>
           <div className="header-right">
+            {activeEvent && (
+              <button
+                className={`im-in-btn${participatedEvents.has(activeEvent.id) ? ' im-in-btn--active' : ''}`}
+                onClick={() => handleToggleParticipation(activeEvent.id)}
+              >
+                {participatedEvents.has(activeEvent.id) ? '✅ I\'m in' : '👍 I\'m in'}
+              </button>
+            )}
             {/* Mobile-only events button */}
             <button className="events-mobile-btn" onClick={() => setShowEventDrawer(true)} title="Events">
               ⚡
