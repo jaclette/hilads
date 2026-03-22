@@ -23,9 +23,10 @@ function filterAndSort(events, tz) {
 export default function EventsSidebar({ events, cityEvents, activeEventId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onCreateClick }) {
   const tz = cityTimezone || 'UTC'
   const hiladsEvents = filterAndSort(events, tz)
-  const publicEvents = filterAndSort(cityEvents || [], tz)
+  // City events: don't filter by today — TM events are upcoming (backend already prunes expired ones)
+  const publicEvents = (cityEvents || []).sort((a, b) => a.starts_at - b.starts_at)
   // DEBUG — remove after investigation
-  console.log('[EventsSidebar] tz:', tz, 'cityEvents raw:', cityEvents?.length ?? 0, 'after isToday filter:', publicEvents.length, cityEvents)
+  console.log('[EventsSidebar] cityEvents raw:', cityEvents?.length ?? 0, 'rendered:', publicEvents.length)
   const totalCount = hiladsEvents.length + publicEvents.length
 
   function renderRow(event) {
