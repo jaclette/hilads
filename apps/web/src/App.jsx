@@ -507,12 +507,16 @@ export default function App() {
     const counts = {}
     await Promise.allSettled(loadedChannels.map(async (ch) => {
       try {
-        const evData = await fetchEvents(ch.channelId)
+        const [evData, cityEvData] = await Promise.all([
+          fetchEvents(ch.channelId),
+          fetchCityEvents(ch.channelId),
+        ])
         const tz = ch.timezone || 'UTC'
         const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-        counts[ch.channelId] = evData.events.filter(e =>
+        const hiladsCount = evData.events.filter(e =>
           new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
         ).length
+        counts[ch.channelId] = hiladsCount + (cityEvData.events?.length ?? 0)
       } catch { /* ignore */ }
     }))
     setChannelEventCounts({ ...counts })
