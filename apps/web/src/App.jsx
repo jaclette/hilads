@@ -1116,7 +1116,7 @@ export default function App() {
                     <div className="city-row-stats">
                       {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
                       {channelEventCounts[ch.channelId] > 0 && (
-                        <span className="city-row-events">🔥 {channelEventCounts[ch.channelId]} events</span>
+                        <span className="city-row-events">🔥 {channelEventCounts[ch.channelId]} {channelEventCounts[ch.channelId] === 1 ? 'event' : 'events'}</span>
                       )}
                       <span className="city-row-count">{ch.messageCount} msgs</span>
                     </div>
