@@ -56,20 +56,16 @@ export default function EventsSidebar({ events, cityEvents, activeEventId, cityT
         <button className="create-event-btn" onClick={onCreateClick} title="Create event">+</button>
       </div>
       <div className="events-list">
-        {publicEvents.length > 0 ? (
+        <p className="events-group-label">Hilads Events</p>
+        {hiladsEvents.length === 0
+          ? <p className="events-empty">No events today</p>
+          : hiladsEvents.map(renderRow)
+        }
+        {publicEvents.length > 0 && (
           <>
-            <p className="events-group-label">Hilads Events</p>
-            {hiladsEvents.length === 0
-              ? <p className="events-empty">No events today</p>
-              : hiladsEvents.map(renderRow)
-            }
             <p className="events-group-label events-group-label--city">🎫 City Events</p>
             {publicEvents.map(renderRow)}
           </>
-        ) : (
-          hiladsEvents.length === 0
-            ? <p className="events-empty">No events today</p>
-            : hiladsEvents.map(renderRow)
         )}
       </div>
     </aside>
