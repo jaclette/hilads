@@ -269,6 +269,150 @@ $router->add('POST', '/api/v1/uploads', function () {
     Response::json(['url' => $url], 201);
 });
 
+$router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    Response::json(['events' => EventRepository::getByChannel($channelId)]);
+});
+
+$router->add('POST', '/api/v1/channels/{channelId}/events', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId      = $body['guestId']       ?? null;
+    $nickname     = $body['nickname']      ?? null;
+    $title        = $body['title']         ?? null;
+    $locationHint = $body['location_hint'] ?? null;
+    $startsAt     = $body['starts_at']     ?? null;
+
+    if (empty($guestId) || !is_string($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($nickname) || !is_string($nickname)) {
+        Response::json(['error' => 'nickname is required'], 400);
+    }
+
+    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+
+    if ($nickname === '') {
+        Response::json(['error' => 'nickname must not be empty'], 400);
+    }
+
+    if (empty($title) || !is_string($title)) {
+        Response::json(['error' => 'title is required'], 400);
+    }
+
+    $title = mb_substr(trim(strip_tags($title)), 0, 100);
+
+    if (mb_strlen($title) < 3) {
+        Response::json(['error' => 'title must be at least 3 characters'], 400);
+    }
+
+    if ($locationHint !== null) {
+        if (!is_string($locationHint)) {
+            Response::json(['error' => 'location_hint must be a string'], 400);
+        }
+        $locationHint = mb_substr(trim(strip_tags($locationHint)), 0, 100);
+        if ($locationHint === '') {
+            $locationHint = null;
+        }
+    }
+
+    if (!is_numeric($startsAt)) {
+        Response::json(['error' => 'starts_at is required and must be a unix timestamp'], 400);
+    }
+
+    $startsAt = (int) $startsAt;
+
+    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt);
+
+    Response::json($event, 201);
+});
+
+$router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params) {
+    $eventId = $params['eventId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    if (EventRepository::findById($eventId) === null) {
+        Response::json(['error' => 'Event not found or expired'], 404);
+    }
+
+    Response::json(['messages' => MessageRepository::getByChannel($eventId)]);
+});
+
+$router->add('POST', '/api/v1/events/{eventId}/messages', function (array $params) {
+    $eventId = $params['eventId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    if (EventRepository::findById($eventId) === null) {
+        Response::json(['error' => 'Event not found or expired'], 404);
+    }
+
+    $body = Request::json();
+
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId  = $body['guestId']  ?? null;
+    $nickname = $body['nickname'] ?? null;
+    $content  = $body['content']  ?? null;
+
+    if (empty($guestId) || !is_string($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($nickname) || !is_string($nickname)) {
+        Response::json(['error' => 'nickname is required'], 400);
+    }
+
+    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+
+    if ($nickname === '') {
+        Response::json(['error' => 'nickname must not be empty'], 400);
+    }
+
+    if (empty($content) || !is_string($content)) {
+        Response::json(['error' => 'content is required'], 400);
+    }
+
+    if (strlen($content) > 1000) {
+        Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+    }
+
+    $message = MessageRepository::add($eventId, $guestId, $nickname, $content);
+
+    Response::json($message, 201);
+});
+
 $router->add('POST', '/api/v1/disconnect', function () {
     $body = Request::json();
 

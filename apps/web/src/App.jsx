@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchEventMessages, sendEventMessage } from './api'
 import { createSocket } from './socket'
 import { cityFlag } from './cityMeta'
 import Logo from './components/Logo'
+import EventsSidebar from './components/EventsSidebar'
+import CreateEventModal from './components/CreateEventModal'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -136,6 +138,17 @@ export default function App() {
   const [channelsLoading, setChannelsLoading] = useState(false)
   const [fadingIds, setFadingIds] = useState(new Set())
   const [onlineUsers, setOnlineUsers] = useState([])
+  const [typingUsers, setTypingUsers] = useState([])
+  const [uploading, setUploading] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState(null)
+
+  // Events state
+  const [events, setEvents] = useState([])
+  const [activeEventId, setActiveEventId] = useState(null)
+  const [activeEvent, setActiveEvent] = useState(null)
+  const [showEventDrawer, setShowEventDrawer] = useState(false)
+  const [showCreateEvent, setShowCreateEvent] = useState(false)
+
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
   const activityRef = useRef(null)
@@ -148,12 +161,13 @@ export default function App() {
   const socketRef = useRef(null)      // WebSocket presence client
   const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
   const heartbeatRef = useRef(null)   // periodic heartbeat interval
-  const [typingUsers, setTypingUsers] = useState([])
   const typingTimeoutRef = useRef(null) // debounce timer for typingStop
   const isTypingRef = useRef(false)     // true while typingStart has been sent
-  const [uploading, setUploading] = useState(false)
-  const [lightboxUrl, setLightboxUrl] = useState(null)
   const fileInputRef = useRef(null)
+
+  // Events refs
+  const activeEventIdRef = useRef(null)
+  const eventsPolRef = useRef(null)
 
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
@@ -186,6 +200,7 @@ export default function App() {
     return () => {
       clearInterval(pollRef.current)
       clearInterval(heartbeatRef.current)
+      clearInterval(eventsPolRef.current)
       activeRef.current = false
       clearTimeout(activityRef.current)
       clearTimeout(typingTimeoutRef.current)
@@ -315,12 +330,17 @@ export default function App() {
         setTypingUsers(users)
       })
 
+      // Socket: handle newEvent for real-time events list refresh
+      socket.on('newEvent', ({ cityId }) => {
+        if (activeChannelRef.current !== cityId) return
+        fetchEvents(cityId).then(data => {
+          if (activeChannelRef.current === cityId) setEvents(data.events)
+        }).catch(() => {})
+      })
+
       socket.joinRoom(location.channelId, sessionIdRef.current, name)
 
       // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
-      // Server TTL is 120s. We beat every 20s so the user stays online even when
-      // the browser throttles background timers (worst-case ~60s between beats).
-      // Intentionally no !document.hidden check — presence must stay alive in background tabs.
       clearInterval(heartbeatRef.current)
       heartbeatRef.current = setInterval(() => {
         if (activeRef.current && activeChannelRef.current) {
@@ -344,6 +364,18 @@ export default function App() {
       pollFnRef.current = doPoll
       clearInterval(pollRef.current)
       pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+
+      // ── Events: fetch + poll (30s) ───────────────────────────────────────────
+      const doEventsPoll = async () => {
+        if (!activeRef.current) return
+        try {
+          const evData = await fetchEvents(location.channelId)
+          if (activeChannelRef.current === location.channelId) setEvents(evData.events)
+        } catch { /* ignore */ }
+      }
+      doEventsPoll()
+      clearInterval(eventsPolRef.current)
+      eventsPolRef.current = setInterval(doEventsPoll, 30_000)
     } catch (err) {
       setError(err.message)
       setStatus('error')
@@ -407,7 +439,12 @@ export default function App() {
     stopTyping()
     setSending(true)
     try {
-      const msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, nickname, content)
+      let msg
+      if (activeEventIdRef.current) {
+        msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, nickname, content)
+      } else {
+        msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, nickname, content)
+      }
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { type: 'message', ...msg }])
       setInput('')
@@ -447,6 +484,7 @@ export default function App() {
     setTypingUsers([])
     clearInterval(pollRef.current)
     clearInterval(heartbeatRef.current)
+    clearInterval(eventsPolRef.current)
     socketRef.current?.leaveRoom(channelId, sessionIdRef.current)
 
     // mark which channel we're switching to — used to discard stale async results
@@ -458,6 +496,10 @@ export default function App() {
     knownIdsRef.current = new Set()
     setCity(newCityName)
     setChannelId(newChannelId)
+    setEvents([])
+    setActiveEventId(null)
+    setActiveEvent(null)
+    activeEventIdRef.current = null
 
     try {
       // Emit join event (also handles leaving previous channel) before fetching
@@ -513,9 +555,106 @@ export default function App() {
       }
       pollFnRef.current = doPoll
       pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+
+      // Events: fetch + poll for new city
+      const doEventsPoll = async () => {
+        if (!activeRef.current) return
+        try {
+          const evData = await fetchEvents(newChannelId)
+          if (activeChannelRef.current === newChannelId) setEvents(evData.events)
+        } catch { /* ignore */ }
+      }
+      doEventsPoll()
+      eventsPolRef.current = setInterval(doEventsPoll, 30_000)
     } catch {
       // silently fail — user stays with empty feed for new city
     }
+  }
+
+  // Switch to an event's chat
+  function handleSelectEvent(event) {
+    if (activeEventIdRef.current === event.id) {
+      setShowEventDrawer(false)
+      return
+    }
+
+    // Pause city/current-event polling
+    clearInterval(pollRef.current)
+    pollFnRef.current = null
+
+    const eid = event.id
+    activeEventIdRef.current = eid
+    setActiveEventId(eid)
+    setActiveEvent(event)
+    setShowEventDrawer(false)
+    setFeed([])
+    knownIdsRef.current = new Set()
+
+    const doPoll = async () => {
+      if (!activeRef.current) return
+      const latest = await fetchEventMessages(eid)
+      if (activeEventIdRef.current !== eid) return
+      const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(m.id))
+      if (newMsgs.length > 0) {
+        newMsgs.forEach(m => knownIdsRef.current.add(m.id))
+        setFeed(prev => [...prev, ...newMsgs.map(m => ({ type: 'message', ...m }))])
+      }
+    }
+
+    doPoll()
+    pollFnRef.current = doPoll
+    pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+  }
+
+  // Return to city chat from an event
+  function handleBackToCity() {
+    clearInterval(pollRef.current)
+    pollFnRef.current = null
+
+    const cid = activeChannelRef.current
+    activeEventIdRef.current = null
+    setActiveEventId(null)
+    setActiveEvent(null)
+    setFeed([])
+    knownIdsRef.current = new Set()
+
+    // Re-fetch city messages
+    fetchMessages(cid).then(data => {
+      if (activeEventIdRef.current !== null || activeChannelRef.current !== cid) return
+      knownIdsRef.current = new Set(data.messages.map(messageKey))
+      const total = data.messages.length
+      setFeed(data.messages.map((m, idx) => {
+        const staggerIndex = Math.max(0, idx - (total - 8))
+        const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
+        return toFeedItem(m, delay)
+      }))
+    }).catch(() => {})
+
+    const doPoll = async () => {
+      if (!activeRef.current) return
+      const latest = await fetchMessages(cid)
+      if (activeChannelRef.current !== cid || activeEventIdRef.current !== null) return
+      const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(messageKey(m)))
+      if (newMsgs.length > 0) {
+        newMsgs.forEach(m => knownIdsRef.current.add(messageKey(m)))
+        const items = newMsgs.map(m => toFeedItem(m))
+        setFeed(prev => [...prev, ...items])
+        items.forEach(item => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
+      }
+    }
+
+    pollFnRef.current = doPoll
+    pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+  }
+
+  // Refresh events list after creation
+  function handleEventCreated() {
+    setShowCreateEvent(false)
+    const cid = activeChannelRef.current
+    if (!cid) return
+    fetchEvents(cid).then(data => {
+      if (activeChannelRef.current === cid) setEvents(data.events)
+    }).catch(() => {})
   }
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current)
@@ -630,23 +769,52 @@ export default function App() {
 
   return (
     <div className="chat-layout">
+
+      {/* Events sidebar — desktop only */}
+      <EventsSidebar
+        events={events}
+        activeEventId={activeEventId}
+        onSelectEvent={handleSelectEvent}
+        onCreateClick={() => setShowCreateEvent(true)}
+      />
+
       <div className="screen chat">
         <header className="chat-header">
           <div className="header-left">
             <Logo variant="icon" size="sm" />
             <div className="header-divider" />
-            <div className="online-dot" />
-            <div className="header-city">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>{cityFlag(city)}</span>
-                <span className="city-name">{city}</span>
-              </div>
-              <span className="online-label">
-                {onlineCount != null ? `${onlineCount} people online` : 'live now'}
-              </span>
-            </div>
+            {activeEvent ? (
+              <>
+                <button className="back-to-city-btn" onClick={handleBackToCity}>
+                  ← {city}
+                </button>
+                <div className="header-city">
+                  <span className="event-header-title">{activeEvent.title}</span>
+                  {activeEvent.location_hint && (
+                    <span className="online-label">📍 {activeEvent.location_hint}</span>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="online-dot" />
+                <div className="header-city">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>{cityFlag(city)}</span>
+                    <span className="city-name">{city}</span>
+                  </div>
+                  <span className="online-label">
+                    {onlineCount != null ? `${onlineCount} people online` : 'live now'}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
           <div className="header-right">
+            {/* Mobile-only events button */}
+            <button className="events-mobile-btn" onClick={() => setShowEventDrawer(true)} title="Events">
+              ⚡
+            </button>
             <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
               <GlobeIcon />
               <span>Switch</span>
@@ -667,8 +835,11 @@ export default function App() {
         <div className="messages">
           {feed.length === 0 && (
             <div className="empty">
-              <p className="empty-icon">👋</p>
-              <p>Be the first to say something in {city}!</p>
+              <p className="empty-icon">{activeEvent ? '💬' : '👋'}</p>
+              <p>{activeEvent
+                ? `Be the first to chat about ${activeEvent.title}!`
+                : `Be the first to say something in ${city}!`
+              }</p>
             </div>
           )}
           {feed.map((item, i) => {
@@ -747,8 +918,8 @@ export default function App() {
           <button
             type="button"
             className="upload-btn"
-            title="Send image"
-            disabled={uploading || sending}
+            title={activeEventId ? 'Images not supported in event chat' : 'Send image'}
+            disabled={uploading || sending || !!activeEventId}
             onClick={() => fileInputRef.current?.click()}
           >
             {uploading ? <span className="upload-spinner" /> : <ImageIcon />}
@@ -757,7 +928,10 @@ export default function App() {
             type="text"
             value={input}
             onChange={handleInputChange}
-            placeholder={city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length](city) : ''}
+            placeholder={activeEvent
+              ? `Chat about ${activeEvent.title}…`
+              : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length](city) : ''
+            }
             maxLength={1000}
             autoFocus
           />
@@ -815,6 +989,54 @@ export default function App() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Mobile events drawer */}
+      {showEventDrawer && (
+        <div className="city-picker-overlay" onClick={() => setShowEventDrawer(false)}>
+          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="city-picker-handle" />
+            <div className="city-picker-header">
+              <span className="city-picker-title">Events in {city}</span>
+              <button className="city-picker-close" onClick={() => setShowEventDrawer(false)}>✕</button>
+            </div>
+            <div className="city-picker-list">
+              <button
+                className="create-event-row"
+                onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}
+              >
+                + Create event
+              </button>
+              {events.length === 0 ? (
+                <p className="events-empty-drawer">No events yet. Be the first!</p>
+              ) : events.map(event => (
+                <button
+                  key={event.id}
+                  className={`city-row${activeEventId === event.id ? ' active' : ''}`}
+                  onClick={() => handleSelectEvent(event)}
+                >
+                  <div className="city-row-left">
+                    <span className="city-row-name">{event.title}</span>
+                    {event.location_hint && (
+                      <span className="city-row-current">📍 {event.location_hint}</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create event modal */}
+      {showCreateEvent && (
+        <CreateEventModal
+          channelId={channelId}
+          guest={guest}
+          nickname={nickname}
+          onCreated={handleEventCreated}
+          onClose={() => setShowCreateEvent(false)}
+        />
       )}
 
       {/* Desktop-only sidebar */}

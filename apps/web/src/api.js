@@ -117,3 +117,45 @@ export async function sendImageMessage(channelId, sessionId, guestId, nickname, 
   }
   return res.json()
 }
+
+export async function fetchEvents(channelId) {
+  const res = await fetch(`${BASE}/channels/${channelId}/events`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch events')
+  return res.json()
+}
+
+export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt) {
+  const body = { guestId, nickname, title, starts_at: startsAt }
+  if (locationHint) body.location_hint = locationHint
+  const res = await fetch(`${BASE}/channels/${channelId}/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to create event')
+  }
+  return res.json()
+}
+
+export async function fetchEventMessages(eventId) {
+  const res = await fetch(`${BASE}/events/${eventId}/messages`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch event messages')
+  return res.json()
+}
+
+export async function sendEventMessage(eventId, guestId, nickname, content) {
+  const res = await fetch(`${BASE}/events/${eventId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, nickname, content }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send message')
+  }
+  return res.json()
+}

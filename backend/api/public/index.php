@@ -59,6 +59,7 @@ require_once __DIR__ . '/../src/NicknameGenerator.php';
 require_once __DIR__ . '/../src/CityRepository.php';
 require_once __DIR__ . '/../src/PresenceRepository.php';
 require_once __DIR__ . '/../src/MessageRepository.php';
+require_once __DIR__ . '/../src/EventRepository.php';
 require_once __DIR__ . '/../src/R2Uploader.php';
 
 session_set_cookie_params([

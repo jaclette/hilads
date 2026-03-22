@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 class MessageRepository
 {
-    private static function filePath(int $channelId): string
+    private static function filePath(int|string $channelId): string
     {
         return __DIR__ . '/../storage/messages_' . $channelId . '.json';
     }
 
-    public static function getByChannel(int $channelId): array
+    public static function getByChannel(int|string $channelId): array
     {
         $path = self::filePath($channelId);
 
@@ -59,7 +59,7 @@ class MessageRepository
         return $message;
     }
 
-    public static function add(int $channelId, string $guestId, string $nickname, string $content): array
+    public static function add(int|string $channelId, string $guestId, string $nickname, string $content): array
     {
         $messages = self::getByChannel($channelId);
 
