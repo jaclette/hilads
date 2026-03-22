@@ -1,4 +1,5 @@
 import { EVENT_ICONS } from '../cityMeta'
+import { getEventStatus, getTimeLabel } from '../eventUtils'
 
 function isToday(unixTs, timezone) {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone })
@@ -6,34 +7,7 @@ function isToday(unixTs, timezone) {
   return today === eventDay
 }
 
-function formatTime(unixTs, timezone) {
-  return new Date(unixTs * 1000).toLocaleTimeString('en-US', {
-    timeZone: timezone,
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  })
-}
-
 const STATUS_PRIORITY = { now: 0, soon: 1, scheduled: 2 }
-
-function getEventStatus(unixTs) {
-  const diffMin = (unixTs * 1000 - Date.now()) / 60000
-  if (diffMin >= -30 && diffMin <= 15) return 'now'
-  if (diffMin > 15 && diffMin <= 60) return 'soon'
-  return 'scheduled'
-}
-
-function getTimeLabel(unixTs, timezone) {
-  const status = getEventStatus(unixTs)
-  if (status === 'now') return '🔥 happening now'
-  if (status === 'soon') {
-    const diffMin = (unixTs * 1000 - Date.now()) / 60000
-    const rounded = Math.max(5, Math.round(diffMin / 5) * 5)
-    return `🔥 in ${rounded} min`
-  }
-  return formatTime(unixTs, timezone)
-}
 
 export default function EventsSidebar({ events, activeEventId, cityTimezone, onSelectEvent, onCreateClick }) {
   const tz = cityTimezone || 'UTC'
@@ -65,7 +39,7 @@ export default function EventsSidebar({ events, activeEventId, cityTimezone, onS
               {EVENT_ICONS[event.type] ?? '📌'} {event.title}
             </span>
             <span className="event-row-location">
-              🕐 {getTimeLabel(event.starts_at, tz)}
+              {getTimeLabel(event.starts_at, tz)}
               {event.location_hint && ` · 📍 ${event.location_hint}`}
             </span>
           </button>

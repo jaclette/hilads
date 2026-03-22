@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchEventMessages, sendEventMessage } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
+import { getTimeLabel } from './eventUtils'
 import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventModal from './components/CreateEventModal'
@@ -793,10 +794,13 @@ export default function App() {
                   ← {city}
                 </button>
                 <div className="header-city">
-                  <span className="event-header-title">{activeEvent.title}</span>
-                  {activeEvent.location_hint && (
-                    <span className="online-label">📍 {activeEvent.location_hint}</span>
-                  )}
+                  <span className="event-header-title">
+                    {EVENT_ICONS[activeEvent.type] ?? '📌'} {activeEvent.title}
+                  </span>
+                  <span className="online-label">
+                    {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
+                    {activeEvent.location_hint && ` · 📍 ${activeEvent.location_hint}`}
+                  </span>
                 </div>
               </>
             ) : (
