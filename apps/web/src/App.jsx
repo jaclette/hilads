@@ -145,6 +145,8 @@ export default function App() {
 
   // Events state
   const [events, setEvents] = useState([])
+  const [previewEvents, setPreviewEvents] = useState([])
+  const [previewTimezone, setPreviewTimezone] = useState('UTC')
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
@@ -221,6 +223,15 @@ export default function App() {
     const position = await getPosition()
     const location = await resolveLocation(position.coords.latitude, position.coords.longitude)
     setCity(location.city)
+    setPreviewTimezone(location.timezone ?? 'UTC')
+    fetchEvents(location.channelId).then(data => {
+      const now = Date.now()
+      const filtered = data.events
+        .filter(e => (e.starts_at * 1000 - now) / 60000 >= -30)
+        .sort((a, b) => a.starts_at - b.starts_at)
+        .slice(0, 3)
+      setPreviewEvents(filtered)
+    }).catch(() => {})
     return location
   }
 
@@ -683,7 +694,18 @@ export default function App() {
                   <span style={{ fontSize: '2rem', lineHeight: 1 }}>{cityFlag(city)}</span>
                   <span className="ob-city-name">{city}</span>
                 </div>
-                <span className="ob-city-sub">people are chatting live right now</span>
+                {previewEvents.length > 0 ? (
+                  <div className="ob-events-preview">
+                    {previewEvents.map(e => (
+                      <div key={e.id} className="ob-event-row">
+                        <span className="ob-event-title">{EVENT_ICONS[e.type] ?? '📌'} {e.title}</span>
+                        <span className="ob-event-time">{getTimeLabel(e.starts_at, previewTimezone)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="ob-city-sub">people are chatting live right now</span>
+                )}
               </>
             ) : (
               <span className="ob-locating">› locating...</span>
