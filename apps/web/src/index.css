@@ -9,13 +9,13 @@
   --surface: #1a1a24;
   --surface2: #21212e;
   --border: #2a2a38;
-  --accent: #7c6aff;
-  --accent2: #ff6a9f;
+  --accent: #C24A38;   /* coral — matches logo */
+  --accent2: #B87228;  /* amber — matches logo */
   --green: #3ddc84;
   --text: #f0f0f5;
   --muted: #666;
   --muted2: #999;
-  --mine-bg: #7c6aff;
+  --mine-bg: #9E3A2C;  /* slightly darker coral for message bubbles */
   --other-bg: #1e1e2c;
 }
 
@@ -131,8 +131,8 @@ html, body, #root {
   justify-content: center;
   padding: 24px;
   background:
-    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(124, 106, 255, 0.13) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 35% at 85% 85%, rgba(255, 106, 159, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(194, 74, 56, 0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 35% at 85% 85%, rgba(184, 114, 40, 0.07) 0%, transparent 55%),
     var(--bg);
 }
 
@@ -144,7 +144,7 @@ html, body, #root {
   gap: 28px;
   padding: 36px 28px 32px;
   background: rgba(26, 26, 36, 0.75);
-  border: 1px solid rgba(124, 106, 255, 0.2);
+  border: 1px solid rgba(194, 74, 56, 0.2);
   border-radius: 20px;
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.25),
@@ -159,7 +159,7 @@ html, body, #root {
 
 .ob-sep {
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(124, 106, 255, 0.35), rgba(6, 182, 212, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(194, 74, 56, 0.30), rgba(184, 114, 40, 0.15), transparent);
   margin: -6px 0;
 }
 
@@ -273,18 +273,18 @@ html, body, #root {
   cursor: pointer;
   margin-top: 4px;
   transition: opacity 0.15s, transform 0.12s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(124, 106, 255, 0.25);
+  box-shadow: 0 4px 20px rgba(194, 74, 56, 0.25);
 }
 
 .ob-btn:hover {
-  box-shadow: 0 6px 28px rgba(124, 106, 255, 0.45);
+  box-shadow: 0 6px 28px rgba(194, 74, 56, 0.45);
   transform: translateY(-1px);
 }
 
 .ob-btn:active {
   transform: scale(0.98) translateY(0);
   opacity: 0.9;
-  box-shadow: 0 2px 10px rgba(124, 106, 255, 0.2);
+  box-shadow: 0 2px 10px rgba(194, 74, 56, 0.2);
 }
 
 .ob-hint {
@@ -348,9 +348,8 @@ html, body, #root {
   right: 0;
   height: 1px;
   background: linear-gradient(90deg,
-    rgba(124, 106, 255, 0.5) 0%,
-    rgba(6, 182, 212, 0.35) 40%,
-    rgba(255, 106, 159, 0.2) 75%,
+    rgba(194, 74, 56, 0.45) 0%,
+    rgba(184, 114, 40, 0.25) 55%,
     transparent 100%
   );
 }
@@ -723,8 +722,8 @@ html, body, #root {
 
 .upload-btn:hover:not(:disabled) {
   color: var(--accent);
-  border-color: rgba(124, 106, 255, 0.45);
-  background: rgba(124, 106, 255, 0.08);
+  border-color: rgba(194, 74, 56, 0.45);
+  background: rgba(194, 74, 56, 0.08);
 }
 
 .upload-btn:disabled {
@@ -773,8 +772,8 @@ html, body, #root {
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--accent);
-  background: rgba(124, 106, 255, 0.08);
-  border: 1px solid rgba(124, 106, 255, 0.22);
+  background: rgba(194, 74, 56, 0.08);
+  border: 1px solid rgba(194, 74, 56, 0.22);
   border-radius: 20px;
   padding: 5px 14px;
   margin: 10px 0;
@@ -990,8 +989,8 @@ html, body, #root {
 
 .change-city-btn:hover {
   color: var(--accent);
-  border-color: rgba(124, 106, 255, 0.45);
-  background: rgba(124, 106, 255, 0.08);
+  border-color: rgba(194, 74, 56, 0.45);
+  background: rgba(194, 74, 56, 0.08);
 }
 
 .city-btn-name {
@@ -1027,7 +1026,7 @@ html, body, #root {
 
 .city-picker-panel {
   background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 56px);
-  border-top: 1px solid rgba(124, 106, 255, 0.25);
+  border-top: 1px solid rgba(194, 74, 56, 0.25);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 640px;
@@ -1057,7 +1056,7 @@ html, body, #root {
   }
   .city-picker-panel {
     border-radius: 20px;
-    border: 1px solid rgba(124, 106, 255, 0.2);
+    border: 1px solid rgba(194, 74, 56, 0.2);
     max-width: 400px;
     max-height: 60vh;
     background: linear-gradient(160deg, var(--surface2) 0%, var(--surface) 80px);
@@ -1134,12 +1133,12 @@ html, body, #root {
 
 .city-row:hover {
   background: rgba(255, 255, 255, 0.04);
-  box-shadow: inset 2px 0 0 rgba(124, 106, 255, 0.3);
+  box-shadow: inset 2px 0 0 rgba(194, 74, 56, 0.3);
 }
 
 .city-row.active {
-  background: rgba(124, 106, 255, 0.09);
-  border-color: rgba(124, 106, 255, 0.22);
+  background: rgba(194, 74, 56, 0.09);
+  border-color: rgba(194, 74, 56, 0.22);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 
@@ -1176,7 +1175,7 @@ html, body, #root {
   font-size: 0.68rem;
   color: var(--accent);
   font-weight: 600;
-  background: rgba(124, 106, 255, 0.12);
+  background: rgba(194, 74, 56, 0.12);
   border-radius: 10px;
   padding: 2px 7px;
   flex-shrink: 0;
@@ -1259,8 +1258,8 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(124, 106, 255, 0.12);
-  border: 1px solid rgba(124, 106, 255, 0.3);
+  background: rgba(194, 74, 56, 0.12);
+  border: 1px solid rgba(194, 74, 56, 0.3);
   border-radius: 6px;
   color: var(--accent);
   font-size: 1rem;
@@ -1272,7 +1271,7 @@ html, body, #root {
 }
 
 .create-event-btn:hover {
-  background: rgba(124, 106, 255, 0.24);
+  background: rgba(194, 74, 56, 0.24);
 }
 
 .events-list {
@@ -1309,8 +1308,8 @@ html, body, #root {
 }
 
 .event-row.active {
-  background: rgba(124, 106, 255, 0.09);
-  border-color: rgba(124, 106, 255, 0.22);
+  background: rgba(194, 74, 56, 0.09);
+  border-color: rgba(194, 74, 56, 0.22);
   box-shadow: inset 2px 0 0 var(--accent);
 }
 
@@ -1376,7 +1375,7 @@ html, body, #root {
 
 .back-to-city-btn:hover {
   color: var(--accent);
-  border-color: rgba(124, 106, 255, 0.45);
+  border-color: rgba(194, 74, 56, 0.45);
 }
 
 .event-header-title {
@@ -1411,8 +1410,8 @@ html, body, #root {
 
 .events-mobile-btn:hover {
   color: var(--accent);
-  border-color: rgba(124, 106, 255, 0.45);
-  background: rgba(124, 106, 255, 0.08);
+  border-color: rgba(194, 74, 56, 0.45);
+  background: rgba(194, 74, 56, 0.08);
 }
 
 @media (min-width: 768px) {
@@ -1450,14 +1449,14 @@ html, body, #root {
 
 .im-in-btn:hover {
   color: var(--accent);
-  border-color: rgba(124, 106, 255, 0.45);
-  background: rgba(124, 106, 255, 0.08);
+  border-color: rgba(194, 74, 56, 0.45);
+  background: rgba(194, 74, 56, 0.08);
 }
 
 .im-in-btn--active {
   color: var(--accent);
-  border-color: rgba(124, 106, 255, 0.45);
-  background: rgba(124, 106, 255, 0.1);
+  border-color: rgba(194, 74, 56, 0.45);
+  background: rgba(194, 74, 56, 0.1);
 }
 
 /* ── Mobile events drawer content ─────────────────────── */
@@ -1468,8 +1467,8 @@ html, body, #root {
   width: 100%;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px dashed rgba(124, 106, 255, 0.4);
-  background: rgba(124, 106, 255, 0.05);
+  border: 1px dashed rgba(194, 74, 56, 0.4);
+  background: rgba(194, 74, 56, 0.05);
   color: var(--accent);
   font-size: 0.88rem;
   font-weight: 600;
@@ -1479,7 +1478,7 @@ html, body, #root {
 }
 
 .create-event-row:hover {
-  background: rgba(124, 106, 255, 0.1);
+  background: rgba(194, 74, 56, 0.1);
 }
 
 .events-empty-drawer {
@@ -1517,8 +1516,8 @@ html, body, #root {
 }
 
 .event-type-btn.selected {
-  background: rgba(124, 106, 255, 0.12);
-  border-color: rgba(124, 106, 255, 0.45);
+  background: rgba(194, 74, 56, 0.12);
+  border-color: rgba(194, 74, 56, 0.45);
   color: var(--accent);
 }
 
@@ -1554,7 +1553,7 @@ html, body, #root {
 
 .modal-panel {
   background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 56px);
-  border-top: 1px solid rgba(124, 106, 255, 0.25);
+  border-top: 1px solid rgba(194, 74, 56, 0.25);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 640px;
@@ -1568,7 +1567,7 @@ html, body, #root {
 
   .modal-panel {
     border-radius: 20px;
-    border: 1px solid rgba(124, 106, 255, 0.2);
+    border: 1px solid rgba(194, 74, 56, 0.2);
     max-width: 400px;
     background: linear-gradient(160deg, var(--surface2) 0%, var(--surface) 80px);
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.3);
