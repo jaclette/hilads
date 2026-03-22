@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class TicketmasterImporter
 {
-    private const REFRESH_COOLDOWN = 900; // 15 minutes between syncs per city
+    private const REFRESH_COOLDOWN = 604800; // 7 days between syncs per city
     private const MAX_EVENTS       = 10;
     private const TIMEOUT          = 5;   // curl timeout in seconds
     private const SYNC_FILE        = __DIR__ . '/../storage/city_sync.json';

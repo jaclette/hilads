@@ -315,7 +315,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
         'api_key_set'         => !empty(getenv('TICKETMASTER_API_KEY')),
         'last_synced_at'      => $lastSync,
         'seconds_since_sync'  => $lastSync !== null ? (time() - $lastSync) : null,
-        'cooldown_seconds'    => 900,
+        'cooldown_seconds'    => 604800,
         'total_stored_events' => count($stored),
         'tm_stored_count'     => count($tmStored),
         'tm_sample'           => array_slice($tmStored, 0, 2),
