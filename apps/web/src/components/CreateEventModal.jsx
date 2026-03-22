@@ -47,7 +47,7 @@ export default function CreateEventModal({ channelId, guest, nickname, cityTimez
     setSubmitting(true)
     setError(null)
     try {
-      await createEvent(
+      const newEvent = await createEvent(
         channelId,
         guest.guestId,
         nickname,
@@ -56,7 +56,7 @@ export default function CreateEventModal({ channelId, guest, nickname, cityTimez
         cityTimeToUnix(tz, time),
         type,
       )
-      onCreated()
+      onCreated(newEvent)
     } catch (err) {
       setError(err.message)
     } finally {

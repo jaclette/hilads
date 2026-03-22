@@ -786,8 +786,14 @@ export default function App() {
   }
 
   // Refresh events list after creation
-  function handleEventCreated() {
+  function handleEventCreated(newEvent) {
     setShowCreateEvent(false)
+    // Optimistic update: show the new event immediately using the POST response,
+    // so the creator doesn't see a blank gap while the re-fetch is in flight.
+    if (newEvent?.id) {
+      setEvents(prev => [...prev, newEvent])
+    }
+    // Confirm with server (catches any server-side pruning or ordering)
     const cid = activeChannelRef.current
     if (!cid) return
     fetchEvents(cid).then(data => {
