@@ -6,14 +6,18 @@
  * Client → Server  : joinRoom(cityId, sessionId, nickname)
  *                    leaveRoom(cityId, sessionId)
  *                    heartbeat(cityId, sessionId)
+ *                    joinEvent(eventId, sessionId)
+ *                    leaveEvent(eventId, sessionId)
  *
  * Server → Client  : presenceSnapshot(cityId, users, count)
  *                    userJoined(cityId, user)
  *                    userLeft(cityId, user)
  *                    onlineCountUpdated(cityId, count)
+ *                    event_presence_update(eventId, count)
  *
  * All events are JSON objects with an `event` field.
  * Presence is scoped by cityId and keyed by sessionId.
+ * Event presence is scoped by eventId and keyed by sessionId (in-memory only).
  */
 
 import { WebSocketServer } from 'ws'
@@ -29,6 +33,9 @@ const rooms = new Map()
 
 // typing: Map<cityId, Map<sessionId, { sessionId, nickname, timer }>>
 const typing = new Map()
+
+// eventRooms: Map<eventId, Map<sessionId, { sessionId, ws }>>
+const eventRooms = new Map()
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -174,6 +181,39 @@ function handleTypingStop(ws, { cityId, sessionId }) {
   if (clearTyping(cityId, sessionId)) broadcastTyping(cityId)
 }
 
+// ── Event presence helpers ──────────────────────────────────────────────────────
+
+function getEventRoom(eventId) {
+  if (!eventRooms.has(eventId)) eventRooms.set(eventId, new Map())
+  return eventRooms.get(eventId)
+}
+
+function broadcastEventCount(eventId) {
+  const room = eventRooms.get(eventId)
+  if (!room) return
+  const count = room.size
+  const msg = JSON.stringify({ event: 'event_presence_update', eventId, count })
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+  }
+}
+
+function handleJoinEvent(ws, { eventId, sessionId }) {
+  const room = getEventRoom(eventId)
+  room.set(sessionId, { sessionId, ws })
+  console.log(`[WS] joinEvent: ${sessionId.slice(0, 8)} -> event ${eventId} (${room.size} in room)`)
+  broadcastEventCount(eventId)
+}
+
+function handleLeaveEvent(ws, { eventId, sessionId }) {
+  const room = eventRooms.get(eventId)
+  if (!room) return
+  room.delete(sessionId)
+  console.log(`[WS] leaveEvent: ${sessionId.slice(0, 8)} <- event ${eventId} (${room.size} in room)`)
+  if (room.size === 0) eventRooms.delete(eventId)
+  else broadcastEventCount(eventId)
+}
+
 // Remove a disconnected ws from all rooms it was part of
 function removeWs(ws) {
   for (const [cityId, room] of rooms) {
@@ -183,6 +223,15 @@ function removeWs(ws) {
         if (clearTyping(cityId, sessionId)) broadcastTyping(cityId)
         broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname } })
         broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size })
+      }
+    }
+  }
+  for (const [eventId, room] of eventRooms) {
+    for (const [sessionId, session] of room) {
+      if (session.ws === ws) {
+        room.delete(sessionId)
+        if (room.size === 0) eventRooms.delete(eventId)
+        else broadcastEventCount(eventId)
       }
     }
   }
@@ -206,6 +255,8 @@ wss.on('connection', (ws) => {
       case 'heartbeat':    return handleHeartbeat(ws, msg)
       case 'typingStart':  return handleTypingStart(ws, msg)
       case 'typingStop':   return handleTypingStop(ws, msg)
+      case 'joinEvent':    return handleJoinEvent(ws, msg)
+      case 'leaveEvent':   return handleLeaveEvent(ws, msg)
     }
   })
 

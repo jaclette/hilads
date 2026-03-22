@@ -9,7 +9,7 @@ function isToday(unixTs, timezone) {
 
 const STATUS_PRIORITY = { now: 0, soon: 1, scheduled: 2 }
 
-export default function EventsSidebar({ events, activeEventId, cityTimezone, onSelectEvent, onCreateClick }) {
+export default function EventsSidebar({ events, activeEventId, cityTimezone, eventPresence, onSelectEvent, onCreateClick }) {
   const tz = cityTimezone || 'UTC'
   const todayEvents = events
     .filter(e => isToday(e.starts_at, tz))
@@ -41,6 +41,7 @@ export default function EventsSidebar({ events, activeEventId, cityTimezone, onS
             <span className="event-row-location">
               {getTimeLabel(event.starts_at, tz)}
               {event.location_hint && ` · 📍 ${event.location_hint}`}
+              {eventPresence?.[event.id] > 0 && ` · ${eventPresence[event.id]} here`}
             </span>
           </button>
         ))}

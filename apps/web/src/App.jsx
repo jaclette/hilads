@@ -152,6 +152,7 @@ export default function App() {
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
+  const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
 
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
@@ -342,6 +343,10 @@ export default function App() {
       socket.on('typingUsers', ({ cityId, users }) => {
         if (activeChannelRef.current !== cityId) return
         setTypingUsers(users)
+      })
+
+      socket.on('event_presence_update', ({ eventId, count }) => {
+        setEventPresence(prev => ({ ...prev, [eventId]: count }))
       })
 
       // Socket: handle newEvent for real-time events list refresh
@@ -593,12 +598,18 @@ export default function App() {
       return
     }
 
+    // Leave previous event if switching from one event to another
+    if (activeEventIdRef.current) {
+      socketRef.current?.leaveEvent(activeEventIdRef.current, sessionIdRef.current)
+    }
+
     // Pause city/current-event polling
     clearInterval(pollRef.current)
     pollFnRef.current = null
 
     const eid = event.id
     activeEventIdRef.current = eid
+    socketRef.current?.joinEvent(eid, sessionIdRef.current)
     setActiveEventId(eid)
     setActiveEvent(event)
     setShowEventDrawer(false)
@@ -623,6 +634,10 @@ export default function App() {
 
   // Return to city chat from an event
   function handleBackToCity() {
+    if (activeEventIdRef.current) {
+      socketRef.current?.leaveEvent(activeEventIdRef.current, sessionIdRef.current)
+    }
+
     clearInterval(pollRef.current)
     pollFnRef.current = null
 
@@ -801,6 +816,7 @@ export default function App() {
         events={events}
         activeEventId={activeEventId}
         cityTimezone={cityTimezone}
+        eventPresence={eventPresence}
         onSelectEvent={handleSelectEvent}
         onCreateClick={() => setShowCreateEvent(true)}
       />
@@ -822,6 +838,7 @@ export default function App() {
                   <span className="online-label">
                     {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
                     {activeEvent.location_hint && ` · 📍 ${activeEvent.location_hint}`}
+                    {eventPresence[activeEvent.id] != null && ` · ${eventPresence[activeEvent.id]} here`}
                   </span>
                 </div>
               </>

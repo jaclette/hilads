@@ -6,11 +6,14 @@
  * Client → Server  : joinRoom(cityId, sessionId, nickname)
  *                    leaveRoom(cityId, sessionId)
  *                    heartbeat(cityId, sessionId)
+ *                    joinEvent(eventId, sessionId)
+ *                    leaveEvent(eventId, sessionId)
  *
  * Server → Client  : presenceSnapshot(cityId, users, count)
  *                    userJoined(cityId, user)
  *                    userLeft(cityId, user)
  *                    onlineCountUpdated(cityId, count)
+ *                    event_presence_update(eventId, count)
  */
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8081'
@@ -25,6 +28,8 @@ export function createSocket() {
 
   // Last joinRoom call — replayed automatically on reconnect
   let pendingJoin = null
+  // Last joinEvent call — replayed automatically on reconnect
+  let pendingEventJoin = null
 
   function connect() {
     if (destroyed) return
@@ -36,6 +41,10 @@ export function createSocket() {
       if (pendingJoin) {
         console.log('[socket] replaying joinRoom', pendingJoin)
         send({ event: 'joinRoom', ...pendingJoin })
+      }
+      if (pendingEventJoin) {
+        console.log('[socket] replaying joinEvent', pendingEventJoin)
+        send({ event: 'joinEvent', ...pendingEventJoin })
       }
     }
 
@@ -86,6 +95,20 @@ export function createSocket() {
     /** Notify others that this user stopped typing. */
     typingStop(cityId, sessionId) {
       send({ event: 'typingStop', cityId, sessionId })
+    },
+
+    /** Join an event room. Replayed automatically on reconnect. */
+    joinEvent(eventId, sessionId) {
+      console.log('[socket] → joinEvent', { eventId, sessionId })
+      pendingEventJoin = { eventId, sessionId }
+      send({ event: 'joinEvent', eventId, sessionId })
+    },
+
+    /** Leave an event room (e.g. back to city, or switching events). */
+    leaveEvent(eventId, sessionId) {
+      console.log('[socket] → leaveEvent', { eventId, sessionId })
+      pendingEventJoin = null
+      send({ event: 'leaveEvent', eventId, sessionId })
     },
 
     /** Keep presence alive. Call when tab regains focus. */
