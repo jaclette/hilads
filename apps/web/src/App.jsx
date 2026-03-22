@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchEventMessages, sendEventMessage } from './api'
 import { createSocket } from './socket'
-import { cityFlag } from './cityMeta'
+import { cityFlag, EVENT_ICONS } from './cityMeta'
 import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventModal from './components/CreateEventModal'
@@ -148,6 +148,7 @@ export default function App() {
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showCreateEvent, setShowCreateEvent] = useState(false)
+  const [cityTimezone, setCityTimezone] = useState('UTC')
 
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
@@ -268,6 +269,7 @@ export default function App() {
       const session = await createGuestSession(name)
       setGuest(session)
       setChannelId(location.channelId)
+      setCityTimezone(location.timezone ?? 'UTC')
       activeChannelRef.current = location.channelId
 
       // Emit join event before fetching messages so it's included
@@ -468,7 +470,7 @@ export default function App() {
     }
   }
 
-  async function switchCity(newChannelId, newCityName) {
+  async function switchCity(newChannelId, newCityName, newCityTimezone) {
     if (newChannelId === channelId) {
       setShowCityPicker(false)
       return
@@ -496,6 +498,7 @@ export default function App() {
     knownIdsRef.current = new Set()
     setCity(newCityName)
     setChannelId(newChannelId)
+    setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
     setActiveEventId(null)
     setActiveEvent(null)
@@ -774,6 +777,7 @@ export default function App() {
       <EventsSidebar
         events={events}
         activeEventId={activeEventId}
+        cityTimezone={cityTimezone}
         onSelectEvent={handleSelectEvent}
         onCreateClick={() => setShowCreateEvent(true)}
       />
@@ -971,7 +975,7 @@ export default function App() {
                   <button
                     key={ch.channelId}
                     className={`city-row${isActive ? ' active' : ''}`}
-                    onClick={() => switchCity(ch.channelId, ch.city)}
+                    onClick={() => switchCity(ch.channelId, ch.city, ch.timezone)}
                   >
                     <div className="city-row-left">
                       <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
@@ -1007,22 +1011,34 @@ export default function App() {
               >
                 + Create event
               </button>
-              {events.length === 0 ? (
-                <p className="events-empty-drawer">No events yet. Be the first!</p>
-              ) : events.map(event => (
-                <button
-                  key={event.id}
-                  className={`city-row${activeEventId === event.id ? ' active' : ''}`}
-                  onClick={() => handleSelectEvent(event)}
-                >
-                  <div className="city-row-left">
-                    <span className="city-row-name">{event.title}</span>
-                    {event.location_hint && (
-                      <span className="city-row-current">📍 {event.location_hint}</span>
-                    )}
-                  </div>
-                </button>
-              ))}
+              {(() => {
+                const tz = cityTimezone || 'UTC'
+                const todayEvents = events.filter(e => {
+                  const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+                  const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
+                  return today === eventDay
+                })
+                if (todayEvents.length === 0) {
+                  return <p className="events-empty-drawer">No events today. Be the first!</p>
+                }
+                return todayEvents.map(event => (
+                  <button
+                    key={event.id}
+                    className={`city-row${activeEventId === event.id ? ' active' : ''}`}
+                    onClick={() => handleSelectEvent(event)}
+                  >
+                    <div className="city-row-left">
+                      <span className="city-row-name">
+                        {EVENT_ICONS[event.type] ?? '📌'} {event.title}
+                      </span>
+                      <span className="city-row-current">
+                        🕐 {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
+                        {event.location_hint && ` · 📍 ${event.location_hint}`}
+                      </span>
+                    </div>
+                  </button>
+                ))
+              })()}
             </div>
           </div>
         </div>
@@ -1034,6 +1050,7 @@ export default function App() {
           channelId={channelId}
           guest={guest}
           nickname={nickname}
+          cityTimezone={cityTimezone}
           onCreated={handleEventCreated}
           onClose={() => setShowCreateEvent(false)}
         />

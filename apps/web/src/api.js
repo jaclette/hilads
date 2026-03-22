@@ -124,8 +124,8 @@ export async function fetchEvents(channelId) {
   return res.json()
 }
 
-export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt) {
-  const body = { guestId, nickname, title, starts_at: startsAt }
+export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, type) {
+  const body = { guestId, nickname, title, starts_at: startsAt, type }
   if (locationHint) body.location_hint = locationHint
   const res = await fetch(`${BASE}/channels/${channelId}/events`, {
     method: 'POST',

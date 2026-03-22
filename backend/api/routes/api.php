@@ -49,6 +49,7 @@ $router->add('POST', '/api/v1/location/resolve', function () {
     Response::json([
         'city'      => $city['name'],
         'channelId' => $city['id'],
+        'timezone'  => $city['timezone'],
     ]);
 });
 
@@ -61,6 +62,7 @@ $router->add('GET', '/api/v1/channels', function () {
         $channels[] = [
             'channelId'      => $city['id'],
             'city'           => $city['name'],
+            'timezone'       => $city['timezone'],
             'messageCount'   => $stats['messageCount'],
             'activeUsers'    => $stats['activeUsers'],
             'lastActivityAt' => $stats['lastActivityAt'],
@@ -305,6 +307,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     $title        = $body['title']         ?? null;
     $locationHint = $body['location_hint'] ?? null;
     $startsAt     = $body['starts_at']     ?? null;
+    $type         = $body['type']          ?? null;
 
     if (empty($guestId) || !is_string($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -346,7 +349,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
 
     $startsAt = (int) $startsAt;
 
-    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt);
+    $allowedTypes = ['drinks', 'party', 'music', 'food', 'coffee', 'sport', 'meetup', 'other'];
+
+    if (empty($type) || !in_array($type, $allowedTypes, true)) {
+        Response::json(['error' => 'type is required and must be one of: ' . implode(', ', $allowedTypes)], 400);
+    }
+
+    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $type);
 
     Response::json($event, 201);
 });

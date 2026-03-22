@@ -30,3 +30,16 @@ const CITY_FLAGS = {
 export function cityFlag(name) {
   return CITY_FLAGS[name] ?? '🌍'
 }
+
+export const EVENT_TYPES = [
+  { value: 'drinks',  icon: '🍻', label: 'Drinks' },
+  { value: 'party',   icon: '🎉', label: 'Party' },
+  { value: 'music',   icon: '🎵', label: 'Music' },
+  { value: 'food',    icon: '🍽️', label: 'Food' },
+  { value: 'coffee',  icon: '☕', label: 'Coffee' },
+  { value: 'sport',   icon: '⚽', label: 'Sport' },
+  { value: 'meetup',  icon: '👥', label: 'Meetup' },
+  { value: 'other',   icon: '📌', label: 'Other' },
+]
+
+export const EVENT_ICONS = Object.fromEntries(EVENT_TYPES.map(t => [t.value, t.icon]))

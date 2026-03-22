@@ -1334,6 +1334,56 @@ html, body, #root {
   font-size: 0.88rem;
 }
 
+/* ── Event type selector ─────────────────────────────── */
+
+.event-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.event-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted2);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.event-type-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+.event-type-btn.selected {
+  background: rgba(124, 106, 255, 0.12);
+  border-color: rgba(124, 106, 255, 0.45);
+  color: var(--accent);
+}
+
+.event-type-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.event-type-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.modal-row {
+  display: flex;
+  gap: 10px;
+}
+
 /* ── Create event modal ───────────────────────────────── */
 
 .modal-overlay {

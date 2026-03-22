@@ -90,7 +90,8 @@ class EventRepository
         string $nickname,
         string $title,
         ?string $locationHint,
-        int $startsAt
+        int $startsAt,
+        string $type = 'other'
     ): array {
         // Load raw (including recently expired) to check cooldown history
         $raw = self::load($channelId);
@@ -122,6 +123,7 @@ class EventRepository
             'guest_id'      => $guestId,
             'nickname'      => $nickname,
             'title'         => $title,
+            'type'          => $type,
             'location_hint' => $locationHint,
             'starts_at'     => $startsAt,
             'expires_at'    => $expiresAt,
