@@ -101,6 +101,28 @@ function getOrCreateSessionId() {
   return id
 }
 
+const IDENTITY_KEY = 'hilads_identity'
+
+function saveIdentity(nickname, channelId, city) {
+  localStorage.setItem(IDENTITY_KEY, JSON.stringify({ nickname, channelId, city }))
+}
+
+function loadIdentity() {
+  try {
+    const raw = localStorage.getItem(IDENTITY_KEY)
+    if (!raw) return null
+    const { nickname, channelId, city } = JSON.parse(raw)
+    if (!nickname?.trim() || !channelId) return null
+    return { nickname: nickname.trim(), channelId, city: city ?? null }
+  } catch {
+    return null
+  }
+}
+
+function clearIdentity() {
+  localStorage.removeItem(IDENTITY_KEY)
+}
+
 // Build the onlineUsers array for the sidebar/strip, marking the current user.
 // Users come from presenceSnapshot (keyed by sessionId).
 function buildOnlineUsers(users, mySessionId) {
@@ -120,7 +142,7 @@ export default function App() {
   const [city, setCity] = useState(null)
   const [channelId, setChannelId] = useState(null)
   const [guest, setGuest] = useState(null)
-  const [nickname, setNickname] = useState(generateNickname)
+  const [nickname, setNickname] = useState(() => loadIdentity()?.nickname ?? generateNickname())
   const [feed, setFeed] = useState([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
@@ -175,6 +197,10 @@ export default function App() {
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
     locPromiseRef.current = startGeolocation()
+
+    // auto-rejoin if the user has a saved identity
+    const saved = loadIdentity()
+    if (saved) handleJoin(null, saved)
 
     // Remove this tab from presence on close — sendBeacon survives page unload
     const handleUnload = () => {
@@ -276,14 +302,17 @@ export default function App() {
     }, 5000)
   }
 
-  async function handleJoin(e) {
-    e.preventDefault()
-    const name = nickname.trim() || generateNickname()
+  async function handleJoin(e, rejoinData = null) {
+    if (e) e.preventDefault()
+    const name = rejoinData?.nickname ?? (nickname.trim() || generateNickname())
     setNickname(name)
     nicknameRef.current = name
     setStatus('joining')
     try {
-      const location = await locPromiseRef.current
+      const location = rejoinData
+        ? { channelId: rejoinData.channelId, city: rejoinData.city, timezone: 'UTC' }
+        : await locPromiseRef.current
+      if (rejoinData?.city) setCity(rejoinData.city)
       const session = await createGuestSession(name)
       setGuest(session)
       setChannelId(location.channelId)
@@ -308,6 +337,7 @@ export default function App() {
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
       setOnlineCount(joinData.onlineCount ?? null)
       setStatus('ready')
+      saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null)
       scheduleEphemeral(joinKey)
 
       activeRef.current = true
@@ -411,8 +441,14 @@ export default function App() {
       clearInterval(eventsPolRef.current)
       eventsPolRef.current = setInterval(doEventsPoll, 30_000)
     } catch (err) {
-      setError(err.message)
-      setStatus('error')
+      if (rejoinData) {
+        // stored channel may no longer exist — fall back to home
+        clearIdentity()
+        setStatus('onboarding')
+      } else {
+        setError(err.message)
+        setStatus('error')
+      }
     }
   }
 
@@ -551,6 +587,7 @@ export default function App() {
     knownIdsRef.current = new Set()
     setCity(newCityName)
     setChannelId(newChannelId)
+    saveIdentity(nickname, newChannelId, newCityName)
     setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
     setCityEvents([])
