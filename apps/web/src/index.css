@@ -1135,6 +1135,17 @@ html, body, #root {
   color: var(--muted);
 }
 
+.city-row-events {
+  font-size: 0.73rem;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.ob-event-count {
+  font-weight: 600;
+  color: var(--text2);
+}
+
 /* ── Events sidebar (desktop) ─────────────────────────── */
 
 .events-sidebar {

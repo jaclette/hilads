@@ -146,7 +146,9 @@ export default function App() {
   // Events state
   const [events, setEvents] = useState([])
   const [previewEvents, setPreviewEvents] = useState([])
+  const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewTimezone, setPreviewTimezone] = useState('UTC')
+  const [channelEventCounts, setChannelEventCounts] = useState({})
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
@@ -228,8 +230,14 @@ export default function App() {
     setCity(location.city)
     setPreviewTimezone(location.timezone ?? 'UTC')
     fetchEvents(location.channelId).then(data => {
+      const tz = location.timezone ?? 'UTC'
+      const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+      const todayEvents = data.events.filter(e =>
+        new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+      )
+      setPreviewEventCount(todayEvents.length)
       const now = Date.now()
-      const filtered = data.events
+      const filtered = todayEvents
         .filter(e => (e.starts_at * 1000 - now) / 60000 >= -30)
         .sort((a, b) => a.starts_at - b.starts_at)
         .slice(0, 3)
@@ -483,14 +491,30 @@ export default function App() {
   async function openCityPicker() {
     setShowCityPicker(true)
     setChannelsLoading(true)
+    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      setChannels(data.channels)
+      loadedChannels = data.channels
+      setChannels(loadedChannels)
     } catch {
       setChannels([])
     } finally {
       setChannelsLoading(false)
     }
+    if (loadedChannels.length === 0) return
+    // Fetch today's event counts per city in parallel (non-blocking)
+    const counts = {}
+    await Promise.allSettled(loadedChannels.map(async (ch) => {
+      try {
+        const evData = await fetchEvents(ch.channelId)
+        const tz = ch.timezone || 'UTC'
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+        counts[ch.channelId] = evData.events.filter(e =>
+          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        ).length
+      } catch { /* ignore */ }
+    }))
+    setChannelEventCounts({ ...counts })
   }
 
   async function switchCity(newChannelId, newCityName, newCityTimezone) {
@@ -730,6 +754,11 @@ export default function App() {
                   <span style={{ fontSize: '2rem', lineHeight: 1 }}>{cityFlag(city)}</span>
                   <span className="ob-city-name">{city}</span>
                 </div>
+                {previewEventCount > 0 && (
+                  <span className="ob-city-sub ob-event-count">
+                    🔥 {previewEventCount} event{previewEventCount > 1 ? 's' : ''} happening today
+                  </span>
+                )}
                 {previewEvents.length > 0 ? (
                   <div className="ob-events-preview">
                     {previewEvents.map(e => (
@@ -1058,6 +1087,9 @@ export default function App() {
                     </div>
                     <div className="city-row-stats">
                       {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
+                      {channelEventCounts[ch.channelId] > 0 && (
+                        <span className="city-row-events">🔥 {channelEventCounts[ch.channelId]} events</span>
+                      )}
                       <span className="city-row-count">{ch.messageCount} msgs</span>
                     </div>
                   </button>
