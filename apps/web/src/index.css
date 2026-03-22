@@ -943,8 +943,9 @@ html, body, #root {
 }
 
 .sidebar-you {
-  font-size: 0.68rem;
-  color: var(--muted2);
+  font-size: 0.7rem;
+  color: var(--accent);
+  opacity: 0.7;
   font-weight: 400;
 }
 

@@ -1216,7 +1216,8 @@ export default function App() {
                   {user.nickname[0].toUpperCase()}
                 </span>
                 <span className="sidebar-user-name">
-                  {user.isMe ? <><strong>{user.nickname}</strong> <span className="sidebar-you">(you)</span></> : user.nickname}
+                  {user.nickname}
+                  {user.isMe && <span className="sidebar-you"> (you)</span>}
                 </span>
               </div>
             )
