@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchEventMessages, sendEventMessage, fetchEventParticipants, toggleEventParticipation } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, fetchEventParticipants, toggleEventParticipation } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel } from './eventUtils'
@@ -136,6 +136,7 @@ export default function App() {
 
   // Events state
   const [events, setEvents] = useState([])
+  const [cityEvents, setCityEvents] = useState([])
   const [previewEvents, setPreviewEvents] = useState([])
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewTimezone, setPreviewTimezone] = useState('UTC')
@@ -169,6 +170,7 @@ export default function App() {
   // Events refs
   const activeEventIdRef = useRef(null)
   const eventsPolRef = useRef(null)
+  const cityEventsPolRef = useRef(null)
 
   useEffect(() => {
     // start geolocation immediately in the background while user sees onboarding
@@ -202,6 +204,7 @@ export default function App() {
       clearInterval(pollRef.current)
       clearInterval(heartbeatRef.current)
       clearInterval(eventsPolRef.current)
+      clearInterval(cityEventsPolRef.current)
       activeRef.current = false
       clearTimeout(activityRef.current)
       clearTimeout(typingTimeoutRef.current)
@@ -394,8 +397,14 @@ export default function App() {
       const doEventsPoll = async () => {
         if (!activeRef.current) return
         try {
-          const evData = await fetchEvents(location.channelId)
-          if (activeChannelRef.current === location.channelId) setEvents(evData.events)
+          const [evData, cityEvData] = await Promise.all([
+            fetchEvents(location.channelId),
+            fetchCityEvents(location.channelId),
+          ])
+          if (activeChannelRef.current === location.channelId) {
+            setEvents(evData.events)
+            setCityEvents(cityEvData.events)
+          }
         } catch { /* ignore */ }
       }
       doEventsPoll()
@@ -526,6 +535,7 @@ export default function App() {
     clearInterval(pollRef.current)
     clearInterval(heartbeatRef.current)
     clearInterval(eventsPolRef.current)
+    clearInterval(cityEventsPolRef.current)
     socketRef.current?.leaveRoom(channelId, sessionIdRef.current)
 
     // mark which channel we're switching to — used to discard stale async results
@@ -539,6 +549,7 @@ export default function App() {
     setChannelId(newChannelId)
     setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
+    setCityEvents([])
     setActiveEventId(null)
     setActiveEvent(null)
     activeEventIdRef.current = null
@@ -602,8 +613,14 @@ export default function App() {
       const doEventsPoll = async () => {
         if (!activeRef.current) return
         try {
-          const evData = await fetchEvents(newChannelId)
-          if (activeChannelRef.current === newChannelId) setEvents(evData.events)
+          const [evData, cityEvData] = await Promise.all([
+            fetchEvents(newChannelId),
+            fetchCityEvents(newChannelId),
+          ])
+          if (activeChannelRef.current === newChannelId) {
+            setEvents(evData.events)
+            setCityEvents(cityEvData.events)
+          }
         } catch { /* ignore */ }
       }
       doEventsPoll()
@@ -869,6 +886,7 @@ export default function App() {
       {/* Events sidebar — desktop only */}
       <EventsSidebar
         events={events}
+        cityEvents={cityEvents}
         activeEventId={activeEventId}
         cityTimezone={cityTimezone}
         eventPresence={eventPresence}
@@ -924,7 +942,7 @@ export default function App() {
             )}
             {/* Mobile-only events button */}
             <button className="events-mobile-btn" onClick={() => setShowEventDrawer(true)} title="Events">
-              🔥 Events{events.length > 0 ? ` (${events.length})` : ''}
+              🔥 Events{(events.length + cityEvents.length) > 0 ? ` (${events.length + cityEvents.length})` : ''}
             </button>
             <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
               🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
@@ -1124,15 +1142,14 @@ export default function App() {
               </button>
               {(() => {
                 const tz = cityTimezone || 'UTC'
-                const todayEvents = events.filter(e => {
+                const isEventToday = e => {
                   const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
                   const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
                   return today === eventDay
-                })
-                if (todayEvents.length === 0) {
-                  return <p className="events-empty-drawer">No events today. Be the first!</p>
                 }
-                return todayEvents.map(event => (
+                const todayHilads = events.filter(isEventToday)
+                const todayCity = cityEvents.filter(isEventToday)
+                const renderEventRow = event => (
                   <button
                     key={event.id}
                     className={`city-row${activeEventId === event.id ? ' active' : ''}`}
@@ -1148,7 +1165,19 @@ export default function App() {
                       </span>
                     </div>
                   </button>
-                ))
+                )
+                if (todayHilads.length === 0 && todayCity.length === 0) {
+                  return <p className="events-empty-drawer">No events today. Be the first!</p>
+                }
+                return (
+                  <>
+                    {todayCity.length > 0 && <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>}
+                    {todayHilads.length === 0 && todayCity.length > 0 && <p className="events-empty-drawer" style={{ padding: '8px 12px' }}>No Hilads events today</p>}
+                    {todayHilads.map(renderEventRow)}
+                    {todayCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>🎫 City Events</p>}
+                    {todayCity.map(renderEventRow)}
+                  </>
+                )
               })()}
             </div>
           </div>

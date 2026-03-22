@@ -1336,6 +1336,22 @@ html, body, #root {
   line-height: 1.5;
 }
 
+.events-group-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted2);
+  padding: 10px 8px 2px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.events-group-label--city {
+  color: #fb923c;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
 /* ── Event chat header state ──────────────────────────── */
 
 .back-to-city-btn {

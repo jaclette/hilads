@@ -56,9 +56,81 @@ class EventRepository
 
         self::save($channelId, $active);
 
-        usort($active, fn($a, $b) => $a['starts_at'] - $b['starts_at']);
+        // Return only user-created (hilads) events — TM events have source=ticketmaster
+        $hilads = array_values(array_filter($active, fn($e) => ($e['source'] ?? 'hilads') === 'hilads'));
 
-        return array_slice($active, 0, self::MAX_RETURN);
+        usort($hilads, fn($a, $b) => $a['starts_at'] - $b['starts_at']);
+
+        return array_slice($hilads, 0, self::MAX_RETURN);
+    }
+
+    public static function getPublicByChannel(int $channelId): array
+    {
+        $raw    = self::load($channelId);
+        $active = self::pruneExpired($raw);
+
+        self::save($channelId, $active);
+
+        $public = array_values(array_filter($active, fn($e) => ($e['source'] ?? 'hilads') === 'ticketmaster'));
+
+        usort($public, fn($a, $b) => $a['starts_at'] - $b['starts_at']);
+
+        return array_slice($public, 0, 10);
+    }
+
+    public static function upsertPublic(int $channelId, array $incoming): void
+    {
+        $raw = self::load($channelId);
+        $now = time();
+
+        // Index existing TM events by external_id for O(1) lookup
+        $index = [];
+        foreach ($raw as $i => $event) {
+            if (($event['source'] ?? '') === 'ticketmaster' && !empty($event['external_id'])) {
+                $index[$event['external_id']] = $i;
+            }
+        }
+
+        foreach ($incoming as $new) {
+            $extId = $new['external_id'];
+
+            if (isset($index[$extId])) {
+                // Update mutable fields on existing event
+                $i = $index[$extId];
+                $raw[$i]['title']        = $new['title'];
+                $raw[$i]['venue']        = $new['venue'];
+                $raw[$i]['location']     = $new['location'];
+                $raw[$i]['image_url']    = $new['image_url'];
+                $raw[$i]['external_url'] = $new['external_url'];
+                $raw[$i]['starts_at']    = $new['starts_at'];
+                $raw[$i]['expires_at']   = $new['expires_at'];
+                $raw[$i]['updated_at']   = $now;
+            } else {
+                // Insert as a full internal event channel
+                $raw[] = [
+                    'id'           => bin2hex(random_bytes(8)),
+                    'channel_id'   => $channelId,
+                    'source'       => 'ticketmaster',
+                    'external_id'  => $extId,
+                    'title'        => $new['title'],
+                    'type'         => 'city_event',
+                    'venue'        => $new['venue'],
+                    'location'     => $new['location'],
+                    'image_url'    => $new['image_url'],
+                    'external_url' => $new['external_url'],
+                    'starts_at'    => $new['starts_at'],
+                    'expires_at'   => $new['expires_at'],
+                    'created_at'   => $now,
+                    'updated_at'   => $now,
+                    // Fields not applicable to imported events
+                    'guest_id'     => null,
+                    'nickname'     => null,
+                    'location_hint'=> null,
+                ];
+            }
+        }
+
+        self::save($channelId, $raw);
     }
 
     // Find a non-expired event by its ID across all channels

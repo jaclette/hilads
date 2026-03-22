@@ -62,6 +62,7 @@ require_once __DIR__ . '/../src/MessageRepository.php';
 require_once __DIR__ . '/../src/EventRepository.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/R2Uploader.php';
+require_once __DIR__ . '/../src/TicketmasterImporter.php';
 
 session_set_cookie_params([
     'lifetime' => 0,

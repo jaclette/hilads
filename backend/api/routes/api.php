@@ -271,6 +271,38 @@ $router->add('POST', '/api/v1/uploads', function () {
     Response::json(['url' => $url], 201);
 });
 
+$router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    $city = CityRepository::findById($channelId);
+
+    if ($city === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $lat = $_GET['lat'] ?? null;
+    $lng = $_GET['lng'] ?? null;
+
+    if ($lat !== null && $lng !== null) {
+        if (!is_numeric($lat) || !is_numeric($lng)) {
+            Response::json(['error' => 'lat and lng must be numeric'], 400);
+        }
+        $lat = (float) $lat;
+        $lng = (float) $lng;
+    } else {
+        $lat = null;
+        $lng = null;
+    }
+
+    TicketmasterImporter::syncIfNeeded($channelId, $lat, $lng, $city['name']);
+
+    Response::json(['events' => EventRepository::getPublicByChannel($channelId)]);
+});
+
 $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
