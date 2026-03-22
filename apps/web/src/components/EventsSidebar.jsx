@@ -27,7 +27,11 @@ function getEventStatus(unixTs) {
 function getTimeLabel(unixTs, timezone) {
   const status = getEventStatus(unixTs)
   if (status === 'now') return '🔥 happening now'
-  if (status === 'soon') return '🔥 starting soon'
+  if (status === 'soon') {
+    const diffMin = (unixTs * 1000 - Date.now()) / 60000
+    const rounded = Math.max(5, Math.round(diffMin / 5) * 5)
+    return `🔥 in ${rounded} min`
+  }
   return formatTime(unixTs, timezone)
 }
 
