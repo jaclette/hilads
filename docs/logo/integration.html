@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hilads — Logo Integration Guide</title>
+  <!-- Favicon: SVG (modern) + PNG fallback -->
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #08080f; color: #c0c0d8; }
+
+    /* ── Section layout ── */
+    .section { padding: 56px 40px; border-bottom: 1px solid #0f0f1e; }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #2a2a42; margin-bottom: 6px; }
+    .section-title { font-size: 16px; font-weight: 700; color: #888; margin-bottom: 28px; }
+
+    /* ── Code blocks ── */
+    pre {
+      background: #0d0d1a;
+      border: 1px solid #181828;
+      border-radius: 10px;
+      padding: 20px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #8080b0;
+      overflow-x: auto;
+      max-width: 680px;
+    }
+    pre .c { color: #2a2a48; } /* comment */
+    pre .k { color: #6060a0; } /* keyword / tag */
+    pre .s { color: #587070; } /* string */
+    pre .v { color: #708060; } /* value */
+
+    /* ── Live previews ── */
+    .preview-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 56px;
+      padding: 0 20px;
+      background: #0d0d1a;
+      border: 1px solid #181828;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      max-width: 480px;
+    }
+
+    .preview-splash {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 220px;
+      background: #0d0d1a;
+      border: 1px solid #181828;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      max-width: 320px;
+    }
+
+    .splash-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .splash-tagline {
+      font-size: 13px;
+      color: #2a2a42;
+      letter-spacing: .04em;
+    }
+
+    /* ── Inline logo ── */
+    .logo-inline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .logo-name {
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: -.5px;
+      color: white;
+    }
+
+    /* ── Dot animation (CSS-only, works when SVG is inline) ── */
+    @keyframes hilads-pulse {
+      0%, 100% { opacity: .82; }
+      50%       { opacity: 1;   }
+    }
+
+    .hilads-dot {
+      animation: hilads-pulse 3s ease-in-out infinite;
+    }
+
+    /* ── Splash animation ── */
+    @keyframes fade-in {
+      from { opacity: 0; transform: scale(.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .splash-logo {
+      animation: fade-in .6s ease-out both;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  1. HEADER — top-left lockup                       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">01</div>
+  <div class="section-title">Header — top-left lockup</div>
+
+  <!-- Live preview -->
+  <div class="preview-bar">
+    <a href="#" class="logo-inline">
+      <!-- Inline SVG so CSS animation works without JS -->
+      <svg class="logo-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-hdr" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%"   stop-color="#C24A38"/>
+            <stop offset="44%"  stop-color="#B85530"/>
+            <stop offset="100%" stop-color="#B87228"/>
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="15" fill="url(#g-hdr)"/>
+        <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+        <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+        <rect x="17" y="28" width="9" height="6"  rx="2"   fill="white"/>
+        <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+        <circle class="hilads-dot" cx="47" cy="15" r="5.5" fill="white"/>
+      </svg>
+      <span class="logo-name">hilads</span>
+    </a>
+  </div>
+
+  <pre><span class="c">&lt;!-- Add to your global CSS once --&gt;</span>
+<span class="k">@keyframes</span> hilads-pulse {
+  <span class="v">0%, 100%</span> { opacity: <span class="v">.82</span>; }
+  <span class="v">50%</span>       { opacity: <span class="v">1</span>;   }
+}
+.hilads-dot { animation: hilads-pulse <span class="v">3s</span> ease-in-out infinite; }
+
+<span class="c">&lt;!-- Header markup --&gt;</span>
+<span class="k">&lt;a</span> href=<span class="s">"/"</span> class=<span class="s">"logo"</span><span class="k">&gt;</span>
+  <span class="c">&lt;!-- Inline SVG so CSS animation works --&gt;</span>
+  <span class="k">&lt;svg</span> viewBox=<span class="s">"0 0 64 64"</span> width=<span class="s">"32"</span> height=<span class="s">"32"</span> aria-hidden=<span class="s">"true"</span><span class="k">&gt;</span>
+    &lt;defs&gt;
+      &lt;linearGradient id=<span class="s">"g"</span> x1=<span class="s">"5%"</span> y1=<span class="s">"0%"</span> x2=<span class="s">"95%"</span> y2=<span class="s">"100%"</span>&gt;
+        &lt;stop offset=<span class="s">"0%"</span>   stop-color=<span class="s">"#C24A38"</span>/&gt;
+        &lt;stop offset=<span class="s">"44%"</span>  stop-color=<span class="s">"#B85530"</span>/&gt;
+        &lt;stop offset=<span class="s">"100%"</span> stop-color=<span class="s">"#B87228"</span>/&gt;
+      &lt;/linearGradient&gt;
+    &lt;/defs&gt;
+    &lt;rect width=<span class="s">"64"</span> height=<span class="s">"64"</span> rx=<span class="s">"15"</span> fill=<span class="s">"url(#g)"</span>/&gt;
+    &lt;rect x=<span class="s">"9"</span>  y=<span class="s">"13"</span> width=<span class="s">"8"</span> height=<span class="s">"38"</span> rx=<span class="s">"2.5"</span> fill=<span class="s">"white"</span>/&gt;
+    &lt;rect x=<span class="s">"26"</span> y=<span class="s">"13"</span> width=<span class="s">"8"</span> height=<span class="s">"38"</span> rx=<span class="s">"2.5"</span> fill=<span class="s">"white"</span>/&gt;
+    &lt;rect x=<span class="s">"17"</span> y=<span class="s">"28"</span> width=<span class="s">"9"</span> height=<span class="s">"6"</span>  rx=<span class="s">"2"</span>   fill=<span class="s">"white"</span>/&gt;
+    &lt;rect x=<span class="s">"43"</span> y=<span class="s">"25"</span> width=<span class="s">"8"</span> height=<span class="s">"26"</span> rx=<span class="s">"2.5"</span> fill=<span class="s">"white"</span>/&gt;
+    &lt;circle class=<span class="s">"hilads-dot"</span> cx=<span class="s">"47"</span> cy=<span class="s">"15"</span> r=<span class="s">"5.5"</span> fill=<span class="s">"white"</span>/&gt;
+  <span class="k">&lt;/svg&gt;</span>
+  <span class="k">&lt;span&gt;</span>hilads<span class="k">&lt;/span&gt;</span>
+<span class="k">&lt;/a&gt;</span></pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  2. SPLASH / LOADING                               -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">02</div>
+  <div class="section-title">Splash / Loading screen</div>
+
+  <!-- Live preview -->
+  <div class="preview-splash">
+    <div class="splash-inner splash-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="72" height="72" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-splash" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%"   stop-color="#C24A38"/>
+            <stop offset="44%"  stop-color="#B85530"/>
+            <stop offset="100%" stop-color="#B87228"/>
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="15" fill="url(#g-splash)"/>
+        <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+        <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+        <rect x="17" y="28" width="9" height="6"  rx="2"   fill="white"/>
+        <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+        <circle class="hilads-dot" cx="47" cy="15" r="5.5" fill="white"/>
+      </svg>
+      <span class="splash-tagline">finding your city…</span>
+    </div>
+  </div>
+
+  <pre><span class="c">/* Splash screen */</span>
+.splash {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: <span class="v">#08080f</span>;
+  flex-direction: column;
+  gap: <span class="v">16px</span>;
+  animation: fade-in <span class="v">.6s</span> ease-out both;
+}
+
+<span class="k">@keyframes</span> fade-in {
+  from { opacity: <span class="v">0</span>; transform: scale(<span class="v">.94</span>); }
+  to   { opacity: <span class="v">1</span>; transform: scale(<span class="v">1</span>); }
+}
+
+<span class="c">/* React usage */</span>
+{isLoading &amp;&amp; (
+  <span class="k">&lt;div</span> className=<span class="s">"splash"</span><span class="k">&gt;</span>
+    <span class="k">&lt;HiladsIcon</span> size=<span class="s">{72}</span> <span class="k">/&gt;</span>
+    <span class="k">&lt;span&gt;</span>finding your city…<span class="k">&lt;/span&gt;</span>
+  <span class="k">&lt;/div&gt;</span>
+)}</pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  3. REACT COMPONENT (copy-paste)                   -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">03</div>
+  <div class="section-title">React component — copy-paste ready</div>
+
+  <pre><span class="c">// HiladsIcon.jsx</span>
+<span class="c">// Drop this file anywhere in your project.</span>
+<span class="c">// No dependencies. No imports needed.</span>
+
+<span class="k">export default function</span> <span class="v">HiladsIcon</span>({ size = <span class="v">32</span>, animated = <span class="v">true</span> }) {
+  <span class="k">return</span> (
+    <span class="k">&lt;svg</span>
+      viewBox=<span class="s">"0 0 64 64"</span>
+      width=<span class="s">{size}</span>
+      height=<span class="s">{size}</span>
+      aria-hidden=<span class="s">"true"</span>
+      style=<span class="s">{{ flexShrink: 0 }}</span>
+    <span class="k">&gt;</span>
+      &lt;defs&gt;
+        &lt;linearGradient id=<span class="s">"hi-g"</span> x1=<span class="s">"5%"</span> y1=<span class="s">"0%"</span> x2=<span class="s">"95%"</span> y2=<span class="s">"100%"</span>&gt;
+          &lt;stop offset=<span class="s">"0%"</span>   stopColor=<span class="s">"#C24A38"</span> /&gt;
+          &lt;stop offset=<span class="s">"44%"</span>  stopColor=<span class="s">"#B85530"</span> /&gt;
+          &lt;stop offset=<span class="s">"100%"</span> stopColor=<span class="s">"#B87228"</span> /&gt;
+        &lt;/linearGradient&gt;
+      &lt;/defs&gt;
+      &lt;rect width=<span class="s">"64"</span> height=<span class="s">"64"</span> rx=<span class="s">"15"</span> fill=<span class="s">"url(#hi-g)"</span> /&gt;
+      &lt;rect x=<span class="s">"9"</span>  y=<span class="s">"13"</span> width=<span class="s">"8"</span> height=<span class="s">"38"</span> rx=<span class="s">"2.5"</span> fill=<span class="s">"white"</span> /&gt;
+      &lt;rect x=<span class="s">"26"</span> y=<span class="s">"13"</span> width=<span class="s">"8"</span> height=<span class="s">"38"</span> rx=<span class="s">"2.5"</span> fill=<span class="s">"white"</span> /&gt;
+      &lt;rect x=<span class="s">"17"</span> y=<span class="s">"28"</span> width=<span class="s">"9"</span> height=<span class="s">"6"</span>  rx=<span class="s">"2"</span>   fill=<span class="s">"white"</span> /&gt;
+      &lt;rect x=<span class="s">"43"</span> y=<span class="s">"25"</span> width=<span class="s">"8"</span> height=<span class="s">"26"</span> rx=<span class="s">"2.5"</span> fill=<span class="s">"white"</span> /&gt;
+      &lt;circle
+        cx=<span class="s">"47"</span> cy=<span class="s">"15"</span> r=<span class="s">"5.5"</span> fill=<span class="s">"white"</span>
+        style=<span class="s">{{ animation: animated ? 'hilads-pulse 3s ease-in-out infinite' : 'none' }}</span>
+      /&gt;
+    <span class="k">&lt;/svg&gt;</span>
+  )
+}
+
+<span class="c">/* In your global CSS or index.css: */</span>
+<span class="k">@keyframes</span> hilads-pulse {
+  <span class="v">0%, 100%</span> { opacity: <span class="v">.82</span>; }
+  <span class="v">50%</span>       { opacity: <span class="v">1</span>;   }
+}</pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  4. FAVICON                                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">04</div>
+  <div class="section-title">Favicon</div>
+
+  <pre><span class="c">&lt;!-- In &lt;head&gt; --&gt;</span>
+
+<span class="c">&lt;!-- Modern browsers: SVG favicon (scales perfectly, supports dark mode) --&gt;</span>
+<span class="k">&lt;link</span> rel=<span class="s">"icon"</span> type=<span class="s">"image/svg+xml"</span> href=<span class="s">"/logo/icon.svg"</span><span class="k">&gt;</span>
+
+<span class="c">&lt;!-- Fallback: 32px PNG for Safari and older browsers --&gt;</span>
+<span class="k">&lt;link</span> rel=<span class="s">"icon"</span> type=<span class="s">"image/png"</span> sizes=<span class="s">"32x32"</span> href=<span class="s">"/logo/hilads-icon-32.png"</span><span class="k">&gt;</span>
+
+<span class="c">&lt;!-- Apple home screen icon --&gt;</span>
+<span class="k">&lt;link</span> rel=<span class="s">"apple-touch-icon"</span> sizes=<span class="s">"128x128"</span> href=<span class="s">"/logo/hilads-icon-128.png"</span><span class="k">&gt;</span></pre>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  5. FILES                                          -->
+<!-- ═══════════════════════════════════════════════════ -->
+<div class="section">
+  <div class="section-label">05</div>
+  <div class="section-title">What's in this folder</div>
+
+  <pre>logo/
+  icon.svg              <span class="c">← master icon, animated, use this everywhere</span>
+  wordmark.svg          <span class="c">← "hilads" wordmark with animated dot</span>
+  export.html           <span class="c">← open in browser → download PNGs at any size</span>
+  integration.html      <span class="c">← this file</span>
+
+<span class="c">Generated from export.html:</span>
+  hilads-icon-16.png    <span class="c">← favicon fallback</span>
+  hilads-icon-32.png    <span class="c">← standard icon</span>
+  hilads-icon-64.png    <span class="c">← medium</span>
+  hilads-icon-128.png   <span class="c">← large / apple-touch-icon</span>
+  hilads-icon-256.png   <span class="c">← 2x retina target</span></pre>
+</div>
+
+</body>
+</html>

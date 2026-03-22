@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hilads — Logo Export</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0a0a14;
+      color: #c0c0d8;
+      padding: 40px;
+    }
+    h1 { font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: #444466; margin-bottom: 32px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 40px; }
+    .card {
+      background: #111122;
+      border: 1px solid #1a1a30;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      min-width: 160px;
+    }
+    .card-label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: #33334a; }
+    .preview { display: flex; align-items: center; justify-content: center; min-height: 80px; }
+    button {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      background: #1a1a38;
+      color: #8080cc;
+      border: 1px solid #2a2a50;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    button:hover { background: #22224a; color: #a0a0e0; }
+    .note { font-size: 12px; color: #33334a; line-height: 1.7; max-width: 480px; padding: 14px 18px; border-left: 2px solid #1a1a30; }
+    .note strong { color: #555577; }
+  </style>
+</head>
+<body>
+
+<h1>Hilads / Logo Export</h1>
+
+<!-- Hidden master SVG (no animation — clean for canvas export) -->
+<svg id="src" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="position:absolute;visibility:hidden">
+  <defs>
+    <linearGradient id="g" x1="5%" y1="0%" x2="95%" y2="100%">
+      <stop offset="0%"   stop-color="#C24A38"/>
+      <stop offset="44%"  stop-color="#B85530"/>
+      <stop offset="100%" stop-color="#B87228"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#g)"/>
+  <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+  <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+  <rect x="17" y="28" width="9" height="6"  rx="2"   fill="white"/>
+  <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+  <circle cx="47" cy="15" r="5.5" fill="white"/>
+</svg>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="card-label">favicon — 16px</div>
+    <div class="preview"><canvas id="c16" width="16" height="16"></canvas></div>
+    <button onclick="dl(16)">Download PNG</button>
+  </div>
+
+  <div class="card">
+    <div class="card-label">icon — 32px</div>
+    <div class="preview"><canvas id="c32" width="32" height="32" style="width:64px;height:64px;image-rendering:pixelated"></canvas></div>
+    <button onclick="dl(32)">Download PNG</button>
+  </div>
+
+  <div class="card">
+    <div class="card-label">icon — 64px</div>
+    <div class="preview"><canvas id="c64" width="64" height="64"></canvas></div>
+    <button onclick="dl(64)">Download PNG</button>
+  </div>
+
+  <div class="card">
+    <div class="card-label">icon — 128px</div>
+    <div class="preview"><canvas id="c128" width="128" height="128" style="width:96px;height:96px"></canvas></div>
+    <button onclick="dl(128)">Download PNG</button>
+  </div>
+
+  <div class="card">
+    <div class="card-label">icon — 256px</div>
+    <div class="preview"><canvas id="c256" width="256" height="256" style="width:80px;height:80px"></canvas></div>
+    <button onclick="dl(256)">Download PNG</button>
+  </div>
+
+</div>
+
+<div class="note">
+  <strong>SVG export:</strong> Copy <code>icon.svg</code> directly — it is already production-ready.<br>
+  <strong>Favicon:</strong> Use <code>&lt;link rel="icon" type="image/svg+xml" href="icon.svg"&gt;</code> for modern browsers.
+  Add the 16px PNG as fallback for Safari / older browsers.<br>
+  <strong>Animation:</strong> The SVG includes a CSS pulse on the dot. Static PNG exports have no animation — expected.
+</div>
+
+<script>
+  const sizes = [16, 32, 64, 128, 256];
+
+  function getSvgDataUrl() {
+    const svg = document.getElementById('src');
+    const str = new XMLSerializer().serializeToString(svg);
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(str);
+  }
+
+  function renderToCanvas(size, callback) {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.getElementById('c' + size);
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+      callback && callback(canvas);
+    };
+    img.src = getSvgDataUrl();
+  }
+
+  function dl(size) {
+    renderToCanvas(size, (canvas) => {
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = 'hilads-icon-' + size + '.png';
+      a.click();
+    });
+  }
+
+  // Render all previews on load
+  window.addEventListener('load', () => {
+    sizes.forEach(s => renderToCanvas(s));
+  });
+</script>
+
+</body>
+</html>

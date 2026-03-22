@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hilads — Concept 01 Refined</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #08080f;
+      color: #e8e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+      padding: 52px 36px;
+    }
+
+    h1.page-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #33334a;
+      margin-bottom: 6px;
+    }
+
+    h2.page-sub {
+      font-size: 20px;
+      font-weight: 900;
+      color: #c8c8e0;
+      margin-bottom: 56px;
+    }
+
+    section {
+      margin-bottom: 72px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #2a2a42;
+      margin-bottom: 20px;
+    }
+
+    .row {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .cell {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cell-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #2a2a42;
+    }
+
+    .bg-dark  { background: #0d0d1a; border: 1px solid #181828; border-radius: 14px; padding: 24px; display: flex; align-items: center; justify-content: center; }
+    .bg-mid   { background: #1a1a2e; border: 1px solid #252540; border-radius: 14px; padding: 24px; display: flex; align-items: center; justify-content: center; }
+    .bg-light { background: #f0f0f5; border: 1px solid #e0e0ec; border-radius: 14px; padding: 24px; display: flex; align-items: center; justify-content: center; }
+    .bg-white { background: #ffffff; border: 1px solid #e8e8f0; border-radius: 14px; padding: 24px; display: flex; align-items: center; justify-content: center; }
+
+    .note {
+      font-size: 12px;
+      color: #383858;
+      line-height: 1.7;
+      max-width: 540px;
+      padding: 14px 18px;
+      border-left: 2px solid #181828;
+      margin-top: 8px;
+    }
+
+    .note strong { color: #5a5a80; }
+
+    hr { border: none; border-top: 1px solid #0f0f1e; margin: 72px 0; }
+
+    /* Activity state toggle */
+    .state-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+
+    .state-btn {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #1f1f38;
+      background: transparent;
+      color: #33334a;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .state-btn:hover { border-color: #33335a; color: #6060a0; }
+    .state-btn.active { background: #1a1a38; border-color: #3a3a70; color: #a0a0e0; }
+
+    .state-label {
+      font-size: 10px;
+      color: #22223a;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h1 class="page-title">Hilads / Logo — Concept 01 Refined</h1>
+<h2 class="page-sub">H¡ — Alive, not decorative</h2>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  SVG DEFS (shared, hidden)                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+
+    <!--
+      GRADIENT PHILOSOPHY:
+      Not a clean 2-stop ramp. Three stops at non-linear positions,
+      slightly cool mid-point breaks the "perfect startup gradient" feel.
+      Colors: muted coral (not #FF4F6E) → dusty amber (not #FFAA3C).
+      Less saturated, more like worn terracotta → dry clay.
+    -->
+    <linearGradient id="grad-main" x1="5%" y1="0%" x2="95%" y2="100%">
+      <stop offset="0%"   stop-color="#C24A38"/>  <!-- dusty coral, muted -->
+      <stop offset="42%"  stop-color="#B85530"/>  <!-- slight warm shift, not linear -->
+      <stop offset="100%" stop-color="#B87228"/>  <!-- dry amber, earthy -->
+    </linearGradient>
+
+    <!-- Lighter/softer version for small sizes where contrast matters more -->
+    <linearGradient id="grad-small" x1="5%" y1="0%" x2="95%" y2="100%">
+      <stop offset="0%"   stop-color="#D05540"/>
+      <stop offset="100%" stop-color="#CC8030"/>
+    </linearGradient>
+
+    <!--
+      NOISE FILTER — very subtle organic grain
+      Adds micro-variation that breaks the pure digital look.
+      Opacity: 0.07 — barely perceptible, just enough to remove "plastic" feel.
+    -->
+    <filter id="noise-overlay" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.68 0.72" numOctaves="4"
+        stitchTiles="stitch" result="noiseTex"/>
+      <feColorMatrix type="matrix" in="noiseTex"
+        values="0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0 0
+                0 0 0 0.07 0" result="noiseMask"/>
+      <feBlend in="SourceGraphic" in2="noiseMask" mode="overlay"/>
+    </filter>
+
+    <!-- Monochrome version -->
+    <linearGradient id="grad-mono" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </linearGradient>
+
+    <!-- Dot presence colors -->
+    <!-- default: warm off-white, slightly cream -->
+    <!-- online: soft green -->
+    <!-- busy: warm amber, matching gradient family -->
+
+  </defs>
+</svg>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  1. MAIN ICON                                       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">01 — Main icon</div>
+  <div class="row">
+
+    <!-- 96px dark -->
+    <div class="cell">
+      <div class="cell-label">96px — dark</div>
+      <div class="bg-dark">
+        <svg id="icon-main" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-icon" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+            <filter id="icon-noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.68 0.72" numOctaves="4" stitchTiles="stitch" result="n"/>
+              <feColorMatrix type="matrix" in="n"
+                values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.065 0" result="nm"/>
+              <feBlend in="SourceGraphic" in2="nm" mode="overlay"/>
+            </filter>
+            <!-- Dot glow -->
+            <radialGradient id="dot-glow-default" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stop-color="#f5efe0" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#f5efe0" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="dot-glow-green" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stop-color="#4ade80" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#4ade80" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="dot-glow-orange" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stop-color="#fb923c" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- BG with noise -->
+          <rect width="64" height="64" rx="15" fill="url(#g-icon)" filter="url(#icon-noise)"/>
+
+          <!--
+            H — slightly heavier strokes than C01 original.
+            Width 7 → 8. Crossbar slightly thicker.
+            This helps the silhouette read at small sizes.
+          -->
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+
+          <!--
+            ¡ — narrower gap from H, tighter composition.
+            Stroke width matches H bars (8px).
+          -->
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+
+          <!--
+            PRESENCE DOT
+            Three layers:
+              1. Outer glow ring — large, very soft, animates
+              2. Mid glow — slightly smaller, more opaque
+              3. Core dot — sharp, always visible
+            Default color: warm off-white / cream.
+          -->
+          <!-- Outer glow -->
+          <circle id="dot-outer-glow" cx="47" cy="15" r="13" fill="url(#dot-glow-default)" opacity="0">
+            <animate attributeName="opacity" values="0;0.9;0" dur="3s" repeatCount="indefinite" id="anim-outer"/>
+          </circle>
+          <!-- Mid glow -->
+          <circle id="dot-mid-glow" cx="47" cy="15" r="8" fill="#f5efe0" opacity="0">
+            <animate attributeName="opacity" values="0;0.25;0" dur="3s" repeatCount="indefinite" id="anim-mid"/>
+          </circle>
+          <!-- Core dot -->
+          <circle id="dot-core" cx="47" cy="15" r="5.5" fill="#f5efe0">
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite" id="anim-core"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 96px light -->
+    <div class="cell">
+      <div class="cell-label">96px — light</div>
+      <div class="bg-light">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-icon-l" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+            <filter id="icon-noise-l">
+              <feTurbulence type="fractalNoise" baseFrequency="0.68 0.72" numOctaves="4" stitchTiles="stitch" result="n"/>
+              <feColorMatrix type="matrix" in="n"
+                values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.065 0" result="nm"/>
+              <feBlend in="SourceGraphic" in2="nm" mode="overlay"/>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-icon-l)" filter="url(#icon-noise-l)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white">
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 96px white bg -->
+    <div class="cell">
+      <div class="cell-label">96px — white</div>
+      <div class="bg-white">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-icon-w" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-icon-w)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white">
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  2. SIZE MATRIX                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">02 — Size matrix (readability test)</div>
+  <div class="row" style="align-items: center;">
+
+    <!--
+      128px — full detail
+    -->
+    <div class="cell">
+      <div class="cell-label">128px</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128">
+          <defs>
+            <linearGradient id="g-128" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-128)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white">
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 64px -->
+    <div class="cell">
+      <div class="cell-label">64px</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+          <defs>
+            <linearGradient id="g-64" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-64)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white">
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+    <!--
+      32px — simplified geometry.
+      At this size:
+        - H crossbar must be thicker (6px instead of 6px — same, but rx reduced)
+        - ¡ dot must be larger relative to stroke (ratio: dot r=4.5 vs stroke w=7)
+        - rx on rects reduced so corners don't eat mass
+        - Same viewBox keeps proportion math identical.
+      No noise filter at 32px (kills at subpixel level).
+    -->
+    <div class="cell">
+      <div class="cell-label">32px</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32">
+          <defs>
+            <linearGradient id="g-32" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#D05540"/>
+              <stop offset="100%" stop-color="#CC8030"/>
+            </linearGradient>
+          </defs>
+          <!-- Slightly warmer/brighter gradient for small sizes — better contrast -->
+          <rect width="64" height="64" rx="12" fill="url(#g-32)"/>
+          <!-- H — same positions, slightly reduced rx for sharper silhouette -->
+          <rect x="9"  y="13" width="8" height="38" rx="1.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="1.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="1"   fill="white"/>
+          <!-- ¡ -->
+          <rect x="43" y="25" width="8" height="26" rx="1.5" fill="white"/>
+          <!-- Dot — at 32px this is 2.25px radius, must be perceptible -->
+          <circle cx="47" cy="15" r="5.5" fill="white"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 24px -->
+    <div class="cell">
+      <div class="cell-label">24px</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="24" height="24">
+          <defs>
+            <linearGradient id="g-24" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#D05540"/>
+              <stop offset="100%" stop-color="#CC8030"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="10" fill="url(#g-24)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="1" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="1" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="1" fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="1" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 16px — favicon territory -->
+    <div class="cell">
+      <div class="cell-label">16px</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="16" height="16">
+          <defs>
+            <linearGradient id="g-16" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%"   stop-color="#D05540"/>
+              <stop offset="100%" stop-color="#CC8030"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="8" fill="url(#g-16)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="0" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="0" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="0" fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="0" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <strong>32px strategy:</strong> Same viewBox geometry, brighter gradient variant (better contrast at small size),
+    reduced corner radius on rects (silhouette stays sharp). The dot at 32px renders at ~2.75px —
+    perceptible and distinctive. At 16px it becomes a pixel cluster — acceptable for favicon.
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  3. MONOCHROME / SILHOUETTE TEST                    -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">03 — Monochrome silhouette</div>
+  <div class="row">
+
+    <!-- White on dark -->
+    <div class="cell">
+      <div class="cell-label">White on dark</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <rect width="64" height="64" rx="15" fill="#1c1c2e"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Dark on light -->
+    <div class="cell">
+      <div class="cell-label">Dark on light</div>
+      <div class="bg-light">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <rect width="64" height="64" rx="15" fill="#1a1a2a"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <circle cx="47" cy="15" r="5.5" fill="white"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Pure black fill, no bg -->
+    <div class="cell">
+      <div class="cell-label">Flat stamp (no bg)</div>
+      <div class="bg-light">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="#1a1a2a"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="#1a1a2a"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="#1a1a2a"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="#1a1a2a"/>
+          <circle cx="47" cy="15" r="5.5" fill="#1a1a2a"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Inverted / cutout feel -->
+    <div class="cell">
+      <div class="cell-label">Knockout (cutout)</div>
+      <div class="bg-light">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-knockout" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+            <mask id="mask-ko">
+              <rect width="64" height="64" fill="white"/>
+              <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="black"/>
+              <rect x="26" y="13" width="8" height="38" rx="2.5" fill="black"/>
+              <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="black"/>
+              <rect x="43" y="25" width="8" height="26" rx="2.5" fill="black"/>
+              <circle cx="47" cy="15" r="5.5" fill="black"/>
+            </mask>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-knockout)" mask="url(#mask-ko)"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <strong>Silhouette reads cleanly:</strong> H + ¡ are immediately legible without color.
+    The dot is the dominant accent element — distinct from both letter bodies.
+    Knockout version (gradient background, letter shapes cut out) works well for merchandise / emboss.
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  4. PRESENCE DOT — STATES                           -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">04 — Presence dot states</div>
+
+  <div class="state-bar">
+    <span class="state-label">Activity level:</span>
+    <button class="state-btn active" onclick="setState('idle')" id="btn-idle">Idle</button>
+    <button class="state-btn" onclick="setState('active')" id="btn-active">Active</button>
+    <button class="state-btn" onclick="setState('busy')" id="btn-busy">Busy</button>
+  </div>
+
+  <div class="row">
+
+    <!-- Live preview -->
+    <div class="cell">
+      <div class="cell-label">Live preview</div>
+      <div class="bg-dark">
+        <svg id="dot-demo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-demo" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+            <filter id="demo-noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.68 0.72" numOctaves="4" stitchTiles="stitch" result="n"/>
+              <feColorMatrix type="matrix" in="n"
+                values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.065 0" result="nm"/>
+              <feBlend in="SourceGraphic" in2="nm" mode="overlay"/>
+            </filter>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-demo)" filter="url(#demo-noise)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <!-- Outer glow ring -->
+          <circle id="demo-outer" cx="47" cy="15" r="12" fill="none" opacity="0"/>
+          <!-- Core dot -->
+          <circle id="demo-dot" cx="47" cy="15" r="5.5" fill="#f5efe0"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- State: Idle -->
+    <div class="cell">
+      <div class="cell-label">Idle — breathing (3s)</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-st1" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-st1)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <!-- Idle: slow pulse, cream dot, very faint glow -->
+          <circle cx="47" cy="15" r="9" fill="#f5efe0" opacity="0">
+            <animate attributeName="opacity" values="0;0.15;0" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="47" cy="15" r="5.5" fill="#f5efe0">
+            <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+    <!-- State: Active (someone chatting) -->
+    <div class="cell">
+      <div class="cell-label">Active — faster (1.4s)</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-st2" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-st2)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <!-- Active: green dot, brighter glow, faster -->
+          <circle cx="47" cy="15" r="11" fill="#4ade80" opacity="0">
+            <animate attributeName="opacity" values="0;0.3;0" dur="1.4s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="47" cy="15" r="5.5" fill="#4ade80">
+            <animate attributeName="opacity" values="0.75;1;0.75" dur="1.4s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+    <!-- State: Busy (high activity) -->
+    <div class="cell">
+      <div class="cell-label">Busy — quick (0.7s)</div>
+      <div class="bg-dark">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
+          <defs>
+            <linearGradient id="g-st3" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <rect width="64" height="64" rx="15" fill="url(#g-st3)"/>
+          <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white"/>
+          <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
+          <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
+          <!-- Busy: warm amber/orange, fast, larger ring -->
+          <circle cx="47" cy="15" r="12" fill="#fb923c" opacity="0">
+            <animate attributeName="opacity" values="0;0.35;0" dur="0.7s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="47" cy="15" r="7" fill="#fb923c" opacity="0">
+            <animate attributeName="opacity" values="0;0.5;0" dur="0.7s" repeatCount="indefinite" begin="0.15s"/>
+          </circle>
+          <circle cx="47" cy="15" r="5.5" fill="#fb923c">
+            <animate attributeName="r" values="5.5;6.5;5.5" dur="0.7s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <strong>Semantic encoding:</strong>
+    Cream/white = city is there, quiet. Green = people are talking. Orange = it's busy right now.
+    The dot reads identically to a user presence indicator — the logo IS the product.
+  </div>
+</section>
+
+<hr>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  5. WORDMARK                                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section>
+  <div class="section-label">05 — Wordmark</div>
+  <div class="row">
+
+    <!-- Wordmark dark -->
+    <div class="cell">
+      <div class="cell-label">Full — dark bg</div>
+      <div class="bg-dark" style="min-width: 300px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 52" width="272" height="52">
+          <defs>
+            <linearGradient id="g-wm" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="48%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <!--
+            "hi" in gradient — slightly heavier weight makes the gradient letterforms
+            feel grounded next to the white "lads"
+          -->
+          <text x="0" y="42"
+            font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+            font-weight="900"
+            font-size="38"
+            fill="url(#g-wm)"
+            letter-spacing="-1.5">h</text>
+
+          <!-- i stem — no system dot, we control it -->
+          <text x="28" y="42"
+            font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+            font-weight="900"
+            font-size="38"
+            fill="url(#g-wm)"
+            letter-spacing="-1.5">i</text>
+          <!-- Erase system i dot -->
+          <rect x="27" y="1" width="16" height="13" fill="#0d0d1a"/>
+          <!-- Presence dot — same semantic as icon, same warm cream color -->
+          <circle cx="35" cy="8.5" r="5.5" fill="#f0e8d8">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite"/>
+          </circle>
+
+          <!-- "lads" — white, recedes behind the branded "hi" -->
+          <text x="48" y="42"
+            font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+            font-weight="900"
+            font-size="38"
+            fill="white"
+            opacity="0.92"
+            letter-spacing="-1.5">lads</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Wordmark light -->
+    <div class="cell">
+      <div class="cell-label">Full — light bg</div>
+      <div class="bg-light" style="min-width: 300px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 52" width="272" height="52">
+          <defs>
+            <linearGradient id="g-wm-l" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="48%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <text x="0" y="42"
+            font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+            font-weight="900" font-size="38" fill="url(#g-wm-l)" letter-spacing="-1.5">h</text>
+          <text x="28" y="42"
+            font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+            font-weight="900" font-size="38" fill="url(#g-wm-l)" letter-spacing="-1.5">i</text>
+          <rect x="27" y="1" width="16" height="13" fill="#f0f0f5"/>
+          <circle cx="35" cy="8.5" r="5.5" fill="#C24A38">
+            <animate attributeName="opacity" values="0.85;1;0.85" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <text x="48" y="42"
+            font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+            font-weight="900" font-size="38" fill="#1a1a2a" letter-spacing="-1.5">lads</text>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Icon + wordmark horizontal lockup -->
+  <div class="row" style="margin-top: 20px;">
+    <div class="cell">
+      <div class="cell-label">Horizontal lockup</div>
+      <div class="bg-dark" style="min-width: 300px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 52" width="310" height="52">
+          <defs>
+            <linearGradient id="g-lock" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%"   stop-color="#C24A38"/>
+              <stop offset="42%"  stop-color="#B85530"/>
+              <stop offset="100%" stop-color="#B87228"/>
+            </linearGradient>
+          </defs>
+          <!-- Mini icon -->
+          <rect x="0" y="2" width="48" height="48" rx="11" fill="url(#g-lock)"/>
+          <rect x="7"  y="10" width="6" height="28" rx="2" fill="white"/>
+          <rect x="20" y="10" width="6" height="28" rx="2" fill="white"/>
+          <rect x="13" y="21" width="7"  height="5"  rx="1.5" fill="white"/>
+          <rect x="33" y="19" width="6" height="19" rx="2" fill="white"/>
+          <circle cx="36" cy="12" r="4" fill="white">
+            <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <!-- Wordmark -->
+          <text x="62" y="39"
+            font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+            font-weight="900" font-size="30" fill="white" letter-spacing="-1">hilads</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  JS: Activity state switcher                        -->
+<!-- ═══════════════════════════════════════════════════ -->
+<script>
+  const states = {
+    idle: {
+      dotFill:   '#f5efe0',
+      glowFill:  '#f5efe0',
+      dur:       '3s',
+      glowR:     9,
+      coreAnim:  '0.7;1;0.7',
+      glowAnim:  '0;0.15;0',
+    },
+    active: {
+      dotFill:   '#4ade80',
+      glowFill:  '#4ade80',
+      dur:       '1.4s',
+      glowR:     11,
+      coreAnim:  '0.75;1;0.75',
+      glowAnim:  '0;0.30;0',
+    },
+    busy: {
+      dotFill:   '#fb923c',
+      glowFill:  '#fb923c',
+      dur:       '0.7s',
+      glowR:     12,
+      coreAnim:  '0.8;1;0.8',
+      glowAnim:  '0;0.40;0',
+    },
+  };
+
+  function setState(name) {
+    const s = states[name];
+    const dot   = document.getElementById('demo-dot');
+    const outer = document.getElementById('demo-outer');
+
+    // Update colors
+    dot.setAttribute('fill', s.dotFill);
+    outer.setAttribute('fill', s.glowFill);
+    outer.setAttribute('r', s.glowR);
+
+    // Remove old animations and rebuild
+    dot.innerHTML = '';
+    outer.innerHTML = '';
+
+    // Core pulse
+    const coreAnim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+    coreAnim.setAttribute('attributeName', 'opacity');
+    coreAnim.setAttribute('values', s.coreAnim);
+    coreAnim.setAttribute('dur', s.dur);
+    coreAnim.setAttribute('repeatCount', 'indefinite');
+    dot.appendChild(coreAnim);
+
+    // If busy: also animate radius
+    if (name === 'busy') {
+      const rAnim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+      rAnim.setAttribute('attributeName', 'r');
+      rAnim.setAttribute('values', '5.5;6.5;5.5');
+      rAnim.setAttribute('dur', s.dur);
+      rAnim.setAttribute('repeatCount', 'indefinite');
+      dot.appendChild(rAnim);
+    }
+
+    // Glow ring
+    const glowAnim = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+    glowAnim.setAttribute('attributeName', 'opacity');
+    glowAnim.setAttribute('values', s.glowAnim);
+    glowAnim.setAttribute('dur', s.dur);
+    glowAnim.setAttribute('repeatCount', 'indefinite');
+    outer.appendChild(glowAnim);
+
+    // Update buttons
+    document.querySelectorAll('.state-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-' + name).classList.add('active');
+  }
+
+  // Init
+  setState('idle');
+</script>
+
+</body>
+</html>

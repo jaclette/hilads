@@ -105,15 +105,19 @@ html, body, #root {
   user-select: none;
 }
 
-.logo svg {
-  /* keeps SVG pixel-crisp at any display density */
-  shape-rendering: crispEdges;
+@keyframes hilads-pulse {
+  0%, 100% { opacity: .82; }
+  50%       { opacity: 1;   }
+}
+
+.hi-dot {
+  animation: hilads-pulse 3s ease-in-out infinite;
 }
 
 .logo-wordmark {
   font-weight: 800;
   letter-spacing: -0.03em;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  background: linear-gradient(90deg, #C24A38, #B87228);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -366,7 +370,7 @@ html, body, #root {
 
 /* Logo glow in header context */
 .chat-header .logo svg {
-  filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.5));
+  filter: drop-shadow(0 0 6px rgba(194, 74, 56, 0.35));
 }
 
 .online-dot {

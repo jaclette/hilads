@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 44" role="img" aria-label="Hilads">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#C24A38"/>
+      <stop offset="44%"  stop-color="#B85530"/>
+      <stop offset="100%" stop-color="#B87228"/>
+    </linearGradient>
+  </defs>
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: .82; }
+      50%       { opacity: 1;   }
+    }
+    .dot { animation: pulse 3s ease-in-out infinite; }
+
+    text {
+      font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      font-weight: 900;
+      font-size: 38px;
+      letter-spacing: -1.5px;
+    }
+  </style>
+
+  <!-- "h" in gradient -->
+  <text x="0" y="38" fill="url(#g)">h</text>
+
+  <!-- "i" stem in gradient -->
+  <text x="27" y="38" fill="url(#g)">i</text>
+  <!-- Erase system i-dot with bg color (dark) -->
+  <rect x="26" y="1" width="16" height="13" fill="#08080f"/>
+  <!-- Presence dot -->
+  <circle class="dot" cx="34" cy="8" r="5.5" fill="#f0e8d8"/>
+
+  <!-- "lads" in white -->
+  <text x="46" y="38" fill="white" opacity=".92">lads</text>
+</svg>

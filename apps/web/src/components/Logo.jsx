@@ -17,24 +17,27 @@ export default function Logo({ variant = 'wordmark', size = 'md' }) {
       <svg
         width={s.icon}
         height={s.icon}
-        viewBox="0 0 56 56"
-        fill="none"
+        viewBox="0 0 64 64"
         xmlns="http://www.w3.org/2000/svg"
         style={{ flexShrink: 0, display: 'block' }}
         aria-hidden="true"
       >
-        <rect width="56" height="56" rx="10" fill="#0a0a0f" />
-        {/* › chevron prompt */}
-        <line x1="10" y1="18" x2="19" y2="28" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" />
-        <line x1="19" y1="28" x2="10" y2="38" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round" />
-        {/* H — left stem */}
-        <rect x="24" y="16" width="5" height="24" rx="1" fill="#f8f8fc" />
-        {/* H — right stem */}
-        <rect x="37" y="16" width="5" height="24" rx="1" fill="#f8f8fc" />
-        {/* H — crossbar */}
-        <rect x="29" y="26" width="8" height="3.5" rx="1" fill="#f8f8fc" />
-        {/* cursor */}
-        <rect x="45" y="16" width="5" height="24" rx="1" fill="#06b6d4" opacity="0.9" />
+        <defs>
+          <linearGradient id="hi-g" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%"   stopColor="#C24A38" />
+            <stop offset="44%"  stopColor="#B85530" />
+            <stop offset="100%" stopColor="#B87228" />
+          </linearGradient>
+        </defs>
+        {/* Background */}
+        <rect width="64" height="64" rx="15" fill="url(#hi-g)" />
+        {/* H */}
+        <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white" />
+        <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white" />
+        <rect x="17" y="28" width="9" height="6"  rx="2"   fill="white" />
+        {/* ¡ */}
+        <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white" />
+        <circle className="hi-dot" cx="47" cy="15" r="5.5" fill="white" />
       </svg>
 
       {variant === 'wordmark' && (
