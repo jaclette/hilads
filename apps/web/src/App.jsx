@@ -929,7 +929,7 @@ export default function App() {
             <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
               🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
             </button>
-            <span className="you-badge">{guest?.nickname}</span>
+            <span className="you-badge">👤 {guest?.nickname}</span>
           </div>
         </header>
 
