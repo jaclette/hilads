@@ -1,5 +1,5 @@
 import { EVENT_ICONS } from '../cityMeta'
-import { getEventStatus, getTimeLabel } from '../eventUtils'
+import { getEventStatus, getTimeLabel, getEventLocation } from '../eventUtils'
 
 function isToday(unixTs, timezone) {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone })
@@ -42,10 +42,12 @@ export default function EventsSidebar({ events, cityEvents, activeEventId, cityT
         </span>
         <span className="event-row-location">
           {getTimeLabel(event.starts_at, tz)}
-          {event.location_hint && ` · 📍 ${event.location_hint}`}
           {eventPresence?.[event.id] > 0 && ` · 🔥 ${eventPresence[event.id]} here`}
           {eventParticipants?.[event.id] > 0 && ` · 👍 ${eventParticipants[event.id]} going`}
         </span>
+        {getEventLocation(event) && (
+          <span className="event-row-venue">📍 {getEventLocation(event)}</span>
+        )}
       </button>
     )
   }

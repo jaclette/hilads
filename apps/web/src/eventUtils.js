@@ -14,6 +14,27 @@ export function getEventStatus(unixTs) {
   return 'scheduled'
 }
 
+// Returns a human-readable location string for any event type.
+// TM events have venue + location (city); hilads events have location_hint.
+export function getEventLocation(event) {
+  if (event.venue && event.location) return `${event.venue} · ${event.location}`
+  if (event.venue) return event.venue
+  if (event.location) return event.location
+  if (event.location_hint) return event.location_hint
+  return null
+}
+
+// Returns a maps URL to open the venue. Prefers precise coordinates, falls back to text search.
+export function getEventMapsUrl(event) {
+  if (event.venue_lat && event.venue_lng) {
+    return `https://maps.google.com/?q=${event.venue_lat},${event.venue_lng}`
+  }
+  const q = event.venue
+    ? (event.location ? `${event.venue}, ${event.location}` : event.venue)
+    : (event.location || event.location_hint)
+  return q ? `https://maps.google.com/?q=${encodeURIComponent(q)}` : null
+}
+
 export function getTimeLabel(unixTs, timezone) {
   const status = getEventStatus(unixTs)
   if (status === 'now') return '🔥 happening now'

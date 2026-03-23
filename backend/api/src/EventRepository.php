@@ -100,6 +100,8 @@ class EventRepository
                 $raw[$i]['title']        = $new['title'];
                 $raw[$i]['venue']        = $new['venue'];
                 $raw[$i]['location']     = $new['location'];
+                $raw[$i]['venue_lat']    = $new['venue_lat'] ?? null;
+                $raw[$i]['venue_lng']    = $new['venue_lng'] ?? null;
                 $raw[$i]['image_url']    = $new['image_url'];
                 $raw[$i]['external_url'] = $new['external_url'];
                 $raw[$i]['starts_at']    = $new['starts_at'];

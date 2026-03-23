@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, fetchEventParticipants, toggleEventParticipation } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
-import { getTimeLabel } from './eventUtils'
+import { getTimeLabel, getEventLocation, getEventMapsUrl } from './eventUtils'
 import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
@@ -1314,9 +1314,18 @@ export default function App() {
                 <span className="event-header-title">{activeEvent.title}</span>
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
-                  {activeEvent.location_hint && ` · ${activeEvent.location_hint}`}
                   {` · ${eventPresence[activeEvent.id] ?? 0} here · ${eventParticipants[activeEvent.id] ?? 0} going`}
                 </span>
+                {(() => {
+                  const loc = getEventLocation(activeEvent)
+                  const url = getEventMapsUrl(activeEvent)
+                  if (url) return (
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="event-location">
+                      📍 {loc}
+                    </a>
+                  )
+                  return <span className="event-location event-location--muted">📍 {loc ?? 'Location not available yet'}</span>
+                })()}
               </div>
             </div>
           ) : (
@@ -1597,9 +1606,11 @@ export default function App() {
                         {EVENT_ICONS[event.type] ?? '📌'} {event.title}
                       </span>
                       <span className="city-row-current">
-                        {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
-                        {event.location_hint && ` · ${event.location_hint}`}
+                        {getTimeLabel(event.starts_at, tz)}
                       </span>
+                      {getEventLocation(event) && (
+                        <span className="city-row-location">📍 {getEventLocation(event)}</span>
+                      )}
                     </div>
                     {going > 0 && (
                       <div className="city-row-stats">

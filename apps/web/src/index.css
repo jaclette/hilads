@@ -483,12 +483,33 @@ html, body, #root {
   50%       { transform: scale(1.25); opacity: 1;   box-shadow: 0 0 0 5px rgba(194, 74, 56, 0); }
 }
 
-/* Event mode meta info (time, location, counts) */
+/* Event mode meta info (time, counts) */
 .event-meta-label {
   font-size: 0.75rem;
   color: var(--muted2);
   font-weight: 500;
   letter-spacing: 0.01em;
+}
+
+/* Location line — event header, Hot drawer rows, sidebar rows */
+.event-location {
+  font-size: 0.75rem;
+  color: #FF7A3C;
+  font-weight: 500;
+  text-decoration: none;
+  display: block;
+}
+.event-location:hover { text-decoration: underline; }
+.event-location--muted { color: var(--muted2); }
+
+.city-row-location,
+.event-row-venue {
+  font-size: 0.72rem;
+  color: var(--muted2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 

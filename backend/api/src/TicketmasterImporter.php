@@ -146,13 +146,21 @@ class TicketmasterImporter
                 continue;
             }
 
-            // Venue and location label
+            // Venue name, city, and coordinates
             $venue    = null;
             $location = null;
+            $venueLat = null;
+            $venueLng = null;
             if (!empty($item['_embedded']['venues'][0])) {
                 $v        = $item['_embedded']['venues'][0];
                 $venue    = $v['name'] ?? null;
                 $location = $v['city']['name'] ?? null;
+                $rawLat   = $v['location']['latitude']  ?? null;
+                $rawLng   = $v['location']['longitude'] ?? null;
+                if (is_numeric($rawLat) && is_numeric($rawLng)) {
+                    $venueLat = (float) $rawLat;
+                    $venueLng = (float) $rawLng;
+                }
             }
 
             // Image: prefer 16:9, fall back to first available
@@ -173,6 +181,8 @@ class TicketmasterImporter
                 'title'        => mb_substr($title, 0, 100),
                 'venue'        => $venue,
                 'location'     => $location,
+                'venue_lat'    => $venueLat,
+                'venue_lng'    => $venueLng,
                 'image_url'    => $imageUrl,
                 'external_url' => $item['url'] ?? null,
                 'starts_at'    => $startsAt,
