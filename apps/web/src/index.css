@@ -478,19 +478,15 @@ html, body, #root {
 
 .bottom-nav {
   display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(84px + env(safe-area-inset-bottom));
+  /* In-flow: stacks naturally below input-bar, no fixed overlap */
+  flex-shrink: 0;
+  width: 100%;
+  height: calc(80px + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: rgba(20, 14, 10, 0.96);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: #130e0a;
   border-top: 1px solid rgba(194, 74, 56, 0.22);
   border-radius: 20px 20px 0 0;
-  z-index: 90;
-  box-shadow: 0 -2px 0 rgba(194, 74, 56, 0.12), 0 -8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 -2px 0 rgba(194, 74, 56, 0.1), 0 -12px 28px rgba(0, 0, 0, 0.5);
 }
 
 @media (max-width: 767px) {
@@ -498,9 +494,12 @@ html, body, #root {
     display: flex;
   }
 
-  /* Push input bar above bottom nav */
+  /* Floating elevation: input sits visually above the nav */
   .input-bar {
-    padding-bottom: calc(84px + max(12px, env(safe-area-inset-bottom)));
+    padding-bottom: 12px;
+    border-top: none;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
+    background: var(--surface2);
   }
 }
 
