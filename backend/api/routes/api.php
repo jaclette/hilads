@@ -55,9 +55,12 @@ $router->add('POST', '/api/v1/location/resolve', function () {
 });
 
 $router->add('GET', '/api/v1/channels', function () {
-    // Determine which channel IDs have actual data files to avoid reading 350 empty paths
     $storageDir = Storage::dir() . '/';
-    $activeIds = [];
+
+    // Build lookup maps of which channel IDs have data files (avoids reading 350 empty paths)
+    $activeIds     = [];
+    $eventFileMap  = [];
+
     foreach (glob($storageDir . 'messages_*.json') as $f) {
         if (preg_match('/messages_(\d+)\.json$/', $f, $m)) {
             $activeIds[(int) $m[1]] = true;
@@ -68,24 +71,48 @@ $router->add('GET', '/api/v1/channels', function () {
             $activeIds[(int) $m[1]] = true;
         }
     }
+    foreach (glob($storageDir . 'events_*.json') as $f) {
+        if (preg_match('/events_(\d+)\.json$/', $f, $m)) {
+            $eventFileMap[(int) $m[1]] = $f;
+        }
+    }
 
+    $now      = time();
     $channels = [];
 
     foreach (CityRepository::all() as $city) {
-        if (isset($activeIds[$city['id']])) {
-            $stats = MessageRepository::getStats($city['id']);
+        $id = $city['id'];
+
+        if (isset($activeIds[$id])) {
+            $stats = MessageRepository::getStats($id);
         } else {
             $stats = ['messageCount' => 0, 'activeUsers' => 0, 'lastActivityAt' => null];
         }
 
+        // Count today's non-expired events from the stored file (no Ticketmaster sync)
+        $eventCount = 0;
+        if (isset($eventFileMap[$id])) {
+            $tz         = new DateTimeZone($city['timezone']);
+            $todayStr   = (new DateTime('now', $tz))->format('Y-m-d');
+            $rawEvents  = json_decode(file_get_contents($eventFileMap[$id]), true) ?? [];
+            foreach ($rawEvents as $ev) {
+                if (($ev['expires_at'] ?? 0) < $now) continue;
+                $evDay = (new DateTime('@' . (int) ($ev['starts_at'] ?? 0)))
+                    ->setTimezone($tz)
+                    ->format('Y-m-d');
+                if ($evDay === $todayStr) $eventCount++;
+            }
+        }
+
         $channels[] = [
-            'channelId'      => $city['id'],
+            'channelId'      => $id,
             'city'           => $city['name'],
             'country'        => $city['country'] ?? null,
             'timezone'       => $city['timezone'],
             'messageCount'   => $stats['messageCount'],
             'activeUsers'    => $stats['activeUsers'],
             'lastActivityAt' => $stats['lastActivityAt'],
+            'eventCount'     => $eventCount,
         ];
     }
 

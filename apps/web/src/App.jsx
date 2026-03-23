@@ -650,40 +650,20 @@ export default function App() {
     setCitySearchQuery('')
     setChannelsLoading(true)
     setChannelEventCounts({})
-    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      loadedChannels = data.channels
-      setChannels(loadedChannels)
+      setChannels(data.channels)
+      // eventCount comes from the backend — no per-city fetch needed
+      const counts = {}
+      for (const ch of data.channels) {
+        if (ch.eventCount) counts[ch.channelId] = ch.eventCount
+      }
+      setChannelEventCounts(counts)
     } catch {
       setChannels([])
     } finally {
       setChannelsLoading(false)
     }
-    if (loadedChannels.length === 0) return
-    // Fetch event counts only for cities that have any activity.
-    // Inactive cities (0 users, 0 messages) almost certainly have no events — skip them.
-    // This keeps the call count small while guaranteeing correct counts for all visible rows.
-    const candidates = loadedChannels.filter(ch => ch.activeUsers > 0 || ch.messageCount > 0)
-    const counts = {}
-    await Promise.allSettled(candidates.map(async (ch) => {
-      try {
-        const [evData, cityEvData] = await Promise.all([
-          fetchEvents(ch.channelId),
-          fetchCityEvents(ch.channelId),
-        ])
-        const tz = ch.timezone || 'UTC'
-        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-        const hiladsCount = evData.events.filter(e =>
-          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-        ).length
-        const cityCount = (cityEvData.events ?? []).filter(e =>
-          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-        ).length
-        counts[ch.channelId] = hiladsCount + cityCount
-      } catch { /* ignore */ }
-    }))
-    setChannelEventCounts({ ...counts })
   }
 
   async function openObCityPicker() {
@@ -691,37 +671,19 @@ export default function App() {
     setCitySearchQuery('')
     setObChannelsLoading(true)
     setObChannelEventCounts({})
-    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      loadedChannels = data.channels
-      setObChannels(loadedChannels)
+      setObChannels(data.channels)
+      const counts = {}
+      for (const ch of data.channels) {
+        if (ch.eventCount) counts[ch.channelId] = ch.eventCount
+      }
+      setObChannelEventCounts(counts)
     } catch {
       setObChannels([])
     } finally {
       setObChannelsLoading(false)
     }
-    if (loadedChannels.length === 0) return
-    const candidates = loadedChannels.filter(ch => ch.activeUsers > 0 || ch.messageCount > 0)
-    const counts = {}
-    await Promise.allSettled(candidates.map(async (ch) => {
-      try {
-        const [evData, cityEvData] = await Promise.all([
-          fetchEvents(ch.channelId),
-          fetchCityEvents(ch.channelId),
-        ])
-        const tz = ch.timezone || 'UTC'
-        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-        const hiladsCount = evData.events.filter(e =>
-          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-        ).length
-        const cityCount = (cityEvData.events ?? []).filter(e =>
-          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-        ).length
-        counts[ch.channelId] = hiladsCount + cityCount
-      } catch { /* ignore */ }
-    }))
-    setObChannelEventCounts({ ...counts })
   }
 
   function joinCityFromOb(newChannelId, cityName, timezone, country) {
@@ -1203,13 +1165,12 @@ export default function App() {
                     (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
                   ))
                 }
-                const top10 = sorted
-                  .filter(ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0) > 0)
-                  .slice(0, 10)
-                if (top10.length === 0) return <div className="city-no-results">No active cities right now</div>
+                const active = sorted.filter(ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0) > 0)
+                const top10 = (active.length > 0 ? active : sorted).slice(0, 10)
+                const label = active.length > 0 ? 'Top cities right now' : 'Cities'
                 return (
                   <>
-                    <div className="city-list-label">Top cities right now</div>
+                    <div className="city-list-label">{label}</div>
                     {top10.map(ch => renderCityRow(
                       ch,
                       obChannelEventCounts[ch.channelId] ?? 0,
@@ -1540,14 +1501,13 @@ export default function App() {
                   ch.channelId === channelId
                 ))
               }
-              // Default mode — top 10 active cities only (score > 0)
-              const top10 = sorted
-                .filter(ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0) > 0)
-                .slice(0, 10)
-              if (top10.length === 0) return <div className="city-no-results">No active cities right now</div>
+              // Default mode — top 10 active cities; fall back to top 10 by name if none active
+              const active = sorted.filter(ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0) > 0)
+              const top10 = (active.length > 0 ? active : sorted).slice(0, 10)
+              const label = active.length > 0 ? 'Top cities right now' : 'Cities'
               return (
                 <>
-                  <div className="city-list-label">Top cities right now</div>
+                  <div className="city-list-label">{label}</div>
                   {top10.map(ch => renderCityRow(
                     ch,
                     channelEventCounts[ch.channelId] ?? 0,
