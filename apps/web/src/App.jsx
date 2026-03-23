@@ -271,6 +271,7 @@ export default function App() {
   // 'pending' | 'resolving' | 'denied' | 'error'
   const [geoState, setGeoState] = useState('pending')
   const [obPickingCity, setObPickingCity] = useState(false)
+  const [obShowAuth, setObShowAuth] = useState(false)
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [obChannelEventCounts, setObChannelEventCounts] = useState({})
@@ -1039,6 +1040,21 @@ export default function App() {
   // ── Onboarding ─────────────────────────────────────────────────────────────
 
   if (status === 'onboarding') {
+    if (obShowAuth) {
+      return (
+        <AuthScreen
+          guestId={guest?.guestId}
+          guestNickname={nickname}
+          onSuccess={(user) => {
+            setAccount(user)
+            setObShowAuth(false)
+            handleJoin(null)
+          }}
+          onBack={() => setObShowAuth(false)}
+        />
+      )
+    }
+
     const [c1, c2] = avatarColors(nickname || 'A')
     return (
       <div className="screen ob-screen">
@@ -1128,6 +1144,11 @@ export default function App() {
                     {geoState === 'error' ? 'Try again' : 'Use my location instead'}
                   </button>
                 )}
+                {!account && (
+                  <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
+                    Create account instead
+                  </button>
+                )}
               </>
             ) : (
               <>
@@ -1152,6 +1173,11 @@ export default function App() {
                 <button type="submit" className="ob-btn">
                   {city ? `Join ${city}` : 'Join Chat'} →
                 </button>
+                {!account && (
+                  <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
+                    Create account instead
+                  </button>
+                )}
               </>
             )}
             <p className="ob-hint">// anonymous · no sign-up</p>
