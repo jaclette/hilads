@@ -513,7 +513,7 @@ html, body, #root {
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 14px 8px 10px;
+  padding: 14px 4px 10px;
   color: rgba(158, 142, 130, 0.55);
   position: relative;
   transition: color 0.18s ease;
@@ -998,48 +998,6 @@ html, body, #root {
   border: 2px solid var(--surface);
 }
 
-/* ── Mobile online strip ──────────────────────────────── */
-
-.online-mobile-strip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow-x: auto;
-  padding: 8px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  flex-shrink: 0;
-  scrollbar-width: none;
-  cursor: pointer;
-  width: 100%;
-  text-align: left;
-  transition: background 0.12s;
-}
-
-.online-mobile-strip:hover,
-.online-mobile-strip:active {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.online-mobile-strip::-webkit-scrollbar {
-  display: none;
-}
-
-.online-strip-label {
-  margin-left: 4px;
-  font-size: 0.75rem;
-  color: var(--muted2);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.online-strip-chevron {
-  margin-left: auto;
-  font-size: 1rem;
-  color: var(--muted2);
-  flex-shrink: 0;
-  padding-right: 4px;
-}
 
 /* ── People drawer ────────────────────────────────────── */
 
@@ -1122,10 +1080,6 @@ html, body, #root {
 @media (min-width: 768px) {
   .online-sidebar {
     display: flex;
-  }
-
-  .online-mobile-strip {
-    display: none;
   }
 
   /* on desktop, don't auto-center the chat — let flexbox handle it */

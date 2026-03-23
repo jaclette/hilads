@@ -997,17 +997,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* Mobile-only online strip */}
-        {onlineUsers.length > 0 && (
-          <button className="online-mobile-strip" onClick={() => setShowPeopleDrawer(true)}>
-            {onlineUsers.map((user) => (
-              <OnlineUserAvatar key={user.id} user={user} />
-            ))}
-            <span className="online-strip-label">👥 {onlineUsers.length} here</span>
-            <span className="online-strip-chevron">›</span>
-          </button>
-        )}
-
         <div className="messages">
           {feed.length === 0 && (
             <div className="empty">
@@ -1131,6 +1120,15 @@ export default function App() {
           >
             <span className="bottom-nav-icon">🌍</span>
             <span className="bottom-nav-label">City</span>
+          </button>
+          <button
+            className={`bottom-nav-tab${showPeopleDrawer ? ' active' : ''}`}
+            onClick={() => setShowPeopleDrawer(true)}
+          >
+            <span className="bottom-nav-icon">👥</span>
+            <span className="bottom-nav-label">
+              {onlineUsers.length > 0 ? `${onlineUsers.length} here` : 'People'}
+            </span>
           </button>
           <button
             className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
