@@ -644,7 +644,10 @@ export default function App() {
         const hiladsCount = evData.events.filter(e =>
           new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
         ).length
-        counts[ch.channelId] = hiladsCount + (cityEvData.events?.length ?? 0)
+        const cityCount = (cityEvData.events ?? []).filter(e =>
+          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        ).length
+        counts[ch.channelId] = hiladsCount + cityCount
       } catch { /* ignore */ }
     }))
     setChannelEventCounts({ ...counts })
