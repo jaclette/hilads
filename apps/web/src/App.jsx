@@ -650,20 +650,40 @@ export default function App() {
     setCitySearchQuery('')
     setChannelsLoading(true)
     setChannelEventCounts({})
+    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      setChannels(data.channels)
-      // eventCount comes from the backend — no per-city fetch needed
+      loadedChannels = data.channels
+      setChannels(loadedChannels)
+      // Phase 1: seed counts from stored data — available immediately, no extra calls
       const counts = {}
-      for (const ch of data.channels) {
-        if (ch.eventCount) counts[ch.channelId] = ch.eventCount
-      }
+      for (const ch of loadedChannels) counts[ch.channelId] = ch.eventCount ?? 0
       setChannelEventCounts(counts)
     } catch {
       setChannels([])
     } finally {
       setChannelsLoading(false)
     }
+    if (loadedChannels.length === 0) return
+    // Phase 2: enrich event counts for cities that have users + the current city.
+    // This triggers Ticketmaster sync for cities that haven't been visited yet, updating
+    // counts in the background as each response arrives.
+    const toEnrich = loadedChannels
+      .filter(ch => ch.activeUsers > 0 || ch.channelId === channelId)
+      .slice(0, 10)
+    toEnrich.forEach(async (ch) => {
+      try {
+        const tz = ch.timezone || 'UTC'
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+        const isToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        const [hiladsData, cityData] = await Promise.all([
+          fetchEvents(ch.channelId),
+          fetchCityEvents(ch.channelId),
+        ])
+        const total = hiladsData.events.filter(isToday).length + (cityData.events ?? []).filter(isToday).length
+        setChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
+      } catch { /* ignore */ }
+    })
   }
 
   async function openObCityPicker() {
@@ -671,19 +691,34 @@ export default function App() {
     setCitySearchQuery('')
     setObChannelsLoading(true)
     setObChannelEventCounts({})
+    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      setObChannels(data.channels)
+      loadedChannels = data.channels
+      setObChannels(loadedChannels)
       const counts = {}
-      for (const ch of data.channels) {
-        if (ch.eventCount) counts[ch.channelId] = ch.eventCount
-      }
+      for (const ch of loadedChannels) counts[ch.channelId] = ch.eventCount ?? 0
       setObChannelEventCounts(counts)
     } catch {
       setObChannels([])
     } finally {
       setObChannelsLoading(false)
     }
+    if (loadedChannels.length === 0) return
+    const toEnrich = loadedChannels.filter(ch => ch.activeUsers > 0).slice(0, 10)
+    toEnrich.forEach(async (ch) => {
+      try {
+        const tz = ch.timezone || 'UTC'
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+        const isToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        const [hiladsData, cityData] = await Promise.all([
+          fetchEvents(ch.channelId),
+          fetchCityEvents(ch.channelId),
+        ])
+        const total = hiladsData.events.filter(isToday).length + (cityData.events ?? []).filter(isToday).length
+        setObChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
+      } catch { /* ignore */ }
+    })
   }
 
   function joinCityFromOb(newChannelId, cityName, timezone, country) {
@@ -1165,9 +1200,11 @@ export default function App() {
                     (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
                   ))
                 }
-                const active = sorted.filter(ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0) > 0)
-                const top10 = (active.length > 0 ? active : sorted).slice(0, 10)
-                const label = active.length > 0 ? 'Top cities right now' : 'Cities'
+                const getScore = ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0)
+                const active   = sorted.filter(ch => getScore(ch) > 0)
+                const inactive = sorted.filter(ch => getScore(ch) === 0)
+                const top10    = [...active, ...inactive].slice(0, 10)
+                const label    = active.length > 0 ? 'Top cities right now' : 'Cities'
                 return (
                   <>
                     <div className="city-list-label">{label}</div>
@@ -1501,10 +1538,12 @@ export default function App() {
                   ch.channelId === channelId
                 ))
               }
-              // Default mode — top 10 active cities; fall back to top 10 by name if none active
-              const active = sorted.filter(ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0) > 0)
-              const top10 = (active.length > 0 ? active : sorted).slice(0, 10)
-              const label = active.length > 0 ? 'Top cities right now' : 'Cities'
+              // Default mode — active cities first by score, then fill remaining slots up to 10
+              const getScore = ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0)
+              const active   = sorted.filter(ch => getScore(ch) > 0)
+              const inactive = sorted.filter(ch => getScore(ch) === 0)
+              const top10    = [...active, ...inactive].slice(0, 10)
+              const label    = active.length > 0 ? 'Top cities right now' : 'Cities'
               return (
                 <>
                   <div className="city-list-label">{label}</div>
