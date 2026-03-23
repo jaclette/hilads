@@ -16,7 +16,7 @@ class Database
 
             $parts = parse_url($url);
             $dsn   = sprintf(
-                'pgsql:host=%s;port=%s;dbname=%s',
+                'pgsql:host=%s;port=%s;dbname=%s;sslmode=require',
                 $parts['host'],
                 $parts['port'] ?? 5432,
                 ltrim($parts['path'], '/')
