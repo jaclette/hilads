@@ -269,6 +269,7 @@ export default function App() {
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [obChannelEventCounts, setObChannelEventCounts] = useState({})
+  const [citySearchQuery, setCitySearchQuery] = useState('')
 
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
@@ -634,6 +635,7 @@ export default function App() {
 
   async function openCityPicker() {
     setShowCityPicker(true)
+    setCitySearchQuery('')
     setChannelsLoading(true)
     let loadedChannels = []
     try {
@@ -670,6 +672,7 @@ export default function App() {
 
   async function openObCityPicker() {
     setObPickingCity(true)
+    setCitySearchQuery('')
     setObChannelsLoading(true)
     let loadedChannels = []
     try {
@@ -979,6 +982,12 @@ export default function App() {
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current)
 
+  // ── City scoring ────────────────────────────────────────────────────────────
+
+  function cityScore(ch, eventCount) {
+    return (eventCount * 3) + (ch.activeUsers * 2) + (ch.messageCount * 1)
+  }
+
   // ── Shared city row renderer ────────────────────────────────────────────────
 
   function renderCityRow(ch, eventCount, onClick, isActive = false) {
@@ -1119,17 +1128,36 @@ export default function App() {
               <button className="page-back-btn" onClick={() => setObPickingCity(false)}>←</button>
               <span className="page-title">Pick a city</span>
             </div>
+            <div className="city-search-wrap">
+              <input
+                className="city-search-input"
+                type="search"
+                placeholder="Search a city…"
+                value={citySearchQuery}
+                onChange={e => setCitySearchQuery(e.target.value)}
+                autoFocus
+              />
+            </div>
             <div className="page-body">
               {obChannelsLoading ? (
                 <div className="city-picker-loading">Loading cities...</div>
-              ) : [...obChannels].sort((a, b) => {
-                if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
-                return a.city.localeCompare(b.city)
-              }).map(ch => renderCityRow(
-                ch,
-                obChannelEventCounts[ch.channelId] ?? 0,
-                (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone)
-              ))}
+              ) : (() => {
+                const q = citySearchQuery.trim().toLowerCase()
+                const filtered = [...obChannels]
+                  .filter(ch => !q || ch.city.toLowerCase().includes(q))
+                  .sort((a, b) => {
+                    const scoreA = cityScore(a, obChannelEventCounts[a.channelId] ?? 0)
+                    const scoreB = cityScore(b, obChannelEventCounts[b.channelId] ?? 0)
+                    if (scoreB !== scoreA) return scoreB - scoreA
+                    return a.city.localeCompare(b.city)
+                  })
+                if (filtered.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
+                return filtered.map(ch => renderCityRow(
+                  ch,
+                  obChannelEventCounts[ch.channelId] ?? 0,
+                  (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone)
+                ))
+              })()}
             </div>
           </div>
         )}
@@ -1408,23 +1436,41 @@ export default function App() {
             <button className="page-back-btn" onClick={() => setShowCityPicker(false)}>←</button>
             <span className="page-title">Switch city</span>
           </div>
+          <div className="city-search-wrap">
+            <input
+              className="city-search-input"
+              type="search"
+              placeholder="Search a city…"
+              value={citySearchQuery}
+              onChange={e => setCitySearchQuery(e.target.value)}
+              autoFocus
+            />
+          </div>
           <div className="page-body">
             {channelsLoading ? (
               <div className="city-picker-loading">Loading cities...</div>
-            ) : [...channels].sort((a, b) => {
-              const aCurrent = a.channelId === channelId
-              const bCurrent = b.channelId === channelId
-              if (aCurrent) return -1
-              if (bCurrent) return 1
-              if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
-              if (b.messageCount !== a.messageCount) return b.messageCount - a.messageCount
-              return a.city.localeCompare(b.city)
-            }).map((ch) => renderCityRow(
-              ch,
-              channelEventCounts[ch.channelId] ?? 0,
-              (ch) => switchCity(ch.channelId, ch.city, ch.timezone),
-              ch.channelId === channelId
-            ))}
+            ) : (() => {
+              const q = citySearchQuery.trim().toLowerCase()
+              const filtered = [...channels]
+                .filter(ch => !q || ch.city.toLowerCase().includes(q))
+                .sort((a, b) => {
+                  if (!q) {
+                    if (a.channelId === channelId) return -1
+                    if (b.channelId === channelId) return 1
+                  }
+                  const scoreA = cityScore(a, channelEventCounts[a.channelId] ?? 0)
+                  const scoreB = cityScore(b, channelEventCounts[b.channelId] ?? 0)
+                  if (scoreB !== scoreA) return scoreB - scoreA
+                  return a.city.localeCompare(b.city)
+                })
+              if (filtered.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
+              return filtered.map(ch => renderCityRow(
+                ch,
+                channelEventCounts[ch.channelId] ?? 0,
+                (ch) => switchCity(ch.channelId, ch.city, ch.timezone),
+                !q && ch.channelId === channelId
+              ))
+            })()}
           </div>
         </div>
       )}
