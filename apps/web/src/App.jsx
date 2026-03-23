@@ -661,12 +661,10 @@ export default function App() {
       setChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    // Fetch event counts only for the top 15 candidates by base score (online + messages).
-    // This avoids 700 concurrent API calls for 350 cities while keeping visible rows accurate.
-    const TOP_FETCH = 15
-    const candidates = [...loadedChannels]
-      .sort((a, b) => (b.activeUsers * 2 + b.messageCount) - (a.activeUsers * 2 + a.messageCount))
-      .slice(0, TOP_FETCH)
+    // Fetch event counts only for cities that have any activity.
+    // Inactive cities (0 users, 0 messages) almost certainly have no events — skip them.
+    // This keeps the call count small while guaranteeing correct counts for all visible rows.
+    const candidates = loadedChannels.filter(ch => ch.activeUsers > 0 || ch.messageCount > 0)
     const counts = {}
     await Promise.allSettled(candidates.map(async (ch) => {
       try {
@@ -704,10 +702,7 @@ export default function App() {
       setObChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    const TOP_FETCH = 15
-    const candidates = [...loadedChannels]
-      .sort((a, b) => (b.activeUsers * 2 + b.messageCount) - (a.activeUsers * 2 + a.messageCount))
-      .slice(0, TOP_FETCH)
+    const candidates = loadedChannels.filter(ch => ch.activeUsers > 0 || ch.messageCount > 0)
     const counts = {}
     await Promise.allSettled(candidates.map(async (ch) => {
       try {
@@ -1010,7 +1005,7 @@ export default function App() {
   // ── City scoring ────────────────────────────────────────────────────────────
 
   function cityScore(ch, eventCount) {
-    return (eventCount * 3) + (ch.activeUsers * 2) + (ch.messageCount * 1)
+    return (eventCount * 10) + (ch.activeUsers * 3)
   }
 
   // ── Shared city row renderer ────────────────────────────────────────────────
@@ -1208,10 +1203,14 @@ export default function App() {
                     (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
                   ))
                 }
+                const top10 = sorted
+                  .filter(ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0) > 0)
+                  .slice(0, 10)
+                if (top10.length === 0) return <div className="city-no-results">No active cities right now</div>
                 return (
                   <>
                     <div className="city-list-label">Top cities right now</div>
-                    {sorted.slice(0, 10).map(ch => renderCityRow(
+                    {top10.map(ch => renderCityRow(
                       ch,
                       obChannelEventCounts[ch.channelId] ?? 0,
                       (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
@@ -1533,31 +1532,27 @@ export default function App() {
                 })
               if (sorted.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
               if (q) {
-                // Search mode — show all matches, no limit
+                // Search mode — all matches, full metrics, no limit
                 return sorted.map(ch => renderCityRow(
                   ch,
                   channelEventCounts[ch.channelId] ?? 0,
                   (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                  false
+                  ch.channelId === channelId
                 ))
               }
-              // Default mode — current city pinned, then top 9 by score
-              const current = channels.find(ch => ch.channelId === channelId)
-              const others = sorted.filter(ch => ch.channelId !== channelId).slice(0, current ? 9 : 10)
+              // Default mode — top 10 active cities only (score > 0)
+              const top10 = sorted
+                .filter(ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0) > 0)
+                .slice(0, 10)
+              if (top10.length === 0) return <div className="city-no-results">No active cities right now</div>
               return (
                 <>
                   <div className="city-list-label">Top cities right now</div>
-                  {current && renderCityRow(
-                    current,
-                    channelEventCounts[current.channelId] ?? 0,
-                    (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                    true
-                  )}
-                  {others.map(ch => renderCityRow(
+                  {top10.map(ch => renderCityRow(
                     ch,
                     channelEventCounts[ch.channelId] ?? 0,
                     (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                    false
+                    ch.channelId === channelId
                   ))}
                 </>
               )
