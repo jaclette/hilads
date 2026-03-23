@@ -264,6 +264,10 @@ export default function App() {
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
+  const [geoBlocked, setGeoBlocked] = useState(false)
+  const [obPickingCity, setObPickingCity] = useState(false)
+  const [obChannels, setObChannels] = useState([])
+  const [obChannelsLoading, setObChannelsLoading] = useState(false)
 
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
@@ -338,25 +342,30 @@ export default function App() {
   }, [feed])
 
   async function startGeolocation() {
-    const position = await getPosition()
-    const location = await resolveLocation(position.coords.latitude, position.coords.longitude)
-    setCity(location.city)
-    setPreviewTimezone(location.timezone ?? 'UTC')
-    fetchEvents(location.channelId).then(data => {
-      const tz = location.timezone ?? 'UTC'
-      const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-      const todayEvents = data.events.filter(e =>
-        new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-      )
-      setPreviewEventCount(todayEvents.length)
-      const now = Date.now()
-      const filtered = todayEvents
-        .filter(e => (e.starts_at * 1000 - now) / 60000 >= -30)
-        .sort((a, b) => a.starts_at - b.starts_at)
-        .slice(0, 3)
-      setPreviewEvents(filtered)
-    }).catch(() => {})
-    return location
+    try {
+      const position = await getPosition()
+      const location = await resolveLocation(position.coords.latitude, position.coords.longitude)
+      setCity(location.city)
+      setPreviewTimezone(location.timezone ?? 'UTC')
+      fetchEvents(location.channelId).then(data => {
+        const tz = location.timezone ?? 'UTC'
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+        const todayEvents = data.events.filter(e =>
+          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        )
+        setPreviewEventCount(todayEvents.length)
+        const now = Date.now()
+        const filtered = todayEvents
+          .filter(e => (e.starts_at * 1000 - now) / 60000 >= -30)
+          .sort((a, b) => a.starts_at - b.starts_at)
+          .slice(0, 3)
+        setPreviewEvents(filtered)
+      }).catch(() => {})
+      return location
+    } catch {
+      setGeoBlocked(true)
+      return null
+    }
   }
 
   function getPosition() {
@@ -404,6 +413,11 @@ export default function App() {
       const location = rejoinData
         ? { channelId: rejoinData.channelId, city: rejoinData.city, timezone: 'UTC' }
         : await locPromiseRef.current
+      if (!location && !rejoinData) {
+        // Geo was denied before a city was selected — return to onboarding
+        setStatus('onboarding')
+        return
+      }
       if (rejoinData?.city) setCity(rejoinData.city)
       const session = await createGuestSession(name)
       setGuest(session)
@@ -651,6 +665,26 @@ export default function App() {
       } catch { /* ignore */ }
     }))
     setChannelEventCounts({ ...counts })
+  }
+
+  async function openObCityPicker() {
+    setObPickingCity(true)
+    setObChannelsLoading(true)
+    try {
+      const data = await fetchChannels()
+      setObChannels(data.channels)
+    } catch {
+      setObChannels([])
+    } finally {
+      setObChannelsLoading(false)
+    }
+  }
+
+  function joinCityFromOb(newChannelId, cityName, timezone) {
+    setObPickingCity(false)
+    setCity(cityName)
+    locPromiseRef.current = Promise.resolve({ channelId: newChannelId, city: cityName, timezone: timezone ?? 'UTC' })
+    handleJoin(null)
   }
 
   async function switchCity(newChannelId, newCityName, newCityTimezone) {
@@ -936,12 +970,14 @@ export default function App() {
                   </div>
                 ) : null}
               </>
+            ) : geoBlocked ? (
+              <p className="ob-tagline">No worries — you can still jump into any city.</p>
             ) : (
               <span className="ob-locating">› locating...</span>
             )}
           </div>
 
-          <form className="ob-form" onSubmit={handleJoin}>
+          <form className="ob-form" onSubmit={geoBlocked ? (e) => { e.preventDefault(); openObCityPicker() } : handleJoin}>
             <label className="ob-label">Your name</label>
             <div className="ob-input-row">
               <span
@@ -962,12 +998,43 @@ export default function App() {
             </div>
 
             <button type="submit" className="ob-btn">
-              {city ? `Join ${city}` : 'Join Chat'} →
+              {city ? `Join ${city}` : geoBlocked ? 'Browse cities' : 'Join Chat'} →
             </button>
 
             <p className="ob-hint">// anonymous · no sign-up</p>
           </form>
         </div>
+
+        {obPickingCity && (
+          <div className="full-page">
+            <div className="page-header">
+              <button className="page-back-btn" onClick={() => setObPickingCity(false)}>←</button>
+              <span className="page-title">Pick a city</span>
+            </div>
+            <div className="page-body">
+              {obChannelsLoading ? (
+                <div className="city-picker-loading">Loading cities...</div>
+              ) : [...obChannels].sort((a, b) => {
+                if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
+                return a.city.localeCompare(b.city)
+              }).map(ch => (
+                <button
+                  key={ch.channelId}
+                  className="city-row"
+                  onClick={() => joinCityFromOb(ch.channelId, ch.city, ch.timezone)}
+                >
+                  <div className="city-row-left">
+                    <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
+                    <span className="city-row-name">{ch.city}</span>
+                  </div>
+                  <div className="city-row-stats">
+                    {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     )
   }
