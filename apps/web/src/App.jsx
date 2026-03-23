@@ -10,6 +10,70 @@ import CreateEventModal from './components/CreateEventModal'
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 
+// ── Bottom nav icons ──────────────────────────────────────────────────────────
+
+const NAV_ICON_PROPS = {
+  width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none',
+  stroke: 'currentColor', strokeWidth: '1.75',
+  strokeLinecap: 'round', strokeLinejoin: 'round',
+}
+
+function NavIconEvents() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      {/* Outer flame */}
+      <path d="M12 2C9 6.5 6 10 6 14a6 6 0 0 0 12 0c0-4-3-7.5-6-12z" />
+      {/* Inner flame core */}
+      <path d="M12 9c-1.5 2-2.5 3.5-2.5 5a2.5 2.5 0 0 0 5 0c0-1.5-1-3-2.5-5z" strokeWidth="1.4" />
+      {/* Live dot */}
+      <circle cx="18.5" cy="5" r="2.2" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function NavIconCity() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      {/* Globe outline */}
+      <circle cx="12" cy="12" r="9" />
+      {/* Longitude ellipse */}
+      <ellipse cx="12" cy="12" rx="3.5" ry="9" />
+      {/* Equator */}
+      <line x1="3" y1="12" x2="21" y2="12" />
+      {/* Active location dot */}
+      <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function NavIconPeople() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      {/* Back person */}
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3 21c0-3.3 2.7-6 6-6" />
+      {/* Front person */}
+      <circle cx="15.5" cy="8" r="3.5" />
+      <path d="M8 21a9 9 0 0 1 14 0" />
+      {/* Presence dot */}
+      <circle cx="20.5" cy="3.5" r="2.2" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function NavIconProfile() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      {/* Head */}
+      <circle cx="12" cy="8" r="4" />
+      {/* Shoulders */}
+      <path d="M4 21a9 9 0 0 1 16 0" />
+    </svg>
+  )
+}
+
+// ── Chat icons ────────────────────────────────────────────────────────────────
+
 function SendIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1136,21 +1200,21 @@ export default function App() {
             className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
             onClick={() => setShowEventDrawer(true)}
           >
-            <span className="bottom-nav-icon">🔥</span>
+            <span className="bottom-nav-icon"><NavIconEvents /></span>
             <span className="bottom-nav-label">Events</span>
           </button>
           <button
             className={`bottom-nav-tab${showCityPicker ? ' active' : ''}`}
             onClick={openCityPicker}
           >
-            <span className="bottom-nav-icon">🌍</span>
+            <span className="bottom-nav-icon"><NavIconCity /></span>
             <span className="bottom-nav-label">City</span>
           </button>
           <button
             className={`bottom-nav-tab${showPeopleDrawer ? ' active' : ''}`}
             onClick={() => setShowPeopleDrawer(true)}
           >
-            <span className="bottom-nav-icon">👥</span>
+            <span className="bottom-nav-icon"><NavIconPeople /></span>
             <span className="bottom-nav-label">
               {onlineUsers.length > 0 ? `${onlineUsers.length} here` : 'People'}
             </span>
@@ -1159,7 +1223,7 @@ export default function App() {
             className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
             onClick={() => { setProfileNickInput(nickname); setShowProfileDrawer(true) }}
           >
-            <span className="bottom-nav-icon">👤</span>
+            <span className="bottom-nav-icon"><NavIconProfile /></span>
             <span className="bottom-nav-label">{guest?.nickname ?? 'Profile'}</span>
           </button>
         </nav>
