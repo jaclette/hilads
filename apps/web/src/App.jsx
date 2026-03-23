@@ -820,12 +820,11 @@ export default function App() {
           <div className="ob-city-block">
             {city ? (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ fontSize: '2rem', lineHeight: 1 }}>{cityFlag(city)}</span>
-                  <span className="ob-city-name">{city}</span>
+                <div>
+                  <span className="ob-city-name">{city} <span style={{ fontSize: '0.8em', verticalAlign: 'middle' }}>{cityFlag(city)}</span></span>
                 </div>
                 <p className="ob-tagline">See who's around. Say hi instantly.</p>
-                <span className="ob-live">🔥 {previewLiveCount} people chatting right now</span>
+                <span className="ob-live"><span className="ob-live-fire">🔥</span> {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now</span>
                 {previewEventCount > 0 && (
                   <span className="ob-city-sub ob-event-count">
                     🔥 {previewEventCount} event{previewEventCount > 1 ? 's' : ''} happening today
@@ -863,7 +862,7 @@ export default function App() {
                 onChange={(e) => setNickname(e.target.value)}
                 maxLength={20}
                 autoFocus
-                placeholder="Your nickname"
+                placeholder="Say hi as..."
               />
             </div>
 

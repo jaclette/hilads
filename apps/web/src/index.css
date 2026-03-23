@@ -208,6 +208,16 @@ html, body, #root {
   display: inline-block;
 }
 
+.ob-live-fire {
+  display: inline-block;
+  animation: fire-pulse 2s ease-in-out infinite;
+}
+
+@keyframes fire-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+
 .ob-locating {
   font-size: 0.88rem;
   color: var(--muted2);
