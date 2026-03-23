@@ -1140,204 +1140,182 @@ export default function App() {
         </nav>
       </div>
 
-      {/* City picker modal */}
+      {/* ── Full-screen pages ─────────────────────────── */}
+
       {showCityPicker && (
-        <div className="city-picker-overlay" onClick={() => setShowCityPicker(false)}>
-          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="city-picker-handle" />
-            <div className="city-picker-header">
-              <span className="city-picker-title">Switch city</span>
-              <button className="city-picker-close" onClick={() => setShowCityPicker(false)}>✕</button>
-            </div>
-            <div className="city-picker-list">
-              {channelsLoading ? (
-                <div className="city-picker-loading">Loading cities...</div>
-              ) : [...channels].sort((a, b) => {
-                const aCurrent = a.channelId === channelId
-                const bCurrent = b.channelId === channelId
-                if (aCurrent) return -1
-                if (bCurrent) return 1
-                // highest active users first
-                if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
-                // then highest message count
-                if (b.messageCount !== a.messageCount) return b.messageCount - a.messageCount
-                // finally alphabetical
-                return a.city.localeCompare(b.city)
-              }).map((ch) => {
-                const isActive = ch.channelId === channelId
-                const hasActivity = ch.activeUsers > 0
-                return (
-                  <button
-                    key={ch.channelId}
-                    className={`city-row${isActive ? ' active' : ''}`}
-                    onClick={() => switchCity(ch.channelId, ch.city, ch.timezone)}
-                  >
-                    <div className="city-row-left">
-                      <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
-                      <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
-                      <span className="city-row-name">{ch.city}</span>
-                      {isActive && <span className="city-row-current">you're here</span>}
-                    </div>
-                    <div className="city-row-stats">
-                      {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
-                      {channelEventCounts[ch.channelId] > 0 && (
-                        <span className="city-row-events">🔥 {channelEventCounts[ch.channelId]} {channelEventCounts[ch.channelId] === 1 ? 'event' : 'events'}</span>
-                      )}
-                      <span className="city-row-count">{ch.messageCount} msgs</span>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
+        <div className="full-page">
+          <div className="page-header">
+            <button className="page-back-btn" onClick={() => setShowCityPicker(false)}>←</button>
+            <span className="page-title">Switch city</span>
+          </div>
+          <div className="page-body">
+            {channelsLoading ? (
+              <div className="city-picker-loading">Loading cities...</div>
+            ) : [...channels].sort((a, b) => {
+              const aCurrent = a.channelId === channelId
+              const bCurrent = b.channelId === channelId
+              if (aCurrent) return -1
+              if (bCurrent) return 1
+              if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
+              if (b.messageCount !== a.messageCount) return b.messageCount - a.messageCount
+              return a.city.localeCompare(b.city)
+            }).map((ch) => {
+              const isActive = ch.channelId === channelId
+              const hasActivity = ch.activeUsers > 0
+              return (
+                <button
+                  key={ch.channelId}
+                  className={`city-row${isActive ? ' active' : ''}`}
+                  onClick={() => switchCity(ch.channelId, ch.city, ch.timezone)}
+                >
+                  <div className="city-row-left">
+                    <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
+                    <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
+                    <span className="city-row-name">{ch.city}</span>
+                    {isActive && <span className="city-row-current">you're here</span>}
+                  </div>
+                  <div className="city-row-stats">
+                    {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
+                    {channelEventCounts[ch.channelId] > 0 && (
+                      <span className="city-row-events">🔥 {channelEventCounts[ch.channelId]} {channelEventCounts[ch.channelId] === 1 ? 'event' : 'events'}</span>
+                    )}
+                    <span className="city-row-count">{ch.messageCount} msgs</span>
+                  </div>
+                </button>
+              )
+            })}
           </div>
         </div>
       )}
 
-      {/* Mobile events drawer */}
       {showEventDrawer && (
-        <div className="city-picker-overlay" onClick={() => setShowEventDrawer(false)}>
-          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="city-picker-handle" />
-            <div className="city-picker-header">
-              <span className="city-picker-title">Events in {city}</span>
-              <button className="city-picker-close" onClick={() => setShowEventDrawer(false)}>✕</button>
-            </div>
-            <div className="city-picker-list">
-              <button
-                className="create-event-row"
-                onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}
-              >
-                + Create event
-              </button>
-              {(() => {
-                const tz = cityTimezone || 'UTC'
-                const isEventToday = e => {
-                  const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-                  const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
-                  return today === eventDay
-                }
-                const todayHilads = events.filter(isEventToday)
-                const todayCity = cityEvents.filter(isEventToday)
-                const renderEventRow = event => (
-                  <button
-                    key={event.id}
-                    className={`city-row${activeEventId === event.id ? ' active' : ''}`}
-                    onClick={() => handleSelectEvent(event)}
-                  >
-                    <div className="city-row-left">
-                      <span className="city-row-name">
-                        {EVENT_ICONS[event.type] ?? '📌'} {event.title}
-                      </span>
-                      <span className="city-row-current">
-                        🕐 {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
-                        {event.location_hint && ` · 📍 ${event.location_hint}`}
-                      </span>
-                    </div>
-                  </button>
-                )
-                if (todayHilads.length === 0 && todayCity.length === 0) {
-                  return <p className="events-empty-drawer">No events today. Be the first!</p>
-                }
-                return (
-                  <>
-                    {todayCity.length > 0 && <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>}
-                    {todayHilads.length === 0 && todayCity.length > 0 && <p className="events-empty-drawer" style={{ padding: '8px 12px' }}>No Hilads events today</p>}
-                    {todayHilads.map(renderEventRow)}
-                    {todayCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>🎫 City Events</p>}
-                    {todayCity.map(renderEventRow)}
-                  </>
-                )
-              })()}
-            </div>
+        <div className="full-page">
+          <div className="page-header">
+            <button className="page-back-btn" onClick={() => setShowEventDrawer(false)}>←</button>
+            <span className="page-title">Events in {city}</span>
+            <button className="page-action-btn" onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}>+ New</button>
+          </div>
+          <div className="page-body">
+            {(() => {
+              const tz = cityTimezone || 'UTC'
+              const isEventToday = e => {
+                const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+                const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
+                return today === eventDay
+              }
+              const todayHilads = events.filter(isEventToday)
+              const todayCity = cityEvents.filter(isEventToday)
+              const renderEventRow = event => (
+                <button
+                  key={event.id}
+                  className={`city-row${activeEventId === event.id ? ' active' : ''}`}
+                  onClick={() => handleSelectEvent(event)}
+                >
+                  <div className="city-row-left">
+                    <span className="city-row-name">
+                      {EVENT_ICONS[event.type] ?? '📌'} {event.title}
+                    </span>
+                    <span className="city-row-current">
+                      🕐 {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
+                      {event.location_hint && ` · 📍 ${event.location_hint}`}
+                    </span>
+                  </div>
+                </button>
+              )
+              if (todayHilads.length === 0 && todayCity.length === 0) {
+                return <p className="events-empty-drawer">No events today. Be the first!</p>
+              }
+              return (
+                <>
+                  {todayCity.length > 0 && <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>}
+                  {todayHilads.length === 0 && todayCity.length > 0 && <p className="events-empty-drawer" style={{ padding: '8px 12px' }}>No Hilads events today</p>}
+                  {todayHilads.map(renderEventRow)}
+                  {todayCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>🎫 City Events</p>}
+                  {todayCity.map(renderEventRow)}
+                </>
+              )
+            })()}
           </div>
         </div>
       )}
 
-      {/* Mobile people drawer */}
       {showPeopleDrawer && (
-        <div className="city-picker-overlay" onClick={() => setShowPeopleDrawer(false)}>
-          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="city-picker-handle" />
-            <div className="city-picker-header">
-              <span className="city-picker-title">People here ({onlineUsers.length})</span>
-              <button className="city-picker-close" onClick={() => setShowPeopleDrawer(false)}>✕</button>
-            </div>
-            <div className="city-picker-list">
-              {onlineUsers.map((user) => {
-                const [c1, c2] = avatarColors(user.nickname)
-                return (
-                  <div key={user.id} className="people-drawer-row">
-                    <span
-                      className="online-avatar"
-                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                      data-me={user.isMe ? 'true' : undefined}
-                    >
-                      {user.nickname[0].toUpperCase()}
-                    </span>
-                    <span className="people-drawer-name">
-                      {user.nickname}
-                      {user.isMe && <span className="people-drawer-you"> (you)</span>}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
+        <div className="full-page">
+          <div className="page-header">
+            <button className="page-back-btn" onClick={() => setShowPeopleDrawer(false)}>←</button>
+            <span className="page-title">People here · {onlineUsers.length}</span>
+          </div>
+          <div className="page-body">
+            {onlineUsers.map((user) => {
+              const [c1, c2] = avatarColors(user.nickname)
+              return (
+                <div key={user.id} className="people-drawer-row">
+                  <span
+                    className="online-avatar"
+                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                    data-me={user.isMe ? 'true' : undefined}
+                  >
+                    {user.nickname[0].toUpperCase()}
+                  </span>
+                  <span className="people-drawer-name">
+                    {user.nickname}
+                    {user.isMe && <span className="people-drawer-you"> (you)</span>}
+                  </span>
+                </div>
+              )
+            })}
           </div>
         </div>
       )}
 
-      {/* Profile drawer */}
       {showProfileDrawer && (
-        <div className="city-picker-overlay" onClick={() => setShowProfileDrawer(false)}>
-          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="city-picker-handle" />
-            <div className="city-picker-header">
-              <span className="city-picker-title">Your profile</span>
-              <button className="city-picker-close" onClick={() => setShowProfileDrawer(false)}>✕</button>
+        <div className="full-page">
+          <div className="page-header">
+            <button className="page-back-btn" onClick={() => setShowProfileDrawer(false)}>←</button>
+            <span className="page-title">Your profile</span>
+          </div>
+          <div className="page-body page-body--centered">
+            {(() => {
+              const [c1, c2] = avatarColors(profileNickInput || nickname)
+              return (
+                <div className="profile-avatar-row">
+                  <span
+                    className="online-avatar profile-avatar-lg"
+                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                  >
+                    {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
+                  </span>
+                </div>
+              )
+            })()}
+            <div className="modal-field">
+              <label className="modal-label">Nickname</label>
+              <input
+                className="modal-input"
+                type="text"
+                value={profileNickInput}
+                onChange={(e) => setProfileNickInput(e.target.value)}
+                maxLength={20}
+                placeholder="Your name..."
+                autoFocus
+              />
             </div>
-            <div className="profile-drawer-content">
-              {(() => {
-                const [c1, c2] = avatarColors(profileNickInput || nickname)
-                return (
-                  <div className="profile-avatar-row">
-                    <span
-                      className="online-avatar profile-avatar-lg"
-                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                    >
-                      {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
-                    </span>
-                  </div>
-                )
-              })()}
-              <div className="modal-field">
-                <label className="modal-label">Nickname</label>
-                <input
-                  className="modal-input"
-                  type="text"
-                  value={profileNickInput}
-                  onChange={(e) => setProfileNickInput(e.target.value)}
-                  maxLength={20}
-                  placeholder="Your name..."
-                  autoFocus
-                />
-              </div>
-              <button
-                className="modal-submit"
-                onClick={() => {
-                  const trimmed = profileNickInput.trim()
-                  if (trimmed) {
-                    setNickname(trimmed)
-                    nicknameRef.current = trimmed
-                    saveIdentity(trimmed, channelId, city)
-                  }
-                  setShowProfileDrawer(false)
-                }}
-                disabled={!profileNickInput.trim()}
-              >
-                Save
-              </button>
-              <p className="profile-hint">// anonymous · no sign-up</p>
-            </div>
+            <button
+              className="modal-submit"
+              onClick={() => {
+                const trimmed = profileNickInput.trim()
+                if (trimmed) {
+                  setNickname(trimmed)
+                  nicknameRef.current = trimmed
+                  saveIdentity(trimmed, channelId, city)
+                }
+                setShowProfileDrawer(false)
+              }}
+              disabled={!profileNickInput.trim()}
+            >
+              Save
+            </button>
+            <p className="profile-hint">// anonymous · no sign-up</p>
           </div>
         </div>
       )}
