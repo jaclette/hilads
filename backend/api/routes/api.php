@@ -50,18 +50,38 @@ $router->add('POST', '/api/v1/location/resolve', function () {
         'city'      => $city['name'],
         'channelId' => $city['id'],
         'timezone'  => $city['timezone'],
+        'country'   => $city['country'] ?? null,
     ]);
 });
 
 $router->add('GET', '/api/v1/channels', function () {
+    // Determine which channel IDs have actual data files to avoid reading 350 empty paths
+    $storageDir = Storage::dir() . '/';
+    $activeIds = [];
+    foreach (glob($storageDir . 'messages_*.json') as $f) {
+        if (preg_match('/messages_(\d+)\.json$/', $f, $m)) {
+            $activeIds[(int) $m[1]] = true;
+        }
+    }
+    foreach (glob($storageDir . 'presence_*.json') as $f) {
+        if (preg_match('/presence_(\d+)\.json$/', $f, $m)) {
+            $activeIds[(int) $m[1]] = true;
+        }
+    }
+
     $channels = [];
 
     foreach (CityRepository::all() as $city) {
-        $stats = MessageRepository::getStats($city['id']);
+        if (isset($activeIds[$city['id']])) {
+            $stats = MessageRepository::getStats($city['id']);
+        } else {
+            $stats = ['messageCount' => 0, 'activeUsers' => 0, 'lastActivityAt' => null];
+        }
 
         $channels[] = [
             'channelId'      => $city['id'],
             'city'           => $city['name'],
+            'country'        => $city['country'] ?? null,
             'timezone'       => $city['timezone'],
             'messageCount'   => $stats['messageCount'],
             'activeUsers'    => $stats['activeUsers'],

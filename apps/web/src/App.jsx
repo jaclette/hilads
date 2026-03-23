@@ -264,6 +264,7 @@ export default function App() {
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
+  const [cityCountry, setCityCountry] = useState(null)
   const [geoBlocked, setGeoBlocked] = useState(false)
   const [obPickingCity, setObPickingCity] = useState(false)
   const [obChannels, setObChannels] = useState([])
@@ -348,6 +349,7 @@ export default function App() {
       const position = await getPosition()
       const location = await resolveLocation(position.coords.latitude, position.coords.longitude)
       setCity(location.city)
+      setCityCountry(location.country ?? null)
       setPreviewTimezone(location.timezone ?? 'UTC')
       fetchEvents(location.channelId).then(data => {
         const tz = location.timezone ?? 'UTC'
@@ -706,10 +708,11 @@ export default function App() {
     setObChannelEventCounts({ ...counts })
   }
 
-  function joinCityFromOb(newChannelId, cityName, timezone) {
+  function joinCityFromOb(newChannelId, cityName, timezone, country) {
     setObPickingCity(false)
     setCity(cityName)
-    locPromiseRef.current = Promise.resolve({ channelId: newChannelId, city: cityName, timezone: timezone ?? 'UTC' })
+    setCityCountry(country ?? null)
+    locPromiseRef.current = Promise.resolve({ channelId: newChannelId, city: cityName, timezone: timezone ?? 'UTC', country: country ?? null })
     handleJoin(null)
   }
 
@@ -718,12 +721,13 @@ export default function App() {
     locPromiseRef.current = startGeolocation()
   }
 
-  async function switchCity(newChannelId, newCityName, newCityTimezone) {
+  async function switchCity(newChannelId, newCityName, newCityTimezone, newCityCountry) {
     if (newChannelId === channelId) {
       setShowCityPicker(false)
       return
     }
     setShowCityPicker(false)
+    setCityCountry(newCityCountry ?? null)
 
     // stop everything tied to the previous room
     activeRef.current = false
@@ -1000,7 +1004,7 @@ export default function App() {
       >
         <div className="city-row-left">
           <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
-          <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
+          <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.country)}</span>
           <span className="city-row-name">{ch.city}</span>
           {isActive && <span className="city-row-current">you're here</span>}
         </div>
@@ -1030,7 +1034,7 @@ export default function App() {
             {city ? (
               <>
                 <div>
-                  <span className="ob-city-name">{city} <span style={{ fontSize: '0.8em', verticalAlign: 'middle', WebkitTextFillColor: 'initial' }}>{cityFlag(city)}</span></span>
+                  <span className="ob-city-name">{city} <span style={{ fontSize: '0.8em', verticalAlign: 'middle', WebkitTextFillColor: 'initial' }}>{cityFlag(cityCountry)}</span></span>
                 </div>
                 <p className="ob-tagline">See who's around. Say hi instantly.</p>
                 <span className="ob-live"><span className="ob-live-fire">🔥</span> {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now</span>
@@ -1155,7 +1159,7 @@ export default function App() {
                 return filtered.map(ch => renderCityRow(
                   ch,
                   obChannelEventCounts[ch.channelId] ?? 0,
-                  (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone)
+                  (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
                 ))
               })()}
             </div>
@@ -1264,7 +1268,7 @@ export default function App() {
               <Logo variant="icon" size="lg" />
               <div className="header-hero-city">
                 <span className="header-hero-name">
-                  {cityFlag(city)} {city}
+                  {cityFlag(cityCountry)} {city}
                 </span>
                 <span className="online-label">
                   <span className="online-pulse" />
@@ -1467,7 +1471,7 @@ export default function App() {
               return filtered.map(ch => renderCityRow(
                 ch,
                 channelEventCounts[ch.channelId] ?? 0,
-                (ch) => switchCity(ch.channelId, ch.city, ch.timezone),
+                (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
                 !q && ch.channelId === channelId
               ))
             })()}
