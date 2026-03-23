@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, fetchEventParticipants, toggleEventParticipation } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl } from './eventUtils'
@@ -612,7 +612,9 @@ export default function App() {
     setUploading(true)
     try {
       const { url } = await uploadImage(file)
-      const msg = await sendImageMessage(channelId, sessionIdRef.current, guest.guestId, nickname, url)
+      const msg = activeEventIdRef.current
+        ? await sendEventImageMessage(activeEventIdRef.current, guest.guestId, nickname, url)
+        : await sendImageMessage(channelId, sessionIdRef.current, guest.guestId, nickname, url)
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { ...msg }])
     } catch (err) {
@@ -1443,8 +1445,8 @@ export default function App() {
           <button
             type="button"
             className="upload-btn"
-            title={activeEventId ? 'Images not supported in event chat' : 'Send image'}
-            disabled={uploading || sending || !!activeEventId}
+            title="Send image"
+            disabled={uploading || sending}
             onClick={() => fileInputRef.current?.click()}
           >
             {uploading ? <span className="upload-spinner" /> : <ImageIcon />}

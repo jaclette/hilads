@@ -190,3 +190,17 @@ export async function sendEventMessage(eventId, guestId, nickname, content) {
   }
   return res.json()
 }
+
+export async function sendEventImageMessage(eventId, guestId, nickname, imageUrl) {
+  const res = await fetch(`${BASE}/events/${eventId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, nickname, type: 'image', imageUrl }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send image')
+  }
+  return res.json()
+}

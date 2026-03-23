@@ -491,6 +491,8 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
     $guestId  = $body['guestId']  ?? null;
     $nickname = $body['nickname'] ?? null;
     $content  = $body['content']  ?? null;
+    $type     = $body['type']     ?? 'text';
+    $imageUrl = $body['imageUrl'] ?? null;
 
     if (empty($guestId) || !is_string($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -506,15 +508,37 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
         Response::json(['error' => 'nickname must not be empty'], 400);
     }
 
-    if (empty($content) || !is_string($content)) {
-        Response::json(['error' => 'content is required'], 400);
+    if (!in_array($type, ['text', 'image'], true)) {
+        Response::json(['error' => 'type must be text or image'], 400);
     }
 
-    if (strlen($content) > 1000) {
-        Response::json(['error' => 'content must not exceed 1000 characters'], 400);
-    }
+    if ($type === 'image') {
+        if (empty($imageUrl) || !is_string($imageUrl)) {
+            Response::json(['error' => 'imageUrl is required for image messages'], 400);
+        }
 
-    $message = MessageRepository::add($eventId, $guestId, $nickname, $content);
+        $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+        if (!str_starts_with($imageUrl, $r2Base)) {
+            Response::json(['error' => 'Invalid image URL'], 400);
+        }
+
+        $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
+        if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
+            Response::json(['error' => 'Invalid image reference'], 400);
+        }
+
+        $message = MessageRepository::addImage($eventId, $guestId, $nickname, $imageUrl);
+    } else {
+        if (empty($content) || !is_string($content)) {
+            Response::json(['error' => 'content is required'], 400);
+        }
+
+        if (strlen($content) > 1000) {
+            Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+        }
+
+        $message = MessageRepository::add($eventId, $guestId, $nickname, $content);
+    }
 
     Response::json($message, 201);
 });
