@@ -42,12 +42,20 @@ class AuthService
             Response::json(['error' => 'An account with this email already exists'], 409);
         }
 
-        $user = UserRepository::create([
-            'email'         => $email,
-            'password_hash' => password_hash($password, PASSWORD_BCRYPT),
-            'display_name'  => $displayName,
-            'guest_id'      => $guestId,
-        ]);
+        try {
+            $user = UserRepository::create([
+                'email'         => $email,
+                'password_hash' => password_hash($password, PASSWORD_BCRYPT),
+                'display_name'  => $displayName,
+                'guest_id'      => $guestId,
+            ]);
+        } catch (\RuntimeException $e) {
+            if ($e->getMessage() === 'email_already_exists') {
+                // Race condition: two signups with same email both passed findByEmail check
+                Response::json(['error' => 'An account with this email already exists'], 409);
+            }
+            throw $e;
+        }
 
         $_SESSION['user_id'] = $user['id'];
 

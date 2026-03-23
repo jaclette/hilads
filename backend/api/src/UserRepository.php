@@ -9,8 +9,6 @@ class UserRepository
         $id  = bin2hex(random_bytes(16));
         $now = time();
 
-        error_log('[hilads:repo] UserRepository::create email=' . ($data['email'] ?? 'null'));
-
         $stmt = Database::pdo()->prepare('
             INSERT INTO users
                 (id, email, password_hash, google_id, display_name, birth_year,
@@ -19,42 +17,44 @@ class UserRepository
                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ');
 
-        $stmt->execute([
-            $id,
-            $data['email']             ?? null,
-            $data['password_hash']     ?? null,
-            $data['google_id']         ?? null,
-            $data['display_name'],
-            $data['birth_year']        ?? null,
-            $data['profile_photo_url'] ?? null,
-            $data['home_city']         ?? null,
-            $data['interests']         ?? '[]',
-            $data['guest_id']          ?? null,
-            $now,
-            $now,
-        ]);
+        try {
+            $stmt->execute([
+                $id,
+                $data['email']             ?? null,
+                $data['password_hash']     ?? null,
+                $data['google_id']         ?? null,
+                $data['display_name'],
+                $data['birth_year']        ?? null,
+                $data['profile_photo_url'] ?? null,
+                $data['home_city']         ?? null,
+                $data['interests']         ?? '[]',
+                $data['guest_id']          ?? null,
+                $now,
+                $now,
+            ]);
+        } catch (\PDOException $e) {
+            // SQLSTATE 23xxx = integrity constraint violation (unique, not-null, fk, check)
+            if (str_starts_with((string) $e->getCode(), '23')) {
+                throw new \RuntimeException('email_already_exists');
+            }
+            throw $e;
+        }
 
-        $created = self::findById($id);
-        error_log('[hilads:repo] UserRepository::create done id=' . $id . ' found=' . ($created !== null ? 'yes' : 'no'));
-        return $created;
+        return self::findById($id);
     }
 
     public static function findById(string $id): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM users WHERE id = ?');
         $stmt->execute([$id]);
-        $row = $stmt->fetch() ?: null;
-        error_log('[hilads:repo] UserRepository::findById id=' . $id . ' found=' . ($row !== null ? 'yes' : 'no'));
-        return $row;
+        return $stmt->fetch() ?: null;
     }
 
     public static function findByEmail(string $email): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM users WHERE email = ?');
         $stmt->execute([strtolower($email)]);
-        $row = $stmt->fetch() ?: null;
-        error_log('[hilads:repo] UserRepository::findByEmail email=' . $email . ' found=' . ($row !== null ? 'yes' : 'no'));
-        return $row;
+        return $stmt->fetch() ?: null;
     }
 
     public static function findByGoogleId(string $googleId): ?array

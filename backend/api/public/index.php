@@ -6,12 +6,12 @@ ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
 
 set_exception_handler(function (Throwable $e) {
-    error_log('[hilads] Uncaught ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+    error_log('[hilads] ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) {
         http_response_code(500);
         header('Content-Type: application/json');
     }
-    echo json_encode(['error' => 'Internal server error', 'detail' => $e->getMessage()]);
+    echo json_encode(['error' => 'Internal server error']);
     exit();
 });
 
@@ -32,37 +32,18 @@ if ($method === 'GET' && $uri === '/health') {
     header('Content-Type: application/json');
 
     $dbUrl    = getenv('DATABASE_URL') ?: null;
-    $dbTarget = 'not set';
-    $dbStatus = 'not configured';
+    $dbStatus = $dbUrl ? 'configured' : 'no DATABASE_URL';
     $dbError  = null;
 
     if ($dbUrl) {
-        $p        = parse_url($dbUrl);
-        $dbTarget = ($p['host'] ?? '?') . ':' . ($p['port'] ?? 5432) . '/' . ltrim($p['path'] ?? '', '/');
+        $p = parse_url($dbUrl);
         try {
             $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=require',
                 $p['host'], $p['port'] ?? 5432, ltrim($p['path'], '/'));
-            $pdo = new PDO($dsn,
+            new PDO($dsn,
                 isset($p['user']) ? urldecode($p['user']) : null,
                 isset($p['pass']) ? urldecode($p['pass']) : null,
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-
-            $connRow    = $pdo->query("SELECT current_database(), current_user, current_schema()")->fetch(PDO::FETCH_NUM);
-            $dbDatabase = $connRow[0];
-            $dbUser     = $connRow[1];
-            $dbSchema   = $connRow[2];
-
-            // Check users table in ALL schemas (not just public — Render may default to user schema)
-            $tblRow     = $pdo->query("SELECT table_schema FROM information_schema.tables WHERE table_name='users' LIMIT 1")->fetch(PDO::FETCH_NUM);
-            $usersSchema = $tblRow ? $tblRow[0] : null;
-
-            // Count rows in users if table exists
-            $userCount = null;
-            if ($usersSchema) {
-                $cnt = $pdo->query("SELECT COUNT(*) FROM \"$usersSchema\".users")->fetch(PDO::FETCH_NUM);
-                $userCount = (int)$cnt[0];
-            }
-
             $dbStatus = 'connected';
         } catch (Throwable $ex) {
             $dbStatus = 'connection_failed';
@@ -70,20 +51,11 @@ if ($method === 'GET' && $uri === '/health') {
         }
     }
 
-    error_log('[hilads:health] db_status=' . $dbStatus . ' database=' . ($dbDatabase ?? '?') . ' schema=' . ($dbSchema ?? '?') . ' users_table_schema=' . ($usersSchema ?? 'MISSING') . ' user_count=' . ($userCount ?? 'n/a') . ($dbError ? ' error=' . $dbError : ''));
-
     echo json_encode([
-        'status'            => 'ok',
-        'service'           => 'hilads-api',
-        'db_status'         => $dbStatus,
-        'db_target'         => $dbTarget,
-        'db_database'       => $dbDatabase ?? null,
-        'db_user'           => $dbUser ?? null,
-        'db_current_schema' => $dbSchema ?? null,
-        'users_table_schema'=> $usersSchema ?? null,   // null = table does not exist anywhere
-        'users_row_count'   => $userCount,
-        'db_error'          => $dbError ?? null,
-        'session_user_id'   => $_SESSION['user_id'] ?? null,  // shows if session is carrying a user
+        'status'     => 'ok',
+        'service'    => 'hilads-api',
+        'db_status'  => $dbStatus,
+        'db_error'   => $dbError ?? null,
     ]);
     exit();
 }

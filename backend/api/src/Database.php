@@ -31,10 +31,6 @@ class Database
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
 
-            // Log exact connection target so we can compare with Render dashboard
-            $row = self::$pdo->query("SELECT current_database(), current_user, current_schema()")->fetch(PDO::FETCH_NUM);
-            error_log('[hilads:db] connected database=' . $row[0] . ' user=' . $row[1] . ' schema=' . $row[2]);
-
             self::migrate(self::$pdo);
         }
 
@@ -43,7 +39,6 @@ class Database
 
     private static function migrate(PDO $pdo): void
     {
-        error_log('[hilads:db] migrate() start');
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS users (
                 id                TEXT PRIMARY KEY,
@@ -60,8 +55,9 @@ class Database
                 updated_at        INTEGER NOT NULL
             )
         ");
-        // Log which schema the users table actually landed in
-        $row = $pdo->query("SELECT table_schema FROM information_schema.tables WHERE table_name='users' LIMIT 1")->fetch(PDO::FETCH_NUM);
-        error_log('[hilads:db] migrate() done — users table in schema=' . ($row[0] ?? 'NOT FOUND'));
+
+        // Indexes — CREATE INDEX IF NOT EXISTS is idempotent, safe to run on every boot
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_users_email    ON users (lower(email))");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_users_guest_id ON users (guest_id) WHERE guest_id IS NOT NULL");
     }
 }
