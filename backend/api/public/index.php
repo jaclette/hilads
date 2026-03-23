@@ -21,9 +21,19 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method === 'GET' && $uri === '/health') {
     http_response_code(200);
     header('Content-Type: application/json');
+    $dbUrl      = getenv('DATABASE_URL') ?: null;
+    $dbDriver   = $dbUrl ? 'pgsql' : 'none';
+    $dbHost     = 'not set';
+    if ($dbUrl) {
+        $p = parse_url($dbUrl);
+        $dbHost = ($p['host'] ?? '?') . ':' . ($p['port'] ?? 5432) . ltrim($p['path'] ?? '', '/');
+    }
+    error_log('[hilads:boot] db_driver=' . $dbDriver . ' db_target=' . $dbHost);
     echo json_encode([
-        'status' => 'ok',
-        'service' => 'hilads-api',
+        'status'    => 'ok',
+        'service'   => 'hilads-api',
+        'db_driver' => $dbDriver,
+        'db_target' => $dbHost,
     ]);
     exit();
 }
