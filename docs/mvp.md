@@ -1,195 +1,129 @@
-# Hilads — MVP Definition
+# Hilads — MVP v1
 
-## 🧠 Vision
+## What is Hilads?
 
-Hilads is a social travel app that instantly connects users to a local city chat without friction.
+Hilads is a real-time social app that makes cities feel alive.
 
-No signup. No search. Just open → connect → chat.
+Open the app → see who's around → jump into something happening now.
 
----
-
-## 🎯 MVP Goal
-
-Validate one core assumption:
-
-👉 Travelers want to instantly connect with people nearby without friction.
+It is not a chat app. It is a **live social layer on top of cities**.
 
 ---
 
-## 🚀 MVP Features (v1)
+## Core Concept
 
-### 1. Geolocation
-- Get user location (lat/lng)
-- Resolve nearest major city
+When you open Hilads, you feel the energy of your city instantly.
 
-### 2. Auto Channel Join
-- User is automatically placed in a city channel
-- No selection UI
+- Who's here right now?
+- What's happening nearby?
+- Can I join something in the next 10 minutes?
 
-### 3. Anonymous Identity
-- Random nickname generated
-- Example: `BlueTiger42`, `CrazyBanana7`
-
-### 4. Public Chat
-- Read messages in city channel
-- Send text messages
-
-### 5. Basic UI
-- Chat screen (main)
-- Minimal header (city name)
-- Message input
+No friction. No sign-up wall. Just instant presence.
 
 ---
 
-## ❌ Not in MVP
+## Current Features (v1)
 
-- No login
-- No private chat
-- No images
-- No notifications
-- No premium
-- No multi-channel
-- No profiles
+### Identity
+- Lightweight guest session (UUID + nickname)
+- Custom nickname support
+- No password, no email required
 
----
+### Presence
+- See who's online in the city right now
+- Live user count per city
+- Presence signals even with low traffic (liveness engine)
 
-## 🧱 Architecture Overview
+### City Chat
+- Real-time chat per city
+- Text + photo messages
+- Auto-join based on geolocation
+- Rate-limited to prevent spam
 
-### Frontend
-- React (web)
-- Simple chat interface
+### Events
+- Create a spontaneous event (time, place, vibe)
+- Browse active events in the city
+- Join an event → show attendance
+- Events expire automatically
 
-### Backend
-- PHP API
-- REST endpoints
-- MySQL database
-
-### Infra (later)
-- Hosting
-- CDN
-- WebSocket (optional later)
-
----
-
-## 🗂️ Core Concepts
-
-### User (anonymous)
-- Temporary identity
-- Stored via guest session
-
-### City
-- Predefined dataset
-- Used to assign channels
-
-### Channel
-- One channel per city
-
-### Message
-- Text message in a channel
+### Geolocation
+- Auto-detect city on open
+- Resolve nearest supported city
+- No manual city selection required
 
 ---
 
-## 🔌 API v1
+## Core User Flow
 
-### Create guest session
-POST /api/v1/guest/session
+```
+Open app
+  → geolocation resolves city
+  → see who's here + active events
+  → chat or join an event instantly
+```
 
-Response:
-{
-"guestId": "...",
-"nickname": "BlueTiger42"
-}
-
----
-
-### Resolve location
-POST /api/v1/location/resolve
-
-Body:
-{
-"lat": 10.8231,
-"lng": 106.6297
-}
-
-Response:
-{
-"city": "Ho Chi Minh City",
-"channelId": 123
-}
+That's it. Three steps to feeling the city.
 
 ---
 
-### Get messages
-GET /api/v1/channels/{channelId}/messages
+## Product Principles
+
+**Mobile-first** — no web patterns. Native-feel on mobile. FAB, bottom nav, full screens.
+
+**Instant interaction** — zero-friction entry. No onboarding walls. You're in immediately.
+
+**No empty states** — the city always feels active. Presence signals, event hints, activity indicators.
+
+**Emotional, not functional** — the goal is to feel something, not to complete a task.
 
 ---
 
-### Send message
-POST /api/v1/channels/{channelId}/messages
+## What We Avoid
 
-Body:
-{
-"guestId": "...",
-"content": "Anyone up for beers tonight?"
-}
-
----
-
-## 🗃️ Database (v1)
-
-### cities
-- id
-- name
-- country
-- lat
-- lng
-- population
+- Heavy authentication (no passwords, no OAuth flows)
+- Complex social graph (no followers, no feed algorithms)
+- Private messaging (stay public and spontaneous)
+- Notifications system (not yet — adds complexity without clear retention gain)
+- Features that don't answer: *"Does this make the city feel more alive right now?"*
 
 ---
 
-### channels
-- id
-- city_id
+## Key Rule
+
+> **"Does this make the city feel more alive right now?"**
+>
+> If the answer is no → don't build it.
 
 ---
 
-### guest_sessions
-- id
-- nickname
-- created_at
+## Tech Stack (v1)
+
+| Layer | Stack |
+|---|---|
+| Frontend | React 18, Vite, mobile-first |
+| Backend | PHP 8.2, plain REST API, no framework |
+| Database | MySQL |
+| Real-time | Polling + Node.js WebSocket (presence) |
+| Storage | Cloudflare R2 (photos) |
+| Hosting | Render |
 
 ---
 
-### messages
-- id
-- channel_id
-- guest_id
-- content
-- created_at
+## Success Metrics
+
+- Time to first interaction (target: <30s)
+- Messages per session
+- Events created per day
+- Users who return within 24h
+- Active users per city at peak time
 
 ---
 
-## 📈 Success Metrics
+## What Comes Next
 
-- Messages per user
-- Time to first message
-- Active users per city
-- Messages per channel
+When v1 is stable and we see retention signals:
 
----
-
-## ⚠️ Risks
-
-- Empty channels (cold start)
-- Spam / trolls
-- Low retention
-
----
-
-## 🔥 Next Steps After MVP
-
-- Login system
-- Private messages
-- Notifications
-- Photo upload
-- Events (meetups)
+- Push notifications (for nearby events)
+- Better liveness engine (more activity signals)
+- City rankings / trending moments
+- Richer event formats (recurring, ticketed, etc.)
