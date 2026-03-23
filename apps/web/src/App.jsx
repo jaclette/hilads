@@ -265,7 +265,8 @@ export default function App() {
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
   const [cityCountry, setCityCountry] = useState(null)
-  const [geoBlocked, setGeoBlocked] = useState(false)
+  // 'pending' | 'resolving' | 'denied' | 'error'
+  const [geoState, setGeoState] = useState('pending')
   const [obPickingCity, setObPickingCity] = useState(false)
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
@@ -345,12 +346,15 @@ export default function App() {
   }, [feed])
 
   async function startGeolocation() {
+    setGeoState('pending')
     try {
       const position = await getPosition()
+      setGeoState('resolving')
       const location = await resolveLocation(position.coords.latitude, position.coords.longitude)
       setCity(location.city)
       setCityCountry(location.country ?? null)
       setPreviewTimezone(location.timezone ?? 'UTC')
+      setGeoState('resolved')
       fetchEvents(location.channelId).then(data => {
         const tz = location.timezone ?? 'UTC'
         const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
@@ -366,8 +370,15 @@ export default function App() {
         setPreviewEvents(filtered)
       }).catch(() => {})
       return location
-    } catch {
-      setGeoBlocked(true)
+    } catch (err) {
+      // GeolocationPositionError.PERMISSION_DENIED = code 1
+      // POSITION_UNAVAILABLE = 2, TIMEOUT = 3 — permission was granted but no fix
+      if (err && err.code === 1) {
+        setGeoState('denied')
+      } else {
+        // covers: no geolocation API, GPS unavailable/timeout, network/server error
+        setGeoState('error')
+      }
       return null
     }
   }
@@ -375,12 +386,11 @@ export default function App() {
   function getPosition() {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported by your browser'))
+        reject(new Error('Geolocation not supported'))
         return
       }
-      navigator.geolocation.getCurrentPosition(resolve, () =>
-        reject(new Error('Location access denied'))
-      )
+      // Pass the raw GeolocationPositionError so callers can inspect .code
+      navigator.geolocation.getCurrentPosition(resolve, (err) => reject(err))
     })
   }
 
@@ -717,7 +727,7 @@ export default function App() {
   }
 
   function retryGeo() {
-    setGeoBlocked(false)
+    setGeoState('pending')
     locPromiseRef.current = startGeolocation()
   }
 
@@ -1054,9 +1064,9 @@ export default function App() {
                   </div>
                 ) : null}
               </>
-            ) : geoBlocked ? (
+            ) : geoState === 'denied' ? (
               <>
-                <span className="ob-geo-status">
+                <span className="ob-geo-status ob-geo-status--denied">
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
@@ -1065,13 +1075,26 @@ export default function App() {
                 </span>
                 <p className="ob-geo-headline">Pick a city<br />and jump in</p>
               </>
-            ) : (
+            ) : geoState === 'error' ? (
+              <>
+                <span className="ob-geo-status ob-geo-status--warn">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  Couldn't reach your location
+                </span>
+                <p className="ob-geo-headline">Pick a city<br />and jump in</p>
+              </>
+            ) : geoState === 'resolving' ? (
               <span className="ob-locating">› locating...</span>
+            ) : (
+              <span className="ob-locating">› requesting location...</span>
             )}
           </div>
 
-          <form className="ob-form" onSubmit={geoBlocked ? (e) => { e.preventDefault(); openObCityPicker() } : handleJoin}>
-            {geoBlocked ? (
+          <form className="ob-form" onSubmit={(geoState === 'denied' || geoState === 'error') ? (e) => { e.preventDefault(); openObCityPicker() } : handleJoin}>
+            {(geoState === 'denied' || geoState === 'error') ? (
               <>
                 <button type="submit" className="ob-btn">Browse cities →</button>
                 <label className="ob-label" style={{ marginTop: 4 }}>Your name</label>
@@ -1093,7 +1116,7 @@ export default function App() {
                 </div>
                 {navigator.geolocation && (
                   <button type="button" className="ob-geo-retry" onClick={retryGeo}>
-                    Use my location instead
+                    {geoState === 'error' ? 'Try again' : 'Use my location instead'}
                   </button>
                 )}
               </>

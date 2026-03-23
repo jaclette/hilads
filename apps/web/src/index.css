@@ -244,6 +244,16 @@ html, body, #root {
   padding: 4px 10px;
 }
 
+.ob-geo-status--warn {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+
+.ob-geo-status--denied {
+  color: var(--muted2);
+}
+
 .ob-geo-headline {
   font-size: 1.55rem;
   font-weight: 700;
