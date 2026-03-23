@@ -55,8 +55,8 @@ function NavIconPeople() {
       {/* Front person */}
       <circle cx="15.5" cy="8" r="3.5" />
       <path d="M8 21a9 9 0 0 1 14 0" />
-      {/* Presence dot */}
-      <circle cx="20.5" cy="3.5" r="2.2" fill="currentColor" stroke="none" />
+      {/* Green presence dot — always green, not accent */}
+      <circle cx="20.5" cy="3.5" r="2.5" fill="var(--green)" stroke="var(--bg)" strokeWidth="1" />
     </svg>
   )
 }
@@ -68,6 +68,8 @@ function NavIconProfile() {
       <circle cx="12" cy="8" r="4" />
       {/* Shoulders */}
       <path d="M4 21a9 9 0 0 1 16 0" />
+      {/* Status dot */}
+      <circle cx="19.5" cy="5" r="2.2" fill="currentColor" stroke="none" />
     </svg>
   )
 }
@@ -1201,30 +1203,28 @@ export default function App() {
             onClick={() => setShowEventDrawer(true)}
           >
             <span className="bottom-nav-icon"><NavIconEvents /></span>
-            <span className="bottom-nav-label">Events</span>
+            <span className="bottom-nav-label">Hot</span>
           </button>
           <button
             className={`bottom-nav-tab${showCityPicker ? ' active' : ''}`}
             onClick={openCityPicker}
           >
             <span className="bottom-nav-icon"><NavIconCity /></span>
-            <span className="bottom-nav-label">City</span>
+            <span className="bottom-nav-label">Cities</span>
           </button>
           <button
             className={`bottom-nav-tab${showPeopleDrawer ? ' active' : ''}`}
             onClick={() => setShowPeopleDrawer(true)}
           >
             <span className="bottom-nav-icon"><NavIconPeople /></span>
-            <span className="bottom-nav-label">
-              {onlineUsers.length > 0 ? `${onlineUsers.length} here` : 'People'}
-            </span>
+            <span className="bottom-nav-label">Here</span>
           </button>
           <button
             className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
             onClick={() => { setProfileNickInput(nickname); setShowProfileDrawer(true) }}
           >
             <span className="bottom-nav-icon"><NavIconProfile /></span>
-            <span className="bottom-nav-label">{guest?.nickname ?? 'Profile'}</span>
+            <span className="bottom-nav-label">Me</span>
           </button>
         </nav>
       </div>

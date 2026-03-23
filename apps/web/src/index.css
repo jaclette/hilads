@@ -537,6 +537,12 @@ html, body, #root {
 
 .bottom-nav-tab.active .bottom-nav-icon {
   filter: drop-shadow(0 0 4px rgba(194, 74, 56, 0.7));
+  animation: icon-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes icon-breathe {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.12); opacity: 0.85; }
 }
 
 .bottom-nav-label {
