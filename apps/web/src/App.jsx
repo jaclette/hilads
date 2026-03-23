@@ -1145,9 +1145,12 @@ export default function App() {
                   </button>
                 )}
                 {!account && (
-                  <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
-                    Create account instead
-                  </button>
+                  <div className="ob-identity-cta">
+                    <p className="ob-identity-hint">Don't lose your name 👇</p>
+                    <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
+                      ✨ Save my identity
+                    </button>
+                  </div>
                 )}
               </>
             ) : (
@@ -1174,9 +1177,12 @@ export default function App() {
                   {city ? `Join ${city}` : 'Join Chat'} →
                 </button>
                 {!account && (
-                  <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
-                    Create account instead
-                  </button>
+                  <div className="ob-identity-cta">
+                    <p className="ob-identity-hint">Don't lose your name 👇</p>
+                    <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
+                      ✨ Save my identity
+                    </button>
+                  </div>
                 )}
               </>
             )}

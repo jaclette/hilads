@@ -281,6 +281,25 @@ html, body, #root {
   opacity: 0.55;
 }
 
+.ob-identity-cta {
+  width: 100%;
+  animation: ob-identity-fadein 0.5s ease both;
+  animation-delay: 0.25s;
+  opacity: 0;
+}
+
+@keyframes ob-identity-fadein {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ob-identity-hint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted2);
+  margin: 0 0 6px;
+}
+
 .ob-create-account {
   background: none;
   border: 1px solid var(--border);
@@ -291,11 +310,16 @@ html, body, #root {
   padding: 10px;
   width: 100%;
   cursor: pointer;
-  margin-top: 4px;
+  transition: color 0.15s, border-color 0.15s, transform 0.12s;
   -webkit-tap-highlight-color: transparent;
 }
+.ob-create-account:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.25);
+}
 .ob-create-account:active {
-  opacity: 0.7;
+  transform: scale(0.97);
+  opacity: 0.75;
 }
 
 .ob-form {
