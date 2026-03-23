@@ -9,11 +9,24 @@ class Database
     public static function pdo(): PDO
     {
         if (self::$pdo === null) {
-            $path     = Storage::path('users.db');
-            self::$pdo = new PDO('sqlite:' . $path);
-            self::$pdo->setAttribute(PDO::ATTR_ERRMODE,            PDO::ERRMODE_EXCEPTION);
-            self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            self::$pdo->exec('PRAGMA journal_mode=WAL');  // better concurrent read performance
+            $url = getenv('DATABASE_URL');
+            if (!$url) {
+                throw new \RuntimeException('DATABASE_URL environment variable is not set');
+            }
+
+            $parts = parse_url($url);
+            $dsn   = sprintf(
+                'pgsql:host=%s;port=%s;dbname=%s',
+                $parts['host'],
+                $parts['port'] ?? 5432,
+                ltrim($parts['path'], '/')
+            );
+
+            self::$pdo = new PDO($dsn, $parts['user'] ?? null, $parts['pass'] ?? null, [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            ]);
+
             self::migrate(self::$pdo);
         }
 
