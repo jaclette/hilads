@@ -1037,28 +1037,31 @@ export default function App() {
       <div className="screen chat">
         <header className="chat-header">
           {activeEvent ? (
-            /* Event mode: compact bar with back + event info */
-            <>
-              <div className="header-top-row">
-                <button className="back-to-city-btn" onClick={handleBackToCity}>← {city}</button>
+            /* Event mode */
+            <div className="event-header">
+              <div className="event-header-top">
+                <button className="event-back-btn" onClick={handleBackToCity}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                  </svg>
+                  <span className="event-back-label">{city}</span>
+                </button>
                 <button
-                  className={`im-in-btn${participatedEvents.has(activeEvent.id) ? ' im-in-btn--active' : ''}`}
+                  className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
                   onClick={() => handleToggleParticipation(activeEvent.id)}
                 >
-                  {participatedEvents.has(activeEvent.id) ? '✅ I\'m in' : '👍 I\'m in'}
+                  {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
                 </button>
               </div>
-              <div className="header-hero-city">
-                <span className="header-hero-name">
-                  {EVENT_ICONS[activeEvent.type] ?? '📌'} {activeEvent.title}
-                </span>
+              <div className="event-header-body">
+                <span className="event-header-title">{activeEvent.title}</span>
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
-                  {activeEvent.location_hint && ` · 📍 ${activeEvent.location_hint}`}
-                  {` · 🔥 ${eventPresence[activeEvent.id] ?? 0} here · 👍 ${eventParticipants[activeEvent.id] ?? 0} going`}
+                  {activeEvent.location_hint && ` · ${activeEvent.location_hint}`}
+                  {` · ${eventPresence[activeEvent.id] ?? 0} here · ${eventParticipants[activeEvent.id] ?? 0} going`}
                 </span>
               </div>
-            </>
+            </div>
           ) : (
             /* City mode: centered hero header */
             <div className="header-hero">
@@ -1281,11 +1284,11 @@ export default function App() {
         <div className="full-page">
           <div className="page-header">
             <button className="page-back-btn" onClick={() => setShowEventDrawer(false)}>←</button>
-            <span className="page-title">Events</span>
-            <button className="page-action-btn" onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}>+ New</button>
+            <span className="page-title">Hot</span>
           </div>
-          <div className="page-body">
+          <div className="page-body page-body--has-fab">
             {(() => {
+              const openCreate = () => { setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
               const tz = cityTimezone || 'UTC'
               const isEventToday = e => {
                 const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
@@ -1305,26 +1308,43 @@ export default function App() {
                       {EVENT_ICONS[event.type] ?? '📌'} {event.title}
                     </span>
                     <span className="city-row-current">
-                      🕐 {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
-                      {event.location_hint && ` · 📍 ${event.location_hint}`}
+                      {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
+                      {event.location_hint && ` · ${event.location_hint}`}
                     </span>
                   </div>
                 </button>
               )
               if (todayHilads.length === 0 && todayCity.length === 0) {
-                return <p className="events-empty-drawer">No events today. Be the first!</p>
+                return (
+                  <div className="events-empty-state">
+                    <p className="events-empty-title">Nothing on yet</p>
+                    <p className="events-empty-sub">Be the first to make something happen in {city}</p>
+                    <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                  </div>
+                )
               }
               return (
                 <>
                   {todayCity.length > 0 && <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>}
                   {todayHilads.length === 0 && todayCity.length > 0 && <p className="events-empty-drawer" style={{ padding: '8px 12px' }}>No Hilads events today</p>}
                   {todayHilads.map(renderEventRow)}
-                  {todayCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>🎫 City Events</p>}
+                  {todayCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>City Events</p>}
                   {todayCity.map(renderEventRow)}
                 </>
               )
             })()}
           </div>
+          {/* Floating action button */}
+          <button
+            className="events-fab"
+            onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}
+            aria-label="Create event"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
         </div>
       )}
 

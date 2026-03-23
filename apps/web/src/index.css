@@ -442,20 +442,6 @@ html, body, #root {
   letter-spacing: 0.01em;
 }
 
-/* Event mode header: left-aligned compact bar */
-.header-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 18px;
-}
-
-/* In event mode, hero-city is left-aligned (not centered) */
-.chat-header > .header-hero-city {
-  align-items: flex-start;
-  text-align: left;
-  padding-top: 8px;
-}
 
 .you-badge {
   font-size: 0.78rem;
@@ -1520,38 +1506,102 @@ html, body, #root {
   margin-top: 4px;
 }
 
-/* ── Event chat header state ──────────────────────────── */
+/* ── Event subchannel header ──────────────────────────── */
 
-.back-to-city-btn {
+.event-header {
   display: flex;
-  align-items: center;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 4px 10px;
-  color: var(--muted2);
-  font-size: 0.73rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: color 0.12s, border-color 0.12s;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
 }
 
-.back-to-city-btn:hover {
-  color: var(--accent);
-  border-color: rgba(194, 74, 56, 0.45);
+.event-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Back button: large tap target, native feel */
+.event-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--muted2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
+  min-height: 44px;
+  flex-shrink: 1;
+  min-width: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.12s;
+}
+
+.event-back-btn:hover,
+.event-back-btn:active {
+  color: var(--text);
+}
+
+.event-back-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 180px;
+}
+
+/* Join / Going CTA */
+.event-join-btn {
+  flex-shrink: 0;
+  padding: 9px 20px;
+  border-radius: 22px;
+  border: 1.5px solid rgba(255, 122, 60, 0.55);
+  background: transparent;
+  color: #FF7A3C;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.event-join-btn:hover {
+  background: rgba(255, 122, 60, 0.08);
+}
+
+.event-join-btn:active {
+  transform: scale(0.96);
+}
+
+.event-join-btn--active {
+  background: #FF7A3C;
+  border-color: #FF7A3C;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 122, 60, 0.3);
+}
+
+.event-join-btn--active:hover {
+  background: rgba(255, 122, 60, 0.88);
+}
+
+/* Event title + meta */
+.event-header-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .event-header-title {
-  font-size: 1rem;
+  font-size: 1.45rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
+  letter-spacing: -0.02em;
 }
 
 /* Shrink city name on tight mobile headers */
@@ -1559,36 +1609,9 @@ html, body, #root {
   .change-city-btn {
     max-width: 120px;
   }
-}
-
-/* ── I'm in button ────────────────────────────────────── */
-
-.im-in-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text2);
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 5px 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: color 0.12s, border-color 0.12s, background 0.12s;
-}
-
-.im-in-btn:hover {
-  color: var(--accent);
-  border-color: rgba(194, 74, 56, 0.45);
-  background: rgba(194, 74, 56, 0.08);
-}
-
-.im-in-btn--active {
-  color: var(--accent);
-  border-color: rgba(194, 74, 56, 0.45);
-  background: rgba(194, 74, 56, 0.1);
+  .event-back-label {
+    max-width: 110px;
+  }
 }
 
 /* ── Mobile events drawer content ─────────────────────── */
@@ -1619,6 +1642,90 @@ html, body, #root {
   padding: 24px 12px;
   color: var(--muted2);
   font-size: 0.88rem;
+}
+
+/* ── Events page: FAB + empty state ──────────────────── */
+
+.page-body--has-fab {
+  padding-bottom: 96px; /* clear the FAB */
+}
+
+.events-fab {
+  position: absolute;
+  bottom: 28px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #FF7A3C;
+  border: none;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255, 122, 60, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+  z-index: 10;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.events-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(255, 122, 60, 0.6), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.events-fab:active {
+  transform: scale(0.91);
+  box-shadow: 0 2px 10px rgba(255, 122, 60, 0.4);
+}
+
+.events-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 72px 32px 0;
+  gap: 8px;
+}
+
+.events-empty-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.events-empty-sub {
+  font-size: 0.88rem;
+  color: var(--muted2);
+  line-height: 1.55;
+  max-width: 240px;
+  margin-bottom: 8px;
+}
+
+.events-empty-cta {
+  padding: 13px 30px;
+  background: #FF7A3C;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(255, 122, 60, 0.35);
+  transition: opacity 0.15s, transform 0.12s;
+  -webkit-tap-highlight-color: transparent;
+  margin-top: 8px;
+}
+
+.events-empty-cta:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.events-empty-cta:active {
+  transform: scale(0.97);
+  opacity: 0.88;
 }
 
 /* ── Event type selector ─────────────────────────────── */
