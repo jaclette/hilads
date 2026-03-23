@@ -362,7 +362,7 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 18px;
+  padding: 10px 14px;
   border-bottom: none;
   background: linear-gradient(180deg, var(--surface) 0%, rgba(27, 20, 16, 0.97) 100%);
   flex-shrink: 0;
@@ -386,7 +386,23 @@ html, body, #root {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-shrink: 0;
+}
+
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .header-divider {
@@ -448,6 +464,121 @@ html, body, #root {
   border: 1px solid var(--border);
   border-radius: 20px;
   padding: 4px 10px;
+}
+
+/* On mobile, hide action buttons from header — bottom nav handles them */
+@media (max-width: 767px) {
+  .events-mobile-btn,
+  .change-city-btn,
+  .you-badge {
+    display: none;
+  }
+}
+
+/* ── Bottom Navigation (mobile only) ─────────────────── */
+
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(60px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(22, 16, 12, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(194, 74, 56, 0.18);
+  border-radius: 16px 16px 0 0;
+  z-index: 90;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 767px) {
+  .bottom-nav {
+    display: flex;
+  }
+
+  /* Push input bar above bottom nav */
+  .input-bar {
+    padding-bottom: calc(60px + max(12px, env(safe-area-inset-bottom)));
+  }
+}
+
+.bottom-nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px 4px 8px;
+  color: var(--muted);
+  position: relative;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.bottom-nav-tab.active {
+  color: var(--accent);
+}
+
+.bottom-nav-tab.active::before {
+  content: '';
+  position: absolute;
+  inset: 6px 14px;
+  border-radius: 12px;
+  background: rgba(194, 74, 56, 0.1);
+  box-shadow: 0 0 14px rgba(194, 74, 56, 0.18);
+}
+
+.bottom-nav-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  position: relative;
+}
+
+.bottom-nav-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  position: relative;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Profile drawer ───────────────────────────────────── */
+
+.profile-drawer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.profile-avatar-row {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 4px;
+}
+
+.profile-avatar-lg {
+  width: 64px !important;
+  height: 64px !important;
+  font-size: 1.6rem !important;
+  border-radius: 50% !important;
+}
+
+.profile-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
 }
 
 /* ── Messages ─────────────────────────────────────────── */

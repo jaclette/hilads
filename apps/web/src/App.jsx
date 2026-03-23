@@ -168,6 +168,8 @@ export default function App() {
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
+  const [showProfileDrawer, setShowProfileDrawer] = useState(false)
+  const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
@@ -946,7 +948,8 @@ export default function App() {
         <header className="chat-header">
           <div className="header-left">
             <Logo variant="icon" size="sm" />
-            <div className="header-divider" />
+          </div>
+          <div className="header-center">
             {activeEvent ? (
               <>
                 <button className="back-to-city-btn" onClick={handleBackToCity}>
@@ -987,7 +990,6 @@ export default function App() {
                 {participatedEvents.has(activeEvent.id) ? '✅ I\'m in' : '👍 I\'m in'}
               </button>
             )}
-            {/* Mobile-only events button */}
             <button className="events-mobile-btn" onClick={() => setShowEventDrawer(true)} title="Events">
               🔥 Events{(events.length + cityEvents.length) > 0 ? ` (${events.length + cityEvents.length})` : ''}
             </button>
@@ -1116,6 +1118,31 @@ export default function App() {
             <SendIcon />
           </button>
         </form>
+
+        {/* Bottom navigation — mobile only */}
+        <nav className="bottom-nav">
+          <button
+            className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
+            onClick={() => setShowEventDrawer(true)}
+          >
+            <span className="bottom-nav-icon">🔥</span>
+            <span className="bottom-nav-label">Events</span>
+          </button>
+          <button
+            className={`bottom-nav-tab${showCityPicker ? ' active' : ''}`}
+            onClick={openCityPicker}
+          >
+            <span className="bottom-nav-icon">🌍</span>
+            <span className="bottom-nav-label">City</span>
+          </button>
+          <button
+            className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
+            onClick={() => { setProfileNickInput(nickname); setShowProfileDrawer(true) }}
+          >
+            <span className="bottom-nav-icon">👤</span>
+            <span className="bottom-nav-label">{guest?.nickname ?? 'Profile'}</span>
+          </button>
+        </nav>
       </div>
 
       {/* City picker modal */}
@@ -1259,6 +1286,62 @@ export default function App() {
                   </div>
                 )
               })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Profile drawer */}
+      {showProfileDrawer && (
+        <div className="city-picker-overlay" onClick={() => setShowProfileDrawer(false)}>
+          <div className="city-picker-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="city-picker-handle" />
+            <div className="city-picker-header">
+              <span className="city-picker-title">Your profile</span>
+              <button className="city-picker-close" onClick={() => setShowProfileDrawer(false)}>✕</button>
+            </div>
+            <div className="profile-drawer-content">
+              {(() => {
+                const [c1, c2] = avatarColors(profileNickInput || nickname)
+                return (
+                  <div className="profile-avatar-row">
+                    <span
+                      className="online-avatar profile-avatar-lg"
+                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                    >
+                      {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
+                    </span>
+                  </div>
+                )
+              })()}
+              <div className="modal-field">
+                <label className="modal-label">Nickname</label>
+                <input
+                  className="modal-input"
+                  type="text"
+                  value={profileNickInput}
+                  onChange={(e) => setProfileNickInput(e.target.value)}
+                  maxLength={20}
+                  placeholder="Your name..."
+                  autoFocus
+                />
+              </div>
+              <button
+                className="modal-submit"
+                onClick={() => {
+                  const trimmed = profileNickInput.trim()
+                  if (trimmed) {
+                    setNickname(trimmed)
+                    nicknameRef.current = trimmed
+                    saveIdentity(trimmed, channelId, city)
+                  }
+                  setShowProfileDrawer(false)
+                }}
+                disabled={!profileNickInput.trim()}
+              >
+                Save
+              </button>
+              <p className="profile-hint">// anonymous · no sign-up</p>
             </div>
           </div>
         </div>
