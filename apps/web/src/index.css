@@ -1665,7 +1665,146 @@ html, body, #root {
   gap: 10px;
 }
 
-/* ── Create event modal ───────────────────────────────── */
+/* ── Create event page ────────────────────────────────── */
+
+.cef-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px 20px 48px;
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.cef-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cef-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--muted2);
+}
+
+.cef-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.cef-cat-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 14px 4px 11px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--surface);
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cef-cat-btn:active {
+  transform: scale(0.93);
+}
+
+.cef-cat-btn.selected {
+  color: #FF7A3C;
+  border-color: rgba(255, 122, 60, 0.45);
+  background: rgba(255, 122, 60, 0.07);
+  box-shadow: 0 0 14px rgba(255, 122, 60, 0.1);
+}
+
+.cef-cat-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.cef-input {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cef-input::placeholder {
+  color: var(--muted);
+}
+
+.cef-input:focus {
+  border-color: rgba(255, 122, 60, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 122, 60, 0.07);
+}
+
+/* Time field on mobile needs a readable color */
+.cef-input[type="time"] {
+  color-scheme: dark;
+}
+
+.cef-row {
+  display: flex;
+  gap: 12px;
+}
+
+.cef-row .cef-section {
+  flex: 1;
+}
+
+.cef-error {
+  font-size: 0.85rem;
+  color: #ff6b6b;
+  margin-top: -12px;
+}
+
+.cef-submit {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #FF7A3C, #B87228);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s;
+  box-shadow: 0 4px 20px rgba(255, 122, 60, 0.25);
+}
+
+.cef-submit:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.cef-submit:active {
+  transform: scale(0.98);
+  opacity: 0.88;
+}
+
+.cef-submit:disabled {
+  opacity: 0.35;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Create event modal (legacy, desktop fallback) ────── */
 
 .modal-overlay {
   position: fixed;

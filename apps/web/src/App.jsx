@@ -5,7 +5,7 @@ import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel } from './eventUtils'
 import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
-import CreateEventModal from './components/CreateEventModal'
+import CreateEventPage from './components/CreateEventModal'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -259,6 +259,7 @@ export default function App() {
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent, setShowCreateEvent] = useState(false)
+  const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
@@ -879,6 +880,7 @@ export default function App() {
   // Refresh events list after creation
   function handleEventCreated(newEvent) {
     setShowCreateEvent(false)
+    setCreateFromDrawer(false)
     // Optimistic update: show the new event immediately using the POST response,
     // so the creator doesn't see a blank gap while the re-fetch is in flight.
     if (newEvent?.id) {
@@ -1280,7 +1282,7 @@ export default function App() {
           <div className="page-header">
             <button className="page-back-btn" onClick={() => setShowEventDrawer(false)}>←</button>
             <span className="page-title">Events</span>
-            <button className="page-action-btn" onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}>+ New</button>
+            <button className="page-action-btn" onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}>+ New</button>
           </div>
           <div className="page-body">
             {(() => {
@@ -1407,15 +1409,19 @@ export default function App() {
         </div>
       )}
 
-      {/* Create event modal */}
+      {/* Create event — full-screen page */}
       {showCreateEvent && (
-        <CreateEventModal
+        <CreateEventPage
           channelId={channelId}
           guest={guest}
           nickname={nickname}
           cityTimezone={cityTimezone}
           onCreated={handleEventCreated}
-          onClose={() => setShowCreateEvent(false)}
+          onBack={() => {
+            setShowCreateEvent(false)
+            if (createFromDrawer) { setShowEventDrawer(true) }
+            setCreateFromDrawer(false)
+          }}
         />
       )}
 

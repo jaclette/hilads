@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { createEvent } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 
+// ── Time helpers ───────────────────────────────────────────────────────────────
+
 function getDefaultTime(timezone) {
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: timezone,
@@ -31,7 +33,126 @@ function cityTimeToUnix(timezone, timeStr) {
   return Math.floor((naive.getTime() - offsetMs) / 1000)
 }
 
-export default function CreateEventModal({ channelId, guest, nickname, cityTimezone, onCreated, onClose }) {
+// ── Category icons ─────────────────────────────────────────────────────────────
+
+const P = {
+  width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none',
+  stroke: 'currentColor', strokeWidth: '1.75',
+  strokeLinecap: 'round', strokeLinejoin: 'round',
+}
+
+function IconDrinks() {
+  return (
+    <svg {...P}>
+      {/* Wine glass bowl */}
+      <path d="M6 3h12l-2.5 8a4.5 4.5 0 0 1-9 0L6 3z" />
+      {/* Stem */}
+      <line x1="12" y1="15" x2="12" y2="20" />
+      {/* Base */}
+      <line x1="9" y1="20" x2="15" y2="20" />
+    </svg>
+  )
+}
+
+function IconParty() {
+  return (
+    <svg {...P}>
+      {/* Radiant burst */}
+      <line x1="12" y1="2"   x2="12" y2="5.5" />
+      <line x1="12" y1="18.5" x2="12" y2="22" />
+      <line x1="2"   y1="12" x2="5.5" y2="12" />
+      <line x1="18.5" y1="12" x2="22" y2="12" />
+      <line x1="5.3"  y1="5.3"  x2="7.8" y2="7.8" />
+      <line x1="16.2" y1="16.2" x2="18.7" y2="18.7" />
+      <line x1="5.3"  y1="18.7" x2="7.8" y2="16.2" />
+      <line x1="16.2" y1="7.8"  x2="18.7" y2="5.3" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
+function IconMusic() {
+  return (
+    <svg {...P}>
+      <path d="M9 18V7l11-2v11" />
+      <circle cx="6"  cy="18" r="3" />
+      <circle cx="17" cy="16" r="3" />
+    </svg>
+  )
+}
+
+function IconFood() {
+  return (
+    <svg {...P}>
+      {/* Fork */}
+      <line x1="10" y1="2" x2="10" y2="22" />
+      <path d="M7 2v6a3 3 0 0 0 6 0V2" />
+      {/* Knife */}
+      <line x1="17" y1="2" x2="17" y2="22" />
+      <path d="M14 2c0 3 3 4 3 6" />
+    </svg>
+  )
+}
+
+function IconCoffee() {
+  return (
+    <svg {...P}>
+      {/* Cup */}
+      <path d="M6 9h12l-1.5 10a2 2 0 0 1-2 2H9.5a2 2 0 0 1-2-2L6 9z" />
+      {/* Handle */}
+      <path d="M18 11h2a2 2 0 0 1 0 4h-2" />
+      {/* Steam */}
+      <path d="M10 5c0 2 2 2 2 4" />
+      <path d="M14 5c0 2 2 2 2 4" />
+    </svg>
+  )
+}
+
+function IconSport() {
+  return (
+    <svg {...P}>
+      {/* Lightning bolt — energy, action */}
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  )
+}
+
+function IconMeetup() {
+  return (
+    <svg {...P}>
+      {/* Two speech bubbles */}
+      <path d="M3 6a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H8l-3 3v-3H5a2 2 0 0 1-2-2V6z" />
+      <path d="M17 9h1a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2v2l-2.5-2" />
+    </svg>
+  )
+}
+
+function IconOther() {
+  return (
+    <svg {...P}>
+      {[5, 12, 19].flatMap(cy =>
+        [5, 12, 19].map(cx => (
+          <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.8" fill="currentColor" stroke="none" />
+        ))
+      )}
+    </svg>
+  )
+}
+
+const CATEGORY_ICONS = {
+  drinks: IconDrinks,
+  party:  IconParty,
+  music:  IconMusic,
+  food:   IconFood,
+  coffee: IconCoffee,
+  sport:  IconSport,
+  meetup: IconMeetup,
+  other:  IconOther,
+}
+
+// ── Component ──────────────────────────────────────────────────────────────────
+
+export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, onCreated, onBack }) {
   const tz = cityTimezone || 'UTC'
   const [type, setType] = useState('other')
   const [title, setTitle] = useState('')
@@ -65,30 +186,41 @@ export default function CreateEventModal({ channelId, guest, nickname, cityTimez
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-panel" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <span className="modal-title">Create event</span>
-          <button className="city-picker-close" onClick={onClose}>✕</button>
-        </div>
-        <form className="modal-form" onSubmit={handleSubmit}>
-          <div className="event-type-grid">
-            {EVENT_TYPES.map(et => (
-              <button
-                key={et.value}
-                type="button"
-                className={`event-type-btn${type === et.value ? ' selected' : ''}`}
-                onClick={() => setType(et.value)}
-              >
-                <span className="event-type-icon">{et.icon}</span>
-                <span className="event-type-label">{et.label}</span>
-              </button>
-            ))}
+    <div className="full-page">
+      <div className="page-header">
+        <button className="page-back-btn" onClick={onBack}>←</button>
+        <span className="page-title">Create event</span>
+      </div>
+
+      <div className="page-body">
+        <form className="cef-form" onSubmit={handleSubmit}>
+
+          {/* Category */}
+          <div className="cef-section">
+            <p className="cef-label">Category</p>
+            <div className="cef-category-grid">
+              {EVENT_TYPES.map(et => {
+                const Icon = CATEGORY_ICONS[et.value]
+                return (
+                  <button
+                    key={et.value}
+                    type="button"
+                    className={`cef-cat-btn${type === et.value ? ' selected' : ''}`}
+                    onClick={() => setType(et.value)}
+                  >
+                    {Icon && <Icon />}
+                    <span className="cef-cat-label">{et.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
-          <div className="modal-field">
-            <label className="modal-label">Title</label>
+
+          {/* Title */}
+          <div className="cef-section">
+            <label className="cef-label">Title</label>
             <input
-              className="modal-input"
+              className="cef-input"
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
@@ -97,33 +229,42 @@ export default function CreateEventModal({ channelId, guest, nickname, cityTimez
               autoFocus
             />
           </div>
-          <div className="modal-row">
-            <div className="modal-field" style={{ flex: 1 }}>
-              <label className="modal-label">Time (local)</label>
+
+          {/* Time + Location */}
+          <div className="cef-row">
+            <div className="cef-section">
+              <label className="cef-label">Time (local)</label>
               <input
-                className="modal-input"
+                className="cef-input"
                 type="time"
                 value={time}
                 onChange={e => setTime(e.target.value)}
                 required
               />
             </div>
-            <div className="modal-field" style={{ flex: 1 }}>
-              <label className="modal-label">Location (optional)</label>
+            <div className="cef-section">
+              <label className="cef-label">Location</label>
               <input
-                className="modal-input"
+                className="cef-input"
                 type="text"
                 value={location}
                 onChange={e => setLocation(e.target.value)}
-                placeholder="e.g. Rooftop Bar"
+                placeholder="Optional"
                 maxLength={100}
               />
             </div>
           </div>
-          {error && <p className="modal-error">{error}</p>}
-          <button type="submit" className="modal-submit" disabled={submitting || !title.trim()}>
+
+          {error && <p className="cef-error">{error}</p>}
+
+          <button
+            type="submit"
+            className="cef-submit"
+            disabled={submitting || !title.trim()}
+          >
             {submitting ? 'Creating…' : 'Create event'}
           </button>
+
         </form>
       </div>
     </div>
