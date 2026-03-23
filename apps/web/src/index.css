@@ -466,10 +466,9 @@ html, body, #root {
   padding: 4px 10px;
 }
 
-/* On mobile, hide action buttons from header — bottom nav handles them */
+/* On mobile, hide desktop-only header controls */
 @media (max-width: 767px) {
-  .events-mobile-btn,
-  .change-city-btn,
+  .header-city-btn,
   .you-badge {
     display: none;
   }
@@ -483,15 +482,15 @@ html, body, #root {
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(60px + env(safe-area-inset-bottom));
+  height: calc(84px + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: rgba(22, 16, 12, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(194, 74, 56, 0.18);
-  border-radius: 16px 16px 0 0;
+  background: rgba(20, 14, 10, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid rgba(194, 74, 56, 0.22);
+  border-radius: 20px 20px 0 0;
   z-index: 90;
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -2px 0 rgba(194, 74, 56, 0.12), 0 -8px 32px rgba(0, 0, 0, 0.6);
 }
 
 @media (max-width: 767px) {
@@ -501,7 +500,7 @@ html, body, #root {
 
   /* Push input bar above bottom nav */
   .input-bar {
-    padding-bottom: calc(60px + max(12px, env(safe-area-inset-bottom)));
+    padding-bottom: calc(84px + max(12px, env(safe-area-inset-bottom)));
   }
 }
 
@@ -511,45 +510,54 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 5px;
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 10px 4px 8px;
-  color: var(--muted);
+  padding: 14px 8px 10px;
+  color: rgba(158, 142, 130, 0.55);
   position: relative;
-  transition: color 0.15s;
+  transition: color 0.18s ease;
   -webkit-tap-highlight-color: transparent;
+  /* vertical separator between tabs */
+  border-right: 1px solid rgba(45, 33, 24, 0.8);
+}
+
+.bottom-nav-tab:last-child {
+  border-right: none;
 }
 
 .bottom-nav-tab.active {
-  color: var(--accent);
+  color: #fff;
 }
 
 .bottom-nav-tab.active::before {
   content: '';
   position: absolute;
-  inset: 6px 14px;
-  border-radius: 12px;
-  background: rgba(194, 74, 56, 0.1);
-  box-shadow: 0 0 14px rgba(194, 74, 56, 0.18);
+  inset: 8px 12px;
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(194, 74, 56, 0.18) 0%, rgba(184, 114, 40, 0.10) 100%);
+  box-shadow: 0 0 20px rgba(194, 74, 56, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .bottom-nav-icon {
-  font-size: 1.35rem;
+  font-size: 1.55rem;
   line-height: 1;
   position: relative;
+  filter: drop-shadow(0 0 0 transparent);
+  transition: filter 0.18s ease;
+}
+
+.bottom-nav-tab.active .bottom-nav-icon {
+  filter: drop-shadow(0 0 6px rgba(194, 74, 56, 0.55));
 }
 
 .bottom-nav-label {
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   position: relative;
-  max-width: 72px;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -1547,39 +1555,6 @@ html, body, #root {
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 220px;
-}
-
-/* ── Mobile events button ─────────────────────────────── */
-
-.events-mobile-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 0 10px;
-  height: 34px;
-  color: var(--muted2);
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: color 0.12s, border-color 0.12s, background 0.12s;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.events-mobile-btn:hover {
-  color: var(--accent);
-  border-color: rgba(194, 74, 56, 0.45);
-  background: rgba(194, 74, 56, 0.08);
-}
-
-@media (min-width: 768px) {
-  .events-mobile-btn {
-    display: none;
-  }
-
-  /* hide "Switch" text label on smaller desktop widths if needed */
 }
 
 /* Shrink city name on tight mobile headers */

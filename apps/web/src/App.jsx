@@ -990,10 +990,7 @@ export default function App() {
                 {participatedEvents.has(activeEvent.id) ? '✅ I\'m in' : '👍 I\'m in'}
               </button>
             )}
-            <button className="events-mobile-btn" onClick={() => setShowEventDrawer(true)} title="Events">
-              🔥 Events{(events.length + cityEvents.length) > 0 ? ` (${events.length + cityEvents.length})` : ''}
-            </button>
-            <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
+            <button className="change-city-btn header-city-btn" onClick={openCityPicker} title="Switch city">
               🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
             </button>
             <span className="you-badge">👤 {guest?.nickname}</span>
