@@ -21,6 +21,8 @@
 
 html, body, #root {
   height: 100%;
+  width: 100%;
+  overflow-x: hidden;
   font-family: system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
@@ -31,6 +33,7 @@ html, body, #root {
 .chat-layout {
   display: flex;
   height: 100%;
+  width: 100%;
   max-width: 1040px;
   margin: 0 auto;
 }
@@ -488,8 +491,8 @@ html, body, #root {
   width: 100%;
   height: calc(80px + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: #0f0c0a;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: #141210;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -16px 32px rgba(0, 0, 0, 0.5);
 }
@@ -519,33 +522,37 @@ html, body, #root {
   border: none;
   cursor: pointer;
   padding: 14px 4px 10px;
-  color: rgba(158, 142, 130, 0.45);
+  color: rgba(255, 255, 255, 0.38);
   position: relative;
-  transition: color 0.18s ease, transform 0.15s ease;
+  transition: color 0.15s ease, transform 0.15s ease;
   -webkit-tap-highlight-color: transparent;
-  border-right: 1px solid rgba(45, 33, 24, 0.8);
 }
 
-.bottom-nav-tab:last-child {
-  border-right: none;
+/* Top-line active indicator */
+.bottom-nav-tab::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: transparent;
+  transition: background 0.15s ease;
 }
 
 .bottom-nav-tab:active {
-  transform: scale(1.1);
+  transform: scale(0.94);
   transition: transform 0.08s ease;
 }
 
 .bottom-nav-tab.active {
-  color: var(--accent);
+  color: #FF7A3C;
 }
 
-.bottom-nav-tab.active::before {
-  content: '';
-  position: absolute;
-  inset: 8px 10px;
-  border-radius: 14px;
-  background: rgba(194, 74, 56, 0.1);
-  box-shadow: 0 0 16px rgba(194, 74, 56, 0.18);
+.bottom-nav-tab.active::after {
+  background: #FF7A3C;
+  box-shadow: 0 0 8px rgba(255, 122, 60, 0.6);
 }
 
 .bottom-nav-icon {
@@ -553,23 +560,17 @@ html, body, #root {
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: filter 0.18s ease;
+  transition: filter 0.15s ease;
 }
 
 .bottom-nav-tab.active .bottom-nav-icon {
-  filter: drop-shadow(0 0 4px rgba(194, 74, 56, 0.7));
-  animation: icon-breathe 2.4s ease-in-out infinite;
-}
-
-@keyframes icon-breathe {
-  0%, 100% { transform: scale(1);    opacity: 1; }
-  50%       { transform: scale(1.12); opacity: 0.85; }
+  filter: drop-shadow(0 0 5px rgba(255, 122, 60, 0.5));
 }
 
 .bottom-nav-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   position: relative;
   white-space: nowrap;
@@ -1168,6 +1169,7 @@ html, body, #root {
 
 .screen.chat {
   position: relative; /* anchor for absolute full-page children */
+  overflow: hidden;   /* contain slideInRight animation within viewport */
 }
 
 @keyframes slideInRight {
