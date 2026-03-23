@@ -161,7 +161,7 @@ html, body, #root {
 .ob-sep {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(194, 74, 56, 0.30), rgba(184, 114, 40, 0.15), transparent);
-  margin: -6px 0;
+  margin: 4px 0;
 }
 
 .ob-city-block {
@@ -188,6 +188,24 @@ html, body, #root {
 .ob-city-sub {
   font-size: 0.85rem;
   color: var(--muted2);
+}
+
+.ob-tagline {
+  font-size: 0.95rem;
+  color: var(--muted2);
+  margin: 2px 0 0;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.ob-live {
+  font-size: 0.82rem;
+  color: var(--muted2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 3px 10px;
+  display: inline-block;
 }
 
 .ob-locating {

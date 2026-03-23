@@ -162,6 +162,7 @@ export default function App() {
   const [previewEvents, setPreviewEvents] = useState([])
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewTimezone, setPreviewTimezone] = useState('UTC')
+  const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
   const [channelEventCounts, setChannelEventCounts] = useState({})
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
@@ -823,6 +824,8 @@ export default function App() {
                   <span style={{ fontSize: '2rem', lineHeight: 1 }}>{cityFlag(city)}</span>
                   <span className="ob-city-name">{city}</span>
                 </div>
+                <p className="ob-tagline">See who's around. Say hi instantly.</p>
+                <span className="ob-live">🔥 {previewLiveCount} people chatting right now</span>
                 {previewEventCount > 0 && (
                   <span className="ob-city-sub ob-event-count">
                     🔥 {previewEventCount} event{previewEventCount > 1 ? 's' : ''} happening today
@@ -837,9 +840,7 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <span className="ob-city-sub">people are chatting live right now</span>
-                )}
+                ) : null}
               </>
             ) : (
               <span className="ob-locating">› locating...</span>
