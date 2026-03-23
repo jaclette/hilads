@@ -649,6 +649,7 @@ export default function App() {
     setShowCityPicker(true)
     setCitySearchQuery('')
     setChannelsLoading(true)
+    setChannelEventCounts({})
     let loadedChannels = []
     try {
       const data = await fetchChannels()
@@ -660,9 +661,14 @@ export default function App() {
       setChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    // Fetch today's event counts per city in parallel (non-blocking)
+    // Fetch event counts only for the top 15 candidates by base score (online + messages).
+    // This avoids 700 concurrent API calls for 350 cities while keeping visible rows accurate.
+    const TOP_FETCH = 15
+    const candidates = [...loadedChannels]
+      .sort((a, b) => (b.activeUsers * 2 + b.messageCount) - (a.activeUsers * 2 + a.messageCount))
+      .slice(0, TOP_FETCH)
     const counts = {}
-    await Promise.allSettled(loadedChannels.map(async (ch) => {
+    await Promise.allSettled(candidates.map(async (ch) => {
       try {
         const [evData, cityEvData] = await Promise.all([
           fetchEvents(ch.channelId),
@@ -686,6 +692,7 @@ export default function App() {
     setObPickingCity(true)
     setCitySearchQuery('')
     setObChannelsLoading(true)
+    setObChannelEventCounts({})
     let loadedChannels = []
     try {
       const data = await fetchChannels()
@@ -697,8 +704,12 @@ export default function App() {
       setObChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
+    const TOP_FETCH = 15
+    const candidates = [...loadedChannels]
+      .sort((a, b) => (b.activeUsers * 2 + b.messageCount) - (a.activeUsers * 2 + a.messageCount))
+      .slice(0, TOP_FETCH)
     const counts = {}
-    await Promise.allSettled(loadedChannels.map(async (ch) => {
+    await Promise.allSettled(candidates.map(async (ch) => {
       try {
         const [evData, cityEvData] = await Promise.all([
           fetchEvents(ch.channelId),
@@ -1021,7 +1032,7 @@ export default function App() {
         <div className="city-row-stats">
           {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
           {eventCount > 0 && <span className="city-row-events">🔥 {eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
-          <span className="city-row-count">{ch.messageCount} msgs</span>
+          {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
         </div>
       </button>
     )
@@ -1167,10 +1178,21 @@ export default function App() {
             </div>
             <div className="page-body">
               {obChannelsLoading ? (
-                <div className="city-picker-loading">Loading cities...</div>
+                <div className="city-skeleton">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={i} className="city-skeleton-row">
+                      <div className="city-skeleton-left">
+                        <div className="skel skel-dot" />
+                        <div className="skel skel-flag" />
+                        <div className="skel skel-name" style={{ width: `${52 + (i * 17) % 34}%` }} />
+                      </div>
+                      <div className="skel skel-stat" />
+                    </div>
+                  ))}
+                </div>
               ) : (() => {
                 const q = citySearchQuery.trim().toLowerCase()
-                const filtered = [...obChannels]
+                const sorted = [...obChannels]
                   .filter(ch => !q || ch.city.toLowerCase().includes(q))
                   .sort((a, b) => {
                     const scoreA = cityScore(a, obChannelEventCounts[a.channelId] ?? 0)
@@ -1178,12 +1200,24 @@ export default function App() {
                     if (scoreB !== scoreA) return scoreB - scoreA
                     return a.city.localeCompare(b.city)
                   })
-                if (filtered.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
-                return filtered.map(ch => renderCityRow(
-                  ch,
-                  obChannelEventCounts[ch.channelId] ?? 0,
-                  (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
-                ))
+                if (sorted.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
+                if (q) {
+                  return sorted.map(ch => renderCityRow(
+                    ch,
+                    obChannelEventCounts[ch.channelId] ?? 0,
+                    (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
+                  ))
+                }
+                return (
+                  <>
+                    <div className="city-list-label">Top cities right now</div>
+                    {sorted.slice(0, 10).map(ch => renderCityRow(
+                      ch,
+                      obChannelEventCounts[ch.channelId] ?? 0,
+                      (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
+                    ))}
+                  </>
+                )
               })()}
             </div>
           </div>
@@ -1475,28 +1509,58 @@ export default function App() {
           </div>
           <div className="page-body">
             {channelsLoading ? (
-              <div className="city-picker-loading">Loading cities...</div>
+              <div className="city-skeleton">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="city-skeleton-row">
+                    <div className="city-skeleton-left">
+                      <div className="skel skel-dot" />
+                      <div className="skel skel-flag" />
+                      <div className="skel skel-name" style={{ width: `${52 + (i * 17) % 34}%` }} />
+                    </div>
+                    <div className="skel skel-stat" />
+                  </div>
+                ))}
+              </div>
             ) : (() => {
               const q = citySearchQuery.trim().toLowerCase()
-              const filtered = [...channels]
+              const sorted = [...channels]
                 .filter(ch => !q || ch.city.toLowerCase().includes(q))
                 .sort((a, b) => {
-                  if (!q) {
-                    if (a.channelId === channelId) return -1
-                    if (b.channelId === channelId) return 1
-                  }
                   const scoreA = cityScore(a, channelEventCounts[a.channelId] ?? 0)
                   const scoreB = cityScore(b, channelEventCounts[b.channelId] ?? 0)
                   if (scoreB !== scoreA) return scoreB - scoreA
                   return a.city.localeCompare(b.city)
                 })
-              if (filtered.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
-              return filtered.map(ch => renderCityRow(
-                ch,
-                channelEventCounts[ch.channelId] ?? 0,
-                (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                !q && ch.channelId === channelId
-              ))
+              if (sorted.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
+              if (q) {
+                // Search mode — show all matches, no limit
+                return sorted.map(ch => renderCityRow(
+                  ch,
+                  channelEventCounts[ch.channelId] ?? 0,
+                  (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
+                  false
+                ))
+              }
+              // Default mode — current city pinned, then top 9 by score
+              const current = channels.find(ch => ch.channelId === channelId)
+              const others = sorted.filter(ch => ch.channelId !== channelId).slice(0, current ? 9 : 10)
+              return (
+                <>
+                  <div className="city-list-label">Top cities right now</div>
+                  {current && renderCityRow(
+                    current,
+                    channelEventCounts[current.channelId] ?? 0,
+                    (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
+                    true
+                  )}
+                  {others.map(ch => renderCityRow(
+                    ch,
+                    channelEventCounts[ch.channelId] ?? 0,
+                    (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
+                    false
+                  ))}
+                </>
+              )
             })()}
           </div>
         </div>
