@@ -1545,6 +1545,16 @@ html, body, #root {
   margin-top: 4px;
 }
 
+.event-going-count {
+  font-size: 0.78rem;
+  color: var(--muted2);
+  white-space: nowrap;
+}
+
+.event-row--buzzing .event-going-count {
+  color: var(--accent);
+}
+
 /* ── Event subchannel header ──────────────────────────── */
 
 .event-header {

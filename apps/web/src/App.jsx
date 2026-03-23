@@ -882,6 +882,24 @@ export default function App() {
     }).catch(() => {})
   }, [activeEvent?.id])
 
+  // Bulk-fetch participant counts for all today's events when the Hot drawer opens
+  useEffect(() => {
+    if (!showEventDrawer || !sessionIdRef.current) return
+    const tz = cityTimezone || 'UTC'
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+    const isEventToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+    ;[...events, ...cityEvents].filter(isEventToday).forEach(event => {
+      fetchEventParticipants(event.id, sessionIdRef.current).then(({ count, isIn }) => {
+        setEventParticipants(prev => ({ ...prev, [event.id]: count }))
+        setParticipatedEvents(prev => {
+          const next = new Set(prev)
+          isIn ? next.add(event.id) : next.delete(event.id)
+          return next
+        })
+      }).catch(() => {})
+    })
+  }, [showEventDrawer])
+
   // Toggle "I'm in" participation for an event
   async function handleToggleParticipation(eventId) {
     try {
@@ -1428,23 +1446,31 @@ export default function App() {
               }
               const todayHilads = events.filter(isEventToday)
               const todayCity = cityEvents.filter(isEventToday)
-              const renderEventRow = event => (
-                <button
-                  key={event.id}
-                  className={`city-row${activeEventId === event.id ? ' active' : ''}`}
-                  onClick={() => handleSelectEvent(event)}
-                >
-                  <div className="city-row-left">
-                    <span className="city-row-name">
-                      {EVENT_ICONS[event.type] ?? '📌'} {event.title}
-                    </span>
-                    <span className="city-row-current">
-                      {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
-                      {event.location_hint && ` · ${event.location_hint}`}
-                    </span>
-                  </div>
-                </button>
-              )
+              const renderEventRow = event => {
+                const going = eventParticipants[event.id] ?? 0
+                return (
+                  <button
+                    key={event.id}
+                    className={`city-row${activeEventId === event.id ? ' active' : ''}${going >= 3 ? ' event-row--buzzing' : ''}`}
+                    onClick={() => handleSelectEvent(event)}
+                  >
+                    <div className="city-row-left">
+                      <span className="city-row-name">
+                        {EVENT_ICONS[event.type] ?? '📌'} {event.title}
+                      </span>
+                      <span className="city-row-current">
+                        {new Date(event.starts_at * 1000).toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true })}
+                        {event.location_hint && ` · ${event.location_hint}`}
+                      </span>
+                    </div>
+                    {going > 0 && (
+                      <div className="city-row-stats">
+                        <span className="event-going-count">👥 {going}</span>
+                      </div>
+                    )}
+                  </button>
+                )
+              }
               if (todayHilads.length === 0 && todayCity.length === 0) {
                 return (
                   <div className="events-empty-state">
