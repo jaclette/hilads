@@ -1192,7 +1192,7 @@ export default function App() {
         <div className="full-page">
           <div className="page-header">
             <button className="page-back-btn" onClick={() => setShowEventDrawer(false)}>←</button>
-            <span className="page-title">Events in {city}</span>
+            <span className="page-title">Events</span>
             <button className="page-action-btn" onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}>+ New</button>
           </div>
           <div className="page-body">

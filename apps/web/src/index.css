@@ -1153,11 +1153,11 @@ html, body, #root {
 .page-header {
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  height: 56px;
+  padding: 0 20px;
+  height: 80px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  background: var(--surface);
+  background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 100%);
   position: relative;
 }
 
@@ -1165,9 +1165,9 @@ html, body, #root {
   background: none;
   border: none;
   color: var(--accent);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   cursor: pointer;
-  padding: 8px 10px 8px 0;
+  padding: 10px 14px 10px 0;
   line-height: 1;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
@@ -1182,14 +1182,15 @@ html, body, #root {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.9rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 60%;
+  max-width: 55%;
   pointer-events: none;
+  letter-spacing: -0.01em;
 }
 
 .page-action-btn {
