@@ -301,25 +301,25 @@ html, body, #root {
 }
 
 .ob-create-account {
-  background: none;
-  border: 1px solid var(--border);
+  background: rgba(255, 122, 60, 0.08);
+  border: 1.5px solid #FF7A3C;
   border-radius: 10px;
-  color: var(--muted2);
-  font-size: 0.85rem;
-  font-weight: 500;
-  padding: 10px;
+  color: #FF7A3C;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 12px;
   width: 100%;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, transform 0.12s;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
   -webkit-tap-highlight-color: transparent;
 }
 .ob-create-account:hover {
-  color: var(--text);
-  border-color: rgba(255,255,255,0.25);
+  background: rgba(255, 122, 60, 0.15);
 }
 .ob-create-account:active {
   transform: scale(0.97);
-  opacity: 0.75;
+  background: rgba(255, 122, 60, 0.22);
+  box-shadow: 0 0 0 3px rgba(255, 122, 60, 0.18);
 }
 
 .ob-form {
