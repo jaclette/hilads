@@ -268,6 +268,7 @@ export default function App() {
   const [obPickingCity, setObPickingCity] = useState(false)
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
+  const [obChannelEventCounts, setObChannelEventCounts] = useState({})
 
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
@@ -670,14 +671,36 @@ export default function App() {
   async function openObCityPicker() {
     setObPickingCity(true)
     setObChannelsLoading(true)
+    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      setObChannels(data.channels)
+      loadedChannels = data.channels
+      setObChannels(loadedChannels)
     } catch {
       setObChannels([])
     } finally {
       setObChannelsLoading(false)
     }
+    if (loadedChannels.length === 0) return
+    const counts = {}
+    await Promise.allSettled(loadedChannels.map(async (ch) => {
+      try {
+        const [evData, cityEvData] = await Promise.all([
+          fetchEvents(ch.channelId),
+          fetchCityEvents(ch.channelId),
+        ])
+        const tz = ch.timezone || 'UTC'
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+        const hiladsCount = evData.events.filter(e =>
+          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        ).length
+        const cityCount = (cityEvData.events ?? []).filter(e =>
+          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        ).length
+        counts[ch.channelId] = hiladsCount + cityCount
+      } catch { /* ignore */ }
+    }))
+    setObChannelEventCounts({ ...counts })
   }
 
   function joinCityFromOb(newChannelId, cityName, timezone) {
@@ -685,6 +708,11 @@ export default function App() {
     setCity(cityName)
     locPromiseRef.current = Promise.resolve({ channelId: newChannelId, city: cityName, timezone: timezone ?? 'UTC' })
     handleJoin(null)
+  }
+
+  function retryGeo() {
+    setGeoBlocked(false)
+    locPromiseRef.current = startGeolocation()
   }
 
   async function switchCity(newChannelId, newCityName, newCityTimezone) {
@@ -933,6 +961,31 @@ export default function App() {
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current)
 
+  // ── Shared city row renderer ────────────────────────────────────────────────
+
+  function renderCityRow(ch, eventCount, onClick, isActive = false) {
+    const hasActivity = ch.activeUsers > 0
+    return (
+      <button
+        key={ch.channelId}
+        className={`city-row${isActive ? ' active' : ''}`}
+        onClick={() => onClick(ch)}
+      >
+        <div className="city-row-left">
+          <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
+          <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
+          <span className="city-row-name">{ch.city}</span>
+          {isActive && <span className="city-row-current">you're here</span>}
+        </div>
+        <div className="city-row-stats">
+          {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
+          {eventCount > 0 && <span className="city-row-events">🔥 {eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
+          <span className="city-row-count">{ch.messageCount} msgs</span>
+        </div>
+      </button>
+    )
+  }
+
   // ── Onboarding ─────────────────────────────────────────────────────────────
 
   if (status === 'onboarding') {
@@ -971,36 +1024,73 @@ export default function App() {
                 ) : null}
               </>
             ) : geoBlocked ? (
-              <p className="ob-tagline">No worries — you can still jump into any city.</p>
+              <>
+                <span className="ob-geo-status">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                  Location off
+                </span>
+                <p className="ob-geo-headline">Pick a city<br />and jump in</p>
+              </>
             ) : (
               <span className="ob-locating">› locating...</span>
             )}
           </div>
 
           <form className="ob-form" onSubmit={geoBlocked ? (e) => { e.preventDefault(); openObCityPicker() } : handleJoin}>
-            <label className="ob-label">Your name</label>
-            <div className="ob-input-row">
-              <span
-                className="ob-avatar-preview"
-                style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-              >
-                {(nickname[0] || 'A').toUpperCase()}
-              </span>
-              <input
-                className="ob-input"
-                type="text"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                maxLength={20}
-                autoFocus
-                placeholder="Say hi as..."
-              />
-            </div>
-
-            <button type="submit" className="ob-btn">
-              {city ? `Join ${city}` : geoBlocked ? 'Browse cities' : 'Join Chat'} →
-            </button>
-
+            {geoBlocked ? (
+              <>
+                <button type="submit" className="ob-btn">Browse cities →</button>
+                <label className="ob-label" style={{ marginTop: 4 }}>Your name</label>
+                <div className="ob-input-row">
+                  <span
+                    className="ob-avatar-preview"
+                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                  >
+                    {(nickname[0] || 'A').toUpperCase()}
+                  </span>
+                  <input
+                    className="ob-input"
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    maxLength={20}
+                    placeholder="Say hi as..."
+                  />
+                </div>
+                {navigator.geolocation && (
+                  <button type="button" className="ob-geo-retry" onClick={retryGeo}>
+                    Use my location instead
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                <label className="ob-label">Your name</label>
+                <div className="ob-input-row">
+                  <span
+                    className="ob-avatar-preview"
+                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                  >
+                    {(nickname[0] || 'A').toUpperCase()}
+                  </span>
+                  <input
+                    className="ob-input"
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    maxLength={20}
+                    autoFocus
+                    placeholder="Say hi as..."
+                  />
+                </div>
+                <button type="submit" className="ob-btn">
+                  {city ? `Join ${city}` : 'Join Chat'} →
+                </button>
+              </>
+            )}
             <p className="ob-hint">// anonymous · no sign-up</p>
           </form>
         </div>
@@ -1017,20 +1107,10 @@ export default function App() {
               ) : [...obChannels].sort((a, b) => {
                 if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
                 return a.city.localeCompare(b.city)
-              }).map(ch => (
-                <button
-                  key={ch.channelId}
-                  className="city-row"
-                  onClick={() => joinCityFromOb(ch.channelId, ch.city, ch.timezone)}
-                >
-                  <div className="city-row-left">
-                    <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
-                    <span className="city-row-name">{ch.city}</span>
-                  </div>
-                  <div className="city-row-stats">
-                    {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
-                  </div>
-                </button>
+              }).map(ch => renderCityRow(
+                ch,
+                obChannelEventCounts[ch.channelId] ?? 0,
+                (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone)
               ))}
             </div>
           </div>
@@ -1321,31 +1401,12 @@ export default function App() {
               if (b.activeUsers !== a.activeUsers) return b.activeUsers - a.activeUsers
               if (b.messageCount !== a.messageCount) return b.messageCount - a.messageCount
               return a.city.localeCompare(b.city)
-            }).map((ch) => {
-              const isActive = ch.channelId === channelId
-              const hasActivity = ch.activeUsers > 0
-              return (
-                <button
-                  key={ch.channelId}
-                  className={`city-row${isActive ? ' active' : ''}`}
-                  onClick={() => switchCity(ch.channelId, ch.city, ch.timezone)}
-                >
-                  <div className="city-row-left">
-                    <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
-                    <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.city)}</span>
-                    <span className="city-row-name">{ch.city}</span>
-                    {isActive && <span className="city-row-current">you're here</span>}
-                  </div>
-                  <div className="city-row-stats">
-                    {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
-                    {channelEventCounts[ch.channelId] > 0 && (
-                      <span className="city-row-events">🔥 {channelEventCounts[ch.channelId]} {channelEventCounts[ch.channelId] === 1 ? 'event' : 'events'}</span>
-                    )}
-                    <span className="city-row-count">{ch.messageCount} msgs</span>
-                  </div>
-                </button>
-              )
-            })}
+            }).map((ch) => renderCityRow(
+              ch,
+              channelEventCounts[ch.channelId] ?? 0,
+              (ch) => switchCity(ch.channelId, ch.city, ch.timezone),
+              ch.channelId === channelId
+            ))}
           </div>
         </div>
       )}

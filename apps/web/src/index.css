@@ -232,6 +232,45 @@ html, body, #root {
   50%       { opacity: 0.45; }
 }
 
+.ob-geo-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: var(--muted2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+.ob-geo-headline {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.ob-geo-retry {
+  background: none;
+  border: none;
+  color: var(--muted2);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: center;
+  width: 100%;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ob-geo-retry:active {
+  opacity: 0.55;
+}
+
 .ob-form {
   display: flex;
   flex-direction: column;
