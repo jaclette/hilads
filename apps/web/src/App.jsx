@@ -59,7 +59,8 @@ const AMBIENT_MESSAGES = [
   () => `🍻 Who's out tonight?`,
   () => `💬 The city is waking up`,
   () => `🌙 Night owls are online`,
-  () => `👀 Someone just opened the app`,
+  () => `👀 Someone just arrived`,
+  () => `🔥 New face in the city`,
   () => `🎉 The vibe is alive right now`,
   () => `🗺️ Explorers checking in`,
 ]
@@ -82,13 +83,22 @@ function messageKey(m) {
   return m.id
 }
 
+const JOIN_TEMPLATES = [
+  (n) => `👋 ${n} just landed`,
+  (n) => `🔥 ${n} joined the vibe`,
+  (n) => `🍻 ${n} is here`,
+  (n) => `👀 ${n} just showed up`,
+  (n) => `✨ ${n} arrived`,
+]
+
 function toFeedItem(m, staggerDelay) {
   if (m.type === 'system' && m.event === 'join') {
+    const tpl = JOIN_TEMPLATES[Math.floor(Math.random() * JOIN_TEMPLATES.length)]
     return {
       type: 'activity',
       subtype: 'join',
       id: messageKey(m),
-      text: `👋 ${m.nickname} just joined`,
+      text: tpl(m.nickname),
     }
   }
   return { type: 'message', staggerDelay, ...m }
