@@ -22,7 +22,11 @@ class Database
                 ltrim($parts['path'], '/')
             );
 
-            self::$pdo = new PDO($dsn, $parts['user'] ?? null, $parts['pass'] ?? null, [
+            // parse_url() returns URL-encoded credentials — PDO needs the decoded values
+            $user = isset($parts['user']) ? urldecode($parts['user']) : null;
+            $pass = isset($parts['pass']) ? urldecode($parts['pass']) : null;
+
+            self::$pdo = new PDO($dsn, $user, $pass, [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
