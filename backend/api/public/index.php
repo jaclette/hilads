@@ -15,7 +15,16 @@ set_exception_handler(function (Throwable $e) {
     exit();
 });
 
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path'     => '/',
+    'secure'   => true,
+    'httponly' => true,
+    'samesite' => 'None',
+]);
+session_start();
+
+$uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET' && $uri === '/health') {
@@ -37,24 +46,44 @@ if ($method === 'GET' && $uri === '/health') {
                 isset($p['user']) ? urldecode($p['user']) : null,
                 isset($p['pass']) ? urldecode($p['pass']) : null,
                 [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-            $row      = $pdo->query("SELECT COUNT(*) as n FROM information_schema.tables WHERE table_schema='public'")->fetch(PDO::FETCH_ASSOC);
+
+            $connRow    = $pdo->query("SELECT current_database(), current_user, current_schema()")->fetch(PDO::FETCH_NUM);
+            $dbDatabase = $connRow[0];
+            $dbUser     = $connRow[1];
+            $dbSchema   = $connRow[2];
+
+            // Check users table in ALL schemas (not just public — Render may default to user schema)
+            $tblRow     = $pdo->query("SELECT table_schema FROM information_schema.tables WHERE table_name='users' LIMIT 1")->fetch(PDO::FETCH_NUM);
+            $usersSchema = $tblRow ? $tblRow[0] : null;
+
+            // Count rows in users if table exists
+            $userCount = null;
+            if ($usersSchema) {
+                $cnt = $pdo->query("SELECT COUNT(*) FROM \"$usersSchema\".users")->fetch(PDO::FETCH_NUM);
+                $userCount = (int)$cnt[0];
+            }
+
             $dbStatus = 'connected';
-            $tableCount = (int)($row['n'] ?? 0);
         } catch (Throwable $ex) {
             $dbStatus = 'connection_failed';
             $dbError  = $ex->getMessage();
         }
     }
 
-    error_log('[hilads:health] db_target=' . $dbTarget . ' db_status=' . $dbStatus . ($dbError ? ' error=' . $dbError : '') . ' tables=' . ($tableCount ?? 'n/a'));
+    error_log('[hilads:health] db_status=' . $dbStatus . ' database=' . ($dbDatabase ?? '?') . ' schema=' . ($dbSchema ?? '?') . ' users_table_schema=' . ($usersSchema ?? 'MISSING') . ' user_count=' . ($userCount ?? 'n/a') . ($dbError ? ' error=' . $dbError : ''));
 
     echo json_encode([
-        'status'      => 'ok',
-        'service'     => 'hilads-api',
-        'db_target'   => $dbTarget,
-        'db_status'   => $dbStatus,
-        'table_count' => $tableCount ?? null,
-        'db_error'    => $dbError,
+        'status'            => 'ok',
+        'service'           => 'hilads-api',
+        'db_status'         => $dbStatus,
+        'db_target'         => $dbTarget,
+        'db_database'       => $dbDatabase ?? null,
+        'db_user'           => $dbUser ?? null,
+        'db_current_schema' => $dbSchema ?? null,
+        'users_table_schema'=> $usersSchema ?? null,   // null = table does not exist anywhere
+        'users_row_count'   => $userCount,
+        'db_error'          => $dbError ?? null,
+        'session_user_id'   => $_SESSION['user_id'] ?? null,  // shows if session is carrying a user
     ]);
     exit();
 }
@@ -115,16 +144,6 @@ require_once __DIR__ . '/../src/EventRepository.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/R2Uploader.php';
 require_once __DIR__ . '/../src/TicketmasterImporter.php';
-
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'None',
-]);
-
-session_start();
 
 $router = new Router();
 
