@@ -669,8 +669,8 @@ export default function App() {
     // This triggers Ticketmaster sync for cities that haven't been visited yet, updating
     // counts in the background as each response arrives.
     const toEnrich = loadedChannels
-      .filter(ch => ch.activeUsers > 0 || ch.channelId === channelId)
-      .slice(0, 10)
+      .filter(ch => ch.activeUsers > 0 || ch.messageCount > 0 || ch.channelId === channelId)
+      .slice(0, 15)
     toEnrich.forEach(async (ch) => {
       try {
         const tz = ch.timezone || 'UTC'
@@ -1002,7 +1002,7 @@ export default function App() {
   // ── City scoring ────────────────────────────────────────────────────────────
 
   function cityScore(ch, eventCount) {
-    return (eventCount * 10) + (ch.activeUsers * 3)
+    return (eventCount * 10) + (ch.activeUsers * 3) + (ch.messageCount * 1)
   }
 
   // ── Shared city row renderer ────────────────────────────────────────────────
@@ -1201,10 +1201,15 @@ export default function App() {
                   ))
                 }
                 const getScore = ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0)
-                const active   = sorted.filter(ch => getScore(ch) > 0)
-                const inactive = sorted.filter(ch => getScore(ch) === 0)
-                const top10    = [...active, ...inactive].slice(0, 10)
-                const label    = active.length > 0 ? 'Top cities right now' : 'Cities'
+                const active = [...obChannels]
+                  .filter(ch => getScore(ch) > 0)
+                  .sort((a, b) => getScore(b) - getScore(a) || a.city.localeCompare(b.city))
+                const fillerIds = new Set(active.map(ch => ch.channelId))
+                const filler = [...obChannels]
+                  .filter(ch => !fillerIds.has(ch.channelId))
+                  .sort((a, b) => a.channelId - b.channelId)
+                const top10 = [...active, ...filler].slice(0, 10)
+                const label = active.length > 0 ? 'Top cities right now' : 'Cities'
                 return (
                   <>
                     <div className="city-list-label">{label}</div>
@@ -1520,30 +1525,32 @@ export default function App() {
               </div>
             ) : (() => {
               const q = citySearchQuery.trim().toLowerCase()
-              const sorted = [...channels]
-                .filter(ch => !q || ch.city.toLowerCase().includes(q))
-                .sort((a, b) => {
-                  const scoreA = cityScore(a, channelEventCounts[a.channelId] ?? 0)
-                  const scoreB = cityScore(b, channelEventCounts[b.channelId] ?? 0)
-                  if (scoreB !== scoreA) return scoreB - scoreA
-                  return a.city.localeCompare(b.city)
-                })
-              if (sorted.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
+              const getScore = ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0)
+
               if (q) {
-                // Search mode — all matches, full metrics, no limit
-                return sorted.map(ch => renderCityRow(
+                // Search mode — filter all channels, sort active-first then alpha
+                const results = [...channels]
+                  .filter(ch => ch.city.toLowerCase().includes(q))
+                  .sort((a, b) => getScore(b) - getScore(a) || a.city.localeCompare(b.city))
+                if (results.length === 0) return <div className="city-no-results">No city found for "{q}"</div>
+                return results.map(ch => renderCityRow(
                   ch,
                   channelEventCounts[ch.channelId] ?? 0,
                   (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
                   ch.channelId === channelId
                 ))
               }
-              // Default mode — active cities first by score, then fill remaining slots up to 10
-              const getScore = ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0)
-              const active   = sorted.filter(ch => getScore(ch) > 0)
-              const inactive = sorted.filter(ch => getScore(ch) === 0)
-              const top10    = [...active, ...inactive].slice(0, 10)
-              const label    = active.length > 0 ? 'Top cities right now' : 'Cities'
+
+              // Default mode — active cities by score, then fill to 10 with well-known cities (ID order)
+              const active = [...channels]
+                .filter(ch => getScore(ch) > 0)
+                .sort((a, b) => getScore(b) - getScore(a) || a.city.localeCompare(b.city))
+              const fillerIds = new Set(active.map(ch => ch.channelId))
+              const filler = [...channels]
+                .filter(ch => !fillerIds.has(ch.channelId))
+                .sort((a, b) => a.channelId - b.channelId)
+              const top10 = [...active, ...filler].slice(0, 10)
+              const label = active.length > 0 ? 'Top cities right now' : 'Cities'
               return (
                 <>
                   <div className="city-list-label">{label}</div>
