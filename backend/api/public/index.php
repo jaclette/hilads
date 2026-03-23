@@ -6,6 +6,7 @@ ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
 
 set_exception_handler(function (Throwable $e) {
+    error_log('[hilads] Uncaught ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) {
         http_response_code(500);
         header('Content-Type: application/json');

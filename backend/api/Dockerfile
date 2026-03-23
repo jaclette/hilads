@@ -12,13 +12,14 @@ RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 RUN echo "log_errors = On\nerror_log = /dev/stderr" > /usr/local/etc/php/conf.d/errors.ini
 RUN echo "upload_max_filesize = 10M\npost_max_size = 12M" > /usr/local/etc/php/conf.d/uploads.ini
 
-# Install system deps + PHP extensions often needed
+# Install system deps + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
     libcurl4-openssl-dev \
-    && docker-php-ext-install curl \
+    libpq-dev \
+    && docker-php-ext-install curl pdo_pgsql \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
