@@ -21,19 +21,40 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($method === 'GET' && $uri === '/health') {
     http_response_code(200);
     header('Content-Type: application/json');
-    $dbUrl      = getenv('DATABASE_URL') ?: null;
-    $dbDriver   = $dbUrl ? 'pgsql' : 'none';
-    $dbHost     = 'not set';
+
+    $dbUrl    = getenv('DATABASE_URL') ?: null;
+    $dbTarget = 'not set';
+    $dbStatus = 'not configured';
+    $dbError  = null;
+
     if ($dbUrl) {
-        $p = parse_url($dbUrl);
-        $dbHost = ($p['host'] ?? '?') . ':' . ($p['port'] ?? 5432) . ltrim($p['path'] ?? '', '/');
+        $p        = parse_url($dbUrl);
+        $dbTarget = ($p['host'] ?? '?') . ':' . ($p['port'] ?? 5432) . '/' . ltrim($p['path'] ?? '', '/');
+        try {
+            $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=require',
+                $p['host'], $p['port'] ?? 5432, ltrim($p['path'], '/'));
+            $pdo = new PDO($dsn,
+                isset($p['user']) ? urldecode($p['user']) : null,
+                isset($p['pass']) ? urldecode($p['pass']) : null,
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+            $row      = $pdo->query("SELECT COUNT(*) as n FROM information_schema.tables WHERE table_schema='public'")->fetch(PDO::FETCH_ASSOC);
+            $dbStatus = 'connected';
+            $tableCount = (int)($row['n'] ?? 0);
+        } catch (Throwable $ex) {
+            $dbStatus = 'connection_failed';
+            $dbError  = $ex->getMessage();
+        }
     }
-    error_log('[hilads:boot] db_driver=' . $dbDriver . ' db_target=' . $dbHost);
+
+    error_log('[hilads:health] db_target=' . $dbTarget . ' db_status=' . $dbStatus . ($dbError ? ' error=' . $dbError : '') . ' tables=' . ($tableCount ?? 'n/a'));
+
     echo json_encode([
-        'status'    => 'ok',
-        'service'   => 'hilads-api',
-        'db_driver' => $dbDriver,
-        'db_target' => $dbHost,
+        'status'      => 'ok',
+        'service'     => 'hilads-api',
+        'db_target'   => $dbTarget,
+        'db_status'   => $dbStatus,
+        'table_count' => $tableCount ?? null,
+        'db_error'    => $dbError,
     ]);
     exit();
 }

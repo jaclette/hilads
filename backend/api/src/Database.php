@@ -39,6 +39,7 @@ class Database
 
     private static function migrate(PDO $pdo): void
     {
+        error_log('[hilads:db] migrate() start');
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS users (
                 id                TEXT PRIMARY KEY,
@@ -55,5 +56,6 @@ class Database
                 updated_at        INTEGER NOT NULL
             )
         ");
+        error_log('[hilads:db] migrate() done — users table ensured');
     }
 }
