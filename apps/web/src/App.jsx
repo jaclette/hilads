@@ -899,13 +899,14 @@ export default function App() {
     }).catch(() => {})
   }, [activeEvent?.id])
 
-  // Bulk-fetch participant counts for all today's events when the Hot drawer opens
+  // Bulk-fetch participant counts for visible events when the Hot drawer opens.
+  // Hilads events are today-only (ephemeral); city events are upcoming (no today filter).
   useEffect(() => {
     if (!showEventDrawer || !sessionIdRef.current) return
     const tz = cityTimezone || 'UTC'
     const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
     const isEventToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-    ;[...events, ...cityEvents].filter(isEventToday).forEach(event => {
+    ;[...events.filter(isEventToday), ...cityEvents].forEach(event => {
       fetchEventParticipants(event.id, sessionIdRef.current).then(({ count, isIn }) => {
         setEventParticipants(prev => ({ ...prev, [event.id]: count }))
         setParticipatedEvents(prev => {
@@ -1579,8 +1580,10 @@ export default function App() {
                 const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
                 return today === eventDay
               }
+              // Hilads events are ephemeral (user-created for today) → filter to today only.
+              // City events are upcoming TM imports → show all non-expired, no today filter.
               const todayHilads = events.filter(isEventToday)
-              const todayCity = cityEvents.filter(isEventToday)
+              const upcomingCity = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
               const renderEventRow = event => {
                 const going = eventParticipants[event.id] ?? 0
                 return (
@@ -1606,7 +1609,7 @@ export default function App() {
                   </button>
                 )
               }
-              if (todayHilads.length === 0 && todayCity.length === 0) {
+              if (todayHilads.length === 0 && upcomingCity.length === 0) {
                 return (
                   <div className="events-empty-state">
                     <p className="events-empty-title">Nothing on yet</p>
@@ -1617,11 +1620,11 @@ export default function App() {
               }
               return (
                 <>
-                  {todayCity.length > 0 && <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>}
-                  {todayHilads.length === 0 && todayCity.length > 0 && <p className="events-empty-drawer" style={{ padding: '8px 12px' }}>No Hilads events today</p>}
+                  {(todayHilads.length > 0 || upcomingCity.length > 0) && <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>}
+                  {todayHilads.length === 0 && <p className="events-empty-drawer" style={{ padding: '8px 12px' }}>No Hilads events today</p>}
                   {todayHilads.map(renderEventRow)}
-                  {todayCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>City Events</p>}
-                  {todayCity.map(renderEventRow)}
+                  {upcomingCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>City Events</p>}
+                  {upcomingCity.map(renderEventRow)}
                 </>
               )
             })()}
