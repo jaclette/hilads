@@ -89,18 +89,14 @@ $router->add('GET', '/api/v1/channels', function () {
             $stats = ['messageCount' => 0, 'activeUsers' => 0, 'lastActivityAt' => null];
         }
 
-        // Count today's non-expired events from the stored file (no Ticketmaster sync)
+        // Count all non-expired events from the stored file (no Ticketmaster sync).
+        // Ticketmaster events are future-dated (next week, next month) — a "today only" filter
+        // would silently discard all of them. Count anything that hasn't expired yet.
         $eventCount = 0;
         if (isset($eventFileMap[$id])) {
-            $tz         = new DateTimeZone($city['timezone']);
-            $todayStr   = (new DateTime('now', $tz))->format('Y-m-d');
-            $rawEvents  = json_decode(file_get_contents($eventFileMap[$id]), true) ?? [];
+            $rawEvents = json_decode(file_get_contents($eventFileMap[$id]), true) ?? [];
             foreach ($rawEvents as $ev) {
-                if (($ev['expires_at'] ?? 0) < $now) continue;
-                $evDay = (new DateTime('@' . (int) ($ev['starts_at'] ?? 0)))
-                    ->setTimezone($tz)
-                    ->format('Y-m-d');
-                if ($evDay === $todayStr) $eventCount++;
+                if (($ev['expires_at'] ?? 0) >= $now) $eventCount++;
             }
         }
 

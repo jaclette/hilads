@@ -673,14 +673,14 @@ export default function App() {
       .slice(0, 15)
     toEnrich.forEach(async (ch) => {
       try {
-        const tz = ch.timezone || 'UTC'
-        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-        const isToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
         const [hiladsData, cityData] = await Promise.all([
           fetchEvents(ch.channelId),
           fetchCityEvents(ch.channelId),
         ])
-        const total = hiladsData.events.filter(isToday).length + (cityData.events ?? []).filter(isToday).length
+        // Count all non-expired events — Ticketmaster events are future-dated,
+        // a "today" filter would discard them all.
+        // The backend already prunes truly expired events before returning.
+        const total = hiladsData.events.length + (cityData.events ?? []).length
         setChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
       } catch { /* ignore */ }
     })
@@ -708,14 +708,11 @@ export default function App() {
     const toEnrich = loadedChannels.filter(ch => ch.activeUsers > 0).slice(0, 10)
     toEnrich.forEach(async (ch) => {
       try {
-        const tz = ch.timezone || 'UTC'
-        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-        const isToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
         const [hiladsData, cityData] = await Promise.all([
           fetchEvents(ch.channelId),
           fetchCityEvents(ch.channelId),
         ])
-        const total = hiladsData.events.filter(isToday).length + (cityData.events ?? []).filter(isToday).length
+        const total = hiladsData.events.length + (cityData.events ?? []).length
         setObChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
       } catch { /* ignore */ }
     })
