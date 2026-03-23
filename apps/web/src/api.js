@@ -191,6 +191,61 @@ export async function sendEventMessage(eventId, guestId, nickname, content) {
   return res.json()
 }
 
+// ── Auth & profile ────────────────────────────────────────────────────────────
+
+export async function authSignup(email, password, displayName, guestId) {
+  const res = await fetch(`${BASE}/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password, display_name: displayName, guest_id: guestId }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Signup failed')
+  return data // { user }
+}
+
+export async function authLogin(email, password) {
+  const res = await fetch(`${BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Login failed')
+  return data // { user }
+}
+
+export async function authLogout() {
+  await fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
+}
+
+export async function authMe() {
+  const res = await fetch(`${BASE}/auth/me`, { credentials: 'include' })
+  if (res.status === 401) return null
+  if (!res.ok) throw new Error('Failed to fetch session')
+  return res.json() // { user }
+}
+
+export async function updateProfile(fields) {
+  const res = await fetch(`${BASE}/profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(fields),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Failed to update profile')
+  return data // { user }
+}
+
+export async function fetchPublicProfile(userId) {
+  const res = await fetch(`${BASE}/users/${userId}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('User not found')
+  return res.json() // { user }
+}
+
 export async function sendEventImageMessage(eventId, guestId, nickname, imageUrl) {
   const res = await fetch(`${BASE}/events/${eventId}/messages`, {
     method: 'POST',

@@ -660,6 +660,113 @@ html, body, #root {
   text-align: center;
 }
 
+/* ── Me screen (registered user) ─────────────────────── */
+.me-display-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin: 8px 0 2px;
+}
+.me-email {
+  font-size: 0.8rem;
+  color: var(--muted2);
+  text-align: center;
+  margin: 0 0 12px;
+}
+.me-city, .me-meta {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  text-align: center;
+  margin: 2px 0;
+}
+.me-interests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 12px 0;
+}
+.interest-chip {
+  background: rgba(255,122,60,0.12);
+  color: #FF7A3C;
+  border: 1px solid rgba(255,122,60,0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* ── Guest upgrade CTA ─────────────────────────────────── */
+.me-upgrade {
+  margin-top: 24px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  width: 100%;
+}
+.me-upgrade-hint {
+  font-size: 0.82rem;
+  color: var(--muted2);
+  margin-bottom: 10px;
+}
+.me-upgrade-btn {
+  background: #FF7A3C;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+.me-upgrade-btn:active { transform: scale(0.97); }
+
+/* ── Auth screen ───────────────────────────────────────── */
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  width: 100%;
+}
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: var(--muted2);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.auth-tab--active {
+  background: rgba(255,122,60,0.15);
+  color: #FF7A3C;
+  font-weight: 600;
+}
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.auth-error {
+  font-size: 0.82rem;
+  color: #e05;
+  text-align: center;
+  margin: 4px 0;
+}
+.modal-submit--secondary {
+  background: transparent;
+  color: var(--muted2);
+  border: 1px solid var(--border);
+}
+.modal-submit--secondary:hover { color: var(--text); }
+
 /* ── Messages ─────────────────────────────────────────── */
 
 .messages {

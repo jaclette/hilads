@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl } from './eventUtils'
 import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
+import AuthScreen from './components/AuthScreen'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -257,6 +258,8 @@ export default function App() {
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
+  const [showAuthScreen, setShowAuthScreen] = useState(false)
+  const [account, setAccount] = useState(null)        // null = guest, object = registered
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
@@ -295,6 +298,9 @@ export default function App() {
   const cityEventsPolRef = useRef(null)
 
   useEffect(() => {
+    // restore registered account session if one exists
+    authMe().then(data => { if (data) setAccount(data.user) }).catch(() => {})
+
     // start geolocation immediately in the background while user sees onboarding
     locPromiseRef.current = startGeolocation()
 
@@ -1685,55 +1691,111 @@ export default function App() {
         </div>
       )}
 
-      {showProfileDrawer && (
+      {showProfileDrawer && !showAuthScreen && (
         <div className="full-page">
           <div className="page-header">
             <button className="page-back-btn" onClick={() => setShowProfileDrawer(false)}>←</button>
-            <span className="page-title">Your profile</span>
+            <span className="page-title">Me</span>
           </div>
           <div className="page-body page-body--centered">
-            {(() => {
-              const [c1, c2] = avatarColors(profileNickInput || nickname)
-              return (
-                <div className="profile-avatar-row">
-                  <span
-                    className="online-avatar profile-avatar-lg"
-                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                  >
-                    {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
-                  </span>
+            {account ? (
+              /* ── Registered user ── */
+              <>
+                {(() => {
+                  const [c1, c2] = avatarColors(account.display_name)
+                  return (
+                    <div className="profile-avatar-row">
+                      {account.profile_photo_url
+                        ? <img className="online-avatar profile-avatar-lg" src={account.profile_photo_url} alt={account.display_name} />
+                        : (
+                          <span className="online-avatar profile-avatar-lg" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                            {account.display_name[0]?.toUpperCase() ?? '?'}
+                          </span>
+                        )
+                      }
+                    </div>
+                  )
+                })()}
+                <p className="me-display-name">{account.display_name}</p>
+                <p className="me-email">{account.email}</p>
+                {account.home_city && <p className="me-city">📍 {account.home_city}</p>}
+                {account.age && <p className="me-meta">{account.age} years old</p>}
+                {account.interests?.length > 0 && (
+                  <div className="me-interests">
+                    {account.interests.map(i => <span key={i} className="interest-chip">{i}</span>)}
+                  </div>
+                )}
+                <button
+                  className="modal-submit modal-submit--secondary"
+                  style={{ marginTop: '2rem' }}
+                  onClick={async () => {
+                    await authLogout()
+                    setAccount(null)
+                    setShowProfileDrawer(false)
+                  }}
+                >Sign out</button>
+              </>
+            ) : (
+              /* ── Guest user ── */
+              <>
+                {(() => {
+                  const [c1, c2] = avatarColors(profileNickInput || nickname)
+                  return (
+                    <div className="profile-avatar-row">
+                      <span className="online-avatar profile-avatar-lg" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                        {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
+                      </span>
+                    </div>
+                  )
+                })()}
+                <div className="modal-field">
+                  <label className="modal-label">Nickname</label>
+                  <input
+                    className="modal-input"
+                    type="text"
+                    value={profileNickInput}
+                    onChange={(e) => setProfileNickInput(e.target.value)}
+                    maxLength={20}
+                    placeholder="Your name..."
+                  />
                 </div>
-              )
-            })()}
-            <div className="modal-field">
-              <label className="modal-label">Nickname</label>
-              <input
-                className="modal-input"
-                type="text"
-                value={profileNickInput}
-                onChange={(e) => setProfileNickInput(e.target.value)}
-                maxLength={20}
-                placeholder="Your name..."
-              />
-            </div>
-            <button
-              className="modal-submit"
-              onClick={() => {
-                const trimmed = profileNickInput.trim()
-                if (trimmed) {
-                  setNickname(trimmed)
-                  nicknameRef.current = trimmed
-                  saveIdentity(trimmed, channelId, city)
-                }
-                setShowProfileDrawer(false)
-              }}
-              disabled={!profileNickInput.trim()}
-            >
-              Save
-            </button>
-            <p className="profile-hint">// anonymous · no sign-up</p>
+                <button
+                  className="modal-submit"
+                  onClick={() => {
+                    const trimmed = profileNickInput.trim()
+                    if (trimmed) {
+                      setNickname(trimmed)
+                      nicknameRef.current = trimmed
+                      saveIdentity(trimmed, channelId, city)
+                    }
+                    setShowProfileDrawer(false)
+                  }}
+                  disabled={!profileNickInput.trim()}
+                >Save nickname</button>
+                <div className="me-upgrade">
+                  <p className="me-upgrade-hint">Save your profile and keep your identity</p>
+                  <button className="me-upgrade-btn" onClick={() => setShowAuthScreen(true)}>
+                    Create account
+                  </button>
+                </div>
+                <p className="profile-hint">// anonymous · no sign-up required</p>
+              </>
+            )}
           </div>
         </div>
+      )}
+
+      {showProfileDrawer && showAuthScreen && (
+        <AuthScreen
+          guestId={guest?.guestId}
+          guestNickname={nickname}
+          onSuccess={(user) => {
+            setAccount(user)
+            setShowAuthScreen(false)
+            setShowProfileDrawer(false)
+          }}
+          onBack={() => setShowAuthScreen(false)}
+        />
       )}
 
       {/* Create event — full-screen page */}

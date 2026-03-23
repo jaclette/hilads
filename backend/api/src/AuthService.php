@@ -1,0 +1,200 @@
+<?php
+
+declare(strict_types=1);
+
+class AuthService
+{
+    public const ALLOWED_INTERESTS = [
+        'drinks', 'party', 'nightlife', 'music', 'live music', 'culture', 'art',
+        'food', 'coffee', 'sport', 'fitness', 'hiking', 'beach', 'wellness',
+        'travel', 'hangout', 'socializing', 'language exchange', 'dating',
+        'networking', 'startup', 'tech', 'gaming',
+    ];
+
+    // ── Signup ────────────────────────────────────────────────────────────────
+
+    public static function signup(
+        string $email,
+        string $password,
+        string $displayName,
+        ?string $guestId = null
+    ): array {
+        $email       = strtolower(trim($email));
+        $displayName = mb_substr(trim(strip_tags($displayName)), 0, 30);
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            Response::json(['error' => 'Invalid email address'], 422);
+        }
+
+        if (mb_strlen($password) < 8) {
+            Response::json(['error' => 'Password must be at least 8 characters'], 422);
+        }
+
+        if (mb_strlen($password) > 72) {
+            Response::json(['error' => 'Password must not exceed 72 characters'], 422);
+        }
+
+        if ($displayName === '') {
+            Response::json(['error' => 'Display name is required'], 422);
+        }
+
+        if (UserRepository::findByEmail($email) !== null) {
+            Response::json(['error' => 'An account with this email already exists'], 409);
+        }
+
+        $user = UserRepository::create([
+            'email'         => $email,
+            'password_hash' => password_hash($password, PASSWORD_BCRYPT),
+            'display_name'  => $displayName,
+            'guest_id'      => $guestId,
+        ]);
+
+        $_SESSION['user_id'] = $user['id'];
+
+        return $user;
+    }
+
+    // ── Login ─────────────────────────────────────────────────────────────────
+
+    public static function login(string $email, string $password): array
+    {
+        $email = strtolower(trim($email));
+        $user  = UserRepository::findByEmail($email);
+
+        if ($user === null || empty($user['password_hash']) || !password_verify($password, $user['password_hash'])) {
+            Response::json(['error' => 'Invalid email or password'], 401);
+        }
+
+        $_SESSION['user_id'] = $user['id'];
+
+        return $user;
+    }
+
+    // ── Session helpers ───────────────────────────────────────────────────────
+
+    public static function currentUser(): ?array
+    {
+        $userId = $_SESSION['user_id'] ?? null;
+        if ($userId === null) {
+            return null;
+        }
+
+        return UserRepository::findById((string) $userId);
+    }
+
+    /** Returns the current user or sends a 401 and exits. */
+    public static function requireAuth(): array
+    {
+        $user = self::currentUser();
+        if ($user === null) {
+            Response::json(['error' => 'Authentication required'], 401);
+        }
+
+        return $user;
+    }
+
+    // ── Profile field sanitisation ────────────────────────────────────────────
+
+    /**
+     * Validates and normalises profile fields from a raw request body.
+     * Returns only the fields that are safe to pass to UserRepository::update().
+     */
+    public static function sanitiseProfileFields(array $body): array
+    {
+        $fields = [];
+        $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+
+        if (array_key_exists('display_name', $body)) {
+            $name = mb_substr(trim(strip_tags((string) ($body['display_name'] ?? ''))), 0, 30);
+            if ($name === '') {
+                Response::json(['error' => 'display_name must not be empty'], 422);
+            }
+            $fields['display_name'] = $name;
+        }
+
+        if (array_key_exists('birth_year', $body)) {
+            $year    = $body['birth_year'];
+            $minYear = (int) date('Y') - 100;
+            $maxYear = (int) date('Y') - 18;
+
+            if ($year !== null) {
+                $year = filter_var($year, FILTER_VALIDATE_INT);
+                if ($year === false || $year < $minYear || $year > $maxYear) {
+                    Response::json(['error' => 'birth_year must be a valid year (users must be at least 18)'], 422);
+                }
+            }
+            $fields['birth_year'] = $year;
+        }
+
+        if (array_key_exists('home_city', $body)) {
+            $city = $body['home_city'];
+            if ($city !== null) {
+                $city = mb_substr(trim(strip_tags((string) $city)), 0, 60);
+            }
+            $fields['home_city'] = $city ?: null;
+        }
+
+        if (array_key_exists('profile_photo_url', $body)) {
+            $url = $body['profile_photo_url'];
+            if ($url !== null) {
+                if (!is_string($url) || !str_starts_with($url, $r2Base)) {
+                    Response::json(['error' => 'Invalid profile_photo_url'], 422);
+                }
+                $filename = basename(parse_url($url, PHP_URL_PATH) ?? '');
+                if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
+                    Response::json(['error' => 'Invalid profile_photo_url'], 422);
+                }
+            }
+            $fields['profile_photo_url'] = $url;
+        }
+
+        if (array_key_exists('interests', $body)) {
+            $raw = $body['interests'];
+            if (!is_array($raw)) {
+                Response::json(['error' => 'interests must be an array'], 422);
+            }
+            if (count($raw) > 10) {
+                Response::json(['error' => 'You can select at most 10 interests'], 422);
+            }
+            foreach ($raw as $item) {
+                if (!in_array($item, self::ALLOWED_INTERESTS, true)) {
+                    Response::json(['error' => "Unknown interest: $item"], 422);
+                }
+            }
+            $fields['interests'] = json_encode(array_values($raw));
+        }
+
+        return $fields;
+    }
+
+    // ── Response shape helpers ────────────────────────────────────────────────
+
+    /** Public profile — safe to return to anyone. */
+    public static function publicFields(array $user): array
+    {
+        return [
+            'id'                => $user['id'],
+            'display_name'      => $user['display_name'],
+            'age'               => self::computeAge($user['birth_year'] ?? null),
+            'profile_photo_url' => $user['profile_photo_url'],
+            'home_city'         => $user['home_city'],
+            'interests'         => json_decode($user['interests'] ?? '[]', true),
+        ];
+    }
+
+    /** Own profile — includes email. Never includes password_hash or google_id. */
+    public static function ownFields(array $user): array
+    {
+        return array_merge(self::publicFields($user), [
+            'email' => $user['email'],
+        ]);
+    }
+
+    private static function computeAge(?int $birthYear): ?int
+    {
+        if ($birthYear === null) {
+            return null;
+        }
+        return (int) date('Y') - $birthYear;
+    }
+}

@@ -2,6 +2,73 @@
 
 declare(strict_types=1);
 
+// ── Auth ─────────────────────────────────────────────────────────────────────
+
+$router->add('POST', '/api/v1/auth/signup', function () {
+    $body = Request::json();
+    if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
+
+    $user = AuthService::signup(
+        email:       $body['email']        ?? '',
+        password:    $body['password']     ?? '',
+        displayName: $body['display_name'] ?? '',
+        guestId:     isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null,
+    );
+
+    Response::json(['user' => AuthService::ownFields($user)], 201);
+});
+
+$router->add('POST', '/api/v1/auth/login', function () {
+    $body = Request::json();
+    if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
+
+    $user = AuthService::login(
+        email:    $body['email']    ?? '',
+        password: $body['password'] ?? '',
+    );
+
+    Response::json(['user' => AuthService::ownFields($user)]);
+});
+
+$router->add('POST', '/api/v1/auth/logout', function () {
+    unset($_SESSION['user_id']);
+    Response::json(['ok' => true]);
+});
+
+$router->add('GET', '/api/v1/auth/me', function () {
+    $user = AuthService::requireAuth();
+    Response::json(['user' => AuthService::ownFields($user)]);
+});
+
+// ── Profile ───────────────────────────────────────────────────────────────────
+
+$router->add('PUT', '/api/v1/profile', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json();
+    if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
+
+    $fields = AuthService::sanitiseProfileFields($body);
+    $updated = UserRepository::update($user['id'], $fields);
+
+    Response::json(['user' => AuthService::ownFields($updated)]);
+});
+
+$router->add('GET', '/api/v1/users/{userId}', function (array $params) {
+    $userId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+
+    $user = UserRepository::findById($userId);
+    if ($user === null) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
+    Response::json(['user' => AuthService::publicFields($user)]);
+});
+
+// ── Guest sessions ────────────────────────────────────────────────────────────
+
 $router->add('POST', '/api/v1/guest/session', function () {
     $guestId = bin2hex(random_bytes(16));
 

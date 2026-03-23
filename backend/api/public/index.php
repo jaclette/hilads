@@ -31,7 +31,7 @@ if ($origin !== null && in_array($origin, $allowedOrigins, true)) {
 }
 
 header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
 
 if ($method === 'OPTIONS') {
     http_response_code(204);
@@ -53,6 +53,9 @@ if (file_exists($envFile)) {
 require_once __DIR__ . '/../vendor/autoload.php';
 
 require_once __DIR__ . '/../src/Storage.php';
+require_once __DIR__ . '/../src/Database.php';
+require_once __DIR__ . '/../src/UserRepository.php';
+require_once __DIR__ . '/../src/AuthService.php';
 
 // Ensure persistent storage directory exists (creates it on first boot after mounting disk)
 $storageDir = Storage::dir();
