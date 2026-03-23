@@ -821,7 +821,7 @@ export default function App() {
             {city ? (
               <>
                 <div>
-                  <span className="ob-city-name">{city} <span style={{ fontSize: '0.8em', verticalAlign: 'middle' }}>{cityFlag(city)}</span></span>
+                  <span className="ob-city-name">{city} <span style={{ fontSize: '0.8em', verticalAlign: 'middle', WebkitTextFillColor: 'initial' }}>{cityFlag(city)}</span></span>
                 </div>
                 <p className="ob-tagline">See who's around. Say hi instantly.</p>
                 <span className="ob-live"><span className="ob-live-fire">🔥</span> {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now</span>
