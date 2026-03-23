@@ -649,7 +649,6 @@ export default function App() {
     setShowCityPicker(true)
     setCitySearchQuery('')
     setChannelsLoading(true)
-    setChannelEventCounts({})
     let loadedChannels = []
     try {
       const data = await fetchChannels()
@@ -665,12 +664,14 @@ export default function App() {
       setChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    // Phase 2: enrich event counts for cities that have users + the current city.
-    // This triggers Ticketmaster sync for cities that haven't been visited yet, updating
-    // counts in the background as each response arrives.
+    // Phase 2: enrich event counts for:
+    //   - current city (always)
+    //   - well-known cities (IDs 1–20, the original set — expected to have TM events)
+    //   - any city currently active
+    // This triggers Ticketmaster sync on first visit; subsequent calls read from disk.
     const toEnrich = loadedChannels
-      .filter(ch => ch.activeUsers > 0 || ch.messageCount > 0 || ch.channelId === channelId)
-      .slice(0, 15)
+      .filter(ch => ch.activeUsers > 0 || ch.messageCount > 0 || ch.channelId === channelId || ch.channelId <= 20)
+      .slice(0, 30)
     toEnrich.forEach(async (ch) => {
       try {
         const [hiladsData, cityData] = await Promise.all([
@@ -690,7 +691,6 @@ export default function App() {
     setObPickingCity(true)
     setCitySearchQuery('')
     setObChannelsLoading(true)
-    setObChannelEventCounts({})
     let loadedChannels = []
     try {
       const data = await fetchChannels()
@@ -705,7 +705,7 @@ export default function App() {
       setObChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    const toEnrich = loadedChannels.filter(ch => ch.activeUsers > 0).slice(0, 10)
+    const toEnrich = loadedChannels.filter(ch => ch.activeUsers > 0 || ch.channelId <= 20).slice(0, 25)
     toEnrich.forEach(async (ch) => {
       try {
         const [hiladsData, cityData] = await Promise.all([
