@@ -1050,7 +1050,7 @@ export default function App() {
                 <span className="header-hero-name">
                   {EVENT_ICONS[activeEvent.type] ?? '📌'} {activeEvent.title}
                 </span>
-                <span className="online-label">
+                <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
                   {activeEvent.location_hint && ` · 📍 ${activeEvent.location_hint}`}
                   {` · 🔥 ${eventPresence[activeEvent.id] ?? 0} here · 👍 ${eventParticipants[activeEvent.id] ?? 0} going`}
@@ -1058,21 +1058,19 @@ export default function App() {
               </div>
             </>
           ) : (
-            /* City mode: hero header */
-            <>
-              <div className="header-top-row">
-                <Logo variant="icon" size="sm" />
-                <div className="online-dot" />
-              </div>
+            /* City mode: centered hero header */
+            <div className="header-hero">
+              <Logo variant="icon" size="lg" />
               <div className="header-hero-city">
                 <span className="header-hero-name">
                   {cityFlag(city)} {city}
                 </span>
                 <span className="online-label">
-                  {onlineCount != null ? `${onlineCount} people online` : 'live now'}
+                  <span className="online-pulse" />
+                  {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
                 </span>
               </div>
-            </>
+            </div>
           )}
           {/* Desktop-only controls */}
           <div className="header-desktop-controls">
