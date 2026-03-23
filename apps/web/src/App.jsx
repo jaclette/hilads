@@ -946,51 +946,49 @@ export default function App() {
 
       <div className="screen chat">
         <header className="chat-header">
-          <div className="header-left">
-            <Logo variant="icon" size="sm" />
-          </div>
-          <div className="header-center">
-            {activeEvent ? (
-              <>
-                <button className="back-to-city-btn" onClick={handleBackToCity}>
-                  ← {city}
+          {activeEvent ? (
+            /* Event mode: compact bar with back + event info */
+            <>
+              <div className="header-top-row">
+                <button className="back-to-city-btn" onClick={handleBackToCity}>← {city}</button>
+                <button
+                  className={`im-in-btn${participatedEvents.has(activeEvent.id) ? ' im-in-btn--active' : ''}`}
+                  onClick={() => handleToggleParticipation(activeEvent.id)}
+                >
+                  {participatedEvents.has(activeEvent.id) ? '✅ I\'m in' : '👍 I\'m in'}
                 </button>
-                <div className="header-city">
-                  <span className="event-header-title">
-                    {EVENT_ICONS[activeEvent.type] ?? '📌'} {activeEvent.title}
-                  </span>
-                  <span className="online-label">
-                    {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
-                    {activeEvent.location_hint && ` · 📍 ${activeEvent.location_hint}`}
-                    {` · 🔥 ${eventPresence[activeEvent.id] ?? 0} here · 👍 ${eventParticipants[activeEvent.id] ?? 0} going`}
-                  </span>
-                </div>
-              </>
-            ) : (
-              <>
+              </div>
+              <div className="header-hero-city">
+                <span className="header-hero-name">
+                  {EVENT_ICONS[activeEvent.type] ?? '📌'} {activeEvent.title}
+                </span>
+                <span className="online-label">
+                  {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
+                  {activeEvent.location_hint && ` · 📍 ${activeEvent.location_hint}`}
+                  {` · 🔥 ${eventPresence[activeEvent.id] ?? 0} here · 👍 ${eventParticipants[activeEvent.id] ?? 0} going`}
+                </span>
+              </div>
+            </>
+          ) : (
+            /* City mode: hero header */
+            <>
+              <div className="header-top-row">
+                <Logo variant="icon" size="sm" />
                 <div className="online-dot" />
-                <div className="header-city">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ fontSize: '1.05rem', lineHeight: 1 }}>{cityFlag(city)}</span>
-                    <span className="city-name">{city}</span>
-                  </div>
-                  <span className="online-label">
-                    {onlineCount != null ? `${onlineCount} people online` : 'live now'}
-                  </span>
-                </div>
-              </>
-            )}
-          </div>
-          <div className="header-right">
-            {activeEvent && (
-              <button
-                className={`im-in-btn${participatedEvents.has(activeEvent.id) ? ' im-in-btn--active' : ''}`}
-                onClick={() => handleToggleParticipation(activeEvent.id)}
-              >
-                {participatedEvents.has(activeEvent.id) ? '✅ I\'m in' : '👍 I\'m in'}
-              </button>
-            )}
-            <button className="change-city-btn header-city-btn" onClick={openCityPicker} title="Switch city">
+              </div>
+              <div className="header-hero-city">
+                <span className="header-hero-name">
+                  {cityFlag(city)} {city}
+                </span>
+                <span className="online-label">
+                  {onlineCount != null ? `${onlineCount} people online` : 'live now'}
+                </span>
+              </div>
+            </>
+          )}
+          {/* Desktop-only controls */}
+          <div className="header-desktop-controls">
+            <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
               🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
             </button>
             <span className="you-badge">👤 {guest?.nickname}</span>
