@@ -226,7 +226,6 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               onChange={e => setTitle(e.target.value)}
               placeholder="e.g. Jazz night at Rooftop Bar"
               maxLength={100}
-              autoFocus
             />
           </div>
 

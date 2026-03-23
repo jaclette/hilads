@@ -1168,23 +1168,29 @@ html, body, #root {
 /* ── Full-screen pages ────────────────────────────────── */
 
 .screen.chat {
-  position: relative; /* anchor for absolute full-page children */
-  overflow: hidden;   /* contain slideInRight animation within viewport */
+  position: relative;
 }
 
 @keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0.6; }
-  to   { transform: translateX(0);    opacity: 1; }
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
 
 .full-page {
-  position: absolute;
+  /* Fixed to viewport — fully decoupled from any scroll context.
+     This prevents iOS Safari rubber-band propagation from the
+     underlying .messages scroll container. */
+  position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 200;
   background: var(--bg);
   display: flex;
   flex-direction: column;
-  animation: slideInRight 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  overscroll-behavior: none;
+  /* GPU-composited animation — no layout reflow during transition */
+  animation: slideInRight 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
+  will-change: transform;
 }
 
 .page-header {

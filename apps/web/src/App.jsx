@@ -1386,7 +1386,6 @@ export default function App() {
                 onChange={(e) => setProfileNickInput(e.target.value)}
                 maxLength={20}
                 placeholder="Your name..."
-                autoFocus
               />
             </div>
             <button
