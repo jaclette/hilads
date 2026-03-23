@@ -46,15 +46,27 @@ function avatarColors(name) {
 }
 
 const PLACEHOLDERS = [
-  (city) => `What's on in ${city} right now?`,
-  (city) => `Say something to ${city}...`,
-  (city) => `Talk to the people of ${city}...`,
-  (city) => `Drop a message for ${city}...`,
+  () => `Say hi 👋`,
+  () => `Who's out tonight?`,
+  () => `Any plans? 👀`,
+  () => `What's the vibe right now?`,
+  () => `Anyone up for something? 🍻`,
+  () => `Drop a message…`,
+]
+
+const AMBIENT_MESSAGES = [
+  () => `🔥 People are arriving`,
+  () => `🍻 Who's out tonight?`,
+  () => `💬 The city is waking up`,
+  () => `🌙 Night owls are online`,
+  () => `👀 Someone just opened the app`,
+  () => `🎉 The vibe is alive right now`,
+  () => `🗺️ Explorers checking in`,
 ]
 
 function randomActivity() {
-  const count = 15 + Math.floor(Math.random() * 35)
-  return { subtype: 'crowd', text: `🔥 ${count} people are here right now` }
+  const fn = AMBIENT_MESSAGES[Math.floor(Math.random() * AMBIENT_MESSAGES.length)]
+  return { subtype: 'crowd', text: fn() }
 }
 
 function typingText(users, mySessionId) {
@@ -998,11 +1010,16 @@ export default function App() {
         <div className="messages">
           {feed.length === 0 && (
             <div className="empty">
-              <p className="empty-icon">{activeEvent ? '💬' : '👋'}</p>
-              <p>{activeEvent
-                ? `Be the first to chat about ${activeEvent.title}!`
-                : `Be the first to say something in ${city}!`
-              }</p>
+              <p className="empty-icon">{activeEvent ? '💬' : '🔥'}</p>
+              <p className="empty-title">
+                {activeEvent ? `${activeEvent.title}` : 'People are arriving'}
+              </p>
+              <p className="empty-sub">
+                {activeEvent
+                  ? 'Be the first to chat here 👇'
+                  : 'Be the first to say hi 👇'
+                }
+              </p>
             </div>
           )}
           {feed.map((item, i) => {
@@ -1093,7 +1110,7 @@ export default function App() {
             onChange={handleInputChange}
             placeholder={activeEvent
               ? `Chat about ${activeEvent.title}…`
-              : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length](city) : ''
+              : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length]() : ''
             }
             maxLength={1000}
             autoFocus
