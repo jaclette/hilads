@@ -12,6 +12,8 @@
   --accent: #C24A38;
   --accent2: #B87228;
   --green: #3ddc84;
+  --hot-dot: #FF7A3C;
+  --profile-dot: #8B5CF6;
   --text: #ede9e5;
   --muted: #635650;
   --muted2: #968880;
@@ -708,6 +710,10 @@ html, body, #root {
 .bottom-nav-icon svg {
   width: 26px;
   height: 26px;
+}
+
+.bottom-nav-icon circle[fill="var(--hot-dot)"] {
+  filter: drop-shadow(0 0 4px rgba(255, 122, 60, 0.35));
 }
 
 .bottom-nav-tab.active .bottom-nav-icon {

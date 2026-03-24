@@ -80,7 +80,7 @@ function NavIconEvents() {
       {/* Inner flame core */}
       <path d="M12 9c-1.5 2-2.5 3.5-2.5 5a2.5 2.5 0 0 0 5 0c0-1.5-1-3-2.5-5z" strokeWidth="1.4" />
       {/* Live dot */}
-      <circle cx="18.5" cy="5" r="2.2" fill="currentColor" stroke="none" />
+      <circle cx="18.5" cy="5" r="2.2" fill="var(--hot-dot)" stroke="none" />
     </svg>
   )
 }
@@ -123,7 +123,7 @@ function NavIconProfile() {
       {/* Shoulders */}
       <path d="M4 21a9 9 0 0 1 16 0" />
       {/* Status dot */}
-      <circle cx="19.5" cy="5" r="2.2" fill="currentColor" stroke="none" />
+      <circle cx="19.5" cy="5" r="2.2" fill="var(--profile-dot)" stroke="none" />
     </svg>
   )
 }
