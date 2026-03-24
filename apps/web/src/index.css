@@ -2582,7 +2582,8 @@ html, body, #root {
 
 /* Unread dot on the header Messages icon */
 .header-messages-btn--unread {
-  position: relative; /* already set on parent but keep explicit */
+  /* No position override — the button keeps position:absolute from the base rule.
+     position:absolute already creates a containing block for the ::after dot. */
 }
 
 .header-messages-btn--unread::after {
