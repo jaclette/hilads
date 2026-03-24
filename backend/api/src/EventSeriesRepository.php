@@ -36,8 +36,9 @@ class EventSeriesRepository
         }
     }
 
-    private static function createOccurrence(PDO $pdo, array $series, string $date): string
+    private static function createOccurrence(array $series, string $date): string
     {
+        $pdo      = Database::pdo();
         $tz       = $series['timezone'];
         $startsAt = self::localToUnix($date, $series['start_time'], $tz);
         $endsAt   = self::localToUnix($date, $series['end_time'], $tz);
@@ -63,29 +64,35 @@ class EventSeriesRepository
                  ?, to_timestamp(?), to_timestamp(?), ?, ?)
         ")->execute([
             $channelId,
-            $series['created_by'],
-            $series['guest_id'],
+            $series['created_by'] ?? null,
+            $series['guest_id'] ?? null,
             $series['title'],
             $series['event_type'],
-            $series['location'],
+            $series['location'] ?? null,
             $startsAt,
             $endsAt,
             $series['id'],
             $date,
         ]);
 
-        // Auto-join: series creator is always a participant
-        $pdo->prepare("
-            INSERT INTO event_participants (channel_id, guest_id, user_id)
-            VALUES (?, ?, ?)
-            ON CONFLICT (channel_id, guest_id) DO NOTHING
-        ")->execute([$channelId, $series['guest_id'], $series['created_by']]);
+        // Auto-join creator if this is a user-created series
+        if (!empty($series['guest_id'])) {
+            $pdo->prepare("
+                INSERT INTO event_participants (channel_id, guest_id, user_id)
+                VALUES (?, ?, ?)
+                ON CONFLICT (channel_id, guest_id) DO NOTHING
+            ")->execute([$channelId, $series['guest_id'], $series['created_by'] ?? null]);
+        }
 
         return $channelId;
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
 
+    /**
+     * Create a user-initiated series (requires authenticated user + guestId).
+     * Returns { series_id, first_event }.
+     */
     public static function create(
         int     $channelId,
         string  $userId,
@@ -93,10 +100,10 @@ class EventSeriesRepository
         string  $title,
         string  $eventType,
         ?string $location,
-        string  $startTime,      // HH:MM in city timezone
-        string  $endTime,        // HH:MM in city timezone
+        string  $startTime,
+        string  $endTime,
         string  $timezone,
-        string  $recurrenceType, // 'daily', 'weekly', 'every_n_days'
+        string  $recurrenceType,
         ?array  $weekdays    = null,
         ?int    $intervalDays = null,
         ?string $startsOn    = null,
@@ -114,11 +121,11 @@ class EventSeriesRepository
             INSERT INTO event_series
                 (id, city_id, created_by, guest_id, title, event_type, location,
                  start_time, end_time, timezone, recurrence_type, weekdays,
-                 interval_days, starts_on, ends_on)
+                 interval_days, starts_on, ends_on, source)
             VALUES
                 (?, ?, ?, ?, ?, ?, ?,
                  ?, ?, ?, ?, ?,
-                 ?, ?, ?)
+                 ?, ?, ?, 'user')
         ")->execute([
             $id, $cityId, $userId, $guestId, $title, $eventType, $location,
             $startTime, $endTime, $timezone, $recurrenceType,
@@ -144,18 +151,132 @@ class EventSeriesRepository
             'ends_on'        => $endsOn,
         ];
 
-        self::generateOccurrences($pdo, $series, 7);
-
-        $first = self::getFirstOccurrence($pdo, $id);
+        self::generateOccurrences($series, 7);
 
         return [
             'series_id'  => $id,
-            'first_event'=> $first,
+            'first_event'=> self::getFirstOccurrence($id),
         ];
     }
 
-    public static function generateOccurrences(PDO $pdo, array $series, int $lookaheadDays = 7): int
+    /**
+     * Batch-import series from an external source (e.g. places seed script).
+     * Each item must include source_key for idempotency.
+     * Returns { created, skipped, errors }.
+     *
+     * @param array $items  Array of series definitions (see importBatch docblock below)
+     * @param bool  $dryRun If true, validate + count without writing to DB
+     */
+    public static function importBatch(array $items, bool $dryRun = false): array
     {
+        $pdo     = Database::pdo();
+        $created = 0;
+        $skipped = 0;
+        $errors  = [];
+
+        $checkStmt = $pdo->prepare("SELECT 1 FROM event_series WHERE source_key = ?");
+
+        foreach ($items as $idx => $item) {
+            $sourceKey = $item['source_key'] ?? null;
+            if (empty($sourceKey) || !is_string($sourceKey)) {
+                $errors[] = "item #{$idx}: missing or invalid source_key";
+                continue;
+            }
+
+            $cityId = isset($item['city_id']) ? (int) $item['city_id'] : null;
+            if (!$cityId) {
+                $errors[] = "item #{$idx}: missing city_id";
+                continue;
+            }
+
+            $city = CityRepository::findById($cityId);
+            if ($city === null) {
+                $errors[] = "item #{$idx}: city_id={$cityId} not found";
+                continue;
+            }
+
+            if (empty($item['title']) || empty($item['start_time']) || empty($item['end_time'])) {
+                $errors[] = "item #{$idx}: missing required field (title, start_time, end_time)";
+                continue;
+            }
+
+            // Check for existing series with this source_key (dedup)
+            $checkStmt->execute([$sourceKey]);
+            if ($checkStmt->fetchColumn()) {
+                $skipped++;
+                continue;
+            }
+
+            if ($dryRun) {
+                // Count as would-be-created without writing
+                $created++;
+                continue;
+            }
+
+            $id       = bin2hex(random_bytes(8));
+            $cityDbId = 'city_' . $cityId;
+            $startsOn = (new DateTime('today', new DateTimeZone($city['timezone'])))->format('Y-m-d');
+
+            $stmt = $pdo->prepare("
+                INSERT INTO event_series
+                    (id, city_id, created_by, guest_id, title, event_type, location,
+                     start_time, end_time, timezone, recurrence_type, weekdays,
+                     interval_days, starts_on, ends_on, source, source_key)
+                VALUES
+                    (?, ?, NULL, NULL, ?, ?, ?,
+                     ?, ?, ?, ?, NULL,
+                     NULL, ?, NULL, 'import', ?)
+                ON CONFLICT (source_key) DO NOTHING
+            ");
+            $stmt->execute([
+                $id,
+                $cityDbId,
+                mb_substr(trim($item['title']), 0, 100),
+                $item['event_type'] ?? 'other',
+                isset($item['location']) ? mb_substr(trim($item['location']), 0, 100) : null,
+                $item['start_time'],
+                $item['end_time'],
+                $city['timezone'],
+                $item['recurrence_type'] ?? 'daily',
+                $startsOn,
+                $sourceKey,
+            ]);
+
+            // ON CONFLICT triggered means a concurrent insert beat us — treat as skipped
+            if ($stmt->rowCount() === 0) {
+                $skipped++;
+                continue;
+            }
+
+            // Generate the first 7 days of occurrences
+            $series = [
+                'id'             => $id,
+                'city_id'        => $cityDbId,
+                'created_by'     => null,
+                'guest_id'       => null,
+                'title'          => mb_substr(trim($item['title']), 0, 100),
+                'event_type'     => $item['event_type'] ?? 'other',
+                'location'       => isset($item['location']) ? mb_substr(trim($item['location']), 0, 100) : null,
+                'start_time'     => $item['start_time'],
+                'end_time'       => $item['end_time'],
+                'timezone'       => $city['timezone'],
+                'recurrence_type'=> $item['recurrence_type'] ?? 'daily',
+                'weekdays'       => null,
+                'interval_days'  => null,
+                'starts_on'      => $startsOn,
+                'ends_on'        => null,
+            ];
+
+            self::generateOccurrences($series, 7);
+            $created++;
+        }
+
+        return ['created' => $created, 'skipped' => $skipped, 'errors' => $errors];
+    }
+
+    public static function generateOccurrences(array $series, int $lookaheadDays = 7): int
+    {
+        $pdo       = Database::pdo();
         $tz        = new DateTimeZone($series['timezone']);
         $today     = new DateTime('today', $tz);
         $end       = (clone $today)->modify("+{$lookaheadDays} days");
@@ -181,7 +302,7 @@ class EventSeriesRepository
             if (self::matchesRecurrence($series, $date)) {
                 $existsStmt->execute([$series['id'], $date]);
                 if (!$existsStmt->fetchColumn()) {
-                    self::createOccurrence($pdo, $series, $date);
+                    self::createOccurrence($series, $date);
                     $created++;
                 }
             }
@@ -194,24 +315,23 @@ class EventSeriesRepository
 
     public static function generateAll(int $lookaheadDays = 7): array
     {
-        $pdo     = Database::pdo();
-        $allRows = $pdo->query("
+        $allRows = Database::pdo()->query("
             SELECT * FROM event_series
             WHERE ends_on IS NULL OR ends_on >= CURRENT_DATE
         ")->fetchAll();
 
         $results = [];
         foreach ($allRows as $series) {
-            $n = self::generateOccurrences($pdo, $series, $lookaheadDays);
+            $n = self::generateOccurrences($series, $lookaheadDays);
             $results[] = ['series_id' => $series['id'], 'created' => $n];
         }
 
         return $results;
     }
 
-    private static function getFirstOccurrence(PDO $pdo, string $seriesId): ?array
+    private static function getFirstOccurrence(string $seriesId): ?array
     {
-        $stmt = $pdo->prepare("
+        $stmt = Database::pdo()->prepare("
             SELECT
                 c.id,
                 c.parent_id,

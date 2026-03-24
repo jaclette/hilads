@@ -96,7 +96,7 @@ class Database
                     CREATE TABLE IF NOT EXISTS event_series (
                         id              TEXT        PRIMARY KEY,
                         city_id         TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
-                        created_by      TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        created_by      TEXT        REFERENCES users(id) ON DELETE SET NULL,
                         guest_id        TEXT,
                         title           TEXT        NOT NULL,
                         event_type      TEXT        NOT NULL DEFAULT 'other',
@@ -109,13 +109,29 @@ class Database
                         interval_days   INTEGER,
                         starts_on       DATE        NOT NULL,
                         ends_on         DATE,
+                        source          TEXT        NOT NULL DEFAULT 'user',
+                        source_key      TEXT        UNIQUE,
                         created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
                     )
                 ");
-                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_city ON event_series (city_id)");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_city   ON event_series (city_id)");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_source ON event_series (source)");
                 self::$pdo->exec("ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS series_id TEXT REFERENCES event_series(id) ON DELETE SET NULL");
                 self::$pdo->exec("ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS occurrence_date DATE");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_series ON channel_events (series_id) WHERE series_id IS NOT NULL");
+            } else {
+                // Additive: add source + source_key columns if missing (deployed before this migration)
+                $hasSourceKey = (bool) self::$pdo
+                    ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'event_series' AND column_name = 'source_key')")
+                    ->fetchColumn();
+                if (!$hasSourceKey) {
+                    self::$pdo->exec("ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'user'");
+                    self::$pdo->exec("ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source_key TEXT");
+                    self::$pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS event_series_source_key_unique ON event_series (source_key) WHERE source_key IS NOT NULL");
+                    self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_source ON event_series (source)");
+                    // created_by was NOT NULL in the first iteration — relax it for import rows
+                    self::$pdo->exec("ALTER TABLE event_series ALTER COLUMN created_by DROP NOT NULL");
+                }
             }
         }
 
@@ -179,7 +195,7 @@ class Database
             CREATE TABLE IF NOT EXISTS event_series (
                 id              TEXT        PRIMARY KEY,
                 city_id         TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
-                created_by      TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                created_by      TEXT        REFERENCES users(id) ON DELETE SET NULL,
                 guest_id        TEXT,
                 title           TEXT        NOT NULL,
                 event_type      TEXT        NOT NULL DEFAULT 'other',
@@ -192,10 +208,13 @@ class Database
                 interval_days   INTEGER,
                 starts_on       DATE        NOT NULL,
                 ends_on         DATE,
+                source          TEXT        NOT NULL DEFAULT 'user',
+                source_key      TEXT        UNIQUE,
                 created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
             )
         ");
-        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_city ON event_series (city_id)");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_city   ON event_series (city_id)");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_source ON event_series (source)");
 
         // ── Channel events (1:1 with channels WHERE type='event') ────────────
         $pdo->exec("

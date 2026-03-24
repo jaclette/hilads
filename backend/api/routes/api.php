@@ -899,6 +899,108 @@ $router->add('POST', '/api/v1/channels/{channelId}/event-series', function (arra
     Response::json($result, 201);
 });
 
+// ── Internal: seed recurring venue events via Google Places ──────────────────
+// Protected by X-Api-Key header matching MIGRATION_KEY env var.
+// Supports dryRun=true for safe previewing before any DB writes.
+
+$router->add('POST', '/internal/seed-recurring-venues', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    // Accept key via header (preferred) or query param (legacy compat)
+    $providedKey = $_SERVER['HTTP_X_API_KEY']
+        ?? $_SERVER['HTTP_X_API_Key']
+        ?? ($_GET['key'] ?? '');
+
+    if (!is_string($providedKey) || !hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    // ── Parse + validate inputs ───────────────────────────────────────────────
+
+    $rawCityIds = $body['cityIds'] ?? null;
+    if (!is_array($rawCityIds) || empty($rawCityIds)) {
+        Response::json(['error' => 'cityIds must be a non-empty array of integers'], 400);
+    }
+
+    $cityIds = array_values(array_filter(array_map('intval', $rawCityIds), fn($id) => $id > 0));
+    if (empty($cityIds)) {
+        Response::json(['error' => 'cityIds must contain at least one valid positive integer'], 400);
+    }
+
+    if (count($cityIds) > 50) {
+        Response::json(['error' => 'Max 50 cities per request'], 400);
+    }
+
+    $dryRun     = isset($body['dryRun']) && $body['dryRun'] === true;
+    $limits     = $body['limitPerCategory'] ?? [];
+    $barsLimit  = isset($limits['bars'])   ? max(1, min(10, (int) $limits['bars']))   : 4;
+    $coffeeLimit= isset($limits['coffee']) ? max(1, min(10, (int) $limits['coffee'])) : 2;
+
+    // ── Run ───────────────────────────────────────────────────────────────────
+
+    error_log("[seed-recurring-venues] cities=" . implode(',', $cityIds)
+        . " dryRun=" . ($dryRun ? 'true' : 'false')
+        . " bars={$barsLimit} coffee={$coffeeLimit}");
+
+    try {
+        $result = VenueSeeder::run($cityIds, $dryRun, $barsLimit, $coffeeLimit);
+    } catch (RuntimeException $e) {
+        error_log("[seed-recurring-venues] fatal: " . $e->getMessage());
+        Response::json(['error' => $e->getMessage()], 500);
+    }
+
+    Response::json([
+        'ok'      => empty($result['errors']),
+        'dry_run' => $dryRun,
+        'created' => $result['created'],
+        'skipped' => $result['skipped'],
+        'errors'  => $result['errors'],
+        'cities'  => $result['cities'],
+        'preview' => $result['preview'] ?? null,
+    ]);
+});
+
+// Internal: batch-import recurring event series from an external source (e.g. seed script).
+// Idempotent: items are deduplicated via source_key. Supports ?dry_run=1.
+$router->add('POST', '/internal/event-series/import', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $dryRun = !empty($_GET['dry_run']) && $_GET['dry_run'] !== '0';
+
+    $body = Request::json();
+    if ($body === null || !isset($body['series']) || !is_array($body['series'])) {
+        Response::json(['error' => 'Body must be { "series": [...] }'], 400);
+    }
+
+    if (count($body['series']) > 200) {
+        Response::json(['error' => 'Max 200 items per batch'], 400);
+    }
+
+    $result = EventSeriesRepository::importBatch($body['series'], $dryRun);
+
+    Response::json([
+        'ok'      => empty($result['errors']),
+        'dry_run' => $dryRun,
+        ...$result,
+    ]);
+});
+
 // Internal: generate upcoming occurrences for all active series (call from a daily cron)
 $router->add('POST', '/internal/event-series/generate', function () {
     $expectedKey = getenv('MIGRATION_KEY') ?: null;
