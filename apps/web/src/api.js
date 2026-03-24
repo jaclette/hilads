@@ -238,6 +238,46 @@ export async function fetchPublicProfile(userId) {
   return res.json() // { user }
 }
 
+// ── Conversations (DMs) ───────────────────────────────────────────────────────
+
+export async function fetchConversations() {
+  const res = await fetch(`${BASE}/conversations`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch conversations')
+  return res.json() // { dms, events }
+}
+
+export async function createOrGetDirectConversation(targetUserId) {
+  const res = await fetch(`${BASE}/conversations/direct`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ targetUserId }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Failed to open conversation')
+  return data // { conversation, otherUser }
+}
+
+export async function fetchConversationMessages(conversationId) {
+  const res = await fetch(`${BASE}/conversations/${conversationId}/messages`, {
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to fetch messages')
+  return res.json() // { messages }
+}
+
+export async function sendConversationMessage(conversationId, content) {
+  const res = await fetch(`${BASE}/conversations/${conversationId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ content }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Failed to send message')
+  return data // { message }
+}
+
 export async function sendEventImageMessage(eventId, guestId, nickname, imageUrl) {
   const res = await fetch(`${BASE}/events/${eventId}/messages`, {
     method: 'POST',

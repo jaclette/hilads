@@ -2554,3 +2554,302 @@ html, body, #root {
   opacity: 0.45;
   cursor: default;
 }
+
+/* ── Messages icon in chat header ─────────────────────────────────────────── */
+
+.header-messages-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+  z-index: 2;
+}
+
+.header-messages-btn:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── People Here — DM button ──────────────────────────────────────────────── */
+
+.people-dm-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+
+.people-dm-btn:hover {
+  color: var(--accent);
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── Conversations screen ─────────────────────────────────────────────────── */
+
+.conv-body {
+  padding: 8px 0;
+}
+
+.conv-loading,
+.conv-empty {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.conv-loading {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.conv-empty-icon {
+  font-size: 2.5rem;
+  margin: 0 0 8px;
+}
+
+.conv-empty-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+
+.conv-empty-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.conv-section {
+  margin-bottom: 8px;
+}
+
+.conv-section-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 10px 16px 4px;
+  margin: 0;
+}
+
+.conv-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.conv-row:active {
+  background: rgba(255,255,255,0.05);
+}
+
+.conv-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.conv-event-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.conv-row-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.conv-row-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-row-preview {
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conv-row-time {
+  font-size: 0.75rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ── Direct Message screen ────────────────────────────────────────────────── */
+
+.dm-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+.dm-header-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dm-header-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+img.dm-header-avatar {
+  object-fit: cover;
+}
+
+.dm-header-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dm-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dm-bubble-wrap {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.dm-bubble-wrap--me {
+  justify-content: flex-end;
+}
+
+.dm-bubble {
+  max-width: 75%;
+  padding: 9px 13px;
+  border-radius: 18px;
+  border-bottom-left-radius: 5px;
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.dm-bubble--me {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 5px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+}
+
+.dm-composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: var(--bg);
+}
+
+.dm-input {
+  flex: 1;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 9px 16px;
+  color: var(--text);
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.dm-input:focus {
+  border-color: var(--accent);
+}
+
+.dm-input::placeholder {
+  color: var(--muted);
+}
+
+.dm-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.dm-send-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

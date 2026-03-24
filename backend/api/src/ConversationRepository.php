@@ -1,0 +1,180 @@
+<?php
+
+declare(strict_types=1);
+
+class ConversationRepository
+{
+    // ── DM conversations ──────────────────────────────────────────────────────
+
+    /**
+     * Find an existing DM between two users, or create one.
+     * Guaranteed unique per pair (order-independent).
+     */
+    public static function findOrCreateDirect(string $userA, string $userB): array
+    {
+        $pdo = Database::pdo();
+
+        $stmt = $pdo->prepare("
+            SELECT cp1.conversation_id
+            FROM conversation_participants cp1
+            JOIN conversation_participants cp2
+              ON cp1.conversation_id = cp2.conversation_id
+             AND cp2.user_id = :userB
+            WHERE cp1.user_id = :userA
+            LIMIT 1
+        ");
+        $stmt->execute([':userA' => $userA, ':userB' => $userB]);
+        $id = $stmt->fetchColumn();
+
+        if ($id) {
+            return self::findById($id);
+        }
+
+        $id = bin2hex(random_bytes(16));
+        $pdo->prepare("INSERT INTO conversations (id) VALUES (?)")->execute([$id]);
+        $pdo->prepare("
+            INSERT INTO conversation_participants (conversation_id, user_id) VALUES (?, ?), (?, ?)
+        ")->execute([$id, $userA, $id, $userB]);
+
+        return self::findById($id);
+    }
+
+    public static function findById(string $id): ?array
+    {
+        $stmt = Database::pdo()->prepare("SELECT * FROM conversations WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public static function isParticipant(string $conversationId, string $userId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM conversation_participants
+            WHERE conversation_id = ? AND user_id = ?
+        ");
+        $stmt->execute([$conversationId, $userId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    public static function touchUpdatedAt(string $conversationId): void
+    {
+        Database::pdo()->prepare("
+            UPDATE conversations SET updated_at = now() WHERE id = ?
+        ")->execute([$conversationId]);
+    }
+
+    /**
+     * DM list for a user — with other participant info and last message preview.
+     */
+    public static function listDmsForUser(string $userId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT
+                c.id                    AS id,
+                c.updated_at            AS updated_at,
+                u.id                    AS other_user_id,
+                u.display_name          AS other_display_name,
+                u.profile_photo_url     AS other_photo_url,
+                lm.content              AS last_message,
+                lm.created_at           AS last_message_at,
+                lm.sender_id            AS last_sender_id
+            FROM conversations c
+            JOIN conversation_participants cp  ON cp.conversation_id = c.id AND cp.user_id = :userId
+            JOIN conversation_participants cp2 ON cp2.conversation_id = c.id AND cp2.user_id != :userId
+            JOIN users u ON u.id = cp2.user_id
+            LEFT JOIN LATERAL (
+                SELECT content, created_at, sender_id
+                FROM conversation_messages
+                WHERE conversation_id = c.id
+                ORDER BY created_at DESC
+                LIMIT 1
+            ) lm ON true
+            ORDER BY COALESCE(lm.created_at, c.updated_at) DESC
+            LIMIT 50
+        ");
+        $stmt->execute([':userId' => $userId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Event channels this user created or joined (by user_id).
+     * Used for the "event chats" section in the conversations list.
+     */
+    public static function listEventChannelsForUser(string $userId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT DISTINCT
+                ch.id                   AS channel_id,
+                ce.title                AS title,
+                ce.starts_at            AS starts_at,
+                ce.location             AS location,
+                (ce.created_by = :userId) AS is_creator
+            FROM channels ch
+            JOIN channel_events ce ON ce.channel_id = ch.id
+            LEFT JOIN event_participants ep
+              ON ep.channel_id = ch.id AND ep.user_id = :userId
+            WHERE ch.type   = 'event'
+              AND ch.status = 'active'
+              AND (ce.created_by = :userId OR ep.user_id = :userId)
+            ORDER BY ce.starts_at DESC
+            LIMIT 30
+        ");
+        $stmt->execute([':userId' => $userId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // ── Messages ──────────────────────────────────────────────────────────────
+
+    public static function addMessage(string $conversationId, string $senderId, string $content): array
+    {
+        $id = bin2hex(random_bytes(16));
+        Database::pdo()->prepare("
+            INSERT INTO conversation_messages (id, conversation_id, sender_id, content)
+            VALUES (?, ?, ?, ?)
+        ")->execute([$id, $conversationId, $senderId, $content]);
+
+        self::touchUpdatedAt($conversationId);
+
+        return self::findMessageById($id);
+    }
+
+    public static function listMessages(string $conversationId, int $limit = 100): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT
+                cm.id,
+                cm.conversation_id,
+                cm.sender_id,
+                cm.content,
+                cm.created_at,
+                u.display_name      AS sender_name,
+                u.profile_photo_url AS sender_photo
+            FROM conversation_messages cm
+            JOIN users u ON u.id = cm.sender_id
+            WHERE cm.conversation_id = ?
+            ORDER BY cm.created_at ASC
+            LIMIT ?
+        ");
+        $stmt->execute([$conversationId, $limit]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public static function findMessageById(string $id): ?array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT
+                cm.id,
+                cm.conversation_id,
+                cm.sender_id,
+                cm.content,
+                cm.created_at,
+                u.display_name      AS sender_name,
+                u.profile_photo_url AS sender_photo
+            FROM conversation_messages cm
+            JOIN users u ON u.id = cm.sender_id
+            WHERE cm.id = ?
+        ");
+        $stmt->execute([$id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+}

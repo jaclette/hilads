@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl } from './eventUtils'
@@ -9,6 +9,8 @@ import CreateEventPage from './components/CreateEventModal'
 import AuthScreen from './components/AuthScreen'
 import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
+import ConversationsScreen from './components/ConversationsScreen'
+import DirectMessageScreen from './components/DirectMessageScreen'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -262,6 +264,8 @@ export default function App() {
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
+  const [showConversations, setShowConversations] = useState(false)
+  const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
   const [account, setAccount] = useState(null)        // null = guest, object = registered
@@ -1448,6 +1452,19 @@ export default function App() {
               </div>
             </div>
           )}
+          {/* Messages icon — top-right, always visible */}
+          {account && (
+            <button
+              className="header-messages-btn"
+              onClick={() => setShowConversations(true)}
+              title="Messages"
+              aria-label="Messages"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </button>
+          )}
           {/* Desktop-only controls */}
           <div className="header-desktop-controls">
             <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
@@ -1800,6 +1817,31 @@ export default function App() {
                     {user.isMe && <span className="people-drawer-you"> (you)</span>}
                     {user.isRegistered && !user.isMe && <span className="people-member-badge">member</span>}
                   </span>
+                  {!user.isMe && user.isRegistered && (
+                    <button
+                      className="people-dm-btn"
+                      aria-label={`Message ${user.nickname}`}
+                      onClick={async (e) => {
+                        e.stopPropagation()
+                        if (!account) {
+                          setShowPeopleDrawer(false)
+                          setShowProfileDrawer(true)
+                          setShowAuthScreen(true)
+                          return
+                        }
+                        try {
+                          const { conversation, otherUser } = await createOrGetDirectConversation(user.userId)
+                          setShowPeopleDrawer(false)
+                          setShowConversations(true)
+                          setActiveDm({ conversation, otherUser })
+                        } catch { /* silent */ }
+                      }}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               )
             })}
@@ -1811,6 +1853,28 @@ export default function App() {
         <PublicProfileScreen
           userId={viewingProfile.userId}
           onBack={() => setViewingProfile(null)}
+        />
+      )}
+
+      {showConversations && !activeDm && (
+        <ConversationsScreen
+          account={account}
+          onBack={() => setShowConversations(false)}
+          onOpenDm={(dm) => setActiveDm({ conversation: dm, otherUser: { display_name: dm.other_display_name, profile_photo_url: dm.other_photo_url } })}
+          onOpenEvent={(channelId) => {
+            setShowConversations(false)
+            // Switch to that event's channel if different from current
+          }}
+        />
+      )}
+
+      {showConversations && activeDm && (
+        <DirectMessageScreen
+          conversation={activeDm.conversation}
+          otherUser={activeDm.otherUser}
+          account={account}
+          socket={socketRef.current}
+          onBack={() => setActiveDm(null)}
         />
       )}
 

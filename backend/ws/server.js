@@ -1,27 +1,30 @@
 /**
- * Hilads WebSocket Presence Server
+ * Hilads WebSocket Presence + Messaging Server
  *
  * Contract
  * --------
- * Client → Server  : joinRoom(cityId, sessionId, nickname)
+ * Client → Server  : joinRoom(cityId, sessionId, nickname, userId?)
  *                    leaveRoom(cityId, sessionId)
  *                    heartbeat(cityId, sessionId)
  *                    joinEvent(eventId, sessionId)
  *                    leaveEvent(eventId, sessionId)
+ *                    joinConversation(conversationId, userId)
+ *                    leaveConversation(conversationId, userId)
  *
- * Server → Client  : presenceSnapshot(cityId, users, count)
+ * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
  *                    userJoined(cityId, user)
  *                    userLeft(cityId, user)
  *                    onlineCountUpdated(cityId, count)
  *                    event_presence_update(eventId, count)
  *                    event_participants_update(eventId, count)
+ *                    newConversationMessage(conversationId, message)
  *
  * PHP API → WS (internal HTTP :8082)
- *                    POST /broadcast/event-participants  { eventId, count }
+ *                    POST /broadcast/event-participants   { eventId, count }
+ *                    POST /broadcast/message              { channelId, message }
+ *                    POST /broadcast/conversation-message { conversationId, message }
  *
  * All events are JSON objects with an `event` field.
- * Presence is scoped by cityId and keyed by sessionId.
- * Event presence (here) is in-memory; participation (going) is persisted by the PHP API.
  */
 
 import { WebSocketServer } from 'ws'
@@ -42,6 +45,10 @@ const typing = new Map()
 
 // eventRooms: Map<eventId, Map<sessionId, { sessionId, ws }>>
 const eventRooms = new Map()
+
+// dmRooms: Map<conversationId, Map<userId, { userId, ws }>>
+// Keyed by userId (not sessionId) because DMs are tied to registered accounts.
+const dmRooms = new Map()
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -229,6 +236,32 @@ function handleLeaveEvent(ws, { eventId, sessionId }) {
   else broadcastEventCount(eventId)
 }
 
+// ── DM conversation helpers ────────────────────────────────────────────────────
+
+function handleJoinConversation(ws, { conversationId, userId }) {
+  if (!conversationId || !userId) return
+  if (!dmRooms.has(conversationId)) dmRooms.set(conversationId, new Map())
+  dmRooms.get(conversationId).set(userId, { userId, ws })
+  console.log(`[WS] joinConversation: user ${userId.slice(0, 8)} -> dm ${conversationId.slice(0, 8)}`)
+}
+
+function handleLeaveConversation(ws, { conversationId, userId }) {
+  const room = dmRooms.get(conversationId)
+  if (!room) return
+  room.delete(userId)
+  if (room.size === 0) dmRooms.delete(conversationId)
+  console.log(`[WS] leaveConversation: user ${userId?.slice(0, 8)} <- dm ${conversationId?.slice(0, 8)}`)
+}
+
+function broadcastConversationMessage(conversationId, message) {
+  const room = dmRooms.get(conversationId)
+  if (!room) return
+  const payload = JSON.stringify({ event: 'newConversationMessage', conversationId, message })
+  for (const { ws } of room.values()) {
+    if (ws.readyState === 1 /* OPEN */) ws.send(payload)
+  }
+}
+
 // Remove a disconnected ws from all rooms it was part of
 function removeWs(ws) {
   for (const [cityId, room] of rooms) {
@@ -247,6 +280,14 @@ function removeWs(ws) {
         room.delete(sessionId)
         if (room.size === 0) eventRooms.delete(eventId)
         else broadcastEventCount(eventId)
+      }
+    }
+  }
+  for (const [conversationId, room] of dmRooms) {
+    for (const [userId, member] of room) {
+      if (member.ws === ws) {
+        room.delete(userId)
+        if (room.size === 0) dmRooms.delete(conversationId)
       }
     }
   }
@@ -270,8 +311,10 @@ wss.on('connection', (ws) => {
       case 'heartbeat':    return handleHeartbeat(ws, msg)
       case 'typingStart':  return handleTypingStart(ws, msg)
       case 'typingStop':   return handleTypingStop(ws, msg)
-      case 'joinEvent':  return handleJoinEvent(ws, msg)
-      case 'leaveEvent': return handleLeaveEvent(ws, msg)
+      case 'joinEvent':          return handleJoinEvent(ws, msg)
+      case 'leaveEvent':         return handleLeaveEvent(ws, msg)
+      case 'joinConversation':   return handleJoinConversation(ws, msg)
+      case 'leaveConversation':  return handleLeaveConversation(ws, msg)
     }
   })
 
@@ -316,6 +359,10 @@ const httpServer = createServer((req, res) => {
       } else if (req.method === 'POST' && req.url === '/broadcast/message') {
         const { channelId, message } = JSON.parse(body)
         broadcastNewMessage(channelId, message)
+        res.writeHead(200); res.end('ok')
+      } else if (req.method === 'POST' && req.url === '/broadcast/conversation-message') {
+        const { conversationId, message } = JSON.parse(body)
+        broadcastConversationMessage(conversationId, message)
         res.writeHead(200); res.end('ok')
       } else {
         res.writeHead(404); res.end('not found')

@@ -116,6 +116,16 @@ export function createSocket() {
       send({ event: 'toggleParticipation', eventId, sessionId })
     },
 
+    /** Subscribe to real-time messages for a DM conversation. */
+    joinConversation(conversationId, userId) {
+      send({ event: 'joinConversation', conversationId, userId })
+    },
+
+    /** Unsubscribe from a DM conversation room. */
+    leaveConversation(conversationId, userId) {
+      send({ event: 'leaveConversation', conversationId, userId })
+    },
+
     /** Keep presence alive. Call when tab regains focus. */
     heartbeat(cityId, sessionId) {
       console.debug('[socket] → heartbeat', { cityId, sessionId })

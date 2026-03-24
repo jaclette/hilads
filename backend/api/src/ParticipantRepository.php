@@ -9,7 +9,11 @@ class ParticipantRepository
      * sessionId is stored as guest_id — same key, same behaviour as before.
      * Returns true if now participating, false if just left.
      */
-    public static function toggle(string $eventId, string $sessionId): bool
+    /**
+     * @param string|null $userId  Registered user id if the participant is authenticated.
+     *                             Stored so we can later query "events this user joined".
+     */
+    public static function toggle(string $eventId, string $sessionId, ?string $userId = null): bool
     {
         $pdo = Database::pdo();
 
@@ -28,10 +32,10 @@ class ParticipantRepository
         }
 
         $pdo->prepare("
-            INSERT INTO event_participants (channel_id, guest_id)
-            VALUES (?, ?)
-            ON CONFLICT (channel_id, guest_id) DO NOTHING
-        ")->execute([$eventId, $sessionId]);
+            INSERT INTO event_participants (channel_id, guest_id, user_id)
+            VALUES (?, ?, ?)
+            ON CONFLICT (channel_id, guest_id) DO UPDATE SET user_id = EXCLUDED.user_id
+        ")->execute([$eventId, $sessionId, $userId]);
 
         return true;
     }

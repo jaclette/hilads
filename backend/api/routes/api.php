@@ -23,6 +23,26 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     @file_get_contents($wsUrl . '/broadcast/message', false, $ctx);
 }
 
+// ── Conversation broadcast helper ─────────────────────────────────────────────
+// Fire-and-forget: tells the WS server to push a newConversationMessage event.
+function broadcastConversationMessageToWs(string $conversationId, array $message): void
+{
+    $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
+    $payload = json_encode(['conversationId' => $conversationId, 'message' => $message]);
+
+    $ctx = stream_context_create([
+        'http' => [
+            'method'        => 'POST',
+            'header'        => "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
+            'content'       => $payload,
+            'timeout'       => 1,
+            'ignore_errors' => true,
+        ],
+    ]);
+
+    @file_get_contents($wsUrl . '/broadcast/conversation-message', false, $ctx);
+}
+
 // ── Internal migration endpoint ───────────────────────────────────────────────
 // TEMPORARY — disable by removing MIGRATION_KEY from Render env vars.
 // Protected: returns 404 if MIGRATION_KEY is not set.
@@ -868,7 +888,8 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
         Response::json(['error' => 'sessionId is required'], 400);
     }
 
-    $isIn  = ParticipantRepository::toggle($eventId, $sessionId);
+    $currentUser = AuthService::currentUser(); // null for guests
+    $isIn  = ParticipantRepository::toggle($eventId, $sessionId, $currentUser['id'] ?? null);
     $count = ParticipantRepository::getCount($eventId);
 
     ParticipantRepository::broadcastToWs($eventId, $count);
@@ -974,4 +995,93 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     broadcastMessageToWs($channelId, $message);
 
     Response::json($message, 201);
+});
+
+// ── Conversations ─────────────────────────────────────────────────────────────
+
+// GET /api/v1/conversations
+// Returns the current user's DMs + event channels they created/joined.
+$router->add('GET', '/api/v1/conversations', function () {
+    $user = AuthService::requireAuth();
+
+    $dms    = ConversationRepository::listDmsForUser($user['id']);
+    $events = ConversationRepository::listEventChannelsForUser($user['id']);
+
+    Response::json([
+        'dms'    => $dms,
+        'events' => $events,
+    ]);
+});
+
+// POST /api/v1/conversations/direct
+// Find or create a DM conversation with another registered user.
+// Returns the conversation object so the frontend can navigate to it.
+$router->add('POST', '/api/v1/conversations/direct', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json();
+
+    $targetUserId = isset($body['targetUserId']) && is_string($body['targetUserId'])
+        ? trim($body['targetUserId'])
+        : null;
+
+    if (!$targetUserId) {
+        Response::json(['error' => 'targetUserId is required'], 400);
+    }
+
+    if ($targetUserId === $user['id']) {
+        Response::json(['error' => 'Cannot message yourself'], 400);
+    }
+
+    $target = UserRepository::findById($targetUserId);
+    if (!$target) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
+    $conversation = ConversationRepository::findOrCreateDirect($user['id'], $targetUserId);
+
+    Response::json([
+        'conversation' => $conversation,
+        'otherUser'    => AuthService::publicFields($target),
+    ]);
+});
+
+// GET /api/v1/conversations/{conversationId}/messages
+$router->add('GET', '/api/v1/conversations/{conversationId}/messages', function (array $params) {
+    $user           = AuthService::requireAuth();
+    $conversationId = $params['conversationId'] ?? '';
+
+    if (!ConversationRepository::isParticipant($conversationId, $user['id'])) {
+        Response::json(['error' => 'Not a participant'], 403);
+    }
+
+    $messages = ConversationRepository::listMessages($conversationId);
+
+    Response::json(['messages' => $messages]);
+});
+
+// POST /api/v1/conversations/{conversationId}/messages
+$router->add('POST', '/api/v1/conversations/{conversationId}/messages', function (array $params) {
+    $user           = AuthService::requireAuth();
+    $conversationId = $params['conversationId'] ?? '';
+    $body           = Request::json();
+
+    if (!ConversationRepository::isParticipant($conversationId, $user['id'])) {
+        Response::json(['error' => 'Not a participant'], 403);
+    }
+
+    $content = trim((string) ($body['content'] ?? ''));
+
+    if ($content === '') {
+        Response::json(['error' => 'content is required'], 400);
+    }
+
+    if (mb_strlen($content) > 1000) {
+        Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+    }
+
+    $message = ConversationRepository::addMessage($conversationId, $user['id'], $content);
+
+    broadcastConversationMessageToWs($conversationId, $message);
+
+    Response::json(['message' => $message], 201);
 });
