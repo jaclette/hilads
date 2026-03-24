@@ -4,87 +4,179 @@ declare(strict_types=1);
 
 class MessageRepository
 {
-    private static function filePath(int|string $channelId): string
+    private const LIMIT = 200; // last 200 messages returned per channel
+
+    // ── Channel ID mapping ────────────────────────────────────────────────────
+    // City channels: int 1 → DB key 'city_1'
+    // Event channels: hex string stays as-is
+
+    private static function dbKey(int|string $channelId): string
     {
-        return Storage::path('messages_' . $channelId . '.json');
+        return is_int($channelId) ? 'city_' . $channelId : (string) $channelId;
     }
+
+    private static function clientKey(string $dbChannelId): int|string
+    {
+        return str_starts_with($dbChannelId, 'city_')
+            ? (int) substr($dbChannelId, 5)
+            : $dbChannelId;
+    }
+
+    // ── Format a DB row into the legacy message shape ─────────────────────────
+
+    private static function format(array $row): array
+    {
+        $channelId = self::clientKey($row['channel_id']);
+        $createdAt = (int) $row['created_at'];
+
+        if ($row['type'] === 'system') {
+            return [
+                'type'      => 'system',
+                'event'     => $row['event'],
+                'guestId'   => $row['guest_id'],
+                'nickname'  => $row['nickname'],
+                'createdAt' => $createdAt,
+            ];
+        }
+
+        if ($row['type'] === 'image') {
+            return [
+                'id'        => $row['id'],
+                'channelId' => $channelId,
+                'guestId'   => $row['guest_id'],
+                'nickname'  => $row['nickname'],
+                'type'      => 'image',
+                'imageUrl'  => $row['image_url'],
+                'content'   => '',
+                'createdAt' => $createdAt,
+            ];
+        }
+
+        return [
+            'id'        => $row['id'],
+            'channelId' => $channelId,
+            'guestId'   => $row['guest_id'],
+            'nickname'  => $row['nickname'],
+            'content'   => $row['content'],
+            'createdAt' => $createdAt,
+        ];
+    }
+
+    // ── Reads ─────────────────────────────────────────────────────────────────
 
     public static function getByChannel(int|string $channelId): array
     {
-        $path = self::filePath($channelId);
-
-        if (!file_exists($path)) {
-            return [];
-        }
-
-        $data = json_decode(file_get_contents($path), true);
-
-        return is_array($data) ? $data : [];
+        $stmt = Database::pdo()->prepare("
+            SELECT
+                id, channel_id, type, event,
+                guest_id, nickname, content, image_url,
+                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+            FROM messages
+            WHERE channel_id = ?
+            ORDER BY created_at ASC
+            LIMIT " . self::LIMIT
+        );
+        $stmt->execute([self::dbKey($channelId)]);
+        return array_map([self::class, 'format'], $stmt->fetchAll());
     }
 
     public static function getStats(int $channelId): array
     {
-        $messages = self::getByChannel($channelId);
-        $lastActivityAt = null;
-
-        foreach ($messages as $msg) {
-            if ($lastActivityAt === null || $msg['createdAt'] > $lastActivityAt) {
-                $lastActivityAt = $msg['createdAt'];
-            }
-        }
+        $stmt = Database::pdo()->prepare("
+            SELECT
+                COUNT(*)                                       AS message_count,
+                EXTRACT(EPOCH FROM MAX(created_at))::INTEGER   AS last_activity_at
+            FROM messages
+            WHERE channel_id = ?
+        ");
+        $stmt->execute(['city_' . $channelId]);
+        $row = $stmt->fetch();
 
         return [
-            'messageCount'   => count($messages),
+            'messageCount'   => (int) $row['message_count'],
             'activeUsers'    => PresenceRepository::getCount($channelId),
-            'lastActivityAt' => $lastActivityAt,
+            'lastActivityAt' => $row['last_activity_at'] ? (int) $row['last_activity_at'] : null,
         ];
     }
 
+    /**
+     * Returns message stats for ALL city channels in one query.
+     * Used by the /channels listing to avoid one query per city.
+     * Returns: [ cityId (int) => ['messageCount' => int, 'lastActivityAt' => int|null] ]
+     */
+    public static function getStatsBatch(): array
+    {
+        $rows = Database::pdo()
+            ->query("
+                SELECT
+                    channel_id,
+                    COUNT(*)                                       AS message_count,
+                    EXTRACT(EPOCH FROM MAX(created_at))::INTEGER   AS last_activity_at
+                FROM messages
+                WHERE channel_id LIKE 'city_%'
+                GROUP BY channel_id
+            ")
+            ->fetchAll(PDO::FETCH_ASSOC);
+
+        $stats = [];
+        foreach ($rows as $row) {
+            $cityId          = (int) substr($row['channel_id'], 5);
+            $stats[$cityId]  = [
+                'messageCount'   => (int) $row['message_count'],
+                'lastActivityAt' => $row['last_activity_at'] ? (int) $row['last_activity_at'] : null,
+            ];
+        }
+        return $stats;
+    }
+
+    // ── Writes ────────────────────────────────────────────────────────────────
+
     public static function addJoinEvent(int $channelId, string $guestId, string $nickname): array
     {
-        $messages = self::getByChannel($channelId);
+        Database::pdo()->prepare("
+            INSERT INTO messages (id, channel_id, type, event, guest_id, nickname)
+            VALUES (?, ?, 'system', 'join', ?, ?)
+        ")->execute([bin2hex(random_bytes(8)), self::dbKey($channelId), $guestId, $nickname]);
 
-        $message = [
+        return [
             'type'      => 'system',
             'event'     => 'join',
             'guestId'   => $guestId,
             'nickname'  => $nickname,
             'createdAt' => time(),
         ];
-
-        $messages[] = $message;
-
-        file_put_contents(self::filePath($channelId), json_encode($messages), LOCK_EX);
-
-        return $message;
     }
 
     public static function add(int|string $channelId, string $guestId, string $nickname, string $content): array
     {
-        $messages = self::getByChannel($channelId);
+        $id = bin2hex(random_bytes(8));
 
-        $message = [
-            'id'        => bin2hex(random_bytes(8)),
+        Database::pdo()->prepare("
+            INSERT INTO messages (id, channel_id, type, guest_id, nickname, content)
+            VALUES (?, ?, 'text', ?, ?, ?)
+        ")->execute([$id, self::dbKey($channelId), $guestId, $nickname, $content]);
+
+        return [
+            'id'        => $id,
             'channelId' => $channelId,
             'guestId'   => $guestId,
             'nickname'  => $nickname,
             'content'   => $content,
             'createdAt' => time(),
         ];
-
-        $messages[] = $message;
-
-        file_put_contents(self::filePath($channelId), json_encode($messages), LOCK_EX);
-
-        return $message;
     }
 
-    public static function addImage(int $channelId, string $guestId, string $nickname, string $imageUrl): array
+    public static function addImage(int|string $channelId, string $guestId, string $nickname, string $imageUrl): array
     {
-        $messages = self::getByChannel($channelId);
+        $id = bin2hex(random_bytes(8));
 
-        $message = [
-            'id'        => bin2hex(random_bytes(8)),
+        Database::pdo()->prepare("
+            INSERT INTO messages (id, channel_id, type, guest_id, nickname, image_url, content)
+            VALUES (?, ?, 'image', ?, ?, ?, '')
+        ")->execute([$id, self::dbKey($channelId), $guestId, $nickname, $imageUrl]);
+
+        return [
+            'id'        => $id,
             'channelId' => $channelId,
             'guestId'   => $guestId,
             'nickname'  => $nickname,
@@ -93,11 +185,5 @@ class MessageRepository
             'content'   => '',
             'createdAt' => time(),
         ];
-
-        $messages[] = $message;
-
-        file_put_contents(self::filePath($channelId), json_encode($messages), LOCK_EX);
-
-        return $message;
     }
 }

@@ -176,7 +176,62 @@ $router->add('GET', '/internal/run-migrations', function () {
 
     $log[] = "events: migrated=$evMigrated skipped=$evSkipped";
 
-    // ── 3. Summary query ──────────────────────────────────────────────────────
+    // ── 3. Migrate messages from JSON files ───────────────────────────────────
+
+    $msgStmt = $pdo->prepare("
+        INSERT INTO messages (id, channel_id, type, event, guest_id, nickname, content, image_url, created_at)
+        VALUES (:id, :channel_id, :type, :event, :guest_id, :nickname, :content, :image_url, to_timestamp(:created_at))
+        ON CONFLICT (id) DO NOTHING
+    ");
+
+    $msgMigrated = 0;
+    $msgSkipped  = 0;
+
+    foreach (glob(Storage::dir() . '/messages_*.json') ?: [] as $file) {
+        if (!preg_match('/messages_(.+)\.json$/', $file, $m)) continue;
+
+        $rawId     = $m[1];
+        // Numeric = city channel, hex string = event channel
+        $channelId = ctype_digit($rawId) ? 'city_' . $rawId : $rawId;
+
+        // Verify channel exists in DB before inserting messages
+        $chk = $pdo->prepare("SELECT 1 FROM channels WHERE id = ?");
+        $chk->execute([$channelId]);
+        if (!$chk->fetchColumn()) {
+            $errors[] = "channel $channelId not found for $file — skipped";
+            continue;
+        }
+
+        $msgs = json_decode(file_get_contents($file), true) ?? [];
+
+        foreach ($msgs as $msg) {
+            $type      = $msg['type'] ?? 'text';
+            $createdAt = $msg['createdAt'] ?? $msg['created_at'] ?? time();
+
+            try {
+                $msgStmt->execute([
+                    'id'         => $msg['id'] ?? bin2hex(random_bytes(8)),
+                    'channel_id' => $channelId,
+                    'type'       => $type,
+                    'event'      => $type === 'system' ? ($msg['event'] ?? null) : null,
+                    'guest_id'   => $msg['guestId'] ?? $msg['guest_id'] ?? null,
+                    'nickname'   => $msg['nickname'] ?? '',
+                    'content'    => $msg['content'] ?? null,
+                    'image_url'  => $msg['imageUrl'] ?? $msg['image_url'] ?? null,
+                    'created_at' => (int) $createdAt,
+                ]);
+                if ($msgStmt->rowCount() > 0) $msgMigrated++;
+                else $msgSkipped++;
+            } catch (Throwable $e) {
+                $errors[] = "msg in $channelId: " . $e->getMessage();
+                $msgSkipped++;
+            }
+        }
+    }
+
+    $log[] = "messages: migrated=$msgMigrated skipped=$msgSkipped";
+
+    // ── 4. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
     $eventCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events")->fetchColumn();
@@ -318,30 +373,15 @@ $router->add('POST', '/api/v1/location/resolve', function () {
 });
 
 $router->add('GET', '/api/v1/channels', function () {
-    // Single query: active event counts for all cities
-    $eventCounts = EventRepository::getCountsPerCity();
-
-    // Message stats still come from JSON files (migrated in phase 4)
-    $storageDir = Storage::dir() . '/';
-    $activeIds  = [];
-    foreach (glob($storageDir . 'messages_*.json') as $f) {
-        if (preg_match('/messages_(\d+)\.json$/', $f, $m)) {
-            $activeIds[(int) $m[1]] = true;
-        }
-    }
-    foreach (glob($storageDir . 'presence_*.json') as $f) {
-        if (preg_match('/presence_(\d+)\.json$/', $f, $m)) {
-            $activeIds[(int) $m[1]] = true;
-        }
-    }
+    // Two batch queries replace the old glob + per-file loop
+    $eventCounts  = EventRepository::getCountsPerCity();
+    $messageStats = MessageRepository::getStatsBatch();
 
     $channels = [];
 
     foreach (CityRepository::all() as $city) {
         $id    = $city['id'];
-        $stats = isset($activeIds[$id])
-            ? MessageRepository::getStats($id)
-            : ['messageCount' => 0, 'activeUsers' => 0, 'lastActivityAt' => null];
+        $stats = $messageStats[$id] ?? ['messageCount' => 0, 'lastActivityAt' => null];
 
         $channels[] = [
             'channelId'      => $id,
@@ -349,7 +389,7 @@ $router->add('GET', '/api/v1/channels', function () {
             'country'        => $city['country'] ?? null,
             'timezone'       => $city['timezone'],
             'messageCount'   => $stats['messageCount'],
-            'activeUsers'    => $stats['activeUsers'],
+            'activeUsers'    => PresenceRepository::getCount($id), // still JSON, phase 5
             'lastActivityAt' => $stats['lastActivityAt'],
             'eventCount'     => $eventCounts[$id] ?? 0,
         ];
