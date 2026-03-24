@@ -318,12 +318,12 @@ $router->add('POST', '/api/v1/location/resolve', function () {
 });
 
 $router->add('GET', '/api/v1/channels', function () {
+    // Single query: active event counts for all cities
+    $eventCounts = EventRepository::getCountsPerCity();
+
+    // Message stats still come from JSON files (migrated in phase 4)
     $storageDir = Storage::dir() . '/';
-
-    // Build lookup maps of which channel IDs have data files (avoids reading 350 empty paths)
-    $activeIds     = [];
-    $eventFileMap  = [];
-
+    $activeIds  = [];
     foreach (glob($storageDir . 'messages_*.json') as $f) {
         if (preg_match('/messages_(\d+)\.json$/', $f, $m)) {
             $activeIds[(int) $m[1]] = true;
@@ -334,34 +334,14 @@ $router->add('GET', '/api/v1/channels', function () {
             $activeIds[(int) $m[1]] = true;
         }
     }
-    foreach (glob($storageDir . 'events_*.json') as $f) {
-        if (preg_match('/events_(\d+)\.json$/', $f, $m)) {
-            $eventFileMap[(int) $m[1]] = $f;
-        }
-    }
 
-    $now      = time();
     $channels = [];
 
     foreach (CityRepository::all() as $city) {
-        $id = $city['id'];
-
-        if (isset($activeIds[$id])) {
-            $stats = MessageRepository::getStats($id);
-        } else {
-            $stats = ['messageCount' => 0, 'activeUsers' => 0, 'lastActivityAt' => null];
-        }
-
-        // Count all non-expired events from the stored file (no Ticketmaster sync).
-        // Ticketmaster events are future-dated (next week, next month) — a "today only" filter
-        // would silently discard all of them. Count anything that hasn't expired yet.
-        $eventCount = 0;
-        if (isset($eventFileMap[$id])) {
-            $rawEvents = json_decode(file_get_contents($eventFileMap[$id]), true) ?? [];
-            foreach ($rawEvents as $ev) {
-                if (($ev['expires_at'] ?? 0) >= $now) $eventCount++;
-            }
-        }
+        $id    = $city['id'];
+        $stats = isset($activeIds[$id])
+            ? MessageRepository::getStats($id)
+            : ['messageCount' => 0, 'activeUsers' => 0, 'lastActivityAt' => null];
 
         $channels[] = [
             'channelId'      => $id,
@@ -371,7 +351,7 @@ $router->add('GET', '/api/v1/channels', function () {
             'messageCount'   => $stats['messageCount'],
             'activeUsers'    => $stats['activeUsers'],
             'lastActivityAt' => $stats['lastActivityAt'],
-            'eventCount'     => $eventCount,
+            'eventCount'     => $eventCounts[$id] ?? 0,
         ];
     }
 
@@ -606,29 +586,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
 
     TicketmasterImporter::syncIfNeeded($channelId, $lat, $lng, $city['name']);
 
-    // DEBUG — remove after investigation
-    $syncFile    = __DIR__ . '/../storage/city_sync.json';
-    $syncData    = file_exists($syncFile) ? (json_decode(file_get_contents($syncFile), true) ?? []) : [];
-    $evFile      = __DIR__ . '/../storage/events_' . $channelId . '.json';
-    $stored      = file_exists($evFile) ? (json_decode(file_get_contents($evFile), true) ?? []) : [];
-    $tmStored    = array_values(array_filter($stored, fn($e) => ($e['source'] ?? '') === 'ticketmaster'));
-    $lastSync    = $syncData[(string) $channelId] ?? null;
-    $_debug = [
-        'channel_id'          => $channelId,
-        'city'                => $city['name'],
-        'lat_received'        => $lat,
-        'lng_received'        => $lng,
-        'api_key_set'         => !empty(getenv('TICKETMASTER_API_KEY')),
-        'last_synced_at'      => $lastSync,
-        'seconds_since_sync'  => $lastSync !== null ? (time() - $lastSync) : null,
-        'cooldown_seconds'    => 604800,
-        'total_stored_events' => count($stored),
-        'tm_stored_count'     => count($tmStored),
-        'tm_sample'           => array_slice($tmStored, 0, 2),
-    ];
-    // END DEBUG
-
-    Response::json(['events' => EventRepository::getPublicByChannel($channelId), '_debug' => $_debug]);
+    Response::json(['events' => EventRepository::getPublicByChannel($channelId)]);
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {

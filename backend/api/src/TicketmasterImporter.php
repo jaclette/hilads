@@ -8,11 +8,6 @@ class TicketmasterImporter
     private const MAX_EVENTS       = 10;
     private const TIMEOUT          = 5;   // curl timeout in seconds
 
-    private static function syncFilePath(): string
-    {
-        return Storage::path('city_sync.json');
-    }
-
     /**
      * Syncs Ticketmaster events for a city channel if the cooldown has passed.
      * Falls back to city name when lat/lng are not provided.
@@ -40,7 +35,7 @@ class TicketmasterImporter
             $events = self::normalize($raw, $channelId);
             error_log("[TM] ch={$channelId}: normalized to " . count($events) . " valid events");
             EventRepository::upsertPublic($channelId, $events);
-            self::markSynced($channelId);
+            self::markSynced($channelId, count($events));
         } catch (RuntimeException $e) {
             error_log("[TM] ch={$channelId}: sync failed — " . $e->getMessage());
         }
@@ -48,25 +43,33 @@ class TicketmasterImporter
 
     private static function needsRefresh(int $channelId): bool
     {
-        if (!file_exists(self::syncFilePath())) {
+        $stmt = Database::pdo()->prepare("
+            SELECT synced_at FROM city_sync_log WHERE channel_id = ?
+        ");
+        $stmt->execute(['city_' . $channelId]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
             return true;
         }
 
-        $data = json_decode(file_get_contents(self::syncFilePath()), true);
-        $last = $data[(string) $channelId] ?? 0;
-
-        return (time() - $last) >= self::REFRESH_COOLDOWN;
+        $lastSynced = strtotime($row['synced_at']);
+        return (time() - $lastSynced) >= self::REFRESH_COOLDOWN;
     }
 
-    private static function markSynced(int $channelId): void
+    private static function markSynced(int $channelId, int $eventCount): void
     {
-        $data = [];
-        if (file_exists(self::syncFilePath())) {
-            $data = json_decode(file_get_contents(self::syncFilePath()), true) ?? [];
-        }
-
-        $data[(string) $channelId] = time();
-        file_put_contents(self::syncFilePath(), json_encode($data), LOCK_EX);
+        Database::pdo()->prepare("
+            INSERT INTO city_sync_log (channel_id, synced_at, event_count, status)
+            VALUES (:channel_id, now(), :event_count, 'ok')
+            ON CONFLICT (channel_id) DO UPDATE SET
+                synced_at   = now(),
+                event_count = EXCLUDED.event_count,
+                status      = 'ok'
+        ")->execute([
+            'channel_id'  => 'city_' . $channelId,
+            'event_count' => $eventCount,
+        ]);
     }
 
     private static function fetch(string $apiKey, ?float $lat, ?float $lng, string $cityName): array
