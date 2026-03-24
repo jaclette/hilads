@@ -3,13 +3,13 @@
  *
  * Contract
  * --------
- * Client → Server  : joinRoom(cityId, sessionId, nickname)
+ * Client → Server  : joinRoom(cityId, sessionId, nickname, userId?)
  *                    leaveRoom(cityId, sessionId)
  *                    heartbeat(cityId, sessionId)
  *                    joinEvent(eventId, sessionId)
  *                    leaveEvent(eventId, sessionId)
  *
- * Server → Client  : presenceSnapshot(cityId, users, count)
+ * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
  *                    userJoined(cityId, user)
  *                    userLeft(cityId, user)
  *                    onlineCountUpdated(cityId, count)
@@ -74,10 +74,10 @@ export function createSocket() {
 
   return {
     /** Join a city room. Replayed automatically on reconnect. */
-    joinRoom(cityId, sessionId, nickname) {
-      console.log('[socket] → joinRoom', { cityId, sessionId, nickname })
-      pendingJoin = { cityId, sessionId, nickname }
-      send({ event: 'joinRoom', cityId, sessionId, nickname })
+    joinRoom(cityId, sessionId, nickname, userId = null) {
+      console.log('[socket] → joinRoom', { cityId, sessionId, nickname, userId })
+      pendingJoin = { cityId, sessionId, nickname, userId }
+      send({ event: 'joinRoom', cityId, sessionId, nickname, userId })
     },
 
     /** Leave a city room (e.g. before switching cities). */

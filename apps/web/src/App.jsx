@@ -8,6 +8,7 @@ import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
 import AuthScreen from './components/AuthScreen'
 import ProfileScreen from './components/ProfileScreen'
+import PublicProfileScreen from './components/PublicProfileScreen'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -220,6 +221,8 @@ function buildOnlineUsers(users, mySessionId) {
     id: u.sessionId,
     sessionId: u.sessionId,
     nickname: u.nickname,
+    userId: u.userId ?? null,
+    isRegistered: !!u.userId,
     isMe: u.sessionId === mySessionId,
   }))
 }
@@ -258,9 +261,15 @@ export default function App() {
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
+  const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
   const [account, setAccount] = useState(null)        // null = guest, object = registered
+
+  // Single source of truth for the current user's display name.
+  // Registered users always use backend display_name; guests use localStorage nickname.
+  const activeNickname = account?.display_name ?? nickname
+
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
@@ -289,6 +298,7 @@ export default function App() {
   const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
   const socketRef = useRef(null)      // WebSocket presence client
   const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
+  const accountRef  = useRef(account)  // tracks current account for use in closures
   const heartbeatRef = useRef(null)   // periodic heartbeat interval
   const typingTimeoutRef = useRef(null) // debounce timer for typingStop
   const isTypingRef = useRef(false)     // true while typingStart has been sent
@@ -298,6 +308,24 @@ export default function App() {
   const activeEventIdRef = useRef(null)
   const eventsPolRef = useRef(null)
   const cityEventsPolRef = useRef(null)
+
+  // Keep accountRef + nicknameRef in sync so closures always see the latest identity.
+  // Also re-assert WS presence when login/logout happens mid-session.
+  useEffect(() => {
+    accountRef.current = account
+    // Registered users: override nicknameRef with the backend display_name immediately.
+    if (account?.display_name) {
+      nicknameRef.current = account.display_name
+    }
+    if (status === 'ready' && activeChannelRef.current && socketRef.current) {
+      socketRef.current.joinRoom(
+        activeChannelRef.current,
+        sessionIdRef.current,
+        nicknameRef.current,
+        account?.id ?? null,
+      )
+    }
+  }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     // restore registered account session if one exists
@@ -324,7 +352,7 @@ export default function App() {
     const handleVisibilityChange = () => {
       if (!document.hidden && activeRef.current) {
         if (activeChannelRef.current) {
-          socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current)
+          socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null)
         }
         pollFnRef.current?.()
       }
@@ -427,7 +455,11 @@ export default function App() {
 
   async function handleJoin(e, rejoinData = null) {
     if (e) e.preventDefault()
-    const name = rejoinData?.nickname ?? (nickname.trim() || generateNickname())
+    // Registered users always lead with their backend display_name.
+    // This handles the authMe() → handleJoin() race on auto-rejoin.
+    const name = accountRef.current?.display_name
+      ?? rejoinData?.nickname
+      ?? (nickname.trim() || generateNickname())
     setNickname(name)
     nicknameRef.current = name
     setStatus('joining')
@@ -487,7 +519,7 @@ export default function App() {
         if (activeChannelRef.current !== cityId) return
         setOnlineUsers((prev) => {
           if (prev.some((u) => u.sessionId === user.sessionId)) return prev
-          return [...prev, { id: user.sessionId, sessionId: user.sessionId, nickname: user.nickname, isMe: false }]
+          return [...prev, { id: user.sessionId, sessionId: user.sessionId, nickname: user.nickname, userId: user.userId ?? null, isRegistered: !!user.userId, isMe: false }]
         })
       })
 
@@ -546,7 +578,7 @@ export default function App() {
         }).catch(() => {})
       })
 
-      socket.joinRoom(location.channelId, sessionIdRef.current, name)
+      socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null)
 
       // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
       clearInterval(heartbeatRef.current)
@@ -643,8 +675,8 @@ export default function App() {
     try {
       const { url } = await uploadImage(file)
       const msg = activeEventIdRef.current
-        ? await sendEventImageMessage(activeEventIdRef.current, guest.guestId, nickname, url)
-        : await sendImageMessage(channelId, sessionIdRef.current, guest.guestId, nickname, url)
+        ? await sendEventImageMessage(activeEventIdRef.current, guest.guestId, activeNickname, url)
+        : await sendImageMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, url)
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { ...msg }])
     } catch (err) {
@@ -663,9 +695,9 @@ export default function App() {
     try {
       let msg
       if (activeEventIdRef.current) {
-        msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, nickname, content)
+        msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, activeNickname, content)
       } else {
-        msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, nickname, content)
+        msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content)
       }
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { type: 'message', ...msg }])
@@ -793,7 +825,7 @@ export default function App() {
     knownIdsRef.current = new Set()
     setCity(newCityName)
     setChannelId(newChannelId)
-    saveIdentity(nickname, newChannelId, newCityName)
+    saveIdentity(activeNickname, newChannelId, newCityName)
     setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
     setCityEvents([])
@@ -803,7 +835,7 @@ export default function App() {
 
     try {
       // Emit join event (also handles leaving previous channel) before fetching
-      const joinData = await joinChannel(newChannelId, sessionIdRef.current, guest.guestId, nickname, channelId)
+      const joinData = await joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId)
 
       // another switch happened while we were joining — discard
       if (activeChannelRef.current !== newChannelId) return
@@ -823,7 +855,7 @@ export default function App() {
         return toFeedItem(m, delay)
       })
       setFeed(initialItems)
-      setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname, isMe: true }])
+      setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: activeNickname, isMe: true }])
       setOnlineCount(joinData.onlineCount ?? null)
       scheduleEphemeral(joinKey)
 
@@ -831,7 +863,7 @@ export default function App() {
       scheduleActivity(true)
 
       // Socket: join new room — existing handlers (set up in handleJoin) remain active
-      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, nickname)
+      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null)
 
       // Restart heartbeat for the new room (same policy — no !document.hidden)
       heartbeatRef.current = setInterval(() => {
@@ -1078,7 +1110,7 @@ export default function App() {
       )
     }
 
-    const [c1, c2] = avatarColors(nickname || 'A')
+    const [c1, c2] = avatarColors(activeNickname || 'A')
     return (
       <div className="screen ob-screen">
         <div className="ob-card">
@@ -1411,7 +1443,7 @@ export default function App() {
             <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
               🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
             </button>
-            <span className="you-badge">👤 {guest?.nickname}</span>
+            <span className="you-badge">👤 {activeNickname}</span>
           </div>
         </header>
 
@@ -1546,14 +1578,14 @@ export default function App() {
           </button>
           <button
             className={`bottom-nav-tab${showPeopleDrawer ? ' active' : ''}`}
-            onClick={() => setShowPeopleDrawer(true)}
+            onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
           >
             <span className="bottom-nav-icon"><NavIconPeople /></span>
             <span className="bottom-nav-label">Here</span>
           </button>
           <button
             className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
-            onClick={() => { setProfileNickInput(nickname); setShowProfileDrawer(true) }}
+            onClick={() => { setProfileNickInput(activeNickname); setShowProfileDrawer(true) }}
           >
             <span className="bottom-nav-icon"><NavIconProfile /></span>
             <span className="bottom-nav-label">Me</span>
@@ -1717,17 +1749,35 @@ export default function App() {
         </div>
       )}
 
-      {showPeopleDrawer && (
+      {showPeopleDrawer && !viewingProfile && (
         <div className="full-page">
           <div className="page-header">
-            <button className="page-back-btn" onClick={() => setShowPeopleDrawer(false)}>←</button>
+            <button className="page-back-btn" onClick={() => { setShowPeopleDrawer(false); setViewingProfile(null) }}>←</button>
             <span className="page-title">People here · {onlineUsers.length}</span>
           </div>
           <div className="page-body">
             {onlineUsers.map((user) => {
               const [c1, c2] = avatarColors(user.nickname)
+              const tappable = !user.isMe && user.isRegistered
+              const handleUserTap = () => {
+                if (user.isMe) return
+                if (!account) {
+                  // Guest viewer: nudge to sign up
+                  setShowPeopleDrawer(false)
+                  setShowProfileDrawer(true)
+                  setShowAuthScreen(true)
+                  return
+                }
+                if (user.isRegistered) {
+                  setViewingProfile({ userId: user.userId, nickname: user.nickname })
+                }
+              }
               return (
-                <div key={user.id} className="people-drawer-row">
+                <div
+                  key={user.id}
+                  className={`people-drawer-row${tappable ? ' people-drawer-row--tappable' : ''}`}
+                  onClick={(!user.isMe && (tappable || !account)) ? handleUserTap : undefined}
+                >
                   <span
                     className="online-avatar"
                     style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
@@ -1738,12 +1788,20 @@ export default function App() {
                   <span className="people-drawer-name">
                     {user.nickname}
                     {user.isMe && <span className="people-drawer-you"> (you)</span>}
+                    {user.isRegistered && !user.isMe && <span className="people-member-badge">member</span>}
                   </span>
                 </div>
               )
             })}
           </div>
         </div>
+      )}
+
+      {showPeopleDrawer && viewingProfile && (
+        <PublicProfileScreen
+          userId={viewingProfile.userId}
+          onBack={() => setViewingProfile(null)}
+        />
       )}
 
       {showProfileDrawer && !showAuthScreen && account && (
@@ -1832,7 +1890,7 @@ export default function App() {
         <CreateEventPage
           channelId={channelId}
           guest={guest}
-          nickname={nickname}
+          nickname={activeNickname}
           cityTimezone={cityTimezone}
           onCreated={handleEventCreated}
           onBack={() => {

@@ -53,7 +53,7 @@ function getRoom(cityId) {
 function roomUsers(cityId) {
   const room = rooms.get(cityId)
   if (!room) return []
-  return [...room.values()].map(s => ({ sessionId: s.sessionId, nickname: s.nickname }))
+  return [...room.values()].map(s => ({ sessionId: s.sessionId, nickname: s.nickname, userId: s.userId ?? null }))
 }
 
 function broadcast(cityId, data, exclude = null) {
@@ -125,19 +125,19 @@ setInterval(() => {
 
 // ── Event handlers ─────────────────────────────────────────────────────────────
 
-function handleJoinRoom(ws, { cityId, sessionId, nickname }) {
+function handleJoinRoom(ws, { cityId, sessionId, nickname, userId }) {
   const room = getRoom(cityId)
   const isNew = !room.has(sessionId)
 
   console.log(`[WS] joinRoom: ${nickname} (${sessionId.slice(0, 8)}) -> city ${cityId} (${isNew ? 'new' : 'rejoin'})`)
-  room.set(sessionId, { sessionId, nickname, ws, lastSeen: Date.now() })
+  room.set(sessionId, { sessionId, nickname, userId: userId ?? null, ws, lastSeen: Date.now() })
 
   // Always send full snapshot to the joining client (includes themselves)
   sendSnapshot(ws, cityId)
 
   if (isNew) {
     // Notify existing clients of the new user
-    broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname } }, ws)
+    broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname, userId: userId ?? null } }, ws)
     broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size }, ws)
   }
 }
