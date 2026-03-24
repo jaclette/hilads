@@ -1,4 +1,4 @@
-# Hilads — MVP v2
+# Hilads — MVP v3
 
 ## What is Hilads?
 
@@ -18,50 +18,7 @@ When you open Hilads, you feel the energy of your city instantly.
 - What's happening nearby?
 - Can I join something in the next 10 minutes?
 
-No friction. No sign-up wall. Just instant presence.
-
----
-
-## Current Features (v2)
-
-### Identity
-- Lightweight guest session (UUID + nickname)
-- Custom nickname support
-- No password, no email required
-
-### Presence
-- See who's online in the city right now
-- Live user count per city
-- Presence signals even with low traffic (liveness engine)
-
-### City Chat
-- Real-time chat per city
-- Text + photo messages in all chat contexts (city channels and event subchannels)
-- Auto-join based on geolocation
-- Rate-limited to prevent spam
-
-### Events
-- Create a spontaneous event (time, place, vibe)
-- Browse active events in the city — Hilads events (today) + upcoming city events
-- Event subchannels: dedicated chat per event, with photo support
-- Join an event → show attendance
-- Events expire automatically
-- External city events imported from Ticketmaster (upcoming, not today-only)
-- Event location displayed with venue name + city, tappable to open maps
-
-### City Discovery
-- 350 cities worldwide with country flags
-- Switch city screen ranked by live score: events × 10 + online users × 3 + messages × 1
-- Top 10 cities shown by default (active cities first, then well-known cities by ID)
-- Search across all 350 cities with consistent event counts
-- Skeleton loading state while cities load
-- Event counts pre-loaded for well-known cities (IDs 1–20) without requiring a city visit
-
-### Geolocation
-- Auto-detect city on open
-- Resolve nearest of 350 supported cities
-- Graceful error states: permission denied vs GPS unavailable shown separately
-- Retry and manual override always available
+No friction. Instant presence. Optional identity.
 
 ---
 
@@ -72,9 +29,84 @@ Open app
   → geolocation resolves city (or pick manually)
   → see who's here + active events
   → chat or join an event instantly
+  → explore people around you
 ```
 
-That's it. Three steps to feeling the city.
+Four steps to feeling the city.
+
+---
+
+## Current Features (v3)
+
+### Identity
+
+Two user types, one clean transition:
+
+**Guest**
+- Temporary identity (UUID + nickname)
+- No sign-up required
+- Full access to chat and events
+- Identity stored in localStorage
+
+**Registered**
+- Persistent profile in PostgreSQL
+- Email + password
+- Display name, photo, home city, age, interests
+- Seamless upgrade from guest → registered
+- Single source of truth: backend always wins over localStorage
+
+### Profile
+
+Editable "Me" screen for registered users:
+- Profile photo (uploaded to Cloudflare R2)
+- Display name
+- Home city
+- Age
+- Interests (up to 5, from a curated list)
+
+Public profile viewable by other registered users.
+
+### Presence
+
+- See who's online in the city right now
+- Live user count per city
+- Real-time via WebSocket (presence snapshot on join, live join/leave events)
+- Guest vs registered distinction (member badge)
+- Tap a registered user → view their public profile
+- Guest viewers tapping a user are encouraged to create an account
+
+### City Chat
+
+- Real-time chat per city
+- Text + photo messages
+- Auto-join based on geolocation
+- Rate-limited to prevent spam
+- Messages pushed via WebSocket (3s poll as fallback)
+
+### Events
+
+- Create a spontaneous event (title, time, place)
+- Browse active events — Hilads events + external city events
+- Event subchannels: dedicated real-time chat per event, with photo support
+- Join an event → show attendance
+- Events expire automatically
+- External events imported from Ticketmaster
+- Event location tappable → opens maps
+
+### City Discovery
+
+- 350 cities worldwide with country flags
+- City list ranked by live score: events × 10 + online users × 3 + messages × 1
+- Top 10 active cities shown by default
+- Search across all 350 cities
+- Skeleton loading state
+
+### Geolocation
+
+- Auto-detect city on open
+- Resolve nearest of 350 supported cities
+- Graceful error states: permission denied vs GPS unavailable
+- Manual override always available
 
 ---
 
@@ -82,22 +114,21 @@ That's it. Three steps to feeling the city.
 
 **Mobile-first** — no web patterns. Native-feel on mobile. FAB, bottom nav, full screens.
 
-**Instant interaction** — zero-friction entry. No onboarding walls. You're in immediately.
+**Instant interaction** — zero-friction entry. No mandatory onboarding walls.
 
 **No empty states** — the city always feels active. Presence signals, event hints, activity indicators.
 
-**Trustworthy data** — event counts in the city list match what is visible on the Hot screen. No inflation.
-
 **Emotional, not functional** — the goal is to feel something, not to complete a task.
+
+**Single identity rule** — one user, one name, one source of truth.
 
 ---
 
 ## What We Avoid
 
-- Heavy authentication (no passwords, no OAuth flows)
 - Complex social graph (no followers, no feed algorithms)
 - Private messaging (stay public and spontaneous)
-- Notifications system (not yet — adds complexity without clear retention gain)
+- Notifications system (not yet — adds complexity without clear retention signal)
 - Features that don't answer: *"Does this make the city feel more alive right now?"*
 
 ---
@@ -110,17 +141,17 @@ That's it. Three steps to feeling the city.
 
 ---
 
-## Tech Stack (v2)
+## Tech Stack (v3)
 
 | Layer | Stack |
 |---|---|
 | Frontend | React 18, Vite, mobile-first |
 | Backend | PHP 8.2, plain REST API, no framework |
-| Storage | File-based JSON (messages, events, presence) |
-| Real-time | Polling + Node.js WebSocket (presence) |
-| Media | Cloudflare R2 (photos, all chat types) |
-| External events | Ticketmaster Discovery API (7-day sync cooldown per city) |
-| Hosting | Render |
+| Database | PostgreSQL (messages, events, presence, users) |
+| Real-time | Node.js WebSocket (presence + message push) + 3s poll fallback |
+| Media | Cloudflare R2 (profile photos, chat images) |
+| External events | Ticketmaster Discovery API |
+| Hosting | Render (API + WS), Vercel (frontend) |
 
 ---
 
@@ -130,16 +161,17 @@ That's it. Three steps to feeling the city.
 - Messages per session
 - Events created per day
 - Users who return within 24h
-- Active users per city at peak time
+- Guest → registered conversion rate
+- Active users per city at peak
 
 ---
 
 ## What Comes Next
 
-When v2 is stable and we see retention signals:
+When v3 is stable and we see retention signals:
 
 - Push notifications (for nearby events)
 - Better liveness engine (more activity signals)
 - City rankings / trending moments
+- Richer profile matching (connect based on shared interests)
 - Richer event formats (recurring, ticketed, etc.)
-- User-reported event locations with coordinates
