@@ -99,12 +99,6 @@ require_once __DIR__ . '/../src/Database.php';
 require_once __DIR__ . '/../src/UserRepository.php';
 require_once __DIR__ . '/../src/AuthService.php';
 
-// Ensure persistent storage directory exists (creates it on first boot after mounting disk)
-$storageDir = Storage::dir();
-if (!is_dir($storageDir)) {
-    mkdir($storageDir, 0755, true);
-}
-
 require_once __DIR__ . '/../src/Response.php';
 require_once __DIR__ . '/../src/Router.php';
 require_once __DIR__ . '/../src/Request.php';
