@@ -92,20 +92,58 @@ class VenueSeeder
             }
         }
 
-        // Delegate dedup + storage to the existing importBatch machinery
-        $result = EventSeriesRepository::importBatch($items, $dryRun);
-
-        $result['cities'] = $cityLog;
-        $result['errors'] = array_merge($errors, $result['errors'] ?? []);
-
+        // ── Dry-run: check DB without writing, return full split preview ─────────
         if ($dryRun) {
-            $result['preview'] = $items;
+            $existing   = self::fetchExistingKeys(array_column($items, 'source_key'));
+            $toCreate   = array_values(array_filter($items, fn($i) => !in_array($i['source_key'], $existing, true)));
+            $alreadyHas = array_values(array_filter($items, fn($i) =>  in_array($i['source_key'], $existing, true)));
+
+            return [
+                'ok'      => empty($errors),
+                'dry_run' => true,
+                'created' => count($toCreate),
+                'skipped' => count($alreadyHas),
+                'errors'  => $errors,
+                'cities'  => $cityLog,
+                'preview' => [
+                    'to_create'      => $toCreate,
+                    'already_exists' => $alreadyHas,
+                ],
+            ];
         }
+
+        // ── Real run: delegate dedup + storage to importBatch ─────────────────
+        $result = EventSeriesRepository::importBatch($items, false);
+
+        $result['cities']  = $cityLog;
+        $result['errors']  = array_merge($errors, $result['errors'] ?? []);
+        $result['preview'] = null;
 
         return $result;
     }
 
     // ── Private helpers ───────────────────────────────────────────────────────
+
+    /**
+     * One batch query for all source_keys — avoids N+1 in dry-run mode.
+     *
+     * @param  string[] $keys
+     * @return string[]  Keys that already exist in event_series
+     */
+    private static function fetchExistingKeys(array $keys): array
+    {
+        if (empty($keys)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($keys), '?'));
+        $stmt = Database::pdo()->prepare(
+            "SELECT source_key FROM event_series WHERE source_key IN ({$placeholders})"
+        );
+        $stmt->execute($keys);
+
+        return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    }
 
     private static function buildItem(int $cityId, array $place, string $category): array
     {

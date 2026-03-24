@@ -69,24 +69,43 @@ class PlacesService
             throw new RuntimeException("Places API error: {$msg}");
         }
 
-        $places = [];
-        foreach (array_slice($data['results'] ?? [], 0, $limit) as $result) {
-            $placeId = $result['place_id'] ?? null;
-            $name    = trim($result['name']   ?? '');
+        // ── Filter ────────────────────────────────────────────────────────────
+        // Process all results the API returned (up to 20), then sort + slice.
+        // Slicing before filtering would produce fewer results than requested
+        // when some entries fail the quality checks.
 
-            // Skip results without the minimum required fields
-            if (empty($placeId) || $name === '') {
+        $places = [];
+        foreach ($data['results'] ?? [] as $result) {
+            $placeId = $result['place_id']          ?? null;
+            $name    = trim($result['name']          ?? '');
+            $address = trim($result['formatted_address'] ?? '');
+
+            // Hard requirements: place_id, name, formatted_address, rating
+            if (empty($placeId) || $name === '' || $address === '') {
+                continue;
+            }
+
+            if (!isset($result['rating'])) {
                 continue;
             }
 
             $places[] = [
-                'place_id' => $placeId,
-                'name'     => $name,
-                'address'  => $result['formatted_address'] ?? null,
-                'rating'   => isset($result['rating']) ? (float) $result['rating'] : null,
+                'place_id'     => $placeId,
+                'name'         => $name,
+                'address'      => $address,
+                'rating'       => (float) $result['rating'],
+                // Used for sorting — not exposed to callers
+                '_review_count'=> (int) ($result['user_ratings_total'] ?? 0),
             ];
         }
 
-        return $places;
+        // ── Sort by review count desc (more reviews = more established venue) ─
+        usort($places, fn($a, $b) => $b['_review_count'] <=> $a['_review_count']);
+
+        // Strip the internal sort key and take the top $limit results
+        return array_map(
+            fn($p) => ['place_id' => $p['place_id'], 'name' => $p['name'], 'address' => $p['address'], 'rating' => $p['rating']],
+            array_slice($places, 0, $limit)
+        );
     }
 }
