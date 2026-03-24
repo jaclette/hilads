@@ -1284,30 +1284,34 @@ html, body, #root {
 
 .input-bar {
   display: flex;
-  gap: 8px;
-  padding: 13px 14px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  gap: 12px;
+  padding: 16px 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
   border-top: 1px solid var(--border);
-  background: var(--surface);
+  background:
+    linear-gradient(180deg, rgba(30, 24, 18, 0.96), rgba(22, 18, 16, 0.99));
   flex-shrink: 0;
   align-items: center;
+  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.28);
 }
 
 .input-bar input {
   flex: 1;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 12px 18px;
+  border-radius: 28px;
+  padding: 0 20px;
   color: var(--text);
-  font-size: 1rem;
+  font-size: 1.04rem;
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-  min-height: 48px;
+  min-height: 56px;
+  line-height: 1.2;
 }
 
 .input-bar input::placeholder {
-  color: var(--muted);
+  color: var(--muted2);
+  font-size: 0.98rem;
   transition: color 0.2s ease;
 }
 
@@ -1322,24 +1326,35 @@ html, body, #root {
 }
 
 .upload-btn {
-  width: 46px;
-  height: 46px;
+  width: 54px;
+  height: 54px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  color: var(--muted2);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 50%;
   cursor: pointer;
-  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: color 0.12s, border-color 0.12s, background 0.12s, transform 0.1s, box-shadow 0.15s;
+}
+
+.upload-btn svg {
+  width: 22px;
+  height: 22px;
 }
 
 .upload-btn:hover:not(:disabled) {
   color: var(--accent);
   border-color: rgba(194, 74, 56, 0.45);
-  background: rgba(194, 74, 56, 0.08);
+  background: rgba(194, 74, 56, 0.1);
+  box-shadow: 0 0 0 1px rgba(194, 74, 56, 0.08), 0 0 18px rgba(194, 74, 56, 0.12);
+}
+
+.upload-btn:not(:disabled):active {
+  transform: scale(0.95);
 }
 
 .upload-btn:disabled {
@@ -1348,9 +1363,9 @@ html, body, #root {
 }
 
 .upload-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--border);
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -1358,8 +1373,8 @@ html, body, #root {
 }
 
 .send-btn {
-  width: 44px;
-  height: 44px;
+  width: 54px;
+  height: 54px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -1369,7 +1384,17 @@ html, body, #root {
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.1s;
+  box-shadow: 0 6px 18px rgba(194, 74, 56, 0.32);
+  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.send-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.send-btn:not(:disabled):hover {
+  box-shadow: 0 10px 24px rgba(194, 74, 56, 0.4);
 }
 
 .send-btn:not(:disabled):active {
