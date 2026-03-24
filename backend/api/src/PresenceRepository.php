@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class PresenceRepository
 {
-    private const TTL = 60; // seconds without heartbeat before a user is considered offline
+    private const TTL = 120; // must match HEARTBEAT_TTL_MS in ws/server.js (2 minutes)
 
     private static function dbKey(int $channelId): string
     {

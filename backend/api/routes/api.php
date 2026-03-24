@@ -2,6 +2,27 @@
 
 declare(strict_types=1);
 
+// ── WS broadcast helper ───────────────────────────────────────────────────────
+// Fire-and-forget: tells the WS server to push a newMessage event to room members.
+// channelId: int for city channels, string (hex) for event channels.
+function broadcastMessageToWs(int|string $channelId, array $message): void
+{
+    $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
+    $payload = json_encode(['channelId' => $channelId, 'message' => $message]);
+
+    $ctx = stream_context_create([
+        'http' => [
+            'method'        => 'POST',
+            'header'        => "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
+            'content'       => $payload,
+            'timeout'       => 1,
+            'ignore_errors' => true,
+        ],
+    ]);
+
+    @file_get_contents($wsUrl . '/broadcast/message', false, $ctx);
+}
+
 // ── Internal migration endpoint ───────────────────────────────────────────────
 // TEMPORARY — disable by removing MIGRATION_KEY from Render env vars.
 // Protected: returns 404 if MIGRATION_KEY is not set.
@@ -457,11 +478,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
     $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
 
-    Response::json([
-        'message'     => $message,
-        'onlineUsers' => PresenceRepository::getOnline($channelId),
-        'onlineCount' => PresenceRepository::getCount($channelId),
-    ], 201);
+    // onlineUsers/onlineCount intentionally omitted — the WS presenceSnapshot
+    // arrives within milliseconds and is the authoritative source for presence.
+    Response::json(['message' => $message], 201);
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $params) {
@@ -489,10 +508,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $para
 
     PresenceRepository::leave($channelId, $sessionId);
 
-    Response::json([
-        'onlineUsers' => PresenceRepository::getOnline($channelId),
-        'onlineCount' => PresenceRepository::getCount($channelId),
-    ]);
+    Response::json(['ok' => true]);
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $params) {
@@ -532,10 +548,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
 
     PresenceRepository::heartbeat($channelId, $sessionId, $guestId, $nickname);
 
-    Response::json([
-        'onlineUsers' => PresenceRepository::getOnline($channelId),
-        'onlineCount' => PresenceRepository::getCount($channelId),
-    ]);
+    Response::json(['ok' => true]);
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
@@ -808,6 +821,8 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
         $message = MessageRepository::add($eventId, $guestId, $nickname, $content);
     }
 
+    broadcastMessageToWs($eventId, $message);
+
     Response::json($message, 201);
 });
 
@@ -955,6 +970,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
 
         $message = MessageRepository::add($channelId, $guestId, $nickname, $content);
     }
+
+    broadcastMessageToWs($channelId, $message);
 
     Response::json($message, 201);
 });

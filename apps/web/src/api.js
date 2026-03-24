@@ -121,21 +121,13 @@ export async function sendImageMessage(channelId, sessionId, guestId, nickname, 
 export async function fetchEvents(channelId) {
   const res = await fetch(`${BASE}/channels/${channelId}/events`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch events')
-  const data = await res.json()
-  // DEBUG — remove after investigation
-  console.log('[events] raw payload ch=' + channelId,
-    data.events?.map(e => ({ id: e.id, title: e.title, location_hint: e.location_hint, source: e.source }))
-  )
-  return data
+  return res.json()
 }
 
 export async function fetchCityEvents(channelId) {
   const res = await fetch(`${BASE}/channels/${channelId}/city-events`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch city events')
-  const data = await res.json()
-  // DEBUG — remove after investigation
-  console.log('[cityEvents] response for channel', channelId, data)
-  return data
+  return res.json()
 }
 
 export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, type) {

@@ -288,27 +288,42 @@ setInterval(() => {
   }
 }, PING_INTERVAL_MS)
 
+// ── Message broadcast ───────────────────────────────────────────────────────────
+
+// channelId is an integer for city channels, a hex string for event channels.
+// Pushes a newMessage event to all connected clients in that room.
+function broadcastNewMessage(channelId, message) {
+  const isCity = typeof channelId === 'number'
+  const room   = isCity ? rooms.get(channelId) : eventRooms.get(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'newMessage', channelId, message })
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+  }
+}
+
 // ── Internal HTTP server (PHP API → WS broadcast) ──────────────────────────────
 
 const httpServer = createServer((req, res) => {
-  if (req.method === 'POST' && req.url === '/broadcast/event-participants') {
-    let body = ''
-    req.on('data', chunk => { body += chunk })
-    req.on('end', () => {
-      try {
+  let body = ''
+  req.on('data', chunk => { body += chunk })
+  req.on('end', () => {
+    try {
+      if (req.method === 'POST' && req.url === '/broadcast/event-participants') {
         const { eventId, count } = JSON.parse(body)
         broadcastParticipantCount(eventId, count)
-        res.writeHead(200)
-        res.end('ok')
-      } catch {
-        res.writeHead(400)
-        res.end('bad request')
+        res.writeHead(200); res.end('ok')
+      } else if (req.method === 'POST' && req.url === '/broadcast/message') {
+        const { channelId, message } = JSON.parse(body)
+        broadcastNewMessage(channelId, message)
+        res.writeHead(200); res.end('ok')
+      } else {
+        res.writeHead(404); res.end('not found')
       }
-    })
-  } else {
-    res.writeHead(404)
-    res.end('not found')
-  }
+    } catch {
+      res.writeHead(400); res.end('bad request')
+    }
+  })
 })
 
 httpServer.listen(INTERNAL_PORT)

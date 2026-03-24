@@ -462,7 +462,7 @@ export default function App() {
 
       setFeed(initialItems)
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
-      setOnlineCount(joinData.onlineCount ?? null)
+      setOnlineCount(null) // populated within ~100ms by WS presenceSnapshot
       setStatus('ready')
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null)
       scheduleEphemeral(joinKey)
@@ -513,6 +513,28 @@ export default function App() {
 
       socket.on('event_participants_update', ({ eventId, count }) => {
         setEventParticipants(prev => ({ ...prev, [eventId]: count }))
+      })
+
+      // Socket: push new messages instantly instead of waiting for the 3s poll.
+      // The poll remains as a fallback for when WS is disconnected.
+      // Sender's own messages are already in knownIds — they're skipped automatically.
+      socket.on('newMessage', ({ channelId, message }) => {
+        const isCityMsg  = channelId === activeChannelRef.current
+        const isEventMsg = channelId === activeEventIdRef.current
+
+        if (!isCityMsg && !isEventMsg) return
+
+        const key = isEventMsg ? message.id : messageKey(message)
+        if (!key || knownIdsRef.current.has(key)) return
+        knownIdsRef.current.add(key)
+
+        if (isEventMsg) {
+          setFeed(prev => [...prev, { type: 'message', ...message }])
+        } else {
+          const item = toFeedItem(message)
+          setFeed(prev => [...prev, item])
+          if (item.subtype === 'join') scheduleEphemeral(item.id)
+        }
       })
 
       // Socket: handle newEvent for real-time events list refresh
