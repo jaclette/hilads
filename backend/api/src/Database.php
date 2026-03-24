@@ -40,6 +40,16 @@ class Database
             if (!$tablesExist) {
                 self::migrate(self::$pdo);
             }
+
+            // Additive migrations: run when a new table is absent on an existing DB.
+            // Each block is idempotent and safe to re-check on every cold start.
+            $convExist = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'conversations')")
+                ->fetchColumn();
+
+            if (!$convExist) {
+                self::migrateConversations(self::$pdo);
+            }
         }
 
         return self::$pdo;
@@ -212,5 +222,39 @@ class Database
                 status       TEXT        NOT NULL DEFAULT 'ok'
             )
         ");
+    }
+
+    /**
+     * Additive migration for the conversations feature.
+     * Called when the conversations table is absent (existing DB that predates this feature).
+     * All statements are CREATE IF NOT EXISTS — safe to run more than once.
+     */
+    private static function migrateConversations(PDO $pdo): void
+    {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS conversations (
+                id         TEXT        PRIMARY KEY,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+            )
+        ");
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS conversation_participants (
+                conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+                user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                PRIMARY KEY (conversation_id, user_id)
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_conv_participants_user ON conversation_participants (user_id)");
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS conversation_messages (
+                id              TEXT        PRIMARY KEY,
+                conversation_id TEXT        NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+                sender_id       TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                content         TEXT        NOT NULL,
+                created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_conv_messages_conv ON conversation_messages (conversation_id, created_at ASC)");
     }
 }

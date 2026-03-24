@@ -108,6 +108,7 @@ require_once __DIR__ . '/../src/PresenceRepository.php';
 require_once __DIR__ . '/../src/MessageRepository.php';
 require_once __DIR__ . '/../src/EventRepository.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
+require_once __DIR__ . '/../src/ConversationRepository.php';
 require_once __DIR__ . '/../src/R2Uploader.php';
 require_once __DIR__ . '/../src/TicketmasterImporter.php';
 
