@@ -1740,9 +1740,14 @@ export default function App() {
                       <span className="city-row-name">
                         {EVENT_ICONS[event.type] ?? '📌'} {event.title}
                       </span>
-                      <span className="city-row-current">
-                        {getTimeLabel(event.starts_at, tz)}
-                        {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
+                      <span className="city-row-meta-row">
+                        <span className="city-row-current">
+                          {getTimeLabel(event.starts_at, tz)}
+                          {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
+                        </span>
+                        {event.recurrence_label && (
+                          <span className="recur-badge">↻ {event.recurrence_label}</span>
+                        )}
                       </span>
                       {getEventLocation(event) && (
                         <span className="city-row-location">📍 {getEventLocation(event)}</span>

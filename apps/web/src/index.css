@@ -1831,6 +1831,13 @@ html, body, #root {
   text-overflow: ellipsis;
 }
 
+.city-row-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .city-row-current {
   font-size: 0.68rem;
   color: var(--accent);
@@ -1984,6 +1991,22 @@ html, body, #root {
 
 .event-row.active .event-row-title {
   color: var(--accent);
+}
+
+.recur-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #c97a2f;
+  background: rgba(201, 122, 47, 0.12);
+  border: 1px solid rgba(201, 122, 47, 0.25);
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .event-row-location {

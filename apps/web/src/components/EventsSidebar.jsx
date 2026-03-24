@@ -44,6 +44,9 @@ export default function EventsSidebar({ events, cityEvents, activeEventId, cityT
           {getTimeLabel(event.starts_at, tz)}
           {eventPresence?.[event.id] > 0 && ` · 🔥 ${eventPresence[event.id]} here`}
           {eventParticipants?.[event.id] > 0 && ` · 👍 ${eventParticipants[event.id]} going`}
+          {event.recurrence_label && (
+            <span className="recur-badge">↻ {event.recurrence_label}</span>
+          )}
         </span>
         {getEventLocation(event) && (
           <span className="event-row-venue">📍 {getEventLocation(event)}</span>

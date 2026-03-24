@@ -26,38 +26,75 @@ class EventRepository
             ce.venue_lng,
             ce.image_url,
             ce.external_url,
+            ce.series_id,
+            es.recurrence_type,
+            es.weekdays                                 AS series_weekdays,
+            es.interval_days,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
             EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
             EXTRACT(EPOCH FROM c.created_at)::INTEGER   AS created_at
         FROM channels c
         JOIN channel_events ce ON ce.channel_id = c.id
+        LEFT JOIN event_series es ON es.id = ce.series_id
     ";
+
+    // ── Build a human-readable recurrence label ───────────────────────────────
+
+    private static function recurrenceLabel(string $type, ?string $weekdaysJson, ?int $intervalDays): string
+    {
+        $dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        switch ($type) {
+            case 'daily':
+                return 'Every day';
+            case 'weekly':
+                $days = json_decode($weekdaysJson ?? '[]', true) ?: [];
+                sort($days);
+                if (count($days) === 0) return 'Weekly';
+                if (count($days) === 7) return 'Every day';
+                return implode(' · ', array_map(fn($d) => $dayNames[$d] ?? '?', $days));
+            case 'every_n_days':
+                return 'Every ' . ($intervalDays ?? 1) . ' days';
+            default:
+                return '';
+        }
+    }
 
     // ── Format a DB row into the legacy event array shape ─────────────────────
 
     private static function format(array $row): array
     {
+        $recurrenceLabel = null;
+        if (!empty($row['recurrence_type'])) {
+            $recurrenceLabel = self::recurrenceLabel(
+                $row['recurrence_type'],
+                $row['series_weekdays'] ?? null,
+                isset($row['interval_days']) ? (int) $row['interval_days'] : null,
+            );
+        }
+
         return [
-            'id'           => $row['id'],
-            'channel_id'   => $row['parent_id']
-                                ? (int) substr($row['parent_id'], 5) // 'city_N' → N
-                                : null,
-            'source'       => $row['source'],
-            'external_id'  => $row['external_id'],
-            'guest_id'     => $row['guest_id'],
-            'title'        => $row['title'],
-            'type'         => $row['type'],
-            'location_hint'=> $row['location_hint'],
-            'venue'        => $row['venue'],
-            'location'     => $row['location'],
-            'venue_lat'    => isset($row['venue_lat']) ? (float) $row['venue_lat'] : null,
-            'venue_lng'    => isset($row['venue_lng']) ? (float) $row['venue_lng'] : null,
-            'image_url'    => $row['image_url'],
-            'external_url' => $row['external_url'],
-            'starts_at'    => (int) $row['starts_at'],
-            'ends_at'      => (int) $row['expires_at'], // user-visible end time
-            'expires_at'   => (int) $row['expires_at'],
-            'created_at'   => (int) $row['created_at'],
+            'id'               => $row['id'],
+            'channel_id'       => $row['parent_id']
+                                    ? (int) substr($row['parent_id'], 5) // 'city_N' → N
+                                    : null,
+            'source'           => $row['source'],
+            'external_id'      => $row['external_id'],
+            'guest_id'         => $row['guest_id'],
+            'title'            => $row['title'],
+            'type'             => $row['type'],
+            'location_hint'    => $row['location_hint'],
+            'venue'            => $row['venue'],
+            'location'         => $row['location'],
+            'venue_lat'        => isset($row['venue_lat']) ? (float) $row['venue_lat'] : null,
+            'venue_lng'        => isset($row['venue_lng']) ? (float) $row['venue_lng'] : null,
+            'image_url'        => $row['image_url'],
+            'external_url'     => $row['external_url'],
+            'series_id'        => $row['series_id'],
+            'recurrence_label' => $recurrenceLabel,
+            'starts_at'        => (int) $row['starts_at'],
+            'ends_at'          => (int) $row['expires_at'], // user-visible end time
+            'expires_at'       => (int) $row['expires_at'],
+            'created_at'       => (int) $row['created_at'],
         ];
     }
 
