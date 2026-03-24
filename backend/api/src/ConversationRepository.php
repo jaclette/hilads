@@ -130,7 +130,7 @@ class ConversationRepository
     public static function listEventChannelsForUser(string $userId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT DISTINCT
+            SELECT
                 ch.id                                        AS channel_id,
                 ce.title                                     AS title,
                 EXTRACT(EPOCH FROM ce.starts_at)::INTEGER    AS starts_at,
@@ -149,6 +149,10 @@ class ConversationRepository
             WHERE ch.type   = 'event'
               AND ch.status = 'active'
               AND (ce.created_by = :userId3 OR ep.user_id = :userId4)
+              AND (
+                  ce.occurrence_date IS NULL
+                  OR ce.occurrence_date = CURRENT_DATE
+              )
             ORDER BY starts_at DESC
             LIMIT 30
         ");
