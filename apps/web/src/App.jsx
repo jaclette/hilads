@@ -1690,7 +1690,8 @@ export default function App() {
               <Logo variant="icon" size="lg" />
               <div className="header-hero-city">
                 <span className="header-hero-name">
-                  {cityFlag(cityCountry)} {city}
+                  <span className="header-hero-globe" aria-hidden="true">🌍</span>
+                  <span>{city}</span>
                 </span>
                 <span className="online-label">
                   <span className="online-pulse" />
@@ -1712,8 +1713,28 @@ export default function App() {
               )}
             </div>
           )}
-          {/* Top-right icon cluster — bell + messages (registered users only) */}
-          {account && (
+          {/* City header actions: keep the hero full-width by anchoring controls to the sides */}
+          {!activeEvent && account && (
+            <div className="header-side-control header-side-control--left">
+              <button
+                className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
+                onClick={() => setShowNotifications(true)}
+                title="Notifications"
+                aria-label="Notifications"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                {notifUnreadCount > 0 && (
+                  <span className="header-icon-badge">
+                    {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
+          {activeEvent && account && (
             <div className="header-icons">
               <button
                 className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
@@ -1731,6 +1752,21 @@ export default function App() {
                   </span>
                 )}
               </button>
+              <button
+                className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
+                onClick={() => setShowConversations(true)}
+                title="Messages"
+                aria-label="Messages"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
+              </button>
+            </div>
+          )}
+          {!activeEvent && account && (
+            <div className="header-side-control header-side-control--right">
               <button
                 className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
                 onClick={() => setShowConversations(true)}

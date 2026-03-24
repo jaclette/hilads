@@ -466,9 +466,10 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 18px;
   min-height: 148px;
-  padding: max(18px, env(safe-area-inset-top)) 92px 8px;
+  width: 100%;
+  padding: max(18px, env(safe-area-inset-top)) 0 8px;
 }
 
 /* Logo: big, centered, glowing */
@@ -486,18 +487,31 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   text-align: center;
   position: relative;
+  width: 100%;
 }
 
 .header-hero-name {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
   font-size: clamp(2.15rem, 7.8vw, 2.65rem);
   font-weight: 800;
   line-height: 1.04;
   letter-spacing: -0.04em;
-  max-width: 100%;
-  text-wrap: balance;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+.header-hero-globe {
+  flex-shrink: 0;
+  font-size: 0.82em;
+  line-height: 1;
+  transform: translateY(1px);
 }
 
 .online-label {
@@ -595,10 +609,7 @@ html, body, #root {
   }
 
   .share-btn--city {
-    position: absolute;
-    top: max(16px, env(safe-area-inset-top));
-    left: 0;
-    margin-left: 0;
+    display: none;
   }
 
   .bottom-nav {
@@ -2849,6 +2860,20 @@ html, body, #root {
   z-index: 2;
 }
 
+.header-side-control {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  z-index: 3;
+}
+
+.header-side-control--left {
+  left: 16px;
+}
+
+.header-side-control--right {
+  right: 16px;
+}
+
 /* ── Header icon buttons (bell + messages) ────────────────────────────────── */
 
 .header-icon-btn {
@@ -2918,6 +2943,20 @@ html, body, #root {
   padding: 0;
   top: 5px;
   right: 5px;
+}
+
+@media (min-width: 768px) {
+  .header-side-control {
+    top: 20px;
+  }
+
+  .header-side-control--left {
+    left: 20px;
+  }
+
+  .header-side-control--right {
+    right: 20px;
+  }
 }
 
 /* ── Notifications screen ─────────────────────────────────────────────────── */
