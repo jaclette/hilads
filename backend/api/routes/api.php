@@ -389,7 +389,7 @@ $router->add('GET', '/api/v1/channels', function () {
             'country'        => $city['country'] ?? null,
             'timezone'       => $city['timezone'],
             'messageCount'   => $stats['messageCount'],
-            'activeUsers'    => PresenceRepository::getCount($id), // still JSON, phase 5
+            'activeUsers'    => PresenceRepository::getCount($id),
             'lastActivityAt' => $stats['lastActivityAt'],
             'eventCount'     => $eventCounts[$id] ?? 0,
         ];
