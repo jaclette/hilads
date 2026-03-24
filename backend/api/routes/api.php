@@ -753,7 +753,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         Response::json(['error' => 'type is required and must be one of: ' . implode(', ', $allowedTypes)], 400);
     }
 
-    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $type);
+    $authUser = AuthService::currentUser(); // null for guests — that's fine
+    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $type, $authUser['id'] ?? null);
 
     Response::json($event, 201);
 });

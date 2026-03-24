@@ -140,7 +140,8 @@ class EventRepository
         string $title,
         ?string $locationHint,
         int $startsAt,
-        string $type = 'other'
+        string $type = 'other',
+        ?string $userId = null
     ): array {
         $pdo      = Database::pdo();
         $parentId = 'city_' . $channelId;
@@ -192,20 +193,28 @@ class EventRepository
 
         $pdo->prepare("
             INSERT INTO channel_events
-                (channel_id, source_type, guest_id, title, event_type, location,
+                (channel_id, source_type, guest_id, created_by, title, event_type, location,
                  starts_at, expires_at)
             VALUES
-                (:channel_id, 'hilads', :guest_id, :title, :event_type, :location,
+                (:channel_id, 'hilads', :guest_id, :created_by, :title, :event_type, :location,
                  to_timestamp(:starts_at), to_timestamp(:expires_at))
         ")->execute([
             'channel_id' => $id,
             'guest_id'   => $guestId,
+            'created_by' => $userId,
             'title'      => $title,
             'event_type' => $type,
             'location'   => $locationHint,
             'starts_at'  => $startsAt,
             'expires_at' => $expiresAt,
         ]);
+
+        // Auto-join: creator is always the first participant (idempotent via ON CONFLICT)
+        $pdo->prepare("
+            INSERT INTO event_participants (channel_id, guest_id, user_id)
+            VALUES (?, ?, ?)
+            ON CONFLICT (channel_id, guest_id) DO NOTHING
+        ")->execute([$id, $guestId, $userId]);
 
         return [
             'id'           => $id,
@@ -226,6 +235,7 @@ class EventRepository
             'starts_at'    => $startsAt,
             'expires_at'   => $expiresAt,
             'created_at'   => $now,
+            'participated' => true, // creator is always auto-joined
         ];
     }
 

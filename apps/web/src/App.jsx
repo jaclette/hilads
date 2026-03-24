@@ -1063,6 +1063,9 @@ export default function App() {
     // so the creator doesn't see a blank gap while the re-fetch is in flight.
     if (newEvent?.id) {
       setEvents(prev => [...prev, newEvent])
+      // Creator is auto-joined server-side — reflect that immediately in UI
+      setParticipatedEvents(prev => new Set([...prev, newEvent.id]))
+      setEventParticipants(prev => ({ ...prev, [newEvent.id]: 1 }))
     }
     // Confirm with server (catches any server-side pruning or ordering)
     const cid = activeChannelRef.current
