@@ -64,7 +64,7 @@ class ConversationRepository
     }
 
     /**
-     * DM list for a user — with other participant info and last message preview.
+     * DM list for a user — with other participant info, last message preview, and unread flag.
      */
     public static function listDmsForUser(string $userId): array
     {
@@ -77,10 +77,16 @@ class ConversationRepository
                 u.profile_photo_url     AS other_photo_url,
                 lm.content              AS last_message,
                 lm.created_at           AS last_message_at,
-                lm.sender_id            AS last_sender_id
+                lm.sender_id            AS last_sender_id,
+                EXISTS (
+                    SELECT 1 FROM conversation_messages cm
+                    WHERE cm.conversation_id = c.id
+                      AND cm.sender_id != :userId2
+                      AND (cp.last_read_at IS NULL OR cm.created_at > cp.last_read_at)
+                ) AS has_unread
             FROM conversations c
             JOIN conversation_participants cp  ON cp.conversation_id = c.id AND cp.user_id = :userId
-            JOIN conversation_participants cp2 ON cp2.conversation_id = c.id AND cp2.user_id != :userId
+            JOIN conversation_participants cp2 ON cp2.conversation_id = c.id AND cp2.user_id != :userId3
             JOIN users u ON u.id = cp2.user_id
             LEFT JOIN LATERAL (
                 SELECT content, created_at, sender_id
@@ -92,35 +98,60 @@ class ConversationRepository
             ORDER BY COALESCE(lm.created_at, c.updated_at) DESC
             LIMIT 50
         ");
-        $stmt->execute([':userId' => $userId]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt->execute([':userId' => $userId, ':userId2' => $userId, ':userId3' => $userId]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        // Cast PostgreSQL boolean to proper PHP bool
+        foreach ($rows as &$row) {
+            $row['has_unread'] = (bool) $row['has_unread'];
+        }
+        return $rows;
+    }
+
+    /**
+     * Mark a conversation as read for a participant (sets last_read_at = now()).
+     * Safe to call multiple times — idempotent.
+     */
+    public static function markRead(string $conversationId, string $userId): void
+    {
+        Database::pdo()->prepare("
+            UPDATE conversation_participants
+            SET last_read_at = now()
+            WHERE conversation_id = ? AND user_id = ?
+        ")->execute([$conversationId, $userId]);
     }
 
     /**
      * Event channels this user created or joined (by user_id).
      * Used for the "event chats" section in the conversations list.
+     * has_unread is always false for v1 — event message senders are keyed by
+     * guest_id, making per-user unread detection ambiguous without schema changes.
      */
     public static function listEventChannelsForUser(string $userId): array
     {
         $stmt = Database::pdo()->prepare("
             SELECT DISTINCT
-                ch.id                   AS channel_id,
-                ce.title                AS title,
-                ce.starts_at            AS starts_at,
-                ce.location             AS location,
-                (ce.created_by = :userId) AS is_creator
+                ch.id                      AS channel_id,
+                ce.title                   AS title,
+                ce.starts_at               AS starts_at,
+                ce.location                AS location,
+                (ce.created_by = :userId)  AS is_creator,
+                false                      AS has_unread
             FROM channels ch
             JOIN channel_events ce ON ce.channel_id = ch.id
             LEFT JOIN event_participants ep
-              ON ep.channel_id = ch.id AND ep.user_id = :userId
+              ON ep.channel_id = ch.id AND ep.user_id = :userId2
             WHERE ch.type   = 'event'
               AND ch.status = 'active'
-              AND (ce.created_by = :userId OR ep.user_id = :userId)
+              AND (ce.created_by = :userId3 OR ep.user_id = :userId4)
             ORDER BY ce.starts_at DESC
             LIMIT 30
         ");
-        $stmt->execute([':userId' => $userId]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt->execute([':userId' => $userId, ':userId2' => $userId, ':userId3' => $userId, ':userId4' => $userId]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        foreach ($rows as &$row) {
+            $row['has_unread'] = false; // explicit, not from DB cast
+        }
+        return $rows;
     }
 
     // ── Messages ──────────────────────────────────────────────────────────────

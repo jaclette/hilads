@@ -1084,5 +1084,23 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
 
     broadcastConversationMessageToWs($conversationId, $message);
 
+    // Sending a message also implicitly reads the conversation for the sender
+    ConversationRepository::markRead($conversationId, $user['id']);
+
     Response::json(['message' => $message], 201);
+});
+
+// POST /api/v1/conversations/{conversationId}/mark-read
+// Sets last_read_at = now() for the current user. Idempotent.
+$router->add('POST', '/api/v1/conversations/{conversationId}/mark-read', function (array $params) {
+    $user           = AuthService::requireAuth();
+    $conversationId = $params['conversationId'] ?? '';
+
+    if (!ConversationRepository::isParticipant($conversationId, $user['id'])) {
+        Response::json(['error' => 'Not a participant'], 403);
+    }
+
+    ConversationRepository::markRead($conversationId, $user['id']);
+
+    Response::json(['ok' => true]);
 });

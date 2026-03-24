@@ -50,6 +50,15 @@ class Database
             if (!$convExist) {
                 self::migrateConversations(self::$pdo);
             }
+
+            // Add last_read_at to conversation_participants if missing (tracks unread state).
+            $lastReadExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'conversation_participants' AND column_name = 'last_read_at')")
+                ->fetchColumn();
+
+            if (!$lastReadExists) {
+                self::$pdo->exec("ALTER TABLE conversation_participants ADD COLUMN IF NOT EXISTS last_read_at TIMESTAMPTZ DEFAULT NULL");
+            }
         }
 
         return self::$pdo;
@@ -196,8 +205,9 @@ class Database
         ");
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS conversation_participants (
-                conversation_id TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
-                user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                conversation_id TEXT        NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+                user_id         TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                last_read_at    TIMESTAMPTZ DEFAULT NULL,
                 PRIMARY KEY (conversation_id, user_id)
             )
         ");

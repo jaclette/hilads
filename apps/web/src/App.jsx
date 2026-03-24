@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl } from './eventUtils'
@@ -266,6 +266,7 @@ export default function App() {
   const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
+  const [conversations, setConversations] = useState(null) // { dms, events }
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
   const [account, setAccount] = useState(null)        // null = guest, object = registered
@@ -273,6 +274,8 @@ export default function App() {
   // Single source of truth for the current user's display name.
   // Registered users always use backend display_name; guests use localStorage nickname.
   const activeNickname = account?.display_name ?? nickname
+
+  const hasAnyUnread = conversations?.dms?.some(dm => dm.has_unread) ?? false
 
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent, setShowCreateEvent] = useState(false)
@@ -312,6 +315,12 @@ export default function App() {
   const activeEventIdRef = useRef(null)
   const eventsPolRef = useRef(null)
   const cityEventsPolRef = useRef(null)
+
+  // Fetch conversations whenever the account changes so the unread dot is always current.
+  useEffect(() => {
+    if (!account) { setConversations(null); return }
+    fetchConversations().then(setConversations).catch(() => {})
+  }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep accountRef + nicknameRef in sync so closures always see the latest identity.
   // Also re-assert WS presence when login/logout happens mid-session.
@@ -1458,7 +1467,7 @@ export default function App() {
           {/* Messages icon — top-right, always visible */}
           {account && (
             <button
-              className="header-messages-btn"
+              className={`header-messages-btn${hasAnyUnread ? ' header-messages-btn--unread' : ''}`}
               onClick={() => setShowConversations(true)}
               title="Messages"
               aria-label="Messages"
@@ -1862,11 +1871,19 @@ export default function App() {
       {showConversations && !activeDm && (
         <ConversationsScreen
           account={account}
+          conversations={conversations}
+          onConversationsLoaded={setConversations}
           onBack={() => setShowConversations(false)}
-          onOpenDm={(dm) => setActiveDm({ conversation: dm, otherUser: { display_name: dm.other_display_name, profile_photo_url: dm.other_photo_url } })}
+          onOpenDm={(dm) => {
+            // Optimistically clear unread before navigating
+            setConversations(prev => prev ? {
+              ...prev,
+              dms: prev.dms.map(d => d.id === dm.id ? { ...d, has_unread: false } : d),
+            } : prev)
+            setActiveDm({ conversation: dm, otherUser: { display_name: dm.other_display_name, profile_photo_url: dm.other_photo_url } })
+          }}
           onOpenEvent={(channelId) => {
             setShowConversations(false)
-            // Switch to that event's channel if different from current
           }}
         />
       )}

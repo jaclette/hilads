@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchConversationMessages, sendConversationMessage } from '../api'
+import { fetchConversationMessages, sendConversationMessage, markConversationRead } from '../api'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -23,8 +23,9 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const otherName = otherUser?.display_name ?? '?'
   const [c1, c2] = avatarColors(otherName)
 
-  // Load message history
+  // Load message history and mark as read immediately on open
   useEffect(() => {
+    markConversationRead(conversation.id) // fire-and-forget; UI already cleared optimistically
     fetchConversationMessages(conversation.id)
       .then(data => {
         knownIds.current = new Set(data.messages.map(m => m.id))

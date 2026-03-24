@@ -2580,6 +2580,24 @@ html, body, #root {
   background: rgba(255,255,255,0.06);
 }
 
+/* Unread dot on the header Messages icon */
+.header-messages-btn--unread {
+  position: relative; /* already set on parent but keep explicit */
+}
+
+.header-messages-btn--unread::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  pointer-events: none;
+}
+
 /* ── People Here — DM button ──────────────────────────────────────────────── */
 
 .people-dm-btn {
@@ -2719,10 +2737,37 @@ html, body, #root {
   text-overflow: ellipsis;
 }
 
+.conv-row-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
 .conv-row-time {
   font-size: 0.75rem;
   color: var(--muted);
   flex-shrink: 0;
+}
+
+/* Unread indicator dot on conversation rows */
+.conv-unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Unread row: stronger name */
+.conv-row--unread .conv-row-name {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.conv-row--unread .conv-row-time {
+  color: var(--accent);
 }
 
 /* ── Direct Message screen ────────────────────────────────────────────────── */

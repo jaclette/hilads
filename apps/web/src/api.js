@@ -266,6 +266,14 @@ export async function fetchConversationMessages(conversationId) {
   return res.json() // { messages }
 }
 
+export async function markConversationRead(conversationId) {
+  // Fire-and-forget — UI is already updated optimistically; ignore failures silently.
+  await fetch(`${BASE}/conversations/${conversationId}/mark-read`, {
+    method: 'POST',
+    credentials: 'include',
+  }).catch(() => {})
+}
+
 export async function sendConversationMessage(conversationId, content) {
   const res = await fetch(`${BASE}/conversations/${conversationId}/messages`, {
     method: 'POST',

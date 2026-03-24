@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { fetchConversations } from '../api'
 
 // Formats an ISO-8601 timestamp string as a short relative label for DM rows.
@@ -26,21 +26,19 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-export default function ConversationsScreen({ account, onBack, onOpenDm, onOpenEvent }) {
-  const [data, setData]     = useState(null)
-  const [error, setError]   = useState(null)
-  const [loading, setLoading] = useState(true)
-
+export default function ConversationsScreen({ account, conversations, onConversationsLoaded, onBack, onOpenDm, onOpenEvent }) {
+  // Always re-fetch fresh data when the screen mounts so the list is up to date.
+  // Result is propagated to the parent (which owns the state) via onConversationsLoaded.
   useEffect(() => {
     fetchConversations()
-      .then(setData)
-      .catch(() => setError('Could not load conversations.'))
-      .finally(() => setLoading(false))
-  }, [])
+      .then(onConversationsLoaded)
+      .catch(() => {})
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const dms    = data?.dms    ?? []
-  const events = data?.events ?? []
-  const isEmpty = !loading && !error && dms.length === 0 && events.length === 0
+  const dms    = conversations?.dms    ?? []
+  const events = conversations?.events ?? []
+  const loading = conversations === null
+  const isEmpty = !loading && dms.length === 0 && events.length === 0
 
   return (
     <div className="full-page">
@@ -51,7 +49,6 @@ export default function ConversationsScreen({ account, onBack, onOpenDm, onOpenE
 
       <div className="page-body conv-body">
         {loading && <p className="conv-loading">Loading…</p>}
-        {error   && <p className="profile-error">{error}</p>}
 
         {isEmpty && (
           <div className="conv-empty">
@@ -69,10 +66,11 @@ export default function ConversationsScreen({ account, onBack, onOpenDm, onOpenE
             {dms.map(dm => {
               const name = dm.other_display_name ?? '?'
               const [c1, c2] = avatarColors(name)
+              const timeLabel = formatConvTime(dm.last_message_at)
               return (
                 <button
                   key={dm.id}
-                  className="conv-row"
+                  className={`conv-row${dm.has_unread ? ' conv-row--unread' : ''}`}
                   onClick={() => onOpenDm(dm)}
                 >
                   {dm.other_photo_url
@@ -90,9 +88,10 @@ export default function ConversationsScreen({ account, onBack, onOpenDm, onOpenE
                       }
                     </span>
                   </div>
-                  {formatConvTime(dm.last_message_at) && (
-                    <span className="conv-row-time">{formatConvTime(dm.last_message_at)}</span>
-                  )}
+                  <div className="conv-row-meta">
+                    {timeLabel && <span className="conv-row-time">{timeLabel}</span>}
+                    {dm.has_unread && <span className="conv-unread-dot" />}
+                  </div>
                 </button>
               )
             })}
