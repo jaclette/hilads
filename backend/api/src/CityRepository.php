@@ -4,42 +4,72 @@ declare(strict_types=1);
 
 class CityRepository
 {
+    /** In-memory cache — loaded once per request from Postgres. */
     private static ?array $cities = null;
 
-    private static function cities(): array
+    private static function load(): array
     {
-        if (self::$cities === null) {
-            self::$cities = require __DIR__ . '/cities_data.php';
+        if (self::$cities !== null) {
+            return self::$cities;
         }
+
+        $rows = Database::pdo()
+            ->query("
+                SELECT
+                    CAST(SUBSTRING(ch.id FROM 6) AS INTEGER) AS id,
+                    ch.name,
+                    ci.country,
+                    ci.lat,
+                    ci.lng,
+                    ci.timezone
+                FROM channels ch
+                JOIN cities ci ON ci.channel_id = ch.id
+                WHERE ch.type = 'city'
+                  AND ch.status = 'active'
+                ORDER BY id
+            ")
+            ->fetchAll(PDO::FETCH_ASSOC);
+
+        // Cast numeric fields to their proper types (PDO returns strings)
+        self::$cities = array_map(function (array $row): array {
+            return [
+                'id'       => (int)   $row['id'],
+                'name'     => $row['name'],
+                'country'  => $row['country'],
+                'lat'      => (float) $row['lat'],
+                'lng'      => (float) $row['lng'],
+                'timezone' => $row['timezone'],
+            ];
+        }, $rows);
+
         return self::$cities;
     }
 
     public static function all(): array
     {
-        return self::cities();
+        return self::load();
     }
 
     public static function findById(int $id): ?array
     {
-        foreach (self::cities() as $city) {
+        foreach (self::load() as $city) {
             if ($city['id'] === $id) {
                 return $city;
             }
         }
-
         return null;
     }
 
     public static function nearest(float $lat, float $lng): array
     {
-        $nearest = null;
+        $nearest     = null;
         $minDistance = PHP_FLOAT_MAX;
 
-        foreach (self::cities() as $city) {
+        foreach (self::load() as $city) {
             $distance = self::haversine($lat, $lng, $city['lat'], $city['lng']);
             if ($distance < $minDistance) {
                 $minDistance = $distance;
-                $nearest = $city;
+                $nearest     = $city;
             }
         }
 
@@ -48,7 +78,7 @@ class CityRepository
 
     private static function haversine(float $lat1, float $lng1, float $lat2, float $lng2): float
     {
-        $R = 6371;
+        $R    = 6371;
         $dLat = deg2rad($lat2 - $lat1);
         $dLng = deg2rad($lng2 - $lng1);
 
