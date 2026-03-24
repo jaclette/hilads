@@ -1661,12 +1661,6 @@ export default function App() {
                 <BackButton onClick={handleBackToCity} label={city} className="event-back-btn" ariaLabel={`Back to ${city}`} />
                 <div className="event-header-actions">
                   <button
-                    className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
-                    onClick={() => handleToggleParticipation(activeEvent.id)}
-                  >
-                    {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
-                  </button>
-                  <button
                     className="header-icon-btn"
                     onClick={() => share(activeEvent.title, `${window.location.origin}/event/${activeEvent.id}`)}
                     title="Share this vibe"
@@ -1677,6 +1671,37 @@ export default function App() {
                       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                     </svg>
                   </button>
+                  {account && (
+                    <button
+                      className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
+                      onClick={() => setShowNotifications(true)}
+                      title="Notifications"
+                      aria-label="Notifications"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                      </svg>
+                      {notifUnreadCount > 0 && (
+                        <span className="header-icon-badge">
+                          {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
+                        </span>
+                      )}
+                    </button>
+                  )}
+                  {account && (
+                    <button
+                      className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
+                      onClick={() => setShowConversations(true)}
+                      title="Messages"
+                      aria-label="Messages"
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      </svg>
+                      {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
+                    </button>
+                  )}
                 </div>
               </div>
               <div className="event-header-body">
@@ -1696,6 +1721,14 @@ export default function App() {
                   )
                   return <span className="event-location event-location--muted">📍 {loc ?? 'Location not available yet'}</span>
                 })()}
+                <div className="event-header-cta-row">
+                  <button
+                    className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
+                    onClick={() => handleToggleParticipation(activeEvent.id)}
+                  >
+                    {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
@@ -1732,37 +1765,6 @@ export default function App() {
                     {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
                   </span>
                 )}
-              </button>
-            </div>
-          )}
-          {activeEvent && account && (
-            <div className="header-icons">
-              <button
-                className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
-                onClick={() => setShowNotifications(true)}
-                title="Notifications"
-                aria-label="Notifications"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                </svg>
-                {notifUnreadCount > 0 && (
-                  <span className="header-icon-badge">
-                    {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
-                  </span>
-                )}
-              </button>
-              <button
-                className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
-                onClick={() => setShowConversations(true)}
-                title="Messages"
-                aria-label="Messages"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
               </button>
             </div>
           )}

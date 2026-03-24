@@ -2387,23 +2387,23 @@ html, body, #root {
 .event-header {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   padding-top: 16px;
 }
 
 .event-header-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
 }
 
-/* Join + share grouped on the right */
 .event-header-actions {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  flex-wrap: nowrap;
 }
 
 /* Event header back button */
@@ -2454,7 +2454,7 @@ html, body, #root {
 .event-header-body {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
 }
 
 .event-header-title {
@@ -2463,6 +2463,13 @@ html, body, #root {
   color: var(--text);
   line-height: 1.2;
   letter-spacing: -0.02em;
+}
+
+.event-header-cta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 6px;
 }
 
 /* Shrink city name on tight mobile headers */
