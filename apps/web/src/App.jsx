@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
-import { getTimeLabel, getEventLocation, getEventMapsUrl } from './eventUtils'
+import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
 import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
@@ -1435,6 +1435,7 @@ export default function App() {
                 <span className="event-header-title">{activeEvent.title}</span>
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
+                  {activeEvent.ends_at ? ` → ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
                   {` · ${eventPresence[activeEvent.id] ?? 0} here · ${eventParticipants[activeEvent.id] ?? 0} going`}
                 </span>
                 {(() => {
@@ -1741,6 +1742,7 @@ export default function App() {
                       </span>
                       <span className="city-row-current">
                         {getTimeLabel(event.starts_at, tz)}
+                        {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
                       </span>
                       {getEventLocation(event) && (
                         <span className="city-row-location">📍 {getEventLocation(event)}</span>

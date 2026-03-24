@@ -18,6 +18,13 @@ function getDefaultTime(timezone) {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
+// Add hours to an HH:MM string, wrapping past midnight.
+function addHoursToTime(timeStr, hours) {
+  const [h, m] = timeStr.split(':').map(Number)
+  const total = h * 60 + m + hours * 60
+  return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
+}
+
 function cityTimeToUnix(timezone, timeStr) {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone })
   const naive = new Date(`${today}T${timeStr}:00Z`)
@@ -156,7 +163,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const tz = cityTimezone || 'UTC'
   const [type, setType] = useState('other')
   const [title, setTitle] = useState('')
-  const [time, setTime] = useState(() => getDefaultTime(tz))
+  const [startTime, setStartTime] = useState(() => getDefaultTime(tz))
+  const [endTime, setEndTime] = useState(() => addHoursToTime(getDefaultTime(tz), 2))
   const [location, setLocation] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
@@ -164,7 +172,19 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   async function handleSubmit(e) {
     e.preventDefault()
     const t = title.trim()
-    if (!t || !time) return
+    if (!t || !startTime || !endTime) return
+
+    let startsAtUnix = cityTimeToUnix(tz, startTime)
+    let endsAtUnix   = cityTimeToUnix(tz, endTime)
+
+    // If end time is earlier in the day than start time, assume it's next day (midnight crossover)
+    if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
+
+    if (endsAtUnix - startsAtUnix < 15 * 60) {
+      setError('End time must be at least 15 minutes after start time')
+      return
+    }
+
     setSubmitting(true)
     setError(null)
     try {
@@ -174,7 +194,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
         nickname,
         t,
         location.trim() || null,
-        cityTimeToUnix(tz, time),
+        startsAtUnix,
+        endsAtUnix,
         type,
       )
       onCreated(newEvent)
@@ -229,29 +250,41 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             />
           </div>
 
-          {/* Time + Location */}
+          {/* Start + End time */}
           <div className="cef-row">
             <div className="cef-section">
-              <label className="cef-label">Time (local)</label>
+              <label className="cef-label">Starts</label>
               <input
                 className="cef-input"
                 type="time"
-                value={time}
-                onChange={e => setTime(e.target.value)}
+                value={startTime}
+                onChange={e => setStartTime(e.target.value)}
                 required
               />
             </div>
             <div className="cef-section">
-              <label className="cef-label">Location</label>
+              <label className="cef-label">Ends</label>
               <input
                 className="cef-input"
-                type="text"
-                value={location}
-                onChange={e => setLocation(e.target.value)}
-                placeholder="Optional"
-                maxLength={100}
+                type="time"
+                value={endTime}
+                onChange={e => setEndTime(e.target.value)}
+                required
               />
             </div>
+          </div>
+
+          {/* Location */}
+          <div className="cef-section">
+            <label className="cef-label">Location</label>
+            <input
+              className="cef-input"
+              type="text"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              placeholder="Optional"
+              maxLength={100}
+            />
           </div>
 
           {error && <p className="cef-error">{error}</p>}

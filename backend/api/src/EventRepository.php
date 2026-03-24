@@ -55,6 +55,7 @@ class EventRepository
             'image_url'    => $row['image_url'],
             'external_url' => $row['external_url'],
             'starts_at'    => (int) $row['starts_at'],
+            'ends_at'      => (int) $row['expires_at'], // user-visible end time
             'expires_at'   => (int) $row['expires_at'],
             'created_at'   => (int) $row['created_at'],
         ];
@@ -140,6 +141,7 @@ class EventRepository
         string $title,
         ?string $locationHint,
         int $startsAt,
+        int $endsAt,
         string $type = 'other',
         ?string $userId = null
     ): array {
@@ -179,8 +181,8 @@ class EventRepository
 
         $now       = time();
         $id        = bin2hex(random_bytes(8));
-        $startsAt  = min($startsAt, $now + 48 * 3600);
-        $expiresAt = max($startsAt, $now) + 2 * 3600;
+        $startsAt  = min($startsAt, $now + 48 * 3600);    // cap start: 48 h in the future
+        $expiresAt = min($endsAt, $startsAt + 24 * 3600); // cap duration: 24 h
 
         $pdo->prepare("
             INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
@@ -233,6 +235,7 @@ class EventRepository
             'image_url'    => null,
             'external_url' => null,
             'starts_at'    => $startsAt,
+            'ends_at'      => $expiresAt,
             'expires_at'   => $expiresAt,
             'created_at'   => $now,
             'participated' => true, // creator is always auto-joined

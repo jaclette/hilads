@@ -705,6 +705,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     $title        = $body['title']         ?? null;
     $locationHint = $body['location_hint'] ?? null;
     $startsAt     = $body['starts_at']     ?? null;
+    $endsAt       = $body['ends_at']       ?? null;
     $type         = $body['type']          ?? null;
 
     if (empty($guestId) || !is_string($guestId)) {
@@ -747,6 +748,20 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
 
     $startsAt = (int) $startsAt;
 
+    if (!is_numeric($endsAt)) {
+        Response::json(['error' => 'ends_at is required and must be a unix timestamp'], 400);
+    }
+
+    $endsAt = (int) $endsAt;
+
+    if ($endsAt <= $startsAt) {
+        Response::json(['error' => 'End time must be after start time'], 422);
+    }
+
+    if ($endsAt - $startsAt < 15 * 60) {
+        Response::json(['error' => 'Event must last at least 15 minutes'], 422);
+    }
+
     $allowedTypes = ['drinks', 'party', 'music', 'food', 'coffee', 'sport', 'meetup', 'other'];
 
     if (empty($type) || !in_array($type, $allowedTypes, true)) {
@@ -754,7 +769,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     }
 
     $authUser = AuthService::currentUser(); // null for guests — that's fine
-    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $type, $authUser['id'] ?? null);
+    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $authUser['id'] ?? null);
 
     Response::json($event, 201);
 });

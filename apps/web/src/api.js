@@ -130,8 +130,8 @@ export async function fetchCityEvents(channelId) {
   return res.json()
 }
 
-export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, type) {
-  const body = { guestId, nickname, title, starts_at: startsAt, type }
+export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, endsAt, type) {
+  const body = { guestId, nickname, title, starts_at: startsAt, ends_at: endsAt, type }
   if (locationHint) body.location_hint = locationHint
   const res = await fetch(`${BASE}/channels/${channelId}/events`, {
     method: 'POST',
