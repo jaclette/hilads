@@ -104,7 +104,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
             {events.map(ev => (
               <button
                 key={ev.channel_id}
-                className="conv-row"
+                className={`conv-row${ev.has_unread ? ' conv-row--unread' : ''}`}
                 onClick={() => onOpenEvent(ev)}
               >
                 <span className="conv-event-icon">🔥</span>
@@ -114,6 +114,11 @@ export default function ConversationsScreen({ account, conversations, onConversa
                     {ev.is_creator ? 'You created this' : 'You joined this'}
                   </span>
                 </div>
+                {ev.has_unread && (
+                  <div className="conv-row-meta">
+                    <span className="conv-unread-dot" />
+                  </div>
+                )}
               </button>
             ))}
           </section>

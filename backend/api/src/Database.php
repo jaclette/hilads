@@ -51,13 +51,22 @@ class Database
                 self::migrateConversations(self::$pdo);
             }
 
-            // Add last_read_at to conversation_participants if missing (tracks unread state).
+            // Add last_read_at to conversation_participants if missing (tracks DM unread state).
             $lastReadExists = (bool) self::$pdo
                 ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'conversation_participants' AND column_name = 'last_read_at')")
                 ->fetchColumn();
 
             if (!$lastReadExists) {
                 self::$pdo->exec("ALTER TABLE conversation_participants ADD COLUMN IF NOT EXISTS last_read_at TIMESTAMPTZ DEFAULT NULL");
+            }
+
+            // Add last_read_at to event_participants if missing (tracks event chat unread state).
+            $epLastReadExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'event_participants' AND column_name = 'last_read_at')")
+                ->fetchColumn();
+
+            if (!$epLastReadExists) {
+                self::$pdo->exec("ALTER TABLE event_participants ADD COLUMN IF NOT EXISTS last_read_at TIMESTAMPTZ DEFAULT NULL");
             }
         }
 

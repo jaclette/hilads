@@ -274,6 +274,14 @@ export async function markConversationRead(conversationId) {
   }).catch(() => {})
 }
 
+export async function markEventRead(eventId) {
+  // Fire-and-forget — ignore failures silently.
+  await fetch(`${BASE}/events/${eventId}/mark-read`, {
+    method: 'POST',
+    credentials: 'include',
+  }).catch(() => {})
+}
+
 export async function sendConversationMessage(conversationId, content) {
   const res = await fetch(`${BASE}/conversations/${conversationId}/messages`, {
     method: 'POST',

@@ -1090,6 +1090,22 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     Response::json(['message' => $message], 201);
 });
 
+// POST /api/v1/events/{eventId}/mark-read
+// Sets last_read_at = now() on the event_participants row for the current user. Idempotent.
+// No-op (200 OK) for users who are creators but have no participant row.
+$router->add('POST', '/api/v1/events/{eventId}/mark-read', function (array $params) {
+    $user    = AuthService::requireAuth();
+    $eventId = $params['eventId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    ConversationRepository::markEventRead($eventId, $user['id']);
+
+    Response::json(['ok' => true]);
+});
+
 // POST /api/v1/conversations/{conversationId}/mark-read
 // Sets last_read_at = now() for the current user. Idempotent.
 $router->add('POST', '/api/v1/conversations/{conversationId}/mark-read', function (array $params) {

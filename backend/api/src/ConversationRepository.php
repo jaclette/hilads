@@ -123,8 +123,9 @@ class ConversationRepository
     /**
      * Event channels this user created or joined (by user_id).
      * Used for the "event chats" section in the conversations list.
-     * has_unread is always false for v1 — event message senders are keyed by
-     * guest_id, making per-user unread detection ambiguous without schema changes.
+     * has_unread checks the messages table for text/image messages newer than the user's last_read_at.
+     * For users with no event_participants row (creator-only, never joined), ep.last_read_at is NULL
+     * → all messages appear unread until they open the chat and mark-read is called.
      */
     public static function listEventChannelsForUser(string $userId): array
     {
@@ -135,7 +136,12 @@ class ConversationRepository
                 EXTRACT(EPOCH FROM ce.starts_at)::INTEGER    AS starts_at,
                 ce.location                                  AS location,
                 (ce.created_by = :userId)                    AS is_creator,
-                false                                        AS has_unread
+                EXISTS (
+                    SELECT 1 FROM messages m
+                    WHERE m.channel_id = ch.id
+                      AND m.type IN ('text', 'image')
+                      AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
+                )                                            AS has_unread
             FROM channels ch
             JOIN channel_events ce ON ce.channel_id = ch.id
             LEFT JOIN event_participants ep
@@ -149,11 +155,25 @@ class ConversationRepository
         $stmt->execute([':userId' => $userId, ':userId2' => $userId, ':userId3' => $userId, ':userId4' => $userId]);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($rows as &$row) {
-            $row['has_unread']  = false;
+            $row['has_unread']  = (bool) $row['has_unread'];
             $row['is_creator']  = (bool) $row['is_creator'];
             $row['starts_at']   = (int)  $row['starts_at'];
         }
         return $rows;
+    }
+
+    /**
+     * Mark an event chat as read for a user.
+     * Updates last_read_at on the event_participants row where user_id matches.
+     * No-op for creator-only users (no participant row) — acceptable for v1.
+     */
+    public static function markEventRead(string $channelId, string $userId): void
+    {
+        Database::pdo()->prepare("
+            UPDATE event_participants
+            SET last_read_at = now()
+            WHERE channel_id = ? AND user_id = ?
+        ")->execute([$channelId, $userId]);
     }
 
     // ── Messages ──────────────────────────────────────────────────────────────

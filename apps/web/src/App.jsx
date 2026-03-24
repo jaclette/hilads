@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl } from './eventUtils'
@@ -1884,6 +1884,12 @@ export default function App() {
           }}
           onOpenEvent={(ev) => {
             setShowConversations(false)
+            // Optimistically clear unread before navigating
+            setConversations(prev => prev ? {
+              ...prev,
+              events: prev.events.map(e => e.channel_id === ev.channel_id ? { ...e, has_unread: false } : e),
+            } : prev)
+            markEventRead(ev.channel_id) // fire-and-forget
             // ev.channel_id is the event channel id — same as event.id in handleSelectEvent
             handleSelectEvent({ id: ev.channel_id, title: ev.title, starts_at: ev.starts_at, location: ev.location })
           }}
