@@ -1733,30 +1733,26 @@ export default function App() {
                 return (
                   <button
                     key={event.id}
-                    className={`city-row${activeEventId === event.id ? ' active' : ''}${going >= 3 ? ' event-row--buzzing' : ''}`}
+                    className={`city-row event-row-card${activeEventId === event.id ? ' active' : ''}${going >= 3 ? ' event-row--buzzing' : ''}`}
                     onClick={() => handleSelectEvent(event)}
                   >
-                    <div className="city-row-left">
-                      <span className="city-row-name">
+                    <div className="er-header">
+                      <span className="er-title">
                         {EVENT_ICONS[event.type] ?? '📌'} {event.title}
                       </span>
-                      <span className="city-row-meta-row">
-                        <span className="city-row-current">
-                          {getTimeLabel(event.starts_at, tz)}
-                          {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
-                        </span>
-                        {event.recurrence_label && (
-                          <span className="recur-badge">↻ {event.recurrence_label}</span>
-                        )}
+                      {going > 0 && <span className="er-going">👥 {going}</span>}
+                    </div>
+                    <div className="er-badges">
+                      <span className="city-row-current">
+                        {getTimeLabel(event.starts_at, tz)}
+                        {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
                       </span>
-                      {getEventLocation(event) && (
-                        <span className="city-row-location">📍 {getEventLocation(event)}</span>
+                      {event.recurrence_label && (
+                        <span className="recur-badge">↻ {event.recurrence_label}</span>
                       )}
                     </div>
-                    {going > 0 && (
-                      <div className="city-row-stats">
-                        <span className="event-going-count">👥 {going}</span>
-                      </div>
+                    {getEventLocation(event) && (
+                      <span className="er-location">📍 {getEventLocation(event)}</span>
                     )}
                   </button>
                 )

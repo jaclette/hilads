@@ -1809,6 +1809,64 @@ html, body, #root {
   min-width: 0;
 }
 
+/* ── Event row card (Hot list) ──────────────────────────────────────────────
+   Overrides .city-row to a vertical 3-line layout:
+     line 1: title + participant count
+     line 2: time badge + recurrence badge
+     line 3: location
+   City rows (city list) are unaffected — they still use the base .city-row.
+*/
+.event-row-card {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+}
+
+/* Line 1: title (grows, truncates) + going count (right-aligned, shrinks) */
+.er-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.er-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.er-going {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 500;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Line 2: badges — no wrap, truncate gracefully */
+.er-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+/* Line 3: location — muted, ellipsis */
+.er-location {
+  font-size: 0.72rem;
+  color: var(--muted2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .activity-dot {
   width: 8px;
   height: 8px;
@@ -1996,7 +2054,6 @@ html, body, #root {
 .recur-badge {
   display: inline-flex;
   align-items: center;
-  margin-left: 6px;
   padding: 1px 5px;
   border-radius: 5px;
   font-size: 0.65rem;
