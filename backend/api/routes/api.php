@@ -1055,6 +1055,66 @@ $router->add('POST', '/internal/event-series/import', function () {
     ]);
 });
 
+// ── Internal: message + channel retention cleanup ─────────────────────────────
+// Run daily via cron. Deletes stale messages by channel type and expires old channels.
+//
+// Rules:
+//   city     → messages older than today
+//   event    → messages from channels expired >1h ago (then the channels themselves)
+//   dm       → conversation_messages older than 7 days
+//
+// Call: POST /internal/cleanup?key=YOUR_KEY
+$router->add('POST', '/internal/cleanup', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $pdo = Database::pdo();
+
+    // 1. City channel messages — keep only today
+    $stmt = $pdo->query("
+        DELETE FROM messages
+        WHERE channel_id IN (SELECT id FROM channels WHERE type = 'city')
+          AND created_at < CURRENT_DATE
+    ");
+    $cityDeleted = $stmt->rowCount();
+
+    // 2. Expired event channels — delete the channel (CASCADE removes messages +
+    //    event_participants). The 1-hour buffer prevents cutting off active viewers.
+    //    Recurring occurrences from past days are included automatically.
+    $stmt = $pdo->query("
+        DELETE FROM channels
+        WHERE type = 'event'
+          AND id IN (
+              SELECT channel_id FROM channel_events
+              WHERE expires_at < now() - INTERVAL '1 hour'
+          )
+    ");
+    $eventChannelsDeleted = $stmt->rowCount();
+
+    // 3. Direct message history — keep 7 days
+    $stmt = $pdo->query("
+        DELETE FROM conversation_messages
+        WHERE created_at < now() - INTERVAL '7 days'
+    ");
+    $dmDeleted = $stmt->rowCount();
+
+    error_log("[cleanup] city_messages={$cityDeleted} event_channels={$eventChannelsDeleted} dm_messages={$dmDeleted}");
+
+    Response::json([
+        'ok'                    => true,
+        'city_messages_deleted' => $cityDeleted,
+        'event_channels_deleted'=> $eventChannelsDeleted,
+        'dm_messages_deleted'   => $dmDeleted,
+    ]);
+});
+
 // Internal: generate upcoming occurrences for all active series (call from a daily cron)
 $router->add('POST', '/internal/event-series/generate', function () {
     $expectedKey = getenv('MIGRATION_KEY') ?: null;
