@@ -1462,6 +1462,7 @@ html, body, #root {
   font-size: 0.82rem;
   color: var(--text-muted);
   flex: 1;
+  white-space: pre-line;
 }
 
 .feed-prompt-btn {
@@ -1479,6 +1480,110 @@ html, body, #root {
 
 .feed-prompt-btn:active {
   opacity: 0.85;
+}
+
+.install-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  transform: translateX(-50%);
+  width: min(calc(100% - 24px), 616px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(33, 26, 22, 0.96), rgba(21, 17, 15, 0.98));
+  box-shadow:
+    0 20px 36px rgba(0, 0, 0, 0.42),
+    0 0 26px rgba(255, 122, 60, 0.08);
+  backdrop-filter: blur(16px);
+  z-index: 240;
+  animation: fadeUp 0.22s ease-out both;
+}
+
+.install-banner--with-nav {
+  bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom) + 12px);
+}
+
+.install-banner-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.install-banner-title {
+  margin: 0;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.install-banner-subtitle,
+.install-banner-help {
+  margin: 4px 0 0;
+  color: var(--muted2);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.install-banner-help {
+  color: rgba(255, 215, 196, 0.92);
+}
+
+.install-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.install-banner-add,
+.install-banner-dismiss {
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, opacity 0.15s ease, background 0.15s ease;
+}
+
+.install-banner-add {
+  min-width: 64px;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ff8a4e, #ff6b2f);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 10px 22px rgba(255, 122, 60, 0.22);
+}
+
+.install-banner-dismiss {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  line-height: 1;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.install-banner-add:active,
+.install-banner-dismiss:active {
+  transform: scale(0.96);
+}
+
+@media (hover: hover) {
+  .install-banner-add:hover {
+    opacity: 0.94;
+  }
+
+  .install-banner-dismiss:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 /* ── Online users — shared avatar ────────────────────── */

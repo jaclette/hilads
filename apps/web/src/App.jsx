@@ -13,6 +13,8 @@ import ConversationsScreen from './components/ConversationsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import BackButton from './components/BackButton'
+import InstallPromptBanner from './components/InstallPromptBanner'
+import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
 import { registerPush, unregisterPush } from './push'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -283,6 +285,7 @@ function buildOnlineUsers(users, mySessionId) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function App() {
+  const installPrompt = useBeforeInstallPrompt()
   const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
   const [error, setError] = useState(null)
   const [city, setCity] = useState(null)
@@ -373,6 +376,43 @@ export default function App() {
   const activeEventIdRef = useRef(null)
   const eventsPolRef = useRef(null)
   const cityEventsPolRef = useRef(null)
+
+  const hasInstallFeedPrompt = feed.some(item => item.type === 'prompt' && item.subtype === 'install')
+  const installBannerUsesBottomNav = !showCityPicker && !showEventDrawer && !showPeopleDrawer
+  const showInstallOnMainSurface = status === 'ready' && (
+    (!showCityPicker && !showEventDrawer && !showPeopleDrawer && !showProfileDrawer && !showConversations && !showNotifications && !showCreateEvent)
+    || showCityPicker
+    || showEventDrawer
+    || (showPeopleDrawer && !viewingProfile)
+  )
+  const showInstallBanner = showInstallOnMainSurface && installPrompt.shouldShowBanner && !hasInstallFeedPrompt
+
+  function injectFeedInstallMessage() {
+    if (
+      activeEventIdRef.current ||
+      installPrompt.feedPromptSeen ||
+      showInstallBanner ||
+      !installPrompt.shouldShowBanner
+    ) {
+      return
+    }
+
+    setFeed(prev => {
+      if (prev.some(item => item.type === 'prompt' && item.subtype === 'install')) return prev
+      installPrompt.markFeedPromptShown()
+      promptsShownRef.current.add('install')
+      return [
+        ...prev,
+        {
+          type: 'prompt',
+          subtype: 'install',
+          id: `prompt-install-${Date.now()}`,
+          text: '✨ Add Hilads to your home screen\nNever miss what\'s happening in your city',
+          cta: installPrompt.canUseNativePrompt ? 'Add' : 'How'
+        },
+      ]
+    })
+  }
 
   // Fetch conversations whenever the account changes so the unread dot is always current.
   useEffect(() => {
@@ -635,6 +675,12 @@ export default function App() {
         return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: '🎉 Got a plan tonight?', cta: 'Create event' }]
       })
     }, 60000)
+
+    setTimeout(() => {
+      if (!activeRef.current || activeEventIdRef.current) return
+      if (promptsShownRef.current.has('install') || installPrompt.feedPromptSeen) return
+      injectFeedInstallMessage()
+    }, 12000)
   }
 
   function handlePromptCta(item) {
@@ -645,6 +691,8 @@ export default function App() {
       fileInputRef.current?.click()
     } else if (item.subtype === 'create-event') {
       setShowCreateEvent(true)
+    } else if (item.subtype === 'install') {
+      installPrompt.promptInstall().catch(() => {})
     } else if (item.subtype === 'new-event') {
       const event = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
       if (event) handleSelectEvent(event)
@@ -922,6 +970,9 @@ export default function App() {
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { type: 'message', ...msg }])
       setInput('')
+      if (!activeEventIdRef.current && !installPrompt.feedPromptSeen) {
+        setTimeout(() => injectFeedInstallMessage(), 300)
+      }
     } catch (err) {
       alert(err.message)
     } finally {
@@ -1929,6 +1980,16 @@ export default function App() {
           </button>
         </form>
 
+        {showInstallBanner && installBannerUsesBottomNav && (
+          <InstallPromptBanner
+            instructionText={installPrompt.instructionText}
+            manualHelpVisible={installPrompt.manualHelpVisible}
+            onAdd={() => installPrompt.promptInstall().catch(() => {})}
+            onDismiss={installPrompt.dismissBanner}
+            withBottomNav
+          />
+        )}
+
         {/* Bottom navigation — mobile only */}
         <nav className="bottom-nav" aria-label="Primary">
           <button
@@ -2233,6 +2294,15 @@ export default function App() {
             })}
           </div>
         </div>
+      )}
+
+      {showInstallBanner && !installBannerUsesBottomNav && (
+        <InstallPromptBanner
+          instructionText={installPrompt.instructionText}
+          manualHelpVisible={installPrompt.manualHelpVisible}
+          onAdd={() => installPrompt.promptInstall().catch(() => {})}
+          onDismiss={installPrompt.dismissBanner}
+        />
       )}
 
       {showPeopleDrawer && viewingProfile && (
