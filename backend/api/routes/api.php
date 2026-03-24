@@ -9,11 +9,16 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
 {
     $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
     $payload = json_encode(['channelId' => $channelId, 'message' => $message]);
+    $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
+    $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
+    if ($token !== '') {
+        $headers .= "X-Internal-Token: {$token}\r\n";
+    }
 
     $ctx = stream_context_create([
         'http' => [
             'method'        => 'POST',
-            'header'        => "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
+            'header'        => $headers,
             'content'       => $payload,
             'timeout'       => 1,
             'ignore_errors' => true,
@@ -29,11 +34,16 @@ function broadcastConversationMessageToWs(string $conversationId, array $message
 {
     $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
     $payload = json_encode(['conversationId' => $conversationId, 'message' => $message]);
+    $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
+    $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
+    if ($token !== '') {
+        $headers .= "X-Internal-Token: {$token}\r\n";
+    }
 
     $ctx = stream_context_create([
         'http' => [
             'method'        => 'POST',
-            'header'        => "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
+            'header'        => $headers,
             'content'       => $payload,
             'timeout'       => 1,
             'ignore_errors' => true,
@@ -41,6 +51,29 @@ function broadcastConversationMessageToWs(string $conversationId, array $message
     ]);
 
     @file_get_contents($wsUrl . '/broadcast/conversation-message', false, $ctx);
+}
+
+function enforceRateLimit(string $bucket, int $limit, int $windowSeconds, ?string $suffix = null): void
+{
+    $key = $bucket . '|' . Request::ip();
+    if ($suffix !== null && $suffix !== '') {
+        $key .= '|' . $suffix;
+    }
+
+    if (!RateLimiter::allow($key, $limit, $windowSeconds)) {
+        Response::json(['error' => 'Too many requests'], 429);
+    }
+}
+
+function isValidGuestId(mixed $guestId): bool
+{
+    return is_string($guestId) && preg_match('/^[a-f0-9]{32}$/', $guestId) === 1;
+}
+
+function isValidSessionId(mixed $sessionId): bool
+{
+    return is_string($sessionId)
+        && preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $sessionId) === 1;
 }
 
 // ── Internal migration endpoint ───────────────────────────────────────────────
@@ -303,6 +336,7 @@ $router->add('GET', '/internal/run-migrations', function () {
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 $router->add('POST', '/api/v1/auth/signup', function () {
+    enforceRateLimit('auth_signup', 10, 600);
     $body = Request::json();
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
@@ -317,6 +351,7 @@ $router->add('POST', '/api/v1/auth/signup', function () {
 });
 
 $router->add('POST', '/api/v1/auth/login', function () {
+    enforceRateLimit('auth_login', 12, 600);
     $body = Request::json();
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
@@ -368,6 +403,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
 // ── Guest sessions ────────────────────────────────────────────────────────────
 
 $router->add('POST', '/api/v1/guest/session', function () {
+    enforceRateLimit('guest_session', 15, 3600);
     $guestId = bin2hex(random_bytes(16));
 
     $body = Request::json();
@@ -519,11 +555,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
     $guestId   = $body['guestId']  ?? null;
     $nickname  = $body['nickname'] ?? null;
 
-    if (empty($sessionId) || !is_string($sessionId)) {
+    enforceRateLimit('channel_join', 90, 300);
+
+    if (!isValidSessionId($sessionId)) {
         Response::json(['error' => 'sessionId is required'], 400);
     }
 
-    if (empty($guestId) || !is_string($guestId)) {
+    if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
@@ -574,7 +612,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $para
 
     $sessionId = $body['sessionId'] ?? null;
 
-    if (empty($sessionId) || !is_string($sessionId)) {
+    if (!isValidSessionId($sessionId)) {
         Response::json(['error' => 'sessionId is required'], 400);
     }
 
@@ -604,11 +642,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
     $guestId   = $body['guestId']  ?? null;
     $nickname  = $body['nickname'] ?? null;
 
-    if (empty($sessionId) || !is_string($sessionId)) {
+    enforceRateLimit('channel_heartbeat', 240, 300, (string) $channelId);
+
+    if (!isValidSessionId($sessionId)) {
         Response::json(['error' => 'sessionId is required'], 400);
     }
 
-    if (empty($guestId) || !is_string($guestId)) {
+    if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
@@ -644,6 +684,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
 });
 
 $router->add('POST', '/api/v1/uploads', function () {
+    enforceRateLimit('uploads', 20, 600);
     $file = $_FILES['file'] ?? null;
 
     if ($file === null || $file['error'] !== UPLOAD_ERR_OK) {
@@ -662,6 +703,10 @@ $router->add('POST', '/api/v1/uploads', function () {
         Response::json(['error' => 'File size exceeds the 10 MB limit'], 400);
     }
 
+    if (!is_uploaded_file($file['tmp_name'])) {
+        Response::json(['error' => 'Invalid upload'], 400);
+    }
+
     // Validate MIME type by inspecting the file content — never trust the client header
     $finfo    = new finfo(FILEINFO_MIME_TYPE);
     $mimeType = $finfo->file($file['tmp_name']);
@@ -674,6 +719,14 @@ $router->add('POST', '/api/v1/uploads', function () {
 
     if (!array_key_exists($mimeType, $allowed)) {
         Response::json(['error' => 'Only JPEG, PNG, and WebP images are allowed'], 415);
+    }
+
+    $imageInfo = @getimagesize($file['tmp_name']);
+    if ($imageInfo === false || empty($imageInfo[0]) || empty($imageInfo[1])) {
+        Response::json(['error' => 'Invalid image file'], 415);
+    }
+    if ($imageInfo[0] > 6000 || $imageInfo[1] > 6000 || ($imageInfo[0] * $imageInfo[1]) > 40000000) {
+        Response::json(['error' => 'Image dimensions are too large'], 400);
     }
 
     // Cryptographically random filename — client-supplied name is never used
@@ -760,7 +813,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     $endsAt       = $body['ends_at']       ?? null;
     $type         = $body['type']          ?? null;
 
-    if (empty($guestId) || !is_string($guestId)) {
+    enforceRateLimit('event_create', 8, 3600, (string) $channelId);
+
+    if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
@@ -878,7 +933,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/event-series', function (arra
     $startsOn       = $body['starts_on']        ?? null;
     $endsOn         = $body['ends_on']          ?? null;
 
-    if (empty($guestId) || !is_string($guestId)) {
+    enforceRateLimit('event_series_create', 6, 3600, (string) $channelId);
+
+    if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
@@ -1239,7 +1296,9 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
     $type     = $body['type']     ?? 'text';
     $imageUrl = $body['imageUrl'] ?? null;
 
-    if (empty($guestId) || !is_string($guestId)) {
+    enforceRateLimit('event_message', 45, 300, $eventId);
+
+    if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
@@ -1317,6 +1376,9 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
     }
 
     $sessionId = trim($_GET['sessionId'] ?? '');
+    if ($sessionId !== '' && !isValidSessionId($sessionId)) {
+        Response::json(['error' => 'Invalid sessionId'], 400);
+    }
 
     Response::json([
         'count' => ParticipantRepository::getCount($eventId),
@@ -1343,7 +1405,9 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
 
     $sessionId = $body['sessionId'] ?? null;
 
-    if (empty($sessionId) || !is_string($sessionId)) {
+    enforceRateLimit('event_participant_toggle', 60, 300, $eventId);
+
+    if (!isValidSessionId($sessionId)) {
         Response::json(['error' => 'sessionId is required'], 400);
     }
 
@@ -1365,7 +1429,7 @@ $router->add('POST', '/api/v1/disconnect', function () {
 
     $sessionId = $body['sessionId'] ?? null;
 
-    if (empty($sessionId) || !is_string($sessionId)) {
+    if (!isValidSessionId($sessionId)) {
         Response::json(['error' => 'sessionId is required'], 400);
     }
 
@@ -1398,7 +1462,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     $type      = $body['type']     ?? 'text';
     $imageUrl  = $body['imageUrl'] ?? null;
 
-    if (empty($guestId) || !is_string($guestId)) {
+    enforceRateLimit('channel_message', 60, 300, (string) $channelId);
+
+    if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
@@ -1417,7 +1483,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     }
 
     // Sending a message also refreshes presence (sessionId optional for backward compat)
-    if (!empty($sessionId) && is_string($sessionId)) {
+    if (!empty($sessionId) && isValidSessionId($sessionId)) {
         PresenceRepository::heartbeat($channelId, $sessionId, $guestId, $nickname);
     }
 
@@ -1523,6 +1589,8 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     $user           = AuthService::requireAuth();
     $conversationId = $params['conversationId'] ?? '';
     $body           = Request::json();
+
+    enforceRateLimit('conversation_message', 50, 300, $conversationId);
 
     if (!ConversationRepository::isParticipant($conversationId, $user['id'])) {
         Response::json(['error' => 'Not a participant'], 403);

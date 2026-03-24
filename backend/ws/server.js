@@ -32,10 +32,17 @@ import { createServer } from 'http'
 
 const PORT = process.env.PORT || 8081
 const INTERNAL_PORT = process.env.INTERNAL_PORT || 8082
+const INTERNAL_TOKEN = process.env.WS_INTERNAL_TOKEN || ''
 const HEARTBEAT_TTL_MS = 120_000  // session expires after 120s without heartbeat
 const CLEANUP_INTERVAL_MS = 60_000 // check for stale sessions every 60s
 const PING_INTERVAL_MS = 30_000   // detect dead TCP connections
 const TYPING_TTL_MS = 8_000       // auto-clear typing if no typingStop within 8s
+const ALLOWED_ORIGINS = new Set(
+  (process.env.WS_ALLOWED_ORIGINS || 'https://hilads.vercel.app')
+    .split(',')
+    .map(v => v.trim())
+    .filter(Boolean)
+)
 
 // rooms: Map<cityId, Map<sessionId, { sessionId, nickname, ws, lastSeen }>>
 const rooms = new Map()
@@ -297,7 +304,13 @@ function removeWs(ws) {
 
 const wss = new WebSocketServer({ port: PORT })
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
+  const origin = req.headers.origin
+  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+    ws.close(1008, 'Origin not allowed')
+    return
+  }
+
   ws.isAlive = true
   ws.on('pong', () => { ws.isAlive = true })
 
@@ -352,6 +365,14 @@ const httpServer = createServer((req, res) => {
   req.on('data', chunk => { body += chunk })
   req.on('end', () => {
     try {
+      if (INTERNAL_TOKEN) {
+        const provided = req.headers['x-internal-token']
+        if (provided !== INTERNAL_TOKEN) {
+          res.writeHead(403); res.end('forbidden')
+          return
+        }
+      }
+
       if (req.method === 'POST' && req.url === '/broadcast/event-participants') {
         const { eventId, count } = JSON.parse(body)
         broadcastParticipantCount(eventId, count)

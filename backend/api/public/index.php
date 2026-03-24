@@ -40,7 +40,8 @@ if ($method === 'GET' && $uri === '/health') {
             $dbStatus = 'connected';
         } catch (Throwable $ex) {
             $dbStatus = 'connection_failed';
-            $dbError  = $ex->getMessage();
+            error_log('[hilads] health DB check failed: ' . $ex->getMessage());
+            $dbError  = 'redacted';
         }
     }
 
@@ -95,6 +96,7 @@ require_once __DIR__ . '/../src/AuthService.php';
 require_once __DIR__ . '/../src/Response.php';
 require_once __DIR__ . '/../src/Router.php';
 require_once __DIR__ . '/../src/Request.php';
+require_once __DIR__ . '/../src/RateLimiter.php';
 require_once __DIR__ . '/../src/NicknameGenerator.php';
 require_once __DIR__ . '/../src/CityRepository.php';
 require_once __DIR__ . '/../src/PresenceRepository.php';

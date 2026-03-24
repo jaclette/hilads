@@ -46,7 +46,8 @@ class R2Uploader
                 'ContentType' => $mimeType,
             ]);
         } catch (AwsException $e) {
-            throw new RuntimeException('R2 upload failed: ' . $e->getAwsErrorMessage());
+            error_log('[hilads] R2 upload failed: ' . ($e->getAwsErrorMessage() ?: $e->getMessage()));
+            throw new RuntimeException('Upload failed');
         }
 
         return rtrim(getenv('R2_PUBLIC_URL'), '/') . '/' . $filename;
