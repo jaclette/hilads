@@ -1323,15 +1323,17 @@ export default function App() {
         className={`city-row${isActive ? ' active' : ''}`}
         onClick={() => onClick(ch)}
       >
-        <div className="city-row-left">
-          <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
-          <span style={{ fontSize: '1.05rem', lineHeight: 1, flexShrink: 0 }}>{cityFlag(ch.country)}</span>
-          <span className="city-row-name">{ch.city}</span>
+        <div className="city-row-top">
+          <div className="city-row-left">
+            <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
+            <span className="city-row-flag" aria-hidden="true">{cityFlag(ch.country)}</span>
+            <span className="city-row-name">{ch.city}</span>
+          </div>
           {isActive && <span className="city-row-current">you're here</span>}
         </div>
         <div className="city-row-stats">
           {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
-          {eventCount > 0 && <span className="city-row-events">🔥 {eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
+          {eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
           {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
         </div>
       </button>
