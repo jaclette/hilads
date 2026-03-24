@@ -206,15 +206,17 @@ const JOIN_TEMPLATES = [
   (n) => `✨ ${n} arrived`,
 ]
 
-function toFeedItem(m, staggerDelay) {
+// lastJoinAtRef: pass the component ref so join messages are throttled to 1 per 8s.
+// Returns null for suppressed joins — callers must filter nulls.
+function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   if (m.type === 'system' && m.event === 'join') {
-    const tpl = JOIN_TEMPLATES[Math.floor(Math.random() * JOIN_TEMPLATES.length)]
-    return {
-      type: 'activity',
-      subtype: 'join',
-      id: messageKey(m),
-      text: tpl(m.nickname),
+    if (lastJoinAtRef) {
+      const now = Date.now()
+      if (now - lastJoinAtRef.current < 8000) return null // throttle rapid joins
+      lastJoinAtRef.current = now
     }
+    const tpl = JOIN_TEMPLATES[Math.floor(Math.random() * JOIN_TEMPLATES.length)]
+    return { type: 'activity', subtype: 'join', id: messageKey(m), text: tpl(m.nickname) }
   }
   return { type: 'message', staggerDelay, ...m }
 }
@@ -343,6 +345,9 @@ export default function App() {
   const activityRef = useRef(null)
   const activeRef = useRef(false)
   const knownIdsRef = useRef(new Set())
+  const lastJoinAtRef = useRef(0)          // throttle: timestamp of last join shown in feed
+  const promptsShownRef = useRef(new Set())// tracks which prompt subtypes have been injected
+  const prevEventCountRef = useRef(0)      // detects new events added to the events list
   const locPromiseRef = useRef(null)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
   const sessionIdRef = useRef(getOrCreateSessionId())
@@ -528,16 +533,72 @@ export default function App() {
   }
 
   function scheduleActivity(isFirst = false) {
-    const delay = isFirst ? 6000 + Math.random() * 6000 : 22000 + Math.random() * 38000
+    // First ambient message: 30s after join. Recurring: every 60–120s.
+    // Skipped entirely when the feed already has real user messages (not noisy then).
+    const delay = isFirst ? 30000 : 60000 + Math.random() * 60000
     activityRef.current = setTimeout(() => {
       if (!activeRef.current) return
       const activity = randomActivity()
-      setFeed((prev) => [
-        ...prev,
-        { type: 'activity', id: `act-${Date.now()}`, subtype: activity.subtype, text: activity.text },
-      ])
+      setFeed((prev) => {
+        // Suppress if there are 3+ real messages — city is active enough
+        const realMsgs = prev.filter(m => m.type === 'message').length
+        if (realMsgs >= 3) return prev
+        return [...prev, { type: 'activity', id: `act-${Date.now()}`, subtype: activity.subtype, text: activity.text }]
+      })
       scheduleActivity()
     }, delay)
+  }
+
+  function schedulePrompts() {
+    // Only inject in city chat (not event chat), only once per subtype per session.
+    // Each prompt checks activity level before injecting — suppressed when city is busy.
+
+    // explore: 15s, only if feed is still empty
+    setTimeout(() => {
+      if (!activeRef.current || activeEventIdRef.current) return
+      if (promptsShownRef.current.has('explore')) return
+      setFeed(prev => {
+        if (prev.filter(m => m.type === 'message').length > 0) return prev
+        promptsShownRef.current.add('explore')
+        return [...prev, { type: 'prompt', subtype: 'explore', id: `prompt-explore-${Date.now()}`, text: '🔥 See what\'s happening now', cta: 'Explore' }]
+      })
+    }, 15000)
+
+    // photo: 30s, only if low activity
+    setTimeout(() => {
+      if (!activeRef.current || activeEventIdRef.current) return
+      if (promptsShownRef.current.has('photo')) return
+      setFeed(prev => {
+        if (prev.filter(m => m.type === 'message').length >= 3) return prev
+        promptsShownRef.current.add('photo')
+        return [...prev, { type: 'prompt', subtype: 'photo', id: `prompt-photo-${Date.now()}`, text: '📸 Share what\'s happening', cta: 'Upload' }]
+      })
+    }, 30000)
+
+    // create-event: 60s, only if low activity
+    setTimeout(() => {
+      if (!activeRef.current || activeEventIdRef.current) return
+      if (promptsShownRef.current.has('create-event')) return
+      setFeed(prev => {
+        if (prev.filter(m => m.type === 'message').length >= 3) return prev
+        promptsShownRef.current.add('create-event')
+        return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: '🎉 Got a plan tonight?', cta: 'Create event' }]
+      })
+    }, 60000)
+  }
+
+  function handlePromptCta(item) {
+    setFeed(prev => prev.filter(f => f.id !== item.id))
+    if (item.subtype === 'explore') {
+      setShowEventDrawer(true)
+    } else if (item.subtype === 'photo') {
+      fileInputRef.current?.click()
+    } else if (item.subtype === 'create-event') {
+      setShowCreateEvent(true)
+    } else if (item.subtype === 'new-event') {
+      const event = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
+      if (event) handleSelectEvent(event)
+    }
   }
 
   function scheduleEphemeral(id) {
@@ -599,6 +660,8 @@ export default function App() {
 
       activeRef.current = true
       scheduleActivity(true)
+      promptsShownRef.current = new Set()
+      schedulePrompts()
 
       // ── Socket: real-time presence ───────────────────────────────────────────
       const socket = socketRef.current ?? createSocket()
@@ -661,7 +724,8 @@ export default function App() {
         if (isEventMsg) {
           setFeed(prev => [...prev, { type: 'message', ...message }])
         } else {
-          const item = toFeedItem(message)
+          const item = toFeedItem(message, undefined, lastJoinAtRef)
+          if (!item) return // throttled join
           setFeed(prev => [...prev, item])
           if (item.subtype === 'join') scheduleEphemeral(item.id)
         }
@@ -693,7 +757,7 @@ export default function App() {
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
           newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
-          const newItems = newMsgs.map((m) => toFeedItem(m))
+          const newItems = newMsgs.map((m) => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)
           setFeed((prev) => [...prev, ...newItems])
           newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
@@ -960,6 +1024,8 @@ export default function App() {
 
       activeRef.current = true
       scheduleActivity(true)
+      promptsShownRef.current = new Set()
+      schedulePrompts()
 
       // Socket: join new room — existing handlers (set up in handleJoin) remain active
       socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null)
@@ -979,7 +1045,7 @@ export default function App() {
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
           newMsgs.forEach((m) => knownIdsRef.current.add(messageKey(m)))
-          const newItems = newMsgs.map((m) => toFeedItem(m))
+          const newItems = newMsgs.map((m) => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)
           setFeed((prev) => [...prev, ...newItems])
           newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
@@ -1137,7 +1203,7 @@ export default function App() {
       const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(messageKey(m)))
       if (newMsgs.length > 0) {
         newMsgs.forEach(m => knownIdsRef.current.add(messageKey(m)))
-        const items = newMsgs.map(m => toFeedItem(m))
+        const items = newMsgs.map(m => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)
         setFeed(prev => [...prev, ...items])
         items.forEach(item => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
       }
@@ -1168,6 +1234,28 @@ export default function App() {
   }
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current)
+
+  // Inject a new-event prompt when events array grows (real-time event added).
+  // Only in city chat, only if activity is low. Auto-dismiss after 10s.
+  useEffect(() => {
+    if (!activeRef.current || activeEventIdRef.current) {
+      prevEventCountRef.current = events.length
+      return
+    }
+    if (events.length > prevEventCountRef.current) {
+      const newOnes = events.slice(prevEventCountRef.current)
+      newOnes.forEach(event => {
+        const id = `prompt-new-event-${event.id}`
+        setFeed(prev => {
+          if (prev.some(f => f.id === id)) return prev
+          if (prev.filter(m => m.type === 'message').length >= 5) return prev
+          return [...prev, { type: 'prompt', subtype: 'new-event', id, eventId: event.id, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
+        })
+        setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 10000)
+      })
+    }
+    prevEventCountRef.current = events.length
+  }, [events]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── City scoring ────────────────────────────────────────────────────────────
 
@@ -1621,6 +1709,15 @@ export default function App() {
                     : 'feed-activity'}
                 >
                   {item.text}
+                </div>
+              )
+            }
+
+            if (item.type === 'prompt') {
+              return (
+                <div key={item.id} className="feed-prompt">
+                  <span className="feed-prompt-text">{item.text}</span>
+                  <button className="feed-prompt-btn" onClick={() => handlePromptCta(item)}>{item.cta}</button>
                 </div>
               )
             }

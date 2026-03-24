@@ -1308,6 +1308,44 @@ html, body, #root {
   }
 }
 
+/* ── Feed prompts (contextual CTA injected in city feed) ─ */
+
+.feed-prompt {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 120, 50, 0.1);
+  border: 1px solid rgba(255, 120, 50, 0.25);
+  border-radius: 20px;
+  padding: 8px 14px;
+  margin: 6px 0;
+  animation: fadeUp 0.3s ease-out both;
+}
+
+.feed-prompt-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.feed-prompt-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.feed-prompt-btn:active {
+  opacity: 0.85;
+}
+
 /* ── Online users — shared avatar ────────────────────── */
 
 .online-avatar {
