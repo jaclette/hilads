@@ -1193,14 +1193,14 @@ export default function App() {
     }).catch(() => {})
   }, [activeEvent?.id])
 
-  // Bulk-fetch participant counts for visible events when the Hot drawer opens.
-  // Hilads events are today-only (ephemeral); city events are upcoming (no today filter).
+  // Bulk-fetch participant counts for visible Hilads events when the Hot drawer opens.
+  // The Hot drawer renders only canonical Hilads events for today.
   useEffect(() => {
     if (!showEventDrawer || !sessionIdRef.current) return
     const tz = cityTimezone || 'UTC'
     const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
     const isEventToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-    ;[...events.filter(isEventToday), ...cityEvents].forEach(event => {
+    events.filter(isEventToday).forEach(event => {
       fetchEventParticipants(event.id, sessionIdRef.current).then(({ count, isIn }) => {
         setEventParticipants(prev => ({ ...prev, [event.id]: count }))
         setParticipatedEvents(prev => {
