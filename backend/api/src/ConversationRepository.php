@@ -143,7 +143,7 @@ class ConversationRepository
             WHERE ch.type   = 'event'
               AND ch.status = 'active'
               AND (ce.created_by = :userId3 OR ep.user_id = :userId4)
-            ORDER BY ce.starts_at DESC
+            ORDER BY starts_at DESC
             LIMIT 30
         ");
         $stmt->execute([':userId' => $userId, ':userId2' => $userId, ':userId3' => $userId, ':userId4' => $userId]);
