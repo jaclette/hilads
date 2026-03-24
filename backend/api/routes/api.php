@@ -419,6 +419,58 @@ $router->add('POST', '/api/v1/location/resolve', function () {
     ]);
 });
 
+// ── Deep link / share resolution ──────────────────────────────────────────────
+
+// GET /api/v1/cities/by-slug/{slug}
+// Resolves a URL slug to a city. Slug is derived from city name (lowercase, hyphens).
+// Used when a shared /city/:slug link is opened cold.
+$router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
+    $slug = strtolower(trim($params['slug'] ?? ''));
+    if ($slug === '') {
+        Response::json(['error' => 'Missing slug'], 400);
+    }
+
+    foreach (CityRepository::all() as $city) {
+        $citySlug = strtolower(preg_replace('/[^a-z0-9]+/', '-', $city['name']));
+        $citySlug = trim($citySlug, '-');
+        if ($citySlug === $slug) {
+            Response::json([
+                'channelId' => $city['id'],
+                'city'      => $city['name'],
+                'country'   => $city['country'] ?? null,
+                'timezone'  => $city['timezone'],
+                'slug'      => $citySlug,
+            ]);
+        }
+    }
+
+    Response::json(['error' => 'City not found'], 404);
+});
+
+// GET /api/v1/events/{eventId}
+// Returns a single event by hex channel ID. Used for deep-linked event URLs.
+$router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
+    $eventId = $params['eventId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    $event = EventRepository::findById($eventId);
+    if ($event === null) {
+        Response::json(['error' => 'Event not found or expired'], 404);
+    }
+
+    // Also resolve the city name so the frontend can hydrate city context
+    $city = CityRepository::findById($event['channel_id']);
+    Response::json([
+        'event'    => $event,
+        'cityName' => $city['name'] ?? null,
+        'country'  => $city['country'] ?? null,
+        'timezone' => $city['timezone'] ?? 'UTC',
+    ]);
+});
+
 $router->add('GET', '/api/v1/channels', function () {
     // Four batch queries — no per-city loops
     $eventCounts    = EventRepository::getCountsPerCity();

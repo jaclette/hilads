@@ -1,5 +1,21 @@
 const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
 
+// ── Deep link resolution ───────────────────────────────────────────────────────
+
+export async function fetchCityBySlug(slug) {
+  const res = await fetch(`${BASE}/cities/by-slug/${encodeURIComponent(slug)}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to resolve city slug')
+  return res.json() // { channelId, city, country, timezone, slug }
+}
+
+export async function fetchEventById(eventId) {
+  const res = await fetch(`${BASE}/events/${encodeURIComponent(eventId)}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch event')
+  return res.json() // { event, cityName, country, timezone }
+}
+
 export async function createGuestSession(nickname) {
   const res = await fetch(`${BASE}/guest/session`, {
     method: 'POST',

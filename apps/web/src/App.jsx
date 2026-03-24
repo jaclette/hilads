@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
@@ -14,6 +14,50 @@ import DirectMessageScreen from './components/DirectMessageScreen'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+function cityToSlug(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+function parseDeepLink() {
+  const path = window.location.pathname
+  const cityMatch  = path.match(/^\/city\/([^/]+)$/)
+  const eventMatch = path.match(/^\/event\/([a-f0-9]{16})$/)
+  if (cityMatch)  return { type: 'city',  slug: cityMatch[1] }
+  if (eventMatch) return { type: 'event', id: eventMatch[1] }
+  return null
+}
+
+function pushUrl(path) {
+  if (window.location.pathname !== path) {
+    window.history.pushState(null, '', path)
+  }
+}
+
+function setPageMeta(title, description) {
+  document.title = title
+  let desc = document.querySelector('meta[name="description"]')
+  if (!desc) { desc = document.createElement('meta'); desc.name = 'description'; document.head.appendChild(desc) }
+  desc.content = description
+  let ogTitle = document.querySelector('meta[property="og:title"]')
+  if (!ogTitle) { ogTitle = document.createElement('meta'); ogTitle.setAttribute('property', 'og:title'); document.head.appendChild(ogTitle) }
+  ogTitle.content = title
+  let ogDesc = document.querySelector('meta[property="og:description"]')
+  if (!ogDesc) { ogDesc = document.createElement('meta'); ogDesc.setAttribute('property', 'og:description'); document.head.appendChild(ogDesc) }
+  ogDesc.content = description
+  let ogUrl = document.querySelector('meta[property="og:url"]')
+  if (!ogUrl) { ogUrl = document.createElement('meta'); ogUrl.setAttribute('property', 'og:url'); document.head.appendChild(ogUrl) }
+  ogUrl.content = window.location.href
+}
+
+async function share(title, url) {
+  if (navigator.share) {
+    try { await navigator.share({ title, url }); return } catch (_) { /* user cancelled */ }
+  }
+  try {
+    await navigator.clipboard.writeText(url)
+    return 'copied'
+  } catch (_) {}
+}
 
 // ── Bottom nav icons ──────────────────────────────────────────────────────────
 
@@ -340,9 +384,40 @@ export default function App() {
     }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Deep link resolution on cold load ─────────────────────────────────────
+  // Runs once. If the URL is /city/:slug or /event/:id, override geolocation
+  // by pointing locPromiseRef at the linked city before handleJoin fires.
+  useEffect(() => {
+    const link = parseDeepLink()
+    if (!link) return
+
+    if (link.type === 'city') {
+      locPromiseRef.current = fetchCityBySlug(link.slug).then(data => {
+        if (!data) return null
+        setCity(data.city)
+        setCityCountry(data.country)
+        setCityTimezone(data.timezone)
+        return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country }
+      })
+    }
+
+    if (link.type === 'event') {
+      locPromiseRef.current = fetchEventById(link.id).then(async data => {
+        if (!data) return null
+        const { event, cityName, country, timezone } = data
+        setCity(cityName)
+        setCityCountry(country)
+        setCityTimezone(timezone)
+        // After join the city, open the event — defer until handleJoin completes
+        setTimeout(() => handleSelectEvent(event), 800)
+        return { channelId: event.channel_id, city: cityName, timezone, country }
+      })
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   useEffect(() => {
     // start geolocation immediately — runs concurrently with auth check
-    locPromiseRef.current = startGeolocation()
+    locPromiseRef.current = locPromiseRef.current ?? startGeolocation()
 
     // Resolve auth state BEFORE auto-rejoining so handleJoin always has the
     // correct identity. Without this, accountRef.current is null when
@@ -852,6 +927,8 @@ export default function App() {
     setEvents([])
     setCityEvents([])
     setActiveEventId(null)
+    pushUrl(`/city/${cityToSlug(newCityName)}`)
+    setPageMeta(`Who's in ${newCityName} right now | Hilads`, `See who's online and what's happening in ${newCityName} right now.`)
     setActiveEvent(null)
     activeEventIdRef.current = null
 
@@ -955,6 +1032,8 @@ export default function App() {
     setShowEventDrawer(false)
     setFeed([])
     knownIdsRef.current = new Set()
+    pushUrl(`/event/${eid}`)
+    setPageMeta(`${event.title} is happening now | Hilads`, `Join ${event.title} on Hilads — see who's there and what's happening.`)
 
     const doPoll = async () => {
       if (!activeRef.current) return
@@ -1034,6 +1113,10 @@ export default function App() {
     setActiveEvent(null)
     setFeed([])
     knownIdsRef.current = new Set()
+    if (city) {
+      pushUrl(`/city/${cityToSlug(city)}`)
+      setPageMeta(`Who's in ${city} right now | Hilads`, `See who's online and what's happening in ${city} right now.`)
+    }
 
     // Re-fetch city messages
     fetchMessages(cid).then(data => {
@@ -1424,12 +1507,25 @@ export default function App() {
                   </svg>
                   <span className="event-back-label">{city}</span>
                 </button>
-                <button
-                  className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
-                  onClick={() => handleToggleParticipation(activeEvent.id)}
-                >
-                  {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
-                </button>
+                <div className="event-header-actions">
+                  <button
+                    className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
+                    onClick={() => handleToggleParticipation(activeEvent.id)}
+                  >
+                    {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
+                  </button>
+                  <button
+                    className="share-btn"
+                    onClick={() => share(activeEvent.title, `${window.location.origin}/event/${activeEvent.id}`)}
+                    title="Share this vibe"
+                    aria-label="Share event"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div className="event-header-body">
                 <span className="event-header-title">{activeEvent.title}</span>
@@ -1463,6 +1559,19 @@ export default function App() {
                   {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
                 </span>
               </div>
+              {city && (
+                <button
+                  className="share-btn share-btn--city"
+                  onClick={() => share(`Who's in ${city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(city)}`)}
+                  title="Share city"
+                  aria-label="Share city"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                  </svg>
+                </button>
+              )}
             </div>
           )}
           {/* Messages icon — top-right, always visible */}

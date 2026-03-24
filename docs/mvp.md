@@ -1,177 +1,203 @@
-# Hilads — MVP v3
+# Hilads — MVP v4
 
-## What is Hilads?
+## Vision
 
-Hilads is a real-time social app that makes cities feel alive.
+Hilads makes cities feel alive in real time.
 
 Open the app → see who's around → jump into something happening now.
 
-It is not a chat app. It is a **live social layer on top of cities**.
+Not a chat app. A live social layer on top of cities.
 
 ---
 
-## Core Concept
-
-When you open Hilads, you feel the energy of your city instantly.
-
-- Who's here right now?
-- What's happening nearby?
-- Can I join something in the next 10 minutes?
-
-No friction. Instant presence. Optional identity.
-
----
-
-## Core User Flow
+## Core Experience
 
 ```
 Open app
-  → geolocation resolves city (or pick manually)
-  → see who's here + active events
-  → chat or join an event instantly
-  → explore people around you
+  → city auto-detected by geolocation (or picked manually)
+  → see who's online + what's happening
+  → chat, join an event, or discover a place
+  → no sign-up required
 ```
-
-Four steps to feeling the city.
 
 ---
 
-## Current Features (v3)
+## Main Screens
+
+| Screen | What it does |
+|---|---|
+| **Hot** | Active events in the current city |
+| **Cities** | Switch city — ranked by live activity |
+| **Here** | Who's online right now in the city |
+| **Me** | Profile (registered users only) |
+| **Messages** | DMs + event chats (registered users only) |
+
+---
+
+## Features
 
 ### Identity
 
-Two user types, one clean transition:
-
-**Guest**
-- Temporary identity (UUID + nickname)
-- No sign-up required
-- Full access to chat and events
-- Identity stored in localStorage
+**Guest** (default)
+- Instant entry — no sign-up
+- Temporary identity: UUID + nickname stored in localStorage
+- Full access to city chat and events
 
 **Registered**
-- Persistent profile in PostgreSQL
-- Email + password
-- Display name, photo, home city, age, interests
-- Seamless upgrade from guest → registered
-- Single source of truth: backend always wins over localStorage
-
-### Profile
-
-Editable "Me" screen for registered users:
-- Profile photo (uploaded to Cloudflare R2)
-- Display name
-- Home city
-- Age
-- Interests (up to 5, from a curated list)
-
-Public profile viewable by other registered users.
-
-### Presence
-
-- See who's online in the city right now
-- Live user count per city
-- Real-time via WebSocket (presence snapshot on join, live join/leave events)
-- Guest vs registered distinction (member badge)
-- Tap a registered user → view their public profile
-- Guest viewers tapping a user are encouraged to create an account
+- Email + password or Google
+- Persistent profile: display name, photo, home city, age, interests
+- Unlocks: DMs, creating recurring events, Messages screen
+- Seamless upgrade from guest — history preserved
 
 ### City Chat
 
-- Real-time chat per city
+- One public chat channel per city
 - Text + photo messages
-- Auto-join based on geolocation
 - Rate-limited to prevent spam
-- Messages pushed via WebSocket (3s poll as fallback)
+- Real-time via WebSocket, 3s poll as fallback
+- Messages kept for current day only (cleaned up at midnight)
 
-### Events
+### Events — Hot Screen
 
-- Create a spontaneous event (title, time, place)
-- Browse active events — Hilads events + external city events
-- Event subchannels: dedicated real-time chat per event, with photo support
-- Join an event → show attendance
-- Events expire automatically
-- External events imported from Ticketmaster
-- Event location tappable → opens maps
+Two types of events co-exist in the Hot screen:
+
+**One-shot events**
+- Created by any user (guest or registered)
+- Custom title, time, location
+- Each has its own real-time chat
+- Expire automatically
+- Event chat deleted when the event ends
+
+**Recurring events**
+- Seeded per city: bars, coffee shops, curated venues
+- Daily schedule (e.g. bars: 18:00–01:00, cafés: 10:00–18:00)
+- Displayed with "Every day" badge
+- Appear as "happening now" based on current time
+- Only today's occurrence is shown in Hot and Messages
+
+### Event Subchannels
+
+- Every event has its own real-time chat
+- Text + photo messages
+- Visible to anyone in the city
+- Messages deleted when the event expires (+ 1h buffer)
+
+### Recurring Events — How They Work
+
+Each recurring series generates daily occurrences (7-day lookahead window).
+Only today's occurrence is surfaced in Hot and Messages.
+A daily cron refreshes the lookahead window.
+
+Source: curated static dataset — 10 cities × 7 venues (4 bars + 3 cafés each).
+
+### Direct Messages
+
+- Registered users only
+- 1:1 private conversations
+- History kept for 7 days, then auto-deleted
+
+### Presence
+
+- Live user count per city
+- "X joined" system messages
+- Guest vs registered badge
+- WebSocket-driven (snapshot on join, live updates)
 
 ### City Discovery
 
-- 350 cities worldwide with country flags
-- City list ranked by live score: events × 10 + online users × 3 + messages × 1
-- Top 10 active cities shown by default
-- Search across all 350 cities
-- Skeleton loading state
+- 350 cities worldwide
+- Ranked by live score: `events × 10 + online users × 3 + messages × 1`
+- Top 10 shown by default, full search available
+- City row shows: event count, online users, message count
+- Event count = today's active events only (no future occurrences)
 
-### Geolocation
+### Photos
 
-- Auto-detect city on open
-- Resolve nearest of 350 supported cities
-- Graceful error states: permission denied vs GPS unavailable
-- Manual override always available
+- Share images in city chat and event chats
+- Stored on Cloudflare R2
 
 ---
 
-## Product Principles
+## Message Retention
 
-**Mobile-first** — no web patterns. Native-feel on mobile. FAB, bottom nav, full screens.
+| Channel | Kept | Deleted |
+|---|---|---|
+| City chat | Current day | Older than today (daily cron) |
+| Event chat | While event is active | 1h after event ends |
+| Direct messages | 7 days | Older than 7 days (daily cron) |
 
-**Instant interaction** — zero-friction entry. No mandatory onboarding walls.
-
-**No empty states** — the city always feels active. Presence signals, event hints, activity indicators.
-
-**Emotional, not functional** — the goal is to feel something, not to complete a task.
-
-**Single identity rule** — one user, one name, one source of truth.
+Cleanup is handled by a scheduled job — not during user requests.
 
 ---
 
-## What We Avoid
+## Architecture Concepts
 
-- Complex social graph (no followers, no feed algorithms)
-- Private messaging (stay public and spontaneous)
-- Notifications system (not yet — adds complexity without clear retention signal)
-- Features that don't answer: *"Does this make the city feel more alive right now?"*
+### City Channels
+`city_1`, `city_2` etc. One per city. All users in that city share the same channel. Parent of all event subchannels.
+
+### Event Subchannels
+Hex-id channels of `type='event'`, parented to a city channel. Each has a `channel_events` row with timing, source, and series linkage.
+
+### event_series
+Stores the recurrence rule for recurring events. Each series generates occurrence rows in `channel_events` with an `occurrence_date`. The series is the source of truth — occurrences are ephemeral.
+
+### source_key
+Stable fingerprint for import-created series: `static:v1:city_{id}:{slug}:{category}`. Ensures the seed is idempotent — running it multiple times has no effect.
+
+### Real-time
+WebSocket server handles presence snapshots and message push. PHP API uses a fire-and-forget internal HTTP call to broadcast events. 3-second poll is the fallback for clients that can't maintain a WS connection.
 
 ---
 
-## Key Rule
+## What Is In Scope
+
+- City chat (public, ephemeral)
+- Events: one-shot + recurring
+- Event subchannels
+- Direct messages (registered users)
+- Presence + user discovery
+- Profile (registered users)
+- City switching + discovery
+- Curated recurring venue seed (10 cities)
+- Message retention via daily cleanup
+
+---
+
+## What Is Out of Scope
+
+- Followers, feeds, social graph
+- Push notifications
+- Algorithmic ranking or recommendations
+- Ticketing or paid events
+- Archival or export
+- Mobile native app
+
+---
+
+## Known Issues (Next to Fix)
+
+- Duplicate recurring event chats in Messages (occurrence_date filter partially applied)
+- City event counts may lag after occurrence generation
+- Recurring event generation needs daily cron to be stable
+- UI consistency for recurring vs one-shot events in some edge cases
+
+---
+
+## Product Rule
 
 > **"Does this make the city feel more alive right now?"**
->
-> If the answer is no → don't build it.
+> If no → don't build it.
 
 ---
 
-## Tech Stack (v3)
+## Tech Stack
 
 | Layer | Stack |
 |---|---|
 | Frontend | React 18, Vite, mobile-first |
 | Backend | PHP 8.2, plain REST API, no framework |
-| Database | PostgreSQL (messages, events, presence, users) |
-| Real-time | Node.js WebSocket (presence + message push) + 3s poll fallback |
-| Media | Cloudflare R2 (profile photos, chat images) |
+| Database | PostgreSQL |
+| Real-time | Node.js WebSocket + 3s poll fallback |
+| Media | Cloudflare R2 |
 | External events | Ticketmaster Discovery API |
-| Hosting | Render (API + WS), Vercel (frontend) |
-
----
-
-## Success Metrics
-
-- Time to first interaction (target: <30s)
-- Messages per session
-- Events created per day
-- Users who return within 24h
-- Guest → registered conversion rate
-- Active users per city at peak
-
----
-
-## What Comes Next
-
-When v3 is stable and we see retention signals:
-
-- Push notifications (for nearby events)
-- Better liveness engine (more activity signals)
-- City rankings / trending moments
-- Richer profile matching (connect based on shared interests)
-- Richer event formats (recurring, ticketed, etc.)
+| Hosting | Render (API + WS) · Vercel (frontend) |
