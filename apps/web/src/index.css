@@ -2502,6 +2502,43 @@ html, body, #root {
   font-size: 0.88rem;
 }
 
+.event-row-skeleton {
+  pointer-events: none;
+}
+
+.event-row-skeleton .er-header,
+.event-row-skeleton .er-badges {
+  width: 100%;
+}
+
+.skel-er-title {
+  height: 16px;
+  width: 62%;
+  border-radius: 8px;
+}
+
+.skel-er-going {
+  height: 14px;
+  width: 42px;
+  border-radius: 999px;
+}
+
+.skel-er-badge {
+  height: 22px;
+  width: 118px;
+  border-radius: 999px;
+}
+
+.skel-er-badge--short {
+  width: 84px;
+}
+
+.skel-er-location {
+  height: 13px;
+  width: 54%;
+  border-radius: 7px;
+}
+
 /* ── Events page: FAB + empty state ──────────────────── */
 
 .page-body--has-fab {

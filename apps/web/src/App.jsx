@@ -337,6 +337,7 @@ export default function App() {
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
+  const [hotEventsStatus, setHotEventsStatus] = useState('loading') // 'loading' | 'ready' | 'error'
   const [cityCountry, setCityCountry] = useState(null)
   // 'pending' | 'resolving' | 'denied' | 'error'
   const [geoState, setGeoState] = useState('pending')
@@ -786,7 +787,10 @@ export default function App() {
       socket.on('newEvent', ({ cityId }) => {
         if (activeChannelRef.current !== cityId) return
         fetchEvents(cityId).then(data => {
-          if (activeChannelRef.current === cityId) setEvents(data.events)
+          if (activeChannelRef.current === cityId) {
+            setEvents(data.events)
+            setHotEventsStatus('ready')
+          }
         }).catch(() => {})
       })
 
@@ -818,22 +822,26 @@ export default function App() {
       pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
 
       // ── Events: fetch + poll (30s) ───────────────────────────────────────────
-      const doEventsPoll = async () => {
+      setHotEventsStatus('loading')
+      const doEventsPoll = async (isInitial = false) => {
         if (!activeRef.current) return
         try {
-          const [evData, cityEvData] = await Promise.all([
-            fetchEvents(location.channelId),
-            fetchCityEvents(location.channelId),
-          ])
+          const evData = await fetchEvents(location.channelId)
           if (activeChannelRef.current === location.channelId) {
             setEvents(evData.events)
-            setCityEvents(cityEvData.events)
+            if (isInitial) setHotEventsStatus('ready')
           }
         } catch { /* ignore */ }
+        if (isInitial && activeChannelRef.current === location.channelId) {
+          setHotEventsStatus(prev => prev === 'loading' ? 'error' : prev)
+        }
+        fetchCityEvents(location.channelId).then(cityEvData => {
+          if (activeChannelRef.current === location.channelId) setCityEvents(cityEvData.events)
+        }).catch(() => {})
       }
-      doEventsPoll()
+      doEventsPoll(true)
       clearInterval(eventsPolRef.current)
-      eventsPolRef.current = setInterval(doEventsPoll, 30_000)
+      eventsPolRef.current = setInterval(() => doEventsPoll(false), 30_000)
     } catch (err) {
       if (rejoinData) {
         // stored channel may no longer exist — fall back to home
@@ -1041,6 +1049,7 @@ export default function App() {
     setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
     setCityEvents([])
+    setHotEventsStatus('loading')
     setActiveEventId(null)
     pushUrl(`/city/${cityToSlug(newCityName)}`)
     setPageMeta(`Who's in ${newCityName} right now | Hilads`, `See who's online and what's happening in ${newCityName} right now.`)
@@ -1105,21 +1114,24 @@ export default function App() {
       pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
 
       // Events: fetch + poll for new city
-      const doEventsPoll = async () => {
+      const doEventsPoll = async (isInitial = false) => {
         if (!activeRef.current) return
         try {
-          const [evData, cityEvData] = await Promise.all([
-            fetchEvents(newChannelId),
-            fetchCityEvents(newChannelId),
-          ])
+          const evData = await fetchEvents(newChannelId)
           if (activeChannelRef.current === newChannelId) {
             setEvents(evData.events)
-            setCityEvents(cityEvData.events)
+            if (isInitial) setHotEventsStatus('ready')
           }
         } catch { /* ignore */ }
+        if (isInitial && activeChannelRef.current === newChannelId) {
+          setHotEventsStatus(prev => prev === 'loading' ? 'error' : prev)
+        }
+        fetchCityEvents(newChannelId).then(cityEvData => {
+          if (activeChannelRef.current === newChannelId) setCityEvents(cityEvData.events)
+        }).catch(() => {})
       }
-      doEventsPoll()
-      eventsPolRef.current = setInterval(doEventsPoll, 30_000)
+      doEventsPoll(true)
+      eventsPolRef.current = setInterval(() => doEventsPoll(false), 30_000)
     } catch {
       // silently fail — user stays with empty feed for new city
     }
@@ -1272,6 +1284,7 @@ export default function App() {
     // so the creator doesn't see a blank gap while the re-fetch is in flight.
     if (newEvent?.id) {
       setEvents(prev => [...prev, newEvent])
+      setHotEventsStatus('ready')
       // Creator is auto-joined server-side — reflect that immediately in UI
       setParticipatedEvents(prev => new Set([...prev, newEvent.id]))
       setEventParticipants(prev => ({ ...prev, [newEvent.id]: 1 }))
@@ -1280,7 +1293,10 @@ export default function App() {
     const cid = activeChannelRef.current
     if (!cid) return
     fetchEvents(cid).then(data => {
-      if (activeChannelRef.current === cid) setEvents(data.events)
+      if (activeChannelRef.current === cid) {
+        setEvents(data.events)
+        setHotEventsStatus('ready')
+      }
     }).catch(() => {})
   }
 
@@ -2043,10 +2059,9 @@ export default function App() {
                 const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
                 return today === eventDay
               }
-              // Hilads events are ephemeral (user-created for today) → filter to today only.
-              // City events are upcoming TM imports → show all non-expired, no today filter.
+              // Hot renders only Hilads canonical events from /channels/:id/events.
+              // Those include one-shot events and recurring occurrences stored in Hilads.
               const todayHilads = events.filter(isEventToday)
-              const upcomingCity = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
               const renderEventRow = event => {
                 const going = eventParticipants[event.id] ?? 0
                 return (
@@ -2076,7 +2091,40 @@ export default function App() {
                   </button>
                 )
               }
-              if (todayHilads.length === 0 && upcomingCity.length === 0) {
+              const renderSkeletonRow = (_, idx) => (
+                <div key={`event-skel-${idx}`} className="city-row event-row-card event-row-skeleton" aria-hidden="true">
+                  <div className="er-header">
+                    <span className="skel skel-er-title" />
+                    <span className="skel skel-er-going" />
+                  </div>
+                  <div className="er-badges">
+                    <span className="skel skel-er-badge" />
+                    <span className="skel skel-er-badge skel-er-badge--short" />
+                  </div>
+                  <span className="skel skel-er-location" />
+                </div>
+              )
+
+              if (hotEventsStatus === 'loading') {
+                return (
+                  <>
+                    <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
+                    {[...Array(5)].map(renderSkeletonRow)}
+                  </>
+                )
+              }
+
+              if (hotEventsStatus === 'error') {
+                return (
+                  <div className="events-empty-state">
+                    <p className="events-empty-title">Couldn&apos;t load events</p>
+                    <p className="events-empty-sub">Pull to retry later or create something new in {city}.</p>
+                    <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                  </div>
+                )
+              }
+
+              if (todayHilads.length === 0) {
                 return (
                   <div className="events-empty-state">
                     <p className="events-empty-title">Nothing on yet</p>
@@ -2087,11 +2135,8 @@ export default function App() {
               }
               return (
                 <>
-                  {(todayHilads.length > 0 || upcomingCity.length > 0) && <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>}
-                  {todayHilads.length === 0 && <p className="events-empty-drawer" style={{ padding: '8px 12px' }}>No Hilads events today</p>}
+                  <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
                   {todayHilads.map(renderEventRow)}
-                  {upcomingCity.length > 0 && <p className="events-group-label events-group-label--city" style={{ padding: '10px 12px 2px' }}>City Events</p>}
-                  {upcomingCity.map(renderEventRow)}
                 </>
               )
             })()}
