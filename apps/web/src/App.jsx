@@ -2116,7 +2116,7 @@ export default function App() {
             <BackButton onClick={() => { setShowPeopleDrawer(false); setViewingProfile(null) }} />
             <span className="page-title">People here · {onlineUsers.length}</span>
           </div>
-          <div className="page-body">
+          <div className="page-body people-page-body">
             {onlineUsers.map((user) => {
               const [c1, c2] = avatarColors(user.nickname)
               const tappable = !user.isMe && user.isRegistered
@@ -2146,11 +2146,16 @@ export default function App() {
                   >
                     {user.nickname[0].toUpperCase()}
                   </span>
-                  <span className="people-drawer-name">
-                    {user.nickname}
-                    {user.isMe && <span className="people-drawer-you"> (you)</span>}
-                    {user.isRegistered && !user.isMe && <span className="people-member-badge">member</span>}
-                  </span>
+                  <div className="people-drawer-content">
+                    <span className="people-drawer-name">
+                      {user.nickname}
+                      {user.isMe && <span className="people-drawer-you"> (you)</span>}
+                    </span>
+                    <div className="people-drawer-meta">
+                      {user.isRegistered && !user.isMe && <span className="people-member-badge">member</span>}
+                      {user.isMe && <span className="people-member-badge people-member-badge--you">live now</span>}
+                    </div>
+                  </div>
                   {!user.isMe && user.isRegistered && (
                     <button
                       className="people-dm-btn"
@@ -2250,19 +2255,25 @@ export default function App() {
             <BackButton onClick={() => setShowProfileDrawer(false)} />
             <span className="page-title">Me</span>
           </div>
-          <div className="page-body page-body--centered">
-            {/* ── Guest user ── */}
+          <div className="page-body me-page-body">
             <>
               {(() => {
                 const [c1, c2] = avatarColors(profileNickInput || nickname)
                 return (
-                  <div className="profile-avatar-row">
-                    <span className="online-avatar profile-avatar-lg" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                      {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
-                    </span>
+                  <div className="me-card me-card--hero">
+                    <div className="profile-avatar-row">
+                      <span className="online-avatar profile-avatar-lg" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                        {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
+                      </span>
+                      <div className="me-hero-copy">
+                        <h2 className="me-hero-name">{profileNickInput || nickname || 'Guest'}</h2>
+                        <p className="me-hero-sub">Anonymous for now. You can still shape how you appear.</p>
+                      </div>
+                    </div>
                   </div>
                 )
               })()}
+              <div className="me-card">
                 <div className="modal-field">
                   <label className="modal-label">Nickname</label>
                   <input
@@ -2287,12 +2298,15 @@ export default function App() {
                   }}
                   disabled={!profileNickInput.trim()}
                 >Save nickname</button>
+              </div>
+              <div className="me-card">
                 <div className="me-upgrade">
                   <p className="me-upgrade-hint">Save your profile and keep your identity</p>
                   <button className="me-upgrade-btn" onClick={() => setShowAuthScreen(true)}>
                     Create account
                   </button>
                 </div>
+              </div>
                 <p className="profile-hint">// anonymous · no sign-up required</p>
             </>
           </div>

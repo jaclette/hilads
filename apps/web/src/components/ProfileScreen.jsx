@@ -102,26 +102,30 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut }) {
       </div>
 
       <div className="page-body profile-body">
-
-        {/* ── Photo ──────────────────────────────────────────── */}
-        <div className="profile-photo-section">
-          <button
-            className="profile-photo-btn"
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-            type="button"
-            aria-label="Change profile photo"
-          >
-            {photoUrl
-              ? <img className="online-avatar profile-avatar-xl" src={photoUrl} alt={name} />
-              : <span className="online-avatar profile-avatar-xl" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                  {(name || '?')[0].toUpperCase()}
-                </span>
-            }
-            <span className="profile-photo-badge">
-              {uploading ? '…' : '📷'}
-            </span>
-          </button>
+        <div className="profile-card profile-hero-card">
+          <div className="profile-photo-section">
+            <button
+              className="profile-photo-btn"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              type="button"
+              aria-label="Change profile photo"
+            >
+              {photoUrl
+                ? <img className="online-avatar profile-avatar-xl" src={photoUrl} alt={name} />
+                : <span className="online-avatar profile-avatar-xl" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                    {(name || '?')[0].toUpperCase()}
+                  </span>
+              }
+              <span className="profile-photo-badge">
+                {uploading ? '…' : '📷'}
+              </span>
+            </button>
+            <div className="profile-hero-copy">
+              <h2 className="profile-hero-name">{name || 'Your profile'}</h2>
+              <p className="profile-hero-sub">Update how people see you in Hilads.</p>
+            </div>
+          </div>
           <input
             ref={fileRef}
             type="file"
@@ -131,8 +135,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut }) {
           />
         </div>
 
-        {/* ── Fields ─────────────────────────────────────────── */}
-        <div className="profile-fields">
+        <div className="profile-card profile-fields">
           <div className="modal-field">
             <label className="modal-label">Display name</label>
             <input
@@ -177,7 +180,6 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut }) {
               min={18}
               max={100}
               placeholder="Your age"
-              style={{ width: '100px' }}
             />
           </div>
 
@@ -201,11 +203,9 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut }) {
           </div>
         </div>
 
-        {/* ── Feedback ───────────────────────────────────────── */}
         {error && <p className="profile-error">{error}</p>}
 
-        {/* ── Actions ────────────────────────────────────────── */}
-        <div className="profile-actions">
+        <div className="profile-card profile-actions">
           <button
             className="modal-submit"
             onClick={handleSave}

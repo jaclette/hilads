@@ -736,21 +736,45 @@ html, body, #root {
 
 .profile-avatar-row {
   display: flex;
-  justify-content: center;
-  padding: 8px 0 4px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 0;
 }
 
 .profile-avatar-lg {
-  width: 64px !important;
-  height: 64px !important;
-  font-size: 1.6rem !important;
+  width: 72px !important;
+  height: 72px !important;
+  font-size: 1.7rem !important;
   border-radius: 50% !important;
 }
 
 .profile-hint {
   font-size: 0.75rem;
   color: var(--muted);
-  text-align: center;
+  text-align: left;
+}
+
+.me-card--hero {
+  padding: 20px 18px;
+}
+
+.me-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.me-hero-name {
+  font-size: 1.25rem;
+  font-weight: 750;
+  color: var(--text);
+}
+
+.me-hero-sub {
+  font-size: 0.9rem;
+  color: var(--muted2);
+  line-height: 1.45;
 }
 
 /* ── Me screen (registered user) ─────────────────────── */
@@ -794,15 +818,30 @@ html, body, #root {
 .profile-body {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  padding: 0 16px 40px;
+  gap: 16px;
+  padding: 16px 16px 40px;
   overflow-y: auto;
+}
+
+.profile-card,
+.me-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.14);
+}
+
+.profile-hero-card {
+  padding: 20px 18px;
 }
 
 .profile-photo-section {
   display: flex;
-  justify-content: center;
-  padding: 28px 0 20px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  padding: 0;
 }
 
 .profile-avatar-xl {
@@ -819,6 +858,26 @@ html, body, #root {
   cursor: pointer;
   padding: 0;
   border-radius: 50%;
+}
+
+.profile-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.profile-hero-name {
+  font-size: 1.3rem;
+  font-weight: 750;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.profile-hero-sub {
+  font-size: 0.9rem;
+  color: var(--muted2);
+  line-height: 1.45;
 }
 
 .profile-photo-badge {
@@ -840,7 +899,7 @@ html, body, #root {
 .profile-fields {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
 .modal-input--muted {
@@ -875,31 +934,30 @@ html, body, #root {
 }
 
 .profile-error {
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   color: #e05;
-  text-align: center;
-  margin: 12px 0 0;
+  text-align: left;
+  margin: 2px 4px 0;
 }
 
 .profile-actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 28px;
+  gap: 12px;
 }
 
 /* ── Guest upgrade CTA ─────────────────────────────────── */
 .me-upgrade {
-  margin-top: 24px;
-  text-align: center;
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
+  margin-top: 0;
+  text-align: left;
+  border-top: none;
+  padding-top: 0;
   width: 100%;
 }
 .me-upgrade-hint {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   color: var(--muted2);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .me-upgrade-btn {
   background: #FF7A3C;
@@ -1433,41 +1491,67 @@ html, body, #root {
 .people-drawer-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 11px 6px;
+  gap: 14px;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.people-drawer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+
+.people-drawer-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .people-drawer-name {
-  font-size: 0.95rem;
+  font-size: 1.04rem;
+  font-weight: 700;
   color: var(--text);
 }
 
 .people-drawer-you {
   color: var(--muted2);
-  font-size: 0.8rem;
+  font-size: 0.86rem;
 }
 
 .people-drawer-row--tappable {
   cursor: pointer;
-  border-radius: 10px;
-  transition: background 0.12s;
+  transition: background 0.12s, border-color 0.12s, transform 0.12s;
 }
 
 .people-drawer-row--tappable:active {
   background: var(--surface2);
+  transform: scale(0.985);
 }
 
 .people-member-badge {
-  margin-left: 7px;
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 15%, transparent);
-  border-radius: 5px;
-  padding: 1px 5px;
+  border: 1px solid rgba(194, 74, 56, 0.16);
+  border-radius: 999px;
+  padding: 4px 8px;
   vertical-align: middle;
+}
+
+.people-member-badge--you {
+  color: var(--green);
+  background: rgba(61, 220, 132, 0.1);
+  border-color: rgba(61, 220, 132, 0.18);
 }
 
 /* ── Public profile screen ────────────────────────────── */
@@ -1828,6 +1912,23 @@ html, body, #root {
   max-width: 400px;
   margin: 0 auto;
   width: 100%;
+}
+
+.people-page-body,
+.me-page-body {
+  padding: 16px;
+}
+
+.people-page-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.me-page-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .city-picker-loading {
@@ -3236,22 +3337,29 @@ html, body, #root {
 
 .people-dm-btn {
   margin-left: auto;
-  background: none;
-  border: none;
-  color: var(--muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--text);
   cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s, border-color 0.15s, transform 0.12s;
   flex-shrink: 0;
 }
 
 .people-dm-btn:hover {
   color: var(--accent);
   background: rgba(255,255,255,0.06);
+  border-color: rgba(194, 74, 56, 0.16);
+}
+
+.people-dm-btn:active {
+  transform: scale(0.96);
 }
 
 /* ── Conversations screen ─────────────────────────────────────────────────── */
