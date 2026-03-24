@@ -66,8 +66,8 @@ async function share(title, url) {
 // ── Bottom nav icons ──────────────────────────────────────────────────────────
 
 const NAV_ICON_PROPS = {
-  width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none',
-  stroke: 'currentColor', strokeWidth: '1.75',
+  width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none',
+  stroke: 'currentColor', strokeWidth: '1.9',
   strokeLinecap: 'round', strokeLinejoin: 'round',
 }
 
@@ -1716,12 +1716,12 @@ export default function App() {
           {account && (
             <div className="header-icons">
               <button
-                className="header-icon-btn"
+                className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
                 onClick={() => setShowNotifications(true)}
                 title="Notifications"
                 aria-label="Notifications"
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                   <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                 </svg>
@@ -1737,7 +1737,7 @@ export default function App() {
                 title="Messages"
                 aria-label="Messages"
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
                 {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
@@ -1876,31 +1876,39 @@ export default function App() {
         </form>
 
         {/* Bottom navigation — mobile only */}
-        <nav className="bottom-nav">
+        <nav className="bottom-nav" aria-label="Primary">
           <button
+            type="button"
             className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
             onClick={() => setShowEventDrawer(true)}
+            aria-label="Hot events"
           >
             <span className="bottom-nav-icon"><NavIconEvents /></span>
             <span className="bottom-nav-label">Hot</span>
           </button>
           <button
+            type="button"
             className={`bottom-nav-tab${showCityPicker ? ' active' : ''}`}
             onClick={openCityPicker}
+            aria-label="Cities"
           >
             <span className="bottom-nav-icon"><NavIconCity /></span>
             <span className="bottom-nav-label">Cities</span>
           </button>
           <button
+            type="button"
             className={`bottom-nav-tab${showPeopleDrawer ? ' active' : ''}`}
             onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+            aria-label="People here"
           >
             <span className="bottom-nav-icon"><NavIconPeople /></span>
             <span className="bottom-nav-label">Here</span>
           </button>
           <button
+            type="button"
             className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
             onClick={() => { setProfileNickInput(activeNickname); setShowProfileDrawer(true) }}
+            aria-label="Profile"
           >
             <span className="bottom-nav-icon"><NavIconProfile /></span>
             <span className="bottom-nav-label">Me</span>
