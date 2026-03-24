@@ -7,6 +7,7 @@ import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
 import AuthScreen from './components/AuthScreen'
+import ProfileScreen from './components/ProfileScreen'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -1745,63 +1746,38 @@ export default function App() {
         </div>
       )}
 
-      {showProfileDrawer && !showAuthScreen && (
+      {showProfileDrawer && !showAuthScreen && account && (
+        <ProfileScreen
+          account={account}
+          onSave={setAccount}
+          onBack={() => setShowProfileDrawer(false)}
+          onSignOut={async () => {
+            await authLogout()
+            setAccount(null)
+            setShowProfileDrawer(false)
+          }}
+        />
+      )}
+
+      {showProfileDrawer && !showAuthScreen && !account && (
         <div className="full-page">
           <div className="page-header">
             <button className="page-back-btn" onClick={() => setShowProfileDrawer(false)}>←</button>
             <span className="page-title">Me</span>
           </div>
           <div className="page-body page-body--centered">
-            {account ? (
-              /* ── Registered user ── */
-              <>
-                {(() => {
-                  const [c1, c2] = avatarColors(account.display_name)
-                  return (
-                    <div className="profile-avatar-row">
-                      {account.profile_photo_url
-                        ? <img className="online-avatar profile-avatar-lg" src={account.profile_photo_url} alt={account.display_name} />
-                        : (
-                          <span className="online-avatar profile-avatar-lg" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                            {account.display_name[0]?.toUpperCase() ?? '?'}
-                          </span>
-                        )
-                      }
-                    </div>
-                  )
-                })()}
-                <p className="me-display-name">{account.display_name}</p>
-                <p className="me-email">{account.email}</p>
-                {account.home_city && <p className="me-city">📍 {account.home_city}</p>}
-                {account.age && <p className="me-meta">{account.age} years old</p>}
-                {account.interests?.length > 0 && (
-                  <div className="me-interests">
-                    {account.interests.map(i => <span key={i} className="interest-chip">{i}</span>)}
+            {/* ── Guest user ── */}
+            <>
+              {(() => {
+                const [c1, c2] = avatarColors(profileNickInput || nickname)
+                return (
+                  <div className="profile-avatar-row">
+                    <span className="online-avatar profile-avatar-lg" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                      {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
+                    </span>
                   </div>
-                )}
-                <button
-                  className="modal-submit modal-submit--secondary"
-                  style={{ marginTop: '2rem' }}
-                  onClick={async () => {
-                    await authLogout()
-                    setAccount(null)
-                    setShowProfileDrawer(false)
-                  }}
-                >Sign out</button>
-              </>
-            ) : (
-              /* ── Guest user ── */
-              <>
-                {(() => {
-                  const [c1, c2] = avatarColors(profileNickInput || nickname)
-                  return (
-                    <div className="profile-avatar-row">
-                      <span className="online-avatar profile-avatar-lg" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                        {(profileNickInput || nickname)[0]?.toUpperCase() ?? '?'}
-                      </span>
-                    </div>
-                  )
-                })()}
+                )
+              })()}
                 <div className="modal-field">
                   <label className="modal-label">Nickname</label>
                   <input
@@ -1833,8 +1809,7 @@ export default function App() {
                   </button>
                 </div>
                 <p className="profile-hint">// anonymous · no sign-up required</p>
-              </>
-            )}
+            </>
           </div>
         </div>
       )}
