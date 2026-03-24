@@ -173,6 +173,71 @@ Set these up as Render Cron Jobs or via [cron-job.org](https://cron-job.org).
 
 ---
 
+## Seeding Recurring Venues
+
+Hilads bootstraps cities with recurring events (bars, coffee shops) so the Hot screen is never empty on launch.
+
+The venue list lives in `backend/api/src/venues_seed.php` — a static dataset covering the seeded cities. Each venue becomes a daily recurring `event_series` row. The endpoint is idempotent: re-running it skips already-created series (deduplicated via `source_key`).
+
+### Endpoint
+
+```
+POST /internal/seed-static-venues
+```
+
+Protected by `X-Api-Key` header (value = `MIGRATION_KEY` env var).
+
+### Body
+
+```json
+{
+  "dryRun": true
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `dryRun` | boolean | `true` = preview only, nothing written to DB |
+
+### Run a dry run first
+
+```bash
+curl -X POST "https://hilads-api.onrender.com/internal/seed-static-venues" \
+  -H "X-Api-Key: YOUR_MIGRATION_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"dryRun": true}'
+```
+
+### Run the real import
+
+```bash
+curl -X POST "https://hilads-api.onrender.com/internal/seed-static-venues" \
+  -H "X-Api-Key: YOUR_MIGRATION_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"dryRun": false}'
+```
+
+### Response
+
+```json
+{
+  "ok": true,
+  "dry_run": false,
+  "created": 42,
+  "skipped": 0,
+  "errors": [],
+  "preview": null
+}
+```
+
+After seeding, run the occurrence generator to populate today's events:
+
+```
+POST /internal/event-series/generate?key=YOUR_MIGRATION_KEY
+```
+
+---
+
 ## Docs
 
 - [`docs/mvp.md`](docs/mvp.md) — full product definition and architecture concepts
