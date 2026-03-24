@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createEvent } from '../api'
+import { createEvent, createEventSeries } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 
 // ── Time helpers ───────────────────────────────────────────────────────────────
@@ -159,7 +159,9 @@ const CATEGORY_ICONS = {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, onCreated, onBack }) {
+const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack }) {
   const tz = cityTimezone || 'UTC'
   const [type, setType] = useState('other')
   const [title, setTitle] = useState('')
@@ -169,36 +171,80 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
+  // Recurrence state (registered users only)
+  const [recurrence, setRecurrence] = useState('once') // 'once' | 'daily' | 'weekly' | 'every_n_days'
+  const [weekdays, setWeekdays] = useState([])           // [0-6] for weekly
+  const [intervalDays, setIntervalDays] = useState(2)    // for every_n_days
+
+  function toggleWeekday(dow) {
+    setWeekdays(prev =>
+      prev.includes(dow) ? prev.filter(d => d !== dow) : [...prev, dow]
+    )
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     const t = title.trim()
     if (!t || !startTime || !endTime) return
 
-    let startsAtUnix = cityTimeToUnix(tz, startTime)
-    let endsAtUnix   = cityTimeToUnix(tz, endTime)
+    // Client-side validation for one-time events
+    if (recurrence === 'once') {
+      let startsAtUnix = cityTimeToUnix(tz, startTime)
+      let endsAtUnix   = cityTimeToUnix(tz, endTime)
+      if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
+      if (endsAtUnix - startsAtUnix < 15 * 60) {
+        setError('End time must be at least 15 minutes after start time')
+        return
+      }
 
-    // If end time is earlier in the day than start time, assume it's next day (midnight crossover)
-    if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
+      setSubmitting(true)
+      setError(null)
+      try {
+        const newEvent = await createEvent(
+          channelId,
+          guest.guestId,
+          nickname,
+          t,
+          location.trim() || null,
+          startsAtUnix,
+          endsAtUnix,
+          type,
+        )
+        onCreated(newEvent)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setSubmitting(false)
+      }
+      return
+    }
 
-    if (endsAtUnix - startsAtUnix < 15 * 60) {
-      setError('End time must be at least 15 minutes after start time')
+    // Recurring event
+    if (recurrence === 'weekly' && weekdays.length === 0) {
+      setError('Pick at least one day of the week')
       return
     }
 
     setSubmitting(true)
     setError(null)
     try {
-      const newEvent = await createEvent(
-        channelId,
-        guest.guestId,
-        nickname,
-        t,
-        location.trim() || null,
-        startsAtUnix,
-        endsAtUnix,
+      const payload = {
+        title: t,
+        location_hint: location.trim() || null,
+        start_time: startTime,
+        end_time: endTime,
         type,
-      )
-      onCreated(newEvent)
+        recurrence_type: recurrence,
+        weekdays: recurrence === 'weekly' ? weekdays : undefined,
+        interval_days: recurrence === 'every_n_days' ? intervalDays : undefined,
+      }
+      const result = await createEventSeries(channelId, guest.guestId, payload)
+      // Return the first upcoming occurrence so the caller can open it
+      if (result.first_event) {
+        onCreated(result.first_event)
+      } else {
+        onBack()
+      }
     } catch (err) {
       setError(err.message)
     } finally {
@@ -273,6 +319,60 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               />
             </div>
           </div>
+
+          {/* Recurrence — registered users only */}
+          {account && (
+            <div className="cef-section">
+              <p className="cef-label">Repeat</p>
+              <div className="cef-recurrence-row">
+                {[
+                  { value: 'once',        label: 'Once' },
+                  { value: 'daily',       label: 'Daily' },
+                  { value: 'weekly',      label: 'Weekly' },
+                  { value: 'every_n_days',label: 'Every N days' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className={`cef-recur-btn${recurrence === opt.value ? ' selected' : ''}`}
+                    onClick={() => setRecurrence(opt.value)}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+
+              {recurrence === 'weekly' && (
+                <div className="cef-weekday-row">
+                  {WEEKDAY_LABELS.map((label, dow) => (
+                    <button
+                      key={dow}
+                      type="button"
+                      className={`cef-day-btn${weekdays.includes(dow) ? ' selected' : ''}`}
+                      onClick={() => toggleWeekday(dow)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {recurrence === 'every_n_days' && (
+                <div className="cef-interval-row">
+                  <span className="cef-interval-label">Every</span>
+                  <input
+                    className="cef-interval-input"
+                    type="number"
+                    min={2}
+                    max={365}
+                    value={intervalDays}
+                    onChange={e => setIntervalDays(Math.max(2, Math.min(365, parseInt(e.target.value) || 2)))}
+                  />
+                  <span className="cef-interval-label">days</span>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Location */}
           <div className="cef-section">

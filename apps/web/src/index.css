@@ -2437,6 +2437,88 @@ html, body, #root {
   box-shadow: none;
 }
 
+/* ── Recurrence picker ────────────────────────────────── */
+
+.cef-recurrence-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cef-recur-btn {
+  flex: 1;
+  min-width: 72px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.6);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cef-recur-btn.selected {
+  border-color: #ff7b00;
+  background: rgba(255,123,0,0.15);
+  color: #ff9a3c;
+}
+
+.cef-weekday-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.cef-day-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.6);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cef-day-btn.selected {
+  border-color: #ff7b00;
+  background: rgba(255,123,0,0.2);
+  color: #ff9a3c;
+}
+
+.cef-interval-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cef-interval-label {
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+}
+
+.cef-interval-input {
+  width: 72px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.cef-interval-input:focus {
+  outline: none;
+  border-color: rgba(255,123,0,0.5);
+}
+
 /* ── Create event modal (legacy, desktop fallback) ────── */
 
 .modal-overlay {

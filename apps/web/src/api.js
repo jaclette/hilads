@@ -146,6 +146,20 @@ export async function createEvent(channelId, guestId, nickname, title, locationH
   return res.json()
 }
 
+export async function createEventSeries(channelId, guestId, payload) {
+  const res = await fetch(`${BASE}/channels/${channelId}/event-series`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, ...payload }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to create event series')
+  }
+  return res.json() // { series_id, first_event }
+}
+
 export async function fetchEventMessages(eventId) {
   const res = await fetch(`${BASE}/events/${eventId}/messages`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch event messages')

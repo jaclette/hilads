@@ -1998,6 +1998,7 @@ export default function App() {
           guest={guest}
           nickname={activeNickname}
           cityTimezone={cityTimezone}
+          account={account}
           onCreated={handleEventCreated}
           onBack={() => {
             setShowCreateEvent(false)

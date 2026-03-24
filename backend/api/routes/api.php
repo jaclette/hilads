@@ -774,6 +774,151 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     Response::json($event, 201);
 });
 
+// ── Recurring event series ────────────────────────────────────────────────────
+
+$router->add('POST', '/api/v1/channels/{channelId}/event-series', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    $city = CityRepository::findById($channelId);
+    if ($city === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    // Recurring events are for registered users only
+    $authUser = AuthService::currentUser();
+    if ($authUser === null) {
+        Response::json(['error' => 'Login required to create recurring events'], 401);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId        = $body['guestId']          ?? null;
+    $title          = $body['title']            ?? null;
+    $locationHint   = $body['location_hint']    ?? null;
+    $startTime      = $body['start_time']       ?? null;
+    $endTime        = $body['end_time']         ?? null;
+    $type           = $body['type']             ?? null;
+    $recurrenceType = $body['recurrence_type']  ?? null;
+    $weekdays       = $body['weekdays']         ?? null;
+    $intervalDays   = $body['interval_days']    ?? null;
+    $startsOn       = $body['starts_on']        ?? null;
+    $endsOn         = $body['ends_on']          ?? null;
+
+    if (empty($guestId) || !is_string($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($title) || !is_string($title)) {
+        Response::json(['error' => 'title is required'], 400);
+    }
+    $title = mb_substr(trim(strip_tags($title)), 0, 100);
+    if (mb_strlen($title) < 3) {
+        Response::json(['error' => 'title must be at least 3 characters'], 400);
+    }
+
+    if ($locationHint !== null) {
+        $locationHint = mb_substr(trim(strip_tags((string) $locationHint)), 0, 100);
+        if ($locationHint === '') $locationHint = null;
+    }
+
+    if (!preg_match('/^\d{2}:\d{2}$/', (string) $startTime)) {
+        Response::json(['error' => 'start_time must be HH:MM'], 400);
+    }
+
+    if (!preg_match('/^\d{2}:\d{2}$/', (string) $endTime)) {
+        Response::json(['error' => 'end_time must be HH:MM'], 400);
+    }
+
+    $allowedTypes = ['drinks', 'party', 'music', 'food', 'coffee', 'sport', 'meetup', 'other'];
+    if (empty($type) || !in_array($type, $allowedTypes, true)) {
+        Response::json(['error' => 'type is required'], 400);
+    }
+
+    $allowedRecurrences = ['daily', 'weekly', 'every_n_days'];
+    if (empty($recurrenceType) || !in_array($recurrenceType, $allowedRecurrences, true)) {
+        Response::json(['error' => 'recurrence_type must be: daily, weekly, or every_n_days'], 400);
+    }
+
+    if ($recurrenceType === 'weekly') {
+        if (!is_array($weekdays) || empty($weekdays)) {
+            Response::json(['error' => 'weekdays is required for weekly recurrence'], 400);
+        }
+        $weekdays = array_values(array_filter(array_map('intval', $weekdays), fn($d) => $d >= 0 && $d <= 6));
+        if (empty($weekdays)) {
+            Response::json(['error' => 'weekdays must contain values 0–6'], 400);
+        }
+    } else {
+        $weekdays = null;
+    }
+
+    if ($recurrenceType === 'every_n_days') {
+        $intervalDays = filter_var($intervalDays, FILTER_VALIDATE_INT, ['options' => ['min_range' => 2, 'max_range' => 365]]);
+        if ($intervalDays === false) {
+            Response::json(['error' => 'interval_days must be between 2 and 365'], 400);
+        }
+    } else {
+        $intervalDays = null;
+    }
+
+    if ($startsOn !== null) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $startsOn)) {
+            Response::json(['error' => 'starts_on must be YYYY-MM-DD'], 400);
+        }
+    }
+
+    if ($endsOn !== null) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $endsOn)) {
+            Response::json(['error' => 'ends_on must be YYYY-MM-DD'], 400);
+        }
+    }
+
+    $result = EventSeriesRepository::create(
+        $channelId,
+        $authUser['id'],
+        $guestId,
+        $title,
+        $type,
+        $locationHint,
+        $startTime,
+        $endTime,
+        $city['timezone'],
+        $recurrenceType,
+        $weekdays,
+        $intervalDays,
+        $startsOn,
+        $endsOn,
+    );
+
+    Response::json($result, 201);
+});
+
+// Internal: generate upcoming occurrences for all active series (call from a daily cron)
+$router->add('POST', '/internal/event-series/generate', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $lookahead = filter_var($_GET['days'] ?? 7, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 30]]);
+    if ($lookahead === false) $lookahead = 7;
+
+    $results = EventSeriesRepository::generateAll($lookahead);
+
+    Response::json(['ok' => true, 'results' => $results]);
+});
+
 $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params) {
     $eventId = $params['eventId'] ?? '';
 

@@ -85,6 +85,38 @@ class Database
                 ");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions (user_id)");
             }
+
+            // Recurring event series (adds event_series table + two columns on channel_events).
+            $seriesTableExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'event_series')")
+                ->fetchColumn();
+
+            if (!$seriesTableExists) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS event_series (
+                        id              TEXT        PRIMARY KEY,
+                        city_id         TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+                        created_by      TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        guest_id        TEXT,
+                        title           TEXT        NOT NULL,
+                        event_type      TEXT        NOT NULL DEFAULT 'other',
+                        location        TEXT,
+                        start_time      TEXT        NOT NULL,
+                        end_time        TEXT        NOT NULL,
+                        timezone        TEXT        NOT NULL,
+                        recurrence_type TEXT        NOT NULL,
+                        weekdays        TEXT,
+                        interval_days   INTEGER,
+                        starts_on       DATE        NOT NULL,
+                        ends_on         DATE,
+                        created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_city ON event_series (city_id)");
+                self::$pdo->exec("ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS series_id TEXT REFERENCES event_series(id) ON DELETE SET NULL");
+                self::$pdo->exec("ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS occurrence_date DATE");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_series ON channel_events (series_id) WHERE series_id IS NOT NULL");
+            }
         }
 
         return self::$pdo;
@@ -142,28 +174,53 @@ class Database
         ");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_cities_geo ON cities (lat, lng)");
 
+        // ── Recurring event series ────────────────────────────────────────────
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS event_series (
+                id              TEXT        PRIMARY KEY,
+                city_id         TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+                created_by      TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                guest_id        TEXT,
+                title           TEXT        NOT NULL,
+                event_type      TEXT        NOT NULL DEFAULT 'other',
+                location        TEXT,
+                start_time      TEXT        NOT NULL,
+                end_time        TEXT        NOT NULL,
+                timezone        TEXT        NOT NULL,
+                recurrence_type TEXT        NOT NULL,
+                weekdays        TEXT,
+                interval_days   INTEGER,
+                starts_on       DATE        NOT NULL,
+                ends_on         DATE,
+                created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_city ON event_series (city_id)");
+
         // ── Channel events (1:1 with channels WHERE type='event') ────────────
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS channel_events (
-                channel_id   TEXT        PRIMARY KEY REFERENCES channels(id) ON DELETE CASCADE,
-                source_type  TEXT        NOT NULL,
-                external_id  TEXT,
-                created_by   TEXT        REFERENCES users(id) ON DELETE SET NULL,
-                guest_id     TEXT,
-                title        TEXT        NOT NULL,
-                event_type   TEXT,
-                description  TEXT,
-                venue        TEXT,
-                location     TEXT,
-                venue_lat    DOUBLE PRECISION,
-                venue_lng    DOUBLE PRECISION,
-                starts_at    TIMESTAMPTZ NOT NULL,
-                ends_at      TIMESTAMPTZ,
-                expires_at   TIMESTAMPTZ NOT NULL,
-                image_url    TEXT,
-                external_url TEXT,
-                synced_at    TIMESTAMPTZ,
-                sync_status  TEXT        DEFAULT 'ok',
+                channel_id      TEXT        PRIMARY KEY REFERENCES channels(id) ON DELETE CASCADE,
+                source_type     TEXT        NOT NULL,
+                external_id     TEXT,
+                created_by      TEXT        REFERENCES users(id) ON DELETE SET NULL,
+                guest_id        TEXT,
+                title           TEXT        NOT NULL,
+                event_type      TEXT,
+                description     TEXT,
+                venue           TEXT,
+                location        TEXT,
+                venue_lat       DOUBLE PRECISION,
+                venue_lng       DOUBLE PRECISION,
+                starts_at       TIMESTAMPTZ NOT NULL,
+                ends_at         TIMESTAMPTZ,
+                expires_at      TIMESTAMPTZ NOT NULL,
+                image_url       TEXT,
+                external_url    TEXT,
+                synced_at       TIMESTAMPTZ,
+                sync_status     TEXT        DEFAULT 'ok',
+                series_id       TEXT        REFERENCES event_series(id) ON DELETE SET NULL,
+                occurrence_date DATE,
                 UNIQUE (source_type, external_id)
             )
         ");
@@ -172,6 +229,7 @@ class Database
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_expires ON channel_events (expires_at)");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_guest   ON channel_events (guest_id) WHERE guest_id IS NOT NULL");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_ext_id  ON channel_events (external_id) WHERE external_id IS NOT NULL");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_series  ON channel_events (series_id) WHERE series_id IS NOT NULL");
 
         // ── Messages ─────────────────────────────────────────────────────────
         $pdo->exec("
