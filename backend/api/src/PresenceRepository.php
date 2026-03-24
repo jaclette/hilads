@@ -75,4 +75,25 @@ class PresenceRepository
         $stmt->execute([self::dbKey($channelId)]);
         return (int) $stmt->fetchColumn();
     }
+
+    // Returns active user counts for ALL city channels in one query.
+    // Used by the /channels listing to replace N per-city queries.
+    // Returns: [ cityId (int) => count (int) ]
+    public static function getCountBatch(): array
+    {
+        $rows = Database::pdo()->query("
+            SELECT p.channel_id, COUNT(DISTINCT p.guest_id) AS cnt
+            FROM presence p
+            JOIN channels c ON c.id = p.channel_id AND c.type = 'city'
+            WHERE p.last_seen_at > now() - interval '" . self::TTL . " seconds'
+            GROUP BY p.channel_id
+        ")->fetchAll(PDO::FETCH_ASSOC);
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $cityId          = (int) substr($row['channel_id'], 5);
+            $counts[$cityId] = (int) $row['cnt'];
+        }
+        return $counts;
+    }
 }

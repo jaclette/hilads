@@ -31,7 +31,15 @@ class Database
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
 
-            self::migrate(self::$pdo);
+            // Only run DDL migrations when tables don't exist yet (e.g. fresh deploy).
+            // Skipping this on every worker startup avoids catalog lock contention.
+            $tablesExist = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'channels')")
+                ->fetchColumn();
+
+            if (!$tablesExist) {
+                self::migrate(self::$pdo);
+            }
         }
 
         return self::$pdo;
@@ -74,6 +82,8 @@ class Database
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channels_parent ON channels (parent_id) WHERE parent_id IS NOT NULL");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channels_type   ON channels (type)");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channels_status ON channels (status)");
+        // Partial index: fast lookup of active events by city (used by event counts + listings)
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channels_active_events ON channels (parent_id) WHERE type = 'event' AND status = 'active'");
 
         // ── Cities (1:1 with channels WHERE type='city') ─────────────────────
         $pdo->exec("
@@ -150,6 +160,8 @@ class Database
         ");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_presence_channel ON presence (channel_id, last_seen_at DESC)");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_presence_guest   ON presence (guest_id)");
+        // Covering index: avoids heap fetches for COUNT(DISTINCT guest_id) per channel
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_presence_count   ON presence (channel_id, last_seen_at DESC, guest_id)");
 
         // ── Event participants ────────────────────────────────────────────────
         $pdo->exec("

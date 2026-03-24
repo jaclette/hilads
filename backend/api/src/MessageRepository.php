@@ -109,12 +109,12 @@ class MessageRepository
         $rows = Database::pdo()
             ->query("
                 SELECT
-                    channel_id,
-                    COUNT(*)                                       AS message_count,
-                    EXTRACT(EPOCH FROM MAX(created_at))::INTEGER   AS last_activity_at
-                FROM messages
-                WHERE channel_id LIKE 'city_%'
-                GROUP BY channel_id
+                    m.channel_id,
+                    COUNT(*)                                         AS message_count,
+                    EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER   AS last_activity_at
+                FROM messages m
+                JOIN channels c ON c.id = m.channel_id AND c.type = 'city'
+                GROUP BY m.channel_id
             ")
             ->fetchAll(PDO::FETCH_ASSOC);
 

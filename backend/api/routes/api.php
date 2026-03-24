@@ -231,7 +231,13 @@ $router->add('GET', '/internal/run-migrations', function () {
 
     $log[] = "messages: migrated=$msgMigrated skipped=$msgSkipped";
 
-    // ── 4. Summary query ──────────────────────────────────────────────────────
+    // ── 4. Add new performance indexes (idempotent) ───────────────────────────
+
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_presence_count        ON presence (channel_id, last_seen_at DESC, guest_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channels_active_events ON channels (parent_id) WHERE type = 'event' AND status = 'active'");
+    $log[] = "indexes: applied";
+
+    // ── 5. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
     $eventCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events")->fetchColumn();
@@ -373,9 +379,10 @@ $router->add('POST', '/api/v1/location/resolve', function () {
 });
 
 $router->add('GET', '/api/v1/channels', function () {
-    // Two batch queries replace the old glob + per-file loop
-    $eventCounts  = EventRepository::getCountsPerCity();
-    $messageStats = MessageRepository::getStatsBatch();
+    // Four batch queries — no per-city loops
+    $eventCounts    = EventRepository::getCountsPerCity();
+    $messageStats   = MessageRepository::getStatsBatch();
+    $presenceCounts = PresenceRepository::getCountBatch();
 
     $channels = [];
 
@@ -389,7 +396,7 @@ $router->add('GET', '/api/v1/channels', function () {
             'country'        => $city['country'] ?? null,
             'timezone'       => $city['timezone'],
             'messageCount'   => $stats['messageCount'],
-            'activeUsers'    => PresenceRepository::getCount($id),
+            'activeUsers'    => $presenceCounts[$id] ?? 0,
             'lastActivityAt' => $stats['lastActivityAt'],
             'eventCount'     => $eventCounts[$id] ?? 0,
         ];
