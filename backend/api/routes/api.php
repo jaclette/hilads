@@ -329,7 +329,7 @@ $router->add('POST', '/api/v1/auth/login', function () {
 });
 
 $router->add('POST', '/api/v1/auth/logout', function () {
-    unset($_SESSION['user_id']);
+    AuthService::destroyDbSession();
     Response::json(['ok' => true]);
 });
 

@@ -1914,6 +1914,8 @@ export default function App() {
           onSignOut={async () => {
             await authLogout()
             setAccount(null)
+            clearIdentity()       // prevent auto-rejoin on next boot
+            setStatus('onboarding')
             setShowProfileDrawer(false)
           }}
         />

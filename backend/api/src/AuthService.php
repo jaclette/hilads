@@ -57,7 +57,7 @@ class AuthService
             throw $e;
         }
 
-        $_SESSION['user_id'] = $user['id'];
+        self::createDbSession($user['id']);
 
         return $user;
     }
@@ -73,17 +73,68 @@ class AuthService
             Response::json(['error' => 'Invalid email or password'], 401);
         }
 
-        $_SESSION['user_id'] = $user['id'];
+        self::createDbSession($user['id']);
 
         return $user;
     }
 
     // ── Session helpers ───────────────────────────────────────────────────────
 
+    /**
+     * Create a 30-day DB-backed session token and set it as an HttpOnly cookie.
+     * Replaces PHP file sessions, which are lost on every container restart/deploy.
+     */
+    public static function createDbSession(string $userId): string
+    {
+        $token = bin2hex(random_bytes(32)); // 64-char hex token
+        Database::pdo()->prepare("
+            INSERT INTO user_sessions (id, user_id) VALUES (?, ?)
+        ")->execute([$token, $userId]);
+
+        setcookie('hilads_token', $token, [
+            'expires'  => time() + 60 * 60 * 24 * 30,
+            'path'     => '/',
+            'secure'   => true,
+            'httponly' => true,
+            'samesite' => 'None',
+        ]);
+
+        return $token;
+    }
+
+    /**
+     * Delete the current session token from the DB and clear the cookie.
+     */
+    public static function destroyDbSession(): void
+    {
+        $token = $_COOKIE['hilads_token'] ?? null;
+        if ($token !== null && preg_match('/^[a-f0-9]{64}$/', $token)) {
+            Database::pdo()->prepare("DELETE FROM user_sessions WHERE id = ?")
+                ->execute([$token]);
+        }
+        setcookie('hilads_token', '', [
+            'expires'  => time() - 3600,
+            'path'     => '/',
+            'secure'   => true,
+            'httponly' => true,
+            'samesite' => 'None',
+        ]);
+    }
+
     public static function currentUser(): ?array
     {
-        $userId = $_SESSION['user_id'] ?? null;
-        if ($userId === null) {
+        $token = $_COOKIE['hilads_token'] ?? null;
+        if ($token === null || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+            return null;
+        }
+
+        $stmt = Database::pdo()->prepare("
+            SELECT user_id FROM user_sessions
+            WHERE id = ? AND expires_at > now()
+        ");
+        $stmt->execute([$token]);
+        $userId = $stmt->fetchColumn();
+        if (!$userId) {
             return null;
         }
 

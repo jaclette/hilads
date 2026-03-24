@@ -15,14 +15,7 @@ set_exception_handler(function (Throwable $e) {
     exit();
 });
 
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path'     => '/',
-    'secure'   => true,
-    'httponly' => true,
-    'samesite' => 'None',
-]);
-session_start();
+// Auth uses DB-backed tokens in 'hilads_token' cookie — no PHP sessions needed.
 
 $uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

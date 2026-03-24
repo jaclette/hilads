@@ -68,6 +68,23 @@ class Database
             if (!$epLastReadExists) {
                 self::$pdo->exec("ALTER TABLE event_participants ADD COLUMN IF NOT EXISTS last_read_at TIMESTAMPTZ DEFAULT NULL");
             }
+
+            // DB-backed auth sessions (replaces PHP file sessions lost on container restart).
+            $userSessionsExist = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_sessions')")
+                ->fetchColumn();
+
+            if (!$userSessionsExist) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS user_sessions (
+                        id         TEXT        PRIMARY KEY,
+                        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                        expires_at TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '30 days')
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions (user_id)");
+            }
         }
 
         return self::$pdo;
@@ -241,6 +258,17 @@ class Database
                 status       TEXT        NOT NULL DEFAULT 'ok'
             )
         ");
+
+        // ── Auth sessions (DB-backed — survives container restarts) ───────────
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS user_sessions (
+                id         TEXT        PRIMARY KEY,
+                user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                expires_at TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '30 days')
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions (user_id)");
     }
 
     /**
