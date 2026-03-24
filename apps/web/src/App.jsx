@@ -1688,7 +1688,7 @@ export default function App() {
               <Logo variant="icon" size="lg" />
               <div className="header-hero-city">
                 <span className="header-hero-name">
-                  <span className="header-hero-globe" aria-hidden="true">🌍</span>
+                  <span className="header-hero-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
                   <span>{city}</span>
                 </span>
                 <span className="online-label">

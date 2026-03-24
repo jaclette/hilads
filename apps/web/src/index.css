@@ -509,7 +509,7 @@ html, body, #root {
   overflow-wrap: anywhere;
 }
 
-.header-hero-globe {
+.header-hero-flag {
   flex-shrink: 0;
   font-size: 0.82em;
   line-height: 1;
