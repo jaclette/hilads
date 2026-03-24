@@ -1882,8 +1882,10 @@ export default function App() {
             } : prev)
             setActiveDm({ conversation: dm, otherUser: { display_name: dm.other_display_name, profile_photo_url: dm.other_photo_url } })
           }}
-          onOpenEvent={(channelId) => {
+          onOpenEvent={(ev) => {
             setShowConversations(false)
+            // ev.channel_id is the event channel id — same as event.id in handleSelectEvent
+            handleSelectEvent({ id: ev.channel_id, title: ev.title, starts_at: ev.starts_at, location: ev.location })
           }}
         />
       )}

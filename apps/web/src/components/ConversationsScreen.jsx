@@ -105,7 +105,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
               <button
                 key={ev.channel_id}
                 className="conv-row"
-                onClick={() => onOpenEvent(ev.channel_id)}
+                onClick={() => onOpenEvent(ev)}
               >
                 <span className="conv-event-icon">🔥</span>
                 <div className="conv-row-body">

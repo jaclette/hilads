@@ -130,12 +130,12 @@ class ConversationRepository
     {
         $stmt = Database::pdo()->prepare("
             SELECT DISTINCT
-                ch.id                      AS channel_id,
-                ce.title                   AS title,
-                ce.starts_at               AS starts_at,
-                ce.location                AS location,
-                (ce.created_by = :userId)  AS is_creator,
-                false                      AS has_unread
+                ch.id                                        AS channel_id,
+                ce.title                                     AS title,
+                EXTRACT(EPOCH FROM ce.starts_at)::INTEGER    AS starts_at,
+                ce.location                                  AS location,
+                (ce.created_by = :userId)                    AS is_creator,
+                false                                        AS has_unread
             FROM channels ch
             JOIN channel_events ce ON ce.channel_id = ch.id
             LEFT JOIN event_participants ep
@@ -149,7 +149,9 @@ class ConversationRepository
         $stmt->execute([':userId' => $userId, ':userId2' => $userId, ':userId3' => $userId, ':userId4' => $userId]);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($rows as &$row) {
-            $row['has_unread'] = false; // explicit, not from DB cast
+            $row['has_unread']  = false;
+            $row['is_creator']  = (bool) $row['is_creator'];
+            $row['starts_at']   = (int)  $row['starts_at'];
         }
         return $rows;
     }
