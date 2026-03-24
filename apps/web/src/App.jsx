@@ -328,15 +328,24 @@ export default function App() {
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // restore registered account session if one exists
-    authMe().then(data => { if (data) setAccount(data.user) }).catch(() => {})
-
-    // start geolocation immediately in the background while user sees onboarding
+    // start geolocation immediately — runs concurrently with auth check
     locPromiseRef.current = startGeolocation()
 
-    // auto-rejoin if the user has a saved identity
-    const saved = loadIdentity()
-    if (saved) handleJoin(null, saved)
+    // Resolve auth state BEFORE auto-rejoining so handleJoin always has the
+    // correct identity. Without this, accountRef.current is null when
+    // handleJoin runs and falls back to the guest nickname from localStorage.
+    authMe()
+      .then(data => {
+        if (data) {
+          accountRef.current = data.user // sync ref so handleJoin reads it immediately
+          setAccount(data.user)
+        }
+      })
+      .catch(() => {/* not logged in or network error — proceed as guest */})
+      .finally(() => {
+        const saved = loadIdentity()
+        if (saved) handleJoin(null, saved)
+      })
 
     // Remove this tab from presence on close — sendBeacon survives page unload
     const handleUnload = () => {
@@ -1101,6 +1110,7 @@ export default function App() {
           guestId={guest?.guestId}
           guestNickname={nickname}
           onSuccess={(user) => {
+            accountRef.current = user // sync ref before handleJoin reads it
             setAccount(user)
             setObShowAuth(false)
             handleJoin(null)
