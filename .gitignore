@@ -2,6 +2,7 @@
 node_modules/
 apps/web/node_modules/
 apps/web/node_modules/.vite/
+apps/web/dist/
 
 # Backend storage
 backend/api/storage/*.json
