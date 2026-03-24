@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { fetchConversations } from '../api'
+import BackButton from './BackButton'
 
 // Formats an ISO-8601 timestamp string as a short relative label for DM rows.
 // Returns null for missing/invalid values — caller must guard against null.
@@ -43,7 +44,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
   return (
     <div className="full-page">
       <div className="page-header">
-        <button className="page-back-btn" onClick={onBack}>←</button>
+        <BackButton onClick={onBack} />
         <span className="page-title">Messages</span>
       </div>
 

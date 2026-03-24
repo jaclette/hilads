@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { fetchConversationMessages, sendConversationMessage, markConversationRead } from '../api'
+import BackButton from './BackButton'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -78,7 +79,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
     <div className="full-page dm-screen">
       {/* Header */}
       <div className="page-header">
-        <button className="page-back-btn" onClick={onBack}>←</button>
+        <BackButton onClick={onBack} />
         <div className="dm-header-identity">
           {otherUser?.profile_photo_url
             ? <img className="online-avatar dm-header-avatar" src={otherUser.profile_photo_url} alt={otherName} />

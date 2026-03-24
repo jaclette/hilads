@@ -5,6 +5,7 @@ import {
   fetchNotificationPreferences,
   updateNotificationPreferences,
 } from '../api'
+import BackButton from './BackButton'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -99,7 +100,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
   return (
     <div className="full-page notif-page">
       <div className="page-header">
-        <button className="page-back-btn" onClick={onBack}>←</button>
+        <BackButton onClick={onBack} />
         <span className="page-title">Notifications</span>
         {unreadCount > 0 && (
           <button className="notif-mark-all" onClick={handleMarkAllRead}>

@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { updateProfile, uploadImage } from '../api'
+import BackButton from './BackButton'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -96,7 +97,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut }) {
   return (
     <div className="full-page">
       <div className="page-header">
-        <button className="page-back-btn" onClick={onBack}>←</button>
+        <BackButton onClick={onBack} />
         <span className="page-title">My Profile</span>
       </div>
 

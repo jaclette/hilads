@@ -1697,29 +1697,84 @@ html, body, #root {
 .page-header {
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  height: 80px;
+  padding: max(12px, env(safe-area-inset-top)) 20px 12px;
+  min-height: calc(80px + env(safe-area-inset-top));
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
   background: var(--surface);
   position: relative;
 }
 
-.page-back-btn {
-  background: none;
-  border: none;
-  color: var(--accent);
-  font-size: 1.5rem;
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 46px;
+  min-height: 46px;
+  padding: 0 12px;
+  border-radius: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
   cursor: pointer;
-  padding: 10px 14px 10px 0;
-  line-height: 1;
   flex-shrink: 0;
   -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.12s;
+  transition:
+    transform 0.12s ease,
+    background 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
 }
 
-.page-back-btn:active {
-  opacity: 0.6;
+.back-button:hover {
+  background: rgba(194, 74, 56, 0.1);
+  border-color: rgba(194, 74, 56, 0.25);
+  box-shadow:
+    0 12px 26px rgba(0, 0, 0, 0.28),
+    0 0 18px rgba(194, 74, 56, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.back-button:active {
+  transform: scale(0.96);
+  background: rgba(194, 74, 56, 0.14);
+  border-color: rgba(194, 74, 56, 0.32);
+}
+
+.back-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  line-height: 1;
+}
+
+.back-button__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.back-button--with-label {
+  justify-content: flex-start;
+  min-width: 0;
+  max-width: min(220px, 48vw);
+  padding-right: 14px;
+}
+
+.back-button__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 650;
 }
 
 .page-title {
@@ -2274,35 +2329,12 @@ html, body, #root {
   margin-left: auto;
 }
 
-/* Back button: large tap target, native feel */
+/* Event header back button */
 .event-back-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  color: var(--muted2);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 8px 0;
-  min-height: 44px;
+  color: var(--text);
   flex-shrink: 1;
   min-width: 0;
-  -webkit-tap-highlight-color: transparent;
-  transition: color 0.12s;
-}
-
-.event-back-btn:hover,
-.event-back-btn:active {
-  color: var(--text);
-}
-
-.event-back-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 180px;
+  max-width: min(220px, 46vw);
 }
 
 /* Join / Going CTA */
@@ -2360,9 +2392,6 @@ html, body, #root {
 @media (max-width: 420px) {
   .change-city-btn {
     max-width: 120px;
-  }
-  .event-back-label {
-    max-width: 110px;
   }
 }
 

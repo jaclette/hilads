@@ -12,6 +12,7 @@ import PublicProfileScreen from './components/PublicProfileScreen'
 import ConversationsScreen from './components/ConversationsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
+import BackButton from './components/BackButton'
 import { registerPush, unregisterPush } from './push'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -1497,7 +1498,7 @@ export default function App() {
         {obPickingCity && (
           <div className="full-page">
             <div className="page-header">
-              <button className="page-back-btn" onClick={() => setObPickingCity(false)}>←</button>
+              <BackButton onClick={() => setObPickingCity(false)} />
               <span className="page-title">Pick a city</span>
             </div>
             <div className="city-search-wrap">
@@ -1641,12 +1642,7 @@ export default function App() {
             /* Event mode */
             <div className="event-header">
               <div className="event-header-top">
-                <button className="event-back-btn" onClick={handleBackToCity}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 18 9 12 15 6" />
-                  </svg>
-                  <span className="event-back-label">{city}</span>
-                </button>
+                <BackButton onClick={handleBackToCity} label={city} className="event-back-btn" ariaLabel={`Back to ${city}`} />
                 <div className="event-header-actions">
                   <button
                     className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
@@ -1959,7 +1955,7 @@ export default function App() {
       {showCityPicker && (
         <div className="full-page">
           <div className="page-header">
-            <button className="page-back-btn" onClick={() => setShowCityPicker(false)}>←</button>
+            <BackButton onClick={() => setShowCityPicker(false)} />
             <span className="page-title">Switch city</span>
           </div>
           <div className="city-search-wrap">
@@ -2033,7 +2029,7 @@ export default function App() {
       {showEventDrawer && (
         <div className="full-page">
           <div className="page-header">
-            <button className="page-back-btn" onClick={() => setShowEventDrawer(false)}>←</button>
+            <BackButton onClick={() => setShowEventDrawer(false)} />
             <span className="page-title">Hot</span>
           </div>
           <div className="page-body page-body--has-fab">
@@ -2115,7 +2111,7 @@ export default function App() {
       {showPeopleDrawer && !viewingProfile && (
         <div className="full-page">
           <div className="page-header">
-            <button className="page-back-btn" onClick={() => { setShowPeopleDrawer(false); setViewingProfile(null) }}>←</button>
+            <BackButton onClick={() => { setShowPeopleDrawer(false); setViewingProfile(null) }} />
             <span className="page-title">People here · {onlineUsers.length}</span>
           </div>
           <div className="page-body">
@@ -2249,7 +2245,7 @@ export default function App() {
       {showProfileDrawer && !showAuthScreen && !account && (
         <div className="full-page">
           <div className="page-header">
-            <button className="page-back-btn" onClick={() => setShowProfileDrawer(false)}>←</button>
+            <BackButton onClick={() => setShowProfileDrawer(false)} />
             <span className="page-title">Me</span>
           </div>
           <div className="page-body page-body--centered">

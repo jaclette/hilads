@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { authSignup, authLogin } from '../api'
+import BackButton from './BackButton'
 
 export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack }) {
   const [tab, setTab]         = useState('signup') // 'signup' | 'login'
@@ -28,7 +29,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack }
   return (
     <div className="full-page">
       <div className="page-header">
-        <button className="page-back-btn" onClick={onBack}>←</button>
+        <BackButton onClick={onBack} />
         <span className="page-title">{tab === 'signup' ? 'Create account' : 'Log in'}</span>
       </div>
 

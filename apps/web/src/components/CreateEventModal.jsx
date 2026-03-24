@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { createEvent, createEventSeries } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
+import BackButton from './BackButton'
 
 // ── Time helpers ───────────────────────────────────────────────────────────────
 
@@ -255,7 +256,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   return (
     <div className="full-page">
       <div className="page-header">
-        <button className="page-back-btn" onClick={onBack}>←</button>
+        <BackButton onClick={onBack} />
         <span className="page-title">Create event</span>
       </div>
 
