@@ -275,7 +275,7 @@ export default function App() {
   // Registered users always use backend display_name; guests use localStorage nickname.
   const activeNickname = account?.display_name ?? nickname
 
-  const hasAnyUnread = conversations?.dms?.some(dm => dm.has_unread) ?? false
+  const hasAnyUnread = (conversations?.dms?.some(dm => dm.has_unread) || conversations?.events?.some(ev => ev.has_unread)) ?? false
 
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent, setShowCreateEvent] = useState(false)
