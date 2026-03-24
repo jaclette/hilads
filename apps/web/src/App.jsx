@@ -1651,12 +1651,12 @@ export default function App() {
                     {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
                   </button>
                   <button
-                    className="share-btn"
+                    className="header-icon-btn"
                     onClick={() => share(activeEvent.title, `${window.location.origin}/event/${activeEvent.id}`)}
                     title="Share this vibe"
                     aria-label="Share event"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
                       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                     </svg>
@@ -1696,19 +1696,6 @@ export default function App() {
                   {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
                 </span>
               </div>
-              {city && (
-                <button
-                  className="share-btn share-btn--city"
-                  onClick={() => share(`Who's in ${city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(city)}`)}
-                  title="Share city"
-                  aria-label="Share city"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                  </svg>
-                </button>
-              )}
             </div>
           )}
           {/* City header actions: keep the hero full-width by anchoring controls to the sides */}
@@ -1763,19 +1750,34 @@ export default function App() {
               </button>
             </div>
           )}
-          {!activeEvent && account && (
+          {!activeEvent && (
             <div className="header-side-control header-side-control--right">
-              <button
-                className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
-                onClick={() => setShowConversations(true)}
-                title="Messages"
-                aria-label="Messages"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
-              </button>
+              {city && (
+                <button
+                  className="header-icon-btn"
+                  onClick={() => share(`Who's in ${city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(city)}`)}
+                  title="Share city"
+                  aria-label="Share city"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                  </svg>
+                </button>
+              )}
+              {account && (
+                <button
+                  className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
+                  onClick={() => setShowConversations(true)}
+                  title="Messages"
+                  aria-label="Messages"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                  {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
+                </button>
+              )}
             </div>
           )}
           {/* Desktop-only controls */}
