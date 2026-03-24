@@ -1,6 +1,19 @@
 import { useState, useEffect } from 'react'
 import { fetchConversations } from '../api'
-import { getTimeLabel } from '../eventUtils'
+
+// Formats an ISO-8601 timestamp string as a short relative label for DM rows.
+// Returns null for missing/invalid values — caller must guard against null.
+function formatConvTime(isoStr) {
+  if (!isoStr) return null
+  const d = new Date(isoStr)
+  if (isNaN(d.getTime())) return null
+  const diff = Date.now() - d.getTime()
+  if (diff < 60_000)           return 'now'
+  if (diff < 3_600_000)        return `${Math.floor(diff / 60_000)}m`
+  if (diff < 86_400_000)       return `${Math.floor(diff / 3_600_000)}h`
+  if (diff < 7 * 86_400_000)   return d.toLocaleDateString('en-US', { weekday: 'short' })
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -77,8 +90,8 @@ export default function ConversationsScreen({ account, onBack, onOpenDm, onOpenE
                       }
                     </span>
                   </div>
-                  {dm.last_message_at && (
-                    <span className="conv-row-time">{getTimeLabel(dm.last_message_at)}</span>
+                  {formatConvTime(dm.last_message_at) && (
+                    <span className="conv-row-time">{formatConvTime(dm.last_message_at)}</span>
                   )}
                 </button>
               )
