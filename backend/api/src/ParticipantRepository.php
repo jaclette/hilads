@@ -4,69 +4,75 @@ declare(strict_types=1);
 
 class ParticipantRepository
 {
-    private static function filePath(string $eventId): string
-    {
-        return Storage::path('participants_' . $eventId . '.json');
-    }
-
-    private static function load(string $eventId): array
-    {
-        $path = self::filePath($eventId);
-        if (!file_exists($path)) return [];
-        $data = json_decode(file_get_contents($path), true);
-        return is_array($data) ? $data : [];
-    }
-
-    private static function save(string $eventId, array $data): void
-    {
-        file_put_contents(self::filePath($eventId), json_encode($data), LOCK_EX);
-    }
-
+    /**
+     * Toggle participation for a session.
+     * sessionId is stored as guest_id — same key, same behaviour as before.
+     * Returns true if now participating, false if just left.
+     */
     public static function toggle(string $eventId, string $sessionId): bool
     {
-        $data = self::load($eventId);
+        $pdo = Database::pdo();
 
-        if (isset($data[$sessionId])) {
-            unset($data[$sessionId]);
-            $isIn = false;
-        } else {
-            $data[$sessionId] = true;
-            $isIn = true;
+        $stmt = $pdo->prepare("
+            SELECT 1 FROM event_participants
+            WHERE channel_id = ? AND guest_id = ?
+        ");
+        $stmt->execute([$eventId, $sessionId]);
+
+        if ($stmt->fetchColumn()) {
+            $pdo->prepare("
+                DELETE FROM event_participants
+                WHERE channel_id = ? AND guest_id = ?
+            ")->execute([$eventId, $sessionId]);
+            return false;
         }
 
-        self::save($eventId, $data);
+        $pdo->prepare("
+            INSERT INTO event_participants (channel_id, guest_id)
+            VALUES (?, ?)
+            ON CONFLICT (channel_id, guest_id) DO NOTHING
+        ")->execute([$eventId, $sessionId]);
 
-        return $isIn;
+        return true;
     }
 
     public static function getCount(string $eventId): int
     {
-        return count(self::load($eventId));
+        $stmt = Database::pdo()->prepare("
+            SELECT COUNT(*) FROM event_participants WHERE channel_id = ?
+        ");
+        $stmt->execute([$eventId]);
+        return (int) $stmt->fetchColumn();
     }
 
     public static function isIn(string $eventId, string $sessionId): bool
     {
-        return isset(self::load($eventId)[$sessionId]);
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM event_participants
+            WHERE channel_id = ? AND guest_id = ?
+        ");
+        $stmt->execute([$eventId, $sessionId]);
+        return (bool) $stmt->fetchColumn();
     }
 
-    public static function delete(string $eventId): void
-    {
-        $path = self::filePath($eventId);
-        if (file_exists($path)) unlink($path);
-    }
+    /**
+     * No-op: participants are now in Postgres and expire naturally
+     * with their parent event channel (ON DELETE CASCADE).
+     */
+    public static function delete(string $eventId): void {}
 
     // Fire-and-forget broadcast to WS server — tells it to push the new count to viewers
     public static function broadcastToWs(string $eventId, int $count): void
     {
-        $wsUrl = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
+        $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
         $payload = json_encode(['eventId' => $eventId, 'count' => $count]);
 
         $ctx = stream_context_create([
             'http' => [
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
-                'content' => $payload,
-                'timeout' => 1,
+                'method'        => 'POST',
+                'header'        => "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n",
+                'content'       => $payload,
+                'timeout'       => 1,
                 'ignore_errors' => true,
             ],
         ]);
