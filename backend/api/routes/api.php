@@ -2,6 +2,202 @@
 
 declare(strict_types=1);
 
+// ── Internal migration endpoint ───────────────────────────────────────────────
+// TEMPORARY — disable by removing MIGRATION_KEY from Render env vars.
+// Protected: returns 404 if MIGRATION_KEY is not set.
+// Call: GET /internal/run-migrations?key=YOUR_KEY
+
+$router->add('GET', '/internal/run-migrations', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+
+    // Endpoint does not exist unless MIGRATION_KEY is configured
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $pdo    = Database::pdo();
+    $now    = time();
+    $log    = [];
+    $errors = [];
+
+    // ── 1. Seed cities ────────────────────────────────────────────────────────
+
+    $cities = require __DIR__ . '/../src/cities_data.php';
+
+    $chanStmt = $pdo->prepare("
+        INSERT INTO channels (id, type, name, created_at, updated_at)
+        VALUES (:id, 'city', :name, now(), now())
+        ON CONFLICT (id) DO NOTHING
+    ");
+    $cityStmt = $pdo->prepare("
+        INSERT INTO cities (channel_id, country, lat, lng, timezone)
+        VALUES (:channel_id, :country, :lat, :lng, :timezone)
+        ON CONFLICT (channel_id) DO NOTHING
+    ");
+
+    $citiesInserted = 0;
+    $citiesSkipped  = 0;
+
+    foreach ($cities as $city) {
+        $id = 'city_' . $city['id'];
+        $chanStmt->execute(['id' => $id, 'name' => $city['name']]);
+        $cityStmt->execute([
+            'channel_id' => $id,
+            'country'    => $city['country'],
+            'lat'        => $city['lat'],
+            'lng'        => $city['lng'],
+            'timezone'   => $city['timezone'],
+        ]);
+        if ($chanStmt->rowCount() > 0) $citiesInserted++;
+        else $citiesSkipped++;
+    }
+
+    $log[] = "cities: inserted=$citiesInserted skipped=$citiesSkipped total=" . count($cities);
+
+    // ── 2. Migrate events from JSON files ─────────────────────────────────────
+
+    $evChanStmt = $pdo->prepare("
+        INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
+        VALUES (:id, 'event', :parent_id, :name, :status, :created_at, :updated_at)
+        ON CONFLICT (id) DO NOTHING
+    ");
+    $hiladsStmt = $pdo->prepare("
+        INSERT INTO channel_events
+            (channel_id, source_type, guest_id, title, event_type,
+             venue, location, venue_lat, venue_lng,
+             starts_at, expires_at, image_url, external_url)
+        VALUES
+            (:channel_id, 'hilads', :guest_id, :title, :event_type,
+             :venue, :location, :venue_lat, :venue_lng,
+             to_timestamp(:starts_at), to_timestamp(:expires_at),
+             :image_url, :external_url)
+        ON CONFLICT (channel_id) DO NOTHING
+    ");
+    $tmStmt = $pdo->prepare("
+        INSERT INTO channel_events
+            (channel_id, source_type, external_id, title, event_type,
+             venue, location, venue_lat, venue_lng,
+             starts_at, expires_at, image_url, external_url, synced_at)
+        VALUES
+            (:channel_id, 'ticketmaster', :external_id, :title, :event_type,
+             :venue, :location, :venue_lat, :venue_lng,
+             to_timestamp(:starts_at), to_timestamp(:expires_at),
+             :image_url, :external_url, :synced_at)
+        ON CONFLICT (source_type, external_id) DO UPDATE SET
+            title        = EXCLUDED.title,
+            venue        = EXCLUDED.venue,
+            location     = EXCLUDED.location,
+            venue_lat    = EXCLUDED.venue_lat,
+            venue_lng    = EXCLUDED.venue_lng,
+            starts_at    = EXCLUDED.starts_at,
+            expires_at   = EXCLUDED.expires_at,
+            image_url    = EXCLUDED.image_url,
+            external_url = EXCLUDED.external_url,
+            synced_at    = EXCLUDED.synced_at
+    ");
+
+    $evMigrated = 0;
+    $evSkipped  = 0;
+
+    foreach (glob(Storage::dir() . '/events_*.json') ?: [] as $file) {
+        if (!preg_match('/events_(\d+)\.json$/', $file, $m)) continue;
+
+        $parentId = 'city_' . $m[1];
+        $check    = $pdo->prepare("SELECT 1 FROM channels WHERE id = ?");
+        $check->execute([$parentId]);
+        if (!$check->fetchColumn()) {
+            $errors[] = "parent $parentId not found, skipping $file";
+            continue;
+        }
+
+        $events = json_decode(file_get_contents($file), true) ?? [];
+        foreach ($events as $ev) {
+            if (empty($ev['id']) || empty($ev['title']) || empty($ev['starts_at'])) {
+                $evSkipped++;
+                continue;
+            }
+
+            $source    = $ev['source'] ?? 'hilads';
+            $status    = ($ev['expires_at'] ?? 0) < $now ? 'expired' : 'active';
+            $createdAt = date('c', $ev['created_at'] ?? $now);
+            $updatedAt = date('c', $ev['updated_at'] ?? $ev['created_at'] ?? $now);
+
+            try {
+                $pdo->beginTransaction();
+
+                $evChanStmt->execute([
+                    'id'         => $ev['id'],
+                    'parent_id'  => $parentId,
+                    'name'       => mb_substr($ev['title'], 0, 100),
+                    'status'     => $status,
+                    'created_at' => $createdAt,
+                    'updated_at' => $updatedAt,
+                ]);
+
+                $common = [
+                    'channel_id'  => $ev['id'],
+                    'title'       => mb_substr($ev['title'], 0, 100),
+                    'event_type'  => $ev['type'] ?? null,
+                    'venue'       => $ev['venue'] ?? null,
+                    'location'    => $ev['location'] ?? ($ev['location_hint'] ?? null),
+                    'venue_lat'   => isset($ev['venue_lat']) ? (float) $ev['venue_lat'] : null,
+                    'venue_lng'   => isset($ev['venue_lng']) ? (float) $ev['venue_lng'] : null,
+                    'starts_at'   => (int) $ev['starts_at'],
+                    'expires_at'  => (int) ($ev['expires_at'] ?? ($ev['starts_at'] + 10800)),
+                    'image_url'   => $ev['image_url'] ?? null,
+                    'external_url'=> $ev['external_url'] ?? null,
+                ];
+
+                if ($source === 'ticketmaster') {
+                    $tmStmt->execute(array_merge($common, [
+                        'external_id' => $ev['external_id'] ?? null,
+                        'synced_at'   => $updatedAt,
+                    ]));
+                } else {
+                    $hiladsStmt->execute(array_merge($common, [
+                        'guest_id' => $ev['guest_id'] ?? null,
+                    ]));
+                }
+
+                $pdo->commit();
+                $evMigrated++;
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) $pdo->rollBack();
+                $errors[] = "event {$ev['id']}: " . $e->getMessage();
+                $evSkipped++;
+            }
+        }
+    }
+
+    $log[] = "events: migrated=$evMigrated skipped=$evSkipped";
+
+    // ── 3. Summary query ──────────────────────────────────────────────────────
+
+    $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
+    $eventCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events")->fetchColumn();
+    $activeCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events WHERE expires_at > now()")->fetchColumn();
+
+    $bySource = $pdo->query("SELECT source_type, COUNT(*) AS n FROM channel_events GROUP BY source_type")
+                    ->fetchAll(PDO::FETCH_KEY_PAIR);
+
+    Response::json([
+        'ok'      => empty($errors),
+        'log'     => $log,
+        'errors'  => $errors,
+        'db' => [
+            'cities_total'   => $cityCount,
+            'events_total'   => $eventCount,
+            'events_active'  => $activeCount,
+            'events_by_source' => $bySource,
+        ],
+    ]);
+});
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 $router->add('POST', '/api/v1/auth/signup', function () {
