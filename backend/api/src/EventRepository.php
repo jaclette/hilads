@@ -158,6 +158,10 @@ class EventRepository
                 WHERE c.type     = 'event'
                   AND c.status   = 'active'
                   AND ce.expires_at > now()
+                  AND (
+                      ce.occurrence_date IS NULL
+                      OR ce.occurrence_date = CURRENT_DATE
+                  )
                 GROUP BY c.parent_id
             ")
             ->fetchAll(PDO::FETCH_ASSOC);
