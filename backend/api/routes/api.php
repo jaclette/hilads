@@ -968,6 +968,60 @@ $router->add('POST', '/internal/seed-recurring-venues', function () {
     ]);
 });
 
+// ── Internal: seed static curated venues ──────────────────────────────────────
+// Reads venues_seed.php (static array) and upserts them as recurring event series.
+// Idempotent — safe to run repeatedly. Protected by X-Api-Key or ?key= query param.
+$router->add('POST', '/internal/seed-static-venues', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    $providedKey = $_SERVER['HTTP_X_API_KEY'] ?? ($_GET['key'] ?? '');
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $body   = json_decode(file_get_contents('php://input'), true) ?? [];
+    $dryRun = !empty($body['dryRun']);
+
+    $venues = require __DIR__ . '/../src/venues_seed.php';
+
+    $items = [];
+    foreach ($venues as $v) {
+        $isBar = $v['category'] === 'bar';
+        $slug  = trim(strtolower(preg_replace('/[^a-z0-9]+/', '-', $v['title'])), '-');
+        $items[] = [
+            'city_id'         => (int) $v['city_id'],
+            'title'           => $v['title'],
+            'event_type'      => $isBar ? 'drinks' : 'coffee',
+            'location'        => $v['location'],
+            'start_time'      => $isBar ? '18:00' : '10:00',
+            'end_time'        => $isBar ? '01:00' : '18:00',
+            'recurrence_type' => 'daily',
+            'source_key'      => "static:v1:city_{$v['city_id']}:{$slug}:{$v['category']}",
+        ];
+    }
+
+    error_log('[seed-static-venues] items=' . count($items) . ' dryRun=' . ($dryRun ? 'true' : 'false'));
+
+    try {
+        $result = EventSeriesRepository::importBatch($items, $dryRun);
+    } catch (RuntimeException $e) {
+        error_log('[seed-static-venues] fatal: ' . $e->getMessage());
+        Response::json(['error' => $e->getMessage()], 500);
+    }
+
+    Response::json([
+        'ok'      => empty($result['errors']),
+        'dry_run' => $dryRun,
+        'created' => $result['created'],
+        'skipped' => $result['skipped'],
+        'errors'  => $result['errors'],
+        'preview' => $result['preview'] ?? null,
+    ]);
+});
+
 // Internal: batch-import recurring event series from an external source (e.g. seed script).
 // Idempotent: items are deduplicated via source_key. Supports ?dry_run=1.
 $router->add('POST', '/internal/event-series/import', function () {
