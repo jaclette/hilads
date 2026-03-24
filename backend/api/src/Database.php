@@ -156,6 +156,51 @@ class Database
             }
         }
 
+        // ── Notifications (Phase 1) ───────────────────────────────────────────
+        $notifExist = (bool) self::$pdo
+            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'notifications')")
+            ->fetchColumn();
+
+        if (!$notifExist) {
+            self::$pdo->exec("
+                CREATE TABLE notifications (
+                    id         BIGSERIAL    PRIMARY KEY,
+                    user_id    TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    type       VARCHAR(50)  NOT NULL,
+                    title      TEXT         NOT NULL,
+                    body       TEXT,
+                    data       JSONB        NOT NULL DEFAULT '{}',
+                    is_read    BOOLEAN      NOT NULL DEFAULT FALSE,
+                    created_at TIMESTAMPTZ  NOT NULL DEFAULT now()
+                )
+            ");
+            self::$pdo->exec("CREATE INDEX idx_notifications_user_feed   ON notifications (user_id, created_at DESC)");
+            self::$pdo->exec("CREATE INDEX idx_notifications_user_unread ON notifications (user_id) WHERE is_read = FALSE");
+
+            self::$pdo->exec("
+                CREATE TABLE notification_preferences (
+                    user_id              TEXT    PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+                    dm_push              BOOLEAN NOT NULL DEFAULT TRUE,
+                    event_message_push   BOOLEAN NOT NULL DEFAULT TRUE,
+                    new_event_push       BOOLEAN NOT NULL DEFAULT FALSE
+                )
+            ");
+
+            // push_subscriptions is Phase 2 — created now so Phase 2 needs no migration.
+            self::$pdo->exec("
+                CREATE TABLE push_subscriptions (
+                    id           BIGSERIAL    PRIMARY KEY,
+                    user_id      TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    endpoint     TEXT         NOT NULL UNIQUE,
+                    p256dh       TEXT         NOT NULL,
+                    auth_key     TEXT         NOT NULL,
+                    created_at   TIMESTAMPTZ  NOT NULL DEFAULT now(),
+                    last_used_at TIMESTAMPTZ  NOT NULL DEFAULT now()
+                )
+            ");
+            self::$pdo->exec("CREATE INDEX idx_push_subscriptions_user ON push_subscriptions (user_id)");
+        }
+
         return self::$pdo;
     }
 

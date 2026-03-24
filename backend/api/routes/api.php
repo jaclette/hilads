@@ -823,6 +823,21 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     $authUser = AuthService::currentUser(); // null for guests — that's fine
     $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $authUser['id'] ?? null);
 
+    // Notify registered users currently online in this city (in-app only for Phase 1)
+    $cityChannelId = "city_{$channelId}";
+    $cityNameStmt  = Database::pdo()->prepare("SELECT name FROM channels WHERE id = ?");
+    $cityNameStmt->execute([$cityChannelId]);
+    $cityName = $cityNameStmt->fetchColumn() ?: 'your city';
+    $notifBody = $title . ($locationHint ? ' · ' . $locationHint : '');
+    NotificationRepository::notifyCityOnlineUsers(
+        $cityChannelId,
+        $authUser['id'] ?? null,
+        'new_event',
+        '🔥 New event in ' . $cityName,
+        $notifBody,
+        ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName))]
+    );
+
     Response::json($event, 201);
 });
 
@@ -1272,6 +1287,21 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
 
     broadcastMessageToWs($eventId, $message);
 
+    // Notify registered event participants (excluding the sender)
+    $eventForNotif  = EventRepository::findById($eventId);
+    $senderUser     = AuthService::currentUser();
+    $senderUserId   = $senderUser['id'] ?? null;
+    $eventTitle     = $eventForNotif['title'] ?? 'event';
+    $bodyPreview    = $type === 'image' ? '📸 Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
+    NotificationRepository::notifyEventParticipants(
+        $eventId,
+        $senderUserId,
+        'event_message',
+        $nickname . ' in ' . $eventTitle,
+        $bodyPreview,
+        ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname]
+    );
+
     Response::json($message, 201);
 });
 
@@ -1515,6 +1545,25 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     // Sending a message also implicitly reads the conversation for the sender
     ConversationRepository::markRead($conversationId, $user['id']);
 
+    // Notify the other participant (in-app only for Phase 1 — no push yet)
+    $otherStmt = Database::pdo()->prepare("
+        SELECT user_id FROM conversation_participants
+        WHERE conversation_id = ? AND user_id != ?
+        LIMIT 1
+    ");
+    $otherStmt->execute([$conversationId, $user['id']]);
+    $otherUserId = $otherStmt->fetchColumn();
+    if ($otherUserId) {
+        $preview = mb_substr($content, 0, 100);
+        NotificationRepository::create(
+            $otherUserId,
+            'dm_message',
+            ($user['display_name'] ?? 'Someone') . ' sent you a message',
+            $preview,
+            ['conversationId' => $conversationId, 'senderName' => $user['display_name'] ?? '']
+        );
+    }
+
     Response::json(['message' => $message], 201);
 });
 
@@ -1545,6 +1594,116 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/mark-read', functio
     }
 
     ConversationRepository::markRead($conversationId, $user['id']);
+
+    Response::json(['ok' => true]);
+});
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+// GET /api/v1/notifications
+// Returns last 50 notifications for the current user, plus total unread count.
+$router->add('GET', '/api/v1/notifications', function () {
+    $user = AuthService::requireAuth();
+    Response::json([
+        'notifications' => NotificationRepository::listForUser($user['id']),
+        'unread_count'  => NotificationRepository::unreadCount($user['id']),
+    ]);
+});
+
+// GET /api/v1/notifications/unread-count
+// Lightweight poll endpoint — returns only the unread count.
+$router->add('GET', '/api/v1/notifications/unread-count', function () {
+    $user = AuthService::requireAuth();
+    Response::json(['count' => NotificationRepository::unreadCount($user['id'])]);
+});
+
+// POST /api/v1/notifications/mark-read
+// Body: { ids: [1,2,3] }  OR  { all: true }
+$router->add('POST', '/api/v1/notifications/mark-read', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json();
+
+    if (!empty($body['all'])) {
+        NotificationRepository::markAllRead($user['id']);
+    } elseif (!empty($body['ids']) && is_array($body['ids'])) {
+        NotificationRepository::markRead($user['id'], $body['ids']);
+    } else {
+        Response::json(['error' => 'Provide ids or all:true'], 400);
+    }
+
+    Response::json(['ok' => true]);
+});
+
+// GET /api/v1/notification-preferences
+$router->add('GET', '/api/v1/notification-preferences', function () {
+    $user = AuthService::requireAuth();
+    Response::json(['preferences' => NotificationPreferencesRepository::get($user['id'])]);
+});
+
+// PUT /api/v1/notification-preferences
+// Body: any subset of { dm_push, event_message_push, new_event_push }
+$router->add('PUT', '/api/v1/notification-preferences', function () {
+    $user  = AuthService::requireAuth();
+    $body  = Request::json() ?? [];
+    $prefs = NotificationPreferencesRepository::upsert($user['id'], $body);
+    Response::json(['preferences' => $prefs]);
+});
+
+// ── Web Push ──────────────────────────────────────────────────────────────────
+
+// GET /api/v1/push/vapid-public-key
+// Returns the VAPID public key so the frontend can subscribe.
+// The public key is safe to expose — it is not secret.
+$router->add('GET', '/api/v1/push/vapid-public-key', function () {
+    $key = getenv('VAPID_PUBLIC_KEY') ?: null;
+    if (!$key) {
+        Response::json(['error' => 'Push not configured'], 503);
+    }
+    Response::json(['key' => $key]);
+});
+
+// POST /api/v1/push/subscribe
+// Registers (or refreshes) a browser push subscription for the current user.
+// Upserts on endpoint — safe to call on every login.
+$router->add('POST', '/api/v1/push/subscribe', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json();
+
+    $endpoint = trim((string) ($body['endpoint'] ?? ''));
+    $p256dh   = trim((string) ($body['keys']['p256dh'] ?? ''));
+    $auth     = trim((string) ($body['keys']['auth']   ?? ''));
+
+    if (!$endpoint || !$p256dh || !$auth) {
+        Response::json(['error' => 'endpoint, keys.p256dh and keys.auth are required'], 400);
+    }
+
+    Database::pdo()->prepare("
+        INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth_key)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT (endpoint) DO UPDATE
+           SET user_id      = EXCLUDED.user_id,
+               p256dh       = EXCLUDED.p256dh,
+               auth_key     = EXCLUDED.auth_key,
+               last_used_at = now()
+    ")->execute([$user['id'], $endpoint, $p256dh, $auth]);
+
+    Response::json(['ok' => true]);
+});
+
+// DELETE /api/v1/push/unsubscribe
+// Removes a push subscription (called on logout or when browser unsubscribes).
+$router->add('DELETE', '/api/v1/push/unsubscribe', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json();
+
+    $endpoint = trim((string) ($body['endpoint'] ?? ''));
+    if (!$endpoint) {
+        Response::json(['error' => 'endpoint is required'], 400);
+    }
+
+    Database::pdo()->prepare(
+        "DELETE FROM push_subscriptions WHERE user_id = ? AND endpoint = ?"
+    )->execute([$user['id'], $endpoint]);
 
     Response::json(['ok' => true]);
 });

@@ -66,7 +66,7 @@ if ($origin !== null && in_array($origin, $allowedOrigins, true)) {
 }
 
 header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
 if ($method === 'OPTIONS') {
     http_response_code(204);
@@ -105,6 +105,9 @@ require_once __DIR__ . '/../src/PlacesService.php';
 require_once __DIR__ . '/../src/VenueSeeder.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/ConversationRepository.php';
+require_once __DIR__ . '/../src/NotificationRepository.php';
+require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
+require_once __DIR__ . '/../src/PushService.php';
 require_once __DIR__ . '/../src/R2Uploader.php';
 require_once __DIR__ . '/../src/TicketmasterImporter.php';
 

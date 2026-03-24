@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
@@ -11,6 +11,8 @@ import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
 import ConversationsScreen from './components/ConversationsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
+import NotificationsScreen from './components/NotificationsScreen'
+import { registerPush, unregisterPush } from './push'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -22,8 +24,10 @@ function parseDeepLink() {
   const path = window.location.pathname
   const cityMatch  = path.match(/^\/city\/([^/]+)$/)
   const eventMatch = path.match(/^\/event\/([a-f0-9]{16})$/)
-  if (cityMatch)  return { type: 'city',  slug: cityMatch[1] }
-  if (eventMatch) return { type: 'event', id: eventMatch[1] }
+  if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
+  if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
+  if (path === '/conversations') return { type: 'conversations' }
+  if (path === '/notifications') return { type: 'notifications' }
   return null
 }
 
@@ -316,6 +320,8 @@ export default function App() {
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
   const [account, setAccount] = useState(null)        // null = guest, object = registered
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [notifUnreadCount, setNotifUnreadCount] = useState(0)
 
   // Single source of truth for the current user's display name.
   // Registered users always use backend display_name; guests use localStorage nickname.
@@ -349,6 +355,7 @@ export default function App() {
   const promptsShownRef = useRef(new Set())// tracks which prompt subtypes have been injected
   const prevEventCountRef = useRef(0)      // detects new events added to the events list
   const locPromiseRef = useRef(null)
+  const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
   const sessionIdRef = useRef(getOrCreateSessionId())
   const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
@@ -370,6 +377,44 @@ export default function App() {
     if (!account) { setConversations(null); return }
     fetchConversations().then(setConversations).catch(() => {})
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Poll notification unread count every 30s for registered users.
+  useEffect(() => {
+    if (!account) { setNotifUnreadCount(0); return }
+    let cancelled = false
+    const poll = () => fetchUnreadCount().then(d => { if (!cancelled) setNotifUnreadCount(d.count) }).catch(() => {})
+    poll()
+    const interval = setInterval(poll, 30_000)
+    return () => { cancelled = true; clearInterval(interval) }
+  }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Register push when account becomes available (login/register or page reload with session).
+  // Also handles silent re-registration when permission was already granted.
+  useEffect(() => {
+    if (!account) return
+    registerPush().catch(() => {})
+  }, [account?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle navigate messages from the service worker (push notification click).
+  useEffect(() => {
+    if (!('serviceWorker' in navigator)) return
+    const handler = (e) => {
+      if (e.data?.type !== 'navigate') return
+      const url  = e.data.url ?? '/'
+      const path = new URL(url, window.location.origin).pathname
+      if (path === '/conversations') { setShowConversations(true); return }
+      if (path === '/notifications')  { setShowNotifications(true); return }
+      const eventMatch = path.match(/^\/event\/([a-f0-9]{16})$/)
+      if (eventMatch) {
+        const eid = eventMatch[1]
+        const ev  = events.find(e => e.id === eid) ?? cityEvents.find(e => e.id === eid)
+        if (ev) handleSelectEvent(ev)
+        else    setShowEventDrawer(true)
+      }
+    }
+    navigator.serviceWorker.addEventListener('message', handler)
+    return () => navigator.serviceWorker.removeEventListener('message', handler)
+  }, [events, cityEvents]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Keep accountRef + nicknameRef in sync so closures always see the latest identity.
   // Also re-assert WS presence when login/logout happens mid-session.
@@ -418,6 +463,9 @@ export default function App() {
         return { channelId: event.channel_id, city: cityName, timezone, country }
       })
     }
+
+    if (link.type === 'conversations') openScreenOnJoinRef.current = 'conversations'
+    if (link.type === 'notifications')  openScreenOnJoinRef.current = 'notifications'
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -657,6 +705,8 @@ export default function App() {
       setStatus('ready')
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null)
       scheduleEphemeral(joinKey)
+      if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
 
       activeRef.current = true
       scheduleActivity(true)
@@ -1662,18 +1712,37 @@ export default function App() {
               )}
             </div>
           )}
-          {/* Messages icon — top-right, always visible */}
+          {/* Top-right icon cluster — bell + messages (registered users only) */}
           {account && (
-            <button
-              className={`header-messages-btn${hasAnyUnread ? ' header-messages-btn--unread' : ''}`}
-              onClick={() => setShowConversations(true)}
-              title="Messages"
-              aria-label="Messages"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </button>
+            <div className="header-icons">
+              <button
+                className="header-icon-btn"
+                onClick={() => setShowNotifications(true)}
+                title="Notifications"
+                aria-label="Notifications"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                {notifUnreadCount > 0 && (
+                  <span className="header-icon-badge">
+                    {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
+                  </span>
+                )}
+              </button>
+              <button
+                className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
+                onClick={() => setShowConversations(true)}
+                title="Messages"
+                aria-label="Messages"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
+              </button>
+            </div>
           )}
           {/* Desktop-only controls */}
           <div className="header-desktop-controls">
@@ -2122,6 +2191,7 @@ export default function App() {
           onBack={() => setShowProfileDrawer(false)}
           onSignOut={async () => {
             await authLogout()
+            unregisterPush().catch(() => {})
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
             setStatus('onboarding')
@@ -2195,6 +2265,29 @@ export default function App() {
             setShowProfileDrawer(false)
           }}
           onBack={() => setShowAuthScreen(false)}
+        />
+      )}
+
+      {/* Notifications — full-screen page */}
+      {showNotifications && (
+        <NotificationsScreen
+          onBack={() => setShowNotifications(false)}
+          onUnreadChange={setNotifUnreadCount}
+          onNavigate={(notif) => {
+            setShowNotifications(false)
+            const d = notif.data ?? {}
+            if (notif.type === 'dm_message') {
+              setShowConversations(true)
+            } else if (notif.type === 'event_message' || notif.type === 'event_join') {
+              const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
+              if (ev) handleSelectEvent(ev)
+              else setShowEventDrawer(true)
+            } else if (notif.type === 'new_event') {
+              const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
+              if (ev) handleSelectEvent(ev)
+              else setShowEventDrawer(true)
+            }
+          }}
         />
       )}
 

@@ -1,4 +1,4 @@
-# Hilads — MVP v4
+# Hilads — MVP v5
 
 ## Vision
 
@@ -56,6 +56,7 @@ Open app
 - Rate-limited to prevent spam
 - Real-time via WebSocket, 3s poll as fallback
 - Messages kept for current day only (cleaned up at midnight)
+- Feed prompts injected client-side when activity is low (explore, photo, create-event, new-event banners)
 
 ### Events — Hot Screen
 
@@ -95,6 +96,18 @@ Source: curated static dataset — 10 cities × 7 venues (4 bars + 3 cafés each
 - Registered users only
 - 1:1 private conversations
 - History kept for 7 days, then auto-deleted
+
+### Notifications
+
+- Registered users only
+- In-app notification feed (bell icon in header)
+- Unread badge — polled every 30s
+- Triggered by: new DM, new event message, new event in city
+- Web push (browser push notifications) — registered users who grant permission
+- Push delivered via VAPID / Web Push Protocol
+- Per-user preferences: toggle push on/off per notification type
+- Notification click deep-links into the relevant screen
+- Expired push subscriptions cleaned up automatically (410 responses)
 
 ### Presence
 
@@ -160,26 +173,28 @@ WebSocket server handles presence snapshots and message push. PHP API uses a fir
 - City switching + discovery
 - Curated recurring venue seed (10 cities)
 - Message retention via daily cleanup
+- In-app notifications + web push (registered users)
+- Feed prompts (client-side engagement nudges)
 
 ---
 
 ## What Is Out of Scope
 
 - Followers, feeds, social graph
-- Push notifications
 - Algorithmic ranking or recommendations
 - Ticketing or paid events
 - Archival or export
 - Mobile native app
+- Push notification batching/throttling (deferred to Phase 3)
+- Real-time unread badge via WebSocket (currently polled — deferred to Phase 3)
 
 ---
 
 ## Known Issues (Next to Fix)
 
-- Duplicate recurring event chats in Messages (occurrence_date filter partially applied)
-- City event counts may lag after occurrence generation
 - Recurring event generation needs daily cron to be stable
 - UI consistency for recurring vs one-shot events in some edge cases
+- Notification unread badge is polled (30s lag) — not real-time
 
 ---
 

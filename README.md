@@ -15,6 +15,7 @@ Hilads is a real-time social app. You join a city, see who's online, chat, and d
 - **Direct messages** — 1:1 private chat for registered users
 - **Event chats** — every event has its own dedicated chat channel
 - **Recurring venues** — bars and cafés seeded per city with daily schedules
+- **Notifications** — in-app bell + web push for DMs, event messages, and new events (registered users)
 
 ---
 
@@ -42,6 +43,7 @@ Registered account: persistent profile, DMs, recurring event creation.
 | Here | Online users in the city |
 | Me | Profile (registered) |
 | Messages | DMs + event chats (registered) |
+| Notifications | Bell icon in header — in-app feed + push (registered) |
 
 ---
 
@@ -138,6 +140,9 @@ npm run dev
 | `R2_PUBLIC_URL` | Public base URL for uploaded files |
 | `WS_INTERNAL_URL` | Internal URL of the WS server |
 | `MIGRATION_KEY` | Secret key for internal admin endpoints |
+| `VAPID_PUBLIC_KEY` | VAPID public key for web push (generate with `scripts/generate-vapid-keys.php`) |
+| `VAPID_PRIVATE_KEY` | VAPID private key for web push |
+| `VAPID_SUBJECT` | VAPID subject — `mailto:` or HTTPS URL |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 

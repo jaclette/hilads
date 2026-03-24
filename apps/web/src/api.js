@@ -337,3 +337,55 @@ export async function sendEventImageMessage(eventId, guestId, nickname, imageUrl
   }
   return res.json()
 }
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export async function fetchNotifications() {
+  const res = await fetch(`${BASE}/notifications`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch notifications')
+  return res.json() // { notifications, unread_count }
+}
+
+export async function fetchUnreadCount() {
+  const res = await fetch(`${BASE}/notifications/unread-count`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch unread count')
+  return res.json() // { count }
+}
+
+export async function markNotificationsRead(ids) {
+  const body = Array.isArray(ids) ? { ids } : { all: true }
+  await fetch(`${BASE}/notifications/mark-read`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  }).catch(() => {})
+}
+
+export async function fetchNotificationPreferences() {
+  const res = await fetch(`${BASE}/notification-preferences`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch preferences')
+  return res.json() // { preferences }
+}
+
+export async function updateNotificationPreferences(prefs) {
+  const res = await fetch(`${BASE}/notification-preferences`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(prefs),
+  })
+  if (!res.ok) throw new Error('Failed to update preferences')
+  return res.json() // { preferences }
+}
+
+// ── Push subscriptions ────────────────────────────────────────────────────────
+// Note: push.js handles the full registration flow (SW + browser permission).
+// These helpers are thin HTTP wrappers used internally by push.js.
+
+export async function fetchVapidPublicKey() {
+  const res = await fetch(`${BASE}/push/vapid-public-key`, { credentials: 'include' })
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.key ?? null
+}
