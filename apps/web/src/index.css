@@ -1508,9 +1508,35 @@ html, body, #root {
   bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom) + 12px);
 }
 
+.install-banner--compact {
+  position: static;
+  transform: none;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  gap: 10px;
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.24),
+    0 0 18px rgba(255, 122, 60, 0.05);
+}
+
+.chat-install-slot {
+  padding: 0 16px 10px;
+  flex-shrink: 0;
+}
+
 .install-banner-copy {
   flex: 1;
   min-width: 0;
+}
+
+.install-banner-compact-text {
+  flex: 1;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.84rem;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
 .install-banner-title {
@@ -1569,6 +1595,22 @@ html, body, #root {
   font-size: 1.2rem;
   line-height: 1;
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.install-banner-add--compact {
+  min-width: 56px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  box-shadow: 0 8px 18px rgba(255, 122, 60, 0.18);
+}
+
+.install-banner-dismiss--compact {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  font-size: 1rem;
 }
 
 .install-banner-add:active,

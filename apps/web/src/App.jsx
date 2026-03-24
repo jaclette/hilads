@@ -386,6 +386,9 @@ export default function App() {
     || (showPeopleDrawer && !viewingProfile)
   )
   const showInstallBanner = showInstallOnMainSurface && installPrompt.shouldShowBanner && !hasInstallFeedPrompt
+  const compactInstallText = installPrompt.canUseNativePrompt
+    ? 'Add Hilads to home screen'
+    : installPrompt.instructionText
 
   function injectFeedInstallMessage() {
     if (
@@ -1946,6 +1949,18 @@ export default function App() {
           </div>
         )}
 
+        {showInstallBanner && installBannerUsesBottomNav && (
+          <div className="chat-install-slot">
+            <InstallPromptBanner
+              compact
+              instructionText={compactInstallText}
+              manualHelpVisible={installPrompt.manualHelpVisible}
+              onAdd={() => installPrompt.promptInstall().catch(() => {})}
+              onDismiss={installPrompt.dismissBanner}
+            />
+          </div>
+        )}
+
         <form className="input-bar" onSubmit={handleSend}>
           {/* Hidden file picker — triggered by the image button */}
           <input
@@ -1979,16 +1994,6 @@ export default function App() {
             <SendIcon />
           </button>
         </form>
-
-        {showInstallBanner && installBannerUsesBottomNav && (
-          <InstallPromptBanner
-            instructionText={installPrompt.instructionText}
-            manualHelpVisible={installPrompt.manualHelpVisible}
-            onAdd={() => installPrompt.promptInstall().catch(() => {})}
-            onDismiss={installPrompt.dismissBanner}
-            withBottomNav
-          />
-        )}
 
         {/* Bottom navigation — mobile only */}
         <nav className="bottom-nav" aria-label="Primary">
