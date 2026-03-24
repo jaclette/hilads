@@ -127,11 +127,32 @@ class Database
                 if (!$hasSourceKey) {
                     self::$pdo->exec("ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'user'");
                     self::$pdo->exec("ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source_key TEXT");
-                    self::$pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS event_series_source_key_unique ON event_series (source_key) WHERE source_key IS NOT NULL");
+                    // Full unique index (not partial) — required for ON CONFLICT (source_key) to work.
+                    // PostgreSQL allows multiple NULLs in a full unique index on a nullable column.
+                    self::$pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS event_series_source_key_unique ON event_series (source_key)");
                     self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_series_source ON event_series (source)");
                     // created_by was NOT NULL in the first iteration — relax it for import rows
                     self::$pdo->exec("ALTER TABLE event_series ALTER COLUMN created_by DROP NOT NULL");
                 }
+            }
+
+            // Fix: partial unique index on source_key does not satisfy ON CONFLICT (source_key).
+            // PostgreSQL only matches non-partial unique constraints/indexes for conflict targets.
+            // Drop and recreate as a full unique index. Idempotent: the WHERE % check ensures
+            // this runs exactly once — after replacement the new index has no WHERE clause.
+            $hasPartialSourceKeyIdx = (bool) self::$pdo
+                ->query("SELECT EXISTS (
+                    SELECT 1 FROM pg_indexes
+                    WHERE schemaname = 'public'
+                      AND tablename  = 'event_series'
+                      AND indexname  = 'event_series_source_key_unique'
+                      AND indexdef   LIKE '% WHERE %'
+                )")
+                ->fetchColumn();
+
+            if ($hasPartialSourceKeyIdx) {
+                self::$pdo->exec("DROP INDEX IF EXISTS event_series_source_key_unique");
+                self::$pdo->exec("CREATE UNIQUE INDEX event_series_source_key_unique ON event_series (source_key)");
             }
         }
 
