@@ -1034,10 +1034,16 @@ export default function App() {
           fetchEvents(ch.channelId),
           fetchCityEvents(ch.channelId),
         ])
-        // Count all non-expired events — Ticketmaster events are future-dated,
-        // a "today" filter would discard them all.
-        // The backend already prunes truly expired events before returning.
-        const total = hiladsData.events.length + (cityData.events ?? []).length
+        // Match the same filter used by EventsSidebar:
+        //   - Hilads events: today only (by city timezone)
+        //   - TM/city events: all non-expired (backend already prunes expired)
+        const tz = ch.timezone || 'UTC'
+        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+        const hiladsToday = hiladsData.events.filter(e => {
+          const day = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
+          return day === today
+        })
+        const total = hiladsToday.length + (cityData.events ?? []).length
         setChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
       } catch { /* ignore */ }
     })

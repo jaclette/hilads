@@ -25,9 +25,6 @@ export default function EventsSidebar({ events, cityEvents, activeEventId, cityT
   const hiladsEvents = filterAndSort(events, tz)
   // City events: don't filter by today — TM events are upcoming (backend already prunes expired ones)
   const publicEvents = (cityEvents || []).sort((a, b) => a.starts_at - b.starts_at)
-  // DEBUG — remove after investigation
-  console.log('[EventsSidebar] hiladsEvents:', hiladsEvents.map(e => ({ id: e.id, title: e.title, location_hint: e.location_hint })))
-  console.log('[EventsSidebar] cityEvents raw:', cityEvents?.length ?? 0, 'rendered:', publicEvents.length)
   const totalCount = hiladsEvents.length + publicEvents.length
 
   function renderRow(event) {
