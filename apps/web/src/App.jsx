@@ -237,15 +237,10 @@ function generateNickname() {
   return `${adj}${noun}`
 }
 
-// Unique per browser tab — stored in sessionStorage so it survives hot reloads but not new tabs
-function getOrCreateSessionId() {
-  let id = sessionStorage.getItem('hilads_sid')
-  if (!id) {
-    id = crypto.randomUUID()
-    sessionStorage.setItem('hilads_sid', id)
-  }
-  return id
-}
+// Unique per page load — generated fresh so duplicated tabs never share a sessionId.
+// Stored as a module-level constant so the same ID is used across re-renders and
+// Vite HMR fast-refresh (where the module is preserved, not reloaded).
+const PAGE_SESSION_ID = crypto.randomUUID()
 
 const IDENTITY_KEY = 'hilads_identity'
 
@@ -382,7 +377,7 @@ export default function App() {
   const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
   const chatInputRef = useRef(null)
-  const sessionIdRef = useRef(getOrCreateSessionId())
+  const sessionIdRef = useRef(PAGE_SESSION_ID)
   const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
   const socketRef = useRef(null)      // WebSocket presence client
   const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
