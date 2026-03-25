@@ -1443,6 +1443,40 @@ $router->add('POST', '/internal/event-series/generate', function () {
     Response::json(['ok' => true, 'results' => $results]);
 });
 
+$router->add('POST', '/internal/event-series/refresh-static-occurrences', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    $providedKey = $_SERVER['HTTP_X_API_KEY']
+        ?? $_SERVER['HTTP_X_API_Key']
+        ?? ($_GET['key'] ?? '');
+
+    if (!is_string($providedKey) || !hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $body = Request::json() ?? [];
+    $channelId = null;
+    if (array_key_exists('channelId', $body) && $body['channelId'] !== null) {
+        $channelId = filter_var($body['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($channelId === false) {
+            Response::json(['error' => 'Invalid channelId'], 400);
+        }
+        if (CityRepository::findById($channelId) === null) {
+            Response::json(['error' => 'Channel not found'], 404);
+        }
+    }
+
+    $result = EventSeriesRepository::refreshImportedOccurrences($channelId);
+    Response::json([
+        'ok' => true,
+        'channelId' => $channelId,
+        'result' => $result,
+    ]);
+});
+
 $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params) {
     $eventId = $params['eventId'] ?? '';
 

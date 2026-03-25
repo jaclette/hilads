@@ -376,6 +376,66 @@ class EventSeriesRepository
         return $results;
     }
 
+    public static function refreshImportedOccurrences(?int $channelId = null): array
+    {
+        $pdo = Database::pdo();
+        $params = [];
+        $cityFilter = '';
+        $filter = "
+            WHERE es.source = 'import'
+              AND es.source_key LIKE 'static:v1:%'
+        ";
+
+        if ($channelId !== null) {
+            $filter .= " AND es.city_id = ? ";
+            $cityFilter = " AND es.city_id = ? ";
+            $params[] = 'city_' . $channelId;
+        }
+
+        $eventStmt = $pdo->prepare("
+            UPDATE channel_events ce
+            SET title = es.title,
+                event_type = es.event_type,
+                location = es.location
+            FROM event_series es
+            WHERE ce.series_id = es.id
+              AND ce.expires_at > now()
+              AND es.source = 'import'
+              AND es.source_key LIKE 'static:v1:%'
+              $cityFilter
+        ");
+        $eventStmt->execute($params);
+        $eventsUpdated = $eventStmt->rowCount();
+
+        $channelStmt = $pdo->prepare("
+            UPDATE channels c
+            SET name = es.title,
+                updated_at = now()
+            FROM channel_events ce
+            JOIN event_series es ON es.id = ce.series_id
+            WHERE c.id = ce.channel_id
+              AND ce.expires_at > now()
+              AND es.source = 'import'
+              AND es.source_key LIKE 'static:v1:%'
+              $cityFilter
+        ");
+        $channelStmt->execute($params);
+        $channelsUpdated = $channelStmt->rowCount();
+
+        $seriesStmt = $pdo->prepare("
+            SELECT COUNT(*)
+            FROM event_series es
+            $filter
+        ");
+        $seriesStmt->execute($params);
+
+        return [
+            'series_matched'   => (int) $seriesStmt->fetchColumn(),
+            'events_updated'   => $eventsUpdated,
+            'channels_updated' => $channelsUpdated,
+        ];
+    }
+
     private static function updateImportedSeries(string $seriesId, array $item, array $city): void
     {
         $pdo = Database::pdo();

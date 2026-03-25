@@ -9,9 +9,9 @@ set_exception_handler(function (Throwable $e) {
     error_log('[hilads] ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) {
         http_response_code(500);
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
     }
-    echo json_encode(['error' => 'Internal server error']);
+    echo json_encode(['error' => 'Internal server error'], JSON_UNESCAPED_UNICODE);
     exit();
 });
 
@@ -22,7 +22,7 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if ($method === 'GET' && $uri === '/health') {
     http_response_code(200);
-    header('Content-Type: application/json');
+    header('Content-Type: application/json; charset=utf-8');
 
     $dbUrl    = getenv('DATABASE_URL') ?: null;
     $dbStatus = $dbUrl ? 'configured' : 'no DATABASE_URL';
@@ -50,7 +50,7 @@ if ($method === 'GET' && $uri === '/health') {
         'service'    => 'hilads-api',
         'db_status'  => $dbStatus,
         'db_error'   => $dbError ?? null,
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
     exit();
 }
 
@@ -74,7 +74,7 @@ if ($method === 'OPTIONS') {
     exit();
 }
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
