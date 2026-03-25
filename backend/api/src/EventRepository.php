@@ -102,24 +102,14 @@ class EventRepository
 
     public static function getByChannel(int $channelId): array
     {
-        $stmt = Database::pdo()->prepare("
-            WITH ranked_events AS (
-                " . self::SELECT . ",
-                    ROW_NUMBER() OVER (
-                        PARTITION BY COALESCE(ce.series_id, ce.channel_id)
-                        ORDER BY ce.starts_at ASC, c.created_at ASC
-                    ) AS hilads_rank
-                WHERE c.parent_id = :parent_id
-                  AND c.type       = 'event'
-                  AND c.status     = 'active'
-                  AND ce.source_type = 'hilads'
-                  AND ce.expires_at  > now()
-            )
-            SELECT * FROM ranked_events
-            WHERE hilads_rank = 1
-            ORDER BY starts_at ASC
-            LIMIT " . self::MAX_HILADS
-        );
+        $stmt = Database::pdo()->prepare(self::SELECT . "
+            WHERE c.parent_id = :parent_id
+              AND c.type       = 'event'
+              AND c.status     = 'active'
+              AND ce.source_type = 'hilads'
+              AND ce.expires_at  > now()
+            ORDER BY ce.starts_at ASC
+        ");
         $stmt->execute(['parent_id' => 'city_' . $channelId]);
         return array_map([self::class, 'format'], $stmt->fetchAll());
     }
