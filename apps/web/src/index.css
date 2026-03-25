@@ -474,6 +474,11 @@ html, body, #root {
   padding: max(18px, env(safe-area-inset-top)) 0 8px;
 }
 
+.header-hero--desktop,
+.header-desktop-layout {
+  display: none;
+}
+
 /* Logo: big, centered, glowing */
 .chat-header .logo {
   display: flex;
@@ -594,8 +599,86 @@ html, body, #root {
 }
 
 @media (min-width: 768px) {
+  .chat-header {
+    padding: 18px 28px 22px;
+  }
+
+  .header-hero--mobile,
+  .header-side-control,
   .header-desktop-controls {
+    display: none;
+  }
+
+  .header-desktop-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 240px) minmax(320px, 1fr) minmax(0, 280px);
+    align-items: start;
+    gap: 24px;
+    min-height: 168px;
+  }
+
+  .header-desktop-zone {
+    min-width: 0;
     display: flex;
+    align-items: flex-start;
+  }
+
+  .header-desktop-zone--left {
+    justify-content: flex-start;
+    padding-top: 10px;
+  }
+
+  .header-desktop-zone--center {
+    justify-content: center;
+  }
+
+  .header-desktop-zone--right {
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 10px;
+  }
+
+  .header-desktop-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    border-radius: 18px;
+    background: rgba(15, 12, 10, 0.68);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-hero--desktop {
+    display: flex;
+    min-height: 0;
+    padding: 0;
+    gap: 14px;
+  }
+
+  .header-hero--desktop .logo svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-hero--desktop .header-hero-name {
+    font-size: clamp(2rem, 3.1vw, 2.85rem);
+  }
+
+  .header-hero--desktop .online-label {
+    font-size: 0.92rem;
+  }
+
+  .change-city-btn {
+    max-width: 240px;
+  }
+
+  .you-badge {
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 0.82rem;
+    white-space: nowrap;
   }
 }
 
@@ -3413,15 +3496,7 @@ html, body, #root {
 
 @media (min-width: 768px) {
   .header-side-control {
-    top: 20px;
-  }
-
-  .header-side-control--left {
-    left: 20px;
-  }
-
-  .header-side-control--right {
-    right: 20px;
+    display: none;
   }
 }
 
