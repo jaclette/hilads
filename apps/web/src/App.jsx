@@ -229,14 +229,6 @@ function generateNickname() {
   return `${adj}${noun}`
 }
 
-function countVisibleHiladsEvents(events, timezone = 'UTC') {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone })
-  return events.filter(event => {
-    const eventDay = new Date(event.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: timezone })
-    return eventDay === today
-  }).length
-}
-
 async function fetchVisibleCityEventCount(channel) {
   const [hiladsResult, cityResult] = await Promise.allSettled([
     fetchEvents(channel.channelId),
@@ -244,7 +236,7 @@ async function fetchVisibleCityEventCount(channel) {
   ])
 
   const hiladsCount = hiladsResult.status === 'fulfilled'
-    ? countVisibleHiladsEvents(hiladsResult.value.events ?? [], channel.timezone || 'UTC')
+    ? (hiladsResult.value.events ?? []).length
     : null
   const publicCount = cityResult.status === 'fulfilled'
     ? (cityResult.value.events ?? []).length
