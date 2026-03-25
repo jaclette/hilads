@@ -5,6 +5,31 @@ declare(strict_types=1);
 // ── WS broadcast helper ───────────────────────────────────────────────────────
 // Fire-and-forget: tells the WS server to push a newMessage event to room members.
 // channelId: int for city channels, string (hex) for event channels.
+function apiLog(string $scope, string $message, array $context = []): void
+{
+    $parts = [];
+    foreach ($context as $key => $value) {
+        if ($value === null) {
+            continue;
+        }
+        if (is_bool($value)) {
+            $value = $value ? 'true' : 'false';
+        }
+        if (is_scalar($value)) {
+            $parts[] = $key . '=' . $value;
+        } else {
+            $parts[] = $key . '=' . json_encode($value);
+        }
+    }
+
+    error_log(sprintf('[%s] %s%s', $scope, $message, $parts ? ' | ' . implode(' ', $parts) : ''));
+}
+
+function apiElapsedMs(float $startedAt): int
+{
+    return (int) round((microtime(true) - $startedAt) * 1000);
+}
+
 function broadcastMessageToWs(int|string $channelId, array $message): void
 {
     $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
@@ -535,62 +560,104 @@ $router->add('GET', '/api/v1/channels', function () {
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $params) {
+    $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
     if ($channelId === false) {
         Response::json(['error' => 'Invalid channelId'], 400);
     }
 
-    if (CityRepository::findById($channelId) === null) {
-        Response::json(['error' => 'Channel not found'], 404);
+    try {
+        $body = Request::json();
+
+        if ($body === null) {
+            Response::json(['error' => 'Invalid JSON body'], 400);
+        }
+
+        $sessionId = $body['sessionId'] ?? null;
+        $guestId   = $body['guestId']  ?? null;
+        $nickname  = $body['nickname'] ?? null;
+
+        apiLog('channel_join', 'start', [
+            'channelId' => $channelId,
+            'sessionId' => is_string($sessionId) ? substr($sessionId, 0, 8) : null,
+            'guestId' => is_string($guestId) ? substr($guestId, 0, 8) : null,
+            'ip' => Request::ip(),
+        ]);
+
+        enforceRateLimit('channel_join', 90, 300);
+
+        if (CityRepository::findById($channelId) === null) {
+            Response::json(['error' => 'Channel not found'], 404);
+        }
+
+        if (!isValidSessionId($sessionId)) {
+            Response::json(['error' => 'sessionId is required'], 400);
+        }
+
+        if (!isValidGuestId($guestId)) {
+            Response::json(['error' => 'guestId is required'], 400);
+        }
+
+        if (empty($nickname) || !is_string($nickname)) {
+            Response::json(['error' => 'nickname is required'], 400);
+        }
+
+        $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+
+        if ($nickname === '') {
+            Response::json(['error' => 'nickname must not be empty'], 400);
+        }
+
+        $previousChannelId = isset($body['previousChannelId'])
+            ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+            : false;
+
+        if ($previousChannelId !== false && $previousChannelId !== $channelId) {
+            try {
+                PresenceRepository::leave($previousChannelId, $sessionId);
+            } catch (\Throwable $e) {
+                apiLog('channel_join', 'previous leave failed', [
+                    'channelId' => $channelId,
+                    'previousChannelId' => $previousChannelId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+
+        $message = [
+            'type' => 'system',
+            'event' => 'join',
+            'guestId' => $guestId,
+            'nickname' => $nickname,
+            'createdAt' => time(),
+        ];
+
+        try {
+            $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
+        } catch (\Throwable $e) {
+            apiLog('channel_join', 'join event write failed', [
+                'channelId' => $channelId,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        apiLog('channel_join', 'success', [
+            'channelId' => $channelId,
+            'elapsedMs' => apiElapsedMs($startedAt),
+        ]);
+
+        Response::json(['message' => $message], 201);
+    } catch (\Throwable $e) {
+        apiLog('channel_join', 'failure', [
+            'channelId' => $channelId,
+            'elapsedMs' => apiElapsedMs($startedAt),
+            'error' => get_class($e) . ': ' . $e->getMessage(),
+        ]);
+        throw $e;
     }
-
-    $body = Request::json();
-
-    if ($body === null) {
-        Response::json(['error' => 'Invalid JSON body'], 400);
-    }
-
-    $sessionId = $body['sessionId'] ?? null;
-    $guestId   = $body['guestId']  ?? null;
-    $nickname  = $body['nickname'] ?? null;
-
-    enforceRateLimit('channel_join', 90, 300);
-
-    if (!isValidSessionId($sessionId)) {
-        Response::json(['error' => 'sessionId is required'], 400);
-    }
-
-    if (!isValidGuestId($guestId)) {
-        Response::json(['error' => 'guestId is required'], 400);
-    }
-
-    if (empty($nickname) || !is_string($nickname)) {
-        Response::json(['error' => 'nickname is required'], 400);
-    }
-
-    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
-
-    if ($nickname === '') {
-        Response::json(['error' => 'nickname must not be empty'], 400);
-    }
-
-    // If the user was in a previous room, leave it first
-    $previousChannelId = isset($body['previousChannelId'])
-        ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
-        : false;
-
-    if ($previousChannelId !== false && $previousChannelId !== $channelId) {
-        PresenceRepository::leave($previousChannelId, $sessionId);
-    }
-
-    PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
-
-    $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
-
-    // onlineUsers/onlineCount intentionally omitted — the WS presenceSnapshot
-    // arrives within milliseconds and is the authoritative source for presence.
-    Response::json(['message' => $message], 201);
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $params) {
@@ -664,23 +731,42 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
+    $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
     if ($channelId === false) {
         Response::json(['error' => 'Invalid channelId'], 400);
     }
 
-    if (CityRepository::findById($channelId) === null) {
-        Response::json(['error' => 'Channel not found'], 404);
+    try {
+        if (CityRepository::findById($channelId) === null) {
+            Response::json(['error' => 'Channel not found'], 404);
+        }
+
+        $messages = MessageRepository::getByChannel($channelId);
+        $onlineUsers = PresenceRepository::getOnline($channelId);
+        $onlineCount = PresenceRepository::getCount($channelId);
+
+        apiLog('channel_messages', 'success', [
+            'channelId' => $channelId,
+            'messages' => count($messages),
+            'onlineCount' => $onlineCount,
+            'elapsedMs' => apiElapsedMs($startedAt),
+        ]);
+
+        Response::json([
+            'messages'    => $messages,
+            'onlineUsers' => $onlineUsers,
+            'onlineCount' => $onlineCount,
+        ]);
+    } catch (\Throwable $e) {
+        apiLog('channel_messages', 'failure', [
+            'channelId' => $channelId,
+            'elapsedMs' => apiElapsedMs($startedAt),
+            'error' => get_class($e) . ': ' . $e->getMessage(),
+        ]);
+        throw $e;
     }
-
-    $messages = MessageRepository::getByChannel($channelId);
-
-    Response::json([
-        'messages'    => $messages,
-        'onlineUsers' => PresenceRepository::getOnline($channelId),
-        'onlineCount' => PresenceRepository::getCount($channelId),
-    ]);
 });
 
 $router->add('POST', '/api/v1/uploads', function () {
@@ -743,6 +829,7 @@ $router->add('POST', '/api/v1/uploads', function () {
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array $params) {
+    $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
     if ($channelId === false) {
@@ -774,8 +861,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
         $lng = null;
     }
 
-    // syncIfNeeded is fully resilient — never throws
-    TicketmasterImporter::syncIfNeeded($channelId, $lat, $lng, $city['name']);
+    try {
+        TicketmasterImporter::syncIfNeeded($channelId, $lat, $lng, $city['name']);
+    } catch (\Throwable $e) {
+        apiLog('city_events', 'sync failed', [
+            'channelId' => $channelId,
+            'error' => $e->getMessage(),
+        ]);
+    }
 
     try {
         $events = EventRepository::getPublicByChannel($channelId);
@@ -784,6 +877,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
         $events = [];
     }
 
+    apiLog('city_events', 'success', [
+        'channelId' => $channelId,
+        'events' => count($events),
+        'elapsedMs' => apiElapsedMs($startedAt),
+    ]);
     Response::json(['events' => $events]);
 });
 
@@ -1714,8 +1812,24 @@ $router->add('GET', '/api/v1/notifications', function () {
 // GET /api/v1/notifications/unread-count
 // Lightweight poll endpoint — returns only the unread count.
 $router->add('GET', '/api/v1/notifications/unread-count', function () {
+    $startedAt = microtime(true);
     $user = AuthService::requireAuth();
-    Response::json(['count' => NotificationRepository::unreadCount($user['id'])]);
+    try {
+        $count = NotificationRepository::unreadCount($user['id']);
+        apiLog('notifications_unread', 'success', [
+            'userId' => substr($user['id'], 0, 8),
+            'count' => $count,
+            'elapsedMs' => apiElapsedMs($startedAt),
+        ]);
+        Response::json(['count' => $count]);
+    } catch (\Throwable $e) {
+        apiLog('notifications_unread', 'failure', [
+            'userId' => substr($user['id'], 0, 8),
+            'elapsedMs' => apiElapsedMs($startedAt),
+            'error' => get_class($e) . ': ' . $e->getMessage(),
+        ]);
+        throw $e;
+    }
 });
 
 // POST /api/v1/notifications/mark-read

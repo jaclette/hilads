@@ -5,6 +5,7 @@ declare(strict_types=1);
 class Database
 {
     private static ?PDO $pdo = null;
+    private static bool $bootstrapped = false;
 
     public static function pdo(): PDO
     {
@@ -156,13 +157,24 @@ class Database
             }
         }
 
+        self::bootstrap(self::$pdo);
+
+        return self::$pdo;
+    }
+
+    private static function bootstrap(PDO $pdo): void
+    {
+        if (self::$bootstrapped) {
+            return;
+        }
+
         // ── Notifications (Phase 1) ───────────────────────────────────────────
-        $notifExist = (bool) self::$pdo
+        $notifExist = (bool) $pdo
             ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'notifications')")
             ->fetchColumn();
 
         if (!$notifExist) {
-            self::$pdo->exec("
+            $pdo->exec("
                 CREATE TABLE notifications (
                     id         BIGSERIAL    PRIMARY KEY,
                     user_id    TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -174,10 +186,10 @@ class Database
                     created_at TIMESTAMPTZ  NOT NULL DEFAULT now()
                 )
             ");
-            self::$pdo->exec("CREATE INDEX idx_notifications_user_feed   ON notifications (user_id, created_at DESC)");
-            self::$pdo->exec("CREATE INDEX idx_notifications_user_unread ON notifications (user_id) WHERE is_read = FALSE");
+            $pdo->exec("CREATE INDEX idx_notifications_user_feed   ON notifications (user_id, created_at DESC)");
+            $pdo->exec("CREATE INDEX idx_notifications_user_unread ON notifications (user_id) WHERE is_read = FALSE");
 
-            self::$pdo->exec("
+            $pdo->exec("
                 CREATE TABLE notification_preferences (
                     user_id              TEXT    PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
                     dm_push              BOOLEAN NOT NULL DEFAULT TRUE,
@@ -187,7 +199,7 @@ class Database
             ");
 
             // push_subscriptions is Phase 2 — created now so Phase 2 needs no migration.
-            self::$pdo->exec("
+            $pdo->exec("
                 CREATE TABLE push_subscriptions (
                     id           BIGSERIAL    PRIMARY KEY,
                     user_id      TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -198,10 +210,10 @@ class Database
                     last_used_at TIMESTAMPTZ  NOT NULL DEFAULT now()
                 )
             ");
-            self::$pdo->exec("CREATE INDEX idx_push_subscriptions_user ON push_subscriptions (user_id)");
+            $pdo->exec("CREATE INDEX idx_push_subscriptions_user ON push_subscriptions (user_id)");
         }
 
-        return self::$pdo;
+        self::$bootstrapped = true;
     }
 
     private static function migrate(PDO $pdo): void
