@@ -4,6 +4,16 @@ const INSTALL_DISMISS_KEY = 'hilads_install_prompt_dismissed_until'
 const INSTALL_FEED_KEY = 'hilads_install_feed_prompt_seen'
 const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000
 
+// Capture beforeinstallprompt at module load — before React mounts.
+// This ensures we never miss the event due to useEffect running after mount.
+let _earlyPrompt = null
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()
+    _earlyPrompt = e
+  }, { once: true })
+}
+
 function getStoredNumber(key) {
   if (typeof window === 'undefined') return 0
   const raw = window.localStorage.getItem(key)
@@ -46,6 +56,12 @@ export default function useBeforeInstallPrompt() {
   const platform = useMemo(() => getPlatformState(), [])
 
   useEffect(() => {
+    // Pick up any event captured before React mounted
+    if (_earlyPrompt) {
+      setDeferredPrompt(_earlyPrompt)
+      _earlyPrompt = null
+    }
+
     const onBeforeInstallPrompt = (event) => {
       event.preventDefault()
       setDeferredPrompt(event)
@@ -87,16 +103,23 @@ export default function useBeforeInstallPrompt() {
     if (deferredPrompt) {
       const promptEvent = deferredPrompt
       setDeferredPrompt(null)
-      await promptEvent.prompt()
-      const choice = await promptEvent.userChoice.catch(() => null)
-      if (choice?.outcome === 'accepted') {
+      try {
+        await promptEvent.prompt()
+      } catch {
+        // prompt() can throw if called at wrong time; treat as dismissed
+        return false
+      }
+      const { outcome } = await promptEvent.userChoice.catch(() => ({ outcome: 'dismissed' }))
+      if (outcome === 'accepted') {
         setIsInstalled(true)
         return true
       }
-      dismissBanner()
+      // User dismissed the native dialog — don't set a 7-day cooldown.
+      // The banner stays visible in fallback mode so they can still add manually.
       return false
     }
 
+    // No native prompt available (iOS Safari, Firefox, etc.) — show manual instructions
     setManualHelpVisible(true)
     return false
   }
@@ -114,8 +137,8 @@ export default function useBeforeInstallPrompt() {
   const instructionText = canUseNativePrompt
     ? 'Add Hilads to your home screen'
     : platform.isIOS && platform.isSafari
-      ? 'Tap Share, then Add to Home Screen'
-      : 'Add Hilads from your browser menu'
+      ? 'Tap Share, then "Add to Home Screen"'
+      : 'Open browser menu → Add to Home Screen'
 
   return {
     canUseNativePrompt,

@@ -2018,6 +2018,7 @@ export default function App() {
           <div className="chat-install-slot">
             <InstallPromptBanner
               compact
+              canInstall={installPrompt.canUseNativePrompt}
               instructionText={compactInstallText}
               manualHelpVisible={installPrompt.manualHelpVisible}
               onAdd={() => installPrompt.promptInstall().catch(() => {})}
@@ -2371,6 +2372,7 @@ export default function App() {
 
       {showInstallBanner && !installBannerUsesBottomNav && (
         <InstallPromptBanner
+          canInstall={installPrompt.canUseNativePrompt}
           instructionText={installPrompt.instructionText}
           manualHelpVisible={installPrompt.manualHelpVisible}
           onAdd={() => installPrompt.promptInstall().catch(() => {})}
