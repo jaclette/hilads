@@ -5,7 +5,7 @@ declare(strict_types=1);
 class EventRepository
 {
     private const COOLDOWN   = 300; // 5 min between creations per guest per channel
-    private const MAX_HILADS = 5;
+    private const MAX_HILADS = 10;
     private const MAX_PUBLIC = 10;
 
     // ── Shared SELECT columns ─────────────────────────────────────────────────
