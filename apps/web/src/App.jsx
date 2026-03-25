@@ -1345,14 +1345,10 @@ export default function App() {
     }).catch(() => {})
   }, [activeEvent?.id])
 
-  // Bulk-fetch participant counts for visible Hilads events when the Hot drawer opens.
-  // The Hot drawer renders only canonical Hilads events for today.
+  // Bulk-fetch participant counts for all Hilads events when the Hot drawer opens.
   useEffect(() => {
     if (!showEventDrawer || !sessionIdRef.current) return
-    const tz = cityTimezone || 'UTC'
-    const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-    const isEventToday = e => new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-    events.filter(isEventToday).forEach(event => {
+    events.forEach(event => {
       fetchEventParticipants(event.id, sessionIdRef.current).then(({ count, isIn }) => {
         setEventParticipants(prev => ({ ...prev, [event.id]: count }))
         setParticipatedEvents(prev => {
@@ -2353,14 +2349,9 @@ export default function App() {
             {(() => {
               const openCreate = () => { setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
               const tz = cityTimezone || 'UTC'
-              const isEventToday = e => {
-                const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-                const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
-                return today === eventDay
-              }
-              const todayHilads = events.filter(isEventToday)
+              const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
               const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
-              const totalVisibleEvents = todayHilads.length + publicEvents.length
+              const totalVisibleEvents = hiladsEvents.length + publicEvents.length
               const renderEventRow = (event, group = 'hilads') => {
                 const going = eventParticipants[event.id] ?? 0
                 return (
@@ -2439,9 +2430,9 @@ export default function App() {
               return (
                 <>
                   <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
-                  {todayHilads.length === 0
-                    ? <p className="events-empty">No Hilads events today</p>
-                    : todayHilads.map(event => renderEventRow(event, 'hilads'))}
+                  {hiladsEvents.length === 0
+                    ? <p className="events-empty">No Hilads events yet</p>
+                    : hiladsEvents.map(event => renderEventRow(event, 'hilads'))}
                   {publicEvents.length > 0 && (
                     <>
                       <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>Public Events</p>

@@ -109,8 +109,7 @@ class EventRepository
               AND ce.source_type = 'hilads'
               AND ce.expires_at  > now()
             ORDER BY ce.starts_at ASC
-            LIMIT " . self::MAX_HILADS
-        );
+        ");
         $stmt->execute(['parent_id' => 'city_' . $channelId]);
         return array_map([self::class, 'format'], $stmt->fetchAll());
     }
