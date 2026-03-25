@@ -13,6 +13,7 @@ import ConversationsScreen from './components/ConversationsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import BackButton from './components/BackButton'
+import SendButton from './components/SendButton'
 import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
 import { registerPush, unregisterPush } from './push'
@@ -131,15 +132,6 @@ function NavIconProfile() {
 }
 
 // ── Chat icons ────────────────────────────────────────────────────────────────
-
-function SendIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13" />
-      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-    </svg>
-  )
-}
 
 function ImageIcon() {
   return (
@@ -2054,9 +2046,7 @@ export default function App() {
             maxLength={1000}
             autoFocus
           />
-          <button type="submit" disabled={sending || !input.trim()} className="send-btn">
-            <SendIcon />
-          </button>
+          <SendButton disabled={sending || !input.trim()} />
         </form>
 
         {/* Bottom navigation — mobile only */}

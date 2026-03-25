@@ -3936,23 +3936,3 @@ img.dm-header-avatar {
   color: var(--muted);
 }
 
-.dm-send-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  border: none;
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: opacity 0.15s;
-}
-
-.dm-send-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
-}

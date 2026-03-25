@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { fetchConversationMessages, sendConversationMessage, markConversationRead } from '../api'
 import BackButton from './BackButton'
+import SendButton from './SendButton'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -120,13 +121,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
           maxLength={1000}
           autoFocus
         />
-        <button
-          className="dm-send-btn"
-          type="submit"
-          disabled={sending || !input.trim()}
-        >
-          ↑
-        </button>
+        <SendButton disabled={sending || !input.trim()} />
       </form>
     </div>
   )
