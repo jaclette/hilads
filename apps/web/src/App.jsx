@@ -1010,10 +1010,9 @@ export default function App() {
       const data = await fetchChannels()
       loadedChannels = data.channels
       setChannels(loadedChannels)
-      // Phase 1: seed counts from stored data — available immediately, no extra calls
-      const counts = {}
-      for (const ch of loadedChannels) counts[ch.channelId] = ch.eventCount ?? 0
-      setChannelEventCounts(counts)
+      // No Phase 1 count seeding: ch.eventCount from the backend only counts events for
+      // today's occurrence_date and misses future Ticketmaster events, causing a stale
+      // wrong value that Phase 2 corrects 5s later. Phase 2 is the single source of truth.
     } catch {
       setChannels([])
     } finally {
