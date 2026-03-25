@@ -289,17 +289,17 @@ const PAGE_SESSION_ID = crypto.randomUUID()
 
 const IDENTITY_KEY = 'hilads_identity'
 
-function saveIdentity(nickname, channelId, city) {
-  localStorage.setItem(IDENTITY_KEY, JSON.stringify({ nickname, channelId, city }))
+function saveIdentity(nickname, channelId, city, timezone = null) {
+  localStorage.setItem(IDENTITY_KEY, JSON.stringify({ nickname, channelId, city, timezone }))
 }
 
 function loadIdentity() {
   try {
     const raw = localStorage.getItem(IDENTITY_KEY)
     if (!raw) return null
-    const { nickname, channelId, city } = JSON.parse(raw)
+    const { nickname, channelId, city, timezone } = JSON.parse(raw)
     if (!nickname?.trim() || !channelId) return null
-    return { nickname: nickname.trim(), channelId, city: city ?? null }
+    return { nickname: nickname.trim(), channelId, city: city ?? null, timezone: timezone ?? null }
   } catch {
     return null
   }
@@ -819,7 +819,7 @@ export default function App() {
     setStatus('joining')
     try {
       const location = rejoinData
-        ? { channelId: rejoinData.channelId, city: rejoinData.city, timezone: 'UTC' }
+        ? { channelId: rejoinData.channelId, city: rejoinData.city, timezone: rejoinData.timezone ?? 'UTC' }
         : await locPromiseRef.current
       if (!location && !rejoinData) {
         // Geo was denied before a city was selected — return to onboarding
@@ -851,7 +851,7 @@ export default function App() {
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
       setOnlineCount(null) // populated within ~100ms by WS presenceSnapshot
       setStatus('ready')
-      saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null)
+      saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
       scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
@@ -1177,7 +1177,7 @@ export default function App() {
     knownIdsRef.current = new Set()
     setCity(newCityName)
     setChannelId(newChannelId)
-    saveIdentity(activeNickname, newChannelId, newCityName)
+    saveIdentity(activeNickname, newChannelId, newCityName, newCityTimezone ?? null)
     setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
     setCityEvents([])
@@ -2641,7 +2641,7 @@ export default function App() {
                     if (trimmed) {
                       setNickname(trimmed)
                       nicknameRef.current = trimmed
-                      saveIdentity(trimmed, channelId, city)
+                      saveIdentity(trimmed, channelId, city, cityTimezone ?? null)
                     }
                     setShowProfileDrawer(false)
                   }}
