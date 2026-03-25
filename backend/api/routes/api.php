@@ -1313,7 +1313,7 @@ $router->add('POST', '/internal/seed-static-venues', function () {
     error_log('[seed-static-venues] items=' . count($items) . ' dryRun=' . ($dryRun ? 'true' : 'false'));
 
     try {
-        $result = EventSeriesRepository::importBatch($items, $dryRun);
+        $result = EventSeriesRepository::importBatch($items, $dryRun, true);
     } catch (RuntimeException $e) {
         error_log('[seed-static-venues] fatal: ' . $e->getMessage());
         Response::json(['error' => $e->getMessage()], 500);

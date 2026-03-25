@@ -167,14 +167,15 @@ class EventSeriesRepository
      * @param array $items  Array of series definitions (see importBatch docblock below)
      * @param bool  $dryRun If true, validate + count without writing to DB
      */
-    public static function importBatch(array $items, bool $dryRun = false): array
+    public static function importBatch(array $items, bool $dryRun = false, bool $updateExisting = false): array
     {
         $pdo     = Database::pdo();
         $created = 0;
+        $updated = 0;
         $skipped = 0;
         $errors  = [];
 
-        $checkStmt = $pdo->prepare("SELECT 1 FROM event_series WHERE source_key = ?");
+        $checkStmt = $pdo->prepare("SELECT id FROM event_series WHERE source_key = ?");
 
         foreach ($items as $idx => $item) {
             $sourceKey = $item['source_key'] ?? null;
@@ -202,14 +203,22 @@ class EventSeriesRepository
 
             // Check for existing series with this source_key (dedup)
             $checkStmt->execute([$sourceKey]);
-            if ($checkStmt->fetchColumn()) {
-                $skipped++;
+            $existingSeriesId = $checkStmt->fetchColumn();
+            if ($existingSeriesId) {
+                if ($updateExisting) {
+                    if (!$dryRun) {
+                        self::updateImportedSeries((string) $existingSeriesId, $item, $city);
+                    }
+                    $updated++;
+                } else {
+                    $skipped++;
+                }
                 continue;
             }
 
             if ($dryRun) {
                 // Count as would-be-created without writing
-                $created++;
+                $skipped++;
                 continue;
             }
 
@@ -271,7 +280,7 @@ class EventSeriesRepository
             $created++;
         }
 
-        return ['created' => $created, 'skipped' => $skipped, 'errors' => $errors];
+        return ['created' => $created, 'updated' => $updated, 'skipped' => $skipped, 'errors' => $errors];
     }
 
     public static function generateOccurrences(array $series, int $lookaheadDays = 7): int
@@ -327,6 +336,40 @@ class EventSeriesRepository
         }
 
         return $results;
+    }
+
+    private static function updateImportedSeries(string $seriesId, array $item, array $city): void
+    {
+        $pdo = Database::pdo();
+        $title = mb_substr(trim($item['title']), 0, 100);
+        $location = isset($item['location']) ? mb_substr(trim($item['location']), 0, 100) : null;
+        $eventType = $item['event_type'] ?? 'other';
+        $startTime = $item['start_time'];
+        $endTime = $item['end_time'];
+        $recurrenceType = $item['recurrence_type'] ?? 'daily';
+
+        $pdo->prepare("
+            UPDATE event_series
+            SET title = ?, event_type = ?, location = ?, start_time = ?, end_time = ?, timezone = ?, recurrence_type = ?
+            WHERE id = ?
+        ")->execute([$title, $eventType, $location, $startTime, $endTime, $city['timezone'], $recurrenceType, $seriesId]);
+
+        $pdo->prepare("
+            UPDATE channels
+            SET name = ?, updated_at = now()
+            WHERE id IN (
+                SELECT channel_id FROM channel_events
+                WHERE series_id = ?
+                  AND expires_at > now()
+            )
+        ")->execute([$title, $seriesId]);
+
+        $pdo->prepare("
+            UPDATE channel_events
+            SET title = ?, event_type = ?, location = ?
+            WHERE series_id = ?
+              AND expires_at > now()
+        ")->execute([$title, $eventType, $location, $seriesId]);
     }
 
     private static function getFirstOccurrence(string $seriesId): ?array
