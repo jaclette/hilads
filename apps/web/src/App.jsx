@@ -1786,7 +1786,15 @@ export default function App() {
                 </div>
               </div>
               <div className="event-header-body">
-                <span className="event-header-title">{activeEvent.title}</span>
+                <div className="event-header-title-row">
+                  <span className="event-header-title">{activeEvent.title}</span>
+                  <button
+                    className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
+                    onClick={() => handleToggleParticipation(activeEvent.id)}
+                  >
+                    {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
+                  </button>
+                </div>
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
                   {activeEvent.ends_at ? ` → ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
@@ -1802,14 +1810,6 @@ export default function App() {
                   )
                   return <span className="event-location event-location--muted">📍 {loc ?? 'Location not available yet'}</span>
                 })()}
-                <div className="event-header-cta-row">
-                  <button
-                    className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
-                    onClick={() => handleToggleParticipation(activeEvent.id)}
-                  >
-                    {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
-                  </button>
-                </div>
               </div>
             </div>
           ) : (

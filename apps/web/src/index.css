@@ -2711,19 +2711,21 @@ html, body, #root {
   gap: 8px;
 }
 
+.event-header-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .event-header-title {
+  flex: 1;
+  min-width: 0;
   font-size: 1.6rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1.2;
   letter-spacing: -0.02em;
-}
-
-.event-header-cta-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-top: 6px;
 }
 
 /* Shrink city name on tight mobile headers */
