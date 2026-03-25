@@ -156,7 +156,7 @@ class TicketmasterImporter
                 continue;
             }
 
-            // Venue name, city, and coordinates
+            // Venue name, address, and coordinates
             $venue    = null;
             $location = null;
             $venueLat = null;
@@ -164,7 +164,7 @@ class TicketmasterImporter
             if (!empty($item['_embedded']['venues'][0])) {
                 $v        = $item['_embedded']['venues'][0];
                 $venue    = $v['name'] ?? null;
-                $location = $v['city']['name'] ?? null;
+                $location = self::buildVenueAddress($v);
                 $rawLat   = $v['location']['latitude']  ?? null;
                 $rawLng   = $v['location']['longitude'] ?? null;
                 if (is_numeric($rawLat) && is_numeric($rawLng)) {
@@ -201,5 +201,80 @@ class TicketmasterImporter
         }
 
         return $events;
+    }
+
+    private static function buildVenueAddress(array $venue): ?string
+    {
+        $candidates = [
+            $venue['formattedAddress'] ?? null,
+            $venue['address']['formattedAddress'] ?? null,
+            $venue['address']['line1'] ?? null,
+            $venue['address']['address1'] ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            $clean = self::cleanAddressPart($candidate);
+            if ($clean !== null) {
+                return self::composeAddress($clean, [
+                    $venue['district']['name'] ?? null,
+                    $venue['borough']['name'] ?? null,
+                    $venue['city']['name'] ?? null,
+                    $venue['state']['name'] ?? null,
+                ]);
+            }
+        }
+
+        $street = self::cleanAddressPart($venue['address']['street'] ?? $venue['street'] ?? null);
+        $streetNumber = self::cleanAddressPart(
+            $venue['address']['streetNumber']
+            ?? $venue['address']['houseNumber']
+            ?? $venue['streetNumber']
+            ?? $venue['houseNumber']
+            ?? null
+        );
+        $line2 = self::cleanAddressPart($venue['address']['line2'] ?? $venue['address']['address2'] ?? null);
+
+        $streetLine = trim(implode(' ', array_filter([$street, $streetNumber])));
+
+        return self::composeAddress($streetLine !== '' ? $streetLine : null, [
+            $line2,
+            $venue['district']['name'] ?? null,
+            $venue['borough']['name'] ?? null,
+            $venue['city']['name'] ?? null,
+            $venue['state']['name'] ?? null,
+            $venue['postalCode'] ?? $venue['address']['postalCode'] ?? null,
+            $venue['country']['name'] ?? null,
+        ]);
+    }
+
+    private static function composeAddress(?string $primary, array $parts): ?string
+    {
+        $clean = [];
+        if ($primary !== null && $primary !== '') {
+            $clean[] = $primary;
+        }
+
+        foreach ($parts as $part) {
+            $value = self::cleanAddressPart($part);
+            if ($value === null) {
+                continue;
+            }
+            if (in_array(mb_strtolower($value), array_map('mb_strtolower', $clean), true)) {
+                continue;
+            }
+            $clean[] = $value;
+        }
+
+        return empty($clean) ? null : implode(', ', $clean);
+    }
+
+    private static function cleanAddressPart(mixed $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim(preg_replace('/\s+/', ' ', $value));
+        return $value !== '' ? $value : null;
     }
 }
