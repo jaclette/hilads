@@ -309,6 +309,38 @@ function clearIdentity() {
   localStorage.removeItem(IDENTITY_KEY)
 }
 
+async function hydrateSavedLocation(rejoinData) {
+  if (!rejoinData?.channelId) return null
+  if (rejoinData.timezone) {
+    return {
+      channelId: rejoinData.channelId,
+      city: rejoinData.city ?? null,
+      timezone: rejoinData.timezone,
+      country: rejoinData.country ?? null,
+    }
+  }
+
+  try {
+    const data = await fetchChannels()
+    const match = (data.channels ?? []).find(ch => ch.channelId === rejoinData.channelId)
+    if (match) {
+      return {
+        channelId: match.channelId,
+        city: match.city,
+        timezone: match.timezone ?? 'UTC',
+        country: match.country ?? null,
+      }
+    }
+  } catch {}
+
+  return {
+    channelId: rejoinData.channelId,
+    city: rejoinData.city ?? null,
+    timezone: 'UTC',
+    country: rejoinData.country ?? null,
+  }
+}
+
 const WELCOME_KEY = 'hilads_welcomed'
 
 function hasBeenWelcomed(channelId) {
@@ -665,6 +697,25 @@ export default function App() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [feed])
 
+  useEffect(() => {
+    if (!channelId || cityTimezone !== 'UTC') return
+
+    let cancelled = false
+    fetchChannels()
+      .then(data => {
+        if (cancelled) return
+        const match = (data.channels ?? []).find(ch => ch.channelId === channelId)
+        if (!match?.timezone || match.timezone === 'UTC') return
+        setCityTimezone(match.timezone)
+        if (city) {
+          saveIdentity(activeNickname, channelId, city, match.timezone)
+        }
+      })
+      .catch(() => {})
+
+    return () => { cancelled = true }
+  }, [channelId, cityTimezone, city, activeNickname])
+
   async function startGeolocation() {
     setGeoState('pending')
     try {
@@ -819,7 +870,7 @@ export default function App() {
     setStatus('joining')
     try {
       const location = rejoinData
-        ? { channelId: rejoinData.channelId, city: rejoinData.city, timezone: rejoinData.timezone ?? 'UTC' }
+        ? await hydrateSavedLocation(rejoinData)
         : await locPromiseRef.current
       if (!location && !rejoinData) {
         // Geo was denied before a city was selected — return to onboarding
