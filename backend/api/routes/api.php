@@ -1323,6 +1323,7 @@ $router->add('POST', '/internal/seed-static-venues', function () {
         'ok'      => empty($result['errors']),
         'dry_run' => $dryRun,
         'created' => $result['created'],
+        'updated' => $result['updated'] ?? 0,
         'skipped' => $result['skipped'],
         'errors'  => $result['errors'],
         'preview' => $result['preview'] ?? null,

@@ -174,6 +174,12 @@ class EventSeriesRepository
         $updated = 0;
         $skipped = 0;
         $errors  = [];
+        $preview = [
+            'would_create' => 0,
+            'would_update' => 0,
+            'would_skip'   => 0,
+            'items'        => [],
+        ];
 
         $checkStmt = $pdo->prepare("SELECT id FROM event_series WHERE source_key = ?");
 
@@ -206,19 +212,45 @@ class EventSeriesRepository
             $existingSeriesId = $checkStmt->fetchColumn();
             if ($existingSeriesId) {
                 if ($updateExisting) {
+                    if ($dryRun) {
+                        $preview['would_update']++;
+                        $preview['items'][] = [
+                            'action'     => 'update',
+                            'city_id'    => $cityId,
+                            'title'      => $item['title'],
+                            'source_key' => $sourceKey,
+                            'location'   => $item['location'] ?? null,
+                        ];
+                    }
                     if (!$dryRun) {
                         self::updateImportedSeries((string) $existingSeriesId, $item, $city);
                     }
                     $updated++;
                 } else {
+                    if ($dryRun) {
+                        $preview['would_skip']++;
+                        $preview['items'][] = [
+                            'action'     => 'skip',
+                            'city_id'    => $cityId,
+                            'title'      => $item['title'],
+                            'source_key' => $sourceKey,
+                            'location'   => $item['location'] ?? null,
+                        ];
+                    }
                     $skipped++;
                 }
                 continue;
             }
 
             if ($dryRun) {
-                // Count as would-be-created without writing
-                $skipped++;
+                $preview['would_create']++;
+                $preview['items'][] = [
+                    'action'     => 'create',
+                    'city_id'    => $cityId,
+                    'title'      => $item['title'],
+                    'source_key' => $sourceKey,
+                    'location'   => $item['location'] ?? null,
+                ];
                 continue;
             }
 
@@ -280,7 +312,13 @@ class EventSeriesRepository
             $created++;
         }
 
-        return ['created' => $created, 'updated' => $updated, 'skipped' => $skipped, 'errors' => $errors];
+        return [
+            'created' => $created,
+            'updated' => $updated,
+            'skipped' => $skipped,
+            'errors'  => $errors,
+            'preview' => $dryRun ? $preview : null,
+        ];
     }
 
     public static function generateOccurrences(array $series, int $lookaheadDays = 7): int
