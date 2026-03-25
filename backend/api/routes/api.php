@@ -492,7 +492,7 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
     }
 
     foreach (CityRepository::all() as $city) {
-        $citySlug = strtolower(preg_replace('/[^a-z0-9]+/', '-', $city['name']));
+        $citySlug = preg_replace('/[^a-z0-9]+/', '-', strtolower($city['name']));
         $citySlug = trim($citySlug, '-');
         if ($citySlug === $slug) {
             Response::json([
