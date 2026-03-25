@@ -749,7 +749,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
         Response::json(['error' => 'Invalid channelId'], 400);
     }
 
-    $city = CityRepository::findById($channelId);
+    try {
+        $city = CityRepository::findById($channelId);
+    } catch (\Throwable $e) {
+        error_log("[city-events] DB error on city lookup ch={$channelId} — " . $e->getMessage());
+        Response::json(['events' => []], 200);
+    }
 
     if ($city === null) {
         Response::json(['error' => 'Channel not found'], 404);
@@ -769,9 +774,17 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
         $lng = null;
     }
 
+    // syncIfNeeded is fully resilient — never throws
     TicketmasterImporter::syncIfNeeded($channelId, $lat, $lng, $city['name']);
 
-    Response::json(['events' => EventRepository::getPublicByChannel($channelId)]);
+    try {
+        $events = EventRepository::getPublicByChannel($channelId);
+    } catch (\Throwable $e) {
+        error_log("[city-events] DB error on events read ch={$channelId} — " . $e->getMessage());
+        $events = [];
+    }
+
+    Response::json(['events' => $events]);
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {
