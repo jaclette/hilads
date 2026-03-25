@@ -2388,6 +2388,11 @@ html, body, #root {
   white-space: nowrap;
 }
 
+.er-going--public {
+  color: #ffb283;
+  font-weight: 700;
+}
+
 /* Line 2: badges — no wrap, truncate gracefully */
 .er-badges {
   display: flex;

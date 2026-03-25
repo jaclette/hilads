@@ -909,19 +909,30 @@ export default function App() {
       setHotEventsStatus('loading')
       const doEventsPoll = async (isInitial = false) => {
         if (!activeRef.current) return
-        try {
-          const evData = await fetchEvents(location.channelId)
-          if (activeChannelRef.current === location.channelId) {
-            setEvents(evData.events)
-            if (isInitial) setHotEventsStatus('ready')
-          }
-        } catch { /* ignore */ }
-        if (isInitial && activeChannelRef.current === location.channelId) {
-          setHotEventsStatus(prev => prev === 'loading' ? 'error' : prev)
+        const [hiladsResult, publicResult] = await Promise.allSettled([
+          fetchEvents(location.channelId),
+          fetchCityEvents(location.channelId),
+        ])
+        if (activeChannelRef.current !== location.channelId) return
+
+        const hiladsOk = hiladsResult.status === 'fulfilled'
+        const publicOk = publicResult.status === 'fulfilled'
+
+        if (hiladsOk) {
+          setEvents(hiladsResult.value.events)
+        } else if (isInitial) {
+          setEvents([])
         }
-        fetchCityEvents(location.channelId).then(cityEvData => {
-          if (activeChannelRef.current === location.channelId) setCityEvents(cityEvData.events)
-        }).catch(() => {})
+
+        if (publicOk) {
+          setCityEvents(publicResult.value.events)
+        } else if (isInitial) {
+          setCityEvents([])
+        }
+
+        if (isInitial) {
+          setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
+        }
       }
       doEventsPoll(true)
       clearInterval(eventsPolRef.current)
@@ -1183,19 +1194,30 @@ export default function App() {
       // Events: fetch + poll for new city
       const doEventsPoll = async (isInitial = false) => {
         if (!activeRef.current) return
-        try {
-          const evData = await fetchEvents(newChannelId)
-          if (activeChannelRef.current === newChannelId) {
-            setEvents(evData.events)
-            if (isInitial) setHotEventsStatus('ready')
-          }
-        } catch { /* ignore */ }
-        if (isInitial && activeChannelRef.current === newChannelId) {
-          setHotEventsStatus(prev => prev === 'loading' ? 'error' : prev)
+        const [hiladsResult, publicResult] = await Promise.allSettled([
+          fetchEvents(newChannelId),
+          fetchCityEvents(newChannelId),
+        ])
+        if (activeChannelRef.current !== newChannelId) return
+
+        const hiladsOk = hiladsResult.status === 'fulfilled'
+        const publicOk = publicResult.status === 'fulfilled'
+
+        if (hiladsOk) {
+          setEvents(hiladsResult.value.events)
+        } else if (isInitial) {
+          setEvents([])
         }
-        fetchCityEvents(newChannelId).then(cityEvData => {
-          if (activeChannelRef.current === newChannelId) setCityEvents(cityEvData.events)
-        }).catch(() => {})
+
+        if (publicOk) {
+          setCityEvents(publicResult.value.events)
+        } else if (isInitial) {
+          setCityEvents([])
+        }
+
+        if (isInitial) {
+          setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
+        }
       }
       doEventsPoll(true)
       eventsPolRef.current = setInterval(() => doEventsPoll(false), 30_000)
@@ -2191,10 +2213,10 @@ export default function App() {
                 const eventDay = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
                 return today === eventDay
               }
-              // Hot renders only Hilads canonical events from /channels/:id/events.
-              // Those include one-shot events and recurring occurrences stored in Hilads.
               const todayHilads = events.filter(isEventToday)
-              const renderEventRow = event => {
+              const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
+              const totalVisibleEvents = todayHilads.length + publicEvents.length
+              const renderEventRow = (event, group = 'hilads') => {
                 const going = eventParticipants[event.id] ?? 0
                 return (
                   <button
@@ -2206,7 +2228,9 @@ export default function App() {
                       <span className="er-title">
                         {EVENT_ICONS[event.type] ?? '📌'} {event.title}
                       </span>
-                      {going > 0 && <span className="er-going">👥 {going}</span>}
+                      {group === 'public'
+                        ? <span className="er-going er-going--public">Public</span>
+                        : going > 0 && <span className="er-going">👥 {going}</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
@@ -2241,7 +2265,9 @@ export default function App() {
                 return (
                   <>
                     <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
-                    {[...Array(5)].map(renderSkeletonRow)}
+                    {[...Array(3)].map(renderSkeletonRow)}
+                    <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>Public Events</p>
+                    {[...Array(2)].map((_, idx) => renderSkeletonRow(_, idx + 3))}
                   </>
                 )
               }
@@ -2256,7 +2282,7 @@ export default function App() {
                 )
               }
 
-              if (todayHilads.length === 0) {
+              if (totalVisibleEvents === 0) {
                 return (
                   <div className="events-empty-state">
                     <p className="events-empty-title">Nothing on yet</p>
@@ -2268,7 +2294,15 @@ export default function App() {
               return (
                 <>
                   <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
-                  {todayHilads.map(renderEventRow)}
+                  {todayHilads.length === 0
+                    ? <p className="events-empty">No Hilads events today</p>
+                    : todayHilads.map(event => renderEventRow(event, 'hilads'))}
+                  {publicEvents.length > 0 && (
+                    <>
+                      <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>Public Events</p>
+                      {publicEvents.map(event => renderEventRow(event, 'public'))}
+                    </>
+                  )}
                 </>
               )
             })()}
