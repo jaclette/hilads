@@ -886,17 +886,33 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {
+    $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
     if ($channelId === false) {
         Response::json(['error' => 'Invalid channelId'], 400);
     }
 
-    if (CityRepository::findById($channelId) === null) {
-        Response::json(['error' => 'Channel not found'], 404);
-    }
+    try {
+        if (CityRepository::findById($channelId) === null) {
+            Response::json(['error' => 'Channel not found'], 404);
+        }
 
-    Response::json(['events' => EventRepository::getByChannel($channelId)]);
+        $events = EventRepository::getByChannel($channelId);
+        apiLog('hilads_events', 'success', [
+            'channelId' => $channelId,
+            'events' => count($events),
+            'elapsedMs' => apiElapsedMs($startedAt),
+        ]);
+        Response::json(['events' => $events]);
+    } catch (\Throwable $e) {
+        apiLog('hilads_events', 'failure', [
+            'channelId' => $channelId,
+            'elapsedMs' => apiElapsedMs($startedAt),
+            'error' => get_class($e) . ': ' . $e->getMessage(),
+        ]);
+        Response::json(['events' => []], 200);
+    }
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $params) {

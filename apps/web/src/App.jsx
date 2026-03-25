@@ -238,14 +238,56 @@ function countVisibleHiladsEvents(events, timezone = 'UTC') {
 }
 
 async function fetchVisibleCityEventCount(channel) {
-  const [hiladsData, cityData] = await Promise.all([
+  const [hiladsResult, cityResult] = await Promise.allSettled([
     fetchEvents(channel.channelId),
     fetchCityEvents(channel.channelId),
   ])
 
-  const hiladsCount = countVisibleHiladsEvents(hiladsData.events ?? [], channel.timezone || 'UTC')
-  const publicCount = (cityData.events ?? []).length
-  return hiladsCount + publicCount
+  const hiladsCount = hiladsResult.status === 'fulfilled'
+    ? countVisibleHiladsEvents(hiladsResult.value.events ?? [], channel.timezone || 'UTC')
+    : null
+  const publicCount = cityResult.status === 'fulfilled'
+    ? (cityResult.value.events ?? []).length
+    : null
+
+  if (hiladsCount === null && publicCount === null) {
+    throw new Error('Failed to fetch city event count')
+  }
+
+  if (hiladsResult.status === 'rejected' || cityResult.status === 'rejected') {
+    console.warn('[city-count] partial fetch failure', {
+      channelId: channel.channelId,
+      hiladsOk: hiladsResult.status === 'fulfilled',
+      publicOk: cityResult.status === 'fulfilled',
+    })
+  }
+
+  const resolvedHilads = hiladsCount ?? 0
+  const resolvedPublic = publicCount ?? 0
+  const total = resolvedHilads + resolvedPublic
+
+  return total
+}
+
+function rankCitiesForList(channels, fallbackCounts = {}) {
+  return [...channels].sort((a, b) => {
+    const scoreA = ((fallbackCounts[a.channelId] ?? 0) * 10) + (a.activeUsers * 3) + a.messageCount
+    const scoreB = ((fallbackCounts[b.channelId] ?? 0) * 10) + (b.activeUsers * 3) + b.messageCount
+    if (scoreB !== scoreA) return scoreB - scoreA
+    return a.city.localeCompare(b.city)
+  })
+}
+
+function getDefaultCityTargets(channels, limit = 10) {
+  return rankCitiesForList(channels).slice(0, limit)
+}
+
+function getSearchCityTargets(channels, query, limit = 12) {
+  const q = query.trim().toLowerCase()
+  if (!q) return []
+  return rankCitiesForList(
+    channels.filter(ch => ch.city.toLowerCase().includes(q))
+  ).slice(0, limit)
 }
 
 // Unique per page load — generated fresh so duplicated tabs never share a sessionId.
@@ -397,6 +439,8 @@ export default function App() {
   const typingTimeoutRef = useRef(null) // debounce timer for typingStop
   const isTypingRef = useRef(false)     // true while typingStart has been sent
   const fileInputRef = useRef(null)
+  const cityCountLoadingRef = useRef(new Set())
+  const obCityCountLoadingRef = useRef(new Set())
 
   // Events refs
   const activeEventIdRef = useRef(null)
@@ -415,6 +459,33 @@ export default function App() {
   const compactInstallText = installPrompt.canUseNativePrompt
     ? 'Add Hilads to home screen'
     : installPrompt.instructionText
+
+  async function loadExactCityCounts(targetChannels, setCounts, loadingRef) {
+    const queue = targetChannels.filter(ch => {
+      if (!ch?.channelId) return false
+      if (loadingRef.current.has(ch.channelId)) return false
+      loadingRef.current.add(ch.channelId)
+      return true
+    })
+
+    const concurrency = 3
+    const worker = async () => {
+      while (queue.length > 0) {
+        const ch = queue.shift()
+        if (!ch) return
+        try {
+          const total = await fetchVisibleCityEventCount(ch)
+          setCounts(prev => ({ ...prev, [ch.channelId]: total }))
+        } catch (err) {
+          console.warn('[city-count] failed', { channelId: ch.channelId, error: err?.message ?? String(err) })
+        } finally {
+          loadingRef.current.delete(ch.channelId)
+        }
+      }
+    }
+
+    await Promise.all(Array.from({ length: Math.min(concurrency, queue.length) }, worker))
+  }
 
   function injectFeedInstallMessage() {
     if (
@@ -1036,6 +1107,7 @@ export default function App() {
     setCitySearchQuery('')
     setChannelsLoading(true)
     setChannelEventCounts({})
+    cityCountLoadingRef.current = new Set()
     let loadedChannels = []
     try {
       const data = await fetchChannels()
@@ -1047,12 +1119,7 @@ export default function App() {
       setChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    loadedChannels.forEach(async (ch) => {
-      try {
-        const total = await fetchVisibleCityEventCount(ch)
-        setChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
-      } catch { /* ignore */ }
-    })
+    void loadExactCityCounts(getDefaultCityTargets(loadedChannels), setChannelEventCounts, cityCountLoadingRef)
   }
 
   async function openObCityPicker() {
@@ -1060,6 +1127,7 @@ export default function App() {
     setCitySearchQuery('')
     setObChannelsLoading(true)
     setObChannelEventCounts({})
+    obCityCountLoadingRef.current = new Set()
     let loadedChannels = []
     try {
       const data = await fetchChannels()
@@ -1071,12 +1139,7 @@ export default function App() {
       setObChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    loadedChannels.forEach(async (ch) => {
-      try {
-        const total = await fetchVisibleCityEventCount(ch)
-        setObChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
-      } catch { /* ignore */ }
-    })
+    void loadExactCityCounts(getDefaultCityTargets(loadedChannels), setObChannelEventCounts, obCityCountLoadingRef)
   }
 
   function joinCityFromOb(newChannelId, cityName, timezone, country) {
@@ -1412,6 +1475,24 @@ export default function App() {
   }, [events]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── City scoring ────────────────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (!showCityPicker || channels.length === 0) return
+    const targets = citySearchQuery.trim()
+      ? getSearchCityTargets(channels, citySearchQuery)
+      : getDefaultCityTargets(channels)
+    if (targets.length === 0) return
+    void loadExactCityCounts(targets, setChannelEventCounts, cityCountLoadingRef)
+  }, [showCityPicker, channels, citySearchQuery]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!obPickingCity || obChannels.length === 0) return
+    const targets = citySearchQuery.trim()
+      ? getSearchCityTargets(obChannels, citySearchQuery)
+      : getDefaultCityTargets(obChannels)
+    if (targets.length === 0) return
+    void loadExactCityCounts(targets, setObChannelEventCounts, obCityCountLoadingRef)
+  }, [obPickingCity, obChannels, citySearchQuery]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function cityScore(ch, eventCount) {
     return (eventCount * 10) + (ch.activeUsers * 3) + (ch.messageCount * 1)
