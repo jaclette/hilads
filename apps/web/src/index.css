@@ -588,54 +588,55 @@ html, body, #root {
   padding: 4px 10px;
 }
 
-/* Desktop-only controls float top-right via absolute positioning */
-.header-desktop-controls {
-  display: none;
-  position: absolute;
-  top: 18px;
-  right: 20px;
-  align-items: center;
-  gap: 8px;
-}
-
 @media (min-width: 768px) {
   .chat-header {
     padding: 18px 28px 22px;
   }
 
   .header-hero--mobile,
-  .header-side-control,
-  .header-desktop-controls {
+  .header-side-control {
     display: none;
   }
 
   .header-desktop-layout {
     display: grid;
-    grid-template-columns: minmax(0, 240px) minmax(320px, 1fr) minmax(0, 280px);
-    align-items: start;
-    gap: 24px;
+    grid-template-columns: minmax(220px, 1fr) minmax(320px, 720px) minmax(220px, 1fr);
+    align-items: center;
+    gap: 28px;
     min-height: 168px;
+    width: 100%;
   }
 
   .header-desktop-zone {
     min-width: 0;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
   }
 
   .header-desktop-zone--left {
     justify-content: flex-start;
-    padding-top: 10px;
   }
 
   .header-desktop-zone--center {
     justify-content: center;
+    padding-inline: 8px;
   }
 
   .header-desktop-zone--right {
     justify-content: flex-end;
-    gap: 12px;
-    padding-top: 10px;
+  }
+
+  .header-desktop-left,
+  .header-desktop-right {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .header-desktop-right {
+    justify-content: flex-end;
+    gap: 14px;
+    flex-wrap: wrap;
   }
 
   .header-desktop-actions {
@@ -655,6 +656,8 @@ html, body, #root {
     min-height: 0;
     padding: 0;
     gap: 14px;
+    width: 100%;
+    max-width: 720px;
   }
 
   .header-hero--desktop .logo svg {
@@ -671,7 +674,7 @@ html, body, #root {
   }
 
   .change-city-btn {
-    max-width: 240px;
+    max-width: min(100%, 260px);
   }
 
   .you-badge {

@@ -101,6 +101,22 @@ function isValidSessionId(mixed $sessionId): bool
         && preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $sessionId) === 1;
 }
 
+function normalizeUnixTimestamp(mixed $value): ?int
+{
+    if (!is_numeric($value)) {
+        return null;
+    }
+
+    $timestamp = (int) $value;
+
+    // Accept JavaScript millisecond timestamps from manual/API clients.
+    if ($timestamp > 1000000000000) {
+        $timestamp = (int) floor($timestamp / 1000);
+    }
+
+    return $timestamp > 0 ? $timestamp : null;
+}
+
 // ── Internal migration endpoint ───────────────────────────────────────────────
 // TEMPORARY — disable by removing MIGRATION_KEY from Render env vars.
 // Protected: returns 404 if MIGRATION_KEY is not set.
@@ -976,17 +992,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         }
     }
 
-    if (!is_numeric($startsAt)) {
+    $startsAt = normalizeUnixTimestamp($startsAt);
+    if ($startsAt === null) {
         Response::json(['error' => 'starts_at is required and must be a unix timestamp'], 400);
     }
 
-    $startsAt = (int) $startsAt;
-
-    if (!is_numeric($endsAt)) {
+    $endsAt = normalizeUnixTimestamp($endsAt);
+    if ($endsAt === null) {
         Response::json(['error' => 'ends_at is required and must be a unix timestamp'], 400);
     }
-
-    $endsAt = (int) $endsAt;
 
     if ($endsAt <= $startsAt) {
         Response::json(['error' => 'End time must be after start time'], 422);
