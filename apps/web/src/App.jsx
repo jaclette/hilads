@@ -313,6 +313,7 @@ export default function App() {
   const [feed, setFeed] = useState([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState(null)
   const [onlineCount, setOnlineCount] = useState(null)
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])
@@ -977,7 +978,9 @@ export default function App() {
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => [...prev, { ...msg }])
     } catch (err) {
-      alert(err.message)
+      console.error('[send-image] failed:', err)
+      setSendError("Couldn't send image. Please try again.")
+      setTimeout(() => setSendError(null), 4000)
     } finally {
       setUploading(false)
     }
@@ -1003,7 +1006,9 @@ export default function App() {
         setTimeout(() => injectFeedInstallMessage(), 300)
       }
     } catch (err) {
-      alert(err.message)
+      console.error('[send] failed:', err)
+      setSendError("Couldn't send message. Please try again.")
+      setTimeout(() => setSendError(null), 4000)
     } finally {
       setSending(false)
     }
@@ -2018,6 +2023,10 @@ export default function App() {
               onDismiss={installPrompt.dismissBanner}
             />
           </div>
+        )}
+
+        {sendError && (
+          <div className="send-error-toast">{sendError}</div>
         )}
 
         <form className="input-bar" onSubmit={handleSend}>

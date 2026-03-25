@@ -1289,6 +1289,8 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
 $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $params) {
     $eventId = $params['eventId'] ?? '';
 
+    error_log("[event-msg] POST eventId={$eventId}");
+
     if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
         Response::json(['error' => 'Invalid eventId'], 400);
     }
@@ -1344,7 +1346,12 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
             Response::json(['error' => 'Invalid image reference'], 400);
         }
 
-        $message = MessageRepository::addImage($eventId, $guestId, $nickname, $imageUrl);
+        try {
+            $message = MessageRepository::addImage($eventId, $guestId, $nickname, $imageUrl);
+        } catch (\Throwable $e) {
+            error_log("[event-msg] DB error inserting image message eventId={$eventId}: " . $e->getMessage());
+            Response::json(['error' => 'Failed to send message'], 500);
+        }
     } else {
         if (empty($content) || !is_string($content)) {
             Response::json(['error' => 'content is required'], 400);
@@ -1354,25 +1361,38 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
             Response::json(['error' => 'content must not exceed 1000 characters'], 400);
         }
 
-        $message = MessageRepository::add($eventId, $guestId, $nickname, $content);
+        try {
+            $message = MessageRepository::add($eventId, $guestId, $nickname, $content);
+        } catch (\Throwable $e) {
+            error_log("[event-msg] DB error inserting message eventId={$eventId}: " . $e->getMessage());
+            Response::json(['error' => 'Failed to send message'], 500);
+        }
     }
+
+    error_log("[event-msg] message saved id={$message['id']} eventId={$eventId}");
 
     broadcastMessageToWs($eventId, $message);
 
-    // Notify registered event participants (excluding the sender)
-    $eventForNotif  = EventRepository::findById($eventId);
-    $senderUser     = AuthService::currentUser();
-    $senderUserId   = $senderUser['id'] ?? null;
-    $eventTitle     = $eventForNotif['title'] ?? 'event';
-    $bodyPreview    = $type === 'image' ? '📸 Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
-    NotificationRepository::notifyEventParticipants(
-        $eventId,
-        $senderUserId,
-        'event_message',
-        $nickname . ' in ' . $eventTitle,
-        $bodyPreview,
-        ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname]
-    );
+    // Notify registered event participants — non-fatal: a notification failure must never
+    // prevent the message response from reaching the sender.
+    try {
+        $eventForNotif = EventRepository::findById($eventId);
+        $senderUser    = AuthService::currentUser();
+        $senderUserId  = $senderUser['id'] ?? null;
+        $eventTitle    = is_array($eventForNotif) ? ($eventForNotif['title'] ?? 'event') : 'event';
+        $bodyPreview   = $type === 'image' ? '📸 Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
+        NotificationRepository::notifyEventParticipants(
+            $eventId,
+            $senderUserId,
+            'event_message',
+            $nickname . ' in ' . $eventTitle,
+            $bodyPreview,
+            ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname]
+        );
+    } catch (\Throwable $e) {
+        error_log("[event-msg] notification error eventId={$eventId}: " . get_class($e) . ': ' . $e->getMessage());
+        // Do not rethrow — the message was already saved and broadcast successfully.
+    }
 
     Response::json($message, 201);
 });

@@ -1280,6 +1280,22 @@ html, body, #root {
   background: rgba(255, 255, 255, 0.22);
 }
 
+/* ── Send error toast ─────────────────────────────────── */
+
+.send-error-toast {
+  align-self: center;
+  background: rgba(194, 74, 56, 0.12);
+  border: 1px solid rgba(194, 74, 56, 0.3);
+  color: #e07060;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  text-align: center;
+  margin: 0 16px 4px;
+  animation: fadeUp 0.25s ease-out both;
+  pointer-events: none;
+}
+
 /* ── Input bar ────────────────────────────────────────── */
 
 .input-bar {
