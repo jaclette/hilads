@@ -229,6 +229,25 @@ function generateNickname() {
   return `${adj}${noun}`
 }
 
+function countVisibleHiladsEvents(events, timezone = 'UTC') {
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone })
+  return events.filter(event => {
+    const eventDay = new Date(event.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: timezone })
+    return eventDay === today
+  }).length
+}
+
+async function fetchVisibleCityEventCount(channel) {
+  const [hiladsData, cityData] = await Promise.all([
+    fetchEvents(channel.channelId),
+    fetchCityEvents(channel.channelId),
+  ])
+
+  const hiladsCount = countVisibleHiladsEvents(hiladsData.events ?? [], channel.timezone || 'UTC')
+  const publicCount = (cityData.events ?? []).length
+  return hiladsCount + publicCount
+}
+
 // Unique per page load — generated fresh so duplicated tabs never share a sessionId.
 // Stored as a module-level constant so the same ID is used across re-renders and
 // Vite HMR fast-refresh (where the module is preserved, not reloaded).
@@ -1005,44 +1024,21 @@ export default function App() {
     setShowCityPicker(true)
     setCitySearchQuery('')
     setChannelsLoading(true)
+    setChannelEventCounts({})
     let loadedChannels = []
     try {
       const data = await fetchChannels()
       loadedChannels = data.channels
       setChannels(loadedChannels)
-      // No Phase 1 count seeding: ch.eventCount from the backend only counts events for
-      // today's occurrence_date and misses future Ticketmaster events, causing a stale
-      // wrong value that Phase 2 corrects 5s later. Phase 2 is the single source of truth.
     } catch {
       setChannels([])
     } finally {
       setChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    // Phase 2: enrich event counts for:
-    //   - current city (always)
-    //   - well-known cities (IDs 1–20, the original set — expected to have TM events)
-    //   - any city currently active
-    // This triggers Ticketmaster sync on first visit; subsequent calls read from disk.
-    const toEnrich = loadedChannels
-      .filter(ch => ch.activeUsers > 0 || ch.messageCount > 0 || ch.channelId === channelId || ch.channelId <= 20)
-      .slice(0, 30)
-    toEnrich.forEach(async (ch) => {
+    loadedChannels.forEach(async (ch) => {
       try {
-        const [hiladsData, cityData] = await Promise.all([
-          fetchEvents(ch.channelId),
-          fetchCityEvents(ch.channelId),
-        ])
-        // Match the same filter used by EventsSidebar:
-        //   - Hilads events: today only (by city timezone)
-        //   - TM/city events: all non-expired (backend already prunes expired)
-        const tz = ch.timezone || 'UTC'
-        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-        const hiladsToday = hiladsData.events.filter(e => {
-          const day = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
-          return day === today
-        })
-        const total = hiladsToday.length + (cityData.events ?? []).length
+        const total = await fetchVisibleCityEventCount(ch)
         setChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
       } catch { /* ignore */ }
     })
@@ -1052,28 +1048,21 @@ export default function App() {
     setObPickingCity(true)
     setCitySearchQuery('')
     setObChannelsLoading(true)
+    setObChannelEventCounts({})
     let loadedChannels = []
     try {
       const data = await fetchChannels()
       loadedChannels = data.channels
       setObChannels(loadedChannels)
-      const counts = {}
-      for (const ch of loadedChannels) counts[ch.channelId] = ch.eventCount ?? 0
-      setObChannelEventCounts(counts)
     } catch {
       setObChannels([])
     } finally {
       setObChannelsLoading(false)
     }
     if (loadedChannels.length === 0) return
-    const toEnrich = loadedChannels.filter(ch => ch.activeUsers > 0 || ch.channelId <= 20).slice(0, 25)
-    toEnrich.forEach(async (ch) => {
+    loadedChannels.forEach(async (ch) => {
       try {
-        const [hiladsData, cityData] = await Promise.all([
-          fetchEvents(ch.channelId),
-          fetchCityEvents(ch.channelId),
-        ])
-        const total = hiladsData.events.length + (cityData.events ?? []).length
+        const total = await fetchVisibleCityEventCount(ch)
         setObChannelEventCounts(prev => ({ ...prev, [ch.channelId]: total }))
       } catch { /* ignore */ }
     })
@@ -1408,7 +1397,7 @@ export default function App() {
 
   // ── Shared city row renderer ────────────────────────────────────────────────
 
-  function renderCityRow(ch, eventCount, onClick, isActive = false) {
+  function renderCityRow(ch, eventCount, onClick, isActive = false, isEventCountResolved = true) {
     const hasActivity = ch.activeUsers > 0
     return (
       <button
@@ -1426,7 +1415,8 @@ export default function App() {
         </div>
         <div className="city-row-stats">
           {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
-          {eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
+          {!isEventCountResolved && <span className="skel skel-stat city-row-stat-skel" aria-hidden="true" />}
+          {isEventCountResolved && eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
           {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
         </div>
       </button>
@@ -1632,7 +1622,9 @@ export default function App() {
                   return sorted.map(ch => renderCityRow(
                     ch,
                     obChannelEventCounts[ch.channelId] ?? 0,
-                    (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
+                    (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country),
+                    false,
+                    Object.hasOwn(obChannelEventCounts, ch.channelId)
                   ))
                 }
                 const getScore = ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0)
@@ -1651,7 +1643,9 @@ export default function App() {
                     {top10.map(ch => renderCityRow(
                       ch,
                       obChannelEventCounts[ch.channelId] ?? 0,
-                      (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country)
+                      (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country),
+                      false,
+                      Object.hasOwn(obChannelEventCounts, ch.channelId)
                     ))}
                   </>
                 )
@@ -2150,7 +2144,8 @@ export default function App() {
                   ch,
                   channelEventCounts[ch.channelId] ?? 0,
                   (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                  ch.channelId === channelId
+                  ch.channelId === channelId,
+                  Object.hasOwn(channelEventCounts, ch.channelId)
                 ))
               }
 
@@ -2171,7 +2166,8 @@ export default function App() {
                     ch,
                     channelEventCounts[ch.channelId] ?? 0,
                     (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                    ch.channelId === channelId
+                    ch.channelId === channelId,
+                    Object.hasOwn(channelEventCounts, ch.channelId)
                   ))}
                 </>
               )

@@ -2476,6 +2476,12 @@ html, body, #root {
   font-weight: 600;
 }
 
+.city-row-stat-skel {
+  width: 58px;
+  height: 11px;
+  border-radius: 999px;
+}
+
 .ob-event-count {
   font-weight: 600;
   color: var(--text2);
@@ -3935,4 +3941,3 @@ img.dm-header-avatar {
 .dm-input::placeholder {
   color: var(--muted);
 }
-
