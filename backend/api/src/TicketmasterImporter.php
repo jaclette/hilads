@@ -15,8 +15,18 @@ class TicketmasterImporter
      */
     public static function syncIfNeeded(int $channelId, ?float $lat, ?float $lng, string $cityName): void
     {
+        self::sync($channelId, $lat, $lng, $cityName, false);
+    }
+
+    public static function forceSync(int $channelId, ?float $lat, ?float $lng, string $cityName): void
+    {
+        self::sync($channelId, $lat, $lng, $cityName, true);
+    }
+
+    private static function sync(int $channelId, ?float $lat, ?float $lng, string $cityName, bool $force): void
+    {
         try {
-            if (!self::needsRefresh($channelId)) {
+            if (!$force && !self::needsRefresh($channelId)) {
                 error_log("[TM] ch={$channelId}: skipping — cooldown active");
                 return;
             }
@@ -27,7 +37,7 @@ class TicketmasterImporter
                 return;
             }
 
-            error_log("[TM] ch={$channelId}: syncing city={$cityName} lat={$lat} lng={$lng}");
+            error_log("[TM] ch={$channelId}: syncing city={$cityName} lat={$lat} lng={$lng} force=" . ($force ? 'true' : 'false'));
 
             $raw    = self::fetch($apiKey, $lat, $lng, $cityName);
             $items  = $raw['_embedded']['events'] ?? [];

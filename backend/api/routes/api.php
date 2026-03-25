@@ -1150,6 +1150,62 @@ $router->add('POST', '/api/v1/channels/{channelId}/event-series', function (arra
     Response::json($result, 201);
 });
 
+// ── Internal: force-refresh Ticketmaster events for one city ─────────────────
+// Protected by MIGRATION_KEY. Safe backfill path for refreshing stored location data.
+// Call: POST /internal/city-events/resync?key=YOUR_KEY
+// Body: { "channelId": 17 }
+
+$router->add('POST', '/internal/city-events/resync', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    $providedKey = $_SERVER['HTTP_X_API_KEY']
+        ?? $_SERVER['HTTP_X_API_Key']
+        ?? ($_GET['key'] ?? '');
+
+    if (!is_string($providedKey) || !hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $channelId = filter_var($body['channelId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'channelId is required'], 400);
+    }
+
+    $city = CityRepository::findById($channelId);
+    if ($city === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    apiLog('internal_resync_city_events', 'start', [
+        'channelId' => $channelId,
+        'city' => $city['name'],
+        'ip' => Request::ip(),
+    ]);
+
+    TicketmasterImporter::forceSync($channelId, $city['lat'] ?? null, $city['lng'] ?? null, $city['name']);
+    $events = EventRepository::getPublicByChannel($channelId);
+
+    apiLog('internal_resync_city_events', 'success', [
+        'channelId' => $channelId,
+        'events' => count($events),
+    ]);
+
+    Response::json([
+        'ok' => true,
+        'channelId' => $channelId,
+        'city' => $city['name'],
+        'public_events' => count($events),
+    ]);
+});
+
 // ── Internal: seed recurring venue events via Google Places ──────────────────
 // Protected by X-Api-Key header matching MIGRATION_KEY env var.
 // Supports dryRun=true for safe previewing before any DB writes.
