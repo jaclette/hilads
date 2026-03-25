@@ -269,6 +269,24 @@ function clearIdentity() {
   localStorage.removeItem(IDENTITY_KEY)
 }
 
+const WELCOME_KEY = 'hilads_welcomed'
+
+function hasBeenWelcomed(channelId) {
+  try {
+    const raw = localStorage.getItem(WELCOME_KEY)
+    return raw ? !!JSON.parse(raw)[channelId] : false
+  } catch { return false }
+}
+
+function markWelcomed(channelId) {
+  try {
+    const raw = localStorage.getItem(WELCOME_KEY)
+    const map = raw ? JSON.parse(raw) : {}
+    map[channelId] = 1
+    localStorage.setItem(WELCOME_KEY, JSON.stringify(map))
+  } catch {}
+}
+
 // Build the onlineUsers array for the sidebar/strip, marking the current user.
 // Users come from presenceSnapshot (keyed by sessionId).
 function buildOnlineUsers(users, mySessionId) {
@@ -362,6 +380,7 @@ export default function App() {
   const locPromiseRef = useRef(null)
   const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
+  const chatInputRef = useRef(null)
   const sessionIdRef = useRef(getOrCreateSessionId())
   const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
   const socketRef = useRef(null)      // WebSocket presence client
@@ -625,6 +644,12 @@ export default function App() {
     })
   }
 
+  function injectWelcomeCard(cid, cityName) {
+    if (!cityName || hasBeenWelcomed(cid)) return
+    markWelcomed(cid)
+    setFeed(prev => [...prev, { type: 'welcome', id: `welcome-${cid}`, city: cityName }])
+  }
+
   function scheduleActivity(isFirst = false) {
     // First ambient message: 30s after join. Recurring: every 60–120s.
     // Skipped entirely when the feed already has real user messages (not noisy then).
@@ -758,6 +783,7 @@ export default function App() {
       setStatus('ready')
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null)
       scheduleEphemeral(joinKey)
+      injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
 
@@ -1135,6 +1161,7 @@ export default function App() {
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: activeNickname, isMe: true }])
       setOnlineCount(joinData.onlineCount ?? null)
       scheduleEphemeral(joinKey)
+      injectWelcomeCard(newChannelId, newCityName)
 
       activeRef.current = true
       scheduleActivity(true)
@@ -1890,6 +1917,38 @@ export default function App() {
               )
             }
 
+            if (item.type === 'welcome') {
+              return (
+                <div key={item.id} className="feed-welcome">
+                  <div className="feed-welcome-header">
+                    <span className="feed-welcome-city">{item.city} is live ✨</span>
+                    <button
+                      className="feed-welcome-dismiss"
+                      onClick={() => setFeed(prev => prev.filter(f => f.id !== item.id))}
+                      aria-label="Dismiss"
+                    >×</button>
+                  </div>
+                  <p className="feed-welcome-body">Real people, right now. Say hi, see who's around, or bring a friend in.</p>
+                  <div className="feed-welcome-actions">
+                    <button
+                      className="feed-welcome-btn feed-welcome-btn--primary"
+                      onClick={() => {
+                        setFeed(prev => prev.filter(f => f.id !== item.id))
+                        chatInputRef.current?.focus()
+                      }}
+                    >Say hi 👋</button>
+                    <button
+                      className="feed-welcome-btn feed-welcome-btn--secondary"
+                      onClick={() => {
+                        setFeed(prev => prev.filter(f => f.id !== item.id))
+                        share(`Who's in ${item.city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(item.city)}`)
+                      }}
+                    >Invite friends</button>
+                  </div>
+                </div>
+              )
+            }
+
             if (item.type === 'prompt') {
               return (
                 <div key={item.id} className="feed-prompt">
@@ -1980,6 +2039,7 @@ export default function App() {
             {uploading ? <span className="upload-spinner" /> : <ImageIcon />}
           </button>
           <input
+            ref={chatInputRef}
             type="text"
             value={input}
             onChange={handleInputChange}
