@@ -102,6 +102,12 @@ class EventRepository
 
     public static function getByChannel(int $channelId): array
     {
+        $city = CityRepository::findById($channelId);
+        $timezone = $city['timezone'] ?? 'UTC';
+        $tz = new DateTimeZone($timezone);
+        $today = (new DateTime('now', $tz))->format('Y-m-d');
+        $now = time();
+
         $stmt = Database::pdo()->prepare(self::SELECT . "
             WHERE c.parent_id = :parent_id
               AND c.type       = 'event'
@@ -111,7 +117,32 @@ class EventRepository
             ORDER BY ce.starts_at ASC
         ");
         $stmt->execute(['parent_id' => 'city_' . $channelId]);
-        return array_map([self::class, 'format'], $stmt->fetchAll());
+
+        $events = [];
+        $seenKeys = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $event = self::format($row);
+
+            $startDate = (new DateTime('@' . $event['starts_at']))->setTimezone($tz)->format('Y-m-d');
+            $endDate = (new DateTime('@' . $event['expires_at']))->setTimezone($tz)->format('Y-m-d');
+            $isVisibleToday = $startDate === $today
+                || ($event['starts_at'] <= $now && $endDate === $today);
+
+            if (!$isVisibleToday) {
+                continue;
+            }
+
+            $dedupeKey = $event['series_id'] ?: $event['id'];
+            if (isset($seenKeys[$dedupeKey])) {
+                continue;
+            }
+            $seenKeys[$dedupeKey] = true;
+            $events[] = $event;
+        }
+
+        usort($events, fn(array $a, array $b) => $a['starts_at'] <=> $b['starts_at']);
+
+        return array_slice($events, 0, self::MAX_HILADS);
     }
 
     public static function getPublicByChannel(int $channelId): array
