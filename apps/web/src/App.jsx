@@ -1375,8 +1375,8 @@ export default function App() {
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current)
 
-  // Inject a new-event prompt when events array grows (real-time event added).
-  // Only in city chat, only if activity is low. Auto-dismiss after 10s.
+  // Inject a new-event message when events array grows (real-time event added).
+  // Only in city chat. Stays in feed permanently like a normal message.
   useEffect(() => {
     if (!activeRef.current || activeEventIdRef.current) {
       prevEventCountRef.current = events.length
@@ -1385,13 +1385,11 @@ export default function App() {
     if (events.length > prevEventCountRef.current) {
       const newOnes = events.slice(prevEventCountRef.current)
       newOnes.forEach(event => {
-        const id = `prompt-new-event-${event.id}`
+        const id = `event-msg-${event.id}`
         setFeed(prev => {
           if (prev.some(f => f.id === id)) return prev
-          if (prev.filter(m => m.type === 'message').length >= 5) return prev
-          return [...prev, { type: 'prompt', subtype: 'new-event', id, eventId: event.id, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
+          return [...prev, { type: 'event', id, eventId: event.id, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
         })
-        setTimeout(() => setFeed(prev => prev.filter(f => f.id !== id)), 10000)
       })
     }
     prevEventCountRef.current = events.length
@@ -1937,6 +1935,16 @@ export default function App() {
                       }}
                     >Invite friends</button>
                   </div>
+                </div>
+              )
+            }
+
+            if (item.type === 'event') {
+              const ev = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
+              return (
+                <div key={item.id} className="feed-prompt">
+                  <span className="feed-prompt-text">{item.text}</span>
+                  <button className="feed-prompt-btn" onClick={() => ev && handleSelectEvent(ev)}>{item.cta}</button>
                 </div>
               )
             }
