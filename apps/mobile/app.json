@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Hilads",
+    "slug": "hilads",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "hilads",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.hilads.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f0f0f"
+      },
+      "package": "com.hilads.app",
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Hilads needs your location to find your city.",
+          "locationAlwaysAndWhenInUsePermission": "Hilads needs your location to find your city."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
