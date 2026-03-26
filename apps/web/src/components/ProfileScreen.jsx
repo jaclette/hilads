@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { updateProfile, uploadImage } from '../api'
 import BackButton from './BackButton'
+import { EVENT_ICONS } from '../cityMeta'
+import { getTimeLabel, formatTime } from '../eventUtils'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -21,7 +23,7 @@ const INTERESTS = [
   'hangout', 'socializing', 'gaming', 'tech', 'dating',
 ]
 
-export default function ProfileScreen({ account, onSave, onBack, onSignOut }) {
+export default function ProfileScreen({ account, myEvents, cityTimezone, onSave, onBack, onSelectEvent, onDeleteEvent, onSignOut }) {
   const [photoUrl, setPhotoUrl]   = useState(account.profile_photo_url ?? null)
   const [name, setName]           = useState(account.display_name ?? '')
   const [homeCity, setHomeCity]   = useState(account.home_city ?? '')
@@ -204,6 +206,32 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut }) {
         </div>
 
         {error && <p className="profile-error">{error}</p>}
+
+        {myEvents !== null && myEvents.length > 0 && (
+          <div className="profile-card">
+            <p className="me-section-label">My events</p>
+            {myEvents.map(ev => {
+              const now = Date.now() / 1000
+              const isLive = ev.starts_at <= now && ev.expires_at > now
+              const tz = cityTimezone || 'UTC'
+              return (
+                <div key={ev.id} className="my-event-row">
+                  <button className="my-event-row-body" onClick={() => onSelectEvent?.(ev)}>
+                    <span className="my-event-title">{EVENT_ICONS[ev.type] ?? '📌'} {ev.title}</span>
+                    <span className="my-event-meta">
+                      {getTimeLabel(ev.starts_at, tz)}
+                      {ev.ends_at ? ` → ${formatTime(ev.ends_at, tz)}` : ''}
+                    </span>
+                    <span className={`my-event-badge${isLive ? ' my-event-badge--live' : ''}`}>
+                      {isLive ? 'Live' : 'Upcoming'}
+                    </span>
+                  </button>
+                  <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label="Delete event">✕</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
 
         <div className="profile-card profile-actions">
           <button

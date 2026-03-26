@@ -17,6 +17,7 @@ class EventRepository
             ce.source_type                              AS source,
             ce.external_id,
             ce.guest_id,
+            ce.created_by,
             ce.title,
             ce.event_type                               AS type,
             ce.venue,
@@ -80,6 +81,7 @@ class EventRepository
             'source'           => $row['source'],
             'external_id'      => $row['external_id'],
             'guest_id'         => $row['guest_id'],
+            'created_by'       => $row['created_by'],
             'title'            => $row['title'],
             'type'             => $row['type'],
             'location_hint'    => $row['location_hint'],
@@ -169,6 +171,128 @@ class EventRepository
         $stmt->execute(['id' => $eventId]);
         $row = $stmt->fetch();
         return $row ? self::format($row) : null;
+    }
+
+    /**
+     * Returns all active/upcoming Hilads events created by this guest or registered user.
+     * Used by the "My events" section in the Me screen.
+     */
+    public static function getByUser(string $guestId, ?string $userId): array
+    {
+        if ($userId !== null) {
+            $stmt = Database::pdo()->prepare(self::SELECT . "
+                WHERE c.type         = 'event'
+                  AND c.status       = 'active'
+                  AND ce.source_type = 'hilads'
+                  AND ce.expires_at  > now()
+                  AND (ce.guest_id = :guest_id OR ce.created_by = :user_id)
+                ORDER BY ce.starts_at ASC
+            ");
+            $stmt->execute(['guest_id' => $guestId, 'user_id' => $userId]);
+        } else {
+            $stmt = Database::pdo()->prepare(self::SELECT . "
+                WHERE c.type         = 'event'
+                  AND c.status       = 'active'
+                  AND ce.source_type = 'hilads'
+                  AND ce.expires_at  > now()
+                  AND ce.guest_id    = :guest_id
+                ORDER BY ce.starts_at ASC
+            ");
+            $stmt->execute(['guest_id' => $guestId]);
+        }
+        return array_map([self::class, 'format'], $stmt->fetchAll());
+    }
+
+    /**
+     * Updates a Hilads event. Returns the updated event or null if ownership check fails.
+     * Ownership: creator's guest_id or (for registered users) created_by user_id.
+     */
+    public static function update(
+        string  $eventId,
+        string  $guestId,
+        ?string $userId,
+        string  $title,
+        ?string $locationHint,
+        int     $startsAt,
+        int     $endsAt,
+        string  $type
+    ): ?array {
+        $pdo = Database::pdo();
+
+        // Verify ownership before writing
+        if ($userId !== null) {
+            $check = $pdo->prepare("
+                SELECT 1 FROM channel_events
+                WHERE channel_id = :id AND source_type = 'hilads'
+                  AND (guest_id = :guest_id OR created_by = :user_id)
+            ");
+            $check->execute(['id' => $eventId, 'guest_id' => $guestId, 'user_id' => $userId]);
+        } else {
+            $check = $pdo->prepare("
+                SELECT 1 FROM channel_events
+                WHERE channel_id = :id AND source_type = 'hilads' AND guest_id = :guest_id
+            ");
+            $check->execute(['id' => $eventId, 'guest_id' => $guestId]);
+        }
+        if (!$check->fetch()) return null;
+
+        $now       = time();
+        $startsAt  = min($startsAt, $now + 48 * 3600);
+        $expiresAt = min($endsAt,   $startsAt + 24 * 3600);
+
+        $pdo->prepare("
+            UPDATE channel_events
+            SET title      = :title,
+                location   = :location,
+                event_type = :type,
+                starts_at  = to_timestamp(:starts_at),
+                expires_at = to_timestamp(:expires_at)
+            WHERE channel_id = :id
+        ")->execute([
+            'title'      => $title,
+            'location'   => $locationHint,
+            'type'       => $type,
+            'starts_at'  => $startsAt,
+            'expires_at' => $expiresAt,
+            'id'         => $eventId,
+        ]);
+
+        // Keep channel name in sync with title
+        $pdo->prepare("
+            UPDATE channels SET name = :name, updated_at = now() WHERE id = :id
+        ")->execute(['name' => $title, 'id' => $eventId]);
+
+        return self::findById($eventId);
+    }
+
+    /**
+     * Soft-deletes a Hilads event by expiring it immediately.
+     * Returns false if the event was not found or the caller is not the owner.
+     */
+    public static function delete(string $eventId, string $guestId, ?string $userId): bool
+    {
+        $pdo = Database::pdo();
+
+        if ($userId !== null) {
+            $check = $pdo->prepare("
+                SELECT 1 FROM channel_events
+                WHERE channel_id = :id AND source_type = 'hilads'
+                  AND (guest_id = :guest_id OR created_by = :user_id)
+            ");
+            $check->execute(['id' => $eventId, 'guest_id' => $guestId, 'user_id' => $userId]);
+        } else {
+            $check = $pdo->prepare("
+                SELECT 1 FROM channel_events
+                WHERE channel_id = :id AND source_type = 'hilads' AND guest_id = :guest_id
+            ");
+            $check->execute(['id' => $eventId, 'guest_id' => $guestId]);
+        }
+        if (!$check->fetch()) return false;
+
+        $pdo->prepare("UPDATE channels       SET status = 'deleted', updated_at = now() WHERE id = :id")->execute(['id' => $eventId]);
+        $pdo->prepare("UPDATE channel_events SET expires_at = now()                      WHERE channel_id = :id")->execute(['id' => $eventId]);
+
+        return true;
     }
 
     /**
@@ -295,6 +419,7 @@ class EventRepository
             'source'       => 'hilads',
             'external_id'  => null,
             'guest_id'     => $guestId,
+            'created_by'   => $userId,
             'nickname'     => $nickname,
             'title'        => $title,
             'type'         => $type,

@@ -1,9 +1,21 @@
 import { useState } from 'react'
-import { createEvent, createEventSeries } from '../api'
+import { createEvent, createEventSeries, updateEvent } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 import BackButton from './BackButton'
 
 // ── Time helpers ───────────────────────────────────────────────────────────────
+
+// Convert a unix timestamp back to HH:MM in the given timezone (for pre-filling edit form).
+function unixToTimeStr(unixTs, timezone) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date(unixTs * 1000))
+  const p = Object.fromEntries(parts.map(x => [x.type, x.value]))
+  return `${p.hour === '24' ? '00' : p.hour}:${p.minute}`
+}
 
 function getDefaultTime(timezone) {
   const parts = new Intl.DateTimeFormat('en-US', {
@@ -162,13 +174,14 @@ const CATEGORY_ICONS = {
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack }) {
+export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack, editEvent }) {
   const tz = cityTimezone || 'UTC'
-  const [type, setType] = useState('other')
-  const [title, setTitle] = useState('')
-  const [startTime, setStartTime] = useState(() => getDefaultTime(tz))
-  const [endTime, setEndTime] = useState(() => addHoursToTime(getDefaultTime(tz), 2))
-  const [location, setLocation] = useState('')
+  const isEdit = !!editEvent
+  const [type, setType] = useState(() => editEvent?.type || 'other')
+  const [title, setTitle] = useState(() => editEvent?.title || '')
+  const [startTime, setStartTime] = useState(() => editEvent ? unixToTimeStr(editEvent.starts_at, tz) : getDefaultTime(tz))
+  const [endTime, setEndTime] = useState(() => editEvent ? unixToTimeStr(editEvent.ends_at || editEvent.expires_at, tz) : addHoursToTime(getDefaultTime(tz), 2))
+  const [location, setLocation] = useState(() => editEvent?.location_hint || editEvent?.location || '')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
@@ -188,7 +201,35 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     const t = title.trim()
     if (!t || !startTime || !endTime) return
 
-    // Client-side validation for one-time events
+    // ── Edit mode ──────────────────────────────────────────────────────────────
+    if (isEdit) {
+      let startsAtUnix = cityTimeToUnix(tz, startTime)
+      let endsAtUnix   = cityTimeToUnix(tz, endTime)
+      if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
+      if (endsAtUnix - startsAtUnix < 15 * 60) {
+        setError('End time must be at least 15 minutes after start time')
+        return
+      }
+      setSubmitting(true)
+      setError(null)
+      try {
+        const updated = await updateEvent(editEvent.id, guest.guestId, {
+          title: t,
+          location_hint: location.trim() || null,
+          starts_at: startsAtUnix,
+          ends_at: endsAtUnix,
+          type,
+        })
+        onCreated(updated)
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setSubmitting(false)
+      }
+      return
+    }
+
+    // ── Create mode: one-time event ────────────────────────────────────────────
     if (recurrence === 'once') {
       let startsAtUnix = cityTimeToUnix(tz, startTime)
       let endsAtUnix   = cityTimeToUnix(tz, endTime)
@@ -257,7 +298,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">Create event</span>
+        <span className="page-title">{isEdit ? 'Edit event' : 'Create event'}</span>
       </div>
 
       <div className="page-body">
@@ -321,8 +362,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             </div>
           </div>
 
-          {/* Recurrence — registered users only */}
-          {account && (
+          {/* Recurrence — registered users only, not available in edit mode */}
+          {account && !isEdit && (
             <div className="cef-section">
               <p className="cef-label">Repeat</p>
               <div className="cef-recurrence-row">
@@ -395,7 +436,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             className="cef-submit"
             disabled={submitting || !title.trim()}
           >
-            {submitting ? 'Creating…' : 'Create event'}
+            {submitting ? (isEdit ? 'Saving…' : 'Creating…') : (isEdit ? 'Save changes' : 'Create event')}
           </button>
 
         </form>

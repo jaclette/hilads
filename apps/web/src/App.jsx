@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
@@ -172,6 +172,28 @@ const AVATAR_PALETTES = [
 function avatarColors(name) {
   const hash = name.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
+}
+
+// ── My event row (used in both guest and registered Me screens) ──────────────
+
+function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
+  const now = Date.now() / 1000
+  const isLive = event.starts_at <= now && event.expires_at > now
+  return (
+    <div className="my-event-row">
+      <button className="my-event-row-body" onClick={onSelect}>
+        <span className="my-event-title">{EVENT_ICONS[event.type] ?? '📌'} {event.title}</span>
+        <span className="my-event-meta">
+          {getTimeLabel(event.starts_at, cityTimezone || 'UTC')}
+          {event.ends_at ? ` → ${formatTime(event.ends_at, cityTimezone || 'UTC')}` : ''}
+        </span>
+        <span className={`my-event-badge${isLive ? ' my-event-badge--live' : ''}`}>
+          {isLive ? 'Live' : 'Upcoming'}
+        </span>
+      </button>
+      <button className="my-event-delete" onClick={onDelete} aria-label="Delete event">✕</button>
+    </div>
+  )
 }
 
 const PLACEHOLDERS = [
@@ -442,6 +464,9 @@ export default function App() {
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
+  const [showEditEvent, setShowEditEvent] = useState(false)
+  const [myEvents, setMyEvents] = useState([])
+  const [myEventsLoaded, setMyEventsLoaded] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
@@ -489,7 +514,7 @@ export default function App() {
   const hasInstallFeedPrompt = feed.some(item => item.type === 'prompt' && item.subtype === 'install')
   const installBannerUsesBottomNav = !showCityPicker && !showEventDrawer && !showPeopleDrawer
   const showInstallOnMainSurface = status === 'ready' && (
-    (!showCityPicker && !showEventDrawer && !showPeopleDrawer && !showProfileDrawer && !showConversations && !showNotifications && !showCreateEvent)
+    (!showCityPicker && !showEventDrawer && !showPeopleDrawer && !showProfileDrawer && !showConversations && !showNotifications && !showCreateEvent && !showEditEvent)
     || showCityPicker
     || showEventDrawer
     || (showPeopleDrawer && !viewingProfile)
@@ -560,6 +585,15 @@ export default function App() {
       console.warn('[hilads] background conversations sync failed:', err?.message ?? String(err))
     })
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Load "My events" whenever the profile drawer opens (guest or registered).
+  useEffect(() => {
+    if (!showProfileDrawer || !guest?.guestId) return
+    setMyEventsLoaded(false)
+    fetchMyEvents(guest.guestId)
+      .then(data => { setMyEvents(data.events ?? []); setMyEventsLoaded(true) })
+      .catch(() => setMyEventsLoaded(true))
+  }, [showProfileDrawer]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Poll notification unread count every 30s for registered users.
   useEffect(() => {
@@ -1484,6 +1518,15 @@ export default function App() {
     pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
   }
 
+  // Refresh event in list after edit
+  function handleEventUpdated(updatedEvent) {
+    setShowEditEvent(false)
+    if (!updatedEvent?.id) return
+    setActiveEvent(updatedEvent)
+    setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e))
+    setMyEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e))
+  }
+
   // Refresh events list after creation
   function handleEventCreated(newEvent) {
     setShowCreateEvent(false)
@@ -1884,6 +1927,13 @@ export default function App() {
 
   // ── Chat ───────────────────────────────────────────────────────────────────
 
+  // True when the active event was created by the current user (guest or registered).
+  const isMyEvent = activeEvent
+    ? (account
+        ? activeEvent.created_by === account.id || activeEvent.guest_id === guest?.guestId
+        : activeEvent.guest_id === guest?.guestId)
+    : false
+
   return (
     <div className="chat-layout">
 
@@ -1918,6 +1968,16 @@ export default function App() {
                       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                     </svg>
                   </button>
+                  {isMyEvent && (
+                    <button
+                      className="event-edit-btn"
+                      onClick={() => setShowEditEvent(true)}
+                      title="Edit event"
+                      aria-label="Edit event"
+                    >
+                      Edit
+                    </button>
+                  )}
                   {account && (
                     <button
                       className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
@@ -2653,8 +2713,19 @@ export default function App() {
       {showProfileDrawer && !showAuthScreen && account && (
         <ProfileScreen
           account={account}
+          myEvents={myEventsLoaded ? myEvents : null}
+          cityTimezone={cityTimezone}
           onSave={setAccount}
           onBack={() => setShowProfileDrawer(false)}
+          onSelectEvent={(ev) => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
+          onDeleteEvent={async (ev) => {
+            try {
+              await deleteEvent(ev.id, guest?.guestId ?? '')
+              setMyEvents(prev => prev.filter(e => e.id !== ev.id))
+              setEvents(prev => prev.filter(e => e.id !== ev.id))
+              if (activeEvent?.id === ev.id) handleBackToCity()
+            } catch (_) {}
+          }}
           onSignOut={async () => {
             await authLogout()
             unregisterPush().catch(() => {})
@@ -2724,6 +2795,27 @@ export default function App() {
                   </button>
                 </div>
               </div>
+              {myEventsLoaded && myEvents.length > 0 && (
+                <div className="me-card">
+                  <p className="me-section-label">My events</p>
+                  {myEvents.map(ev => (
+                    <MyEventRow
+                      key={ev.id}
+                      event={ev}
+                      cityTimezone={cityTimezone}
+                      onSelect={() => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
+                      onDelete={async () => {
+                        try {
+                          await deleteEvent(ev.id, guest.guestId)
+                          setMyEvents(prev => prev.filter(e => e.id !== ev.id))
+                          setEvents(prev => prev.filter(e => e.id !== ev.id))
+                          if (activeEvent?.id === ev.id) handleBackToCity()
+                        } catch (_) {}
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
                 <p className="profile-hint">// anonymous · no sign-up required</p>
             </>
           </div>
@@ -2763,6 +2855,20 @@ export default function App() {
               else setShowEventDrawer(true)
             }
           }}
+        />
+      )}
+
+      {/* Edit event — full-screen page (reuses CreateEventPage in edit mode) */}
+      {showEditEvent && activeEvent && (
+        <CreateEventPage
+          editEvent={activeEvent}
+          channelId={channelId}
+          guest={guest}
+          nickname={activeNickname}
+          cityTimezone={cityTimezone}
+          account={account}
+          onCreated={handleEventUpdated}
+          onBack={() => setShowEditEvent(false)}
         />
       )}
 

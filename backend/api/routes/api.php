@@ -1037,6 +1037,104 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     Response::json($event, 201);
 });
 
+// ── Event ownership: my events + edit + delete ────────────────────────────────
+
+$router->add('GET', '/api/v1/users/me/events', function () {
+    $guestId  = $_GET['guestId'] ?? null;
+    $authUser = AuthService::currentUser();
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $events = EventRepository::getByUser($guestId, $authUser['id'] ?? null);
+    Response::json(['events' => $events]);
+});
+
+$router->add('PUT', '/api/v1/events/{eventId}', function (array $params) {
+    $eventId = $params['eventId'] ?? null;
+    if (!$eventId || !preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId      = $body['guestId']       ?? null;
+    $title        = $body['title']         ?? null;
+    $locationHint = $body['location_hint'] ?? null;
+    $startsAt     = $body['starts_at']     ?? null;
+    $endsAt       = $body['ends_at']       ?? null;
+    $type         = $body['type']          ?? null;
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($title) || !is_string($title)) {
+        Response::json(['error' => 'title is required'], 400);
+    }
+    $title = mb_substr(trim(strip_tags($title)), 0, 100);
+    if (mb_strlen($title) < 3) {
+        Response::json(['error' => 'title must be at least 3 characters'], 400);
+    }
+
+    if ($locationHint !== null) {
+        $locationHint = mb_substr(trim(strip_tags((string) $locationHint)), 0, 100) ?: null;
+    }
+
+    $startsAt = normalizeUnixTimestamp($startsAt);
+    $endsAt   = normalizeUnixTimestamp($endsAt);
+    if ($startsAt === null || $endsAt === null) {
+        Response::json(['error' => 'starts_at and ends_at are required unix timestamps'], 400);
+    }
+    if ($endsAt <= $startsAt) {
+        Response::json(['error' => 'End time must be after start time'], 422);
+    }
+    if ($endsAt - $startsAt < 15 * 60) {
+        Response::json(['error' => 'Event must last at least 15 minutes'], 422);
+    }
+
+    $allowedTypes = ['drinks', 'party', 'music', 'food', 'coffee', 'sport', 'meetup', 'other'];
+    if (empty($type) || !in_array($type, $allowedTypes, true)) {
+        Response::json(['error' => 'type must be one of: ' . implode(', ', $allowedTypes)], 400);
+    }
+
+    $authUser = AuthService::currentUser();
+    $updated  = EventRepository::update($eventId, $guestId, $authUser['id'] ?? null, $title, $locationHint, $startsAt, $endsAt, $type);
+
+    if ($updated === null) {
+        Response::json(['error' => 'Event not found or you are not the creator'], 403);
+    }
+
+    Response::json($updated);
+});
+
+$router->add('DELETE', '/api/v1/events/{eventId}', function (array $params) {
+    $eventId = $params['eventId'] ?? null;
+    if (!$eventId || !preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    $body    = Request::json();
+    $guestId = $body['guestId'] ?? null;
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $authUser = AuthService::currentUser();
+    $deleted  = EventRepository::delete($eventId, $guestId, $authUser['id'] ?? null);
+
+    if (!$deleted) {
+        Response::json(['error' => 'Event not found or you are not the creator'], 403);
+    }
+
+    Response::json(['ok' => true]);
+});
+
 // ── Recurring event series ────────────────────────────────────────────────────
 
 $router->add('POST', '/api/v1/channels/{channelId}/event-series', function (array $params) {

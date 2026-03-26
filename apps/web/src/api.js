@@ -270,6 +270,38 @@ export async function fetchPublicProfile(userId) {
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
 
+export async function fetchMyEvents(guestId) {
+  const res = await fetch(`${BASE}/users/me/events?guestId=${encodeURIComponent(guestId)}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch my events')
+  return res.json() // { events }
+}
+
+export async function updateEvent(eventId, guestId, fields) {
+  const res = await fetch(`${BASE}/events/${encodeURIComponent(eventId)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, ...fields }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Failed to update event')
+  return data // updated event
+}
+
+export async function deleteEvent(eventId, guestId) {
+  const res = await fetch(`${BASE}/events/${encodeURIComponent(eventId)}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to delete event')
+  }
+  return res.json()
+}
+
 export async function fetchConversations() {
   const res = await fetch(`${BASE}/conversations`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch conversations')
