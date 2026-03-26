@@ -8,6 +8,9 @@ export const API_URL =
 export const WS_URL =
   process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:8081';
 
+export const APP_VERSION = '1.0.0';
+export const IS_DEV = __DEV__;
+
 // ── Design tokens ─────────────────────────────────────────────────────────────
 
 export const Colors = {

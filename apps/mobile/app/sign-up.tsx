@@ -10,6 +10,7 @@ import { authSignup } from '@/api/auth';
 import { persistToken } from '@/services/session';
 import { useApp } from '@/context/AppContext';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignUpScreen() {
@@ -40,6 +41,7 @@ export default function SignUpScreen() {
       const { user } = await authSignup(e, p, n, guestId);
       await persistToken();
       setAccount(user);
+      track('auth_signup');
       requestIfAppropriate(); // ask for push after successful registration
       router.back();
     } catch (err: unknown) {

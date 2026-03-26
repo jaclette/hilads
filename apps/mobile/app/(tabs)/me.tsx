@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   View, Text, Image, FlatList, ScrollView, TouchableOpacity,
   ActivityIndicator, Alert, StyleSheet,
@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useMyEvents } from '@/hooks/useMyEvents';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
 import type { HiladsEvent } from '@/types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -62,6 +62,18 @@ export default function MeScreen() {
   const router = useRouter();
   const { identity, account, city, wsConnected, logout } = useApp();
   const { events, loading: eventsLoading } = useMyEvents();
+  const tapCount = useRef(0);
+  const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleVersionTap() {
+    tapCount.current += 1;
+    if (tapTimer.current) clearTimeout(tapTimer.current);
+    tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 2000);
+    if (tapCount.current >= 5) {
+      tapCount.current = 0;
+      router.push('/debug');
+    }
+  }
 
   const displayName = account?.display_name ?? identity?.nickname ?? '—';
   const initials    = displayName.slice(0, 2).toUpperCase();
@@ -203,6 +215,11 @@ export default function MeScreen() {
           </View>
         )}
 
+        {/* Version — tap 5 times to open debug panel */}
+        <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
+          <Text style={styles.version}>v{APP_VERSION}</Text>
+        </TouchableOpacity>
+
         <View style={{ height: Spacing.xl }} />
       </ScrollView>
     </SafeAreaView>
@@ -328,4 +345,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', borderWidth: 1, borderColor: Colors.border,
   },
   upgradeSecondaryText: { color: Colors.text, fontWeight: '600', fontSize: FontSizes.sm },
+
+  versionWrap: { alignItems: 'center', paddingVertical: Spacing.md },
+  version:     { fontSize: FontSizes.xs, color: Colors.muted2 },
 });

@@ -1,18 +1,24 @@
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 interface Props {
-  error: string | null;
+  error:    string | null;
+  onRetry?: () => void;
 }
 
-export function BootScreen({ error }: Props) {
+export function BootScreen({ error, onRetry }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Hilads</Text>
       {error ? (
         <>
           <Text style={styles.errorText}>{error}</Text>
-          <Text style={styles.errorHint}>Check your connection and restart the app.</Text>
+          <Text style={styles.errorHint}>Check your connection and try again.</Text>
+          {onRetry && (
+            <TouchableOpacity style={styles.retryBtn} onPress={onRetry} activeOpacity={0.8}>
+              <Text style={styles.retryText}>Try again</Text>
+            </TouchableOpacity>
+          )}
         </>
       ) : (
         <ActivityIndicator color={Colors.accent} size="large" style={styles.spinner} />
@@ -48,5 +54,17 @@ const styles = StyleSheet.create({
     color:     Colors.muted,
     textAlign: 'center',
     marginTop: Spacing.sm,
+  },
+  retryBtn: {
+    marginTop:       Spacing.lg,
+    backgroundColor: Colors.accent,
+    borderRadius:    Radius.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+  },
+  retryText: {
+    color:      Colors.white,
+    fontWeight: '700',
+    fontSize:   FontSizes.sm,
   },
 });

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { socket } from '@/lib/socket';
 import { uploadFile } from '@/api/uploads';
+import { track } from '@/services/analytics';
 import type { Message } from '@/types';
 
 interface Params {
@@ -90,12 +91,13 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
     try {
       const msg = await postTextFn(trimmed);
       addNew([msg]);
+      track('message_sent', { channelId });
     } catch {
       setError('Failed to send message');
     } finally {
       setSending(false);
     }
-  }, [sending, postTextFn, addNew]);
+  }, [sending, postTextFn, addNew, channelId]);
 
   // Send image — upload first, then post message
   const sendImage = useCallback(async (localUri: string) => {

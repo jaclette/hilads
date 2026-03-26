@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { fetchChannels } from '@/api/channels';
+import { track } from '@/services/analytics';
 import type { City } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
@@ -110,7 +111,10 @@ export default function CitiesScreen() {
             <CityRow
               city={item}
               isActive={item.channelId === activeCity?.channelId}
-              onPress={() => setCity(item)}
+              onPress={() => {
+                setCity(item);
+                track('city_selected', { cityId: item.channelId, cityName: item.name });
+              }}
             />
           )}
           refreshControl={

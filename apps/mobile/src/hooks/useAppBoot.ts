@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
 import { loadOrCreateIdentity, generateSessionId } from '@/lib/identity';
@@ -8,11 +8,23 @@ import { authMe } from '@/api/auth';
 import { loadSavedToken } from '@/services/session';
 import { fetchUnreadCount } from '@/api/notifications';
 
-export function useAppBoot(): void {
+interface Result {
+  retry: () => void;
+}
+
+export function useAppBoot(): Result {
   const {
     setIdentity, setSessionId, setAccount,
     setCity, setBooting, setBootError, setWsConnected, setUnreadDMs,
   } = useApp();
+
+  const [retryCount, setRetryCount] = useState(0);
+
+  function retry() {
+    setBootError(null);
+    setBooting(true);
+    setRetryCount(c => c + 1);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -38,18 +50,22 @@ export function useAppBoot(): void {
           }
         });
 
-        // 3. Location
+        // 3. Location — failure here must not block boot
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (cancelled) return;
 
         let city = null;
         if (status === 'granted') {
-          const pos = await Location.getCurrentPositionAsync({
-            accuracy: Location.Accuracy.Balanced,
-          });
-          if (!cancelled) {
-            city = await resolveLocation(pos.coords.latitude, pos.coords.longitude)
-              .catch(() => null);
+          try {
+            const pos = await Location.getCurrentPositionAsync({
+              accuracy: Location.Accuracy.Balanced,
+            });
+            if (!cancelled) {
+              city = await resolveLocation(pos.coords.latitude, pos.coords.longitude)
+                .catch(() => null);
+            }
+          } catch {
+            // Location timeout or hardware error — continue without city
           }
         }
 
@@ -83,5 +99,7 @@ export function useAppBoot(): void {
     boot();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [retryCount]);
+
+  return { retry };
 }

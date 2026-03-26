@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchDmMessages, sendDmMessage, markDmRead } from '@/api/conversations';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
+import { track } from '@/services/analytics';
 import type { DmMessage } from '@/types';
 
 interface Result {
@@ -87,6 +88,7 @@ export function useDMThread(conversationId: string): Result {
     try {
       const msg = await sendDmMessage(conversationId, trimmed);
       addNew([msg]);
+      track('dm_sent', { conversationId });
     } catch {
       setError('Failed to send message');
     } finally {

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform,
@@ -12,6 +12,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { fetchEventMessages, sendEventMessage, sendEventImageMessage } from '@/api/events';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
+import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { HiladsEvent, Message } from '@/types';
 
@@ -100,6 +101,7 @@ function EventHeader({
           ]}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            if (!event.is_participating) track('event_joined', { eventId: event.id });
             onToggle();
           }}
           disabled={toggling}
@@ -129,6 +131,10 @@ export default function EventDetailScreen() {
     event, loading: eventLoading, error: eventError,
     toggling, isOwner, toggleParticipation,
   } = useEventDetail(id);
+
+  useEffect(() => {
+    if (id) track('event_opened', { eventId: id });
+  }, [id]);
 
   // Event chat uses event.id as channelId for WS filtering
   const channelId = event?.id ?? id;

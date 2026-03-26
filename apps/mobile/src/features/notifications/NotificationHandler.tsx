@@ -14,6 +14,7 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { setupNotificationChannel } from '@/services/push';
+import { track } from '@/services/analytics';
 
 // ── Foreground display strategy ───────────────────────────────────────────────
 // Show banner + badge + sound even when the app is open.
@@ -79,6 +80,7 @@ export function NotificationHandler() {
       const data = response.notification.request.content.data as NotifData;
       const route = resolveRoute(data);
       if (route) {
+        track('notification_opened', { type: data.type ?? 'unknown' });
         // If still booting, defer
         if (booting) {
           pendingRoute.current = route;

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View, Text, FlatList, TextInput, TouchableOpacity,
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useDMThread } from '@/hooks/useDMThread';
 import { useApp } from '@/context/AppContext';
+import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { DmMessage } from '@/types';
 
@@ -32,6 +33,10 @@ export default function DMThreadScreen() {
   const { account } = useApp();
 
   const { messages, loading, sending, error, clearError, sendText } = useDMThread(id);
+
+  useEffect(() => {
+    if (id) track('dm_opened', { conversationId: id });
+  }, [id]);
 
   const [text, setText] = useState('');
 

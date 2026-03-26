@@ -10,6 +10,7 @@ import { authLogin } from '@/api/auth';
 import { persistToken } from '@/services/session';
 import { useApp } from '@/context/AppContext';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignInScreen() {
@@ -32,6 +33,7 @@ export default function SignInScreen() {
       const { user } = await authLogin(e, p);
       await persistToken();
       setAccount(user);
+      track('auth_login');
       requestIfAppropriate(); // ask for push after successful sign-in
       router.back();
     } catch (err: unknown) {
