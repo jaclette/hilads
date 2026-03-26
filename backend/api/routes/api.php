@@ -1028,20 +1028,24 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         throw $e; // re-throw so global handler returns 500 — but now it's in the logs
     }
 
-    // Notify registered users currently online in this city (in-app only for Phase 1)
-    $cityChannelId = "city_{$channelId}";
-    $cityNameStmt  = Database::pdo()->prepare("SELECT name FROM channels WHERE id = ?");
-    $cityNameStmt->execute([$cityChannelId]);
-    $cityName = $cityNameStmt->fetchColumn() ?: 'your city';
-    $notifBody = $title . ($locationHint ? ' · ' . $locationHint : '');
-    NotificationRepository::notifyCityOnlineUsers(
-        $cityChannelId,
-        $authUser['id'] ?? null,
-        'new_event',
-        '🔥 New event in ' . $cityName,
-        $notifBody,
-        ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName))]
-    );
+    // Notify registered users currently online in this city (non-fatal side effect).
+    try {
+        $cityChannelId = "city_{$channelId}";
+        $cityNameStmt  = Database::pdo()->prepare("SELECT name FROM channels WHERE id = ?");
+        $cityNameStmt->execute([$cityChannelId]);
+        $cityName  = $cityNameStmt->fetchColumn() ?: 'your city';
+        $notifBody = $title . ($locationHint ? ' · ' . $locationHint : '');
+        NotificationRepository::notifyCityOnlineUsers(
+            $cityChannelId,
+            $authUser['id'] ?? null,
+            'new_event',
+            '🔥 New event in ' . $cityName,
+            $notifBody,
+            ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName))]
+        );
+    } catch (\Throwable $e) {
+        error_log("[event-create] notify failed (non-fatal): " . $e->getMessage());
+    }
 
     Response::json($event, 201);
 });

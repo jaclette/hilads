@@ -406,12 +406,17 @@ class EventRepository
             'expires_at' => $expiresAt,
         ]);
 
-        // Auto-join: creator is always the first participant (idempotent via ON CONFLICT)
-        $pdo->prepare("
-            INSERT INTO event_participants (channel_id, guest_id, user_id)
-            VALUES (?, ?, ?)
-            ON CONFLICT (channel_id, guest_id) DO NOTHING
-        ")->execute([$id, $guestId, $userId]);
+        // Auto-join: creator is always the first participant (idempotent via ON CONFLICT).
+        // Non-fatal: if this fails (e.g. schema lag), the event itself is already created.
+        try {
+            $pdo->prepare("
+                INSERT INTO event_participants (channel_id, guest_id, user_id)
+                VALUES (?, ?, ?)
+                ON CONFLICT (channel_id, guest_id) DO NOTHING
+            ")->execute([$id, $guestId, $userId]);
+        } catch (\Throwable $e) {
+            error_log("[event-create] auto-join failed (non-fatal): " . $e->getMessage());
+        }
 
         return [
             'id'           => $id,
