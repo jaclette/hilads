@@ -61,8 +61,23 @@ async function share(title, url) {
   if (navigator.share) {
     try { await navigator.share({ title, url }); return } catch (_) { /* user cancelled */ }
   }
+  // navigator.clipboard requires HTTPS + user gesture; unavailable on http or older Safari
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(url)
+      return 'copied'
+    } catch (_) {}
+  }
+  // Fallback: execCommand works on Safari and http
   try {
-    await navigator.clipboard.writeText(url)
+    const el = document.createElement('input')
+    el.value = url
+    el.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
+    document.body.appendChild(el)
+    el.focus()
+    el.select()
+    document.execCommand('copy')
+    document.body.removeChild(el)
     return 'copied'
   } catch (_) {}
 }
