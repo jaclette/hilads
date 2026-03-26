@@ -84,3 +84,17 @@ export async function sendEventMessage(
 ): Promise<Message> {
   return api.post<Message>(`/events/${eventId}/messages`, { guestId, nickname, content });
 }
+
+export async function sendEventImageMessage(
+  eventId: string,
+  guestId: string,
+  nickname: string,
+  imageUrl: string,
+): Promise<Message> {
+  return api.post<Message>(`/events/${eventId}/messages`, {
+    guestId,
+    nickname,
+    image_url: imageUrl,
+    type: 'image',
+  });
+}

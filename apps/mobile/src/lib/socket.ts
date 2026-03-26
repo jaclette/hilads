@@ -1,20 +1,19 @@
 import { WS_URL } from '@/constants';
-import type { WsMessage } from '@/types';
 
-type Handler = (data: WsMessage) => void;
+type Handler = (data: Record<string, unknown>) => void;
 
 // ── Hilads WebSocket client ───────────────────────────────────────────────────
-// Single persistent connection. Reconnects automatically with backoff.
-// Handlers are keyed by WS message type; use '*' to receive everything.
+// The WS server uses { event: '...' } for both directions (not { type: '...' }).
+// Dispatch is keyed on `data.event`. Use '*' to receive all messages.
 
 class HiladsSocket {
-  private ws:            WebSocket | null = null;
-  private handlers:      Map<string, Set<Handler>> = new Map();
-  private shouldConnect: boolean = false;
-  private reconnectMs:   number  = 2000;
+  private ws:             WebSocket | null = null;
+  private handlers:       Map<string, Set<Handler>> = new Map();
+  private shouldConnect:  boolean = false;
+  private reconnectMs:    number  = 2000;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
-  // ── Public API ──────────────────────────────────────────────────────────────
+  // ── Connection ──────────────────────────────────────────────────────────────
 
   connect(): void {
     this.shouldConnect = true;
@@ -28,34 +27,50 @@ class HiladsSocket {
     this.ws = null;
   }
 
-  /** Subscribe to a message type. Returns an unsubscribe function. */
-  on(type: string, handler: Handler): () => void {
-    if (!this.handlers.has(type)) {
-      this.handlers.set(type, new Set());
-    }
-    this.handlers.get(type)!.add(handler);
-    return () => this.handlers.get(type)?.delete(handler);
+  get isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
   }
 
-  /** Send a JSON message. Silently drops if not connected. */
+  // ── Subscriptions ───────────────────────────────────────────────────────────
+
+  /** Subscribe to a WS event name. Returns an unsubscribe function. */
+  on(event: string, handler: Handler): () => void {
+    if (!this.handlers.has(event)) {
+      this.handlers.set(event, new Set());
+    }
+    this.handlers.get(event)!.add(handler);
+    return () => this.handlers.get(event)?.delete(handler);
+  }
+
+  // ── Sending ─────────────────────────────────────────────────────────────────
+
+  /** Send a raw message. Silently drops if disconnected. */
   send(data: object): void {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(data));
     }
   }
 
-  /** Join a city or event channel. */
-  joinChannel(channelId: string, guestId: string, nickname: string): void {
-    this.send({ type: 'join', channelId, guestId, nickname });
+  // ── Presence helpers ────────────────────────────────────────────────────────
+
+  joinCity(cityId: string, sessionId: string, nickname: string, userId?: string): void {
+    this.send({ event: 'joinRoom', cityId, sessionId, nickname, ...(userId ? { userId } : {}) });
   }
 
-  /** Leave a channel. */
-  leaveChannel(channelId: string, guestId: string): void {
-    this.send({ type: 'leave', channelId, guestId });
+  leaveCity(cityId: string, sessionId: string): void {
+    this.send({ event: 'leaveRoom', cityId, sessionId });
   }
 
-  get isConnected(): boolean {
-    return this.ws?.readyState === WebSocket.OPEN;
+  joinEvent(eventId: string, sessionId: string): void {
+    this.send({ event: 'joinEvent', eventId, sessionId });
+  }
+
+  leaveEvent(eventId: string, sessionId: string): void {
+    this.send({ event: 'leaveEvent', eventId, sessionId });
+  }
+
+  heartbeat(cityId: string, sessionId: string): void {
+    this.send({ event: 'heartbeat', cityId, sessionId });
   }
 
   // ── Internal ─────────────────────────────────────────────────────────────────
@@ -68,47 +83,38 @@ class HiladsSocket {
 
       this.ws.onopen = () => {
         console.log('[WS] connected');
-        this.reconnectMs = 2000; // reset backoff on success
-        this._emit({ type: 'connected' });
+        this.reconnectMs = 2000;
+        this._dispatch('connected', {});
       };
 
       this.ws.onmessage = (e) => {
         try {
-          const data = JSON.parse(e.data as string) as WsMessage;
-          this._emit(data);
-          // Also emit to wildcard listeners
-          if (data.type !== '*') {
-            const wildcardData = { ...data, type: '*' };
-            this.handlers.get('*')?.forEach(h => h(wildcardData));
-          }
+          const data = JSON.parse(e.data as string) as Record<string, unknown>;
+          // Server uses `event` field; fall back to `type` for compat
+          const eventName = (data.event ?? data.type ?? 'unknown') as string;
+          this._dispatch(eventName, data);
+          this._dispatch('*', data);
         } catch (err) {
-          console.warn('[WS] failed to parse message:', err);
+          console.warn('[WS] parse error:', err);
         }
       };
 
-      this.ws.onerror = (e) => {
-        console.warn('[WS] error:', e);
-      };
+      this.ws.onerror = () => {/* handled in onclose */};
 
       this.ws.onclose = () => {
         console.log('[WS] disconnected');
-        this._emit({ type: 'disconnected' });
-        if (this.shouldConnect) {
-          this._scheduleReconnect();
-        }
+        this._dispatch('disconnected', {});
+        if (this.shouldConnect) this._scheduleReconnect();
       };
     } catch (err) {
-      console.error('[WS] failed to create socket:', err);
-      if (this.shouldConnect) {
-        this._scheduleReconnect();
-      }
+      console.error('[WS] create failed:', err);
+      if (this.shouldConnect) this._scheduleReconnect();
     }
   }
 
   private _scheduleReconnect(): void {
     this._clearReconnect();
     this.reconnectTimer = setTimeout(() => {
-      // Exponential backoff capped at 30s
       this.reconnectMs = Math.min(this.reconnectMs * 1.5, 30_000);
       this._connect();
     }, this.reconnectMs);
@@ -121,10 +127,9 @@ class HiladsSocket {
     }
   }
 
-  private _emit(data: WsMessage): void {
-    this.handlers.get(data.type)?.forEach(h => h(data));
+  private _dispatch(event: string, data: Record<string, unknown>): void {
+    this.handlers.get(event)?.forEach(h => h(data));
   }
 }
 
-// Singleton — one connection for the entire app
 export const socket = new HiladsSocket();

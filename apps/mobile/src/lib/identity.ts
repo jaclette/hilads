@@ -19,6 +19,14 @@ export function generateGuestId(): string {
   return generateHex(32);
 }
 
+/** UUID v4 for per-session presence tracking (not persisted). */
+export function generateSessionId(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
 // ── Nickname generation ───────────────────────────────────────────────────────
 // Mirrors the web NicknameGenerator pattern.
 

@@ -71,3 +71,19 @@ export async function sendMessage(
     content,
   });
 }
+
+export async function sendImageMessage(
+  channelId: string,
+  sessionId: string,
+  guestId: string,
+  nickname: string,
+  imageUrl: string,
+): Promise<Message> {
+  return api.post<Message>(`/channels/${channelId}/messages`, {
+    sessionId,
+    guestId,
+    nickname,
+    image_url: imageUrl,
+    type: 'image',
+  });
+}

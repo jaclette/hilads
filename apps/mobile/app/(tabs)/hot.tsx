@@ -4,6 +4,7 @@ import {
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { fetchCityEvents } from '@/api/events';
 import type { HiladsEvent } from '@/types';
@@ -19,13 +20,13 @@ function formatTime(ts: number): string {
   return new Date(ts * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function EventCard({ event }: { event: HiladsEvent }) {
+function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void }) {
   const now     = Date.now() / 1000;
   const isLive  = event.starts_at <= now && event.expires_at > now;
   const icon    = EVENT_ICONS[event.event_type] ?? '📌';
 
   return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={onPress}>
       <View style={styles.cardHeader}>
         <Text style={styles.cardIcon}>{icon}</Text>
         <View style={styles.cardMeta}>
@@ -59,6 +60,7 @@ function EventCard({ event }: { event: HiladsEvent }) {
 }
 
 export default function HotScreen() {
+  const router = useRouter();
   const { city } = useApp();
   const [events,     setEvents]     = useState<HiladsEvent[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -97,7 +99,16 @@ export default function HotScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>🔥 Hot</Text>
-        {city && <Text style={styles.headerCity}>{city.name}</Text>}
+        <View style={styles.headerRight}>
+          {city && <Text style={styles.headerCity}>{city.name}</Text>}
+          <TouchableOpacity
+            style={styles.chatBtn}
+            onPress={() => router.push('/city-chat')}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.chatBtnText}>💬 Chat</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {loading && !refreshing ? (
@@ -115,7 +126,9 @@ export default function HotScreen() {
         <FlatList
           data={events}
           keyExtractor={(e) => e.id}
-          renderItem={({ item }) => <EventCard event={item} />}
+          renderItem={({ item }) => (
+            <EventCard event={item} onPress={() => router.push(`/event/${item.id}`)} />
+          )}
           contentContainerStyle={events.length === 0 ? styles.flex1 : styles.list}
           refreshControl={
             <RefreshControl
@@ -149,7 +162,15 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
   headerTitle:  { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
+  headerRight:  { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   headerCity:   { fontSize: FontSizes.sm, color: Colors.muted },
+  chatBtn: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical:   6,
+    backgroundColor:   Colors.accentDim,
+    borderRadius:      Radius.full,
+  },
+  chatBtnText: { fontSize: FontSizes.sm, color: Colors.accent, fontWeight: '600' },
   center:       { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   emptyTitle:   { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, textAlign: 'center', marginBottom: Spacing.xs },
   emptySubtitle:{ fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
