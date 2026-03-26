@@ -184,11 +184,12 @@ function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
       <button className="my-event-row-body" onClick={onSelect}>
         <span className="my-event-title">{EVENT_ICONS[event.type] ?? '📌'} {event.title}</span>
         <span className="my-event-meta">
-          {getTimeLabel(event.starts_at, cityTimezone || 'UTC')}
-          {event.ends_at ? ` → ${formatTime(event.ends_at, cityTimezone || 'UTC')}` : ''}
+          {event.recurrence_label
+            ? event.recurrence_label
+            : getTimeLabel(event.starts_at, cityTimezone || 'UTC') + (event.ends_at ? ` → ${formatTime(event.ends_at, cityTimezone || 'UTC')}` : '')}
         </span>
-        <span className={`my-event-badge${isLive ? ' my-event-badge--live' : ''}`}>
-          {isLive ? 'Live' : 'Upcoming'}
+        <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (event.recurrence_label ? ' my-event-badge--recurring' : '')}`}>
+          {isLive ? 'Live' : (event.recurrence_label ? '↻ Recurring' : 'Upcoming')}
         </span>
       </button>
       <button className="my-event-delete" onClick={onDelete} aria-label="Delete event">✕</button>

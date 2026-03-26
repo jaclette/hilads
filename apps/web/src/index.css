@@ -2987,6 +2987,10 @@ html, body, #root {
   background: rgba(255, 122, 60, 0.18);
   color: #FF7A3C;
 }
+.my-event-badge--recurring {
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+}
 
 .my-event-delete {
   flex-shrink: 0;

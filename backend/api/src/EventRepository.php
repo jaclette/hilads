@@ -174,8 +174,9 @@ class EventRepository
     }
 
     /**
-     * Returns all active/upcoming Hilads events created by this guest or registered user.
-     * Used by the "My events" section in the Me screen.
+     * Returns active/upcoming Hilads events created by this guest or registered user.
+     * Recurring series are deduplicated: only the nearest upcoming (or currently live)
+     * occurrence is returned per series, so users see one entry per series they created.
      */
     public static function getByUser(string $guestId, ?string $userId): array
     {
@@ -200,7 +201,20 @@ class EventRepository
             ");
             $stmt->execute(['guest_id' => $guestId]);
         }
-        return array_map([self::class, 'format'], $stmt->fetchAll());
+
+        // Deduplicate recurring series: rows are sorted by starts_at ASC so the first
+        // occurrence seen per series_id is the nearest upcoming (or currently live) one.
+        $seenSeries = [];
+        $result     = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $sid = $row['series_id'] ?? null;
+            if ($sid !== null) {
+                if (isset($seenSeries[$sid])) continue;
+                $seenSeries[$sid] = true;
+            }
+            $result[] = self::format($row);
+        }
+        return $result;
     }
 
     /**

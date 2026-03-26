@@ -219,11 +219,12 @@ export default function ProfileScreen({ account, myEvents, cityTimezone, onSave,
                   <button className="my-event-row-body" onClick={() => onSelectEvent?.(ev)}>
                     <span className="my-event-title">{EVENT_ICONS[ev.type] ?? '📌'} {ev.title}</span>
                     <span className="my-event-meta">
-                      {getTimeLabel(ev.starts_at, tz)}
-                      {ev.ends_at ? ` → ${formatTime(ev.ends_at, tz)}` : ''}
+                      {ev.recurrence_label
+                        ? ev.recurrence_label
+                        : getTimeLabel(ev.starts_at, tz) + (ev.ends_at ? ` → ${formatTime(ev.ends_at, tz)}` : '')}
                     </span>
-                    <span className={`my-event-badge${isLive ? ' my-event-badge--live' : ''}`}>
-                      {isLive ? 'Live' : 'Upcoming'}
+                    <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (ev.recurrence_label ? ' my-event-badge--recurring' : '')}`}>
+                      {isLive ? 'Live' : (ev.recurrence_label ? '↻ Recurring' : 'Upcoming')}
                     </span>
                   </button>
                   <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label="Delete event">✕</button>
