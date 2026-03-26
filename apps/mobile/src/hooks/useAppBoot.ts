@@ -5,11 +5,13 @@ import { loadOrCreateIdentity, generateSessionId } from '@/lib/identity';
 import { socket } from '@/lib/socket';
 import { resolveLocation, joinChannel } from '@/api/channels';
 import { authMe } from '@/api/auth';
+import { loadSavedToken } from '@/services/session';
+import { fetchUnreadCount } from '@/api/notifications';
 
 export function useAppBoot(): void {
   const {
     setIdentity, setSessionId, setAccount,
-    setCity, setBooting, setBootError, setWsConnected,
+    setCity, setBooting, setBootError, setWsConnected, setUnreadDMs,
   } = useApp();
 
   useEffect(() => {
@@ -24,8 +26,17 @@ export function useAppBoot(): void {
         setIdentity(identity);
         setSessionId(sessionId);
 
-        // 2. Auth check — non-blocking
-        authMe().then(user => { if (!cancelled && user) setAccount(user); });
+        // 2. Restore saved auth token, then check session
+        await loadSavedToken();
+        authMe().then(user => {
+          if (!cancelled && user) {
+            setAccount(user);
+            // Fetch unread DM count for registered users
+            fetchUnreadCount().then(count => {
+              if (!cancelled) setUnreadDMs(count);
+            }).catch(() => {});
+          }
+        });
 
         // 3. Location
         const { status } = await Location.requestForegroundPermissionsAsync();
@@ -45,7 +56,6 @@ export function useAppBoot(): void {
         if (cancelled) return;
         if (city) {
           setCity(city);
-          // Register presence via REST (non-fatal)
           joinChannel(city.channelId, sessionId, identity.guestId, identity.nickname)
             .catch(() => {});
         }
@@ -54,7 +64,6 @@ export function useAppBoot(): void {
         const offConnected    = socket.on('connected',    () => setWsConnected(true));
         const offDisconnected = socket.on('disconnected', () => setWsConnected(false));
 
-        // Re-join city room after every (re)connect
         socket.on('connected', () => {
           if (city) socket.joinCity(city.channelId, sessionId, identity.nickname);
         });

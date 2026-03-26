@@ -81,7 +81,49 @@ export interface User {
   profile_photo_url?: string;
   home_city?: string;
   interests?: string[];
+  age?: number;
   guest_id?: string;
+}
+
+// ── Conversations (DMs) ───────────────────────────────────────────────────────
+
+export interface Conversation {
+  id: string;
+  updated_at: string;
+  other_user_id: string;
+  other_display_name: string;
+  other_photo_url?: string;
+  last_message?: string;
+  last_message_at?: string;
+  last_sender_id?: string;
+  has_unread: boolean;
+}
+
+export interface DmMessage {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
+  sender_name: string;
+  sender_photo?: string;
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+
+export interface Notification {
+  id: number;
+  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event';
+  title: string;
+  body: string;
+  data: {
+    conversationId?: string;
+    eventId?: string;
+    channelId?: string;
+    senderName?: string;
+  };
+  is_read: boolean;
+  created_at: string;
 }
 
 // ── WebSocket messages ────────────────────────────────────────────────────────

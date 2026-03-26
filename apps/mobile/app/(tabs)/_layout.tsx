@@ -1,25 +1,13 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants';
+import { useApp } from '@/context/AppContext';
 
 type IoniconsName = React.ComponentProps<typeof Ionicons>['name'];
 
-interface TabConfig {
-  name:   string;
-  title:  string;
-  icon:   IoniconsName;
-  iconActive: IoniconsName;
-}
-
-const TABS: TabConfig[] = [
-  { name: 'hot',      title: 'Hot',      icon: 'flame-outline',    iconActive: 'flame' },
-  { name: 'cities',   title: 'Cities',   icon: 'earth-outline',    iconActive: 'earth' },
-  { name: 'here',     title: 'Here',     icon: 'people-outline',   iconActive: 'people' },
-  { name: 'messages', title: 'Messages', icon: 'chatbubble-outline',iconActive: 'chatbubble' },
-  { name: 'me',       title: 'Me',       icon: 'person-outline',   iconActive: 'person' },
-];
-
 export default function TabsLayout() {
+  const { unreadDMs } = useApp();
+
   return (
     <Tabs
       screenOptions={{
@@ -40,22 +28,53 @@ export default function TabsLayout() {
         },
       }}
     >
-      {TABS.map((tab) => (
-        <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
-          options={{
-            title: tab.title,
-            tabBarIcon: ({ focused, color, size }) => (
-              <Ionicons
-                name={focused ? tab.iconActive : tab.icon}
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-      ))}
+      <Tabs.Screen
+        name="hot"
+        options={{
+          title: 'Hot',
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'flame' : 'flame-outline'} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="cities"
+        options={{
+          title: 'Cities',
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'earth' : 'earth-outline'} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="here"
+        options={{
+          title: 'Here',
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'people' : 'people-outline'} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: 'Messages',
+          tabBarBadge: unreadDMs > 0 ? unreadDMs : undefined,
+          tabBarBadgeStyle: { backgroundColor: Colors.accent, fontSize: 10 },
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'chatbubble' : 'chatbubble-outline'} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="me"
+        options={{
+          title: 'Me',
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

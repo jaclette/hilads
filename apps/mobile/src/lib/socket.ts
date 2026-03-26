@@ -27,6 +27,13 @@ class HiladsSocket {
     this.ws = null;
   }
 
+  /** Force an immediate reconnect attempt — use when app returns to foreground. */
+  reconnectNow(): void {
+    if (!this.shouldConnect) return;
+    this._clearReconnect();
+    this._connect();
+  }
+
   get isConnected(): boolean {
     return this.ws?.readyState === WebSocket.OPEN;
   }
@@ -71,6 +78,14 @@ class HiladsSocket {
 
   heartbeat(cityId: string, sessionId: string): void {
     this.send({ event: 'heartbeat', cityId, sessionId });
+  }
+
+  joinDm(conversationId: string, userId: string): void {
+    this.send({ event: 'joinDm', conversationId, userId });
+  }
+
+  leaveDm(conversationId: string): void {
+    this.send({ event: 'leaveDm', conversationId });
   }
 
   // ── Internal ─────────────────────────────────────────────────────────────────

@@ -1,11 +1,12 @@
 import { useCallback } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useApp } from '@/context/AppContext';
+import * as Haptics from 'expo-haptics';
 import { useEventDetail } from '@/hooks/useEventDetail';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchEventMessages, sendEventMessage, sendEventImageMessage } from '@/api/events';
@@ -97,7 +98,10 @@ function EventHeader({
             styles.joinBtn,
             event.is_participating && styles.joinBtnActive,
           ]}
-          onPress={onToggle}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            onToggle();
+          }}
           disabled={toggling}
           activeOpacity={0.8}
         >
@@ -158,7 +162,7 @@ export default function EventDetailScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.screenHeader}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
@@ -184,7 +188,10 @@ export default function EventDetailScreen() {
           <Text style={styles.errorText}>{eventError ?? 'Event not found'}</Text>
         </View>
       ) : (
-        <>
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
           <FlatList
             data={messages}
             keyExtractor={(m) => m.id}
@@ -223,7 +230,7 @@ export default function EventDetailScreen() {
             onSendText={sendText}
             onSendImage={sendImage}
           />
-        </>
+        </KeyboardAvoidingView>
       )}
     </SafeAreaView>
   );
@@ -231,6 +238,7 @@ export default function EventDetailScreen() {
 
 const styles = StyleSheet.create({
   container:    { flex: 1, backgroundColor: Colors.bg },
+  flex:         { flex: 1 },
 
   screenHeader: {
     flexDirection:     'row',

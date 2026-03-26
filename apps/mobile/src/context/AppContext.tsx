@@ -6,6 +6,8 @@ import React, {
   type ReactNode,
 } from 'react';
 import type { GuestIdentity, City, User } from '@/types';
+import { authLogout } from '@/api/auth';
+import { clearToken } from '@/services/session';
 
 interface AppState {
   booting:     boolean;
@@ -15,6 +17,7 @@ interface AppState {
   account:     User | null;
   city:        City | null;
   wsConnected: boolean;
+  unreadDMs:   number;
 }
 
 interface AppActions {
@@ -25,6 +28,8 @@ interface AppActions {
   setBooting:     (booting: boolean) => void;
   setBootError:   (error: string | null) => void;
   setWsConnected: (connected: boolean) => void;
+  setUnreadDMs:   (count: number) => void;
+  logout:         () => Promise<void>;
 }
 
 const AppContext = createContext<(AppState & AppActions) | null>(null);
@@ -32,22 +37,34 @@ const AppContext = createContext<(AppState & AppActions) | null>(null);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [booting,     setBooting]     = useState(true);
   const [bootError,   setBootError]   = useState<string | null>(null);
-  const [identity,    setIdentity]    = useState<GuestIdentity | null>(null);
+  const [identity,    setIdentityRaw] = useState<GuestIdentity | null>(null);
   const [sessionId,   setSessionId]   = useState<string | null>(null);
   const [account,     setAccount]     = useState<User | null>(null);
   const [city,        setCity]        = useState<City | null>(null);
   const [wsConnected, setWsConnected] = useState(false);
+  const [unreadDMs,   setUnreadDMs]   = useState(0);
+
+  const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
+
+  const logout = useCallback(async () => {
+    await authLogout();
+    await clearToken();
+    setAccount(null);
+    setUnreadDMs(0);
+  }, []);
 
   return (
     <AppContext.Provider
       value={{
-        booting, bootError, identity, sessionId, account, city, wsConnected,
+        booting, bootError, identity, sessionId, account, city, wsConnected, unreadDMs,
         setBooting, setBootError,
-        setIdentity: useCallback((id: GuestIdentity) => setIdentity(id), []),
+        setIdentity,
         setSessionId: useCallback((id: string) => setSessionId(id), []),
         setAccount,
         setCity: useCallback((c: City) => setCity(c), []),
         setWsConnected,
+        setUnreadDMs,
+        logout,
       }}
     >
       {children}

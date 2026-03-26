@@ -3,34 +3,81 @@
     "name": "Hilads",
     "slug": "hilads",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "scheme": "hilads",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "splash": {
+      "backgroundColor": "#0f0f0f",
+      "resizeMode": "contain"
+    },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.hilads.app"
+      "bundleIdentifier": "com.hilads.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Hilads uses your location to find your city and show you what's happening nearby.",
+        "NSCameraUsageDescription": "Hilads lets you send photos in city chats and event conversations.",
+        "NSPhotoLibraryUsageDescription": "Hilads lets you share photos from your library in chats.",
+        "NSUserNotificationUsageDescription": "Hilads sends you notifications for new messages and events in your city."
+      },
+      "entitlements": {
+        "aps-environment": "production"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#0f0f0f"
       },
       "package": "com.hilads.app",
+      "versionCode": 1,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_COARSE_LOCATION"
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.VIBRATE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.POST_NOTIFICATIONS"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "hilads" }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "plugins": [
       "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "color": "#FF7A3C",
+          "defaultChannel": "default",
+          "sounds": []
+        }
+      ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Hilads needs your location to find your city.",
-          "locationAlwaysAndWhenInUsePermission": "Hilads needs your location to find your city."
+          "locationWhenInUsePermission": "Hilads uses your location to find your city.",
+          "locationAlwaysAndWhenInUsePermission": "Hilads uses your location to find your city."
         }
       ]
     ],
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    },
     "experiments": {
       "typedRoutes": true
     }

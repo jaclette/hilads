@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import {
   View, FlatList, ActivityIndicator, Text,
-  TouchableOpacity, StyleSheet,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -48,7 +48,7 @@ export default function CityChatScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
@@ -67,41 +67,47 @@ export default function CityChatScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Message list */}
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} />
-        </View>
-      ) : (
-        <FlatList
-          data={messages}
-          keyExtractor={(m) => m.id}
-          renderItem={({ item }) => (
-            <ChatMessage message={item} myGuestId={identity?.guestId} />
-          )}
-          inverted
-          contentContainerStyle={styles.listContent}
-          keyboardShouldPersistTaps="handled"
-          ListEmptyComponent={
-            <View style={styles.emptyWrap}>
-              <Text style={styles.emptyText}>No messages yet. Say hello 👋</Text>
-            </View>
-          }
-        />
-      )}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        {/* Message list */}
+        {loading ? (
+          <View style={styles.center}>
+            <ActivityIndicator color={Colors.accent} />
+          </View>
+        ) : (
+          <FlatList
+            data={messages}
+            keyExtractor={(m) => m.id}
+            renderItem={({ item }) => (
+              <ChatMessage message={item} myGuestId={identity?.guestId} />
+            )}
+            inverted
+            contentContainerStyle={styles.listContent}
+            keyboardShouldPersistTaps="handled"
+            ListEmptyComponent={
+              <View style={styles.emptyWrap}>
+                <Text style={styles.emptyText}>No messages yet. Say hello 👋</Text>
+              </View>
+            }
+          />
+        )}
 
-      {/* Composer */}
-      <ChatInput
-        sending={sending}
-        onSendText={sendText}
-        onSendImage={sendImage}
-      />
+        {/* Composer */}
+        <ChatInput
+          sending={sending}
+          onSendText={sendText}
+          onSendImage={sendImage}
+        />
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container:    { flex: 1, backgroundColor: Colors.bg },
+  flex:         { flex: 1 },
   header: {
     flexDirection:  'row',
     alignItems:     'center',

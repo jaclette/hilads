@@ -3,6 +3,7 @@ import {
   View, TextInput, TouchableOpacity, Text,
   ActivityIndicator, StyleSheet, Platform,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
@@ -19,6 +20,7 @@ export function ChatInput({ sending, onSendText, onSendImage }: Props) {
   function handleSend() {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onSendText(trimmed);
     setText('');
   }
