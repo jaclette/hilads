@@ -1,12 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchConversations } from '../api'
 import BackButton from './BackButton'
 
-// Formats an ISO-8601 timestamp string as a short relative label for DM rows.
+// Formats a timestamp string as a short relative label for DM rows.
+// Handles both ISO-8601 ("2024-01-15T14:30:00Z") and MySQL datetime
+// ("2024-01-15 14:30:00") formats — the latter is invalid in Safari's
+// Date constructor so we normalise the space to "T" before parsing.
 // Returns null for missing/invalid values — caller must guard against null.
 function formatConvTime(isoStr) {
   if (!isoStr) return null
-  const d = new Date(isoStr)
+  // Safari rejects "YYYY-MM-DD HH:mm:ss" (space separator) — normalise to "T"
+  const normalised = typeof isoStr === 'string' ? isoStr.replace(' ', 'T') : isoStr
+  const d = new Date(normalised)
   if (isNaN(d.getTime())) return null
   const diff = Date.now() - d.getTime()
   if (diff < 60_000)           return 'now'
@@ -28,18 +33,29 @@ function avatarColors(name) {
 }
 
 export default function ConversationsScreen({ account, conversations, onConversationsLoaded, onBack, onOpenDm, onOpenEvent }) {
+  const [fetchError, setFetchError] = useState(false)
+
   // Always re-fetch fresh data when the screen mounts so the list is up to date.
   // Result is propagated to the parent (which owns the state) via onConversationsLoaded.
   useEffect(() => {
+    setFetchError(false)
     fetchConversations()
-      .then(onConversationsLoaded)
-      .catch(() => {})
+      .then(data => {
+        setFetchError(false)
+        onConversationsLoaded(data)
+      })
+      .catch(err => {
+        // Log to help diagnose Safari / cookie / network issues
+        console.warn('[hilads] Messages failed to load:', err?.message ?? String(err))
+        setFetchError(true)
+      })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const dms    = conversations?.dms    ?? []
   const events = conversations?.events ?? []
-  const loading = conversations === null
-  const isEmpty = !loading && dms.length === 0 && events.length === 0
+  // loading only while fetch is in-flight — a fetch error must not leave us stuck
+  const loading = conversations === null && !fetchError
+  const isEmpty = !loading && !fetchError && dms.length === 0 && events.length === 0
 
   return (
     <div className="full-page">
@@ -50,6 +66,14 @@ export default function ConversationsScreen({ account, conversations, onConversa
 
       <div className="page-body conv-body">
         {loading && <p className="conv-loading">Loading…</p>}
+
+        {fetchError && (
+          <div className="conv-empty">
+            <p className="conv-empty-icon">⚠️</p>
+            <p className="conv-empty-title">Couldn't load messages</p>
+            <p className="conv-empty-sub">Check your connection and try again.</p>
+          </div>
+        )}
 
         {isEmpty && (
           <div className="conv-empty">

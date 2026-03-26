@@ -556,7 +556,9 @@ export default function App() {
   // Fetch conversations whenever the account changes so the unread dot is always current.
   useEffect(() => {
     if (!account) { setConversations(null); return }
-    fetchConversations().then(setConversations).catch(() => {})
+    fetchConversations().then(setConversations).catch(err => {
+      console.warn('[hilads] background conversations sync failed:', err?.message ?? String(err))
+    })
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Poll notification unread count every 30s for registered users.
