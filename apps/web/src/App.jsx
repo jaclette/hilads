@@ -466,6 +466,7 @@ export default function App() {
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)
+  const [successToast, setSuccessToast] = useState(null) // { msg: string }
   const [myEvents, setMyEvents] = useState([])
   const [myEventsLoaded, setMyEventsLoaded] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
@@ -1539,6 +1540,16 @@ export default function App() {
     setMyEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e))
   }
 
+  // Clean up after event deletion
+  function handleEventDeleted(eventId) {
+    setShowEditEvent(false)
+    setEvents(prev => prev.filter(e => e.id !== eventId))
+    setMyEvents(prev => prev.filter(e => e.id !== eventId))
+    if (activeEvent?.id === eventId) handleBackToCity()
+    setSuccessToast({ msg: 'Event deleted' })
+    setTimeout(() => setSuccessToast(null), 3000)
+  }
+
   // Refresh events list after creation
   function handleEventCreated(newEvent) {
     setShowCreateEvent(false)
@@ -2340,6 +2351,10 @@ export default function App() {
           <div className="send-error-toast">{sendError}</div>
         )}
 
+        {successToast && (
+          <div className="success-toast">{successToast.msg}</div>
+        )}
+
         <form className="input-bar" onSubmit={handleSend}>
           {/* Hidden file picker — triggered by the image button */}
           <input
@@ -2901,6 +2916,7 @@ export default function App() {
           cityTimezone={cityTimezone}
           account={account}
           onCreated={handleEventUpdated}
+          onDeleted={handleEventDeleted}
           onBack={() => setShowEditEvent(false)}
         />
       )}

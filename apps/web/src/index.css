@@ -1368,6 +1368,23 @@ html, body, #root {
   background: rgba(255, 255, 255, 0.22);
 }
 
+/* ── Success toast ────────────────────────────────────── */
+
+.success-toast {
+  align-self: center;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0 16px 4px;
+  animation: fadeUp 0.25s ease-out both;
+  pointer-events: none;
+}
+
 /* ── Send error toast ─────────────────────────────────── */
 
 .send-error-toast {
@@ -3360,6 +3377,115 @@ html, body, #root {
   transform: none;
   box-shadow: none;
 }
+
+/* ── Delete event button (edit mode only) ─────────────── */
+
+.cef-delete-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 20px;
+  background: transparent;
+  border: 1.5px solid rgba(239, 68, 68, 0.4);
+  border-radius: 14px;
+  color: #f87171;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cef-delete-btn:hover  { background: rgba(239, 68, 68, 0.07); border-color: rgba(239, 68, 68, 0.65); }
+.cef-delete-btn:active { transform: scale(0.98); opacity: 0.85; }
+.cef-delete-btn:disabled { opacity: 0.35; cursor: default; }
+
+/* ── Delete confirm overlay ───────────────────────────── */
+
+.delete-confirm-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 10;
+  animation: fadeIn 0.15s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.delete-confirm-dialog {
+  width: 100%;
+  background: var(--surface, #1a1a1a);
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 20px;
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: slideUp 0.2s ease-out both;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.delete-confirm-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.delete-confirm-body {
+  font-size: 0.85rem;
+  color: var(--text-muted, rgba(255,255,255,0.5));
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.delete-confirm-cancel {
+  flex: 1;
+  padding: 13px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.delete-confirm-cancel:active { opacity: 0.75; }
+.delete-confirm-cancel:disabled { opacity: 0.35; cursor: default; }
+
+.delete-confirm-ok {
+  flex: 1;
+  padding: 13px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1.5px solid rgba(239, 68, 68, 0.5);
+  border-radius: 12px;
+  color: #f87171;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+.delete-confirm-ok:hover  { background: rgba(239, 68, 68, 0.22); }
+.delete-confirm-ok:active { opacity: 0.85; transform: scale(0.98); }
+.delete-confirm-ok:disabled { opacity: 0.35; cursor: default; }
 
 /* ── Recurrence picker ────────────────────────────────── */
 

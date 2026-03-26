@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createEvent, createEventSeries, updateEvent } from '../api'
+import { createEvent, createEventSeries, updateEvent, deleteEvent } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 import BackButton from './BackButton'
 
@@ -174,7 +174,7 @@ const CATEGORY_ICONS = {
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack, editEvent }) {
+export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack, onDeleted, editEvent }) {
   const tz = cityTimezone || 'UTC'
   const isEdit = !!editEvent
   const [type, setType] = useState(() => editEvent?.type || 'other')
@@ -184,6 +184,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const [location, setLocation] = useState(() => editEvent?.location_hint || editEvent?.location || '')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   // Recurrence state (registered users only)
   const [recurrence, setRecurrence] = useState('once') // 'once' | 'daily' | 'weekly' | 'every_n_days'
@@ -294,12 +296,49 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     }
   }
 
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      await deleteEvent(editEvent.id, guest.guestId)
+      onDeleted?.(editEvent.id)
+    } catch (err) {
+      setDeleting(false)
+      setShowConfirm(false)
+      setError(err.message || 'Could not delete event. Try again.')
+    }
+  }
+
   return (
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
         <span className="page-title">{isEdit ? 'Edit event' : 'Create event'}</span>
       </div>
+
+      {showConfirm && (
+        <div className="delete-confirm-overlay">
+          <div className="delete-confirm-dialog">
+            <p className="delete-confirm-title">Delete this event?</p>
+            <p className="delete-confirm-body">This will remove the event and all messages. This can't be undone.</p>
+            <div className="delete-confirm-actions">
+              <button
+                className="delete-confirm-cancel"
+                onClick={() => setShowConfirm(false)}
+                disabled={deleting}
+              >
+                Cancel
+              </button>
+              <button
+                className="delete-confirm-ok"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                {deleting ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="page-body">
         <form className="cef-form" onSubmit={handleSubmit}>
@@ -438,6 +477,17 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
           >
             {submitting ? (isEdit ? 'Saving…' : 'Creating…') : (isEdit ? 'Save changes' : 'Create event')}
           </button>
+
+          {isEdit && (
+            <button
+              type="button"
+              className="cef-delete-btn"
+              onClick={() => setShowConfirm(true)}
+              disabled={submitting}
+            >
+              🗑 Delete event
+            </button>
+          )}
 
         </form>
       </div>
