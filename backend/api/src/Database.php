@@ -155,6 +155,16 @@ class Database
                 self::$pdo->exec("DROP INDEX IF EXISTS event_series_source_key_unique");
                 self::$pdo->exec("CREATE UNIQUE INDEX event_series_source_key_unique ON event_series (source_key)");
             }
+
+            // Add created_by to channel_events if missing (event ownership feature).
+            $ceCreatedByExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'channel_events' AND column_name = 'created_by')")
+                ->fetchColumn();
+
+            if (!$ceCreatedByExists) {
+                self::$pdo->exec("ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS created_by TEXT REFERENCES users(id) ON DELETE SET NULL");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_created_by ON channel_events (created_by) WHERE created_by IS NOT NULL");
+            }
         }
 
         self::bootstrap(self::$pdo);
