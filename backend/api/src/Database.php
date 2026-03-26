@@ -165,6 +165,18 @@ class Database
                 self::$pdo->exec("ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS created_by TEXT REFERENCES users(id) ON DELETE SET NULL");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_created_by ON channel_events (created_by) WHERE created_by IS NOT NULL");
             }
+
+            // Add user_id to event_participants if missing (event ownership feature).
+            // The original table only had (channel_id, guest_id, joined_at).
+            // user_id was added to link registered users to their participation rows.
+            $epUserIdExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'event_participants' AND column_name = 'user_id')")
+                ->fetchColumn();
+
+            if (!$epUserIdExists) {
+                self::$pdo->exec("ALTER TABLE event_participants ADD COLUMN IF NOT EXISTS user_id TEXT REFERENCES users(id) ON DELETE SET NULL");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_participants_user ON event_participants (user_id) WHERE user_id IS NOT NULL");
+            }
         }
 
         self::bootstrap(self::$pdo);

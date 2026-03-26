@@ -1017,7 +1017,16 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     }
 
     $authUser = AuthService::currentUser(); // null for guests — that's fine
-    $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $authUser['id'] ?? null);
+    $userId   = $authUser['id'] ?? null;
+
+    error_log("[event-create] channelId={$channelId} guestId={$guestId} userId={$userId} title=" . json_encode($title));
+
+    try {
+        $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $userId);
+    } catch (\Throwable $e) {
+        error_log("[event-create] FAILED: " . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        throw $e; // re-throw so global handler returns 500 — but now it's in the logs
+    }
 
     // Notify registered users currently online in this city (in-app only for Phase 1)
     $cityChannelId = "city_{$channelId}";
