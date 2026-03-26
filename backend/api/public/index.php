@@ -20,6 +20,25 @@ set_exception_handler(function (Throwable $e) {
 $uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
+// ── Admin backoffice ──────────────────────────────────────────────────────────
+// Handled before the JSON API path to avoid CORS/Content-Type conflicts.
+if (str_starts_with($uri, '/admin')) {
+    $envFile = __DIR__ . '/../.env';
+    if (file_exists($envFile)) {
+        $vars = @parse_ini_file($envFile);
+        if (is_array($vars)) {
+            foreach ($vars as $key => $value) {
+                putenv("$key=$value");
+            }
+        }
+    }
+    require_once __DIR__ . '/../vendor/autoload.php';
+    require_once __DIR__ . '/../src/Database.php';
+    require_once __DIR__ . '/../admin/boot.php';
+    exit;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 if ($method === 'GET' && $uri === '/health') {
     http_response_code(200);
     header('Content-Type: application/json; charset=utf-8');

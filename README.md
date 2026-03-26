@@ -97,6 +97,7 @@ apps/
   web/          React frontend (mobile-first)
 backend/
   api/          PHP REST API (nginx + FPM via Docker)
+    admin/      Internal backoffice (server-rendered PHP, /admin)
   ws/           Node.js WebSocket server
 docs/
   mvp.md        Full product definition
@@ -181,6 +182,8 @@ npm run dev
 | `VAPID_SUBJECT` | VAPID subject — `mailto:` or HTTPS URL |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
+| `ADMIN_USERNAME` | Admin backoffice login username |
+| `ADMIN_PASSWORD` | Admin backoffice login password |
 
 Generate VAPID keys: `php backend/api/scripts/generate-vapid-keys.php`
 
@@ -239,6 +242,29 @@ After seeding, generate today's occurrences:
 
 ```
 POST /internal/event-series/generate?key=YOUR_MIGRATION_KEY
+```
+
+---
+
+## Admin Backoffice
+
+An internal ops tool served from the API at `/admin`. No separate service required.
+
+| Route | Description |
+|---|---|
+| `GET /admin` | Dashboard — stats overview |
+| `GET /admin/users` | User list — searchable, read-only |
+| `GET /admin/events` | Event list — searchable, filterable by status |
+| `GET /admin/events/{id}/edit` | Edit event fields |
+| `POST /admin/events/{id}/delete` | Soft-delete an event |
+
+**Auth:** env-var credentials (`ADMIN_USERNAME` + `ADMIN_PASSWORD`), PHP session, CSRF-protected.
+
+Add to your Render environment:
+
+```
+ADMIN_USERNAME   your-username
+ADMIN_PASSWORD   a-strong-password
 ```
 
 ---

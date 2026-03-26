@@ -1,4 +1,4 @@
-# Hilads — MVP v6
+# Hilads — MVP v7
 
 ## Vision
 
@@ -260,6 +260,30 @@ Schema migrations are applied idempotently inside `Database::pdo()` on first con
 
 ---
 
+## Admin Backoffice
+
+Internal tool accessible at `/admin` on the API service. Not part of the product — ops only.
+
+**Authentication:**
+- Credentials from env vars: `ADMIN_USERNAME` + `ADMIN_PASSWORD`
+- PHP session-based, scoped to `/admin` path
+- Session regenerated on login, destroyed on logout
+- CSRF protection on all state-changing forms
+
+**Routes:**
+- `GET /admin` — dashboard with stats (users, events, active events, messages)
+- `GET /admin/users` — searchable, paginated user list (read-only)
+- `GET /admin/events` — searchable event list with status filters (active / expired / deleted / recurring / one-shot)
+- `GET /admin/events/{id}/edit` — edit event title, location, venue, times, status
+- `POST /admin/events/{id}/delete` — soft delete (mirrors product behavior)
+
+**Constraints:**
+- Users are read-only in v1
+- Recurring event occurrences: only title/location/venue editable (times are cron-generated from `event_series`)
+- Implemented as server-rendered PHP inside `backend/api/admin/` — no separate service, no JS framework
+
+---
+
 ## What Is In Scope
 
 - City chat (public, ephemeral)
@@ -275,6 +299,7 @@ Schema migrations are applied idempotently inside `Database::pdo()` on first con
 - Message retention via daily cleanup
 - In-app notifications + web push (registered users)
 - Feed prompts (client-side engagement nudges)
+- Internal admin backoffice (ops, not product)
 
 ---
 
