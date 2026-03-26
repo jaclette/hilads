@@ -1586,6 +1586,60 @@ html, body, #root {
   opacity: 0.85;
 }
 
+/* ── Owner prompt card — shown in event feed for creators ── */
+
+.feed-owner-prompt {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin: 4px 0 8px;
+  animation: fadeUp 0.3s ease-out both;
+}
+
+.feed-owner-prompt-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.feed-owner-prompt-text {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+.feed-owner-prompt-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.feed-owner-prompt-btn {
+  flex-shrink: 0;
+  background: rgba(167, 139, 250, 0.15);
+  color: #a78bfa;
+  border: 1px solid rgba(167, 139, 250, 0.35);
+  border-radius: 14px;
+  padding: 6px 13px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+.feed-owner-prompt-btn:active {
+  opacity: 0.85;
+  transform: scale(0.97);
+}
+
 /* ── Welcome onboarding card (local-only, first visit per city) ── */
 
 .feed-welcome {
@@ -2821,22 +2875,41 @@ html, body, #root {
   background: rgba(255, 122, 60, 0.88);
 }
 
-/* Edit event button — shown in header when current user is the creator */
-.event-edit-btn {
-  flex-shrink: 0;
-  padding: 7px 14px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+/* Edit event CTA — replaces Join for event creators, same pill weight */
+.event-join-btn--edit {
+  border-color: rgba(167, 139, 250, 0.55);
+  color: #a78bfa;
 }
-.event-edit-btn:hover  { background: rgba(255,255,255,0.08); color: #fff; }
-.event-edit-btn:active { transform: scale(0.96); }
+.event-join-btn--edit:hover {
+  background: rgba(167, 139, 250, 0.1);
+  border-color: rgba(167, 139, 250, 0.8);
+}
+
+/* One-shot pulse on first render as creator */
+@keyframes edit-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0.55); }
+  60%  { box-shadow: 0 0 0 10px rgba(167, 139, 250, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(167, 139, 250, 0); }
+}
+.event-join-btn--pulse {
+  animation: edit-pulse 0.7s ease-out 0.35s 2 both;
+}
+
+/* Creator badge — shown above event title when you own the event */
+.event-creator-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  border-radius: 10px;
+  padding: 2px 8px;
+  letter-spacing: 0.02em;
+  align-self: flex-start;
+}
 
 /* My events section in Me / Profile screen */
 .me-section-label {

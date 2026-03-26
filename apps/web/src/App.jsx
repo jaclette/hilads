@@ -465,6 +465,7 @@ export default function App() {
   const [showCreateEvent, setShowCreateEvent] = useState(false)
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
+  const [showEditPulse, setShowEditPulse] = useState(false)
   const [myEvents, setMyEvents] = useState([])
   const [myEventsLoaded, setMyEventsLoaded] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
@@ -1405,7 +1406,18 @@ export default function App() {
     setActiveEventId(eid)
     setActiveEvent(event)
     setShowEventDrawer(false)
-    setFeed([])
+
+    // Inject owner prompt + trigger edit-button pulse when entering your own event
+    const ownsThisEvent = account
+      ? event.created_by === account.id || event.guest_id === guest?.guestId
+      : event.guest_id === guest?.guestId
+    if (ownsThisEvent) {
+      setFeed([{ type: 'owner-prompt', id: '__owner_prompt__' }])
+      setShowEditPulse(true)
+    } else {
+      setFeed([])
+      setShowEditPulse(false)
+    }
     knownIdsRef.current = new Set()
     pushUrl(`/event/${eid}`)
     setPageMeta(`${event.title} is happening now | Hilads`, `Join ${event.title} on Hilads — see who's there and what's happening.`)
@@ -1968,16 +1980,7 @@ export default function App() {
                       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
                     </svg>
                   </button>
-                  {isMyEvent && (
-                    <button
-                      className="event-edit-btn"
-                      onClick={() => setShowEditEvent(true)}
-                      title="Edit event"
-                      aria-label="Edit event"
-                    >
-                      Edit
-                    </button>
-                  )}
+                  {/* Edit entry point moved to title row for better visibility */}
                   {account && (
                     <button
                       className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
@@ -2012,14 +2015,27 @@ export default function App() {
                 </div>
               </div>
               <div className="event-header-body">
+                {isMyEvent && (
+                  <span className="event-creator-badge">👑 Your event</span>
+                )}
                 <div className="event-header-title-row">
                   <span className="event-header-title">{activeEvent.title}</span>
-                  <button
-                    className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
-                    onClick={() => handleToggleParticipation(activeEvent.id)}
-                  >
-                    {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
-                  </button>
+                  {isMyEvent ? (
+                    <button
+                      className={`event-join-btn event-join-btn--edit${showEditPulse ? ' event-join-btn--pulse' : ''}`}
+                      onClick={() => setShowEditEvent(true)}
+                      onAnimationEnd={() => setShowEditPulse(false)}
+                    >
+                      ✏️ Edit event
+                    </button>
+                  ) : (
+                    <button
+                      className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
+                      onClick={() => handleToggleParticipation(activeEvent.id)}
+                    >
+                      {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
+                    </button>
+                  )}
                 </div>
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
@@ -2217,6 +2233,23 @@ export default function App() {
                       }}
                     >Invite friends</button>
                   </div>
+                </div>
+              )
+            }
+
+            if (item.type === 'owner-prompt') {
+              return (
+                <div key={item.id} className="feed-owner-prompt">
+                  <div className="feed-owner-prompt-body">
+                    <span className="feed-owner-prompt-text">🔥 You started this event!</span>
+                    <span className="feed-owner-prompt-sub">Make it even better — add a description, update the time, or share it.</span>
+                  </div>
+                  <button
+                    className="feed-owner-prompt-btn"
+                    onClick={() => setShowEditEvent(true)}
+                  >
+                    ✏️ Edit event
+                  </button>
                 </div>
               )
             }
