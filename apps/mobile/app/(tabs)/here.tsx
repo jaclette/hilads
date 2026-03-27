@@ -88,7 +88,7 @@ function UserRow({
 
 export default function HereScreen() {
   const router = useRouter();
-  const { city, sessionId, onlineUsers, wsConnected } = useApp();
+  const { city, sessionId, onlineUsers } = useApp();
 
   // Show self at bottom of the list, others first
   // Filter and sort: others first, then me
@@ -104,7 +104,7 @@ export default function HereScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Here</Text>
+          <Text style={styles.headerTitle}>People here</Text>
         </View>
         <View style={styles.empty}>
           <Text style={styles.emptyEmoji}>📍</Text>
@@ -125,23 +125,13 @@ export default function HereScreen() {
   return (
     <SafeAreaView style={styles.container}>
 
-      {/* Header — web: "People here · N" */}
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>
-          People here
-          {total > 0 ? <Text style={styles.headerCount}> · {total}</Text> : ''}
+          People here{total > 0 ? <Text style={styles.headerCount}> · {total}</Text> : ''}
         </Text>
         <Text style={styles.headerSub}>{city.name}</Text>
       </View>
-
-      {/* ── DEBUG BLOCK (temporary) — remove once presence confirmed working ── */}
-      {__DEV__ && (
-        <View style={styles.debugBlock}>
-          <Text style={styles.debugText}>cityId: {city.channelId} · ws: {wsConnected ? 'connected' : 'disconnected'}</Text>
-          <Text style={styles.debugText}>session: {sessionId?.slice(0,8)} · raw: {onlineUsers.length} · shown: {displayList.length}</Text>
-          <Text style={styles.debugText}>users: {onlineUsers.map(u => u.nickname).join(', ') || '(none yet)'}</Text>
-        </View>
-      )}
 
       <FlatList
         data={displayList}
@@ -181,37 +171,35 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   flex1:     { flex: 1 },
 
-  // ── Header — web: page-header style ──────────────────────────────────────
+  // ── Header ────────────────────────────────────────────────────────────────
   header: {
+    alignItems:        'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.md,
+    paddingTop:        Spacing.lg,
+    paddingBottom:     Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
   headerTitle: {
-    fontSize:      FontSizes.xl,
+    fontSize:      FontSizes.xxl,
     fontWeight:    '800',
     color:         Colors.text,
-    letterSpacing: -0.5,
+    letterSpacing: -0.8,
+    textAlign:     'center',
   },
   headerCount: {
+    fontSize:   FontSizes.xl,
     color:      Colors.muted,
     fontWeight: '600',
   },
-  headerSub: { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
+  headerSub: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    marginTop:  6,
+    textAlign:  'center',
+  },
 
   list: { padding: Spacing.md, gap: Spacing.sm },
-
-  // ── Temporary debug block ─────────────────────────────────────────────────
-  debugBlock: {
-    backgroundColor:   'rgba(255,122,60,0.08)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,122,60,0.2)',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   8,
-    gap:               2,
-  },
-  debugText: { fontSize: 11, color: Colors.accent, fontFamily: 'monospace' },
 
   // ── User row — web: .presence-user-card ───────────────────────────────────
   row: {
