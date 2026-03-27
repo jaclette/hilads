@@ -15,7 +15,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignInScreen() {
   const router = useRouter();
-  const { setAccount } = useApp();
+  const { setAccount, setJoined } = useApp();
   const { requestIfAppropriate } = usePushNotifications();
 
   const [email,    setEmail]    = useState('');
@@ -33,6 +33,7 @@ export default function SignInScreen() {
       const { user } = await authLogin(e, p);
       await persistToken();
       setAccount(user);
+      setJoined(true);   // dismiss LandingScreen if it was showing
       track('auth_login');
       requestIfAppropriate(); // ask for push after successful sign-in
       router.back();

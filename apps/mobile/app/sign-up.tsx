@@ -15,7 +15,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const { setAccount, identity } = useApp();
+  const { setAccount, setJoined, identity } = useApp();
   const { requestIfAppropriate } = usePushNotifications();
 
   const [name,     setName]     = useState('');
@@ -41,6 +41,7 @@ export default function SignUpScreen() {
       const { user } = await authSignup(e, p, n, guestId);
       await persistToken();
       setAccount(user);
+      setJoined(true);   // dismiss LandingScreen if it was showing
       track('auth_signup');
       requestIfAppropriate(); // ask for push after successful registration
       router.back();

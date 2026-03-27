@@ -1,8 +1,9 @@
 // ── Identity ──────────────────────────────────────────────────────────────────
 
 export interface GuestIdentity {
-  guestId: string;    // 32-char hex UUID
-  nickname: string;
+  guestId:   string;    // 32-char hex UUID
+  nickname:  string;
+  channelId?: string;   // persisted after first city join; used for auto-rejoin
 }
 
 // ── City / Channel ────────────────────────────────────────────────────────────
@@ -47,18 +48,20 @@ export interface HiladsEvent {
 }
 
 // ── Messages ──────────────────────────────────────────────────────────────────
+//
+// API returns camelCase. All field names here match the actual wire format.
 
 export interface Message {
-  id: string;
-  channel_id: string;
+  id?: string;                    // absent on some system messages
+  channelId?: string;
   type: 'text' | 'system' | 'image';
-  event?: string;
-  guest_id?: string;
-  user_id?: string;
+  event?: string;                 // system message subtype: 'join' | etc.
+  guestId?: string;
+  userId?: string;
   nickname: string;
-  content?: string;
-  image_url?: string;
-  created_at: string;  // ISO timestamp
+  content?: string;               // text message body
+  imageUrl?: string;              // image message URL (R2)
+  createdAt: number | string;     // unix seconds (number) or ISO string
 }
 
 // ── Presence ──────────────────────────────────────────────────────────────────

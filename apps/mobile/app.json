@@ -10,7 +10,9 @@
     "scheme": "hilads",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
+    "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/splash.png",
       "backgroundColor": "#0f0f0f",
       "resizeMode": "contain"
     },
@@ -29,6 +31,7 @@
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f0f0f"
       },
       "package": "com.hilads.app",
@@ -48,9 +51,14 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            { "scheme": "hilads" }
+            {
+              "scheme": "hilads"
+            }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -73,13 +81,16 @@
         }
       ]
     ],
-    "extra": {
-      "eas": {
-        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
-      }
-    },
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "0555a464-8dda-484b-b0a2-d61b2ad2786c"
+      }
     }
   }
 }

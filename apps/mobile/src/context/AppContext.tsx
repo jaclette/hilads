@@ -9,40 +9,57 @@ import type { GuestIdentity, City, User } from '@/types';
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 
+// Matches web geoState values exactly:
+// 'pending'   → permission dialog showing ("› requesting location...")
+// 'resolving' → coords acquired, calling /location/resolve ("› locating...")
+// 'resolved'  → city known, show city card
+// 'denied'    → user denied permission
+// 'error'     → GPS unavailable / API failure
+export type GeoState = 'pending' | 'resolving' | 'resolved' | 'denied' | 'error';
+
 interface AppState {
-  booting:     boolean;
-  bootError:   string | null;
-  identity:    GuestIdentity | null;
-  sessionId:   string | null;   // UUID v4, per-session, not persisted
-  account:     User | null;
-  city:        City | null;
-  wsConnected: boolean;
-  unreadDMs:   number;
+  booting:      boolean;
+  bootError:    string | null;
+  identity:     GuestIdentity | null;
+  sessionId:    string | null;   // UUID v4, per-session, not persisted
+  account:      User | null;
+  city:         City | null;
+  wsConnected:  boolean;
+  unreadDMs:    number;
+  geoState:     GeoState;
+  detectedCity: City | null;     // geo-resolved city, shown on landing screen
+  joined:       boolean;         // true once user has joined a city (or auto-rejoined)
 }
 
 interface AppActions {
-  setIdentity:    (identity: GuestIdentity) => void;
-  setSessionId:   (id: string) => void;
-  setAccount:     (account: User | null) => void;
-  setCity:        (city: City) => void;
-  setBooting:     (booting: boolean) => void;
-  setBootError:   (error: string | null) => void;
-  setWsConnected: (connected: boolean) => void;
-  setUnreadDMs:   (count: number) => void;
-  logout:         () => Promise<void>;
+  setIdentity:     (identity: GuestIdentity) => void;
+  setSessionId:    (id: string) => void;
+  setAccount:      (account: User | null) => void;
+  setCity:         (city: City) => void;
+  setBooting:      (booting: boolean) => void;
+  setBootError:    (error: string | null) => void;
+  setWsConnected:  (connected: boolean) => void;
+  setUnreadDMs:    (count: number) => void;
+  setGeoState:     (state: GeoState) => void;
+  setDetectedCity: (city: City | null) => void;
+  setJoined:       (joined: boolean) => void;
+  logout:          () => Promise<void>;
 }
 
 const AppContext = createContext<(AppState & AppActions) | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [booting,     setBooting]     = useState(true);
-  const [bootError,   setBootError]   = useState<string | null>(null);
-  const [identity,    setIdentityRaw] = useState<GuestIdentity | null>(null);
-  const [sessionId,   setSessionId]   = useState<string | null>(null);
-  const [account,     setAccount]     = useState<User | null>(null);
-  const [city,        setCity]        = useState<City | null>(null);
-  const [wsConnected, setWsConnected] = useState(false);
-  const [unreadDMs,   setUnreadDMs]   = useState(0);
+  const [booting,      setBooting]      = useState(true);
+  const [bootError,    setBootError]    = useState<string | null>(null);
+  const [identity,     setIdentityRaw]  = useState<GuestIdentity | null>(null);
+  const [sessionId,    setSessionId]    = useState<string | null>(null);
+  const [account,      setAccount]      = useState<User | null>(null);
+  const [city,         setCity]         = useState<City | null>(null);
+  const [wsConnected,  setWsConnected]  = useState(false);
+  const [unreadDMs,    setUnreadDMs]    = useState(0);
+  const [geoState,     setGeoState]     = useState<GeoState>('pending');
+  const [detectedCity, setDetectedCity] = useState<City | null>(null);
+  const [joined,       setJoined]       = useState(false);
 
   const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
 
@@ -57,6 +74,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected, unreadDMs,
+        geoState, detectedCity, joined,
         setBooting, setBootError,
         setIdentity,
         setSessionId: useCallback((id: string) => setSessionId(id), []),
@@ -64,6 +82,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setCity: useCallback((c: City) => setCity(c), []),
         setWsConnected,
         setUnreadDMs,
+        setGeoState:     useCallback((s: GeoState) => setGeoState(s), []),
+        setDetectedCity: useCallback((c: City | null) => setDetectedCity(c), []),
+        setJoined:       useCallback((j: boolean) => setJoined(j), []),
         logout,
       }}
     >

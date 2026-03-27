@@ -1,20 +1,53 @@
+/**
+ * ChatInput — faithful port of the web .input-bar.
+ *
+ * Web source: App.jsx form.input-bar, index.css (.upload-btn, .send-btn, .input-bar input)
+ *
+ * Upload button: 54×54px circle, rgba(255,255,255,0.05) bg, 1px border rgba(255,255,255,0.09)
+ * Input:         pill 28px radius, min-height 56px, padding 0 20px
+ * Send button:   54×54px circle, gradient accent→accent2, shadow
+ */
+
 import { useState, useRef } from 'react';
 import {
   View, TextInput, TouchableOpacity, Text,
   ActivityIndicator, StyleSheet, Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { Colors, FontSizes } from '@/constants';
 
-interface Props {
-  sending:   boolean;
-  onSendText:  (text: string) => void;
-  onSendImage: (uri: string) => void;
+// ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
+// Web: PLACEHOLDERS[channelId % PLACEHOLDERS.length]()
+
+const PLACEHOLDERS = [
+  'Say hi 👋',
+  "Who's out tonight?",
+  'Any plans? 👀',
+  "What's the vibe right now?",
+  'Anyone up for something? 🍻',
+  'Drop a message…',
+];
+
+export function getPlaceholder(channelId: string): string {
+  const n = parseInt(channelId, 10);
+  const idx = isNaN(n) ? 0 : n % PLACEHOLDERS.length;
+  return PLACEHOLDERS[idx];
 }
 
-export function ChatInput({ sending, onSendText, onSendImage }: Props) {
-  const [text, setText] = useState('');
+// ── Component ─────────────────────────────────────────────────────────────────
+
+interface Props {
+  sending:     boolean;
+  onSendText:  (text: string) => void;
+  onSendImage: (uri: string) => void;
+  placeholder?: string;
+}
+
+export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…' }: Props) {
+  const [text,      setText]      = useState('');
+  const [uploading, setUploading] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
   function handleSend() {
@@ -26,7 +59,7 @@ export function ChatInput({ sending, onSendText, onSendImage }: Props) {
   }
 
   async function handlePickImage() {
-    if (sending) return;
+    if (sending || uploading) return;
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') return;
@@ -37,103 +70,157 @@ export function ChatInput({ sending, onSendText, onSendImage }: Props) {
     });
 
     if (!result.canceled && result.assets[0]?.uri) {
-      onSendImage(result.assets[0].uri);
+      setUploading(true);
+      try {
+        await onSendImage(result.assets[0].uri);
+      } finally {
+        setUploading(false);
+      }
     }
   }
 
+  const busy       = sending || uploading;
+  const canSend    = !!text.trim() && !busy;
+
   return (
     <View style={styles.container}>
+
+      {/* ── Upload button — web: .upload-btn (54×54, rgba bg, border, image SVG) ── */}
       <TouchableOpacity
-        style={styles.iconBtn}
+        style={[styles.uploadBtn, busy && styles.btnDisabled]}
         onPress={handlePickImage}
         activeOpacity={0.7}
-        disabled={sending}
+        disabled={busy}
       >
-        <Text style={styles.iconText}>📷</Text>
+        {uploading ? (
+          <ActivityIndicator size="small" color={Colors.accent} />
+        ) : (
+          // Web: ImageIcon SVG 22px — Ionicons 'image-outline' is visually equivalent
+          <Ionicons name="image-outline" size={22} color={Colors.text} />
+        )}
       </TouchableOpacity>
 
+      {/* ── Input — web: border-radius 28px, min-height 56px, padding 0 20px ── */}
       <TextInput
         ref={inputRef}
         style={styles.input}
         value={text}
         onChangeText={setText}
-        placeholder="Message…"
+        placeholder={placeholder}
         placeholderTextColor={Colors.muted2}
         multiline
         maxLength={1000}
         returnKeyType="send"
         blurOnSubmit={Platform.OS !== 'ios'}
         onSubmitEditing={Platform.OS !== 'ios' ? handleSend : undefined}
-        editable={!sending}
+        editable={!busy}
       />
 
+      {/* ── Send button — web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}
+      {/* Gradient approximated with #B87228 (accent2 — warm amber end of gradient)  */}
+      {/* Web: disabled = opacity 0.3 on the same gradient (not a different bg)      */}
       <TouchableOpacity
-        style={[styles.sendBtn, (!text.trim() || sending) && styles.sendBtnDisabled]}
+        style={[styles.sendBtnWrap, !canSend && styles.sendBtnDisabled]}
         onPress={handleSend}
         activeOpacity={0.8}
-        disabled={!text.trim() || sending}
+        disabled={!canSend}
       >
-        {sending ? (
-          <ActivityIndicator size="small" color={Colors.white} />
-        ) : (
-          <Text style={styles.sendIcon}>↑</Text>
-        )}
+        <View style={styles.sendBtn}>
+          {sending ? (
+            <ActivityIndicator size="small" color={Colors.white} />
+          ) : (
+            // Web: SendIcon SVG 20×20px, strokeWidth 2.5, color: #fff
+            <Ionicons name="send" size={20} color="#fff" />
+          )}
+        </View>
       </TouchableOpacity>
+
     </View>
   );
 }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
+
+  // ── .input-bar ─────────────────────────────────────────────────────────────
+  // Web: gap 12px; padding 16px; border-top 1px var(--border);
+  //      gradient rgba(30,24,18,0.96)→rgba(22,18,16,0.99);
+  //      box-shadow 0 -10px 28px rgba(0,0,0,0.28)
   container: {
     flexDirection:     'row',
-    alignItems:        'flex-end',
-    paddingHorizontal: Spacing.sm,
-    paddingVertical:   Spacing.sm,
+    alignItems:        'center',
+    paddingHorizontal: 16,
+    paddingVertical:   16,
     borderTopWidth:    1,
     borderTopColor:    Colors.border,
-    backgroundColor:   Colors.bg,
-    gap:               Spacing.xs,
+    backgroundColor:   'rgba(22, 18, 16, 0.99)',
+    gap:               12,
+    shadowColor:       '#000',
+    shadowOffset:      { width: 0, height: -5 },
+    shadowOpacity:     0.28,
+    shadowRadius:      12,
+    elevation:         10,
   },
 
-  iconBtn: {
-    width:           40,
-    height:          40,
-    justifyContent:  'center',
+  // ── .upload-btn ────────────────────────────────────────────────────────────
+  // Web: 54×54px; bg rgba(255,255,255,0.05); border 1px rgba(255,255,255,0.09);
+  //      border-radius 50%; icon 22px
+  uploadBtn: {
+    width:           54,
+    height:          54,
+    flexShrink:      0,
     alignItems:      'center',
-    borderRadius:    Radius.full,
-    backgroundColor: Colors.bg3,
+    justifyContent:  'center',
+    borderRadius:    27,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth:     1,
+    borderColor:     'rgba(255, 255, 255, 0.09)',
   },
-  iconText: { fontSize: 18 },
 
+  // ── .input-bar input ───────────────────────────────────────────────────────
+  // Web: border-radius 28px; min-height 56px; padding 0 20px; font-size 1.04rem
   input: {
     flex:              1,
-    minHeight:         40,
+    minHeight:         56,
     maxHeight:         120,
-    backgroundColor:   Colors.bg2,
-    borderRadius:      Radius.lg,
+    backgroundColor:   Colors.bg,
+    borderRadius:      28,
     borderWidth:       1,
     borderColor:       Colors.border,
-    paddingHorizontal: Spacing.sm,
-    paddingTop:        10,
-    paddingBottom:     10,
+    paddingHorizontal: 20,
+    paddingVertical:   12,
     color:             Colors.text,
-    fontSize:          FontSizes.sm,
+    fontSize:          FontSizes.md,
+    lineHeight:        22,
   },
 
+  // ── .send-btn ──────────────────────────────────────────────────────────────
+  // Web: 54×54px; gradient linear-gradient(135deg, #C24A38, #B87228);
+  //      border-radius 50%; box-shadow 0 6px 18px rgba(194,74,56,0.32)
+  //      disabled: opacity 0.3 (same gradient, just faded)
+  // Gradient approximated with #B87228 (accent2 — the warm amber end).
+  sendBtnWrap: {
+    flexShrink:    0,
+    shadowColor:   '#C24A38',
+    shadowOffset:  { width: 0, height: 6 },
+    shadowOpacity: 0.32,
+    shadowRadius:  12,
+    elevation:     8,
+  },
   sendBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    Radius.full,
-    backgroundColor: Colors.accent,
-    justifyContent:  'center',
+    width:           54,
+    height:          54,
+    borderRadius:    27,
+    backgroundColor: '#B87228',   // web gradient approximation (warm amber end)
     alignItems:      'center',
+    justifyContent:  'center',
   },
   sendBtnDisabled: {
-    backgroundColor: Colors.bg3,
+    opacity:       0.3,
+    shadowOpacity: 0,
+    elevation:     0,
   },
-  sendIcon: {
-    fontSize:   18,
-    color:      Colors.white,
-    fontWeight: '700',
-  },
+
+  btnDisabled: { opacity: 0.35 },
 });

@@ -30,7 +30,8 @@ export type AnalyticsEvent =
   | 'push_permission_denied'
   | 'auth_signup'
   | 'auth_login'
-  | 'auth_logout';
+  | 'auth_logout'
+  | 'landing_joined';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

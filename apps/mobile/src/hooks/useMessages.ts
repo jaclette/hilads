@@ -31,14 +31,26 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
   // Track seen IDs to deduplicate WS + poll + send
   const seenIds = useRef(new Set<string>());
 
+  // Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
+  function toMs(ts: number | string | undefined): number {
+    if (!ts) return 0;
+    if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;  // seconds → ms
+    return new Date(ts).getTime();
+  }
+
+  // Stable dedup key — system messages may lack id, fall back to guestId+createdAt
+  function msgKey(m: Message): string {
+    return m.id ?? `${m.guestId ?? ''}:${m.createdAt}`;
+  }
+
   // Add new messages (newest first order for inverted FlatList)
   const addNew = useCallback((incoming: Message[]) => {
-    const fresh = incoming.filter(m => !seenIds.current.has(m.id));
+    const fresh = incoming.filter(m => !seenIds.current.has(msgKey(m)));
     if (fresh.length === 0) return;
-    fresh.forEach(m => seenIds.current.add(m.id));
+    fresh.forEach(m => seenIds.current.add(msgKey(m)));
     // Sort ascending then reverse → newest at index 0
     const sorted = [...fresh].sort(
-      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+      (a, b) => toMs(a.createdAt) - toMs(b.createdAt),
     ).reverse();
     setMessages(prev => [...sorted, ...prev]);
   }, []);
@@ -49,7 +61,11 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
     setError(null);
     try {
       const msgs = await loadFn();
-      seenIds.current = new Set(msgs.map(m => m.id));
+      if (__DEV__) {
+        console.log('[messages] count:', msgs.length);
+        if (msgs.length > 0) console.log('[messages] sample:', JSON.stringify(msgs[msgs.length - 1]));
+      }
+      seenIds.current = new Set(msgs.map(m => msgKey(m)));
       // API returns ascending (oldest first) → reverse for inverted list
       setMessages([...msgs].reverse());
     } catch {

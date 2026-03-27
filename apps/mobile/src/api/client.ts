@@ -54,7 +54,18 @@ async function request<T = unknown>(
     headers['Cookie'] = `hilads_token=${authToken}`;
   }
 
-  const res = await fetch(url, { headers, ...rest });
+  if (__DEV__) {
+    console.log('[api]', (rest.method ?? 'GET').padEnd(6), url);
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(url, { headers, ...rest });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[api] fetch failed:', (rest.method ?? 'GET'), url, '→', msg);
+    throw err;
+  }
 
   // Capture auth token from Set-Cookie header (login response)
   const setCookie = res.headers.get('set-cookie');

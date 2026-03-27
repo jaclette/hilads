@@ -1,57 +1,130 @@
+/**
+ * Cities screen — faithful port of the web "Switch city" full-page screen.
+ *
+ * Web source: App.jsx showCityPicker block + renderCityRow()
+ *             index.css (.full-page, .city-row, .city-row-*, .city-list-label, .city-search-*)
+ *
+ * Structure:
+ *   Header:  back button (→ chat) + centered "Switch city" title
+ *   Search:  full-width pill input, placeholder "Search a city…"
+ *   Label:   "Top cities right now" / "Cities"
+ *   Cards:   two-row cards:
+ *              top:   activity dot + flag + city name + "you're here" badge
+ *              stats: N online (green) · N events · N msgs
+ */
+
 import { useEffect, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet,
   TouchableOpacity, ActivityIndicator, TextInput, RefreshControl,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchChannels } from '@/api/channels';
+import { fetchChannels, joinChannel } from '@/api/channels';
+import { socket } from '@/lib/socket';
+import { saveIdentity } from '@/lib/identity';
 import { track } from '@/services/analytics';
 import type { City } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { Colors, FontSizes, Spacing } from '@/constants';
 
-function CityRow({ city, isActive, onPress }: { city: City; isActive: boolean; onPress: () => void }) {
+// ── Flag emoji — mirrors web cityFlag() ──────────────────────────────────────
+
+function cityFlag(countryCode?: string): string {
+  if (!countryCode || countryCode.length !== 2) return '';
+  return [...countryCode.toUpperCase()]
+    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
+    .join('');
+}
+
+// ── Live activity dot — mirrors web .activity-dot.live pulse animation ───────
+
+function ActivityDot({ live }: { live: boolean }) {
+  const scale = useState(() => new Animated.Value(1))[0];
+
+  useEffect(() => {
+    if (!live) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(scale, { toValue: 1.5, duration: 1000, useNativeDriver: true }),
+        Animated.timing(scale, { toValue: 1,   duration: 1000, useNativeDriver: true }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [live]);
+
+  return (
+    <Animated.View style={[
+      styles.activityDot,
+      live && styles.activityDotLive,
+      live && { transform: [{ scale }] },
+    ]} />
+  );
+}
+
+// ── City card — mirrors web renderCityRow() ───────────────────────────────────
+
+function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; onPress: () => void }) {
+  const flag = cityFlag(city.country);
+  const live = (city.onlineCount ?? 0) > 0;
+
   return (
     <TouchableOpacity
-      style={[styles.row, isActive && styles.rowActive]}
+      style={[styles.card, isActive && styles.cardActive]}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
     >
-      <View style={styles.rowLeft}>
-        <Text style={[styles.cityName, isActive && styles.cityNameActive]}>
-          {city.name}
-        </Text>
-        <Text style={styles.countryName}>{city.country}</Text>
+      {/* web: inset 2px 0 0 var(--accent) on active */}
+      {isActive && <View style={styles.activeAccentBar} />}
+
+      {/* ── Top row: dot + flag + name + "you're here" badge ── */}
+      <View style={styles.cardTop}>
+        <View style={styles.cardLeft}>
+          <ActivityDot live={live} />
+          {!!flag && <Text style={styles.flag}>{flag}</Text>}
+          <Text style={[styles.cityName, isActive && styles.cityNameActive]} numberOfLines={2}>
+            {city.name}
+          </Text>
+        </View>
+        {isActive && (
+          <View style={styles.hereBadge}>
+            <Text style={styles.hereBadgeText}>you're here</Text>
+          </View>
+        )}
       </View>
 
-      <View style={styles.rowRight}>
-        {city.onlineCount != null && (
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>{city.onlineCount}</Text>
-            <Text style={styles.statLabel}>here</Text>
-          </View>
+      {/* ── Stats row: online · events · msgs ── */}
+      <View style={styles.statsRow}>
+        {live && (
+          <Text style={styles.statOnline}>{city.onlineCount} online</Text>
         )}
-        {city.eventCount != null && (
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>{city.eventCount}</Text>
-            <Text style={styles.statLabel}>events</Text>
-          </View>
+        {(city.eventCount ?? 0) > 0 && (
+          <Text style={styles.statEvents}>
+            {city.eventCount} {city.eventCount === 1 ? 'event' : 'events'}
+          </Text>
         )}
-        {isActive && (
-          <View style={styles.activeDot} />
+        {(city.messageCount ?? 0) > 0 && (
+          <Text style={styles.statMsgs}>{city.messageCount} msgs</Text>
         )}
       </View>
     </TouchableOpacity>
   );
 }
 
+// ── Screen ────────────────────────────────────────────────────────────────────
+
 export default function CitiesScreen() {
-  const { city: activeCity, setCity } = useApp();
-  const [cities,     setCities]     = useState<City[]>([]);
-  const [filtered,   setFiltered]   = useState<City[]>([]);
-  const [loading,    setLoading]    = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [query,      setQuery]      = useState('');
+  const router                                              = useRouter();
+  const { city: activeCity, setCity, identity, sessionId, setIdentity } = useApp();
+  const [cities,        setCities]        = useState<City[]>([]);
+  const [filtered,      setFiltered]      = useState<City[]>([]);
+  const [loading,       setLoading]       = useState(true);
+  const [refreshing,    setRefreshing]    = useState(false);
+  const [query,         setQuery]         = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
 
   async function load(isRefresh = false) {
     if (isRefresh) setRefreshing(true);
@@ -80,25 +153,53 @@ export default function CitiesScreen() {
     }
   }, [query, cities]);
 
+  // Section label — web: "Top cities right now" when any city has activity, else "Cities"
+  // Rendered uppercase via textTransform → "TOP CITIES RIGHT NOW" / "CITIES"
+  const hasActivity  = cities.some(c => (c.onlineCount ?? 0) > 0);
+  const sectionLabel = query.trim() ? null : (hasActivity ? 'Top cities right now' : 'Cities');
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
+
+      {/* ── Header — web: .page-header (back button + centered title) ── */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>🌍 Cities</Text>
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => router.push('/(tabs)/chat')}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Ionicons name="chevron-back" size={22} color={Colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Switch city</Text>
       </View>
 
-      <View style={styles.searchWrapper}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search cities…"
-          placeholderTextColor={Colors.muted2}
-          value={query}
-          onChangeText={setQuery}
-          clearButtonMode="while-editing"
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+      {/* ── Search — web: .city-search-wrap + .city-search-input ── */}
+      {/* Focus: border turns accent + soft orange outer glow (web: border-color var(--accent)) */}
+      <View style={styles.searchWrap}>
+        <View style={[styles.searchInner, searchFocused && styles.searchInnerFocused]}>
+          <Ionicons
+            name="search"
+            size={16}
+            color={searchFocused ? Colors.accent : Colors.muted2}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search a city…"
+            placeholderTextColor={Colors.muted2}
+            value={query}
+            onChangeText={setQuery}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            clearButtonMode="while-editing"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
       </View>
 
+      {/* ── City list ── */}
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator color={Colors.accent} size="large" />
@@ -108,12 +209,30 @@ export default function CitiesScreen() {
           data={filtered}
           keyExtractor={(c) => c.channelId}
           renderItem={({ item }) => (
-            <CityRow
+            <CityCard
               city={item}
               isActive={item.channelId === activeCity?.channelId}
               onPress={() => {
                 setCity(item);
+                // Persist new channelId so relaunch restores the correct city.
+                // Bug: without this, identity.channelId stays stale in AsyncStorage
+                // and the boot auto-rejoin restores the OLD city on next launch.
+                if (identity) {
+                  const updated = { ...identity, channelId: item.channelId };
+                  saveIdentity(updated).catch(() => {});
+                  setIdentity(updated);
+                }
+                // Join new city on the server and socket
+                if (identity && sessionId) {
+                  joinChannel(item.channelId, sessionId, identity.guestId, identity.nickname).catch(() => {});
+                  if (socket.isConnected) {
+                    socket.joinCity(item.channelId, sessionId, identity.nickname);
+                  } else {
+                    socket.on('connected', () => socket.joinCity(item.channelId, sessionId, identity.nickname));
+                  }
+                }
                 track('city_selected', { cityId: item.channelId, cityName: item.name });
+                router.push('/(tabs)/chat');
               }}
             />
           )}
@@ -124,57 +243,257 @@ export default function CitiesScreen() {
               tintColor={Colors.accent}
             />
           }
+          ListHeaderComponent={sectionLabel ? (
+            <Text style={styles.sectionLabel}>{sectionLabel}</Text>
+          ) : null}
+          contentContainerStyle={filtered.length === 0 ? styles.flex1 : styles.listContent}
           ListEmptyComponent={
             <View style={styles.center}>
-              <Text style={styles.emptyText}>No cities found</Text>
+              <Text style={styles.emptyText}>
+                {query.trim() ? `No city found for "${query}"` : 'No cities found'}
+              </Text>
             </View>
           }
-          contentContainerStyle={filtered.length === 0 ? styles.flex1 : undefined}
         />
       )}
     </SafeAreaView>
   );
 }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container:     { flex: 1, backgroundColor: Colors.bg },
-  flex1:         { flex: 1 },
+  container: { flex: 1, backgroundColor: Colors.bg },
+  flex1:     { flex: 1 },
+
+  // ── .page-header ─────────────────────────────────────────────────────────
+  // Web: bg var(--surface), border-bottom rgba(255,255,255,0.05), min-height 80px
   header: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'center',
+    minHeight:         60,
     paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
+    paddingVertical:   12,
+    backgroundColor:   Colors.bg2,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
-  headerTitle:   { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
-  searchWrapper: { padding: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  searchInput: {
-    backgroundColor: Colors.bg2,
-    borderRadius:    Radius.md,
+  // Web: .back-button — 46×46px pill, border rgba(255,255,255,0.1), bg rgba(255,255,255,0.05)
+  backBtn: {
+    position:        'absolute',
+    left:            Spacing.md,
+    width:           46,
+    height:          46,
+    borderRadius:    13,
     borderWidth:     1,
-    borderColor:     Colors.border,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-    color:           Colors.text,
-    fontSize:        FontSizes.sm,
+    borderColor:     'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    alignItems:      'center',
+    justifyContent:  'center',
   },
-  center:      { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  emptyText:   { color: Colors.muted, fontSize: FontSizes.sm },
-  row: {
-    flexDirection:    'row',
-    alignItems:       'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:  Spacing.md,
+  // Web: .page-title — centered, 1.35rem (~21.6px), weight 700, letter-spacing -0.01em
+  headerTitle: {
+    fontSize:      22,
+    fontWeight:    '700',
+    color:         Colors.text,
+    letterSpacing: -0.22,
+  },
+
+  // ── .city-search-wrap ─────────────────────────────────────────────────────
+  // Web: padding 12px 14px, border-bottom var(--border), bg rgba(13,11,9,0.9)
+  searchWrap: {
+    paddingHorizontal: 14,
+    paddingVertical:   12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    backgroundColor:   'rgba(13,11,9,0.9)',
   },
-  rowActive:     { backgroundColor: 'rgba(255,122,60,0.06)' },
-  rowLeft:       { flex: 1 },
-  cityName:      { fontSize: FontSizes.md, fontWeight: '500', color: Colors.text },
-  cityNameActive:{ color: Colors.accent },
-  countryName:   { fontSize: FontSizes.xs, color: Colors.muted, marginTop: 2 },
-  rowRight:      { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  stat:          { alignItems: 'center' },
-  statValue:     { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
-  statLabel:     { fontSize: FontSizes.xs, color: Colors.muted },
-  activeDot:     { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.accent },
+  searchInner: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    backgroundColor:   Colors.bg2,
+    borderRadius:      14,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    paddingHorizontal: 14,
+  },
+  // Web: .city-search-input:focus { border-color: var(--accent) }
+  // Softer than full accent — semi-transparent border + warm glow + tinted bg
+  searchInnerFocused: {
+    borderColor:     'rgba(194,74,56,0.55)',  // softer than full accent
+    backgroundColor: 'rgba(194,74,56,0.04)',  // warm tint
+    shadowColor:     '#C24A38',
+    shadowOffset:    { width: 0, height: 0 },
+    shadowOpacity:   0.30,
+    shadowRadius:    12,
+    elevation:       5,
+  },
+  searchIcon:  { marginRight: 8 },
+  searchInput: {
+    flex:            1,
+    paddingVertical: 13,
+    color:           Colors.text,
+    fontSize:        FontSizes.md,
+  },
+
+  // ── .city-list-label ──────────────────────────────────────────────────────
+  // Web: padding 12px 18px 10px, 0.72rem, weight 600, uppercase, letter-spacing 0.08em
+  sectionLabel: {
+    paddingHorizontal: 18,
+    paddingTop:        12,
+    paddingBottom:     10,
+    fontSize:          11,
+    fontWeight:        '600',
+    letterSpacing:     0.88,  // 0.08em × 11px
+    textTransform:     'uppercase',
+    color:             Colors.muted,
+  },
+
+  listContent: { paddingBottom: 24 },
+
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
+  emptyText: { fontSize: FontSizes.md, color: Colors.muted2, textAlign: 'center' },
+
+  // ── .city-row ─────────────────────────────────────────────────────────────
+  // Web: border-radius 18px, border rgba(255,255,255,0.05), padding 18px 18px 16px,
+  //      flex-col, gap 12px, shadow 0 10px 22px rgba(0,0,0,0.12), margin-bottom 10px
+  card: {
+    marginHorizontal:  12,
+    marginBottom:      10,
+    borderRadius:      18,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.07)',
+    backgroundColor:   'rgba(255,255,255,0.03)',
+    paddingHorizontal: 18,
+    paddingTop:        20,
+    paddingBottom:     18,
+    gap:               12,
+    overflow:          'hidden',
+    shadowColor:       '#000',
+    shadowOffset:      { width: 0, height: 12 },
+    shadowOpacity:     0.22,
+    shadowRadius:      16,
+    elevation:         5,
+  },
+  // Web: .city-row.active
+  //   background: linear-gradient(180deg, rgba(194,74,56,0.12), rgba(194,74,56,0.07))
+  //   border-color: rgba(194,74,56,0.22)
+  //   box-shadow: 0 16px 30px rgba(0,0,0,0.18), inset 2px 0 0 var(--accent)
+  //                         ↑ dark shadow — NOT orange. Orange only on the inset left bar.
+  // Gradient approximated as flat midpoint rgba(194,74,56,0.09)
+  cardActive: {
+    backgroundColor: 'rgba(194,74,56,0.09)',
+    borderColor:     'rgba(194,74,56,0.22)',
+    shadowColor:     '#000',   // web uses dark shadow, not orange glow
+    shadowOffset:    { width: 0, height: 16 },
+    shadowOpacity:   0.18,
+    shadowRadius:    15,
+    elevation:       5,
+  },
+  // Web: inset 2px 0 0 var(--accent) via box-shadow
+  activeAccentBar: {
+    position:               'absolute',
+    left:                   0,
+    top:                    0,
+    bottom:                 0,
+    width:                  3,
+    backgroundColor:        Colors.accent,
+    borderTopLeftRadius:    18,
+    borderBottomLeftRadius: 18,
+  },
+
+  // ── .city-row-top ─────────────────────────────────────────────────────────
+  cardTop: {
+    flexDirection:  'row',
+    alignItems:     'flex-start',
+    justifyContent: 'space-between',
+    gap:            12,
+  },
+  // ── .city-row-left ────────────────────────────────────────────────────────
+  cardLeft: {
+    flex:        1,
+    flexDirection: 'row',
+    alignItems:  'flex-start',
+    gap:         12,
+  },
+
+  // ── .activity-dot / .activity-dot.live ────────────────────────────────────
+  // Web: 9px circle, bg var(--border) inactive, var(--green) + glow active, margin-top 7px
+  activityDot: {
+    width:           9,
+    height:          9,
+    borderRadius:    4.5,
+    backgroundColor: Colors.border,
+    flexShrink:      0,
+    marginTop:       7,
+  },
+  activityDotLive: {
+    backgroundColor: Colors.green,
+    shadowColor:     Colors.green,
+    shadowOffset:    { width: 0, height: 0 },
+    shadowOpacity:   0.6,
+    shadowRadius:    4,
+    elevation:       2,
+  },
+
+  // ── .city-row-flag ────────────────────────────────────────────────────────
+  // Web: font-size 1.18rem (~18.9px) → 21px for stronger presence on mobile
+  flag: {
+    fontSize:   21,
+    lineHeight: 24,
+    flexShrink: 0,
+    marginTop:  2,
+  },
+
+  // ── .city-row-name ────────────────────────────────────────────────────────
+  // Web: 1.08rem, font-weight 750 → 19px + weight 800 for mobile visual weight
+  cityName: {
+    flex:         1,
+    fontSize:     19,
+    fontWeight:   '800',
+    color:        Colors.text,
+    lineHeight:   24,
+    letterSpacing: -0.2,
+  },
+  cityNameActive: { color: Colors.accent },
+
+  // ── .city-row-current — "you're here" badge ───────────────────────────────
+  // Web: 0.72rem, weight 700, color --accent, bg rgba(194,74,56,0.14),
+  //      border rgba(194,74,56,0.18), radius 999px, padding 5px 10px
+  // Web: .city-row-current — bg rgba(194,74,56,0.14), border rgba(194,74,56,0.18),
+  //      radius 999px, padding 5px 10px, font 0.72rem/700/accent
+  // Web: .city-row-current — no shadow, just subtle bg + border
+  hereBadge: {
+    backgroundColor:   'rgba(194,74,56,0.14)',
+    borderWidth:       1,
+    borderColor:       'rgba(194,74,56,0.18)',
+    borderRadius:      999,
+    paddingHorizontal: 11,
+    paddingVertical:   5,
+    flexShrink:        0,
+    alignSelf:         'flex-start',
+  },
+  hereBadgeText: {
+    fontSize:   11,
+    fontWeight: '700',
+    color:      Colors.accent,
+    letterSpacing: 0.1,
+  },
+
+  // ── .city-row-stats ───────────────────────────────────────────────────────
+  // Web: flex row, gap 16px, padding-left 33px (= 9px dot + 12px gap + 12px flag area)
+  statsRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    flexWrap:      'wrap',
+    gap:           16,
+    paddingLeft:   33,
+  },
+  // Web: .city-row-users — 0.82rem (~13px), green, weight 700 → 14px mobile
+  statOnline: { fontSize: 14, fontWeight: '700', color: Colors.green },
+  // Web: .city-row-events — 0.82rem, var(--text), weight 600
+  statEvents: { fontSize: 14, fontWeight: '600', color: Colors.text },
+  // Web: .city-row-count — 0.82rem, var(--muted), weight 600
+  statMsgs:   { fontSize: 14, fontWeight: '600', color: Colors.muted },
 });

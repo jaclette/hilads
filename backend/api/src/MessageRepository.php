@@ -67,15 +67,20 @@ class MessageRepository
     public static function getByChannel(int|string $channelId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT
-                id, channel_id, type, event,
-                guest_id, nickname, content, image_url,
-                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
-            FROM messages
-            WHERE channel_id = ?
+            SELECT id, channel_id, type, event,
+                   guest_id, nickname, content, image_url, created_at
+            FROM (
+                SELECT
+                    id, channel_id, type, event,
+                    guest_id, nickname, content, image_url,
+                    EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+                FROM messages
+                WHERE channel_id = ?
+                ORDER BY created_at DESC
+                LIMIT " . self::LIMIT . "
+            ) sub
             ORDER BY created_at ASC
-            LIMIT " . self::LIMIT
-        );
+        ");
         $stmt->execute([self::dbKey($channelId)]);
         return array_map([self::class, 'format'], $stmt->fetchAll());
     }

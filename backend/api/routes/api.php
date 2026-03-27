@@ -1511,9 +1511,10 @@ $router->add('POST', '/internal/cleanup', function () {
     $pdo = Database::pdo();
 
     // 1. City channel messages — keep only today
+    // Messages are stored with 'city_N' keys; channels.id is numeric — prefix to match.
     $stmt = $pdo->query("
         DELETE FROM messages
-        WHERE channel_id IN (SELECT id FROM channels WHERE type = 'city')
+        WHERE channel_id IN (SELECT 'city_' || id FROM channels WHERE type = 'city')
           AND created_at < CURRENT_DATE
     ");
     $cityDeleted = $stmt->rowCount();

@@ -28,8 +28,8 @@
         "buildType": "app-bundle"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.hilads.com",
-        "EXPO_PUBLIC_WS_URL": "wss://ws.hilads.com"
+        "EXPO_PUBLIC_API_URL": "https://hilads-api.onrender.com",
+        "EXPO_PUBLIC_WS_URL": "wss://hilads-ws.onrender.com"
       }
     }
   },

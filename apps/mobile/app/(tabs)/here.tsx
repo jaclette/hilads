@@ -1,42 +1,68 @@
 import { useEffect, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet,
-  ActivityIndicator, RefreshControl,
+  ActivityIndicator, TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import type { OnlineUser } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-function UserRow({ user }: { user: OnlineUser }) {
+// ── Avatar color — hash-based palette matching web ────────────────────────────
+
+const AVATAR_PALETTE = [
+  '#C24A38', '#B87228', '#3ddc84', '#8B5CF6',
+  '#0EA5E9', '#E879A0', '#F59E0B', '#14B8A6',
+];
+
+function avatarColor(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+}
+
+// ── User row ──────────────────────────────────────────────────────────────────
+
+function UserRow({ user, onPress }: { user: OnlineUser; onPress: () => void }) {
   const initials = user.nickname.slice(0, 2).toUpperCase();
+  const color    = avatarColor(user.nickname);
 
   return (
-    <View style={styles.row}>
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>{initials}</Text>
+    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
+      {/* Avatar */}
+      <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
+        <Text style={[styles.avatarText, { color }]}>{initials}</Text>
       </View>
+
+      {/* Name + badge */}
       <View style={styles.rowInfo}>
         <Text style={styles.nickname}>{user.nickname}</Text>
         {user.isRegistered && (
-          <View style={styles.regBadge}>
-            <Text style={styles.regBadgeText}>Member</Text>
+          <View style={styles.memberBadge}>
+            <Text style={styles.memberBadgeText}>Member</Text>
           </View>
         )}
       </View>
-      <View style={styles.onlineDot} />
-    </View>
+
+      {/* Live dot */}
+      <View style={styles.liveDot} />
+    </TouchableOpacity>
   );
 }
 
+// ── Screen ────────────────────────────────────────────────────────────────────
+
 export default function HereScreen() {
+  const router   = useRouter();
   const { city, identity } = useApp();
-  const [users,  setUsers]  = useState<OnlineUser[]>([]);
+  const [users,   setUsers]   = useState<OnlineUser[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Listen to presence updates from WebSocket
     const off = socket.on('presence', (data) => {
       if (data.channelId === city?.channelId && Array.isArray(data['users'])) {
         setUsers(data['users'] as OnlineUser[]);
@@ -44,14 +70,10 @@ export default function HereScreen() {
       }
     });
 
-    // If already connected and in a city, request a fresh snapshot
-    if (socket.isConnected && city && identity) {
+    if (socket.isConnected && city) {
       socket.send({ type: 'presence_request', channelId: city.channelId });
-      setLoading(false);
-    } else {
-      // Will receive snapshot on join
-      setLoading(false);
     }
+    setLoading(false);
 
     return off;
   }, [city?.channelId]);
@@ -60,38 +82,66 @@ export default function HereScreen() {
     ? users.filter(u => u.guestId !== identity.guestId)
     : users;
 
+  // No city
+  if (!city) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>👥 Here</Text>
+        </View>
+        <View style={styles.empty}>
+          <Text style={styles.emptyEmoji}>📍</Text>
+          <Text style={styles.emptyTitle}>No city selected</Text>
+          <Text style={styles.emptySub}>Pick a city to see who's around.</Text>
+          <TouchableOpacity
+            style={styles.emptyBtn}
+            onPress={() => router.push('/(tabs)/cities')}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.emptyBtnText}>Browse cities</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>👥 Here</Text>
-        {city && (
+        <View>
+          <Text style={styles.headerTitle}>👥 Here</Text>
           <Text style={styles.headerSub}>
             {displayUsers.length > 0
               ? `${displayUsers.length} online in ${city.name}`
-              : `In ${city.name}`}
+              : city.name}
           </Text>
-        )}
+        </View>
       </View>
 
-      {!city ? (
-        <View style={styles.center}>
-          <Text style={styles.emptyTitle}>No city selected</Text>
-          <Text style={styles.emptySubtitle}>Go to Cities to pick one.</Text>
-        </View>
-      ) : loading ? (
-        <View style={styles.center}>
+      {loading ? (
+        <View style={styles.empty}>
           <ActivityIndicator color={Colors.accent} size="large" />
         </View>
       ) : (
         <FlatList
           data={displayUsers}
           keyExtractor={(u) => u.sessionId}
-          renderItem={({ item }) => <UserRow user={item} />}
-          contentContainerStyle={displayUsers.length === 0 ? styles.flex1 : undefined}
+          renderItem={({ item }) => (
+            <UserRow
+              user={item}
+              onPress={() => {
+                if (item.userId) {
+                  router.push({ pathname: '/dm/[id]', params: { id: item.userId, name: item.nickname } });
+                }
+              }}
+            />
+          )}
+          contentContainerStyle={displayUsers.length === 0 ? styles.flex1 : styles.list}
           ListEmptyComponent={
-            <View style={styles.center}>
+            <View style={styles.empty}>
+              <Text style={styles.emptyEmoji}>👻</Text>
               <Text style={styles.emptyTitle}>Nobody else here yet</Text>
-              <Text style={styles.emptySubtitle}>You're one of the first. Say hi in chat.</Text>
+              <Text style={styles.emptySub}>You're one of the first.{'\n'}Say hi in the city chat.</Text>
             </View>
           }
         />
@@ -100,41 +150,83 @@ export default function HereScreen() {
   );
 }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   flex1:     { flex: 1 },
+
   header: {
     paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
+    paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
-  headerSub:   { fontSize: FontSizes.xs, color: Colors.muted, marginTop: 2 },
-  center:      { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  emptyTitle:  { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, textAlign: 'center', marginBottom: Spacing.xs },
-  emptySubtitle:{ fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
+  headerTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
+  headerSub:   { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
+
+  list: { padding: Spacing.md, gap: Spacing.sm },
+
+  // ── User row ───────────────────────────────────────────────────────────────
+
   row: {
-    flexDirection:    'row',
-    alignItems:       'center',
-    gap:              Spacing.sm,
+    flexDirection:   'row',
+    alignItems:      'center',
+    backgroundColor: Colors.bg2,
+    borderRadius:    Radius.lg,
+    borderWidth:     1,
+    borderColor:     Colors.border,
     paddingHorizontal: Spacing.md,
-    paddingVertical:  Spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    paddingVertical:   Spacing.md,
+    gap:               Spacing.md,
   },
   avatar: {
-    width:           40,
-    height:          40,
-    borderRadius:    Radius.full,
-    backgroundColor: Colors.bg3,
-    alignItems:      'center',
-    justifyContent:  'center',
+    width:        44,
+    height:       44,
+    borderRadius: Radius.full,
+    borderWidth:  1,
+    alignItems:   'center',
+    justifyContent: 'center',
   },
-  avatarText:   { color: Colors.accent, fontWeight: '700', fontSize: FontSizes.sm },
-  rowInfo:      { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  nickname:     { fontSize: FontSizes.md, color: Colors.text, fontWeight: '500' },
-  regBadge:     { backgroundColor: 'rgba(96,165,250,0.12)', borderRadius: Radius.full, paddingHorizontal: 7, paddingVertical: 2 },
-  regBadgeText: { color: '#60a5fa', fontSize: FontSizes.xs, fontWeight: '600' },
-  onlineDot:    { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.green },
+  avatarText: { fontWeight: '700', fontSize: FontSizes.sm },
+
+  rowInfo: {
+    flex:           1,
+    flexDirection:  'row',
+    alignItems:     'center',
+    gap:            Spacing.sm,
+    flexWrap:       'wrap',
+  },
+  nickname: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+
+  memberBadge: {
+    backgroundColor:  'rgba(139,92,246,0.15)',
+    borderRadius:     Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   3,
+  },
+  memberBadgeText: { color: Colors.violet, fontSize: FontSizes.xs, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4 },
+
+  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.green },
+
+  // ── Empty state ────────────────────────────────────────────────────────────
+
+  empty: {
+    flex:           1,
+    justifyContent: 'center',
+    alignItems:     'center',
+    padding:        Spacing.xl,
+    gap:            Spacing.sm,
+  },
+  emptyEmoji: { fontSize: 48, marginBottom: Spacing.sm },
+  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: Colors.text, textAlign: 'center' },
+  emptySub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22 },
+  emptyBtn: {
+    marginTop:         Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical:   Spacing.sm + 2,
+    backgroundColor:   Colors.accent,
+    borderRadius:      Radius.full,
+  },
+  emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
 });
