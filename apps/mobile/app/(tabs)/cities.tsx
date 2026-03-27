@@ -243,9 +243,9 @@ export default function CitiesScreen() {
                 if (identity && sessionId) {
                   joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
                   if (socket.isConnected) {
-                    socket.joinCity(item.channelId, sessionId, nickname);
+                    socket.joinCity(item.channelId, sessionId, nickname, account?.id);
                   } else {
-                    socket.on('connected', () => socket.joinCity(item.channelId, sessionId, nickname));
+                    socket.on('connected', () => socket.joinCity(item.channelId, sessionId, nickname, account?.id));
                   }
                 }
                 track('city_selected', { cityId: item.channelId, cityName: item.name });

@@ -74,8 +74,8 @@ function UserRow({
         ) : null}
       </View>
 
-      {/* DM button — only for registered non-self users */}
-      {!isMe && user.userId && (
+      {/* DM button — all non-self users; navigation guarded by userId */}
+      {!isMe && (
         <TouchableOpacity style={styles.dmBtn} onPress={onDm} activeOpacity={0.7}>
           <Feather name="message-square" size={18} color={Colors.muted2} />
         </TouchableOpacity>

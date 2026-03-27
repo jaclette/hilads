@@ -178,11 +178,12 @@ export function useAppBoot(): Result {
                 setCity(saved);
                 joinChannel(saved.channelId, sessionId, identity.guestId, displayName)
                   .catch(() => {});
+                const userId = user?.id;
                 socket.on('connected', () =>
-                  socket.joinCity(saved.channelId, sessionId, displayName),
+                  socket.joinCity(saved.channelId, sessionId, displayName, userId),
                 );
                 if (socket.isConnected) {
-                  socket.joinCity(saved.channelId, sessionId, displayName);
+                  socket.joinCity(saved.channelId, sessionId, displayName, userId);
                 }
                 setJoined(true);
                 // Restore directly into the city channel — mirrors web auto-rejoin behaviour.

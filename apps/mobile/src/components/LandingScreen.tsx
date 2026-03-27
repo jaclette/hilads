@@ -175,9 +175,9 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
         await joinChannel(city.channelId, sessionId, identity.guestId, trimmed);
         setCity(city);
         if (socket.isConnected) {
-          socket.joinCity(city.channelId, sessionId, trimmed);
+          socket.joinCity(city.channelId, sessionId, trimmed, account?.id);
         } else {
-          socket.on('connected', () => socket.joinCity(city.channelId, sessionId, trimmed));
+          socket.on('connected', () => socket.joinCity(city.channelId, sessionId, trimmed, account?.id));
         }
       }
 

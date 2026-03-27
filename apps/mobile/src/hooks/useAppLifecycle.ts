@@ -13,7 +13,7 @@ import { useApp } from '@/context/AppContext';
 import { joinChannel } from '@/api/channels';
 
 export function useAppLifecycle(onForeground?: () => void): void {
-  const { city, identity, sessionId } = useApp();
+  const { city, identity, sessionId, account } = useApp();
   const appState = useRef<AppStateStatus>(AppState.currentState);
 
   // Stable reference to the callback so the effect doesn't re-run on every render
@@ -33,7 +33,7 @@ export function useAppLifecycle(onForeground?: () => void): void {
       // City WS join happens automatically on 'connected' event via useAppBoot
       // but if already connected we need to rejoin manually
       if (socket.isConnected) {
-        socket.joinCity(city.channelId, sessionId, identity.nickname);
+        socket.joinCity(city.channelId, sessionId, identity.nickname, account?.id);
       }
     }
 
