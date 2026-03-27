@@ -5,7 +5,7 @@ import React, {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { GuestIdentity, City, User } from '@/types';
+import type { GuestIdentity, City, User, OnlineUser } from '@/types';
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 
@@ -29,6 +29,7 @@ interface AppState {
   geoState:     GeoState;
   detectedCity: City | null;     // geo-resolved city, shown on landing screen
   joined:       boolean;         // true once user has joined a city (or auto-rejoined)
+  onlineUsers:  OnlineUser[];    // live presence list for the current city
 }
 
 interface AppActions {
@@ -43,6 +44,7 @@ interface AppActions {
   setGeoState:     (state: GeoState) => void;
   setDetectedCity: (city: City | null) => void;
   setJoined:       (joined: boolean) => void;
+  setOnlineUsers:  (users: OnlineUser[]) => void;
   logout:          () => Promise<void>;
 }
 
@@ -60,6 +62,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [geoState,     setGeoState]     = useState<GeoState>('pending');
   const [detectedCity, setDetectedCity] = useState<City | null>(null);
   const [joined,       setJoined]       = useState(false);
+  const [onlineUsers,  setOnlineUsers]  = useState<OnlineUser[]>([]);
 
   const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
 
@@ -74,7 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected, unreadDMs,
-        geoState, detectedCity, joined,
+        geoState, detectedCity, joined, onlineUsers,
         setBooting, setBootError,
         setIdentity,
         setSessionId: useCallback((id: string) => setSessionId(id), []),
@@ -85,6 +88,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setGeoState:     useCallback((s: GeoState) => setGeoState(s), []),
         setDetectedCity: useCallback((c: City | null) => setDetectedCity(c), []),
         setJoined:       useCallback((j: boolean) => setJoined(j), []),
+        setOnlineUsers:  useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
         logout,
       }}
     >

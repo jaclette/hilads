@@ -306,7 +306,15 @@ const wss = new WebSocketServer({ port: PORT })
 
 wss.on('connection', (ws, req) => {
   const origin = req.headers.origin
-  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+  // Allow connections from:
+  //   - no origin header (native apps, curl, server-to-server)
+  //   - "null" origin string (React Native on Android via OkHttp)
+  //   - the WS server's own hostname (OkHttp computes origin from the WS URL)
+  //   - explicitly allowed web origins (browsers)
+  const wsHost = req.headers.host  // e.g. "hilads-ws.onrender.com"
+  const selfOrigin = wsHost ? `https://${wsHost}` : null
+  if (origin && origin !== 'null' && origin !== selfOrigin && !ALLOWED_ORIGINS.has(origin)) {
+    console.log(`[WS] rejected origin: "${origin}" (allowed: ${[...ALLOWED_ORIGINS].join(', ')})`)
     ws.close(1008, 'Origin not allowed')
     return
   }

@@ -7,6 +7,7 @@ import { AppProvider, useApp } from '@/context/AppContext';
 import { useAppBoot } from '@/hooks/useAppBoot';
 import { useAppLifecycle } from '@/hooks/useAppLifecycle';
 import { usePresenceHeartbeat } from '@/hooks/usePresenceHeartbeat';
+import { usePresence } from '@/hooks/usePresence';
 import { BootScreen } from '@/components/BootScreen';
 import { LandingScreen } from '@/components/LandingScreen';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
@@ -23,6 +24,7 @@ function RootLayoutInner() {
   const { retry, retryGeo } = useAppBoot();
   useAppLifecycle();       // foreground/background WS resilience
   usePresenceHeartbeat();  // keep presence alive
+  usePresence();           // sync online users list to AppContext
 
   useEffect(() => {
     if (!booting) SplashScreen.hideAsync();

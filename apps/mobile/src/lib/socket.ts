@@ -59,13 +59,25 @@ class HiladsSocket {
   }
 
   // ── Presence helpers ────────────────────────────────────────────────────────
+  //
+  // IMPORTANT: WS server uses integer cityId as Map keys.
+  // The API returns channelId as a string (e.g. "1") but the server expects
+  // the numeric form (1). Sending "1" (string) joins a DIFFERENT Map room
+  // than 1 (integer), so web and native users never see each other.
+  // All city-scoped WS messages must coerce to integer before sending.
+
+  /** Coerce string cityId to integer to match server's Map key type. */
+  private _numericCityId(cityId: string): number {
+    const n = parseInt(cityId, 10);
+    return isNaN(n) ? (cityId as unknown as number) : n;
+  }
 
   joinCity(cityId: string, sessionId: string, nickname: string, userId?: string): void {
-    this.send({ event: 'joinRoom', cityId, sessionId, nickname, ...(userId ? { userId } : {}) });
+    this.send({ event: 'joinRoom', cityId: this._numericCityId(cityId), sessionId, nickname, ...(userId ? { userId } : {}) });
   }
 
   leaveCity(cityId: string, sessionId: string): void {
-    this.send({ event: 'leaveRoom', cityId, sessionId });
+    this.send({ event: 'leaveRoom', cityId: this._numericCityId(cityId), sessionId });
   }
 
   joinEvent(eventId: string, sessionId: string, nickname?: string): void {
@@ -77,7 +89,7 @@ class HiladsSocket {
   }
 
   heartbeat(cityId: string, sessionId: string): void {
-    this.send({ event: 'heartbeat', cityId, sessionId });
+    this.send({ event: 'heartbeat', cityId: this._numericCityId(cityId), sessionId });
   }
 
   joinDm(conversationId: string, userId: string): void {
@@ -116,8 +128,9 @@ class HiladsSocket {
 
       this.ws.onerror = () => {/* handled in onclose */};
 
-      this.ws.onclose = () => {
-        console.log('[WS] disconnected');
+      this.ws.onclose = (e) => {
+        // Log close code so origin-rejection (1008) is visible in native logs
+        console.log(`[WS] disconnected — code: ${e.code}, reason: "${e.reason ?? ''}"`);
         this._dispatch('disconnected', {});
         if (this.shouldConnect) this._scheduleReconnect();
       };
