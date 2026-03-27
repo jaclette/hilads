@@ -47,6 +47,14 @@ export interface HiladsEvent {
   city_channel_id?: string;
 }
 
+// ── Event participants ────────────────────────────────────────────────────────
+
+export interface EventParticipant {
+  guestId: string;
+  nickname: string;
+  joinedAt?: number;
+}
+
 // ── Messages ──────────────────────────────────────────────────────────────────
 //
 // API returns camelCase. All field names here match the actual wire format.
@@ -54,7 +62,7 @@ export interface HiladsEvent {
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
-  type: 'text' | 'system' | 'image';
+  type: 'text' | 'system' | 'image' | 'event';
   event?: string;                 // system message subtype: 'join' | etc.
   guestId?: string;
   userId?: string;
@@ -62,6 +70,7 @@ export interface Message {
   content?: string;               // text message body
   imageUrl?: string;              // image message URL (R2)
   createdAt: number | string;     // unix seconds (number) or ISO string
+  eventId?: string;               // for type === 'event' synthetic feed items
 }
 
 // ── Presence ──────────────────────────────────────────────────────────────────

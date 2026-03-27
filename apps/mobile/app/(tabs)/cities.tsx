@@ -69,17 +69,20 @@ function ActivityDot({ live }: { live: boolean }) {
 
 function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; onPress: () => void }) {
   const flag = cityFlag(city.country);
-  const live = (city.onlineCount ?? 0) > 0;
+  // Active city always counts as live — user is there, at least 1 person online
+  const live = isActive || (city.onlineCount ?? 0) > 0;
 
   return (
-    <TouchableOpacity
-      style={[styles.card, isActive && styles.cardActive]}
-      onPress={onPress}
-      activeOpacity={0.75}
-    >
-      {/* web: inset 2px 0 0 var(--accent) on active */}
+    <View style={styles.cardWrapper}>
+      {/* web: inset 2px 0 0 var(--accent) — rendered as sibling OUTSIDE the card
+          so it is never clipped by the card's border-radius */}
       {isActive && <View style={styles.activeAccentBar} />}
 
+      <TouchableOpacity
+        style={[styles.card, isActive && styles.cardActive]}
+        onPress={onPress}
+        activeOpacity={0.75}
+      >
       {/* ── Top row: dot + flag + name + "you're here" badge ── */}
       <View style={styles.cardTop}>
         <View style={styles.cardLeft}>
@@ -98,7 +101,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 
       {/* ── Stats row: online · events · msgs ── */}
       <View style={styles.statsRow}>
-        {live && (
+        {(city.onlineCount ?? 0) > 0 && (
           <Text style={styles.statOnline}>{city.onlineCount} online</Text>
         )}
         {(city.eventCount ?? 0) > 0 && (
@@ -110,7 +113,8 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
           <Text style={styles.statMsgs}>{city.messageCount} msgs</Text>
         )}
       </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -118,7 +122,8 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 
 export default function CitiesScreen() {
   const router                                              = useRouter();
-  const { city: activeCity, setCity, identity, sessionId, setIdentity } = useApp();
+  const { city: activeCity, setCity, identity, sessionId, setIdentity, account } = useApp();
+  const nickname = account?.display_name ?? identity?.nickname ?? '';
   const [cities,        setCities]        = useState<City[]>([]);
   const [filtered,      setFiltered]      = useState<City[]>([]);
   const [loading,       setLoading]       = useState(true);
@@ -157,6 +162,17 @@ export default function CitiesScreen() {
   // Rendered uppercase via textTransform → "TOP CITIES RIGHT NOW" / "CITIES"
   const hasActivity  = cities.some(c => (c.onlineCount ?? 0) > 0);
   const sectionLabel = query.trim() ? null : (hasActivity ? 'Top cities right now' : 'Cities');
+
+  // Current city always first — regardless of server ordering.
+  // Default (no query): top 10 only — mirrors web getDefaultCityTargets(limit=10).
+  // Search: all matching results — mirrors web getSearchCityTargets(limit=12, but unbounded here).
+  const ranked = activeCity
+    ? [
+        ...filtered.filter(c => c.channelId === activeCity.channelId),
+        ...filtered.filter(c => c.channelId !== activeCity.channelId),
+      ]
+    : filtered;
+  const sortedFiltered = query.trim() ? ranked : ranked.slice(0, 10);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -206,8 +222,9 @@ export default function CitiesScreen() {
         </View>
       ) : (
         <FlatList
-          data={filtered}
+          data={sortedFiltered}
           keyExtractor={(c) => c.channelId}
+          keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
             <CityCard
               city={item}
@@ -224,11 +241,11 @@ export default function CitiesScreen() {
                 }
                 // Join new city on the server and socket
                 if (identity && sessionId) {
-                  joinChannel(item.channelId, sessionId, identity.guestId, identity.nickname).catch(() => {});
+                  joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
                   if (socket.isConnected) {
-                    socket.joinCity(item.channelId, sessionId, identity.nickname);
+                    socket.joinCity(item.channelId, sessionId, nickname);
                   } else {
-                    socket.on('connected', () => socket.joinCity(item.channelId, sessionId, identity.nickname));
+                    socket.on('connected', () => socket.joinCity(item.channelId, sessionId, nickname));
                   }
                 }
                 track('city_selected', { cityId: item.channelId, cityName: item.name });
@@ -246,7 +263,7 @@ export default function CitiesScreen() {
           ListHeaderComponent={sectionLabel ? (
             <Text style={styles.sectionLabel}>{sectionLabel}</Text>
           ) : null}
-          contentContainerStyle={filtered.length === 0 ? styles.flex1 : styles.listContent}
+          contentContainerStyle={sortedFiltered.length === 0 ? styles.flex1 : styles.listContent}
           ListEmptyComponent={
             <View style={styles.center}>
               <Text style={styles.emptyText}>
@@ -319,15 +336,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   // Web: .city-search-input:focus { border-color: var(--accent) }
-  // Softer than full accent — semi-transparent border + warm glow + tinted bg
+  // Android: do NOT change elevation on focus — changing elevation forces a new
+  // rendering layer which immediately steals focus from the TextInput child.
   searchInnerFocused: {
-    borderColor:     'rgba(194,74,56,0.55)',  // softer than full accent
-    backgroundColor: 'rgba(194,74,56,0.04)',  // warm tint
-    shadowColor:     '#C24A38',
-    shadowOffset:    { width: 0, height: 0 },
-    shadowOpacity:   0.30,
-    shadowRadius:    12,
-    elevation:       5,
+    borderColor:     'rgba(194,74,56,0.55)',
+    backgroundColor: 'rgba(194,74,56,0.04)',
   },
   searchIcon:  { marginRight: 8 },
   searchInput: {
@@ -341,11 +354,11 @@ const styles = StyleSheet.create({
   // Web: padding 12px 18px 10px, 0.72rem, weight 600, uppercase, letter-spacing 0.08em
   sectionLabel: {
     paddingHorizontal: 18,
-    paddingTop:        12,
-    paddingBottom:     10,
-    fontSize:          11,
-    fontWeight:        '600',
-    letterSpacing:     0.88,  // 0.08em × 11px
+    paddingTop:        16,
+    paddingBottom:     12,
+    fontSize:          13,
+    fontWeight:        '700',
+    letterSpacing:     1.1,
     textTransform:     'uppercase',
     color:             Colors.muted,
   },
@@ -355,12 +368,18 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   emptyText: { fontSize: FontSizes.md, color: Colors.muted2, textAlign: 'center' },
 
+  // ── Card wrapper — positions accent bar as a sibling to the card ─────────
+  // overflow: visible so the bar can bleed past the card's rounded corners
+  cardWrapper: {
+    marginHorizontal: 12,
+    marginBottom:     10,
+    position:         'relative',
+  },
+
   // ── .city-row ─────────────────────────────────────────────────────────────
   // Web: border-radius 18px, border rgba(255,255,255,0.05), padding 18px 18px 16px,
   //      flex-col, gap 12px, shadow 0 10px 22px rgba(0,0,0,0.12), margin-bottom 10px
   card: {
-    marginHorizontal:  12,
-    marginBottom:      10,
     borderRadius:      18,
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.07)',
@@ -391,16 +410,25 @@ const styles = StyleSheet.create({
     shadowRadius:    15,
     elevation:       5,
   },
-  // Web: inset 2px 0 0 var(--accent) via box-shadow
+  // Web: inset 2px 0 0 var(--accent) via box-shadow — rendered as a sibling element
+  // outside the card so it is never clipped by overflow: hidden on the card.
+  // Positioned at left: -1 so it bleeds 1px past the card's left rounded edge.
+  // top/bottom: 8 keeps it inset from the wrapper extremes so it doesn't clip
+  // the outer rounded shadow edge.
   activeAccentBar: {
-    position:               'absolute',
-    left:                   0,
-    top:                    0,
-    bottom:                 0,
-    width:                  3,
-    backgroundColor:        Colors.accent,
-    borderTopLeftRadius:    18,
-    borderBottomLeftRadius: 18,
+    position:        'absolute',
+    left:            -1,
+    top:             8,
+    bottom:          8,
+    width:           4,
+    zIndex:          1,
+    borderRadius:    2,
+    backgroundColor: Colors.accent,
+    shadowColor:     Colors.accent,
+    shadowOffset:    { width: 0, height: 0 },
+    shadowOpacity:   0.55,
+    shadowRadius:    5,
+    elevation:       4,
   },
 
   // ── .city-row-top ─────────────────────────────────────────────────────────
@@ -456,7 +484,7 @@ const styles = StyleSheet.create({
     lineHeight:   24,
     letterSpacing: -0.2,
   },
-  cityNameActive: { color: Colors.accent },
+  cityNameActive: {},
 
   // ── .city-row-current — "you're here" badge ───────────────────────────────
   // Web: 0.72rem, weight 700, color --accent, bg rgba(194,74,56,0.14),

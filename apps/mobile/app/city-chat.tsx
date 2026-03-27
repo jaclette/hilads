@@ -15,7 +15,8 @@ import type { Message } from '@/types';
 
 export default function CityChatScreen() {
   const router = useRouter();
-  const { city, identity, sessionId } = useApp();
+  const { city, identity, sessionId, account } = useApp();
+  const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   const channelId = city?.channelId ?? '';
 
@@ -27,17 +28,17 @@ export default function CityChatScreen() {
   const postTextFn = useCallback(
     (content: string): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendMessage(channelId, sessionId, identity.guestId, identity.nickname, content);
+      return sendMessage(channelId, sessionId, identity.guestId, nickname, content);
     },
-    [channelId, identity, sessionId],
+    [channelId, identity, sessionId, nickname],
   );
 
   const postImageFn = useCallback(
     (imageUrl: string): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendImageMessage(channelId, sessionId, identity.guestId, identity.nickname, imageUrl);
+      return sendImageMessage(channelId, sessionId, identity.guestId, nickname, imageUrl);
     },
-    [channelId, identity, sessionId],
+    [channelId, identity, sessionId, nickname],
   );
 
   const { messages, loading, sending, error, clearError, sendText, sendImage } = useMessages({

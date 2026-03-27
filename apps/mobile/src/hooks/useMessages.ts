@@ -77,14 +77,18 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
 
   useEffect(() => { load(); }, [channelId]);
 
-  // WebSocket — live new messages
+  // WebSocket — live new messages.
+  // Server emits { event: 'newMessage', channelId, message }.
+  // Listen to both 'newMessage' (correct) and 'message' (legacy/compat).
   useEffect(() => {
-    const off = socket.on('message', (data) => {
-      if (data.channelId === channelId && data.message) {
+    function handler(data: Record<string, unknown>) {
+      if ((data.channelId === channelId || data.eventId === channelId) && data.message) {
         addNew([data.message as Message]);
       }
-    });
-    return off;
+    }
+    const off1 = socket.on('newMessage', handler);
+    const off2 = socket.on('message', handler);
+    return () => { off1(); off2(); };
   }, [channelId, addNew]);
 
   // Polling fallback — catches messages when WS is down

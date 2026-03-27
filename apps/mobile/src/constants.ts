@@ -51,13 +51,13 @@ export const Colors = {
 } as const;
 
 export const FontSizes = {
-  xs:   11,
-  sm:   13,
-  md:   15,
-  lg:   18,
-  xl:   22,
-  xxl:  28,
-  hero: 34,  // city name hero, large screen titles
+  xs:   12,
+  sm:   14,
+  md:   17,
+  lg:   20,
+  xl:   24,
+  xxl:  32,
+  hero: 40,  // city name hero, large screen titles
 } as const;
 
 export const Radius = {
@@ -68,10 +68,10 @@ export const Radius = {
 } as const;
 
 export const Spacing = {
-  xs:   4,
-  sm:   8,
-  md:   16,
-  lg:   24,
-  xl:   32,
-  xxl:  48,
+  xs:   5,
+  sm:   9,
+  md:   18,
+  lg:   27,
+  xl:   36,
+  xxl:  54,
 } as const;

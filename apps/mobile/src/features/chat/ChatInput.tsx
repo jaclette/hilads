@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     paddingHorizontal: 16,
-    paddingVertical:   16,
+    paddingVertical:   18,
     borderTopWidth:    1,
     borderTopColor:    Colors.border,
     backgroundColor:   'rgba(22, 18, 16, 0.99)',
@@ -167,12 +167,12 @@ const styles = StyleSheet.create({
   // Web: 54×54px; bg rgba(255,255,255,0.05); border 1px rgba(255,255,255,0.09);
   //      border-radius 50%; icon 22px
   uploadBtn: {
-    width:           54,
-    height:          54,
+    width:           60,
+    height:          60,
     flexShrink:      0,
     alignItems:      'center',
     justifyContent:  'center',
-    borderRadius:    27,
+    borderRadius:    30,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth:     1,
     borderColor:     'rgba(255, 255, 255, 0.09)',
@@ -182,17 +182,17 @@ const styles = StyleSheet.create({
   // Web: border-radius 28px; min-height 56px; padding 0 20px; font-size 1.04rem
   input: {
     flex:              1,
-    minHeight:         56,
-    maxHeight:         120,
+    minHeight:         62,
+    maxHeight:         130,
     backgroundColor:   Colors.bg,
-    borderRadius:      28,
+    borderRadius:      31,
     borderWidth:       1,
     borderColor:       Colors.border,
-    paddingHorizontal: 20,
-    paddingVertical:   12,
+    paddingHorizontal: 22,
+    paddingVertical:   14,
     color:             Colors.text,
     fontSize:          FontSizes.md,
-    lineHeight:        22,
+    lineHeight:        24,
   },
 
   // ── .send-btn ──────────────────────────────────────────────────────────────
@@ -209,9 +209,9 @@ const styles = StyleSheet.create({
     elevation:     8,
   },
   sendBtn: {
-    width:           54,
-    height:          54,
-    borderRadius:    27,
+    width:           60,
+    height:          60,
+    borderRadius:    30,
     backgroundColor: '#B87228',   // web gradient approximation (warm amber end)
     alignItems:      'center',
     justifyContent:  'center',

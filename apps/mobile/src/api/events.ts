@@ -1,13 +1,20 @@
 import { api } from './client';
-import type { HiladsEvent, Message } from '@/types';
+import type { HiladsEvent, Message, EventParticipant } from '@/types';
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
+// Hilads events for a city — today's events (hilads-created, recurring included).
+// Uses /channels/{id}/events which applies server-side "today" filtering in city timezone.
+// NOTE: API returns `type` and `source` — normalised here to match HiladsEvent shape.
 export async function fetchCityEvents(channelId: string): Promise<HiladsEvent[]> {
-  const data = await api.get<{ events: HiladsEvent[] }>(
-    `/channels/${channelId}/city-events`,
+  const data = await api.get<{ events: Record<string, unknown>[] }>(
+    `/channels/${channelId}/events`,
   );
-  return data.events ?? [];
+  return (data.events ?? []).map(e => ({
+    ...e,
+    event_type: (e.event_type ?? e.type) as HiladsEvent['event_type'],
+    source_type: (e.source_type ?? e.source ?? 'hilads') as HiladsEvent['source_type'],
+  })) as HiladsEvent[];
 }
 
 export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
@@ -48,6 +55,23 @@ export async function createEvent(
   });
 }
 
+export async function createEventSeries(
+  channelId: string,
+  guestId: string,
+  payload: {
+    title: string;
+    start_time: string;       // "HH:MM"
+    end_time: string;         // "HH:MM"
+    type: string;
+    recurrence_type: 'daily' | 'weekly' | 'every_n_days';
+    weekdays?: number[];      // 0-6, required for weekly
+    interval_days?: number;   // 2-365, required for every_n_days
+    location_hint?: string;
+  },
+): Promise<{ series_id: string; first_event: HiladsEvent }> {
+  return api.post(`/channels/${channelId}/event-series`, { guestId, ...payload });
+}
+
 export async function updateEvent(
   eventId: string,
   guestId: string,
@@ -58,6 +82,30 @@ export async function updateEvent(
 
 export async function deleteEvent(eventId: string, guestId: string): Promise<void> {
   await api.delete(`/events/${eventId}`, { guestId });
+}
+
+// ── Event participants ────────────────────────────────────────────────────────
+// GET /events/{id}/participants?sessionId={sid}
+// Returns { participants, count, isIn } — mirrors web fetchEventParticipants(eventId, sessionId)
+// isIn: whether the current session has joined (only present when sessionId is passed)
+
+export async function fetchEventParticipants(
+  eventId: string,
+  sessionId?: string,
+): Promise<{ participants: EventParticipant[]; count: number; isIn?: boolean }> {
+  try {
+    const data = await api.get<{ participants?: EventParticipant[]; count?: number; isIn?: boolean }>(
+      `/events/${eventId}/participants`,
+      sessionId ? { params: { sessionId } } : undefined,
+    );
+    return {
+      participants: data.participants ?? [],
+      count:        data.count ?? (data.participants?.length ?? 0),
+      isIn:         data.isIn,
+    };
+  } catch {
+    return { participants: [], count: 0 };
+  }
 }
 
 // ── Event participation ───────────────────────────────────────────────────────

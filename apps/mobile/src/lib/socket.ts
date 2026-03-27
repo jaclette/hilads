@@ -68,8 +68,8 @@ class HiladsSocket {
     this.send({ event: 'leaveRoom', cityId, sessionId });
   }
 
-  joinEvent(eventId: string, sessionId: string): void {
-    this.send({ event: 'joinEvent', eventId, sessionId });
+  joinEvent(eventId: string, sessionId: string, nickname?: string): void {
+    this.send({ event: 'joinEvent', eventId, sessionId, ...(nickname ? { nickname } : {}) });
   }
 
   leaveEvent(eventId: string, sessionId: string): void {

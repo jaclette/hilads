@@ -150,8 +150,8 @@ export function useAppBoot(): Result {
         console.log('[boot] phase 3: boot complete, releasing UI');
         setBooting(false);
 
-        // Phase 4: Auth (fire-and-forget)
-        loadSavedToken()
+        // Phase 4: Auth check — resolves with user (or null) so Phase 5 can use the correct nickname
+        const authPromise = loadSavedToken()
           .then(() => authMe())
           .then(user => {
             if (!cancelled && user) {
@@ -160,26 +160,29 @@ export function useAppBoot(): Result {
                 .then(count => { if (!cancelled) setUnreadDMs(count); })
                 .catch(() => {});
             }
+            return user ?? null;
           })
-          .catch(() => {});
+          .catch(() => null);
 
-        // Phase 5: City resolution (background)
+        // Phase 5: City resolution — waits for auth so we use the correct display name
+        // (authenticated display_name takes priority over guest nickname everywhere)
         if (identity.channelId) {
           console.log('[boot] returning user, fetching channels');
-          fetchChannels()
-            .then(channels => {
+          Promise.all([authPromise, fetchChannels()])
+            .then(([user, channels]) => {
               if (cancelled) return;
+              const displayName = user?.display_name ?? identity.nickname;
               const saved = channels.find(c => c.channelId === identity.channelId);
               if (saved) {
                 console.log('[boot] auto-rejoining', saved.name);
                 setCity(saved);
-                joinChannel(saved.channelId, sessionId, identity.guestId, identity.nickname)
+                joinChannel(saved.channelId, sessionId, identity.guestId, displayName)
                   .catch(() => {});
                 socket.on('connected', () =>
-                  socket.joinCity(saved.channelId, sessionId, identity.nickname),
+                  socket.joinCity(saved.channelId, sessionId, displayName),
                 );
                 if (socket.isConnected) {
-                  socket.joinCity(saved.channelId, sessionId, identity.nickname);
+                  socket.joinCity(saved.channelId, sessionId, displayName);
                 }
                 setJoined(true);
                 // Restore directly into the city channel — mirrors web auto-rejoin behaviour.

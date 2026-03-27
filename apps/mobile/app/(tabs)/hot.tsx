@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchCityEvents } from '@/api/events';
+import { fetchCityEvents, fetchEventParticipants } from '@/api/events';
+import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -38,28 +40,30 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={onPress}>
-      {/* Top row: icon + badges */}
-      <View style={styles.cardTop}>
+      {/* Title row: icon + name + going count — web: .event-title */}
+      <View style={styles.cardTitleRow}>
         <Text style={styles.cardIcon}>{icon}</Text>
-        <View style={styles.cardBadges}>
-          {isLive && (
-            <View style={styles.liveBadge}>
-              <Text style={styles.liveBadgeText}>Live</Text>
-            </View>
-          )}
-          {event.recurrence_label && (
-            <View style={styles.recurBadge}>
-              <Text style={styles.recurBadgeText}>↻ {event.recurrence_label}</Text>
-            </View>
-          )}
-        </View>
-        {event.participant_count !== undefined && event.participant_count > 0 && (
-          <Text style={styles.goingCount}>{event.participant_count} going</Text>
+        <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
+        {(event.participant_count ?? 0) > 0 && (
+          <View style={styles.goingWrap}>
+            <Text style={styles.goingCount}>👥 {event.participant_count}</Text>
+          </View>
         )}
       </View>
 
-      {/* Title — large, the hero of the card */}
-      <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
+      {/* Time pill + recurrence badge — web: .event-time-row */}
+      <View style={styles.timePillRow}>
+        <View style={[styles.timePill, isLive && styles.timePillLive]}>
+          <Text style={styles.timePillText}>
+            🕐 {formatTime(event.starts_at)}{event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
+          </Text>
+        </View>
+        {event.recurrence_label && (
+          <View style={styles.recurBadge}>
+            <Text style={styles.recurBadgeText}>↻ {event.recurrence_label}</Text>
+          </View>
+        )}
+      </View>
 
       {/* Location */}
       {(event.location ?? event.venue) ? (
@@ -67,12 +71,6 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
           📍 {event.location ?? event.venue}
         </Text>
       ) : null}
-
-      {/* Time */}
-      <Text style={styles.cardTime}>
-        {formatDate(event.starts_at)} · {formatTime(event.starts_at)}
-        {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
-      </Text>
     </TouchableOpacity>
   );
 }
@@ -93,11 +91,15 @@ function EmptyState() {
 
 export default function HotScreen() {
   const router = useRouter();
-  const { city } = useApp();
+  const { city, sessionId } = useApp();
   const [events,     setEvents]     = useState<HiladsEvent[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error,      setError]      = useState<string | null>(null);
+
+  // Stable ref so WS handler can patch counts without stale closure
+  const eventsRef = useRef<HiladsEvent[]>([]);
+  eventsRef.current = events;
 
   async function load(isRefresh = false) {
     if (!city) {
@@ -108,15 +110,18 @@ export default function HotScreen() {
     else setLoading(true);
     setError(null);
     try {
-      // eslint-disable-next-line no-console
-      console.log('[Hot] fetching events for', city.channelId);
       const data = await fetchCityEvents(city.channelId);
-      // eslint-disable-next-line no-console
-      console.log('[Hot] received', data.length, 'events');
       setEvents(data);
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error('[Hot] fetch failed:', e);
+      // Fetch participant counts per event — mirrors web "bulk-fetch on drawer open"
+      // The events list API may return participant_count: 0/null; real counts come here.
+      data.forEach(ev => {
+        fetchEventParticipants(ev.id, sessionId ?? undefined).then(({ count }) => {
+          if (count > 0) {
+            setEvents(prev => prev.map(e => e.id === ev.id ? { ...e, participant_count: count } : e));
+          }
+        });
+      });
+    } catch {
       setError('Could not load events');
     } finally {
       setLoading(false);
@@ -126,12 +131,26 @@ export default function HotScreen() {
 
   useEffect(() => { load(); }, [city?.channelId]);
 
+  // Live participant count updates — mirrors web event_participants_update WS listener
+  useEffect(() => {
+    const off = socket.on('event_participants_update', (data: Record<string, unknown>) => {
+      const { eventId, count } = data as { eventId: string; count: number };
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, participant_count: count } : e));
+    });
+    return off;
+  }, []);
+
   // No city — prompt to select one
   if (!city && !loading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>🔥 Hot</Text>
+          <TouchableOpacity style={styles.backBtn} onPress={() => router.push('/(tabs)/chat')} activeOpacity={0.75}>
+            <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>Hot</Text>
+          </View>
         </View>
         <View style={styles.empty}>
           <Text style={styles.emptyEmoji}>🌍</Text>
@@ -153,10 +172,17 @@ export default function HotScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
+      {/* Header — web: BackButton left + "Hot" title centered */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>🔥 Hot</Text>
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => router.push('/(tabs)/chat')}
+          activeOpacity={0.75}
+        >
+          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+        </TouchableOpacity>
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>Hot</Text>
           {city && <Text style={styles.headerSub}>{city.name}</Text>}
         </View>
       </View>
@@ -193,9 +219,23 @@ export default function HotScreen() {
               tintColor={Colors.accent}
             />
           }
+          ListHeaderComponent={
+            events.length > 0 ? (
+              <Text style={styles.sectionLabel}>Hilads events</Text>
+            ) : null
+          }
           ListEmptyComponent={<EmptyState />}
         />
       )}
+
+      {/* ── FAB — always visible, matches web "+" button ── */}
+      <TouchableOpacity
+        style={styles.fab}
+        activeOpacity={0.85}
+        onPress={() => router.push(`/event/create`)}
+      >
+        <Text style={styles.fabIcon}>+</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -206,11 +246,35 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   flex1:     { flex: 1 },
 
+  // Header — web: BackButton left + "Hot" centered (page-header layout)
+  // Title is absolutely centered so it stays centered regardless of side elements.
   header: {
+    flexDirection:     'row',
+    alignItems:        'center',
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    minHeight:         56,
+  },
+  backBtn: {
+    width:           40,
+    height:          40,
+    borderRadius:    12,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.10)',
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexShrink:      0,
+    zIndex:          1,
+  },
+  // Absolutely centered title — unaffected by left/right elements
+  headerCenter: {
+    position:  'absolute',
+    left:      0,
+    right:     0,
+    alignItems: 'center',
   },
   headerTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
   headerSub:   { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
@@ -220,9 +284,20 @@ const styles = StyleSheet.create({
   retryBtn:  { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: Colors.bg3, borderRadius: Radius.full },
   retryText: { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
 
-  list: { paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md, gap: Spacing.sm },
+  sectionLabel: {
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.md,
+    paddingBottom:     Spacing.sm,
+    fontSize:          FontSizes.xs,
+    fontWeight:        '700',
+    letterSpacing:     1.0,
+    textTransform:     'uppercase',
+    color:             Colors.muted,
+  },
 
-  // ── Event card ─────────────────────────────────────────────────────────────
+  list: { paddingBottom: 100, paddingHorizontal: Spacing.md, gap: Spacing.sm },
+
+  // ── Event card — web: .event-card ──────────────────────────────────────────
 
   card: {
     backgroundColor: Colors.bg2,
@@ -230,27 +305,41 @@ const styles = StyleSheet.create({
     borderWidth:     1,
     borderColor:     Colors.border,
     padding:         Spacing.md,
-    gap:             6,
+    gap:             10,
   },
-  cardTop: {
+
+  // Title row: icon + name + going count
+  cardTitleRow: {
     flexDirection: 'row',
-    alignItems:    'center',
-    gap:           Spacing.xs,
-    marginBottom:  2,
+    alignItems:    'flex-start',
+    gap:           10,
   },
-  cardIcon:  { fontSize: 22 },
-  cardBadges:{ flexDirection: 'row', gap: Spacing.xs, flex: 1 },
+  cardIcon:  { fontSize: 22, marginTop: 1 },
+  cardTitle: { flex: 1, fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, lineHeight: 26 },
 
-  liveBadge:     { backgroundColor: 'rgba(255,122,60,0.18)', borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3 },
-  liveBadgeText: { color: Colors.accent, fontSize: FontSizes.xs, fontWeight: '700' },
-  recurBadge:    { backgroundColor: 'rgba(139,92,246,0.15)', borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3 },
-  recurBadgeText:{ color: Colors.violet, fontSize: FontSizes.xs, fontWeight: '600' },
+  goingWrap:  {},
+  goingCount: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600', marginTop: 3 },
 
-  goingCount: { fontSize: FontSizes.xs, color: Colors.muted, fontWeight: '600' },
+  // Time pill + recurrence badge — web: .event-time pill dark bg, orange time text
+  timePillRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  timePill: {
+    backgroundColor:   'rgba(255,255,255,0.06)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 12,
+    paddingVertical:   5,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.08)',
+  },
+  timePillLive: {
+    backgroundColor: 'rgba(255,122,60,0.12)',
+    borderColor:     'rgba(255,122,60,0.2)',
+  },
+  timePillText: { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.accent },
 
-  cardTitle:    { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, lineHeight: 24 },
-  cardLocation: { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 18 },
-  cardTime:     { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
+  recurBadge:     { backgroundColor: 'rgba(184,114,40,0.15)', borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: 'rgba(184,114,40,0.25)' },
+  recurBadgeText: { color: Colors.accent3, fontSize: FontSizes.sm, fontWeight: '600' },
+
+  cardLocation: { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
 
   // ── Empty state ────────────────────────────────────────────────────────────
 
@@ -272,4 +361,23 @@ const styles = StyleSheet.create({
     borderRadius:      Radius.full,
   },
   emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
+
+  // ── FAB — web: .fab-create (fixed bottom-right, orange circle) ────────────
+  fab: {
+    position:        'absolute',
+    right:           20,
+    bottom:          24,
+    width:           58,
+    height:          58,
+    borderRadius:    29,
+    backgroundColor: Colors.accent,
+    alignItems:      'center',
+    justifyContent:  'center',
+    shadowColor:     Colors.accent,
+    shadowOffset:    { width: 0, height: 4 },
+    shadowOpacity:   0.45,
+    shadowRadius:    12,
+    elevation:       10,
+  },
+  fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
 });

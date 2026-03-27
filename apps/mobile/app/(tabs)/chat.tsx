@@ -10,7 +10,7 @@
  * Input mirrors web .input-bar: pill input, image button, send button.
  */
 
-import { useCallback, useRef, useEffect, useState } from 'react';
+import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Platform,
@@ -19,9 +19,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage } from '@/api/channels';
+import { fetchCityEvents } from '@/api/events';
+import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
@@ -70,6 +73,7 @@ function PulseDot() {
 export default function ChatTab() {
   const router  = useRouter();
   const { city, identity, sessionId, account, unreadDMs } = useApp();
+  const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   // Online count — populated by WS presenceSnapshot, fallback "live now"
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
@@ -84,6 +88,27 @@ export default function ChatTab() {
 
   const channelId = city?.channelId ?? '';
 
+  // ── Events — fetch today's events and inject as feed items ───────────────
+  const [events, setEvents] = useState<HiladsEvent[]>([]);
+
+  useEffect(() => {
+    if (!channelId) return;
+    fetchCityEvents(channelId).then(setEvents).catch(() => {});
+  }, [channelId]);
+
+  // Listen for new_event WS broadcast to inject real-time event feed items
+  useEffect(() => {
+    const off = socket.on('new_event', (data: { event?: HiladsEvent; channelId?: string }) => {
+      if (data.channelId === channelId && data.event) {
+        setEvents(prev => {
+          if (prev.some(e => e.id === data.event!.id)) return prev;
+          return [data.event!, ...prev];
+        });
+      }
+    });
+    return off;
+  }, [channelId]);
+
   const loadFn = useCallback(
     () => fetchMessages(channelId),
     [channelId],
@@ -92,17 +117,17 @@ export default function ChatTab() {
   const postTextFn = useCallback(
     (content: string): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendMessage(channelId, sessionId, identity.guestId, identity.nickname, content);
+      return sendMessage(channelId, sessionId, identity.guestId, nickname, content);
     },
-    [channelId, identity, sessionId],
+    [channelId, identity, sessionId, nickname],
   );
 
   const postImageFn = useCallback(
     (imageUrl: string): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendImageMessage(channelId, sessionId, identity.guestId, identity.nickname, imageUrl);
+      return sendImageMessage(channelId, sessionId, identity.guestId, nickname, imageUrl);
     },
-    [channelId, identity, sessionId],
+    [channelId, identity, sessionId, nickname],
   );
 
   const { messages, loading, sending, error, clearError, sendText, sendImage } = useMessages({
@@ -111,6 +136,23 @@ export default function ChatTab() {
     postTextFn,
     postImageFn,
   });
+
+  // Merge real messages + synthetic event feed items, newest-first for inverted FlatList
+  const allMessages = useMemo(() => {
+    const toMs = (ts: number | string) => {
+      if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;
+      return new Date(ts).getTime();
+    };
+    const eventItems = events.map(e => ({
+      id:        `event__${e.id}`,
+      type:      'event' as const,
+      nickname:  '',
+      createdAt: e.starts_at,
+      eventId:   e.id,
+      content:   e.title,
+    }));
+    return [...messages, ...eventItems].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
+  }, [messages, events]);
 
   // No city yet — prompt to pick one
   if (!city) {
@@ -157,10 +199,10 @@ export default function ChatTab() {
         {account && (
           <TouchableOpacity
             style={styles.headerIconBtn}
-            activeOpacity={0.7}
+            activeOpacity={0.6}
             onPress={() => router.push('/(tabs)/me')}
           >
-            <Ionicons name="notifications-outline" size={22} color={Colors.muted2} />
+            <Ionicons name="notifications-outline" size={24} color={Colors.muted2} />
           </TouchableOpacity>
         )}
 
@@ -168,11 +210,11 @@ export default function ChatTab() {
         {account && (
           <TouchableOpacity
             style={[styles.headerIconBtnRight, unreadDMs > 0 && styles.headerIconBtnUnread]}
-            activeOpacity={0.7}
+            activeOpacity={0.6}
             onPress={() => router.push('/(tabs)/messages')}
           >
-            <Ionicons
-              name="chatbubble-outline"
+            <Feather
+              name="message-square"
               size={22}
               color={unreadDMs > 0 ? Colors.text : Colors.muted2}
             />
@@ -184,7 +226,7 @@ export default function ChatTab() {
         {/* ── Hero: logo + city + online pill ── */}
         {/* web: .chat-header .logo svg { drop-shadow orange glow } */}
         <View style={styles.iconGlow}>
-          <HiladsIcon size={40} />
+          <HiladsIcon size={46} />
         </View>
         <View style={styles.heroCity}>
           <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>
@@ -218,20 +260,22 @@ export default function ChatTab() {
           </View>
         ) : (
           <FlatList
-            data={messages}
+            data={allMessages}
             // Robust key: fall back to index if id is missing/duplicate
             keyExtractor={(m, idx) => (m.id ? m.id : String(idx))}
             renderItem={({ item, index }) => (
               <ChatMessage
                 message={item}
                 myGuestId={identity?.guestId}
-                // Grouping: in inverted list, messages[index+1] is visually above.
+                // Grouping: in inverted list, allMessages[index+1] is visually above.
                 // Hide avatar/name if the message above is from the same sender.
                 isGrouped={
-                  index < messages.length - 1 &&
-                  messages[index + 1]?.guestId === item.guestId &&
-                  messages[index + 1]?.type !== 'system' &&
-                  item.type !== 'system'
+                  index < allMessages.length - 1 &&
+                  allMessages[index + 1]?.guestId === item.guestId &&
+                  allMessages[index + 1]?.type !== 'system' &&
+                  allMessages[index + 1]?.type !== 'event' &&
+                  item.type !== 'system' &&
+                  item.type !== 'event'
                 }
               />
             )}
@@ -275,10 +319,10 @@ const styles = StyleSheet.create({
     flexDirection:     'column',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               18,
-    minHeight:         148,
-    paddingTop:        18,
-    paddingBottom:     16,
+    gap:               20,
+    minHeight:         168,
+    paddingTop:        22,
+    paddingBottom:     20,
     paddingHorizontal: Spacing.md,
     backgroundColor:   Colors.bg2,
     borderBottomWidth: 1,
@@ -292,18 +336,17 @@ const styles = StyleSheet.create({
   },
 
   // ── .header-side-control — absolute icon buttons ─────────────────────────
-  // Web: position absolute, top: max(18px, safe-area-inset-top), z-index 3
-  // Icon btn: 48×48px, bg rgba(255,255,255,0.03), border rgba(255,255,255,0.03), radius 14px
+  // Web: solid dark card, 48×48, border-radius 16, bg #1A1A1A, border #2A2A2A
   headerIconBtn: {
     position:        'absolute',
     left:            16,
     top:             18,
-    width:           44,
-    height:          44,
-    borderRadius:    13,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    width:           48,
+    height:          48,
+    borderRadius:    16,
+    backgroundColor: '#1A1A1A',
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.06)',
+    borderColor:     '#2A2A2A',
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -311,31 +354,36 @@ const styles = StyleSheet.create({
     position:        'absolute',
     right:           16,
     top:             18,
-    width:           44,
-    height:          44,
-    borderRadius:    13,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    width:           48,
+    height:          48,
+    borderRadius:    16,
+    backgroundColor: '#1A1A1A',
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.06)',
+    borderColor:     '#2A2A2A',
     alignItems:      'center',
     justifyContent:  'center',
   },
-  // Web: .header-icon-btn--unread — orange-tinted bg+border when has unreads
+  // Web: .header-icon-btn--unread — orange border + tinted bg + glow when has unreads
   headerIconBtnUnread: {
-    backgroundColor: 'rgba(255,122,60,0.08)',
-    borderColor:     'rgba(255,122,60,0.18)',
+    backgroundColor: 'rgba(255,122,60,0.12)',
+    borderColor:     Colors.accent,
+    shadowColor:     Colors.accent,
+    shadowOffset:    { width: 0, height: 0 },
+    shadowOpacity:   0.35,
+    shadowRadius:    8,
+    elevation:       4,
   },
   // Web: .header-icon-badge--dot — 9px orange circle, absolute top-right
   headerIconDot: {
     position:        'absolute',
-    top:             5,
-    right:           5,
+    top:             8,
+    right:           8,
     width:           9,
     height:          9,
     borderRadius:    4.5,
     backgroundColor: Colors.accent,
     borderWidth:     2,
-    borderColor:     Colors.bg2,
+    borderColor:     '#1A1A1A',
   },
 
   // ── Logo glow — web: .chat-header .logo svg { drop-shadow orange } ─────────
@@ -356,12 +404,12 @@ const styles = StyleSheet.create({
 
   // .header-hero-name: clamp(2.15rem, 7.8vw, 2.65rem), weight 800, letter-spacing -0.04em
   cityName: {
-    fontSize:      34,      // ≈ 2.15rem at 16px base
+    fontSize:      42,      // ≈ 2.65rem at 16px base — upper end of web clamp
     fontWeight:    '800',
-    letterSpacing: -1.36,   // -0.04em × 34px
+    letterSpacing: -1.68,   // -0.04em × 42px
     color:         Colors.text,
     textAlign:     'center',
-    lineHeight:    36,
+    lineHeight:    46,
   },
 
   // .online-label: pill, gap 8, padding 6 12, bg rgba(255,255,255,0.05), border rgba(255,255,255,0.07)
@@ -369,8 +417,8 @@ const styles = StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     gap:               8,
-    paddingHorizontal: 12,
-    paddingVertical:   6,
+    paddingHorizontal: 14,
+    paddingVertical:   7,
     borderRadius:      999,
     backgroundColor:   'rgba(255,255,255,0.05)',
     borderWidth:       1,
@@ -379,16 +427,16 @@ const styles = StyleSheet.create({
 
   // .online-pulse: 7px, #C24A38
   pulseDot: {
-    width:           7,
-    height:          7,
-    borderRadius:    3.5,
+    width:           8,
+    height:          8,
+    borderRadius:    4,
     backgroundColor: '#C24A38',
     flexShrink:      0,
   },
 
   // online count text: 1rem = 16px
   onlineText: {
-    fontSize: 15,
+    fontSize: 16,
     color:    Colors.text,
   },
 
@@ -399,8 +447,8 @@ const styles = StyleSheet.create({
   // ── Messages ─────────────────────────────────────────────────────────────
   // web: .messages { padding: 22px 18px 14px; gap: 8px }
   listContent: {
-    paddingTop:    22,
-    paddingBottom: 14,
+    paddingTop:    28,
+    paddingBottom: 18,
   },
 
   // ── Empty state — web: .empty ─────────────────────────────────────────────

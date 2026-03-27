@@ -93,7 +93,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             <View style={styles.iconWrap}>
               <Ionicons
                 name={focused ? tab.icon : tab.outline}
-                size={26}
+                size={30}
                 color={color}
               />
               <Dot color={tab.dot} />
@@ -135,12 +135,12 @@ const styles = StyleSheet.create({
     flexDirection:  'column',
     alignItems:     'center',
     justifyContent: 'center',
-    gap:            6,    // web: gap: 6px
-    minHeight:      60,   // web: min-height: 60px
-    paddingTop:     10,   // web: padding: 10px 6px 8px
-    paddingBottom:  8,
+    gap:            7,
+    minHeight:      68,
+    paddingTop:     12,
+    paddingBottom:  10,
     paddingHorizontal: 6,
-    borderRadius:   18,   // web: border-radius: 18px
+    borderRadius:   18,
   },
 
   // .bottom-nav-tab.active
@@ -148,20 +148,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 122, 60, 0.06)',
   },
 
-  // .bottom-nav-icon (26×26 container)
+  // .bottom-nav-icon
   iconWrap: {
-    width:          26,
-    height:         26,
+    width:          32,
+    height:         32,
     alignItems:     'center',
     justifyContent: 'center',
   },
 
   // .bottom-nav-label: 0.76rem ≈ 12px, weight 600, uppercase, letter-spacing 0.03em
   label: {
-    fontSize:      12,
-    fontWeight:    '600',
+    fontSize:      13,
+    fontWeight:    '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.36,   // 0.03em × 12px
+    letterSpacing: 0.52,   // 0.04em × 13px
   },
 });
 

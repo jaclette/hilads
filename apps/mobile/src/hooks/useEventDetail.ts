@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchEventById, toggleEventParticipation } from '@/api/events';
+import { fetchEventById, toggleEventParticipation, fetchEventParticipants } from '@/api/events';
 import { useApp } from '@/context/AppContext';
 import type { HiladsEvent } from '@/types';
 
@@ -26,13 +26,26 @@ export function useEventDetail(eventId: string): Result {
     setError(null);
     try {
       const res = await fetchEventById(eventId);
-      setEvent(res?.event ?? null);
+      const ev = res?.event ?? null;
+      setEvent(ev);
+      // Restore participation state — fetchEventById has no sessionId context,
+      // so is_participating may be stale/false. Re-check via participants endpoint.
+      if (ev && sessionId) {
+        fetchEventParticipants(ev.id, sessionId).then(({ count, isIn }) => {
+          if (isIn !== undefined) {
+            setEvent(prev => prev
+              ? { ...prev, is_participating: isIn, participant_count: count }
+              : prev,
+            );
+          }
+        });
+      }
     } catch {
       setError('Failed to load event');
     } finally {
       setLoading(false);
     }
-  }, [eventId]);
+  }, [eventId, sessionId]);
 
   useEffect(() => { load(); }, [load]);
 

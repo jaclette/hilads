@@ -12,7 +12,8 @@
  *   text   → bubble with avatar + author (grouped = avatar hidden)
  */
 
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
 import type { Message } from '@/types';
 
@@ -68,6 +69,27 @@ interface Props {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
+  const router = useRouter();
+
+  // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
+  if (message.type === 'event') {
+    return (
+      <View style={styles.eventRow}>
+        <View style={styles.eventPill}>
+          <Text style={styles.eventText} numberOfLines={2}>
+            🔥 New event: {message.content}
+          </Text>
+          <TouchableOpacity
+            style={styles.eventJoinBtn}
+            activeOpacity={0.8}
+            onPress={() => message.eventId && router.push(`/event/${message.eventId}`)}
+          >
+            <Text style={styles.eventJoinText}>Join</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   // ── System / join message — web: .feed-join (centered pill) ──────────────
   if (message.type === 'system') {
@@ -161,24 +183,63 @@ export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
 
 const styles = StyleSheet.create({
 
+  // ── .feed-prompt — event orange pill ─────────────────────────────────────
+  // Web: centered row, orange tinted bg + border, fire emoji + title + Join btn
+  eventRow: {
+    alignItems:        'center',
+    marginVertical:    12,
+    paddingHorizontal: 16,
+  },
+  eventPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               12,
+    backgroundColor:   'rgba(255,122,60,0.08)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.20)',
+    borderRadius:      20,
+    paddingHorizontal: 16,
+    paddingVertical:   10,
+    maxWidth:          '100%',
+  },
+  eventText: {
+    flex:       1,
+    fontSize:   14,
+    fontWeight: '500',
+    color:      Colors.text,
+    lineHeight: 20,
+  },
+  eventJoinBtn: {
+    backgroundColor: Colors.accent,
+    borderRadius:    14,
+    paddingHorizontal: 14,
+    paddingVertical:   6,
+    flexShrink:      0,
+  },
+  eventJoinText: {
+    color:      '#fff',
+    fontSize:   13,
+    fontWeight: '700',
+  },
+
   // ── .feed-join — centered pill ────────────────────────────────────────────
   // Web: font-size 0.85rem (~13.6px), font-weight 500, padding 6px 16px,
   //      margin 12px 0, border-radius 20px, bg rgba(255,255,255,0.04)
   systemRow: {
     alignItems:        'center',
-    marginVertical:    12,
+    marginVertical:    16,
     paddingHorizontal: 16,
   },
   systemText: {
-    fontSize:          14,
+    fontSize:          15,
     fontWeight:        '500',
     color:             Colors.muted2,
     backgroundColor:   'rgba(255,255,255,0.04)',
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.07)',
     borderRadius:      20,
-    paddingHorizontal: 18,
-    paddingVertical:   8,
+    paddingHorizontal: 20,
+    paddingVertical:   9,
     overflow:          'hidden',
   },
 
@@ -186,27 +247,27 @@ const styles = StyleSheet.create({
   row: {
     paddingHorizontal: 18,
     flexDirection:     'column',
-    maxWidth:          '80%',
+    maxWidth:          '82%',
   },
   rowOther:   { alignSelf: 'flex-start' },
   rowMine:    { alignSelf: 'flex-end' },
-  rowFirst:   { marginTop: 22 },
-  rowGrouped: { marginTop: 4 },
+  rowFirst:   { marginTop: 28 },
+  rowGrouped: { marginTop: 5 },
 
   // ── .msg-meta ─────────────────────────────────────────────────────────────
   meta: {
     flexDirection: 'row',
     alignItems:    'center',
-    gap:           6,
+    gap:           8,
     paddingLeft:   2,
-    marginBottom:  3,
+    marginBottom:  4,
   },
 
   // ── .msg-avatar ───────────────────────────────────────────────────────────
   avatar: {
-    width:          28,
-    height:         28,
-    borderRadius:   14,
+    width:          34,
+    height:         34,
+    borderRadius:   17,
     alignItems:     'center',
     justifyContent: 'center',
     flexShrink:     0,
@@ -216,19 +277,19 @@ const styles = StyleSheet.create({
     shadowRadius:   4,
     elevation:      4,
   },
-  avatarLetter: { color: '#fff', fontSize: 11, fontWeight: '700' },
+  avatarLetter: { color: '#fff', fontSize: 13, fontWeight: '700' },
 
   // ── .msg-author ───────────────────────────────────────────────────────────
-  author: { fontSize: 13, fontWeight: '600', opacity: 0.9 },
+  author: { fontSize: 16, fontWeight: '700', opacity: 0.9 },
 
-  // Grouped indent: 28px avatar + 6px gap
-  groupedOffset: { paddingLeft: 34 },
+  // Grouped indent: 34px avatar + 8px gap
+  groupedOffset: { paddingLeft: 42 },
 
   // ── .msg-content ──────────────────────────────────────────────────────────
   bubble: {
     borderRadius:      18,
-    paddingHorizontal: 15,
-    paddingVertical:   12,
+    paddingHorizontal: 20,
+    paddingVertical:   14,
   },
   bubbleOther: {
     backgroundColor:     Colors.bg3,
@@ -237,20 +298,20 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 4,
   },
   bubbleMine: {
-    backgroundColor:      '#C24A38',
+    backgroundColor:      '#B87228',   // web gradient end — warm orange, not red
     borderTopRightRadius: 4,
-    shadowColor:          '#9e3a2c',
+    shadowColor:          '#8a5418',
     shadowOffset:         { width: 0, height: 2 },
     shadowOpacity:        0.35,
     shadowRadius:         6,
     elevation:            4,
   },
-  bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 23 },
+  bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 27 },
   bubbleTextMine: { color: '#fff' },
 
   // ── .msg-image ────────────────────────────────────────────────────────────
   // web: max-width 260px; max-height 300px; border-radius varies
-  image: { width: 260, height: 220, marginTop: 2 },
+  image: { width: 280, height: 240, marginTop: 2 },
   imageOther: {
     borderTopLeftRadius:     4,
     borderTopRightRadius:    16,

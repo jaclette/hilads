@@ -44,6 +44,7 @@ function RootLayoutInner() {
           {/* Stack is always mounted so sign-in/sign-up routing works from LandingScreen */}
           <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: Colors.bg } }}>
             <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="event/create" />
             <Stack.Screen name="event/[id]" />
             <Stack.Screen
               name="sign-in"
