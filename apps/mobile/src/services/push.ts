@@ -72,42 +72,46 @@ export async function hasBeenAsked(): Promise<boolean> {
  * Call after the user has a registered account (not for guests).
  */
 export async function requestAndRegisterPush(): Promise<string | null> {
+  console.log('[push-mobile] requestAndRegisterPush — isDevice:', Device.isDevice, 'platform:', Platform.OS);
   if (!Device.isDevice) {
-    console.log('[push] skipping — not a physical device');
+    console.log('[push-mobile] skipping — not a physical device');
     return null;
   }
 
   // Always ensure the Android channel is set up before token acquisition.
-  // This covers the boot-time path where setupNotificationChannel() is not
-  // called separately (e.g. returning user re-opening the app).
   await setupNotificationChannel();
 
   await AsyncStorage.setItem(PUSH_ASKED_KEY, '1');
 
   const { status: existing } = await Notifications.getPermissionsAsync();
   let finalStatus = existing;
-  console.log('[push] permission status (existing):', existing);
+  console.log('[push-mobile] permission status (existing):', existing);
 
   if (existing !== 'granted') {
+    console.log('[push-mobile] requesting permission...');
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
-    console.log('[push] permission status (after request):', finalStatus);
+    console.log('[push-mobile] permission status (after request):', finalStatus);
   }
 
   if (finalStatus !== 'granted') {
-    console.warn('[push] permission not granted — aborting token registration');
+    console.warn('[push-mobile] permission NOT granted — aborting token registration. Final status:', finalStatus);
     return null;
   }
 
-  console.log('[push] permission granted — fetching Expo push token (projectId:', PROJECT_ID, ')');
+  console.log('[push-mobile] permission granted — calling getExpoPushTokenAsync (projectId:', PROJECT_ID, ')');
   try {
     const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId: PROJECT_ID });
-    console.log('[push] Expo push token:', token);
+    console.log('[push-mobile] expo token =', token);
+
+    const savedToken = await AsyncStorage.getItem(PUSH_TOKEN_KEY);
+    console.log('[push-mobile] previously saved token:', savedToken ?? '(none)');
     await AsyncStorage.setItem(PUSH_TOKEN_KEY, token);
+
     await registerTokenWithBackend(token);
     return token;
   } catch (err) {
-    console.error('[push] getExpoPushTokenAsync failed:', String(err));
+    console.error('[push-mobile] getExpoPushTokenAsync FAILED:', String(err));
     return null;
   }
 }
@@ -135,11 +139,14 @@ export async function unregisterPushToken(): Promise<void> {
 // ── Backend sync ──────────────────────────────────────────────────────────────
 
 async function registerTokenWithBackend(token: string): Promise<void> {
-  console.log('[push] registering token with backend, platform:', Platform.OS);
+  const payload = { token, platform: Platform.OS };
+  console.log('[push-mobile] subscribing token to backend — payload:', JSON.stringify(payload));
   try {
-    await api.post('/push/mobile-token', { token, platform: Platform.OS });
-    console.log('[push] token registered with backend ✓');
+    const res = await api.post<{ ok?: boolean }>('/push/mobile-token', payload);
+    console.log('[push-mobile] subscribe response ok:', res?.ok ?? '(no body)');
   } catch (err) {
-    console.error('[push] failed to register token with backend:', String(err));
+    console.error('[push-mobile] subscribe request FAILED:', String(err));
+    // Re-throw so the caller can see registration failed
+    throw err;
   }
 }

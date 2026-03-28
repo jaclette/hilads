@@ -73,12 +73,16 @@ class MobilePushService
         array   $data = []
     ): void {
         try {
+            error_log("[push-send] recipient=$userId type=$type title=" . json_encode($title));
+
             // 1. Check user preference for this notification type
             $prefCol = self::prefColumn($type);
             if ($prefCol !== null) {
                 $prefs = NotificationPreferencesRepository::get($userId);
-                if (!($prefs[$prefCol] ?? false)) {
-                    error_log("[push] skipping $type for user $userId — preference disabled");
+                $prefValue = $prefs[$prefCol] ?? null;
+                error_log("[push-send] pref[$prefCol]=" . json_encode($prefValue) . " for user=$userId");
+                if (!$prefValue) {
+                    error_log("[push-send] skipping $type for user=$userId — preference disabled");
                     return;
                 }
             }
@@ -88,7 +92,7 @@ class MobilePushService
             if ($cooldown > 0) {
                 $refId = self::refId($type, $data);
                 if (self::isOnCooldown($userId, $type, $refId, $cooldown)) {
-                    error_log("[push] skipping $type for user $userId — on cooldown");
+                    error_log("[push-send] skipping $type for user=$userId refId=$refId — on cooldown");
                     return;
                 }
                 self::recordDelivery($userId, $type, $refId);
@@ -101,12 +105,13 @@ class MobilePushService
             $stmt->execute([$userId]);
             $tokens = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
+            error_log("[push-send] found " . count($tokens) . " mobile token(s) for user=$userId"
+                . (count($tokens) > 0 ? ": " . implode(", ", $tokens) : ""));
+
             if (empty($tokens)) {
-                error_log("[push] no mobile tokens for user $userId — skipping $type");
+                error_log("[push-send] no mobile tokens for user=$userId — skipping $type");
                 return;
             }
-
-            error_log("[push] sending $type to user $userId (" . count($tokens) . " device(s))");
 
             // 4. Build Expo push payload (one message per device)
             $payload = array_map(fn($token) => [
@@ -118,14 +123,16 @@ class MobilePushService
                 'channelId' => 'default', // Android channel defined in push.ts
             ], $tokens);
 
+            error_log("[push-send] sending $type to user=$userId (" . count($tokens) . " device(s)) payload=" . json_encode($payload));
+
             // 5. Send to Expo Push API
             $response = self::postToExpo($payload);
             if ($response === null) {
-                error_log("[push] Expo API request failed (network error or timeout) for user $userId");
+                error_log("[push-send] Expo API request FAILED (network error or timeout) for user=$userId");
                 return;
             }
 
-            error_log("[push] Expo API response for user $userId: $response");
+            error_log("[push-send] Expo API response for user=$userId: $response");
 
             // 6. Clean up DeviceNotRegistered tokens
             $decoded = json_decode($response, true);
@@ -150,7 +157,7 @@ class MobilePushService
                     ->execute($invalid);
             }
         } catch (\Throwable $e) {
-            error_log("[push] MobilePushService::send exception for user $userId type $type: " . $e->getMessage());
+            error_log("[push-send] EXCEPTION for user=$userId type=$type: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         }
     }
 

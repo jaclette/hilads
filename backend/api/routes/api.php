@@ -2244,21 +2244,33 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     $token    = trim((string) ($body['token']    ?? ''));
     $platform = trim((string) ($body['platform'] ?? 'unknown'));
 
+    error_log("[push-subscribe] user={$user['id']} platform=$platform token=$token");
+
     if (!$token || !str_starts_with($token, 'ExponentPushToken[')) {
+        error_log("[push-subscribe] REJECTED — invalid token format: '$token'");
         Response::json(['error' => 'Invalid Expo push token'], 400);
     }
 
     $allowed = ['android', 'ios', 'unknown'];
     if (!in_array($platform, $allowed, true)) $platform = 'unknown';
 
-    Database::pdo()->prepare("
-        INSERT INTO mobile_push_tokens (user_id, token, platform)
-        VALUES (?, ?, ?)
-        ON CONFLICT (token) DO UPDATE
-           SET user_id     = EXCLUDED.user_id,
-               platform    = EXCLUDED.platform,
-               last_used_at = now()
-    ")->execute([$user['id'], $token, $platform]);
+    try {
+        $stmt = Database::pdo()->prepare("
+            INSERT INTO mobile_push_tokens (user_id, token, platform)
+            VALUES (?, ?, ?)
+            ON CONFLICT (token) DO UPDATE
+               SET user_id      = EXCLUDED.user_id,
+                   platform     = EXCLUDED.platform,
+                   last_used_at = now()
+            RETURNING id
+        ");
+        $stmt->execute([$user['id'], $token, $platform]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        error_log("[push-subscribe] upsert success for user={$user['id']} row_id=" . ($row['id'] ?? '?'));
+    } catch (\Throwable $e) {
+        error_log("[push-subscribe] DB ERROR for user={$user['id']}: " . $e->getMessage());
+        Response::json(['error' => 'Failed to store push token: ' . $e->getMessage()], 500);
+    }
 
     Response::json(['ok' => true]);
 });
