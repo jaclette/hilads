@@ -186,6 +186,53 @@ class Database
                 self::$pdo->exec("ALTER TABLE event_participants ADD COLUMN IF NOT EXISTS user_id TEXT REFERENCES users(id) ON DELETE SET NULL");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_event_participants_user ON event_participants (user_id) WHERE user_id IS NOT NULL");
             }
+
+            // Add event_join_push to notification_preferences if missing.
+            // This column was added to NotificationPreferencesRepository but the original
+            // bootstrap() CREATE TABLE only had 3 columns — causing SQL crashes in production.
+            $ejpExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'event_join_push')")
+                ->fetchColumn();
+
+            if (!$ejpExists) {
+                self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS event_join_push BOOLEAN NOT NULL DEFAULT FALSE");
+            }
+
+            // Mobile push token registry (one row per device, Expo push tokens).
+            $mptExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'mobile_push_tokens')")
+                ->fetchColumn();
+
+            if (!$mptExists) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS mobile_push_tokens (
+                        id         BIGSERIAL   PRIMARY KEY,
+                        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        token      TEXT        NOT NULL UNIQUE,
+                        platform   TEXT        NOT NULL DEFAULT 'unknown',
+                        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_mobile_push_tokens_user ON mobile_push_tokens (user_id)");
+            }
+
+            // Anti-noise push delivery log (cooldown tracking per user/type/ref).
+            $pdlExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'push_delivery_log')")
+                ->fetchColumn();
+
+            if (!$pdlExists) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS push_delivery_log (
+                        id      BIGSERIAL   PRIMARY KEY,
+                        user_id TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        type    TEXT        NOT NULL,
+                        ref_id  TEXT        NOT NULL DEFAULT '',
+                        sent_at TIMESTAMPTZ NOT NULL DEFAULT now()
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_push_delivery_log_lookup ON push_delivery_log (user_id, type, ref_id, sent_at DESC)");
+            }
         }
 
         self::bootstrap(self::$pdo);
@@ -225,6 +272,7 @@ class Database
                     user_id              TEXT    PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
                     dm_push              BOOLEAN NOT NULL DEFAULT TRUE,
                     event_message_push   BOOLEAN NOT NULL DEFAULT TRUE,
+                    event_join_push      BOOLEAN NOT NULL DEFAULT FALSE,
                     new_event_push       BOOLEAN NOT NULL DEFAULT FALSE
                 )
             ");
