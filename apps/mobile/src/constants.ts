@@ -8,16 +8,14 @@ export const API_URL =
 export const WS_URL =
   process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:8081';
 
-// ── Env diagnostics (dev only) ────────────────────────────────────────────────
-if (__DEV__) {
-  if (!process.env.EXPO_PUBLIC_API_URL) {
-    console.warn('[env] ⚠️  EXPO_PUBLIC_API_URL is undefined — falling back to http://localhost:8080');
-    console.warn('[env] ⚠️  On Android emulator this will fail. Set EXPO_PUBLIC_API_URL=http://10.0.2.2:8080 in .env.local');
-  }
-  console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined)');
-  console.log('[env] API_URL (resolved)  =', API_URL);
-  console.log('[env] WS_URL              =', WS_URL);
+// ── Env diagnostics (always-on — helps debug production APK connectivity) ─────
+if (!process.env.EXPO_PUBLIC_API_URL && __DEV__) {
+  console.warn('[env] ⚠️  EXPO_PUBLIC_API_URL is undefined — falling back to http://localhost:8080');
+  console.warn('[env] ⚠️  On Android emulator this will fail. Set EXPO_PUBLIC_API_URL=http://10.0.2.2:8080 in .env.local');
 }
+console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined)');
+console.log('[env] API_URL (resolved)  =', API_URL);
+console.log('[env] WS_URL              =', WS_URL);
 
 export const APP_VERSION = '1.0.0';
 export const IS_DEV = __DEV__;

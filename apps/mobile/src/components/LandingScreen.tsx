@@ -124,9 +124,12 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     setIdentity, setCity, setJoined,
   } = useApp();
 
-  const [nickname, setNickname] = useState(identity?.nickname ?? '');
-  const [joining,  setJoining]  = useState(false);
-  const [error,    setError]    = useState<string | null>(null);
+  const [nickname,     setNickname]     = useState(identity?.nickname ?? '');
+  const [joining,      setJoining]      = useState(false);
+  const [error,        setError]        = useState<string | null>(null);
+  // Show the "browse cities" escape after a delay if geo is still pending/resolving.
+  // Prevents the user from being stuck with no action available on slow/broken devices.
+  const [showGeoEscape, setShowGeoEscape] = useState(false);
 
   // Events preview — fetched after city is detected (mirrors web startGeolocation)
   const [previewEvents,     setPreviewEvents]     = useState<HiladsEvent[]>([]);
@@ -139,6 +142,17 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   useEffect(() => {
     if (identity?.nickname && !nickname) setNickname(identity.nickname);
   }, [identity?.nickname]);
+
+  // Escape hatch: if still waiting for geo after 10 seconds, reveal "Browse cities"
+  // so the user is never fully stuck with no action available.
+  useEffect(() => {
+    if (geoState !== 'pending' && geoState !== 'resolving') {
+      setShowGeoEscape(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowGeoEscape(true), 10_000);
+    return () => clearTimeout(timer);
+  }, [geoState]);
 
   // Fetch events when city is detected — mirrors web's fetchEvents() after resolveLocation
   useEffect(() => {
@@ -288,10 +302,24 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                 </>
               ) : geoState === 'resolving' ? (
                 /* web: "› locating..." */
-                <PulsingText text="› locating..." style={styles.locating} />
+                <>
+                  <PulsingText text="› locating..." style={styles.locating} />
+                  {showGeoEscape && (
+                    <TouchableOpacity onPress={handleBrowseCities} activeOpacity={0.7} style={styles.geoEscapeBtn}>
+                      <Text style={styles.geoEscapeText}>Choose city manually →</Text>
+                    </TouchableOpacity>
+                  )}
+                </>
               ) : (
                 /* web: "› requesting location..." (geoState = 'pending') */
-                <PulsingText text="› requesting location..." style={styles.locating} />
+                <>
+                  <PulsingText text="› requesting location..." style={styles.locating} />
+                  {showGeoEscape && (
+                    <TouchableOpacity onPress={handleBrowseCities} activeOpacity={0.7} style={styles.geoEscapeBtn}>
+                      <Text style={styles.geoEscapeText}>Choose city manually →</Text>
+                    </TouchableOpacity>
+                  )}
+                </>
               )}
             </View>
 
@@ -649,6 +677,15 @@ const styles = StyleSheet.create({
     color:      Colors.white,
     fontWeight: '700',
     fontSize:   FontSizes.md,
+  },
+
+  // Geo escape — shown after 10s in pending/resolving so user is never stuck
+  geoEscapeBtn: { alignItems: 'center', paddingVertical: 6, marginTop: 4 },
+  geoEscapeText: {
+    color:               Colors.muted,
+    fontSize:            12,
+    textDecorationLine:  'underline',
+    textDecorationColor: Colors.muted,
   },
 
   // ob-geo-retry

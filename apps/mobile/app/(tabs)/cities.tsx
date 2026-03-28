@@ -128,17 +128,19 @@ export default function CitiesScreen() {
   const [filtered,      setFiltered]      = useState<City[]>([]);
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
+  const [error,         setError]         = useState(false);
   const [query,         setQuery]         = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
 
   async function load(isRefresh = false) {
     if (isRefresh) setRefreshing(true);
+    setError(false);
     try {
       const data = await fetchChannels();
       setCities(data);
       setFiltered(data);
     } catch {
-      // silent — show stale data
+      setError(true);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -219,6 +221,13 @@ export default function CitiesScreen() {
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator color={Colors.accent} size="large" />
+        </View>
+      ) : error ? (
+        <View style={styles.center}>
+          <Text style={styles.emptyText}>Couldn't load cities</Text>
+          <TouchableOpacity style={styles.retryBtn} onPress={() => load()} activeOpacity={0.7}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -367,6 +376,14 @@ const styles = StyleSheet.create({
 
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   emptyText: { fontSize: FontSizes.md, color: Colors.muted2, textAlign: 'center' },
+  retryBtn: {
+    marginTop:         16,
+    paddingHorizontal: 24,
+    paddingVertical:   10,
+    borderRadius:      999,
+    backgroundColor:   Colors.accent2,
+  },
+  retryText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.white },
 
   // ── Card wrapper — positions accent bar as a sibling to the card ─────────
   // overflow: visible so the bar can bleed past the card's rounded corners
