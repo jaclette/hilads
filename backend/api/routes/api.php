@@ -526,6 +526,8 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
 
 // GET /api/v1/events/{eventId}
 // Returns a single event by hex channel ID. Used for deep-linked event URLs.
+// Optional query params: guestId (32-char hex) — when provided, adds participant_count
+// and is_participating to the event object so the CTA renders correctly on first load.
 $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
     $eventId = $params['eventId'] ?? '';
 
@@ -536,6 +538,22 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
     $event = EventRepository::findById($eventId);
     if ($event === null) {
         Response::json(['error' => 'Event not found or expired'], 404);
+    }
+
+    // Embed participation state when caller passes their persistent guestId.
+    // This eliminates a round-trip and avoids the race condition where the CTA
+    // briefly shows "Join" before the secondary /participants fetch completes.
+    $guestId   = trim($_GET['guestId']   ?? '');
+    $sessionId = trim($_GET['sessionId'] ?? '');
+    if (isValidGuestId($guestId)) {
+        $event['participant_count']  = ParticipantRepository::getCount($eventId);
+        $event['is_participating']   = ParticipantRepository::isIn($eventId, $guestId);
+    } elseif (isValidSessionId($sessionId)) {
+        $event['participant_count']  = ParticipantRepository::getCount($eventId);
+        $event['is_participating']   = ParticipantRepository::isIn($eventId, $sessionId);
+    } else {
+        $event['participant_count']  = ParticipantRepository::getCount($eventId);
+        $event['is_participating']   = false;
     }
 
     // Also resolve the city name so the frontend can hydrate city context
@@ -1739,14 +1757,24 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
         Response::json(['error' => 'Event not found or expired'], 404);
     }
 
+    // Prefer guestId (persistent across sessions) over sessionId (ephemeral).
+    // Native app sends guestId; web sends sessionId — both are valid participant keys.
+    $guestId   = trim($_GET['guestId']   ?? '');
     $sessionId = trim($_GET['sessionId'] ?? '');
+
+    if ($guestId !== '' && !isValidGuestId($guestId)) {
+        Response::json(['error' => 'Invalid guestId'], 400);
+    }
     if ($sessionId !== '' && !isValidSessionId($sessionId)) {
         Response::json(['error' => 'Invalid sessionId'], 400);
     }
 
+    $participantKey = $guestId !== '' ? $guestId : ($sessionId !== '' ? $sessionId : '');
+
     Response::json([
-        'count' => ParticipantRepository::getCount($eventId),
-        'isIn'  => $sessionId !== '' ? ParticipantRepository::isIn($eventId, $sessionId) : false,
+        'participants' => ParticipantRepository::getParticipants($eventId),
+        'count'        => ParticipantRepository::getCount($eventId),
+        'isIn'         => $participantKey !== '' ? ParticipantRepository::isIn($eventId, $participantKey) : false,
     ]);
 });
 
@@ -1767,16 +1795,24 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
         Response::json(['error' => 'Invalid JSON body'], 400);
     }
 
+    // Prefer guestId (persistent across sessions) over sessionId (ephemeral).
+    // Native app sends guestId; web sends sessionId — both are valid participant keys.
+    $guestId   = $body['guestId']   ?? null;
     $sessionId = $body['sessionId'] ?? null;
 
     enforceRateLimit('event_participant_toggle', 60, 300, $eventId);
 
-    if (!isValidSessionId($sessionId)) {
-        Response::json(['error' => 'sessionId is required'], 400);
+    if (isValidGuestId($guestId)) {
+        $participantKey = $guestId;
+    } elseif (isValidSessionId($sessionId)) {
+        $participantKey = $sessionId;
+    } else {
+        Response::json(['error' => 'guestId or sessionId is required'], 400);
     }
 
+    $nickname    = isset($body['nickname']) ? mb_substr(trim((string) $body['nickname']), 0, 64) : '';
     $currentUser = AuthService::currentUser(); // null for guests
-    $isIn  = ParticipantRepository::toggle($eventId, $sessionId, $currentUser['id'] ?? null);
+    $isIn  = ParticipantRepository::toggle($eventId, $participantKey, $currentUser['id'] ?? null, $nickname);
     $count = ParticipantRepository::getCount($eventId);
 
     ParticipantRepository::broadcastToWs($eventId, $count);

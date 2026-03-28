@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet,
+  View, Text, SectionList, StyleSheet,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchCityEvents, fetchEventParticipants } from '@/api/events';
+import { fetchCityEvents, fetchPublicCityEvents, fetchEventParticipants } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { HiladsEvent } from '@/types';
@@ -40,15 +40,17 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={onPress}>
-      {/* Title row: icon + name + going count — web: .event-title */}
+      {/* Title row: icon + name + public badge / going count — web: .event-title */}
       <View style={styles.cardTitleRow}>
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
-        {(event.participant_count ?? 0) > 0 && (
+        {event.source_type === 'ticketmaster' ? (
+          <Text style={styles.publicBadge}>Public</Text>
+        ) : (event.participant_count ?? 0) > 0 ? (
           <View style={styles.goingWrap}>
             <Text style={styles.goingCount}>👥 {event.participant_count}</Text>
           </View>
-        )}
+        ) : null}
       </View>
 
       {/* Time pill + recurrence badge — web: .event-time-row */}
@@ -91,15 +93,16 @@ function EmptyState() {
 
 export default function HotScreen() {
   const router = useRouter();
-  const { city, sessionId } = useApp();
-  const [events,     setEvents]     = useState<HiladsEvent[]>([]);
-  const [loading,    setLoading]    = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error,      setError]      = useState<string | null>(null);
+  const { city, identity } = useApp();
+  const [hiladsEvents,  setHiladsEvents]  = useState<HiladsEvent[]>([]);
+  const [publicEvents,  setPublicEvents]  = useState<HiladsEvent[]>([]);
+  const [loading,       setLoading]       = useState(true);
+  const [refreshing,    setRefreshing]    = useState(false);
+  const [error,         setError]         = useState<string | null>(null);
 
   // Stable ref so WS handler can patch counts without stale closure
   const eventsRef = useRef<HiladsEvent[]>([]);
-  eventsRef.current = events;
+  eventsRef.current = hiladsEvents;
 
   async function load(isRefresh = false) {
     if (!city) {
@@ -110,14 +113,18 @@ export default function HotScreen() {
     else setLoading(true);
     setError(null);
     try {
-      const data = await fetchCityEvents(city.channelId);
-      setEvents(data);
-      // Fetch participant counts per event — mirrors web "bulk-fetch on drawer open"
-      // The events list API may return participant_count: 0/null; real counts come here.
-      data.forEach(ev => {
-        fetchEventParticipants(ev.id, sessionId ?? undefined).then(({ count }) => {
+      // Fetch hilads + public events in parallel — mirrors web Promise.allSettled() call
+      const [hiladsData, publicData] = await Promise.all([
+        fetchCityEvents(city.channelId),
+        fetchPublicCityEvents(city.channelId),
+      ]);
+      setHiladsEvents(hiladsData);
+      setPublicEvents(publicData);
+      // Fetch participant counts for hilads events
+      hiladsData.forEach(ev => {
+        fetchEventParticipants(ev.id, identity?.guestId).then(({ count }) => {
           if (count > 0) {
-            setEvents(prev => prev.map(e => e.id === ev.id ? { ...e, participant_count: count } : e));
+            setHiladsEvents(prev => prev.map(e => e.id === ev.id ? { ...e, participant_count: count } : e));
           }
         });
       });
@@ -135,7 +142,7 @@ export default function HotScreen() {
   useEffect(() => {
     const off = socket.on('event_participants_update', (data: Record<string, unknown>) => {
       const { eventId, count } = data as { eventId: string; count: number };
-      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, participant_count: count } : e));
+      setHiladsEvents(prev => prev.map(e => e.id === eventId ? { ...e, participant_count: count } : e));
     });
     return off;
   }, []);
@@ -198,9 +205,16 @@ export default function HotScreen() {
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
+      ) : hiladsEvents.length === 0 && publicEvents.length === 0 ? (
+        <EmptyState />
       ) : (
-        <FlatList
-          data={events}
+        <SectionList
+          sections={[
+            { key: 'hilads', title: 'Hilads Events', data: hiladsEvents },
+            ...(publicEvents.length > 0
+              ? [{ key: 'public', title: 'Public Events', data: publicEvents }]
+              : []),
+          ]}
           keyExtractor={(e) => e.id}
           renderItem={({ item }) => (
             <EventCard
@@ -211,7 +225,16 @@ export default function HotScreen() {
               }}
             />
           )}
-          contentContainerStyle={events.length === 0 ? styles.flex1 : styles.list}
+          renderSectionHeader={({ section }) => (
+            <>
+              {section.key === 'public' && <View style={styles.sectionDivider} />}
+              <Text style={styles.sectionLabel}>{section.title}</Text>
+              {section.key === 'hilads' && hiladsEvents.length === 0 && (
+                <Text style={styles.sectionEmpty}>No Hilads events yet</Text>
+              )}
+            </>
+          )}
+          contentContainerStyle={styles.list}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -219,12 +242,7 @@ export default function HotScreen() {
               tintColor={Colors.accent}
             />
           }
-          ListHeaderComponent={
-            events.length > 0 ? (
-              <Text style={styles.sectionLabel}>Hilads events</Text>
-            ) : null
-          }
-          ListEmptyComponent={<EmptyState />}
+          stickySectionHeadersEnabled={false}
         />
       )}
 
@@ -294,6 +312,17 @@ const styles = StyleSheet.create({
     textTransform:     'uppercase',
     color:             Colors.muted,
   },
+  sectionEmpty: {
+    paddingHorizontal: Spacing.md,
+    paddingBottom:     Spacing.md,
+    fontSize:          FontSizes.sm,
+    color:             Colors.muted2,
+  },
+  sectionDivider: {
+    height:          1,
+    backgroundColor: Colors.border,
+    marginVertical:  Spacing.sm,
+  },
 
   list: { paddingBottom: 100, paddingHorizontal: Spacing.md, gap: Spacing.sm },
 
@@ -317,8 +346,9 @@ const styles = StyleSheet.create({
   cardIcon:  { fontSize: 22, marginTop: 1 },
   cardTitle: { flex: 1, fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, lineHeight: 26 },
 
-  goingWrap:  {},
-  goingCount: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600', marginTop: 3 },
+  goingWrap:    {},
+  goingCount:   { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600', marginTop: 3 },
+  publicBadge:  { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent, marginTop: 3 },
 
   // Time pill + recurrence badge — web: .event-time pill dark bg, orange time text
   timePillRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },

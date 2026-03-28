@@ -17,6 +17,23 @@ export async function fetchCityEvents(channelId: string): Promise<HiladsEvent[]>
   })) as HiladsEvent[];
 }
 
+// Public (ticketmaster) events for a city — mirrors web fetchCityEvents().
+// Endpoint: GET /channels/{id}/city-events
+export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEvent[]> {
+  try {
+    const data = await api.get<{ events: Record<string, unknown>[] }>(
+      `/channels/${channelId}/city-events`,
+    );
+    return (data.events ?? []).map(e => ({
+      ...e,
+      event_type: (e.event_type ?? e.type) as HiladsEvent['event_type'],
+      source_type: (e.source_type ?? e.source ?? 'ticketmaster') as HiladsEvent['source_type'],
+    })) as HiladsEvent[];
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
   const data = await api.get<{ events: HiladsEvent[] }>('/users/me/events', {
     params: { guestId },
@@ -26,9 +43,13 @@ export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
 
 export async function fetchEventById(
   eventId: string,
+  guestId?: string,
 ): Promise<{ event: HiladsEvent; cityName: string; country: string; timezone: string } | null> {
   try {
-    return await api.get(`/events/${encodeURIComponent(eventId)}`);
+    return await api.get(
+      `/events/${encodeURIComponent(eventId)}`,
+      guestId ? { params: { guestId } } : undefined,
+    );
   } catch {
     return null;
   }
@@ -91,12 +112,13 @@ export async function deleteEvent(eventId: string, guestId: string): Promise<voi
 
 export async function fetchEventParticipants(
   eventId: string,
-  sessionId?: string,
+  guestId?: string,
 ): Promise<{ participants: EventParticipant[]; count: number; isIn?: boolean }> {
   try {
     const data = await api.get<{ participants?: EventParticipant[]; count?: number; isIn?: boolean }>(
       `/events/${eventId}/participants`,
-      sessionId ? { params: { sessionId } } : undefined,
+      // Send guestId (persistent) so isIn survives app restarts
+      guestId ? { params: { guestId } } : undefined,
     );
     return {
       participants: data.participants ?? [],
@@ -112,9 +134,11 @@ export async function fetchEventParticipants(
 
 export async function toggleEventParticipation(
   eventId: string,
-  sessionId: string,
+  guestId: string,
+  nickname: string,
 ): Promise<{ count: number; isIn: boolean }> {
-  return api.post(`/events/${eventId}/participants/toggle`, { sessionId });
+  // Send guestId (persistent across restarts) not sessionId (ephemeral)
+  return api.post(`/events/${eventId}/participants/toggle`, { guestId, nickname });
 }
 
 // ── Event chat ────────────────────────────────────────────────────────────────

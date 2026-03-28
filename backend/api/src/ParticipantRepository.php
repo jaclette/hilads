@@ -13,7 +13,7 @@ class ParticipantRepository
      * @param string|null $userId  Registered user id if the participant is authenticated.
      *                             Stored so we can later query "events this user joined".
      */
-    public static function toggle(string $eventId, string $sessionId, ?string $userId = null): bool
+    public static function toggle(string $eventId, string $sessionId, ?string $userId = null, string $nickname = ''): bool
     {
         $pdo = Database::pdo();
 
@@ -32,12 +32,33 @@ class ParticipantRepository
         }
 
         $pdo->prepare("
-            INSERT INTO event_participants (channel_id, guest_id, user_id)
-            VALUES (?, ?, ?)
-            ON CONFLICT (channel_id, guest_id) DO UPDATE SET user_id = EXCLUDED.user_id
-        ")->execute([$eventId, $sessionId, $userId]);
+            INSERT INTO event_participants (channel_id, guest_id, user_id, nickname)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT (channel_id, guest_id) DO UPDATE SET user_id = EXCLUDED.user_id, nickname = EXCLUDED.nickname
+        ")->execute([$eventId, $sessionId, $userId, $nickname]);
 
         return true;
+    }
+
+    /**
+     * Returns the list of participants with their nicknames, newest-first.
+     *
+     * @return array<array{guestId: string, nickname: string, joinedAt: int}>
+     */
+    public static function getParticipants(string $eventId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT guest_id, nickname, EXTRACT(EPOCH FROM joined_at)::int AS joined_at
+            FROM event_participants
+            WHERE channel_id = ?
+            ORDER BY joined_at ASC
+        ");
+        $stmt->execute([$eventId]);
+        return array_map(fn($r) => [
+            'guestId'  => $r['guest_id'],
+            'nickname' => $r['nickname'],
+            'joinedAt' => (int) $r['joined_at'],
+        ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     public static function getCount(string $eventId): int

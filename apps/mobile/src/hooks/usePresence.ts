@@ -46,18 +46,42 @@ export function usePresence(): void {
     const offSnapshot = socket.on('presenceSnapshot', (data) => {
       if (!matchesCity(data)) return;
       const raw = Array.isArray(data.users) ? (data.users as RawUser[]) : [];
-      console.log('[presence] snapshot received, users:', raw.length, 'channelId:', channelId);
+      console.log('[presence] snapshot users:', raw.length, '| channelId:', channelId);
+      if (__DEV__) {
+        raw.forEach((u, i) => console.log(`  [${i}] sessionId=${u.sessionId} nickname=${u.nickname}`));
+      }
+
       const mapped = raw.map(toOnlineUser);
-      usersRef.current = mapped;
-      setOnlineUsers(mapped);
+
+      // Deduplicate by sessionId — guards against double-delivery or server races.
+      // Also filters out entries with no sessionId (would cause duplicate FlatList keys).
+      const seen = new Set<string>();
+      const deduped = mapped.filter(u => {
+        if (!u.sessionId) {
+          console.warn('[presence] user missing sessionId, skipping:', u.nickname);
+          return false;
+        }
+        if (seen.has(u.sessionId)) {
+          console.warn('[presence] duplicate sessionId in snapshot, skipping:', u.sessionId);
+          return false;
+        }
+        seen.add(u.sessionId);
+        return true;
+      });
+
+      usersRef.current = deduped;
+      setOnlineUsers(deduped);
     });
 
     // userJoined — single user entered the city
     const offJoined = socket.on('userJoined', (data) => {
       if (!matchesCity(data)) return;
       const u = data.user as RawUser | undefined;
-      if (!u?.sessionId) return;
-      console.log('[presence] userJoined:', u.nickname);
+      if (!u?.sessionId) {
+        console.warn('[presence] userJoined missing sessionId:', JSON.stringify(data));
+        return;
+      }
+      console.log('[presence] userJoined:', u.nickname, '| sessionId:', u.sessionId.slice(0, 8));
       if (usersRef.current.some(p => p.sessionId === u.sessionId)) return;
       const next = [...usersRef.current, toOnlineUser(u)];
       usersRef.current = next;

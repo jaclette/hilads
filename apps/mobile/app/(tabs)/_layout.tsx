@@ -10,27 +10,6 @@ import { Colors } from '@/constants';
 
 const ACTIVE_COLOR   = '#FF7A3C';                  // web: color: #FF7A3C on .active
 const INACTIVE_COLOR = 'rgba(255,255,255,0.52)';   // web: color: rgba(255,255,255,0.52)
-const GREEN          = '#3ddc84';                   // web: var(--green), NavIconPeople dot
-const VIOLET         = '#8B5CF6';                  // web: var(--profile-dot), NavIconProfile dot
-
-// ── Status dots — mirrors web SVG overlay circles ────────────────────────────
-// Each icon in the web SVG has a small status circle. Always visible, not just active.
-
-function Dot({ color }: { color: string }) {
-  return (
-    <View style={{
-      position:        'absolute',
-      top:             -1,
-      right:           -4,
-      width:           7,
-      height:          7,
-      borderRadius:    3.5,
-      backgroundColor: color,
-      borderWidth:     1.5,
-      borderColor:     'rgba(20,18,16,0.96)',  // matches container bg
-    }} />
-  );
-}
 
 // ── Tab definitions — 4 primary tabs matching web .bottom-nav ─────────────────
 
@@ -39,14 +18,13 @@ type TabDef = {
   label:   string;
   icon:    React.ComponentProps<typeof Ionicons>['name'];
   outline: React.ComponentProps<typeof Ionicons>['name'];
-  dot:     string;
 };
 
 const TABS: TabDef[] = [
-  { name: 'hot',    label: 'Hot',    icon: 'flame',  outline: 'flame-outline',  dot: ACTIVE_COLOR },
-  { name: 'cities', label: 'Cities', icon: 'earth',  outline: 'earth-outline',  dot: ACTIVE_COLOR },
-  { name: 'here',   label: 'Here',   icon: 'people', outline: 'people-outline', dot: GREEN },
-  { name: 'me',     label: 'Me',     icon: 'person', outline: 'person-outline', dot: VIOLET },
+  { name: 'hot',    label: 'Hot',    icon: 'flame',  outline: 'flame-outline'  },
+  { name: 'cities', label: 'Cities', icon: 'earth',  outline: 'earth-outline'  },
+  { name: 'here',   label: 'Here',   icon: 'people', outline: 'people-outline' },
+  { name: 'me',     label: 'Me',     icon: 'person', outline: 'person-outline' },
 ];
 
 // ── Custom tab bar — faithful port of web .bottom-nav ────────────────────────
@@ -89,14 +67,13 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             }}
             activeOpacity={0.85}
           >
-            {/* Icon + status dot — web: .bottom-nav-icon (26×26 svg + overlay circle) */}
+            {/* Icon — web: .bottom-nav-icon */}
             <View style={styles.iconWrap}>
               <Ionicons
                 name={focused ? tab.icon : tab.outline}
                 size={30}
                 color={color}
               />
-              <Dot color={tab.dot} />
             </View>
 
             {/* Label — web: .bottom-nav-label */}

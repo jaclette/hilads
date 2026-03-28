@@ -224,10 +224,18 @@ export default function MeScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
 
-        {/* ── Header — web: .profile-header "My Profile" + back button ── */}
-        {/* Native: no back (tab). Centered title. */}
+        {/* ── Header — back button left, centered title ── */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>My Profile</Text>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => router.push('/(tabs)/chat')}
+            activeOpacity={0.75}
+          >
+            <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>My Profile</Text>
+          </View>
         </View>
 
         {/* ── Avatar — web: .profile-avatar-wrap → tappable, camera badge ── */}
@@ -457,7 +465,7 @@ export default function MeScreen() {
               onPress={handleLogout}
               activeOpacity={0.85}
             >
-              <Text style={styles.ctaBtnText}>Sign out</Text>
+              <Text style={[styles.ctaBtnText, styles.ctaBtnTextSignOut]}>Sign out</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -478,15 +486,34 @@ export default function MeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
 
-  // ── Header — web: .profile-header ────────────────────────────────────────
+  // ── Header — back button left, centered title ────────────────────────────
   header: {
+    flexDirection:     'row',
     alignItems:        'center',
-    justifyContent:    'center',
-    minHeight:         56,
+    paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
+    minHeight:         56,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
     backgroundColor:   Colors.bg2,
+  },
+  backBtn: {
+    width:           40,
+    height:          40,
+    borderRadius:    12,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.10)',
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexShrink:      0,
+    zIndex:          1,
+  },
+  headerCenter: {
+    position:   'absolute',
+    left:       0,
+    right:      0,
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize:      FontSizes.xl,
@@ -740,14 +767,19 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
     minHeight:       52,
   },
-  ctaBtnSave:    { backgroundColor: Colors.accent2 },
-  ctaBtnSignOut: { backgroundColor: '#9E3020' },
+  ctaBtnSave:    { backgroundColor: Colors.accent },
+  ctaBtnSignOut: {
+    backgroundColor: 'transparent',
+    borderWidth:     1.5,
+    borderColor:     'rgba(255,122,60,0.4)',
+  },
   ctaBtnText: {
     fontSize:      FontSizes.md,
     fontWeight:    '700',
     color:         Colors.white,
     letterSpacing: -0.2,
   },
+  ctaBtnTextSignOut: { color: Colors.accent },
 
   // ── Guest upgrade ──────────────────────────────────────────────────────────
   upgradeCard: {

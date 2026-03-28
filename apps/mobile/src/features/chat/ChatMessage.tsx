@@ -12,7 +12,8 @@
  *   text   → bubble with avatar + author (grouped = avatar hidden)
  */
 
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRef, useEffect } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
 import type { Message } from '@/types';
@@ -58,46 +59,96 @@ function systemText(message: Message): string {
   return message.content ?? `${nick} (${message.event ?? 'activity'})`;
 }
 
+// ── Entry animation hook — called unconditionally at top of ChatMessage ───────
+// opacity 0→1, translateY 8→0, ease-out, 200ms
+// Must be called before any conditional returns to obey React hook rules.
+
+function useEntryAnimation(duration = 200) {
+  const opacity    = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(8)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity,    { toValue: 1, duration, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  return { opacity, translateY };
+}
+
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
   message:   Message;
   myGuestId: string | undefined;
   isGrouped?: boolean;
+  index?:     number;   // used for stagger delay on event items
+}
+
+// ── Animated event pill — fade + slide-up on mount, staggered by index ───────
+
+function AnimatedEventPill({ message, index }: { message: Message; index: number }) {
+  const router  = useRouter();
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue:         1,
+        duration:        260,
+        delay:           index * 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue:         0,
+        duration:        260,
+        delay:           index * 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
+      <View style={styles.eventPill}>
+        <Text style={styles.eventText}>
+          🔥 New event: {message.content}
+        </Text>
+        <TouchableOpacity
+          style={styles.eventJoinBtn}
+          activeOpacity={0.8}
+          onPress={() => message.eventId && router.push(`/event/${message.eventId}`)}
+        >
+          <Text style={styles.eventJoinText}>Join</Text>
+        </TouchableOpacity>
+      </View>
+    </Animated.View>
+  );
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }: Props) {
   const router = useRouter();
+
+  // Hook called unconditionally — React rules require this before any early return
+  const { opacity, translateY } = useEntryAnimation(200);
+  const animStyle = { opacity, transform: [{ translateY }] } as const;
 
   // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
   if (message.type === 'event') {
-    return (
-      <View style={styles.eventRow}>
-        <View style={styles.eventPill}>
-          <Text style={styles.eventText} numberOfLines={2}>
-            🔥 New event: {message.content}
-          </Text>
-          <TouchableOpacity
-            style={styles.eventJoinBtn}
-            activeOpacity={0.8}
-            onPress={() => message.eventId && router.push(`/event/${message.eventId}`)}
-          >
-            <Text style={styles.eventJoinText}>Join</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+    return <AnimatedEventPill message={message} index={index} />;
   }
 
   // ── System / join message — web: .feed-join (centered pill) ──────────────
   if (message.type === 'system') {
     const text = systemText(message);
     return (
-      <View style={styles.systemRow}>
+      <Animated.View style={[styles.systemRow, animStyle]}>
         <Text style={styles.systemText}>{text}</Text>
-      </View>
+      </Animated.View>
     );
   }
 
@@ -108,14 +159,15 @@ export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
       console.warn('[msg] image message missing imageUrl:', JSON.stringify(message));
       return null;
     }
-    const isMine = Boolean(myGuestId && message.guestId === myGuestId);
-    const [c1]   = avatarColors(message.nickname ?? '?');
+    const isMine  = Boolean(myGuestId && message.guestId === myGuestId);
+    const [c1]    = avatarColors(message.nickname ?? '?');
     const initial = (message.nickname?.[0] ?? '?').toUpperCase();
     return (
-      <View style={[
+      <Animated.View style={[
         styles.row,
         isMine    ? styles.rowMine    : styles.rowOther,
         isGrouped ? styles.rowGrouped : styles.rowFirst,
+        animStyle,
       ]}>
         {!isMine && !isGrouped && (
           <View style={styles.meta}>
@@ -134,7 +186,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
             onError={() => console.warn('[msg] image load error:', message.imageUrl)}
           />
         </View>
-      </View>
+      </Animated.View>
     );
   }
 
@@ -150,10 +202,11 @@ export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
   const initial = (message.nickname?.[0] ?? '?').toUpperCase();
 
   return (
-    <View style={[
+    <Animated.View style={[
       styles.row,
       isMine    ? styles.rowMine    : styles.rowOther,
       isGrouped ? styles.rowGrouped : styles.rowFirst,
+      animStyle,
     ]}>
 
       {/* ── Avatar + author — web: .msg-meta ── */}
@@ -175,7 +228,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
         </View>
       </View>
 
-    </View>
+    </Animated.View>
   );
 }
 
@@ -184,41 +237,43 @@ export function ChatMessage({ message, myGuestId, isGrouped = false }: Props) {
 const styles = StyleSheet.create({
 
   // ── .feed-prompt — event orange pill ─────────────────────────────────────
-  // Web: centered row, orange tinted bg + border, fire emoji + title + Join btn
+  // Centered column: title on top, Join button below — handles any title length cleanly
   eventRow: {
     alignItems:        'center',
-    marginVertical:    12,
-    paddingHorizontal: 16,
+    marginVertical:    4,
+    paddingHorizontal: 18,
   },
   eventPill: {
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               12,
+    justifyContent:    'space-between',
     backgroundColor:   'rgba(255,122,60,0.08)',
     borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.20)',
-    borderRadius:      20,
+    borderColor:       'rgba(255,122,60,0.18)',
+    borderRadius:      22,
     paddingHorizontal: 16,
-    paddingVertical:   10,
-    maxWidth:          '100%',
+    paddingVertical:   12,
+    maxWidth:          '82%',
   },
   eventText: {
-    flex:       1,
-    fontSize:   14,
-    fontWeight: '500',
-    color:      Colors.text,
-    lineHeight: 20,
+    flexShrink:  1,
+    fontSize:    16,
+    fontWeight:  '600',
+    color:       Colors.text,
+    lineHeight:  22,
+    marginRight: 10,
+    textAlign:   'center',
   },
   eventJoinBtn: {
-    backgroundColor: Colors.accent,
-    borderRadius:    14,
-    paddingHorizontal: 14,
-    paddingVertical:   6,
-    flexShrink:      0,
+    backgroundColor:   'rgba(255,122,60,0.55)',
+    borderRadius:      12,
+    paddingHorizontal: 11,
+    paddingVertical:   4,
+    flexShrink:        0,
   },
   eventJoinText: {
     color:      '#fff',
-    fontSize:   13,
+    fontSize:   15,
     fontWeight: '700',
   },
 

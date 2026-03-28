@@ -383,7 +383,9 @@ const styles = StyleSheet.create({
     borderRadius:      18,
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.07)',
-    backgroundColor:   'rgba(255,255,255,0.03)',
+    // Solid bg required — rgba(255,255,255,0.03) is effectively transparent on Android,
+    // causing touch events to fall through to the FlatList instead of the card.
+    backgroundColor:   Colors.bg2,
     paddingHorizontal: 18,
     paddingTop:        20,
     paddingBottom:     18,
@@ -402,7 +404,8 @@ const styles = StyleSheet.create({
   //                         ↑ dark shadow — NOT orange. Orange only on the inset left bar.
   // Gradient approximated as flat midpoint rgba(194,74,56,0.09)
   cardActive: {
-    backgroundColor: 'rgba(194,74,56,0.09)',
+    // rgba(194,74,56,0.12) blended over Colors.bg2 (#161210) → warm dark red surface
+    backgroundColor: '#211410',
     borderColor:     'rgba(194,74,56,0.22)',
     shadowColor:     '#000',   // web uses dark shadow, not orange glow
     shadowOffset:    { width: 0, height: 16 },

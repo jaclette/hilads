@@ -107,7 +107,7 @@ export function useAppBoot(): Result {
   const {
     setIdentity, setSessionId, setAccount,
     setCity, setBooting, setBootError, setWsConnected, setUnreadDMs,
-    setGeoState, setDetectedCity, setJoined,
+    setUnreadNotifications, setGeoState, setDetectedCity, setJoined,
   } = useApp();
 
   const [retryCount,    setRetryCount]    = useState(0);
@@ -157,7 +157,7 @@ export function useAppBoot(): Result {
             if (!cancelled && user) {
               setAccount(user);
               fetchUnreadCount()
-                .then(count => { if (!cancelled) setUnreadDMs(count); })
+                .then(count => { if (!cancelled) setUnreadNotifications(count); })
                 .catch(() => {});
             }
             return user ?? null;

@@ -8,6 +8,7 @@ import { useAppBoot } from '@/hooks/useAppBoot';
 import { useAppLifecycle } from '@/hooks/useAppLifecycle';
 import { usePresenceHeartbeat } from '@/hooks/usePresenceHeartbeat';
 import { usePresence } from '@/hooks/usePresence';
+import { useGlobalNotifications } from '@/hooks/useGlobalNotifications';
 import { BootScreen } from '@/components/BootScreen';
 import { LandingScreen } from '@/components/LandingScreen';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
@@ -22,9 +23,10 @@ SplashScreen.preventAutoHideAsync();
 function RootLayoutInner() {
   const { booting, bootError, joined } = useApp();
   const { retry, retryGeo } = useAppBoot();
-  useAppLifecycle();       // foreground/background WS resilience
-  usePresenceHeartbeat();  // keep presence alive
-  usePresence();           // sync online users list to AppContext
+  useAppLifecycle();          // foreground/background WS resilience
+  usePresenceHeartbeat();     // keep presence alive
+  usePresence();              // sync online users list to AppContext
+  useGlobalNotifications();   // always-on unread DM + notification badge updates
 
   useEffect(() => {
     if (!booting) SplashScreen.hideAsync();
@@ -57,6 +59,7 @@ function RootLayoutInner() {
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
             <Stack.Screen name="dm/[id]" />
+            <Stack.Screen name="notifications" />
             <Stack.Screen
               name="debug"
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}

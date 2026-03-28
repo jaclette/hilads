@@ -72,19 +72,38 @@ function PulseDot() {
 
 export default function ChatTab() {
   const router  = useRouter();
-  const { city, identity, sessionId, account, unreadDMs } = useApp();
+  const {
+    city, identity, sessionId, account,
+    unreadDMs, setUnreadDMs,
+    unreadNotifications,
+  } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   // Online count — populated by WS presenceSnapshot, fallback "live now"
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
+  const countScale = useRef(new Animated.Value(1)).current;
+
+  const pulseCount = useCallback(() => {
+    Animated.sequence([
+      Animated.timing(countScale, { toValue: 1.18, duration: 120, useNativeDriver: true }),
+      Animated.timing(countScale, { toValue: 1,    duration: 180, useNativeDriver: true }),
+    ]).start();
+  }, [countScale]);
 
   useEffect(() => {
     const off = socket.on('presenceSnapshot', (data: { count?: number; users?: unknown[] }) => {
-      if (data.count != null)          setOnlineCount(data.count);
-      else if (Array.isArray(data.users)) setOnlineCount(data.users.length);
+      const next = data.count != null ? data.count
+                 : Array.isArray(data.users) ? data.users.length
+                 : null;
+      if (next !== null) {
+        setOnlineCount(prev => {
+          if (prev !== null && prev !== next) pulseCount();
+          return next;
+        });
+      }
     });
     return off;
-  }, []);
+  }, [pulseCount]);
 
   const channelId = city?.channelId ?? '';
 
@@ -137,12 +156,16 @@ export default function ChatTab() {
     postImageFn,
   });
 
-  // Merge real messages + synthetic event feed items, newest-first for inverted FlatList
+  // Merge real messages + synthetic event feed items, newest-first for inverted FlatList.
+  // Event items are prepended (index 0…n) so they appear pinned at the bottom of the
+  // inverted list — just above the input — matching web where events are the most-recent
+  // feed entries. System join messages sort naturally by their own timestamp above events.
   const allMessages = useMemo(() => {
     const toMs = (ts: number | string) => {
       if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;
       return new Date(ts).getTime();
     };
+    const sorted = [...messages].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
     const eventItems = events.map(e => ({
       id:        `event__${e.id}`,
       type:      'event' as const,
@@ -151,7 +174,9 @@ export default function ChatTab() {
       eventId:   e.id,
       content:   e.title,
     }));
-    return [...messages, ...eventItems].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
+    // Events at front → bottom of inverted list (newest visual position, near input).
+    // Messages above — join pills appear naturally between events and older chat.
+    return [...eventItems, ...sorted];
   }, [messages, events]);
 
   // No city yet — prompt to pick one
@@ -195,14 +220,21 @@ export default function ChatTab() {
         {/* ── Side controls — web: .header-side-control (absolute positioned) ── */}
         {/* Only shown when account exists — mirrors web: {!activeEvent && account && ...} */}
 
-        {/* Left: notification bell */}
+        {/* Left: notification bell + badge count */}
         {account && (
           <TouchableOpacity
-            style={styles.headerIconBtn}
-            activeOpacity={0.6}
-            onPress={() => router.push('/(tabs)/me')}
+            style={[styles.headerIconBtn, unreadNotifications > 0 && styles.headerIconBtnUnread]}
+            activeOpacity={0.65}
+            onPress={() => router.push('/notifications' as never)}
           >
-            <Ionicons name="notifications-outline" size={24} color={Colors.muted2} />
+            <Ionicons name="notifications-outline" size={28} color={Colors.white} />
+            {unreadNotifications > 0 && (
+              <View style={styles.headerIconBadge}>
+                <Text style={styles.headerIconBadgeText}>
+                  {unreadNotifications > 9 ? '9+' : String(unreadNotifications)}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         )}
 
@@ -210,16 +242,20 @@ export default function ChatTab() {
         {account && (
           <TouchableOpacity
             style={[styles.headerIconBtnRight, unreadDMs > 0 && styles.headerIconBtnUnread]}
-            activeOpacity={0.6}
-            onPress={() => router.push('/(tabs)/messages')}
+            activeOpacity={0.65}
+            onPress={() => {
+              setUnreadDMs(0);
+              router.push('/(tabs)/messages');
+            }}
           >
-            <Feather
-              name="message-square"
-              size={22}
-              color={unreadDMs > 0 ? Colors.text : Colors.muted2}
-            />
-            {/* web: .header-icon-badge--dot — 9px orange circle */}
-            {unreadDMs > 0 && <View style={styles.headerIconDot} />}
+            <Feather name="message-square" size={28} color={Colors.white} />
+            {unreadDMs > 0 && (
+              <View style={styles.headerIconBadge}>
+                <Text style={styles.headerIconBadgeText}>
+                  {unreadDMs > 9 ? '9+' : String(unreadDMs)}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
         )}
 
@@ -234,9 +270,9 @@ export default function ChatTab() {
           </Text>
           <View style={styles.onlinePill}>
             <PulseDot />
-            <Text style={styles.onlineText}>
+            <Animated.Text style={[styles.onlineText, { transform: [{ scale: countScale }] }]}>
               {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-            </Text>
+            </Animated.Text>
           </View>
         </View>
 
@@ -267,6 +303,7 @@ export default function ChatTab() {
               <ChatMessage
                 message={item}
                 myGuestId={identity?.guestId}
+                index={index}
                 // Grouping: in inverted list, allMessages[index+1] is visually above.
                 // Hide avatar/name if the message above is from the same sender.
                 isGrouped={
@@ -336,54 +373,56 @@ const styles = StyleSheet.create({
   },
 
   // ── .header-side-control — absolute icon buttons ─────────────────────────
-  // Web: solid dark card, 48×48, border-radius 16, bg #1A1A1A, border #2A2A2A
+  // 48×48 touch area, white icon, visible border for definition on dark bg
+  // Web: dark rounded square, subtle border for definition on dark header
   headerIconBtn: {
     position:        'absolute',
-    left:            16,
-    top:             18,
-    width:           48,
-    height:          48,
+    left:            18,
+    top:             16,
+    width:           52,
+    height:          52,
     borderRadius:    16,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderWidth:     1,
-    borderColor:     '#2A2A2A',
+    borderColor:     'rgba(255,255,255,0.10)',
     alignItems:      'center',
     justifyContent:  'center',
   },
   headerIconBtnRight: {
     position:        'absolute',
-    right:           16,
-    top:             18,
-    width:           48,
-    height:          48,
+    right:           18,
+    top:             16,
+    width:           52,
+    height:          52,
     borderRadius:    16,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderWidth:     1,
-    borderColor:     '#2A2A2A',
+    borderColor:     'rgba(255,255,255,0.10)',
     alignItems:      'center',
     justifyContent:  'center',
   },
-  // Web: .header-icon-btn--unread — orange border + tinted bg + glow when has unreads
-  headerIconBtnUnread: {
-    backgroundColor: 'rgba(255,122,60,0.12)',
-    borderColor:     Colors.accent,
-    shadowColor:     Colors.accent,
-    shadowOffset:    { width: 0, height: 0 },
-    shadowOpacity:   0.35,
-    shadowRadius:    8,
-    elevation:       4,
+  // Unread state: no extra border/glow — badge alone signals unread
+  headerIconBtnUnread: {},
+  // Badge — small circle, top-right, no glow, matches web dot style
+  headerIconBadge: {
+    position:          'absolute',
+    top:               7,
+    right:             7,
+    minWidth:          17,
+    height:            17,
+    borderRadius:      9,
+    backgroundColor:   '#C0392B',
+    borderWidth:       1.5,
+    borderColor:       Colors.bg2,
+    alignItems:        'center',
+    justifyContent:    'center',
+    paddingHorizontal: 3,
   },
-  // Web: .header-icon-badge--dot — 9px orange circle, absolute top-right
-  headerIconDot: {
-    position:        'absolute',
-    top:             8,
-    right:           8,
-    width:           9,
-    height:          9,
-    borderRadius:    4.5,
-    backgroundColor: Colors.accent,
-    borderWidth:     2,
-    borderColor:     '#1A1A1A',
+  headerIconBadgeText: {
+    color:      Colors.white,
+    fontSize:   10,
+    fontWeight: '700',
+    lineHeight: 12,
   },
 
   // ── Logo glow — web: .chat-header .logo svg { drop-shadow orange } ─────────

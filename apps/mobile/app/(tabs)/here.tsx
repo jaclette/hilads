@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import type { OnlineUser } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -74,10 +75,10 @@ function UserRow({
         ) : null}
       </View>
 
-      {/* DM button — all non-self users; navigation guarded by userId */}
-      {!isMe && (
+      {/* DM button — registered non-self users only */}
+      {!isMe && user.userId && (
         <TouchableOpacity style={styles.dmBtn} onPress={onDm} activeOpacity={0.7}>
-          <Feather name="message-square" size={18} color={Colors.muted2} />
+          <Feather name="message-square" size={22} color={Colors.text} />
         </TouchableOpacity>
       )}
     </View>
@@ -125,17 +126,26 @@ export default function HereScreen() {
   return (
     <SafeAreaView style={styles.container}>
 
-      {/* Header */}
+      {/* Header — back button left, centered title + city sub */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>
-          People here{total > 0 ? <Text style={styles.headerCount}> · {total}</Text> : ''}
-        </Text>
-        <Text style={styles.headerSub}>{city.name}</Text>
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => router.push('/(tabs)/chat')}
+          activeOpacity={0.75}
+        >
+          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+        </TouchableOpacity>
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>
+            People here{total > 0 ? <Text style={styles.headerCount}> · {total}</Text> : ''}
+          </Text>
+          <Text style={styles.headerSub}>{city.name}</Text>
+        </View>
       </View>
 
       <FlatList
         data={displayList}
-        keyExtractor={(u) => u.sessionId}
+        keyExtractor={(u, i) => u.sessionId || `fallback_${i}`}
         renderItem={({ item }) => (
           <UserRow
             user={item}
@@ -173,29 +183,48 @@ const styles = StyleSheet.create({
 
   // ── Header ────────────────────────────────────────────────────────────────
   header: {
+    flexDirection:     'row',
     alignItems:        'center',
     paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.lg,
-    paddingBottom:     Spacing.md,
+    paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    minHeight:         56,
+  },
+  backBtn: {
+    width:           40,
+    height:          40,
+    borderRadius:    12,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.10)',
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexShrink:      0,
+    zIndex:          1,
+  },
+  headerCenter: {
+    position:   'absolute',
+    left:       0,
+    right:      0,
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize:      FontSizes.xxl,
+    fontSize:      FontSizes.xl,
     fontWeight:    '800',
     color:         Colors.text,
-    letterSpacing: -0.8,
+    letterSpacing: -0.5,
     textAlign:     'center',
   },
   headerCount: {
-    fontSize:   FontSizes.xl,
+    fontSize:   FontSizes.lg,
     color:      Colors.muted,
     fontWeight: '600',
   },
   headerSub: {
     fontSize:   FontSizes.sm,
     color:      Colors.muted,
-    marginTop:  6,
+    marginTop:  2,
     textAlign:  'center',
   },
 

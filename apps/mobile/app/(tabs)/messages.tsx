@@ -1,20 +1,68 @@
-import { useCallback } from 'react';
+/**
+ * Messages screen — port of web "Messages" page.
+ *
+ * Two sections:
+ *   1. DIRECT MESSAGES — 1:1 conversations (DMs)
+ *   2. EVENT CHATS — events the user created / joined
+ *
+ * Web parity: section labels, large colored avatars, last-message preview,
+ * relative timestamps, orange unread dot.
+ */
+
+import { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, Image,
+  View, Text, SectionList, TouchableOpacity, Image,
   ActivityIndicator, RefreshControl, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
+import { fetchMyEvents } from '@/api/events';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import type { Conversation } from '@/types';
+import type { Conversation, HiladsEvent } from '@/types';
 
-// ── Conversation row ──────────────────────────────────────────────────────────
+// ── Avatar palette — same hash system as People here / DM screen ──────────────
 
-function ConversationRow({ convo, onPress }: { convo: Conversation; onPress: () => void }) {
-  const initials = convo.other_display_name.slice(0, 2).toUpperCase();
+const AVATAR_PALETTE = [
+  '#C24A38', '#B87228', '#3ddc84', '#8B5CF6',
+  '#0EA5E9', '#E879A0', '#F59E0B', '#14B8A6',
+];
+
+function avatarColor(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+}
+
+// ── Relative timestamp — never shows "Invalid Date" ──────────────────────────
+
+function relativeTime(raw?: string | null): string {
+  if (!raw) return '';
+  // Try ISO string then epoch ms then epoch seconds
+  let ms = Date.parse(raw);
+  if (isNaN(ms)) {
+    const n = Number(raw);
+    if (!isNaN(n)) ms = n < 1e10 ? n * 1000 : n;
+  }
+  if (isNaN(ms)) return '';
+  const diffSec = Math.floor((Date.now() - ms) / 1000);
+  if (diffSec < 60)  return 'now';
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m`;
+  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h`;
+  return `${Math.floor(diffSec / 86400)}d`;
+}
+
+// ── DM row ────────────────────────────────────────────────────────────────────
+
+function DMRow({ convo, onPress }: { convo: Conversation; onPress: () => void }) {
+  const name  = convo.other_display_name;
+  const color = avatarColor(name);
+  const initial = name.slice(0, 1).toUpperCase();
+  const time = relativeTime(convo.last_message_at);
 
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
@@ -22,58 +70,101 @@ function ConversationRow({ convo, onPress }: { convo: Conversation; onPress: () 
       {convo.other_photo_url ? (
         <Image source={{ uri: convo.other_photo_url }} style={styles.avatar} />
       ) : (
-        <View style={styles.avatarFallback}>
-          <Text style={styles.avatarText}>{initials}</Text>
+        <View style={[styles.avatarCircle, { backgroundColor: color + '28', borderColor: color + '50' }]}>
+          <Text style={[styles.avatarInitial, { color }]}>{initial}</Text>
         </View>
       )}
 
-      {/* Content */}
-      <View style={styles.rowContent}>
+      {/* Name + preview */}
+      <View style={styles.rowBody}>
         <View style={styles.rowTop}>
-          <Text style={[styles.rowName, convo.has_unread && styles.rowNameUnread]}>
-            {convo.other_display_name}
+          <Text style={[styles.rowName, convo.has_unread && styles.rowNameUnread]} numberOfLines={1}>
+            {name}
           </Text>
-          {convo.last_message_at && (
-            <Text style={styles.rowTime}>
-              {new Date(convo.last_message_at).toLocaleTimeString([], {
-                hour: '2-digit', minute: '2-digit',
-              })}
-            </Text>
-          )}
+          {time ? <Text style={styles.rowTime}>{time}</Text> : null}
         </View>
-        {convo.last_message && (
-          <Text style={[styles.rowPreview, convo.has_unread && styles.rowPreviewUnread]} numberOfLines={1}>
+        {convo.last_message ? (
+          <Text
+            style={[styles.rowPreview, convo.has_unread && styles.rowPreviewUnread]}
+            numberOfLines={1}
+          >
             {convo.last_message}
           </Text>
-        )}
+        ) : null}
       </View>
 
-      {/* Unread indicator */}
+      {/* Unread dot */}
       {convo.has_unread && <View style={styles.unreadDot} />}
     </TouchableOpacity>
   );
 }
 
+// ── Event row ─────────────────────────────────────────────────────────────────
+
+function EventRow({ event, onPress }: { event: HiladsEvent; onPress: () => void }) {
+  return (
+    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
+      {/* Icon tile */}
+      <View style={styles.eventIcon}>
+        <Text style={styles.eventEmoji}>🔥</Text>
+      </View>
+
+      {/* Name + subtitle */}
+      <View style={styles.rowBody}>
+        <Text style={styles.rowName} numberOfLines={1}>{event.title}</Text>
+        <Text style={styles.rowPreview} numberOfLines={1}>
+          {event.city_name ?? 'Event chat'}
+          {event.participant_count != null ? ` · ${event.participant_count} going` : ''}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+// ── Section header ────────────────────────────────────────────────────────────
+
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────────────────────
+
+type Section =
+  | { key: 'dms';    title: string; data: Conversation[] }
+  | { key: 'events'; title: string; data: HiladsEvent[] };
 
 export default function MessagesScreen() {
   const router = useRouter();
-  const { account } = useApp();
-  const { conversations, loading, error, reload } = useConversations();
+  const { account, identity } = useApp();
+  const { conversations, loading: loadingDMs, error, reload: reloadDMs } = useConversations();
 
-  const handleOpen = useCallback((convo: Conversation) => {
-    router.push({
-      pathname: '/dm/[id]',
-      params: { id: convo.id, name: convo.other_display_name },
-    });
-  }, [router]);
+  const [events,       setEvents]       = useState<HiladsEvent[]>([]);
+  const [loadingEvts,  setLoadingEvts]  = useState(false);
 
-  // Guest: show upgrade prompt
+  const loadEvents = useCallback(async () => {
+    if (!identity?.guestId) return;
+    setLoadingEvts(true);
+    try {
+      const evts = await fetchMyEvents(identity.guestId);
+      setEvents(evts);
+    } catch { /* silent */ }
+    finally { setLoadingEvts(false); }
+  }, [identity?.guestId]);
+
+  useEffect(() => { loadEvents(); }, [loadEvents]);
+
+  const reload = useCallback(() => { reloadDMs(); loadEvents(); }, [reloadDMs, loadEvents]);
+
+  // Guest: upgrade prompt
   if (!account) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>💬 Messages</Text>
+          <Text style={styles.headerTitle}>Messages</Text>
         </View>
         <UpgradePrompt
           title="Messages are for members"
@@ -83,13 +174,27 @@ export default function MessagesScreen() {
     );
   }
 
+  const loading = loadingDMs && conversations.length === 0 && events.length === 0;
+
+  const sections: Section[] = [];
+  if (conversations.length > 0) {
+    sections.push({ key: 'dms', title: 'DIRECT MESSAGES', data: conversations });
+  }
+  if (events.length > 0) {
+    sections.push({ key: 'events', title: 'EVENT CHATS', data: events });
+  }
+
+  const isEmpty = !loading && conversations.length === 0 && events.length === 0;
+
   return (
     <SafeAreaView style={styles.container}>
+
+      {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>💬 Messages</Text>
+        <Text style={styles.headerTitle}>Messages</Text>
       </View>
 
-      {loading && conversations.length === 0 ? (
+      {loading || loadingEvts && events.length === 0 ? (
         <View style={styles.center}>
           <ActivityIndicator color={Colors.accent} />
         </View>
@@ -100,53 +205,173 @@ export default function MessagesScreen() {
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
+      ) : isEmpty ? (
+        <View style={styles.center}>
+          <Text style={styles.emptyIcon}>💬</Text>
+          <Text style={styles.emptyTitle}>No messages yet</Text>
+          <Text style={styles.emptySub}>Connect with people you meet in the city.</Text>
+        </View>
       ) : (
-        <FlatList
-          data={conversations}
-          keyExtractor={(c) => c.id}
-          renderItem={({ item }) => (
-            <ConversationRow convo={item} onPress={() => handleOpen(item)} />
-          )}
+        <SectionList
+          sections={sections}
+          keyExtractor={(item, i) => ('id' in item ? item.id : String(i))}
+          renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
+          renderItem={({ item, section }) => {
+            if (section.key === 'dms') {
+              const convo = item as Conversation;
+              return (
+                <DMRow
+                  convo={convo}
+                  onPress={() => router.push({
+                    pathname: '/dm/[id]',
+                    // Pass other_user_id — DM screen resolves to conversationId via findOrCreateDM
+                    params: { id: convo.other_user_id, name: convo.other_display_name },
+                  })}
+                />
+              );
+            }
+            const event = item as HiladsEvent;
+            return (
+              <EventRow
+                event={event}
+                onPress={() => router.push({
+                  pathname: '/event/[id]',
+                  params: { id: event.id },
+                })}
+              />
+            );
+          }}
           refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={reload} tintColor={Colors.accent} />
+            <RefreshControl
+              refreshing={loadingDMs || loadingEvts}
+              onRefresh={reload}
+              tintColor={Colors.accent}
+            />
           }
-          ItemSeparatorComponent={() => <View style={styles.separator} />}
-          ListEmptyComponent={
-            <View style={styles.center}>
-              <Text style={styles.emptyIcon}>💬</Text>
-              <Text style={styles.emptyTitle}>No messages yet</Text>
-              <Text style={styles.emptySub}>
-                Connect with people you meet in the city.
-              </Text>
-            </View>
-          }
-          contentContainerStyle={conversations.length === 0 ? styles.flex1 : undefined}
+          stickySectionHeadersEnabled={false}
+          contentContainerStyle={styles.listContent}
         />
       )}
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
-  flex1:     { flex: 1 },
+// ── Styles ────────────────────────────────────────────────────────────────────
 
+const styles = StyleSheet.create({
+  container:   { flex: 1, backgroundColor: Colors.bg },
+  listContent: { paddingBottom: Spacing.xl },
+
+  // ── Header ────────────────────────────────────────────────────────────────
   header: {
+    alignItems:        'center',
     paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
+    paddingTop:        Spacing.lg,
+    paddingBottom:     Spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  headerTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
-
-  center: {
-    flex:            1,
-    justifyContent:  'center',
-    alignItems:      'center',
-    padding:         Spacing.xl,
-    gap:             Spacing.sm,
+  headerTitle: {
+    fontSize:      FontSizes.xxl,
+    fontWeight:    '800',
+    color:         Colors.text,
+    letterSpacing: -0.8,
   },
-  errorText: { fontSize: FontSizes.sm, color: Colors.red },
+
+  // ── Section header ────────────────────────────────────────────────────────
+  sectionHeader: {
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.lg,
+    paddingBottom:     Spacing.sm,
+  },
+  sectionTitle: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    color:         Colors.muted2,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+
+  // ── Row ───────────────────────────────────────────────────────────────────
+  row: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   14,
+    gap:               Spacing.md,
+  },
+
+  // DM avatar — colored circle
+  avatar: {
+    width: 52, height: 52, borderRadius: Radius.full,
+  },
+  avatarCircle: {
+    width:          52,
+    height:         52,
+    borderRadius:   Radius.full,
+    borderWidth:    1.5,
+    alignItems:     'center',
+    justifyContent: 'center',
+    flexShrink:     0,
+  },
+  avatarInitial: {
+    fontSize:   FontSizes.lg,
+    fontWeight: '700',
+  },
+
+  // Event icon tile
+  eventIcon: {
+    width:           52,
+    height:          52,
+    borderRadius:    16,
+    backgroundColor: Colors.bg3,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexShrink:      0,
+  },
+  eventEmoji: { fontSize: 24 },
+
+  // Row body
+  rowBody: { flex: 1, gap: 5 },
+  rowTop:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+
+  rowName: {
+    flex:       1,
+    fontSize:   FontSizes.md,
+    fontWeight: '600',
+    color:      Colors.text,
+  },
+  rowNameUnread: { fontWeight: '800', color: Colors.white },
+
+  rowTime: {
+    fontSize:  FontSizes.xs,
+    color:     Colors.muted2,
+    flexShrink: 0,
+  },
+  rowPreview: {
+    fontSize:  FontSizes.sm,
+    color:     Colors.muted,
+    lineHeight: 20,
+  },
+  rowPreviewUnread: { color: Colors.text },
+
+  // Unread dot
+  unreadDot: {
+    width:           10,
+    height:          10,
+    borderRadius:    5,
+    backgroundColor: Colors.accent,
+    flexShrink:      0,
+  },
+
+  // ── States ────────────────────────────────────────────────────────────────
+  center: {
+    flex: 1, justifyContent: 'center', alignItems: 'center',
+    padding: Spacing.xl, gap: Spacing.sm,
+  },
+  errorText:  { fontSize: FontSizes.sm, color: Colors.red },
   retryBtn: {
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
     backgroundColor: Colors.bg3, borderRadius: Radius.md,
@@ -155,32 +380,4 @@ const styles = StyleSheet.create({
   emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
   emptyTitle: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, textAlign: 'center' },
   emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
-
-  row: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.md,
-    gap:               Spacing.sm,
-  },
-  avatar:        { width: 44, height: 44, borderRadius: Radius.full },
-  avatarFallback: {
-    width: 44, height: 44, borderRadius: Radius.full,
-    backgroundColor: Colors.bg3, borderWidth: 1, borderColor: Colors.border,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  avatarText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
-  rowContent: { flex: 1, gap: 3 },
-  rowTop:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  rowName:    { fontSize: FontSizes.sm, fontWeight: '500', color: Colors.text },
-  rowNameUnread: { fontWeight: '700', color: Colors.white },
-  rowTime:    { fontSize: FontSizes.xs, color: Colors.muted2 },
-  rowPreview: { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 16 },
-  rowPreviewUnread: { color: Colors.text },
-
-  unreadDot: {
-    width: 8, height: 8, borderRadius: 4,
-    backgroundColor: Colors.accent,
-  },
-  separator: { height: 1, backgroundColor: Colors.border, marginLeft: 44 + Spacing.md + Spacing.sm },
 });

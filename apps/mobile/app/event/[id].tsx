@@ -92,7 +92,7 @@ function ParticipantsStrip({ participants }: { participants: EventParticipant[] 
 export default function EventDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { identity, sessionId, city, account } = useApp();
+  const { identity, sessionId, city, account } = useApp(); // sessionId still used for WS joinEvent
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   const {
@@ -111,8 +111,9 @@ export default function EventDetailScreen() {
 
   useEffect(() => {
     if (!id) return;
-    fetchEventParticipants(id, sessionId ?? undefined).then(({ participants: p }) => setParticipants(p));
-  }, [id, sessionId]);
+    // Use guestId (persistent) for participation lookup — survives app restarts
+    fetchEventParticipants(id, identity?.guestId).then(({ participants: p }) => setParticipants(p));
+  }, [id, identity?.guestId]);
 
   // Live presence count — server emits event_presence_update { eventId, count }
   useEffect(() => {
@@ -127,8 +128,8 @@ export default function EventDetailScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (!event?.is_participating) track('event_joined', { eventId: event?.id });
     await toggleParticipation();
-    fetchEventParticipants(id, sessionId ?? undefined).then(({ participants: p }) => setParticipants(p));
-  }, [event, toggleParticipation, id, sessionId]);
+    fetchEventParticipants(id, identity?.guestId).then(({ participants: p }) => setParticipants(p));
+  }, [event, toggleParticipation, id, identity?.guestId]);
 
   // Join / leave WS event room so the server routes newMessage events here
   useEffect(() => {

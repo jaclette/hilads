@@ -18,34 +18,36 @@ import { clearToken } from '@/services/session';
 export type GeoState = 'pending' | 'resolving' | 'resolved' | 'denied' | 'error';
 
 interface AppState {
-  booting:      boolean;
-  bootError:    string | null;
-  identity:     GuestIdentity | null;
-  sessionId:    string | null;   // UUID v4, per-session, not persisted
-  account:      User | null;
-  city:         City | null;
-  wsConnected:  boolean;
-  unreadDMs:    number;
-  geoState:     GeoState;
-  detectedCity: City | null;     // geo-resolved city, shown on landing screen
-  joined:       boolean;         // true once user has joined a city (or auto-rejoined)
-  onlineUsers:  OnlineUser[];    // live presence list for the current city
+  booting:              boolean;
+  bootError:            string | null;
+  identity:             GuestIdentity | null;
+  sessionId:            string | null;   // UUID v4, per-session, not persisted
+  account:              User | null;
+  city:                 City | null;
+  wsConnected:          boolean;
+  unreadDMs:            number;
+  unreadNotifications:  number;
+  geoState:             GeoState;
+  detectedCity:         City | null;     // geo-resolved city, shown on landing screen
+  joined:               boolean;         // true once user has joined a city (or auto-rejoined)
+  onlineUsers:          OnlineUser[];    // live presence list for the current city
 }
 
 interface AppActions {
-  setIdentity:     (identity: GuestIdentity) => void;
-  setSessionId:    (id: string) => void;
-  setAccount:      (account: User | null) => void;
-  setCity:         (city: City) => void;
-  setBooting:      (booting: boolean) => void;
-  setBootError:    (error: string | null) => void;
-  setWsConnected:  (connected: boolean) => void;
-  setUnreadDMs:    (count: number) => void;
-  setGeoState:     (state: GeoState) => void;
-  setDetectedCity: (city: City | null) => void;
-  setJoined:       (joined: boolean) => void;
-  setOnlineUsers:  (users: OnlineUser[]) => void;
-  logout:          () => Promise<void>;
+  setIdentity:             (identity: GuestIdentity) => void;
+  setSessionId:            (id: string) => void;
+  setAccount:              (account: User | null) => void;
+  setCity:                 (city: City) => void;
+  setBooting:              (booting: boolean) => void;
+  setBootError:            (error: string | null) => void;
+  setWsConnected:          (connected: boolean) => void;
+  setUnreadDMs:            (count: number) => void;
+  setUnreadNotifications:  (count: number) => void;
+  setGeoState:             (state: GeoState) => void;
+  setDetectedCity:         (city: City | null) => void;
+  setJoined:               (joined: boolean) => void;
+  setOnlineUsers:          (users: OnlineUser[]) => void;
+  logout:                  () => Promise<void>;
 }
 
 const AppContext = createContext<(AppState & AppActions) | null>(null);
@@ -57,9 +59,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [sessionId,    setSessionId]    = useState<string | null>(null);
   const [account,      setAccount]      = useState<User | null>(null);
   const [city,         setCity]         = useState<City | null>(null);
-  const [wsConnected,  setWsConnected]  = useState(false);
-  const [unreadDMs,    setUnreadDMs]    = useState(0);
-  const [geoState,     setGeoState]     = useState<GeoState>('pending');
+  const [wsConnected,             setWsConnected]             = useState(false);
+  const [unreadDMs,               setUnreadDMs]               = useState(0);
+  const [unreadNotifications,     setUnreadNotifications]     = useState(0);
+  const [geoState,                setGeoState]                = useState<GeoState>('pending');
   const [detectedCity, setDetectedCity] = useState<City | null>(null);
   const [joined,       setJoined]       = useState(false);
   const [onlineUsers,  setOnlineUsers]  = useState<OnlineUser[]>([]);
@@ -71,24 +74,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     await clearToken();
     setAccount(null);
     setUnreadDMs(0);
+    setUnreadNotifications(0);
   }, []);
 
   return (
     <AppContext.Provider
       value={{
-        booting, bootError, identity, sessionId, account, city, wsConnected, unreadDMs,
+        booting, bootError, identity, sessionId, account, city, wsConnected,
+        unreadDMs, unreadNotifications,
         geoState, detectedCity, joined, onlineUsers,
         setBooting, setBootError,
         setIdentity,
-        setSessionId: useCallback((id: string) => setSessionId(id), []),
+        setSessionId:            useCallback((id: string) => setSessionId(id), []),
         setAccount,
-        setCity: useCallback((c: City) => setCity(c), []),
+        setCity:                 useCallback((c: City) => setCity(c), []),
         setWsConnected,
         setUnreadDMs,
-        setGeoState:     useCallback((s: GeoState) => setGeoState(s), []),
-        setDetectedCity: useCallback((c: City | null) => setDetectedCity(c), []),
-        setJoined:       useCallback((j: boolean) => setJoined(j), []),
-        setOnlineUsers:  useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
+        setUnreadNotifications,
+        setGeoState:             useCallback((s: GeoState) => setGeoState(s), []),
+        setDetectedCity:         useCallback((c: City | null) => setDetectedCity(c), []),
+        setJoined:               useCallback((j: boolean) => setJoined(j), []),
+        setOnlineUsers:          useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
         logout,
       }}
     >

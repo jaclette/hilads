@@ -92,12 +92,13 @@ class HiladsSocket {
     this.send({ event: 'heartbeat', cityId: this._numericCityId(cityId), sessionId });
   }
 
+  // Mirrors web socket.js joinConversation() — event name must match server exactly.
   joinDm(conversationId: string, userId: string): void {
-    this.send({ event: 'joinDm', conversationId, userId });
+    this.send({ event: 'joinConversation', conversationId, userId });
   }
 
   leaveDm(conversationId: string): void {
-    this.send({ event: 'leaveDm', conversationId });
+    this.send({ event: 'leaveConversation', conversationId });
   }
 
   // ── Internal ─────────────────────────────────────────────────────────────────
@@ -119,6 +120,8 @@ class HiladsSocket {
           const data = JSON.parse(e.data as string) as Record<string, unknown>;
           // Server uses `event` field; fall back to `type` for compat
           const eventName = (data.event ?? data.type ?? 'unknown') as string;
+          // Log all events in dev so we can verify event names (remove in prod if noisy)
+          if (__DEV__) console.log(`[WS] ← ${eventName}`, JSON.stringify(data).slice(0, 120));
           this._dispatch(eventName, data);
           this._dispatch('*', data);
         } catch (err) {

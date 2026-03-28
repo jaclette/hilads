@@ -2,7 +2,7 @@
  * HiladsIcon — faithful View recreation of Logo.jsx SVG.
  *
  * SVG viewBox 64×64, scaled to target size (scale = size/64).
- * Background: rounded rect #C24A38 (gradient approximation).
+ * Background: rounded rect #D15828 (burnt orange — premium dark tone).
  * H letterform: two vertical bars + horizontal crossbar.
  * ¡ letterform: vertical bar + circle dot with pulse animation.
  */
@@ -30,7 +30,7 @@ export function HiladsIcon({ size = 46 }: { size?: number }) {
       width:           size,
       height:          size,
       borderRadius:    s(15),
-      backgroundColor: '#C24A38',
+      backgroundColor: '#D15828',
       overflow:        'hidden',
     }}>
       {/* H — left vertical bar (x=9, y=13, w=8, h=38, rx=2.5) */}
