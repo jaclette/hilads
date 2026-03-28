@@ -25,10 +25,14 @@ interface Result {
 
 export function usePushNotifications(): Result {
   const requestIfAppropriate = useCallback(async () => {
-    // Only ask once — respect prior choice
-    if (await hasBeenAsked()) return;
-    if (await hasPushPermission()) return;
     await setupNotificationChannel();
+    if (await hasPushPermission()) {
+      // Already granted — re-sync token with backend (handles token refresh / new installs)
+      await requestAndRegisterPush();
+      return;
+    }
+    // Only prompt once if never asked
+    if (await hasBeenAsked()) return;
     await requestAndRegisterPush();
   }, []);
 

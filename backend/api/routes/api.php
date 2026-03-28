@@ -2230,3 +2230,54 @@ $router->add('DELETE', '/api/v1/push/unsubscribe', function () {
 
     Response::json(['ok' => true]);
 });
+
+// ── Native (Expo) Push Tokens ─────────────────────────────────────────────────
+
+// POST /api/v1/push/mobile-token
+// Registers or refreshes an Expo push token for the current user's device.
+// Safe to call on every login — upserts on token value.
+// Body: { token: string, platform: 'android' | 'ios' }
+$router->add('POST', '/api/v1/push/mobile-token', function () {
+    $user  = AuthService::requireAuth();
+    $body  = Request::json();
+
+    $token    = trim((string) ($body['token']    ?? ''));
+    $platform = trim((string) ($body['platform'] ?? 'unknown'));
+
+    if (!$token || !str_starts_with($token, 'ExponentPushToken[')) {
+        Response::json(['error' => 'Invalid Expo push token'], 400);
+    }
+
+    $allowed = ['android', 'ios', 'unknown'];
+    if (!in_array($platform, $allowed, true)) $platform = 'unknown';
+
+    Database::pdo()->prepare("
+        INSERT INTO mobile_push_tokens (user_id, token, platform)
+        VALUES (?, ?, ?)
+        ON CONFLICT (token) DO UPDATE
+           SET user_id     = EXCLUDED.user_id,
+               platform    = EXCLUDED.platform,
+               last_used_at = now()
+    ")->execute([$user['id'], $token, $platform]);
+
+    Response::json(['ok' => true]);
+});
+
+// DELETE /api/v1/push/mobile-token
+// Removes the Expo push token for the current user's device (called on logout).
+// Body: { token: string }
+$router->add('DELETE', '/api/v1/push/mobile-token', function () {
+    $user  = AuthService::requireAuth();
+    $body  = Request::json();
+
+    $token = trim((string) ($body['token'] ?? ''));
+    if (!$token) {
+        Response::json(['error' => 'token is required'], 400);
+    }
+
+    Database::pdo()->prepare(
+        "DELETE FROM mobile_push_tokens WHERE user_id = ? AND token = ?"
+    )->execute([$user['id'], $token]);
+
+    Response::json(['ok' => true]);
+});

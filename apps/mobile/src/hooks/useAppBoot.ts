@@ -8,6 +8,7 @@ import { resolveLocation, joinChannel, fetchChannels } from '@/api/channels';
 import { authMe } from '@/api/auth';
 import { loadSavedToken } from '@/services/session';
 import { fetchUnreadCount } from '@/api/notifications';
+import { requestAndRegisterPush } from '@/services/push';
 
 // Timeout for the watchPositionAsync step before falling back / erroring.
 const GEO_TIMEOUT_MS = 15_000;
@@ -159,6 +160,8 @@ export function useAppBoot(): Result {
               fetchUnreadCount()
                 .then(count => { if (!cancelled) setUnreadNotifications(count); })
                 .catch(() => {});
+              // Register device for native push — non-blocking, non-fatal
+              requestAndRegisterPush().catch(() => {});
             }
             return user ?? null;
           })

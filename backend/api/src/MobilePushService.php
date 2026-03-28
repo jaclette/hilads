@@ -1,0 +1,180 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * MobilePushService — delivers push notifications to native (iOS/Android) devices
+ * via the Expo Push Notifications API.
+ *
+ * Architecture:
+ *   NotificationRepository::create()
+ *     → MobilePushService::send()       ← this file
+ *     → PushService::send()             ← existing web-push (VAPID)
+ *
+ * Anti-noise rules:
+ *   event_join  — max 1 push per (user, event) per 5 minutes
+ *   new_event   — max 1 push per (user, city channel) per 1 hour
+ *   dm_message  — no cooldown (each message is relevant)
+ *   event_message — no cooldown
+ *
+ * Token lifecycle:
+ *   - Tokens stored in mobile_push_tokens table (one row per device)
+ *   - DeviceNotRegistered response → token deleted automatically
+ */
+class MobilePushService
+{
+    private const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
+
+    /** Map notification type → notification_preferences column */
+    private static function prefColumn(string $type): ?string
+    {
+        return match ($type) {
+            'dm_message'    => 'dm_push',
+            'event_message' => 'event_message_push',
+            'event_join'    => 'event_join_push',
+            'new_event'     => 'new_event_push',
+            default         => null,
+        };
+    }
+
+    /** Anti-noise cooldown in seconds (0 = no cooldown) */
+    private static function cooldownSeconds(string $type): int
+    {
+        return match ($type) {
+            'event_join' => 300,   // 5 min — avoid bursts when many people join
+            'new_event'  => 3600,  // 1 hour — city events should not spam
+            default      => 0,
+        };
+    }
+
+    /** Extract the deduplication ref ID for cooldown checks */
+    private static function refId(string $type, array $data): string
+    {
+        return match ($type) {
+            'dm_message'             => $data['conversationId'] ?? '',
+            'event_message',
+            'event_join'             => $data['eventId'] ?? '',
+            'new_event'              => $data['channelId'] ?? '',
+            default                  => '',
+        };
+    }
+
+    /**
+     * Send a native push to all registered devices for $userId.
+     *
+     * Respects notification preferences and anti-noise cooldowns.
+     * All errors are swallowed — in-app notification is already persisted.
+     */
+    public static function send(
+        string  $userId,
+        string  $type,
+        string  $title,
+        ?string $body,
+        array   $data = []
+    ): void {
+        try {
+            // 1. Check user preference for this notification type
+            $prefCol = self::prefColumn($type);
+            if ($prefCol !== null) {
+                $prefs = NotificationPreferencesRepository::get($userId);
+                if (!($prefs[$prefCol] ?? false)) return;
+            }
+
+            // 2. Anti-noise cooldown
+            $cooldown = self::cooldownSeconds($type);
+            if ($cooldown > 0) {
+                $refId = self::refId($type, $data);
+                if (self::isOnCooldown($userId, $type, $refId, $cooldown)) return;
+                self::recordDelivery($userId, $type, $refId);
+            }
+
+            // 3. Fetch registered device tokens for this user
+            $stmt = Database::pdo()->prepare(
+                "SELECT token FROM mobile_push_tokens WHERE user_id = ?"
+            );
+            $stmt->execute([$userId]);
+            $tokens = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+            if (empty($tokens)) return;
+
+            // 4. Build Expo push payload (one message per device)
+            $payload = array_map(fn($token) => [
+                'to'        => $token,
+                'title'     => $title,
+                'body'      => $body ?? '',
+                'data'      => array_merge($data, ['type' => $type]),
+                'sound'     => 'default',
+                'channelId' => 'default', // Android channel defined in push.ts
+            ], $tokens);
+
+            // 5. Send to Expo Push API
+            $response = self::postToExpo($payload);
+            if ($response === null) return;
+
+            // 6. Clean up DeviceNotRegistered tokens
+            $decoded = json_decode($response, true);
+            if (!is_array($decoded['data'] ?? null)) return;
+
+            $invalid = [];
+            foreach ($decoded['data'] as $i => $result) {
+                if (
+                    ($result['status'] ?? '') === 'error' &&
+                    ($result['details']['error'] ?? '') === 'DeviceNotRegistered'
+                ) {
+                    $invalid[] = $tokens[$i];
+                }
+            }
+
+            if (!empty($invalid)) {
+                $placeholders = implode(',', array_fill(0, count($invalid), '?'));
+                Database::pdo()
+                    ->prepare("DELETE FROM mobile_push_tokens WHERE token IN ($placeholders)")
+                    ->execute($invalid);
+            }
+        } catch (\Throwable) {
+            // Non-fatal — in-app notification already created
+        }
+    }
+
+    // ── Cooldown helpers ──────────────────────────────────────────────────────
+
+    private static function isOnCooldown(
+        string $userId,
+        string $type,
+        string $refId,
+        int    $cooldownSeconds // always a hardcoded constant — safe to interpolate
+    ): bool {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM push_delivery_log
+            WHERE user_id = ? AND type = ? AND ref_id = ?
+              AND sent_at > now() - interval '{$cooldownSeconds} seconds'
+            LIMIT 1
+        ");
+        $stmt->execute([$userId, $type, $refId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    private static function recordDelivery(string $userId, string $type, string $refId): void
+    {
+        Database::pdo()->prepare(
+            "INSERT INTO push_delivery_log (user_id, type, ref_id) VALUES (?, ?, ?)"
+        )->execute([$userId, $type, $refId]);
+    }
+
+    // ── HTTP ──────────────────────────────────────────────────────────────────
+
+    private static function postToExpo(array $payload): ?string
+    {
+        $context = stream_context_create([
+            'http' => [
+                'method'        => 'POST',
+                'header'        => "Content-Type: application/json\r\nAccept: application/json\r\n",
+                'content'       => json_encode($payload),
+                'timeout'       => 5,
+                'ignore_errors' => true,
+            ],
+        ]);
+        $result = @file_get_contents(self::EXPO_PUSH_URL, false, $context);
+        return $result !== false ? $result : null;
+    }
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { fetchConversations } from '@/api/conversations';
+import { fetchConversations, markDmRead } from '@/api/conversations';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import type { Conversation } from '@/types';
@@ -9,6 +9,7 @@ interface Result {
   loading:        boolean;
   error:          string | null;
   reload:         () => void;
+  markAllRead:    () => void;
 }
 
 export function useConversations(): Result {
@@ -57,5 +58,14 @@ export function useConversations(): Result {
     return off;
   }, [setUnreadDMs]);
 
-  return { conversations, loading, error, reload: load };
+  const markAllRead = useCallback(() => {
+    setConversations(prev => {
+      const unread = prev.filter(c => c.has_unread);
+      unread.forEach(c => markDmRead(c.id)); // fire-and-forget
+      return prev.map(c => c.has_unread ? { ...c, has_unread: false } : c);
+    });
+    setUnreadDMs(0);
+  }, [setUnreadDMs]);
+
+  return { conversations, loading, error, reload: load, markAllRead };
 }

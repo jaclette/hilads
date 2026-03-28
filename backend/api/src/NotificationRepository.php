@@ -27,8 +27,11 @@ class NotificationRepository
         $stmt->execute([$userId, $type, $title, $body, json_encode($data)]);
         $notif = self::normalise($stmt->fetch(\PDO::FETCH_ASSOC));
 
-        // Attempt web push delivery (fire-and-forget; failure is non-fatal)
+        // Web push (browser VAPID) — fire-and-forget
         PushService::send($userId, $type, $title, $body, self::pushUrl($type, $data), self::pushTag($type, $data));
+
+        // Native push (iOS/Android via Expo) — fire-and-forget
+        MobilePushService::send($userId, $type, $title, $body, $data);
 
         return $notif;
     }

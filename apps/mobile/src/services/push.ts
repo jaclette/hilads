@@ -1,11 +1,13 @@
 /**
- * Push notification service.
+ * Push notification service — native (iOS / Android) via Expo.
  *
- * Handles permission request, Expo push token registration, and backend sync.
+ * Flow:
+ *   1. Request permission (once, after account is created / logged in)
+ *   2. Get Expo push token (device-specific)
+ *   3. Store token locally + register with backend
  *
- * Backend assumption: POST /push/mobile-token { token, platform }
- * This endpoint does not yet exist in the web-push backend. The call is made
- * silently (non-fatal). Add it when the backend is extended for native push.
+ * Backend: POST /api/v1/push/mobile-token  { token, platform }
+ *          DELETE /api/v1/push/mobile-token { token }
  */
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
@@ -14,23 +16,28 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '@/api/client';
 
-const PUSH_TOKEN_KEY  = 'hilads_push_token';
-const PUSH_ASKED_KEY  = 'hilads_push_asked';
+const PUSH_TOKEN_KEY = 'hilads_push_token';
+const PUSH_ASKED_KEY = 'hilads_push_asked';
 
-// ── Android notification channel ─────────────────────────────────────────────
+// EAS project ID — required to get a valid Expo push token in production builds
+const PROJECT_ID =
+  (Constants.expoConfig?.extra?.eas?.projectId as string | undefined) ??
+  '0555a464-8dda-484b-b0a2-d61b2ad2786c';
+
+// ── Android notification channel ──────────────────────────────────────────────
 
 export async function setupNotificationChannel(): Promise<void> {
   if (Platform.OS !== 'android') return;
   await Notifications.setNotificationChannelAsync('default', {
-    name:            'Hilads',
-    importance:      Notifications.AndroidImportance.MAX,
+    name:             'Hilads',
+    importance:       Notifications.AndroidImportance.MAX,
     vibrationPattern: [0, 250, 250, 250],
-    lightColor:      '#FF7A3C',
-    showBadge:       true,
+    lightColor:       '#FF7A3C',
+    showBadge:        true,
   });
 }
 
-// ── Permission + token ────────────────────────────────────────────────────────
+// ── Permission helpers ────────────────────────────────────────────────────────
 
 export async function hasPushPermission(): Promise<boolean> {
   const { status } = await Notifications.getPermissionsAsync();
@@ -41,14 +48,15 @@ export async function hasBeenAsked(): Promise<boolean> {
   return (await AsyncStorage.getItem(PUSH_ASKED_KEY)) === '1';
 }
 
+// ── Register ──────────────────────────────────────────────────────────────────
+
 /**
- * Request push permission and register the device token.
+ * Request push permission and register this device.
  * Safe to call multiple times — no-ops if already registered.
- * Returns the token string, or null if permission was denied or unavailable.
+ * Call after the user has a registered account (not for guests).
  */
 export async function requestAndRegisterPush(): Promise<string | null> {
-  // Physical device only — simulators don't support push
-  if (!Device.isDevice) return null;
+  if (!Device.isDevice) return null; // simulators don't support push
 
   await AsyncStorage.setItem(PUSH_ASKED_KEY, '1');
 
@@ -63,14 +71,9 @@ export async function requestAndRegisterPush(): Promise<string | null> {
   if (finalStatus !== 'granted') return null;
 
   try {
-    const projectId =
-      Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
-    const { data: token } = await Notifications.getExpoPushTokenAsync(
-      projectId ? { projectId } : undefined,
-    );
-
+    const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId: PROJECT_ID });
     await AsyncStorage.setItem(PUSH_TOKEN_KEY, token);
-    await syncTokenWithBackend(token);
+    await registerTokenWithBackend(token);
     return token;
   } catch {
     return null;
@@ -81,13 +84,25 @@ export async function getSavedPushToken(): Promise<string | null> {
   return AsyncStorage.getItem(PUSH_TOKEN_KEY);
 }
 
-// ── Backend sync ──────────────────────────────────────────────────────────────
-// Backend endpoint: POST /api/v1/push/mobile-token
-// Body: { token: string, platform: 'android' | 'ios' }
-// NOTE: this endpoint needs to be added to the backend for native push.
+// ── Unregister (logout) ───────────────────────────────────────────────────────
 
-async function syncTokenWithBackend(token: string): Promise<void> {
+/**
+ * Remove this device's push token from the backend.
+ * Call on logout so the user stops receiving pushes on this device.
+ */
+export async function unregisterPushToken(): Promise<void> {
+  const token = await getSavedPushToken();
+  if (!token) return;
+  await api
+    .delete('/push/mobile-token', { token })
+    .catch(() => {/* non-fatal */});
+  await AsyncStorage.removeItem(PUSH_TOKEN_KEY);
+}
+
+// ── Backend sync ──────────────────────────────────────────────────────────────
+
+async function registerTokenWithBackend(token: string): Promise<void> {
   await api
     .post('/push/mobile-token', { token, platform: Platform.OS })
-    .catch(() => {/* non-fatal — backend may not support this yet */});
+    .catch(() => {/* non-fatal */});
 }

@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
 import { fetchMyEvents } from '@/api/events';
@@ -157,10 +158,32 @@ type Section =
   | { key: 'dms';    title: string; data: Conversation[] }
   | { key: 'events'; title: string; data: HiladsEvent[] };
 
+function BackButton() {
+  const router = useRouter();
+  const handleBack = () => {
+    if (router.canGoBack()) router.back();
+    else router.replace('/(tabs)/hot');
+  };
+  return (
+    <TouchableOpacity style={styles.backBtn} onPress={handleBack} activeOpacity={0.7}>
+      <Feather name="chevron-left" size={22} color={Colors.text} />
+    </TouchableOpacity>
+  );
+}
+
 export default function MessagesScreen() {
   const router = useRouter();
   const { account, identity, eventChatPreviews, clearEventChatCounts, setUnreadDMs } = useApp();
-  const { conversations, loading: loadingDMs, error, reload: reloadDMs } = useConversations();
+  const { conversations, loading: loadingDMs, error, reload: reloadDMs, markAllRead: markDMsRead } = useConversations();
+
+  const hasUnread =
+    conversations.some(c => c.has_unread) ||
+    Object.values(eventChatPreviews).some(p => p.count > 0);
+
+  const markAllRead = useCallback(() => {
+    markDMsRead();
+    clearEventChatCounts();
+  }, [markDMsRead, clearEventChatCounts]);
 
   // When this screen comes into focus: clear all event chat unread dots and
   // zero the header badge (useConversations will re-set it to the DM-only count).
@@ -191,7 +214,9 @@ export default function MessagesScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
+          <BackButton />
           <Text style={styles.headerTitle}>Messages</Text>
+          <View style={styles.markReadBtn} />
         </View>
         <UpgradePrompt
           title="Messages are for members"
@@ -218,7 +243,15 @@ export default function MessagesScreen() {
 
       {/* Header */}
       <View style={styles.header}>
+        <BackButton />
         <Text style={styles.headerTitle}>Messages</Text>
+        {hasUnread ? (
+          <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.markReadBtn}>
+            <Text style={styles.markReadText}>Mark all read</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.markReadBtn} />
+        )}
       </View>
 
       {loading || loadingEvts && events.length === 0 ? (
@@ -292,18 +325,40 @@ const styles = StyleSheet.create({
 
   // ── Header ────────────────────────────────────────────────────────────────
   header: {
+    flexDirection:     'row',
     alignItems:        'center',
     paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.lg,
-    paddingBottom:     Spacing.md,
+    paddingVertical:   12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
+  backBtn: {
+    width:           40,
+    height:          40,
+    borderRadius:    12,
+    backgroundColor: Colors.bg2,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    alignItems:      'center',
+    justifyContent:  'center',
+  },
   headerTitle: {
-    fontSize:      FontSizes.xxl,
+    flex:          1,
+    textAlign:     'center',
+    fontSize:      FontSizes.lg,
     fontWeight:    '800',
     color:         Colors.text,
-    letterSpacing: -0.8,
+    letterSpacing: -0.4,
+  },
+  markReadBtn: {
+    width:          80,
+    alignItems:     'flex-end',
+    justifyContent: 'center',
+  },
+  markReadText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+    color:      Colors.accent,
   },
 
   // ── Section header ────────────────────────────────────────────────────────
