@@ -76,6 +76,7 @@ export default function ChatTab() {
     city, identity, sessionId, account,
     unreadDMs, setUnreadDMs,
     unreadNotifications,
+    clearEventChatCounts,
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
@@ -245,6 +246,7 @@ export default function ChatTab() {
             activeOpacity={0.65}
             onPress={() => {
               setUnreadDMs(0);
+              clearEventChatCounts();
               router.push('/(tabs)/messages');
             }}
           >

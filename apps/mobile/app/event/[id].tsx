@@ -92,7 +92,7 @@ function ParticipantsStrip({ participants }: { participants: EventParticipant[] 
 export default function EventDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { identity, sessionId, city, account } = useApp(); // sessionId still used for WS joinEvent
+  const { identity, sessionId, city, account, setActiveEventId, removeEventChatPreview } = useApp(); // sessionId still used for WS joinEvent
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   const {
@@ -108,6 +108,15 @@ export default function EventDetailScreen() {
   useEffect(() => {
     if (id) track('event_opened', { eventId: id });
   }, [id]);
+
+  // Register this as the active event so useEventChatNotifications skips unread for it.
+  // Also clear any accumulated unread preview for this event on open.
+  useEffect(() => {
+    if (!id) return;
+    setActiveEventId(id);
+    removeEventChatPreview(id);
+    return () => setActiveEventId(null);
+  }, [id, setActiveEventId, removeEventChatPreview]);
 
   useEffect(() => {
     if (!id) return;

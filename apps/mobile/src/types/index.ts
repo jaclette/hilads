@@ -47,6 +47,14 @@ export interface HiladsEvent {
   city_channel_id?: string;
 }
 
+// ── Event chat unread state ───────────────────────────────────────────────────
+
+export interface EventChatPreview {
+  count:     number;   // unread message count since last view (in-memory, resets on launch)
+  preview:   string;   // last message text
+  previewAt: string;   // ISO timestamp of last message
+}
+
 // ── Event participants ────────────────────────────────────────────────────────
 
 export interface EventParticipant {

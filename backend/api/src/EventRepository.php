@@ -180,26 +180,31 @@ class EventRepository
      */
     public static function getByUser(string $guestId, ?string $userId): array
     {
+        // Named params cannot repeat in PDO — use part_guest_id for the EXISTS clause.
         if ($userId !== null) {
             $stmt = Database::pdo()->prepare(self::SELECT . "
                 WHERE c.type         = 'event'
                   AND c.status       = 'active'
                   AND ce.source_type = 'hilads'
                   AND ce.expires_at  > now()
-                  AND (ce.guest_id = :guest_id OR ce.created_by = :user_id)
+                  AND (ce.guest_id = :guest_id OR ce.created_by = :user_id
+                       OR EXISTS (
+                           SELECT 1 FROM event_participants ep
+                           WHERE ep.channel_id = c.id AND ep.guest_id = :part_guest_id
+                       ))
                 ORDER BY ce.starts_at ASC
             ");
-            $stmt->execute(['guest_id' => $guestId, 'user_id' => $userId]);
+            $stmt->execute(['guest_id' => $guestId, 'user_id' => $userId, 'part_guest_id' => $guestId]);
         } else {
             $stmt = Database::pdo()->prepare(self::SELECT . "
                 WHERE c.type         = 'event'
                   AND c.status       = 'active'
                   AND ce.source_type = 'hilads'
                   AND ce.expires_at  > now()
-                  AND ce.guest_id    = :guest_id
+                  {$participantPredicate}
                 ORDER BY ce.starts_at ASC
             ");
-            $stmt->execute(['guest_id' => $guestId]);
+            $stmt->execute(['guest_id' => $guestId, 'part_guest_id' => $guestId]);
         }
 
         // Deduplicate recurring series: rows are sorted by starts_at ASC so the first

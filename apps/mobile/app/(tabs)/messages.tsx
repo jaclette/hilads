@@ -15,13 +15,13 @@ import {
   ActivityIndicator, RefreshControl, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
 import { fetchMyEvents } from '@/api/events';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import type { Conversation, HiladsEvent } from '@/types';
+import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
 
 // ── Avatar palette — same hash system as People here / DM screen ──────────────
 
@@ -101,7 +101,20 @@ function DMRow({ convo, onPress }: { convo: Conversation; onPress: () => void })
 
 // ── Event row ─────────────────────────────────────────────────────────────────
 
-function EventRow({ event, onPress }: { event: HiladsEvent; onPress: () => void }) {
+function EventRow({
+  event, unread, onPress,
+}: {
+  event:   HiladsEvent;
+  unread?: EventChatPreview;
+  onPress: () => void;
+}) {
+  const hasUnread = (unread?.count ?? 0) > 0;
+  const preview   = unread?.preview
+    ?? (event.city_name
+      ? `${event.city_name}${event.participant_count != null ? ` · ${event.participant_count} going` : ''}`
+      : 'Event chat');
+  const time = unread?.previewAt ? relativeTime(unread.previewAt) : '';
+
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
       {/* Icon tile */}
@@ -109,14 +122,21 @@ function EventRow({ event, onPress }: { event: HiladsEvent; onPress: () => void 
         <Text style={styles.eventEmoji}>🔥</Text>
       </View>
 
-      {/* Name + subtitle */}
+      {/* Name + preview */}
       <View style={styles.rowBody}>
-        <Text style={styles.rowName} numberOfLines={1}>{event.title}</Text>
-        <Text style={styles.rowPreview} numberOfLines={1}>
-          {event.city_name ?? 'Event chat'}
-          {event.participant_count != null ? ` · ${event.participant_count} going` : ''}
+        <View style={styles.rowTop}>
+          <Text style={[styles.rowName, hasUnread && styles.rowNameUnread]} numberOfLines={1}>
+            {event.title}
+          </Text>
+          {time ? <Text style={styles.rowTime}>{time}</Text> : null}
+        </View>
+        <Text style={[styles.rowPreview, hasUnread && styles.rowPreviewUnread]} numberOfLines={1}>
+          {preview}
         </Text>
       </View>
+
+      {/* Unread dot */}
+      {hasUnread && <View style={styles.unreadDot} />}
     </TouchableOpacity>
   );
 }
@@ -139,8 +159,15 @@ type Section =
 
 export default function MessagesScreen() {
   const router = useRouter();
-  const { account, identity } = useApp();
+  const { account, identity, eventChatPreviews, clearEventChatCounts, setUnreadDMs } = useApp();
   const { conversations, loading: loadingDMs, error, reload: reloadDMs } = useConversations();
+
+  // When this screen comes into focus: clear all event chat unread dots and
+  // zero the header badge (useConversations will re-set it to the DM-only count).
+  useFocusEffect(useCallback(() => {
+    clearEventChatCounts();
+    setUnreadDMs(0);
+  }, [clearEventChatCounts, setUnreadDMs]));
 
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
   const [loadingEvts,  setLoadingEvts]  = useState(false);
@@ -234,6 +261,7 @@ export default function MessagesScreen() {
             return (
               <EventRow
                 event={event}
+                unread={eventChatPreviews[event.id]}
                 onPress={() => router.push({
                   pathname: '/event/[id]',
                   params: { id: event.id },

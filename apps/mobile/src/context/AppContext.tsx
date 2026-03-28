@@ -5,7 +5,7 @@ import React, {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { GuestIdentity, City, User, OnlineUser } from '@/types';
+import type { GuestIdentity, City, User, OnlineUser, EventChatPreview } from '@/types';
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 
@@ -27,6 +27,8 @@ interface AppState {
   wsConnected:          boolean;
   unreadDMs:            number;
   unreadNotifications:  number;
+  eventChatPreviews:    Record<string, EventChatPreview>; // per event-id unread state
+  activeEventId:        string | null;   // event/[id] screen currently mounted
   geoState:             GeoState;
   detectedCity:         City | null;     // geo-resolved city, shown on landing screen
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
@@ -41,8 +43,12 @@ interface AppActions {
   setBooting:              (booting: boolean) => void;
   setBootError:            (error: string | null) => void;
   setWsConnected:          (connected: boolean) => void;
-  setUnreadDMs:            (count: number) => void;
+  setUnreadDMs:            (count: number | ((prev: number) => number)) => void;
   setUnreadNotifications:  (count: number) => void;
+  setEventChatPreview:     (eventId: string, preview: EventChatPreview) => void;
+  removeEventChatPreview:  (eventId: string) => void;
+  clearEventChatCounts:    () => void;
+  setActiveEventId:        (id: string | null) => void;
   setGeoState:             (state: GeoState) => void;
   setDetectedCity:         (city: City | null) => void;
   setJoined:               (joined: boolean) => void;
@@ -62,6 +68,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [wsConnected,             setWsConnected]             = useState(false);
   const [unreadDMs,               setUnreadDMs]               = useState(0);
   const [unreadNotifications,     setUnreadNotifications]     = useState(0);
+  const [eventChatPreviews,       setEventChatPreviewsRaw]    = useState<Record<string, EventChatPreview>>({});
+  const [activeEventId,           setActiveEventId]           = useState<string | null>(null);
   const [geoState,                setGeoState]                = useState<GeoState>('pending');
   const [detectedCity, setDetectedCity] = useState<City | null>(null);
   const [joined,       setJoined]       = useState(false);
@@ -69,19 +77,41 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
 
+  const setEventChatPreview = useCallback((eventId: string, preview: EventChatPreview) => {
+    setEventChatPreviewsRaw(prev => ({ ...prev, [eventId]: preview }));
+  }, []);
+
+  const removeEventChatPreview = useCallback((eventId: string) => {
+    setEventChatPreviewsRaw(prev => {
+      if (!prev[eventId]) return prev;
+      const next = { ...prev };
+      delete next[eventId];
+      return next;
+    });
+  }, []);
+
+  const clearEventChatCounts = useCallback(() => {
+    setEventChatPreviewsRaw(prev => {
+      const next: Record<string, EventChatPreview> = {};
+      for (const [id, p] of Object.entries(prev)) next[id] = { ...p, count: 0 };
+      return next;
+    });
+  }, []);
+
   const logout = useCallback(async () => {
     await authLogout();
     await clearToken();
     setAccount(null);
     setUnreadDMs(0);
     setUnreadNotifications(0);
+    setEventChatPreviewsRaw({});
   }, []);
 
   return (
     <AppContext.Provider
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected,
-        unreadDMs, unreadNotifications,
+        unreadDMs, unreadNotifications, eventChatPreviews, activeEventId,
         geoState, detectedCity, joined, onlineUsers,
         setBooting, setBootError,
         setIdentity,
@@ -91,6 +121,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setWsConnected,
         setUnreadDMs,
         setUnreadNotifications,
+        setEventChatPreview,
+        removeEventChatPreview,
+        clearEventChatCounts,
+        setActiveEventId:        useCallback((id: string | null) => setActiveEventId(id), []),
         setGeoState:             useCallback((s: GeoState) => setGeoState(s), []),
         setDetectedCity:         useCallback((c: City | null) => setDetectedCity(c), []),
         setJoined:               useCallback((j: boolean) => setJoined(j), []),
