@@ -32,7 +32,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f0f0f"
+        "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
       "versionCode": 1,

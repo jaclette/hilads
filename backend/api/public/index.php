@@ -129,6 +129,7 @@ require_once __DIR__ . '/../src/ConversationRepository.php';
 require_once __DIR__ . '/../src/NotificationRepository.php';
 require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
 require_once __DIR__ . '/../src/PushService.php';
+require_once __DIR__ . '/../src/MobilePushService.php';
 require_once __DIR__ . '/../src/R2Uploader.php';
 require_once __DIR__ . '/../src/TicketmasterImporter.php';
 

@@ -10,111 +10,130 @@ import { loadSavedToken } from '@/services/session';
 import { fetchUnreadCount } from '@/api/notifications';
 import { requestAndRegisterPush } from '@/services/push';
 
-// Timeout for the watchPositionAsync step before falling back / erroring.
-const GEO_TIMEOUT_MS = 15_000;
+// ── Timeouts ──────────────────────────────────────────────────────────────────
 
-// Accept cached positions up to 10 minutes old for the fast path.
+// Boot: max time to wait for fetchChannels() before starting geo anyway.
+// If the API is unreachable, fetch() has no built-in timeout and the OS TCP
+// timeout is ~75s — this ensures geo starts even when the server is down.
+const BOOT_FETCH_TIMEOUT_MS = 8_000;
+
+// watchPositionAsync: how long to wait for first GPS fix before falling back.
+const GEO_WATCH_TIMEOUT_MS = 10_000;
+
+// getCurrentPositionAsync last-resort fallback timeout.
+const GEO_CURRENT_TIMEOUT_MS = 8_000;
+
+// getLastKnownPositionAsync: accept cached positions up to 10 minutes old.
 const LAST_KNOWN_MAX_AGE_MS = 10 * 60 * 1000;
 
-// Maximum time we wait for requestForegroundPermissionsAsync before giving up.
-// On some Android devices the OS dialog can hang if the window is not yet focused.
-const PERM_TIMEOUT_MS = 8_000;
+// requestForegroundPermissionsAsync: OS dialog can hang on some Android builds
+// if the window is not yet focused. Race against this timeout.
+const PERM_TIMEOUT_MS = 6_000;
 
-// Absolute ceiling for the entire geo flow (permission + position).
-// If we haven't resolved city by this point, show the fallback UI.
-const GEO_ABSOLUTE_TIMEOUT_MS = 30_000;
+// Absolute ceiling for the entire geo flow (services + permission + position + resolve).
+// If we haven't exited by this point, force the error state so the user isn't stuck.
+const GEO_ABSOLUTE_TIMEOUT_MS = 20_000;
 
-// How long after setBooting(false) before we call requestForegroundPermissionsAsync.
+// How long after setBooting(false) before starting geo.
 // Gives React one frame to render and Android to make the window focusable.
-const GEO_START_DELAY_MS = 350;
+const GEO_START_DELAY_MS = 400;
 
 interface Result {
   retry:    () => void;
   retryGeo: () => void;
 }
 
-// ── Geo position helper ───────────────────────────────────────────────────────
+// ── Position helper ───────────────────────────────────────────────────────────
 //
-// Strategy:
-//   1. getLastKnownPositionAsync — instant if cached
-//   2. watchPositionAsync (primary) — Android requestLocationUpdates, fires fast
-//   3. getCurrentPositionAsync (fallback) — last resort
-//
-// watchPositionAsync is the reliable Android approach:
-// requestLocationUpdates fires as soon as the OS has any fix, including
-// injected emulator coordinates. getCurrentPositionAsync (requestSingleUpdate)
-// is slower and more likely to stall at startup.
+// Three-step strategy (each step is skipped if the previous one succeeds):
+//   1. getLastKnownPositionAsync  — instant if the OS has a recent cache
+//   2. watchPositionAsync         — Android requestLocationUpdates, fires fast
+//   3. getCurrentPositionAsync    — last resort, explicit timeout to avoid hang
 
 async function getPosition(): Promise<Location.LocationObject | null> {
-  // Step 1: last known position (instant if available)
-  console.log('[geo] trying last known position');
+  // ── Step 1: last known (instant) ──────────────────────────────────────────
+  console.log('[geo] getLastKnownPositionAsync...');
   try {
     const last = await Location.getLastKnownPositionAsync({ maxAge: LAST_KNOWN_MAX_AGE_MS });
     if (last) {
-      console.log('[geo] last known position:', last.coords.latitude, last.coords.longitude,
-        '(accuracy:', last.coords.accuracy, 'm)');
+      console.log('[geo] last known →', last.coords.latitude, last.coords.longitude,
+        '(accuracy:', last.coords.accuracy, 'm, age:',
+        Math.round((Date.now() - last.timestamp) / 1000), 's)');
       return last;
     }
-    console.log('[geo] no last known position');
+    console.log('[geo] no last known position in cache');
   } catch (e) {
-    console.log('[geo] getLastKnownPositionAsync error:', e);
+    console.warn('[geo] getLastKnownPositionAsync error:', String(e));
   }
 
-  // Step 2: watchPositionAsync — primary fresh-position strategy
-  console.log('[geo] starting watchPositionAsync (Accuracy.Balanced, timeout', GEO_TIMEOUT_MS, 'ms)');
+  // ── Step 2: watchPositionAsync (primary fresh-position strategy) ──────────
+  // Android requestLocationUpdates fires as soon as the OS has any fix.
+  console.log('[geo] watchPositionAsync start (timeout:', GEO_WATCH_TIMEOUT_MS, 'ms)');
   const watched = await new Promise<Location.LocationObject | null>(resolve => {
     let sub: Location.LocationSubscription | null = null;
+    let resolved = false;
 
     const timer = setTimeout(() => {
-      sub?.remove();
-      console.log('[geo] watchPositionAsync timed out after', GEO_TIMEOUT_MS, 'ms');
-      resolve(null);
-    }, GEO_TIMEOUT_MS);
+      if (!resolved) {
+        resolved = true;
+        sub?.remove();
+        console.warn('[geo] watchPositionAsync timed out after', GEO_WATCH_TIMEOUT_MS, 'ms');
+        resolve(null);
+      }
+    }, GEO_WATCH_TIMEOUT_MS);
 
     Location.watchPositionAsync(
-      {
-        accuracy:         Location.Accuracy.Balanced,
-        timeInterval:     1000,
-        distanceInterval: 1,
-      },
+      { accuracy: Location.Accuracy.Balanced, timeInterval: 1000, distanceInterval: 1 },
       loc => {
-        clearTimeout(timer);
-        sub?.remove();
-        console.log('[geo] watchPositionAsync received fix:',
-          loc.coords.latitude, loc.coords.longitude,
-          '(accuracy:', loc.coords.accuracy, 'm)');
-        resolve(loc);
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timer);
+          sub?.remove();
+          console.log('[geo] watchPositionAsync fix:',
+            loc.coords.latitude, loc.coords.longitude,
+            '(accuracy:', loc.coords.accuracy, 'm)');
+          resolve(loc);
+        }
       },
-    ).then(s => { sub = s; }).catch(err => {
-      clearTimeout(timer);
-      console.log('[geo] watchPositionAsync setup error:', err);
-      resolve(null);
+    ).then(s => {
+      if (resolved) {
+        // Already resolved (timeout fired before sub was assigned) — clean up.
+        s.remove();
+      } else {
+        sub = s;
+      }
+    }).catch(err => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        console.warn('[geo] watchPositionAsync setup error:', String(err));
+        resolve(null);
+      }
     });
   });
 
   if (watched) return watched;
 
-  // Step 3: getCurrentPositionAsync — last-resort fallback, with explicit timeout.
-  // Without a timeout this call hangs forever on emulators with no location source,
-  // which prevents getPosition() from ever returning null and blocks the dev fallback.
-  const GET_CURRENT_TIMEOUT_MS = 10_000;
-  console.log('[geo] fallback: getCurrentPositionAsync (Accuracy.Balanced, timeout', GET_CURRENT_TIMEOUT_MS, 'ms)');
+  // ── Step 3: getCurrentPositionAsync (last resort) ─────────────────────────
+  console.log('[geo] getCurrentPositionAsync fallback (timeout:', GEO_CURRENT_TIMEOUT_MS, 'ms)');
   try {
     const pos = await Promise.race([
       Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('getCurrentPositionAsync timeout')), GET_CURRENT_TIMEOUT_MS),
+        setTimeout(() => reject(new Error('getCurrentPositionAsync timed out after ' + GEO_CURRENT_TIMEOUT_MS + 'ms')),
+          GEO_CURRENT_TIMEOUT_MS),
       ),
     ]);
-    console.log('[geo] getCurrentPositionAsync success:', pos.coords.latitude, pos.coords.longitude,
-      '(accuracy:', pos.coords.accuracy, 'm)');
+    console.log('[geo] getCurrentPositionAsync →',
+      pos.coords.latitude, pos.coords.longitude, '(accuracy:', pos.coords.accuracy, 'm)');
     return pos;
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.log('[geo] getCurrentPositionAsync failed:', msg);
+    console.warn('[geo] getCurrentPositionAsync failed:', String(e));
     return null;
   }
 }
+
+// ── useAppBoot ────────────────────────────────────────────────────────────────
 
 export function useAppBoot(): Result {
   const {
@@ -136,6 +155,124 @@ export function useAppBoot(): Result {
     setGeoState('pending');
     setDetectedCity(null);
     setGeoRetryCount(c => c + 1);
+  }
+
+  // ── Shared geo flow ────────────────────────────────────────────────────────
+  //
+  // Single function used by both the boot effect and the geo-retry effect.
+  // `isCancelled` is a thunk so each call site provides its own cancellation flag.
+
+  async function runGeoFlow(isCancelled: () => boolean): Promise<void> {
+    if (isCancelled()) return;
+    console.log('[geo] ── flow start ──────────────────────────────────────');
+
+    const absoluteTimer = setTimeout(() => {
+      if (!isCancelled()) {
+        console.warn('[geo] absolute timeout (' + GEO_ABSOLUTE_TIMEOUT_MS + 'ms) — forcing error state');
+        setGeoState('error');
+      }
+    }, GEO_ABSOLUTE_TIMEOUT_MS);
+
+    try {
+      // ── Step 0: Location services ────────────────────────────────────────
+      // On Android, the user can grant app permission but have GPS disabled in
+      // device Settings → Location. If services are off, watchPositionAsync will
+      // hang silently until our watch timeout fires. Check upfront and fail fast.
+      console.log('[geo] checking location services (hasServicesEnabledAsync)...');
+      let servicesEnabled = true; // assume enabled if the check throws
+      try {
+        servicesEnabled = await Location.hasServicesEnabledAsync();
+      } catch (e) {
+        console.warn('[geo] hasServicesEnabledAsync threw (assuming enabled):', String(e));
+      }
+      console.log('[geo] location services enabled:', servicesEnabled);
+
+      if (!servicesEnabled) {
+        if (!isCancelled()) {
+          console.warn('[geo] location services are OFF → error state (user must enable GPS)');
+          setGeoState('error');
+        }
+        return;
+      }
+
+      // ── Step 1: Permission ───────────────────────────────────────────────
+      console.log('[geo] requestForegroundPermissionsAsync (timeout:', PERM_TIMEOUT_MS, 'ms)...');
+      const permResult = await Promise.race([
+        Location.requestForegroundPermissionsAsync(),
+        new Promise<{ status: string }>(resolve =>
+          setTimeout(() => {
+            console.warn('[geo] permission dialog timed out after', PERM_TIMEOUT_MS, 'ms');
+            resolve({ status: 'timeout' });
+          }, PERM_TIMEOUT_MS),
+        ),
+      ]);
+      if (isCancelled()) return;
+
+      const status = permResult.status;
+      const canAskAgain = (permResult as { canAskAgain?: boolean }).canAskAgain;
+      console.log('[geo] permission result: status=' + status
+        + ' canAskAgain=' + String(canAskAgain ?? '?'));
+
+      if (status !== 'granted') {
+        if (!isCancelled()) {
+          console.warn('[geo] permission not granted (' + status + ') → '
+            + (status === 'timeout' ? 'error' : 'denied') + ' state');
+          setGeoState(status === 'timeout' ? 'error' : 'denied');
+        }
+        return;
+      }
+
+      // ── Step 2: Position ─────────────────────────────────────────────────
+      console.log('[geo] permission granted → fetching position...');
+      setGeoState('resolving');
+
+      let pos = await getPosition();
+      if (isCancelled()) return;
+
+      if (!pos) {
+        if (__DEV__) {
+          console.warn('[geo] ⚠️  DEV: no position — injecting Ho Chi Minh City (10.7769, 106.7009)');
+          pos = {
+            coords: { latitude: 10.7769, longitude: 106.7009, altitude: null, accuracy: 0,
+                      altitudeAccuracy: null, heading: null, speed: null },
+            timestamp: Date.now(),
+          } as Location.LocationObject;
+        } else {
+          console.warn('[geo] no position obtained → error state');
+          if (!isCancelled()) setGeoState('error');
+          return;
+        }
+      }
+
+      // ── Step 3: City resolution ──────────────────────────────────────────
+      const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+      console.log('[geo] position:', lat, lng, '(accuracy:', accuracy, 'm)');
+      console.log('[geo] calling /location/resolve for', lat, lng, '...');
+
+      const city = await resolveLocation(lat, lng)
+        .then(c => {
+          console.log('[geo] resolveLocation → city:', c.name,
+            'channelId:', c.channelId, 'country:', c.country);
+          return c;
+        })
+        .catch(err => {
+          console.warn('[geo] resolveLocation failed:', String(err));
+          return null;
+        });
+
+      if (isCancelled()) return;
+      setDetectedCity(city);
+      const nextState = city ? 'resolved' : 'error';
+      setGeoState(nextState);
+      console.log('[geo] ── flow complete → geoState:', nextState, '─────────');
+    } catch (err) {
+      if (!isCancelled()) {
+        console.warn('[geo] unexpected error in geo flow:', String(err));
+        setGeoState('error');
+      }
+    } finally {
+      clearTimeout(absoluteTimer);
+    }
   }
 
   // ── Main boot effect ────────────────────────────────────────────────────────
@@ -163,7 +300,7 @@ export function useAppBoot(): Result {
         console.log('[boot] phase 3: boot complete, releasing UI');
         setBooting(false);
 
-        // Phase 4: Auth check — resolves with user (or null) so Phase 5 can use the correct nickname
+        // Phase 4: Auth check
         const authPromise = loadSavedToken()
           .then(() => authMe())
           .then(user => {
@@ -172,22 +309,27 @@ export function useAppBoot(): Result {
               fetchUnreadCount()
                 .then(count => { if (!cancelled) setUnreadNotifications(count); })
                 .catch(() => {});
-              // Register device for native push — non-blocking, non-fatal
               requestAndRegisterPush().catch(() => {});
             }
             return user ?? null;
           })
           .catch(() => null);
 
-        // Phase 5: City resolution — waits for auth so we use the correct display name
-        // (authenticated display_name takes priority over guest nickname everywhere)
-        // Defer geo start so React has rendered the LandingScreen and Android has
+        // Phase 5: City resolution
+        // Defer geo start so React has rendered LandingScreen and Android has
         // made the window interactive before we request location permission.
-        const startGeo = () => setTimeout(() => { if (!cancelled) resolveGeo(); }, GEO_START_DELAY_MS);
+        const startGeo = () => setTimeout(() => {
+          if (!cancelled) runGeoFlow(() => cancelled);
+        }, GEO_START_DELAY_MS);
 
         if (identity.channelId) {
-          console.log('[boot] returning user, fetching channels');
-          Promise.all([authPromise, fetchChannels()])
+          console.log('[boot] returning user, fetching channels (timeout:', BOOT_FETCH_TIMEOUT_MS, 'ms)');
+          Promise.race([
+            Promise.all([authPromise, fetchChannels()]),
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error('boot: channel fetch timeout')), BOOT_FETCH_TIMEOUT_MS),
+            ),
+          ])
             .then(([user, channels]) => {
               if (cancelled) return;
               const displayName = user?.display_name ?? identity.nickname;
@@ -205,23 +347,20 @@ export function useAppBoot(): Result {
                   socket.joinCity(saved.channelId, sessionId, displayName, userId);
                 }
                 setJoined(true);
-                // Restore directly into the city channel — mirrors web auto-rejoin behaviour.
-                // LandingScreen is about to unmount; navigate before it does so the
-                // tabs land on chat instead of the default hot tab.
                 router.replace('/(tabs)/chat');
               } else {
-                console.log('[boot] saved city not found, starting geo');
+                console.log('[boot] saved city not found → starting geo');
                 startGeo();
               }
             })
             .catch(() => {
               if (!cancelled) {
-                console.log('[boot] fetchChannels failed, starting geo');
+                console.log('[boot] fetchChannels failed → starting geo');
                 startGeo();
               }
             });
         } else {
-          console.log('[boot] new user, starting geo');
+          console.log('[boot] new user → starting geo');
           startGeo();
         }
 
@@ -235,164 +374,18 @@ export function useAppBoot(): Result {
       }
     }
 
-    async function resolveGeo() {
-      if (cancelled) return;
-      console.log('[geo] resolveGeo start');
-
-      // Absolute ceiling — if the entire flow takes longer than this, show fallback.
-      // Covers hung permission dialogs and slow GPS on real Android devices.
-      const absoluteTimer = setTimeout(() => {
-        if (!cancelled) {
-          console.warn('[geo] absolute timeout reached — falling to error state');
-          setGeoState('error');
-        }
-      }, GEO_ABSOLUTE_TIMEOUT_MS);
-
-      try {
-        // ── Step 1: Permission ─────────────────────────────────────────────────
-        // Race the OS dialog against a timeout. On some Android builds, the dialog
-        // can hang if requestForegroundPermissionsAsync is called before the window
-        // is interactive. If it times out we treat it as 'denied' so the user
-        // gets the fallback UI instead of an infinite spinner.
-        console.log('[geo] requesting foreground location permission...');
-        const permResult = await Promise.race([
-          Location.requestForegroundPermissionsAsync(),
-          new Promise<{ status: string }>(resolve =>
-            setTimeout(() => {
-              console.warn('[geo] permission request timed out after', PERM_TIMEOUT_MS, 'ms');
-              resolve({ status: 'timeout' });
-            }, PERM_TIMEOUT_MS),
-          ),
-        ]);
-        if (cancelled) return;
-
-        const status = permResult.status;
-        console.log('[geo] permission status =', status);
-
-        if (status !== 'granted') {
-          setGeoState(status === 'timeout' ? 'error' : 'denied');
-          return;
-        }
-
-        // ── Step 2: Position ───────────────────────────────────────────────────
-        setGeoState('resolving');
-
-        let pos = await getPosition();
-        if (cancelled) return;
-        console.log('[geo] getPosition() returned:', pos ? `${pos.coords.latitude}, ${pos.coords.longitude}` : 'null');
-
-        if (!pos) {
-          if (__DEV__) {
-            // DEV fallback: no emulator location — inject fixed coords to test city flow.
-            console.warn('[geo] ⚠️  DEV FALLBACK: injecting Ho Chi Minh City (10.7769, 106.7009)');
-            pos = {
-              coords: { latitude: 10.7769, longitude: 106.7009, altitude: null, accuracy: 0,
-                        altitudeAccuracy: null, heading: null, speed: null },
-              timestamp: Date.now(),
-            } as Location.LocationObject;
-          } else {
-            console.log('[geo] no position obtained → error state');
-            setGeoState('error');
-            return;
-          }
-        }
-
-        // ── Step 3: City resolution ────────────────────────────────────────────
-        console.log('[geo] resolving city for coords', pos.coords.latitude, pos.coords.longitude);
-        const city = await resolveLocation(pos.coords.latitude, pos.coords.longitude)
-          .catch(err => { console.warn('[geo] resolveLocation failed:', err); return null; });
-
-        if (cancelled) return;
-        console.log('[geo] city resolved:', city?.name ?? 'null', 'channelId:', city?.channelId ?? 'null');
-        setDetectedCity(city);
-        setGeoState(city ? 'resolved' : 'error');
-      } catch (err) {
-        if (!cancelled) {
-          console.warn('[geo] unexpected error in resolveGeo:', err);
-          setGeoState('error');
-        }
-      } finally {
-        clearTimeout(absoluteTimer);
-      }
-    }
-
     boot();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [retryCount]);
 
   // ── Geo-only retry effect ───────────────────────────────────────────────────
-  // Triggered independently by retryGeo() — re-runs geo without re-booting.
 
   useEffect(() => {
-    if (geoRetryCount === 0) return;  // skip initial mount
+    if (geoRetryCount === 0) return;
     let cancelled = false;
-
-    async function rerunGeo() {
-      if (cancelled) return;
-      console.log('[geo] retrying (attempt', geoRetryCount, ')');
-
-      const absoluteTimer = setTimeout(() => {
-        if (!cancelled) {
-          console.warn('[geo] retry absolute timeout — falling to error state');
-          setGeoState('error');
-        }
-      }, GEO_ABSOLUTE_TIMEOUT_MS);
-
-      try {
-        const permResult = await Promise.race([
-          Location.requestForegroundPermissionsAsync(),
-          new Promise<{ status: string }>(resolve =>
-            setTimeout(() => resolve({ status: 'timeout' }), PERM_TIMEOUT_MS),
-          ),
-        ]);
-        if (cancelled) return;
-
-        const status = permResult.status;
-        console.log('[geo] retry permission status =', status);
-        if (status !== 'granted') {
-          setGeoState(status === 'timeout' ? 'error' : 'denied');
-          return;
-        }
-
-        setGeoState('resolving');
-
-        let pos = await getPosition();
-        if (cancelled) return;
-        console.log('[geo] retry getPosition():', pos ? `${pos.coords.latitude}, ${pos.coords.longitude}` : 'null');
-
-        if (!pos) {
-          if (__DEV__) {
-            console.warn('[geo] ⚠️  DEV FALLBACK: injecting Ho Chi Minh City');
-            pos = {
-              coords: { latitude: 10.7769, longitude: 106.7009, altitude: null, accuracy: 0,
-                        altitudeAccuracy: null, heading: null, speed: null },
-              timestamp: Date.now(),
-            } as Location.LocationObject;
-          } else {
-            setGeoState('error');
-            return;
-          }
-        }
-
-        console.log('[geo] retry resolving city for', pos.coords.latitude, pos.coords.longitude);
-        const city = await resolveLocation(pos.coords.latitude, pos.coords.longitude)
-          .catch(err => { console.warn('[geo] retry resolveLocation failed:', err); return null; });
-        if (cancelled) return;
-        console.log('[geo] retry resolved city:', city?.name ?? 'null');
-        setDetectedCity(city);
-        setGeoState(city ? 'resolved' : 'error');
-      } catch (err) {
-        if (!cancelled) {
-          console.warn('[geo] retry unexpected error:', err);
-          setGeoState('error');
-        }
-      } finally {
-        clearTimeout(absoluteTimer);
-      }
-    }
-
-    rerunGeo();
+    console.log('[geo] retry triggered (attempt', geoRetryCount, ')');
+    runGeoFlow(() => cancelled);
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geoRetryCount]);

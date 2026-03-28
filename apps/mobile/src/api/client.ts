@@ -58,13 +58,20 @@ async function request<T = unknown>(
     console.log('[api]', (rest.method ?? 'GET').padEnd(6), url);
   }
 
+  // 15s timeout — prevents indefinite hangs when the server is unreachable.
+  // The OS TCP timeout can be 75s+; this gives the caller a predictable failure.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15_000);
+
   let res: Response;
   try {
-    res = await fetch(url, { headers, ...rest });
+    res = await fetch(url, { headers, signal: controller.signal, ...rest });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[api] fetch failed:', (rest.method ?? 'GET'), url, '→', msg);
     throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   // Capture auth token from Set-Cookie header (login response)

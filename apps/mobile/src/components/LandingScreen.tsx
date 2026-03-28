@@ -128,8 +128,10 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   const [joining,      setJoining]      = useState(false);
   const [error,        setError]        = useState<string | null>(null);
   // Show the "browse cities" escape after a delay if geo is still pending/resolving.
-  // Prevents the user from being stuck with no action available on slow/broken devices.
+  // Timer ID stored in a ref so the effect cleanup (which runs on every geoState
+  // change) does NOT cancel it when transitioning pending → resolving.
   const [showGeoEscape, setShowGeoEscape] = useState(false);
+  const escapeTimerId = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Events preview — fetched after city is detected (mirrors web startGeolocation)
   const [previewEvents,     setPreviewEvents]     = useState<HiladsEvent[]>([]);
@@ -143,15 +145,26 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     if (identity?.nickname && !nickname) setNickname(identity.nickname);
   }, [identity?.nickname]);
 
-  // Escape hatch: if still waiting for geo after 10 seconds, reveal "Browse cities"
-  // so the user is never fully stuck with no action available.
+  // Escape hatch: reveal "Browse cities" 5s after geo starts.
+  // We store the timer ID in a ref so React's effect cleanup (which runs on
+  // every geoState change) does NOT cancel it during pending → resolving.
+  // The timer is only cancelled when geo leaves the in-flight states.
   useEffect(() => {
-    if (geoState !== 'pending' && geoState !== 'resolving') {
+    const inFlight = geoState === 'pending' || geoState === 'resolving';
+    if (!inFlight) {
+      if (escapeTimerId.current !== null) {
+        clearTimeout(escapeTimerId.current);
+        escapeTimerId.current = null;
+      }
       setShowGeoEscape(false);
       return;
     }
-    const timer = setTimeout(() => setShowGeoEscape(true), 10_000);
-    return () => clearTimeout(timer);
+    if (escapeTimerId.current !== null) return; // already counting — don't restart
+    escapeTimerId.current = setTimeout(() => {
+      escapeTimerId.current = null;
+      setShowGeoEscape(true);
+    }, 5_000);
+    // No cleanup return — the timer must survive pending → resolving transitions
   }, [geoState]);
 
   // Fetch events when city is detected — mirrors web's fetchEvents() after resolveLocation

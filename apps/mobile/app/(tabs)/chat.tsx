@@ -17,6 +17,7 @@ import {
   TouchableOpacity, Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -71,7 +72,8 @@ function PulseDot() {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function ChatTab() {
-  const router  = useRouter();
+  const router       = useRouter();
+  const tabBarHeight = useBottomTabBarHeight();
   const {
     city, identity, sessionId, account,
     unreadDMs, setUnreadDMs,
@@ -183,7 +185,7 @@ export default function ChatTab() {
   // No city yet — prompt to pick one
   if (!city) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { paddingBottom: tabBarHeight }]}>
         <View style={styles.noCityWrap}>
           <Text style={styles.noCityTitle}>No city selected</Text>
           <Text style={styles.noCitySubtitle}>
@@ -204,7 +206,7 @@ export default function ChatTab() {
   const flag = cityFlag(city.country);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={[styles.container, { paddingBottom: tabBarHeight }]} edges={['top']}>
 
       {/* ── Header — web: .chat-header + renderCityHero() (mobile variant) ── */}
       {/*                                                                      */}
