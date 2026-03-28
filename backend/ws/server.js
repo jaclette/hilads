@@ -19,19 +19,22 @@
  *                    event_participants_update(eventId, count)
  *                    newConversationMessage(conversationId, message)
  *
- * PHP API → WS (internal HTTP :8082)
+ * PHP API → WS (same port as WS, plain HTTP POST — Render proxies both)
  *                    POST /broadcast/event-participants   { eventId, count }
  *                    POST /broadcast/message              { channelId, message }
  *                    POST /broadcast/conversation-message { conversationId, message }
  *
  * All events are JSON objects with an `event` field.
+ *
+ * Architecture note: WS upgrades and broadcast HTTP requests share the same
+ * port. Render's proxy routes WebSocket upgrades to the WS server and
+ * regular HTTP POSTs to the HTTP handler on the same process.
  */
 
 import { WebSocketServer } from 'ws'
 import { createServer } from 'http'
 
 const PORT = process.env.PORT || 8081
-const INTERNAL_PORT = process.env.INTERNAL_PORT || 8082
 const INTERNAL_TOKEN = process.env.WS_INTERNAL_TOKEN || ''
 const HEARTBEAT_TTL_MS = 120_000  // session expires after 120s without heartbeat
 const CLEANUP_INTERVAL_MS = 60_000 // check for stale sessions every 60s
@@ -300,9 +303,68 @@ function removeWs(ws) {
   }
 }
 
-// ── Server ─────────────────────────────────────────────────────────────────────
+// ── HTTP server (shared: WS upgrades + broadcast routes) ───────────────────────
+//
+// Both WebSocket client connections and PHP broadcast POSTs go through the same
+// port. Render's proxy sends WS upgrades to the WS handler and plain HTTP POSTs
+// to the HTTP handler — no separate internal port needed.
 
-const wss = new WebSocketServer({ port: PORT })
+function handleBroadcastRequest(req, res) {
+  let body = ''
+  req.on('data', chunk => { body += chunk })
+  req.on('end', () => {
+    console.log(`[internal] ${req.method} ${req.url} from ${req.socket.remoteAddress} body-len=${body.length}`)
+    try {
+      if (INTERNAL_TOKEN) {
+        const provided = req.headers['x-internal-token']
+        if (provided !== INTERNAL_TOKEN) {
+          console.log(`[internal] ✗ auth FAILED (provided=${provided ? provided.slice(0, 6) + '...' : 'none'})`)
+          res.writeHead(403); res.end('forbidden')
+          return
+        }
+      }
+
+      if (req.method === 'POST' && req.url === '/broadcast/event-participants') {
+        const { eventId, count } = JSON.parse(body)
+        const room = eventRooms.get(eventId)
+        console.log(`[internal] broadcast event-participants eventId=${eventId} count=${count} roomSize=${room ? room.size : 0}`)
+        broadcastParticipantCount(eventId, count)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'POST' && req.url === '/broadcast/message') {
+        const { channelId, message } = JSON.parse(body)
+        const isCity = typeof channelId === 'number'
+        const room = isCity ? rooms.get(channelId) : eventRooms.get(channelId)
+        console.log(`[internal] broadcast message channelId=${JSON.stringify(channelId)} isCity=${isCity} roomSize=${room ? room.size : 0}`)
+        broadcastNewMessage(channelId, message)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'POST' && req.url === '/broadcast/conversation-message') {
+        const { conversationId, message } = JSON.parse(body)
+        const room = dmRooms.get(conversationId)
+        console.log(`[internal] broadcast conversation-message convId=${conversationId ? conversationId.slice(0, 8) : 'null'} roomSize=${room ? room.size : 0}`)
+        broadcastConversationMessage(conversationId, message)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'GET' && req.url === '/health') {
+        // Health check endpoint — Render and uptime monitors can probe this
+        res.writeHead(200, { 'Content-Type': 'application/json' })
+        res.end(JSON.stringify({ ok: true, clients: wss.clients.size }))
+
+      } else {
+        console.log(`[internal] ✗ unknown route ${req.method} ${req.url}`)
+        res.writeHead(404); res.end('not found')
+      }
+    } catch (err) {
+      console.log(`[internal] ✗ error: ${err.message}`)
+      res.writeHead(400); res.end('bad request')
+    }
+  })
+}
+
+const httpServer = createServer(handleBroadcastRequest)
+
+const wss = new WebSocketServer({ server: httpServer })
 
 wss.on('connection', (ws, req) => {
   const origin = req.headers.origin
@@ -327,11 +389,11 @@ wss.on('connection', (ws, req) => {
     try { msg = JSON.parse(raw) } catch { return }
 
     switch (msg.event) {
-      case 'joinRoom':     return handleJoinRoom(ws, msg)
-      case 'leaveRoom':    return handleLeaveRoom(ws, msg)
-      case 'heartbeat':    return handleHeartbeat(ws, msg)
-      case 'typingStart':  return handleTypingStart(ws, msg)
-      case 'typingStop':   return handleTypingStop(ws, msg)
+      case 'joinRoom':           return handleJoinRoom(ws, msg)
+      case 'leaveRoom':          return handleLeaveRoom(ws, msg)
+      case 'heartbeat':          return handleHeartbeat(ws, msg)
+      case 'typingStart':        return handleTypingStart(ws, msg)
+      case 'typingStop':         return handleTypingStop(ws, msg)
       case 'joinEvent':          return handleJoinEvent(ws, msg)
       case 'leaveEvent':         return handleLeaveEvent(ws, msg)
       case 'joinConversation':   return handleJoinConversation(ws, msg)
@@ -366,60 +428,7 @@ function broadcastNewMessage(channelId, message) {
   }
 }
 
-// ── Internal HTTP server (PHP API → WS broadcast) ──────────────────────────────
-
-const httpServer = createServer((req, res) => {
-  let body = ''
-  req.on('data', chunk => { body += chunk })
-  req.on('end', () => {
-    console.log(`[internal] ${req.method} ${req.url} from ${req.socket.remoteAddress} body-len=${body.length}`)
-    try {
-      if (INTERNAL_TOKEN) {
-        const provided = req.headers['x-internal-token']
-        if (provided !== INTERNAL_TOKEN) {
-          console.log(`[internal] ✗ auth FAILED — token mismatch (provided=${provided ? provided.slice(0, 6) + '...' : 'none'})`)
-          res.writeHead(403); res.end('forbidden')
-          return
-        }
-        console.log('[internal] ✓ auth OK')
-      } else {
-        console.log('[internal] auth skipped (no INTERNAL_TOKEN set)')
-      }
-
-      if (req.method === 'POST' && req.url === '/broadcast/event-participants') {
-        const { eventId, count } = JSON.parse(body)
-        const room = eventRooms.get(eventId)
-        console.log(`[internal] broadcast event-participants eventId=${eventId} count=${count} roomSize=${room ? room.size : 0}`)
-        broadcastParticipantCount(eventId, count)
-        res.writeHead(200); res.end('ok')
-      } else if (req.method === 'POST' && req.url === '/broadcast/message') {
-        const parsed = JSON.parse(body)
-        const { channelId, message } = parsed
-        const isCity = typeof channelId === 'number'
-        const room = isCity ? rooms.get(channelId) : eventRooms.get(channelId)
-        console.log(`[internal] broadcast message channelId=${JSON.stringify(channelId)} isCity=${isCity} roomSize=${room ? room.size : 0}`)
-        broadcastNewMessage(channelId, message)
-        res.writeHead(200); res.end('ok')
-      } else if (req.method === 'POST' && req.url === '/broadcast/conversation-message') {
-        const { conversationId, message } = JSON.parse(body)
-        const room = dmRooms.get(conversationId)
-        console.log(`[internal] broadcast conversation-message convId=${conversationId ? conversationId.slice(0, 8) : 'null'} roomSize=${room ? room.size : 0}`)
-        broadcastConversationMessage(conversationId, message)
-        res.writeHead(200); res.end('ok')
-      } else {
-        console.log(`[internal] ✗ unknown route ${req.method} ${req.url}`)
-        res.writeHead(404); res.end('not found')
-      }
-    } catch (err) {
-      console.log(`[internal] ✗ error: ${err.message}`)
-      res.writeHead(400); res.end('bad request')
-    }
-  })
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`Hilads server listening on port ${PORT} (WS + HTTP broadcast)`)
+  console.log(`INTERNAL_TOKEN=${INTERNAL_TOKEN ? 'set' : 'none'} ALLOWED_ORIGINS=${[...ALLOWED_ORIGINS].join(',')}`)
 })
-
-httpServer.listen(INTERNAL_PORT, '0.0.0.0', () => {
-  console.log(`Hilads WS internal HTTP listening on 0.0.0.0:${INTERNAL_PORT}`)
-})
-
-console.log(`Hilads WS server listening on ws://0.0.0.0:${PORT}`)
-console.log(`INTERNAL_PORT=${INTERNAL_PORT} INTERNAL_TOKEN=${INTERNAL_TOKEN ? 'set' : 'none'} ALLOWED_ORIGINS=${[...ALLOWED_ORIGINS].join(',')}`)
