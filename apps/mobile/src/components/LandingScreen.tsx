@@ -23,7 +23,7 @@ import {
   ScrollView, Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { joinChannel } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
@@ -118,6 +118,7 @@ function PulsingText({ text, style }: { text: string; style?: object }) {
 
 export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   const router = useRouter();
+  const pathname = usePathname();
   const {
     identity, sessionId, account,
     geoState, detectedCity,
@@ -227,6 +228,11 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   }
 
   // ── Render ───────────────────────────────────────────────────────────────────
+
+  // If the user navigated to an auth screen (sign-up / sign-in), step aside so
+  // the screen below is visible. The overlay would cover modal screens because
+  // it uses absoluteFillObject + zIndex: 100, rendering above the Stack.
+  if (pathname === '/sign-up' || pathname === '/sign-in') return null;
 
   const canJoin = !!trimmed && !joining && geoState !== 'pending';
 

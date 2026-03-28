@@ -24,10 +24,25 @@ const PROJECT_ID =
   (Constants.expoConfig?.extra?.eas?.projectId as string | undefined) ??
   '0555a464-8dda-484b-b0a2-d61b2ad2786c';
 
+// ── Foreground notification handler ───────────────────────────────────────────
+//
+// Must be set at module load — before any notification can arrive.
+// Without this Expo silently drops notifications received while the app is open.
+// For background / terminated state Android handles it natively via FCM.
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge:  true,
+  }),
+});
+
 // ── Android notification channel ──────────────────────────────────────────────
 
 export async function setupNotificationChannel(): Promise<void> {
   if (Platform.OS !== 'android') return;
+  console.log('[push] setupNotificationChannel');
   await Notifications.setNotificationChannelAsync('default', {
     name:             'Hilads',
     importance:       Notifications.AndroidImportance.MAX,
@@ -35,6 +50,7 @@ export async function setupNotificationChannel(): Promise<void> {
     lightColor:       '#FF7A3C',
     showBadge:        true,
   });
+  console.log('[push] Android channel "default" configured (importance MAX)');
 }
 
 // ── Permission helpers ────────────────────────────────────────────────────────
@@ -56,26 +72,42 @@ export async function hasBeenAsked(): Promise<boolean> {
  * Call after the user has a registered account (not for guests).
  */
 export async function requestAndRegisterPush(): Promise<string | null> {
-  if (!Device.isDevice) return null; // simulators don't support push
+  if (!Device.isDevice) {
+    console.log('[push] skipping — not a physical device');
+    return null;
+  }
+
+  // Always ensure the Android channel is set up before token acquisition.
+  // This covers the boot-time path where setupNotificationChannel() is not
+  // called separately (e.g. returning user re-opening the app).
+  await setupNotificationChannel();
 
   await AsyncStorage.setItem(PUSH_ASKED_KEY, '1');
 
   const { status: existing } = await Notifications.getPermissionsAsync();
   let finalStatus = existing;
+  console.log('[push] permission status (existing):', existing);
 
   if (existing !== 'granted') {
     const { status } = await Notifications.requestPermissionsAsync();
     finalStatus = status;
+    console.log('[push] permission status (after request):', finalStatus);
   }
 
-  if (finalStatus !== 'granted') return null;
+  if (finalStatus !== 'granted') {
+    console.warn('[push] permission not granted — aborting token registration');
+    return null;
+  }
 
+  console.log('[push] permission granted — fetching Expo push token (projectId:', PROJECT_ID, ')');
   try {
     const { data: token } = await Notifications.getExpoPushTokenAsync({ projectId: PROJECT_ID });
+    console.log('[push] Expo push token:', token);
     await AsyncStorage.setItem(PUSH_TOKEN_KEY, token);
     await registerTokenWithBackend(token);
     return token;
-  } catch {
+  } catch (err) {
+    console.error('[push] getExpoPushTokenAsync failed:', String(err));
     return null;
   }
 }
@@ -93,16 +125,21 @@ export async function getSavedPushToken(): Promise<string | null> {
 export async function unregisterPushToken(): Promise<void> {
   const token = await getSavedPushToken();
   if (!token) return;
+  console.log('[push] unregistering token from backend');
   await api
     .delete('/push/mobile-token', { token })
-    .catch(() => {/* non-fatal */});
+    .catch(err => console.warn('[push] unregister failed:', String(err)));
   await AsyncStorage.removeItem(PUSH_TOKEN_KEY);
 }
 
 // ── Backend sync ──────────────────────────────────────────────────────────────
 
 async function registerTokenWithBackend(token: string): Promise<void> {
-  await api
-    .post('/push/mobile-token', { token, platform: Platform.OS })
-    .catch(() => {/* non-fatal */});
+  console.log('[push] registering token with backend, platform:', Platform.OS);
+  try {
+    await api.post('/push/mobile-token', { token, platform: Platform.OS });
+    console.log('[push] token registered with backend ✓');
+  } catch (err) {
+    console.error('[push] failed to register token with backend:', String(err));
+  }
 }

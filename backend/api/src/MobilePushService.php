@@ -77,14 +77,20 @@ class MobilePushService
             $prefCol = self::prefColumn($type);
             if ($prefCol !== null) {
                 $prefs = NotificationPreferencesRepository::get($userId);
-                if (!($prefs[$prefCol] ?? false)) return;
+                if (!($prefs[$prefCol] ?? false)) {
+                    error_log("[push] skipping $type for user $userId — preference disabled");
+                    return;
+                }
             }
 
             // 2. Anti-noise cooldown
             $cooldown = self::cooldownSeconds($type);
             if ($cooldown > 0) {
                 $refId = self::refId($type, $data);
-                if (self::isOnCooldown($userId, $type, $refId, $cooldown)) return;
+                if (self::isOnCooldown($userId, $type, $refId, $cooldown)) {
+                    error_log("[push] skipping $type for user $userId — on cooldown");
+                    return;
+                }
                 self::recordDelivery($userId, $type, $refId);
             }
 
@@ -95,7 +101,12 @@ class MobilePushService
             $stmt->execute([$userId]);
             $tokens = $stmt->fetchAll(\PDO::FETCH_COLUMN);
 
-            if (empty($tokens)) return;
+            if (empty($tokens)) {
+                error_log("[push] no mobile tokens for user $userId — skipping $type");
+                return;
+            }
+
+            error_log("[push] sending $type to user $userId (" . count($tokens) . " device(s))");
 
             // 4. Build Expo push payload (one message per device)
             $payload = array_map(fn($token) => [
@@ -109,7 +120,12 @@ class MobilePushService
 
             // 5. Send to Expo Push API
             $response = self::postToExpo($payload);
-            if ($response === null) return;
+            if ($response === null) {
+                error_log("[push] Expo API request failed (network error or timeout) for user $userId");
+                return;
+            }
+
+            error_log("[push] Expo API response for user $userId: $response");
 
             // 6. Clean up DeviceNotRegistered tokens
             $decoded = json_decode($response, true);
@@ -117,22 +133,24 @@ class MobilePushService
 
             $invalid = [];
             foreach ($decoded['data'] as $i => $result) {
-                if (
-                    ($result['status'] ?? '') === 'error' &&
-                    ($result['details']['error'] ?? '') === 'DeviceNotRegistered'
-                ) {
-                    $invalid[] = $tokens[$i];
+                if (($result['status'] ?? '') === 'error') {
+                    $errCode = $result['details']['error'] ?? 'unknown';
+                    error_log("[push] token error for user $userId token[$i]: $errCode — " . ($result['message'] ?? ''));
+                    if ($errCode === 'DeviceNotRegistered') {
+                        $invalid[] = $tokens[$i];
+                    }
                 }
             }
 
             if (!empty($invalid)) {
+                error_log("[push] removing " . count($invalid) . " stale token(s) for user $userId");
                 $placeholders = implode(',', array_fill(0, count($invalid), '?'));
                 Database::pdo()
                     ->prepare("DELETE FROM mobile_push_tokens WHERE token IN ($placeholders)")
                     ->execute($invalid);
             }
-        } catch (\Throwable) {
-            // Non-fatal — in-app notification already created
+        } catch (\Throwable $e) {
+            error_log("[push] MobilePushService::send exception for user $userId type $type: " . $e->getMessage());
         }
     }
 

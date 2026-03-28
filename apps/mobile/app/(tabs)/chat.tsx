@@ -17,7 +17,6 @@ import {
   TouchableOpacity, Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -71,9 +70,14 @@ function PulseDot() {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
+// Small gap between the composer and the tab bar.
+// The tab bar is in React Navigation's layout flow (not an overlay), so the
+// screen content area already ends at the tab bar boundary. We only need a
+// small buffer to keep the input above the tab bar's elevation shadow.
+const COMPOSER_BOTTOM_PAD = 8;
+
 export default function ChatTab() {
-  const router       = useRouter();
-  const tabBarHeight = useBottomTabBarHeight();
+  const router = useRouter();
   const {
     city, identity, sessionId, account,
     unreadDMs, setUnreadDMs,
@@ -185,7 +189,7 @@ export default function ChatTab() {
   // No city yet — prompt to pick one
   if (!city) {
     return (
-      <SafeAreaView style={[styles.container, { paddingBottom: tabBarHeight }]}>
+      <SafeAreaView style={[styles.container, { paddingBottom: COMPOSER_BOTTOM_PAD }]}>
         <View style={styles.noCityWrap}>
           <Text style={styles.noCityTitle}>No city selected</Text>
           <Text style={styles.noCitySubtitle}>
@@ -206,7 +210,7 @@ export default function ChatTab() {
   const flag = cityFlag(city.country);
 
   return (
-    <SafeAreaView style={[styles.container, { paddingBottom: tabBarHeight }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { paddingBottom: COMPOSER_BOTTOM_PAD }]} edges={['top']}>
 
       {/* ── Header — web: .chat-header + renderCityHero() (mobile variant) ── */}
       {/*                                                                      */}
