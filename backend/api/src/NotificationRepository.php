@@ -108,11 +108,13 @@ class NotificationRepository
         ?string $body,
         array   $data
     ): void {
+        // CAST(? AS text) tells Postgres the type of the nullable param so it
+        // can resolve $2 even when the value is NULL (avoids "indeterminate datatype").
         $stmt = Database::pdo()->prepare("
             SELECT DISTINCT user_id FROM event_participants
             WHERE channel_id = ?
               AND user_id IS NOT NULL
-              AND (? IS NULL OR user_id != ?)
+              AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
         ");
         $stmt->execute([$eventId, $excludeUserId, $excludeUserId]);
         foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $uid) {
@@ -137,7 +139,7 @@ class NotificationRepository
             WHERE channel_id = ?
               AND user_id IS NOT NULL
               AND last_seen_at > now() - interval '3 minutes'
-              AND (? IS NULL OR user_id != ?)
+              AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
         ");
         $stmt->execute([$cityChannelId, $excludeUserId, $excludeUserId]);
         foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $uid) {
