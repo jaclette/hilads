@@ -206,14 +206,24 @@ class Database
             if (!$mptExists) {
                 self::$pdo->exec("
                     CREATE TABLE IF NOT EXISTS mobile_push_tokens (
-                        id         BIGSERIAL   PRIMARY KEY,
-                        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-                        token      TEXT        NOT NULL UNIQUE,
-                        platform   TEXT        NOT NULL DEFAULT 'unknown',
-                        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+                        id           BIGSERIAL   PRIMARY KEY,
+                        user_id      TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        token        TEXT        NOT NULL UNIQUE,
+                        platform     TEXT        NOT NULL DEFAULT 'unknown',
+                        created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+                        last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()
                     )
                 ");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_mobile_push_tokens_user ON mobile_push_tokens (user_id)");
+            } else {
+                // Add last_used_at if missing — the ON CONFLICT UPDATE in /push/mobile-token sets it.
+                // Without this column the upsert fails silently and no token is ever stored.
+                $mptLuaExists = (bool) self::$pdo
+                    ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'mobile_push_tokens' AND column_name = 'last_used_at')")
+                    ->fetchColumn();
+                if (!$mptLuaExists) {
+                    self::$pdo->exec("ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()");
+                }
             }
 
             // Anti-noise push delivery log (cooldown tracking per user/type/ref).
