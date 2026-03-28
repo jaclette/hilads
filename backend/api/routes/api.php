@@ -35,6 +35,10 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
     $payload = json_encode(['channelId' => $channelId, 'message' => $message]);
     $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
+    $target  = $wsUrl . '/broadcast/message';
+
+    error_log("[ws-broadcast] → target={$target} channelId=" . json_encode($channelId) . " token=" . ($token !== '' ? 'set' : 'none') . " payload=" . substr($payload, 0, 200));
+
     $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
     if ($token !== '') {
         $headers .= "X-Internal-Token: {$token}\r\n";
@@ -45,12 +49,19 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
             'method'        => 'POST',
             'header'        => $headers,
             'content'       => $payload,
-            'timeout'       => 1,
+            'timeout'       => 2,
             'ignore_errors' => true,
         ],
     ]);
 
-    @file_get_contents($wsUrl . '/broadcast/message', false, $ctx);
+    $result = @file_get_contents($target, false, $ctx);
+    $status = isset($http_response_header) ? ($http_response_header[0] ?? 'no-header') : 'no-response';
+    if ($result === false) {
+        $err = error_get_last();
+        error_log("[ws-broadcast] ✗ FAILED target={$target} error=" . ($err['message'] ?? 'unknown'));
+    } else {
+        error_log("[ws-broadcast] ✓ OK status=\"{$status}\" body=" . substr((string)$result, 0, 100));
+    }
 }
 
 // ── Conversation broadcast helper ─────────────────────────────────────────────
@@ -60,6 +71,10 @@ function broadcastConversationMessageToWs(string $conversationId, array $message
     $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
     $payload = json_encode(['conversationId' => $conversationId, 'message' => $message]);
     $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
+    $target  = $wsUrl . '/broadcast/conversation-message';
+
+    error_log("[ws-broadcast] → target={$target} conversationId=" . substr($conversationId, 0, 8) . " token=" . ($token !== '' ? 'set' : 'none'));
+
     $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
     if ($token !== '') {
         $headers .= "X-Internal-Token: {$token}\r\n";
@@ -70,12 +85,19 @@ function broadcastConversationMessageToWs(string $conversationId, array $message
             'method'        => 'POST',
             'header'        => $headers,
             'content'       => $payload,
-            'timeout'       => 1,
+            'timeout'       => 2,
             'ignore_errors' => true,
         ],
     ]);
 
-    @file_get_contents($wsUrl . '/broadcast/conversation-message', false, $ctx);
+    $result = @file_get_contents($target, false, $ctx);
+    $status = isset($http_response_header) ? ($http_response_header[0] ?? 'no-header') : 'no-response';
+    if ($result === false) {
+        $err = error_get_last();
+        error_log("[ws-broadcast] ✗ FAILED target={$target} error=" . ($err['message'] ?? 'unknown'));
+    } else {
+        error_log("[ws-broadcast] ✓ OK status=\"{$status}\" body=" . substr((string)$result, 0, 100));
+    }
 }
 
 function enforceRateLimit(string $bucket, int $limit, int $windowSeconds, ?string $suffix = null): void

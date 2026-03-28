@@ -372,37 +372,54 @@ const httpServer = createServer((req, res) => {
   let body = ''
   req.on('data', chunk => { body += chunk })
   req.on('end', () => {
+    console.log(`[internal] ${req.method} ${req.url} from ${req.socket.remoteAddress} body-len=${body.length}`)
     try {
       if (INTERNAL_TOKEN) {
         const provided = req.headers['x-internal-token']
         if (provided !== INTERNAL_TOKEN) {
+          console.log(`[internal] ✗ auth FAILED — token mismatch (provided=${provided ? provided.slice(0, 6) + '...' : 'none'})`)
           res.writeHead(403); res.end('forbidden')
           return
         }
+        console.log('[internal] ✓ auth OK')
+      } else {
+        console.log('[internal] auth skipped (no INTERNAL_TOKEN set)')
       }
 
       if (req.method === 'POST' && req.url === '/broadcast/event-participants') {
         const { eventId, count } = JSON.parse(body)
+        const room = eventRooms.get(eventId)
+        console.log(`[internal] broadcast event-participants eventId=${eventId} count=${count} roomSize=${room ? room.size : 0}`)
         broadcastParticipantCount(eventId, count)
         res.writeHead(200); res.end('ok')
       } else if (req.method === 'POST' && req.url === '/broadcast/message') {
-        const { channelId, message } = JSON.parse(body)
+        const parsed = JSON.parse(body)
+        const { channelId, message } = parsed
+        const isCity = typeof channelId === 'number'
+        const room = isCity ? rooms.get(channelId) : eventRooms.get(channelId)
+        console.log(`[internal] broadcast message channelId=${JSON.stringify(channelId)} isCity=${isCity} roomSize=${room ? room.size : 0}`)
         broadcastNewMessage(channelId, message)
         res.writeHead(200); res.end('ok')
       } else if (req.method === 'POST' && req.url === '/broadcast/conversation-message') {
         const { conversationId, message } = JSON.parse(body)
+        const room = dmRooms.get(conversationId)
+        console.log(`[internal] broadcast conversation-message convId=${conversationId ? conversationId.slice(0, 8) : 'null'} roomSize=${room ? room.size : 0}`)
         broadcastConversationMessage(conversationId, message)
         res.writeHead(200); res.end('ok')
       } else {
+        console.log(`[internal] ✗ unknown route ${req.method} ${req.url}`)
         res.writeHead(404); res.end('not found')
       }
-    } catch {
+    } catch (err) {
+      console.log(`[internal] ✗ error: ${err.message}`)
       res.writeHead(400); res.end('bad request')
     }
   })
 })
 
-httpServer.listen(INTERNAL_PORT)
+httpServer.listen(INTERNAL_PORT, '0.0.0.0', () => {
+  console.log(`Hilads WS internal HTTP listening on 0.0.0.0:${INTERNAL_PORT}`)
+})
 
-console.log(`Hilads WS server listening on ws://localhost:${PORT}`)
-console.log(`Hilads WS internal HTTP listening on http://localhost:${INTERNAL_PORT}`)
+console.log(`Hilads WS server listening on ws://0.0.0.0:${PORT}`)
+console.log(`INTERNAL_PORT=${INTERNAL_PORT} INTERNAL_TOKEN=${INTERNAL_TOKEN ? 'set' : 'none'} ALLOWED_ORIGINS=${[...ALLOWED_ORIGINS].join(',')}`)
