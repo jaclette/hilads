@@ -5,15 +5,12 @@
  * is visible.
  *
  * Event routing:
- *   newConversationMessage → unreadDMs     (when inside a joined DM room)
  *   notification { type: 'dm_message' }   → unreadDMs     (global DM alert from server)
  *   notification { type: * (non-DM) }     → unreadNotifications
  *   newNotification                        → unreadNotifications
  *
- * The server sends `notification` events globally to all connected sockets for
- * DM messages; `newConversationMessage` is only sent to members of the
- * conversation room (joined via joinConversation). We handle both paths so the
- * badge updates regardless of whether the DM screen is open.
+ * DM unread from newConversationMessage is handled by useGlobalDmNotifications
+ * (with own-message and active-thread guards).
  */
 
 import { useEffect } from 'react';
@@ -22,14 +19,6 @@ import { useApp } from '@/context/AppContext';
 
 export function useGlobalNotifications() {
   const { setUnreadDMs, setUnreadNotifications } = useApp();
-
-  // newConversationMessage — fired when inside an active conversation room
-  useEffect(() => {
-    const off = socket.on('newConversationMessage', () => {
-      setUnreadDMs(prev => prev + 1);
-    });
-    return off;
-  }, [setUnreadDMs]);
 
   // notification / newNotification — global server broadcast
   // Route dm_message type → message badge; everything else → bell badge

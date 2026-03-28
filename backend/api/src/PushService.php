@@ -13,6 +13,7 @@ class PushService
         return match ($type) {
             'dm_message'    => 'dm_push',
             'event_message' => 'event_message_push',
+            'event_join'    => 'event_join_push',
             'new_event'     => 'new_event_push',
             default         => null,
         };

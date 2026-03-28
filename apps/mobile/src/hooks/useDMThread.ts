@@ -15,7 +15,7 @@ interface Result {
 }
 
 export function useDMThread(conversationId: string): Result {
-  const { account } = useApp();
+  const { account, setActiveDmId } = useApp();
   const [messages, setMessages] = useState<DmMessage[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [sending,  setSending]  = useState(false);
@@ -54,8 +54,12 @@ export function useDMThread(conversationId: string): Result {
     return () => { cancelled = true; };
   }, [conversationId]);
 
-  // WS — live new DMs
+  // WS — track active thread + live append
+  // setActiveDmId tells the global DM hook to skip unread increments for this thread.
+  // joinDm re-asserts membership (global hook also joins, but re-joining is harmless).
+  // Do NOT leaveDm on unmount — the global hook owns the WS room subscription.
   useEffect(() => {
+    setActiveDmId(conversationId);
     if (account) socket.joinDm(conversationId, account.id);
     const off = socket.on('newConversationMessage', (data) => {
       if (data.conversationId === conversationId && data.message) {
@@ -65,9 +69,9 @@ export function useDMThread(conversationId: string): Result {
     });
     return () => {
       off();
-      socket.leaveDm(conversationId);
+      setActiveDmId(null);
     };
-  }, [conversationId, account, addNew]);
+  }, [conversationId, account, addNew, setActiveDmId]);
 
   // Polling fallback
   useEffect(() => {

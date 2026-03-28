@@ -1,0 +1,98 @@
+/**
+ * useGlobalDmNotifications — always-on WS subscriptions for DM conversations.
+ *
+ * Mounted in RootLayoutInner so it stays active across all screens.
+ *
+ * On boot: fetches the user's conversations and joins their WS rooms so
+ * newConversationMessage events are received globally — not just when the
+ * dm/[id] screen is open.
+ *
+ * On newConversationMessage for a subscribed conversation:
+ *   - Own messages:          ignored (no self-unread)
+ *   - Active DM thread open: ignored (useDMThread handles live append)
+ *   - Otherwise:             increments global unreadDMs badge
+ */
+
+import { useEffect, useRef, useCallback } from 'react';
+import { socket } from '@/lib/socket';
+import { fetchConversations } from '@/api/conversations';
+import { useApp } from '@/context/AppContext';
+
+export function useGlobalDmNotifications() {
+  const {
+    account,
+    setUnreadDMs,
+    activeDmId,
+  } = useApp();
+
+  const accountIdRef  = useRef<string | undefined>(account?.id);
+  const activeDmIdRef = useRef<string | null>(activeDmId);
+
+  accountIdRef.current  = account?.id;
+  activeDmIdRef.current = activeDmId;
+
+  // Load all conversations and join their WS rooms
+  const joinAll = useCallback(async () => {
+    const uid = accountIdRef.current;
+    if (!uid) {
+      if (__DEV__) console.log('[dmChat] joinAll skipped — no account');
+      return;
+    }
+    try {
+      const convs = await fetchConversations();
+      convs.forEach(c => {
+        socket.joinDm(c.id, uid);
+        if (__DEV__) console.log('[dmChat] joined conversation', c.id.slice(0, 8), c.other_display_name);
+      });
+      if (__DEV__) console.log('[dmChat] subscribed to', convs.length, 'DM rooms');
+    } catch (err) {
+      if (__DEV__) console.warn('[dmChat] joinAll failed:', err);
+    }
+  }, []); // stable — uses refs only
+
+  // Join on boot (once account is ready)
+  useEffect(() => {
+    if (account?.id) joinAll();
+  }, [account?.id, joinAll]);
+
+  // Re-join all rooms after WS reconnects
+  useEffect(() => {
+    const off = socket.on('connected', joinAll);
+    return off;
+  }, [joinAll]);
+
+  // Listen for new DMs in subscribed conversation rooms
+  useEffect(() => {
+    const handler = (data: Record<string, unknown>) => {
+      const conversationId = data.conversationId as string | undefined;
+      if (!conversationId) return;
+
+      if (__DEV__) {
+        console.log('[dmChat] newConversationMessage received', {
+          conversationId: conversationId.slice(0, 8),
+          activeDmId: activeDmIdRef.current?.slice(0, 8) ?? null,
+        });
+      }
+
+      const msg = data.message as { sender_id?: string } | undefined;
+
+      // Ignore own messages
+      if (msg?.sender_id === accountIdRef.current) {
+        if (__DEV__) console.log('[dmChat] skipping own message for', conversationId.slice(0, 8));
+        return;
+      }
+
+      // Ignore if user is actively viewing this DM thread right now
+      if (activeDmIdRef.current === conversationId) {
+        if (__DEV__) console.log('[dmChat] skipping — DM thread active for', conversationId.slice(0, 8));
+        return;
+      }
+
+      if (__DEV__) console.log('[dmChat] unread++', { conversationId: conversationId.slice(0, 8) });
+      setUnreadDMs(prev => prev + 1);
+    };
+
+    const off = socket.on('newConversationMessage', handler);
+    return off;
+  }, [setUnreadDMs]);
+}

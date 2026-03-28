@@ -21,6 +21,8 @@ import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import {
   fetchNotifications, markNotificationsRead,
+  fetchNotificationPreferences, updateNotificationPreferences,
+  type NotificationPreferences,
 } from '@/api/notifications';
 import { socket } from '@/lib/socket';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -140,18 +142,25 @@ export default function NotificationsScreen() {
   const notifRef = useRef(notifications);
   notifRef.current = notifications;
 
-  // Preferences — local state (persisted in memory, consistent with web)
-  const [prefDMs,       setPrefDMs]       = useState(true);
-  const [prefEvents,    setPrefEvents]    = useState(true);
-  const [prefNewEvents, setPrefNewEvents] = useState(false);
+  // Preferences — loaded from backend, saved on toggle
+  const [prefs, setPrefs] = useState<NotificationPreferences>({
+    dm_push:            true,
+    event_message_push: true,
+    event_join_push:    false,
+    new_event_push:     false,
+  });
 
-  // ── Load notifications ────────────────────────────────────────────────────
+  // ── Load notifications + preferences ─────────────────────────────────────
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const { notifications: list } = await fetchNotifications();
+      const [{ notifications: list }, loadedPrefs] = await Promise.all([
+        fetchNotifications(),
+        fetchNotificationPreferences().catch(() => null),
+      ]);
       setNotifications(list);
+      if (loadedPrefs) setPrefs(loadedPrefs);
       // Clear badge — user has opened this screen
       const unread = list.filter(n => !n.is_read).length;
       setUnreadNotifications(unread);
@@ -160,6 +169,17 @@ export default function NotificationsScreen() {
   }, [setUnreadNotifications]);
 
   useEffect(() => { load(); }, [load]);
+
+  // ── Toggle a preference and sync to backend ───────────────────────────────
+
+  const togglePref = useCallback((key: keyof NotificationPreferences, value: boolean) => {
+    const updated = { ...prefs, [key]: value };
+    setPrefs(updated);
+    updateNotificationPreferences({ [key]: value }).catch(() => {
+      // Revert on failure
+      setPrefs(prefs);
+    });
+  }, [prefs]);
 
   // ── Realtime: new notification via WS ────────────────────────────────────
 
@@ -262,23 +282,30 @@ export default function NotificationsScreen() {
           <View style={styles.prefCard}>
             <PrefRow
               label="New direct messages"
-              subtitle="In-app · Push coming soon"
-              value={prefDMs}
-              onChange={setPrefDMs}
+              subtitle="When someone sends you a private message"
+              value={prefs.dm_push}
+              onChange={v => togglePref('dm_push', v)}
             />
             <View style={styles.prefDivider} />
             <PrefRow
               label="Event chat messages"
               subtitle="When someone messages in an event you joined"
-              value={prefEvents}
-              onChange={setPrefEvents}
+              value={prefs.event_message_push}
+              onChange={v => togglePref('event_message_push', v)}
+            />
+            <View style={styles.prefDivider} />
+            <PrefRow
+              label="Someone joined your event"
+              subtitle="When a new person joins an event you're going to"
+              value={prefs.event_join_push}
+              onChange={v => togglePref('event_join_push', v)}
             />
             <View style={styles.prefDivider} />
             <PrefRow
               label="New events in your city"
-              subtitle="When someone creates an event while you're online"
-              value={prefNewEvents}
-              onChange={setPrefNewEvents}
+              subtitle="When someone creates an event in your city"
+              value={prefs.new_event_push}
+              onChange={v => togglePref('new_event_push', v)}
             />
           </View>
         </View>

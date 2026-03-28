@@ -10,6 +10,7 @@ import { usePresenceHeartbeat } from '@/hooks/usePresenceHeartbeat';
 import { usePresence } from '@/hooks/usePresence';
 import { useGlobalNotifications } from '@/hooks/useGlobalNotifications';
 import { useEventChatNotifications } from '@/hooks/useEventChatNotifications';
+import { useGlobalDmNotifications } from '@/hooks/useGlobalDmNotifications';
 import { BootScreen } from '@/components/BootScreen';
 import { LandingScreen } from '@/components/LandingScreen';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
@@ -27,8 +28,9 @@ function RootLayoutInner() {
   useAppLifecycle();          // foreground/background WS resilience
   usePresenceHeartbeat();     // keep presence alive
   usePresence();              // sync online users list to AppContext
-  useGlobalNotifications();        // always-on unread DM + notification badge updates
+  useGlobalNotifications();        // always-on notification badge updates
   useEventChatNotifications();     // always-on unread event chat badge + preview updates
+  useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
 
   useEffect(() => {
     if (!booting) SplashScreen.hideAsync();

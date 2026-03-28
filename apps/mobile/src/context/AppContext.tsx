@@ -29,6 +29,7 @@ interface AppState {
   unreadNotifications:  number;
   eventChatPreviews:    Record<string, EventChatPreview>; // per event-id unread state
   activeEventId:        string | null;   // event/[id] screen currently mounted
+  activeDmId:           string | null;   // dm/[id] screen currently mounted
   geoState:             GeoState;
   detectedCity:         City | null;     // geo-resolved city, shown on landing screen
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
@@ -49,6 +50,7 @@ interface AppActions {
   removeEventChatPreview:  (eventId: string) => void;
   clearEventChatCounts:    () => void;
   setActiveEventId:        (id: string | null) => void;
+  setActiveDmId:           (id: string | null) => void;
   setGeoState:             (state: GeoState) => void;
   setDetectedCity:         (city: City | null) => void;
   setJoined:               (joined: boolean) => void;
@@ -70,6 +72,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [unreadNotifications,     setUnreadNotifications]     = useState(0);
   const [eventChatPreviews,       setEventChatPreviewsRaw]    = useState<Record<string, EventChatPreview>>({});
   const [activeEventId,           setActiveEventId]           = useState<string | null>(null);
+  const [activeDmId,              setActiveDmId]              = useState<string | null>(null);
   const [geoState,                setGeoState]                = useState<GeoState>('pending');
   const [detectedCity, setDetectedCity] = useState<City | null>(null);
   const [joined,       setJoined]       = useState(false);
@@ -111,7 +114,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <AppContext.Provider
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected,
-        unreadDMs, unreadNotifications, eventChatPreviews, activeEventId,
+        unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
         geoState, detectedCity, joined, onlineUsers,
         setBooting, setBootError,
         setIdentity,
@@ -125,6 +128,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         removeEventChatPreview,
         clearEventChatCounts,
         setActiveEventId:        useCallback((id: string | null) => setActiveEventId(id), []),
+        setActiveDmId:           useCallback((id: string | null) => setActiveDmId(id), []),
         setGeoState:             useCallback((s: GeoState) => setGeoState(s), []),
         setDetectedCity:         useCallback((c: City | null) => setDetectedCity(c), []),
         setJoined:               useCallback((j: boolean) => setJoined(j), []),

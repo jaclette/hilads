@@ -1839,6 +1839,23 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
 
     ParticipantRepository::broadcastToWs($eventId, $count);
 
+    // Notify other registered participants when a registered user joins (not on leave)
+    if ($isIn && $currentUser !== null) {
+        $event = EventRepository::findById($eventId);
+        if ($event !== null) {
+            $joinerName = $currentUser['display_name'] ?? ($nickname ?: 'Someone');
+            $eventTitle = $event['title'] ?? 'an event';
+            NotificationRepository::notifyEventParticipants(
+                $eventId,
+                $currentUser['id'],
+                'event_join',
+                "👋 {$joinerName} joined {$eventTitle}",
+                null,
+                ['eventId' => $eventId]
+            );
+        }
+    }
+
     Response::json(['count' => $count, 'isIn' => $isIn]);
 });
 
@@ -2147,7 +2164,7 @@ $router->add('GET', '/api/v1/notification-preferences', function () {
 });
 
 // PUT /api/v1/notification-preferences
-// Body: any subset of { dm_push, event_message_push, new_event_push }
+// Body: any subset of { dm_push, event_message_push, event_join_push, new_event_push }
 $router->add('PUT', '/api/v1/notification-preferences', function () {
     $user  = AuthService::requireAuth();
     $body  = Request::json() ?? [];

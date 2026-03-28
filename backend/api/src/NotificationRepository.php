@@ -13,6 +13,11 @@ class NotificationRepository
         ?string $body,
         array   $data = []
     ): array {
+        // Skip if recipient has disabled this notification type
+        if (!self::isEnabledForUser($userId, $type)) {
+            return [];
+        }
+
         $stmt = Database::pdo()->prepare("
             INSERT INTO notifications (user_id, type, title, body, data)
             VALUES (?, ?, ?, ?, ?::jsonb)
@@ -26,6 +31,36 @@ class NotificationRepository
         PushService::send($userId, $type, $title, $body, self::pushUrl($type, $data), self::pushTag($type, $data));
 
         return $notif;
+    }
+
+    private static function isEnabledForUser(string $userId, string $type): bool
+    {
+        $col = match ($type) {
+            'dm_message'    => 'dm_push',
+            'event_message' => 'event_message_push',
+            'event_join'    => 'event_join_push',
+            'new_event'     => 'new_event_push',
+            default         => null,
+        };
+        if ($col === null) return true; // Unknown type — always create
+
+        $defaults = [
+            'dm_push'            => true,
+            'event_message_push' => true,
+            'event_join_push'    => false,
+            'new_event_push'     => false,
+        ];
+
+        try {
+            $stmt = Database::pdo()->prepare(
+                "SELECT {$col} FROM notification_preferences WHERE user_id = ?"
+            );
+            $stmt->execute([$userId]);
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $row ? (bool) $row[$col] : ($defaults[$col] ?? true);
+        } catch (\Throwable) {
+            return true; // On DB error, don't suppress
+        }
     }
 
     private static function pushUrl(string $type, array $data): string
