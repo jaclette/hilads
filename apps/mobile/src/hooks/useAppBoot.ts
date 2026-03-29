@@ -8,7 +8,6 @@ import { resolveLocation, joinChannel, fetchChannels } from '@/api/channels';
 import { authMe } from '@/api/auth';
 import { loadSavedToken } from '@/services/session';
 import { fetchUnreadCount } from '@/api/notifications';
-import { requestAndRegisterPush } from '@/services/push';
 import { getAuthToken } from '@/api/client';
 
 // ── Timeouts ──────────────────────────────────────────────────────────────────
@@ -303,22 +302,30 @@ export function useAppBoot(): Result {
 
         // Phase 4: Auth check
         const authPromise = loadSavedToken()
-          .then(() => authMe())
+          .then(hadToken => {
+            console.log('[boot] loadSavedToken — token found in SecureStore:', hadToken);
+            console.log('[boot] authToken in memory after load:',
+              getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO');
+            return authMe();
+          })
           .then(user => {
+            console.log('[boot] authMe result:', user ? `user=${user.id}` : 'null (not authenticated)');
             if (!cancelled && user) {
-              setAccount(user);
+              setAccount(user);  // usePushRegistration in _layout.tsx reacts to this
               fetchUnreadCount()
                 .then(count => { if (!cancelled) setUnreadNotifications(count); })
                 .catch(() => {});
-              console.log('[boot] triggering push registration — authToken present:',
-                getAuthToken() !== null ? 'yes' : 'NO (token not loaded yet — push may get 401)');
-              requestAndRegisterPush().catch(err =>
-                console.warn('[boot] push registration failed:', String(err)),
-              );
+              console.log('[boot] account set — push registration will fire via usePushRegistration');
+              console.log('[boot] authToken present:', getAuthToken() !== null ? 'yes' : 'NO');
+            } else if (!cancelled) {
+              console.log('[boot] no authenticated user — push registration will wait for login');
             }
             return user ?? null;
           })
-          .catch(() => null);
+          .catch(err => {
+            console.warn('[boot] auth check failed:', String(err));
+            return null;
+          });
 
         // Phase 5: City resolution
         // Defer geo start so React has rendered LandingScreen and Android has

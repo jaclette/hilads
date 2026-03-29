@@ -11,6 +11,7 @@ import { usePresence } from '@/hooks/usePresence';
 import { useGlobalNotifications } from '@/hooks/useGlobalNotifications';
 import { useEventChatNotifications } from '@/hooks/useEventChatNotifications';
 import { useGlobalDmNotifications } from '@/hooks/useGlobalDmNotifications';
+import { usePushRegistration } from '@/hooks/usePushRegistration';
 import { BootScreen } from '@/components/BootScreen';
 import { LandingScreen } from '@/components/LandingScreen';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
@@ -31,6 +32,7 @@ function RootLayoutInner() {
   useGlobalNotifications();        // always-on notification badge updates
   useEventChatNotifications();     // always-on unread event chat badge + preview updates
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
+  usePushRegistration();           // register push token whenever an account is available
 
   useEffect(() => {
     if (!booting) SplashScreen.hideAsync();

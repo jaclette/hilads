@@ -10,13 +10,15 @@
  *   - After sending a first message
  *   - On Messages tab mount (registered users only)
  */
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   requestAndRegisterPush,
   hasBeenAsked,
   hasPushPermission,
   setupNotificationChannel,
 } from '@/services/push';
+import { getAuthToken } from '@/api/client';
+import { API_URL } from '@/constants';
 
 interface Result {
   /** Ask for push permission if not already asked and not already granted. */
@@ -24,8 +26,21 @@ interface Result {
 }
 
 export function usePushNotifications(): Result {
+
+  // ── Mount proof — confirms this hook is alive in the current render tree ────
+  useEffect(() => {
+    console.log('[push-hook] ── usePushNotifications MOUNTED ────────────────');
+    console.log('[push-hook] API_URL =', API_URL);
+    console.log('[push-hook] authToken at mount =',
+      getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO');
+  }, []);
+
   const requestIfAppropriate = useCallback(async () => {
-    console.log('[push-hook] requestIfAppropriate called');
+    console.log('[push-hook] ── requestIfAppropriate called ──────────────────');
+    console.log('[push-hook] API_URL =', API_URL);
+    console.log('[push-hook] authToken =',
+      getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — push will get 401');
+
     await setupNotificationChannel();
 
     const granted = await hasPushPermission();
@@ -33,16 +48,14 @@ export function usePushNotifications(): Result {
     console.log('[push-hook] hasPushPermission =', granted, '| hasBeenAsked =', asked);
 
     if (granted) {
-      // Already granted — re-sync token with backend (handles token refresh / new installs)
-      console.log('[push-hook] permission already granted → re-syncing token with backend');
+      console.log('[push-hook] permission granted → re-syncing token with backend');
       await requestAndRegisterPush();
       return;
     }
 
     if (asked) {
-      // Previously asked but not granted — do not prompt again, but still try to register
-      // in case permission was manually enabled in Settings after the initial ask.
-      console.log('[push-hook] already asked, permission not granted — attempting silent re-register');
+      // Previously asked — still attempt registration in case user enabled in Settings.
+      console.log('[push-hook] already asked, not yet granted — attempting silent re-register');
       await requestAndRegisterPush();
       return;
     }

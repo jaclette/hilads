@@ -8,14 +8,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { authSignup } from '@/api/auth';
 import { useApp } from '@/context/AppContext';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignUpScreen() {
   const router = useRouter();
   const { setAccount, setJoined, identity } = useApp();
-  const { requestIfAppropriate } = usePushNotifications();
 
   const [name,     setName]     = useState('');
   const [email,    setEmail]    = useState('');
@@ -41,8 +39,7 @@ export default function SignUpScreen() {
       setAccount(user);
       setJoined(true);   // dismiss LandingScreen if it was showing
       track('auth_signup');
-      requestIfAppropriate().catch(err => console.warn('[push-hook] sign-up trigger failed:', String(err)));
-      router.back();
+      router.back(); // usePushRegistration in _layout.tsx reacts to setAccount above
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Sign up failed';
       setError(msg.includes('409') || msg.includes('already') ? 'Email already registered' : msg);

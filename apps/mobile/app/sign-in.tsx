@@ -8,14 +8,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { authLogin } from '@/api/auth';
 import { useApp } from '@/context/AppContext';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignInScreen() {
   const router = useRouter();
   const { setAccount, setJoined } = useApp();
-  const { requestIfAppropriate } = usePushNotifications();
 
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -33,8 +31,7 @@ export default function SignInScreen() {
       setAccount(user);
       setJoined(true);   // dismiss LandingScreen if it was showing
       track('auth_login');
-      requestIfAppropriate().catch(err => console.warn('[push-hook] sign-in trigger failed:', String(err)));
-      router.back();
+      router.back(); // usePushRegistration in _layout.tsx reacts to setAccount above
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Sign in failed';
       setError(msg === 'HTTP 401' || msg.includes('401') ? 'Invalid email or password' : msg);
