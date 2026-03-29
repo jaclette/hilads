@@ -1,4 +1,4 @@
-import { api, setAuthToken } from './client';
+import { api, setAuthToken, getAuthToken } from './client';
 import { persistToken } from '@/services/session';
 import type { User } from '@/types';
 
@@ -20,15 +20,16 @@ export async function authLogin(
   password: string,
 ): Promise<{ user: User }> {
   const res = await api.post<{ user: User; token?: string }>('/auth/login', { email, password });
-  // Persist token from response body — set-cookie headers are not reliably
-  // exposed by React Native fetch on Android, so we carry the token in the body.
+  // If the token came in the response body, load it into the client explicitly.
+  // If it came via Set-Cookie, client.ts already captured it into authToken.
+  // Either way, always persist whatever token is now in memory to SecureStore
+  // so the session survives app restarts.
   if (res.token) {
-    console.log('[auth] login: persisting session token from response body');
     setAuthToken(res.token);
-    await persistToken();
-  } else {
-    console.warn('[auth] login: no token in response body — relying on set-cookie capture');
   }
+  await persistToken();
+  console.log('[auth] login: token persisted to SecureStore =',
+    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — no token received from server');
   return res;
 }
 
@@ -45,12 +46,11 @@ export async function authSignup(
     guest_id: guestId,
   });
   if (res.token) {
-    console.log('[auth] signup: persisting session token from response body');
     setAuthToken(res.token);
-    await persistToken();
-  } else {
-    console.warn('[auth] signup: no token in response body — relying on set-cookie capture');
   }
+  await persistToken();
+  console.log('[auth] signup: token persisted to SecureStore =',
+    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — no token received from server');
   return res;
 }
 

@@ -34,21 +34,10 @@ const PROJECT_ID =
 
 console.log('[push-mobile] PROJECT_ID =', PROJECT_ID);
 
-// ── Foreground notification handler ───────────────────────────────────────────
-//
-// Must be set at module load — before any notification can arrive.
-// Without this Expo silently drops notifications received while the app is open.
-// For background / terminated state Android handles it natively via FCM.
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge:  true,
-  }),
-});
-
 // ── Android notification channel ──────────────────────────────────────────────
+// NOTE: setNotificationHandler is set in NotificationHandler.tsx (mounted in
+// _layout.tsx) so it can apply per-screen suppression logic. Do not set it
+// here — only one handler is active at a time and the last call wins.
 
 export async function setupNotificationChannel(): Promise<void> {
   if (Platform.OS !== 'android') return;

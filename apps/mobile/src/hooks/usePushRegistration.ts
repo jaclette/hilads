@@ -42,6 +42,7 @@ export function usePushRegistration(): void {
   useEffect(() => {
     console.log('[push-reg] ── account effect fired ─────────────────────────');
     console.log('[push-reg] account =', account ? `id=${account.id} name=${account.display_name}` : 'null');
+    console.log('[push-reg] lastRegisteredFor =', lastRegisteredFor.current ?? 'null');
     console.log('[push-reg] API_URL =', API_URL);
     console.log('[push-reg] authToken present =',
       getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO');
@@ -52,16 +53,22 @@ export function usePushRegistration(): void {
     }
 
     if (lastRegisteredFor.current === account.id) {
-      console.log('[push-reg] already registered for this user this session — skipping');
+      console.log('[push-reg] guard: already registered for this user this session — skipping');
       return;
     }
 
-    lastRegisteredFor.current = account.id;
-
     console.log('[push-reg] NEW account detected — starting push registration for', account.id);
 
-    requestAndRegisterPush().catch(err =>
-      console.warn('[push-reg] registration failed:', String(err)),
-    );
+    // NOTE: we set the guard ONLY after success so that a failed attempt is
+    // retried on the next account change (e.g. logout → login with same user).
+    requestAndRegisterPush()
+      .then(() => {
+        console.log('[push-reg] SUCCESS — marking session as registered for', account.id);
+        lastRegisteredFor.current = account.id;
+      })
+      .catch(err => {
+        console.warn('[push-reg] registration failed — will NOT mark session; will retry on next trigger:', String(err));
+        // intentionally NOT setting lastRegisteredFor so the next trigger retries
+      });
   }, [account?.id]);
 }

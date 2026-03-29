@@ -17,6 +17,26 @@ import { useApp } from '@/context/AppContext';
 import { setupNotificationChannel } from '@/services/push';
 import { track } from '@/services/analytics';
 
+// ── Cold-start notification — resolved at module load ─────────────────────────
+// Start this promise immediately when the module is first imported, BEFORE any
+// component mounts. This gives it the maximum time to resolve and lets
+// useAppBoot await it before deciding where to redirect on boot.
+
+const _coldStartPromise = Notifications.getLastNotificationResponseAsync().catch(() => null);
+
+/**
+ * Returns the deep-link route the user should land on if they cold-started the
+ * app by tapping a push notification, or null if there was no such notification.
+ * Safe to call multiple times — reuses the same single promise.
+ */
+export async function getColdStartNotificationRoute(): Promise<string | null> {
+  const response = await _coldStartPromise;
+  if (!response) return null;
+  const route = resolveRoute(response.notification.request.content.data as NotifData);
+  console.log('[push-nav] cold-start notification check → route:', route ?? 'none');
+  return route;
+}
+
 // ── Active screen state ───────────────────────────────────────────────────────
 // Module-level mutable ref so the notification handler (called outside React)
 // can read the current active screen without a closure/stale reference.
@@ -61,8 +81,11 @@ function resolveRoute(data: NotifData): string | null {
   switch (data.type) {
     case 'dm_message':
       if (data.conversationId) {
-        const name = data.senderName ? `&name=${encodeURIComponent(data.senderName)}` : '';
-        return `/dm/${data.conversationId}?${name}`;
+        // conv param tells DM screen to open by conversationId directly (skip findOrCreateDM).
+        // id segment is also the conversationId — only used as a URL segment / display key.
+        const namePart = data.senderName ? `&name=${encodeURIComponent(data.senderName)}` : '';
+        console.log('[push-nav] tapped DM notification with conversationId=', data.conversationId);
+        return `/dm/${data.conversationId}?conv=${encodeURIComponent(data.conversationId)}${namePart}`;
       }
       return '/(tabs)/messages';
 
@@ -91,31 +114,63 @@ export function NotificationHandler() {
   activeScreen.dmId    = activeDmId;
   activeScreen.eventId = activeEventId;
 
-  // On mount: set up channel + check for cold-start notification
+  // Ref so the tap listener (set up once in useEffect([])) can read the current
+  // booting value without a stale closure. Needed for background→foreground taps
+  // where booting is already false by the time the notification is tapped.
+  const bootingRef = useRef(booting);
+  useEffect(() => { bootingRef.current = booting; }, [booting]);
+
+  // On mount: set up channel + register cold-start route as fallback
+  // (useAppBoot handles the actual navigation for returning users;
+  //  this covers new-user / geo-flow paths where boot doesn't redirect)
   useEffect(() => {
     setupNotificationChannel();
 
-    Notifications.getLastNotificationResponseAsync().then(response => {
+    _coldStartPromise.then(response => {
       if (!response) return;
       const data  = response.notification.request.content.data as NotifData;
       const route = resolveRoute(data);
-      if (route) pendingRoute.current = route;
+      if (route) {
+        console.log('[push-nav] cold-start route stored in pendingRoute:', route);
+        pendingRoute.current = route;
+      }
+    });
+
+    // Foreground received listener — logs incoming notifications while app is open
+    const receivedSub = Notifications.addNotificationReceivedListener(notification => {
+      const data = notification.request.content.data as NotifData;
+      console.log('[notif] foreground notification received:',
+        notification.request.content.title,
+        '| type:', data.type ?? '(none)',
+        '| suppress:', (
+          (data.type === 'dm_message'    && !!data.conversationId && data.conversationId === activeScreen.dmId) ||
+          (data.type === 'event_message' && !!data.eventId        && data.eventId        === activeScreen.eventId)
+        ),
+      );
     });
 
     // Live tap listener (background → foreground, or foreground tap)
+    // IMPORTANT: reads bootingRef.current (not the closed-over `booting`) so
+    // background→foreground taps correctly see booting=false and navigate directly.
     const sub = Notifications.addNotificationResponseReceivedListener(response => {
       const data  = response.notification.request.content.data as NotifData;
+      console.log('[push-nav] notification tapped | type:', data.type ?? '(none)',
+        '| conversationId:', data.conversationId ?? '-',
+        '| eventId:', data.eventId ?? '-');
       const route = resolveRoute(data);
+      console.log('[push-nav] resolved route:', route ?? 'none — ignoring');
       if (!route) return;
       track('notification_opened', { type: data.type ?? 'unknown' });
-      if (booting) {
+      if (bootingRef.current) {
+        console.log('[push-nav] app still booting — storing route for deferred navigation:', route);
         pendingRoute.current = route;
       } else {
+        console.log('[push-nav] navigating to:', route);
         router.push(route as Parameters<typeof router.push>[0]);
       }
     });
 
-    return () => sub.remove();
+    return () => { receivedSub.remove(); sub.remove(); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

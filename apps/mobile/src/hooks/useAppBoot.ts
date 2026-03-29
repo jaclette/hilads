@@ -9,6 +9,7 @@ import { authMe } from '@/api/auth';
 import { loadSavedToken } from '@/services/session';
 import { fetchUnreadCount } from '@/api/notifications';
 import { getAuthToken } from '@/api/client';
+import { getColdStartNotificationRoute } from '@/features/notifications/NotificationHandler';
 
 // ── Timeouts ──────────────────────────────────────────────────────────────────
 
@@ -342,7 +343,7 @@ export function useAppBoot(): Result {
               setTimeout(() => reject(new Error('boot: channel fetch timeout')), BOOT_FETCH_TIMEOUT_MS),
             ),
           ])
-            .then(([user, channels]) => {
+            .then(async ([user, channels]) => {
               if (cancelled) return;
               const displayName = user?.display_name ?? identity.nickname;
               const saved = channels.find(c => c.channelId === identity.channelId);
@@ -359,7 +360,22 @@ export function useAppBoot(): Result {
                   socket.joinCity(saved.channelId, sessionId, displayName, userId);
                 }
                 setJoined(true);
-                router.replace('/(tabs)/chat');
+
+                // Check for a cold-start notification deep link.
+                // If the user launched the app by tapping a push notification,
+                // navigate there instead of defaulting to city chat.
+                const notifRoute = await getColdStartNotificationRoute();
+                if (notifRoute) {
+                  console.log('[push-nav] app boot redirect skipped because notification deep link is present:', notifRoute);
+                  // Push city chat first so back-button works naturally, then navigate to destination.
+                  router.replace('/(tabs)/chat');
+                  setTimeout(() => {
+                    console.log('[push-nav] navigating to:', notifRoute);
+                    router.push(notifRoute as Parameters<typeof router.push>[0]);
+                  }, 300);
+                } else {
+                  router.replace('/(tabs)/chat');
+                }
               } else {
                 console.log('[boot] saved city not found → starting geo');
                 startGeo();

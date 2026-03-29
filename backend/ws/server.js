@@ -346,6 +346,13 @@ function handleBroadcastRequest(req, res) {
         broadcastConversationMessage(conversationId, message)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/new-event') {
+        const { channelId, hiladsEvent } = JSON.parse(body)
+        const room = rooms.get(channelId)
+        console.log(`[internal] broadcast new-event channelId=${channelId} eventId=${hiladsEvent?.id} roomSize=${room ? room.size : 0}`)
+        broadcastNewEvent(channelId, hiladsEvent)
+        res.writeHead(200); res.end('ok')
+
       } else if (req.method === 'GET' && req.url === '/health') {
         // Health check endpoint — Render and uptime monitors can probe this
         res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -413,6 +420,20 @@ setInterval(() => {
     ws.ping()
   }
 }, PING_INTERVAL_MS)
+
+// ── New-event broadcast ─────────────────────────────────────────────────────────
+
+// Pushes a new_event notification to all clients in the city room so in-app
+// banners appear without requiring a push notification.
+// channelId is an integer (city room key).
+function broadcastNewEvent(channelId, hiladsEvent) {
+  const room = rooms.get(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'new_event', channelId, hiladsEvent })
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+  }
+}
 
 // ── Message broadcast ───────────────────────────────────────────────────────────
 

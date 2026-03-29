@@ -1,12 +1,21 @@
-import { useState, useEffect } from 'react';
+/**
+ * DM conversation screen — redesigned for Hilads visual identity.
+ *
+ * Two open modes (set by route params):
+ *   Notification:  conv param present → open existing conversation by conversationId directly
+ *   Profile flow:  no conv param → id is a userId, call findOrCreateDM to resolve thread
+ */
+
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, FlatList, TextInput, TouchableOpacity,
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
+  Animated,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { useDMThread } from '@/hooks/useDMThread';
 import { findOrCreateDM } from '@/api/conversations';
 import { useApp } from '@/context/AppContext';
@@ -14,54 +23,124 @@ import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { DmMessage } from '@/types';
 
-// ── Avatar — hash-based color, same palette as People here ───────────────────
+// ── Avatar color — hash-based, warm palette ───────────────────────────────────
 
-const AVATAR_PALETTE = [
-  '#C24A38', '#B87228', '#3ddc84', '#8B5CF6',
-  '#0EA5E9', '#E879A0', '#F59E0B', '#14B8A6',
+const AVATAR_COLORS = [
+  '#C24A38', '#B87228', '#8B5CF6', '#0EA5E9',
+  '#E879A0', '#3ddc84', '#F59E0B', '#14B8A6',
 ];
 
 function avatarColor(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+// ── Time formatting ────────────────────────────────────────────────────────────
+
+function formatTime(ts: string): string {
+  try {
+    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch {
+    return '';
   }
-  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
 }
 
 // ── Message row ───────────────────────────────────────────────────────────────
-// Own messages: orange gradient (web: linear-gradient(135deg, #FF7A3C, #C24A38))
-// Other messages: dark surface bubble
+// In a 1:1 DM sender names are omitted — position (left/right) makes it obvious.
+// Grouping: consecutive messages from the same sender are visually clustered.
+//   isFirst = oldest in the group (top of cluster)
+//   isLast  = newest in the group (bottom of cluster, shows timestamp)
 
-function DmRow({ msg, isMine }: { msg: DmMessage; isMine: boolean }) {
+interface RowProps {
+  msg:        DmMessage;
+  isMine:     boolean;
+  isFirst:    boolean;   // first (oldest) msg in this sender's run
+  isLast:     boolean;   // last  (newest) msg in this sender's run
+  color:      string;    // avatar accent color for received messages
+  initial:    string;
+}
+
+function DmRow({ msg, isMine, isFirst, isLast, color, initial }: RowProps) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(6)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity,    { toValue: 1, duration: 180, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 180, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
   const isSending = msg.status === 'sending';
   const isFailed  = msg.status === 'failed';
+
+  // Bubble shape: the "tail" corner is only on the first message of each group.
+  // Mine (right): bottom-right corner flattened on first.
+  // Theirs (left): bottom-left corner flattened on first.
+  const bubbleMineShape  = isFirst ? styles.bubbleMineFirst  : undefined;
+  const bubbleOtherShape = isFirst ? styles.bubbleOtherFirst : undefined;
+
   return (
-    <View style={[styles.row, isMine && styles.rowMine, isSending && styles.rowSending]}>
-      {!isMine && <Text style={styles.senderName}>{msg.sender_name}</Text>}
-      {isMine ? (
-        <>
-          <View style={[styles.bubble, styles.bubbleMine, isFailed && styles.bubbleFailed]}>
-            <Text style={[styles.bubbleText, styles.bubbleTextMine]}>{msg.content}</Text>
-          </View>
-          {isFailed && <Text style={styles.failedLabel}>Failed to send</Text>}
-        </>
-      ) : (
-        <View style={[styles.bubble, styles.bubbleOther]}>
-          <Text style={styles.bubbleText}>{msg.content}</Text>
+    <Animated.View style={[
+      styles.rowWrapper,
+      isMine ? styles.rowWrapperMine : styles.rowWrapperOther,
+      isFirst ? styles.rowFirst : styles.rowGrouped,
+      { opacity, transform: [{ translateY }] },
+    ]}>
+      {/* Received: small avatar dot to the left, visible only on first of group */}
+      {!isMine && (
+        <View style={styles.avatarSlot}>
+          {isFirst && (
+            <View style={[styles.avatar, { backgroundColor: color }]}>
+              <Text style={styles.avatarText}>{initial}</Text>
+            </View>
+          )}
         </View>
       )}
-    </View>
+
+      <View style={[styles.bubbleCol, isMine && styles.bubbleColMine]}>
+        <View style={[
+          styles.bubble,
+          isMine  ? styles.bubbleMine  : styles.bubbleOther,
+          isMine  ? bubbleMineShape    : bubbleOtherShape,
+          isSending && styles.bubbleSending,
+          isFailed  && styles.bubbleFailed,
+        ]}>
+          <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
+            {msg.content}
+          </Text>
+        </View>
+
+        {/* Status / timestamp row — only on last message of group */}
+        {isLast && (
+          <View style={[styles.metaRow, isMine && styles.metaRowMine]}>
+            {isSending && (
+              <Text style={styles.metaText}>Sending…</Text>
+            )}
+            {isFailed && (
+              <Text style={styles.metaTextFailed}>Failed · tap to retry</Text>
+            )}
+            {!isSending && !isFailed && (
+              <Text style={styles.metaText}>{formatTime(msg.created_at)}</Text>
+            )}
+          </View>
+        )}
+      </View>
+    </Animated.View>
   );
 }
 
-// ── Thread — only rendered once conversationId is resolved ────────────────────
+// ── Thread — rendered once conversationId is known ────────────────────────────
 
-function DMThread({ conversationId }: { conversationId: string }) {
+function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { account } = useApp();
   const { messages, loading, sending, error, clearError, sendText } = useDMThread(conversationId);
-  const [text,      setText]      = useState('');
-  const [focused,   setFocused]   = useState(false);
+  const [text,    setText]    = useState('');
+  const [focused, setFocused] = useState(false);
+
+  const color   = avatarColor(displayName);
+  const initial = displayName.slice(0, 1).toUpperCase();
 
   function handleSend() {
     const t = text.trim();
@@ -71,6 +150,27 @@ function DMThread({ conversationId }: { conversationId: string }) {
     setText('');
   }
 
+  // Inverted FlatList: index 0 = newest (bottom), index n-1 = oldest (top).
+  // "isFirst" = oldest in sender run → avatar shown here.
+  // "isLast"  = newest in sender run → timestamp shown here.
+  const renderItem = useCallback(({ item, index }: { item: DmMessage; index: number }) => {
+    const isMine  = item.sender_id === account?.id;
+    const prevMsg = messages[index + 1]; // older message
+    const nextMsg = messages[index - 1]; // newer message
+    const isFirst = !prevMsg || prevMsg.sender_id !== item.sender_id;
+    const isLast  = !nextMsg || nextMsg.sender_id !== item.sender_id;
+    return (
+      <DmRow
+        msg={item}
+        isMine={isMine}
+        isFirst={isFirst}
+        isLast={isLast}
+        color={color}
+        initial={initial}
+      />
+    );
+  }, [messages, account?.id, color, initial]);
+
   return (
     <KeyboardAvoidingView
       style={styles.flex}
@@ -78,41 +178,42 @@ function DMThread({ conversationId }: { conversationId: string }) {
     >
       {error && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorText}>{error} · tap to dismiss</Text>
+          <Text style={styles.errorBannerText}>{error} · tap to dismiss</Text>
         </TouchableOpacity>
       )}
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} />
+          <ActivityIndicator color={Colors.accent} size="large" />
         </View>
       ) : (
         <FlatList
           data={messages}
           keyExtractor={(m) => m.id}
-          renderItem={({ item }) => (
-            <DmRow msg={item} isMine={item.sender_id === account?.id} />
-          )}
+          renderItem={renderItem}
           inverted
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
-              <Text style={styles.emptyText}>Say hello! 👋</Text>
+              <Text style={styles.emptyEmoji}>💬</Text>
+              <Text style={styles.emptyTitle}>Start a conversation</Text>
+              <Text style={styles.emptySub}>Say hi to {displayName}</Text>
             </View>
           }
         />
       )}
 
-      {/* Composer — matches web .input-bar */}
-      <View style={styles.composer}>
+      {/* ── Composer ── */}
+      <View style={[styles.composer, focused && styles.composerFocused]}>
         <TextInput
-          style={[styles.input, focused && styles.inputFocused]}
+          style={styles.input}
           value={text}
           onChangeText={setText}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder="Message…"
+          placeholder={`Message ${displayName}…`}
           placeholderTextColor={Colors.muted2}
           multiline
           maxLength={1000}
@@ -129,7 +230,7 @@ function DMThread({ conversationId }: { conversationId: string }) {
         >
           {sending
             ? <ActivityIndicator size="small" color={Colors.white} />
-            : <Feather name="send" size={24} color={text.trim() ? Colors.white : Colors.muted} />
+            : <Ionicons name="send" size={20} color={text.trim() ? '#fff' : Colors.muted2} />
           }
         </TouchableOpacity>
       </View>
@@ -138,11 +239,13 @@ function DMThread({ conversationId }: { conversationId: string }) {
 }
 
 // ── Screen ────────────────────────────────────────────────────────────────────
-// `id` is a userId — call POST /conversations/direct to get/create conversationId first.
+// Two open modes:
+//   Notification flow: conv param is set → open existing conversation directly by conversationId.
+//   User-profile flow: no conv param → id is a userId, call findOrCreateDM to get/create thread.
 
 export default function DMThreadScreen() {
   const router = useRouter();
-  const { id, name } = useLocalSearchParams<{ id: string; name?: string }>();
+  const { id, name, conv } = useLocalSearchParams<{ id: string; name?: string; conv?: string }>();
 
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [resolveError,   setResolveError]   = useState<string | null>(null);
@@ -152,15 +255,28 @@ export default function DMThreadScreen() {
   const initial     = displayName.slice(0, 1).toUpperCase();
 
   useEffect(() => {
+    console.log('[dm-screen] route params = id:', id, '| name:', name, '| conv:', conv);
+
+    if (conv) {
+      // Notification flow: conversationId already known — open directly, no API call needed.
+      console.log('[dm-screen] opened from notification');
+      console.log('[dm-screen] using existing conversationId, skipping findOrCreateDM');
+      console.log('[dm-screen] loading conversation', conv);
+      setConversationId(conv);
+      track('dm_opened', { conversationId: conv, source: 'notification' });
+      return;
+    }
+
     if (!id) return;
     let cancelled = false;
+    // User-profile flow: id is a userId — find or create the DM thread.
     console.log('[DM] opening DM → targetUserId:', id, '| name:', displayName);
     findOrCreateDM(id)
       .then(({ conversation }) => {
         if (!cancelled) {
           console.log('[DM] conversationId resolved:', conversation.id);
           setConversationId(conversation.id);
-          track('dm_opened', { conversationId: conversation.id });
+          track('dm_opened', { conversationId: conversation.id, source: 'profile' });
         }
       })
       .catch((err) => {
@@ -168,39 +284,50 @@ export default function DMThreadScreen() {
         if (!cancelled) setResolveError('Could not open this conversation.');
       });
     return () => { cancelled = true; };
-  }, [id]);
+  }, [id, conv]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
 
-      {/* Header — web: back button + avatar + name */}
+      {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={22} color={Colors.text} />
+          <Feather name="chevron-left" size={26} color={Colors.text} />
         </TouchableOpacity>
 
-        {/* Avatar circle — same color system as People here */}
-        <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '60' }]}>
-          <Text style={[styles.avatarText, { color }]}>{initial}</Text>
+        <View style={[styles.headerAvatar, { backgroundColor: color + '22', borderColor: color + '55' }]}>
+          <Text style={[styles.headerAvatarText, { color }]}>{initial}</Text>
         </View>
 
-        <Text style={styles.headerName} numberOfLines={1}>{displayName}</Text>
+        <View style={styles.headerInfo}>
+          <Text style={styles.headerName} numberOfLines={1}>{displayName}</Text>
+          <Text style={styles.headerSub}>Direct message</Text>
+        </View>
       </View>
 
+      {/* ── Body ── */}
       {resolveError ? (
         <View style={styles.center}>
           <Text style={styles.resolveErrorText}>{resolveError}</Text>
+          <TouchableOpacity style={styles.retryBtn} onPress={() => router.back()} activeOpacity={0.8}>
+            <Text style={styles.retryBtnText}>Go back</Text>
+          </TouchableOpacity>
         </View>
       ) : !conversationId ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} />
+          <ActivityIndicator color={Colors.accent} size="large" />
         </View>
       ) : (
-        <DMThread conversationId={conversationId} />
+        <DMThread conversationId={conversationId} displayName={displayName} />
       )}
     </SafeAreaView>
   );
 }
+
+// ── Styles ────────────────────────────────────────────────────────────────────
+
+const AVATAR_SIZE = 28;
+const SEND_BTN    = 48;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
@@ -210,136 +337,237 @@ const styles = StyleSheet.create({
   header: {
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               12,
     paddingHorizontal: Spacing.md,
-    paddingVertical:   12,
+    paddingVertical:   10,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
+    gap:               12,
   },
   backBtn: {
     width:           40,
     height:          40,
-    borderRadius:    12,
+    borderRadius:    Radius.md,
     backgroundColor: Colors.bg2,
     borderWidth:     1,
     borderColor:     Colors.border,
     alignItems:      'center',
     justifyContent:  'center',
+    flexShrink:      0,
+  },
+  headerAvatar: {
+    width:          44,
+    height:         44,
+    borderRadius:   Radius.full,
+    borderWidth:    1.5,
+    alignItems:     'center',
+    justifyContent: 'center',
+    flexShrink:     0,
+  },
+  headerAvatarText: { fontWeight: '800', fontSize: FontSizes.md },
+  headerInfo: { flex: 1, gap: 1 },
+  headerName: {
+    fontSize:      FontSizes.md,
+    fontWeight:    '700',
+    color:         Colors.text,
+    letterSpacing: -0.3,
+  },
+  headerSub: {
+    fontSize: FontSizes.xs,
+    color:    Colors.muted2,
+  },
+
+  // ── States ──────────────────────────────────────────────────────────────────
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
+  resolveErrorText: {
+    color:      Colors.muted,
+    fontSize:   FontSizes.sm,
+    textAlign:  'center',
+    paddingHorizontal: Spacing.xl,
+  },
+  retryBtn: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.sm,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.full,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+  },
+  retryBtnText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '600' },
+
+  errorBanner: {
+    backgroundColor:   Colors.accent2,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   8,
+  },
+  errorBannerText: { color: '#fff', fontSize: FontSizes.xs, textAlign: 'center' },
+
+  // ── Message list ────────────────────────────────────────────────────────────
+  listContent: {
+    paddingTop:        24,
+    paddingBottom:     8,
+    paddingHorizontal: 16,
+  },
+
+  // ── Row wrapper ─────────────────────────────────────────────────────────────
+  rowWrapper: {
+    flexDirection: 'row',
+    alignItems:    'flex-end',
+    maxWidth:      '82%',
+  },
+  rowWrapperMine:  { alignSelf: 'flex-end' },
+  rowWrapperOther: { alignSelf: 'flex-start' },
+  rowFirst:   { marginTop: 18 },
+  rowGrouped: { marginTop: 3 },
+
+  // ── Avatar slot (received messages only) ────────────────────────────────────
+  avatarSlot: {
+    width:       AVATAR_SIZE + 6,   // fixed slot keeps bubbles aligned within a run
+    alignItems:  'flex-end',
+    paddingRight: 6,
+    paddingBottom: 2,
   },
   avatar: {
-    width:          38,
-    height:         38,
+    width:          AVATAR_SIZE,
+    height:         AVATAR_SIZE,
     borderRadius:   Radius.full,
-    borderWidth:    1,
     alignItems:     'center',
     justifyContent: 'center',
   },
-  avatarText:  { fontWeight: '700', fontSize: FontSizes.md },
-  headerName:  { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, flex: 1 },
+  avatarText: { color: '#fff', fontSize: 11, fontWeight: '800' },
 
-  // ── States ──────────────────────────────────────────────────────────────────
-  errorBanner:      { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  errorText:        { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
-  resolveErrorText: { color: Colors.muted, fontSize: FontSizes.sm },
-  center:           { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  // ── Bubble column ────────────────────────────────────────────────────────────
+  bubbleCol:     { flexShrink: 1 },
+  bubbleColMine: { alignItems: 'flex-end' },
 
-  // ── Messages ─────────────────────────────────────────────────────────────────
-  listContent: { paddingVertical: Spacing.md, paddingHorizontal: 4 },
-  emptyWrap:   { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  emptyText:   { color: Colors.muted, fontSize: FontSizes.sm },
-
-  row: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   6,
-    alignItems:        'flex-start',
-  },
-  rowMine:    { alignItems: 'flex-end' },
-  rowSending: { opacity: 0.65 },
-  senderName: { fontSize: FontSizes.xs, color: Colors.muted, marginBottom: 5, marginLeft: 8 },
-
-  // Bubble base — shared geometry
+  // ── Bubble ──────────────────────────────────────────────────────────────────
   bubble: {
-    maxWidth:          '80%',
-    borderRadius:      24,
-    paddingHorizontal: 20,
-    paddingVertical:   14,
+    borderRadius:      22,
+    paddingHorizontal: 18,
+    paddingVertical:   12,
+    maxWidth:          '100%',
   },
-  // Other: visible warm dark surface — clearly distinct from bg (#0d0b09)
+  // Received: warm dark surface with subtle border
   bubbleOther: {
-    backgroundColor:        '#2d2416',
-    borderBottomLeftRadius: 6,
+    backgroundColor: Colors.bg3,
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.06)',
   },
-  // Mine: flat orange — replace with LinearGradient after native rebuild
+  // "Tail" corner on first message of a received group
+  bubbleOtherFirst: {
+    borderBottomLeftRadius: 5,
+  },
+  // Sent: brand orange — bright, unmistakably mine
   bubbleMine: {
-    backgroundColor:         '#FF7A3C',
-    borderBottomRightRadius: 6,
-    // Orange glow (iOS shadow; Android uses elevation below)
-    shadowColor:    '#FF7A3C',
-    shadowOffset:   { width: 0, height: 3 },
-    shadowOpacity:  0.4,
-    shadowRadius:   10,
-    elevation:      5,
+    backgroundColor: Colors.accent,
+    shadowColor:     Colors.accent,
+    shadowOffset:    { width: 0, height: 3 },
+    shadowOpacity:   0.35,
+    shadowRadius:    8,
+    elevation:       5,
   },
-  bubbleText:     { fontSize: 15, color: Colors.text, lineHeight: 23 },
-  bubbleTextMine: { color: '#fff', fontWeight: '500' },
+  // "Tail" corner on first message of a sent group
+  bubbleMineFirst: {
+    borderBottomRightRadius: 5,
+  },
+  bubbleSending: { opacity: 0.6 },
   bubbleFailed: {
     borderWidth: 1.5,
-    borderColor: 'rgba(248,113,113,0.55)',
+    borderColor: 'rgba(248,113,113,0.6)',
+    backgroundColor: 'rgba(248,113,113,0.08)',
   },
-  failedLabel: {
-    fontSize:    11,
-    color:       Colors.red,
-    marginTop:   4,
-    marginRight: 8,
+  bubbleText: {
+    fontSize:   15,
+    color:      Colors.text,
+    lineHeight: 22,
+  },
+  bubbleTextMine: { color: '#fff', fontWeight: '500' },
+
+  // ── Meta row (timestamp / status) ────────────────────────────────────────────
+  metaRow:     { marginTop: 4, paddingHorizontal: 4 },
+  metaRowMine: { alignItems: 'flex-end' },
+  metaText: {
+    fontSize: 11,
+    color:    Colors.muted2,
+  },
+  metaTextFailed: {
+    fontSize: 11,
+    color:    Colors.red,
   },
 
-  // ── Composer — web: .input-bar ───────────────────────────────────────────────
+  // ── Empty state ──────────────────────────────────────────────────────────────
+  emptyWrap: {
+    flex:           1,
+    justifyContent: 'center',
+    alignItems:     'center',
+    paddingVertical: Spacing.xxl,
+    gap:            8,
+  },
+  emptyEmoji: { fontSize: 40 },
+  emptyTitle: {
+    fontSize:   FontSizes.md,
+    fontWeight: '600',
+    color:      Colors.text,
+    textAlign:  'center',
+  },
+  emptySub: {
+    fontSize:  FontSizes.sm,
+    color:     Colors.muted,
+    textAlign: 'center',
+  },
+
+  // ── Composer ─────────────────────────────────────────────────────────────────
   composer: {
     flexDirection:     'row',
     alignItems:        'flex-end',
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: 14,
     paddingVertical:   12,
+    paddingBottom:     Platform.OS === 'android' ? 12 : 14,
     borderTopWidth:    1,
     borderTopColor:    Colors.border,
     backgroundColor:   Colors.bg,
     gap:               10,
+    shadowColor:       '#000',
+    shadowOffset:      { width: 0, height: -4 },
+    shadowOpacity:     0.22,
+    shadowRadius:      10,
+    elevation:         8,
+  },
+  composerFocused: {
+    borderTopColor: 'rgba(255,122,60,0.3)',
   },
   input: {
     flex:              1,
-    minHeight:         54,
-    maxHeight:         140,
+    minHeight:         48,
+    maxHeight:         130,
     backgroundColor:   Colors.bg2,
     borderRadius:      Radius.full,
     borderWidth:       1.5,
     borderColor:       Colors.border,
     paddingHorizontal: 20,
-    paddingTop:        17,
-    paddingBottom:     17,
+    paddingTop:        13,
+    paddingBottom:     13,
     color:             Colors.text,
     fontSize:          FontSizes.sm,
+    lineHeight:        22,
   },
-  inputFocused: {
-    borderColor: Colors.accent,
-  },
-  // Active: solid orange + strong glow  |  Off: visible dark surface, not invisible
   sendBtn: {
-    width:           56,
-    height:          56,
+    width:           SEND_BTN,
+    height:          SEND_BTN,
     borderRadius:    Radius.full,
-    backgroundColor: '#FF7A3C',
-    justifyContent:  'center',
+    backgroundColor: Colors.accent,
     alignItems:      'center',
+    justifyContent:  'center',
     flexShrink:      0,
-    shadowColor:    '#FF7A3C',
-    shadowOffset:   { width: 0, height: 4 },
-    shadowOpacity:  0.55,
-    shadowRadius:   12,
-    elevation:      8,
+    shadowColor:     Colors.accent,
+    shadowOffset:    { width: 0, height: 4 },
+    shadowOpacity:   0.5,
+    shadowRadius:    10,
+    elevation:       8,
   },
   sendBtnOff: {
-    backgroundColor: '#2d2416',
+    backgroundColor: Colors.bg2,
     borderWidth:     1,
-    borderColor:     '#3d3020',
+    borderColor:     Colors.border,
     shadowOpacity:   0,
     elevation:       0,
   },

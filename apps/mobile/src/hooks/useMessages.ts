@@ -173,6 +173,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
   // ── Send image (optimistic with local URI preview) ─────────────────────────
 
   const sendImage = useCallback(async (localUri: string) => {
+    console.log('[image-upload] picker result = uri:', localUri);
     const senderNickname = account?.display_name ?? identity?.nickname ?? '';
     const localId = makeLocalId('local-img');
     const optimistic: Message = {

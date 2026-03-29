@@ -151,29 +151,61 @@ export default function ChatTab() {
 
   const channelId = city?.channelId ?? '';
 
-  // ── Ephemeral event banner ─────────────────────────────────────────────────
-  // New events arrive via WS and show as a temporary strip above the input.
-  // Throttled to at most once per 2 minutes; auto-dismissed after 10 seconds.
-  const [eventBanner, setEventBanner] = useState<{ id: string; title: string } | null>(null);
-  const lastBannerAt  = useRef<number>(0);
-  const bannerTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ── Ephemeral event banners ────────────────────────────────────────────────
+  // New events arrive via WS and show as temporary strips above the input.
+  // Up to 3 banners shown simultaneously; each auto-expires independently.
+  // No global throttle — every new event in this channel gets a banner.
 
-  const dismissBanner = useCallback(() => {
-    if (bannerTimer.current) { clearTimeout(bannerTimer.current); bannerTimer.current = null; }
-    setEventBanner(null);
+  type BannerEntry = { id: string; title: string };
+  const [eventBanners, setEventBanners] = useState<BannerEntry[]>([]);
+  // Per-banner timers keyed by event id
+  const bannerTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  const dismissBanner = useCallback((id: string) => {
+    const t = bannerTimers.current.get(id);
+    if (t) { clearTimeout(t); bannerTimers.current.delete(id); }
+    setEventBanners(prev => prev.filter(b => b.id !== id));
+    console.log('[event-banners] dismissed banner', id);
   }, []);
 
   useEffect(() => {
-    const off = socket.on('new_event', (data: { event?: HiladsEvent; channelId?: string }) => {
-      if (data.channelId !== channelId || !data.event) return;
-      const now = Date.now();
-      if (now - lastBannerAt.current < 2 * 60 * 1000) return; // throttle: 2 min
-      lastBannerAt.current = now;
-      if (bannerTimer.current) clearTimeout(bannerTimer.current);
-      setEventBanner({ id: data.event.id, title: data.event.title });
-      bannerTimer.current = setTimeout(() => setEventBanner(null), 10_000);
+    // data.event is the WS event name string ('new_event') — event payload is in data.hiladsEvent
+    const off = socket.on('new_event', (data: { hiladsEvent?: HiladsEvent; channelId?: string | number }) => {
+      console.log('[event-banners] incoming event', data.hiladsEvent?.id,
+        '| ws channelId:', data.channelId, '| local channelId:', channelId);
+
+      // String coercion handles server sending channelId as number vs string
+      if (!data.hiladsEvent || String(data.channelId) !== String(channelId)) return;
+
+      const { id, title } = data.hiladsEvent;
+      console.log('[event-banners] adding banner id=' + id + ' title=' + title);
+
+      setEventBanners(prev => {
+        if (prev.some(b => b.id === id)) {
+          console.log('[event-banners] dedup — banner already shown for', id);
+          return prev;
+        }
+        const next = [{ id, title }, ...prev].slice(0, 3); // cap at 3
+        console.log('[event-banners] active banners count =', next.length);
+        return next;
+      });
+
+      // Each banner gets its own 20s auto-expire timer
+      if (bannerTimers.current.has(id)) clearTimeout(bannerTimers.current.get(id)!);
+      const t = setTimeout(() => {
+        console.log('[event-banners] expiring banner', id);
+        setEventBanners(prev => prev.filter(b => b.id !== id));
+        bannerTimers.current.delete(id);
+      }, 20_000);
+      bannerTimers.current.set(id, t);
     });
-    return () => { off(); if (bannerTimer.current) clearTimeout(bannerTimer.current); };
+
+    return () => {
+      off();
+      bannerTimers.current.forEach(t => clearTimeout(t));
+      bannerTimers.current.clear();
+      console.log('[event-banners] cleared due to channel change or unmount');
+    };
   }, [channelId]);
 
   const loadFn = useCallback(
@@ -350,14 +382,15 @@ export default function ChatTab() {
           />
         )}
 
-        {/* ── Ephemeral event banner — slides in above input, auto-dismissed ── */}
-        {eventBanner && (
+        {/* ── Ephemeral event banners — slide in above input, auto-dismissed ── */}
+        {eventBanners.map(banner => (
           <EventBannerStrip
-            title={eventBanner.title}
-            eventId={eventBanner.id}
-            onDismiss={dismissBanner}
+            key={banner.id}
+            title={banner.title}
+            eventId={banner.id}
+            onDismiss={() => dismissBanner(banner.id)}
           />
-        )}
+        ))}
 
         {/* ── Input — web: .input-bar ── */}
         <ChatInput

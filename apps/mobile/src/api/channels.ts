@@ -117,11 +117,7 @@ export async function sendImageMessage(
   nickname: string,
   imageUrl: string,
 ): Promise<Message> {
-  return api.post<Message>(`/channels/${channelId}/messages`, {
-    sessionId,
-    guestId,
-    nickname,
-    image_url: imageUrl,
-    type: 'image',
-  });
+  const payload = { sessionId, guestId, nickname, imageUrl, type: 'image' };
+  console.log('[image-upload] sending message payload =', JSON.stringify(payload));
+  return api.post<Message>(`/channels/${channelId}/messages`, payload);
 }

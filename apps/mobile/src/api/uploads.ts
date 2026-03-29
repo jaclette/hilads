@@ -9,6 +9,8 @@ import { getAuthToken } from './client';
  * multipart boundary when body is FormData.
  */
 export async function uploadFile(localUri: string): Promise<string> {
+  console.log('[image-upload] upload start — uri:', localUri);
+
   const formData = new FormData();
   formData.append('file', {
     uri:  localUri,
@@ -28,9 +30,11 @@ export async function uploadFile(localUri: string): Promise<string> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
+    console.error('[image-upload] upload failed =', res.status, JSON.stringify(body));
     throw new Error(body?.error ?? 'Upload failed');
   }
 
   const { url } = await res.json();
+  console.log('[image-upload] upload success url=', url);
   return url as string;
 }

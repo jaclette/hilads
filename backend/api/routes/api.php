@@ -64,6 +64,44 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     }
 }
 
+// ── New-event broadcast helper ────────────────────────────────────────────────
+// Fire-and-forget: tells the WS server to push a new_event notification to all
+// users currently in the city room, so in-app banners appear without a push.
+// channelId: integer city room key (matches WS server rooms Map).
+function broadcastNewEventToWs(int $channelId, array $hiladsEvent): void
+{
+    $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
+    $payload = json_encode(['channelId' => $channelId, 'hiladsEvent' => $hiladsEvent]);
+    $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
+    $target  = $wsUrl . '/broadcast/new-event';
+
+    error_log("[ws-broadcast] → target={$target} channelId={$channelId} token=" . ($token !== '' ? 'set' : 'none'));
+
+    $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
+    if ($token !== '') {
+        $headers .= "X-Internal-Token: {$token}\r\n";
+    }
+
+    $ctx = stream_context_create([
+        'http' => [
+            'method'        => 'POST',
+            'header'        => $headers,
+            'content'       => $payload,
+            'timeout'       => 2,
+            'ignore_errors' => true,
+        ],
+    ]);
+
+    $result = @file_get_contents($target, false, $ctx);
+    $status = isset($http_response_header) ? ($http_response_header[0] ?? 'no-header') : 'no-response';
+    if ($result === false) {
+        $err = error_get_last();
+        error_log("[ws-broadcast] ✗ FAILED target={$target} error=" . ($err['message'] ?? 'unknown'));
+    } else {
+        error_log("[ws-broadcast] ✓ OK status=\"{$status}\" body=" . substr((string)$result, 0, 100));
+    }
+}
+
 // ── Conversation broadcast helper ─────────────────────────────────────────────
 // Fire-and-forget: tells the WS server to push a newConversationMessage event.
 function broadcastConversationMessageToWs(string $conversationId, array $message): void
@@ -1070,6 +1108,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     } catch (\Throwable $e) {
         error_log("[event-create] FAILED: " . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
         throw $e; // re-throw so global handler returns 500 — but now it's in the logs
+    }
+
+    // Broadcast new_event to WS room so in-app banners appear for all connected users.
+    try {
+        broadcastNewEventToWs((int) $channelId, $event);
+    } catch (\Throwable $e) {
+        error_log("[event-create] ws broadcast failed (non-fatal): " . $e->getMessage());
     }
 
     // Notify registered users currently online in this city (non-fatal side effect).
