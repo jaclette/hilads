@@ -14,6 +14,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants } from '@/api/events';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
+import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing } from '@/constants';
 import type { Message, EventParticipant } from '@/types';
@@ -317,18 +318,34 @@ export default function EventDetailScreen() {
           <FlatList
             data={feed}
             keyExtractor={(m, i) => m.id ?? String(i)}
-            renderItem={({ item, index }) => (
-              <ChatMessage
-                message={item}
-                myGuestId={identity?.guestId}
-                isGrouped={
-                  index < feed.length - 1 &&
-                  feed[index + 1]?.guestId === item.guestId &&
-                  feed[index + 1]?.type !== 'system' &&
-                  item.type !== 'system'
-                }
-              />
-            )}
+            renderItem={({ item, index }) => {
+              const olderMsg = feed[index + 1];
+              const newerMsg = feed[index - 1];
+              const isGrouped =
+                !!olderMsg &&
+                olderMsg.guestId === item.guestId &&
+                olderMsg.type !== 'system' &&
+                item.type !== 'system';
+              const showTime =
+                item.type !== 'system' && item.type !== 'event' && (
+                  !newerMsg ||
+                  newerMsg.guestId !== item.guestId ||
+                  newerMsg.type === 'system'
+                );
+              const dateLabel =
+                item.type !== 'event' && !isSameDay(item.createdAt, olderMsg?.createdAt)
+                  ? formatDateLabel(item.createdAt)
+                  : undefined;
+              return (
+                <ChatMessage
+                  message={item}
+                  myGuestId={identity?.guestId}
+                  isGrouped={isGrouped}
+                  showTime={showTime}
+                  dateLabel={dateLabel}
+                />
+              );
+            }}
             inverted
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"

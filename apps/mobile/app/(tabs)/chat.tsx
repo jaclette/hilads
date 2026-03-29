@@ -29,6 +29,7 @@ import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { Colors, FontSizes, Spacing } from '@/constants';
+import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import type { Message } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
@@ -356,19 +357,37 @@ export default function ChatTab() {
           <FlatList
             data={messages}
             keyExtractor={(m, idx) => (m.id ? m.id : String(idx))}
-            renderItem={({ item, index }) => (
-              <ChatMessage
-                message={item}
-                myGuestId={identity?.guestId}
-                index={index}
-                isGrouped={
-                  index < messages.length - 1 &&
-                  messages[index + 1]?.guestId === item.guestId &&
-                  messages[index + 1]?.type !== 'system' &&
-                  item.type !== 'system'
-                }
-              />
-            )}
+            renderItem={({ item, index }) => {
+              const olderMsg = messages[index + 1]; // older (higher index in inverted list)
+              const newerMsg = messages[index - 1]; // newer (lower index)
+              const isGrouped =
+                !!olderMsg &&
+                olderMsg.guestId === item.guestId &&
+                olderMsg.type !== 'system' &&
+                item.type !== 'system';
+              // showTime: last (newest) message in a sender run — newerMsg differs or absent
+              const showTime =
+                item.type !== 'system' && item.type !== 'event' && (
+                  !newerMsg ||
+                  newerMsg.guestId !== item.guestId ||
+                  newerMsg.type === 'system'
+                );
+              // dateLabel: show when this item starts a new calendar day vs the older message
+              const dateLabel =
+                item.type !== 'event' && !isSameDay(item.createdAt, olderMsg?.createdAt)
+                  ? formatDateLabel(item.createdAt)
+                  : undefined;
+              return (
+                <ChatMessage
+                  message={item}
+                  myGuestId={identity?.guestId}
+                  index={index}
+                  isGrouped={isGrouped}
+                  showTime={showTime}
+                  dateLabel={dateLabel}
+                />
+              );
+            }}
             inverted
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"

@@ -21,7 +21,47 @@ import { findOrCreateDM } from '@/api/conversations';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import type { DmMessage } from '@/types';
+
+// ── Date separator — reused from ChatMessage visual style ─────────────────────
+
+function DateSeparator({ label }: { label: string }) {
+  return (
+    <View style={sepStyles.row}>
+      <View style={sepStyles.line} />
+      <Text style={sepStyles.text}>{label}</Text>
+      <View style={sepStyles.line} />
+    </View>
+  );
+}
+
+const sepStyles = StyleSheet.create({
+  row: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    marginVertical:    18,
+    paddingHorizontal: 16,
+    gap:               10,
+  },
+  line: {
+    flex:            1,
+    height:          1,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  text: {
+    fontSize:          11,
+    fontWeight:        '600',
+    color:             Colors.muted2,
+    letterSpacing:     0.5,
+    textTransform:     'uppercase',
+    backgroundColor:   Colors.bg2,
+    paddingHorizontal: 10,
+    paddingVertical:   3,
+    borderRadius:      999,
+    overflow:          'hidden',
+  },
+});
 
 // ── Avatar color — hash-based, warm palette ───────────────────────────────────
 
@@ -59,9 +99,10 @@ interface RowProps {
   isLast:     boolean;   // last  (newest) msg in this sender's run
   color:      string;    // avatar accent color for received messages
   initial:    string;
+  dateLabel?: string;    // if set, render a date separator above this row
 }
 
-function DmRow({ msg, isMine, isFirst, isLast, color, initial }: RowProps) {
+function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowProps) {
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(6)).current;
 
@@ -82,12 +123,14 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial }: RowProps) {
   const bubbleOtherShape = isFirst ? styles.bubbleOtherFirst : undefined;
 
   return (
-    <Animated.View style={[
-      styles.rowWrapper,
-      isMine ? styles.rowWrapperMine : styles.rowWrapperOther,
-      isFirst ? styles.rowFirst : styles.rowGrouped,
-      { opacity, transform: [{ translateY }] },
-    ]}>
+    <>
+      {dateLabel && <DateSeparator label={dateLabel} />}
+      <Animated.View style={[
+        styles.rowWrapper,
+        isMine ? styles.rowWrapperMine : styles.rowWrapperOther,
+        isFirst ? styles.rowFirst : styles.rowGrouped,
+        { opacity, transform: [{ translateY }] },
+      ]}>
       {/* Received: small avatar dot to the left, visible only on first of group */}
       {!isMine && (
         <View style={styles.avatarSlot}>
@@ -128,6 +171,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial }: RowProps) {
         )}
       </View>
     </Animated.View>
+    </>
   );
 }
 
@@ -159,6 +203,10 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     const nextMsg = messages[index - 1]; // newer message
     const isFirst = !prevMsg || prevMsg.sender_id !== item.sender_id;
     const isLast  = !nextMsg || nextMsg.sender_id !== item.sender_id;
+    // Show date separator when this item starts a new calendar day vs the older message
+    const dateLabel = !isSameDay(item.created_at, prevMsg?.created_at)
+      ? formatDateLabel(item.created_at)
+      : undefined;
     return (
       <DmRow
         msg={item}
@@ -167,6 +215,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         isLast={isLast}
         color={color}
         initial={initial}
+        dateLabel={dateLabel}
       />
     );
   }, [messages, account?.id, color, initial]);

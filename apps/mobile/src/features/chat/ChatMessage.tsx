@@ -16,6 +16,7 @@ import { useRef, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
+import { formatTime } from '@/lib/messageTime';
 import type { Message } from '@/types';
 
 // ── Avatar palette — mirrors web AVATAR_PALETTES ──────────────────────────────
@@ -83,7 +84,9 @@ interface Props {
   message:   Message;
   myGuestId: string | undefined;
   isGrouped?: boolean;
-  index?:     number;   // used for stagger delay on event items
+  index?:     number;     // used for stagger delay on event items
+  showTime?:  boolean;    // show timestamp below bubble (last in sender group)
+  dateLabel?: string;     // if set, render a date separator above this item
 }
 
 // ── Animated event pill — fade + slide-up on mount, staggered by index ───────
@@ -128,9 +131,21 @@ function AnimatedEventPill({ message, index }: { message: Message; index: number
   );
 }
 
+// ── Date separator — centered pill between days ───────────────────────────────
+
+function DateSeparator({ label }: { label: string }) {
+  return (
+    <View style={styles.dateSepRow}>
+      <View style={styles.dateSepLine} />
+      <Text style={styles.dateSepText}>{label}</Text>
+      <View style={styles.dateSepLine} />
+    </View>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel }: Props) {
   const router = useRouter();
 
   // Hook called unconditionally — React rules require this before any early return
@@ -139,16 +154,24 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }
 
   // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
   if (message.type === 'event') {
-    return <AnimatedEventPill message={message} index={index} />;
+    return (
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <AnimatedEventPill message={message} index={index} />
+      </>
+    );
   }
 
   // ── System / join message — web: .feed-join (centered pill) ──────────────
   if (message.type === 'system') {
     const text = systemText(message);
     return (
-      <Animated.View style={[styles.systemRow, animStyle]}>
-        <Text style={styles.systemText}>{text}</Text>
-      </Animated.View>
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <Animated.View style={[styles.systemRow, animStyle]}>
+          <Text style={styles.systemText}>{text}</Text>
+        </Animated.View>
+      </>
     );
   }
 
@@ -165,40 +188,48 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }
       return null;
     }
     return (
-      <Animated.View style={[
-        styles.row,
-        isMine    ? styles.rowMine    : styles.rowOther,
-        isGrouped ? styles.rowGrouped : styles.rowFirst,
-        animStyle,
-        isSending && styles.rowSending,
-      ]}>
-        {!isMine && !isGrouped && (
-          <View style={styles.meta}>
-            <View style={[styles.avatar, { backgroundColor: c1 }]}>
-              <Text style={styles.avatarLetter}>{initial}</Text>
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <Animated.View style={[
+          styles.row,
+          isMine    ? styles.rowMine    : styles.rowOther,
+          isGrouped ? styles.rowGrouped : styles.rowFirst,
+          animStyle,
+          isSending && styles.rowSending,
+        ]}>
+          {!isMine && !isGrouped && (
+            <View style={styles.meta}>
+              <View style={[styles.avatar, { backgroundColor: c1 }]}>
+                <Text style={styles.avatarLetter}>{initial}</Text>
+              </View>
+              <Text style={[styles.author, { color: c1 }]}>{message.nickname}</Text>
             </View>
-            <Text style={[styles.author, { color: c1 }]}>{message.nickname}</Text>
+          )}
+          <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
+            <Image
+              source={{ uri: message.imageUrl }}
+              style={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
+              resizeMode="cover"
+              onError={() => console.warn('[msg] image load error:', message.imageUrl)}
+            />
+            {isSending && (
+              <View style={styles.imageOverlay}>
+                <ActivityIndicator size="small" color="rgba(255,255,255,0.8)" />
+              </View>
+            )}
+            {isFailed && (
+              <View style={styles.imageOverlay}>
+                <Text style={styles.imageFailedIcon}>!</Text>
+              </View>
+            )}
           </View>
-        )}
-        <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
-          <Image
-            source={{ uri: message.imageUrl }}
-            style={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
-            resizeMode="cover"
-            onError={() => console.warn('[msg] image load error:', message.imageUrl)}
-          />
-          {isSending && (
-            <View style={styles.imageOverlay}>
-              <ActivityIndicator size="small" color="rgba(255,255,255,0.8)" />
-            </View>
+          {showTime && (
+            <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
+              {formatTime(message.createdAt)}
+            </Text>
           )}
-          {isFailed && (
-            <View style={styles.imageOverlay}>
-              <Text style={styles.imageFailedIcon}>!</Text>
-            </View>
-          )}
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </>
     );
   }
 
@@ -209,41 +240,49 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }
   }
 
   return (
-    <Animated.View style={[
-      styles.row,
-      isMine    ? styles.rowMine    : styles.rowOther,
-      isGrouped ? styles.rowGrouped : styles.rowFirst,
-      animStyle,
-      isSending && styles.rowSending,
-    ]}>
+    <>
+      {dateLabel && <DateSeparator label={dateLabel} />}
+      <Animated.View style={[
+        styles.row,
+        isMine    ? styles.rowMine    : styles.rowOther,
+        isGrouped ? styles.rowGrouped : styles.rowFirst,
+        animStyle,
+        isSending && styles.rowSending,
+      ]}>
 
-      {/* ── Avatar + author — web: .msg-meta ── */}
-      {!isMine && !isGrouped && (
-        <View style={styles.meta}>
-          <View style={[styles.avatar, { backgroundColor: c1 }]}>
-            <Text style={styles.avatarLetter}>{initial}</Text>
+        {/* ── Avatar + author — web: .msg-meta ── */}
+        {!isMine && !isGrouped && (
+          <View style={styles.meta}>
+            <View style={[styles.avatar, { backgroundColor: c1 }]}>
+              <Text style={styles.avatarLetter}>{initial}</Text>
+            </View>
+            <Text style={[styles.author, { color: c1 }]}>{message.nickname}</Text>
           </View>
-          <Text style={[styles.author, { color: c1 }]}>{message.nickname}</Text>
-        </View>
-      )}
-
-      {/* ── Bubble — web: .msg-content ── */}
-      <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
-        <View style={[
-          styles.bubble,
-          isMine ? styles.bubbleMine : styles.bubbleOther,
-          isFailed && styles.bubbleFailed,
-        ]}>
-          <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-            {message.content}
-          </Text>
-        </View>
-        {isFailed && (
-          <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
         )}
-      </View>
 
-    </Animated.View>
+        {/* ── Bubble — web: .msg-content ── */}
+        <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
+          <View style={[
+            styles.bubble,
+            isMine ? styles.bubbleMine : styles.bubbleOther,
+            isFailed && styles.bubbleFailed,
+          ]}>
+            <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
+              {message.content}
+            </Text>
+          </View>
+          {isFailed && (
+            <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
+          )}
+          {showTime && (
+            <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
+              {formatTime(message.createdAt)}
+            </Text>
+          )}
+        </View>
+
+      </Animated.View>
+    </>
   );
 }
 
@@ -391,6 +430,41 @@ const styles = StyleSheet.create({
     marginTop:  4,
     marginLeft: 4,
   },
+
+  // ── Date separator ────────────────────────────────────────────────────────
+  dateSepRow: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    marginVertical:    18,
+    paddingHorizontal: 18,
+    gap:               10,
+  },
+  dateSepLine: {
+    flex:            1,
+    height:          1,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  dateSepText: {
+    fontSize:          11,
+    fontWeight:        '600',
+    color:             Colors.muted2,
+    letterSpacing:     0.5,
+    textTransform:     'uppercase',
+    backgroundColor:   Colors.bg2,
+    paddingHorizontal: 10,
+    paddingVertical:   3,
+    borderRadius:      999,
+    overflow:          'hidden',
+  },
+
+  // ── Per-bubble timestamp ──────────────────────────────────────────────────
+  timestamp: {
+    fontSize:   11,
+    marginTop:  3,
+    color:      Colors.muted2,
+  },
+  timestampMine:  { textAlign: 'right',  paddingRight: 2 },
+  timestampOther: { textAlign: 'left',   paddingLeft: 2 },
 
   // ── .msg-image ────────────────────────────────────────────────────────────
   image: { width: 280, height: 240, marginTop: 2 },
