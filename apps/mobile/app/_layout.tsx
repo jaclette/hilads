@@ -21,9 +21,13 @@ import { Colors } from '@/constants';
 // Keep native splash visible while booting
 SplashScreen.preventAutoHideAsync();
 
+// ── Module-level proof — runs once on JS bundle evaluation ───────────────────
+console.log('[layout] ── MODULE LOADED ───────────────────────────────────────');
+
 // ── Inner layout (has access to AppContext) ───────────────────────────────────
 
 function RootLayoutInner() {
+  console.log('[layout] RootLayoutInner rendered');
   const { booting, bootError, joined } = useApp();
   const { retry, retryGeo } = useAppBoot();
   useAppLifecycle();          // foreground/background WS resilience

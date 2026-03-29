@@ -81,6 +81,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
 
+  const setAccountWithLog = useCallback((u: User | null) => {
+    console.log('[app-ctx] setAccount called:', u ? `id=${u.id} name=${u.display_name}` : 'null');
+    setAccount(u);
+  }, []);
+
   const setEventChatPreview = useCallback((eventId: string, preview: EventChatPreview) => {
     setEventChatPreviewsRaw(prev => ({ ...prev, [eventId]: preview }));
   }, []);
@@ -121,7 +126,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setBooting, setBootError,
         setIdentity,
         setSessionId:            useCallback((id: string) => setSessionId(id), []),
-        setAccount,
+        setAccount:              setAccountWithLog,
         setCity:                 useCallback((c: City) => setCity(c), []),
         setWsConnected,
         setUnreadDMs,

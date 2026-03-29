@@ -17,6 +17,11 @@ import { requestAndRegisterPush } from '@/services/push';
 import { getAuthToken } from '@/api/client';
 import { API_URL } from '@/constants';
 
+// ── Module-level proof of import ──────────────────────────────────────────────
+// Runs ONCE when the JS bundle evaluates this module.
+// If this never appears in logs, the file is not imported at all.
+console.log('[push-reg] ── MODULE LOADED ─────────────────────────────────────');
+
 export function usePushRegistration(): void {
   const { account } = useApp();
 
@@ -24,8 +29,18 @@ export function usePushRegistration(): void {
   // Uses user ID so a logout→login of a different account re-registers.
   const lastRegisteredFor = useRef<string | null>(null);
 
+  // ── Mount proof — fires exactly once when this hook is first rendered ───────
+  // If this never appears, the hook is not in the mounted component tree.
   useEffect(() => {
-    console.log('[push-reg] ── effect fired ──────────────────────────────────');
+    console.log('[push-reg] ── HOOK MOUNTED ──────────────────────────────────');
+    console.log('[push-reg] API_URL at mount =', API_URL);
+    console.log('[push-reg] authToken at mount =',
+      getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO');
+  }, []);
+
+  // ── Account change effect — fires on mount and whenever account.id changes ──
+  useEffect(() => {
+    console.log('[push-reg] ── account effect fired ─────────────────────────');
     console.log('[push-reg] account =', account ? `id=${account.id} name=${account.display_name}` : 'null');
     console.log('[push-reg] API_URL =', API_URL);
     console.log('[push-reg] authToken present =',
