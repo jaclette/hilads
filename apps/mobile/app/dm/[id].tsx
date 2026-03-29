@@ -34,13 +34,18 @@ function avatarColor(str: string): string {
 // Other messages: dark surface bubble
 
 function DmRow({ msg, isMine }: { msg: DmMessage; isMine: boolean }) {
+  const isSending = msg.status === 'sending';
+  const isFailed  = msg.status === 'failed';
   return (
-    <View style={[styles.row, isMine && styles.rowMine]}>
+    <View style={[styles.row, isMine && styles.rowMine, isSending && styles.rowSending]}>
       {!isMine && <Text style={styles.senderName}>{msg.sender_name}</Text>}
       {isMine ? (
-        <View style={[styles.bubble, styles.bubbleMine]}>
-          <Text style={[styles.bubbleText, styles.bubbleTextMine]}>{msg.content}</Text>
-        </View>
+        <>
+          <View style={[styles.bubble, styles.bubbleMine, isFailed && styles.bubbleFailed]}>
+            <Text style={[styles.bubbleText, styles.bubbleTextMine]}>{msg.content}</Text>
+          </View>
+          {isFailed && <Text style={styles.failedLabel}>Failed to send</Text>}
+        </>
       ) : (
         <View style={[styles.bubble, styles.bubbleOther]}>
           <Text style={styles.bubbleText}>{msg.content}</Text>
@@ -249,6 +254,7 @@ const styles = StyleSheet.create({
     alignItems:        'flex-start',
   },
   rowMine:    { alignItems: 'flex-end' },
+  rowSending: { opacity: 0.65 },
   senderName: { fontSize: FontSizes.xs, color: Colors.muted, marginBottom: 5, marginLeft: 8 },
 
   // Bubble base — shared geometry
@@ -276,6 +282,16 @@ const styles = StyleSheet.create({
   },
   bubbleText:     { fontSize: 15, color: Colors.text, lineHeight: 23 },
   bubbleTextMine: { color: '#fff', fontWeight: '500' },
+  bubbleFailed: {
+    borderWidth: 1.5,
+    borderColor: 'rgba(248,113,113,0.55)',
+  },
+  failedLabel: {
+    fontSize:    11,
+    color:       Colors.red,
+    marginTop:   4,
+    marginRight: 8,
+  },
 
   // ── Composer — web: .input-bar ───────────────────────────────────────────────
   composer: {

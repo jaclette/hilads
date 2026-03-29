@@ -79,6 +79,9 @@ export interface Message {
   imageUrl?: string;              // image message URL (R2)
   createdAt: number | string;     // unix seconds (number) or ISO string
   eventId?: string;               // for type === 'event' synthetic feed items
+  // Optimistic send state — absent on confirmed server messages
+  localId?: string;               // temp id assigned client-side before server confirms
+  status?: 'sending' | 'failed'; // undefined = confirmed
 }
 
 // ── Presence ──────────────────────────────────────────────────────────────────
@@ -127,6 +130,9 @@ export interface DmMessage {
   created_at: string;
   sender_name: string;
   sender_photo?: string;
+  // Optimistic send state — absent on confirmed server messages
+  localId?: string;
+  status?: 'sending' | 'failed';
 }
 
 // ── Notifications ─────────────────────────────────────────────────────────────

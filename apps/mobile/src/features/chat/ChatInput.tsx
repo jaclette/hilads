@@ -11,7 +11,7 @@
 import { useState, useRef } from 'react';
 import {
   View, TextInput, TouchableOpacity, Text,
-  ActivityIndicator, StyleSheet, Platform,
+  ActivityIndicator, StyleSheet, Platform, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -62,17 +62,28 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     if (sending || uploading) return;
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') return;
+    console.log('[picker] media library permission status:', status);
 
+    if (status !== 'granted') {
+      console.warn('[picker] permission not granted — status:', status);
+      Alert.alert('Permission needed', 'Allow photo access to share images in chat.');
+      return;
+    }
+
+    console.log('[picker] permission granted — launching image library');
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       quality:    0.8,
     });
 
+    console.log('[picker] result canceled:', result.canceled);
     if (!result.canceled && result.assets[0]?.uri) {
+      console.log('[picker] selected uri:', result.assets[0].uri);
       setUploading(true);
       try {
         await onSendImage(result.assets[0].uri);
+      } catch (err) {
+        console.error('[picker] upload failed:', String(err));
       } finally {
         setUploading(false);
       }

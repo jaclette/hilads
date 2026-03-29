@@ -7,7 +7,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { authLogin } from '@/api/auth';
-import { persistToken } from '@/services/session';
 import { useApp } from '@/context/AppContext';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { track } from '@/services/analytics';
@@ -31,11 +30,10 @@ export default function SignInScreen() {
     setError(null);
     try {
       const { user } = await authLogin(e, p);
-      await persistToken();
       setAccount(user);
       setJoined(true);   // dismiss LandingScreen if it was showing
       track('auth_login');
-      requestIfAppropriate(); // ask for push after successful sign-in
+      requestIfAppropriate().catch(err => console.warn('[push-hook] sign-in trigger failed:', String(err)));
       router.back();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Sign in failed';

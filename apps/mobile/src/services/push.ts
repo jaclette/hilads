@@ -14,7 +14,8 @@ import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { api } from '@/api/client';
+import { api, getAuthToken } from '@/api/client';
+import { API_URL } from '@/constants';
 
 const PUSH_TOKEN_KEY = 'hilads_push_token';
 const PUSH_ASKED_KEY = 'hilads_push_asked';
@@ -139,14 +140,18 @@ export async function unregisterPushToken(): Promise<void> {
 // ── Backend sync ──────────────────────────────────────────────────────────────
 
 async function registerTokenWithBackend(token: string): Promise<void> {
-  const payload = { token, platform: Platform.OS };
-  console.log('[push-mobile] subscribing token to backend — payload:', JSON.stringify(payload));
+  const payload   = { token, platform: Platform.OS };
+  const authToken = getAuthToken();
+  const fullUrl   = `${API_URL}/push/mobile-token`;
+  console.log('[push-mobile] POST', fullUrl);
+  console.log('[push-mobile] subscribe payload =', JSON.stringify(payload));
+  console.log('[push-mobile] authToken present =',
+    authToken !== null ? `yes (${authToken.length} chars)` : 'NO — will get 401');
   try {
     const res = await api.post<{ ok?: boolean }>('/push/mobile-token', payload);
-    console.log('[push-mobile] subscribe response ok:', res?.ok ?? '(no body)');
+    console.log('[push-mobile] subscribe response = 200 ok:', res?.ok ?? '(no body)');
   } catch (err) {
     console.error('[push-mobile] subscribe request FAILED:', String(err));
-    // Re-throw so the caller can see registration failed
     throw err;
   }
 }

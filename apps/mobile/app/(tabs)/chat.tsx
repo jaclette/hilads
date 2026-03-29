@@ -10,7 +10,7 @@
  * Input mirrors web .input-bar: pill input, image button, send button.
  */
 
-import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
+import { useCallback, useRef, useEffect, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Platform,
@@ -23,7 +23,6 @@ import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage } from '@/api/channels';
-import { fetchCityEvents } from '@/api/events';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -31,6 +30,44 @@ import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { Colors, FontSizes, Spacing } from '@/constants';
 import type { Message } from '@/types';
+
+// ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
+// Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.
+// Throttled: max once every 2 minutes per session.
+
+interface BannerProps {
+  title:     string;
+  eventId:   string;
+  onDismiss: () => void;
+}
+
+function EventBannerStrip({ title, eventId, onDismiss }: BannerProps) {
+  const router  = useRouter();
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }).start();
+  }, []);
+
+  function handleJoin() {
+    onDismiss();
+    router.push(`/event/${eventId}`);
+  }
+
+  return (
+    <Animated.View style={[styles.bannerStrip, { opacity }]}>
+      <Text style={styles.bannerText} numberOfLines={1}>
+        🔥 New event: {title}
+      </Text>
+      <TouchableOpacity style={styles.bannerBtn} onPress={handleJoin} activeOpacity={0.8}>
+        <Text style={styles.bannerBtnText}>Join</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.bannerDismiss} onPress={onDismiss} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <Text style={styles.bannerDismissText}>✕</Text>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
 
 // ── Flag emoji — mirrors web cityFlag() ──────────────────────────────────────
 
@@ -114,25 +151,29 @@ export default function ChatTab() {
 
   const channelId = city?.channelId ?? '';
 
-  // ── Events — fetch today's events and inject as feed items ───────────────
-  const [events, setEvents] = useState<HiladsEvent[]>([]);
+  // ── Ephemeral event banner ─────────────────────────────────────────────────
+  // New events arrive via WS and show as a temporary strip above the input.
+  // Throttled to at most once per 2 minutes; auto-dismissed after 10 seconds.
+  const [eventBanner, setEventBanner] = useState<{ id: string; title: string } | null>(null);
+  const lastBannerAt  = useRef<number>(0);
+  const bannerTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (!channelId) return;
-    fetchCityEvents(channelId).then(setEvents).catch(() => {});
-  }, [channelId]);
+  const dismissBanner = useCallback(() => {
+    if (bannerTimer.current) { clearTimeout(bannerTimer.current); bannerTimer.current = null; }
+    setEventBanner(null);
+  }, []);
 
-  // Listen for new_event WS broadcast to inject real-time event feed items
   useEffect(() => {
     const off = socket.on('new_event', (data: { event?: HiladsEvent; channelId?: string }) => {
-      if (data.channelId === channelId && data.event) {
-        setEvents(prev => {
-          if (prev.some(e => e.id === data.event!.id)) return prev;
-          return [data.event!, ...prev];
-        });
-      }
+      if (data.channelId !== channelId || !data.event) return;
+      const now = Date.now();
+      if (now - lastBannerAt.current < 2 * 60 * 1000) return; // throttle: 2 min
+      lastBannerAt.current = now;
+      if (bannerTimer.current) clearTimeout(bannerTimer.current);
+      setEventBanner({ id: data.event.id, title: data.event.title });
+      bannerTimer.current = setTimeout(() => setEventBanner(null), 10_000);
     });
-    return off;
+    return () => { off(); if (bannerTimer.current) clearTimeout(bannerTimer.current); };
   }, [channelId]);
 
   const loadFn = useCallback(
@@ -162,29 +203,6 @@ export default function ChatTab() {
     postTextFn,
     postImageFn,
   });
-
-  // Merge real messages + synthetic event feed items, newest-first for inverted FlatList.
-  // Event items are prepended (index 0…n) so they appear pinned at the bottom of the
-  // inverted list — just above the input — matching web where events are the most-recent
-  // feed entries. System join messages sort naturally by their own timestamp above events.
-  const allMessages = useMemo(() => {
-    const toMs = (ts: number | string) => {
-      if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;
-      return new Date(ts).getTime();
-    };
-    const sorted = [...messages].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-    const eventItems = events.map(e => ({
-      id:        `event__${e.id}`,
-      type:      'event' as const,
-      nickname:  '',
-      createdAt: e.starts_at,
-      eventId:   e.id,
-      content:   e.title,
-    }));
-    // Events at front → bottom of inverted list (newest visual position, near input).
-    // Messages above — join pills appear naturally between events and older chat.
-    return [...eventItems, ...sorted];
-  }, [messages, events]);
 
   // No city yet — prompt to pick one
   if (!city) {
@@ -304,23 +322,18 @@ export default function ChatTab() {
           </View>
         ) : (
           <FlatList
-            data={allMessages}
-            // Robust key: fall back to index if id is missing/duplicate
+            data={messages}
             keyExtractor={(m, idx) => (m.id ? m.id : String(idx))}
             renderItem={({ item, index }) => (
               <ChatMessage
                 message={item}
                 myGuestId={identity?.guestId}
                 index={index}
-                // Grouping: in inverted list, allMessages[index+1] is visually above.
-                // Hide avatar/name if the message above is from the same sender.
                 isGrouped={
-                  index < allMessages.length - 1 &&
-                  allMessages[index + 1]?.guestId === item.guestId &&
-                  allMessages[index + 1]?.type !== 'system' &&
-                  allMessages[index + 1]?.type !== 'event' &&
-                  item.type !== 'system' &&
-                  item.type !== 'event'
+                  index < messages.length - 1 &&
+                  messages[index + 1]?.guestId === item.guestId &&
+                  messages[index + 1]?.type !== 'system' &&
+                  item.type !== 'system'
                 }
               />
             )}
@@ -328,7 +341,6 @@ export default function ChatTab() {
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
             ListEmptyComponent={
-              // Web: .empty block with emoji + "People are arriving" + "Be the first to say hi 👇"
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyIcon}>🔥</Text>
                 <Text style={styles.emptyTitle}>People are arriving</Text>
@@ -338,8 +350,16 @@ export default function ChatTab() {
           />
         )}
 
+        {/* ── Ephemeral event banner — slides in above input, auto-dismissed ── */}
+        {eventBanner && (
+          <EventBannerStrip
+            title={eventBanner.title}
+            eventId={eventBanner.id}
+            onDismiss={dismissBanner}
+          />
+        )}
+
         {/* ── Input — web: .input-bar ── */}
-        {/* Placeholder cycles through PLACEHOLDERS by channelId — mirrors web */}
         <ChatInput
           sending={sending}
           onSendText={sendText}
@@ -530,4 +550,32 @@ const styles = StyleSheet.create({
   citiesBtnText: { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
 
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+
+  // ── EventBannerStrip ──────────────────────────────────────────────────────
+  bannerStrip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 14,
+    paddingVertical:   10,
+    backgroundColor:   'rgba(194,74,56,0.12)',
+    borderTopWidth:    1,
+    borderTopColor:    'rgba(255,122,60,0.22)',
+    gap:               10,
+  },
+  bannerText: {
+    flex:       1,
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+    color:      Colors.text,
+  },
+  bannerBtn: {
+    backgroundColor:   'rgba(255,122,60,0.55)',
+    borderRadius:      10,
+    paddingHorizontal: 12,
+    paddingVertical:   5,
+    flexShrink:        0,
+  },
+  bannerBtnText: { color: '#fff', fontSize: FontSizes.sm, fontWeight: '700' },
+  bannerDismiss: { flexShrink: 0, padding: 2 },
+  bannerDismissText: { fontSize: 13, color: Colors.muted2 },
 });

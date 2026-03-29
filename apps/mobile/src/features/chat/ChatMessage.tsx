@@ -13,7 +13,7 @@
  */
 
 import { useRef, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
 import type { Message } from '@/types';
@@ -152,22 +152,25 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }
     );
   }
 
+  const isMine  = Boolean(myGuestId && message.guestId === myGuestId);
+  const [c1]    = avatarColors(message.nickname ?? '?');
+  const initial = (message.nickname?.[0] ?? '?').toUpperCase();
+  const isSending = message.status === 'sending';
+  const isFailed  = message.status === 'failed';
+
   // ── Image message ─────────────────────────────────────────────────────────
-  // API field: imageUrl (camelCase)
   if (message.type === 'image') {
     if (!message.imageUrl) {
       console.warn('[msg] image message missing imageUrl:', JSON.stringify(message));
       return null;
     }
-    const isMine  = Boolean(myGuestId && message.guestId === myGuestId);
-    const [c1]    = avatarColors(message.nickname ?? '?');
-    const initial = (message.nickname?.[0] ?? '?').toUpperCase();
     return (
       <Animated.View style={[
         styles.row,
         isMine    ? styles.rowMine    : styles.rowOther,
         isGrouped ? styles.rowGrouped : styles.rowFirst,
         animStyle,
+        isSending && styles.rowSending,
       ]}>
         {!isMine && !isGrouped && (
           <View style={styles.meta}>
@@ -180,26 +183,30 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }
         <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
           <Image
             source={{ uri: message.imageUrl }}
-            // web: .msg-image { max-width:260; max-height:300; border-radius varies }
             style={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
             resizeMode="cover"
             onError={() => console.warn('[msg] image load error:', message.imageUrl)}
           />
+          {isSending && (
+            <View style={styles.imageOverlay}>
+              <ActivityIndicator size="small" color="rgba(255,255,255,0.8)" />
+            </View>
+          )}
+          {isFailed && (
+            <View style={styles.imageOverlay}>
+              <Text style={styles.imageFailedIcon}>!</Text>
+            </View>
+          )}
         </View>
       </Animated.View>
     );
   }
 
   // ── Text message ─────────────────────────────────────────────────────────
-  // API field: content
   if (!message.content) {
     console.warn('[msg] text message missing content:', JSON.stringify(message));
     return null;
   }
-
-  const isMine  = Boolean(myGuestId && message.guestId === myGuestId);
-  const [c1]    = avatarColors(message.nickname ?? '?');
-  const initial = (message.nickname?.[0] ?? '?').toUpperCase();
 
   return (
     <Animated.View style={[
@@ -207,6 +214,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }
       isMine    ? styles.rowMine    : styles.rowOther,
       isGrouped ? styles.rowGrouped : styles.rowFirst,
       animStyle,
+      isSending && styles.rowSending,
     ]}>
 
       {/* ── Avatar + author — web: .msg-meta ── */}
@@ -221,11 +229,18 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0 }
 
       {/* ── Bubble — web: .msg-content ── */}
       <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
-        <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubbleOther]}>
+        <View style={[
+          styles.bubble,
+          isMine ? styles.bubbleMine : styles.bubbleOther,
+          isFailed && styles.bubbleFailed,
+        ]}>
           <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
             {message.content}
           </Text>
         </View>
+        {isFailed && (
+          <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
+        )}
       </View>
 
     </Animated.View>
@@ -308,6 +323,7 @@ const styles = StyleSheet.create({
   rowMine:    { alignSelf: 'flex-end' },
   rowFirst:   { marginTop: 28 },
   rowGrouped: { marginTop: 5 },
+  rowSending: { opacity: 0.65 },
 
   // ── .msg-meta ─────────────────────────────────────────────────────────────
   meta: {
@@ -364,9 +380,36 @@ const styles = StyleSheet.create({
   bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 27 },
   bubbleTextMine: { color: '#fff' },
 
+  // Failed state
+  bubbleFailed: {
+    borderWidth: 1,
+    borderColor: 'rgba(248,113,113,0.5)',
+  },
+  failedLabel: {
+    fontSize:   11,
+    color:      Colors.red,
+    marginTop:  4,
+    marginLeft: 4,
+  },
+
   // ── .msg-image ────────────────────────────────────────────────────────────
-  // web: max-width 260px; max-height 300px; border-radius varies
   image: { width: 280, height: 240, marginTop: 2 },
+  imageOverlay: {
+    position:       'absolute',
+    top:            0,
+    left:           0,
+    right:          0,
+    bottom:         0,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    alignItems:     'center',
+    justifyContent: 'center',
+    borderRadius:   16,
+  },
+  imageFailedIcon: {
+    color:      '#fff',
+    fontSize:   22,
+    fontWeight: '800',
+  },
   imageOther: {
     borderTopLeftRadius:     4,
     borderTopRightRadius:    16,

@@ -7,7 +7,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { authSignup } from '@/api/auth';
-import { persistToken } from '@/services/session';
 import { useApp } from '@/context/AppContext';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { track } from '@/services/analytics';
@@ -39,11 +38,10 @@ export default function SignUpScreen() {
       // Pass guestId so the backend can merge existing guest events/data
       const guestId = identity?.guestId ?? '';
       const { user } = await authSignup(e, p, n, guestId);
-      await persistToken();
       setAccount(user);
       setJoined(true);   // dismiss LandingScreen if it was showing
       track('auth_signup');
-      requestIfAppropriate(); // ask for push after successful registration
+      requestIfAppropriate().catch(err => console.warn('[push-hook] sign-up trigger failed:', String(err)));
       router.back();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Sign up failed';

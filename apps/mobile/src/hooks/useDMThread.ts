@@ -6,19 +6,22 @@ import { track } from '@/services/analytics';
 import type { DmMessage } from '@/types';
 
 interface Result {
-  messages: DmMessage[];   // newest first (inverted FlatList)
-  loading:  boolean;
-  sending:  boolean;
-  error:    string | null;
+  messages:   DmMessage[];  // newest first (inverted FlatList)
+  loading:    boolean;
+  sending:    boolean;      // kept for interface compat — always false (optimistic)
+  error:      string | null;
   clearError: () => void;
-  sendText: (content: string) => Promise<void>;
+  sendText:   (content: string) => Promise<void>;
+}
+
+function makeLocalId(): string {
+  return `local-dm-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
 export function useDMThread(conversationId: string): Result {
   const { account, setActiveDmId } = useApp();
   const [messages, setMessages] = useState<DmMessage[]>([]);
   const [loading,  setLoading]  = useState(true);
-  const [sending,  setSending]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
   const seenIds = useRef(new Set<string>());
 
@@ -55,9 +58,6 @@ export function useDMThread(conversationId: string): Result {
   }, [conversationId]);
 
   // WS — track active thread + live append
-  // setActiveDmId tells the global DM hook to skip unread increments for this thread.
-  // joinDm re-asserts membership (global hook also joins, but re-joining is harmless).
-  // Do NOT leaveDm on unmount — the global hook owns the WS room subscription.
   useEffect(() => {
     setActiveDmId(conversationId);
     if (account) socket.joinDm(conversationId, account.id);
@@ -84,21 +84,50 @@ export function useDMThread(conversationId: string): Result {
     return () => clearInterval(id);
   }, [conversationId, addNew]);
 
+  // ── Send text (optimistic) ─────────────────────────────────────────────────
+
   const sendText = useCallback(async (content: string) => {
     const trimmed = content.trim();
-    if (!trimmed || sending) return;
-    setSending(true);
+    if (!trimmed) return;
+
+    const localId = makeLocalId();
+    const optimistic: DmMessage = {
+      id:              localId,
+      conversation_id: conversationId,
+      sender_id:       account?.id ?? '',
+      content:         trimmed,
+      created_at:      new Date().toISOString(),
+      sender_name:     account?.display_name ?? '',
+      localId,
+      status:          'sending',
+    };
+
+    setMessages(prev => [optimistic, ...prev]);
     setError(null);
+
     try {
       const msg = await sendDmMessage(conversationId, trimmed);
-      addNew([msg]);
+      // Reconcile: replace placeholder with confirmed server message.
+      // If WS delivered the server message first, remove placeholder only.
+      seenIds.current.add(msg.id);
+      setMessages(prev => {
+        if (prev.some(m => m.id === msg.id && m.id !== localId)) {
+          return prev.filter(m => m.id !== localId);
+        }
+        return prev.map(m => m.id === localId ? msg : m);
+      });
       track('dm_sent', { conversationId });
     } catch {
+      setMessages(prev =>
+        prev.map(m => m.id === localId ? { ...m, status: 'failed' as const } : m),
+      );
       setError('Failed to send message');
-    } finally {
-      setSending(false);
     }
-  }, [conversationId, sending, addNew]);
+  }, [conversationId, account]);
 
-  return { messages, loading, sending, error, clearError: () => setError(null), sendText };
+  return {
+    messages, loading, sending: false, error,
+    clearError: () => setError(null),
+    sendText,
+  };
 }

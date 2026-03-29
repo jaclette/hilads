@@ -57,7 +57,8 @@ class AuthService
             throw $e;
         }
 
-        self::createDbSession($user['id']);
+        $token = self::createDbSession($user['id']);
+        $user['_token'] = $token; // exposed in response body for mobile clients
 
         return $user;
     }
@@ -73,7 +74,8 @@ class AuthService
             Response::json(['error' => 'Invalid email or password'], 401);
         }
 
-        self::createDbSession($user['id']);
+        $token = self::createDbSession($user['id']);
+        $user['_token'] = $token; // exposed in response body for mobile clients
 
         return $user;
     }

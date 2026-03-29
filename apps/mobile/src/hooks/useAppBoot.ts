@@ -9,6 +9,7 @@ import { authMe } from '@/api/auth';
 import { loadSavedToken } from '@/services/session';
 import { fetchUnreadCount } from '@/api/notifications';
 import { requestAndRegisterPush } from '@/services/push';
+import { getAuthToken } from '@/api/client';
 
 // ── Timeouts ──────────────────────────────────────────────────────────────────
 
@@ -309,7 +310,11 @@ export function useAppBoot(): Result {
               fetchUnreadCount()
                 .then(count => { if (!cancelled) setUnreadNotifications(count); })
                 .catch(() => {});
-              requestAndRegisterPush().catch(() => {});
+              console.log('[boot] triggering push registration — authToken present:',
+                getAuthToken() !== null ? 'yes' : 'NO (token not loaded yet — push may get 401)');
+              requestAndRegisterPush().catch(err =>
+                console.warn('[boot] push registration failed:', String(err)),
+              );
             }
             return user ?? null;
           })

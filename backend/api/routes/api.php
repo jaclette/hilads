@@ -403,14 +403,16 @@ $router->add('POST', '/api/v1/auth/signup', function () {
     $body = Request::json();
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
-    $user = AuthService::signup(
+    $user  = AuthService::signup(
         email:       $body['email']        ?? '',
         password:    $body['password']     ?? '',
         displayName: $body['display_name'] ?? '',
         guestId:     isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null,
     );
 
-    Response::json(['user' => AuthService::ownFields($user)], 201);
+    // _token is included so mobile clients can persist it directly (set-cookie
+    // headers are not reliably accessible from React Native fetch on Android).
+    Response::json(['user' => AuthService::ownFields($user), 'token' => $user['_token']], 201);
 });
 
 $router->add('POST', '/api/v1/auth/login', function () {
@@ -423,7 +425,9 @@ $router->add('POST', '/api/v1/auth/login', function () {
         password: $body['password'] ?? '',
     );
 
-    Response::json(['user' => AuthService::ownFields($user)]);
+    // _token is included so mobile clients can persist it directly (set-cookie
+    // headers are not reliably accessible from React Native fetch on Android).
+    Response::json(['user' => AuthService::ownFields($user), 'token' => $user['_token']]);
 });
 
 $router->add('POST', '/api/v1/auth/logout', function () {
@@ -2238,6 +2242,11 @@ $router->add('DELETE', '/api/v1/push/unsubscribe', function () {
 // Safe to call on every login — upserts on token value.
 // Body: { token: string, platform: 'android' | 'ios' }
 $router->add('POST', '/api/v1/push/mobile-token', function () {
+    // Log BEFORE requireAuth so we can detect 401 cases in logs.
+    // If this line appears but "[push-subscribe] user=..." does not → auth failed.
+    $rawCookie = $_COOKIE['hilads_token'] ?? '(none)';
+    error_log("[push-subscribe] request received — cookie present: " . ($rawCookie !== '(none)' ? 'yes (' . strlen($rawCookie) . ' chars)' : 'NO'));
+
     $user  = AuthService::requireAuth();
     $body  = Request::json();
 
