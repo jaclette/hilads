@@ -11,15 +11,33 @@ class PresenceRepository
         return 'city_' . $channelId;
     }
 
-    public static function join(int $channelId, string $sessionId, string $guestId, string $nickname): void
+    /**
+     * Upserts presence for the session.
+     * Returns true if this is a genuinely new join (session was absent or expired),
+     * false if the session was already active within the TTL (re-join / heartbeat).
+     * Use the return value to decide whether to emit a "just landed" feed event.
+     */
+    public static function join(int $channelId, string $sessionId, string $guestId, string $nickname): bool
     {
-        Database::pdo()->prepare("
+        $pdo = Database::pdo();
+
+        $check = $pdo->prepare("
+            SELECT 1 FROM presence
+            WHERE session_id = ? AND channel_id = ?
+              AND last_seen_at > now() - interval '" . self::TTL . " seconds'
+        ");
+        $check->execute([$sessionId, self::dbKey($channelId)]);
+        $alreadyActive = (bool) $check->fetchColumn();
+
+        $pdo->prepare("
             INSERT INTO presence (session_id, channel_id, guest_id, nickname, last_seen_at)
             VALUES (?, ?, ?, ?, now())
             ON CONFLICT (session_id, channel_id) DO UPDATE SET
                 nickname     = EXCLUDED.nickname,
                 last_seen_at = now()
         ")->execute([$sessionId, self::dbKey($channelId), $guestId, $nickname]);
+
+        return !$alreadyActive;
     }
 
     public static function leave(int $channelId, string $sessionId): void

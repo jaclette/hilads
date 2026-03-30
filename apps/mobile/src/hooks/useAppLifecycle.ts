@@ -26,19 +26,23 @@ export function useAppLifecycle(onForeground?: () => void): void {
       socket.reconnectNow();
     }
 
-    // Re-join the city channel (presence may have expired while backgrounded)
+    // Re-join the city channel (presence may have expired while backgrounded).
+    // Use the registered display name when available — falling back to the guest
+    // nickname prevents spurious "GuestName just landed" feed events for users
+    // whose real identity is already known.
     if (city && identity && sessionId) {
-      joinChannel(city.channelId, sessionId, identity.guestId, identity.nickname)
+      const displayName = account?.display_name ?? identity.nickname;
+      joinChannel(city.channelId, sessionId, identity.guestId, displayName)
         .catch(() => {});
       // City WS join happens automatically on 'connected' event via useAppBoot
       // but if already connected we need to rejoin manually
       if (socket.isConnected) {
-        socket.joinCity(city.channelId, sessionId, identity.nickname, account?.id);
+        socket.joinCity(city.channelId, sessionId, displayName, account?.id);
       }
     }
 
     onForegroundRef.current?.();
-  }, [city, identity, sessionId]);
+  }, [city, identity, sessionId, account]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (nextState: AppStateStatus) => {

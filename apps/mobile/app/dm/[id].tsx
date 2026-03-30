@@ -231,20 +231,25 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   }
 
   async function openCamera() {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow camera access to take photos.');
-      return;
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Allow camera access to take photos.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+      if (!result.canceled && result.assets[0]?.uri) await sendImageUri(result.assets[0].uri);
+    } catch (err) {
+      console.warn('[camera] launch failed:', String(err));
+      Alert.alert('Camera unavailable', 'Could not open the camera. Please try again.');
     }
-    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
-    if (!result.canceled && result.assets[0]?.uri) await sendImageUri(result.assets[0].uri);
   }
 
   function handlePickImage() {
     if (busy) return;
     Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: openCamera  },
-      { text: 'Choose from Library', onPress: openLibrary },
+      { text: 'Take Photo',          onPress: () => setTimeout(openCamera,  100) },
+      { text: 'Choose from Library', onPress: () => setTimeout(openLibrary, 100) },
       { text: 'Cancel', style: 'cancel' },
     ]);
   }

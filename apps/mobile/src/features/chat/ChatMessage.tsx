@@ -143,17 +143,26 @@ function DateSeparator({ label }: { label: string }) {
   );
 }
 
-// ── Sender identity — avatar + name, tappable for registered users ────────────
-// Wraps in TouchableOpacity when userId is present (registered), plain View for guests.
-// Navigates to /user/[userId]. Used in both text and image message paths to avoid duplication.
+// ── Sender identity — avatar + name, always tappable ─────────────────────────
+// Always renders as TouchableOpacity so the tap area exists regardless of
+// whether the backend has resolved userId yet.
+//
+// Navigation ID priority: userId (registered account ID) → guestId (fallback).
+// The backend profile endpoint accepts both — it tries findById first, then
+// findByGuestId — so both forms resolve to the correct profile page.
+// Guests with no account get a "User not found" screen, which is the correct
+// graceful outcome. This matches DM behaviour where sender_id is always present.
 
-function SenderMeta({ nickname, color, initial, userId }: {
+function SenderMeta({ nickname, color, initial, userId, guestId }: {
   nickname: string;
   color:    string;
   initial:  string;
   userId?:  string;
+  guestId?: string;
 }) {
   const router = useRouter();
+  const navId  = userId ?? guestId;   // prefer resolved userId, fall back to guestId
+
   const inner = (
     <>
       <View style={[styles.avatar, { backgroundColor: color }]}>
@@ -162,11 +171,12 @@ function SenderMeta({ nickname, color, initial, userId }: {
       <Text style={[styles.author, { color }]}>{nickname}</Text>
     </>
   );
-  if (userId) {
+
+  if (navId) {
     return (
       <TouchableOpacity
         style={styles.meta}
-        onPress={() => router.push({ pathname: '/user/[id]', params: { id: userId } })}
+        onPress={() => router.push({ pathname: '/user/[id]', params: { id: navId } })}
         activeOpacity={0.7}
         hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
       >
@@ -237,6 +247,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               color={c1}
               initial={initial}
               userId={message.userId}
+              guestId={message.guestId}
             />
           )}
           <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
@@ -291,6 +302,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             color={c1}
             initial={initial}
             userId={message.userId}
+            guestId={message.guestId}
           />
         )}
 

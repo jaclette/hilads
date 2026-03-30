@@ -497,7 +497,9 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         Response::json(['error' => 'Invalid userId'], 400);
     }
 
-    $user = UserRepository::findById($userId);
+    // Try primary userId lookup first; fall back to guest_id for city-channel
+    // taps where the navigation ID may be a guestId rather than a registered userId.
+    $user = UserRepository::findById($userId) ?? UserRepository::findByGuestId($userId);
     if ($user === null) {
         Response::json(['error' => 'User not found'], 404);
     }
@@ -510,7 +512,15 @@ $router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
     if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
         Response::json(['error' => 'Invalid userId'], 400);
     }
-    $events = EventRepository::getPublicByUserId($userId);
+
+    // Resolve guestId → userId if necessary so events are keyed on the registered account.
+    $user = UserRepository::findById($userId) ?? UserRepository::findByGuestId($userId);
+    if ($user === null) {
+        Response::json(['events' => []]);
+        return;
+    }
+
+    $events = EventRepository::getPublicByUserId($user['id']);
     Response::json(['events' => $events]);
 });
 
@@ -732,27 +742,27 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             }
         }
 
-        PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+        $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
 
-        $message = [
-            'type' => 'system',
-            'event' => 'join',
-            'guestId' => $guestId,
-            'nickname' => $nickname,
-            'createdAt' => time(),
-        ];
-
-        try {
-            $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
-        } catch (\Throwable $e) {
-            apiLog('channel_join', 'join event write failed', [
-                'channelId' => $channelId,
-                'error' => $e->getMessage(),
-            ]);
+        // Only emit a "just landed" feed event for genuinely new joins.
+        // Re-joins (foreground transitions, reconnects within TTL) must not
+        // produce a second feed message — that is the source of duplicate
+        // guest-name events that appear before the registered display name.
+        $message = null;
+        if ($isNewSession) {
+            try {
+                $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
+            } catch (\Throwable $e) {
+                apiLog('channel_join', 'join event write failed', [
+                    'channelId' => $channelId,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         apiLog('channel_join', 'success', [
             'channelId' => $channelId,
+            'isNew'     => $isNewSession,
             'elapsedMs' => apiElapsedMs($startedAt),
         ]);
 

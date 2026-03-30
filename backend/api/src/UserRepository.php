@@ -57,6 +57,13 @@ class UserRepository
         return $stmt->fetch() ?: null;
     }
 
+    public static function findByGuestId(string $guestId): ?array
+    {
+        $stmt = Database::pdo()->prepare('SELECT * FROM users WHERE guest_id = ?');
+        $stmt->execute([$guestId]);
+        return $stmt->fetch() ?: null;
+    }
+
     public static function findByGoogleId(string $googleId): ?array
     {
         $stmt = Database::pdo()->prepare('SELECT * FROM users WHERE google_id = ?');

@@ -80,20 +80,29 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   }
 
   async function openCamera() {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow camera access to take photos in chat.');
-      return;
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Allow camera access to take photos in chat.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+      if (!result.canceled && result.assets[0]?.uri) await launchWithUri(result.assets[0].uri);
+    } catch (err) {
+      console.warn('[camera] launch failed:', String(err));
+      Alert.alert('Camera unavailable', 'Could not open the camera. Please try again.');
     }
-    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
-    if (!result.canceled && result.assets[0]?.uri) await launchWithUri(result.assets[0].uri);
   }
 
   function handlePickImage() {
     if (sending || uploading) return;
+    // Delay each action by 100 ms so the Alert's dismissal animation fully
+    // completes before we try to present the camera / picker. Without this,
+    // iOS silently drops the launchCameraAsync / launchImageLibraryAsync
+    // presentation because the UIAlertController is still mid-dismiss.
     Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: openCamera  },
-      { text: 'Choose from Library', onPress: openLibrary },
+      { text: 'Take Photo',          onPress: () => setTimeout(openCamera,  100) },
+      { text: 'Choose from Library', onPress: () => setTimeout(openLibrary, 100) },
       { text: 'Cancel', style: 'cancel' },
     ]);
   }
