@@ -178,7 +178,6 @@ export default function HereScreen() {
             />
           );
         }}
-        )}
         contentContainerStyle={displayList.length === 0 ? styles.flex1 : styles.list}
         ListEmptyComponent={
           <View style={styles.empty}>
