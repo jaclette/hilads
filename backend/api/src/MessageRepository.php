@@ -39,6 +39,18 @@ class MessageRepository
             ];
         }
 
+        if ($row['type'] === 'event') {
+            return [
+                'id'        => $row['id'],
+                'channelId' => $channelId,
+                'type'      => 'event',
+                'eventId'   => $row['event'],   // event column stores the event channel ID
+                'content'   => $row['content'], // event title
+                'nickname'  => $row['nickname'] ?? '',
+                'createdAt' => $createdAt,
+            ];
+        }
+
         if ($row['type'] === 'image') {
             return [
                 'id'        => $row['id'],
@@ -147,6 +159,31 @@ class MessageRepository
             'type'      => 'system',
             'event'     => 'join',
             'guestId'   => $guestId,
+            'nickname'  => $nickname,
+            'createdAt' => time(),
+        ];
+    }
+
+    /**
+     * Stores an event-announcement feed item in the city channel.
+     * type='event', event column = event channel ID, content = title.
+     * No DB migration needed — reuses existing event column (TEXT, nullable).
+     */
+    public static function addEventAnnouncement(int|string $channelId, string $eventId, string $title, string $guestId, string $nickname): array
+    {
+        $id = bin2hex(random_bytes(8));
+
+        Database::pdo()->prepare("
+            INSERT INTO messages (id, channel_id, type, event, guest_id, nickname, content)
+            VALUES (?, ?, 'event', ?, ?, ?, ?)
+        ")->execute([$id, self::dbKey($channelId), $eventId, $guestId, $nickname, $title]);
+
+        return [
+            'id'        => $id,
+            'channelId' => $channelId,
+            'type'      => 'event',
+            'eventId'   => $eventId,
+            'content'   => $title,
             'nickname'  => $nickname,
             'createdAt' => time(),
         ];
