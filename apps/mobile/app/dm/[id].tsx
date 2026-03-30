@@ -233,8 +233,6 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   async function openCamera() {
     console.log('[camera/dm] openCamera called');
     try {
-      // Same fix as ChatInput: requestCameraPermissionsAsync() hangs indefinitely on
-      // Android + New Architecture. Let launchCameraAsync() handle it via system Intent.
       if (Platform.OS === 'ios') {
         console.log('[camera/dm] iOS: requesting permission...');
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -244,13 +242,39 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           return;
         }
       }
-      console.log('[camera/dm] launching camera...');
-      const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
-      console.log('[camera/dm] result canceled:', result.canceled);
-      if (!result.canceled && result.assets[0]?.uri) await sendImageUri(result.assets[0].uri);
+
+      console.log('[camera/dm] launching camera (platform:', Platform.OS, ')...');
+      const CAMERA_TIMEOUT_MS = 60_000;
+      const result = await Promise.race([
+        ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 }),
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () => reject(new Error(
+              'launchCameraAsync timed out after ' + CAMERA_TIMEOUT_MS + 'ms — ' +
+              'activity result was never received (possible FileProvider misconfiguration)',
+            )),
+            CAMERA_TIMEOUT_MS,
+          ),
+        ),
+      ]);
+
+      console.log('[camera/dm] launchCameraAsync resolved');
+      console.log('[camera/dm] full result:', JSON.stringify(result));
+      console.log('[camera/dm] result.canceled:', result.canceled);
+      console.log('[camera/dm] result.assets:', JSON.stringify(result.assets));
+
+      const uri = result.assets?.[0]?.uri;
+      console.log('[camera/dm] asset uri:', uri ?? 'none');
+
+      if (!result.canceled && uri) {
+        console.log('[camera/dm] entering upload flow with uri:', uri);
+        await sendImageUri(uri);
+      } else {
+        console.log('[camera/dm] canceled or no uri — no upload');
+      }
     } catch (err) {
       console.error('[camera/dm] launch failed:', String(err));
-      Alert.alert('Camera unavailable', 'Could not open the camera. Please try again.');
+      Alert.alert('Camera unavailable', String(err));
     }
   }
 
