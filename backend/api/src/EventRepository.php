@@ -223,6 +223,40 @@ class EventRepository
     }
 
     /**
+     * Returns active/upcoming Hilads events for a public profile view.
+     * Matches events created by this registered user OR where they joined as a participant.
+     * Used by GET /api/v1/users/{userId}/events — requires no auth.
+     */
+    public static function getPublicByUserId(string $userId): array
+    {
+        $stmt = Database::pdo()->prepare(self::SELECT . "
+            WHERE c.type         = 'event'
+              AND c.status       = 'active'
+              AND ce.source_type = 'hilads'
+              AND ce.expires_at  > now()
+              AND (ce.created_by = :user_id
+                   OR EXISTS (
+                       SELECT 1 FROM event_participants ep
+                       WHERE ep.channel_id = c.id AND ep.user_id = :part_user_id
+                   ))
+            ORDER BY ce.starts_at ASC
+        ");
+        $stmt->execute(['user_id' => $userId, 'part_user_id' => $userId]);
+
+        $seenSeries = [];
+        $result     = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $sid = $row['series_id'] ?? null;
+            if ($sid !== null) {
+                if (isset($seenSeries[$sid])) continue;
+                $seenSeries[$sid] = true;
+            }
+            $result[] = self::format($row);
+        }
+        return $result;
+    }
+
+    /**
      * Updates a Hilads event. Returns the updated event or null if ownership check fails.
      * Ownership: creator's guest_id or (for registered users) created_by user_id.
      */

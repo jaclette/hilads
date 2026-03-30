@@ -56,6 +56,7 @@ class MessageRepository
                 'id'        => $row['id'],
                 'channelId' => $channelId,
                 'guestId'   => $row['guest_id'],
+                'userId'    => $row['user_id'] ?? null,
                 'nickname'  => $row['nickname'],
                 'type'      => 'image',
                 'imageUrl'  => $row['image_url'],
@@ -68,6 +69,7 @@ class MessageRepository
             'id'        => $row['id'],
             'channelId' => $channelId,
             'guestId'   => $row['guest_id'],
+            'userId'    => $row['user_id'] ?? null,
             'nickname'  => $row['nickname'],
             'content'   => $row['content'],
             'createdAt' => $createdAt,
@@ -80,11 +82,11 @@ class MessageRepository
     {
         $stmt = Database::pdo()->prepare("
             SELECT id, channel_id, type, event,
-                   guest_id, nickname, content, image_url, created_at
+                   guest_id, user_id, nickname, content, image_url, created_at
             FROM (
                 SELECT
                     id, channel_id, type, event,
-                    guest_id, nickname, content, image_url,
+                    guest_id, user_id, nickname, content, image_url,
                     EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
                 FROM messages
                 WHERE channel_id = ?
@@ -189,38 +191,40 @@ class MessageRepository
         ];
     }
 
-    public static function add(int|string $channelId, string $guestId, string $nickname, string $content): array
+    public static function add(int|string $channelId, string $guestId, string $nickname, string $content, ?string $userId = null): array
     {
         $id = bin2hex(random_bytes(8));
 
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, guest_id, nickname, content)
-            VALUES (?, ?, 'text', ?, ?, ?)
-        ")->execute([$id, self::dbKey($channelId), $guestId, $nickname, $content]);
+            INSERT INTO messages (id, channel_id, type, guest_id, user_id, nickname, content)
+            VALUES (?, ?, 'text', ?, ?, ?, ?)
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $content]);
 
         return [
             'id'        => $id,
             'channelId' => $channelId,
             'guestId'   => $guestId,
+            'userId'    => $userId,
             'nickname'  => $nickname,
             'content'   => $content,
             'createdAt' => time(),
         ];
     }
 
-    public static function addImage(int|string $channelId, string $guestId, string $nickname, string $imageUrl): array
+    public static function addImage(int|string $channelId, string $guestId, string $nickname, string $imageUrl, ?string $userId = null): array
     {
         $id = bin2hex(random_bytes(8));
 
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, guest_id, nickname, image_url, content)
-            VALUES (?, ?, 'image', ?, ?, ?, '')
-        ")->execute([$id, self::dbKey($channelId), $guestId, $nickname, $imageUrl]);
+            INSERT INTO messages (id, channel_id, type, guest_id, user_id, nickname, image_url, content)
+            VALUES (?, ?, 'image', ?, ?, ?, ?, '')
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $imageUrl]);
 
         return [
             'id'        => $id,
             'channelId' => $channelId,
             'guestId'   => $guestId,
+            'userId'    => $userId,
             'nickname'  => $nickname,
             'type'      => 'image',
             'imageUrl'  => $imageUrl,

@@ -505,6 +505,15 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     Response::json(['user' => AuthService::publicFields($user)]);
 });
 
+$router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
+    $userId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+    $events = EventRepository::getPublicByUserId($userId);
+    Response::json(['events' => $events]);
+});
+
 // ── Guest sessions ────────────────────────────────────────────────────────────
 
 $router->add('POST', '/api/v1/guest/session', function () {
@@ -1805,7 +1814,9 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
         }
 
         try {
-            $message = MessageRepository::addImage($eventId, $guestId, $nickname, $imageUrl);
+            $senderUser   = AuthService::currentUser();
+            $senderUserId = $senderUser['id'] ?? null;
+            $message = MessageRepository::addImage($eventId, $guestId, $nickname, $imageUrl, $senderUserId);
         } catch (\Throwable $e) {
             error_log("[event-msg] DB error inserting image message eventId={$eventId}: " . $e->getMessage());
             Response::json(['error' => 'Failed to send message'], 500);
@@ -1820,7 +1831,9 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
         }
 
         try {
-            $message = MessageRepository::add($eventId, $guestId, $nickname, $content);
+            $senderUser   = AuthService::currentUser();
+            $senderUserId = $senderUser['id'] ?? null;
+            $message = MessageRepository::add($eventId, $guestId, $nickname, $content, $senderUserId);
         } catch (\Throwable $e) {
             error_log("[event-msg] DB error inserting message eventId={$eventId}: " . $e->getMessage());
             Response::json(['error' => 'Failed to send message'], 500);
@@ -1835,8 +1848,6 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
     // prevent the message response from reaching the sender.
     try {
         $eventForNotif = EventRepository::findById($eventId);
-        $senderUser    = AuthService::currentUser();
-        $senderUserId  = $senderUser['id'] ?? null;
         $eventTitle    = is_array($eventForNotif) ? ($eventForNotif['title'] ?? 'event') : 'event';
         $bodyPreview   = $type === 'image' ? '📸 Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
         NotificationRepository::notifyEventParticipants(
@@ -2030,7 +2041,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             Response::json(['error' => 'Invalid image reference'], 400);
         }
 
-        $message = MessageRepository::addImage($channelId, $guestId, $nickname, $imageUrl);
+        $msgSender       = AuthService::currentUser();
+        $msgSenderUserId = $msgSender['id'] ?? null;
+        $message = MessageRepository::addImage($channelId, $guestId, $nickname, $imageUrl, $msgSenderUserId);
     } else {
         if (empty($content) || !is_string($content)) {
             Response::json(['error' => 'content is required'], 400);
@@ -2040,7 +2053,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             Response::json(['error' => 'content must not exceed 1000 characters'], 400);
         }
 
-        $message = MessageRepository::add($channelId, $guestId, $nickname, $content);
+        $msgSender       = AuthService::currentUser();
+        $msgSenderUserId = $msgSender['id'] ?? null;
+        $message = MessageRepository::add($channelId, $guestId, $nickname, $content, $msgSenderUserId);
     }
 
     broadcastMessageToWs($channelId, $message);
@@ -2049,8 +2064,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     // Sender is excluded if they have a registered account; guests are excluded via null.
     // MobilePushService applies a 5-minute cooldown per recipient per channel.
     try {
-        $msgSender        = AuthService::currentUser();
-        $msgSenderUserId  = $msgSender['id'] ?? null;
         $msgCityChannelId = "city_{$channelId}";
         $msgPreview       = $type === 'image' ? '📸 Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
         NotificationRepository::notifyCityOnlineUsers(

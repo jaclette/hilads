@@ -2,7 +2,8 @@
  * Public profile screen — /user/[id]
  *
  * Web parity: PublicProfileScreen.jsx
- * Shows: avatar, display name, member badge, home city, age, interests.
+ * Shows: avatar, display name, member badge, home city, age, interests,
+ *        events the user is going to, events the user created.
  * DM button at the bottom for registered non-self users.
  */
 
@@ -14,10 +15,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { fetchPublicProfile } from '@/api/users';
+import { fetchPublicProfile, fetchUserEvents } from '@/api/users';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import type { User } from '@/types';
+import type { User, HiladsEvent } from '@/types';
 
 // ── Avatar gradient palette — mirrors web PublicProfileScreen.jsx ─────────────
 
@@ -31,6 +32,62 @@ function avatarBg(name: string): string {
   return AVATAR_BG[hash % AVATAR_BG.length];
 }
 
+// ── Event helpers — mirrors hot.tsx ───────────────────────────────────────────
+
+const EVENT_ICONS: Record<string, string> = {
+  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
+  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
+  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
+};
+
+function formatEventTime(ts: number): string {
+  const d = new Date(ts * 1000);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  if (d.toDateString() === today.toDateString()) return `Today · ${time}`;
+  if (d.toDateString() === tomorrow.toDateString()) return `Tomorrow · ${time}`;
+  return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ` · ${time}`;
+}
+
+// ── Event pill — compact card for profile events list ─────────────────────────
+
+function EventPill({
+  event,
+  onPress,
+}: {
+  event: HiladsEvent;
+  onPress: () => void;
+}) {
+  const icon = EVENT_ICONS[event.event_type] ?? '📌';
+  const now  = Date.now() / 1000;
+  const isLive = event.starts_at <= now && event.expires_at > now;
+
+  return (
+    <TouchableOpacity style={styles.eventPill} onPress={onPress} activeOpacity={0.7}>
+      <Text style={styles.eventIcon}>{icon}</Text>
+      <View style={styles.eventInfo}>
+        <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+        <View style={styles.eventMeta}>
+          {isLive && (
+            <View style={styles.liveBadge}>
+              <Text style={styles.liveBadgeText}>LIVE</Text>
+            </View>
+          )}
+          <Text style={styles.eventTime}>{formatEventTime(event.starts_at)}</Text>
+          {event.location_hint ? (
+            <Text style={styles.eventLocation} numberOfLines={1}>· {event.location_hint}</Text>
+          ) : null}
+        </View>
+      </View>
+      <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+    </TouchableOpacity>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function PublicProfileScreen() {
@@ -38,15 +95,22 @@ export default function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { account } = useApp();
 
-  const [user,    setUser]    = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState<string | null>(null);
+  const [user,         setUser]         = useState<User | null>(null);
+  const [events,       setEvents]       = useState<HiladsEvent[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [error,        setError]        = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetchPublicProfile(id)
-      .then(u => setUser(u))
+    Promise.all([
+      fetchPublicProfile(id),
+      fetchUserEvents(id),
+    ])
+      .then(([u, evs]) => {
+        setUser(u);
+        setEvents(evs);
+      })
       .catch(() => setError('Could not load profile.'))
       .finally(() => setLoading(false));
   }, [id]);
@@ -56,11 +120,22 @@ export default function PublicProfileScreen() {
   const bg      = avatarBg(name);
   const isSelf  = account?.id === id;
 
+  // Split events: created by this user vs joined-but-not-created
+  const createdEvents = events.filter(e => e.created_by === id);
+  const goingEvents   = events.filter(e => e.created_by !== id);
+
   function handleDm() {
     if (!user?.id) return;
     router.push({
       pathname: '/dm/[id]',
       params: { id: user.id, name: user.display_name },
+    });
+  }
+
+  function handleEventPress(eventId: string) {
+    router.push({
+      pathname: '/event/[id]',
+      params: { id: eventId },
     });
   }
 
@@ -128,13 +203,45 @@ export default function PublicProfileScreen() {
 
           {/* ── Interests — read-only chips ── */}
           {(user.interests?.length ?? 0) > 0 && (
-            <View style={styles.interestsSection}>
+            <View style={styles.section}>
               <Text style={styles.sectionLabel}>Interests</Text>
               <View style={styles.interestsWrap}>
                 {(user.interests ?? []).map(interest => (
                   <View key={interest} style={styles.chip}>
                     <Text style={styles.chipText}>{interest}</Text>
                   </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* ── Events going to (joined but not created) ── */}
+          {goingEvents.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Going to</Text>
+              <View style={styles.eventList}>
+                {goingEvents.slice(0, 5).map(event => (
+                  <EventPill
+                    key={event.id}
+                    event={event}
+                    onPress={() => handleEventPress(event.id)}
+                  />
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* ── Events created ── */}
+          {createdEvents.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Created</Text>
+              <View style={styles.eventList}>
+                {createdEvents.slice(0, 5).map(event => (
+                  <EventPill
+                    key={event.id}
+                    event={event}
+                    onPress={() => handleEventPress(event.id)}
+                  />
                 ))}
               </View>
             </View>
@@ -215,8 +322,8 @@ const styles = StyleSheet.create({
 
   // ── Body ──────────────────────────────────────────────────────────────────
   body: {
-    padding:   Spacing.md,
-    gap:       Spacing.md,
+    padding:       Spacing.md,
+    gap:           Spacing.md,
     paddingBottom: Spacing.xxl,
   },
 
@@ -280,9 +387,7 @@ const styles = StyleSheet.create({
     borderTopWidth:    1,
     borderTopColor:    Colors.border,
   },
-  detailRowFirst: {
-    borderTopWidth: 0,
-  },
+  detailRowFirst: { borderTopWidth: 0 },
   detailLabel: {
     fontSize:   FontSizes.sm,
     color:      Colors.muted,
@@ -294,8 +399,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // ── Interests ─────────────────────────────────────────────────────────────
-  interestsSection: { gap: Spacing.sm },
+  // ── Sections (interests, events) ──────────────────────────────────────────
+  section: { gap: Spacing.sm },
   sectionLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
@@ -303,6 +408,8 @@ const styles = StyleSheet.create({
     letterSpacing: 1.0,
     textTransform: 'uppercase',
   },
+
+  // ── Interests ─────────────────────────────────────────────────────────────
   interestsWrap: {
     flexDirection: 'row',
     flexWrap:      'wrap',
@@ -320,6 +427,56 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.sm,
     color:      Colors.violet,
     fontWeight: '600',
+  },
+
+  // ── Event list ────────────────────────────────────────────────────────────
+  eventList: { gap: Spacing.xs },
+  eventPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.lg,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.sm + 2,
+    gap:               Spacing.sm,
+  },
+  eventIcon:  { fontSize: 20 },
+  eventInfo:  { flex: 1, gap: 2 },
+  eventTitle: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  eventMeta: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           6,
+    flexWrap:      'wrap',
+  },
+  eventTime: {
+    fontSize: FontSizes.xs,
+    color:    Colors.muted,
+  },
+  eventLocation: {
+    fontSize:    FontSizes.xs,
+    color:       Colors.muted,
+    flexShrink:  1,
+  },
+  liveBadge: {
+    backgroundColor:   'rgba(61,220,132,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 6,
+    paddingVertical:   1,
+    borderWidth:       1,
+    borderColor:       'rgba(61,220,132,0.25)',
+  },
+  liveBadgeText: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    color:         Colors.green,
+    letterSpacing: 0.4,
   },
 
   // ── DM button ─────────────────────────────────────────────────────────────
