@@ -10,7 +10,7 @@
  * Input mirrors web .input-bar: pill input, image button, send button.
  */
 
-import { useCallback, useRef, useEffect, useState } from 'react';
+import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Platform,
@@ -23,6 +23,7 @@ import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage } from '@/api/channels';
+import { fetchCityEvents } from '@/api/events';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -108,11 +109,9 @@ function PulseDot() {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-// Small gap between the composer and the tab bar.
-// The tab bar is in React Navigation's layout flow (not an overlay), so the
-// screen content area already ends at the tab bar boundary. We only need a
-// small buffer to keep the input above the tab bar's elevation shadow.
-const COMPOSER_BOTTOM_PAD = 8;
+// The tab bar lives in React Navigation's layout flow (not an overlay), so the
+// screen content area already ends exactly at the tab bar — no bottom padding needed.
+const COMPOSER_BOTTOM_PAD = 0;
 
 export default function ChatTab() {
   const router = useRouter();
@@ -157,6 +156,10 @@ export default function ChatTab() {
   // Up to 3 banners shown simultaneously; each auto-expires independently.
   // No global throttle — every new event in this channel gets a banner.
 
+  // ── Event feed synthesis state — declared before WS effect that uses it ─────
+  const seenEventIds   = useRef(new Set<string>());
+  const [eventFeedItems, setEventFeedItems] = useState<Message[]>([]);
+
   type BannerEntry = { id: string; title: string };
   const [eventBanners, setEventBanners] = useState<BannerEntry[]>([]);
   // Per-banner timers keyed by event id
@@ -191,6 +194,21 @@ export default function ChatTab() {
         return next;
       });
 
+      // Also inject into the chat feed (same as web setFeed pattern)
+      if (!seenEventIds.current.has(id)) {
+        seenEventIds.current.add(id);
+        const feedMsg: Message = {
+          id:        `event-msg-${id}`,
+          type:      'event',
+          eventId:   id,
+          content:   title,
+          nickname:  '',
+          createdAt: Date.now() / 1000,
+        };
+        setEventFeedItems(prev => [feedMsg, ...prev]);
+        console.log('[event-feed] injected feed item via WS for event', id);
+      }
+
       // Each banner gets its own 20s auto-expire timer
       if (bannerTimers.current.has(id)) clearTimeout(bannerTimers.current.get(id)!);
       const t = setTimeout(() => {
@@ -208,6 +226,56 @@ export default function ChatTab() {
       console.log('[event-banners] cleared due to channel change or unmount');
     };
   }, [channelId]);
+
+  // ── Event feed item synthesis (mirrors web prevEventCountRef pattern) ───────
+  // Web: when events array grows, inject { type: 'event', id: 'event-msg-{id}', ... }
+  // into the feed. Native mirrors this: poll cityEvents, synthesize on first sight.
+
+  // Fetch today's events + poll every 30s (same interval as web)
+  useEffect(() => {
+    if (!channelId) return;
+    seenEventIds.current.clear();
+    setEventFeedItems([]);
+
+    async function loadEvents() {
+      try {
+        const evts = await fetchCityEvents(channelId);
+        const now   = Date.now() / 1000;
+        const fresh: Message[] = [];
+        for (const e of evts) {
+          if (!seenEventIds.current.has(e.id)) {
+            seenEventIds.current.add(e.id);
+            fresh.push({
+              id:        `event-msg-${e.id}`,
+              type:      'event',
+              eventId:   e.id,
+              content:   e.title,
+              nickname:  '',
+              createdAt: now,
+            });
+          }
+        }
+        if (fresh.length > 0) {
+          setEventFeedItems(prev => [...prev, ...fresh]);
+          console.log('[event-feed] synthesized', fresh.length, 'event feed item(s)');
+        }
+      } catch {}
+    }
+
+    loadEvents();
+    const id = setInterval(loadEvents, 30_000);
+    return () => clearInterval(id);
+  }, [channelId]);
+
+  // Merge synthesized event items into the messages list, sorted newest-first
+  const allMessages = useMemo<Message[]>(() => {
+    if (eventFeedItems.length === 0) return messages;
+    return [...messages, ...eventFeedItems].sort((a, b) => {
+      const ta = typeof a.createdAt === 'number' ? a.createdAt : new Date(a.createdAt).getTime() / 1000;
+      const tb = typeof b.createdAt === 'number' ? b.createdAt : new Date(b.createdAt).getTime() / 1000;
+      return tb - ta; // newest first for inverted FlatList
+    });
+  }, [messages, eventFeedItems]);
 
   const loadFn = useCallback(
     () => fetchMessages(channelId),
@@ -355,11 +423,11 @@ export default function ChatTab() {
           </View>
         ) : (
           <FlatList
-            data={messages}
+            data={allMessages}
             keyExtractor={(m, idx) => (m.id ? m.id : String(idx))}
             renderItem={({ item, index }) => {
-              const olderMsg = messages[index + 1]; // older (higher index in inverted list)
-              const newerMsg = messages[index - 1]; // newer (lower index)
+              const olderMsg = allMessages[index + 1]; // older (higher index in inverted list)
+              const newerMsg = allMessages[index - 1]; // newer (lower index)
               const isGrouped =
                 !!olderMsg &&
                 olderMsg.guestId === item.guestId &&

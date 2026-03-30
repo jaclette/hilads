@@ -1117,23 +1117,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         error_log("[event-create] ws broadcast failed (non-fatal): " . $e->getMessage());
     }
 
-    // Store a type='event' announcement in the city channel feed + broadcast as newMessage.
-    // This makes the AnimatedEventPill appear in the chat feed — for online users
-    // (via WS newMessage) and users opening the app later (via fetchMessages).
-    try {
-        $feedMsg = MessageRepository::addEventAnnouncement(
-            (int) $channelId,
-            $event['id'],
-            $title,
-            $guestId,
-            $nickname,
-        );
-        broadcastMessageToWs((int) $channelId, $feedMsg);
-        error_log("[event-create] event feed message stored id={$feedMsg['id']} eventId={$event['id']}");
-    } catch (\Throwable $e) {
-        error_log("[event-create] event feed message failed (non-fatal): " . $e->getMessage());
-    }
-
     // Notify registered users currently online in this city (non-fatal side effect).
     try {
         $cityChannelId = "city_{$channelId}";

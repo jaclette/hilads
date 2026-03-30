@@ -354,14 +354,14 @@ const styles = StyleSheet.create({
 
   // ── .message ─────────────────────────────────────────────────────────────
   row: {
-    paddingHorizontal: 18,
-    flexDirection:     'column',
-    maxWidth:          '82%',
+    flexDirection: 'column',
+    maxWidth:      '72%',
   },
-  rowOther:   { alignSelf: 'flex-start' },
-  rowMine:    { alignSelf: 'flex-end' },
-  rowFirst:   { marginTop: 28 },
-  rowGrouped: { marginTop: 5 },
+  // alignItems shrinks children to content width so short bubbles don't stretch
+  rowOther:   { alignSelf: 'flex-start', alignItems: 'flex-start', paddingLeft: 14 },
+  rowMine:    { alignSelf: 'flex-end',   alignItems: 'flex-end',   paddingRight: 14 },
+  rowFirst:   { marginTop: 16 },
+  rowGrouped: { marginTop: 3 },
   rowSending: { opacity: 0.65 },
 
   // ── .msg-meta ─────────────────────────────────────────────────────────────
@@ -390,16 +390,16 @@ const styles = StyleSheet.create({
   avatarLetter: { color: '#fff', fontSize: 13, fontWeight: '700' },
 
   // ── .msg-author ───────────────────────────────────────────────────────────
-  author: { fontSize: 16, fontWeight: '700', opacity: 0.9 },
+  author: { fontSize: 13, fontWeight: '700', opacity: 0.9 },
 
   // Grouped indent: 34px avatar + 8px gap
   groupedOffset: { paddingLeft: 42 },
 
   // ── .msg-content ──────────────────────────────────────────────────────────
   bubble: {
-    borderRadius:      18,
-    paddingHorizontal: 20,
-    paddingVertical:   14,
+    borderRadius:      16,
+    paddingHorizontal: 12,
+    paddingVertical:   8,
   },
   bubbleOther: {
     backgroundColor:     Colors.bg3,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
     shadowRadius:         6,
     elevation:            4,
   },
-  bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 27 },
+  bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 22 },
   bubbleTextMine: { color: '#fff' },
 
   // Failed state
