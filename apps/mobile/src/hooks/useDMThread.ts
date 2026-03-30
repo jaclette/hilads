@@ -1,17 +1,19 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { fetchDmMessages, sendDmMessage, markDmRead } from '@/api/conversations';
+import { fetchDmMessages, sendDmMessage, sendDmImageMessage, markDmRead } from '@/api/conversations';
+import { uploadFile } from '@/api/uploads';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import type { DmMessage } from '@/types';
 
 interface Result {
-  messages:   DmMessage[];  // newest first (inverted FlatList)
-  loading:    boolean;
-  sending:    boolean;      // kept for interface compat — always false (optimistic)
-  error:      string | null;
-  clearError: () => void;
-  sendText:   (content: string) => Promise<void>;
+  messages:    DmMessage[];  // newest first (inverted FlatList)
+  loading:     boolean;
+  sending:     boolean;      // kept for interface compat — always false (optimistic)
+  error:       string | null;
+  clearError:  () => void;
+  sendText:    (content: string) => Promise<void>;
+  sendImage:   (localUri: string) => Promise<void>;
 }
 
 function makeLocalId(): string {
@@ -96,6 +98,7 @@ export function useDMThread(conversationId: string): Result {
       conversation_id: conversationId,
       sender_id:       account?.id ?? '',
       content:         trimmed,
+      type:            'text',
       created_at:      new Date().toISOString(),
       sender_name:     account?.display_name ?? '',
       localId,
@@ -107,8 +110,6 @@ export function useDMThread(conversationId: string): Result {
 
     try {
       const msg = await sendDmMessage(conversationId, trimmed);
-      // Reconcile: replace placeholder with confirmed server message.
-      // If WS delivered the server message first, remove placeholder only.
       seenIds.current.add(msg.id);
       setMessages(prev => {
         if (prev.some(m => m.id === msg.id && m.id !== localId)) {
@@ -125,9 +126,49 @@ export function useDMThread(conversationId: string): Result {
     }
   }, [conversationId, account]);
 
+  // ── Send image (optimistic — local URI shown while uploading) ──────────────
+
+  const sendImage = useCallback(async (localUri: string) => {
+    const localId = makeLocalId();
+    const optimistic: DmMessage = {
+      id:              localId,
+      conversation_id: conversationId,
+      sender_id:       account?.id ?? '',
+      content:         '',
+      type:            'image',
+      image_url:       localUri,  // local URI for immediate preview
+      created_at:      new Date().toISOString(),
+      sender_name:     account?.display_name ?? '',
+      localId,
+      status:          'sending',
+    };
+
+    setMessages(prev => [optimistic, ...prev]);
+    setError(null);
+
+    try {
+      const remoteUrl = await uploadFile(localUri);
+      const msg = await sendDmImageMessage(conversationId, remoteUrl);
+      seenIds.current.add(msg.id);
+      setMessages(prev => {
+        if (prev.some(m => m.id === msg.id && m.id !== localId)) {
+          return prev.filter(m => m.id !== localId);
+        }
+        return prev.map(m => m.id === localId ? msg : m);
+      });
+      track('dm_image_sent', { conversationId });
+    } catch {
+      setMessages(prev =>
+        prev.map(m => m.id === localId ? { ...m, status: 'failed' as const } : m),
+      );
+      setError('Failed to send image');
+    }
+  }, [conversationId, account]);
+
   return {
     messages, loading, sending: false, error,
     clearError: () => setError(null),
     sendText,
+    sendImage,
   };
 }

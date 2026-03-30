@@ -198,6 +198,21 @@ class Database
                 self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS event_join_push BOOLEAN NOT NULL DEFAULT FALSE");
             }
 
+            // Add channel_message_push + city_join_push to notification_preferences if missing.
+            $cmpExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'channel_message_push')")
+                ->fetchColumn();
+            if (!$cmpExists) {
+                self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS channel_message_push BOOLEAN NOT NULL DEFAULT FALSE");
+            }
+
+            $cjpExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'city_join_push')")
+                ->fetchColumn();
+            if (!$cjpExists) {
+                self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS city_join_push BOOLEAN NOT NULL DEFAULT FALSE");
+            }
+
             // Mobile push token registry (one row per device, Expo push tokens).
             $mptExists = (bool) self::$pdo
                 ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'mobile_push_tokens')")
@@ -224,6 +239,15 @@ class Database
                 if (!$mptLuaExists) {
                     self::$pdo->exec("ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()");
                 }
+            }
+
+            // Add type + image_url to conversation_messages if missing (DM image upload feature).
+            $cmTypeExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'conversation_messages' AND column_name = 'type')")
+                ->fetchColumn();
+            if (!$cmTypeExists) {
+                self::$pdo->exec("ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS type TEXT NOT NULL DEFAULT 'text'");
+                self::$pdo->exec("ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS image_url TEXT");
             }
 
             // Anti-noise push delivery log (cooldown tracking per user/type/ref).
@@ -279,11 +303,13 @@ class Database
 
             $pdo->exec("
                 CREATE TABLE notification_preferences (
-                    user_id              TEXT    PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-                    dm_push              BOOLEAN NOT NULL DEFAULT TRUE,
-                    event_message_push   BOOLEAN NOT NULL DEFAULT TRUE,
-                    event_join_push      BOOLEAN NOT NULL DEFAULT FALSE,
-                    new_event_push       BOOLEAN NOT NULL DEFAULT FALSE
+                    user_id                TEXT    PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+                    dm_push                BOOLEAN NOT NULL DEFAULT TRUE,
+                    event_message_push     BOOLEAN NOT NULL DEFAULT TRUE,
+                    event_join_push        BOOLEAN NOT NULL DEFAULT FALSE,
+                    new_event_push         BOOLEAN NOT NULL DEFAULT FALSE,
+                    channel_message_push   BOOLEAN NOT NULL DEFAULT FALSE,
+                    city_join_push         BOOLEAN NOT NULL DEFAULT FALSE
                 )
             ");
 

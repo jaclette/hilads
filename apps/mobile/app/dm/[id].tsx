@@ -8,11 +8,12 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  View, Text, FlatList, TextInput, TouchableOpacity,
+  View, Text, Image, FlatList, TextInput, TouchableOpacity,
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
-  Animated,
+  Animated, Alert,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -93,6 +94,7 @@ interface RowProps {
 }
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowProps) {
+  const router = useRouter();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(6)).current;
 
@@ -122,28 +124,51 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowP
         { opacity, transform: [{ translateY }] },
       ]}>
       {/* Received: small avatar dot to the left, visible only on first of group */}
+      {/* Tap avatar → open sender's public profile */}
       {!isMine && (
         <View style={styles.avatarSlot}>
           {isFirst && (
-            <View style={[styles.avatar, { backgroundColor: color }]}>
-              <Text style={styles.avatarText}>{initial}</Text>
-            </View>
+            <TouchableOpacity
+              onPress={() => router.push(`/user/${msg.sender_id}` as Parameters<typeof router.push>[0])}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <View style={[styles.avatar, { backgroundColor: color }]}>
+                <Text style={styles.avatarText}>{initial}</Text>
+              </View>
+            </TouchableOpacity>
           )}
         </View>
       )}
 
       <View style={[styles.bubbleCol, isMine && styles.bubbleColMine]}>
-        <View style={[
-          styles.bubble,
-          isMine  ? styles.bubbleMine  : styles.bubbleOther,
-          isMine  ? bubbleMineShape    : bubbleOtherShape,
-          isSending && styles.bubbleSending,
-          isFailed  && styles.bubbleFailed,
-        ]}>
-          <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-            {msg.content}
-          </Text>
-        </View>
+        {msg.type === 'image' && msg.image_url ? (
+          <View style={[
+            styles.imageBubble,
+            isMine  ? styles.bubbleMine  : styles.bubbleOther,
+            isMine  ? bubbleMineShape    : bubbleOtherShape,
+            isSending && styles.bubbleSending,
+            isFailed  && styles.bubbleFailed,
+          ]}>
+            <Image
+              source={{ uri: msg.image_url }}
+              style={styles.bubbleImage}
+              resizeMode="cover"
+            />
+          </View>
+        ) : (
+          <View style={[
+            styles.bubble,
+            isMine  ? styles.bubbleMine  : styles.bubbleOther,
+            isMine  ? bubbleMineShape    : bubbleOtherShape,
+            isSending && styles.bubbleSending,
+            isFailed  && styles.bubbleFailed,
+          ]}>
+            <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
+              {msg.content}
+            </Text>
+          </View>
+        )}
 
         {/* Status / timestamp row — only on last message of group */}
         {isLast && (
@@ -169,19 +194,45 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowP
 
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { account } = useApp();
-  const { messages, loading, sending, error, clearError, sendText } = useDMThread(conversationId);
-  const [text,    setText]    = useState('');
-  const [focused, setFocused] = useState(false);
+  const { messages, loading, sending, error, clearError, sendText, sendImage } = useDMThread(conversationId);
+  const [text,      setText]      = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [focused,   setFocused]   = useState(false);
 
   const color   = avatarColor(displayName);
   const initial = displayName.slice(0, 1).toUpperCase();
+  const busy    = sending || uploading;
 
   function handleSend() {
     const t = text.trim();
-    if (!t || sending) return;
+    if (!t || busy) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     sendText(t);
     setText('');
+  }
+
+  async function handlePickImage() {
+    if (busy) return;
+
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Allow photo access to share images.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality:    0.8,
+    });
+
+    if (!result.canceled && result.assets[0]?.uri) {
+      setUploading(true);
+      try {
+        await sendImage(result.assets[0].uri);
+      } finally {
+        setUploading(false);
+      }
+    }
   }
 
   // Inverted FlatList: index 0 = newest (bottom), index n-1 = oldest (top).
@@ -246,6 +297,17 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
       {/* ── Composer ── */}
       <View style={[styles.composer, focused && styles.composerFocused]}>
+        <TouchableOpacity
+          style={[styles.imageBtn, busy && styles.imageBtnDisabled]}
+          onPress={handlePickImage}
+          disabled={busy}
+          activeOpacity={0.7}
+        >
+          {uploading
+            ? <ActivityIndicator size="small" color={Colors.accent} />
+            : <Ionicons name="image-outline" size={22} color={Colors.text} />
+          }
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           value={text}
@@ -259,12 +321,12 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           returnKeyType="send"
           blurOnSubmit={Platform.OS !== 'ios'}
           onSubmitEditing={Platform.OS !== 'ios' ? handleSend : undefined}
-          editable={!sending}
+          editable={!busy}
         />
         <TouchableOpacity
-          style={[styles.sendBtn, (!text.trim() || sending) && styles.sendBtnOff]}
+          style={[styles.sendBtn, (!text.trim() || busy) && styles.sendBtnOff]}
           onPress={handleSend}
-          disabled={!text.trim() || sending}
+          disabled={!text.trim() || busy}
           activeOpacity={0.8}
         >
           {sending
@@ -574,6 +636,18 @@ const styles = StyleSheet.create({
   composerFocused: {
     borderTopColor: 'rgba(255,122,60,0.3)',
   },
+  imageBtn: {
+    width:           SEND_BTN,
+    height:          SEND_BTN,
+    borderRadius:    Radius.full,
+    backgroundColor: Colors.bg2,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexShrink:      0,
+  },
+  imageBtnDisabled: { opacity: 0.4 },
   input: {
     flex:              1,
     minHeight:         48,
@@ -609,5 +683,17 @@ const styles = StyleSheet.create({
     borderColor:     Colors.border,
     shadowOpacity:   0,
     elevation:       0,
+  },
+
+  // ── Image bubble ─────────────────────────────────────────────────────────────
+  imageBubble: {
+    borderRadius:    22,
+    overflow:        'hidden',
+    maxWidth:        '100%',
+    padding:         0,
+  },
+  bubbleImage: {
+    width:  220,
+    height: 180,
   },
 });

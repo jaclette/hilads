@@ -29,11 +29,13 @@ class MobilePushService
     private static function prefColumn(string $type): ?string
     {
         return match ($type) {
-            'dm_message'    => 'dm_push',
-            'event_message' => 'event_message_push',
-            'event_join'    => 'event_join_push',
-            'new_event'     => 'new_event_push',
-            default         => null,
+            'dm_message'      => 'dm_push',
+            'event_message'   => 'event_message_push',
+            'event_join'      => 'event_join_push',
+            'new_event'       => 'new_event_push',
+            'channel_message' => 'channel_message_push',
+            'city_join'       => 'city_join_push',
+            default           => null,
         };
     }
 
@@ -41,9 +43,11 @@ class MobilePushService
     private static function cooldownSeconds(string $type): int
     {
         return match ($type) {
-            'event_join' => 300,   // 5 min — avoid bursts when many people join
-            'new_event'  => 3600,  // 1 hour — city events should not spam
-            default      => 0,
+            'event_join'      => 300,   // 5 min — avoid bursts when many people join
+            'new_event'       => 3600,  // 1 hour — city events should not spam
+            'channel_message' => 300,   // 5 min — one push per city channel per 5 min per recipient
+            'city_join'       => 600,   // 10 min — one "X arrived" per city per 10 min per recipient
+            default           => 0,
         };
     }
 
@@ -51,11 +55,13 @@ class MobilePushService
     private static function refId(string $type, array $data): string
     {
         return match ($type) {
-            'dm_message'             => $data['conversationId'] ?? '',
+            'dm_message'                   => $data['conversationId'] ?? '',
             'event_message',
-            'event_join'             => $data['eventId'] ?? '',
-            'new_event'              => $data['channelId'] ?? '',
-            default                  => '',
+            'event_join'                   => $data['eventId'] ?? '',
+            'new_event',
+            'channel_message',
+            'city_join'                    => $data['channelId'] ?? '',
+            default                        => '',
         };
     }
 

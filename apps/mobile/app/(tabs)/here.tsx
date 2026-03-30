@@ -34,21 +34,30 @@ function avatarColor(str: string): string {
 
 // ── User row — matches web "People here" card ─────────────────────────────────
 // Web: avatar circle + name + MEMBER badge (purple) or LIVE NOW (green) + DM btn
+// Full card tap → opens public profile (registered non-self users only).
+// DM button → opens DM thread directly (independent inner touchable).
 
 function UserRow({
   user,
   isMe,
+  onPress,
   onDm,
 }: {
   user: OnlineUser;
   isMe: boolean;
+  onPress?: () => void;
   onDm: () => void;
 }) {
   const initials = (user.nickname ?? '?').slice(0, 2).toUpperCase();
   const color    = avatarColor(user.nickname ?? '');
 
   return (
-    <View style={styles.row}>
+    <TouchableOpacity
+      style={styles.row}
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+      disabled={!onPress}
+    >
       {/* Avatar */}
       <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
         <Text style={[styles.avatarText, { color }]}>{initials}</Text>
@@ -81,7 +90,7 @@ function UserRow({
           <Feather name="message-square" size={22} color={Colors.text} />
         </TouchableOpacity>
       )}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -146,19 +155,29 @@ export default function HereScreen() {
       <FlatList
         data={displayList}
         keyExtractor={(u, i) => u.sessionId || `fallback_${i}`}
-        renderItem={({ item }) => (
-          <UserRow
-            user={item}
-            isMe={item.sessionId === mySessionId}
-            onDm={() => {
-              if (item.userId) {
+        renderItem={({ item }) => {
+          const isMe = item.sessionId === mySessionId;
+          return (
+            <UserRow
+              user={item}
+              isMe={isMe}
+              onPress={!isMe && item.userId ? () => {
                 router.push({
-                  pathname: '/dm/[id]',
-                  params: { id: item.userId, name: item.nickname },
+                  pathname: '/user/[id]',
+                  params: { id: item.userId! },
                 });
-              }
-            }}
-          />
+              } : undefined}
+              onDm={() => {
+                if (item.userId) {
+                  router.push({
+                    pathname: '/dm/[id]',
+                    params: { id: item.userId, name: item.nickname },
+                  });
+                }
+              }}
+            />
+          );
+        }}
         )}
         contentContainerStyle={displayList.length === 0 ? styles.flex1 : styles.list}
         ListEmptyComponent={

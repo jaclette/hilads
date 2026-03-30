@@ -2,10 +2,12 @@ import { api } from './client';
 import type { Notification } from '@/types';
 
 export interface NotificationPreferences {
-  dm_push:            boolean;
-  event_message_push: boolean;
-  event_join_push:    boolean;
-  new_event_push:     boolean;
+  dm_push:              boolean;
+  event_message_push:   boolean;
+  event_join_push:      boolean;
+  new_event_push:       boolean;
+  channel_message_push: boolean;
+  city_join_push:       boolean;
 }
 
 export async function fetchNotifications(): Promise<{ notifications: Notification[]; unread_count: number }> {

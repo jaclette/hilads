@@ -109,9 +109,10 @@ function PulseDot() {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-// The tab bar lives in React Navigation's layout flow (not an overlay), so the
-// screen content area already ends exactly at the tab bar — no bottom padding needed.
-const COMPOSER_BOTTOM_PAD = 0;
+// ── Screen ────────────────────────────────────────────────────────────────────
+// Tab bar is in-flow (flex-column sibling), so the screen content area ends
+// exactly at the tab bar top. No paddingBottom needed on the SafeAreaView.
+// ChatInput uses elevation: 30 to render above the tab bar's upward shadow.
 
 export default function ChatTab() {
   const router = useRouter();
@@ -308,7 +309,7 @@ export default function ChatTab() {
   // No city yet — prompt to pick one
   if (!city) {
     return (
-      <SafeAreaView style={[styles.container, { paddingBottom: COMPOSER_BOTTOM_PAD }]}>
+      <SafeAreaView style={[styles.container, { paddingBottom: 0 }]}>
         <View style={styles.noCityWrap}>
           <Text style={styles.noCityTitle}>No city selected</Text>
           <Text style={styles.noCitySubtitle}>
@@ -329,7 +330,7 @@ export default function ChatTab() {
   const flag = cityFlag(city.country);
 
   return (
-    <SafeAreaView style={[styles.container, { paddingBottom: COMPOSER_BOTTOM_PAD }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { paddingBottom: 0 }]} edges={['top']}>
 
       {/* ── Header — web: .chat-header + renderCityHero() (mobile variant) ── */}
       {/*                                                                      */}

@@ -143,6 +143,40 @@ function DateSeparator({ label }: { label: string }) {
   );
 }
 
+// ── Sender identity — avatar + name, tappable for registered users ────────────
+// Wraps in TouchableOpacity when userId is present (registered), plain View for guests.
+// Navigates to /user/[userId]. Used in both text and image message paths to avoid duplication.
+
+function SenderMeta({ nickname, color, initial, userId }: {
+  nickname: string;
+  color:    string;
+  initial:  string;
+  userId?:  string;
+}) {
+  const router = useRouter();
+  const inner = (
+    <>
+      <View style={[styles.avatar, { backgroundColor: color }]}>
+        <Text style={styles.avatarLetter}>{initial}</Text>
+      </View>
+      <Text style={[styles.author, { color }]}>{nickname}</Text>
+    </>
+  );
+  if (userId) {
+    return (
+      <TouchableOpacity
+        style={styles.meta}
+        onPress={() => router.push(`/user/${userId}` as Parameters<typeof router.push>[0])}
+        activeOpacity={0.7}
+        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+      >
+        {inner}
+      </TouchableOpacity>
+    );
+  }
+  return <View style={styles.meta}>{inner}</View>;
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel }: Props) {
@@ -198,12 +232,12 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           isSending && styles.rowSending,
         ]}>
           {!isMine && !isGrouped && (
-            <View style={styles.meta}>
-              <View style={[styles.avatar, { backgroundColor: c1 }]}>
-                <Text style={styles.avatarLetter}>{initial}</Text>
-              </View>
-              <Text style={[styles.author, { color: c1 }]}>{message.nickname}</Text>
-            </View>
+            <SenderMeta
+              nickname={message.nickname ?? '?'}
+              color={c1}
+              initial={initial}
+              userId={message.userId}
+            />
           )}
           <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
             <Image
@@ -252,12 +286,12 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
 
         {/* ── Avatar + author — web: .msg-meta ── */}
         {!isMine && !isGrouped && (
-          <View style={styles.meta}>
-            <View style={[styles.avatar, { backgroundColor: c1 }]}>
-              <Text style={styles.avatarLetter}>{initial}</Text>
-            </View>
-            <Text style={[styles.author, { color: c1 }]}>{message.nickname}</Text>
-          </View>
+          <SenderMeta
+            nickname={message.nickname ?? '?'}
+            color={c1}
+            initial={initial}
+            userId={message.userId}
+          />
         )}
 
         {/* ── Bubble — web: .msg-content ── */}

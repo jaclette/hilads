@@ -30,6 +30,17 @@ export async function sendDmMessage(
   return data.message;
 }
 
+export async function sendDmImageMessage(
+  conversationId: string,
+  imageUrl: string,
+): Promise<DmMessage> {
+  const data = await api.post<{ message: DmMessage }>(
+    `/conversations/${conversationId}/messages`,
+    { type: 'image', imageUrl },
+  );
+  return data.message;
+}
+
 export async function markDmRead(conversationId: string): Promise<void> {
   await api.post(`/conversations/${conversationId}/mark-read`).catch(() => {});
 }

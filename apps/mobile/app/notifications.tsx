@@ -49,10 +49,13 @@ function relativeTime(raw?: string | null): string {
 
 function NotifIcon({ type, unread }: { type: Notification['type']; unread: boolean }) {
   const iconName: React.ComponentProps<typeof Feather>['name'] =
-    type === 'dm_message'    ? 'message-circle' :
-    type === 'event_message' ? 'message-square' :
-    type === 'event_join'    ? 'users'           :
-    /* new_event */             'zap';
+    type === 'dm_message'      ? 'message-circle' :
+    type === 'event_message'   ? 'message-square' :
+    type === 'event_join'      ? 'users'           :
+    type === 'new_event'       ? 'zap'             :
+    type === 'channel_message' ? 'hash'            :
+    type === 'city_join'       ? 'user-plus'       :
+    /* fallback */               'bell';
 
   const color = unread ? Colors.white : Colors.muted;
   const bg    = unread ? 'rgba(255,122,60,0.15)' : Colors.bg3;
@@ -144,10 +147,12 @@ export default function NotificationsScreen() {
 
   // Preferences — loaded from backend, saved on toggle
   const [prefs, setPrefs] = useState<NotificationPreferences>({
-    dm_push:            true,
-    event_message_push: true,
-    event_join_push:    false,
-    new_event_push:     false,
+    dm_push:              true,
+    event_message_push:   true,
+    event_join_push:      false,
+    new_event_push:       false,
+    channel_message_push: false,
+    city_join_push:       false,
   });
 
   // ── Load notifications + preferences ─────────────────────────────────────
@@ -223,6 +228,8 @@ export default function NotificationsScreen() {
       router.push(`/dm/${notif.data.conversationId}` as never);
     } else if (notif.data?.eventId) {
       router.push(`/event/${notif.data.eventId}` as never);
+    } else if (notif.type === 'channel_message' || notif.type === 'city_join') {
+      router.push('/(tabs)/chat' as never);
     }
   }, [router, setUnreadNotifications]);
 
@@ -306,6 +313,20 @@ export default function NotificationsScreen() {
               subtitle="When someone creates an event in your city"
               value={prefs.new_event_push}
               onChange={v => togglePref('new_event_push', v)}
+            />
+            <View style={styles.prefDivider} />
+            <PrefRow
+              label="City chat messages"
+              subtitle="When someone sends a message in your city channel"
+              value={prefs.channel_message_push}
+              onChange={v => togglePref('channel_message_push', v)}
+            />
+            <View style={styles.prefDivider} />
+            <PrefRow
+              label="Someone arrived in your city"
+              subtitle="When a registered user joins the city channel you're in"
+              value={prefs.city_join_push}
+              onChange={v => togglePref('city_join_push', v)}
             />
           </View>
         </View>

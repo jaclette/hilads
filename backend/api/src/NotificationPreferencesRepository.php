@@ -7,17 +7,20 @@ class NotificationPreferencesRepository
     private static function defaults(): array
     {
         return [
-            'dm_push'            => true,
-            'event_message_push' => true,
-            'event_join_push'    => false,
-            'new_event_push'     => false,
+            'dm_push'              => true,
+            'event_message_push'   => true,
+            'event_join_push'      => false,
+            'new_event_push'       => false,
+            'channel_message_push' => false,
+            'city_join_push'       => false,
         ];
     }
 
     public static function get(string $userId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT dm_push, event_message_push, event_join_push, new_event_push
+            SELECT dm_push, event_message_push, event_join_push, new_event_push,
+                   channel_message_push, city_join_push
             FROM notification_preferences
             WHERE user_id = ?
         ");
@@ -29,10 +32,12 @@ class NotificationPreferencesRepository
         }
 
         return [
-            'dm_push'            => (bool) $row['dm_push'],
-            'event_message_push' => (bool) $row['event_message_push'],
-            'event_join_push'    => (bool) $row['event_join_push'],
-            'new_event_push'     => (bool) $row['new_event_push'],
+            'dm_push'              => (bool) $row['dm_push'],
+            'event_message_push'   => (bool) $row['event_message_push'],
+            'event_join_push'      => (bool) $row['event_join_push'],
+            'new_event_push'       => (bool) $row['new_event_push'],
+            'channel_message_push' => (bool) $row['channel_message_push'],
+            'city_join_push'       => (bool) $row['city_join_push'],
         ];
     }
 
@@ -40,26 +45,33 @@ class NotificationPreferencesRepository
     {
         $defaults = self::defaults();
 
-        $dm        = isset($prefs['dm_push'])            ? (bool) $prefs['dm_push']            : $defaults['dm_push'];
-        $eventMsg  = isset($prefs['event_message_push']) ? (bool) $prefs['event_message_push'] : $defaults['event_message_push'];
-        $eventJoin = isset($prefs['event_join_push'])    ? (bool) $prefs['event_join_push']    : $defaults['event_join_push'];
-        $newEvent  = isset($prefs['new_event_push'])     ? (bool) $prefs['new_event_push']     : $defaults['new_event_push'];
+        $dm       = isset($prefs['dm_push'])              ? (bool) $prefs['dm_push']              : $defaults['dm_push'];
+        $eventMsg = isset($prefs['event_message_push'])   ? (bool) $prefs['event_message_push']   : $defaults['event_message_push'];
+        $eventJoin= isset($prefs['event_join_push'])      ? (bool) $prefs['event_join_push']      : $defaults['event_join_push'];
+        $newEvent = isset($prefs['new_event_push'])       ? (bool) $prefs['new_event_push']       : $defaults['new_event_push'];
+        $chanMsg  = isset($prefs['channel_message_push']) ? (bool) $prefs['channel_message_push'] : $defaults['channel_message_push'];
+        $cityJoin = isset($prefs['city_join_push'])       ? (bool) $prefs['city_join_push']       : $defaults['city_join_push'];
 
         Database::pdo()->prepare("
-            INSERT INTO notification_preferences (user_id, dm_push, event_message_push, event_join_push, new_event_push)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO notification_preferences
+                (user_id, dm_push, event_message_push, event_join_push, new_event_push, channel_message_push, city_join_push)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (user_id) DO UPDATE
-               SET dm_push            = EXCLUDED.dm_push,
-                   event_message_push = EXCLUDED.event_message_push,
-                   event_join_push    = EXCLUDED.event_join_push,
-                   new_event_push     = EXCLUDED.new_event_push
-        ")->execute([$userId, $dm, $eventMsg, $eventJoin, $newEvent]);
+               SET dm_push              = EXCLUDED.dm_push,
+                   event_message_push   = EXCLUDED.event_message_push,
+                   event_join_push      = EXCLUDED.event_join_push,
+                   new_event_push       = EXCLUDED.new_event_push,
+                   channel_message_push = EXCLUDED.channel_message_push,
+                   city_join_push       = EXCLUDED.city_join_push
+        ")->execute([$userId, $dm, $eventMsg, $eventJoin, $newEvent, $chanMsg, $cityJoin]);
 
         return [
-            'dm_push'            => $dm,
-            'event_message_push' => $eventMsg,
-            'event_join_push'    => $eventJoin,
-            'new_event_push'     => $newEvent,
+            'dm_push'              => $dm,
+            'event_message_push'   => $eventMsg,
+            'event_join_push'      => $eventJoin,
+            'new_event_push'       => $newEvent,
+            'channel_message_push' => $chanMsg,
+            'city_join_push'       => $cityJoin,
         ];
     }
 }

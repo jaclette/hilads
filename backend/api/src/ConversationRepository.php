@@ -89,7 +89,10 @@ class ConversationRepository
             JOIN conversation_participants cp2 ON cp2.conversation_id = c.id AND cp2.user_id != :userId3
             JOIN users u ON u.id = cp2.user_id
             LEFT JOIN LATERAL (
-                SELECT content, created_at, sender_id
+                SELECT
+                    CASE WHEN type = 'image' THEN '📸 Image' ELSE content END AS content,
+                    created_at,
+                    sender_id
                 FROM conversation_messages
                 WHERE conversation_id = c.id
                 ORDER BY created_at DESC
@@ -186,9 +189,22 @@ class ConversationRepository
     {
         $id = bin2hex(random_bytes(16));
         Database::pdo()->prepare("
-            INSERT INTO conversation_messages (id, conversation_id, sender_id, content)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO conversation_messages (id, conversation_id, sender_id, content, type)
+            VALUES (?, ?, ?, ?, 'text')
         ")->execute([$id, $conversationId, $senderId, $content]);
+
+        self::touchUpdatedAt($conversationId);
+
+        return self::findMessageById($id);
+    }
+
+    public static function addImageMessage(string $conversationId, string $senderId, string $imageUrl): array
+    {
+        $id = bin2hex(random_bytes(16));
+        Database::pdo()->prepare("
+            INSERT INTO conversation_messages (id, conversation_id, sender_id, content, type, image_url)
+            VALUES (?, ?, ?, '', 'image', ?)
+        ")->execute([$id, $conversationId, $senderId, $imageUrl]);
 
         self::touchUpdatedAt($conversationId);
 
@@ -203,6 +219,8 @@ class ConversationRepository
                 cm.conversation_id,
                 cm.sender_id,
                 cm.content,
+                cm.type,
+                cm.image_url,
                 cm.created_at,
                 u.display_name      AS sender_name,
                 u.profile_photo_url AS sender_photo
@@ -224,6 +242,8 @@ class ConversationRepository
                 cm.conversation_id,
                 cm.sender_id,
                 cm.content,
+                cm.type,
+                cm.image_url,
                 cm.created_at,
                 u.display_name      AS sender_name,
                 u.profile_photo_url AS sender_photo

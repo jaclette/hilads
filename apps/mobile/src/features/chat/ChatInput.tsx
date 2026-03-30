@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     shadowOffset:      { width: 0, height: -5 },
     shadowOpacity:     0.28,
     shadowRadius:      12,
-    elevation:         10,
+    elevation:         30, // must exceed tab bar (elevation: 24) to render above its upward shadow
   },
 
   // ── .upload-btn ────────────────────────────────────────────────────────────

@@ -823,7 +823,45 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
 
     $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
 
+    // Detect new arrival BEFORE updating last_seen_at.
+    // Only fires for registered users — guests have no push tokens and no notification preferences.
+    // "New arrival" = no presence record for this user in this city in the last 10 minutes.
+    $heartbeatUser     = AuthService::currentUser();
+    $heartbeatUserId   = $heartbeatUser['id'] ?? null;
+    $presenceChannelId = "city_{$channelId}";
+    $isNewArrival      = false;
+    if ($heartbeatUserId !== null) {
+        $arrivalStmt = Database::pdo()->prepare("
+            SELECT 1 FROM presence
+            WHERE channel_id = ? AND user_id = ?
+              AND last_seen_at > now() - interval '10 minutes'
+            LIMIT 1
+        ");
+        $arrivalStmt->execute([$presenceChannelId, $heartbeatUserId]);
+        $isNewArrival = !$arrivalStmt->fetchColumn();
+    }
+
     PresenceRepository::heartbeat($channelId, $sessionId, $guestId, $nickname);
+
+    // Notify other registered users in the city that this user has arrived.
+    // MobilePushService applies a 10-minute cooldown per recipient per channel.
+    if ($isNewArrival && $heartbeatUserId !== null) {
+        try {
+            $cityNameStmt = Database::pdo()->prepare("SELECT name FROM channels WHERE id = ?");
+            $cityNameStmt->execute([$channelId]);
+            $cityName = $cityNameStmt->fetchColumn() ?: 'the city';
+            NotificationRepository::notifyCityOnlineUsers(
+                $presenceChannelId,
+                $heartbeatUserId,
+                'city_join',
+                "👋 {$nickname} is now in {$cityName}",
+                null,
+                ['channelId' => $presenceChannelId, 'senderName' => $nickname, 'senderUserId' => $heartbeatUserId]
+            );
+        } catch (\Throwable $e) {
+            error_log("[heartbeat] city_join notify failed (non-fatal): " . $e->getMessage());
+        }
+    }
 
     Response::json(['ok' => true]);
 });
@@ -1130,7 +1168,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
             'new_event',
             '🔥 New event in ' . $cityName,
             $notifBody,
-            ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName))]
+            ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName)), 'senderUserId' => $authUser['id'] ?? null]
         );
     } catch (\Throwable $e) {
         error_log("[event-create] notify failed (non-fatal): " . $e->getMessage());
@@ -1807,7 +1845,7 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
             'event_message',
             $nickname . ' in ' . $eventTitle,
             $bodyPreview,
-            ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname]
+            ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname, 'senderUserId' => $senderUserId]
         );
     } catch (\Throwable $e) {
         error_log("[event-msg] notification error eventId={$eventId}: " . get_class($e) . ': ' . $e->getMessage());
@@ -1900,7 +1938,7 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
                 'event_join',
                 "👋 {$joinerName} joined {$eventTitle}",
                 null,
-                ['eventId' => $eventId]
+                ['eventId' => $eventId, 'senderUserId' => $currentUser['id'], 'senderName' => $joinerName]
             );
         }
     }
@@ -2007,6 +2045,26 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
 
     broadcastMessageToWs($channelId, $message);
 
+    // Notify registered users currently online in this city — non-fatal side effect.
+    // Sender is excluded if they have a registered account; guests are excluded via null.
+    // MobilePushService applies a 5-minute cooldown per recipient per channel.
+    try {
+        $msgSender        = AuthService::currentUser();
+        $msgSenderUserId  = $msgSender['id'] ?? null;
+        $msgCityChannelId = "city_{$channelId}";
+        $msgPreview       = $type === 'image' ? '📸 Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
+        NotificationRepository::notifyCityOnlineUsers(
+            $msgCityChannelId,
+            $msgSenderUserId,
+            'channel_message',
+            $nickname . ' in the city chat',
+            $msgPreview,
+            ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId]
+        );
+    } catch (\Throwable $e) {
+        error_log("[channel-msg] notify failed (non-fatal): " . $e->getMessage());
+    }
+
     Response::json($message, 201);
 });
 
@@ -2084,17 +2142,41 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
         Response::json(['error' => 'Not a participant'], 403);
     }
 
-    $content = trim((string) ($body['content'] ?? ''));
+    $content  = trim((string) ($body['content'] ?? ''));
+    $type     = $body['type'] ?? 'text';
+    $imageUrl = $body['imageUrl'] ?? null;
 
-    if ($content === '') {
-        Response::json(['error' => 'content is required'], 400);
+    if (!in_array($type, ['text', 'image'], true)) {
+        Response::json(['error' => 'type must be text or image'], 400);
     }
 
-    if (mb_strlen($content) > 1000) {
-        Response::json(['error' => 'content must not exceed 1000 characters'], 400);
-    }
+    if ($type === 'image') {
+        if (empty($imageUrl) || !is_string($imageUrl)) {
+            Response::json(['error' => 'imageUrl is required for image messages'], 400);
+        }
 
-    $message = ConversationRepository::addMessage($conversationId, $user['id'], $content);
+        $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+        if (!str_starts_with($imageUrl, $r2Base)) {
+            Response::json(['error' => 'Invalid image URL'], 400);
+        }
+
+        $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
+        if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
+            Response::json(['error' => 'Invalid image reference'], 400);
+        }
+
+        $message = ConversationRepository::addImageMessage($conversationId, $user['id'], $imageUrl);
+    } else {
+        if ($content === '') {
+            Response::json(['error' => 'content is required'], 400);
+        }
+
+        if (mb_strlen($content) > 1000) {
+            Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+        }
+
+        $message = ConversationRepository::addMessage($conversationId, $user['id'], $content);
+    }
 
     broadcastConversationMessageToWs($conversationId, $message);
 
@@ -2110,7 +2192,7 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     $otherStmt->execute([$conversationId, $user['id']]);
     $otherUserId = $otherStmt->fetchColumn();
     if ($otherUserId) {
-        $preview = mb_substr($content, 0, 100);
+        $preview = $type === 'image' ? '📸 Sent an image' : mb_substr($content, 0, 100);
         NotificationRepository::create(
             $otherUserId,
             'dm_message',

@@ -39,19 +39,23 @@ class NotificationRepository
     private static function isEnabledForUser(string $userId, string $type): bool
     {
         $col = match ($type) {
-            'dm_message'    => 'dm_push',
-            'event_message' => 'event_message_push',
-            'event_join'    => 'event_join_push',
-            'new_event'     => 'new_event_push',
-            default         => null,
+            'dm_message'      => 'dm_push',
+            'event_message'   => 'event_message_push',
+            'event_join'      => 'event_join_push',
+            'new_event'       => 'new_event_push',
+            'channel_message' => 'channel_message_push',
+            'city_join'       => 'city_join_push',
+            default           => null,
         };
         if ($col === null) return true; // Unknown type — always create
 
         $defaults = [
-            'dm_push'            => true,
-            'event_message_push' => true,
-            'event_join_push'    => false,
-            'new_event_push'     => false,
+            'dm_push'              => true,
+            'event_message_push'   => true,
+            'event_join_push'      => false,
+            'new_event_push'       => false,
+            'channel_message_push' => false,
+            'city_join_push'       => false,
         ];
 
         try {
@@ -69,21 +73,24 @@ class NotificationRepository
     private static function pushUrl(string $type, array $data): string
     {
         return match ($type) {
-            'dm_message'                  => '/conversations',
+            'dm_message'                      => '/conversations',
             'event_message', 'event_join',
-            'new_event'                   => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
-            default                       => '/',
+            'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
+            'channel_message', 'city_join'    => '/',
+            default                           => '/',
         };
     }
 
     private static function pushTag(string $type, array $data): string
     {
         return match ($type) {
-            'dm_message'    => 'dm-'        . ($data['conversationId'] ?? 'dm'),
+            'dm_message'      => 'dm-'        . ($data['conversationId'] ?? 'dm'),
             'event_message',
-            'event_join'    => 'event-'     . ($data['eventId'] ?? 'event'),
-            'new_event'     => 'new-event-' . ($data['eventId'] ?? 'event'),
-            default         => 'hilads-' . $type,
+            'event_join'      => 'event-'     . ($data['eventId'] ?? 'event'),
+            'new_event'       => 'new-event-' . ($data['eventId'] ?? 'event'),
+            'channel_message' => 'channel-'   . ($data['channelId'] ?? 'city'),
+            'city_join'       => 'cityjoin-'  . ($data['channelId'] ?? 'city'),
+            default           => 'hilads-' . $type,
         };
     }
 

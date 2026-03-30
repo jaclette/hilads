@@ -127,6 +127,8 @@ export interface DmMessage {
   conversation_id: string;
   sender_id: string;
   content: string;
+  type?: 'text' | 'image';
+  image_url?: string;
   created_at: string;
   sender_name: string;
   sender_photo?: string;

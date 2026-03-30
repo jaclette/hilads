@@ -107,6 +107,11 @@ function resolveRoute(data: NotifData): string | null {
       if (data.eventId) return `/event/${data.eventId}`;
       return '/(tabs)/hot';
 
+    case 'channel_message':
+    case 'city_join':
+      // Deep link to the city chat tab — the user's current city channel.
+      return '/(tabs)/chat';
+
     default:
       return null;
   }
