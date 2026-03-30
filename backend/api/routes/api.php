@@ -2101,7 +2101,7 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     // Sending a message also implicitly reads the conversation for the sender
     ConversationRepository::markRead($conversationId, $user['id']);
 
-    // Notify the other participant (in-app only for Phase 1 — no push yet)
+    // Notify the other participant — explicitly exclude the sender by user_id.
     $otherStmt = Database::pdo()->prepare("
         SELECT user_id FROM conversation_participants
         WHERE conversation_id = ? AND user_id != ?
@@ -2116,7 +2116,11 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
             'dm_message',
             ($user['display_name'] ?? 'Someone') . ' sent you a message',
             $preview,
-            ['conversationId' => $conversationId, 'senderName' => $user['display_name'] ?? '']
+            [
+                'conversationId' => $conversationId,
+                'senderName'     => $user['display_name'] ?? '',
+                'senderUserId'   => $user['id'],   // lets client reject if push token was re-assigned
+            ]
         );
     }
 

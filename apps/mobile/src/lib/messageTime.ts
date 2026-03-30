@@ -4,13 +4,26 @@
  * createdAt can be:
  *   - unix seconds (number < 1e10)  — city / event message API
  *   - unix milliseconds (number ≥ 1e10) — rare but handled
- *   - ISO string                    — DM message API
+ *   - ISO string                    — DM message API (optimistic messages)
+ *   - PostgreSQL TIMESTAMPTZ string — DM messages from the backend API,
+ *     e.g. "2024-03-15 18:30:00.123456+00"
+ *     (space instead of T, microseconds, +HH timezone suffix without minutes)
+ *     Hermes (Android JS engine) returns Invalid Date for this format.
+ *     We normalise it to ISO 8601 before parsing.
  */
 
+function normalizePostgresTimestamp(ts: string): string {
+  return ts
+    .replace(' ', 'T')             // "2024-03-15 18:30:00" → "2024-03-15T18:30:00"
+    .replace(/(\.\d{3})\d+/, '$1') // truncate microseconds → milliseconds
+    .replace(/([+-]\d{2})$/, '$1:00'); // "+00" suffix → "+00:00"
+}
+
 function toMs(ts: number | string | undefined): number {
-  if (!ts) return 0;
+  if (ts === undefined || ts === null || ts === '') return 0;
   if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;
-  return new Date(ts).getTime();
+  const ms = new Date(normalizePostgresTimestamp(ts)).getTime();
+  return isNaN(ms) ? 0 : ms;
 }
 
 /** "18:42" — short local time for the timestamp under a bubble. */

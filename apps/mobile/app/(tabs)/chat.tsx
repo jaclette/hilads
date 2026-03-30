@@ -267,16 +267,6 @@ export default function ChatTab() {
     return () => clearInterval(id);
   }, [channelId]);
 
-  // Merge synthesized event items into the messages list, sorted newest-first
-  const allMessages = useMemo<Message[]>(() => {
-    if (eventFeedItems.length === 0) return messages;
-    return [...messages, ...eventFeedItems].sort((a, b) => {
-      const ta = typeof a.createdAt === 'number' ? a.createdAt : new Date(a.createdAt).getTime() / 1000;
-      const tb = typeof b.createdAt === 'number' ? b.createdAt : new Date(b.createdAt).getTime() / 1000;
-      return tb - ta; // newest first for inverted FlatList
-    });
-  }, [messages, eventFeedItems]);
-
   const loadFn = useCallback(
     () => fetchMessages(channelId),
     [channelId],
@@ -304,6 +294,16 @@ export default function ChatTab() {
     postTextFn,
     postImageFn,
   });
+
+  // Merge synthesized event items into the messages list, sorted newest-first
+  const allMessages = useMemo<Message[]>(() => {
+    if (eventFeedItems.length === 0) return messages;
+    return [...messages, ...eventFeedItems].sort((a, b) => {
+      const ta = typeof a.createdAt === 'number' ? a.createdAt : new Date(a.createdAt).getTime() / 1000;
+      const tb = typeof b.createdAt === 'number' ? b.createdAt : new Date(b.createdAt).getTime() / 1000;
+      return tb - ta; // newest first for inverted FlatList
+    });
+  }, [messages, eventFeedItems]);
 
   // No city yet — prompt to pick one
   if (!city) {

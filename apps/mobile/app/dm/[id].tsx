@@ -21,7 +21,7 @@ import { findOrCreateDM } from '@/api/conversations';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import { isSameDay, formatDateLabel } from '@/lib/messageTime';
+import { isSameDay, formatDateLabel, formatTime } from '@/lib/messageTime';
 import type { DmMessage } from '@/types';
 
 // ── Date separator — reused from ChatMessage visual style ─────────────────────
@@ -74,16 +74,6 @@ function avatarColor(str: string): string {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
   return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
-}
-
-// ── Time formatting ────────────────────────────────────────────────────────────
-
-function formatTime(ts: string): string {
-  try {
-    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  } catch {
-    return '';
-  }
 }
 
 // ── Message row ───────────────────────────────────────────────────────────────

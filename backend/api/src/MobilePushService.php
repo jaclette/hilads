@@ -98,12 +98,31 @@ class MobilePushService
                 self::recordDelivery($userId, $type, $refId);
             }
 
-            // 3. Fetch registered device tokens for this user
+            // 3. Fetch registered device tokens for this user,
+            //    then exclude any token that is ALSO registered under the sender's user_id.
+            //    This prevents a push reaching the sender's physical device when a push
+            //    token was re-assigned between accounts (e.g. two accounts on one device).
             $stmt = Database::pdo()->prepare(
                 "SELECT token FROM mobile_push_tokens WHERE user_id = ?"
             );
             $stmt->execute([$userId]);
             $tokens = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+            $senderUserId = $data['senderUserId'] ?? null;
+            if ($senderUserId !== null && $senderUserId !== $userId && !empty($tokens)) {
+                $senderStmt = Database::pdo()->prepare(
+                    "SELECT token FROM mobile_push_tokens WHERE user_id = ?"
+                );
+                $senderStmt->execute([$senderUserId]);
+                $senderTokens = array_flip($senderStmt->fetchAll(\PDO::FETCH_COLUMN));
+                if (!empty($senderTokens)) {
+                    $before = count($tokens);
+                    $tokens = array_values(array_filter($tokens, fn($t) => !isset($senderTokens[$t])));
+                    if (count($tokens) < $before) {
+                        error_log("[push-send] removed " . ($before - count($tokens)) . " token(s) shared with sender=$senderUserId for recipient=$userId");
+                    }
+                }
+            }
 
             error_log("[push-send] found " . count($tokens) . " mobile token(s) for user=$userId"
                 . (count($tokens) > 0 ? ": " . implode(", ", $tokens) : ""));

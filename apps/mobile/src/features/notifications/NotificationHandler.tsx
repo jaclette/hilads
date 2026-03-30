@@ -37,13 +37,14 @@ export async function getColdStartNotificationRoute(): Promise<string | null> {
   return route;
 }
 
-// ── Active screen state ───────────────────────────────────────────────────────
+// ── Active screen + account state ────────────────────────────────────────────
 // Module-level mutable ref so the notification handler (called outside React)
-// can read the current active screen without a closure/stale reference.
+// can read the current state without a closure/stale reference.
 
 const activeScreen = {
-  dmId:    null as string | null,
-  eventId: null as string | null,
+  dmId:      null as string | null,
+  eventId:   null as string | null,
+  accountId: null as string | null, // current logged-in user — used to reject own-sender pushes
 };
 
 // ── Foreground display strategy ───────────────────────────────────────────────
@@ -56,14 +57,22 @@ type NotifData = {
   eventId?:        string;
   channelId?:      string;
   senderName?:     string;
+  senderUserId?:   string; // set by backend for dm_message — used to reject own-sender pushes
 };
 
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
     const data = notification.request.content.data as NotifData;
 
+    // Suppress push notifications that were sent by the current user.
+    // This handles the case where a push token was re-assigned across accounts
+    // (e.g. two accounts on one device) and a push intended for the recipient
+    // arrives on the sender's device instead.
+    const sentByMe = !!data.senderUserId && data.senderUserId === activeScreen.accountId;
+
     // Suppress if user is actively viewing the exact thread
     const suppress =
+      sentByMe ||
       (data.type === 'dm_message'    && !!data.conversationId && data.conversationId === activeScreen.dmId) ||
       (data.type === 'event_message' && !!data.eventId        && data.eventId        === activeScreen.eventId);
 
@@ -106,13 +115,14 @@ function resolveRoute(data: NotifData): string | null {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function NotificationHandler() {
-  const { booting, activeDmId, activeEventId } = useApp();
+  const { booting, account, activeDmId, activeEventId } = useApp();
   const pendingRoute = useRef<string | null>(null);
 
   // Keep module-level state in sync with React context
   // (runs on every render, which is intentional — no useEffect needed)
-  activeScreen.dmId    = activeDmId;
-  activeScreen.eventId = activeEventId;
+  activeScreen.dmId      = activeDmId;
+  activeScreen.eventId   = activeEventId;
+  activeScreen.accountId = account?.id ?? null;
 
   // Ref so the tap listener (set up once in useEffect([])) can read the current
   // booting value without a stale closure. Needed for background→foreground taps
@@ -139,10 +149,12 @@ export function NotificationHandler() {
     // Foreground received listener — logs incoming notifications while app is open
     const receivedSub = Notifications.addNotificationReceivedListener(notification => {
       const data = notification.request.content.data as NotifData;
+      const sentByMe = !!data.senderUserId && data.senderUserId === activeScreen.accountId;
       console.log('[notif] foreground notification received:',
         notification.request.content.title,
         '| type:', data.type ?? '(none)',
-        '| suppress:', (
+        '| sentByMe:', sentByMe,
+        '| suppress:', sentByMe || (
           (data.type === 'dm_message'    && !!data.conversationId && data.conversationId === activeScreen.dmId) ||
           (data.type === 'event_message' && !!data.eventId        && data.eventId        === activeScreen.eventId)
         ),

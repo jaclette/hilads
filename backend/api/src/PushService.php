@@ -33,7 +33,8 @@ class PushService
         string  $title,
         ?string $body,
         string  $url,
-        string  $tag
+        string  $tag,
+        array   $data = []
     ): void {
         $vapidPublic  = getenv('VAPID_PUBLIC_KEY')  ?: null;
         $vapidPrivate = getenv('VAPID_PRIVATE_KEY') ?: null;
@@ -63,7 +64,7 @@ class PushService
             return;
         }
 
-        // Load subscriptions
+        // Load subscriptions, then exclude any endpoint shared with the sender.
         try {
             $subStmt = Database::pdo()->prepare(
                 "SELECT id, endpoint, p256dh, auth_key FROM push_subscriptions WHERE user_id = ?"
@@ -75,6 +76,21 @@ class PushService
         }
 
         if (empty($subs)) return;
+
+        // Remove subscriptions whose endpoint is also registered under the sender.
+        $senderUserId = ($data ?? [])['senderUserId'] ?? null;
+        if ($senderUserId !== null && $senderUserId !== $userId) {
+            try {
+                $senderEndpointStmt = Database::pdo()->prepare(
+                    "SELECT endpoint FROM push_subscriptions WHERE user_id = ?"
+                );
+                $senderEndpointStmt->execute([$senderUserId]);
+                $senderEndpoints = array_flip($senderEndpointStmt->fetchAll(\PDO::FETCH_COLUMN));
+                if (!empty($senderEndpoints)) {
+                    $subs = array_values(array_filter($subs, fn($s) => !isset($senderEndpoints[$s['endpoint']])));
+                }
+            } catch (\Throwable) { /* non-fatal */ }
+        }
 
         try {
             $webPush = new WebPush(
