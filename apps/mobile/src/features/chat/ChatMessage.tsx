@@ -166,7 +166,7 @@ function SenderMeta({ nickname, color, initial, userId }: {
     return (
       <TouchableOpacity
         style={styles.meta}
-        onPress={() => router.push(`/user/${userId}` as Parameters<typeof router.push>[0])}
+        onPress={() => router.push({ pathname: '/user/[id]', params: { id: userId } })}
         activeOpacity={0.7}
         hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
       >
