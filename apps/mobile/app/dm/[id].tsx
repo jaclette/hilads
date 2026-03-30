@@ -211,28 +211,42 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     setText('');
   }
 
-  async function handlePickImage() {
-    if (busy) return;
+  async function sendImageUri(uri: string) {
+    setUploading(true);
+    try {
+      await sendImage(uri);
+    } finally {
+      setUploading(false);
+    }
+  }
 
+  async function openLibrary() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission needed', 'Allow photo access to share images.');
       return;
     }
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
+    if (!result.canceled && result.assets[0]?.uri) await sendImageUri(result.assets[0].uri);
+  }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality:    0.8,
-    });
-
-    if (!result.canceled && result.assets[0]?.uri) {
-      setUploading(true);
-      try {
-        await sendImage(result.assets[0].uri);
-      } finally {
-        setUploading(false);
-      }
+  async function openCamera() {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Allow camera access to take photos.');
+      return;
     }
+    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+    if (!result.canceled && result.assets[0]?.uri) await sendImageUri(result.assets[0].uri);
+  }
+
+  function handlePickImage() {
+    if (busy) return;
+    Alert.alert('Send a photo', undefined, [
+      { text: 'Take Photo',          onPress: openCamera  },
+      { text: 'Choose from Library', onPress: openLibrary },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   }
 
   // Inverted FlatList: index 0 = newest (bottom), index n-1 = oldest (top).

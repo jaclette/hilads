@@ -67,6 +67,13 @@
       "expo-router",
       "expo-secure-store",
       [
+        "expo-image-picker",
+        {
+          "photosPermission": "Hilads lets you share photos from your library in chats.",
+          "cameraPermission": "Hilads lets you send photos in city chats and event conversations."
+        }
+      ],
+      [
         "expo-notifications",
         {
           "googleServicesFile": "./google-services.json",

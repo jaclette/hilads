@@ -58,36 +58,44 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     setText('');
   }
 
-  async function handlePickImage() {
-    if (sending || uploading) return;
+  async function launchWithUri(uri: string) {
+    setUploading(true);
+    try {
+      await onSendImage(uri);
+    } catch (err) {
+      console.error('[picker] upload failed:', String(err));
+    } finally {
+      setUploading(false);
+    }
+  }
 
+  async function openLibrary() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    console.log('[picker] media library permission status:', status);
-
     if (status !== 'granted') {
-      console.warn('[picker] permission not granted — status:', status);
       Alert.alert('Permission needed', 'Allow photo access to share images in chat.');
       return;
     }
+    const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
+    if (!result.canceled && result.assets[0]?.uri) await launchWithUri(result.assets[0].uri);
+  }
 
-    console.log('[picker] permission granted — launching image library');
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality:    0.8,
-    });
-
-    console.log('[picker] result canceled:', result.canceled);
-    if (!result.canceled && result.assets[0]?.uri) {
-      console.log('[picker] selected uri:', result.assets[0].uri);
-      setUploading(true);
-      try {
-        await onSendImage(result.assets[0].uri);
-      } catch (err) {
-        console.error('[picker] upload failed:', String(err));
-      } finally {
-        setUploading(false);
-      }
+  async function openCamera() {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Allow camera access to take photos in chat.');
+      return;
     }
+    const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+    if (!result.canceled && result.assets[0]?.uri) await launchWithUri(result.assets[0].uri);
+  }
+
+  function handlePickImage() {
+    if (sending || uploading) return;
+    Alert.alert('Send a photo', undefined, [
+      { text: 'Take Photo',          onPress: openCamera  },
+      { text: 'Choose from Library', onPress: openLibrary },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   }
 
   const busy       = sending || uploading;
