@@ -10,7 +10,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, Image, FlatList, TextInput, TouchableOpacity,
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
-  Animated, Alert,
+  Animated, Alert, InteractionManager,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
@@ -231,25 +231,31 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   }
 
   async function openCamera() {
+    console.log('[camera/dm] openCamera called');
     try {
+      console.log('[camera/dm] requesting permission...');
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      console.log('[camera/dm] permission status:', status);
       if (status !== 'granted') {
         Alert.alert('Permission needed', 'Allow camera access to take photos.');
         return;
       }
+      console.log('[camera/dm] launching camera...');
       const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+      console.log('[camera/dm] result canceled:', result.canceled);
       if (!result.canceled && result.assets[0]?.uri) await sendImageUri(result.assets[0].uri);
     } catch (err) {
-      console.warn('[camera] launch failed:', String(err));
+      console.error('[camera/dm] launch failed:', String(err));
       Alert.alert('Camera unavailable', 'Could not open the camera. Please try again.');
     }
   }
 
   function handlePickImage() {
     if (busy) return;
+    console.log('[camera/dm] handlePickImage called');
     Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: () => setTimeout(openCamera,  100) },
-      { text: 'Choose from Library', onPress: () => setTimeout(openLibrary, 100) },
+      { text: 'Take Photo',          onPress: () => { console.log('[camera/dm] Take Photo tapped'); InteractionManager.runAfterInteractions(() => openCamera()); } },
+      { text: 'Choose from Library', onPress: () => InteractionManager.runAfterInteractions(() => openLibrary()) },
       { text: 'Cancel', style: 'cancel' },
     ]);
   }

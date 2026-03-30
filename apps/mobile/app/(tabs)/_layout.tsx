@@ -4,6 +4,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants';
+import { useApp } from '@/context/AppContext';
 
 // ── Web nav color tokens ──────────────────────────────────────────────────────
 // Sourced from index.css: .bottom-nav-tab, .bottom-nav-tab.active
@@ -145,8 +146,14 @@ const styles = StyleSheet.create({
 // ── Layout ────────────────────────────────────────────────────────────────────
 
 export default function TabsLayout() {
+  const { joined } = useApp();
+  // initialRouteName is only read at first mount. Since useAppBoot delays
+  // setBooting(false) until after setJoined(true) for returning users, joined
+  // is already true when this navigator first mounts — so it opens on 'chat'
+  // directly without ever rendering the 'hot' tab first.
   return (
     <Tabs
+      initialRouteName={joined ? 'chat' : 'hot'}
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >

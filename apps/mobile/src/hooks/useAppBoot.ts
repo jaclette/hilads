@@ -297,11 +297,10 @@ export function useAppBoot(): Result {
         const offDisconnected = socket.on('disconnected', () => setWsConnected(false));
         socket.connect();
 
-        // Phase 3: Release UI immediately — everything else runs in background
-        console.log('[boot] phase 3: boot complete, releasing UI');
-        setBooting(false);
-
-        // Phase 4: Auth check
+        // Phase 3: Auth check — runs in background.
+        // NOTE: setBooting(false) is intentionally NOT called here for returning users.
+        // For returning users we hold the boot screen until the saved city is confirmed,
+        // so the Stack never mounts into the wrong tab. For new users it fires below.
         const authPromise = loadSavedToken()
           .then(hadToken => {
             console.log('[boot] loadSavedToken — token found in SecureStore:', hadToken);
@@ -328,7 +327,7 @@ export function useAppBoot(): Result {
             return null;
           });
 
-        // Phase 5: City resolution
+        // Phase 4: City resolution
         // Defer geo start so React has rendered LandingScreen and Android has
         // made the window interactive before we request location permission.
         const startGeo = () => setTimeout(() => {
@@ -336,6 +335,11 @@ export function useAppBoot(): Result {
         }, GEO_START_DELAY_MS);
 
         if (identity.channelId) {
+          // Returning user: hold the boot screen (BootScreen stays visible, Stack does NOT
+          // mount) until we confirm the saved city. Once confirmed, setJoined(true) and
+          // setBooting(false) are called together — React 18 batches them into a single
+          // render. When the Stack first mounts, index.tsx sees joined=true and redirects
+          // directly to /(tabs)/chat. No intermediate hot-tab flash, no router.replace jump.
           console.log('[boot] returning user, fetching channels (timeout:', BOOT_FETCH_TIMEOUT_MS, 'ms)');
           Promise.race([
             Promise.all([authPromise, fetchChannels()]),
@@ -362,33 +366,36 @@ export function useAppBoot(): Result {
                 setJoined(true);
 
                 // Check for a cold-start notification deep link.
-                // If the user launched the app by tapping a push notification,
-                // navigate there instead of defaulting to city chat.
                 const notifRoute = await getColdStartNotificationRoute();
+
+                // Release the boot screen now — joined=true is already set so the Stack
+                // mounts directly on chat (via index.tsx redirect). No router.replace needed.
+                setBooting(false);
+
                 if (notifRoute) {
-                  console.log('[push-nav] app boot redirect skipped because notification deep link is present:', notifRoute);
-                  // Push city chat first so back-button works naturally, then navigate to destination.
-                  router.replace('/(tabs)/chat');
+                  console.log('[push-nav] notification deep link at boot:', notifRoute);
                   setTimeout(() => {
                     console.log('[push-nav] navigating to:', notifRoute);
                     router.push(notifRoute as Parameters<typeof router.push>[0]);
                   }, 300);
-                } else {
-                  router.replace('/(tabs)/chat');
                 }
               } else {
-                console.log('[boot] saved city not found → starting geo');
+                console.log('[boot] saved city not found → releasing UI + starting geo');
+                setBooting(false);
                 startGeo();
               }
             })
             .catch(() => {
               if (!cancelled) {
-                console.log('[boot] fetchChannels failed → starting geo');
+                console.log('[boot] fetchChannels failed → releasing UI + starting geo');
+                setBooting(false);
                 startGeo();
               }
             });
         } else {
-          console.log('[boot] new user → starting geo');
+          // New user: release UI immediately → LandingScreen shows + geo starts
+          console.log('[boot] new user → releasing UI + starting geo');
+          setBooting(false);
           startGeo();
         }
 

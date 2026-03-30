@@ -11,7 +11,7 @@
 import { useState, useRef } from 'react';
 import {
   View, TextInput, TouchableOpacity, Text,
-  ActivityIndicator, StyleSheet, Platform, Alert,
+  ActivityIndicator, StyleSheet, Platform, Alert, InteractionManager,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -80,29 +80,35 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   }
 
   async function openCamera() {
+    console.log('[camera] openCamera called');
     try {
+      console.log('[camera] requesting permission...');
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      console.log('[camera] permission status:', status);
       if (status !== 'granted') {
         Alert.alert('Permission needed', 'Allow camera access to take photos in chat.');
         return;
       }
+      console.log('[camera] launching camera...');
       const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+      console.log('[camera] result canceled:', result.canceled);
       if (!result.canceled && result.assets[0]?.uri) await launchWithUri(result.assets[0].uri);
     } catch (err) {
-      console.warn('[camera] launch failed:', String(err));
+      console.error('[camera] launch failed:', String(err));
       Alert.alert('Camera unavailable', 'Could not open the camera. Please try again.');
     }
   }
 
   function handlePickImage() {
     if (sending || uploading) return;
-    // Delay each action by 100 ms so the Alert's dismissal animation fully
-    // completes before we try to present the camera / picker. Without this,
-    // iOS silently drops the launchCameraAsync / launchImageLibraryAsync
-    // presentation because the UIAlertController is still mid-dismiss.
+    console.log('[camera] handlePickImage called');
+    // Use InteractionManager.runAfterInteractions instead of a fixed setTimeout.
+    // The iOS action sheet dismiss animation takes ~300-400ms; a fixed 100ms delay
+    // is too short. runAfterInteractions waits for ALL active animations to finish
+    // before presenting the camera/picker, so iOS never silently drops the modal.
     Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: () => setTimeout(openCamera,  100) },
-      { text: 'Choose from Library', onPress: () => setTimeout(openLibrary, 100) },
+      { text: 'Take Photo',          onPress: () => { console.log('[camera] Take Photo tapped'); InteractionManager.runAfterInteractions(() => openCamera()); } },
+      { text: 'Choose from Library', onPress: () => InteractionManager.runAfterInteractions(() => openLibrary()) },
       { text: 'Cancel', style: 'cancel' },
     ]);
   }
