@@ -37,7 +37,7 @@ export function useAppLifecycle(onForeground?: () => void): void {
       // City WS join happens automatically on 'connected' event via useAppBoot
       // but if already connected we need to rejoin manually
       if (socket.isConnected) {
-        socket.joinCity(city.channelId, sessionId, displayName, account?.id);
+        socket.joinCity(city.channelId, sessionId, displayName, account?.id, identity.guestId);
       }
     }
 

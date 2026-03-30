@@ -47,7 +47,7 @@ const ALLOWED_ORIGINS = new Set(
     .filter(Boolean)
 )
 
-// rooms: Map<cityId, Map<sessionId, { sessionId, nickname, ws, lastSeen }>>
+// rooms: Map<cityId, Map<sessionId, { sessionId, nickname, userId, guestId, ws, lastSeen }>>
 const rooms = new Map()
 
 // typing: Map<cityId, Map<sessionId, { sessionId, nickname, timer }>>
@@ -70,7 +70,7 @@ function getRoom(cityId) {
 function roomUsers(cityId) {
   const room = rooms.get(cityId)
   if (!room) return []
-  return [...room.values()].map(s => ({ sessionId: s.sessionId, nickname: s.nickname, userId: s.userId ?? null }))
+  return [...room.values()].map(s => ({ sessionId: s.sessionId, nickname: s.nickname, userId: s.userId ?? null, guestId: s.guestId ?? null }))
 }
 
 function broadcast(cityId, data, exclude = null) {
@@ -142,19 +142,37 @@ setInterval(() => {
 
 // ── Event handlers ─────────────────────────────────────────────────────────────
 
-function handleJoinRoom(ws, { cityId, sessionId, nickname, userId }) {
+function handleJoinRoom(ws, { cityId, sessionId, nickname, userId, guestId }) {
   const room = getRoom(cityId)
+
+  // Evict any stale sessions for the same real user (same userId or same guestId but
+  // different sessionId). This prevents the HERE screen from showing both the old
+  // guest-name session and the new registered-name session simultaneously when the
+  // app reboots and generates a fresh sessionId.
+  if (userId || guestId) {
+    for (const [existingSessionId, session] of room) {
+      if (existingSessionId === sessionId) continue  // same session — handled below
+      const sameUser = (userId && session.userId === userId) || (guestId && session.guestId === guestId)
+      if (sameUser) {
+        console.log(`[WS] joinRoom: evicting stale session ${existingSessionId.slice(0, 8)} (${session.nickname}) for same user`)
+        room.delete(existingSessionId)
+        if (clearTyping(cityId, existingSessionId)) broadcastTyping(cityId)
+        broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId: existingSessionId, nickname: session.nickname } })
+      }
+    }
+  }
+
   const isNew = !room.has(sessionId)
 
   console.log(`[WS] joinRoom: ${nickname} (${sessionId.slice(0, 8)}) -> city ${cityId} (${isNew ? 'new' : 'rejoin'})`)
-  room.set(sessionId, { sessionId, nickname, userId: userId ?? null, ws, lastSeen: Date.now() })
+  room.set(sessionId, { sessionId, nickname, userId: userId ?? null, guestId: guestId ?? null, ws, lastSeen: Date.now() })
 
   // Always send full snapshot to the joining client (includes themselves)
   sendSnapshot(ws, cityId)
 
   if (isNew) {
     // Notify existing clients of the new user
-    broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname, userId: userId ?? null } }, ws)
+    broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname, userId: userId ?? null, guestId: guestId ?? null } }, ws)
     broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size }, ws)
   }
 }

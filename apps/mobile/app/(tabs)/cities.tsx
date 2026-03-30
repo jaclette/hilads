@@ -252,7 +252,7 @@ export default function CitiesScreen() {
                 if (identity && sessionId) {
                   joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
                   if (socket.isConnected) {
-                    socket.joinCity(item.channelId, sessionId, nickname, account?.id);
+                    socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
                   } else {
                     socket.on('connected', () => socket.joinCity(item.channelId, sessionId, nickname, account?.id));
                   }

@@ -72,8 +72,8 @@ class HiladsSocket {
     return isNaN(n) ? (cityId as unknown as number) : n;
   }
 
-  joinCity(cityId: string, sessionId: string, nickname: string, userId?: string): void {
-    this.send({ event: 'joinRoom', cityId: this._numericCityId(cityId), sessionId, nickname, ...(userId ? { userId } : {}) });
+  joinCity(cityId: string, sessionId: string, nickname: string, userId?: string, guestId?: string): void {
+    this.send({ event: 'joinRoom', cityId: this._numericCityId(cityId), sessionId, nickname, ...(userId ? { userId } : {}), ...(guestId ? { guestId } : {}) });
   }
 
   leaveCity(cityId: string, sessionId: string): void {

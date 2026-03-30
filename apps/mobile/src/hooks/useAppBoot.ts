@@ -354,10 +354,10 @@ export function useAppBoot(): Result {
                   .catch(() => {});
                 const userId = user?.id;
                 socket.on('connected', () =>
-                  socket.joinCity(saved.channelId, sessionId, displayName, userId),
+                  socket.joinCity(saved.channelId, sessionId, displayName, userId, identity.guestId),
                 );
                 if (socket.isConnected) {
-                  socket.joinCity(saved.channelId, sessionId, displayName, userId);
+                  socket.joinCity(saved.channelId, sessionId, displayName, userId, identity.guestId);
                 }
                 setJoined(true);
 
