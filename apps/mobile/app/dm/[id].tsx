@@ -233,12 +233,16 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   async function openCamera() {
     console.log('[camera/dm] openCamera called');
     try {
-      console.log('[camera/dm] requesting permission...');
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      console.log('[camera/dm] permission status:', status);
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Allow camera access to take photos.');
-        return;
+      // Same fix as ChatInput: requestCameraPermissionsAsync() hangs indefinitely on
+      // Android + New Architecture. Let launchCameraAsync() handle it via system Intent.
+      if (Platform.OS === 'ios') {
+        console.log('[camera/dm] iOS: requesting permission...');
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        console.log('[camera/dm] iOS permission status:', status);
+        if (status !== 'granted') {
+          Alert.alert('Permission needed', 'Allow camera access in Settings → Hilads → Camera.');
+          return;
+        }
       }
       console.log('[camera/dm] launching camera...');
       const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });

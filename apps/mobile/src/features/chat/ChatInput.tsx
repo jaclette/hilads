@@ -82,12 +82,19 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   async function openCamera() {
     console.log('[camera] openCamera called');
     try {
-      console.log('[camera] requesting permission...');
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      console.log('[camera] permission status:', status);
-      if (status !== 'granted') {
-        Alert.alert('Permission needed', 'Allow camera access to take photos in chat.');
-        return;
+      // On Android + New Architecture, requestCameraPermissionsAsync() hangs
+      // indefinitely — the native permission dispatch deadlocks before the Activity
+      // reaches the correct focused state. launchCameraAsync() handles the Android
+      // runtime permission internally via the system camera Intent, so the explicit
+      // pre-check is both redundant and broken on Android. Keep it only on iOS.
+      if (Platform.OS === 'ios') {
+        console.log('[camera] iOS: requesting permission...');
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        console.log('[camera] iOS permission status:', status);
+        if (status !== 'granted') {
+          Alert.alert('Permission needed', 'Allow camera access in Settings → Hilads → Camera.');
+          return;
+        }
       }
       console.log('[camera] launching camera...');
       const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
