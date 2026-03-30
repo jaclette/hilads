@@ -80,17 +80,23 @@ class MessageRepository
 
     public static function getByChannel(int|string $channelId): array
     {
+        // COALESCE(m.user_id, u.id): retroactively resolves the sender's registered userId
+        // for messages where user_id was never written (sent before the api.php fix).
+        // Uses idx_users_guest_id — no performance cost on the hot path.
         $stmt = Database::pdo()->prepare("
             SELECT id, channel_id, type, event,
                    guest_id, user_id, nickname, content, image_url, created_at
             FROM (
                 SELECT
-                    id, channel_id, type, event,
-                    guest_id, user_id, nickname, content, image_url,
-                    EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
-                FROM messages
-                WHERE channel_id = ?
-                ORDER BY created_at DESC
+                    m.id, m.channel_id, m.type, m.event,
+                    m.guest_id,
+                    COALESCE(m.user_id, u.id) AS user_id,
+                    m.nickname, m.content, m.image_url,
+                    EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
+                FROM messages m
+                LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL
+                WHERE m.channel_id = ?
+                ORDER BY m.created_at DESC
                 LIMIT " . self::LIMIT . "
             ) sub
             ORDER BY created_at ASC
