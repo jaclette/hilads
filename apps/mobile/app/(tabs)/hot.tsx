@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, SectionList, StyleSheet,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchCityEvents, fetchPublicCityEvents, fetchEventParticipants } from '@/api/events';
@@ -136,7 +136,7 @@ export default function HotScreen() {
     }
   }
 
-  useEffect(() => { load(); }, [city?.channelId]);
+  useFocusEffect(useCallback(() => { load(); }, [city?.channelId]));
 
   // Live participant count updates — mirrors web event_participants_update WS listener
   useEffect(() => {

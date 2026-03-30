@@ -126,11 +126,17 @@ class EventRepository
             $event = self::format($row);
 
             $startDate = (new DateTime('@' . $event['starts_at']))->setTimezone($tz)->format('Y-m-d');
-            $endDate = (new DateTime('@' . $event['expires_at']))->setTimezone($tz)->format('Y-m-d');
-            $isVisibleToday = $startDate === $today
-                || ($event['starts_at'] <= $now && $endDate === $today);
+            $endDate   = (new DateTime('@' . $event['expires_at']))->setTimezone($tz)->format('Y-m-d');
 
-            if (!$isVisibleToday) {
+            // Show events starting today OR in the future, plus currently-live events.
+            // Using >= $today (not === $today) fixes the case where city timezone is absent
+            // (defaults to UTC) and a user in a UTC-offset timezone creates a "tonight"
+            // event whose UTC date lands on "tomorrow" — $startDate === $today would fail
+            // and silently exclude a perfectly valid same-day event.
+            $isVisible = $startDate >= $today
+                || ($event['starts_at'] <= $now && $endDate >= $today);
+
+            if (!$isVisible) {
                 continue;
             }
 
