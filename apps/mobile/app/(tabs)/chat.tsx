@@ -296,33 +296,27 @@ export default function ChatTab() {
     postImageFn,
   });
 
-  // Feed display priority — controls vertical position in the inverted FlatList:
-  //   index 0 = BOTTOM of screen (near input, visible first)
-  //   high index = TOP of screen (above the fold, user scrolls up)
+  // Merge messages + synthesized event items, then partition into 3 display groups.
   //
-  // Desired top-to-bottom order on screen:
-  //   [TOP]   event cards   → highest index → priority 0
-  //           weather        → mid index     → priority 1
-  //   [BOTTOM] social/join  → index 0        → priority 2
+  // Inverted FlatList: index 0 = BOTTOM of screen (near input), high index = TOP.
+  // Desired top-to-bottom visible order: events | weather | social/other
   //
-  // Sort is `pb - pa` (higher priority value → lower index → bottom).
-  function feedPriority(m: Message): number {
-    if (m.type === 'event') return 0;                          // top of screen
-    if (m.type === 'system' && m.event === 'weather') return 1; // just below events
-    return 2;                                                  // social/join at bottom
-  }
-
-  // Merge synthesized event items into the messages list, sorted newest-first
+  // Array order that achieves this: [other..., weather..., events...]
+  //   - other  → low indices  → bottom (visible when chat opens)
+  //   - weather → mid index   → just above the social stream
+  //   - events  → high indices → top (announcement area above the chat)
+  //
+  // Within each group the existing array order is preserved.
   const allMessages = useMemo<Message[]>(() => {
-    if (eventFeedItems.length === 0) return messages;
-    return [...messages, ...eventFeedItems].sort((a, b) => {
-      const pa = feedPriority(a);
-      const pb = feedPriority(b);
-      if (pa !== pb) return pb - pa; // higher priority → lower index → bottom of screen
-      const ta = typeof a.createdAt === 'number' ? a.createdAt : new Date(a.createdAt).getTime() / 1000;
-      const tb = typeof b.createdAt === 'number' ? b.createdAt : new Date(b.createdAt).getTime() / 1000;
-      return tb - ta; // within same tier: newest first
-    });
+    const combined = eventFeedItems.length === 0
+      ? messages
+      : [...messages, ...eventFeedItems];
+
+    const events  = combined.filter(m => m.type === 'event');
+    const weather = combined.filter(m => m.type === 'system' && m.event === 'weather');
+    const other   = combined.filter(m => m.type !== 'event' && !(m.type === 'system' && m.event === 'weather'));
+
+    return [...other, ...weather, ...events];
   }, [messages, eventFeedItems]);
 
   // No city yet — prompt to pick one
