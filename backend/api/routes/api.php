@@ -516,6 +516,11 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     }
     $fields['isFriend'] = $isFriend;
 
+    // Add vibe score to profile
+    $vibeScore = VibeRepository::scoreForUser($user['id']);
+    $fields['vibeScore'] = $vibeScore['score'];
+    $fields['vibeCount'] = $vibeScore['count'];
+
     Response::json(['user' => $fields]);
 });
 
@@ -663,6 +668,63 @@ $router->add('GET', '/api/v1/users/{userId}/friends', function (array $params) {
         'total'   => $total,
         'page'    => $page,
         'hasMore' => ($offset + count($rows)) < $total,
+    ]);
+});
+
+// ── Vibes ─────────────────────────────────────────────────────────────────────
+// POST /api/v1/users/{userId}/vibes  — create or update a vibe (auth required)
+// GET  /api/v1/users/{userId}/vibes  — list vibes for a user + score
+
+$router->add('POST', '/api/v1/users/{userId}/vibes', function (array $params) {
+    $viewer = AuthService::requireAuth();
+    $targetId = $params['userId'];
+
+    if ($viewer['id'] === $targetId) {
+        Response::json(['error' => 'You cannot leave a vibe for yourself'], 400);
+        return;
+    }
+
+    // Check target exists
+    $targetStmt = Database::pdo()->prepare("SELECT id FROM users WHERE id = ?");
+    $targetStmt->execute([$targetId]);
+    if (!$targetStmt->fetchColumn()) {
+        Response::json(['error' => 'User not found'], 404);
+        return;
+    }
+
+    $body    = Request::json() ?? [];
+    $rating  = isset($body['rating']) ? (int) $body['rating'] : 0;
+    $message = isset($body['message']) ? mb_substr(trim(strip_tags($body['message'])), 0, 300) : null;
+
+    if ($rating < 1 || $rating > 5) {
+        Response::json(['error' => 'rating must be between 1 and 5'], 400);
+        return;
+    }
+
+    $vibe = VibeRepository::upsert($viewer['id'], $targetId, $rating, $message ?: null);
+    Response::json(['vibe' => $vibe], 201);
+});
+
+$router->add('GET', '/api/v1/users/{userId}/vibes', function (array $params) {
+    $targetId = $params['userId'];
+    $limit    = max(1, min(50, (int) ($_GET['limit'] ?? 20)));
+    $offset   = max(0, (int) ($_GET['offset'] ?? 0));
+
+    $vibes = VibeRepository::listForUser($targetId, $limit, $offset);
+    $score = VibeRepository::scoreForUser($targetId);
+
+    // My vibe — only if authenticated
+    $myVibe = null;
+    $viewer = AuthService::currentUser();
+    if ($viewer && $viewer['id'] !== $targetId) {
+        $myVibe = VibeRepository::myVibeFor($viewer['id'], $targetId);
+    }
+
+    Response::json([
+        'vibes'   => $vibes,
+        'score'   => $score['score'],
+        'count'   => $score['count'],
+        'myVibe'  => $myVibe,
     ]);
 });
 

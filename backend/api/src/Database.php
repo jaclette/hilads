@@ -333,6 +333,29 @@ class Database
                 ");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_push_delivery_log_lookup ON push_delivery_log (user_id, type, ref_id, sent_at DESC)");
             }
+
+            // User vibes — social rating system (1–5 stars + optional message).
+            // Added after initial deploy — additive migration.
+            $uvExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_vibes')")
+                ->fetchColumn();
+
+            if (!$uvExists) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS user_vibes (
+                        id          BIGSERIAL    PRIMARY KEY,
+                        author_id   TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        target_id   TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        rating      SMALLINT     NOT NULL CHECK (rating BETWEEN 1 AND 5),
+                        message     TEXT,
+                        created_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+                        updated_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+                        UNIQUE (author_id, target_id)
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_vibes_target ON user_vibes (target_id, created_at DESC)");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_vibes_author ON user_vibes (author_id)");
+            }
         }
 
         self::bootstrap(self::$pdo);

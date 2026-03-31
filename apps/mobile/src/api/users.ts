@@ -37,3 +37,26 @@ export async function addFriend(userId: string): Promise<void> {
 export async function removeFriend(userId: string): Promise<void> {
   await api.delete(`/users/${userId}/friends`);
 }
+
+export interface UserVibe {
+  id: number;
+  rating: number;
+  message?: string;
+  createdAt: string;
+  authorId: string;
+  authorName: string;
+  authorPhoto?: string;
+}
+
+export async function fetchUserVibes(userId: string, { limit = 20, offset = 0 } = {}): Promise<{
+  vibes: UserVibe[];
+  score: number | null;
+  count: number;
+  myVibe: { rating: number; message?: string } | null;
+}> {
+  return api.get(`/users/${userId}/vibes?limit=${limit}&offset=${offset}`);
+}
+
+export async function postVibe(userId: string, { rating, message }: { rating: number; message?: string }): Promise<void> {
+  await api.post(`/users/${userId}/vibes`, { rating, message });
+}

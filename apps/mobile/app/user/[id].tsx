@@ -10,12 +10,12 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, Image, ScrollView, TouchableOpacity,
-  ActivityIndicator, StyleSheet,
+  ActivityIndicator, StyleSheet, TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend } from '@/api/users';
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { User, HiladsEvent, FriendUser } from '@/types';
@@ -155,6 +155,14 @@ export default function PublicProfileScreen() {
   const [isFriend,     setIsFriend]     = useState(false);
   const [friendBusy,   setFriendBusy]   = useState(false);
   const [friends,      setFriends]      = useState<FriendUser[]>([]);
+  const [vibes,        setVibes]        = useState<UserVibe[]>([]);
+  const [vibeScore,    setVibeScore]    = useState<number | null>(null);
+  const [vibeCount,    setVibeCount]    = useState(0);
+  const [myVibe,       setMyVibe]       = useState<{ rating: number; message?: string } | null>(null);
+  const [vibeBusy,     setVibeBusy]     = useState(false);
+  const [vibeRating,   setVibeRating]   = useState(0);
+  const [vibeMessage,  setVibeMessage]  = useState('');
+  const [showVibeForm, setShowVibeForm] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -163,12 +171,18 @@ export default function PublicProfileScreen() {
       fetchPublicProfile(id),
       fetchUserEvents(id),
       fetchUserFriends(id).catch(() => ({ friends: [], total: 0, hasMore: false })),
+      fetchUserVibes(id).catch(() => ({ vibes: [], score: null, count: 0, myVibe: null })),
     ])
-      .then(([u, evs, fr]) => {
+      .then(([u, evs, fr, vib]) => {
         setUser(u);
         setEvents(evs);
         setIsFriend(u.isFriend ?? false);
         setFriends(fr.friends);
+        setVibes(vib.vibes);
+        setVibeScore(vib.score);
+        setVibeCount(vib.count);
+        setMyVibe(vib.myVibe);
+        if (vib.myVibe) { setVibeRating(vib.myVibe.rating); setVibeMessage(vib.myVibe.message ?? ''); }
       })
       .catch(() => setError('Could not load profile.'))
       .finally(() => setLoading(false));
@@ -187,6 +201,21 @@ export default function PublicProfileScreen() {
       }
     } catch { /* silently ignore */ }
     finally { setFriendBusy(false); }
+  }
+
+  async function handleSubmitVibe() {
+    if (!id || vibeBusy || vibeRating === 0) return;
+    setVibeBusy(true);
+    try {
+      await postVibe(id, { rating: vibeRating, message: vibeMessage.trim() || undefined });
+      const fresh = await fetchUserVibes(id);
+      setVibes(fresh.vibes);
+      setVibeScore(fresh.score);
+      setVibeCount(fresh.count);
+      setMyVibe(fresh.myVibe);
+      setShowVibeForm(false);
+    } catch { /* silently ignore */ }
+    finally { setVibeBusy(false); }
   }
 
   const name    = user?.display_name ?? '?';
@@ -379,6 +408,109 @@ export default function PublicProfileScreen() {
                   </TouchableOpacity>
                 ))}
               </View>
+            </View>
+          )}
+
+          {/* ── Vibe score ── */}
+          {vibeCount > 0 && (
+            <View style={styles.vibeScoreCard}>
+              <View style={styles.vibeStarsRow}>
+                {[1,2,3,4,5].map(s => (
+                  <Text key={s} style={[styles.vibeStarStatic, s <= Math.round(vibeScore ?? 0) && styles.vibeStarStaticOn]}>★</Text>
+                ))}
+              </View>
+              <Text style={styles.vibeScoreAvg}>{vibeScore?.toFixed(1)} vibe score</Text>
+              <Text style={styles.vibeScoreCount}>based on {vibeCount} vibe{vibeCount !== 1 ? 's' : ''}</Text>
+            </View>
+          )}
+
+          {/* ── Leave a vibe ── */}
+          {!isSelf && account && (
+            <View style={styles.section}>
+              {!showVibeForm ? (
+                <TouchableOpacity
+                  style={styles.vibeCtaBtn}
+                  onPress={() => setShowVibeForm(true)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.vibeCtaBtnText}>
+                    {myVibe ? `✏️ Update your vibe (${myVibe.rating}★)` : '⭐ Leave a vibe'}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <View style={styles.vibeForm}>
+                  <View style={styles.vibeFormStars}>
+                    {[1,2,3,4,5].map(s => (
+                      <TouchableOpacity key={s} onPress={() => setVibeRating(s)} activeOpacity={0.7}>
+                        <Text style={[styles.vibeFormStar, vibeRating >= s && styles.vibeFormStarOn]}>★</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  <TextInput
+                    style={styles.vibeInput}
+                    placeholder="Say something nice… (optional)"
+                    placeholderTextColor={Colors.muted2}
+                    value={vibeMessage}
+                    onChangeText={setVibeMessage}
+                    maxLength={300}
+                    multiline
+                    numberOfLines={2}
+                  />
+                  <View style={styles.vibeFormActions}>
+                    <TouchableOpacity
+                      style={styles.vibeCancelBtn}
+                      onPress={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? ''); }}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.vibeCancelBtnText}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.vibeSubmitBtn, (vibeBusy || vibeRating === 0) && styles.vibeSubmitBtnDisabled]}
+                      onPress={handleSubmitVibe}
+                      activeOpacity={0.8}
+                      disabled={vibeBusy || vibeRating === 0}
+                    >
+                      <Text style={styles.vibeSubmitBtnText}>{vibeBusy ? 'Sending…' : 'Send vibe ✨'}</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            </View>
+          )}
+
+          {/* ── Vibes list ── */}
+          {(vibeCount > 0 || true) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>
+                {vibeCount > 0 ? `Vibes · ${vibeCount}` : 'Vibes'}
+              </Text>
+              {vibes.length > 0 ? (
+                <View style={styles.vibeList}>
+                  {vibes.map(v => (
+                    <View key={v.id} style={styles.vibeRow}>
+                      {v.authorPhoto ? (
+                        <Image source={{ uri: v.authorPhoto }} style={styles.vibeAvatar} />
+                      ) : (
+                        <View style={[styles.vibeAvatar, styles.vibeAvatarFallback, { backgroundColor: avatarBg(v.authorName) }]}>
+                          <Text style={styles.vibeAvatarInitial}>{(v.authorName || '?')[0].toUpperCase()}</Text>
+                        </View>
+                      )}
+                      <View style={styles.vibeContent}>
+                        <View style={styles.vibeHeader}>
+                          <Text style={styles.vibeAuthor}>{v.authorName}</Text>
+                          <Text style={styles.vibeRating}>{'★'.repeat(v.rating)}</Text>
+                        </View>
+                        {v.message ? <Text style={styles.vibeMsg}>{v.message}</Text> : null}
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <View style={styles.vibeEmpty}>
+                  <Text style={styles.vibeEmptyTitle}>No vibes yet</Text>
+                  <Text style={styles.vibeEmptySubtitle}>Be the first to leave a vibe ✨</Text>
+                </View>
+              )}
             </View>
           )}
 
@@ -751,6 +883,107 @@ const styles = StyleSheet.create({
   friendBtnTextActive: {
     color: Colors.accent,
   },
+
+  // ── Vibe score card ───────────────────────────────────────────────────────
+  vibeScoreCard: {
+    alignItems:      'center',
+    gap:             6,
+    padding:         Spacing.md,
+    backgroundColor: 'rgba(251,191,36,0.04)',
+    borderRadius:    Radius.lg,
+    borderWidth:     1,
+    borderColor:     'rgba(251,191,36,0.12)',
+  },
+  vibeStarsRow:     { flexDirection: 'row', gap: 4 },
+  vibeStarStatic:   { fontSize: 22, color: 'rgba(255,255,255,0.12)' },
+  vibeStarStaticOn: { color: '#fbbf24' },
+  vibeScoreAvg: {
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  vibeScoreCount: {
+    fontSize: FontSizes.xs,
+    color:    Colors.muted2,
+  },
+  // CTA
+  vibeCtaBtn: {
+    paddingVertical:   14,
+    backgroundColor:   'rgba(251,191,36,0.08)',
+    borderRadius:      Radius.lg,
+    borderWidth:       1,
+    borderColor:       'rgba(251,191,36,0.20)',
+    alignItems:        'center',
+  },
+  vibeCtaBtnText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      '#fbbf24',
+  },
+  // Form
+  vibeForm: {
+    backgroundColor: Colors.bg2,
+    borderRadius:    Radius.lg,
+    borderWidth:     1,
+    borderColor:     'rgba(251,191,36,0.18)',
+    padding:         Spacing.md,
+    gap:             Spacing.sm,
+  },
+  vibeFormStars:  { flexDirection: 'row', justifyContent: 'center', gap: 8 },
+  vibeFormStar:   { fontSize: 30, color: 'rgba(255,255,255,0.15)' },
+  vibeFormStarOn: { color: '#fbbf24' },
+  vibeInput: {
+    backgroundColor:   Colors.bg3,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    borderRadius:      Radius.md,
+    color:             Colors.text,
+    fontSize:          FontSizes.sm,
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical:   Spacing.sm,
+    minHeight:         60,
+    textAlignVertical: 'top',
+  },
+  vibeFormActions: { flexDirection: 'row', gap: Spacing.sm, justifyContent: 'flex-end' },
+  vibeCancelBtn: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   9,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    borderRadius:      Radius.md,
+  },
+  vibeCancelBtnText: { fontSize: FontSizes.xs, color: Colors.muted, fontWeight: '600' },
+  vibeSubmitBtn: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   9,
+    backgroundColor:   '#fbbf24',
+    borderRadius:      Radius.md,
+  },
+  vibeSubmitBtnDisabled: { opacity: 0.45 },
+  vibeSubmitBtnText: { fontSize: FontSizes.xs, fontWeight: '700', color: '#000' },
+  // List
+  vibeList:  { gap: Spacing.sm },
+  vibeRow: {
+    flexDirection:     'row',
+    gap:               Spacing.sm,
+    alignItems:        'flex-start',
+  },
+  vibeAvatar: {
+    width:        38,
+    height:       38,
+    borderRadius: 19,
+    flexShrink:   0,
+  },
+  vibeAvatarFallback: { alignItems: 'center', justifyContent: 'center' },
+  vibeAvatarInitial: { fontSize: 14, fontWeight: '700', color: '#fff' },
+  vibeContent: { flex: 1, gap: 3 },
+  vibeHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  vibeAuthor: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  vibeRating: { fontSize: FontSizes.xs, color: '#fbbf24', letterSpacing: 1 },
+  vibeMsg: { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
+  vibeEmpty: { alignItems: 'center', paddingVertical: Spacing.lg, gap: 4 },
+  vibeEmptyTitle: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  vibeEmptySubtitle: { fontSize: FontSizes.xs, color: Colors.muted2 },
 
   // ── DM button ─────────────────────────────────────────────────────────────
   dmBtn: {

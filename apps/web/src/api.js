@@ -480,3 +480,24 @@ export async function fetchVapidPublicKey() {
   const data = await res.json()
   return data.key ?? null
 }
+
+// ── Vibes ─────────────────────────────────────────────────────────────────────
+
+export async function fetchUserVibes(userId, { limit = 20, offset = 0 } = {}) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/vibes?limit=${limit}&offset=${offset}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to fetch vibes')
+  return res.json()
+}
+
+export async function postVibe(userId, { rating, message }) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/vibes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ rating, message }),
+  })
+  if (!res.ok) throw new Error('Failed to post vibe')
+  return res.json()
+}

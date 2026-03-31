@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe } from '../api'
 import { cityFlag } from '../cityMeta'
 import BackButton from './BackButton'
 
@@ -56,9 +56,17 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [events,     setEvents]     = useState([])
   const [friends,    setFriends]    = useState([])
   const [error,      setError]      = useState(null)
-  const [dmBusy,     setDmBusy]     = useState(false)
-  const [isFriend,   setIsFriend]   = useState(false)
-  const [friendBusy, setFriendBusy] = useState(false)
+  const [dmBusy,       setDmBusy]       = useState(false)
+  const [isFriend,     setIsFriend]     = useState(false)
+  const [friendBusy,   setFriendBusy]   = useState(false)
+  const [vibes,        setVibes]        = useState([])
+  const [vibeScore,    setVibeScore]    = useState(null)
+  const [vibeCount,    setVibeCount]    = useState(0)
+  const [myVibe,       setMyVibe]       = useState(null)
+  const [vibeBusy,     setVibeBusy]     = useState(false)
+  const [vibeRating,   setVibeRating]   = useState(0)
+  const [vibeMessage,  setVibeMessage]  = useState('')
+  const [showVibeForm, setShowVibeForm] = useState(false)
 
   useEffect(() => {
     setUser(null)
@@ -66,6 +74,13 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setFriends([])
     setError(null)
     setIsFriend(false)
+    setVibes([])
+    setVibeScore(null)
+    setVibeCount(0)
+    setMyVibe(null)
+    setVibeRating(0)
+    setVibeMessage('')
+    setShowVibeForm(false)
 
     fetchPublicProfile(userId)
       .then(data => { setUser(data.user); setIsFriend(data.user?.isFriend ?? false) })
@@ -77,6 +92,19 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
     fetchUserFriends(userId)
       .then(data => setFriends(data.friends ?? []))
+      .catch(() => {})
+
+    fetchUserVibes(userId)
+      .then(data => {
+        setVibes(data.vibes ?? [])
+        setVibeScore(data.score)
+        setVibeCount(data.count ?? 0)
+        setMyVibe(data.myVibe ?? null)
+        if (data.myVibe) {
+          setVibeRating(data.myVibe.rating)
+          setVibeMessage(data.myVibe.message ?? '')
+        }
+      })
       .catch(() => {})
   }, [userId])
 
@@ -99,6 +127,21 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
       }
     } catch { /* ignore */ }
     finally { setFriendBusy(false) }
+  }
+
+  async function handleSubmitVibe() {
+    if (vibeBusy || vibeRating === 0) return
+    setVibeBusy(true)
+    try {
+      await postVibe(userId, { rating: vibeRating, message: vibeMessage.trim() || undefined })
+      const fresh = await fetchUserVibes(userId)
+      setVibes(fresh.vibes ?? [])
+      setVibeScore(fresh.score)
+      setVibeCount(fresh.count ?? 0)
+      setMyVibe(fresh.myVibe ?? null)
+      setShowVibeForm(false)
+    } catch { /* ignore */ }
+    finally { setVibeBusy(false) }
   }
 
   const name     = user?.display_name ?? '?'
@@ -236,6 +279,86 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 })}
               </div>
             )}
+
+            {/* ── Vibe score ── */}
+            {vibeCount > 0 && (
+              <div className="pub-profile-vibe-score">
+                <div className="pub-profile-vibe-stars">
+                  {[1,2,3,4,5].map(s => (
+                    <span key={s} className={s <= Math.round(vibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}>★</span>
+                  ))}
+                </div>
+                <span className="pub-profile-vibe-avg">{vibeScore?.toFixed(1)} vibe score</span>
+                <span className="pub-profile-vibe-count">based on {vibeCount} vibe{vibeCount !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+
+            {/* ── Leave a vibe form ── */}
+            {account && userId !== account?.id && (
+              <div className="pub-profile-vibe-cta">
+                {!showVibeForm ? (
+                  <button className="pub-profile-vibe-btn" onClick={() => setShowVibeForm(true)}>
+                    {myVibe ? `✏️ Update your vibe (${myVibe.rating}★)` : '⭐ Leave a vibe'}
+                  </button>
+                ) : (
+                  <div className="pub-profile-vibe-form">
+                    <div className="pub-profile-vibe-form-stars">
+                      {[1,2,3,4,5].map(s => (
+                        <button key={s} className={`vibe-star-btn${vibeRating >= s ? ' on' : ''}`} onClick={() => setVibeRating(s)}>★</button>
+                      ))}
+                    </div>
+                    <textarea
+                      className="pub-profile-vibe-input"
+                      placeholder="Say something nice… (optional)"
+                      value={vibeMessage}
+                      onChange={e => setVibeMessage(e.target.value)}
+                      maxLength={300}
+                      rows={2}
+                    />
+                    <div className="pub-profile-vibe-form-actions">
+                      <button className="pub-profile-vibe-cancel" onClick={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? ''); }}>Cancel</button>
+                      <button className="pub-profile-vibe-submit" onClick={handleSubmitVibe} disabled={vibeBusy || vibeRating === 0}>
+                        {vibeBusy ? 'Sending…' : 'Send vibe ✨'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Vibes list ── */}
+            <div className="pub-profile-vibes">
+              {vibes.length > 0 ? (
+                <>
+                  <p className="pub-profile-section-label">Vibes · {vibeCount}</p>
+                  {vibes.map(v => {
+                    const [vc1, vc2] = avatarColors(v.authorName || '?')
+                    return (
+                      <div key={v.id} className="pub-profile-vibe-row">
+                        {v.authorPhoto
+                          ? <img className="pub-profile-vibe-avatar" src={v.authorPhoto} alt={v.authorName} />
+                          : <span className="pub-profile-vibe-avatar pub-profile-vibe-avatar--initials" style={{ background: `linear-gradient(135deg, ${vc1}, ${vc2})` }}>
+                              {(v.authorName || '?')[0].toUpperCase()}
+                            </span>
+                        }
+                        <div className="pub-profile-vibe-content">
+                          <div className="pub-profile-vibe-header">
+                            <span className="pub-profile-vibe-author">{v.authorName}</span>
+                            <span className="pub-profile-vibe-rating">{'★'.repeat(v.rating)}</span>
+                          </div>
+                          {v.message && <p className="pub-profile-vibe-msg">{v.message}</p>}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </>
+              ) : vibeCount === 0 && (
+                <div className="pub-profile-vibes-empty">
+                  <p>No vibes yet</p>
+                  <p>Be the first to leave a vibe ✨</p>
+                </div>
+              )}
+            </div>
 
             {/* ── CTAs ── */}
             {userId !== account?.id && (
