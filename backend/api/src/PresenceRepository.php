@@ -67,15 +67,22 @@ class PresenceRepository
         ")->execute([$sessionId]);
     }
 
-    // Returns unique online users (deduplicated by guestId — one entry per person even with multiple tabs)
+    // Returns unique online users (deduplicated by guestId).
+    // Joins users table to supply userId, created_at, home_city for badge resolution.
     public static function getOnline(int $channelId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT DISTINCT ON (guest_id) guest_id AS \"guestId\", nickname
-            FROM presence
-            WHERE channel_id   = ?
-              AND last_seen_at > now() - interval '" . self::TTL . " seconds'
-            ORDER BY guest_id, last_seen_at DESC
+            SELECT DISTINCT ON (p.guest_id)
+                p.guest_id   AS \"guestId\",
+                p.nickname,
+                u.id         AS \"userId\",
+                u.created_at AS \"userCreatedAt\",
+                u.home_city  AS \"userHomeCity\"
+            FROM presence p
+            LEFT JOIN users u ON u.guest_id = p.guest_id
+            WHERE p.channel_id   = ?
+              AND p.last_seen_at > now() - interval '" . self::TTL . " seconds'
+            ORDER BY p.guest_id, p.last_seen_at DESC
         ");
         $stmt->execute([self::dbKey($channelId)]);
 

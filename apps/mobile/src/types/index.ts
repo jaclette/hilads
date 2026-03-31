@@ -63,6 +63,13 @@ export interface EventParticipant {
   joinedAt?: number;
 }
 
+// ── Badges ────────────────────────────────────────────────────────────────────
+
+export interface Badge {
+  key: 'ghost' | 'fresh' | 'crew' | 'local' | 'host';
+  label: string; // e.g. '😎 Crew'
+}
+
 // ── Messages ──────────────────────────────────────────────────────────────────
 //
 // API returns camelCase. All field names here match the actual wire format.
@@ -79,6 +86,8 @@ export interface Message {
   imageUrl?: string;              // image message URL (R2)
   createdAt: number | string;     // unix seconds (number) or ISO string
   eventId?: string;               // for type === 'event' synthetic feed items
+  primaryBadge?: Badge;           // identity badge (ghost/fresh/crew)
+  contextBadge?: Badge | null;    // city-specific badge (host/local)
   // Optimistic send state — absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
   status?: 'sending' | 'failed'; // undefined = confirmed
@@ -93,6 +102,8 @@ export interface OnlineUser {
   nickname: string;
   profilePhotoUrl?: string;
   isRegistered: boolean;
+  primaryBadge?: Badge;
+  contextBadge?: Badge | null;
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -106,6 +117,7 @@ export interface User {
   interests?: string[];
   age?: number;
   guest_id?: string;
+  primaryBadge?: Badge;
 }
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────

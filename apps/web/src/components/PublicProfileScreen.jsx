@@ -48,7 +48,10 @@ export default function PublicProfileScreen({ userId, onBack }) {
                   </span>
               }
               <h2 className="pub-profile-name">{name}</h2>
-              <span className="pub-profile-member-badge">member</span>
+              {user.primaryBadge
+                ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
+                : <span className="badge-pill badge-pill--crew">😎 Crew</span>
+              }
             </div>
 
             <div className="pub-profile-details">

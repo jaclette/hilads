@@ -240,6 +240,7 @@ class AuthService
             'profile_photo_url' => $user['profile_photo_url'],
             'home_city'         => $user['home_city'],
             'interests'         => json_decode($user['interests'] ?? '[]', true),
+            'primaryBadge'      => UserBadgeService::primaryForUser($user),
         ];
     }
 

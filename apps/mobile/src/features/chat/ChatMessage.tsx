@@ -17,7 +17,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, ActivityIndi
 import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
 import { formatTime } from '@/lib/messageTime';
-import type { Message } from '@/types';
+import type { Message, Badge } from '@/types';
 
 // ── Avatar palette — mirrors web AVATAR_PALETTES ──────────────────────────────
 
@@ -153,12 +153,47 @@ function DateSeparator({ label }: { label: string }) {
 // Guests with no account get a "User not found" screen, which is the correct
 // graceful outcome. This matches DM behaviour where sender_id is always present.
 
-function SenderMeta({ nickname, color, initial, userId, guestId }: {
-  nickname: string;
-  color:    string;
-  initial:  string;
-  userId?:  string;
-  guestId?: string;
+// ── Badge pill ────────────────────────────────────────────────────────────────
+
+const BADGE_CONFIG: Record<string, { bg: string; color: string }> = {
+  ghost: { bg: 'rgba(255,255,255,0.06)', color: '#666' },
+  fresh: { bg: 'rgba(74,222,128,0.12)',  color: '#4ade80' },
+  crew:  { bg: 'rgba(96,165,250,0.12)',  color: '#60a5fa' },
+  local: { bg: 'rgba(52,211,153,0.12)',  color: '#34d399' },
+  host:  { bg: 'rgba(251,191,36,0.15)',  color: '#fbbf24' },
+};
+
+function BadgePill({ badge }: { badge: { key: string; label: string } }) {
+  const cfg = BADGE_CONFIG[badge.key] ?? BADGE_CONFIG.crew;
+  return (
+    <View style={[badgeStyles.pill, { backgroundColor: cfg.bg }]}>
+      <Text style={[badgeStyles.text, { color: cfg.color }]}>{badge.label}</Text>
+    </View>
+  );
+}
+
+const badgeStyles = StyleSheet.create({
+  pill: {
+    borderRadius:      20,
+    paddingHorizontal: 6,
+    paddingVertical:   2,
+  },
+  text: {
+    fontSize:   11,
+    fontWeight: '600',
+  },
+});
+
+// ── SenderMeta ────────────────────────────────────────────────────────────────
+
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge }: {
+  nickname:     string;
+  color:        string;
+  initial:      string;
+  userId?:      string;
+  guestId?:     string;
+  primaryBadge?: Badge;
+  contextBadge?: Badge | null;
 }) {
   const router = useRouter();
   const navId  = userId ?? guestId;   // prefer resolved userId, fall back to guestId
@@ -169,6 +204,8 @@ function SenderMeta({ nickname, color, initial, userId, guestId }: {
         <Text style={styles.avatarLetter}>{initial}</Text>
       </View>
       <Text style={[styles.author, { color }]}>{nickname}</Text>
+      {primaryBadge && <BadgePill badge={primaryBadge} />}
+      {contextBadge && <BadgePill badge={contextBadge} />}
     </>
   );
 
@@ -248,6 +285,8 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               initial={initial}
               userId={message.userId}
               guestId={message.guestId}
+              primaryBadge={message.primaryBadge}
+              contextBadge={message.contextBadge}
             />
           )}
           <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
@@ -303,6 +342,8 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             initial={initial}
             userId={message.userId}
             guestId={message.guestId}
+            primaryBadge={message.primaryBadge}
+            contextBadge={message.contextBadge}
           />
         )}
 

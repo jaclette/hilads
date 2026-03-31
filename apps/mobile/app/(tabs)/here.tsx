@@ -17,6 +17,40 @@ import { useApp } from '@/context/AppContext';
 import type { OnlineUser } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
+// ── Badge pill ────────────────────────────────────────────────────────────────
+
+const BADGE_BG: Record<string, object> = {
+  ghost: { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
+  fresh: { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
+  crew:  { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  local: { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
+  host:  { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
+};
+const BADGE_COLOR: Record<string, string> = {
+  ghost: '#666', fresh: '#4ade80', crew: '#60a5fa', local: '#34d399', host: '#fbbf24',
+};
+
+function BadgePill({ badge }: { badge: { key: string; label: string } }) {
+  const bg    = BADGE_BG[badge.key]    ?? BADGE_BG.crew;
+  const color = BADGE_COLOR[badge.key] ?? BADGE_COLOR.crew;
+  return (
+    <View style={[hereBadgeStyles.pill, bg]}>
+      <Text style={[hereBadgeStyles.text, { color }]}>{badge.label}</Text>
+    </View>
+  );
+}
+
+const hereBadgeStyles = StyleSheet.create({
+  pill: {
+    alignSelf:         'flex-start',
+    borderRadius:      999,
+    paddingHorizontal: 7,
+    paddingVertical:   3,
+    borderWidth:       1,
+  },
+  text: { fontSize: 10, fontWeight: '700' },
+});
+
 // ── Avatar color — hash-based palette matching web ────────────────────────────
 
 const AVATAR_PALETTE = [
@@ -77,11 +111,13 @@ function UserRow({
           <View style={styles.liveNowBadge}>
             <Text style={styles.liveNowText}>LIVE NOW</Text>
           </View>
+        ) : user.primaryBadge ? (
+          <BadgePill badge={user.primaryBadge} />
         ) : user.isRegistered ? (
-          <View style={styles.memberBadge}>
-            <Text style={styles.memberBadgeText}>MEMBER</Text>
-          </View>
-        ) : null}
+          <BadgePill badge={{ key: 'crew', label: '😎 Crew' }} />
+        ) : (
+          <BadgePill badge={{ key: 'ghost', label: '👻 Ghost' }} />
+        )}
       </View>
 
       {/* DM button — registered non-self users only */}
@@ -296,23 +332,6 @@ const styles = StyleSheet.create({
   },
   nickname:  { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
   youLabel:  { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '400' },
-
-  // MEMBER badge — purple, matches web
-  memberBadge: {
-    alignSelf:         'flex-start',
-    backgroundColor:   'rgba(139,92,246,0.15)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   3,
-    borderWidth:       1,
-    borderColor:       'rgba(139,92,246,0.25)',
-  },
-  memberBadgeText: {
-    color:         Colors.violet,
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    letterSpacing: 0.4,
-  },
 
   // LIVE NOW badge — green, matches web
   liveNowBadge: {

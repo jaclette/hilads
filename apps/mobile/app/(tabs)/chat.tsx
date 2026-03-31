@@ -296,13 +296,25 @@ export default function ChatTab() {
     postImageFn,
   });
 
+  // Feed display priority: events (CTA) > regular messages > weather (context).
+  // Within the same priority tier, chronological order is preserved.
+  // FlatList is inverted so index 0 (highest priority) renders at the bottom.
+  function feedPriority(m: Message): number {
+    if (m.type === 'event') return 2;
+    if (m.type === 'system' && m.event === 'weather') return 0;
+    return 1;
+  }
+
   // Merge synthesized event items into the messages list, sorted newest-first
   const allMessages = useMemo<Message[]>(() => {
     if (eventFeedItems.length === 0) return messages;
     return [...messages, ...eventFeedItems].sort((a, b) => {
+      const pa = feedPriority(a);
+      const pb = feedPriority(b);
+      if (pa !== pb) return pb - pa; // higher priority → lower index → bottom of screen
       const ta = typeof a.createdAt === 'number' ? a.createdAt : new Date(a.createdAt).getTime() / 1000;
       const tb = typeof b.createdAt === 'number' ? b.createdAt : new Date(b.createdAt).getTime() / 1000;
-      return tb - ta; // newest first for inverted FlatList
+      return tb - ta; // within same tier: newest first
     });
   }, [messages, eventFeedItems]);
 

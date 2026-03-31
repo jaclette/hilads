@@ -2316,6 +2316,8 @@ export default function App() {
                       {item.nickname[0].toUpperCase()}
                     </span>
                     <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
+                    {item.primaryBadge && <span className={`badge-pill badge-pill--${item.primaryBadge.key}`}>{item.primaryBadge.label}</span>}
+                    {item.contextBadge && <span className={`badge-pill badge-pill--${item.contextBadge.key}`}>{item.contextBadge.label}</span>}
                   </div>
                 )}
                 <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
@@ -2678,8 +2680,14 @@ export default function App() {
                       {user.isMe && <span className="people-drawer-you"> (you)</span>}
                     </span>
                     <div className="people-drawer-meta">
-                      {user.isRegistered && !user.isMe && <span className="people-member-badge">member</span>}
-                      {user.isMe && <span className="people-member-badge people-member-badge--you">live now</span>}
+                      {user.isMe
+                        ? <span className="people-member-badge people-member-badge--you">live now</span>
+                        : user.primaryBadge
+                          ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
+                          : user.isRegistered
+                            ? <span className="badge-pill badge-pill--crew">😎 Crew</span>
+                            : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
+                      }
                     </div>
                   </div>
                   {!user.isMe && user.isRegistered && (

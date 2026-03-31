@@ -260,6 +260,13 @@ export default function MeScreen() {
             </TouchableOpacity>
 
             <Text style={styles.avatarName}>{account?.display_name ?? '—'}</Text>
+            {account?.primaryBadge && (
+              <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
+                <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
+                  {account.primaryBadge.label}
+                </Text>
+              </View>
+            )}
             {account?.email ? (
               <Text style={styles.avatarEmail}>{account.email}</Text>
             ) : null}
@@ -274,6 +281,9 @@ export default function MeScreen() {
                 <Text style={styles.avatarInitials}>{initials}</Text>
               </View>
               <Text style={styles.avatarName}>{identity?.nickname ?? '—'}</Text>
+              <View style={[styles.memberBadge, meBadgeBg('ghost')]}>
+                <Text style={[styles.memberBadgeText, meBadgeColor('ghost')]}>👻 Ghost</Text>
+              </View>
               <Text style={styles.accountType}>Guest session</Text>
             </View>
 
@@ -481,6 +491,22 @@ export default function MeScreen() {
   );
 }
 
+// ── Badge helpers for own profile ────────────────────────────────────────────
+
+const ME_BADGE_BG: Record<string, object> = {
+  ghost: { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
+  fresh: { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
+  crew:  { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  local: { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
+  host:  { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
+};
+const ME_BADGE_COLOR: Record<string, object> = {
+  ghost: { color: '#666' }, fresh: { color: '#4ade80' },
+  crew:  { color: '#60a5fa' }, local: { color: '#34d399' }, host: { color: '#fbbf24' },
+};
+function meBadgeBg(key: string): object   { return ME_BADGE_BG[key]    ?? ME_BADGE_BG.crew; }
+function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BADGE_COLOR.crew; }
+
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
@@ -580,6 +606,17 @@ const styles = StyleSheet.create({
   accountType: {
     fontSize: FontSizes.sm,
     color:    Colors.muted,
+  },
+  memberBadge: {
+    borderRadius:      Radius.full,
+    paddingHorizontal: 10,
+    paddingVertical:   3,
+    borderWidth:       1,
+  },
+  memberBadgeText: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    letterSpacing: 0.3,
   },
 
   // ── Fields card — web: .profile-form ──────────────────────────────────────

@@ -924,9 +924,65 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             error_log('[weather] injection failed (non-fatal): ' . $e->getMessage());
         }
 
-        $messages = MessageRepository::getByChannel($channelId);
+        $messages    = MessageRepository::getByChannel($channelId);
         $onlineUsers = PresenceRepository::getOnline($channelId);
         $onlineCount = PresenceRepository::getCount($channelId);
+
+        // ── Badge enrichment ──────────────────────────────────────────────────
+        // Collect unique registered user IDs from text/image messages
+        $msgUserIds = [];
+        foreach ($messages as $msg) {
+            $t = $msg['type'] ?? 'text';
+            if (($t === 'text' || $t === 'image') && !empty($msg['userId'])) {
+                $msgUserIds[] = $msg['userId'];
+            }
+        }
+        $msgUserIds = array_values(array_unique($msgUserIds));
+        $badgeMap   = UserBadgeService::batchForCity($msgUserIds, $channelId, $city['name']);
+
+        foreach ($messages as &$msg) {
+            $t = $msg['type'] ?? 'text';
+            if ($t === 'text' || $t === 'image') {
+                if (!empty($msg['userId']) && isset($badgeMap[$msg['userId']])) {
+                    $msg['primaryBadge'] = $badgeMap[$msg['userId']]['primaryBadge'];
+                    $msg['contextBadge'] = $badgeMap[$msg['userId']]['contextBadge'];
+                } else {
+                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['contextBadge'] = null;
+                }
+            }
+        }
+        unset($msg);
+
+        // Resolve badges for online users (user data already joined in getOnline)
+        $presenceUserIds = array_values(array_unique(array_filter(
+            array_column($onlineUsers, 'userId'),
+            fn($id) => !empty($id)
+        )));
+        $ambassadors = UserBadgeService::ambassadorsForCity($presenceUserIds, $channelId);
+
+        foreach ($onlineUsers as &$u) {
+            $uid = $u['userId'] ?? null;
+            if (empty($uid)) {
+                $u['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                $u['contextBadge'] = null;
+            } else {
+                $u['primaryBadge'] = UserBadgeService::primaryForUser([
+                    'created_at' => $u['userCreatedAt'],
+                ]);
+                if ($ambassadors[$uid] ?? false) {
+                    $u['contextBadge'] = ['key' => 'host', 'label' => '⭐ Host'];
+                } elseif (!empty($u['userHomeCity'])
+                    && strcasecmp(trim($u['userHomeCity']), trim($city['name'])) === 0) {
+                    $u['contextBadge'] = ['key' => 'local', 'label' => '🌍 Local'];
+                } else {
+                    $u['contextBadge'] = null;
+                }
+            }
+            unset($u['userCreatedAt'], $u['userHomeCity']);
+        }
+        unset($u);
+        // ─────────────────────────────────────────────────────────────────────
 
         apiLog('channel_messages', 'success', [
             'channelId' => $channelId,

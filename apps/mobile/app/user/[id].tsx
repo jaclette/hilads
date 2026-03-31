@@ -20,6 +20,29 @@ import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { User, HiladsEvent } from '@/types';
 
+// ── Badge helpers ─────────────────────────────────────────────────────────────
+
+const PROFILE_BADGE_BG: Record<string, object> = {
+  ghost: { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
+  fresh: { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
+  crew:  { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  local: { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
+  host:  { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
+};
+const PROFILE_BADGE_COLOR: Record<string, object> = {
+  ghost: { color: '#666' },
+  fresh: { color: '#4ade80' },
+  crew:  { color: '#60a5fa' },
+  local: { color: '#34d399' },
+  host:  { color: '#fbbf24' },
+};
+function profileBadgeBg(key: string): object {
+  return PROFILE_BADGE_BG[key] ?? PROFILE_BADGE_BG.crew;
+}
+function profileBadgeColor(key: string): object {
+  return PROFILE_BADGE_COLOR[key] ?? PROFILE_BADGE_COLOR.crew;
+}
+
 // ── Avatar gradient palette — mirrors web PublicProfileScreen.jsx ─────────────
 
 const AVATAR_BG = [
@@ -168,7 +191,7 @@ export default function PublicProfileScreen() {
           contentContainerStyle={styles.body}
           showsVerticalScrollIndicator={false}
         >
-          {/* ── Hero: avatar + name + member badge ── */}
+          {/* ── Hero: avatar + name + identity badge ── */}
           <View style={styles.hero}>
             {user.profile_photo_url ? (
               <Image source={{ uri: user.profile_photo_url }} style={styles.avatar} />
@@ -178,9 +201,13 @@ export default function PublicProfileScreen() {
               </View>
             )}
             <Text style={styles.displayName}>{name}</Text>
-            <View style={styles.memberBadge}>
-              <Text style={styles.memberBadgeText}>MEMBER</Text>
-            </View>
+            {user.primaryBadge && (
+              <View style={[styles.memberBadge, profileBadgeBg(user.primaryBadge.key)]}>
+                <Text style={[styles.memberBadgeText, profileBadgeColor(user.primaryBadge.key)]}>
+                  {user.primaryBadge.label}
+                </Text>
+              </View>
+            )}
           </View>
 
           {/* ── Details: home city + age ── */}

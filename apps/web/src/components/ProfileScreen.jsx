@@ -125,6 +125,9 @@ export default function ProfileScreen({ account, myEvents, cityTimezone, onSave,
             </button>
             <div className="profile-hero-copy">
               <h2 className="profile-hero-name">{name || 'Your profile'}</h2>
+              {account.primaryBadge && (
+                <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
+              )}
               <p className="profile-hero-sub">Update how people see you in Hilads.</p>
             </div>
           </div>
