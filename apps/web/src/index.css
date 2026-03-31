@@ -1355,6 +1355,52 @@ html, body, #root {
   border-radius: 16px 4px 16px 16px;
 }
 
+/* ── Message timestamp ────────────────────────────────── */
+
+.msg-time {
+  font-size: 0.68rem;
+  color: var(--muted);
+  opacity: 0.55;
+  margin-top: 2px;
+  padding-left: 4px;
+  align-self: flex-start;
+}
+
+.msg-time--mine {
+  align-self: flex-end;
+  padding-left: 0;
+  padding-right: 4px;
+}
+
+/* ── Date separator ────────────────────────────────────── */
+
+.date-sep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 16px 6px;
+}
+
+.date-sep::before,
+.date-sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.date-sep-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: var(--bg2, #141414);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
 /* ── Lightbox ─────────────────────────────────────────── */
 
 .lightbox-overlay {
@@ -4341,6 +4387,7 @@ img.dm-header-avatar {
 .dm-bubble-wrap {
   display: flex;
   justify-content: flex-start;
+  margin-top: 10px;
 }
 
 .dm-bubble-wrap--me {
@@ -4364,6 +4411,22 @@ img.dm-header-avatar {
   border-bottom-right-radius: 5px;
   background: linear-gradient(135deg, var(--accent), var(--accent2));
   color: #fff;
+}
+
+.dm-bubble-wrap--grouped {
+  margin-top: 2px;
+}
+
+.dm-time {
+  font-size: 0.68rem;
+  color: var(--muted);
+  opacity: 0.55;
+  margin: 2px 16px 6px;
+  text-align: left;
+}
+
+.dm-time--me {
+  text-align: right;
 }
 
 .dm-composer {

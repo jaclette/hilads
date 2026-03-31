@@ -14,6 +14,53 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
+// ── Time utilities (mirrors native messageTime.ts) ────────────────────────────
+
+function normalizePgTs(ts) {
+  return ts
+    .replace(' ', 'T')
+    .replace(/(\.\d{3})\d+/, '$1')
+    .replace(/([+-]\d{2})$/, '$1:00')
+}
+
+function tsToMs(ts) {
+  if (!ts && ts !== 0) return 0
+  if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts
+  const ms = new Date(normalizePgTs(String(ts))).getTime()
+  return isNaN(ms) ? 0 : ms
+}
+
+function startOfDay(d) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate())
+}
+
+function isSameDay(ts1, ts2) {
+  if (!ts1 || !ts2) return true
+  return startOfDay(new Date(tsToMs(ts1))).getTime() ===
+         startOfDay(new Date(tsToMs(ts2))).getTime()
+}
+
+function formatTime(ts) {
+  const ms = tsToMs(ts)
+  if (!ms) return ''
+  return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function formatDateLabel(ts) {
+  const ms = tsToMs(ts)
+  if (!ms) return ''
+  const d   = new Date(ms)
+  const now = new Date()
+  const today     = startOfDay(now)
+  const yesterday = new Date(today.getTime() - 86_400_000)
+  const msgDay    = startOfDay(d)
+  if (msgDay.getTime() === today.getTime())     return 'Today'
+  if (msgDay.getTime() === yesterday.getTime()) return 'Yesterday'
+  const opts = { month: 'short', day: 'numeric' }
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
+  return d.toLocaleDateString([], opts)
+}
+
 export default function DirectMessageScreen({ conversation, otherUser, account, socket, onBack }) {
   const [messages, setMessages]   = useState([])
   const [input, setInput]         = useState('')
@@ -96,13 +143,28 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       <div className="dm-messages">
         {error && <p className="profile-error" style={{ margin: '12px 16px' }}>{error}</p>}
 
-        {messages.map(msg => {
-          const isMe = msg.sender_id === account?.id
+        {messages.map((msg, i) => {
+          const isMe    = msg.sender_id === account?.id
+          const prevMsg = messages[i - 1]
+          const nextMsg = messages[i + 1]
+          const isGrouped = prevMsg?.sender_id === msg.sender_id
+          const showTime  = !nextMsg || nextMsg.sender_id !== msg.sender_id
+          const dateLabel = !isSameDay(msg.created_at, prevMsg?.created_at) ? formatDateLabel(msg.created_at) : null
           return (
-            <div key={msg.id} className={`dm-bubble-wrap${isMe ? ' dm-bubble-wrap--me' : ''}`}>
-              <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
-                {msg.content}
+            <div key={msg.id ?? msg.localId ?? i}>
+              {dateLabel && (
+                <div className="date-sep">
+                  <span className="date-sep-label">{dateLabel}</span>
+                </div>
+              )}
+              <div className={`dm-bubble-wrap${isMe ? ' dm-bubble-wrap--me' : ''}${isGrouped ? ' dm-bubble-wrap--grouped' : ''}`}>
+                <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
+                  {msg.content}
+                </div>
               </div>
+              {showTime && msg.created_at && (
+                <div className={`dm-time${isMe ? ' dm-time--me' : ''}`}>{formatTime(msg.created_at)}</div>
+              )}
             </div>
           )
         })}

@@ -247,6 +247,53 @@ function messageKey(m) {
   return m.id
 }
 
+// ── Message time / date utilities (mirrors native src/lib/messageTime.ts) ─────
+
+function normalizePgTs(ts) {
+  return ts
+    .replace(' ', 'T')
+    .replace(/(\.\d{3})\d+/, '$1')
+    .replace(/([+-]\d{2})$/, '$1:00')
+}
+
+function tsToMs(ts) {
+  if (ts === undefined || ts === null || ts === '') return 0
+  if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts
+  const ms = new Date(normalizePgTs(ts)).getTime()
+  return isNaN(ms) ? 0 : ms
+}
+
+function startOfDay(d) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate())
+}
+
+function msgIsSameDay(ts1, ts2) {
+  if (!ts1 || !ts2) return true
+  return startOfDay(new Date(tsToMs(ts1))).getTime() ===
+         startOfDay(new Date(tsToMs(ts2))).getTime()
+}
+
+function formatMsgTime(ts) {
+  const ms = tsToMs(ts)
+  if (!ms) return ''
+  return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function formatMsgDateLabel(ts) {
+  const ms = tsToMs(ts)
+  if (!ms) return ''
+  const d   = new Date(ms)
+  const now = new Date()
+  const today     = startOfDay(now)
+  const yesterday = new Date(today.getTime() - 86_400_000)
+  const msgDay    = startOfDay(d)
+  if (msgDay.getTime() === today.getTime())     return 'Today'
+  if (msgDay.getTime() === yesterday.getTime()) return 'Yesterday'
+  const opts = { month: 'short', day: 'numeric' }
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
+  return d.toLocaleDateString([], opts)
+}
+
 const JOIN_TEMPLATES = [
   (n) => `👋 ${n} just landed`,
   (n) => `🔥 ${n} joined the vibe`,
@@ -2318,42 +2365,56 @@ export default function App() {
 
             const isMine = item.guestId === guest?.guestId
             const prevItem = feed[i - 1]
+            const nextItem = feed[i + 1]
             // group consecutive messages/images from the same sender
             const isGrouped = prevItem?.guestId === item.guestId && prevItem?.type !== 'activity'
+            // show time below the last bubble in a sender run
+            const showTime = !nextItem || nextItem.guestId !== item.guestId || !['text', 'image'].includes(nextItem.type ?? '')
+            // show date separator above first message of a new day
+            const dateLabel = !msgIsSameDay(item.createdAt, prevItem?.createdAt) ? formatMsgDateLabel(item.createdAt) : null
             const [c1, c2] = avatarColors(item.nickname)
 
             return (
-              <div
-                key={item.id}
-                className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate'].filter(Boolean).join(' ')}
-                style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
-              >
-                {!isMine && !isGrouped && (
-                  <div className="msg-meta">
-                    <span
-                      className="msg-avatar"
-                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                    >
-                      {(item.nickname ?? '?')[0].toUpperCase()}
-                    </span>
-                    <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
-                    {item.primaryBadge && <span className={`badge-pill badge-pill--${item.primaryBadge.key}`}>{item.primaryBadge.label}</span>}
-                    {item.contextBadge && <span className={`badge-pill badge-pill--${item.contextBadge.key}`}>{item.contextBadge.label}</span>}
-                    {item.vibe && VIBE_META[item.vibe] && (
-                      <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
-                    )}
+              <div key={item.id}>
+                {dateLabel && (
+                  <div className="date-sep">
+                    <span className="date-sep-label">{dateLabel}</span>
                   </div>
                 )}
-                <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
-                  {item.type === 'image' ? (
-                    <img
-                      src={item.imageUrl}
-                      className="msg-image"
-                      alt="shared image"
-                      onClick={() => setLightboxUrl(item.imageUrl)}
-                    />
-                  ) : (
-                    <span className="msg-content">{item.content}</span>
+                <div
+                  className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate'].filter(Boolean).join(' ')}
+                  style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
+                >
+                  {!isMine && !isGrouped && (
+                    <div className="msg-meta">
+                      <span
+                        className="msg-avatar"
+                        style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                      >
+                        {(item.nickname ?? '?')[0].toUpperCase()}
+                      </span>
+                      <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
+                      {item.primaryBadge && <span className={`badge-pill badge-pill--${item.primaryBadge.key}`}>{item.primaryBadge.label}</span>}
+                      {item.contextBadge && <span className={`badge-pill badge-pill--${item.contextBadge.key}`}>{item.contextBadge.label}</span>}
+                      {item.vibe && VIBE_META[item.vibe] && (
+                        <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
+                      )}
+                    </div>
+                  )}
+                  <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
+                    {item.type === 'image' ? (
+                      <img
+                        src={item.imageUrl}
+                        className="msg-image"
+                        alt="shared image"
+                        onClick={() => setLightboxUrl(item.imageUrl)}
+                      />
+                    ) : (
+                      <span className="msg-content">{item.content}</span>
+                    )}
+                  </div>
+                  {showTime && item.createdAt && (
+                    <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatMsgTime(item.createdAt)}</span>
                   )}
                 </div>
               </div>
