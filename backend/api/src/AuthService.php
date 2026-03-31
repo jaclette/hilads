@@ -225,6 +225,15 @@ class AuthService
             $fields['interests'] = json_encode(array_values($raw));
         }
 
+        if (array_key_exists('vibe', $body)) {
+            $allowed = ['party', 'board_games', 'coffee', 'music', 'food', 'chill'];
+            $vibe    = $body['vibe'];
+            if (!in_array($vibe, $allowed, true)) {
+                Response::json(['error' => 'Invalid vibe'], 422);
+            }
+            $fields['vibe'] = $vibe;
+        }
+
         return $fields;
     }
 
@@ -240,6 +249,7 @@ class AuthService
             'profile_photo_url' => $user['profile_photo_url'],
             'home_city'         => $user['home_city'],
             'interests'         => json_decode($user['interests'] ?? '[]', true),
+            'vibe'              => $user['vibe'] ?? 'chill',
             'primaryBadge'      => UserBadgeService::primaryForUser($user),
         ];
     }

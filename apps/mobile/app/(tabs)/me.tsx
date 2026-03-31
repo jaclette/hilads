@@ -31,6 +31,16 @@ import { deleteEvent } from '@/api/events';
 import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
 import type { HiladsEvent } from '@/types';
 
+// ── Vibes — matches backend AuthService allowed list ─────────────────────────
+const VIBES = [
+  { key: 'party',       emoji: '🔥', label: 'Party'       },
+  { key: 'board_games', emoji: '🎲', label: 'Board Games' },
+  { key: 'coffee',      emoji: '☕', label: 'Coffee'       },
+  { key: 'music',       emoji: '🎧', label: 'Music'        },
+  { key: 'food',        emoji: '🍜', label: 'Food'         },
+  { key: 'chill',       emoji: '🧘', label: 'Chill'        },
+] as const;
+
 // ── Interests — matches web ProfileScreen.jsx (20 items, subset of 24 backend allows)
 const INTERESTS = [
   'drinks', 'party', 'nightlife', 'music', 'live music',
@@ -76,6 +86,7 @@ export default function MeScreen() {
   const [displayName,        setDisplayName]        = useState(account?.display_name ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
+  const [selectedVibe,       setSelectedVibe]         = useState<string>(account?.vibe ?? 'chill');
   const [selectedInterests,  setSelectedInterests]   = useState<string[]>(account?.interests ?? []);
   const [pendingPhotoUri,    setPendingPhotoUri]      = useState<string | null>(null);
   const [localEvents,        setLocalEvents]          = useState<HiladsEvent[]>([]);
@@ -91,8 +102,9 @@ export default function MeScreen() {
     setDisplayName(account?.display_name ?? '');
     setHomeCity(account?.home_city ?? '');
     setAgeStr(account?.age != null ? String(account.age) : '');
+    setSelectedVibe(account?.vibe ?? 'chill');
     setSelectedInterests(account?.interests ?? []);
-  }, [account?.display_name, account?.home_city, account?.age, account?.interests]);
+  }, [account?.display_name, account?.home_city, account?.age, account?.vibe, account?.interests]);
 
   // Version tap easter egg
   const tapCount = useRef(0);
@@ -194,6 +206,7 @@ export default function MeScreen() {
         display_name:      displayName.trim(),
         home_city:         homeCity.trim() || null,
         interests:         selectedInterests,
+        vibe:              selectedVibe,
         profile_photo_url: photoUrl,
         ...(birthYear !== undefined ? { birth_year: birthYear } : {}),
       } as unknown as Parameters<typeof updateProfile>[0];
@@ -360,6 +373,28 @@ export default function MeScreen() {
                 keyboardType="number-pad"
                 maxLength={3}
               />
+            </View>
+
+            {/* MY VIBE */}
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>MY VIBE</Text>
+              <View style={styles.chipsWrap}>
+                {VIBES.map(v => {
+                  const active = selectedVibe === v.key;
+                  return (
+                    <TouchableOpacity
+                      key={v.key}
+                      style={[styles.vibeChip, active && styles.vibeChipActive]}
+                      onPress={() => setSelectedVibe(v.key)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.vibeChipText, active && styles.vibeChipTextActive]}>
+                        {v.emoji} {v.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
 
             {/* INTERESTS */}
@@ -693,6 +728,29 @@ const styles = StyleSheet.create({
   },
   chipTextSelected: {
     color:      Colors.white,
+    fontWeight: '700',
+  },
+
+  // ── Vibe chips — single-select, same layout as interest chips ─────────────
+  vibeChip: {
+    paddingHorizontal: 14,
+    paddingVertical:   9,
+    borderRadius:      Radius.full,
+    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.12)',
+  },
+  vibeChipActive: {
+    backgroundColor: 'rgba(255,122,60,0.18)',
+    borderColor:     Colors.accent,
+  },
+  vibeChipText: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    fontWeight: '500',
+  },
+  vibeChipTextActive: {
+    color:      Colors.text,
     fontWeight: '700',
   },
 

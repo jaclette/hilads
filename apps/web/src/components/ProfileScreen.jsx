@@ -15,6 +15,16 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
+// Must match AuthService allowed list on the backend
+const VIBES = [
+  { key: 'party',       emoji: '🔥', label: 'Party'       },
+  { key: 'board_games', emoji: '🎲', label: 'Board Games' },
+  { key: 'coffee',      emoji: '☕', label: 'Coffee'       },
+  { key: 'music',       emoji: '🎧', label: 'Music'        },
+  { key: 'food',        emoji: '🍜', label: 'Food'         },
+  { key: 'chill',       emoji: '🧘', label: 'Chill'        },
+]
+
 // Must match AuthService::ALLOWED_INTERESTS on the backend
 const INTERESTS = [
   'drinks', 'party', 'nightlife', 'music', 'live music',
@@ -28,6 +38,7 @@ export default function ProfileScreen({ account, myEvents, cityTimezone, onSave,
   const [name, setName]           = useState(account.display_name ?? '')
   const [homeCity, setHomeCity]   = useState(account.home_city ?? '')
   const [age, setAge]             = useState(account.age != null ? String(account.age) : '')
+  const [vibe, setVibe]           = useState(account.vibe ?? 'chill')
   const [interests, setInterests] = useState(new Set(account.interests ?? []))
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving]       = useState(false)
@@ -73,6 +84,7 @@ export default function ProfileScreen({ account, myEvents, cityTimezone, onSave,
         display_name:      trimmedName,
         home_city:         homeCity.trim() || null,
         interests:         [...interests],
+        vibe,
         profile_photo_url: photoUrl,
       }
       if (age !== '') {
@@ -186,6 +198,22 @@ export default function ProfileScreen({ account, myEvents, cityTimezone, onSave,
               max={100}
               placeholder="Your age"
             />
+          </div>
+
+          <div className="modal-field">
+            <label className="modal-label">My vibe</label>
+            <div className="vibe-grid">
+              {VIBES.map(v => (
+                <button
+                  key={v.key}
+                  type="button"
+                  className={`vibe-chip${vibe === v.key ? ' vibe-chip--on' : ''}`}
+                  onClick={() => setVibe(v.key)}
+                >
+                  {v.emoji} {v.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="modal-field">

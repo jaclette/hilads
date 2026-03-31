@@ -365,6 +365,7 @@ class Database
                 profile_photo_url TEXT,
                 home_city         TEXT,
                 interests         TEXT NOT NULL DEFAULT '[]',
+                vibe              TEXT NOT NULL DEFAULT 'chill',
                 guest_id          TEXT,
                 created_at        INTEGER NOT NULL,
                 updated_at        INTEGER NOT NULL
@@ -372,6 +373,8 @@ class Database
         ");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_users_email    ON users (lower(email))");
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_users_guest_id ON users (guest_id) WHERE guest_id IS NOT NULL");
+        // Add vibe to existing users tables (migration — safe no-op if column already exists).
+        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS vibe TEXT NOT NULL DEFAULT 'chill'");
 
         // ── Channels (cities + events + future subchannel types) ─────────────
         $pdo->exec("

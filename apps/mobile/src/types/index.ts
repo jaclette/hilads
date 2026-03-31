@@ -108,6 +108,8 @@ export interface OnlineUser {
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
+export type VibeKey = 'party' | 'board_games' | 'coffee' | 'music' | 'food' | 'chill';
+
 export interface User {
   id: string;
   email?: string;
@@ -116,6 +118,7 @@ export interface User {
   home_city?: string;
   interests?: string[];
   age?: number;
+  vibe?: VibeKey;
   guest_id?: string;
   primaryBadge?: Badge;
 }

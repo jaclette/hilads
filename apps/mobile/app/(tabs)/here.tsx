@@ -51,6 +51,36 @@ const hereBadgeStyles = StyleSheet.create({
   text: { fontSize: 10, fontWeight: '700' },
 });
 
+// ── Vibe Ambassador — deterministic assignment from userId hash ───────────────
+
+const VIBES = [
+  { key: 'party',      emoji: '🔥', label: 'Party Ambassador',      color: '#f97316', bg: 'rgba(249,115,22,0.12)',  border: 'rgba(249,115,22,0.25)'  },
+  { key: 'boardgames', emoji: '🎲', label: 'Board Games Ambassador', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.25)' },
+  { key: 'coffee',     emoji: '☕', label: 'Coffee Ambassador',      color: '#c4a882', bg: 'rgba(196,168,130,0.12)', border: 'rgba(196,168,130,0.25)' },
+  { key: 'music',      emoji: '🎧', label: 'Music Ambassador',       color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.25)'  },
+  { key: 'food',       emoji: '🍜', label: 'Food Ambassador',        color: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.25)'  },
+  { key: 'chill',      emoji: '🧘', label: 'Chill Ambassador',       color: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.25)'  },
+] as const;
+
+function getVibe(userId: string | undefined) {
+  if (!userId) return null;
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return VIBES[Math.abs(hash) % VIBES.length];
+}
+
+function VibePill({ userId }: { userId: string }) {
+  const vibe = getVibe(userId);
+  if (!vibe) return null;
+  return (
+    <View style={[hereBadgeStyles.pill, { backgroundColor: vibe.bg, borderColor: vibe.border }]}>
+      <Text style={[hereBadgeStyles.text, { color: vibe.color }]}>{vibe.emoji} {vibe.label}</Text>
+    </View>
+  );
+}
+
 // ── Avatar color — hash-based palette matching web ────────────────────────────
 
 const AVATAR_PALETTE = [
@@ -99,7 +129,7 @@ function UserRow({
         <View style={styles.liveDot} />
       </View>
 
-      {/* Name + badge */}
+      {/* Name + badges */}
       <View style={styles.rowInfo}>
         <View style={styles.nameRow}>
           <Text style={styles.nickname}>
@@ -107,17 +137,20 @@ function UserRow({
             {isMe ? <Text style={styles.youLabel}> (you)</Text> : ''}
           </Text>
         </View>
-        {isMe ? (
-          <View style={styles.liveNowBadge}>
-            <Text style={styles.liveNowText}>LIVE NOW</Text>
-          </View>
-        ) : user.primaryBadge ? (
-          <BadgePill badge={user.primaryBadge} />
-        ) : user.isRegistered ? (
-          <BadgePill badge={{ key: 'crew', label: '😎 Crew' }} />
-        ) : (
-          <BadgePill badge={{ key: 'ghost', label: '👻 Ghost' }} />
-        )}
+        <View style={styles.badgeRow}>
+          {isMe ? (
+            <View style={styles.liveNowBadge}>
+              <Text style={styles.liveNowText}>LIVE NOW</Text>
+            </View>
+          ) : user.primaryBadge ? (
+            <BadgePill badge={user.primaryBadge} />
+          ) : user.isRegistered ? (
+            <BadgePill badge={{ key: 'crew', label: '😎 Crew' }} />
+          ) : (
+            <BadgePill badge={{ key: 'ghost', label: '👻 Ghost' }} />
+          )}
+          {!isMe && user.userId && <VibePill userId={user.userId} />}
+        </View>
       </View>
 
       {/* DM button — registered non-self users only */}
@@ -329,6 +362,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems:    'center',
     flexWrap:      'wrap',
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    flexWrap:      'wrap',
+    gap:           4,
   },
   nickname:  { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
   youLabel:  { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '400' },

@@ -20,6 +20,7 @@ final class UserBadgeService
     // Threshold for "fresh" users: 60 days (roughly 2 months)
     private const FRESH_TTL = 60 * 24 * 3600;
 
+
     // ── Single-user resolution ─────────────────────────────────────────────────
 
     /**
@@ -121,7 +122,7 @@ final class UserBadgeService
      * Batch-check ambassador roles only (one query).
      * Used when we already have user data from a JOIN (presence list).
      *
-     * @return array [ userId => true ] for ambassadors only
+     * @return array [ userId => true ] for ambassador users only.
      */
     public static function ambassadorsForCity(array $userIds, int $cityChannelId): array
     {

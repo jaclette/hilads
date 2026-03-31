@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'add_role') {
         $cityId = trim($_POST['city_id'] ?? '');
-        $role   = trim($_POST['role'] ?? 'ambassador');
+        $role   = trim($_POST['role']    ?? 'ambassador');
 
         if ($cityId === '' || !in_array($role, ['ambassador'], true)) {
             flash_set('error', 'Invalid city or role.');
@@ -49,9 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         VALUES (?, ?, ?, ?)
                         ON CONFLICT (user_id, city_id, role) DO NOTHING
                     ")->execute([$id, $userId, $cityId, $role]);
-                    flash_set('success', 'Role added.');
+                    flash_set('success', 'Ambassador assigned.');
                 } catch (\Throwable $e) {
-                    flash_set('error', 'Could not add role: ' . $e->getMessage());
+                    flash_set('error', 'Could not assign role: ' . $e->getMessage());
                 }
             }
         }
@@ -125,7 +125,7 @@ admin_nav('/admin/users');
                         <?php foreach ($roles as $r): ?>
                             <tr>
                                 <td><?= htmlspecialchars($r['city_name'], ENT_QUOTES) ?></td>
-                                <td><span class="badge badge-ambassador">Ambassador</span></td>
+                                <td><span class="badge badge-ambassador">⭐ Host</span></td>
                                 <td style="color:#666; white-space:nowrap">
                                     <?= date('Y-m-d', strtotime($r['created_at'])) ?>
                                 </td>
@@ -175,7 +175,7 @@ admin_nav('/admin/users');
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Make Ambassador</button>
+                <button type="submit" class="btn btn-primary">Assign Ambassador</button>
             </div>
         </form>
     </div>
