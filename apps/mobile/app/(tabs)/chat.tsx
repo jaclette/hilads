@@ -30,7 +30,7 @@ import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { Colors, FontSizes, Spacing } from '@/constants';
-import { isSameDay, formatDateLabel } from '@/lib/messageTime';
+import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import type { Message } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
@@ -302,21 +302,22 @@ export default function ChatTab() {
     return w?.content ?? null;
   }, [messages]);
 
-  // Merge messages + synthesized event items; weather is excluded from the feed.
+  // Unified feed — weather excluded (shown in header only).
   //
-  // Inverted FlatList: index 0 = BOTTOM of screen (near input, first thing visible).
-  //                    high index = TOP of screen (user scrolls up to reach).
+  // Sorted newest-first for the inverted FlatList:
+  //   index 0 = bottom of screen (newest message, near input)
+  //   high index = top of screen (oldest, user scrolls up)
   //
-  // Desired render order (bottom → top on screen):
-  //   index 0,1,2…  events  → BOTTOM, near input, immediately visible on open
-  //   index n+1…    other   → social/join messages scroll upward
+  // Event items are synthesised with createdAt = Date.now() at load time.
+  // Sorting by timestamp places them naturally:
+  //   - historical messages (older) → high indices → top of screen
+  //   - event items (timestamp ≈ load time) → middle indices → bottom of history
+  //   - new outgoing/incoming messages (newer) → low indices → visual bottom
   //
-  // Array order: [...events, ...other]
+  // Nothing is pinned. Events scroll with the rest of the list.
   const allMessages = useMemo<Message[]>(() => {
-    const combined = [...messages, ...eventFeedItems];
-    const events  = combined.filter(m => m.type === 'event');
-    const other   = combined.filter(m => m.type !== 'event' && !(m.type === 'system' && m.event === 'weather'));
-    return [...events, ...other];
+    const chat = messages.filter(m => !(m.type === 'system' && m.event === 'weather'));
+    return [...chat, ...eventFeedItems].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
   }, [messages, eventFeedItems]);
 
   // No city yet — prompt to pick one
@@ -449,7 +450,9 @@ export default function ChatTab() {
                 !!olderMsg &&
                 olderMsg.guestId === item.guestId &&
                 olderMsg.type !== 'system' &&
-                item.type !== 'system';
+                olderMsg.type !== 'event' &&
+                item.type !== 'system' &&
+                item.type !== 'event';
               // showTime: last (newest) message in a sender run — newerMsg differs or absent
               const showTime =
                 item.type !== 'system' && item.type !== 'event' && (

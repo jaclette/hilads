@@ -66,8 +66,8 @@ export interface EventParticipant {
 // ── Badges ────────────────────────────────────────────────────────────────────
 
 export interface Badge {
-  key: 'ghost' | 'fresh' | 'crew' | 'local' | 'host';
-  label: string; // e.g. '😎 Crew'
+  key: 'ghost' | 'fresh' | 'regular' | 'local' | 'host';
+  label: string;
 }
 
 // ── Messages ──────────────────────────────────────────────────────────────────

@@ -22,17 +22,17 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 const BADGE_BG: Record<string, object> = {
   ghost: { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
   fresh: { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
-  crew:  { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  regular: { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
   local: { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
   host:  { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
 };
 const BADGE_COLOR: Record<string, string> = {
-  ghost: '#666', fresh: '#4ade80', crew: '#60a5fa', local: '#34d399', host: '#fbbf24',
+  ghost: '#666', fresh: '#4ade80', regular: '#60a5fa', local: '#34d399', host: '#fbbf24',
 };
 
 function BadgePill({ badge }: { badge: { key: string; label: string } }) {
-  const bg    = BADGE_BG[badge.key]    ?? BADGE_BG.crew;
-  const color = BADGE_COLOR[badge.key] ?? BADGE_COLOR.crew;
+  const bg    = BADGE_BG[badge.key]    ?? BADGE_BG.regular;
+  const color = BADGE_COLOR[badge.key] ?? BADGE_COLOR.regular;
   return (
     <View style={[hereBadgeStyles.pill, bg]}>
       <Text style={[hereBadgeStyles.text, { color }]}>{badge.label}</Text>
@@ -137,7 +137,7 @@ function UserRow({
           ) : user.primaryBadge ? (
             <BadgePill badge={user.primaryBadge} />
           ) : user.isRegistered ? (
-            <BadgePill badge={{ key: 'crew', label: '😎 Crew' }} />
+            <BadgePill badge={{ key: 'regular', label: 'Regular' }} />
           ) : (
             <BadgePill badge={{ key: 'ghost', label: '👻 Ghost' }} />
           )}

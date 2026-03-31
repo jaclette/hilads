@@ -67,6 +67,25 @@ function avatarBg(name: string): string {
   return AVATAR_BG[hash % AVATAR_BG.length];
 }
 
+// ── City flag — mirrors chat.tsx cityFlag() ───────────────────────────────────
+
+function cityFlag(countryCode?: string): string {
+  if (!countryCode || countryCode.length !== 2) return '';
+  return [...countryCode.toUpperCase()]
+    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
+    .join('');
+}
+
+// ── Badge microcopy — 1-line human description for each badge type ─────────────
+
+const BADGE_MICROCOPY: Record<string, string> = {
+  ghost: 'Just browsing 👀',
+  fresh: 'Just landed 👶',
+  regular: 'Shows up often',
+  local: 'Knows the city',
+  host:  'Makes it happen 🔥',
+};
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatDate(ts: number): string {
@@ -79,7 +98,7 @@ function formatDate(ts: number): string {
 
 export default function MeScreen() {
   const router  = useRouter();
-  const { identity, account, setAccount, logout } = useApp();
+  const { identity, account, setAccount, logout, city } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
   // ── Profile editing state — initialised from account
@@ -273,13 +292,32 @@ export default function MeScreen() {
             </TouchableOpacity>
 
             <Text style={styles.avatarName}>{account?.display_name ?? '—'}</Text>
+
+            {/* Badge + microcopy */}
             {account?.primaryBadge && (
-              <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
-                <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
-                  {account.primaryBadge.label}
+              <View style={styles.badgeBlock}>
+                <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
+                  <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
+                    {account.primaryBadge.label}
+                  </Text>
+                </View>
+                {BADGE_MICROCOPY[account.primaryBadge.key] && (
+                  <Text style={styles.badgeMicrocopy}>
+                    {BADGE_MICROCOPY[account.primaryBadge.key]}
+                  </Text>
+                )}
+              </View>
+            )}
+
+            {/* Current city */}
+            {city && (
+              <View style={styles.cityPill}>
+                <Text style={styles.cityPillText}>
+                  {cityFlag(city.country)}{cityFlag(city.country) ? ' ' : ''}{city.name}
                 </Text>
               </View>
             )}
+
             {account?.email ? (
               <Text style={styles.avatarEmail}>{account.email}</Text>
             ) : null}
@@ -294,8 +332,11 @@ export default function MeScreen() {
                 <Text style={styles.avatarInitials}>{initials}</Text>
               </View>
               <Text style={styles.avatarName}>{identity?.nickname ?? '—'}</Text>
-              <View style={[styles.memberBadge, meBadgeBg('ghost')]}>
-                <Text style={[styles.memberBadgeText, meBadgeColor('ghost')]}>👻 Ghost</Text>
+              <View style={styles.badgeBlock}>
+                <View style={[styles.memberBadge, meBadgeBg('ghost')]}>
+                  <Text style={[styles.memberBadgeText, meBadgeColor('ghost')]}>👻 Ghost</Text>
+                </View>
+                <Text style={styles.badgeMicrocopy}>{BADGE_MICROCOPY.ghost}</Text>
               </View>
               <Text style={styles.accountType}>Guest session</Text>
             </View>
@@ -531,16 +572,16 @@ export default function MeScreen() {
 const ME_BADGE_BG: Record<string, object> = {
   ghost: { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
   fresh: { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
-  crew:  { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  regular: { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
   local: { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
   host:  { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
 };
 const ME_BADGE_COLOR: Record<string, object> = {
   ghost: { color: '#666' }, fresh: { color: '#4ade80' },
-  crew:  { color: '#60a5fa' }, local: { color: '#34d399' }, host: { color: '#fbbf24' },
+  regular: { color: '#60a5fa' }, local: { color: '#34d399' }, host: { color: '#fbbf24' },
 };
-function meBadgeBg(key: string): object   { return ME_BADGE_BG[key]    ?? ME_BADGE_BG.crew; }
-function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BADGE_COLOR.crew; }
+function meBadgeBg(key: string): object   { return ME_BADGE_BG[key]    ?? ME_BADGE_BG.regular; }
+function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BADGE_COLOR.regular; }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
@@ -652,6 +693,34 @@ const styles = StyleSheet.create({
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
     letterSpacing: 0.3,
+  },
+
+  // ── Badge block: pill + microcopy stacked ─────────────────────────────────
+  badgeBlock: {
+    alignItems: 'center',
+    gap:        4,
+  },
+  badgeMicrocopy: {
+    fontSize:  FontSizes.xs,
+    color:     Colors.muted2,
+    textAlign: 'center',
+  },
+
+  // ── City pill — current Hilads city ──────────────────────────────────────
+  cityPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 12,
+    paddingVertical:   5,
+    borderRadius:      Radius.full,
+    backgroundColor:   'rgba(255,255,255,0.05)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.09)',
+  },
+  cityPillText: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    fontWeight: '500',
   },
 
   // ── Fields card — web: .profile-form ──────────────────────────────────────

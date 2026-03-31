@@ -268,6 +268,12 @@ export async function fetchPublicProfile(userId) {
   return res.json() // { user }
 }
 
+export async function fetchUserEvents(userId) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/events`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch user events')
+  return res.json() // { events }
+}
+
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
 
 export async function fetchMyEvents(guestId) {

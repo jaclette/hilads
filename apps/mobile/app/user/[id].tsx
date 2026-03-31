@@ -25,22 +25,22 @@ import type { User, HiladsEvent } from '@/types';
 const PROFILE_BADGE_BG: Record<string, object> = {
   ghost: { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
   fresh: { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
-  crew:  { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  regular: { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
   local: { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
   host:  { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
 };
 const PROFILE_BADGE_COLOR: Record<string, object> = {
   ghost: { color: '#666' },
   fresh: { color: '#4ade80' },
-  crew:  { color: '#60a5fa' },
+  regular: { color: '#60a5fa' },
   local: { color: '#34d399' },
   host:  { color: '#fbbf24' },
 };
 function profileBadgeBg(key: string): object {
-  return PROFILE_BADGE_BG[key] ?? PROFILE_BADGE_BG.crew;
+  return PROFILE_BADGE_BG[key] ?? PROFILE_BADGE_BG.regular;
 }
 function profileBadgeColor(key: string): object {
-  return PROFILE_BADGE_COLOR[key] ?? PROFILE_BADGE_COLOR.crew;
+  return PROFILE_BADGE_COLOR[key] ?? PROFILE_BADGE_COLOR.regular;
 }
 
 // ── Avatar gradient palette — mirrors web PublicProfileScreen.jsx ─────────────

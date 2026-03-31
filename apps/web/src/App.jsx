@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
@@ -1228,13 +1228,21 @@ export default function App() {
 
     stopTyping()
     setUploading(true)
+    const localId = `local-img-${Date.now()}`
     try {
       const { url } = await uploadImage(file)
       const msg = activeEventIdRef.current
         ? await sendEventImageMessage(activeEventIdRef.current, guest.guestId, activeNickname, url)
         : await sendImageMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, url)
+      // Reconcile: WS may have already inserted the server message while we were uploading.
+      // If so, just add the server ID to knownIds (dedup future echoes) — no feed append needed.
+      // If not, append now. localId placeholder was never inserted for images (upload takes time),
+      // so there is nothing to replace — just guard against the WS-wins race.
       knownIdsRef.current.add(msg.id)
-      setFeed((prev) => [...prev, { ...msg }])
+      setFeed((prev) => {
+        if (prev.some(f => f.id === msg.id)) return prev   // WS already inserted it
+        return [...prev, { ...msg }]
+      })
     } catch (err) {
       console.error('[send-image] failed:', err)
       setSendError("Couldn't send image. Please try again.")
@@ -1249,6 +1257,22 @@ export default function App() {
     const content = input.trim()
     if (!content || sending) return
     stopTyping()
+
+    // Optimistic insert — message appears instantly without waiting for HTTP.
+    // Uses a local placeholder ID so the WS echo can be reconciled correctly.
+    const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+    const optimistic = {
+      type:      'message',
+      id:        localId,
+      localId,
+      guestId:   guest?.guestId,
+      nickname:  activeNickname,
+      content:   content.trim(),
+      createdAt: Date.now() / 1000,
+    }
+    setFeed(prev => [...prev, optimistic])
+    setInput('')
+
     setSending(true)
     try {
       let msg
@@ -1257,14 +1281,30 @@ export default function App() {
       } else {
         msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content)
       }
+
+      // Add server ID to knownIds so future WS echoes are skipped.
       knownIdsRef.current.add(msg.id)
-      setFeed((prev) => [...prev, { type: 'message', ...msg }])
-      setInput('')
+
+      // Reconcile the optimistic placeholder with the confirmed server message.
+      // Two cases:
+      //   WS arrived first → server message already in feed; just remove the placeholder.
+      //   HTTP arrived first → replace placeholder with server-confirmed message.
+      setFeed(prev => {
+        if (prev.some(f => f.id === msg.id)) {
+          // WS beat HTTP — server message is already present; drop the placeholder only.
+          return prev.filter(f => f.id !== localId)
+        }
+        // HTTP beat WS — swap placeholder for server message.
+        return prev.map(f => f.id === localId ? { type: 'message', ...msg } : f)
+      })
+
       if (!activeEventIdRef.current && !installPrompt.feedPromptSeen) {
         setTimeout(() => injectFeedInstallMessage(), 300)
       }
     } catch (err) {
       console.error('[send] failed:', err)
+      // Remove the optimistic placeholder so the user can retry cleanly.
+      setFeed(prev => prev.filter(f => f.id !== localId))
       setSendError("Couldn't send message. Please try again.")
       setTimeout(() => setSendError(null), 4000)
     } finally {
@@ -2386,7 +2426,11 @@ export default function App() {
                   style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
                 >
                   {!isMine && !isGrouped && (
-                    <div className="msg-meta">
+                    <div
+                      className={`msg-meta${item.userId ? ' msg-meta--tappable' : ''}`}
+                      onClick={item.userId ? () => setViewingProfile({ userId: item.userId, nickname: item.nickname }) : undefined}
+                      title={item.userId ? `View ${item.nickname}'s profile` : undefined}
+                    >
                       <span
                         className="msg-avatar"
                         style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
@@ -2770,7 +2814,7 @@ export default function App() {
                         : user.primaryBadge
                           ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
                           : user.isRegistered
-                            ? <span className="badge-pill badge-pill--crew">😎 Crew</span>
+                            ? <span className="badge-pill badge-pill--regular">Regular</span>
                             : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
                       }
                       {!user.isMe && user.vibe && VIBE_META[user.vibe] && (
@@ -2820,10 +2864,22 @@ export default function App() {
         />
       )}
 
-      {showPeopleDrawer && viewingProfile && (
+      {viewingProfile && (
         <PublicProfileScreen
           userId={viewingProfile.userId}
+          cityName={city}
+          cityCountry={cityCountry}
+          account={account}
           onBack={() => setViewingProfile(null)}
+          onSendDm={account ? async (targetUserId) => {
+            try {
+              const { conversation, otherUser } = await createOrGetDirectConversation(targetUserId)
+              setViewingProfile(null)
+              setShowPeopleDrawer(false)
+              setShowConversations(true)
+              setActiveDm({ conversation, otherUser })
+            } catch { /* silent */ }
+          } : null}
         />
       )}
 

@@ -19,7 +19,7 @@ function normalizePostgresTimestamp(ts: string): string {
     .replace(/([+-]\d{2})$/, '$1:00'); // "+00" suffix → "+00:00"
 }
 
-function toMs(ts: number | string | undefined): number {
+export function toMs(ts: number | string | undefined): number {
   if (ts === undefined || ts === null || ts === '') return 0;
   if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts;
   const ms = new Date(normalizePostgresTimestamp(ts)).getTime();

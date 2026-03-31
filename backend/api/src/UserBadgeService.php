@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Primary badge   (always one):
  *   ghost  👻 Ghost  — anonymous guest session (no registered account)
  *   fresh  ✨ Fresh  — registered user, account < 60 days old
- *   crew   😎 Crew   — registered user, account ≥ 60 days old
+ *   regular  Regular  — registered user, account ≥ 60 days old
  *
  * Context badge   (at most one, city-specific):
  *   host   ⭐ Host   — ambassador role for this city  (priority)
@@ -169,6 +169,6 @@ final class UserBadgeService
             return ['key' => 'fresh', 'label' => '✨ Fresh'];
         }
 
-        return ['key' => 'crew', 'label' => '😎 Crew'];
+        return ['key' => 'regular', 'label' => 'Regular'];
     }
 }

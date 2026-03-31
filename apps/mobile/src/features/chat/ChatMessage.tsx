@@ -158,13 +158,13 @@ function DateSeparator({ label }: { label: string }) {
 const BADGE_CONFIG: Record<string, { bg: string; color: string }> = {
   ghost: { bg: 'rgba(255,255,255,0.06)', color: '#666' },
   fresh: { bg: 'rgba(74,222,128,0.12)',  color: '#4ade80' },
-  crew:  { bg: 'rgba(96,165,250,0.12)',  color: '#60a5fa' },
+  regular: { bg: 'rgba(96,165,250,0.12)',  color: '#60a5fa' },
   local: { bg: 'rgba(52,211,153,0.12)',  color: '#34d399' },
   host:  { bg: 'rgba(251,191,36,0.15)',  color: '#fbbf24' },
 };
 
 function BadgePill({ badge }: { badge: { key: string; label: string } }) {
-  const cfg = BADGE_CONFIG[badge.key] ?? BADGE_CONFIG.crew;
+  const cfg = BADGE_CONFIG[badge.key] ?? BADGE_CONFIG.regular;
   return (
     <View style={[badgeStyles.pill, { backgroundColor: cfg.bg }]}>
       <Text style={[badgeStyles.text, { color: cfg.color }]}>{badge.label}</Text>
