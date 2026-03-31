@@ -395,7 +395,17 @@ function getSearchCityTargets(channels, query, limit = 12) {
 // Vite HMR fast-refresh (where the module is preserved, not reloaded).
 const PAGE_SESSION_ID = crypto.randomUUID()
 
-const IDENTITY_KEY = 'hilads_identity'
+const IDENTITY_KEY  = 'hilads_identity'
+const GUEST_ID_KEY  = 'hilads_guest_id'
+
+function saveGuestId(id) {
+  localStorage.setItem(GUEST_ID_KEY, id)
+}
+
+function loadGuestId() {
+  const id = localStorage.getItem(GUEST_ID_KEY)
+  return (id && /^[a-f0-9]{32}$/.test(id)) ? id : null
+}
 
 function saveIdentity(nickname, channelId, city, timezone = null) {
   localStorage.setItem(IDENTITY_KEY, JSON.stringify({ nickname, channelId, city, timezone }))
@@ -1066,7 +1076,11 @@ export default function App() {
         return
       }
       if (rejoinData?.city) setCity(rejoinData.city)
-      const session = await createGuestSession(name)
+      const savedGuestId = loadGuestId()
+      const session = savedGuestId
+        ? { guestId: savedGuestId, nickname: name }
+        : await createGuestSession(name)
+      if (!savedGuestId) saveGuestId(session.guestId)
       setGuest(session)
       setChannelId(location.channelId)
       setCityTimezone(location.timezone ?? 'UTC')
