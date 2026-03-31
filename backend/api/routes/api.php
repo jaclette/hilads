@@ -944,11 +944,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             $t = $msg['type'] ?? 'text';
             if ($t === 'text' || $t === 'image') {
                 if (!empty($msg['userId']) && isset($badgeMap[$msg['userId']])) {
-                    $msg['primaryBadge'] = $badgeMap[$msg['userId']]['primaryBadge'];
-                    $msg['contextBadge'] = $badgeMap[$msg['userId']]['contextBadge'];
+                    $entry = $badgeMap[$msg['userId']];
+                    $msg['primaryBadge'] = $entry['primaryBadge'];
+                    $msg['contextBadge'] = $entry['contextBadge'];
+                    $msg['vibe']         = $entry['vibe'] ?? 'chill';
                 } else {
                     $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge'] = null;
+                    $msg['vibe']         = null;
                 }
             }
         }
@@ -978,8 +981,9 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                 } else {
                     $u['contextBadge'] = null;
                 }
+                $u['vibe'] = $u['userVibe'] ?? 'chill';
             }
-            unset($u['userCreatedAt'], $u['userHomeCity']);
+            unset($u['userCreatedAt'], $u['userHomeCity'], $u['userVibe']);
         }
         unset($u);
         // ─────────────────────────────────────────────────────────────────────

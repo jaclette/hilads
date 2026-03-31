@@ -77,7 +77,8 @@ class PresenceRepository
                 p.nickname,
                 u.id         AS \"userId\",
                 u.created_at AS \"userCreatedAt\",
-                u.home_city  AS \"userHomeCity\"
+                u.home_city  AS \"userHomeCity\",
+                u.vibe       AS \"userVibe\"
             FROM presence p
             LEFT JOIN users u ON u.guest_id = p.guest_id
             WHERE p.channel_id   = ?

@@ -88,6 +88,7 @@ export interface Message {
   eventId?: string;               // for type === 'event' synthetic feed items
   primaryBadge?: Badge;           // identity badge (ghost/fresh/crew)
   contextBadge?: Badge | null;    // city-specific badge (host/local)
+  vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
   // Optimistic send state — absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
   status?: 'sending' | 'failed'; // undefined = confirmed
@@ -104,6 +105,7 @@ export interface OnlineUser {
   isRegistered: boolean;
   primaryBadge?: Badge;
   contextBadge?: Badge | null;
+  vibe?: string;
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────

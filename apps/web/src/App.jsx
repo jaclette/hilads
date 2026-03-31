@@ -231,24 +231,15 @@ function typingText(users, mySessionId) {
   return 'Several people are typing…'
 }
 
-// ── Vibe Ambassador — deterministic assignment from userId hash ───────────────
+// ── Vibe display ──────────────────────────────────────────────────────────────
 
-const VIBES = [
-  { key: 'party',      emoji: '🔥', label: 'Party Ambassador',      color: '#f97316' },
-  { key: 'boardgames', emoji: '🎲', label: 'Board Games Ambassador', color: '#a78bfa' },
-  { key: 'coffee',     emoji: '☕', label: 'Coffee Ambassador',      color: '#c4a882' },
-  { key: 'music',      emoji: '🎧', label: 'Music Ambassador',       color: '#60a5fa' },
-  { key: 'food',       emoji: '🍜', label: 'Food Ambassador',        color: '#fbbf24' },
-  { key: 'chill',      emoji: '🧘', label: 'Chill Ambassador',       color: '#34d399' },
-]
-
-function getVibe(userId) {
-  if (!userId) return null
-  let hash = 0
-  for (let i = 0; i < userId.length; i++) {
-    hash = userId.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  return VIBES[Math.abs(hash) % VIBES.length]
+const VIBE_META = {
+  party:       { emoji: '🔥', label: 'Party' },
+  board_games: { emoji: '🎲', label: 'Board Games' },
+  coffee:      { emoji: '☕', label: 'Coffee' },
+  music:       { emoji: '🎧', label: 'Music' },
+  food:        { emoji: '🍜', label: 'Food' },
+  chill:       { emoji: '🧘', label: 'Chill' },
 }
 
 function messageKey(m) {
@@ -2348,6 +2339,9 @@ export default function App() {
                     <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                     {item.primaryBadge && <span className={`badge-pill badge-pill--${item.primaryBadge.key}`}>{item.primaryBadge.label}</span>}
                     {item.contextBadge && <span className={`badge-pill badge-pill--${item.contextBadge.key}`}>{item.contextBadge.label}</span>}
+                    {item.vibe && VIBE_META[item.vibe] && (
+                      <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
+                    )}
                   </div>
                 )}
                 <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
@@ -2718,12 +2712,9 @@ export default function App() {
                             ? <span className="badge-pill badge-pill--crew">😎 Crew</span>
                             : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
                       }
-                      {!user.isMe && (() => {
-                        const vibe = getVibe(user.userId)
-                        return vibe ? (
-                          <span className="vibe-badge" style={{ color: vibe.color }}>{vibe.emoji} {vibe.label}</span>
-                        ) : null
-                      })()}
+                      {!user.isMe && user.vibe && VIBE_META[user.vibe] && (
+                        <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
+                      )}
                     </div>
                   </div>
                   {!user.isMe && user.isRegistered && (

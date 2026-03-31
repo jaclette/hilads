@@ -184,9 +184,15 @@ const badgeStyles = StyleSheet.create({
   },
 });
 
+// ── Vibe emoji lookup ─────────────────────────────────────────────────────────
+
+const VIBE_EMOJI: Record<string, string> = {
+  party: '🔥', board_games: '🎲', coffee: '☕', music: '🎧', food: '🍜', chill: '🧘',
+};
+
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
-function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge }: {
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe }: {
   nickname:     string;
   color:        string;
   initial:      string;
@@ -194,6 +200,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   guestId?:     string;
   primaryBadge?: Badge;
   contextBadge?: Badge | null;
+  vibe?:         string;
 }) {
   const router = useRouter();
   const navId  = userId ?? guestId;   // prefer resolved userId, fall back to guestId
@@ -206,6 +213,9 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       <Text style={[styles.author, { color }]}>{nickname}</Text>
       {primaryBadge && <BadgePill badge={primaryBadge} />}
       {contextBadge && <BadgePill badge={contextBadge} />}
+      {vibe && VIBE_EMOJI[vibe] && (
+        <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
+      )}
     </>
   );
 
@@ -287,6 +297,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               guestId={message.guestId}
               primaryBadge={message.primaryBadge}
               contextBadge={message.contextBadge}
+              vibe={message.vibe}
             />
           )}
           <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
@@ -344,6 +355,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             guestId={message.guestId}
             primaryBadge={message.primaryBadge}
             contextBadge={message.contextBadge}
+            vibe={message.vibe}
           />
         )}
 
@@ -477,7 +489,8 @@ const styles = StyleSheet.create({
   avatarLetter: { color: '#fff', fontSize: 13, fontWeight: '700' },
 
   // ── .msg-author ───────────────────────────────────────────────────────────
-  author: { fontSize: 13, fontWeight: '700', opacity: 0.9 },
+  author:    { fontSize: 13, fontWeight: '700', opacity: 0.9 },
+  vibeLabel: { fontSize: 13, opacity: 0.55 },
 
   // Grouped indent: 34px avatar + 8px gap
   groupedOffset: { paddingLeft: 42 },

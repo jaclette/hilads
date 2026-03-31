@@ -51,32 +51,24 @@ const hereBadgeStyles = StyleSheet.create({
   text: { fontSize: 10, fontWeight: '700' },
 });
 
-// ── Vibe Ambassador — deterministic assignment from userId hash ───────────────
+// ── Vibe display ──────────────────────────────────────────────────────────────
 
-const VIBES = [
-  { key: 'party',      emoji: '🔥', label: 'Party Ambassador',      color: '#f97316', bg: 'rgba(249,115,22,0.12)',  border: 'rgba(249,115,22,0.25)'  },
-  { key: 'boardgames', emoji: '🎲', label: 'Board Games Ambassador', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.25)' },
-  { key: 'coffee',     emoji: '☕', label: 'Coffee Ambassador',      color: '#c4a882', bg: 'rgba(196,168,130,0.12)', border: 'rgba(196,168,130,0.25)' },
-  { key: 'music',      emoji: '🎧', label: 'Music Ambassador',       color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.25)'  },
-  { key: 'food',       emoji: '🍜', label: 'Food Ambassador',        color: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.25)'  },
-  { key: 'chill',      emoji: '🧘', label: 'Chill Ambassador',       color: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.25)'  },
-] as const;
+const VIBE_META: Record<string, { emoji: string; label: string; color: string; bg: string; border: string }> = {
+  party:       { emoji: '🔥', label: 'Party',       color: '#f97316', bg: 'rgba(249,115,22,0.12)',  border: 'rgba(249,115,22,0.25)'  },
+  board_games: { emoji: '🎲', label: 'Board Games', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.25)' },
+  coffee:      { emoji: '☕', label: 'Coffee',      color: '#c4a882', bg: 'rgba(196,168,130,0.12)', border: 'rgba(196,168,130,0.25)' },
+  music:       { emoji: '🎧', label: 'Music',       color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.25)'  },
+  food:        { emoji: '🍜', label: 'Food',        color: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  border: 'rgba(251,191,36,0.25)'  },
+  chill:       { emoji: '🧘', label: 'Chill',       color: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.25)'  },
+};
 
-function getVibe(userId: string | undefined) {
-  if (!userId) return null;
-  let hash = 0;
-  for (let i = 0; i < userId.length; i++) {
-    hash = userId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return VIBES[Math.abs(hash) % VIBES.length];
-}
-
-function VibePill({ userId }: { userId: string }) {
-  const vibe = getVibe(userId);
+function VibePill({ vibe }: { vibe?: string }) {
   if (!vibe) return null;
+  const meta = VIBE_META[vibe];
+  if (!meta) return null;
   return (
-    <View style={[hereBadgeStyles.pill, { backgroundColor: vibe.bg, borderColor: vibe.border }]}>
-      <Text style={[hereBadgeStyles.text, { color: vibe.color }]}>{vibe.emoji} {vibe.label}</Text>
+    <View style={[hereBadgeStyles.pill, { backgroundColor: meta.bg, borderColor: meta.border }]}>
+      <Text style={[hereBadgeStyles.text, { color: meta.color, opacity: 0.85 }]}>{meta.emoji} {meta.label}</Text>
     </View>
   );
 }
@@ -149,7 +141,7 @@ function UserRow({
           ) : (
             <BadgePill badge={{ key: 'ghost', label: '👻 Ghost' }} />
           )}
-          {!isMe && user.userId && <VibePill userId={user.userId} />}
+          {!isMe && user.vibe && <VibePill vibe={user.vibe} />}
         </View>
       </View>
 

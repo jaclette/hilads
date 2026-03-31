@@ -1986,6 +1986,12 @@ html, body, #root {
   white-space: nowrap;
 }
 
+.msg-vibe {
+  font-size: 0.85rem;
+  opacity: 0.5;
+  margin-left: 2px;
+}
+
 .people-drawer-name {
   font-size: 1.04rem;
   font-weight: 700;

@@ -76,9 +76,9 @@ final class UserBadgeService
         $channelKey = 'city_' . $cityChannelId;
         $in         = implode(',', array_fill(0, count($userIds), '?'));
 
-        // 1 query: fetch created_at + home_city for all senders
+        // 1 query: fetch created_at + home_city + vibe for all senders
         $stmt = Database::pdo()->prepare(
-            "SELECT id, created_at, home_city FROM users WHERE id IN ($in)"
+            "SELECT id, created_at, home_city, vibe FROM users WHERE id IN ($in)"
         );
         $stmt->execute($userIds);
         $userRows = [];
@@ -112,7 +112,11 @@ final class UserBadgeService
                 }
             }
 
-            $result[$userId] = ['primaryBadge' => $primary, 'contextBadge' => $context];
+            $result[$userId] = [
+                'primaryBadge' => $primary,
+                'contextBadge' => $context,
+                'vibe'         => $u['vibe'] ?? 'chill',
+            ];
         }
 
         return $result;
