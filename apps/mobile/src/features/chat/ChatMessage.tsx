@@ -257,13 +257,25 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   if (message.type === 'system') {
     const text = systemText(message);
     const time = message.createdAt ? formatTime(message.createdAt) : null;
+    // Only join messages carry user identity — other system events (weather, etc.) are not tappable.
+    const navId = message.event === 'join' ? (message.userId ?? message.guestId ?? null) : null;
+    const pill = (
+      <Animated.View style={[styles.systemRow, animStyle]}>
+        <Text style={styles.systemText}>{text}</Text>
+        {time ? <Text style={styles.systemTime}>{time}</Text> : null}
+      </Animated.View>
+    );
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}
-        <Animated.View style={[styles.systemRow, animStyle]}>
-          <Text style={styles.systemText}>{text}</Text>
-          {time ? <Text style={styles.systemTime}>{time}</Text> : null}
-        </Animated.View>
+        {navId ? (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.push({ pathname: '/user/[id]', params: { id: navId } })}
+          >
+            {pill}
+          </TouchableOpacity>
+        ) : pill}
       </>
     );
   }

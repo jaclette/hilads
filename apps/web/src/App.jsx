@@ -312,7 +312,7 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
       lastJoinAtRef.current = now
     }
     const tpl = JOIN_TEMPLATES[Math.floor(Math.random() * JOIN_TEMPLATES.length)]
-    return { type: 'activity', subtype: 'join', id: messageKey(m), text: tpl(m.nickname), createdAt: m.createdAt }
+    return { type: 'activity', subtype: 'join', id: messageKey(m), text: tpl(m.nickname), createdAt: m.createdAt, nickname: m.nickname, userId: m.userId ?? null, guestId: m.guestId ?? null }
   }
   // Weather system messages have no nickname/id — render as a subtle activity line.
   if (m.type === 'system' && m.event === 'weather') {
@@ -2384,12 +2384,14 @@ export default function App() {
           {feed.map((item, i) => {
             if (item.type === 'activity') {
               if (item.subtype === 'weather') return null
+              const navId = item.subtype === 'join' ? (item.userId ?? item.guestId ?? null) : null
               return (
                 <div
                   key={item.id}
                   className={item.subtype === 'join'
-                    ? `feed-join${fadingIds.has(item.id) ? ' feed-join--exit' : ''}`
+                    ? `feed-join${fadingIds.has(item.id) ? ' feed-join--exit' : ''}${navId ? ' feed-join--clickable' : ''}`
                     : 'feed-activity'}
+                  onClick={navId ? () => setViewingProfile({ userId: navId, nickname: item.nickname ?? '' }) : undefined}
                 >
                   {item.text}
                   {item.createdAt && <span className="feed-join-time">{formatMsgTime(item.createdAt)}</span>}
