@@ -22,6 +22,9 @@ const TYPE_ICONS = {
   event_message: '🔥',
   event_join:    '👥',
   new_event:     '🔥',
+  channel_message: '💬',
+  city_join:     '👋',
+  friend_added:  '👋',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────
@@ -185,6 +188,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
             <Toggle
               checked={prefs?.new_event_push ?? false}
               onChange={v => handleTogglePref('new_event_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
+              <span className="notif-pref-name">Friend requests</span>
+              <span className="notif-pref-desc">When someone adds you as a friend</span>
+            </div>
+            <Toggle
+              checked={prefs?.friend_added_push ?? true}
+              onChange={v => handleTogglePref('friend_added_push', v)}
               disabled={prefsSaving || !prefs}
             />
           </div>

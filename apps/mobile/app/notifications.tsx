@@ -55,6 +55,7 @@ function NotifIcon({ type, unread }: { type: Notification['type']; unread: boole
     type === 'new_event'       ? 'zap'             :
     type === 'channel_message' ? 'hash'            :
     type === 'city_join'       ? 'user-plus'       :
+    type === 'friend_added'    ? 'user-plus'       :
     /* fallback */               'bell';
 
   const color = unread ? Colors.white : Colors.muted;
@@ -153,6 +154,7 @@ export default function NotificationsScreen() {
     new_event_push:       false,
     channel_message_push: false,
     city_join_push:       false,
+    friend_added_push:    true,
   });
 
   // ── Load notifications + preferences ─────────────────────────────────────
@@ -230,6 +232,8 @@ export default function NotificationsScreen() {
       router.push(`/event/${notif.data.eventId}` as never);
     } else if (notif.type === 'channel_message' || notif.type === 'city_join') {
       router.push('/(tabs)/chat' as never);
+    } else if (notif.type === 'friend_added' && notif.data?.senderUserId) {
+      router.push(`/user/${notif.data.senderUserId}` as never);
     }
   }, [router, setUnreadNotifications]);
 
@@ -327,6 +331,13 @@ export default function NotificationsScreen() {
               subtitle="When a registered user joins the city channel you're in"
               value={prefs.city_join_push}
               onChange={v => togglePref('city_join_push', v)}
+            />
+            <View style={styles.prefDivider} />
+            <PrefRow
+              label="Friend requests"
+              subtitle="When someone adds you as a friend"
+              value={prefs.friend_added_push}
+              onChange={v => togglePref('friend_added_push', v)}
             />
           </View>
         </View>

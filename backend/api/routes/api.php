@@ -566,13 +566,38 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
         Response::json(['error' => 'Cannot add yourself as a friend'], 400);
     }
 
-    if (UserRepository::findById($targetId) === null) {
+    $target = UserRepository::findById($targetId);
+    if ($target === null) {
         Response::json(['error' => 'User not found'], 404);
     }
+
+    // Check if already friends so we don't re-send a notification on duplicate adds
+    $alreadyFriend = (bool) Database::pdo()
+        ->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?")
+        ->execute([$viewer['id'], $targetId])
+        ?: false;
+    $checkStmt = Database::pdo()->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?");
+    $checkStmt->execute([$viewer['id'], $targetId]);
+    $alreadyFriend = (bool) $checkStmt->fetchColumn();
 
     Database::pdo()
         ->prepare("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
         ->execute([$viewer['id'], $targetId]);
+
+    // Notify the target user — only on first add, not on duplicate requests
+    if (!$alreadyFriend) {
+        $senderName = $viewer['display_name'] ?? 'Someone';
+        NotificationRepository::create(
+            $targetId,
+            'friend_added',
+            "{$senderName} added you as a friend 👋",
+            null,
+            [
+                'senderUserId' => $viewer['id'],
+                'senderName'   => $senderName,
+            ]
+        );
+    }
 
     Response::json(['ok' => true]);
 });

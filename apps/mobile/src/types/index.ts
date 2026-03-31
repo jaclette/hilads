@@ -167,7 +167,7 @@ export interface DmMessage {
 
 export interface Notification {
   id: number;
-  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event';
+  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event' | 'channel_message' | 'city_join' | 'friend_added';
   title: string;
   body: string;
   data: {
@@ -175,6 +175,7 @@ export interface Notification {
     eventId?: string;
     channelId?: string;
     senderName?: string;
+    senderUserId?: string;
   };
   is_read: boolean;
   created_at: string;

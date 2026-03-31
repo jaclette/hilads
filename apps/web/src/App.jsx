@@ -757,6 +757,11 @@ export default function App() {
         const ev  = events.find(e => e.id === eid) ?? cityEvents.find(e => e.id === eid)
         if (ev) handleSelectEvent(ev)
         else    setShowEventDrawer(true)
+        return
+      }
+      const userMatch = path.match(/^\/user\/([a-f0-9-]+)$/)
+      if (userMatch) {
+        setViewingProfile({ userId: userMatch[1], nickname: '' })
       }
     }
     navigator.serviceWorker.addEventListener('message', handler)
@@ -3209,6 +3214,8 @@ export default function App() {
               const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
               if (ev) handleSelectEvent(ev)
               else setShowEventDrawer(true)
+            } else if (notif.type === 'friend_added' && d.senderUserId) {
+              setViewingProfile({ userId: d.senderUserId, nickname: d.senderName ?? '' })
             }
           }}
         />

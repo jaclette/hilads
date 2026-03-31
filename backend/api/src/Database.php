@@ -213,6 +213,14 @@ class Database
                 self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS city_join_push BOOLEAN NOT NULL DEFAULT FALSE");
             }
 
+            // Add friend_added_push to notification_preferences if missing.
+            $fapExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'friend_added_push')")
+                ->fetchColumn();
+            if (!$fapExists) {
+                self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS friend_added_push BOOLEAN NOT NULL DEFAULT TRUE");
+            }
+
             // Mobile push token registry (one row per device, Expo push tokens).
             $mptExists = (bool) self::$pdo
                 ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'mobile_push_tokens')")

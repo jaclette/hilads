@@ -45,6 +45,7 @@ class NotificationRepository
             'new_event'       => 'new_event_push',
             'channel_message' => 'channel_message_push',
             'city_join'       => 'city_join_push',
+            'friend_added'    => 'friend_added_push',
             default           => null,
         };
         if ($col === null) return true; // Unknown type — always create
@@ -56,6 +57,7 @@ class NotificationRepository
             'new_event_push'       => false,
             'channel_message_push' => false,
             'city_join_push'       => false,
+            'friend_added_push'    => true,
         ];
 
         try {
@@ -77,6 +79,7 @@ class NotificationRepository
             'event_message', 'event_join',
             'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
             'channel_message', 'city_join'    => '/',
+            'friend_added'                    => isset($data['senderUserId']) ? "/user/{$data['senderUserId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -90,6 +93,7 @@ class NotificationRepository
             'new_event'       => 'new-event-' . ($data['eventId'] ?? 'event'),
             'channel_message' => 'channel-'   . ($data['channelId'] ?? 'city'),
             'city_join'       => 'cityjoin-'  . ($data['channelId'] ?? 'city'),
+            'friend_added'    => 'friend-'    . ($data['senderUserId'] ?? 'user'),
             default           => 'hilads-' . $type,
         };
     }
