@@ -1093,6 +1093,8 @@ export default function App() {
         const isEventMsg = channelId === activeEventIdRef.current
 
         if (!isCityMsg && !isEventMsg) return
+        // In event mode: only accept messages for the active event
+        if (activeEventIdRef.current && !isEventMsg) return
 
         const key = isEventMsg ? message.id : messageKey(message)
         if (!key || knownIdsRef.current.has(key)) return

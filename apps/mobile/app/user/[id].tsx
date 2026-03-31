@@ -20,6 +20,25 @@ import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { User, HiladsEvent } from '@/types';
 
+// ── Badge microcopy — mirrors web PublicProfileScreen.jsx & me.tsx ────────────
+
+const BADGE_MICROCOPY: Record<string, string> = {
+  ghost:   'Just browsing 👀',
+  fresh:   'Just landed 👶',
+  regular: 'Shows up often',
+  local:   'Knows the city',
+  host:    'Makes it happen 🔥',
+};
+
+// ── City flag — mirrors me.tsx / chat.tsx ──────────────────────────────────────
+
+function cityFlag(countryCode?: string): string {
+  if (!countryCode || countryCode.length !== 2) return '';
+  return [...countryCode.toUpperCase()]
+    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
+    .join('');
+}
+
 // ── Badge helpers ─────────────────────────────────────────────────────────────
 
 const PROFILE_BADGE_BG: Record<string, object> = {
@@ -116,7 +135,7 @@ function EventPill({
 export default function PublicProfileScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { account } = useApp();
+  const { account, city } = useApp();
 
   const [user,         setUser]         = useState<User | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
@@ -191,7 +210,7 @@ export default function PublicProfileScreen() {
           contentContainerStyle={styles.body}
           showsVerticalScrollIndicator={false}
         >
-          {/* ── Hero: avatar + name + identity badge ── */}
+          {/* ── Hero: avatar + name + identity badge + microcopy + city ── */}
           <View style={styles.hero}>
             {user.profile_photo_url ? (
               <Image source={{ uri: user.profile_photo_url }} style={styles.avatar} />
@@ -202,12 +221,26 @@ export default function PublicProfileScreen() {
             )}
             <Text style={styles.displayName}>{name}</Text>
             {user.primaryBadge && (
-              <View style={[styles.memberBadge, profileBadgeBg(user.primaryBadge.key)]}>
-                <Text style={[styles.memberBadgeText, profileBadgeColor(user.primaryBadge.key)]}>
-                  {user.primaryBadge.label}
-                </Text>
+              <View style={styles.badgeBlock}>
+                <View style={[styles.memberBadge, profileBadgeBg(user.primaryBadge.key)]}>
+                  <Text style={[styles.memberBadgeText, profileBadgeColor(user.primaryBadge.key)]}>
+                    {user.primaryBadge.label}
+                  </Text>
+                </View>
+                {BADGE_MICROCOPY[user.primaryBadge.key] ? (
+                  <Text style={styles.badgeMicrocopy}>
+                    {BADGE_MICROCOPY[user.primaryBadge.key]}
+                  </Text>
+                ) : null}
               </View>
             )}
+            {city ? (
+              <View style={styles.cityPill}>
+                <Text style={styles.cityPillText}>
+                  {cityFlag(city.country)}{cityFlag(city.country) ? ' ' : ''}{city.name}
+                </Text>
+              </View>
+            ) : null}
           </View>
 
           {/* ── Details: home city + age ── */}
@@ -382,19 +415,40 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     textAlign:     'center',
   },
+  badgeBlock: {
+    alignItems: 'center',
+    gap:        4,
+  },
   memberBadge: {
-    backgroundColor:   'rgba(139,92,246,0.15)',
     borderRadius:      Radius.full,
     paddingHorizontal: 10,
     paddingVertical:   4,
     borderWidth:       1,
-    borderColor:       'rgba(139,92,246,0.25)',
   },
   memberBadgeText: {
-    color:         Colors.violet,
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
     letterSpacing: 0.6,
+  },
+  badgeMicrocopy: {
+    fontSize:  FontSizes.xs,
+    color:     Colors.muted,
+    textAlign: 'center',
+  },
+  cityPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 12,
+    paddingVertical:   5,
+    borderRadius:      Radius.full,
+    backgroundColor:   'rgba(255,255,255,0.05)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.09)',
+  },
+  cityPillText: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    fontWeight: '500',
   },
 
   // ── Details card ─────────────────────────────────────────────────────────
