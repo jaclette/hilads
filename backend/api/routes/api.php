@@ -507,6 +507,23 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     Response::json(['user' => AuthService::publicFields($user)]);
 });
 
+// ── /me/events MUST be registered before /{userId}/events ────────────────────
+// The dynamic {userId} pattern matches ANY path segment, including the literal
+// string "me". If /{userId}/events is registered first, requests to /me/events
+// are captured with userId="me", which fails the hex-id validation and returns
+// "Invalid userId". The specific /me route must come first.
+$router->add('GET', '/api/v1/users/me/events', function () {
+    $guestId  = $_GET['guestId'] ?? null;
+    $authUser = AuthService::currentUser();
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $events = EventRepository::getByUser($guestId, $authUser['id'] ?? null);
+    Response::json(['events' => $events]);
+});
+
 $router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
     $userId = $params['userId'] ?? '';
     if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
@@ -1196,19 +1213,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     Response::json($event, 201);
 });
 
-// ── Event ownership: my events + edit + delete ────────────────────────────────
-
-$router->add('GET', '/api/v1/users/me/events', function () {
-    $guestId  = $_GET['guestId'] ?? null;
-    $authUser = AuthService::currentUser();
-
-    if (!isValidGuestId($guestId)) {
-        Response::json(['error' => 'guestId is required'], 400);
-    }
-
-    $events = EventRepository::getByUser($guestId, $authUser['id'] ?? null);
-    Response::json(['events' => $events]);
-});
+// ── Event ownership: edit + delete ───────────────────────────────────────────
+// NOTE: GET /me/events is registered earlier in this file, before /{userId}/events,
+// to avoid the dynamic segment shadowing the literal "me" path.
 
 $router->add('PUT', '/api/v1/events/{eventId}', function (array $params) {
     $eventId = $params['eventId'] ?? null;

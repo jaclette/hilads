@@ -9,7 +9,7 @@
     "orientation": "portrait",
     "scheme": "hilads",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -65,7 +65,14 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/withSingleTopActivity",
       "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Hilads lets you send photos in city chats and event conversations."
+        }
+      ],
       [
         "expo-image-picker",
         {

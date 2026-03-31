@@ -53,6 +53,7 @@ export function useEventChatNotifications() {
       if (__DEV__) console.log('[eventChat] joinAll skipped — no guestId or sessionId');
       return;
     }
+    if (__DEV__) console.log('[eventChat] joinAll — fetching events for guestId:', gid.slice(0, 8));
     try {
       const events = await fetchMyEvents(gid);
       myEventIdsRef.current = new Set(events.map(e => e.id));
@@ -68,12 +69,18 @@ export function useEventChatNotifications() {
 
   // Join on boot (once identity + sessionId are ready)
   useEffect(() => {
-    if (guestId && sessionId) joinAll();
+    if (guestId && sessionId) {
+      if (__DEV__) console.log('[eventChat] joinAll triggered — identity ready (guestId:', guestId.slice(0, 8) + ')');
+      joinAll();
+    }
   }, [guestId, sessionId, joinAll]);
 
   // Re-join all rooms after WS reconnects
   useEffect(() => {
-    const off = socket.on('connected', joinAll);
+    const off = socket.on('connected', () => {
+      if (__DEV__) console.log('[eventChat] joinAll triggered — WS connected');
+      joinAll();
+    });
     return off;
   }, [joinAll]);
 

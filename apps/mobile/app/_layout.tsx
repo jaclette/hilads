@@ -1,3 +1,4 @@
+import '@/polyfills'; // must be first — polyfills WeakRef for Hermes + old arch
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';

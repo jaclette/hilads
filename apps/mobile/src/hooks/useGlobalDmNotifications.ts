@@ -35,9 +35,12 @@ export function useGlobalDmNotifications() {
   const joinAll = useCallback(async () => {
     const uid = accountIdRef.current;
     if (!uid) {
-      if (__DEV__) console.log('[dmChat] joinAll skipped — no account');
+      // Expected during boot for guests and while auth is still hydrating for
+      // registered users. Once setAccount() fires, the effect below re-triggers.
+      if (__DEV__) console.log('[dmChat] joinAll skipped — no account (auth not yet hydrated)');
       return;
     }
+    if (__DEV__) console.log('[dmChat] joinAll — fetching conversations for userId:', uid.slice(0, 8));
     try {
       const convs = await fetchConversations();
       convs.forEach(c => {
@@ -50,14 +53,20 @@ export function useGlobalDmNotifications() {
     }
   }, []); // stable — uses refs only
 
-  // Join on boot (once account is ready)
+  // Join on boot (once account is ready — fires after auth hydration completes)
   useEffect(() => {
-    if (account?.id) joinAll();
+    if (account?.id) {
+      if (__DEV__) console.log('[dmChat] joinAll triggered — account hydrated (userId:', account.id.slice(0, 8) + ')');
+      joinAll();
+    }
   }, [account?.id, joinAll]);
 
   // Re-join all rooms after WS reconnects
   useEffect(() => {
-    const off = socket.on('connected', joinAll);
+    const off = socket.on('connected', () => {
+      if (__DEV__) console.log('[dmChat] joinAll triggered — WS connected (account:', accountIdRef.current ? accountIdRef.current.slice(0, 8) : 'none' + ')');
+      joinAll();
+    });
     return off;
   }, [joinAll]);
 

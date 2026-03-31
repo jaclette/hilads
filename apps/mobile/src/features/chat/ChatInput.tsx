@@ -11,12 +11,14 @@
 import { useState, useRef } from 'react';
 import {
   View, TextInput, TouchableOpacity, Text,
-  ActivityIndicator, StyleSheet, Platform, Alert, InteractionManager,
+  ActivityIndicator, StyleSheet, Platform, Alert, Linking
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, FontSizes } from '@/constants';
+import { AndroidCameraCapture } from './AndroidCameraCapture';
+
 
 // ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
 // Web: PLACEHOLDERS[channelId % PLACEHOLDERS.length]()
@@ -46,8 +48,9 @@ interface Props {
 }
 
 export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…' }: Props) {
-  const [text,      setText]      = useState('');
-  const [uploading, setUploading] = useState(false);
+  const [text,            setText]           = useState('');
+  const [uploading,       setUploading]       = useState(false);
+  const [androidCamera,   setAndroidCamera]   = useState(false);
   const inputRef = useRef<TextInput>(null);
 
   function handleSend() {
@@ -79,72 +82,77 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     if (!result.canceled && result.assets[0]?.uri) await launchWithUri(result.assets[0].uri);
   }
 
-  async function openCamera() {
-    console.log('[camera] openCamera called');
+  // ── Android: open in-app camera modal (bypasses ActivityResultLauncher) ──────
+  // expo-image-picker's launchCameraAsync() hangs on Android 14 + singleTask
+  // MainActivity because the ActivityResultLauncher callback is never delivered
+  // across task boundaries. AndroidCameraCapture uses expo-camera's CameraView
+  // entirely within the app process — no ActivityResultLauncher involved.
+  function openCameraAndroid() {
+    console.log('[camera] Android path — opening in-app camera modal');
+    setAndroidCamera(true);
+  }
+
+  // ── iOS: use expo-image-picker as normal (works correctly on iOS) ─────────
+  async function openCameraIOS() {
+    console.log('[camera] iOS path — using launchCameraAsync');
     try {
-      // On Android + New Architecture, requestCameraPermissionsAsync() hangs
-      // indefinitely — the native permission dispatch deadlocks before the Activity
-      // reaches the correct focused state. launchCameraAsync() handles the Android
-      // runtime permission internally via the system camera Intent, so the explicit
-      // pre-check is both redundant and broken on Android. Keep it only on iOS.
-      if (Platform.OS === 'ios') {
-        console.log('[camera] iOS: requesting permission...');
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        console.log('[camera] iOS permission status:', status);
-        if (status !== 'granted') {
-          Alert.alert('Permission needed', 'Allow camera access in Settings → Hilads → Camera.');
+      console.log('[camera] checking current permission...');
+      const current = await ImagePicker.getCameraPermissionsAsync();
+      console.log('[camera] current permission:', JSON.stringify(current));
+
+      if (!current.granted) {
+        console.log('[camera] requesting permission...');
+        const requested = await ImagePicker.requestCameraPermissionsAsync();
+        console.log('[camera] requested permission result:', JSON.stringify(requested));
+        if (!requested.granted) {
+          if (requested.canAskAgain === false) {
+            console.log('[camera] permission blocked, open settings');
+            Alert.alert(
+              'Camera permission required',
+              'Please allow camera access in Settings → Hilads → Camera.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Open Settings', onPress: () => Linking.openSettings() },
+              ],
+            );
+          } else {
+            console.log('[camera] permission denied');
+            Alert.alert('Camera permission required', 'Camera access is needed to take photos.');
+          }
           return;
         }
       }
 
-      // Wrap launchCameraAsync in a timeout race so a hang (missing FileProvider /
-      // lost activity result on Android) surfaces as an explicit error instead of
-      // freezing the UI silently.
-      console.log('[camera] launching camera (platform:', Platform.OS, ')...');
-      const CAMERA_TIMEOUT_MS = 60_000;
-      const result = await Promise.race([
-        ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 }),
-        new Promise<never>((_, reject) =>
-          setTimeout(
-            () => reject(new Error(
-              'launchCameraAsync timed out after ' + CAMERA_TIMEOUT_MS + 'ms — ' +
-              'activity result was never received (possible FileProvider misconfiguration)',
-            )),
-            CAMERA_TIMEOUT_MS,
-          ),
-        ),
-      ]);
+      console.log('[camera] permission granted, calling launchCameraAsync...');
+      const res = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+      console.log('[camera] launchCameraAsync resolved:', JSON.stringify(res));
+      if (!res.canceled && res.assets?.[0]?.uri) await launchWithUri(res.assets[0].uri);
+    } catch (e) {
+      console.error('[camera] iOS error:', e);
+      Alert.alert('Camera unavailable', 'Could not open the camera. Please try again.');
+    }
+  }
 
-      console.log('[camera] launchCameraAsync resolved');
-      console.log('[camera] full result:', JSON.stringify(result));
-      console.log('[camera] result.canceled:', result.canceled);
-      console.log('[camera] result.assets:', JSON.stringify(result.assets));
-
-      const uri = result.assets?.[0]?.uri;
-      console.log('[camera] asset uri:', uri ?? 'none');
-
-      if (!result.canceled && uri) {
-        console.log('[camera] entering upload flow with uri:', uri);
-        await launchWithUri(uri);
-      } else {
-        console.log('[camera] canceled or no uri — no upload');
-      }
-    } catch (err) {
-      console.error('[camera] launch failed:', String(err));
-      Alert.alert('Camera unavailable', String(err));
+  function openCamera() {
+    console.log('[camera] openCamera called, platform:', Platform.OS);
+    if (Platform.OS === 'android') {
+      openCameraAndroid();
+    } else {
+      openCameraIOS();
     }
   }
 
   function handlePickImage() {
     if (sending || uploading) return;
     console.log('[camera] handlePickImage called');
-    // Use InteractionManager.runAfterInteractions instead of a fixed setTimeout.
-    // The iOS action sheet dismiss animation takes ~300-400ms; a fixed 100ms delay
-    // is too short. runAfterInteractions waits for ALL active animations to finish
-    // before presenting the camera/picker, so iOS never silently drops the modal.
     Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: () => { console.log('[camera] Take Photo tapped'); InteractionManager.runAfterInteractions(() => openCamera()); } },
-      { text: 'Choose from Library', onPress: () => InteractionManager.runAfterInteractions(() => openLibrary()) },
+      // On Android, setTimeout(fn, 0) lets the Alert dialog fully dismiss before
+      // launching the camera. InteractionManager.runAfterInteractions blocks
+      // indefinitely on Android when screen/tab animations are registered.
+      // On iOS, the action sheet dismiss animation (~300ms) is also safely covered
+      // by the JS event loop flush that setTimeout(fn, 0) provides.
+      { text: 'Take Photo',          onPress: () => setTimeout(openCamera, 0) },
+      { text: 'Choose from Library', onPress: () => setTimeout(openLibrary, 0) },
       { text: 'Cancel', style: 'cancel' },
     ]);
   }
@@ -153,6 +161,22 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   const canSend    = !!text.trim() && !busy;
 
   return (
+    <>
+    {/* ── Android in-app camera (bypasses ActivityResultLauncher hang) ──── */}
+    {Platform.OS === 'android' && (
+      <AndroidCameraCapture
+        visible={androidCamera}
+        onCapture={(uri) => {
+          console.log('[camera] Android capture received uri:', uri);
+          setAndroidCamera(false);
+          launchWithUri(uri);
+        }}
+        onClose={() => {
+          console.log('[camera] Android camera modal closed');
+          setAndroidCamera(false);
+        }}
+      />
+    )}
     <View style={styles.container}>
 
       {/* ── Upload button — web: .upload-btn (54×54, rgba bg, border, image SVG) ── */}
@@ -206,6 +230,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       </TouchableOpacity>
 
     </View>
+    </>
   );
 }
 
