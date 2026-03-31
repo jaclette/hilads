@@ -911,8 +911,17 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
     }
 
     try {
-        if (CityRepository::findById($channelId) === null) {
+        $city = CityRepository::findById($channelId);
+        if ($city === null) {
             Response::json(['error' => 'Channel not found'], 404);
+        }
+
+        // Inject a live weather system message if 4 h have elapsed since the last one.
+        // Non-fatal: a failure here must never break message delivery.
+        try {
+            WeatherService::maybeInject($channelId, $city);
+        } catch (\Throwable $e) {
+            error_log('[weather] injection failed (non-fatal): ' . $e->getMessage());
         }
 
         $messages = MessageRepository::getByChannel($channelId);

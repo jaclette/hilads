@@ -5,20 +5,28 @@
  * internally. On Android 14 + singleTask MainActivity the result callback
  * never fires, so the promise hangs until the app is backgrounded/foregrounded.
  *
- * This component renders a full-screen Modal with expo-camera's CameraView,
- * completely bypassing the ActivityResultLauncher path. It is only used on
- * Android; iOS continues to use launchCameraAsync().
+ * UX flow:
+ *   1. Camera viewfinder + floating controls (flip / flash)
+ *   2. Tap shutter → capture
+ *   3. Preview screen → Retake | Use Photo
+ *   4. Use Photo → compress → onCapture(uri)
  */
 
-import { useRef, useState, useCallback } from 'react';
+import { useRef, useState } from 'react';
 import {
   Modal, View, TouchableOpacity, ActivityIndicator,
-  StyleSheet, SafeAreaView, Text,
+  StyleSheet, SafeAreaView, Text, Image,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import type { CameraViewRef } from 'expo-camera';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants';
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type FlashMode = 'off' | 'on' | 'auto';
+type Screen = 'camera' | 'preview';
 
 interface Props {
   visible: boolean;
@@ -26,30 +34,55 @@ interface Props {
   onClose: () => void;
 }
 
+// ── Compression settings ──────────────────────────────────────────────────────
+// Resize only if the image is very wide (> 1920px) so tiny thumbnails aren't
+// re-encoded needlessly. JPEG 0.78 gives a good quality/size balance for chat.
+const MAX_WIDTH   = 1920;
+const JPEG_QUALITY = 0.78;
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
   const cameraRef = useRef<CameraViewRef>(null);
-  const [ready, setReady]       = useState(false);
-  const [taking, setTaking]     = useState(false);
-  const [facing, setFacing]     = useState<'back' | 'front'>('back');
+
+  const [screen,      setScreen]      = useState<Screen>('camera');
+  const [ready,       setReady]       = useState(false);
+  const [taking,      setTaking]      = useState(false);
+  const [compressing, setCompressing] = useState(false);
+  const [facing,      setFacing]      = useState<'back' | 'front'>('back');
+  const [flash,       setFlash]       = useState<FlashMode>('off');
+  const [capturedUri, setCapturedUri] = useState<string | null>(null);
+
   const [permission, requestPermission] = useCameraPermissions();
 
-  // Reset readiness every time the modal opens
-  const handleVisible = useCallback((vis: boolean) => {
-    if (vis) setReady(false);
-  }, []);
+  // Reset state each time the modal opens
+  function handleModalShow() {
+    setScreen('camera');
+    setReady(false);
+    setCapturedUri(null);
+    console.log('[android-camera] modal opened');
+  }
+
+  // ── Capture ───────────────────────────────────────────────────────────────
 
   async function takePhoto() {
     if (!cameraRef.current || !ready || taking) return;
-    console.log('[android-camera] taking picture...');
+    console.log('[android-camera] shutter tapped — capturing...');
     setTaking(true);
     try {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, skipProcessing: false });
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.92,        // high at capture — we compress before upload
+        skipProcessing: false,
+      });
       if (!photo?.uri) {
-        console.warn('[android-camera] no URI in result');
+        console.warn('[android-camera] takePictureAsync returned no URI');
         return;
       }
-      console.log('[android-camera] photo taken:', photo.uri);
-      onCapture(photo.uri);
+      console.log('[android-camera] photo captured:', photo.uri,
+        `(${photo.width}×${photo.height})`);
+      setCapturedUri(photo.uri);
+      setScreen('preview');
+      console.log('[android-camera] preview shown');
     } catch (e) {
       console.error('[android-camera] takePictureAsync failed:', e);
     } finally {
@@ -57,10 +90,57 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
     }
   }
 
-  // ── Permission not yet determined ──────────────────────────────────────────
-  if (!permission) {
-    return null;
+  // ── Preview actions ───────────────────────────────────────────────────────
+
+  function handleRetake() {
+    console.log('[android-camera] retake tapped');
+    setCapturedUri(null);
+    setScreen('camera');
   }
+
+  async function handleUsePhoto() {
+    if (!capturedUri) return;
+    console.log('[android-camera] use photo tapped — compressing...');
+    setCompressing(true);
+    try {
+      const result = await manipulateAsync(
+        capturedUri,
+        // Only resize if image exceeds MAX_WIDTH; otherwise just re-encode
+        [{ resize: { width: MAX_WIDTH } }],
+        { compress: JPEG_QUALITY, format: SaveFormat.JPEG },
+      );
+      console.log('[android-camera] compressed →', result.uri,
+        `(${result.width}×${result.height})`);
+      onCapture(result.uri);
+    } catch (e) {
+      console.error('[android-camera] compression failed — using original:', e);
+      onCapture(capturedUri); // graceful fallback
+    } finally {
+      setCompressing(false);
+    }
+  }
+
+  // ── Flash cycle: off → on → auto ─────────────────────────────────────────
+
+  function cycleFlash() {
+    setFlash(f => {
+      const next: FlashMode = f === 'off' ? 'on' : f === 'on' ? 'auto' : 'off';
+      console.log('[android-camera] flash →', next);
+      return next;
+    });
+  }
+
+  const flashIcon = flash === 'on'
+    ? 'flash'
+    : flash === 'auto'
+    ? 'flash-outline'
+    : 'flash-off-outline';
+
+  // ── Permission gate ───────────────────────────────────────────────────────
+
+  if (!permission) return null;
+
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <Modal
@@ -68,47 +148,104 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
       animationType="slide"
       statusBarTranslucent
       onRequestClose={onClose}
+      onShow={handleModalShow}
     >
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.root}>
 
-        {/* ── Permission denied ────────────────────────────────────────────── */}
+        {/* ── Permission denied ─────────────────────────────────────────── */}
         {!permission.granted ? (
-          <View style={styles.permDenied}>
+          <View style={styles.center}>
             <Text style={styles.permText}>Camera access is required to take photos.</Text>
             <TouchableOpacity style={styles.permBtn} onPress={requestPermission}>
               <Text style={styles.permBtnText}>Grant permission</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.permBtn, { marginTop: 12 }]} onPress={onClose}>
+            <TouchableOpacity style={[styles.permBtn, styles.permBtnSecondary]} onPress={onClose}>
               <Text style={styles.permBtnText}>Cancel</Text>
             </TouchableOpacity>
           </View>
+
+        /* ── Preview screen ─────────────────────────────────────────────── */
+        ) : screen === 'preview' && capturedUri ? (
+          <View style={styles.previewRoot}>
+            {/* Full-screen image */}
+            <Image source={{ uri: capturedUri }} style={styles.previewImage} resizeMode="cover" />
+
+            {/* Close button (top-left) */}
+            <TouchableOpacity style={styles.previewClose} onPress={onClose}>
+              <Ionicons name="close" size={26} color="#fff" />
+            </TouchableOpacity>
+
+            {/* Action bar */}
+            <View style={styles.previewBar}>
+
+              {/* Retake */}
+              <TouchableOpacity
+                style={styles.retakeBtn}
+                onPress={handleRetake}
+                disabled={compressing}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="camera-outline" size={20} color="#fff" style={{ marginRight: 6 }} />
+                <Text style={styles.retakeBtnText}>Retake</Text>
+              </TouchableOpacity>
+
+              {/* Use Photo — primary CTA */}
+              <TouchableOpacity
+                style={[styles.useBtn, compressing && styles.btnDisabled]}
+                onPress={handleUsePhoto}
+                disabled={compressing}
+                activeOpacity={0.85}
+              >
+                {compressing ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <>
+                    <Text style={styles.useBtnText}>Use Photo</Text>
+                    <Ionicons name="checkmark" size={20} color="#fff" style={{ marginLeft: 6 }} />
+                  </>
+                )}
+              </TouchableOpacity>
+
+            </View>
+          </View>
+
+        /* ── Camera viewfinder ──────────────────────────────────────────── */
         ) : (
           <>
-            {/* ── Live preview ─────────────────────────────────────────────── */}
             <CameraView
               ref={cameraRef}
               style={styles.camera}
               facing={facing}
+              flash={flash}
               onCameraReady={() => {
-                console.log('[android-camera] camera ready');
+                console.log('[android-camera] camera ready (facing:', facing + ')');
                 setReady(true);
               }}
             />
 
-            {/* ── Controls overlay ─────────────────────────────────────────── */}
-            <View style={styles.controls}>
-
-              {/* Close */}
-              <TouchableOpacity style={styles.sideBtn} onPress={onClose}>
+            {/* ── Top bar: close + flash ───────────────────────────────── */}
+            <View style={styles.topBar}>
+              <TouchableOpacity style={styles.iconBtn} onPress={onClose}>
                 <Ionicons name="close" size={28} color="#fff" />
               </TouchableOpacity>
+
+              <TouchableOpacity style={styles.iconBtn} onPress={cycleFlash}>
+                <Ionicons name={flashIcon} size={26} color={flash !== 'off' ? '#FFD60A' : '#fff'} />
+              </TouchableOpacity>
+            </View>
+
+            {/* ── Bottom bar: shutter + flip ───────────────────────────── */}
+            <View style={styles.bottomBar}>
+
+              {/* Spacer (keeps shutter centred) */}
+              <View style={styles.iconBtn} />
 
               {/* Shutter */}
               <TouchableOpacity
                 style={[styles.shutter, (!ready || taking) && styles.shutterDisabled]}
                 onPress={takePhoto}
                 disabled={!ready || taking}
-                activeOpacity={0.7}
+                activeOpacity={0.75}
               >
                 {taking
                   ? <ActivityIndicator size="small" color="#fff" />
@@ -117,8 +254,13 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 
               {/* Flip */}
               <TouchableOpacity
-                style={styles.sideBtn}
-                onPress={() => setFacing(f => f === 'back' ? 'front' : 'back')}
+                style={styles.iconBtn}
+                onPress={() => {
+                  setReady(false); // camera needs to reinitialize after flip
+                  setFacing(f => f === 'back' ? 'front' : 'back');
+                  console.log('[android-camera] flip →', facing === 'back' ? 'front' : 'back');
+                }}
+                disabled={taking}
               >
                 <Ionicons name="camera-reverse-outline" size={28} color="#fff" />
               </TouchableOpacity>
@@ -126,20 +268,48 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
             </View>
           </>
         )}
+
       </SafeAreaView>
     </Modal>
   );
 }
 
+// ── Styles ────────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+
+  root: {
+    flex:            1,
     backgroundColor: '#000',
   },
+
+  center: {
+    flex:           1,
+    alignItems:     'center',
+    justifyContent: 'center',
+    padding:        32,
+  },
+
+  // ── Camera ────────────────────────────────────────────────────────────────
+
   camera: {
     flex: 1,
   },
-  controls: {
+
+  topBar: {
+    position:        'absolute',
+    top:             0,
+    left:            0,
+    right:           0,
+    flexDirection:   'row',
+    justifyContent:  'space-between',
+    alignItems:      'center',
+    paddingTop:      8,
+    paddingHorizontal: 8,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+
+  bottomBar: {
     position:        'absolute',
     bottom:          0,
     left:            0,
@@ -148,54 +318,138 @@ const styles = StyleSheet.create({
     flexDirection:   'row',
     alignItems:      'center',
     justifyContent:  'space-around',
-    paddingBottom:   20,
+    paddingBottom:   16,
     backgroundColor: 'rgba(0,0,0,0.45)',
   },
-  sideBtn: {
-    width:          56,
-    height:         56,
+
+  iconBtn: {
+    width:          60,
+    height:         60,
     alignItems:     'center',
     justifyContent: 'center',
   },
+
   shutter: {
-    width:           76,
-    height:          76,
-    borderRadius:    38,
+    width:           78,
+    height:          78,
+    borderRadius:    39,
     borderWidth:     4,
     borderColor:     '#fff',
     alignItems:      'center',
     justifyContent:  'center',
   },
+
   shutterInner: {
-    width:           58,
-    height:          58,
-    borderRadius:    29,
+    width:           60,
+    height:          60,
+    borderRadius:    30,
     backgroundColor: '#fff',
   },
+
   shutterDisabled: {
     opacity: 0.4,
   },
-  permDenied: {
-    flex:           1,
-    alignItems:     'center',
-    justifyContent: 'center',
-    padding:        32,
+
+  // ── Preview ───────────────────────────────────────────────────────────────
+
+  previewRoot: {
+    flex:            1,
+    backgroundColor: '#000',
   },
-  permText: {
+
+  previewImage: {
+    flex: 1,
+  },
+
+  previewClose: {
+    position:        'absolute',
+    top:             12,
+    left:            12,
+    width:           44,
+    height:          44,
+    borderRadius:    22,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    alignItems:      'center',
+    justifyContent:  'center',
+  },
+
+  previewBar: {
+    position:        'absolute',
+    bottom:          0,
+    left:            0,
+    right:           0,
+    flexDirection:   'row',
+    alignItems:      'center',
+    justifyContent:  'space-between',
+    paddingHorizontal: 20,
+    paddingVertical:  20,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    gap:             12,
+  },
+
+  retakeBtn: {
+    flexDirection:   'row',
+    alignItems:      'center',
+    paddingHorizontal: 20,
+    paddingVertical:   13,
+    borderRadius:    28,
+    borderWidth:     1.5,
+    borderColor:     'rgba(255,255,255,0.6)',
+  },
+
+  retakeBtnText: {
+    color:      '#fff',
+    fontSize:   15,
+    fontWeight: '500',
+  },
+
+  useBtn: {
+    flex:            1,
+    flexDirection:   'row',
+    alignItems:      'center',
+    justifyContent:  'center',
+    paddingVertical: 14,
+    borderRadius:    28,
+    backgroundColor: Colors.accent,
+  },
+
+  useBtnText: {
     color:      '#fff',
     fontSize:   16,
-    textAlign:  'center',
-    marginBottom: 24,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
+
+  btnDisabled: {
+    opacity: 0.5,
+  },
+
+  // ── Permission ────────────────────────────────────────────────────────────
+
+  permText: {
+    color:        '#fff',
+    fontSize:     16,
+    textAlign:    'center',
+    marginBottom: 28,
+    lineHeight:   22,
+  },
+
   permBtn: {
-    backgroundColor: Colors.accent,
-    paddingHorizontal: 24,
-    paddingVertical:   12,
-    borderRadius:      24,
+    backgroundColor:   Colors.accent,
+    paddingHorizontal: 28,
+    paddingVertical:   13,
+    borderRadius:      28,
   },
+
+  permBtnSecondary: {
+    marginTop:       12,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+
   permBtnText: {
     color:      '#fff',
     fontSize:   15,
     fontWeight: '600',
   },
+
 });
