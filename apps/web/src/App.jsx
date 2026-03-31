@@ -1441,7 +1441,8 @@ export default function App() {
       const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(m.id))
       if (newMsgs.length > 0) {
         newMsgs.forEach(m => knownIdsRef.current.add(m.id))
-        setFeed(prev => [...prev, ...newMsgs.map(m => ({ type: 'message', ...m }))])
+        const items = newMsgs.map(m => toFeedItem(m)).filter(Boolean)
+        setFeed(prev => [...prev, ...items])
       }
     }
 
@@ -1936,7 +1937,7 @@ export default function App() {
         style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
         data-me={user.isMe ? 'true' : undefined}
       >
-        {user.nickname[0].toUpperCase()}
+        {(user.nickname ?? '?')[0].toUpperCase()}
       </span>
     )
   }
@@ -2313,7 +2314,7 @@ export default function App() {
                       className="msg-avatar"
                       style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
                     >
-                      {item.nickname[0].toUpperCase()}
+                      {(item.nickname ?? '?')[0].toUpperCase()}
                     </span>
                     <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                     {item.primaryBadge && <span className={`badge-pill badge-pill--${item.primaryBadge.key}`}>{item.primaryBadge.label}</span>}
@@ -2672,7 +2673,7 @@ export default function App() {
                     style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
                     data-me={user.isMe ? 'true' : undefined}
                   >
-                    {user.nickname[0].toUpperCase()}
+                    {(user.nickname ?? '?')[0].toUpperCase()}
                   </span>
                   <div className="people-drawer-content">
                     <span className="people-drawer-name">
@@ -2970,7 +2971,7 @@ export default function App() {
                   style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
                   data-me={user.isMe ? 'true' : undefined}
                 >
-                  {user.nickname[0].toUpperCase()}
+                  {(user.nickname ?? '?')[0].toUpperCase()}
                 </span>
                 <span className="sidebar-user-name">
                   {user.nickname}
