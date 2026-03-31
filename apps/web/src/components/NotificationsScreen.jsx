@@ -18,13 +18,14 @@ function timeAgo(isoString) {
 }
 
 const TYPE_ICONS = {
-  dm_message:    '💬',
-  event_message: '🔥',
-  event_join:    '👥',
-  new_event:     '🔥',
-  channel_message: '💬',
-  city_join:     '👋',
-  friend_added:  '👋',
+  dm_message:     '💬',
+  event_message:  '🔥',
+  event_join:     '👥',
+  new_event:      '🔥',
+  channel_message:'💬',
+  city_join:      '👋',
+  friend_added:   '👋',
+  vibe_received:  '✨',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────
@@ -200,6 +201,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
             <Toggle
               checked={prefs?.friend_added_push ?? true}
               onChange={v => handleTogglePref('friend_added_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
+              <span className="notif-pref-name">Vibes ✨</span>
+              <span className="notif-pref-desc">When someone leaves a vibe on your profile</span>
+            </div>
+            <Toggle
+              checked={prefs?.vibe_received_push ?? true}
+              onChange={v => handleTogglePref('vibe_received_push', v)}
               disabled={prefsSaving || !prefs}
             />
           </div>

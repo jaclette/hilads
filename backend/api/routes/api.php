@@ -701,7 +701,28 @@ $router->add('POST', '/api/v1/users/{userId}/vibes', function (array $params) {
         return;
     }
 
+    // Detect new vs update before upsert so we only notify on first-time vibes.
+    $existsStmt = Database::pdo()->prepare("SELECT 1 FROM user_vibes WHERE author_id = ? AND target_id = ?");
+    $existsStmt->execute([$viewer['id'], $targetId]);
+    $isNewVibe = !$existsStmt->fetchColumn();
+
     $vibe = VibeRepository::upsert($viewer['id'], $targetId, $rating, $message ?: null);
+
+    if ($isNewVibe) {
+        $actorName = $viewer['display_name'] ?? 'Someone';
+        NotificationRepository::create(
+            $targetId,
+            'vibe_received',
+            "{$actorName} sent you a vibe ✨",
+            null,
+            [
+                'actorId'   => $viewer['id'],
+                'actorName' => $actorName,
+                'vibeId'    => $vibe['id'],
+            ]
+        );
+    }
+
     Response::json(['vibe' => $vibe], 201);
 });
 

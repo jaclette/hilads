@@ -167,7 +167,7 @@ export interface DmMessage {
 
 export interface Notification {
   id: number;
-  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event' | 'channel_message' | 'city_join' | 'friend_added';
+  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event' | 'channel_message' | 'city_join' | 'friend_added' | 'vibe_received';
   title: string;
   body: string;
   data: {
@@ -176,6 +176,9 @@ export interface Notification {
     channelId?: string;
     senderName?: string;
     senderUserId?: string;
+    actorId?: string;
+    actorName?: string;
+    vibeId?: number;
   };
   is_read: boolean;
   created_at: string;

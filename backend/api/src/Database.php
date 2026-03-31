@@ -221,6 +221,14 @@ class Database
                 self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS friend_added_push BOOLEAN NOT NULL DEFAULT TRUE");
             }
 
+            // Add vibe_received_push to notification_preferences if missing.
+            $vrpExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'vibe_received_push')")
+                ->fetchColumn();
+            if (!$vrpExists) {
+                self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS vibe_received_push BOOLEAN NOT NULL DEFAULT TRUE");
+            }
+
             // Mobile push token registry (one row per device, Expo push tokens).
             $mptExists = (bool) self::$pdo
                 ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'mobile_push_tokens')")

@@ -46,6 +46,7 @@ class NotificationRepository
             'channel_message' => 'channel_message_push',
             'city_join'       => 'city_join_push',
             'friend_added'    => 'friend_added_push',
+            'vibe_received'   => 'vibe_received_push',
             default           => null,
         };
         if ($col === null) return true; // Unknown type — always create
@@ -80,6 +81,7 @@ class NotificationRepository
             'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
             'channel_message', 'city_join'    => '/',
             'friend_added'                    => isset($data['senderUserId']) ? "/user/{$data['senderUserId']}" : '/notifications',
+            'vibe_received'                   => '/me',
             default                           => '/',
         };
     }
@@ -94,6 +96,7 @@ class NotificationRepository
             'channel_message' => 'channel-'   . ($data['channelId'] ?? 'city'),
             'city_join'       => 'cityjoin-'  . ($data['channelId'] ?? 'city'),
             'friend_added'    => 'friend-'    . ($data['senderUserId'] ?? 'user'),
+            'vibe_received'   => 'vibe-'      . ($data['actorId'] ?? 'user'),
             default           => 'hilads-' . $type,
         };
     }

@@ -35,6 +35,7 @@ class MobilePushService
             'new_event'       => 'new_event_push',
             'channel_message' => 'channel_message_push',
             'city_join'       => 'city_join_push',
+            'vibe_received'   => 'vibe_received_push',
             default           => null,
         };
     }

@@ -14,6 +14,7 @@ class NotificationPreferencesRepository
             'channel_message_push' => false,
             'city_join_push'       => false,
             'friend_added_push'    => true,
+            'vibe_received_push'   => true,
         ];
     }
 
@@ -21,7 +22,7 @@ class NotificationPreferencesRepository
     {
         $stmt = Database::pdo()->prepare("
             SELECT dm_push, event_message_push, event_join_push, new_event_push,
-                   channel_message_push, city_join_push, friend_added_push
+                   channel_message_push, city_join_push, friend_added_push, vibe_received_push
             FROM notification_preferences
             WHERE user_id = ?
         ");
@@ -40,6 +41,7 @@ class NotificationPreferencesRepository
             'channel_message_push' => (bool) $row['channel_message_push'],
             'city_join_push'       => (bool) $row['city_join_push'],
             'friend_added_push'    => (bool) ($row['friend_added_push'] ?? true),
+            'vibe_received_push'   => (bool) ($row['vibe_received_push'] ?? true),
         ];
     }
 
@@ -47,19 +49,20 @@ class NotificationPreferencesRepository
     {
         $defaults = self::defaults();
 
-        $dm          = isset($prefs['dm_push'])              ? (bool) $prefs['dm_push']              : $defaults['dm_push'];
-        $eventMsg    = isset($prefs['event_message_push'])   ? (bool) $prefs['event_message_push']   : $defaults['event_message_push'];
-        $eventJoin   = isset($prefs['event_join_push'])      ? (bool) $prefs['event_join_push']      : $defaults['event_join_push'];
-        $newEvent    = isset($prefs['new_event_push'])       ? (bool) $prefs['new_event_push']       : $defaults['new_event_push'];
-        $chanMsg     = isset($prefs['channel_message_push']) ? (bool) $prefs['channel_message_push'] : $defaults['channel_message_push'];
-        $cityJoin    = isset($prefs['city_join_push'])       ? (bool) $prefs['city_join_push']       : $defaults['city_join_push'];
-        $friendAdded = isset($prefs['friend_added_push'])    ? (bool) $prefs['friend_added_push']    : $defaults['friend_added_push'];
+        $dm            = isset($prefs['dm_push'])              ? (bool) $prefs['dm_push']              : $defaults['dm_push'];
+        $eventMsg      = isset($prefs['event_message_push'])   ? (bool) $prefs['event_message_push']   : $defaults['event_message_push'];
+        $eventJoin     = isset($prefs['event_join_push'])      ? (bool) $prefs['event_join_push']      : $defaults['event_join_push'];
+        $newEvent      = isset($prefs['new_event_push'])       ? (bool) $prefs['new_event_push']       : $defaults['new_event_push'];
+        $chanMsg       = isset($prefs['channel_message_push']) ? (bool) $prefs['channel_message_push'] : $defaults['channel_message_push'];
+        $cityJoin      = isset($prefs['city_join_push'])       ? (bool) $prefs['city_join_push']       : $defaults['city_join_push'];
+        $friendAdded   = isset($prefs['friend_added_push'])    ? (bool) $prefs['friend_added_push']    : $defaults['friend_added_push'];
+        $vibeReceived  = isset($prefs['vibe_received_push'])   ? (bool) $prefs['vibe_received_push']   : $defaults['vibe_received_push'];
 
         Database::pdo()->prepare("
             INSERT INTO notification_preferences
                 (user_id, dm_push, event_message_push, event_join_push, new_event_push,
-                 channel_message_push, city_join_push, friend_added_push)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                 channel_message_push, city_join_push, friend_added_push, vibe_received_push)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (user_id) DO UPDATE
                SET dm_push              = EXCLUDED.dm_push,
                    event_message_push   = EXCLUDED.event_message_push,
@@ -67,8 +70,9 @@ class NotificationPreferencesRepository
                    new_event_push       = EXCLUDED.new_event_push,
                    channel_message_push = EXCLUDED.channel_message_push,
                    city_join_push       = EXCLUDED.city_join_push,
-                   friend_added_push    = EXCLUDED.friend_added_push
-        ")->execute([$userId, $dm, $eventMsg, $eventJoin, $newEvent, $chanMsg, $cityJoin, $friendAdded]);
+                   friend_added_push    = EXCLUDED.friend_added_push,
+                   vibe_received_push   = EXCLUDED.vibe_received_push
+        ")->execute([$userId, $dm, $eventMsg, $eventJoin, $newEvent, $chanMsg, $cityJoin, $friendAdded, $vibeReceived]);
 
         return [
             'dm_push'              => $dm,
@@ -78,6 +82,7 @@ class NotificationPreferencesRepository
             'channel_message_push' => $chanMsg,
             'city_join_push'       => $cityJoin,
             'friend_added_push'    => $friendAdded,
+            'vibe_received_push'   => $vibeReceived,
         ];
     }
 }

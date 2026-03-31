@@ -9,6 +9,7 @@ export interface NotificationPreferences {
   channel_message_push: boolean;
   city_join_push:       boolean;
   friend_added_push:    boolean;
+  vibe_received_push:   boolean;
 }
 
 export async function fetchNotifications(): Promise<{ notifications: Notification[]; unread_count: number }> {

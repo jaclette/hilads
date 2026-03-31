@@ -775,6 +775,9 @@ export default function App() {
       if (userMatch) {
         setViewingProfile({ userId: userMatch[1], nickname: '' })
       }
+      if (path === '/me') {
+        setShowProfileDrawer(true)
+      }
     }
     navigator.serviceWorker.addEventListener('message', handler)
     return () => navigator.serviceWorker.removeEventListener('message', handler)
@@ -3250,6 +3253,8 @@ export default function App() {
               else setShowEventDrawer(true)
             } else if (notif.type === 'friend_added' && d.senderUserId) {
               setViewingProfile({ userId: d.senderUserId, nickname: d.senderName ?? '' })
+            } else if (notif.type === 'vibe_received') {
+              setShowProfileDrawer(true)
             }
           }}
         />

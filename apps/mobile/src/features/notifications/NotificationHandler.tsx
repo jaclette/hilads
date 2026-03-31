@@ -58,6 +58,9 @@ type NotifData = {
   channelId?:      string;
   senderName?:     string;
   senderUserId?:   string; // set by backend for dm_message — used to reject own-sender pushes
+  actorId?:        string;
+  actorName?:      string;
+  vibeId?:         number;
 };
 
 Notifications.setNotificationHandler({
@@ -111,6 +114,10 @@ function resolveRoute(data: NotifData): string | null {
     case 'city_join':
       // Deep link to the city chat tab — the user's current city channel.
       return '/(tabs)/chat';
+
+    case 'vibe_received':
+      // Open own profile — that's where the new vibe is visible.
+      return '/(tabs)/me';
 
     default:
       return null;
