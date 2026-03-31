@@ -170,6 +170,7 @@ const AVATAR_PALETTES = [
 ]
 
 function avatarColors(name) {
+  if (name == null) console.warn('[avatarColors] called with', name, new Error().stack?.split('\n')[2]?.trim())
   const hash = (name || '?').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }

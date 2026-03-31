@@ -296,13 +296,20 @@ export default function ChatTab() {
     postImageFn,
   });
 
-  // Feed display priority: events (CTA) > regular messages > weather (context).
-  // Within the same priority tier, chronological order is preserved.
-  // FlatList is inverted so index 0 (highest priority) renders at the bottom.
+  // Feed display priority — controls vertical position in the inverted FlatList:
+  //   index 0 = BOTTOM of screen (near input, visible first)
+  //   high index = TOP of screen (above the fold, user scrolls up)
+  //
+  // Desired top-to-bottom order on screen:
+  //   [TOP]   event cards   → highest index → priority 0
+  //           weather        → mid index     → priority 1
+  //   [BOTTOM] social/join  → index 0        → priority 2
+  //
+  // Sort is `pb - pa` (higher priority value → lower index → bottom).
   function feedPriority(m: Message): number {
-    if (m.type === 'event') return 2;
-    if (m.type === 'system' && m.event === 'weather') return 0;
-    return 1;
+    if (m.type === 'event') return 0;                          // top of screen
+    if (m.type === 'system' && m.event === 'weather') return 1; // just below events
+    return 2;                                                  // social/join at bottom
   }
 
   // Merge synthesized event items into the messages list, sorted newest-first
