@@ -1275,9 +1275,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $countStmt->execute($binds);
     $total = (int) $countStmt->fetchColumn();
 
-    // Paginated fetch — order by last_seen_at so recent visitors appear first
+    // Paginated fetch — order by last_seen_at so recent visitors appear first.
+    // NOTE: m.last_seen_at is TIMESTAMPTZ, u.created_at is INTEGER (Unix epoch).
+    //       COALESCE requires matching types — cast both to epoch seconds.
     $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at, u.home_city,
-                   COALESCE(m.last_seen_at, u.created_at) AS sort_at
+                   COALESCE(EXTRACT(EPOCH FROM m.last_seen_at)::INTEGER, u.created_at) AS sort_at
             FROM users u
             $baseJoin
             WHERE $where
