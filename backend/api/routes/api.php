@@ -761,6 +761,25 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
 
+        // Record persistent city membership for registered users.
+        // Fire-and-forget: a failure here must never break the join flow.
+        try {
+            $pdo = Database::pdo();
+            $memberUser = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
+            $memberUser->execute([$guestId]);
+            $memberUserId = $memberUser->fetchColumn();
+            if ($memberUserId) {
+                $memberChannelKey = 'city_' . $channelId;
+                $pdo->prepare("
+                    INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
+                    VALUES (?, ?, now(), now())
+                    ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
+                ")->execute([$memberUserId, $memberChannelKey]);
+            }
+        } catch (\Throwable $e) {
+            error_log('[channel_join] membership upsert failed (non-fatal): ' . $e->getMessage());
+        }
+
         // Only emit a "just landed" feed event for genuinely new joins.
         // Re-joins (foreground transitions, reconnects within TTL) must not
         // produce a second feed message — that is the source of duplicate
@@ -1100,9 +1119,10 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $channelKey = 'city_' . $channelId;
     $cityName   = $city['name'];
 
-    // Base: users whose home_city matches (case-insensitive trim)
-    $conditions = ["LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name))"];
-    $binds      = [':city_name' => $cityName];
+    // Base: users who joined via city channel membership OR have home_city set
+    $baseJoin  = "LEFT JOIN user_city_memberships m ON m.user_id = u.id AND m.channel_id = :channel_key";
+    $conditions = ["(m.channel_id IS NOT NULL OR LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name)))"];
+    $binds      = [':channel_key' => $channelKey, ':city_name' => $cityName];
 
     if ($vibeFilter !== null) {
         $conditions[] = 'u.vibe = :vibe';
@@ -1120,21 +1140,23 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
         )";
         $binds[':city_key'] = $channelKey;
     }
-    // badge=local: all home_city users are local — no extra condition needed
+    // badge=local: all members are local — no extra condition needed
 
     $where = implode(' AND ', $conditions);
 
     // Total count
-    $countStmt = $pdo->prepare("SELECT COUNT(*) FROM users u WHERE $where");
+    $countStmt = $pdo->prepare("SELECT COUNT(*) FROM users u $baseJoin WHERE $where");
     $countStmt->execute($binds);
     $total = (int) $countStmt->fetchColumn();
 
-    // Paginated fetch
-    $sql  = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at, u.home_city
-             FROM users u
-             WHERE $where
-             ORDER BY u.created_at DESC
-             LIMIT :limit OFFSET :offset";
+    // Paginated fetch — order by last_seen_at so recent visitors appear first
+    $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at, u.home_city,
+                   COALESCE(m.last_seen_at, u.created_at) AS sort_at
+            FROM users u
+            $baseJoin
+            WHERE $where
+            ORDER BY sort_at DESC
+            LIMIT :limit OFFSET :offset";
     $stmt = $pdo->prepare($sql);
     foreach ($binds as $k => $v) {
         $stmt->bindValue($k, $v);

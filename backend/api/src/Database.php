@@ -501,6 +501,21 @@ class Database
         // Covering index: avoids heap fetches for COUNT(DISTINCT guest_id) per channel
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_presence_count   ON presence (channel_id, last_seen_at DESC, guest_id)");
 
+        // ── City memberships — persistent record of registered users per city ──
+        // Upserted on every channel join; survives session end / page close.
+        // Source of truth for the "City Crew" feature in the Here screen.
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS user_city_memberships (
+                user_id       TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                channel_id    TEXT        NOT NULL,
+                first_seen_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                last_seen_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+                PRIMARY KEY (user_id, channel_id)
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_city_memberships_channel ON user_city_memberships (channel_id, last_seen_at DESC)");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_city_memberships_user    ON user_city_memberships (user_id)");
+
         // ── Event participants ────────────────────────────────────────────────
         $pdo->exec("
             CREATE TABLE IF NOT EXISTS event_participants (
