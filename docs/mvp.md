@@ -1,4 +1,4 @@
-# Hilads — MVP v7
+# Hilads — MVP v8
 
 ## Vision
 
@@ -6,7 +6,7 @@ Hilads makes cities feel alive in real time.
 
 Open the app → see who's around → jump into something happening now.
 
-Not a chat app. A live social layer on top of cities.
+Not a chat app. A **live social layer on top of cities**.
 
 ---
 
@@ -17,7 +17,8 @@ Open app
   → city auto-detected by geolocation (or picked manually)
   → see who's online + what's happening
   → chat, join an event, or create one
-  → no sign-up required
+  → no sign-up required — instant Ghost mode
+  → register to unlock profile, DMs, friends, and vibes
 ```
 
 ---
@@ -29,29 +30,147 @@ Open app
 | **Hot** | Active events in the current city |
 | **Cities** | Switch city — ranked by live activity |
 | **Here** | Who's online right now in the city |
-| **Me** | Profile + My Events (registered users) |
-| **Messages** | DMs + event chats (registered users) |
+| **Me** | Profile, My Events, friends list (registered) |
+| **Messages** | DMs + event chats (registered) |
+| **Notifications** | Bell icon — in-app feed + push (registered) |
 
 ---
 
-## Features
+## Identity
 
-### Identity
+### Ghost (default)
 
-**Guest** (default)
 - Instant entry — no sign-up
-- Temporary identity: UUID + nickname stored in localStorage
+- Persistent identity: 32-char hex guestId stored in localStorage / SecureStore
+- Nickname chosen on first join
+- Minimal profile card (ghost badge + avatar initial, no API call)
 - Full access to city chat and events, including creating events
 
-**Registered**
+Ghost identity is **persistent across page loads** — the same guestId is reused so historical feed messages can be correctly attributed.
+
+### Registered
+
 - Email + password or Google OAuth
-- Persistent profile: display name, photo, home city, age, interests
-- Unlocks: DMs, Messages screen, persistent event ownership across sessions
-- Seamless upgrade from guest — history and ownership preserved
+- Persistent profile: display name, photo, home city, age, bio
+- Unlocks: DMs, friends, vibe system, notifications, full profile
+- Seamless upgrade from ghost — ownership and history preserved
+- Badge evolves automatically over time (see Badge System)
 
 ---
 
-### City Chat
+## Profile System
+
+### Registered Profile
+
+Accessible from:
+- "Here" screen (tap any user)
+- Feed bubbles (tap a join item)
+- Friends list
+- Direct link (`/user/{id}` on web, `/user/[id]` on native)
+
+Contains:
+- Display name + avatar (photo or generated initial)
+- Badge (Fresh / Regular / Host / Local — see below)
+- Self-chosen vibe (emoji label)
+- Vibe score (average rating) + vibe count
+- List of vibes received (author, rating, optional message)
+- Friends list
+- Add Friend / Message CTA
+
+### Ghost Profile
+
+Accessible from:
+- Feed bubbles (tap a join item from a ghost user)
+
+Contains:
+- Generated avatar initial + color
+- Nickname
+- 👻 Ghost badge
+- City context
+- No API call — fully client-side rendered
+
+---
+
+## Badge System
+
+Badges signal how long a user has been part of the Hilads community.
+
+| Badge | Trigger | Label |
+|---|---|---|
+| Fresh | Account < 2 months old | 🌱 Fresh |
+| Regular | Account ≥ 2 months old | ⭐ Regular |
+
+Badges evolve automatically — no action required by the user. The badge is computed from `users.created_at` relative to the current date at display time.
+
+Additional badges may be added in future (Host, Local, etc.).
+
+---
+
+## Vibe System
+
+Vibes are the social reputation layer of Hilads. Instead of reviews, users leave **vibes** — a short rating + optional message — on other users' profiles.
+
+### Leaving a vibe
+
+- Any registered user can leave a vibe on any other registered user's profile
+- Rating: 1–5 stars
+- Optional message: up to 300 characters
+- One vibe per (author → target) pair — the vibe is updatable
+- Cannot leave a vibe on yourself
+
+### Vibe display
+
+On a user's profile:
+- **Vibe score** — average rating displayed as a number (e.g. 4.8 ⭐)
+- **Vibe count** — total number of vibes received
+- **Vibe list** — latest vibes with author avatar, name, rating, and message
+
+### Vibe notification
+
+When someone receives a new vibe:
+- **In-app notification** appears in the notification screen ("Jaclette sent you a vibe ✨")
+- **Push notification** (web + native) — tapping opens the recipient's own profile so they can immediately see the new vibe
+- Only first-time vibes notify — edits are silent
+
+---
+
+## Friends System
+
+### Adding a friend
+
+- From any registered user's profile: "Add Friend" CTA
+- Friendship is currently one-directional (follow-style) in v1
+
+### Viewing friends
+
+- Own friends list visible in the **Me** screen
+- Other users' friend lists visible on their public profiles
+
+### Friend notification
+
+- When someone adds you as a friend, you receive an in-app notification + push
+
+---
+
+## Feed System
+
+The city chat feed includes **system items** that announce social activity:
+
+| Event | Text example |
+|---|---|
+| User joined city | "Jaclette joined the vibe" |
+| User arrived | "Jaclette just landed" |
+| User is active | "Jaclette is live" |
+
+Feed item properties:
+- Timestamped
+- **Clickable** — tapping opens the user's profile
+- Identity-resolved: registered users open their full profile, ghost users open the ghost profile card
+- Payload always includes `userId` (if registered) and `guestId` (if ghost), never conflated
+
+---
+
+## City Chat
 
 - One public chat channel per city
 - Text + photo messages
@@ -62,18 +181,18 @@ Open app
 
 ---
 
-### Events — Hot Screen
+## Events — Hot Screen
 
 Two types of events co-exist in the Hot screen:
 
-**One-shot events**
-- Created by any user (guest or registered)
+### One-shot events
+- Created by any user (ghost or registered)
 - Custom title, optional location hint, start/end time
 - Each has its own real-time chat
 - Expire automatically at `expires_at`
 - Event chat deleted when the event ends
 
-**Recurring events**
+### Recurring events
 - Seeded per city: bars, coffee shops, curated venues
 - Daily schedule (e.g. bars: 18:00–01:00, cafés: 10:00–18:00)
 - Displayed with "↻ Every day" badge (or weekly schedule)
@@ -82,7 +201,7 @@ Two types of events co-exist in the Hot screen:
 
 ---
 
-### Event Ownership
+## Event Ownership
 
 Every event belongs to its creator — tracked via dual identity:
 
@@ -97,72 +216,10 @@ Every event belongs to its creator — tracked via dual identity:
 **Creator UX signals:**
 - "👑 Your event" badge in the event header
 - Owner-prompt card injected at the top of event chat on first open
-- Edit button pulse animation on first render
-
-**Ownership on recurring events:**
-- Ownership belongs to the `event_series` row, not individual occurrences
-- Creator can edit or delete the entire series
 
 ---
 
-### Event Lifecycle
-
-```
-Guest/registered user creates event
-  → event is inserted into channel_events
-  → creator is auto-joined as first participant
-  → city online users are notified (push + in-app)
-  → creator sees Edit CTA instead of Join
-
-Creator can edit:
-  → update title, location, start/end time
-
-Creator can delete:
-  → soft delete: status = 'deleted', expires_at = now()
-  → event disappears from Hot, Messages, city lists
-  → event chat is purged on next cleanup run
-```
-
----
-
-### Event Subchannels
-
-- Every event has its own real-time chat
-- Text + photo messages
-- Visible to anyone in the city
-- Messages deleted when the event expires (+1h buffer)
-
----
-
-### Recurring Events — How They Work
-
-Each recurring series (`event_series`) stores the recurrence rule.
-Daily occurrences are generated into `channel_events` via a 7-day lookahead cron.
-Only today's occurrence is surfaced in Hot and Messages.
-
-Source: curated static dataset — 10 cities × ~7 venues each (bars + cafés).
-
-**Recurrence types:** daily, weekly (specific weekdays)
-**Labels:** "Every day", "Mon / Wed / Fri", etc. — computed from series rule
-
----
-
-### My Events
-
-Shows events created by the user — available in the **Me** tab.
-
-Rules:
-- One-shot events: shown with exact start → end time
-- Recurring events: shown **once per series** (nearest upcoming occurrence)
-  - Deduplicated server-side: first upcoming occurrence wins
-  - Meta line shows recurrence label (e.g. "Every day · 18:00") instead of a specific date
-  - Badge shows "↻ Recurring" instead of "Upcoming"
-- Live events: badge shows "Live"
-- Expired events: not shown
-
----
-
-### Direct Messages
+## Direct Messages
 
 - Registered users only
 - 1:1 private conversations
@@ -170,40 +227,55 @@ Rules:
 
 ---
 
-### Notifications
+## Notifications
 
 - Registered users only
-- In-app notification feed (bell icon in header)
-- Unread badge polled every 30s
-- Triggered by: new DM, new event message, new event in city
-- Web push (browser push notifications) — users who grant permission
-- Push delivered via VAPID / Web Push Protocol
-- Per-user preferences: toggle push on/off per notification type
-- Notification click deep-links into the relevant screen
-- Expired push subscriptions cleaned up automatically (410 responses)
+- In-app notification feed (bell icon in city channel header)
+- Unread badge polled every 30s (real-time update via WebSocket when open)
+- Per-user preferences: toggle each type on/off
+
+### Notification types
+
+| Type | Trigger | Deep-link target |
+|---|---|---|
+| `dm_message` | New direct message | DM conversation |
+| `event_message` | New message in event you joined | Event chat |
+| `event_join` | Someone joined your event | Event |
+| `new_event` | New event created while you're online | Event |
+| `channel_message` | New message in city chat | City chat |
+| `city_join` | Registered user arrived in your city | City chat |
+| `friend_added` | Someone added you as friend | Their profile |
+| `vibe_received` | Someone left a vibe on your profile | **Your own profile** |
+
+### Push notifications
+
+- **Web push** — browser VAPID push (requires permission)
+- **Native push** — Expo Push API (iOS + Android)
+- Anti-noise cooldowns on high-frequency types (event_join: 5 min, new_event: 1 hour, channel_message: 5 min)
+- Expired push subscriptions cleaned up automatically
+- Same preference controls apply to push as to in-app
 
 ---
 
-### Presence
+## Presence
 
 - Live user count per city
 - "X joined" system messages in city chat
-- Guest vs registered badge on user rows
+- Ghost vs registered badge on user rows
 - WebSocket-driven: snapshot on join, live updates
 
 ---
 
-### City Discovery
+## City Discovery
 
-- 350 cities worldwide
+- 350+ cities worldwide
 - Ranked by live score: `events × 10 + online users × 3 + messages × 1`
 - Top 10 shown by default, full search available
 - City row shows: event count, online users, message count
-- Event count = today's active events only
 
 ---
 
-### Photos
+## Photos
 
 - Share images in city chat and event chats
 - Stored on Cloudflare R2
@@ -218,24 +290,19 @@ Rules:
 | Event chat | While event is active | 1h after event ends |
 | Direct messages | 7 days | Older than 7 days (daily cron) |
 
-Cleanup is handled by a scheduled job — not during user requests.
-
 ---
 
 ## Architecture Concepts
 
 ### City Channels
-`city_1`, `city_2` etc. One per city. All users share the same channel.
-Parent of all event subchannels.
+`city_1`, `city_2` etc. One per city. All users share the same channel. Parent of all event subchannels.
 
 ### Event Subchannels
 Hex-id channels of `type='event'`, parented to a city channel.
 Each has a `channel_events` row with: timing, source, series linkage, and creator identity (`created_by`).
 
 ### event_series
-Stores the recurrence rule for recurring events.
-Each series generates occurrence rows in `channel_events` with an `occurrence_date`.
-The series is the source of truth — occurrences are ephemeral and regenerated daily.
+Stores the recurrence rule for recurring events. Each series generates occurrence rows in `channel_events` with an `occurrence_date`. The series is the source of truth — occurrences are ephemeral and regenerated daily.
 
 ### Event ownership model
 ```
@@ -244,9 +311,8 @@ channel_events.created_by   — creator's user UUID (set if registered)
 ```
 Ownership check: `guest_id = :guest_id OR created_by = :user_id`
 
-### source_key
-Stable fingerprint for seeded series: `static:v1:city_{id}:{slug}:{category}`.
-Ensures the seed is idempotent — re-running it skips already-created series.
+### Ghost identity persistence
+The guestId is a 32-char hex string stored in `localStorage` (web) and `SecureStore` (native). It is reused across sessions so that historical chat messages can be linked to a registered user via `users.guest_id` when they later register.
 
 ### Real-time
 WebSocket server handles presence snapshots and message push.
@@ -255,7 +321,6 @@ PHP API uses a fire-and-forget internal HTTP call to broadcast events.
 
 ### Non-fatal side effects
 Auto-join and city notification on event creation are wrapped in try/catch.
-If they fail (e.g. schema lag), the event itself is already created and a 201 is returned.
 Schema migrations are applied idempotently inside `Database::pdo()` on first connection.
 
 ---
@@ -264,23 +329,12 @@ Schema migrations are applied idempotently inside `Database::pdo()` on first con
 
 Internal tool accessible at `/admin` on the API service. Not part of the product — ops only.
 
-**Authentication:**
-- Credentials from env vars: `ADMIN_USERNAME` + `ADMIN_PASSWORD`
-- PHP session-based, scoped to `/admin` path
-- Session regenerated on login, destroyed on logout
-- CSRF protection on all state-changing forms
-
 **Routes:**
-- `GET /admin` — dashboard with stats (users, events, active events, messages)
+- `GET /admin` — dashboard with stats
 - `GET /admin/users` — searchable, paginated user list (read-only)
-- `GET /admin/events` — searchable event list with status filters (active / expired / deleted / recurring / one-shot)
-- `GET /admin/events/{id}/edit` — edit event title, location, venue, times, status
-- `POST /admin/events/{id}/delete` — soft delete (mirrors product behavior)
-
-**Constraints:**
-- Users are read-only in v1
-- Recurring event occurrences: only title/location/venue editable (times are cron-generated from `event_series`)
-- Implemented as server-rendered PHP inside `backend/api/admin/` — no separate service, no JS framework
+- `GET /admin/events` — searchable event list with status filters
+- `GET /admin/events/{id}/edit` — edit event fields
+- `POST /admin/events/{id}/delete` — soft delete
 
 ---
 
@@ -293,25 +347,30 @@ Internal tool accessible at `/admin` on the API service. Not part of the product
 - My Events (deduplicated, per creator)
 - Direct messages (registered users)
 - Presence + user discovery
-- Profile (registered users)
+- Ghost profile (lightweight, no API call)
+- Registered profile (full — badge, vibe, friends)
+- Badge system (Fresh / Regular, auto-evolving)
+- Vibe system (leave, display, score)
+- Friends system (add, list, view)
+- Feed bubbles (clickable, identity-resolved)
 - City switching + discovery
-- Curated recurring venue seed (10 cities)
+- Curated recurring venue seed
 - Message retention via daily cleanup
-- In-app notifications + web push (registered users)
-- Feed prompts (client-side engagement nudges)
-- Internal admin backoffice (ops, not product)
+- In-app notifications + web push + native push
+- Push preference controls per type
+- Vibe notifications (in-app + push, deep-link to own profile)
+- Native app (Expo / React Native — iOS + Android)
+- Internal admin backoffice (ops only)
 
 ---
 
 ## What Is Out of Scope
 
-- Followers, feeds, social graph
 - Algorithmic ranking or recommendations
 - Ticketing or paid events
 - Archival or export
-- Mobile native app
-- Push notification batching/throttling
-- Real-time unread badge via WebSocket (currently polled)
+- Follower graph / feed (beyond friends)
+- Real-time unread badge via WebSocket (currently polled every 30s)
 
 ---
 
@@ -326,9 +385,10 @@ Internal tool accessible at `/admin` on the API service. Not part of the product
 
 | Layer | Stack |
 |---|---|
-| Frontend | React 18, Vite, mobile-first |
+| Web frontend | React 18, Vite, mobile-first PWA |
+| Native app | Expo SDK 52 + React Native, TypeScript |
 | Backend | PHP 8.2, plain REST API, no framework |
 | Database | PostgreSQL |
 | Real-time | Node.js WebSocket + 3s poll fallback |
 | Media | Cloudflare R2 |
-| Hosting | Render (API + WS) · Vercel (frontend) |
+| Hosting | Render (API + WS) · Vercel (web) · EAS (native builds) |
