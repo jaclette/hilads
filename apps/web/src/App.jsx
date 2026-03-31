@@ -170,7 +170,7 @@ const AVATAR_PALETTES = [
 ]
 
 function avatarColors(name) {
-  const hash = name.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
+  const hash = (name || '?').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0)
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
@@ -254,6 +254,16 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
     }
     const tpl = JOIN_TEMPLATES[Math.floor(Math.random() * JOIN_TEMPLATES.length)]
     return { type: 'activity', subtype: 'join', id: messageKey(m), text: tpl(m.nickname) }
+  }
+  // Weather system messages have no nickname/id — render as a subtle activity line.
+  if (m.type === 'system' && m.event === 'weather') {
+    console.log('[feed] weather system message:', m.content)
+    return { type: 'activity', subtype: 'weather', id: `weather_${m.createdAt}`, text: m.content }
+  }
+  // Guard: any other system message that slips through has no nickname — skip it rather than crash.
+  if (m.type === 'system') {
+    console.warn('[feed] unhandled system message — skipping:', m)
+    return null
   }
   return { type: 'message', staggerDelay, ...m }
 }
