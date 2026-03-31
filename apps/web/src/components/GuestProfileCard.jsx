@@ -16,7 +16,7 @@ function avatarColors(name) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function GuestProfileCard({ guestId, nickname, cityName, onBack }) {
-  const name    = nickname || 'Guest'
+  const name    = nickname || 'Ghost'
   const initial = name[0].toUpperCase()
   const [c1, c2] = avatarColors(name)
 
@@ -36,14 +36,14 @@ export default function GuestProfileCard({ guestId, nickname, cityName, onBack }
             {initial}
           </span>
           <div className="pub-profile-name">{name}</div>
-          <div className="guest-profile-badge">Guest</div>
+          <div className="guest-profile-badge">👻 Ghost</div>
           {cityName && (
             <div className="guest-profile-city">Visiting {cityName}</div>
           )}
         </div>
 
         <p className="guest-profile-note">
-          This person is browsing as a guest.
+          Floating around as a ghost 👻
         </p>
       </div>
     </div>

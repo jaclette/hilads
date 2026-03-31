@@ -34,7 +34,7 @@ export default function GuestProfileScreen() {
   const { nickname, guestId } = useLocalSearchParams<{ nickname: string; guestId: string }>();
   const { city } = useApp();
 
-  const name    = nickname || 'Guest';
+  const name    = nickname || 'Ghost';
   const initial = name[0].toUpperCase();
   const bg      = avatarBg(name);
 
@@ -60,7 +60,7 @@ export default function GuestProfileScreen() {
         <Text style={styles.displayName}>{name}</Text>
 
         <View style={styles.guestBadge}>
-          <Text style={styles.guestBadgeText}>GUEST</Text>
+          <Text style={styles.guestBadgeText}>👻 Ghost</Text>
         </View>
 
         {city ? (
@@ -68,7 +68,7 @@ export default function GuestProfileScreen() {
         ) : null}
       </View>
 
-      <Text style={styles.note}>This person is browsing as a guest.</Text>
+      <Text style={styles.note}>Floating around as a ghost 👻</Text>
 
     </SafeAreaView>
   );
