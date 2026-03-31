@@ -2393,15 +2393,41 @@ html, body, #root {
   width: 100%;
   max-width: 360px;
   padding-top: 4px;
+  display: flex;
+  gap: 10px;
+}
+
+.pub-profile-friend-btn {
+  flex: 1;
+  padding: 13px 10px;
+  border-radius: 12px;
+  background: var(--surface2);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.pub-profile-friend-btn--active {
+  background: rgba(255,122,60,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.pub-profile-friend-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .pub-profile-dm-btn {
-  width: 100%;
-  padding: 14px;
+  flex: 1;
+  padding: 13px 10px;
   border-radius: 12px;
   background: var(--accent);
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   border: none;
   cursor: pointer;
@@ -2411,6 +2437,122 @@ html, body, #root {
 .pub-profile-dm-btn:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* ── Friends section on public profile ─────────────── */
+
+.pub-profile-friends {
+  width: 100%;
+  max-width: 360px;
+}
+
+.pub-profile-friend-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  transition: background 0.12s;
+}
+
+.pub-profile-friend-row:hover {
+  background: var(--surface3, rgba(255,255,255,0.06));
+}
+
+.pub-profile-friend-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.pub-profile-friend-avatar--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pub-profile-friend-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pub-profile-friend-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pub-profile-friend-badge {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ── My Friends section on own profile ─────────────── */
+
+.my-friend-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  transition: opacity 0.12s;
+}
+
+.my-friend-row:last-child { border-bottom: none; }
+
+.my-friend-row:hover { opacity: 0.8; }
+
+.my-friend-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.my-friend-avatar--initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.my-friend-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.my-friend-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-friend-badge {
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 .pub-profile-error {

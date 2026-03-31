@@ -15,10 +15,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { fetchPublicProfile, fetchUserEvents } from '@/api/users';
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend } from '@/api/users';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import type { User, HiladsEvent } from '@/types';
+import type { User, HiladsEvent, FriendUser } from '@/types';
 
 // ── Badge microcopy — mirrors web PublicProfileScreen.jsx & me.tsx ────────────
 
@@ -152,6 +152,9 @@ export default function PublicProfileScreen() {
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState<string | null>(null);
+  const [isFriend,     setIsFriend]     = useState(false);
+  const [friendBusy,   setFriendBusy]   = useState(false);
+  const [friends,      setFriends]      = useState<FriendUser[]>([]);
 
   useEffect(() => {
     if (!id) return;
@@ -159,14 +162,32 @@ export default function PublicProfileScreen() {
     Promise.all([
       fetchPublicProfile(id),
       fetchUserEvents(id),
+      fetchUserFriends(id).catch(() => ({ friends: [], total: 0, hasMore: false })),
     ])
-      .then(([u, evs]) => {
+      .then(([u, evs, fr]) => {
         setUser(u);
         setEvents(evs);
+        setIsFriend(u.isFriend ?? false);
+        setFriends(fr.friends);
       })
       .catch(() => setError('Could not load profile.'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  async function handleFriendToggle() {
+    if (!user || friendBusy) return;
+    setFriendBusy(true);
+    try {
+      if (isFriend) {
+        await removeFriend(user.id);
+        setIsFriend(false);
+      } else {
+        await addFriend(user.id);
+        setIsFriend(true);
+      }
+    } catch { /* silently ignore */ }
+    finally { setFriendBusy(false); }
+  }
 
   const name    = user?.display_name ?? '?';
   const initial = name[0].toUpperCase();
@@ -329,12 +350,62 @@ export default function PublicProfileScreen() {
             </View>
           )}
 
-          {/* ── DM button — registered non-self viewers only ── */}
+          {/* ── Friends section ── */}
+          {friends.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>Friends · {friends.length}</Text>
+              <View style={styles.friendList}>
+                {friends.map(f => (
+                  <TouchableOpacity
+                    key={f.id}
+                    style={styles.friendRow}
+                    onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id } })}
+                    activeOpacity={0.7}
+                  >
+                    {f.profile_photo_url ? (
+                      <Image source={{ uri: f.profile_photo_url }} style={styles.friendAvatar} />
+                    ) : (
+                      <View style={[styles.friendAvatar, styles.friendAvatarFallback, { backgroundColor: avatarBg(f.display_name) }]}>
+                        <Text style={styles.friendAvatarInitial}>{f.display_name[0]?.toUpperCase()}</Text>
+                      </View>
+                    )}
+                    <View style={styles.friendInfo}>
+                      <Text style={styles.friendName} numberOfLines={1}>{f.display_name}</Text>
+                      {f.primaryBadge && (
+                        <Text style={styles.friendBadge}>{f.primaryBadge.label}</Text>
+                      )}
+                    </View>
+                    <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* ── Action buttons — registered non-self viewers only ── */}
           {!isSelf && account && (
-            <TouchableOpacity style={styles.dmBtn} onPress={handleDm} activeOpacity={0.85}>
-              <Feather name="message-square" size={20} color={Colors.white} />
-              <Text style={styles.dmBtnText}>Send a message</Text>
-            </TouchableOpacity>
+            <View style={styles.actionBtns}>
+              <TouchableOpacity
+                style={[styles.friendBtn, isFriend && styles.friendBtnActive]}
+                onPress={handleFriendToggle}
+                activeOpacity={0.85}
+                disabled={friendBusy}
+              >
+                <Ionicons
+                  name={isFriend ? 'person-remove-outline' : 'person-add-outline'}
+                  size={18}
+                  color={isFriend ? Colors.accent : Colors.text}
+                />
+                <Text style={[styles.friendBtnText, isFriend && styles.friendBtnTextActive]}>
+                  {isFriend ? 'Friend' : 'Add friend'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.dmBtn} onPress={handleDm} activeOpacity={0.85}>
+                <Feather name="message-square" size={18} color={Colors.white} />
+                <Text style={styles.dmBtnText}>Message</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </ScrollView>
       ) : null}
@@ -611,24 +682,94 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
   },
 
-  // ── DM button ─────────────────────────────────────────────────────────────
-  dmBtn: {
+  // ── Friends list ──────────────────────────────────────────────────────────
+  friendList: { gap: Spacing.xs },
+  friendRow: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.lg,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.sm + 2,
+    gap:               Spacing.sm,
+  },
+  friendAvatar: {
+    width:        40,
+    height:       40,
+    borderRadius: 20,
+    flexShrink:   0,
+  },
+  friendAvatarFallback: {
+    alignItems:     'center',
+    justifyContent: 'center',
+  },
+  friendAvatarInitial: {
+    fontSize:   16,
+    fontWeight: '700',
+    color:      '#fff',
+  },
+  friendInfo: { flex: 1, gap: 2 },
+  friendName: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  friendBadge: {
+    fontSize: FontSizes.xs,
+    color:    Colors.muted,
+  },
+
+  // ── Action buttons row ────────────────────────────────────────────────────
+  actionBtns: {
+    flexDirection: 'row',
+    gap:           Spacing.sm,
+    marginTop:     Spacing.sm,
+  },
+  friendBtn: {
+    flex:              1,
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               10,
-    marginTop:         Spacing.sm,
-    paddingVertical:   16,
+    gap:               8,
+    paddingVertical:   15,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.lg,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+  },
+  friendBtnActive: {
+    backgroundColor: 'rgba(255,122,60,0.10)',
+    borderColor:     Colors.accent,
+  },
+  friendBtnText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  friendBtnTextActive: {
+    color: Colors.accent,
+  },
+
+  // ── DM button ─────────────────────────────────────────────────────────────
+  dmBtn: {
+    flex:              1,
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'center',
+    gap:               8,
+    paddingVertical:   15,
     backgroundColor:   Colors.accent2,
     borderRadius:      Radius.lg,
     shadowColor:       Colors.accent2,
     shadowOffset:      { width: 0, height: 4 },
-    shadowOpacity:     0.35,
-    shadowRadius:      10,
-    elevation:         6,
+    shadowOpacity:     0.30,
+    shadowRadius:      8,
+    elevation:         5,
   },
   dmBtnText: {
-    fontSize:   FontSizes.md,
+    fontSize:   FontSizes.sm,
     fontWeight: '700',
     color:      Colors.white,
   },

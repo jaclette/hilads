@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { fetchPublicProfile, fetchUserEvents } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend } from '../api'
 import { cityFlag } from '../cityMeta'
 import BackButton from './BackButton'
 
@@ -51,30 +51,54 @@ function eventIcon(type) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function PublicProfileScreen({ userId, cityName, cityCountry, account, onBack, onSendDm }) {
-  const [user,   setUser]   = useState(null)
-  const [events, setEvents] = useState([])
-  const [error,  setError]  = useState(null)
-  const [dmBusy, setDmBusy] = useState(false)
+export default function PublicProfileScreen({ userId, cityName, cityCountry, account, onBack, onSendDm, onViewProfile }) {
+  const [user,       setUser]       = useState(null)
+  const [events,     setEvents]     = useState([])
+  const [friends,    setFriends]    = useState([])
+  const [error,      setError]      = useState(null)
+  const [dmBusy,     setDmBusy]     = useState(false)
+  const [isFriend,   setIsFriend]   = useState(false)
+  const [friendBusy, setFriendBusy] = useState(false)
 
   useEffect(() => {
     setUser(null)
     setEvents([])
+    setFriends([])
     setError(null)
+    setIsFriend(false)
 
     fetchPublicProfile(userId)
-      .then(data => setUser(data.user))
+      .then(data => { setUser(data.user); setIsFriend(data.user?.isFriend ?? false) })
       .catch(() => setError('Could not load profile.'))
 
     fetchUserEvents(userId)
       .then(data => setEvents(data.events ?? []))
-      .catch(() => { /* events are optional — fail silently */ })
+      .catch(() => {})
+
+    fetchUserFriends(userId)
+      .then(data => setFriends(data.friends ?? []))
+      .catch(() => {})
   }, [userId])
 
   async function handleSendDm() {
     if (!onSendDm || dmBusy) return
     setDmBusy(true)
     try { await onSendDm(userId) } finally { setDmBusy(false) }
+  }
+
+  async function handleFriendToggle() {
+    if (!account || friendBusy) return
+    setFriendBusy(true)
+    try {
+      if (isFriend) {
+        await removeFriend(userId)
+        setIsFriend(false)
+      } else {
+        await addFriend(userId)
+        setIsFriend(true)
+      }
+    } catch { /* ignore */ }
+    finally { setFriendBusy(false) }
   }
 
   const name     = user?.display_name ?? '?'
@@ -182,16 +206,58 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </div>
             )}
 
-            {/* ── DM CTA ── */}
-            {onSendDm && userId !== account?.id && (
+            {/* ── Friends ── */}
+            {friends.length > 0 && (
+              <div className="pub-profile-friends">
+                <p className="pub-profile-section-label">Friends · {friends.length}</p>
+                {friends.map(f => {
+                  const [fc1, fc2] = avatarColors(f.display_name || '?')
+                  return (
+                    <div
+                      key={f.id}
+                      className="pub-profile-friend-row"
+                      onClick={() => onViewProfile ? onViewProfile(f.id, f.display_name) : undefined}
+                      style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
+                    >
+                      {f.profile_photo_url
+                        ? <img className="pub-profile-friend-avatar" src={f.profile_photo_url} alt={f.display_name} />
+                        : <span className="pub-profile-friend-avatar pub-profile-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
+                            {(f.display_name || '?')[0].toUpperCase()}
+                          </span>
+                      }
+                      <div className="pub-profile-friend-info">
+                        <span className="pub-profile-friend-name">{f.display_name}</span>
+                        {f.primaryBadge && (
+                          <span className="pub-profile-friend-badge">{f.primaryBadge.label}</span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* ── CTAs ── */}
+            {userId !== account?.id && (
               <div className="pub-profile-cta">
-                <button
-                  className="pub-profile-dm-btn"
-                  onClick={handleSendDm}
-                  disabled={dmBusy}
-                >
-                  {dmBusy ? 'Opening…' : '💬 Send a message'}
-                </button>
+                {account && (
+                  <button
+                    className={`pub-profile-friend-btn${isFriend ? ' pub-profile-friend-btn--active' : ''}`}
+                    onClick={handleFriendToggle}
+                    disabled={friendBusy}
+                  >
+                    {isFriend ? '✓ Friend' : '+ Add friend'}
+                  </button>
+                )}
+                {onSendDm && (
+                  <button
+                    className="pub-profile-dm-btn"
+                    onClick={handleSendDm}
+                    disabled={dmBusy}
+                  >
+                    {dmBusy ? 'Opening…' : '💬 Message'}
+                  </button>
+                )}
               </div>
             )}
           </>

@@ -270,6 +270,24 @@ class Database
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_city_roles_city ON user_city_roles (city_id)");
             }
 
+            // User friends — one-directional "add as friend" list.
+            $ufExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_friends')")
+                ->fetchColumn();
+
+            if (!$ufExists) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS user_friends (
+                        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        friend_id  TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                        PRIMARY KEY (user_id, friend_id)
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_friends_user   ON user_friends (user_id,   created_at DESC)");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_friends_friend ON user_friends (friend_id, created_at DESC)");
+            }
+
             // City memberships (source of truth for City Crew / Here screen).
             // Added after initial deploy — must run as an additive migration on existing DBs.
             $ucmExists = (bool) self::$pdo

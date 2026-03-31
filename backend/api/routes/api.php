@@ -504,7 +504,19 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         Response::json(['error' => 'User not found'], 404);
     }
 
-    Response::json(['user' => AuthService::publicFields($user)]);
+    $fields = AuthService::publicFields($user);
+
+    // Add isFriend: whether the current authenticated viewer has added this user as a friend.
+    $viewer    = AuthService::currentUser();
+    $isFriend  = false;
+    if ($viewer !== null && $viewer['id'] !== $user['id']) {
+        $chk = Database::pdo()->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?");
+        $chk->execute([$viewer['id'], $user['id']]);
+        $isFriend = (bool) $chk->fetchColumn();
+    }
+    $fields['isFriend'] = $isFriend;
+
+    Response::json(['user' => $fields]);
 });
 
 // ── /me/events MUST be registered before /{userId}/events ────────────────────
@@ -539,6 +551,94 @@ $router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
 
     $events = EventRepository::getPublicByUserId($user['id']);
     Response::json(['events' => $events]);
+});
+
+// ── Friends ───────────────────────────────────────────────────────────────────
+
+// POST /api/v1/users/{userId}/friends — add {userId} as my friend (auth required).
+$router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) {
+    $viewer   = AuthService::requireAuth();
+    $targetId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $targetId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+    if ($targetId === $viewer['id']) {
+        Response::json(['error' => 'Cannot add yourself as a friend'], 400);
+    }
+
+    if (UserRepository::findById($targetId) === null) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
+    Database::pdo()
+        ->prepare("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
+        ->execute([$viewer['id'], $targetId]);
+
+    Response::json(['ok' => true]);
+});
+
+// DELETE /api/v1/users/{userId}/friends — remove {userId} from my friends (auth required).
+$router->add('DELETE', '/api/v1/users/{userId}/friends', function (array $params) {
+    $viewer   = AuthService::requireAuth();
+    $targetId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $targetId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+
+    Database::pdo()
+        ->prepare("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?")
+        ->execute([$viewer['id'], $targetId]);
+
+    Response::json(['ok' => true]);
+});
+
+// GET /api/v1/users/{userId}/friends — list a user's friends (public, paginated).
+$router->add('GET', '/api/v1/users/{userId}/friends', function (array $params) {
+    $userId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+
+    $limit  = max(1, min(50, (int) ($_GET['limit'] ?? 20)));
+    $page   = max(1, (int) ($_GET['page']  ?? 1));
+    $offset = ($page - 1) * $limit;
+
+    $pdo = Database::pdo();
+
+    $countStmt = $pdo->prepare("SELECT COUNT(*) FROM user_friends WHERE user_id = ?");
+    $countStmt->execute([$userId]);
+    $total = (int) $countStmt->fetchColumn();
+
+    $stmt = $pdo->prepare("
+        SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at
+        FROM user_friends f
+        JOIN users u ON u.id = f.friend_id
+        WHERE f.user_id = :uid
+        ORDER BY f.created_at DESC
+        LIMIT :limit OFFSET :offset
+    ");
+    $stmt->bindValue(':uid', $userId);
+    $stmt->bindValue(':limit',  $limit,  \PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+
+    $friends = array_map(static function (array $u): array {
+        return [
+            'id'                => $u['id'],
+            'display_name'      => $u['display_name'],
+            'profile_photo_url' => $u['profile_photo_url'],
+            'vibe'              => $u['vibe'],
+            'primaryBadge'      => UserBadgeService::primaryForUser($u),
+        ];
+    }, $rows);
+
+    Response::json([
+        'friends' => $friends,
+        'total'   => $total,
+        'page'    => $page,
+        'hasMore' => ($offset + count($rows)) < $total,
+    ]);
 });
 
 // ── Guest sessions ────────────────────────────────────────────────────────────

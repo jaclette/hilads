@@ -28,8 +28,9 @@ import { useMyEvents } from '@/hooks/useMyEvents';
 import { updateProfile } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
+import { fetchUserFriends } from '@/api/users';
 import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
-import type { HiladsEvent } from '@/types';
+import type { HiladsEvent, FriendUser } from '@/types';
 
 // ── Vibes — matches backend AuthService allowed list ─────────────────────────
 const VIBES = [
@@ -112,9 +113,21 @@ export default function MeScreen() {
   const [saving,             setSaving]              = useState(false);
   const [saved,              setSaved]               = useState(false);
   const [saveError,          setSaveError]           = useState<string | null>(null);
+  const [myFriends,          setMyFriends]           = useState<FriendUser[]>([]);
+  const [friendsLoading,     setFriendsLoading]      = useState(false);
 
   // Re-sync local events when hook loads
   useEffect(() => { setLocalEvents(rawEvents); }, [rawEvents]);
+
+  // Load my friends when account is available
+  useEffect(() => {
+    if (!account?.id) return;
+    setFriendsLoading(true);
+    fetchUserFriends(account.id)
+      .then(data => setMyFriends(data.friends))
+      .catch(() => {})
+      .finally(() => setFriendsLoading(false));
+  }, [account?.id]);
 
   // Re-sync form state if account changes externally (e.g. after login)
   useEffect(() => {
@@ -522,6 +535,44 @@ export default function MeScreen() {
           </View>
         )}
 
+        {/* ── My Friends ─────────────────────────────────────────────────── */}
+        {!isGuest && (
+          <View style={styles.eventsCard}>
+            <Text style={styles.eventsLabel}>MY FRIENDS</Text>
+            {friendsLoading ? (
+              <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
+            ) : myFriends.length === 0 ? (
+              <Text style={styles.eventsEmpty}>No friends yet. Add some from profiles.</Text>
+            ) : (
+              myFriends.map((f, idx) => (
+                <View key={f.id}>
+                  {idx > 0 && <View style={styles.eventDivider} />}
+                  <TouchableOpacity
+                    style={styles.friendRow}
+                    onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id } })}
+                    activeOpacity={0.7}
+                  >
+                    {f.profile_photo_url ? (
+                      <Image source={{ uri: f.profile_photo_url }} style={styles.friendAvatar} />
+                    ) : (
+                      <View style={[styles.friendAvatarFallback, { backgroundColor: avatarBg(f.display_name) }]}>
+                        <Text style={styles.friendAvatarInitial}>{f.display_name[0]?.toUpperCase()}</Text>
+                      </View>
+                    )}
+                    <View style={styles.friendInfo}>
+                      <Text style={styles.friendName} numberOfLines={1}>{f.display_name}</Text>
+                      {f.primaryBadge && (
+                        <Text style={styles.friendBadgeText}>{f.primaryBadge.label}</Text>
+                      )}
+                    </View>
+                    <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
+          </View>
+        )}
+
         {/* ── CTAs — web: Save profile + Sign out (gradient buttons) ──────── */}
         {!isGuest && (
           <View style={styles.ctaSection}>
@@ -910,6 +961,42 @@ const styles = StyleSheet.create({
     fontSize:   22,
     color:      Colors.muted2,
     lineHeight: 26,
+  },
+
+  // ── My Friends rows (reuse eventsCard container) ──────────────────────────
+  friendRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           10,
+  },
+  friendAvatar: {
+    width:        38,
+    height:       38,
+    borderRadius: 19,
+    flexShrink:   0,
+  },
+  friendAvatarFallback: {
+    width:           38,
+    height:          38,
+    borderRadius:    19,
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexShrink:      0,
+  },
+  friendAvatarInitial: {
+    fontSize:   15,
+    fontWeight: '700',
+    color:      '#fff',
+  },
+  friendInfo: { flex: 1, gap: 2 },
+  friendName: {
+    fontSize:   FontSizes.md,
+    fontWeight: '600',
+    color:      Colors.text,
+  },
+  friendBadgeText: {
+    fontSize: FontSizes.xs,
+    color:    Colors.muted,
   },
 
   // ── CTAs — web: .profile-actions ──────────────────────────────────────────

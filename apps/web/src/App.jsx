@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
@@ -549,6 +549,8 @@ export default function App() {
   const [successToast, setSuccessToast] = useState(null) // { msg: string }
   const [myEvents, setMyEvents] = useState([])
   const [myEventsLoaded, setMyEventsLoaded] = useState(false)
+  const [myFriends, setMyFriends] = useState([])
+  const [myFriendsLoaded, setMyFriendsLoaded] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
@@ -712,6 +714,15 @@ export default function App() {
     fetchMyEvents(guest.guestId)
       .then(data => { setMyEvents(data.events ?? []); setMyEventsLoaded(true) })
       .catch(() => setMyEventsLoaded(true))
+  }, [showProfileDrawer]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Load my friends whenever the profile drawer opens (registered only).
+  useEffect(() => {
+    if (!showProfileDrawer || !account?.id) return
+    setMyFriendsLoaded(false)
+    fetchUserFriends(account.id)
+      .then(data => { setMyFriends(data.friends ?? []); setMyFriendsLoaded(true) })
+      .catch(() => setMyFriendsLoaded(true))
   }, [showProfileDrawer]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Poll notification unread count every 30s for registered users.
@@ -2999,6 +3010,7 @@ export default function App() {
           cityCountry={cityCountry}
           account={account}
           onBack={() => setViewingProfile(null)}
+          onViewProfile={(uid, nickname) => setViewingProfile({ userId: uid, nickname })}
           onSendDm={account ? async (targetUserId) => {
             try {
               const { conversation, otherUser } = await createOrGetDirectConversation(targetUserId)
@@ -3053,9 +3065,14 @@ export default function App() {
         <ProfileScreen
           account={account}
           myEvents={myEventsLoaded ? myEvents : null}
+          myFriends={myFriendsLoaded ? myFriends : null}
           cityTimezone={cityTimezone}
           onSave={setAccount}
           onBack={() => setShowProfileDrawer(false)}
+          onViewFriend={(uid, nickname) => {
+            setShowProfileDrawer(false)
+            setViewingProfile({ userId: uid, nickname })
+          }}
           onSelectEvent={(ev) => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
           onDeleteEvent={async (ev) => {
             try {

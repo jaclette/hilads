@@ -33,7 +33,7 @@ const INTERESTS = [
   'hangout', 'socializing', 'gaming', 'tech', 'dating',
 ]
 
-export default function ProfileScreen({ account, myEvents, cityTimezone, onSave, onBack, onSelectEvent, onDeleteEvent, onSignOut }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut }) {
   const [photoUrl, setPhotoUrl]   = useState(account.profile_photo_url ?? null)
   const [name, setName]           = useState(account.display_name ?? '')
   const [homeCity, setHomeCity]   = useState(account.home_city ?? '')
@@ -259,6 +259,34 @@ export default function ProfileScreen({ account, myEvents, cityTimezone, onSave,
                     </span>
                   </button>
                   <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label="Delete event">✕</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {myFriends !== null && myFriends.length > 0 && (
+          <div className="profile-card">
+            <p className="me-section-label">My friends</p>
+            {myFriends.map(f => {
+              const [fc1, fc2] = avatarColors(f.display_name || '?')
+              return (
+                <div
+                  key={f.id}
+                  className="my-friend-row"
+                  onClick={() => onViewFriend?.(f.id, f.display_name)}
+                  style={{ cursor: onViewFriend ? 'pointer' : 'default' }}
+                >
+                  {f.profile_photo_url
+                    ? <img className="my-friend-avatar" src={f.profile_photo_url} alt={f.display_name} />
+                    : <span className="my-friend-avatar my-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
+                        {(f.display_name || '?')[0].toUpperCase()}
+                      </span>
+                  }
+                  <div className="my-friend-info">
+                    <span className="my-friend-name">{f.display_name}</span>
+                    {f.primaryBadge && <span className="my-friend-badge">{f.primaryBadge.label}</span>}
+                  </div>
                 </div>
               )
             })}

@@ -123,6 +123,15 @@ export interface User {
   vibe?: VibeKey;
   guest_id?: string;
   primaryBadge?: Badge;
+  isFriend?: boolean;
+}
+
+export interface FriendUser {
+  id: string;
+  display_name: string;
+  profile_photo_url?: string;
+  vibe?: VibeKey;
+  primaryBadge?: Badge;
 }
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────

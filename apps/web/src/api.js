@@ -283,6 +283,36 @@ export async function fetchUserEvents(userId) {
   return res.json() // { events }
 }
 
+// ── Friends ────────────────────────────────────────────────────────────────────
+
+export async function fetchUserFriends(userId, { page = 1, limit = 20 } = {}) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/friends?page=${page}&limit=${limit}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to fetch friends')
+  return res.json() // { friends, total, page, hasMore }
+}
+
+export async function addFriend(userId) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/friends`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) throw new Error('Failed to add friend')
+  return res.json()
+}
+
+export async function removeFriend(userId) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/friends`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to remove friend')
+  return res.json()
+}
+
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
 
 export async function fetchMyEvents(guestId) {
