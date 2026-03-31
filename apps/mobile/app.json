@@ -95,7 +95,9 @@
           "locationWhenInUsePermission": "Hilads uses your location to find your city.",
           "locationAlwaysAndWhenInUsePermission": "Hilads uses your location to find your city."
         }
-      ]
+      ],
+      "expo-font",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true

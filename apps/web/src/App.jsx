@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
@@ -436,6 +436,10 @@ export default function App() {
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState(null)
   const [onlineCount, setOnlineCount] = useState(null)
+  const weatherLabel = useMemo(() => {
+    const w = feed.find(item => item.type === 'activity' && item.subtype === 'weather')
+    return w?.text ?? null
+  }, [feed])
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])
   const [channelsLoading, setChannelsLoading] = useState(false)
@@ -1956,6 +1960,9 @@ export default function App() {
             <span className="online-pulse" />
             {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
           </span>
+          {weatherLabel && (
+            <span className="header-weather">{weatherLabel}</span>
+          )}
         </div>
       </div>
     )
@@ -2217,6 +2224,7 @@ export default function App() {
           )}
           {feed.map((item, i) => {
             if (item.type === 'activity') {
+              if (item.subtype === 'weather') return null
               return (
                 <div
                   key={item.id}

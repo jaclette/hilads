@@ -296,27 +296,27 @@ export default function ChatTab() {
     postImageFn,
   });
 
-  // Merge messages + synthesized event items, then partition into 3 display groups.
+  // Weather — extracted from messages for header display, not rendered in the feed.
+  const weatherLabel = useMemo<string | null>(() => {
+    const w = messages.find(m => m.type === 'system' && m.event === 'weather');
+    return w?.content ?? null;
+  }, [messages]);
+
+  // Merge messages + synthesized event items; weather is excluded from the feed.
   //
-  // Inverted FlatList: index 0 = BOTTOM of screen (near input), high index = TOP.
-  // Desired top-to-bottom visible order: events | weather | social/other
+  // Inverted FlatList: index 0 = BOTTOM of screen (near input, first thing visible).
+  //                    high index = TOP of screen (user scrolls up to reach).
   //
-  // Array order that achieves this: [other..., weather..., events...]
-  //   - other  → low indices  → bottom (visible when chat opens)
-  //   - weather → mid index   → just above the social stream
-  //   - events  → high indices → top (announcement area above the chat)
+  // Desired render order (bottom → top on screen):
+  //   index 0,1,2…  events  → BOTTOM, near input, immediately visible on open
+  //   index n+1…    other   → social/join messages scroll upward
   //
-  // Within each group the existing array order is preserved.
+  // Array order: [...events, ...other]
   const allMessages = useMemo<Message[]>(() => {
-    const combined = eventFeedItems.length === 0
-      ? messages
-      : [...messages, ...eventFeedItems];
-
+    const combined = [...messages, ...eventFeedItems];
     const events  = combined.filter(m => m.type === 'event');
-    const weather = combined.filter(m => m.type === 'system' && m.event === 'weather');
     const other   = combined.filter(m => m.type !== 'event' && !(m.type === 'system' && m.event === 'weather'));
-
-    return [...other, ...weather, ...events];
+    return [...events, ...other];
   }, [messages, eventFeedItems]);
 
   // No city yet — prompt to pick one
@@ -415,6 +415,9 @@ export default function ChatTab() {
               {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
             </Animated.Text>
           </View>
+          {weatherLabel && (
+            <Text style={styles.weatherLabel}>{weatherLabel}</Text>
+          )}
         </View>
 
       </View>
@@ -639,6 +642,15 @@ const styles = StyleSheet.create({
   onlineText: {
     fontSize: 16,
     color:    Colors.text,
+  },
+
+  // Weather context line — subtle, below presence pill
+  weatherLabel: {
+    fontSize:  FontSizes.xs,
+    color:     Colors.muted,
+    opacity:   0.75,
+    marginTop: 2,
+    textAlign: 'center',
   },
 
   // ── Error banner ─────────────────────────────────────────────────────────

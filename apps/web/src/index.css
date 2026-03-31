@@ -533,6 +533,14 @@ html, body, #root {
   border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
+.header-weather {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin-top: 4px;
+  letter-spacing: 0.01em;
+}
+
 /* Warm orange pulse dot */
 .online-pulse {
   width: 7px;
