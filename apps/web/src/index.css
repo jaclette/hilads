@@ -2088,6 +2088,111 @@ html, body, #root {
   border-color: rgba(61, 220, 132, 0.18);
 }
 
+/* ── Here filters ────────────────────────────────────── */
+
+.here-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.here-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.here-filter-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 36px;
+}
+
+.here-filter-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.here-chip {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+
+.here-chip--on {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--accent);
+}
+
+/* ── Here section headers ─────────────────────────────── */
+
+.here-section-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.here-section-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.here-section-dot--live {
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+
+.here-section-empty {
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 10px 0 4px;
+  margin: 0;
+}
+
+.here-load-more {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.here-load-more:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* ── Public profile screen ────────────────────────────── */
 
 .pub-profile-body {

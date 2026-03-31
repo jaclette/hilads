@@ -74,6 +74,17 @@ function avatarBg(name: string): string {
   return AVATAR_BG[hash % AVATAR_BG.length];
 }
 
+// ── Vibe meta — mirrors web PublicProfileScreen.jsx ───────────────────────────
+
+const VIBE_META: Record<string, { emoji: string; label: string; caption: string }> = {
+  party:       { emoji: '🔥', label: 'Party',       caption: 'Always down to party 🎉'   },
+  board_games: { emoji: '🎲', label: 'Board Games', caption: 'Game night, every night'   },
+  coffee:      { emoji: '☕', label: 'Coffee',       caption: 'Best conversations over coffee' },
+  music:       { emoji: '🎧', label: 'Music',        caption: 'Life is a playlist 🎶'     },
+  food:        { emoji: '🍜', label: 'Food',         caption: 'Eats first, questions later' },
+  chill:       { emoji: '🧘', label: 'Chill',        caption: 'Easy vibes only 😌'         },
+};
+
 // ── Event helpers — mirrors hot.tsx ───────────────────────────────────────────
 
 const EVENT_ICONS: Record<string, string> = {
@@ -242,6 +253,17 @@ export default function PublicProfileScreen() {
               </View>
             ) : null}
           </View>
+
+          {/* ── Vibe card ── */}
+          {user.vibe && VIBE_META[user.vibe] ? (
+            <View style={styles.vibeCard}>
+              <Text style={styles.vibeEmoji}>{VIBE_META[user.vibe].emoji}</Text>
+              <View style={styles.vibeText}>
+                <Text style={styles.vibeLabel}>{VIBE_META[user.vibe].label}</Text>
+                <Text style={styles.vibeCaption}>{VIBE_META[user.vibe].caption}</Text>
+              </View>
+            </View>
+          ) : null}
 
           {/* ── Details: home city + age ── */}
           {(user.home_city || user.age != null) && (
@@ -449,6 +471,35 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.sm,
     color:      Colors.muted,
     fontWeight: '500',
+  },
+
+  // ── Vibe card ─────────────────────────────────────────────────────────────
+  vibeCard: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               14,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.lg,
+    borderWidth:       1,
+    borderColor:       'rgba(251,146,60,0.18)',
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.md,
+  },
+  vibeEmoji: {
+    fontSize: 28,
+  },
+  vibeText: {
+    flex: 1,
+    gap:  2,
+  },
+  vibeLabel: {
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  vibeCaption: {
+    fontSize: FontSizes.sm,
+    color:    Colors.muted,
   },
 
   // ── Details card ─────────────────────────────────────────────────────────

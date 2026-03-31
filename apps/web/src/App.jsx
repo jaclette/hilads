@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
@@ -519,6 +519,12 @@ export default function App() {
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
+  const [crewMembers,  setCrewMembers]  = useState([])
+  const [crewPage,     setCrewPage]     = useState(1)
+  const [crewHasMore,  setCrewHasMore]  = useState(false)
+  const [crewLoading,  setCrewLoading]  = useState(false)
+  const [filterBadge,  setFilterBadge]  = useState(null)
+  const [filterVibe,   setFilterVibe]   = useState(null)
   const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
@@ -557,6 +563,43 @@ export default function App() {
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [obChannelEventCounts, setObChannelEventCounts] = useState({})
   const [citySearchQuery, setCitySearchQuery] = useState('')
+
+  // ── City crew fetch — triggered when people drawer opens or filters change ──
+  const crewChannelRef = useRef(null)
+  useEffect(() => {
+    if (!showPeopleDrawer || !channelId) return
+    const cid = channelId
+    crewChannelRef.current = cid
+    setCrewMembers([])
+    setCrewPage(1)
+    setCrewHasMore(false)
+    setCrewLoading(true)
+    fetchCityMembers(cid, { page: 1, badge: filterBadge, vibe: filterVibe })
+      .then(data => {
+        if (crewChannelRef.current !== cid) return
+        setCrewMembers(data.members)
+        setCrewHasMore(data.hasMore)
+        setCrewPage(1)
+      })
+      .catch(() => {})
+      .finally(() => { if (crewChannelRef.current === cid) setCrewLoading(false) })
+  }, [showPeopleDrawer, channelId, filterBadge, filterVibe])
+
+  function loadMoreCrew() {
+    if (!channelId || crewLoading || !crewHasMore) return
+    const cid  = channelId
+    const next = crewPage + 1
+    setCrewLoading(true)
+    fetchCityMembers(cid, { page: next, badge: filterBadge, vibe: filterVibe })
+      .then(data => {
+        if (crewChannelRef.current !== cid) return
+        setCrewMembers(prev => [...prev, ...data.members])
+        setCrewHasMore(data.hasMore)
+        setCrewPage(next)
+      })
+      .catch(() => {})
+      .finally(() => { if (crewChannelRef.current === cid) setCrewLoading(false) })
+  }
 
   const bottomRef = useRef(null)
   const pollRef = useRef(null)
@@ -2769,92 +2812,175 @@ export default function App() {
         </div>
       )}
 
-      {showPeopleDrawer && !viewingProfile && (
-        <div className="full-page">
-          <div className="page-header">
-            <BackButton onClick={() => { setShowPeopleDrawer(false); setViewingProfile(null) }} />
-            <span className="page-title">People here · {onlineUsers.length}</span>
-          </div>
-          <div className="page-body people-page-body">
-            {onlineUsers.map((user) => {
-              const [c1, c2] = avatarColors(user.nickname)
-              const tappable = !user.isMe && user.isRegistered
-              const handleUserTap = () => {
-                if (user.isMe) return
-                if (!account) {
-                  // Guest viewer: nudge to sign up
-                  setShowPeopleDrawer(false)
-                  setShowProfileDrawer(true)
-                  setShowAuthScreen(true)
-                  return
-                }
-                if (user.isRegistered) {
-                  setViewingProfile({ userId: user.userId, nickname: user.nickname })
-                }
-              }
-              return (
-                <div
-                  key={user.id}
-                  className={`people-drawer-row${tappable ? ' people-drawer-row--tappable' : ''}`}
-                  onClick={(!user.isMe && (tappable || !account)) ? handleUserTap : undefined}
-                >
-                  <span
-                    className="online-avatar"
-                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                    data-me={user.isMe ? 'true' : undefined}
-                  >
-                    {(user.nickname ?? '?')[0].toUpperCase()}
-                  </span>
-                  <div className="people-drawer-content">
-                    <span className="people-drawer-name">
-                      {user.nickname}
-                      {user.isMe && <span className="people-drawer-you"> (you)</span>}
-                    </span>
-                    <div className="people-drawer-meta">
-                      {user.isMe
-                        ? <span className="people-member-badge people-member-badge--you">live now</span>
-                        : user.primaryBadge
-                          ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
-                          : user.isRegistered
-                            ? <span className="badge-pill badge-pill--regular">Regular</span>
-                            : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
-                      }
-                      {!user.isMe && user.vibe && VIBE_META[user.vibe] && (
-                        <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
-                      )}
-                    </div>
-                  </div>
-                  {!user.isMe && user.isRegistered && (
-                    <button
-                      className="people-dm-btn"
-                      aria-label={`Message ${user.nickname}`}
-                      onClick={async (e) => {
-                        e.stopPropagation()
-                        if (!account) {
-                          setShowPeopleDrawer(false)
-                          setShowProfileDrawer(true)
-                          setShowAuthScreen(true)
-                          return
-                        }
-                        try {
-                          const { conversation, otherUser } = await createOrGetDirectConversation(user.userId)
-                          setShowPeopleDrawer(false)
-                          setShowConversations(true)
-                          setActiveDm({ conversation, otherUser })
-                        } catch { /* silent */ }
-                      }}
-                    >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                      </svg>
-                    </button>
+      {showPeopleDrawer && !viewingProfile && (() => {
+        // ── helpers scoped to this render ──────────────────────────────────────
+        const BADGE_FILTER_OPTIONS = [
+          { key: 'fresh',   label: '✨ Fresh'   },
+          { key: 'regular', label: 'Regular'    },
+          { key: 'host',    label: '⭐ Host'    },
+          { key: 'local',   label: '🌍 Local'   },
+        ]
+        const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
+
+        // Apply badge + vibe filters to the live list (small → client-side)
+        const filteredOnline = onlineUsers.filter(u => {
+          if (filterBadge && !u.isMe) {
+            const bk = u.primaryBadge?.key
+            if (filterBadge === 'host')    return u.contextBadge?.key === 'host'
+            if (filterBadge === 'local')   return u.contextBadge?.key === 'local'
+            if (bk !== filterBadge) return false
+          }
+          if (filterVibe && !u.isMe && u.vibe !== filterVibe) return false
+          return true
+        })
+
+        const renderOnlineUser = (user) => {
+          const [c1, c2] = avatarColors(user.nickname)
+          const tappable = !user.isMe && user.isRegistered
+          const handleTap = () => {
+            if (user.isMe) return
+            if (!account) { setShowPeopleDrawer(false); setShowProfileDrawer(true); setShowAuthScreen(true); return }
+            if (user.isRegistered) setViewingProfile({ userId: user.userId, nickname: user.nickname })
+          }
+          return (
+            <div
+              key={user.id}
+              className={`people-drawer-row${tappable ? ' people-drawer-row--tappable' : ''}`}
+              onClick={(!user.isMe && (tappable || !account)) ? handleTap : undefined}
+            >
+              <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }} data-me={user.isMe ? 'true' : undefined}>
+                {(user.nickname ?? '?')[0].toUpperCase()}
+              </span>
+              <div className="people-drawer-content">
+                <span className="people-drawer-name">
+                  {user.nickname}{user.isMe && <span className="people-drawer-you"> (you)</span>}
+                </span>
+                <div className="people-drawer-meta">
+                  {user.isMe
+                    ? <span className="people-member-badge people-member-badge--you">live now</span>
+                    : user.primaryBadge
+                      ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
+                      : user.isRegistered
+                        ? <span className="badge-pill badge-pill--regular">Regular</span>
+                        : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
+                  }
+                  {!user.isMe && user.vibe && VIBE_META[user.vibe] && (
+                    <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
                   )}
                 </div>
-              )
-            })}
+              </div>
+              {!user.isMe && user.isRegistered && (
+                <button className="people-dm-btn" aria-label={`Message ${user.nickname}`}
+                  onClick={async (e) => {
+                    e.stopPropagation()
+                    if (!account) { setShowPeopleDrawer(false); setShowProfileDrawer(true); setShowAuthScreen(true); return }
+                    try {
+                      const { conversation, otherUser } = await createOrGetDirectConversation(user.userId)
+                      setShowPeopleDrawer(false); setShowConversations(true); setActiveDm({ conversation, otherUser })
+                    } catch { /* silent */ }
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          )
+        }
+
+        const renderCrewMember = (m) => {
+          const [c1, c2] = avatarColors(m.display_name)
+          return (
+            <div key={m.id} className="people-drawer-row people-drawer-row--tappable"
+              onClick={() => {
+                if (!account) { setShowPeopleDrawer(false); setShowProfileDrawer(true); setShowAuthScreen(true); return }
+                setViewingProfile({ userId: m.id, nickname: m.display_name })
+              }}
+            >
+              {m.profile_photo_url
+                ? <img className="online-avatar" src={m.profile_photo_url} alt={m.display_name} style={{ objectFit: 'cover' }} />
+                : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                    {(m.display_name ?? '?')[0].toUpperCase()}
+                  </span>
+              }
+              <div className="people-drawer-content">
+                <span className="people-drawer-name">{m.display_name}</span>
+                <div className="people-drawer-meta">
+                  {m.primaryBadge && <span className={`badge-pill badge-pill--${m.primaryBadge.key}`}>{m.primaryBadge.label}</span>}
+                  {m.contextBadge && <span className={`badge-pill badge-pill--${m.contextBadge.key}`}>{m.contextBadge.label}</span>}
+                  {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {VIBE_META[m.vibe].label}</span>}
+                </div>
+              </div>
+            </div>
+          )
+        }
+
+        return (
+          <div className="full-page">
+            <div className="page-header">
+              <BackButton onClick={() => { setShowPeopleDrawer(false); setViewingProfile(null) }} />
+              <span className="page-title">People here</span>
+            </div>
+
+            {/* ── Filters ── */}
+            <div className="here-filters">
+              <div className="here-filter-row">
+                <span className="here-filter-label">Badge</span>
+                <div className="here-filter-chips">
+                  {BADGE_FILTER_OPTIONS.map(opt => (
+                    <button key={opt.key}
+                      className={`here-chip${filterBadge === opt.key ? ' here-chip--on' : ''}`}
+                      onClick={() => setFilterBadge(v => v === opt.key ? null : opt.key)}
+                    >{opt.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="here-filter-row">
+                <span className="here-filter-label">Vibe</span>
+                <div className="here-filter-chips">
+                  {VIBE_FILTER_OPTIONS.map(opt => (
+                    <button key={opt.key}
+                      className={`here-chip${filterVibe === opt.key ? ' here-chip--on' : ''}`}
+                      onClick={() => setFilterVibe(v => v === opt.key ? null : opt.key)}
+                    >{opt.label}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="page-body people-page-body">
+
+              {/* ── Section 1: Here now ── */}
+              <div className="here-section-header">
+                <span className="here-section-dot here-section-dot--live" />
+                Here now · {filteredOnline.length}
+              </div>
+              {filteredOnline.length === 0
+                ? <p className="here-section-empty">Nobody matches these filters right now.</p>
+                : filteredOnline.map(renderOnlineUser)
+              }
+
+              {/* ── Section 2: City crew ── */}
+              <div className="here-section-header" style={{ marginTop: 20 }}>
+                🏙️ City crew
+              </div>
+              {crewLoading && crewMembers.length === 0
+                ? <p className="here-section-empty">Loading…</p>
+                : crewMembers.length === 0
+                  ? <p className="here-section-empty">No members match these filters.</p>
+                  : crewMembers.map(renderCrewMember)
+              }
+              {crewHasMore && (
+                <button className="here-load-more" onClick={loadMoreCrew} disabled={crewLoading}>
+                  {crewLoading ? 'Loading…' : 'Load more'}
+                </button>
+              )}
+
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {showInstallBanner && !installBannerUsesBottomNav && (
         <InstallPromptBanner

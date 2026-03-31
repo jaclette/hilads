@@ -140,6 +140,15 @@ export async function fetchEvents(channelId) {
   return res.json()
 }
 
+export async function fetchCityMembers(channelId, { page = 1, limit = 10, badge = null, vibe = null } = {}) {
+  const q = new URLSearchParams({ page, limit })
+  if (badge) q.set('badge', badge)
+  if (vibe)  q.set('vibe',  vibe)
+  const res = await fetch(`${BASE}/channels/${channelId}/members?${q}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch city members')
+  return res.json() // { members, total, page, hasMore }
+}
+
 export async function fetchCityEvents(channelId) {
   const res = await fetch(`${BASE}/channels/${channelId}/city-events`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch city events')

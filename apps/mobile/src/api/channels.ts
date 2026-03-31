@@ -90,6 +90,32 @@ export async function heartbeat(
 
 // ── Messages ──────────────────────────────────────────────────────────────────
 
+export interface CityMember {
+  id:                string;
+  display_name:      string;
+  profile_photo_url: string | null;
+  vibe:              string | null;
+  primaryBadge:      { key: string; label: string };
+  contextBadge:      { key: string; label: string } | null;
+}
+
+export interface CityMembersResult {
+  members: CityMember[];
+  total:   number;
+  page:    number;
+  hasMore: boolean;
+}
+
+export async function fetchCityMembers(
+  channelId: string,
+  opts: { page?: number; limit?: number; badge?: string | null; vibe?: string | null } = {},
+): Promise<CityMembersResult> {
+  const q = new URLSearchParams({ page: String(opts.page ?? 1), limit: String(opts.limit ?? 10) });
+  if (opts.badge) q.set('badge', opts.badge);
+  if (opts.vibe)  q.set('vibe',  opts.vibe);
+  return api.get<CityMembersResult>(`/channels/${channelId}/members?${q}`);
+}
+
 export async function fetchMessages(channelId: string): Promise<Message[]> {
   const data = await api.get<{ messages: Message[] }>(`/channels/${channelId}/messages`);
   return data.messages ?? [];

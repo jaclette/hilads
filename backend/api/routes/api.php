@@ -1069,6 +1069,108 @@ $router->add('POST', '/api/v1/uploads', function () {
     Response::json(['url' => $url], 201);
 });
 
+// ── City crew — registered users associated with this city ────────────────────
+// GET /api/v1/channels/{channelId}/members
+// Returns paginated registered users whose home_city matches this channel's city.
+// Query params:
+//   page  (int, default 1)
+//   limit (int, default 10, max 50)
+//   badge (fresh|regular|host|local — optional)
+//   vibe  (party|coffee|etc — optional)
+$router->add('GET', '/api/v1/channels/{channelId}/members', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+        return;
+    }
+
+    $city = CityRepository::findById($channelId);
+    if ($city === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+        return;
+    }
+
+    $limit      = max(1, min(50, (int) ($_GET['limit'] ?? 10)));
+    $page       = max(1, (int) ($_GET['page']  ?? 1));
+    $offset     = ($page - 1) * $limit;
+    $vibeFilter = isset($_GET['vibe'])  && $_GET['vibe']  !== '' ? $_GET['vibe']  : null;
+    $badgeFilter= isset($_GET['badge']) && $_GET['badge'] !== '' ? $_GET['badge'] : null;
+
+    $pdo        = Database::pdo();
+    $channelKey = 'city_' . $channelId;
+    $cityName   = $city['name'];
+
+    // Base: users whose home_city matches (case-insensitive trim)
+    $conditions = ["LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name))"];
+    $binds      = [':city_name' => $cityName];
+
+    if ($vibeFilter !== null) {
+        $conditions[] = 'u.vibe = :vibe';
+        $binds[':vibe'] = $vibeFilter;
+    }
+
+    if ($badgeFilter === 'fresh') {
+        $conditions[] = "u.created_at > NOW() - INTERVAL '60 days'";
+    } elseif ($badgeFilter === 'regular') {
+        $conditions[] = "u.created_at <= NOW() - INTERVAL '60 days'";
+    } elseif ($badgeFilter === 'host') {
+        $conditions[] = "EXISTS (
+            SELECT 1 FROM user_city_roles r
+            WHERE r.user_id = u.id AND r.city_id = :city_key AND r.role = 'ambassador'
+        )";
+        $binds[':city_key'] = $channelKey;
+    }
+    // badge=local: all home_city users are local — no extra condition needed
+
+    $where = implode(' AND ', $conditions);
+
+    // Total count
+    $countStmt = $pdo->prepare("SELECT COUNT(*) FROM users u WHERE $where");
+    $countStmt->execute($binds);
+    $total = (int) $countStmt->fetchColumn();
+
+    // Paginated fetch
+    $sql  = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at, u.home_city
+             FROM users u
+             WHERE $where
+             ORDER BY u.created_at DESC
+             LIMIT :limit OFFSET :offset";
+    $stmt = $pdo->prepare($sql);
+    foreach ($binds as $k => $v) {
+        $stmt->bindValue($k, $v);
+    }
+    $stmt->bindValue(':limit',  $limit,  \PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+
+    // Resolve ambassador roles for badge computation
+    $userIds     = array_column($rows, 'id');
+    $ambassadors = UserBadgeService::ambassadorsForCity($userIds, $channelId);
+
+    $members = array_map(static function (array $u) use ($ambassadors): array {
+        $primary = UserBadgeService::primaryForUser($u);
+        $context = isset($ambassadors[$u['id']])
+            ? ['key' => 'host',  'label' => '⭐ Host']
+            : ['key' => 'local', 'label' => '🌍 Local'];
+        return [
+            'id'                => $u['id'],
+            'display_name'      => $u['display_name'],
+            'profile_photo_url' => $u['profile_photo_url'],
+            'vibe'              => $u['vibe'],
+            'primaryBadge'      => $primary,
+            'contextBadge'      => $context,
+        ];
+    }, $rows);
+
+    Response::json([
+        'members' => $members,
+        'total'   => $total,
+        'page'    => $page,
+        'hasMore' => ($offset + count($rows)) < $total,
+    ]);
+});
+
 $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array $params) {
     $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
