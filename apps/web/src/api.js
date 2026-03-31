@@ -356,6 +356,20 @@ export async function sendConversationMessage(conversationId, content) {
   return data // { message }
 }
 
+export async function sendConversationImageMessage(conversationId, imageUrl) {
+  const res = await fetch(`${BASE}/conversations/${conversationId}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ type: 'image', imageUrl }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send image')
+  }
+  return res.json() // { message }
+}
+
 export async function sendEventImageMessage(eventId, guestId, nickname, imageUrl) {
   const res = await fetch(`${BASE}/events/${eventId}/messages`, {
     method: 'POST',

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchConversationMessages, sendConversationMessage, markConversationRead } from '../api'
+import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage } from '../api'
 import BackButton from './BackButton'
 import SendButton from './SendButton'
 
@@ -65,9 +65,11 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const [messages, setMessages]   = useState([])
   const [input, setInput]         = useState('')
   const [sending, setSending]     = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError]         = useState(null)
   const bottomRef                 = useRef(null)
   const knownIds                  = useRef(new Set())
+  const fileRef                   = useRef(null)
 
   const otherName = otherUser?.display_name ?? '?'
   const [c1, c2] = avatarColors(otherName)
@@ -104,6 +106,33 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  async function handleImageSelect(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowed.includes(file.type)) {
+      setError('Please select a JPEG, PNG, or WebP image.')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Image too large. Max size: 10 MB.')
+      return
+    }
+    setUploading(true)
+    setError(null)
+    try {
+      const { url } = await uploadImage(file)
+      const { message } = await sendConversationImageMessage(conversation.id, url)
+      knownIds.current.add(message.id)
+      setMessages(prev => [...prev, message])
+    } catch (err) {
+      setError(err.message || "Couldn't send image. Please try again.")
+    } finally {
+      setUploading(false)
+    }
+  }
 
   async function handleSend(e) {
     e.preventDefault()
@@ -158,9 +187,16 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                 </div>
               )}
               <div className={`dm-bubble-wrap${isMe ? ' dm-bubble-wrap--me' : ''}${isGrouped ? ' dm-bubble-wrap--grouped' : ''}`}>
-                <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
-                  {msg.content}
-                </div>
+                {msg.type === 'image'
+                  ? <img
+                      src={msg.image_url}
+                      className="dm-image"
+                      alt="shared image"
+                    />
+                  : <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
+                      {msg.content}
+                    </div>
+                }
               </div>
               {showTime && msg.created_at && (
                 <div className={`dm-time${isMe ? ' dm-time--me' : ''}`}>{formatTime(msg.created_at)}</div>
@@ -175,6 +211,25 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       {/* Composer */}
       <form className="dm-composer" onSubmit={handleSend}>
         <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          style={{ display: 'none' }}
+          onChange={handleImageSelect}
+        />
+        <button
+          type="button"
+          className="dm-upload-btn"
+          title="Send image"
+          disabled={uploading || sending}
+          onClick={() => fileRef.current?.click()}
+        >
+          {uploading
+            ? <span className="upload-spinner" />
+            : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          }
+        </button>
+        <input
           className="dm-input"
           type="text"
           value={input}
@@ -183,7 +238,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
           maxLength={1000}
           autoFocus
         />
-        <SendButton disabled={sending || !input.trim()} />
+        <SendButton disabled={sending || uploading || !input.trim()} />
       </form>
     </div>
   )
