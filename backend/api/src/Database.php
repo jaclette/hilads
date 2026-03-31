@@ -250,6 +250,26 @@ class Database
                 self::$pdo->exec("ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS image_url TEXT");
             }
 
+            // User city roles (ambassador programme).
+            $ucrExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_city_roles')")
+                ->fetchColumn();
+
+            if (!$ucrExists) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS user_city_roles (
+                        id         TEXT        PRIMARY KEY,
+                        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        city_id    TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+                        role       TEXT        NOT NULL DEFAULT 'ambassador',
+                        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                        UNIQUE (user_id, city_id, role)
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_city_roles_user ON user_city_roles (user_id)");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_city_roles_city ON user_city_roles (city_id)");
+            }
+
             // Anti-noise push delivery log (cooldown tracking per user/type/ref).
             $pdlExists = (bool) self::$pdo
                 ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'push_delivery_log')")

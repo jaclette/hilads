@@ -55,6 +55,24 @@ $users = $stmt->fetchAll();
 $total = (int)$countStmt->fetchColumn();
 $pages = (int)ceil($total / $perPage);
 
+// Batch-load roles for users on this page
+$rolesByUser = [];
+if (!empty($users)) {
+    $ids       = array_column($users, 'id');
+    $in        = implode(',', array_fill(0, count($ids), '?'));
+    $roleStmt  = $pdo->prepare("
+        SELECT ucr.user_id, ucr.role, c.name AS city_name
+        FROM user_city_roles ucr
+        JOIN channels c ON c.id = ucr.city_id
+        WHERE ucr.user_id IN ($in)
+        ORDER BY c.name
+    ");
+    $roleStmt->execute($ids);
+    foreach ($roleStmt->fetchAll() as $row) {
+        $rolesByUser[$row['user_id']][] = $row;
+    }
+}
+
 admin_head('Users');
 admin_nav('/admin/users');
 ?>
@@ -81,13 +99,15 @@ admin_nav('/admin/users');
                     <th>Auth</th>
                     <th>Photo</th>
                     <th>Home City</th>
+                    <th>Roles</th>
                     <th>Guest ID</th>
                     <th>Created</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (empty($users)): ?>
-                    <tr><td colspan="8" class="no-results">No users found.</td></tr>
+                    <tr><td colspan="10" class="no-results">No users found.</td></tr>
                 <?php else: ?>
                     <?php foreach ($users as $u): ?>
                         <tr>
@@ -111,6 +131,18 @@ admin_nav('/admin/users');
                                 <?php endif; ?>
                             </td>
                             <td><?= htmlspecialchars($u['home_city'] ?? '—', ENT_QUOTES) ?></td>
+                            <td>
+                                <?php $userRoles = $rolesByUser[$u['id']] ?? []; ?>
+                                <?php if (empty($userRoles)): ?>
+                                    <span style="color:#444">—</span>
+                                <?php else: ?>
+                                    <?php foreach ($userRoles as $r): ?>
+                                        <span class="badge badge-ambassador" title="<?= htmlspecialchars($r['role'], ENT_QUOTES) ?>">
+                                            <?= htmlspecialchars($r['city_name'], ENT_QUOTES) ?>
+                                        </span>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </td>
                             <td class="td-mono" style="font-size:10px"><?= $u['guest_id'] ? htmlspecialchars(substr($u['guest_id'], 0, 10), ENT_QUOTES) . '…' : '—' ?></td>
                             <td style="white-space:nowrap; color:#666">
                                 <?php
@@ -118,6 +150,9 @@ admin_nav('/admin/users');
                                     $ts = is_numeric($u['created_at']) ? (int)$u['created_at'] : strtotime((string)$u['created_at']);
                                     echo $ts > 0 ? date('Y-m-d H:i', $ts) : '—';
                                 ?>
+                            </td>
+                            <td>
+                                <a href="/admin/users/<?= urlencode($u['id']) ?>/roles" class="btn btn-secondary btn-sm">Roles</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

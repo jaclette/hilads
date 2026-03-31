@@ -84,7 +84,8 @@ td { padding: 9px 12px; vertical-align: middle; }
 .badge-recurring { background: rgba(167,139,250,0.12); color: #a78bfa; }
 .badge-guest   { background: rgba(251,191,36,0.1); color: #fbbf24; }
 .badge-registered { background: rgba(96,165,250,0.1); color: #60a5fa; }
-.badge-photo   { background: rgba(34,197,94,0.08); color: #4ade80; }
+.badge-photo       { background: rgba(34,197,94,0.08); color: #4ade80; }
+.badge-ambassador  { background: rgba(255,122,60,0.15); color: #FF7A3C; }
 
 /* Flash messages */
 .flash { padding: 10px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; }

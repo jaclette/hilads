@@ -36,6 +36,10 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/users') {
     require __DIR__ . '/users.php';
 
+} elseif (preg_match('#^/admin/users/([^/]+)/roles$#', $uri, $m)) {
+    $userId = $m[1];
+    require __DIR__ . '/user_roles.php';
+
 } elseif ($uri === '/admin/events') {
     require __DIR__ . '/events.php';
 
