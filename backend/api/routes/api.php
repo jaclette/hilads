@@ -887,14 +887,26 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
 
         // Record persistent city membership for registered users.
+        // Priority: authenticated session (cookie) → guest_id link in users table.
+        // Using the auth session is more reliable — it works even when guest_id
+        // has changed (new device, cleared storage, etc.).
         // Fire-and-forget: a failure here must never break the join flow.
         try {
-            $pdo = Database::pdo();
-            $memberUser = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
-            $memberUser->execute([$guestId]);
-            $memberUserId = $memberUser->fetchColumn();
+            $pdo         = Database::pdo();
+            $memberChannelKey = 'city_' . $channelId;
+
+            // 1. Prefer authenticated user from session cookie
+            $authUser = AuthService::currentUser();
+            $memberUserId = $authUser ? $authUser['id'] : null;
+
+            // 2. Fall back to guest_id link in users table
+            if (!$memberUserId) {
+                $memberUser = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
+                $memberUser->execute([$guestId]);
+                $memberUserId = $memberUser->fetchColumn() ?: null;
+            }
+
             if ($memberUserId) {
-                $memberChannelKey = 'city_' . $channelId;
                 $pdo->prepare("
                     INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
                     VALUES (?, ?, now(), now())
@@ -1244,10 +1256,27 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $channelKey = 'city_' . $channelId;
     $cityName   = $city['name'];
 
-    // Base: users who joined via city channel membership OR have home_city set
-    $baseJoin  = "LEFT JOIN user_city_memberships m ON m.user_id = u.id AND m.channel_id = :channel_key";
-    $conditions = ["(m.channel_id IS NOT NULL OR LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name)))"];
-    $binds      = [':channel_key' => $channelKey, ':city_name' => $cityName];
+    // A user is a city crew member if any of these is true:
+    //   1. explicit row in user_city_memberships (populated on channel join for registered users)
+    //   2. home_city text matches this city's name (optional profile field)
+    //   3. has sent at least one text message in this channel (historical participation —
+    //      covers all users who were active before the memberships table existed)
+    //
+    // The msg_senders derived table is computed once against the indexed channel_id column,
+    // then joined on guest_id — far cheaper than a correlated subquery per user.
+    $baseJoin = "
+        LEFT JOIN user_city_memberships m
+               ON m.user_id = u.id AND m.channel_id = :channel_key
+        LEFT JOIN (
+            SELECT DISTINCT guest_id
+            FROM messages
+            WHERE channel_id = :chan_msg AND type = 'text' AND guest_id IS NOT NULL
+        ) msg_senders ON msg_senders.guest_id = u.guest_id AND u.guest_id IS NOT NULL";
+
+    $conditions = ["(m.channel_id IS NOT NULL
+                     OR LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name))
+                     OR msg_senders.guest_id IS NOT NULL)"];
+    $binds      = [':channel_key' => $channelKey, ':city_name' => $cityName, ':chan_msg' => $channelKey];
 
     if ($vibeFilter !== null) {
         $conditions[] = 'u.vibe = :vibe';

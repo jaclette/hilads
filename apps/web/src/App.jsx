@@ -312,12 +312,12 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
       lastJoinAtRef.current = now
     }
     const tpl = JOIN_TEMPLATES[Math.floor(Math.random() * JOIN_TEMPLATES.length)]
-    return { type: 'activity', subtype: 'join', id: messageKey(m), text: tpl(m.nickname) }
+    return { type: 'activity', subtype: 'join', id: messageKey(m), text: tpl(m.nickname), createdAt: m.createdAt }
   }
   // Weather system messages have no nickname/id — render as a subtle activity line.
   if (m.type === 'system' && m.event === 'weather') {
     console.log('[feed] weather system message:', m.content)
-    return { type: 'activity', subtype: 'weather', id: `weather_${m.createdAt}`, text: m.content }
+    return { type: 'activity', subtype: 'weather', id: `weather_${m.createdAt}`, text: m.content, createdAt: m.createdAt }
   }
   // Guard: any other system message that slips through has no nickname — skip it rather than crash.
   if (m.type === 'system') {
@@ -2392,6 +2392,7 @@ export default function App() {
                     : 'feed-activity'}
                 >
                   {item.text}
+                  {item.createdAt && <span className="feed-join-time">{formatMsgTime(item.createdAt)}</span>}
                 </div>
               )
             }

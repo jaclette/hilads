@@ -256,11 +256,13 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // ── System / join message — web: .feed-join (centered pill) ──────────────
   if (message.type === 'system') {
     const text = systemText(message);
+    const time = message.createdAt ? formatTime(message.createdAt) : null;
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}
         <Animated.View style={[styles.systemRow, animStyle]}>
           <Text style={styles.systemText}>{text}</Text>
+          {time ? <Text style={styles.systemTime}>{time}</Text> : null}
         </Animated.View>
       </>
     );
@@ -437,6 +439,12 @@ const styles = StyleSheet.create({
     alignItems:        'center',
     marginVertical:    16,
     paddingHorizontal: 16,
+    gap:               4,
+  },
+  systemTime: {
+    fontSize:   10,
+    color:      Colors.muted2,
+    opacity:    0.6,
   },
   systemText: {
     fontSize:          15,
