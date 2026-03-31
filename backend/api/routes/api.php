@@ -986,7 +986,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         $message = null;
         if ($isNewSession) {
             try {
-                $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname);
+                $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $memberUserId);
             } catch (\Throwable $e) {
                 apiLog('channel_join', 'join event write failed', [
                     'channelId' => $channelId,

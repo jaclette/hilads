@@ -2214,6 +2214,33 @@ html, body, #root {
   cursor: default;
 }
 
+/* ── Guest profile card ───────────────────────────────── */
+
+.guest-profile-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted2);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.guest-profile-city {
+  font-size: 0.85rem;
+  color: var(--muted2);
+}
+
+.guest-profile-note {
+  font-size: 0.82rem;
+  color: var(--muted2);
+  opacity: 0.6;
+  text-align: center;
+  padding: 0 24px;
+}
+
 /* ── Public profile screen ────────────────────────────── */
 
 .pub-profile-body {

@@ -258,21 +258,27 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     const text = systemText(message);
     const time = message.createdAt ? formatTime(message.createdAt) : null;
     // Only join messages carry user identity — other system events (weather, etc.) are not tappable.
-    const navId = message.event === 'join' ? (message.userId ?? message.guestId ?? null) : null;
+    // Distinguish registered user (userId) from guest (guestId only) to avoid routing guests
+    // through the registered-user profile endpoint, which would return 404.
+    const isJoin   = message.event === 'join';
+    const hasUser  = isJoin && !!message.userId;
+    const hasGuest = isJoin && !message.userId && !!message.guestId;
     const pill = (
       <Animated.View style={[styles.systemRow, animStyle]}>
         <Text style={styles.systemText}>{text}</Text>
         {time ? <Text style={styles.systemTime}>{time}</Text> : null}
       </Animated.View>
     );
+    const handlePress = hasUser
+      ? () => router.push({ pathname: '/user/[id]', params: { id: message.userId! } })
+      : hasGuest
+        ? () => router.push({ pathname: '/user/guest', params: { guestId: message.guestId!, nickname: message.nickname ?? '' } })
+        : null;
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}
-        {navId ? (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => router.push({ pathname: '/user/[id]', params: { id: navId } })}
-          >
+        {handlePress ? (
+          <TouchableOpacity activeOpacity={0.7} onPress={handlePress}>
             {pill}
           </TouchableOpacity>
         ) : pill}

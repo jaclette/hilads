@@ -43,6 +43,7 @@ class MessageRepository
                 'type'      => 'system',
                 'event'     => $row['event'],
                 'guestId'   => $row['guest_id'],
+                'userId'    => $row['user_id'] ?? null,
                 'nickname'  => $row['nickname'],
                 'createdAt' => $createdAt,
             ];
@@ -188,17 +189,18 @@ class MessageRepository
         ];
     }
 
-    public static function addJoinEvent(int $channelId, string $guestId, string $nickname): array
+    public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null): array
     {
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, guest_id, nickname)
-            VALUES (?, ?, 'system', 'join', ?, ?)
-        ")->execute([bin2hex(random_bytes(8)), self::dbKey($channelId), $guestId, $nickname]);
+            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname)
+            VALUES (?, ?, 'system', 'join', ?, ?, ?)
+        ")->execute([bin2hex(random_bytes(8)), self::dbKey($channelId), $guestId, $userId, $nickname]);
 
         return [
             'type'      => 'system',
             'event'     => 'join',
             'guestId'   => $guestId,
+            'userId'    => $userId,
             'nickname'  => $nickname,
             'createdAt' => time(),
         ];

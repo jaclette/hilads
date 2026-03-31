@@ -9,6 +9,7 @@ import CreateEventPage from './components/CreateEventModal'
 import AuthScreen from './components/AuthScreen'
 import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
+import GuestProfileCard from './components/GuestProfileCard'
 import ConversationsScreen from './components/ConversationsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
@@ -526,6 +527,7 @@ export default function App() {
   const [filterBadge,  setFilterBadge]  = useState(null)
   const [filterVibe,   setFilterVibe]   = useState(null)
   const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
+  const [guestProfile,   setGuestProfile]   = useState(null) // { guestId, nickname } for guest-only profiles
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
   const [conversations, setConversations] = useState(null) // { dms, events }
@@ -2384,14 +2386,20 @@ export default function App() {
           {feed.map((item, i) => {
             if (item.type === 'activity') {
               if (item.subtype === 'weather') return null
-              const navId = item.subtype === 'join' ? (item.userId ?? item.guestId ?? null) : null
+              const isClickable = item.subtype === 'join' && (item.userId || item.guestId)
               return (
                 <div
                   key={item.id}
                   className={item.subtype === 'join'
-                    ? `feed-join${fadingIds.has(item.id) ? ' feed-join--exit' : ''}${navId ? ' feed-join--clickable' : ''}`
+                    ? `feed-join${fadingIds.has(item.id) ? ' feed-join--exit' : ''}${isClickable ? ' feed-join--clickable' : ''}`
                     : 'feed-activity'}
-                  onClick={navId ? () => setViewingProfile({ userId: navId, nickname: item.nickname ?? '' }) : undefined}
+                  onClick={isClickable ? () => {
+                    if (item.userId) {
+                      setViewingProfile({ userId: item.userId, nickname: item.nickname ?? '' })
+                    } else {
+                      setGuestProfile({ guestId: item.guestId, nickname: item.nickname ?? '' })
+                    }
+                  } : undefined}
                 >
                   {item.text}
                   {item.createdAt && <span className="feed-join-time">{formatMsgTime(item.createdAt)}</span>}
@@ -3028,6 +3036,15 @@ export default function App() {
               setActiveDm({ conversation, otherUser })
             } catch { /* silent */ }
           } : null}
+        />
+      )}
+
+      {guestProfile && (
+        <GuestProfileCard
+          guestId={guestProfile.guestId}
+          nickname={guestProfile.nickname}
+          cityName={city}
+          onBack={() => setGuestProfile(null)}
         />
       )}
 
