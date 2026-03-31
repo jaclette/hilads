@@ -270,6 +270,26 @@ class Database
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_city_roles_city ON user_city_roles (city_id)");
             }
 
+            // City memberships (source of truth for City Crew / Here screen).
+            // Added after initial deploy — must run as an additive migration on existing DBs.
+            $ucmExists = (bool) self::$pdo
+                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_city_memberships')")
+                ->fetchColumn();
+
+            if (!$ucmExists) {
+                self::$pdo->exec("
+                    CREATE TABLE IF NOT EXISTS user_city_memberships (
+                        user_id       TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        channel_id    TEXT        NOT NULL,
+                        first_seen_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+                        last_seen_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+                        PRIMARY KEY (user_id, channel_id)
+                    )
+                ");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_city_memberships_channel ON user_city_memberships (channel_id, last_seen_at DESC)");
+                self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_city_memberships_user    ON user_city_memberships (user_id)");
+            }
+
             // Anti-noise push delivery log (cooldown tracking per user/type/ref).
             $pdlExists = (bool) self::$pdo
                 ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'push_delivery_log')")

@@ -1130,9 +1130,10 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     }
 
     if ($badgeFilter === 'fresh') {
-        $conditions[] = "u.created_at > NOW() - INTERVAL '60 days'";
+        // created_at is stored as INTEGER (Unix epoch) — compare against epoch arithmetic
+        $conditions[] = "u.created_at > EXTRACT(EPOCH FROM NOW() - INTERVAL '60 days')::INTEGER";
     } elseif ($badgeFilter === 'regular') {
-        $conditions[] = "u.created_at <= NOW() - INTERVAL '60 days'";
+        $conditions[] = "u.created_at <= EXTRACT(EPOCH FROM NOW() - INTERVAL '60 days')::INTEGER";
     } elseif ($badgeFilter === 'host') {
         $conditions[] = "EXISTS (
             SELECT 1 FROM user_city_roles r
