@@ -1210,7 +1210,7 @@ html, body, #root {
 }
 
 .message.grouped {
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .message.mine {
@@ -1271,7 +1271,7 @@ html, body, #root {
 }
 
 .msg-bubble-wrap.grouped {
-  padding-left: 28px; /* align with avatarless messages */
+  /* no indent — grouped bubbles align flush with the first bubble */
 }
 
 .msg-content {
@@ -4414,7 +4414,7 @@ img.dm-header-avatar {
 }
 
 .dm-bubble-wrap--grouped {
-  margin-top: 2px;
+  margin-top: 6px;
 }
 
 .dm-time {

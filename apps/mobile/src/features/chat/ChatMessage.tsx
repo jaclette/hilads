@@ -300,7 +300,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               vibe={message.vibe}
             />
           )}
-          <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
+          <View>
             <Image
               source={{ uri: message.imageUrl }}
               style={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
@@ -360,7 +360,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         )}
 
         {/* ── Bubble — web: .msg-content ── */}
-        <View style={!isMine && isGrouped ? styles.groupedOffset : undefined}>
+        <View>
           <View style={[
             styles.bubble,
             isMine ? styles.bubbleMine : styles.bubbleOther,
@@ -460,7 +460,7 @@ const styles = StyleSheet.create({
   rowOther:   { alignSelf: 'flex-start', alignItems: 'flex-start', paddingLeft: 14 },
   rowMine:    { alignSelf: 'flex-end',   alignItems: 'flex-end',   paddingRight: 14 },
   rowFirst:   { marginTop: 16 },
-  rowGrouped: { marginTop: 3 },
+  rowGrouped: { marginTop: 8 },
   rowSending: { opacity: 0.65 },
 
   // ── .msg-meta ─────────────────────────────────────────────────────────────
@@ -491,9 +491,6 @@ const styles = StyleSheet.create({
   // ── .msg-author ───────────────────────────────────────────────────────────
   author:    { fontSize: 13, fontWeight: '700', opacity: 0.9 },
   vibeLabel: { fontSize: 13, opacity: 0.55 },
-
-  // Grouped indent: 34px avatar + 8px gap
-  groupedOffset: { paddingLeft: 42 },
 
   // ── .msg-content ──────────────────────────────────────────────────────────
   bubble: {
