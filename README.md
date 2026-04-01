@@ -11,6 +11,7 @@ Hilads is a real-time social app. Join a city, see who's online, chat, discover 
 - **City chat** — public real-time chat, one channel per city
 - **Hot screen** — active events in your city (one-shot + recurring venues)
 - **Events** — create, join, edit, and delete events; every event has its own real-time chat
+- **Event participants** — see who's joining each event; participant list inside the event screen
 - **Presence** — who's online right now, live join/leave feed
 - **Here screen** — browse online users, view profiles, add friends
 - **Ghost mode** — instant access with a persistent ghost identity, no sign-up
@@ -19,7 +20,9 @@ Hilads is a real-time social app. Join a city, see who's online, chat, discover 
 - **Badge system** — Fresh / Regular — evolves automatically over time
 - **Friends** — add friends from profiles, view friend lists
 - **Direct messages** — 1:1 private chat for registered users
-- **Notifications** — in-app bell + web push + native push (DMs, events, friends, vibes)
+- **Notifications** — in-app bell + web push + native push (DMs, events, friends, vibes, profile views)
+- **Analytics** — PostHog cross-platform event tracking (web + mobile + backend)
+- **Error monitoring** — Sentry across web, backend, and native app
 - **Native app** — iOS + Android via Expo
 
 ---
@@ -101,6 +104,7 @@ Delivered in-app (bell in channel header) and as push (web VAPID + native Expo).
 | `new_event` | New event while you're online |
 | `friend_added` | Someone added you as friend |
 | `vibe_received` | Someone left a vibe on your profile |
+| `profile_view` | Someone viewed your profile |
 
 Tapping a `vibe_received` notification deep-links to **your own profile** so you can immediately see the new vibe.
 
@@ -240,7 +244,12 @@ npm run ios        # iOS simulator (Mac only)
 | `R2_BUCKET` | R2 bucket name |
 | `R2_PUBLIC_URL` | Public base URL for uploaded files |
 | `WS_INTERNAL_URL` | Internal URL of the WS server |
+| `WS_INTERNAL_TOKEN` | Auth token for WS internal broadcast endpoint |
 | `MIGRATION_KEY` | Secret key for internal admin endpoints |
+| `POSTHOG_API_KEY` | PostHog project API key (server-side capture) |
+| `POSTHOG_HOST` | PostHog ingest host (e.g. `https://eu.i.posthog.com`) |
+| `SENTRY_DSN` | Sentry DSN for `hilads-backend` project |
+| `APP_ENV` | Environment name (`production` / `staging` / `development`) |
 | `VAPID_PUBLIC_KEY` | VAPID public key for web push |
 | `VAPID_PRIVATE_KEY` | VAPID private key for web push |
 | `VAPID_SUBJECT` | VAPID subject — `mailto:` or HTTPS URL |
@@ -257,6 +266,7 @@ Generate VAPID keys: `php backend/api/scripts/generate-vapid-keys.php`
 |---|---|
 | `VITE_API_URL` | Backend API base URL |
 | `VITE_WS_URL` | WebSocket server URL |
+| `VITE_SENTRY_DSN` | Sentry DSN for `hilads-web` project |
 
 ### Native app (`.env`)
 
@@ -264,6 +274,7 @@ Generate VAPID keys: `php backend/api/scripts/generate-vapid-keys.php`
 |---|---|
 | `EXPO_PUBLIC_API_URL` | Backend API base URL (no trailing slash) |
 | `EXPO_PUBLIC_WS_URL` | WebSocket server URL |
+| `EXPO_PUBLIC_SENTRY_DSN` | Sentry DSN for `hilads-mobile` project |
 
 ---
 
@@ -275,6 +286,44 @@ Generate VAPID keys: `php backend/api/scripts/generate-vapid-keys.php`
 | WebSocket | Render (Node) | `render.yaml` — persistent WS connection |
 | Web frontend | Vercel | `apps/web` — auto-deploy on push |
 | Native builds | EAS (Expo) | `eas build --platform android/ios` |
+
+---
+
+## Analytics
+
+PostHog tracks cross-platform behaviour. Every event includes a `platform` property.
+
+- **Web:** `posthog-js` initialized in `apps/web/src/main.jsx`, wrapped via `apps/web/src/lib/analytics.js`
+- **Mobile:** `posthog-react-native` singleton in `apps/mobile/src/services/analytics.ts` (disabled in `__DEV__`)
+- **Backend:** server-side HTTP capture in `backend/api/src/AnalyticsService.php` (fire-and-forget curl)
+
+---
+
+## Error Monitoring (Sentry)
+
+Three separate Sentry projects, one per platform:
+
+| Project | Init location | DSN env var |
+|---|---|---|
+| `hilads-web` | `apps/web/src/main.jsx` | `VITE_SENTRY_DSN` |
+| `hilads-backend` | `backend/api/public/index.php` | `SENTRY_DSN` |
+| `hilads-mobile` | `apps/mobile/app/_layout.tsx` | `EXPO_PUBLIC_SENTRY_DSN` |
+
+All DSNs are env-var only — never hardcoded. Sentry is skipped if the DSN is not set (safe for local dev).
+
+---
+
+## Internal Endpoints
+
+All `/internal/*` routes require `?key=YOUR_MIGRATION_KEY` (or `X-Api-Key` header). Returns `404` if `MIGRATION_KEY` is not configured, `403` on wrong key.
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/internal/run-migrations` | Idempotent DB migrations (run after deploy) |
+| `POST` | `/internal/cleanup` | Purge stale messages + expired channels |
+| `POST` | `/internal/event-series/generate` | Generate recurring event occurrences |
+| `POST` | `/internal/seed-static-venues` | Import venue seed (`{"dryRun": true/false}`) |
+| `GET` | `/internal/sentry-test` | Trigger a test Sentry error (temporary — remove after validation) |
 
 ---
 

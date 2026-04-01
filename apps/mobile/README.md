@@ -68,6 +68,7 @@ src/
 |---|---|
 | `EXPO_PUBLIC_API_URL` | Backend API base URL (no trailing slash) |
 | `EXPO_PUBLIC_WS_URL` | WebSocket server URL |
+| `EXPO_PUBLIC_SENTRY_DSN` | Sentry DSN for `hilads-mobile` (leave empty locally) |
 
 > Use your machine's LAN IP, not `localhost` — the device/emulator can't reach it.
 

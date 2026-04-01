@@ -1,4 +1,4 @@
-# Hilads — MVP v8
+# Hilads — MVP v9
 
 ## Vision
 
@@ -45,6 +45,7 @@ Open app
 - Nickname chosen on first join
 - Minimal profile card (ghost badge + avatar initial, no API call)
 - Full access to city chat and events, including creating events
+- Cannot access `/me/events` — event list requires a registered account
 
 Ghost identity is **persistent across page loads** — the same guestId is reused so historical feed messages can be correctly attributed.
 
@@ -201,6 +202,17 @@ Two types of events co-exist in the Hot screen:
 
 ---
 
+## Event Participants
+
+Every event tracks who is attending via the `event_participants` table.
+
+- Joining an event registers the user (guest or registered) as a participant
+- Participant count is displayed on the event card and event screen
+- Participant list is visible inside the event — shows avatars + nicknames
+- Ghost participants are included with their persistent `guestId`
+
+---
+
 ## Event Ownership
 
 Every event belongs to its creator — tracked via dual identity:
@@ -246,6 +258,7 @@ Every event belongs to its creator — tracked via dual identity:
 | `city_join` | Registered user arrived in your city | City chat |
 | `friend_added` | Someone added you as friend | Their profile |
 | `vibe_received` | Someone left a vibe on your profile | **Your own profile** |
+| `profile_view` | Someone viewed your profile | Viewer's profile |
 
 ### Push notifications
 
@@ -338,13 +351,61 @@ Internal tool accessible at `/admin` on the API service. Not part of the product
 
 ---
 
+## Analytics
+
+PostHog tracks cross-platform user behavior. Every event includes a `platform` property (`web`, `backend`, or `mobile`).
+
+### Frontend events (intent tracking)
+
+| Event | Where | Trigger |
+|---|---|---|
+| `landing_viewed` | web + mobile | Landing screen mount |
+| `clicked_join_city` | web + mobile | Tapped "Join city" |
+| `clicked_sign_up` | web + mobile | Tapped "Save my identity" / Sign Up |
+| `clicked_sign_in` | web | Tapped "Sign In" |
+
+### Backend events (success tracking)
+
+| Event | Trigger |
+|---|---|
+| `guest_created` | New ghost session |
+| `user_registered` | Account created |
+| `user_authenticated` | Successful login |
+| `joined_city` | First join in a new session |
+| `sent_message` | Message sent (city or event) |
+| `event_created` | Event created |
+| `joined_event` | Joined an event |
+| `friend_added` | Friendship created |
+| `friend_removed` | Friend removed |
+
+`identify()` is called on ghost creation (with `guestId`) and on authentication (with `userId`).
+
+---
+
+## Observability
+
+### Sentry
+
+Error monitoring across all three platforms.
+
+| Project | Platform | Init location |
+|---|---|---|
+| `hilads-web` | React (Vite) | `apps/web/src/main.jsx` |
+| `hilads-backend` | PHP | `backend/api/public/index.php` |
+| `hilads-mobile` | Expo / React Native | `apps/mobile/app/_layout.tsx` |
+
+All three use env-var DSNs — no hardcoded values. Backend and web Sentry are confirmed working in production.
+
+---
+
 ## What Is In Scope
 
 - City chat (public, ephemeral)
 - Events: one-shot + recurring
 - Event ownership: create, edit, delete
 - Event subchannels
-- My Events (deduplicated, per creator)
+- Event participants (join tracking + display)
+- My Events (registered users only)
 - Direct messages (registered users)
 - Presence + user discovery
 - Ghost profile (lightweight, no API call)
@@ -359,6 +420,9 @@ Internal tool accessible at `/admin` on the API service. Not part of the product
 - In-app notifications + web push + native push
 - Push preference controls per type
 - Vibe notifications (in-app + push, deep-link to own profile)
+- Profile view notifications (in-app + push)
+- PostHog analytics (web + mobile + backend)
+- Sentry error monitoring (web + backend + mobile)
 - Native app (Expo / React Native — iOS + Android)
 - Internal admin backoffice (ops only)
 
@@ -392,3 +456,5 @@ Internal tool accessible at `/admin` on the API service. Not part of the product
 | Real-time | Node.js WebSocket + 3s poll fallback |
 | Media | Cloudflare R2 |
 | Hosting | Render (API + WS) · Vercel (web) · EAS (native builds) |
+| Analytics | PostHog (posthog-js · posthog-react-native · server-side HTTP) |
+| Error monitoring | Sentry (hilads-web · hilads-backend · hilads-mobile) |
