@@ -1219,7 +1219,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
 
         $messages    = MessageRepository::getByChannel($channelId);
         $onlineUsers = PresenceRepository::getOnline($channelId);
-        $onlineCount = PresenceRepository::getCount($channelId);
+        $onlineCount = count($onlineUsers);
 
         // ── Badge enrichment ──────────────────────────────────────────────────
         // Collect unique registered user IDs from text/image messages

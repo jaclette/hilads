@@ -65,6 +65,8 @@ class ConversationRepository
 
     /**
      * DM list for a user — with other participant info, last message preview, and unread flag.
+     * Two-query approach: main query fetches conversations + last_read_at, then a single batch
+     * query checks unread status — avoids one correlated EXISTS subquery per row.
      */
     public static function listDmsForUser(string $userId): array
     {
@@ -78,15 +80,10 @@ class ConversationRepository
                 lm.content              AS last_message,
                 lm.created_at           AS last_message_at,
                 lm.sender_id            AS last_sender_id,
-                EXISTS (
-                    SELECT 1 FROM conversation_messages cm
-                    WHERE cm.conversation_id = c.id
-                      AND cm.sender_id != :userId2
-                      AND (cp.last_read_at IS NULL OR cm.created_at > cp.last_read_at)
-                ) AS has_unread
+                cp.last_read_at         AS last_read_at
             FROM conversations c
             JOIN conversation_participants cp  ON cp.conversation_id = c.id AND cp.user_id = :userId
-            JOIN conversation_participants cp2 ON cp2.conversation_id = c.id AND cp2.user_id != :userId3
+            JOIN conversation_participants cp2 ON cp2.conversation_id = c.id AND cp2.user_id != :userId2
             JOIN users u ON u.id = cp2.user_id
             LEFT JOIN LATERAL (
                 SELECT
@@ -101,11 +98,35 @@ class ConversationRepository
             ORDER BY COALESCE(lm.created_at, c.updated_at) DESC
             LIMIT 50
         ");
-        $stmt->execute([':userId' => $userId, ':userId2' => $userId, ':userId3' => $userId]);
+        $stmt->execute([':userId' => $userId, ':userId2' => $userId]);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        // Cast PostgreSQL boolean to proper PHP bool
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        // Batch unread check — one query for all conversation IDs
+        $ids          = array_column($rows, 'id');
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $unreadStmt   = Database::pdo()->prepare("
+            SELECT conversation_id, MAX(created_at) AS last_other_at
+            FROM conversation_messages
+            WHERE conversation_id IN ($placeholders)
+              AND sender_id != ?
+            GROUP BY conversation_id
+        ");
+        $unreadStmt->execute([...$ids, $userId]);
+        $lastOtherAt = [];
+        foreach ($unreadStmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            $lastOtherAt[$r['conversation_id']] = $r['last_other_at'];
+        }
+
         foreach ($rows as &$row) {
-            $row['has_unread'] = (bool) $row['has_unread'];
+            $convId      = $row['id'];
+            $lastOther   = $lastOtherAt[$convId] ?? null;
+            $lastRead    = $row['last_read_at'];
+            $row['has_unread'] = $lastOther !== null && ($lastRead === null || $lastOther > $lastRead);
+            unset($row['last_read_at']);
         }
         return $rows;
     }
@@ -126,9 +147,8 @@ class ConversationRepository
     /**
      * Event channels this user created or joined (by user_id).
      * Used for the "event chats" section in the conversations list.
-     * has_unread checks the messages table for text/image messages newer than the user's last_read_at.
-     * For users with no event_participants row (creator-only, never joined), ep.last_read_at is NULL
-     * → all messages appear unread until they open the chat and mark-read is called.
+     * Two-query approach: main query fetches channels + ep.last_read_at, then a single batch
+     * query checks for newer messages — avoids one correlated EXISTS per row.
      */
     public static function listEventChannelsForUser(string $userId): array
     {
@@ -139,12 +159,7 @@ class ConversationRepository
                 EXTRACT(EPOCH FROM ce.starts_at)::INTEGER    AS starts_at,
                 ce.location                                  AS location,
                 (ce.created_by = :userId)                    AS is_creator,
-                EXISTS (
-                    SELECT 1 FROM messages m
-                    WHERE m.channel_id = ch.id
-                      AND m.type IN ('text', 'image')
-                      AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
-                )                                            AS has_unread
+                ep.last_read_at                              AS last_read_at
             FROM channels ch
             JOIN channel_events ce ON ce.channel_id = ch.id
             LEFT JOIN event_participants ep
@@ -161,10 +176,35 @@ class ConversationRepository
         ");
         $stmt->execute([':userId' => $userId, ':userId2' => $userId, ':userId3' => $userId, ':userId4' => $userId]);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if (empty($rows)) {
+            return [];
+        }
+
+        // Batch unread check — one query for all channel IDs
+        $channelIds   = array_column($rows, 'channel_id');
+        $placeholders = implode(',', array_fill(0, count($channelIds), '?'));
+        $unreadStmt   = Database::pdo()->prepare("
+            SELECT channel_id, MAX(created_at) AS last_msg_at
+            FROM messages
+            WHERE channel_id IN ($placeholders)
+              AND type IN ('text', 'image')
+            GROUP BY channel_id
+        ");
+        $unreadStmt->execute($channelIds);
+        $lastMsgAt = [];
+        foreach ($unreadStmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            $lastMsgAt[$r['channel_id']] = $r['last_msg_at'];
+        }
+
         foreach ($rows as &$row) {
-            $row['has_unread']  = (bool) $row['has_unread'];
-            $row['is_creator']  = (bool) $row['is_creator'];
-            $row['starts_at']   = (int)  $row['starts_at'];
+            $chId    = $row['channel_id'];
+            $lastMsg = $lastMsgAt[$chId] ?? null;
+            $lastRead = $row['last_read_at'];
+            $row['has_unread'] = $lastMsg !== null && ($lastRead === null || $lastMsg > $lastRead);
+            $row['is_creator'] = (bool) $row['is_creator'];
+            $row['starts_at']  = (int)  $row['starts_at'];
+            unset($row['last_read_at']);
         }
         return $rows;
     }

@@ -398,6 +398,17 @@ class Database
         // index-only scan ordered by guest_id, avoiding a separate sort step.
         self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_presence_online ON presence (channel_id, guest_id, last_seen_at DESC)");
 
+        // Covers the batch unread check in ConversationRepository::listDmsForUser():
+        // WHERE conversation_id IN (...) AND sender_id != ? — filters by both columns.
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_conv_messages_unread ON conversation_messages (conversation_id, sender_id, created_at DESC)");
+
+        // Covers listEventChannelsForUser() batch unread check:
+        // WHERE channel_id IN (...) AND type IN ('text', 'image')
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_messages_channel_type_time ON messages (channel_id, type, created_at DESC) WHERE type IN ('text', 'image')");
+
+        // Covers members/here page city filter — LOWER(TRIM(home_city)) = LOWER(TRIM(?))
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_users_home_city_lower ON users (LOWER(TRIM(home_city)))");
+
         self::bootstrap(self::$pdo);
 
         return self::$pdo;
