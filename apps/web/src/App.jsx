@@ -1166,7 +1166,7 @@ export default function App() {
         if (activeRef.current && activeChannelRef.current) {
           socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
         }
-      }, 20_000)
+      }, 30_000)
 
       // ── Tab-focus refresh: one-time catch-up when returning to a hidden tab ───
       // New messages arrive via WebSocket; this only runs when the tab was hidden.
@@ -1473,7 +1473,7 @@ export default function App() {
         if (activeRef.current && activeChannelRef.current) {
           socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
         }
-      }, 20_000)
+      }, 30_000)
 
       // Tab-focus refresh only — new messages arrive via WebSocket
       const doRefresh = async () => {

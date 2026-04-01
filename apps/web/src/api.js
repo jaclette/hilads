@@ -195,7 +195,7 @@ export async function fetchEventMessages(eventId) {
 }
 
 export async function fetchEventParticipants(eventId, sessionId) {
-  const res = await fetch(`${BASE}/events/${eventId}/participants?sessionId=${sessionId}`, { credentials: 'include' })
+  const res = await fetch(`${BASE}/events/${eventId}/participants?sessionId=${sessionId}&lite=1`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch participants')
   return res.json() // { count, isIn }
 }

@@ -2417,8 +2417,12 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
 
     $participantKey = $guestId !== '' ? $guestId : ($sessionId !== '' ? $sessionId : '');
 
+    // ?lite=1 — skip the full participant list (user JOIN + mapping).
+    // Use this when only count + isIn are needed (event card / status check).
+    $lite = ($_GET['lite'] ?? '') === '1';
+
     Response::json([
-        'participants' => ParticipantRepository::getParticipants($eventId),
+        'participants' => $lite ? [] : ParticipantRepository::getParticipants($eventId),
         'count'        => ParticipantRepository::getCount($eventId),
         'isIn'         => $participantKey !== '' ? ParticipantRepository::isIn($eventId, $participantKey) : false,
     ]);

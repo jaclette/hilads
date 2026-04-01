@@ -386,6 +386,18 @@ class Database
         self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_messages_channel_created ON messages (channel_id, created_at DESC)");
         self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_conv_messages_conv_created ON conversation_messages (conversation_id, created_at DESC)");
 
+        // Covering index for city-crew DISTINCT guest_id scan (GET /channels/{id}/members).
+        // The msg_senders subquery does: SELECT DISTINCT guest_id FROM messages
+        //   WHERE channel_id = ? AND type = 'text' AND guest_id IS NOT NULL
+        // Without this index Postgres scans all messages for the channel to filter type+guest_id.
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_messages_crew_lookup ON messages (channel_id, type, guest_id) WHERE type = 'text' AND guest_id IS NOT NULL");
+
+        // Better index for PresenceRepository::getOnline().
+        // The query is DISTINCT ON (guest_id) ORDER BY guest_id, last_seen_at DESC.
+        // (channel_id, guest_id, last_seen_at DESC) lets Postgres resolve DISTINCT via
+        // index-only scan ordered by guest_id, avoiding a separate sort step.
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_presence_online ON presence (channel_id, guest_id, last_seen_at DESC)");
+
         self::bootstrap(self::$pdo);
 
         return self::$pdo;
