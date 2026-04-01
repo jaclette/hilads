@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -510,7 +510,8 @@ export default function App() {
   }
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
-  const [conversations, setConversations] = useState(null) // { dms, events }
+  const [conversations, setConversations] = useState(null) // { dms, events } — loaded by ConversationsScreen on open
+  const [conversationsHasUnread, setConversationsHasUnread] = useState(false) // lightweight dot, set at boot
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
   const [account, setAccount] = useState(null)        // null = guest, object = registered
@@ -521,7 +522,10 @@ export default function App() {
   // Registered users always use backend display_name; guests use localStorage nickname.
   const activeNickname = account?.display_name ?? nickname
 
-  const hasAnyUnread = (conversations?.dms?.some(dm => dm.has_unread) || conversations?.events?.some(ev => ev.has_unread)) ?? false
+  // Use full conversations state when available (after ConversationsScreen loads), else lightweight boot flag.
+  const hasAnyUnread = conversations != null
+    ? (conversations.dms.some(dm => dm.has_unread) || conversations.events.some(ev => ev.has_unread))
+    : conversationsHasUnread
 
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
@@ -658,12 +662,13 @@ export default function App() {
     })
   }
 
-  // Fetch conversations whenever the account changes so the unread dot is always current.
+  // Lightweight unread check at boot — only fetches a boolean, not the full conversations list.
+  // Full conversations are loaded by ConversationsScreen when it mounts.
   useEffect(() => {
-    if (!account) { setConversations(null); return }
-    fetchConversations().then(setConversations).catch(err => {
-      console.warn('[hilads] background conversations sync failed:', err?.message ?? String(err))
-    })
+    if (!account) { setConversationsHasUnread(false); setConversations(null); return }
+    fetchConversationsUnread()
+      .then(d => setConversationsHasUnread(d.has_unread ?? false))
+      .catch(() => {})
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load "My events" whenever the profile drawer opens — registered users only.

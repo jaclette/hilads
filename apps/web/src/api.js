@@ -356,6 +356,12 @@ export async function fetchConversations() {
   return res.json() // { dms, events }
 }
 
+export async function fetchConversationsUnread() {
+  const res = await fetch(`${BASE}/conversations/unread`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch conversations unread')
+  return res.json() // { has_unread: bool }
+}
+
 export async function createOrGetDirectConversation(targetUserId) {
   const res = await fetch(`${BASE}/conversations/direct`, {
     method: 'POST',

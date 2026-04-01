@@ -2662,6 +2662,14 @@ $router->add('GET', '/api/v1/conversations', function () {
     ]);
 });
 
+// GET /api/v1/conversations/unread
+// Lightweight poll endpoint — returns only whether the user has any unread DM or event-channel message.
+// Used for the Messages icon dot on city channel; avoids running the full conversations query on boot.
+$router->add('GET', '/api/v1/conversations/unread', function () {
+    $user = AuthService::requireAuth();
+    Response::json(['has_unread' => ConversationRepository::hasAnyUnread($user['id'])]);
+});
+
 // POST /api/v1/conversations/direct
 // Find or create a DM conversation with another registered user.
 // Returns the conversation object so the frontend can navigate to it.

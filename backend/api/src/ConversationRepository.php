@@ -210,6 +210,43 @@ class ConversationRepository
     }
 
     /**
+     * Lightweight unread check — returns true if the user has any unread DM or event-channel message.
+     * Single query, no lateral joins, no per-row subqueries. Used for the Messages icon dot.
+     */
+    public static function hasAnyUnread(string $userId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT (
+                EXISTS (
+                    SELECT 1
+                    FROM conversation_participants cp
+                    JOIN conversation_messages cm ON cm.conversation_id = cp.conversation_id
+                    WHERE cp.user_id = :u1
+                      AND cm.sender_id != :u2
+                      AND (cp.last_read_at IS NULL OR cm.created_at > cp.last_read_at)
+                    LIMIT 1
+                )
+                OR
+                EXISTS (
+                    SELECT 1
+                    FROM channels ch
+                    JOIN channel_events ce ON ce.channel_id = ch.id
+                    LEFT JOIN event_participants ep ON ep.channel_id = ch.id AND ep.user_id = :u3
+                    JOIN messages m ON m.channel_id = ch.id
+                    WHERE ch.type   = 'event'
+                      AND ch.status = 'active'
+                      AND m.type IN ('text', 'image')
+                      AND (ce.created_by = :u4 OR ep.user_id = :u5)
+                      AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
+                    LIMIT 1
+                )
+            ) AS has_unread
+        ");
+        $stmt->execute([':u1' => $userId, ':u2' => $userId, ':u3' => $userId, ':u4' => $userId, ':u5' => $userId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /**
      * Mark an event chat as read for a user.
      * Updates last_read_at on the event_participants row where user_id matches.
      * No-op for creator-only users (no participant row) — acceptable for v1.
