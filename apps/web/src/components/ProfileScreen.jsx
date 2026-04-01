@@ -66,7 +66,11 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     setError(null)
     try {
       const { url } = await uploadImage(file)
+      // Immediately persist the new photo URL to the DB so it survives a page
+      // reload without requiring the user to click "Save profile".
+      const { user } = await updateProfile({ profile_photo_url: url })
       setPhotoUrl(url)
+      onSave(user)
     } catch {
       setError('Photo upload failed. Try again.')
     } finally {
@@ -299,7 +303,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             onClick={handleSave}
             disabled={saving || uploading || !name.trim()}
           >
-            {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save profile'}
+            {uploading ? 'Uploading photo…' : saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save profile'}
           </button>
 
           <button

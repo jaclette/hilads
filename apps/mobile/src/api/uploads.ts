@@ -8,14 +8,21 @@ import { getAuthToken } from './client';
  * Note: Do NOT set Content-Type manually — fetch sets it with the
  * multipart boundary when body is FormData.
  */
-export async function uploadFile(localUri: string): Promise<string> {
-  console.log('[image-upload] upload start — uri:', localUri);
+export async function uploadFile(localUri: string, mimeType?: string | null): Promise<string> {
+  console.log('[image-upload] upload start — uri:', localUri, 'mimeType:', mimeType ?? 'auto');
+
+  // Derive type + extension from the provided mimeType, or fall back to JPEG.
+  // Expo ImagePicker (expo-image-picker ≥ 14) exposes asset.mimeType on iOS/Android.
+  const type = mimeType === 'image/png' ? 'image/png'
+             : mimeType === 'image/webp' ? 'image/webp'
+             : 'image/jpeg';
+  const ext  = type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg';
 
   const formData = new FormData();
   formData.append('file', {
     uri:  localUri,
-    type: 'image/jpeg',
-    name: 'photo.jpg',
+    type,
+    name: `photo.${ext}`,
   } as unknown as Blob);
 
   const headers: Record<string, string> = {};

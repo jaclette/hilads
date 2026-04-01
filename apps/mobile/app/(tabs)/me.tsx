@@ -109,6 +109,7 @@ export default function MeScreen() {
   const [selectedVibe,       setSelectedVibe]         = useState<string>(account?.vibe ?? 'chill');
   const [selectedInterests,  setSelectedInterests]   = useState<string[]>(account?.interests ?? []);
   const [pendingPhotoUri,    setPendingPhotoUri]      = useState<string | null>(null);
+  const [photoUploading,     setPhotoUploading]      = useState(false);
   const [localEvents,        setLocalEvents]          = useState<HiladsEvent[]>([]);
   const [saving,             setSaving]              = useState(false);
   const [saved,              setSaved]               = useState(false);
@@ -170,8 +171,24 @@ export default function MeScreen() {
       aspect: [1, 1],
       quality: 0.85,
     });
-    if (!result.canceled && result.assets[0]) {
-      setPendingPhotoUri(result.assets[0].uri);
+    if (result.canceled || !result.assets[0]) return;
+
+    const asset = result.assets[0];
+    // Show local preview immediately for responsiveness.
+    setPendingPhotoUri(asset.uri);
+    setPhotoUploading(true);
+    try {
+      // Upload to R2 and immediately persist to DB so the photo survives an app
+      // relaunch without requiring the user to tap "Save profile".
+      const url = await uploadFile(asset.uri, asset.mimeType);
+      const { user } = await updateProfile({ profile_photo_url: url } as Parameters<typeof updateProfile>[0]);
+      setAccount(user);
+      setPendingPhotoUri(null); // swap local preview for the persisted R2 URL
+    } catch {
+      setPendingPhotoUri(null); // revert preview on failure
+      Alert.alert('Upload failed', 'Could not upload photo. Please try again.');
+    } finally {
+      setPhotoUploading(false);
     }
   }
 
@@ -217,12 +234,10 @@ export default function MeScreen() {
     setSaving(true);
     setSaveError(null);
     try {
-      // Upload photo first if one was picked
-      let photoUrl = account?.profile_photo_url ?? null;
-      if (pendingPhotoUri) {
-        photoUrl = await uploadFile(pendingPhotoUri);
-        setPendingPhotoUri(null);
-      }
+      // Photo is already uploaded + saved to DB when the user picks it
+      // (see handlePickPhoto). We include the current URL here so the full
+      // profile payload stays consistent.
+      const photoUrl = account?.profile_photo_url ?? null;
 
       // Convert age → birth_year, mirrors web ProfileScreen.jsx
       const ageNum = parseInt(ageStr, 10);
@@ -290,6 +305,7 @@ export default function MeScreen() {
               style={styles.avatarWrap}
               onPress={handlePickPhoto}
               activeOpacity={0.8}
+              disabled={photoUploading}
             >
               {photoSrc ? (
                 <Image source={{ uri: photoSrc }} style={styles.avatar} />
@@ -298,10 +314,18 @@ export default function MeScreen() {
                   <Text style={styles.avatarInitials}>{initials}</Text>
                 </View>
               )}
+              {/* Uploading overlay */}
+              {photoUploading && (
+                <View style={styles.avatarUploadingOverlay}>
+                  <ActivityIndicator color="#fff" size="small" />
+                </View>
+              )}
               {/* web: .profile-avatar-overlay — camera badge */}
-              <View style={styles.cameraBadge}>
-                <Text style={styles.cameraEmoji}>📷</Text>
-              </View>
+              {!photoUploading && (
+                <View style={styles.cameraBadge}>
+                  <Text style={styles.cameraEmoji}>📷</Text>
+                </View>
+              )}
             </TouchableOpacity>
 
             <Text style={styles.avatarName}>{account?.display_name ?? '—'}</Text>
@@ -587,7 +611,7 @@ export default function MeScreen() {
               style={[styles.ctaBtn, styles.ctaBtnSave]}
               onPress={handleSave}
               activeOpacity={0.85}
-              disabled={saving}
+              disabled={saving || photoUploading}
             >
               {saving ? (
                 <ActivityIndicator color={Colors.white} size="small" />
@@ -703,6 +727,17 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.xxl,
     fontWeight: '700',
     color:      Colors.white,
+  },
+  avatarUploadingOverlay: {
+    position:        'absolute',
+    top:             0,
+    left:            0,
+    right:           0,
+    bottom:          0,
+    borderRadius:    Radius.full,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    alignItems:      'center',
+    justifyContent:  'center',
   },
   // web: .profile-avatar-overlay — bottom-right camera badge
   cameraBadge: {
