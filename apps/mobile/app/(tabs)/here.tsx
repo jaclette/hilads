@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchCityMembers, type CityMember } from '@/api/channels';
 import type { OnlineUser } from '@/types';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
@@ -152,7 +153,7 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
 
 export default function HereScreen() {
   const router = useRouter();
-  const { city, sessionId, onlineUsers } = useApp();
+  const { city, sessionId, account, onlineUsers } = useApp();
 
   const [filterBadge, setFilterBadge] = useState<string | null>(null);
   const [filterVibe,  setFilterVibe]  = useState<string | null>(null);
@@ -306,7 +307,10 @@ export default function HereScreen() {
               key={item.sessionId}
               user={item}
               isMe={isMe}
-              onPress={!isMe && item.userId ? () => router.push({ pathname: '/user/[id]', params: { id: item.userId! } }) : undefined}
+              onPress={!isMe && item.userId ? () => {
+                if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+                router.push({ pathname: '/user/[id]', params: { id: item.userId! } });
+              } : undefined}
               onDm={() => {
                 if (item.userId) router.push({ pathname: '/dm/[id]', params: { id: item.userId, name: item.nickname } });
               }}
@@ -327,7 +331,10 @@ export default function HereScreen() {
           <CrewMemberRow
             key={m.id}
             member={m}
-            onPress={() => router.push({ pathname: '/user/[id]', params: { id: m.id, name: m.displayName } })}
+            onPress={() => {
+              if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+              router.push({ pathname: '/user/[id]', params: { id: m.id, name: m.displayName } });
+            }}
           />
         ))}
 

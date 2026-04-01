@@ -19,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { canAccessProfile } from '@/lib/profileAccess';
 import {
   fetchNotifications, markNotificationsRead,
   fetchNotificationPreferences, updateNotificationPreferences,
@@ -140,7 +141,7 @@ function PrefRow({
 
 export default function NotificationsScreen() {
   const router = useRouter();
-  const { setUnreadNotifications } = useApp();
+  const { account, setUnreadNotifications } = useApp();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading,       setLoading]       = useState(true);
@@ -235,7 +236,9 @@ export default function NotificationsScreen() {
     } else if (notif.type === 'channel_message' || notif.type === 'city_join') {
       router.push('/(tabs)/chat' as never);
     } else if (notif.type === 'friend_added' && notif.data?.senderUserId) {
-      router.push(`/user/${notif.data.senderUserId}` as never);
+      if (canAccessProfile(account)) {
+        router.push(`/user/${notif.data.senderUserId}` as never);
+      }
     } else if (notif.type === 'vibe_received') {
       router.push('/(tabs)/me' as never);
     }

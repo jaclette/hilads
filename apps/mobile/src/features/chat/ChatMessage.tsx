@@ -18,6 +18,8 @@ import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
 import { formatTime } from '@/lib/messageTime';
 import type { Message, Badge } from '@/types';
+import { useApp } from '@/context/AppContext';
+import { canAccessProfile } from '@/lib/profileAccess';
 
 // ── Avatar palette — mirrors web AVATAR_PALETTES ──────────────────────────────
 
@@ -202,8 +204,25 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   contextBadge?: Badge | null;
   vibe?:         string;
 }) {
-  const router = useRouter();
-  const navId  = userId ?? guestId;   // prefer resolved userId, fall back to guestId
+  const router  = useRouter();
+  const { account } = useApp();
+
+  // Navigate to a registered profile only when viewer is registered.
+  // If viewer is a ghost, redirect to AuthGate instead.
+  function handlePress() {
+    if (userId) {
+      if (!canAccessProfile(account)) {
+        router.push('/auth-gate');
+        return;
+      }
+      router.push({ pathname: '/user/[id]', params: { id: userId } });
+    } else if (guestId) {
+      // Guest profiles are always viewable (minimal public info)
+      router.push({ pathname: '/user/[id]', params: { id: guestId } });
+    }
+  }
+
+  const navId = userId ?? guestId;
 
   const inner = (
     <>
@@ -223,7 +242,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
     return (
       <TouchableOpacity
         style={styles.meta}
-        onPress={() => router.push({ pathname: '/user/[id]', params: { id: navId } })}
+        onPress={handlePress}
         activeOpacity={0.7}
         hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
       >
@@ -238,6 +257,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel }: Props) {
   const router = useRouter();
+  const { account } = useApp();
 
   // Hook called unconditionally — React rules require this before any early return
   const { opacity, translateY } = useEntryAnimation(200);
@@ -270,7 +290,13 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
       </Animated.View>
     );
     const handlePress = hasUser
-      ? () => router.push({ pathname: '/user/[id]', params: { id: message.userId! } })
+      ? () => {
+          if (!canAccessProfile(account)) {
+            router.push('/auth-gate');
+            return;
+          }
+          router.push({ pathname: '/user/[id]', params: { id: message.userId! } });
+        }
       : hasGuest
         ? () => router.push({ pathname: '/user/guest', params: { guestId: message.guestId!, nickname: message.nickname ?? '' } })
         : null;

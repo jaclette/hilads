@@ -497,6 +497,16 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         Response::json(['error' => 'Invalid userId'], 400);
     }
 
+    // Access rule: only registered users can view registered profiles.
+    // Guests (no token OR guest accountType) are blocked with PROFILE_LOCKED.
+    $viewer = AuthService::currentUser();
+    if ($viewer === null) {
+        Response::json([
+            'error'   => 'PROFILE_LOCKED',
+            'message' => 'Profile access requires registration',
+        ], 403);
+    }
+
     // Try primary userId lookup first; fall back to guest_id for city-channel
     // taps where the navigation ID may be a guestId rather than a registered userId.
     $user = UserRepository::findById($userId) ?? UserRepository::findByGuestId($userId);
@@ -505,7 +515,6 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     }
 
     // isFriend: whether the current authenticated viewer has friended this user
-    $viewer   = AuthService::currentUser();
     $isFriend = false;
     if ($viewer !== null && $viewer['id'] !== $user['id']) {
         $chk = Database::pdo()->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?");

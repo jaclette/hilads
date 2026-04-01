@@ -539,6 +539,13 @@ export default function App() {
   const [filterVibe,   setFilterVibe]   = useState(null)
   const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
   const [guestProfile,   setGuestProfile]   = useState(null) // { guestId, nickname } for guest-only profiles
+
+  // Central access rule: guest users cannot view registered profiles.
+  // Use this everywhere instead of calling setViewingProfile directly.
+  function openProfile(userId, nickname = '') {
+    if (!account) { setShowAuthScreen(true); return }
+    setViewingProfile({ userId, nickname })
+  }
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
   const [conversations, setConversations] = useState(null) // { dms, events }
@@ -775,7 +782,7 @@ export default function App() {
       }
       const userMatch = path.match(/^\/user\/([a-f0-9-]+)$/)
       if (userMatch) {
-        setViewingProfile({ userId: userMatch[1], nickname: '' })
+        openProfile(userMatch[1], '')
       }
       if (path === '/me') {
         setShowProfileDrawer(true)
@@ -2423,7 +2430,7 @@ export default function App() {
                     : 'feed-activity'}
                   onClick={isClickable ? () => {
                     if (item.userId) {
-                      setViewingProfile({ userId: item.userId, nickname: item.nickname ?? '' })
+                      openProfile(item.userId, item.nickname ?? '')
                     } else {
                       setGuestProfile({ guestId: item.guestId, nickname: item.nickname ?? '' })
                     }
@@ -2528,7 +2535,7 @@ export default function App() {
                   {!isMine && !isGrouped && (
                     <div
                       className={`msg-meta${item.userId ? ' msg-meta--tappable' : ''}`}
-                      onClick={item.userId ? () => setViewingProfile({ userId: item.userId, nickname: item.nickname }) : undefined}
+                      onClick={item.userId ? () => openProfile(item.userId, item.nickname) : undefined}
                       title={item.userId ? `View ${item.nickname}'s profile` : undefined}
                     >
                       <span
@@ -2912,8 +2919,7 @@ export default function App() {
           const tappable = !user.isMe && user.isRegistered
           const handleTap = () => {
             if (user.isMe) return
-            if (!account) { setShowPeopleDrawer(false); setShowProfileDrawer(true); setShowAuthScreen(true); return }
-            if (user.isRegistered) setViewingProfile({ userId: user.userId, nickname: user.nickname })
+            if (user.isRegistered) openProfile(user.userId, user.nickname)
           }
           return (
             <div
@@ -2966,10 +2972,7 @@ export default function App() {
           const [c1, c2] = avatarColors(m.displayName)
           return (
             <div key={m.id} className="people-drawer-row people-drawer-row--tappable"
-              onClick={() => {
-                if (!account) { setShowPeopleDrawer(false); setShowProfileDrawer(true); setShowAuthScreen(true); return }
-                setViewingProfile({ userId: m.id, nickname: m.displayName })
-              }}
+              onClick={() => openProfile(m.id, m.displayName)}
             >
               {m.avatarUrl
                 ? <img className="online-avatar" src={m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
@@ -3073,7 +3076,7 @@ export default function App() {
           cityCountry={cityCountry}
           account={account}
           onBack={() => setViewingProfile(null)}
-          onViewProfile={(uid, nickname) => setViewingProfile({ userId: uid, nickname })}
+          onViewProfile={(uid, nickname) => openProfile(uid, nickname)}
           onSendDm={account ? async (targetUserId) => {
             try {
               const { conversation, otherUser } = await createOrGetDirectConversation(targetUserId)
@@ -3143,7 +3146,7 @@ export default function App() {
           onBack={() => setShowProfileDrawer(false)}
           onViewFriend={(uid, nickname) => {
             setShowProfileDrawer(false)
-            setViewingProfile({ userId: uid, nickname })
+            openProfile(uid, nickname)
           }}
           onSelectEvent={(ev) => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
           onDeleteEvent={async (ev) => {
@@ -3282,7 +3285,7 @@ export default function App() {
               if (ev) handleSelectEvent(ev)
               else setShowEventDrawer(true)
             } else if (notif.type === 'friend_added' && d.senderUserId) {
-              setViewingProfile({ userId: d.senderUserId, nickname: d.senderName ?? '' })
+              openProfile(d.senderUserId, d.senderName ?? '')
             } else if (notif.type === 'vibe_received') {
               setShowProfileDrawer(true)
             }

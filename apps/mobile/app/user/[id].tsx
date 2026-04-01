@@ -17,6 +17,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
 import { useApp } from '@/context/AppContext';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
@@ -164,6 +165,13 @@ export default function PublicProfileScreen() {
   const [vibeRating,   setVibeRating]   = useState(0);
   const [vibeMessage,  setVibeMessage]  = useState('');
   const [showVibeForm, setShowVibeForm] = useState(false);
+
+  // Route-level guard — catches any missed navigation guards (deep links, etc.)
+  useEffect(() => {
+    if (!canAccessProfile(account)) {
+      router.replace('/auth-gate');
+    }
+  }, [account]);
 
   useEffect(() => {
     if (!id) return;

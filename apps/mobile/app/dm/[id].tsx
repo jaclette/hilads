@@ -20,6 +20,7 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { useDMThread } from '@/hooks/useDMThread';
 import { findOrCreateDM } from '@/api/conversations';
 import { useApp } from '@/context/AppContext';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { isSameDay, formatDateLabel, formatTime } from '@/lib/messageTime';
@@ -95,6 +96,7 @@ interface RowProps {
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowProps) {
   const router = useRouter();
+  const { account } = useApp();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(6)).current;
 
@@ -129,7 +131,10 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowP
         <View style={styles.avatarSlot}>
           {isFirst && (
             <TouchableOpacity
-              onPress={() => router.push(`/user/${msg.sender_id}` as Parameters<typeof router.push>[0])}
+              onPress={() => {
+                if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+                router.push(`/user/${msg.sender_id}` as Parameters<typeof router.push>[0]);
+              }}
               activeOpacity={0.7}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
