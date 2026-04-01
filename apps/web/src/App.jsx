@@ -3252,30 +3252,28 @@ export default function App() {
         />
       )}
 
-      {/* Desktop-only sidebar */}
-      {onlineUsers.length > 0 && (
-        <aside className="online-sidebar">
-          <p className="online-sidebar-title">Online · {onlineUsers.length}</p>
-          {onlineUsers.map((user) => {
-            const [c1, c2] = avatarColors(user.nickname)
-            return (
-              <div key={user.id} className="sidebar-user">
-                <span
-                  className="online-avatar"
-                  style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                  data-me={user.isMe ? 'true' : undefined}
-                >
-                  {(user.nickname ?? '?')[0].toUpperCase()}
-                </span>
-                <span className="sidebar-user-name">
-                  {user.nickname}
-                  {user.isMe && <span className="sidebar-you"> (you)</span>}
-                </span>
-              </div>
-            )
-          })}
-        </aside>
-      )}
+      {/* Desktop-only sidebar — always rendered to preserve 3-column layout */}
+      <aside className="online-sidebar">
+        <p className="online-sidebar-title">Online · {onlineUsers.length}</p>
+        {onlineUsers.map((user) => {
+          const [c1, c2] = avatarColors(user.nickname)
+          return (
+            <div key={user.id} className="sidebar-user">
+              <span
+                className="online-avatar"
+                style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                data-me={user.isMe ? 'true' : undefined}
+              >
+                {(user.nickname ?? '?')[0].toUpperCase()}
+              </span>
+              <span className="sidebar-user-name">
+                {user.nickname}
+                {user.isMe && <span className="sidebar-you"> (you)</span>}
+              </span>
+            </div>
+          )
+        })}
+      </aside>
 
       {/* Lightbox */}
       {lightboxUrl && (

@@ -37,7 +37,7 @@ html, body, #root {
   display: flex;
   height: 100%;
   width: 100%;
-  max-width: 1040px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -618,7 +618,7 @@ html, body, #root {
 
 @media (min-width: 768px) {
   .chat-header {
-    padding: 18px 28px 22px;
+    padding: 10px 20px 12px;
   }
 
   .header-hero--mobile,
@@ -628,10 +628,10 @@ html, body, #root {
 
   .header-desktop-layout {
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) minmax(320px, 720px) minmax(220px, 1fr);
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 28px;
-    min-height: 168px;
+    gap: 16px;
+    min-height: 68px;
     width: 100%;
   }
 
@@ -646,8 +646,9 @@ html, body, #root {
   }
 
   .header-desktop-zone--center {
-    justify-content: center;
-    padding-inline: 8px;
+    justify-content: flex-start;
+    padding-inline: 4px;
+    min-width: 0;
   }
 
   .header-desktop-zone--right {
@@ -663,66 +664,87 @@ html, body, #root {
 
   .header-desktop-right {
     justify-content: flex-end;
-    gap: 14px;
-    flex-wrap: wrap;
+    gap: 10px;
+    flex-wrap: nowrap;
   }
 
   .header-desktop-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px;
-    border-radius: 18px;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 16px;
     background: rgba(15, 12, 10, 0.68);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
 
+  /* Desktop hero: brand + city side by side as a compact bar */
   .header-hero--desktop {
     display: flex;
+    flex-direction: row;
+    align-items: center;
     min-height: 0;
     padding: 0;
-    gap: 14px;
+    gap: 12px;
     width: 100%;
-    max-width: 720px;
+    min-width: 0;
   }
 
   .header-hero--desktop .header-hero-brand {
     flex-direction: row;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-shrink: 0;
-    padding-right: 14px;
+    padding-right: 12px;
     border-right: 1px solid rgba(255, 255, 255, 0.07);
   }
 
   .header-hero--desktop .header-tagline {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .header-hero--desktop .logo svg {
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
+  }
+
+  /* City block: left-aligned, compact */
+  .header-hero--desktop .header-hero-city {
+    align-items: flex-start;
+    text-align: left;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    width: auto;
   }
 
   .header-hero--desktop .header-hero-name {
-    font-size: clamp(2rem, 3.1vw, 2.85rem);
+    font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+    width: auto;
+    justify-content: flex-start;
+    letter-spacing: -0.025em;
   }
 
   .header-hero--desktop .online-label {
-    font-size: 0.92rem;
+    font-size: 0.74rem;
+  }
+
+  .header-hero--desktop .header-weather {
+    font-size: 0.7rem;
+    margin-top: 0;
   }
 
   .change-city-btn {
-    max-width: min(100%, 260px);
+    max-width: min(100%, 240px);
   }
 
   .you-badge {
-    padding: 10px 14px;
-    border-radius: 16px;
-    font-size: 0.82rem;
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-size: 0.78rem;
     white-space: nowrap;
   }
 }
@@ -2690,12 +2712,12 @@ html, body, #root {
 
 .online-sidebar {
   display: none;
-  width: 180px;
+  width: 224px;
   flex-shrink: 0;
   border-left: 1px solid var(--border);
   background: var(--surface);
   overflow-y: auto;
-  padding: 16px 12px;
+  padding: 18px 14px;
   flex-direction: column;
   gap: 2px;
 }
@@ -2752,6 +2774,20 @@ html, body, #root {
   /* on desktop, don't auto-center the chat — let flexbox handle it */
   .screen.chat {
     margin: 0;
+    max-width: none;
+  }
+
+  .messages {
+    padding: 22px 26px 16px;
+  }
+
+  .input-bar {
+    padding: 14px 20px;
+  }
+
+  .input-bar input {
+    min-height: 48px;
+    font-size: 0.97rem;
   }
 }
 
@@ -3271,7 +3307,7 @@ html, body, #root {
 
 .events-sidebar {
   display: none;
-  width: 160px;
+  width: 224px;
   flex-shrink: 0;
   border-right: 1px solid var(--border);
   background: var(--surface);
@@ -3297,8 +3333,10 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 12px 8px;
+  padding: 16px 14px 8px;
   flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
 }
 
 .events-sidebar-title {
@@ -3335,7 +3373,7 @@ html, body, #root {
 .events-list {
   flex: 1;
   overflow-y: auto;
-  padding: 4px 8px 16px;
+  padding: 6px 10px 16px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -3350,7 +3388,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  padding: 8px;
+  padding: 9px 10px;
   border-radius: 8px;
   border: 1px solid transparent;
   background: none;
@@ -3417,7 +3455,7 @@ html, body, #root {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--muted2);
-  padding: 10px 8px 2px;
+  padding: 10px 10px 2px;
   margin: 0;
   font-weight: 600;
 }
@@ -4418,6 +4456,18 @@ html, body, #root {
 @media (min-width: 768px) {
   .header-side-control {
     display: none;
+  }
+
+  /* Compact icon buttons in the desktop header bar */
+  .header-desktop-actions .header-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+  }
+
+  .header-desktop-actions .header-icon-btn svg {
+    width: 20px;
+    height: 20px;
   }
 }
 
