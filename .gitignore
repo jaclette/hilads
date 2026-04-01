@@ -6,17 +6,10 @@ apps/web/dist/
 
 # Backend storage
 backend/api/storage/*.json
-# Frontend
-node_modules/
-apps/web/node_modules/
-apps/web/node_modules/.vite/
 
 # Env files (use platform env vars in production)
 apps/web/.env
 apps/web/.env.local
-
-# Backend runtime data
-backend/api/storage/*.json
 
 # Expo
 .expo/
@@ -33,3 +26,7 @@ android/build/
 
 # misc
 *.log
+
+# Native builds (Expo managed)
+android/
+ios/
