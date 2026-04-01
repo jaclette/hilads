@@ -2295,13 +2295,20 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
 
     if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
         Response::json(['error' => 'Invalid eventId'], 400);
+        return;
     }
 
-    if (EventRepository::findById($eventId) === null) {
-        Response::json(['error' => 'Event not found or expired'], 404);
-    }
+    try {
+        if (EventRepository::findById($eventId) === null) {
+            Response::json(['error' => 'Event not found or expired'], 404);
+            return;
+        }
 
-    Response::json(['messages' => MessageRepository::getByChannel($eventId)]);
+        Response::json(['messages' => MessageRepository::getByChannel($eventId)]);
+    } catch (\Throwable $e) {
+        error_log('[event-messages] GET failed for event ' . $eventId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to load messages'], 500);
+    }
 });
 
 $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $params) {

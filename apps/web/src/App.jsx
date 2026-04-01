@@ -1642,15 +1642,27 @@ export default function App() {
     pushUrl(`/event/${eid}`)
     setPageMeta(`${event.title} is happening now | Hilads`, `Join ${event.title} on Hilads — see who's there and what's happening.`)
 
+    let consecutiveFailures = 0
+    const MAX_FAILURES = 3
+
     const doPoll = async () => {
       if (!activeRef.current) return
-      const latest = await fetchEventMessages(eid)
-      if (activeEventIdRef.current !== eid) return
-      const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(m.id))
-      if (newMsgs.length > 0) {
-        newMsgs.forEach(m => knownIdsRef.current.add(m.id))
-        const items = newMsgs.map(m => toFeedItem(m)).filter(Boolean)
-        setFeed(prev => [...prev, ...items])
+      try {
+        const latest = await fetchEventMessages(eid)
+        consecutiveFailures = 0
+        if (activeEventIdRef.current !== eid) return
+        const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(m.id))
+        if (newMsgs.length > 0) {
+          newMsgs.forEach(m => knownIdsRef.current.add(m.id))
+          const items = newMsgs.map(m => toFeedItem(m)).filter(Boolean)
+          setFeed(prev => [...prev, ...items])
+        }
+      } catch {
+        consecutiveFailures++
+        if (consecutiveFailures >= MAX_FAILURES) {
+          clearInterval(pollRef.current)
+          pollRef.current = null
+        }
       }
     }
 
