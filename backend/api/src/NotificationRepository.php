@@ -17,7 +17,20 @@ class NotificationRepository
         if (!self::isEnabledForUser($userId, $type)) {
             return [];
         }
+        return self::createUnchecked($userId, $type, $title, $body, $data);
+    }
 
+    /**
+     * Insert a notification and fire pushes without re-checking preferences.
+     * Use this when preferences have already been batch-resolved externally.
+     */
+    private static function createUnchecked(
+        string  $userId,
+        string  $type,
+        string  $title,
+        ?string $body,
+        array   $data = []
+    ): array {
         $stmt = Database::pdo()->prepare("
             INSERT INTO notifications (user_id, type, title, body, data)
             VALUES (?, ?, ?, ?, ?::jsonb)
@@ -36,9 +49,9 @@ class NotificationRepository
         return $notif;
     }
 
-    private static function isEnabledForUser(string $userId, string $type): bool
+    private static function typeToColumn(string $type): ?string
     {
-        $col = match ($type) {
+        return match ($type) {
             'dm_message'      => 'dm_push',
             'event_message'   => 'event_message_push',
             'event_join'      => 'event_join_push',
@@ -50,9 +63,11 @@ class NotificationRepository
             'profile_view'    => 'profile_view_push',
             default           => null,
         };
-        if ($col === null) return true; // Unknown type — always create
+    }
 
-        $defaults = [
+    private static function prefDefaults(): array
+    {
+        return [
             'dm_push'              => true,
             'event_message_push'   => true,
             'event_join_push'      => false,
@@ -60,9 +75,17 @@ class NotificationRepository
             'channel_message_push' => false,
             'city_join_push'       => false,
             'friend_added_push'    => true,
+            'vibe_received_push'   => true,
             'profile_view_push'    => true,
         ];
+    }
 
+    private static function isEnabledForUser(string $userId, string $type): bool
+    {
+        $col = self::typeToColumn($type);
+        if ($col === null) return true;
+
+        $defaults = self::prefDefaults();
         try {
             $stmt = Database::pdo()->prepare(
                 "SELECT {$col} FROM notification_preferences WHERE user_id = ?"
@@ -71,8 +94,44 @@ class NotificationRepository
             $row = $stmt->fetch(\PDO::FETCH_ASSOC);
             return $row ? (bool) $row[$col] : ($defaults[$col] ?? true);
         } catch (\Throwable) {
-            return true; // On DB error, don't suppress
+            return true;
         }
+    }
+
+    /**
+     * Batch-load notification preferences for multiple users — 1 query instead of N.
+     * Returns [ userId => bool ] indicating whether the given type is enabled for each user.
+     */
+    private static function batchIsEnabled(array $userIds, string $type): array
+    {
+        $col = self::typeToColumn($type);
+        if ($col === null) {
+            // Unknown type — always enabled for everyone
+            return array_fill_keys($userIds, true);
+        }
+
+        $defaults = self::prefDefaults();
+        $default  = $defaults[$col] ?? true;
+
+        if (empty($userIds)) return [];
+
+        try {
+            $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+            $stmt = Database::pdo()->prepare(
+                "SELECT user_id, {$col} AS enabled FROM notification_preferences WHERE user_id IN ({$placeholders})"
+            );
+            $stmt->execute($userIds);
+            $rows = array_column($stmt->fetchAll(\PDO::FETCH_ASSOC), 'enabled', 'user_id');
+        } catch (\Throwable) {
+            // On DB error, default to enabled so notifications aren't silently dropped
+            return array_fill_keys($userIds, true);
+        }
+
+        $result = [];
+        foreach ($userIds as $uid) {
+            $result[$uid] = isset($rows[$uid]) ? (bool) $rows[$uid] : $default;
+        }
+        return $result;
     }
 
     private static function pushUrl(string $type, array $data): string
@@ -173,8 +232,15 @@ class NotificationRepository
               AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
         ");
         $stmt->execute([$eventId, $excludeUserId, $excludeUserId]);
-        foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $uid) {
-            self::create($uid, $type, $title, $body, $data);
+        $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($userIds)) return;
+
+        // Batch-load preferences — 1 query regardless of participant count
+        $enabled = self::batchIsEnabled($userIds, $type);
+        foreach ($userIds as $uid) {
+            if ($enabled[$uid] ?? true) {
+                self::createUnchecked($uid, $type, $title, $body, $data);
+            }
         }
     }
 
@@ -198,8 +264,15 @@ class NotificationRepository
               AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
         ");
         $stmt->execute([$cityChannelId, $excludeUserId, $excludeUserId]);
-        foreach ($stmt->fetchAll(\PDO::FETCH_COLUMN) as $uid) {
-            self::create($uid, $type, $title, $body, $data);
+        $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($userIds)) return;
+
+        // Batch-load preferences — 1 query regardless of online user count
+        $enabled = self::batchIsEnabled($userIds, $type);
+        foreach ($userIds as $uid) {
+            if ($enabled[$uid] ?? true) {
+                self::createUnchecked($uid, $type, $title, $body, $data);
+            }
         }
     }
 

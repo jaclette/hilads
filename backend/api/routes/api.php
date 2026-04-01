@@ -37,8 +37,6 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
     $target  = $wsUrl . '/broadcast/message';
 
-    error_log("[ws-broadcast] → target={$target} channelId=" . json_encode($channelId) . " token=" . ($token !== '' ? 'set' : 'none') . " payload=" . substr($payload, 0, 200));
-
     $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
     if ($token !== '') {
         $headers .= "X-Internal-Token: {$token}\r\n";
@@ -55,12 +53,9 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     ]);
 
     $result = @file_get_contents($target, false, $ctx);
-    $status = isset($http_response_header) ? ($http_response_header[0] ?? 'no-header') : 'no-response';
     if ($result === false) {
         $err = error_get_last();
-        error_log("[ws-broadcast] ✗ FAILED target={$target} error=" . ($err['message'] ?? 'unknown'));
-    } else {
-        error_log("[ws-broadcast] ✓ OK status=\"{$status}\" body=" . substr((string)$result, 0, 100));
+        error_log("[ws-broadcast] ✗ FAILED target={$target} channelId=" . json_encode($channelId) . " error=" . ($err['message'] ?? 'unknown'));
     }
 }
 
@@ -1200,45 +1195,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
 
     $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
 
-    // Detect new arrival BEFORE updating last_seen_at.
-    // Only fires for registered users — guests have no push tokens and no notification preferences.
-    // "New arrival" = no presence record for this user in this city in the last 10 minutes.
-    $heartbeatUser     = AuthService::currentUser();
-    $heartbeatUserId   = $heartbeatUser['id'] ?? null;
-    $presenceChannelId = "city_{$channelId}";
-    $isNewArrival      = false;
-    if ($heartbeatUserId !== null) {
-        $arrivalStmt = Database::pdo()->prepare("
-            SELECT 1 FROM presence
-            WHERE channel_id = ? AND user_id = ?
-              AND last_seen_at > now() - interval '10 minutes'
-            LIMIT 1
-        ");
-        $arrivalStmt->execute([$presenceChannelId, $heartbeatUserId]);
-        $isNewArrival = !$arrivalStmt->fetchColumn();
-    }
-
     PresenceRepository::heartbeat($channelId, $sessionId, $guestId, $nickname);
-
-    // Notify other registered users in the city that this user has arrived.
-    // MobilePushService applies a 10-minute cooldown per recipient per channel.
-    if ($isNewArrival && $heartbeatUserId !== null) {
-        try {
-            $cityNameStmt = Database::pdo()->prepare("SELECT name FROM channels WHERE id = ?");
-            $cityNameStmt->execute([$channelId]);
-            $cityName = $cityNameStmt->fetchColumn() ?: 'the city';
-            NotificationRepository::notifyCityOnlineUsers(
-                $presenceChannelId,
-                $heartbeatUserId,
-                'city_join',
-                "👋 {$nickname} is now in {$cityName}",
-                null,
-                ['channelId' => $presenceChannelId, 'senderName' => $nickname, 'senderUserId' => $heartbeatUserId]
-            );
-        } catch (\Throwable $e) {
-            error_log("[heartbeat] city_join notify failed (non-fatal): " . $e->getMessage());
-        }
-    }
 
     Response::json(['ok' => true]);
 });

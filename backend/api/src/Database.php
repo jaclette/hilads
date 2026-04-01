@@ -381,6 +381,11 @@ class Database
             }
         }
 
+        // ── Performance indexes (idempotent — safe to re-run on every cold start) ──
+        // These are CREATE IF NOT EXISTS so they are no-ops once created.
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_messages_channel_created ON messages (channel_id, created_at DESC)");
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_conv_messages_conv_created ON conversation_messages (conversation_id, created_at DESC)");
+
         self::bootstrap(self::$pdo);
 
         return self::$pdo;

@@ -348,58 +348,6 @@ function generateNickname() {
   return `${adj}${noun}`
 }
 
-async function fetchVisibleCityEventCount(channel) {
-  const [hiladsResult, cityResult] = await Promise.allSettled([
-    fetchEvents(channel.channelId),
-    fetchCityEvents(channel.channelId),
-  ])
-
-  const hiladsCount = hiladsResult.status === 'fulfilled'
-    ? (hiladsResult.value.events ?? []).length
-    : null
-  const publicCount = cityResult.status === 'fulfilled'
-    ? (cityResult.value.events ?? []).length
-    : null
-
-  if (hiladsCount === null && publicCount === null) {
-    throw new Error('Failed to fetch city event count')
-  }
-
-  if (hiladsResult.status === 'rejected' || cityResult.status === 'rejected') {
-    console.warn('[city-count] partial fetch failure', {
-      channelId: channel.channelId,
-      hiladsOk: hiladsResult.status === 'fulfilled',
-      publicOk: cityResult.status === 'fulfilled',
-    })
-  }
-
-  const resolvedHilads = hiladsCount ?? 0
-  const resolvedPublic = publicCount ?? 0
-  const total = resolvedHilads + resolvedPublic
-
-  return total
-}
-
-function rankCitiesForList(channels, fallbackCounts = {}) {
-  return [...channels].sort((a, b) => {
-    const scoreA = ((fallbackCounts[a.channelId] ?? 0) * 10) + (a.activeUsers * 3) + a.messageCount
-    const scoreB = ((fallbackCounts[b.channelId] ?? 0) * 10) + (b.activeUsers * 3) + b.messageCount
-    if (scoreB !== scoreA) return scoreB - scoreA
-    return a.city.localeCompare(b.city)
-  })
-}
-
-function getDefaultCityTargets(channels, limit = 10) {
-  return rankCitiesForList(channels).slice(0, limit)
-}
-
-function getSearchCityTargets(channels, query, limit = 12) {
-  const q = query.trim().toLowerCase()
-  if (!q) return []
-  return rankCitiesForList(
-    channels.filter(ch => ch.city.toLowerCase().includes(q))
-  ).slice(0, limit)
-}
 
 // Unique per page load — generated fresh so duplicated tabs never share a sessionId.
 // Stored as a module-level constant so the same ID is used across re-renders and
@@ -537,7 +485,6 @@ export default function App() {
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewTimezone, setPreviewTimezone] = useState('UTC')
   const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
-  const [channelEventCounts, setChannelEventCounts] = useState({})
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
@@ -597,7 +544,6 @@ export default function App() {
   const [obAuthInitialTab, setObAuthInitialTab] = useState('signup')
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
-  const [obChannelEventCounts, setObChannelEventCounts] = useState({})
   const [citySearchQuery, setCitySearchQuery] = useState('')
 
   // ── City crew fetch — triggered when people drawer opens or filters change ──
@@ -638,6 +584,11 @@ export default function App() {
   }
 
   const bottomRef = useRef(null)
+  const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
+  const appendFeed = (items) => setFeed(prev => {
+    const next = Array.isArray(items) ? [...prev, ...items] : [...prev, items]
+    return next.length > FEED_MAX ? next.slice(next.length - FEED_MAX) : next
+  })
   const pollRef = useRef(null)
   const activityRef = useRef(null)
   const activeRef = useRef(false)
@@ -658,8 +609,6 @@ export default function App() {
   const typingTimeoutRef = useRef(null) // debounce timer for typingStop
   const isTypingRef = useRef(false)     // true while typingStart has been sent
   const fileInputRef = useRef(null)
-  const cityCountLoadingRef = useRef(new Set())
-  const obCityCountLoadingRef = useRef(new Set())
 
   // Events refs
   const activeEventIdRef = useRef(null)
@@ -676,33 +625,6 @@ export default function App() {
   const compactInstallText = installPrompt.canUseNativePrompt
     ? 'Add Hilads to home screen'
     : installPrompt.instructionText
-
-  async function loadExactCityCounts(targetChannels, setCounts, loadingRef) {
-    const queue = targetChannels.filter(ch => {
-      if (!ch?.channelId) return false
-      if (loadingRef.current.has(ch.channelId)) return false
-      loadingRef.current.add(ch.channelId)
-      return true
-    })
-
-    const concurrency = 3
-    const worker = async () => {
-      while (queue.length > 0) {
-        const ch = queue.shift()
-        if (!ch) return
-        try {
-          const total = await fetchVisibleCityEventCount(ch)
-          setCounts(prev => ({ ...prev, [ch.channelId]: total }))
-        } catch (err) {
-          console.warn('[city-count] failed', { channelId: ch.channelId, error: err?.message ?? String(err) })
-        } finally {
-          loadingRef.current.delete(ch.channelId)
-        }
-      }
-    }
-
-    await Promise.all(Array.from({ length: Math.min(concurrency, queue.length) }, worker))
-  }
 
   function injectFeedInstallMessage() {
     if (
@@ -912,8 +834,15 @@ export default function App() {
     }
   }, [])
 
+  // Auto-scroll to bottom only when already near the bottom — don't interrupt reading.
+  const messagesContainerRef = useRef(null)
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const container = messagesContainerRef.current
+    if (!container) return
+    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
+    if (distanceFromBottom < 150) {
+      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+    }
   }, [feed])
 
   useEffect(() => {
@@ -1153,14 +1082,12 @@ export default function App() {
       socketRef.current = socket
 
       socket.on('presenceSnapshot', ({ cityId, users, count }) => {
-        console.debug('[presence] snapshot', cityId, count, 'users:', users.map(u => u.nickname))
         if (activeChannelRef.current !== cityId) return
         setOnlineUsers(buildOnlineUsers(users, sessionIdRef.current))
         setOnlineCount(count)
       })
 
       socket.on('userJoined', ({ cityId, user }) => {
-        console.debug('[presence] userJoined', cityId, user.nickname)
         if (activeChannelRef.current !== cityId) return
         setOnlineUsers((prev) => {
           if (prev.some((u) => u.sessionId === user.sessionId)) return prev
@@ -1169,13 +1096,11 @@ export default function App() {
       })
 
       socket.on('userLeft', ({ cityId, user }) => {
-        console.debug('[presence] userLeft', cityId, user.nickname)
         if (activeChannelRef.current !== cityId) return
         setOnlineUsers((prev) => prev.filter((u) => u.sessionId !== user.sessionId))
       })
 
       socket.on('onlineCountUpdated', ({ cityId, count }) => {
-        console.debug('[presence] onlineCountUpdated', cityId, count)
         if (activeChannelRef.current !== cityId) return
         setOnlineCount(count)
       })
@@ -1209,11 +1134,11 @@ export default function App() {
         knownIdsRef.current.add(key)
 
         if (isEventMsg) {
-          setFeed(prev => [...prev, { type: 'message', ...message }])
+          appendFeed({ type: 'message', ...message })
         } else {
           const item = toFeedItem(message, undefined, lastJoinAtRef)
           if (!item) return // throttled join
-          setFeed(prev => [...prev, item])
+          appendFeed(item)
           if (item.subtype === 'join') scheduleEphemeral(item.id)
         }
       })
@@ -1416,40 +1341,28 @@ export default function App() {
     setShowCityPicker(true)
     setCitySearchQuery('')
     setChannelsLoading(true)
-    setChannelEventCounts({})
-    cityCountLoadingRef.current = new Set()
-    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      loadedChannels = data.channels
-      setChannels(loadedChannels)
+      setChannels(data.channels)
     } catch {
       setChannels([])
     } finally {
       setChannelsLoading(false)
     }
-    if (loadedChannels.length === 0) return
-    void loadExactCityCounts(getDefaultCityTargets(loadedChannels), setChannelEventCounts, cityCountLoadingRef)
   }
 
   async function openObCityPicker() {
     setObPickingCity(true)
     setCitySearchQuery('')
     setObChannelsLoading(true)
-    setObChannelEventCounts({})
-    obCityCountLoadingRef.current = new Set()
-    let loadedChannels = []
     try {
       const data = await fetchChannels()
-      loadedChannels = data.channels
-      setObChannels(loadedChannels)
+      setObChannels(data.channels)
     } catch {
       setObChannels([])
     } finally {
       setObChannelsLoading(false)
     }
-    if (loadedChannels.length === 0) return
-    void loadExactCityCounts(getDefaultCityTargets(loadedChannels), setObChannelEventCounts, obCityCountLoadingRef)
   }
 
   function joinCityFromOb(newChannelId, cityName, timezone, country) {
@@ -1808,34 +1721,15 @@ export default function App() {
     prevEventCountRef.current = events.length
   }, [events]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── City scoring ────────────────────────────────────────────────────────────
-
-  useEffect(() => {
-    if (!showCityPicker || channels.length === 0) return
-    const targets = citySearchQuery.trim()
-      ? getSearchCityTargets(channels, citySearchQuery)
-      : getDefaultCityTargets(channels)
-    if (targets.length === 0) return
-    void loadExactCityCounts(targets, setChannelEventCounts, cityCountLoadingRef)
-  }, [showCityPicker, channels, citySearchQuery]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    if (!obPickingCity || obChannels.length === 0) return
-    const targets = citySearchQuery.trim()
-      ? getSearchCityTargets(obChannels, citySearchQuery)
-      : getDefaultCityTargets(obChannels)
-    if (targets.length === 0) return
-    void loadExactCityCounts(targets, setObChannelEventCounts, obCityCountLoadingRef)
-  }, [obPickingCity, obChannels, citySearchQuery]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  function cityScore(ch, eventCount) {
-    return (eventCount * 10) + (ch.activeUsers * 3) + (ch.messageCount * 1)
+  function cityScore(ch) {
+    return ((ch.eventCount ?? 0) * 10) + (ch.activeUsers * 3) + (ch.messageCount * 1)
   }
 
   // ── Shared city row renderer ────────────────────────────────────────────────
 
-  function renderCityRow(ch, eventCount, onClick, isActive = false, isEventCountResolved = true) {
+  function renderCityRow(ch, onClick, isActive = false) {
     const hasActivity = ch.activeUsers > 0
+    const eventCount = ch.eventCount ?? 0
     return (
       <button
         key={ch.channelId}
@@ -1852,8 +1746,7 @@ export default function App() {
         </div>
         <div className="city-row-stats">
           {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
-          {!isEventCountResolved && <span className="skel skel-stat city-row-stat-skel" aria-hidden="true" />}
-          {isEventCountResolved && eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
+          {eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
           {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
         </div>
       </button>
@@ -1933,26 +1826,18 @@ export default function App() {
                 const q = citySearchQuery.trim().toLowerCase()
                 const sorted = [...obChannels]
                   .filter(ch => !q || ch.city.toLowerCase().includes(q))
-                  .sort((a, b) => {
-                    const scoreA = cityScore(a, obChannelEventCounts[a.channelId] ?? 0)
-                    const scoreB = cityScore(b, obChannelEventCounts[b.channelId] ?? 0)
-                    if (scoreB !== scoreA) return scoreB - scoreA
-                    return a.city.localeCompare(b.city)
-                  })
+                  .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
                 if (sorted.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
                 if (q) {
                   return sorted.map(ch => renderCityRow(
                     ch,
-                    obChannelEventCounts[ch.channelId] ?? 0,
                     (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country),
-                    false,
-                    Object.hasOwn(obChannelEventCounts, ch.channelId)
+                    false
                   ))
                 }
-                const getScore = ch => cityScore(ch, obChannelEventCounts[ch.channelId] ?? 0)
                 const active = [...obChannels]
-                  .filter(ch => getScore(ch) > 0)
-                  .sort((a, b) => getScore(b) - getScore(a) || a.city.localeCompare(b.city))
+                  .filter(ch => cityScore(ch) > 0)
+                  .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
                 const fillerIds = new Set(active.map(ch => ch.channelId))
                 const filler = [...obChannels]
                   .filter(ch => !fillerIds.has(ch.channelId))
@@ -1964,10 +1849,8 @@ export default function App() {
                     <div className="city-list-label">{label}</div>
                     {top10.map(ch => renderCityRow(
                       ch,
-                      obChannelEventCounts[ch.channelId] ?? 0,
                       (ch) => joinCityFromOb(ch.channelId, ch.city, ch.timezone, ch.country),
-                      false,
-                      Object.hasOwn(obChannelEventCounts, ch.channelId)
+                      false
                     ))}
                   </>
                 )
@@ -2290,7 +2173,7 @@ export default function App() {
           )}
         </header>
 
-        <div className="messages">
+        <div className="messages" ref={messagesContainerRef}>
           {feed.length === 0 && (
             <div className="empty">
               <p className="empty-icon">{activeEvent ? '💬' : '🔥'}</p>
@@ -2599,27 +2482,24 @@ export default function App() {
               </div>
             ) : (() => {
               const q = citySearchQuery.trim().toLowerCase()
-              const getScore = ch => cityScore(ch, channelEventCounts[ch.channelId] ?? 0)
 
               if (q) {
                 // Search mode — filter all channels, sort active-first then alpha
                 const results = [...channels]
                   .filter(ch => ch.city.toLowerCase().includes(q))
-                  .sort((a, b) => getScore(b) - getScore(a) || a.city.localeCompare(b.city))
+                  .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
                 if (results.length === 0) return <div className="city-no-results">No city found for "{q}"</div>
                 return results.map(ch => renderCityRow(
                   ch,
-                  channelEventCounts[ch.channelId] ?? 0,
                   (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                  ch.channelId === channelId,
-                  Object.hasOwn(channelEventCounts, ch.channelId)
+                  ch.channelId === channelId
                 ))
               }
 
               // Default mode — active cities by score, then fill to 10 with well-known cities (ID order)
               const active = [...channels]
-                .filter(ch => getScore(ch) > 0)
-                .sort((a, b) => getScore(b) - getScore(a) || a.city.localeCompare(b.city))
+                .filter(ch => cityScore(ch) > 0)
+                .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
               const fillerIds = new Set(active.map(ch => ch.channelId))
               const filler = [...channels]
                 .filter(ch => !fillerIds.has(ch.channelId))
@@ -2631,10 +2511,8 @@ export default function App() {
                   <div className="city-list-label">{label}</div>
                   {top10.map(ch => renderCityRow(
                     ch,
-                    channelEventCounts[ch.channelId] ?? 0,
                     (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
-                    ch.channelId === channelId,
-                    Object.hasOwn(channelEventCounts, ch.channelId)
+                    ch.channelId === channelId
                   ))}
                 </>
               )

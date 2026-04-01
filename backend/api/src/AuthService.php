@@ -126,21 +126,30 @@ class AuthService
     public static function currentUser(): ?array
     {
         $token = $_COOKIE['hilads_token'] ?? null;
+
+        // Mobile clients send the token as a Bearer header when cookies are unavailable
+        if ($token === null) {
+            $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+            if (str_starts_with($auth, 'Bearer ')) {
+                $token = substr($auth, 7);
+            }
+        }
+
         if ($token === null || !preg_match('/^[a-f0-9]{64}$/', $token)) {
             return null;
         }
 
+        // Single JOIN — resolves session + user in one round-trip
         $stmt = Database::pdo()->prepare("
-            SELECT user_id FROM user_sessions
-            WHERE id = ? AND expires_at > now()
+            SELECT u.*
+            FROM user_sessions s
+            JOIN users u ON u.id = s.user_id
+            WHERE s.id = ? AND s.expires_at > now()
         ");
         $stmt->execute([$token]);
-        $userId = $stmt->fetchColumn();
-        if (!$userId) {
-            return null;
-        }
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        return UserRepository::findById((string) $userId);
+        return $row ?: null;
     }
 
     /** Returns the current user or sends a 401 and exits. */
