@@ -759,14 +759,15 @@ export default function App() {
       .catch(() => setMyFriendsLoaded(true))
   }, [showProfileDrawer]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Poll notification unread count every 30s for registered users.
+  // Fetch notification unread count once on account load.
+  // Badge is kept current via local state transitions:
+  //   - NotificationsScreen sets it to the true server count on open
+  //   - handleMarkAllRead / handleClickNotif decrement it locally
   useEffect(() => {
     if (!account) { setNotifUnreadCount(0); return }
     let cancelled = false
-    const poll = () => fetchUnreadCount().then(d => { if (!cancelled) setNotifUnreadCount(d.count) }).catch(() => {})
-    poll()
-    const interval = setInterval(poll, 30_000)
-    return () => { cancelled = true; clearInterval(interval) }
+    fetchUnreadCount().then(d => { if (!cancelled) setNotifUnreadCount(d.count) }).catch(() => {})
+    return () => { cancelled = true }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Register push when account becomes available (login/register or page reload with session).
