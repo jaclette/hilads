@@ -36,6 +36,7 @@ class MobilePushService
             'channel_message' => 'channel_message_push',
             'city_join'       => 'city_join_push',
             'vibe_received'   => 'vibe_received_push',
+            'profile_view'    => 'profile_view_push',
             default           => null,
         };
     }
@@ -62,6 +63,7 @@ class MobilePushService
             'new_event',
             'channel_message',
             'city_join'                    => $data['channelId'] ?? '',
+            'profile_view'                 => $data['viewerId'] ?? '',
             default                        => '',
         };
     }

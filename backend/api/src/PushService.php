@@ -16,6 +16,7 @@ class PushService
             'event_join'    => 'event_join_push',
             'new_event'     => 'new_event_push',
             'vibe_received' => 'vibe_received_push',
+            'profile_view'  => 'profile_view_push',
             default         => null,
         };
     }
@@ -57,8 +58,8 @@ class PushService
             $prefStmt->execute([$userId]);
             $prefRow = $prefStmt->fetch(\PDO::FETCH_ASSOC);
 
-            $defaults = ['dm_push' => true, 'event_message_push' => true, 'new_event_push' => false, 'vibe_received_push' => true];
-            $enabled  = $prefRow ? (bool) $prefRow[$prefColumn] : ($defaults[$prefColumn] ?? false);
+            $defaults = ['dm_push' => true, 'event_message_push' => true, 'new_event_push' => false, 'vibe_received_push' => true, 'profile_view_push' => true];
+            $enabled  = $prefRow ? (bool) ($prefRow[$prefColumn] ?? $defaults[$prefColumn] ?? true) : ($defaults[$prefColumn] ?? false);
 
             if (!$enabled) return;
         } catch (\Throwable) {

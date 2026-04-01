@@ -3288,6 +3288,8 @@ export default function App() {
               openProfile(d.senderUserId, d.senderName ?? '')
             } else if (notif.type === 'vibe_received') {
               setShowProfileDrawer(true)
+            } else if (notif.type === 'profile_view' && d.viewerId) {
+              openProfile(d.viewerId, d.viewerName ?? '')
             }
           }}
         />

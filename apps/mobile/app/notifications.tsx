@@ -58,6 +58,7 @@ function NotifIcon({ type, unread }: { type: Notification['type']; unread: boole
     type === 'city_join'       ? 'user-plus'       :
     type === 'friend_added'    ? 'user-plus'       :
     type === 'vibe_received'   ? 'star'            :
+    type === 'profile_view'    ? 'eye'             :
     /* fallback */               'bell';
 
   const color = unread ? Colors.white : Colors.muted;
@@ -158,6 +159,7 @@ export default function NotificationsScreen() {
     city_join_push:       false,
     friend_added_push:    true,
     vibe_received_push:   true,
+    profile_view_push:    true,
   });
 
   // ── Load notifications + preferences ─────────────────────────────────────
@@ -241,8 +243,12 @@ export default function NotificationsScreen() {
       }
     } else if (notif.type === 'vibe_received') {
       router.push('/(tabs)/me' as never);
+    } else if (notif.type === 'profile_view' && notif.data?.viewerId) {
+      if (canAccessProfile(account)) {
+        router.push(`/user/${notif.data.viewerId}` as never);
+      }
     }
-  }, [router, setUnreadNotifications]);
+  }, [router, account, setUnreadNotifications]);
 
   const hasUnread = notifications.some(n => !n.is_read);
 
@@ -352,6 +358,13 @@ export default function NotificationsScreen() {
               subtitle="When someone leaves a vibe on your profile"
               value={prefs.vibe_received_push}
               onChange={v => togglePref('vibe_received_push', v)}
+            />
+            <View style={styles.prefDivider} />
+            <PrefRow
+              label="Profile views 👀"
+              subtitle="When someone checks your profile"
+              value={prefs.profile_view_push}
+              onChange={v => togglePref('profile_view_push', v)}
             />
           </View>
         </View>

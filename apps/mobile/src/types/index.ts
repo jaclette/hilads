@@ -198,7 +198,7 @@ export interface DmMessage {
 
 export interface Notification {
   id: number;
-  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event' | 'channel_message' | 'city_join' | 'friend_added' | 'vibe_received';
+  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event' | 'channel_message' | 'city_join' | 'friend_added' | 'vibe_received' | 'profile_view';
   title: string;
   body: string;
   data: {
@@ -210,6 +210,8 @@ export interface Notification {
     actorId?: string;
     actorName?: string;
     vibeId?: number;
+    viewerId?: string;
+    viewerName?: string;
   };
   is_read: boolean;
   created_at: string;

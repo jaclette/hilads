@@ -47,6 +47,7 @@ class NotificationRepository
             'city_join'       => 'city_join_push',
             'friend_added'    => 'friend_added_push',
             'vibe_received'   => 'vibe_received_push',
+            'profile_view'    => 'profile_view_push',
             default           => null,
         };
         if ($col === null) return true; // Unknown type — always create
@@ -59,6 +60,7 @@ class NotificationRepository
             'channel_message_push' => false,
             'city_join_push'       => false,
             'friend_added_push'    => true,
+            'profile_view_push'    => true,
         ];
 
         try {
@@ -82,6 +84,7 @@ class NotificationRepository
             'channel_message', 'city_join'    => '/',
             'friend_added'                    => isset($data['senderUserId']) ? "/user/{$data['senderUserId']}" : '/notifications',
             'vibe_received'                   => '/me',
+            'profile_view'                    => isset($data['viewerId']) ? "/user/{$data['viewerId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -89,14 +92,15 @@ class NotificationRepository
     private static function pushTag(string $type, array $data): string
     {
         return match ($type) {
-            'dm_message'      => 'dm-'        . ($data['conversationId'] ?? 'dm'),
+            'dm_message'      => 'dm-'           . ($data['conversationId'] ?? 'dm'),
             'event_message',
-            'event_join'      => 'event-'     . ($data['eventId'] ?? 'event'),
-            'new_event'       => 'new-event-' . ($data['eventId'] ?? 'event'),
-            'channel_message' => 'channel-'   . ($data['channelId'] ?? 'city'),
-            'city_join'       => 'cityjoin-'  . ($data['channelId'] ?? 'city'),
-            'friend_added'    => 'friend-'    . ($data['senderUserId'] ?? 'user'),
-            'vibe_received'   => 'vibe-'      . ($data['actorId'] ?? 'user'),
+            'event_join'      => 'event-'         . ($data['eventId'] ?? 'event'),
+            'new_event'       => 'new-event-'     . ($data['eventId'] ?? 'event'),
+            'channel_message' => 'channel-'       . ($data['channelId'] ?? 'city'),
+            'city_join'       => 'cityjoin-'      . ($data['channelId'] ?? 'city'),
+            'friend_added'    => 'friend-'        . ($data['senderUserId'] ?? 'user'),
+            'vibe_received'   => 'vibe-'          . ($data['actorId'] ?? 'user'),
+            'profile_view'    => 'profile-view-'  . ($data['viewerId'] ?? 'user'),
             default           => 'hilads-' . $type,
         };
     }

@@ -538,6 +538,28 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         ],
     );
 
+    // Profile view notification — fire only when viewer ≠ target (both are registered users)
+    if ($viewer['id'] !== $user['id']) {
+        $dedup = Database::pdo()->prepare("
+            SELECT 1 FROM notifications
+            WHERE user_id = ? AND type = 'profile_view'
+              AND data->>'viewerId' = ?
+              AND created_at > NOW() - INTERVAL '60 minutes'
+            LIMIT 1
+        ");
+        $dedup->execute([$user['id'], $viewer['id']]);
+        if (!$dedup->fetch()) {
+            $viewerName = $viewer['display_name'] ?? 'Someone';
+            NotificationRepository::create(
+                $user['id'],
+                'profile_view',
+                "👀 {$viewerName} checked your vibe",
+                null,
+                ['viewerId' => $viewer['id'], 'viewerName' => $viewerName, 'senderUserId' => $viewer['id']]
+            );
+        }
+    }
+
     Response::json(['user' => $dto]);
 });
 

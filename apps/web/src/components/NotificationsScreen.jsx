@@ -26,6 +26,7 @@ const TYPE_ICONS = {
   city_join:      '👋',
   friend_added:   '👋',
   vibe_received:  '✨',
+  profile_view:   '👀',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────
@@ -213,6 +214,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
             <Toggle
               checked={prefs?.vibe_received_push ?? true}
               onChange={v => handleTogglePref('vibe_received_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
+              <span className="notif-pref-name">Profile views 👀</span>
+              <span className="notif-pref-desc">When someone checks your profile</span>
+            </div>
+            <Toggle
+              checked={prefs?.profile_view_push ?? true}
+              onChange={v => handleTogglePref('profile_view_push', v)}
               disabled={prefsSaving || !prefs}
             />
           </div>
