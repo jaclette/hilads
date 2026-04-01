@@ -29,7 +29,7 @@ import { joinChannel } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
-import { track, identifyUser } from '@/services/analytics';
+import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import type { HiladsEvent } from '@/types';
@@ -213,6 +213,13 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
       await saveIdentity(updated);
       setIdentity(updated);
+      setAnalyticsContext({
+        city:     city?.name ?? null,
+        country:  city?.country ?? null,
+        is_guest: !account,
+        guest_id: identity?.guestId ?? null,
+        user_id:  account?.id ?? null,
+      });
       track('clicked_join_city', { city: city?.name ?? null });
       track('landing_joined', { hasCity: !!city, cityId: city?.channelId });
       // Navigate to city chat first — mirrors web's setStatus('ready') which renders

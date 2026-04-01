@@ -463,6 +463,8 @@ $router->add('POST', '/api/v1/auth/signup', function () {
 
     AnalyticsService::capture('user_registered', $user['id'], [
         'guest_id' => isset($body['guest_id']) ? $body['guest_id'] : null,
+        'user_id'  => $user['id'],
+        'is_guest' => false,
     ]);
 
     // _token is included so mobile clients can persist it directly (set-cookie
@@ -480,7 +482,10 @@ $router->add('POST', '/api/v1/auth/login', function () {
         password: $body['password'] ?? '',
     );
 
-    AnalyticsService::capture('user_authenticated', $user['id']);
+    AnalyticsService::capture('user_authenticated', $user['id'], [
+        'user_id'  => $user['id'],
+        'is_guest' => false,
+    ]);
 
     // _token is included so mobile clients can persist it directly (set-cookie
     // headers are not reliably accessible from React Native fetch on Android).
@@ -1098,9 +1103,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         if ($isNewSession) {
             $distinctId = $memberUserId ?? $guestId;
+            $cityInfo   = CityRepository::findById($channelId); // cached in memory
             AnalyticsService::capture('joined_city', $distinctId, [
                 'channel_id' => $channelId,
+                'city'       => $cityInfo['name']    ?? null,
+                'country'    => $cityInfo['country'] ?? null,
                 'is_guest'   => $memberUserId === null,
+                'user_id'    => $memberUserId ?? null,
+                'guest_id'   => $memberUserId === null ? $guestId : null,
             ]);
         }
 
@@ -1716,10 +1726,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         error_log("[event-create] notify failed (non-fatal): " . $e->getMessage());
     }
 
+    $eventCityInfo = CityRepository::findById($channelId); // cached in memory
     AnalyticsService::capture('event_created', $authUser['id'], [
         'channel_id' => $channelId,
+        'city'       => $eventCityInfo['name']    ?? null,
+        'country'    => $eventCityInfo['country'] ?? null,
         'event_type' => $type,
         'event_id'   => $event['id'],
+        'is_guest'   => false,
+        'user_id'    => $authUser['id'],
     ]);
 
     Response::json($event, 201);
@@ -2485,7 +2500,12 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
 
     if ($isIn) {
         $evtDistinctId = $currentUser['id'] ?? $participantKey;
-        AnalyticsService::capture('joined_event', $evtDistinctId, ['event_id' => $eventId]);
+        AnalyticsService::capture('joined_event', $evtDistinctId, [
+            'event_id' => $eventId,
+            'is_guest' => $currentUser === null,
+            'user_id'  => $currentUser['id'] ?? null,
+            'guest_id' => $currentUser === null ? $participantKey : null,
+        ]);
     }
 
     Response::json(['count' => $count, 'isIn' => $isIn]);
@@ -2612,11 +2632,17 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         error_log("[channel-msg] notify failed (non-fatal): " . $e->getMessage());
     }
 
+    $msgCityInfo   = CityRepository::findById($channelId); // cached in memory
     $msgDistinctId = $msgSenderUserId ?? $guestId;
     AnalyticsService::capture('sent_message', $msgDistinctId, [
         'channel_id'   => $channelId,
         'channel_type' => 'city',
         'message_type' => $type,
+        'city'         => $msgCityInfo['name']    ?? null,
+        'country'      => $msgCityInfo['country'] ?? null,
+        'is_guest'     => $msgSenderUserId === null,
+        'user_id'      => $msgSenderUserId ?? null,
+        'guest_id'     => $msgSenderUserId === null ? $guestId : null,
     ]);
 
     Response::json($message, 201);

@@ -43,6 +43,14 @@ export type AnalyticsEvent =
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 
+// ── Shared context (auto-merged into every capture) ───────────────────────────
+
+let _ctx: Payload = {};
+
+export function setAnalyticsContext(ctx: Payload): void {
+  _ctx = { ..._ctx, ...ctx };
+}
+
 // ── PostHog singleton ─────────────────────────────────────────────────────────
 
 const posthog = new PostHog('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
@@ -56,10 +64,10 @@ const posthog = new PostHog('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', 
 export function track(event: AnalyticsEvent, payload?: Payload): void {
   if (__DEV__) {
     // eslint-disable-next-line no-console
-    console.log('[analytics]', event, payload ?? '');
+    console.log('[analytics]', event, { ..._ctx, ...payload });
     return;
   }
-  posthog.capture(event, { platform: 'mobile', ...payload });
+  posthog.capture(event, { platform: 'mobile', ..._ctx, ...payload });
 }
 
 export function identifyUser(id: string, props?: Payload): void {
