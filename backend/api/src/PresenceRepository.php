@@ -12,32 +12,39 @@ class PresenceRepository
     }
 
     /**
-     * Upserts presence for the session.
+     * Upserts presence for the session in a single round-trip.
      * Returns true if this is a genuinely new join (session was absent or expired),
      * false if the session was already active within the TTL (re-join / heartbeat).
      * Use the return value to decide whether to emit a "just landed" feed event.
+     *
+     * Uses a CTE to capture the pre-upsert last_seen_at so the "is new?" check
+     * and the upsert happen in one query instead of two.
      */
     public static function join(int $channelId, string $sessionId, string $guestId, string $nickname): bool
     {
-        $pdo = Database::pdo();
-
-        $check = $pdo->prepare("
-            SELECT 1 FROM presence
-            WHERE session_id = ? AND channel_id = ?
-              AND last_seen_at > now() - interval '" . self::TTL . " seconds'
-        ");
-        $check->execute([$sessionId, self::dbKey($channelId)]);
-        $alreadyActive = (bool) $check->fetchColumn();
-
-        $pdo->prepare("
+        $key  = self::dbKey($channelId);
+        $ttl  = self::TTL;
+        $stmt = Database::pdo()->prepare("
+            WITH existing AS (
+                SELECT last_seen_at
+                FROM presence
+                WHERE session_id = ? AND channel_id = ?
+            )
             INSERT INTO presence (session_id, channel_id, guest_id, nickname, last_seen_at)
             VALUES (?, ?, ?, ?, now())
             ON CONFLICT (session_id, channel_id) DO UPDATE SET
                 nickname     = EXCLUDED.nickname,
                 last_seen_at = now()
-        ")->execute([$sessionId, self::dbKey($channelId), $guestId, $nickname]);
-
-        return !$alreadyActive;
+            RETURNING (
+                NOT EXISTS (
+                    SELECT 1 FROM existing
+                    WHERE last_seen_at > now() - interval '$ttl seconds'
+                )
+            ) AS is_new_session
+        ");
+        $stmt->execute([$sessionId, $key, $sessionId, $key, $guestId, $nickname]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (bool) ($row['is_new_session'] ?? true);
     }
 
     public static function leave(int $channelId, string $sessionId): void

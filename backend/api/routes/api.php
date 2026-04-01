@@ -831,7 +831,7 @@ $router->add('POST', '/api/v1/guest/session', function () {
         ? $custom
         : NicknameGenerator::generate();
 
-    AnalyticsService::capture('guest_created', $guestId, ['nickname' => $nickname]);
+    AnalyticsService::defer('guest_created', $guestId, ['nickname' => $nickname]);
 
     Response::json(['guestId' => $guestId, 'nickname' => $nickname], 201);
 });
@@ -1104,7 +1104,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         if ($isNewSession) {
             $distinctId = $memberUserId ?? $guestId;
             $cityInfo   = CityRepository::findById($channelId); // cached in memory
-            AnalyticsService::capture('joined_city', $distinctId, [
+            // defer() schedules the PostHog HTTP call to run AFTER the response is
+            // sent — completely off the critical path (via fastcgi_finish_request).
+            AnalyticsService::defer('joined_city', $distinctId, [
                 'channel_id' => $channelId,
                 'city'       => $cityInfo['name']    ?? null,
                 'country'    => $cityInfo['country'] ?? null,
@@ -1697,7 +1699,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     }
 
     $eventCityInfo = CityRepository::findById($channelId); // cached in memory
-    AnalyticsService::capture('event_created', $authUser['id'], [
+    AnalyticsService::defer('event_created', $authUser['id'], [
         'channel_id' => $channelId,
         'city'       => $eventCityInfo['name']    ?? null,
         'country'    => $eventCityInfo['country'] ?? null,
@@ -2481,7 +2483,7 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
 
     if ($isIn) {
         $evtDistinctId = $currentUser['id'] ?? $participantKey;
-        AnalyticsService::capture('joined_event', $evtDistinctId, [
+        AnalyticsService::defer('joined_event', $evtDistinctId, [
             'event_id' => $eventId,
             'is_guest' => $currentUser === null,
             'user_id'  => $currentUser['id'] ?? null,
@@ -2615,7 +2617,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
 
     $msgCityInfo   = CityRepository::findById($channelId); // cached in memory
     $msgDistinctId = $msgSenderUserId ?? $guestId;
-    AnalyticsService::capture('sent_message', $msgDistinctId, [
+    AnalyticsService::defer('sent_message', $msgDistinctId, [
         'channel_id'   => $channelId,
         'channel_type' => 'city',
         'message_type' => $type,

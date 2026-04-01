@@ -7,6 +7,7 @@ declare(strict_types=1);
  *
  * Usage:
  *   AnalyticsService::capture('user_registered', $userId, ['city' => 'paris']);
+ *   AnalyticsService::defer('joined_city', $guestId, [...]);  // runs after response is sent
  *
  * Fire-and-forget: failures are logged but never fatal.
  */
@@ -24,11 +25,11 @@ class AnalyticsService
         $properties['platform'] = 'backend';
 
         $payload = json_encode([
-            'api_key'    => $apiKey,
-            'event'      => $event,
+            'api_key'     => $apiKey,
+            'event'       => $event,
             'distinct_id' => $distinctId,
-            'properties' => $properties,
-            'timestamp'  => gmdate('c'),
+            'properties'  => $properties,
+            'timestamp'   => gmdate('c'),
         ]);
 
         try {
@@ -46,5 +47,39 @@ class AnalyticsService
         } catch (\Throwable $e) {
             error_log('[analytics] capture failed: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Schedule a capture to run AFTER the HTTP response is sent to the client.
+     *
+     * Uses PHP's shutdown hook + fastcgi_finish_request() so the analytics
+     * HTTP call is completely off the critical path — the client receives the
+     * response immediately, then the PHP-FPM worker fires the PostHog call
+     * in the background.
+     *
+     * Falls back to a short-timeout synchronous call when fastcgi_finish_request()
+     * is unavailable (Apache/mod_php), capping the overhead at ~300 ms.
+     */
+    public static function defer(string $event, string $distinctId, array $properties = []): void
+    {
+        if (!getenv('POSTHOG_API_KEY')) {
+            return;
+        }
+
+        // Snapshot scalar values so the closure holds no large object references.
+        $e = $event;
+        $d = $distinctId;
+        $p = $properties;
+
+        register_shutdown_function(static function () use ($e, $d, $p): void {
+            // Flush the response buffer and close the FPM connection to the
+            // web server — the client receives its response here, before the
+            // analytics HTTP call begins.
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            }
+
+            AnalyticsService::capture($e, $d, $p);
+        });
     }
 }
