@@ -212,11 +212,11 @@ export default function LandingPage({
         </div>
 
         <h1 className="lp-hero-h1">
-          Stop scrolling.<br />Join the vibe.
+          Stop scrolling<br />Join the vibe
         </h1>
 
         <p className="lp-hero-sub">
-          See who's around and what's happening in your city — right now.
+          See who's around and what's happening in your city right now.
         </p>
 
         <div ref={heroJoinRef} className="lp-hero-join">
@@ -335,7 +335,7 @@ export default function LandingPage({
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
       <footer className="lp-footer">
         <Logo variant="icon" size="sm" />
-        <span className="lp-footer-tagline">Stop scrolling. Join the vibe.</span>
+        <span className="lp-footer-tagline">Stop scrolling Join the vibe</span>
       </footer>
 
     </div>

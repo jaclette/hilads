@@ -2041,7 +2041,7 @@ export default function App() {
       <div className={className}>
         <div className="header-hero-brand">
           <Logo variant="icon" size="lg" />
-          <span className="header-tagline">Stop scrolling. Join the vibe.</span>
+          <span className="header-tagline">Stop scrolling Join the vibe</span>
         </div>
         <div className="header-hero-city">
           <span className="header-hero-name">
