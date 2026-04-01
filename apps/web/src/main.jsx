@@ -8,6 +8,7 @@ import posthog from 'posthog-js'
 
 posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
     api_host: 'https://eu.posthog.com',
+    disable_toolbar: true,
 })
 
 if (import.meta.env.VITE_SENTRY_DSN) {
