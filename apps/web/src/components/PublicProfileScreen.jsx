@@ -57,8 +57,9 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [friends,    setFriends]    = useState([])
   const [error,      setError]      = useState(null)
   const [dmBusy,       setDmBusy]       = useState(false)
-  const [isFriend,     setIsFriend]     = useState(false)
-  const [friendBusy,   setFriendBusy]   = useState(false)
+  const [isFriend,        setIsFriend]        = useState(false)
+  const [friendBusy,      setFriendBusy]      = useState(false)
+  const [confirmUnfriend, setConfirmUnfriend] = useState(false)
   const [vibes,        setVibes]        = useState([])
   const [vibeScore,    setVibeScore]    = useState(null)
   const [vibeCount,    setVibeCount]    = useState(0)
@@ -74,6 +75,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setFriends([])
     setError(null)
     setIsFriend(false)
+    setConfirmUnfriend(false)
     setVibes([])
     setVibeScore(null)
     setVibeCount(0)
@@ -116,11 +118,16 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
   async function handleFriendToggle() {
     if (!account || friendBusy) return
+    if (isFriend && !confirmUnfriend) {
+      setConfirmUnfriend(true)
+      return
+    }
     setFriendBusy(true)
     try {
       if (isFriend) {
         await removeFriend(userId)
         setIsFriend(false)
+        setConfirmUnfriend(false)
       } else {
         await addFriend(userId)
         setIsFriend(true)
@@ -363,7 +370,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             {/* ── CTAs ── */}
             {userId !== account?.id && (
               <div className="pub-profile-cta">
-                {account && (
+                {account && !confirmUnfriend && (
                   <button
                     className={`pub-profile-friend-btn${isFriend ? ' pub-profile-friend-btn--active' : ''}`}
                     onClick={handleFriendToggle}
@@ -371,6 +378,24 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                   >
                     {isFriend ? '✓ Friend' : '+ Add friend'}
                   </button>
+                )}
+                {account && confirmUnfriend && (
+                  <div className="pub-profile-unfriend-confirm">
+                    <button
+                      className="pub-profile-unfriend-btn"
+                      onClick={handleFriendToggle}
+                      disabled={friendBusy}
+                    >
+                      {friendBusy ? 'Removing…' : 'Unfriend'}
+                    </button>
+                    <button
+                      className="pub-profile-unfriend-cancel"
+                      onClick={() => setConfirmUnfriend(false)}
+                      disabled={friendBusy}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 )}
                 {onSendDm && (
                   <button

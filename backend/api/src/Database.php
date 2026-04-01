@@ -286,7 +286,8 @@ class Database
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_city_roles_city ON user_city_roles (city_id)");
             }
 
-            // User friends — one-directional "add as friend" list.
+            // User friends — mutual (bilateral) friendship.
+            // Both (A→B) and (B→A) rows are always kept in sync by the API.
             $ufExists = (bool) self::$pdo
                 ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_friends')")
                 ->fetchColumn();
@@ -302,6 +303,20 @@ class Database
                 ");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_friends_user   ON user_friends (user_id,   created_at DESC)");
                 self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_friends_friend ON user_friends (friend_id, created_at DESC)");
+            } else {
+                // Backfill reverse rows for any existing one-way friendships so the table
+                // is consistent with the new bilateral model. Idempotent — safe to run repeatedly.
+                self::$pdo->exec("
+                    INSERT INTO user_friends (user_id, friend_id, created_at)
+                    SELECT orig.friend_id, orig.user_id, orig.created_at
+                    FROM   user_friends orig
+                    WHERE  NOT EXISTS (
+                        SELECT 1 FROM user_friends rev
+                        WHERE  rev.user_id   = orig.friend_id
+                          AND  rev.friend_id = orig.user_id
+                    )
+                    ON CONFLICT DO NOTHING
+                ");
             }
 
             // City memberships (source of truth for City Crew / Here screen).

@@ -18,3 +18,18 @@ apps/web/.env.local
 # Backend runtime data
 backend/api/storage/*.json
 
+# Expo
+.expo/
+apps/mobile/.expo/
+
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace
+
+# Android
+android/.gradle/
+android/build/
+
+# misc
+*.log

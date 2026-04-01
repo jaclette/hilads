@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, Image, ScrollView, TouchableOpacity,
-  ActivityIndicator, StyleSheet, TextInput,
+  ActivityIndicator, StyleSheet, TextInput, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -188,19 +188,38 @@ export default function PublicProfileScreen() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  async function handleFriendToggle() {
+  function handleFriendToggle() {
     if (!user || friendBusy) return;
-    setFriendBusy(true);
-    try {
-      if (isFriend) {
-        await removeFriend(user.id);
-        setIsFriend(false);
-      } else {
-        await addFriend(user.id);
-        setIsFriend(true);
-      }
-    } catch { /* silently ignore */ }
-    finally { setFriendBusy(false); }
+    if (isFriend) {
+      Alert.alert(
+        'Unfriend',
+        `Remove ${user.display_name} from your friends?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Unfriend',
+            style: 'destructive',
+            onPress: async () => {
+              setFriendBusy(true);
+              try {
+                await removeFriend(user.id);
+                setIsFriend(false);
+              } catch { /* silently ignore */ }
+              finally { setFriendBusy(false); }
+            },
+          },
+        ],
+      );
+    } else {
+      (async () => {
+        setFriendBusy(true);
+        try {
+          await addFriend(user.id);
+          setIsFriend(true);
+        } catch { /* silently ignore */ }
+        finally { setFriendBusy(false); }
+      })();
+    }
   }
 
   async function handleSubmitVibe() {

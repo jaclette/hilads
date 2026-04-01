@@ -24,8 +24,12 @@ const PUSH_ASKED_KEY = 'hilads_push_asked';
 // This runs once when the JS bundle is first evaluated.
 console.log('[push-mobile] ── module loaded ─────────────────────────────');
 console.log('[push-mobile] API_URL =', API_URL);
-console.log('[push-mobile] platform =', Platform.OS);
+console.log('[push-mobile] platform =', Platform.OS, '| version =', Platform.Version);
 console.log('[push-mobile] isDevice =', Device.isDevice);
+if (Platform.OS === 'ios') {
+  console.log('[push-mobile] iOS device model =', Device.modelName ?? 'unknown');
+  console.log('[push-mobile] iOS OS version =', Device.osVersion ?? 'unknown');
+}
 
 // EAS project ID — required to get a valid Expo push token in production builds
 const PROJECT_ID =
@@ -78,7 +82,7 @@ export async function requestAndRegisterPush(): Promise<string | null> {
     getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — POST will get 401');
 
   if (!Device.isDevice) {
-    console.log('[push-mobile] SKIP — not a physical device');
+    console.log('[push-mobile] SKIP — not a physical device (simulator/emulator)');
     return null;
   }
 
@@ -87,31 +91,74 @@ export async function requestAndRegisterPush(): Promise<string | null> {
 
   await AsyncStorage.setItem(PUSH_ASKED_KEY, '1');
 
-  const { status: existing } = await Notifications.getPermissionsAsync();
-  let finalStatus = existing;
-  console.log('[push-mobile] permission status (existing):', existing);
+  const existing = await Notifications.getPermissionsAsync();
+  let finalStatus = existing.status;
+  console.log('[push-mobile] permission status (existing):', existing.status);
+  if (Platform.OS === 'ios' && existing.ios) {
+    console.log('[push-mobile] iOS granular status:', JSON.stringify(existing.ios));
+  }
 
-  if (existing !== 'granted') {
+  if (existing.status !== 'granted') {
     console.log('[push-mobile] requesting permission...');
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
+    // On iOS, explicitly request alert + badge + sound.
+    // On Android, requestPermissionsAsync() does nothing before Android 13
+    // and prompts for POST_NOTIFICATIONS on Android 13+; ios options are ignored.
+    const requested = await Notifications.requestPermissionsAsync({
+      ios: {
+        allowAlert:         true,
+        allowBadge:         true,
+        allowSound:         true,
+        allowAnnouncements: false,
+      },
+    });
+    finalStatus = requested.status;
     console.log('[push-mobile] permission status (after request):', finalStatus);
+    if (Platform.OS === 'ios' && requested.ios) {
+      console.log('[push-mobile] iOS granular status after request:', JSON.stringify(requested.ios));
+    }
   }
 
   if (finalStatus !== 'granted') {
     console.warn('[push-mobile] STOP — permission not granted. Final status:', finalStatus);
+    if (Platform.OS === 'ios') {
+      console.warn('[push-mobile] iOS: user may have denied in Settings. Cannot re-prompt programmatically.');
+    }
     return null;
   }
 
   // ── Get Expo push token ──────────────────────────────────────────────────────
+  // On iOS, getExpoPushTokenAsync calls APNs under the hood.
+  // The aps-environment entitlement in the signed binary must match the APNs
+  // environment Expo routes to (development for internal builds, production for
+  // store builds). EAS manages this automatically — do NOT hardcode aps-environment
+  // in app.json or the entitlement will mismatch for internal/preview builds.
   console.log('[push-mobile] calling getExpoPushTokenAsync — projectId:', PROJECT_ID);
+  if (Platform.OS === 'ios') {
+    // Log the raw APNs device token for debugging — useful to verify APNs registration
+    // is working before Expo wraps it.
+    try {
+      const deviceToken = await Notifications.getDevicePushTokenAsync();
+      console.log('[push-mobile] iOS raw APNs device token type:', deviceToken.type, '| data length:', String(deviceToken.data).length);
+    } catch (dtErr) {
+      console.warn('[push-mobile] iOS getDevicePushTokenAsync failed (not fatal):', String(dtErr));
+    }
+  }
   let token: string;
   try {
     const result = await Notifications.getExpoPushTokenAsync({ projectId: PROJECT_ID });
     token = result.data;
     console.log('[push-mobile] expo token =', token);
+    if (Platform.OS === 'ios') {
+      // Expo iOS tokens start with ExponentPushToken[ for managed workflow
+      const looksValid = token.startsWith('ExponentPushToken[');
+      console.log('[push-mobile] iOS token looks valid:', looksValid);
+    }
   } catch (err) {
     console.error('[push-mobile] getExpoPushTokenAsync FAILED:', String(err));
+    if (Platform.OS === 'ios') {
+      console.error('[push-mobile] iOS: ensure aps-environment entitlement matches build type.');
+      console.error('[push-mobile] iOS: do NOT hardcode aps-environment in app.json — let EAS manage it.');
+    }
     return null;
   }
 

@@ -23,10 +23,8 @@
         "NSLocationWhenInUseUsageDescription": "Hilads uses your location to find your city and show you what's happening nearby.",
         "NSCameraUsageDescription": "Hilads lets you send photos in city chats and event conversations.",
         "NSPhotoLibraryUsageDescription": "Hilads lets you share photos from your library in chats.",
-        "NSUserNotificationUsageDescription": "Hilads sends you notifications for new messages and events in your city."
-      },
-      "entitlements": {
-        "aps-environment": "production"
+        "NSUserNotificationUsageDescription": "Hilads sends you notifications for new messages and events in your city.",
+        "UIBackgroundModes": ["remote-notification", "fetch"]
       }
     },
     "android": {

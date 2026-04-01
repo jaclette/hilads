@@ -577,17 +577,16 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
     }
 
     // Check if already friends so we don't re-send a notification on duplicate adds
-    $alreadyFriend = (bool) Database::pdo()
-        ->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?")
-        ->execute([$viewer['id'], $targetId])
-        ?: false;
     $checkStmt = Database::pdo()->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?");
     $checkStmt->execute([$viewer['id'], $targetId]);
     $alreadyFriend = (bool) $checkStmt->fetchColumn();
 
-    Database::pdo()
-        ->prepare("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
+    // Insert both directions so the friendship is visible to both users immediately.
+    $pdo = Database::pdo();
+    $pdo->prepare("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
         ->execute([$viewer['id'], $targetId]);
+    $pdo->prepare("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
+        ->execute([$targetId, $viewer['id']]);
 
     // Notify the target user — only on first add, not on duplicate requests
     if (!$alreadyFriend) {
@@ -615,9 +614,12 @@ $router->add('DELETE', '/api/v1/users/{userId}/friends', function (array $params
         Response::json(['error' => 'Invalid userId'], 400);
     }
 
-    Database::pdo()
-        ->prepare("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?")
+    // Remove both directions so the friendship ends for both users.
+    $pdo = Database::pdo();
+    $pdo->prepare("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?")
         ->execute([$viewer['id'], $targetId]);
+    $pdo->prepare("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?")
+        ->execute([$targetId, $viewer['id']]);
 
     Response::json(['ok' => true]);
 });

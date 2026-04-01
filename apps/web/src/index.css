@@ -2469,6 +2469,51 @@ html, body, #root {
   cursor: default;
 }
 
+.pub-profile-unfriend-confirm {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.pub-profile-unfriend-btn {
+  flex: 1;
+  padding: 13px 10px;
+  border-radius: 12px;
+  background: rgba(239,68,68,0.12);
+  color: #ef4444;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1px solid rgba(239,68,68,0.35);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pub-profile-unfriend-btn:hover {
+  background: rgba(239,68,68,0.2);
+}
+
+.pub-profile-unfriend-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pub-profile-unfriend-cancel {
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: var(--surface2);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.pub-profile-unfriend-cancel:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .pub-profile-dm-btn {
   flex: 1;
   padding: 13px 10px;
