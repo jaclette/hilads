@@ -1388,7 +1388,7 @@ export default function App() {
 
       // Add server ID to knownIds so future WS echoes are skipped.
       knownIdsRef.current.add(msg.id)
-      track('sent_message', { channel_type: activeEventIdRef.current ? 'event' : 'city', channel_id: activeEventIdRef.current ?? channelId })
+      // sent_message is tracked server-side — no frontend duplicate
 
       // Reconcile the optimistic placeholder with the confirmed server message.
       // Two cases:

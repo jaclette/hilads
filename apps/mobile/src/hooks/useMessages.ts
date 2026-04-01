@@ -1,16 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { socket } from '@/lib/socket';
 import { uploadFile } from '@/api/uploads';
-import { track } from '@/services/analytics';
 import { useApp } from '@/context/AppContext';
 import type { Message } from '@/types';
 
 interface Params {
-  channelId:    string;
-  channelType?: 'city' | 'event';
-  loadFn:       () => Promise<Message[]>;
-  postTextFn:   (content: string) => Promise<Message>;
-  postImageFn:  (imageUrl: string) => Promise<Message>;
+  channelId:   string;
+  loadFn:      () => Promise<Message[]>;
+  postTextFn:  (content: string) => Promise<Message>;
+  postImageFn: (imageUrl: string) => Promise<Message>;
 }
 
 interface Result {
@@ -28,7 +26,7 @@ function makeLocalId(prefix = 'local'): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export function useMessages({ channelId, channelType = 'city', loadFn, postTextFn, postImageFn }: Params): Result {
+export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Params): Result {
   const { identity, account } = useApp();
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -164,7 +162,7 @@ export function useMessages({ channelId, channelType = 'city', loadFn, postTextF
     try {
       const msg = await postTextFn(trimmed);
       reconcile(localId, msg);
-      track('sent_message', { channelId, channel_type: channelType });
+      // sent_message is tracked server-side — no frontend duplicate
     } catch {
       markFailed(localId);
       setError('Failed to send message');

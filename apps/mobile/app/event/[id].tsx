@@ -136,7 +136,7 @@ export default function EventDetailScreen() {
   // Refetch participants after join/leave toggle
   const handleToggle = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    if (!event?.is_participating) track('joined_event', { eventId: event?.id });
+    // joined_event is tracked server-side — no frontend duplicate
     await toggleParticipation();
     fetchEventParticipants(id, identity?.guestId).then(({ participants: p }) => setParticipants(p));
   }, [event, toggleParticipation, id, identity?.guestId]);
@@ -180,7 +180,6 @@ export default function EventDetailScreen() {
 
   const { messages, loading: msgsLoading, sending, error: msgError, clearError, sendText, sendImage } = useMessages({
     channelId,
-    channelType: 'event',
     loadFn,
     postTextFn,
     postImageFn,
