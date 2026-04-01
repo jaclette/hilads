@@ -75,16 +75,7 @@ export function useDMThread(conversationId: string): Result {
     };
   }, [conversationId, account, addNew, setActiveDmId]);
 
-  // Polling fallback
-  useEffect(() => {
-    const id = setInterval(async () => {
-      try {
-        const msgs = await fetchDmMessages(conversationId);
-        addNew(msgs);
-      } catch { /* silent */ }
-    }, 8_000);
-    return () => clearInterval(id);
-  }, [conversationId, addNew]);
+  // Live DM messages arrive via WS newConversationMessage — no polling needed.
 
   // ── Send text (optimistic) ─────────────────────────────────────────────────
 

@@ -663,8 +663,6 @@ export default function App() {
 
   // Events refs
   const activeEventIdRef = useRef(null)
-  const eventsPolRef = useRef(null)
-  const cityEventsPolRef = useRef(null)
 
   const hasInstallFeedPrompt = feed.some(item => item.type === 'prompt' && item.subtype === 'install')
   const installBannerUsesBottomNav = !showCityPicker && !showEventDrawer && !showPeopleDrawer
@@ -903,8 +901,6 @@ export default function App() {
     return () => {
       clearInterval(pollRef.current)
       clearInterval(heartbeatRef.current)
-      clearInterval(eventsPolRef.current)
-      clearInterval(cityEventsPolRef.current)
       activeRef.current = false
       clearTimeout(activityRef.current)
       clearTimeout(typingTimeoutRef.current)
@@ -1258,9 +1254,9 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // ── Events: fetch + poll (30s) ───────────────────────────────────────────
+      // ── Events: initial fetch only; live updates via WS newEvent handler ────
       setHotEventsStatus('loading')
-      const doEventsPoll = async (isInitial = false) => {
+      const fetchAllEvents = async () => {
         if (!activeRef.current) return
         const [hiladsResult, publicResult] = await Promise.allSettled([
           fetchEvents(location.channelId),
@@ -1271,25 +1267,15 @@ export default function App() {
         const hiladsOk = hiladsResult.status === 'fulfilled'
         const publicOk = publicResult.status === 'fulfilled'
 
-        if (hiladsOk) {
-          setEvents(hiladsResult.value.events)
-        } else if (isInitial) {
-          setEvents([])
-        }
+        if (hiladsOk) setEvents(hiladsResult.value.events)
+        else setEvents([])
 
-        if (publicOk) {
-          setCityEvents(publicResult.value.events)
-        } else if (isInitial) {
-          setCityEvents([])
-        }
+        if (publicOk) setCityEvents(publicResult.value.events)
+        else setCityEvents([])
 
-        if (isInitial) {
-          setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
-        }
+        setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
       }
-      doEventsPoll(true)
-      clearInterval(eventsPolRef.current)
-      eventsPolRef.current = setInterval(() => doEventsPoll(false), 30_000)
+      fetchAllEvents()
     } catch (err) {
       if (rejoinData) {
         // stored channel may no longer exist — fall back to home
@@ -1495,8 +1481,6 @@ export default function App() {
     setTypingUsers([])
     clearInterval(pollRef.current)
     clearInterval(heartbeatRef.current)
-    clearInterval(eventsPolRef.current)
-    clearInterval(cityEventsPolRef.current)
     socketRef.current?.leaveRoom(channelId, sessionIdRef.current)
 
     // mark which channel we're switching to — used to discard stale async results
@@ -1576,8 +1560,8 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // Events: fetch + poll for new city
-      const doEventsPoll = async (isInitial = false) => {
+      // Events: initial fetch only; live updates via WS newEvent handler
+      const fetchAllEvents = async () => {
         if (!activeRef.current) return
         const [hiladsResult, publicResult] = await Promise.allSettled([
           fetchEvents(newChannelId),
@@ -1588,24 +1572,15 @@ export default function App() {
         const hiladsOk = hiladsResult.status === 'fulfilled'
         const publicOk = publicResult.status === 'fulfilled'
 
-        if (hiladsOk) {
-          setEvents(hiladsResult.value.events)
-        } else if (isInitial) {
-          setEvents([])
-        }
+        if (hiladsOk) setEvents(hiladsResult.value.events)
+        else setEvents([])
 
-        if (publicOk) {
-          setCityEvents(publicResult.value.events)
-        } else if (isInitial) {
-          setCityEvents([])
-        }
+        if (publicOk) setCityEvents(publicResult.value.events)
+        else setCityEvents([])
 
-        if (isInitial) {
-          setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
-        }
+        setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
       }
-      doEventsPoll(true)
-      eventsPolRef.current = setInterval(() => doEventsPoll(false), 30_000)
+      fetchAllEvents()
     } catch {
       // silently fail — user stays with empty feed for new city
     }
