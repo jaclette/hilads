@@ -2875,7 +2875,12 @@ $router->add('POST', '/api/v1/notifications/mark-read', function () {
 // GET /api/v1/notification-preferences
 $router->add('GET', '/api/v1/notification-preferences', function () {
     $user = AuthService::requireAuth();
-    Response::json(['preferences' => NotificationPreferencesRepository::get($user['id'])]);
+    try {
+        Response::json(['preferences' => NotificationPreferencesRepository::get($user['id'])]);
+    } catch (\Throwable $e) {
+        error_log('[notification-preferences] route GET failed: ' . $e->getMessage());
+        Response::json(['preferences' => NotificationPreferencesRepository::defaults()]);
+    }
 });
 
 // PUT /api/v1/notification-preferences

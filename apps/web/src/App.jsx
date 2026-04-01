@@ -3176,6 +3176,7 @@ export default function App() {
       {/* Notifications — full-screen page */}
       {showNotifications && (
         <NotificationsScreen
+          account={account}
           onBack={() => setShowNotifications(false)}
           onUnreadChange={setNotifUnreadCount}
           onNavigate={(notif) => {

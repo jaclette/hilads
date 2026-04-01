@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class NotificationPreferencesRepository
 {
-    private static function defaults(): array
+    public static function defaults(): array
     {
         return [
             'dm_push'              => true,
@@ -21,33 +21,38 @@ class NotificationPreferencesRepository
 
     public static function get(string $userId): array
     {
-        // profile_view_push column added via migration:
-        //   ALTER TABLE notification_preferences ADD COLUMN profile_view_push BOOLEAN NOT NULL DEFAULT TRUE;
-        $stmt = Database::pdo()->prepare("
-            SELECT dm_push, event_message_push, event_join_push, new_event_push,
-                   channel_message_push, city_join_push, friend_added_push, vibe_received_push,
-                   profile_view_push
-            FROM notification_preferences
-            WHERE user_id = ?
-        ");
-        $stmt->execute([$userId]);
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        try {
+            $stmt = Database::pdo()->prepare("
+                SELECT dm_push, event_message_push, event_join_push, new_event_push,
+                       channel_message_push, city_join_push, friend_added_push, vibe_received_push,
+                       profile_view_push
+                FROM notification_preferences
+                WHERE user_id = ?
+            ");
+            $stmt->execute([$userId]);
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if (!$row) {
+            if (!$row) {
+                return self::defaults();
+            }
+
+            return [
+                'dm_push'              => (bool) $row['dm_push'],
+                'event_message_push'   => (bool) $row['event_message_push'],
+                'event_join_push'      => (bool) $row['event_join_push'],
+                'new_event_push'       => (bool) $row['new_event_push'],
+                'channel_message_push' => (bool) $row['channel_message_push'],
+                'city_join_push'       => (bool) $row['city_join_push'],
+                'friend_added_push'    => (bool) ($row['friend_added_push'] ?? true),
+                'vibe_received_push'   => (bool) ($row['vibe_received_push'] ?? true),
+                'profile_view_push'    => (bool) ($row['profile_view_push'] ?? true),
+            ];
+        } catch (\Throwable $e) {
+            // Most likely cause: profile_view_push column not yet migrated in production.
+            // Run: ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS profile_view_push BOOLEAN NOT NULL DEFAULT TRUE
+            error_log('[notification-preferences] get failed for user ' . $userId . ': ' . $e->getMessage());
             return self::defaults();
         }
-
-        return [
-            'dm_push'              => (bool) $row['dm_push'],
-            'event_message_push'   => (bool) $row['event_message_push'],
-            'event_join_push'      => (bool) $row['event_join_push'],
-            'new_event_push'       => (bool) $row['new_event_push'],
-            'channel_message_push' => (bool) $row['channel_message_push'],
-            'city_join_push'       => (bool) $row['city_join_push'],
-            'friend_added_push'    => (bool) ($row['friend_added_push'] ?? true),
-            'vibe_received_push'   => (bool) ($row['vibe_received_push'] ?? true),
-            'profile_view_push'    => (bool) ($row['profile_view_push'] ?? true),
-        ];
     }
 
     public static function upsert(string $userId, array $prefs): array

@@ -45,7 +45,7 @@ function Toggle({ checked, onChange, disabled }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange }) {
+export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange, account }) {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading]             = useState(true)
   const [unreadCount, setUnreadCount]     = useState(0)
@@ -53,6 +53,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
   const [prefsSaving, setPrefsSaving]     = useState(false)
 
   useEffect(() => {
+    if (!account) return  // preferences require a registered account
+
     let cancelled = false
     setLoading(true)
     fetchNotifications()
@@ -66,10 +68,10 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
     fetchNotificationPreferences()
       .then(data => { if (!cancelled) setPrefs(data.preferences) })
-      .catch(() => {})
+      .catch((err) => { console.error('[notifications] preferences fetch failed:', err) })
 
     return () => { cancelled = true }
-  }, [])
+  }, [account])
 
   function handleMarkAllRead() {
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
