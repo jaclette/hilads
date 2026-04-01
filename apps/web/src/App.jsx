@@ -356,6 +356,9 @@ const PAGE_SESSION_ID = crypto.randomUUID()
 
 const IDENTITY_KEY  = 'hilads_identity'
 const GUEST_ID_KEY  = 'hilads_guest_id'
+// Presence of this flag means the device has (or had) a registered session.
+// Used to skip the authMe() round-trip entirely for pure guests.
+const AUTH_FLAG_KEY = 'hilads_has_auth'
 
 function saveGuestId(id) {
   localStorage.setItem(GUEST_ID_KEY, id)
@@ -787,15 +790,21 @@ export default function App() {
     // Resolve auth state BEFORE auto-rejoining so handleJoin always has the
     // correct identity. Without this, accountRef.current is null when
     // handleJoin runs and falls back to the guest nickname from localStorage.
-    authMe()
-      .then(data => {
-        if (data) {
-          accountRef.current = data.user // sync ref so handleJoin reads it immediately
-          setAccount(data.user)
-        }
-      })
-      .catch(() => {/* not logged in or network error — proceed as guest */})
-      .finally(() => { /* no auto-rejoin — users land on the landing page */ })
+    // Only call if the device has ever had a registered session — skip for pure
+    // guests to avoid a guaranteed 401 on every mount.
+    if (localStorage.getItem(AUTH_FLAG_KEY)) {
+      authMe()
+        .then(data => {
+          if (data) {
+            accountRef.current = data.user // sync ref so handleJoin reads it immediately
+            setAccount(data.user)
+          } else {
+            // 401 — session expired; clear the flag so future mounts skip this call
+            localStorage.removeItem(AUTH_FLAG_KEY)
+          }
+        })
+        .catch(() => {/* network error — keep flag, session may still be valid */})
+    }
 
     // Remove this tab from presence on close — sendBeacon survives page unload
     const handleUnload = () => {
@@ -1780,6 +1789,7 @@ export default function App() {
           guestNickname={nickname}
           initialTab={obAuthInitialTab}
           onSuccess={(user) => {
+            localStorage.setItem(AUTH_FLAG_KEY, '1') // skip useless authMe() 401 on next boot
             accountRef.current = user // sync ref before handleJoin reads it
             setAccount(user)
             setObShowAuth(false)
@@ -2944,6 +2954,7 @@ export default function App() {
             resetAnalytics()
             await authLogout()
             unregisterPush().catch(() => {})
+            localStorage.removeItem(AUTH_FLAG_KEY) // next boot is guest — skip authMe()
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
             setStatus('onboarding')
@@ -3042,6 +3053,7 @@ export default function App() {
           guestId={guest?.guestId}
           guestNickname={nickname}
           onSuccess={(user) => {
+            localStorage.setItem(AUTH_FLAG_KEY, '1') // skip useless authMe() 401 on next boot
             accountRef.current = user // sync ref so closures see updated identity immediately
             setAccount(user)
             setShowAuthScreen(false)

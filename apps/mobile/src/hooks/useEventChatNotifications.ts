@@ -100,7 +100,7 @@ export function useEventChatNotifications() {
   // User left an event screen — participation may have changed (toggle join/leave).
   // Re-fetch to pick up any new or removed event subscriptions.
   useEffect(() => {
-    if (activeEventId === null && guestId && sessionId) joinAll();
+    if (activeEventId === null && account && guestId && sessionId) joinAll();
   }, [activeEventId, guestId, sessionId, joinAll]);
 
   // Listen for new messages in subscribed event rooms

@@ -306,7 +306,9 @@ export function useAppBoot(): Result {
             console.log('[boot] loadSavedToken — token found in SecureStore:', hadToken);
             console.log('[boot] authToken in memory after load:',
               getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO');
-            return authMe();
+            // Skip authMe() entirely for guests — no token means no registered session.
+            // Avoids a guaranteed 401 round-trip on every cold start for guest users.
+            return hadToken ? authMe() : null;
           })
           .then(user => {
             console.log('[boot] authMe result:', user ? `user=${user.id}` : 'null (not authenticated)');
