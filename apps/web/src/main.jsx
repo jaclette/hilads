@@ -17,10 +17,6 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     })
 }
 
-// TEMPORARY: run window.__sentryProdTest() in the browser console to verify.
-// Works in production. Remove after confirming event appears in hilads-web on sentry.io.
-window.__sentryProdTest = () => Sentry.captureMessage('Hilads web prod test')
-
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <App />
