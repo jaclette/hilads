@@ -5091,3 +5091,39 @@ img.dm-header-avatar {
   font-size: 0.85rem;
   line-height: 1.6;
 }
+
+/* ── Guest event block ──────────────────────────────────────────────────────── */
+
+.guest-event-block {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  gap:             16px;
+  padding:         40px 24px;
+  max-width:       360px;
+  margin:          0 auto;
+  text-align:      center;
+}
+
+.guest-event-block-emoji {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.guest-event-block-title {
+  font-size:   1.25rem;
+  font-weight: 700;
+  color:       var(--text);
+  margin:      0;
+}
+
+.guest-event-block-sub {
+  font-size:   0.95rem;
+  color:       var(--muted);
+  line-height: 1.5;
+  margin:      0;
+}
+
+.guest-event-block .modal-submit {
+  margin-top: 4px;
+}

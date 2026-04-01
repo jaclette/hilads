@@ -1607,8 +1607,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         Response::json(['error' => 'type is required and must be one of: ' . implode(', ', $allowedTypes)], 400);
     }
 
-    $authUser = AuthService::currentUser(); // null for guests — that's fine
-    $userId   = $authUser['id'] ?? null;
+    // Event creation requires a registered account — guests may browse and chat
+    // but cannot host events.
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
 
     error_log("[event-create] channelId={$channelId} guestId={$guestId} userId={$userId} title=" . json_encode($title));
 

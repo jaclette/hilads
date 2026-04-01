@@ -554,7 +554,8 @@ export default function App() {
   const hasAnyUnread = (conversations?.dms?.some(dm => dm.has_unread) || conversations?.events?.some(ev => ev.has_unread)) ?? false
 
   const [profileNickInput, setProfileNickInput] = useState('')
-  const [showCreateEvent, setShowCreateEvent] = useState(false)
+  const [showCreateEvent,    setShowCreateEvent]    = useState(false)
+  const [showGuestEventBlock, setShowGuestEventBlock] = useState(false)
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)
@@ -1040,7 +1041,7 @@ export default function App() {
     } else if (item.subtype === 'photo') {
       fileInputRef.current?.click()
     } else if (item.subtype === 'create-event') {
-      setShowCreateEvent(true)
+      openCreateEvent()
     } else if (item.subtype === 'install') {
       installPrompt.promptInstall().catch(() => {})
     } else if (item.subtype === 'new-event') {
@@ -1745,6 +1746,15 @@ export default function App() {
     setTimeout(() => setSuccessToast(null), 3000)
   }
 
+  // Guard: only registered users can create events
+  function openCreateEvent() {
+    if (!account) {
+      setShowGuestEventBlock(true)
+      return
+    }
+    setShowCreateEvent(true)
+  }
+
   // Refresh events list after creation
   function handleEventCreated(newEvent) {
     setShowCreateEvent(false)
@@ -2167,7 +2177,7 @@ export default function App() {
         eventPresence={eventPresence}
         eventParticipants={eventParticipants}
         onSelectEvent={handleSelectEvent}
-        onCreateClick={() => setShowCreateEvent(true)}
+        onCreateClick={openCreateEvent}
       />
 
       <div className="screen chat">
@@ -2746,7 +2756,7 @@ export default function App() {
           </div>
           <div className="page-body page-body--has-fab">
             {(() => {
-              const openCreate = () => { setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
+              const openCreate = () => { if (!account) { setShowGuestEventBlock(true); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
               const tz = cityTimezone || 'UTC'
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
               const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
@@ -2845,7 +2855,7 @@ export default function App() {
           {/* Floating action button */}
           <button
             className="events-fab"
-            onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}
+            onClick={() => { if (!account) { setShowGuestEventBlock(true); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}
             aria-label="Create event"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -3273,6 +3283,33 @@ export default function App() {
           onDeleted={handleEventDeleted}
           onBack={() => setShowEditEvent(false)}
         />
+      )}
+
+      {/* Guest event block — shown when a ghost user tries to create an event */}
+      {showGuestEventBlock && (
+        <div className="full-page">
+          <div className="page-header">
+            <BackButton onClick={() => setShowGuestEventBlock(false)} />
+            <span className="page-title">Create event</span>
+          </div>
+          <div className="guest-event-block">
+            <span className="guest-event-block-emoji">🎉</span>
+            <h2 className="guest-event-block-title">Ghosts can vibe, but can't host.</h2>
+            <p className="guest-event-block-sub">Create an account to throw your own event and put your city on the map.</p>
+            <button
+              className="modal-submit"
+              onClick={() => { setShowGuestEventBlock(false); setShowProfileDrawer(true); setShowAuthScreen(true) }}
+            >
+              Create account
+            </button>
+            <button
+              className="modal-submit modal-submit--secondary"
+              onClick={() => { setShowGuestEventBlock(false); setShowProfileDrawer(true); setShowAuthScreen(true) }}
+            >
+              Sign in
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Create event — full-screen page */}
