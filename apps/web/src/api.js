@@ -134,8 +134,11 @@ export async function sendImageMessage(channelId, sessionId, guestId, nickname, 
   return res.json()
 }
 
-export async function fetchEvents(channelId) {
-  const res = await fetch(`${BASE}/channels/${channelId}/events`, { credentials: 'include' })
+export async function fetchEvents(channelId, sessionId = null) {
+  const url = sessionId
+    ? `${BASE}/channels/${channelId}/events?sessionId=${sessionId}`
+    : `${BASE}/channels/${channelId}/events`
+  const res = await fetch(url, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch events')
   return res.json()
 }

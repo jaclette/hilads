@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchCityEvents, fetchPublicCityEvents, fetchEventParticipants } from '@/api/events';
+import { fetchCityEvents, fetchPublicCityEvents } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { HiladsEvent } from '@/types';
@@ -113,21 +113,14 @@ export default function HotScreen() {
     else setLoading(true);
     setError(null);
     try {
-      // Fetch hilads + public events in parallel — mirrors web Promise.allSettled() call
+      // Fetch hilads + public events in parallel — mirrors web Promise.allSettled() call.
+      // Passing guestId embeds participant_count + is_participating per event (no N+1 fetches).
       const [hiladsData, publicData] = await Promise.all([
-        fetchCityEvents(city.channelId),
+        fetchCityEvents(city.channelId, identity?.guestId),
         fetchPublicCityEvents(city.channelId),
       ]);
       setHiladsEvents(hiladsData);
       setPublicEvents(publicData);
-      // Fetch participant counts for hilads events
-      hiladsData.forEach(ev => {
-        fetchEventParticipants(ev.id, identity?.guestId).then(({ count }) => {
-          if (count > 0) {
-            setHiladsEvents(prev => prev.map(e => e.id === ev.id ? { ...e, participant_count: count } : e));
-          }
-        });
-      });
     } catch {
       setError('Could not load events');
     } finally {

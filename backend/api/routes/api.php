@@ -1546,12 +1546,20 @@ $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $para
         Response::json(['error' => 'Invalid channelId'], 400);
     }
 
+    // Resolve participant key: prefer guestId (persistent) over sessionId (ephemeral).
+    // Used to embed participant_count + is_participating in each event, eliminating N+1 fetches.
+    $guestId   = trim($_GET['guestId']   ?? '');
+    $sessionId = trim($_GET['sessionId'] ?? '');
+    $participantKey = isValidGuestId($guestId)   ? $guestId
+                    : (isValidSessionId($sessionId) ? $sessionId
+                    : null);
+
     try {
         if (CityRepository::findById($channelId) === null) {
             Response::json(['error' => 'Channel not found'], 404);
         }
 
-        $events = EventRepository::getByChannel($channelId);
+        $events = EventRepository::getByChannel($channelId, $participantKey);
         apiLog('hilads_events', 'success', [
             'channelId' => $channelId,
             'events' => count($events),

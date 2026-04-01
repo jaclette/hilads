@@ -5,10 +5,12 @@ import type { HiladsEvent, Message, EventParticipant } from '@/types';
 
 // Hilads events for a city — today's events (hilads-created, recurring included).
 // Uses /channels/{id}/events which applies server-side "today" filtering in city timezone.
+// Passing guestId embeds participant_count + is_participating per event, eliminating N+1 fetches.
 // NOTE: API returns `type` and `source` — normalised here to match HiladsEvent shape.
-export async function fetchCityEvents(channelId: string): Promise<HiladsEvent[]> {
+export async function fetchCityEvents(channelId: string, guestId?: string): Promise<HiladsEvent[]> {
   const data = await api.get<{ events: Record<string, unknown>[] }>(
     `/channels/${channelId}/events`,
+    guestId ? { params: { guestId } } : undefined,
   );
   return (data.events ?? []).map(e => ({
     ...e,

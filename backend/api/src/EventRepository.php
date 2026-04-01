@@ -102,7 +102,12 @@ class EventRepository
 
     // ── Public reads ──────────────────────────────────────────────────────────
 
-    public static function getByChannel(int $channelId): array
+    /**
+     * @param ?string $participantKey  sessionId (web UUID) or guestId (32-char hex).
+     *                                 When provided, each event includes participant_count
+     *                                 and is_participating via a single batch query.
+     */
+    public static function getByChannel(int $channelId, ?string $participantKey = null): array
     {
         $city = CityRepository::findById($channelId);
         $timezone = $city['timezone'] ?? 'UTC';
@@ -149,8 +154,42 @@ class EventRepository
         }
 
         usort($events, fn(array $a, array $b) => $a['starts_at'] <=> $b['starts_at']);
+        $events = array_slice($events, 0, self::MAX_HILADS);
 
-        return array_slice($events, 0, self::MAX_HILADS);
+        // Batch-fetch participant counts — 1 query regardless of event count.
+        // Avoids the N+1 pattern where the frontend called /participants per event.
+        if (!empty($events)) {
+            $ids          = array_column($events, 'id');
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+            $countStmt = Database::pdo()->prepare("
+                SELECT channel_id, COUNT(*) AS cnt
+                FROM event_participants WHERE channel_id IN ($placeholders)
+                GROUP BY channel_id
+            ");
+            $countStmt->execute($ids);
+            $counts = array_column($countStmt->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');
+
+            $isIn = [];
+            if ($participantKey !== null) {
+                $isInStmt = Database::pdo()->prepare("
+                    SELECT channel_id FROM event_participants
+                    WHERE channel_id IN ($placeholders) AND guest_id = ?
+                ");
+                $isInStmt->execute(array_merge($ids, [$participantKey]));
+                $isIn = array_fill_keys($isInStmt->fetchAll(\PDO::FETCH_COLUMN), true);
+            }
+
+            foreach ($events as &$event) {
+                $event['participant_count']  = (int) ($counts[$event['id']] ?? 0);
+                $event['is_participating']   = $participantKey !== null
+                    ? isset($isIn[$event['id']])
+                    : null;
+            }
+            unset($event);
+        }
+
+        return $events;
     }
 
     public static function getPublicByChannel(int $channelId): array

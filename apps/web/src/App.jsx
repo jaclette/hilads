@@ -1146,10 +1146,14 @@ export default function App() {
       // Socket: handle newEvent for real-time events list refresh
       socket.on('newEvent', ({ cityId }) => {
         if (activeChannelRef.current !== cityId) return
-        fetchEvents(cityId).then(data => {
+        fetchEvents(cityId, sessionIdRef.current).then(data => {
           if (activeChannelRef.current === cityId) {
-            setEvents(data.events)
+            const evs = data.events
+            setEvents(evs)
             setHotEventsStatus('ready')
+            const counts = {}
+            evs.forEach(ev => { counts[ev.id] = ev.participant_count ?? 0 })
+            setEventParticipants(prev => ({ ...prev, ...counts }))
           }
         }).catch(() => {})
       })
@@ -1185,7 +1189,7 @@ export default function App() {
       const fetchAllEvents = async () => {
         if (!activeRef.current) return
         const [hiladsResult, publicResult] = await Promise.allSettled([
-          fetchEvents(location.channelId),
+          fetchEvents(location.channelId, sessionIdRef.current),
           fetchCityEvents(location.channelId),
         ])
         if (activeChannelRef.current !== location.channelId) return
@@ -1193,8 +1197,20 @@ export default function App() {
         const hiladsOk = hiladsResult.status === 'fulfilled'
         const publicOk = publicResult.status === 'fulfilled'
 
-        if (hiladsOk) setEvents(hiladsResult.value.events)
-        else setEvents([])
+        if (hiladsOk) {
+          const evs = hiladsResult.value.events
+          setEvents(evs)
+          const counts = {}
+          const participated = new Set()
+          evs.forEach(ev => {
+            counts[ev.id] = ev.participant_count ?? 0
+            if (ev.is_participating) participated.add(ev.id)
+          })
+          setEventParticipants(counts)
+          setParticipatedEvents(participated)
+        } else {
+          setEvents([])
+        }
 
         if (publicOk) setCityEvents(publicResult.value.events)
         else setCityEvents([])
@@ -1478,7 +1494,7 @@ export default function App() {
       const fetchAllEvents = async () => {
         if (!activeRef.current) return
         const [hiladsResult, publicResult] = await Promise.allSettled([
-          fetchEvents(newChannelId),
+          fetchEvents(newChannelId, sessionIdRef.current),
           fetchCityEvents(newChannelId),
         ])
         if (activeChannelRef.current !== newChannelId) return
@@ -1486,8 +1502,20 @@ export default function App() {
         const hiladsOk = hiladsResult.status === 'fulfilled'
         const publicOk = publicResult.status === 'fulfilled'
 
-        if (hiladsOk) setEvents(hiladsResult.value.events)
-        else setEvents([])
+        if (hiladsOk) {
+          const evs = hiladsResult.value.events
+          setEvents(evs)
+          const counts = {}
+          const participated = new Set()
+          evs.forEach(ev => {
+            counts[ev.id] = ev.participant_count ?? 0
+            if (ev.is_participating) participated.add(ev.id)
+          })
+          setEventParticipants(counts)
+          setParticipatedEvents(participated)
+        } else {
+          setEvents([])
+        }
 
         if (publicOk) setCityEvents(publicResult.value.events)
         else setCityEvents([])
@@ -1567,21 +1595,6 @@ export default function App() {
       })
     }).catch(() => {})
   }, [activeEvent?.id])
-
-  // Bulk-fetch participant counts for all Hilads events when the Hot drawer opens.
-  useEffect(() => {
-    if (!showEventDrawer || !sessionIdRef.current) return
-    events.forEach(event => {
-      fetchEventParticipants(event.id, sessionIdRef.current).then(({ count, isIn }) => {
-        setEventParticipants(prev => ({ ...prev, [event.id]: count }))
-        setParticipatedEvents(prev => {
-          const next = new Set(prev)
-          isIn ? next.add(event.id) : next.delete(event.id)
-          return next
-        })
-      }).catch(() => {})
-    })
-  }, [showEventDrawer])
 
   // Toggle "I'm in" participation for an event
   async function handleToggleParticipation(eventId) {
@@ -1691,10 +1704,14 @@ export default function App() {
     // Confirm with server (catches any server-side pruning or ordering)
     const cid = activeChannelRef.current
     if (!cid) return
-    fetchEvents(cid).then(data => {
+    fetchEvents(cid, sessionIdRef.current).then(data => {
       if (activeChannelRef.current === cid) {
-        setEvents(data.events)
+        const evs = data.events
+        setEvents(evs)
         setHotEventsStatus('ready')
+        const counts = {}
+        evs.forEach(ev => { counts[ev.id] = ev.participant_count ?? 0 })
+        setEventParticipants(prev => ({ ...prev, ...counts }))
       }
     }).catch(() => {})
   }
