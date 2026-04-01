@@ -3,6 +3,7 @@ import { updateProfile, uploadImage } from '../api'
 import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
+import { badgeLabel } from '../badgeMeta'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -273,23 +274,23 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
           <div className="profile-card">
             <p className="me-section-label">My friends</p>
             {myFriends.map(f => {
-              const [fc1, fc2] = avatarColors(f.display_name || '?')
+              const [fc1, fc2] = avatarColors(f.displayName || '?')
               return (
                 <div
                   key={f.id}
                   className="my-friend-row"
-                  onClick={() => onViewFriend?.(f.id, f.display_name)}
+                  onClick={() => onViewFriend?.(f.id, f.displayName)}
                   style={{ cursor: onViewFriend ? 'pointer' : 'default' }}
                 >
-                  {f.profile_photo_url
-                    ? <img className="my-friend-avatar" src={f.profile_photo_url} alt={f.display_name} />
+                  {f.avatarUrl
+                    ? <img className="my-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
                     : <span className="my-friend-avatar my-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
-                        {(f.display_name || '?')[0].toUpperCase()}
+                        {(f.displayName || '?')[0].toUpperCase()}
                       </span>
                   }
                   <div className="my-friend-info">
-                    <span className="my-friend-name">{f.display_name}</span>
-                    {f.primaryBadge && <span className="my-friend-badge">{f.primaryBadge.label}</span>}
+                    <span className="my-friend-name">{f.displayName}</span>
+                    {f.badges?.[0] && <span className="my-friend-badge">{badgeLabel(f.badges[0])}</span>}
                   </div>
                 </div>
               )

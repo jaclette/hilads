@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
+import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
 import Logo from './components/Logo'
 import EventsSidebar from './components/EventsSidebar'
@@ -2876,8 +2877,26 @@ export default function App() {
         ]
         const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
 
+        // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
+        // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from it.
+        const CONTEXT_BADGE_KEYS_WEB = new Set(['host', 'local'])
+        const crewLookupMap = new Map(crewMembers.map(m => [m.id, m]))
+        const enrichedOnline = onlineUsers.map(u => {
+          if (!u.userId || u.isMe) return u
+          const crew = crewLookupMap.get(u.userId)
+          if (!crew) return u
+          const primaryKey = (crew.badges ?? []).find(k => !CONTEXT_BADGE_KEYS_WEB.has(k))
+          const contextKey = (crew.badges ?? []).find(k => CONTEXT_BADGE_KEYS_WEB.has(k))
+          return {
+            ...u,
+            primaryBadge:  primaryKey ? { key: primaryKey, label: badgeLabel(primaryKey) } : u.primaryBadge,
+            contextBadge:  contextKey ? { key: contextKey, label: badgeLabel(contextKey) } : u.contextBadge,
+            vibe:          crew.vibe ?? u.vibe,
+          }
+        })
+
         // Apply badge + vibe filters to the live list (small → client-side)
-        const filteredOnline = onlineUsers.filter(u => {
+        const filteredOnline = enrichedOnline.filter(u => {
           if (filterBadge && !u.isMe) {
             const bk = u.primaryBadge?.key
             if (filterBadge === 'host')    return u.contextBadge?.key === 'host'
@@ -2944,25 +2963,26 @@ export default function App() {
         }
 
         const renderCrewMember = (m) => {
-          const [c1, c2] = avatarColors(m.display_name)
+          const [c1, c2] = avatarColors(m.displayName)
           return (
             <div key={m.id} className="people-drawer-row people-drawer-row--tappable"
               onClick={() => {
                 if (!account) { setShowPeopleDrawer(false); setShowProfileDrawer(true); setShowAuthScreen(true); return }
-                setViewingProfile({ userId: m.id, nickname: m.display_name })
+                setViewingProfile({ userId: m.id, nickname: m.displayName })
               }}
             >
-              {m.profile_photo_url
-                ? <img className="online-avatar" src={m.profile_photo_url} alt={m.display_name} style={{ objectFit: 'cover' }} />
+              {m.avatarUrl
+                ? <img className="online-avatar" src={m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                    {(m.display_name ?? '?')[0].toUpperCase()}
+                    {(m.displayName ?? '?')[0].toUpperCase()}
                   </span>
               }
               <div className="people-drawer-content">
-                <span className="people-drawer-name">{m.display_name}</span>
+                <span className="people-drawer-name">{m.displayName}</span>
                 <div className="people-drawer-meta">
-                  {m.primaryBadge && <span className={`badge-pill badge-pill--${m.primaryBadge.key}`}>{m.primaryBadge.label}</span>}
-                  {m.contextBadge && <span className={`badge-pill badge-pill--${m.contextBadge.key}`}>{m.contextBadge.label}</span>}
+                  {(m.badges ?? []).map(k => (
+                    <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
+                  ))}
                   {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {VIBE_META[m.vibe].label}</span>}
                 </div>
               </div>

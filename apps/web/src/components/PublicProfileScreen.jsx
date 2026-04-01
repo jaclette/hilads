@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe } from '../api'
 import { cityFlag } from '../cityMeta'
+import { badgeLabel, BADGE_META } from '../badgeMeta'
 import BackButton from './BackButton'
 
 // ── Avatar palette — mirrors App.jsx / DirectMessageScreen ────────────────────
@@ -151,9 +152,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     finally { setVibeBusy(false) }
   }
 
-  const name     = user?.display_name ?? '?'
+  const name     = user?.displayName ?? '?'
   const [c1, c2] = avatarColors(name)
-  const badge    = user?.primaryBadge
   const vibe     = user?.vibe && VIBE_META[user.vibe] ? user.vibe : null
   const now      = Date.now() / 1000
 
@@ -177,8 +177,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
           <>
             {/* ── Hero ── */}
             <div className="pub-profile-hero">
-              {user.profile_photo_url
-                ? <img className="pub-profile-avatar" src={user.profile_photo_url} alt={name} />
+              {user.avatarUrl
+                ? <img className="pub-profile-avatar" src={user.avatarUrl} alt={name} />
                 : <span className="pub-profile-avatar pub-profile-avatar--initials" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                     {name[0].toUpperCase()}
                   </span>
@@ -186,15 +186,15 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
               <h2 className="pub-profile-name">{name}</h2>
 
-              {/* Badge + microcopy */}
-              {badge && (
-                <div className="pub-profile-badge-block">
-                  <span className={`badge-pill badge-pill--${badge.key}`}>{badge.label}</span>
-                  {BADGE_MICROCOPY[badge.key] && (
-                    <span className="pub-profile-badge-micro">{BADGE_MICROCOPY[badge.key]}</span>
+              {/* Badges + microcopy */}
+              {(user.badges ?? []).map(k => (
+                <div key={k} className="pub-profile-badge-block">
+                  <span className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
+                  {BADGE_MICROCOPY[k] && (
+                    <span className="pub-profile-badge-micro">{BADGE_MICROCOPY[k]}</span>
                   )}
                 </div>
-              )}
+              ))}
 
               {/* City pill — the channel this profile is being viewed from */}
               {cityName && (
@@ -214,10 +214,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                   </span>
                 </div>
               )}
-              {user.home_city && (
+              {user.homeCity && (
                 <div className="pub-profile-detail-row">
                   <span className="pub-profile-detail-label">From</span>
-                  <span className="pub-profile-detail-value">{user.home_city}</span>
+                  <span className="pub-profile-detail-value">{user.homeCity}</span>
                 </div>
               )}
               {user.age != null && (
@@ -261,24 +261,24 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               <div className="pub-profile-friends">
                 <p className="pub-profile-section-label">Friends · {friends.length}</p>
                 {friends.map(f => {
-                  const [fc1, fc2] = avatarColors(f.display_name || '?')
+                  const [fc1, fc2] = avatarColors(f.displayName || '?')
                   return (
                     <div
                       key={f.id}
                       className="pub-profile-friend-row"
-                      onClick={() => onViewProfile ? onViewProfile(f.id, f.display_name) : undefined}
+                      onClick={() => onViewProfile ? onViewProfile(f.id, f.displayName) : undefined}
                       style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
                     >
-                      {f.profile_photo_url
-                        ? <img className="pub-profile-friend-avatar" src={f.profile_photo_url} alt={f.display_name} />
+                      {f.avatarUrl
+                        ? <img className="pub-profile-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
                         : <span className="pub-profile-friend-avatar pub-profile-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
-                            {(f.display_name || '?')[0].toUpperCase()}
+                            {(f.displayName || '?')[0].toUpperCase()}
                           </span>
                       }
                       <div className="pub-profile-friend-info">
-                        <span className="pub-profile-friend-name">{f.display_name}</span>
-                        {f.primaryBadge && (
-                          <span className="pub-profile-friend-badge">{f.primaryBadge.label}</span>
+                        <span className="pub-profile-friend-name">{f.displayName}</span>
+                        {f.badges?.[0] && (
+                          <span className="pub-profile-friend-badge">{badgeLabel(f.badges[0])}</span>
                         )}
                       </div>
                     </div>

@@ -55,18 +55,54 @@ export interface EventChatPreview {
   previewAt: string;   // ISO timestamp of last message
 }
 
+// ── Canonical User DTO ────────────────────────────────────────────────────────
+// Matches backend UserResource output. Used by all REST endpoints that return
+// user data: public profile, friends, city crew, event participants.
+// Note: /auth/me (own profile) still uses the legacy User shape below.
+
+export type BadgeKey = 'ghost' | 'fresh' | 'regular' | 'local' | 'host';
+
+/** Badge metadata for rendering — badge labels/colors are a UI concern. */
+export const BADGE_META: Record<BadgeKey, { label: string; color: string; bg: string; border: string }> = {
+  ghost:   { label: '👻 Ghost', color: '#888',    bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.10)' },
+  fresh:   { label: '✨ Fresh', color: '#4ade80', bg: 'rgba(74,222,128,0.12)',  border: 'rgba(74,222,128,0.22)'  },
+  regular: { label: 'Regular',  color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.22)'  },
+  local:   { label: '🌍 Local', color: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.22)'  },
+  host:    { label: '⭐ Host',  color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.28)'  },
+};
+
+export interface UserDTO {
+  id:          string;
+  accountType: 'guest' | 'registered';
+  displayName: string;
+  avatarUrl:   string | null;
+  /** Badge keys in priority order: primary badge first, context badge second if present. */
+  badges:      BadgeKey[];
+  vibe:        string | null;
+  isFriend?:   boolean | null;
+  isOnline?:   boolean | null;
+}
+
+/** Public profile — UserDTO + profile-specific extensions. */
+export interface PublicProfile extends UserDTO {
+  age?:       number | null;
+  homeCity?:  string | null;
+  interests?: string[];
+  vibeScore?: number | null;
+  vibeCount?: number;
+}
+
 // ── Event participants ────────────────────────────────────────────────────────
 
-export interface EventParticipant {
-  guestId: string;
-  nickname: string;
+/** Enriched event participant — UserDTO + when they joined. */
+export interface EventParticipant extends UserDTO {
   joinedAt?: number;
 }
 
 // ── Badges ────────────────────────────────────────────────────────────────────
 
 export interface Badge {
-  key: 'ghost' | 'fresh' | 'regular' | 'local' | 'host';
+  key: BadgeKey;
   label: string;
 }
 
@@ -126,13 +162,8 @@ export interface User {
   isFriend?: boolean;
 }
 
-export interface FriendUser {
-  id: string;
-  display_name: string;
-  profile_photo_url?: string;
-  vibe?: VibeKey;
-  primaryBadge?: Badge;
-}
+/** Friends list items — canonical UserDTO shape. */
+export type FriendUser = UserDTO;
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
 

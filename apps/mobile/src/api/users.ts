@@ -1,8 +1,8 @@
 import { api } from './client';
-import type { User, HiladsEvent, FriendUser } from '@/types';
+import type { HiladsEvent, UserDTO, PublicProfile, FriendUser } from '@/types';
 
-export async function fetchPublicProfile(userId: string): Promise<User> {
-  const data = await api.get<{ user: User }>(`/users/${userId}`);
+export async function fetchPublicProfile(userId: string): Promise<PublicProfile> {
+  const data = await api.get<{ user: PublicProfile }>(`/users/${userId}`);
   return data.user;
 }
 
@@ -23,11 +23,8 @@ export async function fetchUserFriends(
   userId: string,
   page = 1,
   limit = 20,
-): Promise<{ friends: FriendUser[]; total: number; hasMore: boolean }> {
-  const data = await api.get<{ friends: FriendUser[]; total: number; hasMore: boolean }>(
-    `/users/${userId}/friends?page=${page}&limit=${limit}`,
-  );
-  return data;
+): Promise<{ friends: UserDTO[]; total: number; hasMore: boolean }> {
+  return api.get(`/users/${userId}/friends?page=${page}&limit=${limit}`);
 }
 
 export async function addFriend(userId: string): Promise<void> {

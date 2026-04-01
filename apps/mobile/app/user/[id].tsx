@@ -18,7 +18,8 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import type { User, HiladsEvent, FriendUser } from '@/types';
+import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
+import { BADGE_META } from '@/types';
 
 // ── Badge microcopy — mirrors web PublicProfileScreen.jsx & me.tsx ────────────
 
@@ -148,13 +149,13 @@ export default function PublicProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { account, city } = useApp();
 
-  const [user,         setUser]         = useState<User | null>(null);
+  const [user,         setUser]         = useState<PublicProfile | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState<string | null>(null);
   const [isFriend,     setIsFriend]     = useState(false);
   const [friendBusy,   setFriendBusy]   = useState(false);
-  const [friends,      setFriends]      = useState<FriendUser[]>([]);
+  const [friends,      setFriends]      = useState<UserDTO[]>([]);
   const [vibes,        setVibes]        = useState<UserVibe[]>([]);
   const [vibeScore,    setVibeScore]    = useState<number | null>(null);
   const [vibeCount,    setVibeCount]    = useState(0);
@@ -193,7 +194,7 @@ export default function PublicProfileScreen() {
     if (isFriend) {
       Alert.alert(
         'Unfriend',
-        `Remove ${user.display_name} from your friends?`,
+        `Remove ${user.displayName} from your friends?`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -237,7 +238,7 @@ export default function PublicProfileScreen() {
     finally { setVibeBusy(false); }
   }
 
-  const name    = user?.display_name ?? '?';
+  const name    = user?.displayName ?? '?';
   const initial = name[0].toUpperCase();
   const bg      = avatarBg(name);
   const isSelf  = account?.id === id;
@@ -250,7 +251,7 @@ export default function PublicProfileScreen() {
     if (!user?.id) return;
     router.push({
       pathname: '/dm/[id]',
-      params: { id: user.id, name: user.display_name },
+      params: { id: user.id, name: user.displayName },
     });
   }
 
@@ -292,28 +293,28 @@ export default function PublicProfileScreen() {
         >
           {/* ── Hero: avatar + name + identity badge + microcopy + city ── */}
           <View style={styles.hero}>
-            {user.profile_photo_url ? (
-              <Image source={{ uri: user.profile_photo_url }} style={styles.avatar} />
+            {user.avatarUrl ? (
+              <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
             ) : (
               <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: bg }]}>
                 <Text style={styles.avatarInitial}>{initial}</Text>
               </View>
             )}
             <Text style={styles.displayName}>{name}</Text>
-            {user.primaryBadge && (
-              <View style={styles.badgeBlock}>
-                <View style={[styles.memberBadge, profileBadgeBg(user.primaryBadge.key)]}>
-                  <Text style={[styles.memberBadgeText, profileBadgeColor(user.primaryBadge.key)]}>
-                    {user.primaryBadge.label}
-                  </Text>
+            {user.badges.map(badgeKey => {
+              const meta = BADGE_META[badgeKey as keyof typeof BADGE_META];
+              if (!meta) return null;
+              return (
+                <View key={badgeKey} style={styles.badgeBlock}>
+                  <View style={[styles.memberBadge, profileBadgeBg(badgeKey)]}>
+                    <Text style={[styles.memberBadgeText, profileBadgeColor(badgeKey)]}>{meta.label}</Text>
+                  </View>
+                  {BADGE_MICROCOPY[badgeKey] ? (
+                    <Text style={styles.badgeMicrocopy}>{BADGE_MICROCOPY[badgeKey]}</Text>
+                  ) : null}
                 </View>
-                {BADGE_MICROCOPY[user.primaryBadge.key] ? (
-                  <Text style={styles.badgeMicrocopy}>
-                    {BADGE_MICROCOPY[user.primaryBadge.key]}
-                  </Text>
-                ) : null}
-              </View>
-            )}
+              );
+            })}
             {city ? (
               <View style={styles.cityPill}>
                 <Text style={styles.cityPillText}>
@@ -335,16 +336,16 @@ export default function PublicProfileScreen() {
           ) : null}
 
           {/* ── Details: home city + age ── */}
-          {(user.home_city || user.age != null) && (
+          {(user.homeCity || user.age != null) && (
             <View style={styles.detailsCard}>
-              {user.home_city ? (
+              {user.homeCity ? (
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>From</Text>
-                  <Text style={styles.detailValue}>{user.home_city}</Text>
+                  <Text style={styles.detailValue}>{user.homeCity}</Text>
                 </View>
               ) : null}
               {user.age != null ? (
-                <View style={[styles.detailRow, !user.home_city && styles.detailRowFirst]}>
+                <View style={[styles.detailRow, !user.homeCity && styles.detailRowFirst]}>
                   <Text style={styles.detailLabel}>Age</Text>
                   <Text style={styles.detailValue}>{user.age}</Text>
                 </View>
@@ -410,17 +411,17 @@ export default function PublicProfileScreen() {
                     onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id } })}
                     activeOpacity={0.7}
                   >
-                    {f.profile_photo_url ? (
-                      <Image source={{ uri: f.profile_photo_url }} style={styles.friendAvatar} />
+                    {f.avatarUrl ? (
+                      <Image source={{ uri: f.avatarUrl }} style={styles.friendAvatar} />
                     ) : (
-                      <View style={[styles.friendAvatar, styles.friendAvatarFallback, { backgroundColor: avatarBg(f.display_name) }]}>
-                        <Text style={styles.friendAvatarInitial}>{f.display_name[0]?.toUpperCase()}</Text>
+                      <View style={[styles.friendAvatar, styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
+                        <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>
                       </View>
                     )}
                     <View style={styles.friendInfo}>
-                      <Text style={styles.friendName} numberOfLines={1}>{f.display_name}</Text>
-                      {f.primaryBadge && (
-                        <Text style={styles.friendBadge}>{f.primaryBadge.label}</Text>
+                      <Text style={styles.friendName} numberOfLines={1}>{f.displayName}</Text>
+                      {f.badges[0] && (
+                        <Text style={styles.friendBadge}>{BADGE_META[f.badges[0] as keyof typeof BADGE_META]?.label ?? f.badges[0]}</Text>
                       )}
                     </View>
                     <Ionicons name="chevron-forward" size={16} color={Colors.muted} />

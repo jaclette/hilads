@@ -41,24 +41,44 @@ class ParticipantRepository
     }
 
     /**
-     * Returns the list of participants with their nicknames, newest-first.
+     * Returns the list of participants as canonical UserDTOs (via UserResource),
+     * enriched with profile data for registered users.
      *
-     * @return array<array{guestId: string, nickname: string, joinedAt: int}>
+     * @return array  Each entry is a UserDTO + { joinedAt: int }
      */
     public static function getParticipants(string $eventId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT guest_id, nickname, EXTRACT(EPOCH FROM joined_at)::int AS joined_at
-            FROM event_participants
-            WHERE channel_id = ?
-            ORDER BY joined_at ASC
+            SELECT ep.guest_id, ep.user_id, ep.nickname,
+                   EXTRACT(EPOCH FROM ep.joined_at)::int AS joined_at,
+                   u.display_name, u.profile_photo_url, u.vibe, u.created_at
+            FROM event_participants ep
+            LEFT JOIN users u ON u.id = ep.user_id
+            WHERE ep.channel_id = ?
+            ORDER BY ep.joined_at ASC
         ");
         $stmt->execute([$eventId]);
-        return array_map(fn($r) => [
-            'guestId'  => $r['guest_id'],
-            'nickname' => $r['nickname'],
-            'joinedAt' => (int) $r['joined_at'],
-        ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
+
+        return array_map(function (array $r): array {
+            $joinedAt = (int) $r['joined_at'];
+
+            if ($r['user_id'] !== null) {
+                $userRow = [
+                    'id'                => $r['user_id'],
+                    'display_name'      => $r['display_name'] ?? $r['nickname'],
+                    'profile_photo_url' => $r['profile_photo_url'],
+                    'vibe'              => $r['vibe'],
+                    'created_at'        => $r['created_at'],
+                    'home_city'         => null,
+                ];
+                return array_merge(UserResource::fromUser($userRow), ['joinedAt' => $joinedAt]);
+            }
+
+            return array_merge(
+                UserResource::fromGuest($r['guest_id'], $r['nickname']),
+                ['joinedAt' => $joinedAt],
+            );
+        }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     public static function getCount(string $eventId): int

@@ -504,24 +504,32 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         Response::json(['error' => 'User not found'], 404);
     }
 
-    $fields = AuthService::publicFields($user);
-
-    // Add isFriend: whether the current authenticated viewer has added this user as a friend.
-    $viewer    = AuthService::currentUser();
-    $isFriend  = false;
+    // isFriend: whether the current authenticated viewer has friended this user
+    $viewer   = AuthService::currentUser();
+    $isFriend = false;
     if ($viewer !== null && $viewer['id'] !== $user['id']) {
         $chk = Database::pdo()->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?");
         $chk->execute([$viewer['id'], $user['id']]);
         $isFriend = (bool) $chk->fetchColumn();
     }
-    $fields['isFriend'] = $isFriend;
 
-    // Add vibe score to profile
     $vibeScore = VibeRepository::scoreForUser($user['id']);
-    $fields['vibeScore'] = $vibeScore['score'];
-    $fields['vibeCount'] = $vibeScore['count'];
 
-    Response::json(['user' => $fields]);
+    // Base canonical DTO + public profile extensions
+    $dto = array_merge(
+        UserResource::fromUser($user, [], ['isFriend' => $isFriend]),
+        [
+            'age'       => isset($user['birth_year']) && $user['birth_year'] !== null
+                            ? (int) date('Y') - (int) $user['birth_year']
+                            : null,
+            'homeCity'  => $user['home_city'] ?? null,
+            'interests' => json_decode($user['interests'] ?? '[]', true),
+            'vibeScore' => $vibeScore['score'],
+            'vibeCount' => $vibeScore['count'],
+        ],
+    );
+
+    Response::json(['user' => $dto]);
 });
 
 // ── /me/events MUST be registered before /{userId}/events ────────────────────
@@ -656,13 +664,7 @@ $router->add('GET', '/api/v1/users/{userId}/friends', function (array $params) {
     $rows = $stmt->fetchAll();
 
     $friends = array_map(static function (array $u): array {
-        return [
-            'id'                => $u['id'],
-            'display_name'      => $u['display_name'],
-            'profile_photo_url' => $u['profile_photo_url'],
-            'vibe'              => $u['vibe'],
-            'primaryBadge'      => UserBadgeService::primaryForUser($u),
-        ];
+        return UserResource::fromUser($u);
     }, $rows);
 
     Response::json([
@@ -1412,19 +1414,8 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $userIds     = array_column($rows, 'id');
     $ambassadors = UserBadgeService::ambassadorsForCity($userIds, $channelId);
 
-    $members = array_map(static function (array $u) use ($ambassadors): array {
-        $primary = UserBadgeService::primaryForUser($u);
-        $context = isset($ambassadors[$u['id']])
-            ? ['key' => 'host',  'label' => '⭐ Host']
-            : ['key' => 'local', 'label' => '🌍 Local'];
-        return [
-            'id'                => $u['id'],
-            'display_name'      => $u['display_name'],
-            'profile_photo_url' => $u['profile_photo_url'],
-            'vibe'              => $u['vibe'],
-            'primaryBadge'      => $primary,
-            'contextBadge'      => $context,
-        ];
+    $members = array_map(static function (array $u) use ($ambassadors, $cityName): array {
+        return UserResource::fromUserInCity($u, $ambassadors, $cityName);
     }, $rows);
 
     Response::json([

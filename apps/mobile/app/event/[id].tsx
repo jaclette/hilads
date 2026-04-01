@@ -67,10 +67,10 @@ function ParticipantsStrip({ participants }: { participants: EventParticipant[] 
       <View style={stripStyles.avatars}>
         {visible.map((p, i) => (
           <View
-            key={p.guestId}
-            style={[stripStyles.avatar, { backgroundColor: avatarColor(p.nickname), marginLeft: i > 0 ? -10 : 0 }]}
+            key={p.id}
+            style={[stripStyles.avatar, { backgroundColor: avatarColor(p.displayName), marginLeft: i > 0 ? -10 : 0 }]}
           >
-            <Text style={stripStyles.avatarLetter}>{(p.nickname[0] ?? '?').toUpperCase()}</Text>
+            <Text style={stripStyles.avatarLetter}>{(p.displayName[0] ?? '?').toUpperCase()}</Text>
           </View>
         ))}
         {extra > 0 && (
@@ -81,8 +81,8 @@ function ParticipantsStrip({ participants }: { participants: EventParticipant[] 
       </View>
       <Text style={stripStyles.label}>
         {participants.length === 1
-          ? `${participants[0].nickname} is going`
-          : `${participants[0].nickname} + ${participants.length - 1} going`}
+          ? `${participants[0].displayName} is going`
+          : `${participants[0].displayName} + ${participants.length - 1} going`}
       </Text>
     </View>
   );

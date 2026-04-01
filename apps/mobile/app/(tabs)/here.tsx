@@ -7,9 +7,9 @@
  * Pagination: city crew loads 10 at a time via "Load more".
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet,
+  View, Text, Image, ScrollView, StyleSheet,
   TouchableOpacity, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,27 +19,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchCityMembers, type CityMember } from '@/api/channels';
 import type { OnlineUser } from '@/types';
+import { BADGE_META } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
+const CONTEXT_BADGE_KEYS = new Set(['host', 'local']);
+
 // ── Badge pill ────────────────────────────────────────────────────────────────
+// Accepts a badge key string; derives label and colors from shared BADGE_META.
 
-const BADGE_BG: Record<string, object> = {
-  ghost:   { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
-  fresh:   { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
-  regular: { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
-  local:   { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
-  host:    { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
-};
-const BADGE_COLOR: Record<string, string> = {
-  ghost: '#666', fresh: '#4ade80', regular: '#60a5fa', local: '#34d399', host: '#fbbf24',
-};
-
-function BadgePill({ badge }: { badge: { key: string; label: string } }) {
-  const bg    = BADGE_BG[badge.key]    ?? BADGE_BG.regular;
-  const color = BADGE_COLOR[badge.key] ?? BADGE_COLOR.regular;
+function BadgePill({ badgeKey }: { badgeKey: string }) {
+  const meta = BADGE_META[badgeKey as keyof typeof BADGE_META] ?? BADGE_META.regular;
   return (
-    <View style={[pillStyles.pill, bg]}>
-      <Text style={[pillStyles.text, { color }]}>{badge.label}</Text>
+    <View style={[pillStyles.pill, { backgroundColor: meta.bg, borderColor: meta.border }]}>
+      <Text style={[pillStyles.text, { color: meta.color }]}>{meta.label}</Text>
     </View>
   );
 }
@@ -114,12 +106,11 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
           {isMe ? (
             <View style={styles.liveNowBadge}><Text style={styles.liveNowText}>LIVE NOW</Text></View>
           ) : user.primaryBadge ? (
-            <BadgePill badge={user.primaryBadge} />
-          ) : user.isRegistered ? (
-            <BadgePill badge={{ key: 'regular', label: 'Regular' }} />
+            <BadgePill badgeKey={user.primaryBadge.key} />
           ) : (
-            <BadgePill badge={{ key: 'ghost', label: '👻 Ghost' }} />
+            <BadgePill badgeKey={user.isRegistered ? 'regular' : 'ghost'} />
           )}
+          {!isMe && user.contextBadge && <BadgePill badgeKey={user.contextBadge.key} />}
           {!isMe && <VibePill vibe={user.vibe} />}
         </View>
       </View>
@@ -135,18 +126,21 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
 // ── City crew row ─────────────────────────────────────────────────────────────
 
 function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () => void }) {
-  const initials = (member.display_name ?? '?').slice(0, 2).toUpperCase();
-  const color    = avatarColor(member.display_name ?? '');
+  const initials = (member.displayName ?? '?').slice(0, 2).toUpperCase();
+  const color    = avatarColor(member.displayName ?? '');
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
-      <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
-        <Text style={[styles.avatarText, { color }]}>{initials}</Text>
-      </View>
+      {member.avatarUrl ? (
+        <Image source={{ uri: member.avatarUrl }} style={styles.avatar} />
+      ) : (
+        <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
+          <Text style={[styles.avatarText, { color }]}>{initials}</Text>
+        </View>
+      )}
       <View style={styles.rowInfo}>
-        <Text style={styles.nickname}>{member.display_name}</Text>
+        <Text style={styles.nickname}>{member.displayName}</Text>
         <View style={styles.badgeRow}>
-          {member.primaryBadge && <BadgePill badge={member.primaryBadge} />}
-          {member.contextBadge && <BadgePill badge={member.contextBadge} />}
+          {member.badges.map(k => <BadgePill key={k} badgeKey={k} />)}
           <VibePill vibe={member.vibe} />
         </View>
       </View>
@@ -170,6 +164,13 @@ export default function HereScreen() {
 
   const mySessionId = sessionId ?? '';
 
+  // Build a userId → crew member lookup for badge enrichment
+  const crewLookup = useMemo(() => {
+    const map = new Map<string, CityMember>();
+    crewMembers.forEach(m => map.set(m.id, m));
+    return map;
+  }, [crewMembers]);
+
   // Fetch city crew — reset and reload when filters or city changes
   const loadCrew = useCallback(async (page: number, reset: boolean) => {
     if (!city?.channelId) return;
@@ -192,8 +193,24 @@ export default function HereScreen() {
     loadCrew(1, true);
   }, [loadCrew]);
 
+  // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
+  // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from the array.
+  const enrichedOnline = useMemo(() => onlineUsers.map(u => {
+    if (!u.userId || u.sessionId === mySessionId) return u;
+    const crew = crewLookup.get(u.userId);
+    if (!crew) return u;
+    const primaryKey = crew.badges.find(k => !CONTEXT_BADGE_KEYS.has(k));
+    const contextKey = crew.badges.find(k => CONTEXT_BADGE_KEYS.has(k));
+    return {
+      ...u,
+      primaryBadge:  primaryKey ? { key: primaryKey, label: BADGE_META[primaryKey as keyof typeof BADGE_META]?.label ?? primaryKey } : u.primaryBadge,
+      contextBadge:  contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : u.contextBadge,
+      vibe:          crew.vibe ?? u.vibe,
+    };
+  }), [onlineUsers, crewLookup, mySessionId]);
+
   // Apply badge + vibe filters to live users (client-side — small list)
-  const filteredOnline = onlineUsers.filter(u => {
+  const filteredOnline = enrichedOnline.filter(u => {
     if (filterBadge) {
       const isMe = u.sessionId === mySessionId;
       if (!isMe) {
@@ -310,7 +327,7 @@ export default function HereScreen() {
           <CrewMemberRow
             key={m.id}
             member={m}
-            onPress={() => router.push({ pathname: '/user/[id]', params: { id: m.id } })}
+            onPress={() => router.push({ pathname: '/user/[id]', params: { id: m.id, name: m.displayName } })}
           />
         ))}
 

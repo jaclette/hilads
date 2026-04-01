@@ -135,6 +135,7 @@ require_once __DIR__ . '/../src/R2Uploader.php';
 require_once __DIR__ . '/../src/TicketmasterImporter.php';
 require_once __DIR__ . '/../src/WeatherService.php';
 require_once __DIR__ . '/../src/UserBadgeService.php';
+require_once __DIR__ . '/../src/UserResource.php';
 
 $router = new Router();
 

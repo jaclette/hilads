@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { City, Message } from '@/types';
+import type { City, Message, UserDTO } from '@/types';
 
 // ── City / channel resolution ─────────────────────────────────────────────────
 
@@ -90,14 +90,8 @@ export async function heartbeat(
 
 // ── Messages ──────────────────────────────────────────────────────────────────
 
-export interface CityMember {
-  id:                string;
-  display_name:      string;
-  profile_photo_url: string | null;
-  vibe:              string | null;
-  primaryBadge:      { key: string; label: string };
-  contextBadge:      { key: string; label: string } | null;
-}
+/** City crew member — canonical UserDTO from /channels/{id}/members. */
+export type CityMember = UserDTO;
 
 export interface CityMembersResult {
   members: CityMember[];

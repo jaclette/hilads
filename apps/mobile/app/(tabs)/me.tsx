@@ -30,7 +30,8 @@ import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends } from '@/api/users';
 import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
-import type { HiladsEvent, FriendUser } from '@/types';
+import type { HiladsEvent, UserDTO } from '@/types';
+import { BADGE_META } from '@/types';
 
 // ── Vibes — matches backend AuthService allowed list ─────────────────────────
 const VIBES = [
@@ -114,7 +115,7 @@ export default function MeScreen() {
   const [saving,             setSaving]              = useState(false);
   const [saved,              setSaved]               = useState(false);
   const [saveError,          setSaveError]           = useState<string | null>(null);
-  const [myFriends,          setMyFriends]           = useState<FriendUser[]>([]);
+  const [myFriends,          setMyFriends]           = useState<UserDTO[]>([]);
   const [friendsLoading,     setFriendsLoading]      = useState(false);
 
   // Re-sync local events when hook loads
@@ -573,20 +574,20 @@ export default function MeScreen() {
                   {idx > 0 && <View style={styles.eventDivider} />}
                   <TouchableOpacity
                     style={styles.friendRow}
-                    onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id } })}
+                    onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id, name: f.displayName } })}
                     activeOpacity={0.7}
                   >
-                    {f.profile_photo_url ? (
-                      <Image source={{ uri: f.profile_photo_url }} style={styles.friendAvatar} />
+                    {f.avatarUrl ? (
+                      <Image source={{ uri: f.avatarUrl }} style={styles.friendAvatar} />
                     ) : (
-                      <View style={[styles.friendAvatarFallback, { backgroundColor: avatarBg(f.display_name) }]}>
-                        <Text style={styles.friendAvatarInitial}>{f.display_name[0]?.toUpperCase()}</Text>
+                      <View style={[styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
+                        <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>
                       </View>
                     )}
                     <View style={styles.friendInfo}>
-                      <Text style={styles.friendName} numberOfLines={1}>{f.display_name}</Text>
-                      {f.primaryBadge && (
-                        <Text style={styles.friendBadgeText}>{f.primaryBadge.label}</Text>
+                      <Text style={styles.friendName} numberOfLines={1}>{f.displayName}</Text>
+                      {f.badges[0] && (
+                        <Text style={styles.friendBadgeText}>{BADGE_META[f.badges[0] as keyof typeof BADGE_META]?.label ?? f.badges[0]}</Text>
                       )}
                     </View>
                     <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
