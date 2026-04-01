@@ -412,7 +412,20 @@ $router->add('GET', '/internal/run-migrations', function () {
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channels_active_events ON channels (parent_id) WHERE type = 'event' AND status = 'active'");
     $log[] = "indexes: applied";
 
-    // ── 5. Summary query ──────────────────────────────────────────────────────
+    // ── 5. Add notification_preferences.profile_view_push (idempotent) ───────
+    // Column was added to code but the ALTER TABLE was never run in production.
+    // IF NOT EXISTS is PostgreSQL 9.6+ — safe to run repeatedly.
+    try {
+        $pdo->exec("
+            ALTER TABLE notification_preferences
+            ADD COLUMN IF NOT EXISTS profile_view_push BOOLEAN NOT NULL DEFAULT TRUE
+        ");
+        $log[] = "notification_preferences: profile_view_push column ensured";
+    } catch (\Throwable $e) {
+        $errors[] = "notification_preferences migration: " . $e->getMessage();
+    }
+
+    // ── 6. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
     $eventCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events")->fetchColumn();
