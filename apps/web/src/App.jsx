@@ -5,6 +5,7 @@ import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
 import Logo from './components/Logo'
+import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
 import AuthScreen from './components/AuthScreen'
@@ -859,10 +860,7 @@ export default function App() {
         }
       })
       .catch(() => {/* not logged in or network error — proceed as guest */})
-      .finally(() => {
-        const saved = loadIdentity()
-        if (saved) handleJoin(null, saved)
-      })
+      .finally(() => { /* no auto-rejoin — users land on the landing page */ })
 
     // Remove this tab from presence on close — sendBeacon survives page unload
     const handleUnload = () => {
@@ -1880,140 +1878,20 @@ export default function App() {
       )
     }
 
-    const [c1, c2] = avatarColors(activeNickname || 'A')
     return (
-      <div className="screen ob-screen">
-        <div className="ob-card">
-          <div className="ob-brand">
-            <Logo variant="wordmark" size="lg" />
-          </div>
-
-          <div className="ob-sep" />
-
-          <div className="ob-city-block">
-            {city ? (
-              <>
-                <div>
-                  <span className="ob-city-name">{city} <span style={{ fontSize: '0.8em', verticalAlign: 'middle', WebkitTextFillColor: 'initial' }}>{cityFlag(cityCountry)}</span></span>
-                </div>
-                <p className="ob-tagline">Stop scrolling. Join the vibe.</p>
-                <span className="ob-live"><span className="ob-live-fire">🔥</span> {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now</span>
-                {previewEventCount > 0 && (
-                  <span className="ob-city-sub ob-event-count">
-                    🔥 {previewEventCount} event{previewEventCount > 1 ? 's' : ''} happening today
-                  </span>
-                )}
-                {previewEvents.length > 0 ? (
-                  <div className="ob-events-preview">
-                    {previewEvents.map(e => (
-                      <div key={e.id} className="ob-event-row">
-                        <span className="ob-event-title">{EVENT_ICONS[e.type] ?? '📌'} {e.title}</span>
-                        <span className="ob-event-time">{getTimeLabel(e.starts_at, previewTimezone)}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </>
-            ) : geoState === 'denied' ? (
-              <>
-                <span className="ob-geo-status ob-geo-status--denied">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  Location off
-                </span>
-                <p className="ob-geo-headline">Pick a city<br />and jump in</p>
-              </>
-            ) : geoState === 'error' ? (
-              <>
-                <span className="ob-geo-status ob-geo-status--warn">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
-                  Couldn't reach your location
-                </span>
-                <p className="ob-geo-headline">Pick a city<br />and jump in</p>
-              </>
-            ) : geoState === 'resolving' ? (
-              <span className="ob-locating">› locating...</span>
-            ) : (
-              <span className="ob-locating">› requesting location...</span>
-            )}
-          </div>
-
-          <form className="ob-form" onSubmit={(geoState === 'denied' || geoState === 'error') ? (e) => { e.preventDefault(); openObCityPicker() } : handleJoin}>
-            {(geoState === 'denied' || geoState === 'error') ? (
-              <>
-                <button type="submit" className="ob-btn">Browse cities →</button>
-                <label className="ob-label" style={{ marginTop: 4 }}>Your name</label>
-                <div className="ob-input-row">
-                  <span
-                    className="ob-avatar-preview"
-                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                  >
-                    {(nickname[0] || 'A').toUpperCase()}
-                  </span>
-                  <input
-                    className="ob-input"
-                    type="text"
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    maxLength={20}
-                    placeholder="Say hi as..."
-                  />
-                </div>
-                {navigator.geolocation && (
-                  <button type="button" className="ob-geo-retry" onClick={retryGeo}>
-                    {geoState === 'error' ? 'Try again' : 'Use my location instead'}
-                  </button>
-                )}
-                {!account && (
-                  <div className="ob-identity-cta">
-                    <p className="ob-identity-hint">Don't lose your name 👇</p>
-                    <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
-                      ✨ Save my identity
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <label className="ob-label">Your name</label>
-                <div className="ob-input-row">
-                  <span
-                    className="ob-avatar-preview"
-                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                  >
-                    {(nickname[0] || 'A').toUpperCase()}
-                  </span>
-                  <input
-                    className="ob-input"
-                    type="text"
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    maxLength={20}
-                    autoFocus
-                    placeholder="Say hi as..."
-                  />
-                </div>
-                <button type="submit" className="ob-btn">
-                  {city ? `Join ${city}` : 'Join Chat'} →
-                </button>
-                {!account && (
-                  <div className="ob-identity-cta">
-                    <p className="ob-identity-hint">Don't lose your name 👇</p>
-                    <button type="button" className="ob-create-account" onClick={() => setObShowAuth(true)}>
-                      ✨ Save my identity
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-            <p className="ob-hint">// anonymous · no sign-up</p>
-          </form>
-        </div>
+      <>
+        <LandingPage
+          city={city}
+          cityCountry={cityCountry}
+          geoState={geoState}
+          nickname={nickname}
+          setNickname={setNickname}
+          handleJoin={handleJoin}
+          previewLiveCount={previewLiveCount}
+          onShowAuth={() => setObShowAuth(true)}
+          onOpenCityPicker={openObCityPicker}
+          retryGeo={retryGeo}
+        />
 
         {obPickingCity && (
           <div className="full-page">
@@ -2091,7 +1969,7 @@ export default function App() {
             </div>
           </div>
         )}
-      </div>
+      </>
     )
   }
 
