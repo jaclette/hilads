@@ -567,26 +567,33 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         ],
     );
 
-    // Profile view notification — fire only when viewer ≠ target (both are registered users)
+    // Profile view notification — deferred so PushService HTTP calls don't block the response.
     if ($viewer['id'] !== $user['id']) {
-        $dedup = Database::pdo()->prepare("
-            SELECT 1 FROM notifications
-            WHERE user_id = ? AND type = 'profile_view'
-              AND data->>'viewerId' = ?
-              AND created_at > NOW() - INTERVAL '60 minutes'
-            LIMIT 1
-        ");
-        $dedup->execute([$user['id'], $viewer['id']]);
-        if (!$dedup->fetch()) {
-            $viewerName = $viewer['display_name'] ?? 'Someone';
-            NotificationRepository::create(
-                $user['id'],
-                'profile_view',
-                "👀 {$viewerName} checked your vibe",
-                null,
-                ['viewerId' => $viewer['id'], 'viewerName' => $viewerName, 'senderUserId' => $viewer['id']]
-            );
-        }
+        $targetId   = $user['id'];
+        $viewerId   = $viewer['id'];
+        $viewerName = $viewer['display_name'] ?? 'Someone';
+        register_shutdown_function(static function () use ($targetId, $viewerId, $viewerName): void {
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            }
+            $dedup = Database::pdo()->prepare("
+                SELECT 1 FROM notifications
+                WHERE user_id = ? AND type = 'profile_view'
+                  AND data->>'viewerId' = ?
+                  AND created_at > NOW() - INTERVAL '60 minutes'
+                LIMIT 1
+            ");
+            $dedup->execute([$targetId, $viewerId]);
+            if (!$dedup->fetch()) {
+                NotificationRepository::create(
+                    $targetId,
+                    'profile_view',
+                    "👀 {$viewerName} checked your vibe",
+                    null,
+                    ['viewerId' => $viewerId, 'viewerName' => $viewerName, 'senderUserId' => $viewerId]
+                );
+            }
+        });
     }
 
     Response::json(['user' => $dto]);
@@ -1212,12 +1219,20 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         }
 
         // Inject a live weather system message if 4 h have elapsed since the last one.
-        // Non-fatal: a failure here must never break message delivery.
-        try {
-            WeatherService::maybeInject($channelId, $city);
-        } catch (\Throwable $e) {
-            error_log('[weather] injection failed (non-fatal): ' . $e->getMessage());
-        }
+        // Deferred: the Open-Meteo HTTP call (up to 4 s) runs after the response is sent
+        // so it never adds latency to the messages fetch.
+        $cid  = $channelId;
+        $cty  = $city;
+        register_shutdown_function(static function () use ($cid, $cty): void {
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+            }
+            try {
+                WeatherService::maybeInject($cid, $cty);
+            } catch (\Throwable $e) {
+                error_log('[weather] injection failed (non-fatal): ' . $e->getMessage());
+            }
+        });
 
         $messages    = MessageRepository::getByChannel($channelId);
         $onlineUsers = PresenceRepository::getOnline($channelId);

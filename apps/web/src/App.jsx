@@ -550,9 +550,10 @@ export default function App() {
   const [citySearchQuery, setCitySearchQuery] = useState('')
 
   // ── City crew fetch — triggered when people drawer opens or filters change ──
+  // Guard: skip when a profile overlay is open — the crew list isn't visible.
   const crewChannelRef = useRef(null)
   useEffect(() => {
-    if (!showPeopleDrawer || !channelId) return
+    if (!showPeopleDrawer || viewingProfile || !channelId) return
     const cid = channelId
     crewChannelRef.current = cid
     setCrewMembers([])
@@ -605,6 +606,7 @@ export default function App() {
   const chatInputRef = useRef(null)
   const sessionIdRef = useRef(PAGE_SESSION_ID)
   const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
+  const tabHiddenAtRef = useRef(null) // timestamp when tab was last hidden — guards doRefresh against rapid cycles
   const socketRef = useRef(null)      // WebSocket presence client
   const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
   const accountRef  = useRef(account)  // tracks current account for use in closures
@@ -817,11 +819,20 @@ export default function App() {
 
     // When returning to a hidden tab: re-assert presence and refresh messages.
     // Send joinRoom (not just heartbeat) so the session is re-registered if it somehow expired.
+    // Guard: only call doRefresh when the tab was hidden for ≥10 s — prevents permission dialogs
+    // and rapid tab-switches from firing fetchMessages multiple times per session.
     const handleVisibilityChange = () => {
-      if (!document.hidden && activeRef.current) {
-        if (activeChannelRef.current) {
-          socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null)
-        }
+      if (document.hidden) {
+        tabHiddenAtRef.current = Date.now()
+        return
+      }
+      if (!activeRef.current) return
+      if (activeChannelRef.current) {
+        socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null)
+      }
+      const hiddenMs = tabHiddenAtRef.current ? Date.now() - tabHiddenAtRef.current : Infinity
+      tabHiddenAtRef.current = null
+      if (hiddenMs >= 10_000) {
         pollFnRef.current?.()
       }
     }

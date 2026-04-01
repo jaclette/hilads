@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe } from '../api'
 import { cityFlag } from '../cityMeta'
 import { badgeLabel, BADGE_META } from '../badgeMeta'
@@ -70,6 +70,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [vibeMessage,  setVibeMessage]  = useState('')
   const [showVibeForm, setShowVibeForm] = useState(false)
 
+  // vibeCount from the profile response — used to skip fetchUserVibes when 0
+  const profileVibeCountRef = useRef(0)
+
+  // Phase 1: profile + events — controls the loading state, needed for first paint
   useEffect(() => {
     setUser(null)
     setEvents([])
@@ -84,32 +88,52 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setVibeRating(0)
     setVibeMessage('')
     setShowVibeForm(false)
+    profileVibeCountRef.current = 0
 
     fetchPublicProfile(userId)
-      .then(data => { setUser(data.user); setIsFriend(data.user?.isFriend ?? false) })
+      .then(data => {
+        setUser(data.user)
+        setIsFriend(data.user?.isFriend ?? false)
+        // Seed score/count immediately from profile — vibes request will overwrite with full detail
+        const vc = data.user?.vibeCount ?? 0
+        profileVibeCountRef.current = vc
+        if (data.user?.vibeScore != null) setVibeScore(data.user.vibeScore)
+        if (vc != null) setVibeCount(vc)
+      })
       .catch(() => setError('Could not load profile.'))
 
     fetchUserEvents(userId)
       .then(data => setEvents(data.events ?? []))
       .catch(() => {})
-
-    fetchUserFriends(userId)
-      .then(data => setFriends(data.friends ?? []))
-      .catch(() => {})
-
-    fetchUserVibes(userId)
-      .then(data => {
-        setVibes(data.vibes ?? [])
-        setVibeScore(data.score)
-        setVibeCount(data.count ?? 0)
-        setMyVibe(data.myVibe ?? null)
-        if (data.myVibe) {
-          setVibeRating(data.myVibe.rating)
-          setVibeMessage(data.myVibe.message ?? '')
-        }
-      })
-      .catch(() => {})
   }, [userId])
+
+  // Phase 2: secondary data — fires after profile renders (user is non-null).
+  // Friends and vibes detail are below-fold and not needed for first paint.
+  // vibeCount === 0 from profile → skip fetchUserVibes entirely (no detail to show).
+  useEffect(() => {
+    if (!user) return // wait for phase 1 to complete
+    const id = userId
+
+    fetchUserFriends(id)
+      .then(data => { if (userId === id) setFriends(data.friends ?? []) })
+      .catch(() => {})
+
+    if (profileVibeCountRef.current > 0) {
+      fetchUserVibes(id)
+        .then(data => {
+          if (userId !== id) return
+          setVibes(data.vibes ?? [])
+          setVibeScore(data.score)
+          setVibeCount(data.count ?? 0)
+          setMyVibe(data.myVibe ?? null)
+          if (data.myVibe) {
+            setVibeRating(data.myVibe.rating)
+            setVibeMessage(data.myVibe.message ?? '')
+          }
+        })
+        .catch(() => {})
+    }
+  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSendDm() {
     if (!onSendDm || dmBusy) return

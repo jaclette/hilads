@@ -176,25 +176,31 @@ export default function PublicProfileScreen() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    Promise.all([
-      fetchPublicProfile(id),
-      fetchUserEvents(id),
-      fetchUserFriends(id).catch(() => ({ friends: [], total: 0, hasMore: false })),
-      fetchUserVibes(id).catch(() => ({ vibes: [], score: null, count: 0, myVibe: null })),
-    ])
-      .then(([u, evs, fr, vib]) => {
+
+    // Phase 1: profile + events — controls the loading spinner
+    Promise.all([fetchPublicProfile(id), fetchUserEvents(id)])
+      .then(([u, evs]) => {
         setUser(u);
         setEvents(evs);
         setIsFriend(u.isFriend ?? false);
-        setFriends(fr.friends);
+        // Seed score/count from profile — vibes request will overwrite with full detail
+        if (u.vibeScore != null) setVibeScore(u.vibeScore);
+        if (u.vibeCount != null) setVibeCount(u.vibeCount);
+      })
+      .catch(() => setError('Could not load profile.'))
+      .finally(() => setLoading(false));
+
+    // Phase 2: secondary data — loads in parallel, non-blocking for initial render
+    fetchUserFriends(id).then(fr => setFriends(fr.friends)).catch(() => {});
+    fetchUserVibes(id)
+      .then(vib => {
         setVibes(vib.vibes);
         setVibeScore(vib.score);
         setVibeCount(vib.count);
         setMyVibe(vib.myVibe);
         if (vib.myVibe) { setVibeRating(vib.myVibe.rating); setVibeMessage(vib.myVibe.message ?? ''); }
       })
-      .catch(() => setError('Could not load profile.'))
-      .finally(() => setLoading(false));
+      .catch(() => {});
   }, [id]);
 
   function handleFriendToggle() {
