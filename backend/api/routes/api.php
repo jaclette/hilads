@@ -448,6 +448,10 @@ $router->add('POST', '/api/v1/auth/signup', function () {
         guestId:     isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null,
     );
 
+    AnalyticsService::capture('user_registered', $user['id'], [
+        'guest_id' => isset($body['guest_id']) ? $body['guest_id'] : null,
+    ]);
+
     // _token is included so mobile clients can persist it directly (set-cookie
     // headers are not reliably accessible from React Native fetch on Android).
     Response::json(['user' => AuthService::ownFields($user), 'token' => $user['_token']], 201);
@@ -462,6 +466,8 @@ $router->add('POST', '/api/v1/auth/login', function () {
         email:    $body['email']    ?? '',
         password: $body['password'] ?? '',
     );
+
+    AnalyticsService::capture('user_authenticated', $user['id']);
 
     // _token is included so mobile clients can persist it directly (set-cookie
     // headers are not reliably accessible from React Native fetch on Android).
@@ -642,6 +648,10 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
         );
     }
 
+    if (!$alreadyFriend) {
+        AnalyticsService::capture('friend_added', $viewer['id'], ['target_id' => $targetId]);
+    }
+
     Response::json(['ok' => true]);
 });
 
@@ -659,6 +669,8 @@ $router->add('DELETE', '/api/v1/users/{userId}/friends', function (array $params
         ->execute([$viewer['id'], $targetId]);
     $pdo->prepare("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?")
         ->execute([$targetId, $viewer['id']]);
+
+    AnalyticsService::capture('friend_removed', $viewer['id'], ['target_id' => $targetId]);
 
     Response::json(['ok' => true]);
 });
@@ -800,6 +812,8 @@ $router->add('POST', '/api/v1/guest/session', function () {
         'nickname' => $nickname,
         'created_at' => time(),
     ];
+
+    AnalyticsService::capture('guest_created', $guestId, ['nickname' => $nickname]);
 
     Response::json(['guestId' => $guestId, 'nickname' => $nickname], 201);
 });
@@ -1056,6 +1070,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             'isNew'     => $isNewSession,
             'elapsedMs' => apiElapsedMs($startedAt),
         ]);
+
+        if ($isNewSession) {
+            $distinctId = $memberUserId ?? $guestId;
+            AnalyticsService::capture('joined_city', $distinctId, [
+                'channel_id' => $channelId,
+                'is_guest'   => $memberUserId === null,
+            ]);
+        }
 
         Response::json(['message' => $message], 201);
     } catch (\Throwable $e) {
@@ -1668,6 +1690,12 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     } catch (\Throwable $e) {
         error_log("[event-create] notify failed (non-fatal): " . $e->getMessage());
     }
+
+    AnalyticsService::capture('event_created', $authUser['id'], [
+        'channel_id' => $channelId,
+        'event_type' => $type,
+        'event_id'   => $event['id'],
+    ]);
 
     Response::json($event, 201);
 });
@@ -2430,6 +2458,11 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
         }
     }
 
+    if ($isIn) {
+        $evtDistinctId = $currentUser['id'] ?? $participantKey;
+        AnalyticsService::capture('joined_event', $evtDistinctId, ['event_id' => $eventId]);
+    }
+
     Response::json(['count' => $count, 'isIn' => $isIn]);
 });
 
@@ -2553,6 +2586,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     } catch (\Throwable $e) {
         error_log("[channel-msg] notify failed (non-fatal): " . $e->getMessage());
     }
+
+    $msgDistinctId = $msgSenderUserId ?? $guestId;
+    AnalyticsService::capture('sent_message', $msgDistinctId, [
+        'channel_id'   => $channelId,
+        'channel_type' => 'city',
+        'message_type' => $type,
+    ]);
 
     Response::json($message, 201);
 });

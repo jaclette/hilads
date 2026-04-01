@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import posthog from 'posthog-js'
+import { track } from '../lib/analytics'
 import Logo from './Logo'
 import { cityFlag, EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel } from '../eventUtils'
@@ -180,7 +180,7 @@ export default function LandingPage({
   const heroJoinRef = useRef(null)
 
   useEffect(() => {
-    posthog.capture('landing_viewed')
+    track('landing_viewed')
   }, [])
 
   function scrollToJoin() {
@@ -188,17 +188,17 @@ export default function LandingPage({
   }
 
   function handleJoinWithTracking(e) {
-    posthog.capture('clicked_join_city', { city: city ?? null, entry_mode: 'guest' })
+    track('clicked_join_city', { city: city ?? null, entry_mode: 'guest' })
     handleJoin(e)
   }
 
   function handleSignUp() {
-    posthog.capture('clicked_sign_up')
+    track('clicked_sign_up')
     onSignUp()
   }
 
   function handleSignIn() {
-    posthog.capture('clicked_sign_in')
+    track('clicked_sign_in')
     onSignIn()
   }
 

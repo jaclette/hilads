@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { authSignup } from '@/api/auth';
 import { useApp } from '@/context/AppContext';
-import { track } from '@/services/analytics';
+import { track, identifyUser } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignUpScreen() {
@@ -38,6 +38,8 @@ export default function SignUpScreen() {
       const { user } = await authSignup(e, p, n, guestId);
       setAccount(user);
       setJoined(true);   // dismiss LandingScreen if it was showing
+      identifyUser(user.id, { account_type: 'registered', username: user.display_name });
+      track('user_authenticated');
       track('auth_signup');
       router.back(); // usePushRegistration in _layout.tsx reacts to setAccount above
     } catch (err: unknown) {

@@ -29,7 +29,7 @@ import { joinChannel } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
-import { track } from '@/services/analytics';
+import { track, identifyUser } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import type { HiladsEvent } from '@/types';
@@ -146,6 +146,8 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     if (identity?.nickname && !nickname) setNickname(identity.nickname);
   }, [identity?.nickname]);
 
+  useEffect(() => { track('landing_viewed'); }, []);
+
   // Escape hatch: reveal "Browse cities" 5s after geo starts.
   // We store the timer ID in a ref so React's effect cleanup (which runs on
   // every geoState change) does NOT cancel it during pending → resolving.
@@ -211,6 +213,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
       await saveIdentity(updated);
       setIdentity(updated);
+      track('clicked_join_city', { city: city?.name ?? null });
       track('landing_joined', { hasCity: !!city, cityId: city?.channelId });
       // Navigate to city chat first — mirrors web's setStatus('ready') which renders
       // the city channel view. setJoined(true) then removes the overlay.
@@ -430,7 +433,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   <Text style={styles.identityHint}>Don't lose your name 👇</Text>
                   <TouchableOpacity
                     style={styles.createAccountBtn}
-                    onPress={() => router.push('/sign-up')}
+                    onPress={() => { track('clicked_sign_up'); router.push('/sign-up'); }}
                     activeOpacity={0.85}
                   >
                     <Text style={styles.createAccountText}>✨ Save my identity</Text>
