@@ -732,9 +732,11 @@ export default function App() {
     })
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Load "My events" whenever the profile drawer opens (guest or registered).
+  // Load "My events" whenever the profile drawer opens — registered users only.
+  // Ghost users cannot create events (event creation requires auth), so there is
+  // nothing to show and no point calling the now-auth-gated endpoint.
   useEffect(() => {
-    if (!showProfileDrawer || !guest?.guestId) return
+    if (!showProfileDrawer || !account || !guest?.guestId) return
     setMyEventsLoaded(false)
     fetchMyEvents(guest.guestId)
       .then(data => { setMyEvents(data.events ?? []); setMyEventsLoaded(true) })

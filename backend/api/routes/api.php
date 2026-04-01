@@ -575,14 +575,14 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
 // are captured with userId="me", which fails the hex-id validation and returns
 // "Invalid userId". The specific /me route must come first.
 $router->add('GET', '/api/v1/users/me/events', function () {
+    $authUser = AuthService::requireAuth(); // 401 for guests — event ownership is registered-only
     $guestId  = $_GET['guestId'] ?? null;
-    $authUser = AuthService::currentUser();
 
     if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
-    $events = EventRepository::getByUser($guestId, $authUser['id'] ?? null);
+    $events = EventRepository::getByUser($guestId, $authUser['id']);
     Response::json(['events' => $events]);
 });
 

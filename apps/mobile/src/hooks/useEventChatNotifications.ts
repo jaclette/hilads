@@ -21,6 +21,7 @@ import { useApp } from '@/context/AppContext';
 export function useEventChatNotifications() {
   const {
     identity,
+    account,
     sessionId,
     setUnreadDMs,
     setEventChatPreview,
@@ -67,13 +68,14 @@ export function useEventChatNotifications() {
     }
   }, []); // stable — uses refs only
 
-  // Join on boot (once identity + sessionId are ready)
+  // Join on boot (once identity + sessionId are ready) — registered users only.
+  // Guests cannot create events (auth-gated) so there are no event rooms to join.
   useEffect(() => {
-    if (guestId && sessionId) {
+    if (account && guestId && sessionId) {
       if (__DEV__) console.log('[eventChat] joinAll triggered — identity ready (guestId:', guestId.slice(0, 8) + ')');
       joinAll();
     }
-  }, [guestId, sessionId, joinAll]);
+  }, [account, guestId, sessionId, joinAll]);
 
   // Re-join all rooms after WS reconnects
   useEffect(() => {

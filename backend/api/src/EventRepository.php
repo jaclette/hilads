@@ -207,7 +207,10 @@ class EventRepository
                   AND c.status       = 'active'
                   AND ce.source_type = 'hilads'
                   AND ce.expires_at  > now()
-                  {$participantPredicate}
+                  AND (ce.guest_id = :guest_id OR EXISTS (
+                      SELECT 1 FROM event_participants ep
+                      WHERE ep.channel_id = c.id AND ep.guest_id = :part_guest_id
+                  ))
                 ORDER BY ce.starts_at ASC
             ");
             $stmt->execute(['guest_id' => $guestId, 'part_guest_id' => $guestId]);

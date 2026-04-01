@@ -196,14 +196,14 @@ export default function MessagesScreen() {
   const [loadingEvts,  setLoadingEvts]  = useState(false);
 
   const loadEvents = useCallback(async () => {
-    if (!identity?.guestId) return;
+    if (!account || !identity?.guestId) return; // registered users only
     setLoadingEvts(true);
     try {
       const evts = await fetchMyEvents(identity.guestId);
       setEvents(evts);
     } catch { /* silent */ }
     finally { setLoadingEvts(false); }
-  }, [identity?.guestId]);
+  }, [account, identity?.guestId]);
 
   useEffect(() => { loadEvents(); }, [loadEvents]);
 

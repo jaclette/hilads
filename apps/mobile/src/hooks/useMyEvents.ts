@@ -37,10 +37,12 @@ export function useMyEvents(): Result {
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState<string | null>(null);
 
-  const guestId = account?.guest_id ?? identity?.guestId ?? '';
+  // Event ownership is registered-only (event creation requires auth).
+  // Skip for ghost users — they have no events and the endpoint returns 401.
+  const guestId = account ? (account.guest_id ?? identity?.guestId ?? '') : '';
 
   const load = useCallback(async () => {
-    if (!guestId) {
+    if (!account || !guestId) {
       setLoading(false);
       return;
     }
