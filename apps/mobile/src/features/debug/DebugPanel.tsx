@@ -3,6 +3,7 @@
  * Shows app state, connection info, and quick-action buttons.
  */
 import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet } from 'react-native';
+import * as Sentry from '@sentry/react-native';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { clearIdentity } from '@/lib/identity';
@@ -90,6 +91,14 @@ export function DebugPanel() {
       <View style={styles.actions}>
         <Action title="Force WS reconnect"  onPress={handleForceReconnect} />
         <Action title="Clear session + identity" onPress={handleClearSession} danger />
+        {/* TEMPORARY — remove after confirming events appear in hilads-mobile Sentry project */}
+        <Action
+          title="Send Sentry test event"
+          onPress={() => {
+            Sentry.captureMessage('Hilads mobile Sentry test — OK');
+            Alert.alert('Sentry', 'Test event sent — check hilads-mobile on sentry.io');
+          }}
+        />
       </View>
     </ScrollView>
   );

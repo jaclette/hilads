@@ -1,4 +1,5 @@
 import '@/polyfills'; // must be first — polyfills WeakRef for Hermes + old arch
+import * as Sentry from '@sentry/react-native';
 import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -18,6 +19,14 @@ import { LandingScreen } from '@/components/LandingScreen';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
 import { track } from '@/services/analytics';
 import { Colors } from '@/constants';
+
+// ── Sentry — init before any render ──────────────────────────────────────────
+if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
+    environment: __DEV__ ? 'development' : 'production',
+  });
+}
 
 // Keep native splash visible while booting
 SplashScreen.preventAutoHideAsync();

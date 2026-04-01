@@ -24,7 +24,10 @@
         "NSCameraUsageDescription": "Hilads lets you send photos in city chats and event conversations.",
         "NSPhotoLibraryUsageDescription": "Hilads lets you share photos from your library in chats.",
         "NSUserNotificationUsageDescription": "Hilads sends you notifications for new messages and events in your city.",
-        "UIBackgroundModes": ["remote-notification", "fetch"]
+        "UIBackgroundModes": [
+          "remote-notification",
+          "fetch"
+        ]
       }
     },
     "android": {
@@ -64,6 +67,7 @@
     },
     "plugins": [
       "expo-router",
+      "@sentry/react-native/expo",
       "./plugins/withSingleTopActivity",
       "expo-secure-store",
       [
@@ -96,7 +100,8 @@
         }
       ],
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true

@@ -107,6 +107,13 @@ if (file_exists($envFile)) {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+if (getenv('SENTRY_DSN')) {
+    \Sentry\init([
+        'dsn'         => getenv('SENTRY_DSN'),
+        'environment' => getenv('APP_ENV') ?: 'production',
+    ]);
+}
+
 require_once __DIR__ . '/../src/Storage.php';
 require_once __DIR__ . '/../src/Database.php';
 require_once __DIR__ . '/../src/UserRepository.php';

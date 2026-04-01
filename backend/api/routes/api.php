@@ -2962,3 +2962,23 @@ $router->add('DELETE', '/api/v1/push/mobile-token', function () {
 
     Response::json(['ok' => true]);
 });
+
+// ── TEMPORARY: Sentry test endpoint ──────────────────────────────────────────
+// Remove this route once Sentry integration is confirmed.
+// Protected: only active when MIGRATION_KEY is set in env.
+// Usage: GET /internal/sentry-test?key=YOUR_MIGRATION_KEY
+$router->add('GET', '/internal/sentry-test', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    \Sentry\captureMessage('Hilads backend Sentry test — OK');
+
+    Response::json(['ok' => true, 'message' => 'Sentry test event sent']);
+});
+// ── END TEMPORARY ─────────────────────────────────────────────────────────────

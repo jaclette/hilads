@@ -1,7 +1,8 @@
 {
   "require": {
     "aws/aws-sdk-php": "^3.0",
-    "minishlink/web-push": "^10.0"
+    "minishlink/web-push": "^10.0",
+    "sentry/sentry": "^4.23"
   },
   "config": {
     "optimize-autoloader": true
