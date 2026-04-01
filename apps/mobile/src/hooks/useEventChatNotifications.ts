@@ -46,7 +46,8 @@ export function useEventChatNotifications() {
   activeEventIdRef.current     = activeEventId;
   eventChatPreviewsRef.current = eventChatPreviews;
 
-  // Load all participating events and join their WS rooms
+  // Fetch user's events from API and join their WS rooms — call once on boot or
+  // after participation changes (user left an event screen where they may have toggled).
   const joinAll = useCallback(async () => {
     const sid = sessionIdRef.current;
     const gid = guestIdRef.current;
@@ -68,6 +69,15 @@ export function useEventChatNotifications() {
     }
   }, []); // stable — uses refs only
 
+  // Re-join WS rooms using cached IDs only — no HTTP fetch.
+  // Used on WS reconnect where the event list hasn't changed.
+  const rejoinCached = useCallback(() => {
+    const sid = sessionIdRef.current;
+    if (!sid || myEventIdsRef.current.size === 0) return;
+    if (__DEV__) console.log('[eventChat] rejoinCached —', myEventIdsRef.current.size, 'event rooms');
+    myEventIdsRef.current.forEach(id => socket.joinEvent(id, sid, nicknameRef.current));
+  }, []); // stable — uses refs only
+
   // Join on boot (once identity + sessionId are ready) — registered users only.
   // Guests cannot create events (auth-gated) so there are no event rooms to join.
   useEffect(() => {
@@ -77,18 +87,18 @@ export function useEventChatNotifications() {
     }
   }, [account, guestId, sessionId, joinAll]);
 
-  // Re-join all rooms after WS reconnects
+  // WS reconnect: re-join rooms from cache — no HTTP fetch needed.
+  // The event list hasn't changed; the server just needs the joinEvent signals again.
   useEffect(() => {
     const off = socket.on('connected', () => {
-      if (__DEV__) console.log('[eventChat] joinAll triggered — WS connected');
-      joinAll();
+      if (__DEV__) console.log('[eventChat] WS reconnected — rejoining cached event rooms');
+      rejoinCached();
     });
     return off;
-  }, [joinAll]);
+  }, [rejoinCached]);
 
-  // Also re-subscribe when the event rooms set might have changed (e.g. user joins a new event)
-  // The event/[id].tsx calls toggleParticipation which changes participation state.
-  // We refresh our room list whenever activeEventId becomes null (user left an event screen).
+  // User left an event screen — participation may have changed (toggle join/leave).
+  // Re-fetch to pick up any new or removed event subscriptions.
   useEffect(() => {
     if (activeEventId === null && guestId && sessionId) joinAll();
   }, [activeEventId, guestId, sessionId, joinAll]);

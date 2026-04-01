@@ -25,8 +25,9 @@ export function useGlobalDmNotifications() {
     activeDmId,
   } = useApp();
 
-  const accountIdRef  = useRef<string | undefined>(account?.id);
-  const activeDmIdRef = useRef<string | null>(activeDmId);
+  const accountIdRef      = useRef<string | undefined>(account?.id);
+  const activeDmIdRef     = useRef<string | null>(activeDmId);
+  const convIdsRef        = useRef<Set<string>>(new Set());
 
   accountIdRef.current  = account?.id;
   activeDmIdRef.current = activeDmId;
@@ -43,6 +44,7 @@ export function useGlobalDmNotifications() {
     if (__DEV__) console.log('[dmChat] joinAll — fetching conversations for userId:', uid.slice(0, 8));
     try {
       const convs = await fetchConversations();
+      convIdsRef.current = new Set(convs.map(c => c.id));
       convs.forEach(c => {
         socket.joinDm(c.id, uid);
         if (__DEV__) console.log('[dmChat] joined conversation', c.id.slice(0, 8), c.other_display_name);
@@ -53,6 +55,15 @@ export function useGlobalDmNotifications() {
     }
   }, []); // stable — uses refs only
 
+  // Re-join WS rooms using cached IDs only — no HTTP fetch.
+  // Used on WS reconnect where the conversation list hasn't changed.
+  const rejoinCached = useCallback(() => {
+    const uid = accountIdRef.current;
+    if (!uid || convIdsRef.current.size === 0) return;
+    if (__DEV__) console.log('[dmChat] rejoinCached —', convIdsRef.current.size, 'DM rooms');
+    convIdsRef.current.forEach(id => socket.joinDm(id, uid));
+  }, []); // stable — uses refs only
+
   // Join on boot (once account is ready — fires after auth hydration completes)
   useEffect(() => {
     if (account?.id) {
@@ -61,14 +72,15 @@ export function useGlobalDmNotifications() {
     }
   }, [account?.id, joinAll]);
 
-  // Re-join all rooms after WS reconnects
+  // WS reconnect: re-join rooms from cache — no HTTP fetch needed.
+  // The conversation list hasn't changed; the server just needs the joinDm signals again.
   useEffect(() => {
     const off = socket.on('connected', () => {
-      if (__DEV__) console.log('[dmChat] joinAll triggered — WS connected (account:', accountIdRef.current ? accountIdRef.current.slice(0, 8) : 'none' + ')');
-      joinAll();
+      if (__DEV__) console.log('[dmChat] WS reconnected — rejoining cached DM rooms');
+      rejoinCached();
     });
     return off;
-  }, [joinAll]);
+  }, [rejoinCached]);
 
   // Listen for new DMs in subscribed conversation rooms
   useEffect(() => {
