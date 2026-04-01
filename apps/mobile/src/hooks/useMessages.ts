@@ -34,7 +34,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
   const [sending,  setSending]  = useState(false);  // image upload only
   const [error,    setError]    = useState<string | null>(null);
 
-  // Track seen IDs to deduplicate WS + poll + send
+  // Track seen IDs to deduplicate WS + initial load + send
   const seenIds = useRef(new Set<string>());
 
   // Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
@@ -100,16 +100,8 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
     return () => { off1(); off2(); };
   }, [channelId, addNew]);
 
-  // Polling fallback
-  useEffect(() => {
-    const id = setInterval(async () => {
-      try {
-        const msgs = await loadFn();
-        addNew(msgs);
-      } catch { /* silent */ }
-    }, 8_000);
-    return () => clearInterval(id);
-  }, [channelId, loadFn, addNew]);
+  // New messages arrive via WebSocket (newMessage / message events above).
+  // No polling interval — WebSocket is the only real-time source.
 
   // ── Reconcile optimistic → server message ─────────────────────────────────
   //
