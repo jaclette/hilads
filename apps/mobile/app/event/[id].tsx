@@ -231,7 +231,7 @@ export default function EventDetailScreen() {
   const cityName = city?.name ?? event?.city_name ?? 'Back';
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
       {/* ── Nav — web: back pill + share button ── */}
       <View style={styles.nav}>
@@ -313,7 +313,7 @@ export default function EventDetailScreen() {
       {event && (
         <KeyboardAvoidingView
           style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior="padding"
         >
           <FlatList
             data={feed}

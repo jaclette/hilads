@@ -433,7 +433,7 @@ export default function ChatTab() {
       {/* ── Messages — web: .messages ── */}
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior="padding"
       >
         {loading ? (
           <View style={styles.center}>
