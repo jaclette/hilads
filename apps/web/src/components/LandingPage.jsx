@@ -1,4 +1,5 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
+import posthog from 'posthog-js'
 import Logo from './Logo'
 import { cityFlag, EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel } from '../eventUtils'
@@ -178,8 +179,27 @@ export default function LandingPage({
 }) {
   const heroJoinRef = useRef(null)
 
+  useEffect(() => {
+    posthog.capture('landing_viewed')
+  }, [])
+
   function scrollToJoin() {
     heroJoinRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
+
+  function handleJoinWithTracking(e) {
+    posthog.capture('clicked_join_city', { city: city ?? null, entry_mode: 'guest' })
+    handleJoin(e)
+  }
+
+  function handleSignUp() {
+    posthog.capture('clicked_sign_up')
+    onSignUp()
+  }
+
+  function handleSignIn() {
+    posthog.capture('clicked_sign_in')
+    onSignIn()
   }
 
   return (
@@ -206,12 +226,12 @@ export default function LandingPage({
             geoState={geoState}
             nickname={nickname}
             setNickname={setNickname}
-            handleJoin={handleJoin}
+            handleJoin={handleJoinWithTracking}
             previewLiveCount={previewLiveCount}
             onOpenCityPicker={onOpenCityPicker}
             retryGeo={retryGeo}
-            onSignUp={onSignUp}
-            onSignIn={onSignIn}
+            onSignUp={handleSignUp}
+            onSignIn={handleSignIn}
             autoFocus
           />
         </div>
@@ -303,12 +323,12 @@ export default function LandingPage({
           geoState={geoState}
           nickname={nickname}
           setNickname={setNickname}
-          handleJoin={handleJoin}
+          handleJoin={handleJoinWithTracking}
           previewLiveCount={previewLiveCount}
           onOpenCityPicker={onOpenCityPicker}
           retryGeo={retryGeo}
-          onSignUp={onSignUp}
-          onSignIn={onSignIn}
+          onSignUp={handleSignUp}
+          onSignIn={handleSignIn}
         />
       </section>
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
+import posthog from 'posthog-js'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
@@ -546,6 +547,7 @@ export default function App() {
   function openProfile(userId, nickname = '') {
     if (!account) { setShowAuthScreen(true); return }
     setViewingProfile({ userId, nickname })
+    posthog.capture('viewed_profile', { profile_id: userId })
   }
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
@@ -1091,7 +1093,11 @@ export default function App() {
       const session = savedGuestId
         ? { guestId: savedGuestId, nickname: name }
         : await createGuestSession(name)
-      if (!savedGuestId) saveGuestId(session.guestId)
+      if (!savedGuestId) {
+        saveGuestId(session.guestId)
+        posthog.identify(session.guestId, { account_type: 'guest' })
+        posthog.capture('guest_created')
+      }
       setGuest(session)
       setChannelId(location.channelId)
       setCityTimezone(location.timezone ?? 'UTC')
@@ -1115,6 +1121,7 @@ export default function App() {
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
       setOnlineCount(null) // populated within ~100ms by WS presenceSnapshot
       setStatus('ready')
+      posthog.capture('joined_city', { city: location.city ?? rejoinData?.city ?? null })
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
       scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
@@ -1372,6 +1379,9 @@ export default function App() {
 
       // Add server ID to knownIds so future WS echoes are skipped.
       knownIdsRef.current.add(msg.id)
+      posthog.capture('sent_message', {
+        channel_type: activeEventIdRef.current ? 'event' : 'city',
+      })
 
       // Reconcile the optimistic placeholder with the confirmed server message.
       // Two cases:
@@ -1873,6 +1883,8 @@ export default function App() {
             accountRef.current = user // sync ref before handleJoin reads it
             setAccount(user)
             setObShowAuth(false)
+            posthog.identify(user.id, { account_type: 'registered', username: user.display_name })
+            posthog.capture('user_authenticated')
             handleJoin(null)
           }}
           onBack={() => setObShowAuth(false)}
@@ -3145,6 +3157,8 @@ export default function App() {
             setAccount(user)
             setShowAuthScreen(false)
             setShowProfileDrawer(false)
+            posthog.identify(user.id, { account_type: 'registered', username: user.display_name })
+            posthog.capture('user_authenticated')
           }}
           onBack={() => setShowAuthScreen(false)}
         />
