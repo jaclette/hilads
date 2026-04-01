@@ -583,6 +583,7 @@ export default function App() {
   const [geoState, setGeoState] = useState('pending')
   const [obPickingCity, setObPickingCity] = useState(false)
   const [obShowAuth, setObShowAuth] = useState(false)
+  const [obAuthInitialTab, setObAuthInitialTab] = useState('signup')
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [obChannelEventCounts, setObChannelEventCounts] = useState({})
@@ -1867,6 +1868,7 @@ export default function App() {
         <AuthScreen
           guestId={guest?.guestId}
           guestNickname={nickname}
+          initialTab={obAuthInitialTab}
           onSuccess={(user) => {
             accountRef.current = user // sync ref before handleJoin reads it
             setAccount(user)
@@ -1888,7 +1890,8 @@ export default function App() {
           setNickname={setNickname}
           handleJoin={handleJoin}
           previewLiveCount={previewLiveCount}
-          onShowAuth={() => setObShowAuth(true)}
+          onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
+          onSignIn={() => { setObAuthInitialTab('login');  setObShowAuth(true) }}
           onOpenCityPicker={openObCityPicker}
           retryGeo={retryGeo}
         />

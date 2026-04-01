@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { authSignup, authLogin } from '../api'
 import BackButton from './BackButton'
 
-export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack }) {
-  const [tab, setTab]         = useState('signup') // 'signup' | 'login'
+export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, initialTab = 'signup' }) {
+  const [tab, setTab]         = useState(initialTab) // 'signup' | 'login'
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
   const [name, setName]       = useState(guestNickname || '')

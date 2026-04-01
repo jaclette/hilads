@@ -45,7 +45,7 @@ const HOW_IT_WORKS = [
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
 
-function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, onOpenCityPicker, retryGeo, autoFocus = false }) {
+function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
   const noGeo = geoState === 'denied' || geoState === 'error'
   const [c1, c2] = avatarColors(nickname || 'A')
 
@@ -131,8 +131,24 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
             </button>
           </>
         )}
-        <p className="ob-hint">// anonymous · no sign-up</p>
+        <p className="ob-hint">// anonymous · instant access</p>
       </form>
+
+      {/* Auth section */}
+      <div className="jc-auth">
+        <div className="jc-auth-divider">
+          <span className="jc-auth-divider-text">or keep your identity</span>
+        </div>
+        <div className="jc-auth-actions">
+          <button className="jc-auth-signup" onClick={onSignUp}>
+            ✨ Create account
+          </button>
+          <button className="jc-auth-signin" onClick={onSignIn}>
+            Log in
+          </button>
+        </div>
+        <p className="jc-auth-hint">Save your name · unlock profiles · add friends</p>
+      </div>
     </div>
   )
 }
@@ -158,7 +174,7 @@ export default function LandingPage({
   nickname, setNickname,
   handleJoin,
   previewLiveCount,
-  onShowAuth, onOpenCityPicker, retryGeo,
+  onSignUp, onSignIn, onOpenCityPicker, retryGeo,
 }) {
   const heroJoinRef = useRef(null)
 
@@ -194,6 +210,8 @@ export default function LandingPage({
             previewLiveCount={previewLiveCount}
             onOpenCityPicker={onOpenCityPicker}
             retryGeo={retryGeo}
+            onSignUp={onSignUp}
+            onSignIn={onSignIn}
             autoFocus
           />
         </div>
@@ -289,6 +307,8 @@ export default function LandingPage({
           previewLiveCount={previewLiveCount}
           onOpenCityPicker={onOpenCityPicker}
           retryGeo={retryGeo}
+          onSignUp={onSignUp}
+          onSignIn={onSignIn}
         />
       </section>
 
