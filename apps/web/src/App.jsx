@@ -306,6 +306,15 @@ const JOIN_TEMPLATES = [
   (n) => `✨ ${n} arrived`,
 ]
 
+// Strip duplicate weather items from a feed array built from history, keeping only the most recent.
+function dedupeWeather(items) {
+  const lastWeatherIdx = items.reduce((last, item, i) =>
+    (item.type === 'activity' && item.subtype === 'weather') ? i : last, -1)
+  return lastWeatherIdx === -1
+    ? items
+    : items.filter((item, i) => !(item.type === 'activity' && item.subtype === 'weather') || i === lastWeatherIdx)
+}
+
 // lastJoinAtRef: pass the component ref so join messages are throttled to 1 per 8s.
 // Returns null for suppressed joins — callers must filter nulls.
 function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
@@ -320,7 +329,6 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   }
   // Weather system messages have no nickname/id — render as a subtle activity line.
   if (m.type === 'system' && m.event === 'weather') {
-    console.log('[feed] weather system message:', m.content)
     return { type: 'activity', subtype: 'weather', id: `weather_${m.createdAt}`, text: m.content, createdAt: m.createdAt }
   }
   // Guard: any other system message that slips through has no nickname — skip it rather than crash.
@@ -509,7 +517,8 @@ export default function App() {
   const [sendError, setSendError] = useState(null)
   const [onlineCount, setOnlineCount] = useState(null)
   const weatherLabel = useMemo(() => {
-    const w = feed.find(item => item.type === 'activity' && item.subtype === 'weather')
+    // Find the most recent weather item (last in chronological feed)
+    const w = [...feed].reverse().find(item => item.type === 'activity' && item.subtype === 'weather')
     return w?.text ?? null
   }, [feed])
   const [showCityPicker, setShowCityPicker] = useState(false)
@@ -1120,11 +1129,11 @@ export default function App() {
       knownIdsRef.current = new Set(data.messages.map(messageKey))
 
       const total = data.messages.length
-      const initialItems = data.messages.map((m, idx) => {
+      const initialItems = dedupeWeather(data.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
         const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
         return toFeedItem(m, delay)
-      })
+      }))
 
       setFeed(initialItems)
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
@@ -1527,11 +1536,11 @@ export default function App() {
 
       knownIdsRef.current = new Set(data.messages.map(messageKey))
       const total = data.messages.length
-      const initialItems = data.messages.map((m, idx) => {
+      const initialItems = dedupeWeather(data.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
         const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
         return toFeedItem(m, delay)
-      })
+      }))
       setFeed(initialItems)
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: activeNickname, isMe: true }])
       setOnlineCount(joinData.onlineCount ?? null)
@@ -1739,11 +1748,11 @@ export default function App() {
       if (activeEventIdRef.current !== null || activeChannelRef.current !== cid) return
       knownIdsRef.current = new Set(data.messages.map(messageKey))
       const total = data.messages.length
-      setFeed(data.messages.map((m, idx) => {
+      setFeed(dedupeWeather(data.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
         const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
         return toFeedItem(m, delay)
-      }))
+      })))
     }).catch(() => {})
 
     const doPoll = async () => {
