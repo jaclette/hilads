@@ -401,10 +401,12 @@ export default function ChatTab() {
           </TouchableOpacity>
         )}
 
-        {/* ── Hero: logo + city + online pill ── */}
-        {/* web: .chat-header .logo svg { drop-shadow orange glow } */}
-        <View style={styles.iconGlow}>
-          <HiladsIcon size={46} />
+        {/* ── Hero: logo + tagline + city + online pill ── */}
+        <View style={styles.logoBrand}>
+          <View style={styles.iconGlow}>
+            <HiladsIcon size={46} />
+          </View>
+          <Text style={styles.headerTagline} numberOfLines={1}>Stop scrolling. Join the vibe.</Text>
         </View>
         <View style={styles.heroCity}>
           <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>
@@ -591,6 +593,20 @@ const styles = StyleSheet.create({
     fontSize:   10,
     fontWeight: '700',
     lineHeight: 12,
+  },
+
+  // ── Brand block: logo + tagline ──────────────────────────────────────────
+  logoBrand: {
+    alignItems: 'center',
+    gap:        3,
+  },
+  headerTagline: {
+    fontSize:      11,
+    color:         Colors.muted,
+    opacity:       0.78,
+    fontWeight:    '400',
+    letterSpacing: 0.3,
+    textAlign:     'center',
   },
 
   // ── Logo glow — web: .chat-header .logo svg { drop-shadow orange } ─────────

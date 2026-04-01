@@ -268,8 +268,8 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     <Text style={styles.cityFlagInline}>{cityFlag(city.country)}</Text>
                   </Text>
 
-                  {/* Tagline — web: "See who's around. Say hi instantly." */}
-                  <Text style={styles.tagline}>See who's around. Say hi instantly.</Text>
+                  {/* Tagline — web: "Stop scrolling. Join the vibe." */}
+                  <Text style={styles.tagline}>Stop scrolling. Join the vibe.</Text>
 
                   {/* Live count pill — web: "🔥 N person/people hanging out right now" */}
                   <View style={styles.livePill}>

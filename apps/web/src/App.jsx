@@ -1896,7 +1896,7 @@ export default function App() {
                 <div>
                   <span className="ob-city-name">{city} <span style={{ fontSize: '0.8em', verticalAlign: 'middle', WebkitTextFillColor: 'initial' }}>{cityFlag(cityCountry)}</span></span>
                 </div>
-                <p className="ob-tagline">See who's around. Say hi instantly.</p>
+                <p className="ob-tagline">Stop scrolling. Join the vibe.</p>
                 <span className="ob-live"><span className="ob-live-fire">🔥</span> {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now</span>
                 {previewEventCount > 0 && (
                   <span className="ob-city-sub ob-event-count">
@@ -2146,7 +2146,10 @@ export default function App() {
   function renderCityHero(className = 'header-hero') {
     return (
       <div className={className}>
-        <Logo variant="icon" size="lg" />
+        <div className="header-hero-brand">
+          <Logo variant="icon" size="lg" />
+          <span className="header-tagline">Stop scrolling. Join the vibe.</span>
+        </div>
         <div className="header-hero-city">
           <span className="header-hero-name">
             <span className="header-hero-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
