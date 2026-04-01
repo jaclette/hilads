@@ -7,6 +7,7 @@ import type { Message } from '@/types';
 
 interface Params {
   channelId:    string;
+  channelType?: 'city' | 'event';
   loadFn:       () => Promise<Message[]>;
   postTextFn:   (content: string) => Promise<Message>;
   postImageFn:  (imageUrl: string) => Promise<Message>;
@@ -27,7 +28,7 @@ function makeLocalId(prefix = 'local'): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Params): Result {
+export function useMessages({ channelId, channelType = 'city', loadFn, postTextFn, postImageFn }: Params): Result {
   const { identity, account } = useApp();
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -163,7 +164,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
     try {
       const msg = await postTextFn(trimmed);
       reconcile(localId, msg);
-      track('message_sent', { channelId });
+      track('sent_message', { channelId, channel_type: channelType });
     } catch {
       markFailed(localId);
       setError('Failed to send message');

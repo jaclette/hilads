@@ -21,10 +21,9 @@ export type AnalyticsEvent =
   | 'landing_joined'
   | 'joined_city'
   | 'city_selected'
-  | 'message_sent'
   | 'sent_message'
   | 'event_opened'
-  | 'event_joined'
+  | 'joined_event'
   | 'event_created'
   | 'dm_opened'
   | 'dm_sent'
@@ -77,4 +76,9 @@ export function identifyUser(id: string, props?: Payload): void {
     return;
   }
   posthog.identify(id, props);
+}
+
+export function resetAnalytics(): void {
+  _ctx = {};
+  if (!__DEV__) posthog.reset();
 }

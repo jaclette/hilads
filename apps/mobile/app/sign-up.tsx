@@ -39,7 +39,7 @@ export default function SignUpScreen() {
       setAccount(user);
       setJoined(true);   // dismiss LandingScreen if it was showing
       identifyUser(user.id, { account_type: 'registered', username: user.display_name });
-      setAnalyticsContext({ is_guest: false, user_id: user.id });
+      setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
       track('user_authenticated');
       track('auth_signup');
       router.back(); // usePushRegistration in _layout.tsx reacts to setAccount above

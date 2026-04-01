@@ -14,3 +14,8 @@ export function track(event, props = {}) {
 export function identifyUser(id, props = {}) {
   posthog.identify(id, props)
 }
+
+export function resetAnalytics() {
+  _ctx = {}
+  posthog.reset()
+}

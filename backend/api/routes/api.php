@@ -493,7 +493,14 @@ $router->add('POST', '/api/v1/auth/login', function () {
 });
 
 $router->add('POST', '/api/v1/auth/logout', function () {
+    $user = AuthService::currentUser(); // capture before session is destroyed
     AuthService::destroyDbSession();
+    if ($user) {
+        AnalyticsService::capture('auth_logout', $user['id'], [
+            'user_id'  => $user['id'],
+            'is_guest' => false,
+        ]);
+    }
     Response::json(['ok' => true]);
 });
 

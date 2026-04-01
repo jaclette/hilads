@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { track, identifyUser, setAnalyticsContext } from './lib/analytics'
+import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
@@ -1891,7 +1891,7 @@ export default function App() {
             setAccount(user)
             setObShowAuth(false)
             identifyUser(user.id, { account_type: 'registered', username: user.display_name })
-            setAnalyticsContext({ is_guest: false, user_id: user.id })
+            setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })
             track('user_authenticated')
             handleJoin(null)
           }}
@@ -3062,6 +3062,8 @@ export default function App() {
             } catch (_) {}
           }}
           onSignOut={async () => {
+            track('auth_logout')
+            resetAnalytics()
             await authLogout()
             unregisterPush().catch(() => {})
             setAccount(null)
@@ -3166,7 +3168,7 @@ export default function App() {
             setShowAuthScreen(false)
             setShowProfileDrawer(false)
             identifyUser(user.id, { account_type: 'registered', username: user.display_name })
-            setAnalyticsContext({ is_guest: false, user_id: user.id })
+            setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })
             track('user_authenticated')
           }}
           onBack={() => setShowAuthScreen(false)}

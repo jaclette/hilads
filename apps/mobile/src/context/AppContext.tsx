@@ -9,6 +9,7 @@ import type { GuestIdentity, City, User, OnlineUser, EventChatPreview } from '@/
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 import { unregisterPushToken } from '@/services/push';
+import { track, resetAnalytics } from '@/services/analytics';
 
 // Matches web geoState values exactly:
 // 'pending'   → permission dialog showing ("› requesting location...")
@@ -108,6 +109,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
+    track('auth_logout');
+    resetAnalytics();
     await unregisterPushToken().catch(() => {}); // remove device token before clearing auth
     await authLogout();
     await clearToken();
