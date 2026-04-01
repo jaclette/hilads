@@ -412,17 +412,20 @@ $router->add('GET', '/internal/run-migrations', function () {
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channels_active_events ON channels (parent_id) WHERE type = 'event' AND status = 'active'");
     $log[] = "indexes: applied";
 
-    // ── 5. Add notification_preferences.profile_view_push (idempotent) ───────
-    // Column was added to code but the ALTER TABLE was never run in production.
+    // ── 5. Add notification_preferences columns added after initial schema ───────
+    // All three were added post-launch and may be absent in production.
     // IF NOT EXISTS is PostgreSQL 9.6+ — safe to run repeatedly.
-    try {
-        $pdo->exec("
-            ALTER TABLE notification_preferences
-            ADD COLUMN IF NOT EXISTS profile_view_push BOOLEAN NOT NULL DEFAULT TRUE
-        ");
-        $log[] = "notification_preferences: profile_view_push column ensured";
-    } catch (\Throwable $e) {
-        $errors[] = "notification_preferences migration: " . $e->getMessage();
+    foreach ([
+        ['friend_added_push',  'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['vibe_received_push', 'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['profile_view_push',  'BOOLEAN NOT NULL DEFAULT TRUE'],
+    ] as [$col, $def]) {
+        try {
+            $pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS $col $def");
+            $log[] = "notification_preferences: $col column ensured";
+        } catch (\Throwable $e) {
+            $errors[] = "notification_preferences.$col migration: " . $e->getMessage();
+        }
     }
 
     // ── 6. Summary query ──────────────────────────────────────────────────────
