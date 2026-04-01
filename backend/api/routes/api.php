@@ -2891,12 +2891,17 @@ $router->add('GET', '/api/v1/notification-preferences', function () {
 });
 
 // PUT /api/v1/notification-preferences
-// Body: any subset of { dm_push, event_message_push, event_join_push, new_event_push }
+// Body: any subset of { dm_push, event_message_push, event_join_push, new_event_push, ... }
 $router->add('PUT', '/api/v1/notification-preferences', function () {
-    $user  = AuthService::requireAuth();
-    $body  = Request::json() ?? [];
-    $prefs = NotificationPreferencesRepository::upsert($user['id'], $body);
-    Response::json(['preferences' => $prefs]);
+    $user = AuthService::requireAuth();
+    $body = Request::json() ?? [];
+    try {
+        $prefs = NotificationPreferencesRepository::upsert($user['id'], $body);
+        Response::json(['preferences' => $prefs]);
+    } catch (\Throwable $e) {
+        error_log('[notification-preferences] route PUT failed: ' . $e->getMessage());
+        Response::json(['error' => 'Failed to save preferences'], 500);
+    }
 });
 
 // ── Web Push ──────────────────────────────────────────────────────────────────
