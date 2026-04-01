@@ -1031,6 +1031,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
 
+        // Resolve the authenticated user once — used for both membership tracking
+        // and for the join feed message (with different semantics, see below).
+        $authUser = AuthService::currentUser();
+
         // Record persistent city membership for registered users.
         // Priority: authenticated session (cookie) → guest_id link in users table.
         // Using the auth session is more reliable — it works even when guest_id
@@ -1041,10 +1045,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             $memberChannelKey = 'city_' . $channelId;
 
             // 1. Prefer authenticated user from session cookie
-            $authUser = AuthService::currentUser();
             $memberUserId = $authUser ? $authUser['id'] : null;
 
-            // 2. Fall back to guest_id link in users table
+            // 2. Fall back to guest_id link in users table — for membership tracking only.
+            // We deliberately do NOT use this resolved ID in the join feed message (see below).
             if (!$memberUserId) {
                 $memberUser = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
                 $memberUser->execute([$guestId]);
@@ -1066,10 +1070,18 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         // Re-joins (foreground transitions, reconnects within TTL) must not
         // produce a second feed message — that is the source of duplicate
         // guest-name events that appear before the registered display name.
+        //
+        // IDENTITY BUG FIX: The join message userId must come strictly from the
+        // authenticated session, never from the guest_id → users table lookup.
+        // If someone browses as a ghost whose guestId happens to match a registered
+        // account, their join event must remain a ghost join — using the resolved
+        // $memberUserId here would cause clicking "SoftOwl joined" to open the
+        // registered user's profile (e.g. jaclette) instead of the ghost profile.
+        $joinUserId = $authUser ? $authUser['id'] : null;
         $message = null;
         if ($isNewSession) {
             try {
-                $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $memberUserId);
+                $message = MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $joinUserId);
             } catch (\Throwable $e) {
                 apiLog('channel_join', 'join event write failed', [
                     'channelId' => $channelId,

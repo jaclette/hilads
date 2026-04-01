@@ -91,8 +91,13 @@ class MessageRepository
     public static function getByChannel(int|string $channelId): array
     {
         // COALESCE(m.user_id, u.id): retroactively resolves the sender's registered userId
-        // for messages where user_id was never written (sent before the api.php fix).
-        // Uses idx_users_guest_id — no performance cost on the hot path.
+        // for chat messages (text/image) where user_id was never written (sent before the
+        // api.php fix, or sent as a guest before registering). Uses idx_users_guest_id.
+        //
+        // IMPORTANT: the retroactive join is intentionally excluded for system messages
+        // (type = 'system', e.g. join events). A ghost join must remain a ghost join even
+        // if the guestId was later linked to a registered account — applying COALESCE here
+        // would cause clicking "SoftOwl joined" to open the registered user's profile.
         $stmt = Database::pdo()->prepare("
             SELECT id, channel_id, type, event,
                    guest_id, user_id, nickname, content, image_url, created_at
@@ -104,7 +109,7 @@ class MessageRepository
                     m.nickname, m.content, m.image_url,
                     EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
                 FROM messages m
-                LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL
+                LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
                 WHERE m.channel_id = ?
                 ORDER BY m.created_at DESC
                 LIMIT " . self::LIMIT . "
