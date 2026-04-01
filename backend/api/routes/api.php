@@ -2905,11 +2905,12 @@ $router->add('GET', '/api/v1/notification-preferences', function () {
 $router->add('PUT', '/api/v1/notification-preferences', function () {
     $user = AuthService::requireAuth();
     $body = Request::json() ?? [];
+    error_log('[notification-preferences] PUT user=' . $user['id'] . ' body=' . json_encode($body));
     try {
         $prefs = NotificationPreferencesRepository::upsert($user['id'], $body);
         Response::json(['preferences' => $prefs]);
     } catch (\Throwable $e) {
-        error_log('[notification-preferences] route PUT failed: ' . $e->getMessage());
+        error_log('[notification-preferences] route PUT failed: ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
         Response::json(['error' => 'Failed to save preferences'], 500);
     }
 });

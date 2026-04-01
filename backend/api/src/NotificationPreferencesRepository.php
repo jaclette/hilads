@@ -81,62 +81,31 @@ class NotificationPreferencesRepository
             'profile_view_push'    => $profileView,
         ];
 
-        try {
-            // Level 1: full schema (all columns including recently-added ones)
-            Database::pdo()->prepare("
-                INSERT INTO notification_preferences
-                    (user_id, dm_push, event_message_push, event_join_push, new_event_push,
-                     channel_message_push, city_join_push, friend_added_push, vibe_received_push,
-                     profile_view_push)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT (user_id) DO UPDATE
-                   SET dm_push              = EXCLUDED.dm_push,
-                       event_message_push   = EXCLUDED.event_message_push,
-                       event_join_push      = EXCLUDED.event_join_push,
-                       new_event_push       = EXCLUDED.new_event_push,
-                       channel_message_push = EXCLUDED.channel_message_push,
-                       city_join_push       = EXCLUDED.city_join_push,
-                       friend_added_push    = EXCLUDED.friend_added_push,
-                       vibe_received_push   = EXCLUDED.vibe_received_push,
-                       profile_view_push    = EXCLUDED.profile_view_push
-            ")->execute([$userId, $dm, $eventMsg, $eventJoin, $newEvent, $chanMsg, $cityJoin, $friendAdded, $vibeReceived, $profileView]);
-        } catch (\Throwable $e) {
-            error_log('[notification-preferences] upsert level-1 failed for user ' . $userId . ': ' . $e->getMessage());
-            try {
-                // Level 2: without profile_view_push
-                Database::pdo()->prepare("
-                    INSERT INTO notification_preferences
-                        (user_id, dm_push, event_message_push, event_join_push, new_event_push,
-                         channel_message_push, city_join_push, friend_added_push, vibe_received_push)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (user_id) DO UPDATE
-                       SET dm_push              = EXCLUDED.dm_push,
-                           event_message_push   = EXCLUDED.event_message_push,
-                           event_join_push      = EXCLUDED.event_join_push,
-                           new_event_push       = EXCLUDED.new_event_push,
-                           channel_message_push = EXCLUDED.channel_message_push,
-                           city_join_push       = EXCLUDED.city_join_push,
-                           friend_added_push    = EXCLUDED.friend_added_push,
-                           vibe_received_push   = EXCLUDED.vibe_received_push
-                ")->execute([$userId, $dm, $eventMsg, $eventJoin, $newEvent, $chanMsg, $cityJoin, $friendAdded, $vibeReceived]);
-            } catch (\Throwable $e2) {
-                error_log('[notification-preferences] upsert level-2 failed for user ' . $userId . ': ' . $e2->getMessage());
-                // Level 3: original core columns only (friend_added_push / vibe_received_push also not migrated)
-                Database::pdo()->prepare("
-                    INSERT INTO notification_preferences
-                        (user_id, dm_push, event_message_push, event_join_push, new_event_push,
-                         channel_message_push, city_join_push)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (user_id) DO UPDATE
-                       SET dm_push              = EXCLUDED.dm_push,
-                           event_message_push   = EXCLUDED.event_message_push,
-                           event_join_push      = EXCLUDED.event_join_push,
-                           new_event_push       = EXCLUDED.new_event_push,
-                           channel_message_push = EXCLUDED.channel_message_push,
-                           city_join_push       = EXCLUDED.city_join_push
-                ")->execute([$userId, $dm, $eventMsg, $eventJoin, $newEvent, $chanMsg, $cityJoin]);
-            }
-        }
+        // PDO serialises PHP bool false as "" (empty string) which PostgreSQL rejects for BOOLEAN columns.
+        // Cast every boolean to int (1/0) so PostgreSQL receives a valid boolean literal.
+        $b = static fn(bool $v): int => $v ? 1 : 0;
+
+        Database::pdo()->prepare("
+            INSERT INTO notification_preferences
+                (user_id, dm_push, event_message_push, event_join_push, new_event_push,
+                 channel_message_push, city_join_push, friend_added_push, vibe_received_push,
+                 profile_view_push)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (user_id) DO UPDATE
+               SET dm_push              = EXCLUDED.dm_push,
+                   event_message_push   = EXCLUDED.event_message_push,
+                   event_join_push      = EXCLUDED.event_join_push,
+                   new_event_push       = EXCLUDED.new_event_push,
+                   channel_message_push = EXCLUDED.channel_message_push,
+                   city_join_push       = EXCLUDED.city_join_push,
+                   friend_added_push    = EXCLUDED.friend_added_push,
+                   vibe_received_push   = EXCLUDED.vibe_received_push,
+                   profile_view_push    = EXCLUDED.profile_view_push
+        ")->execute([
+            $userId,
+            $b($dm), $b($eventMsg), $b($eventJoin), $b($newEvent),
+            $b($chanMsg), $b($cityJoin), $b($friendAdded), $b($vibeReceived), $b($profileView),
+        ]);
 
         return $resolved;
     }
