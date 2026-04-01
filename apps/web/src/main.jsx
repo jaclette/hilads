@@ -17,11 +17,9 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     })
 }
 
-// TEMPORARY: run window.__sentryTest() in the browser console to verify.
-// Remove after confirming events appear in the hilads-web Sentry project.
-if (import.meta.env.DEV) {
-    window.__sentryTest = () => Sentry.captureMessage('Hilads web Sentry test — OK')
-}
+// TEMPORARY: run window.__sentryProdTest() in the browser console to verify.
+// Works in production. Remove after confirming event appears in hilads-web on sentry.io.
+window.__sentryProdTest = () => Sentry.captureMessage('Hilads web prod test')
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
