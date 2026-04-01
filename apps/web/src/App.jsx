@@ -1242,8 +1242,9 @@ export default function App() {
         }
       }, 20_000)
 
-      // ── Poll: messages only ──────────────────────────────────────────────────
-      const doPoll = async () => {
+      // ── Tab-focus refresh: one-time catch-up when returning to a hidden tab ───
+      // New messages arrive via WebSocket; this only runs when the tab was hidden.
+      const doRefresh = async () => {
         if (!activeRef.current) return
         const latest = await fetchMessages(location.channelId)
         if (activeChannelRef.current !== location.channelId) return // discard if switched away
@@ -1255,9 +1256,7 @@ export default function App() {
           newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
       }
-      pollFnRef.current = doPoll
-      clearInterval(pollRef.current)
-      pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+      pollFnRef.current = doRefresh
 
       // ── Events: fetch + poll (30s) ───────────────────────────────────────────
       setHotEventsStatus('loading')
@@ -1562,8 +1561,8 @@ export default function App() {
         }
       }, 20_000)
 
-      // Poll: messages only
-      const doPoll = async () => {
+      // Tab-focus refresh only — new messages arrive via WebSocket
+      const doRefresh = async () => {
         if (!activeRef.current) return
         const latest = await fetchMessages(newChannelId)
         if (activeChannelRef.current !== newChannelId) return // discard if switched away again
@@ -1575,8 +1574,7 @@ export default function App() {
           newItems.forEach((item) => { if (item.subtype === 'join') scheduleEphemeral(item.id) })
         }
       }
-      pollFnRef.current = doPoll
-      pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+      pollFnRef.current = doRefresh
 
       // Events: fetch + poll for new city
       const doEventsPoll = async (isInitial = false) => {
@@ -1651,33 +1649,21 @@ export default function App() {
     pushUrl(`/event/${eid}`)
     setPageMeta(`${event.title} is happening now | Hilads`, `Join ${event.title} on Hilads — see who's there and what's happening.`)
 
-    let consecutiveFailures = 0
-    const MAX_FAILURES = 3
-
-    const doPoll = async () => {
+    // Initial fetch for event messages; subsequent messages arrive via WebSocket.
+    const doRefresh = async () => {
       if (!activeRef.current) return
-      try {
-        const latest = await fetchEventMessages(eid)
-        consecutiveFailures = 0
-        if (activeEventIdRef.current !== eid) return
-        const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(m.id))
-        if (newMsgs.length > 0) {
-          newMsgs.forEach(m => knownIdsRef.current.add(m.id))
-          const items = newMsgs.map(m => toFeedItem(m)).filter(Boolean)
-          setFeed(prev => [...prev, ...items])
-        }
-      } catch {
-        consecutiveFailures++
-        if (consecutiveFailures >= MAX_FAILURES) {
-          clearInterval(pollRef.current)
-          pollRef.current = null
-        }
+      const latest = await fetchEventMessages(eid).catch(() => null)
+      if (!latest || activeEventIdRef.current !== eid) return
+      const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(m.id))
+      if (newMsgs.length > 0) {
+        newMsgs.forEach(m => knownIdsRef.current.add(m.id))
+        const items = newMsgs.map(m => toFeedItem(m)).filter(Boolean)
+        setFeed(prev => [...prev, ...items])
       }
     }
 
-    doPoll()
-    pollFnRef.current = doPoll
-    pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+    doRefresh()
+    pollFnRef.current = doRefresh
   }
 
   // Fetch persistent participation state when active event changes
@@ -1755,7 +1741,8 @@ export default function App() {
       })))
     }).catch(() => {})
 
-    const doPoll = async () => {
+    // Tab-focus refresh only — new messages arrive via WebSocket
+    const doRefresh = async () => {
       if (!activeRef.current) return
       const latest = await fetchMessages(cid)
       if (activeChannelRef.current !== cid || activeEventIdRef.current !== null) return
@@ -1768,8 +1755,7 @@ export default function App() {
       }
     }
 
-    pollFnRef.current = doPoll
-    pollRef.current = setInterval(() => { if (!document.hidden) doPoll() }, 3000)
+    pollFnRef.current = doRefresh
   }
 
   // Refresh event in list after edit
