@@ -1776,7 +1776,7 @@ export default function App() {
     if (obShowAuth) {
       return (
         <AuthScreen
-          guestId={guest?.guestId}
+          guestId={guest?.guestId ?? loadGuestId() ?? undefined}
           guestNickname={nickname}
           initialTab={obAuthInitialTab}
           onSuccess={(user) => {
@@ -3042,6 +3042,7 @@ export default function App() {
           guestId={guest?.guestId}
           guestNickname={nickname}
           onSuccess={(user) => {
+            accountRef.current = user // sync ref so closures see updated identity immediately
             setAccount(user)
             setShowAuthScreen(false)
             setShowProfileDrawer(false)

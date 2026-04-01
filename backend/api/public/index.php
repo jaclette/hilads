@@ -73,9 +73,11 @@ if ($method === 'GET' && $uri === '/health') {
     exit();
 }
 
-$allowedOrigins = [
-    'https://hilads.vercel.app',
-];
+// CORS_ORIGINS env var overrides the hard-coded list (comma-separated, no spaces).
+// e.g. CORS_ORIGINS=https://hilads.app,https://hilads.vercel.app
+$allowedOrigins = getenv('CORS_ORIGINS')
+    ? array_filter(explode(',', getenv('CORS_ORIGINS')))
+    : ['https://hilads.app', 'https://hilads.vercel.app'];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? null;
 

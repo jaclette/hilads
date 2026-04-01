@@ -263,11 +263,12 @@ class AuthService
         ];
     }
 
-    /** Own profile — includes email. Never includes password_hash or google_id. */
+    /** Own profile — includes email and guest_id. Never includes password_hash or google_id. */
     public static function ownFields(array $user): array
     {
         return array_merge(self::publicFields($user), [
-            'email' => $user['email'],
+            'email'    => $user['email'],
+            'guest_id' => $user['guest_id'] ?? null,
         ]);
     }
 

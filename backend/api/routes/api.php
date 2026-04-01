@@ -831,11 +831,6 @@ $router->add('POST', '/api/v1/guest/session', function () {
         ? $custom
         : NicknameGenerator::generate();
 
-    $_SESSION['guests'][$guestId] = [
-        'nickname' => $nickname,
-        'created_at' => time(),
-    ];
-
     AnalyticsService::capture('guest_created', $guestId, ['nickname' => $nickname]);
 
     Response::json(['guestId' => $guestId, 'nickname' => $nickname], 201);
