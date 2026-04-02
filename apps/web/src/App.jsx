@@ -2464,7 +2464,6 @@ export default function App() {
               : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length]() : ''
             }
             maxLength={1000}
-            autoFocus
           />
           <SendButton disabled={sending || !input.trim()} />
         </form>
