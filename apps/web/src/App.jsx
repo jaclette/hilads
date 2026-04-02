@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -512,6 +512,7 @@ export default function App() {
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
+  const [legends,      setLegends]      = useState([])  // city ambassadors (Local legends section)
   const [crewMembers,  setCrewMembers]  = useState([])
   const [crewPage,     setCrewPage]     = useState(1)
   const [crewHasMore,  setCrewHasMore]  = useState(false)
@@ -572,6 +573,14 @@ export default function App() {
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [citySearchQuery, setCitySearchQuery] = useState('')
+
+  // ── Local legends fetch — ambassadors for this city (no filter dependency) ──
+  useEffect(() => {
+    if (!showPeopleDrawer || viewingProfile || !channelId) return
+    fetchCityAmbassadors(channelId)
+      .then(data => setLegends(data.ambassadors ?? []))
+      .catch(() => {})
+  }, [showPeopleDrawer, channelId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── City crew fetch — triggered when people drawer opens or filters change ──
   // Guard: skip when a profile overlay is open — the crew list isn't visible.
@@ -2887,7 +2896,45 @@ export default function App() {
                 : filteredOnline.map(renderOnlineUser)
               }
 
-              {/* ── Section 2: City crew ── */}
+              {/* ── Section 2: Local legends ── */}
+              {legends.length > 0 && (
+                <>
+                  <div className="here-section-header here-section-header--legends" style={{ marginTop: 20 }}>
+                    👑 Local legends
+                    <span className="here-legends-hook">People who know this city</span>
+                  </div>
+                  {legends.map(m => {
+                    const [c1, c2] = avatarColors(m.displayName)
+                    return (
+                      <div key={m.id} className="people-drawer-row people-drawer-row--tappable people-drawer-row--legend"
+                        onClick={() => openProfile(m.id, m.displayName)}
+                      >
+                        {m.avatarUrl
+                          ? <img className="online-avatar" src={m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                          : <span className="online-avatar online-avatar--legend" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                              {(m.displayName ?? '?')[0].toUpperCase()}
+                            </span>
+                        }
+                        <div className="people-drawer-content">
+                          <span className="people-drawer-name">{m.displayName}</span>
+                          <div className="people-drawer-meta">
+                            {(m.badges ?? []).map(k => (
+                              <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
+                            ))}
+                            {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {VIBE_META[m.vibe].label}</span>}
+                          </div>
+                          {m.ambassadorPicks && (() => {
+                            const first = m.ambassadorPicks.tip ?? m.ambassadorPicks.restaurant ?? m.ambassadorPicks.spot ?? m.ambassadorPicks.story
+                            return first ? <span className="legend-pick-preview">💡 {first}</span> : null
+                          })()}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </>
+              )}
+
+              {/* ── Section 3: City crew ── */}
               <div className="here-section-header" style={{ marginTop: 20 }}>
                 🏙️ City crew
               </div>

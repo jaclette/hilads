@@ -45,6 +45,11 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [saving, setSaving]       = useState(false)
   const [saved, setSaved]         = useState(false)
   const [error, setError]         = useState(null)
+  // Ambassador picks (only visible when account.isAmbassador)
+  const [pickRestaurant, setPickRestaurant] = useState(account.ambassadorPicks?.restaurant ?? '')
+  const [pickSpot, setPickSpot]             = useState(account.ambassadorPicks?.spot ?? '')
+  const [pickTip, setPickTip]               = useState(account.ambassadorPicks?.tip ?? '')
+  const [pickStory, setPickStory]           = useState(account.ambassadorPicks?.story ?? '')
   const fileRef = useRef(null)
 
   function toggleInterest(i) {
@@ -91,6 +96,12 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         interests:         [...interests],
         vibe,
         profile_photo_url: photoUrl,
+      }
+      if (account.isAmbassador) {
+        fields.ambassador_restaurant = pickRestaurant.trim() || null
+        fields.ambassador_spot       = pickSpot.trim() || null
+        fields.ambassador_tip        = pickTip.trim() || null
+        fields.ambassador_story      = pickStory.trim() || null
       }
       if (age !== '') {
         const n = parseInt(age, 10)
@@ -240,6 +251,34 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </div>
           </div>
         </div>
+
+        {account.isAmbassador && (
+          <div className="profile-card profile-fields">
+            <p className="me-section-label">City picks 👑</p>
+            <p style={{ fontSize: '0.8rem', color: 'var(--muted)', margin: '-4px 0 8px' }}>
+              Shown on your profile as a local legend.
+            </p>
+            {[
+              { key: 'restaurant', label: 'Favorite restaurant', emoji: '🍜', val: pickRestaurant, set: setPickRestaurant, maxLen: 200, placeholder: 'A place you always bring people to' },
+              { key: 'spot',       label: 'Hidden gem / spot',   emoji: '🗺️', val: pickSpot,       set: setPickSpot,       maxLen: 200, placeholder: 'Somewhere most tourists miss' },
+              { key: 'tip',        label: 'Local tip',           emoji: '💡', val: pickTip,        set: setPickTip,        maxLen: 300, placeholder: 'Best piece of advice for newcomers' },
+              { key: 'story',      label: 'City story',          emoji: '🎭', val: pickStory,      set: setPickStory,      maxLen: 400, placeholder: 'Something you love about this city' },
+            ].map(({ key, label, emoji, val, set, maxLen, placeholder }) => (
+              <div key={key} className="modal-field">
+                <label className="modal-label">{emoji} {label}</label>
+                <textarea
+                  className="modal-input"
+                  value={val}
+                  onChange={e => set(e.target.value)}
+                  maxLength={maxLen}
+                  placeholder={placeholder}
+                  rows={2}
+                  style={{ resize: 'none' }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         {error && <p className="profile-error">{error}</p>}
 

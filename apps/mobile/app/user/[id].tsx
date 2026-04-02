@@ -381,6 +381,29 @@ export default function PublicProfileScreen() {
             </View>
           )}
 
+          {/* ── Ambassador picks / City picks 👑 ── */}
+          {user.ambassadorPicks && Object.values(user.ambassadorPicks).some(v => v) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>City picks 👑</Text>
+              <View style={styles.picksCard}>
+                {[
+                  { key: 'restaurant', icon: '🍜', label: 'Favorite restaurant', val: user.ambassadorPicks.restaurant },
+                  { key: 'spot',       icon: '🗺️', label: 'Hidden gem',          val: user.ambassadorPicks.spot },
+                  { key: 'tip',        icon: '💡', label: 'Local tip',            val: user.ambassadorPicks.tip },
+                  { key: 'story',      icon: '🎭', label: 'City story',           val: user.ambassadorPicks.story },
+                ].filter(p => p.val).map(p => (
+                  <View key={p.key} style={styles.pickRow}>
+                    <Text style={styles.pickIcon}>{p.icon}</Text>
+                    <View style={styles.pickBody}>
+                      <Text style={styles.pickLabel}>{p.label}</Text>
+                      <Text style={styles.pickValue}>{p.val}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
           {/* ── Events going to (joined but not created) ── */}
           {goingEvents.length > 0 && (
             <View style={styles.section}>
@@ -797,6 +820,23 @@ const styles = StyleSheet.create({
     color:      Colors.violet,
     fontWeight: '600',
   },
+
+  // ── Ambassador picks ──────────────────────────────────────────────────────
+  picksCard: { gap: Spacing.xs },
+  pickRow: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 10,
+    backgroundColor: 'rgba(255,193,7,0.05)',
+    borderWidth: 1, borderColor: 'rgba(255,193,7,0.15)',
+    borderRadius: Radius.lg,
+    padding: Spacing.md,
+  },
+  pickIcon: { fontSize: FontSizes.lg, flexShrink: 0, marginTop: 1 },
+  pickBody: { flex: 1, gap: 2 },
+  pickLabel: {
+    fontSize: FontSizes.xs, fontWeight: '700', textTransform: 'uppercase',
+    letterSpacing: 0.5, color: Colors.muted,
+  },
+  pickValue: { fontSize: FontSizes.sm, color: Colors.text, fontWeight: '500' },
 
   // ── Event list ────────────────────────────────────────────────────────────
   eventList: { gap: Spacing.xs },

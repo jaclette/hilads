@@ -143,6 +143,16 @@ export async function fetchEvents(channelId, sessionId = null) {
   return res.json()
 }
 
+export async function fetchCityAmbassadors(channelId) {
+  try {
+    const res = await fetch(`${BASE}/channels/${channelId}/ambassadors`, { credentials: 'include' })
+    if (!res.ok) return { ambassadors: [] }
+    return res.json() // { ambassadors: UserDTO[] }
+  } catch {
+    return { ambassadors: [] }
+  }
+}
+
 export async function fetchCityMembers(channelId, { page = 1, limit = 10, badge = null, vibe = null } = {}) {
   const q = new URLSearchParams({ page, limit })
   if (badge) q.set('badge', badge)

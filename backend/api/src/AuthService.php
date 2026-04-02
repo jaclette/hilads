@@ -243,6 +243,25 @@ class AuthService
             $fields['vibe'] = $vibe;
         }
 
+        // ── Ambassador picks — editable only by ambassadors, but sanitised for all ──
+        // The UI only shows these fields to ambassadors, so non-ambassador writes are harmless.
+        $pickFields = [
+            'ambassador_restaurant' => 200,
+            'ambassador_spot'       => 200,
+            'ambassador_tip'        => 300,
+            'ambassador_story'      => 400,
+        ];
+        foreach ($pickFields as $key => $maxLen) {
+            if (array_key_exists($key, $body)) {
+                $val = $body[$key];
+                if ($val !== null) {
+                    $val = mb_substr(trim(strip_tags((string) $val)), 0, $maxLen);
+                    $val = $val === '' ? null : $val;
+                }
+                $fields[$key] = $val;
+            }
+        }
+
         return $fields;
     }
 
@@ -263,12 +282,31 @@ class AuthService
         ];
     }
 
-    /** Own profile — includes email and guest_id. Never includes password_hash or google_id. */
+    /** Own profile — includes email, guest_id, and ambassador state. Never includes password_hash or google_id. */
     public static function ownFields(array $user): array
     {
+        // Single lightweight query to check if the user has any ambassador role.
+        $stmt = Database::pdo()->prepare(
+            "SELECT 1 FROM user_city_roles WHERE user_id = ? AND role = 'ambassador' LIMIT 1"
+        );
+        $stmt->execute([$user['id']]);
+        $isAmbassador = (bool) $stmt->fetchColumn();
+
+        $picks = null;
+        if ($isAmbassador) {
+            $picks = array_filter([
+                'restaurant' => $user['ambassador_restaurant'] ?? null,
+                'spot'       => $user['ambassador_spot']       ?? null,
+                'tip'        => $user['ambassador_tip']        ?? null,
+                'story'      => $user['ambassador_story']      ?? null,
+            ], static fn($v) => $v !== null && $v !== '');
+        }
+
         return array_merge(self::publicFields($user), [
-            'email'    => $user['email'],
-            'guest_id' => $user['guest_id'] ?? null,
+            'email'           => $user['email'],
+            'guest_id'        => $user['guest_id']  ?? null,
+            'isAmbassador'    => $isAmbassador,
+            'ambassadorPicks' => $isAmbassador ? (object) $picks : null,
         ]);
     }
 

@@ -17,7 +17,7 @@ import { useRouter } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchCityMembers, type CityMember } from '@/api/channels';
+import { fetchCityMembers, fetchCityAmbassadors, type CityMember, type CityAmbassador } from '@/api/channels';
 import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
@@ -158,6 +158,8 @@ export default function HereScreen() {
   const [filterBadge, setFilterBadge] = useState<string | null>(null);
   const [filterVibe,  setFilterVibe]  = useState<string | null>(null);
 
+  const [legends,      setLegends]      = useState<CityAmbassador[]>([]);
+
   const [crewMembers,  setCrewMembers]  = useState<CityMember[]>([]);
   const [crewPage,     setCrewPage]     = useState(1);
   const [crewHasMore,  setCrewHasMore]  = useState(false);
@@ -193,6 +195,12 @@ export default function HereScreen() {
   useEffect(() => {
     loadCrew(1, true);
   }, [loadCrew]);
+
+  // Fetch local legends (ambassadors) when city changes
+  useEffect(() => {
+    if (!city?.channelId) return;
+    fetchCityAmbassadors(city.channelId).then(setLegends).catch(() => {});
+  }, [city?.channelId]);
 
   // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
   // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from the array.
@@ -318,7 +326,53 @@ export default function HereScreen() {
           );
         })}
 
-        {/* ── Section 2: City crew ── */}
+        {/* ── Section 2: Local legends ── */}
+        {legends.length > 0 && (
+          <>
+            <View style={[styles.sectionHeader, { marginTop: Spacing.xl, flexDirection: 'column', alignItems: 'flex-start', gap: 2 }]}>
+              <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: Colors.text }]}>
+                👑 Local legends
+              </Text>
+              <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>People who know this city</Text>
+            </View>
+            {legends.map(m => {
+              const initials = (m.displayName ?? '?').slice(0, 2).toUpperCase();
+              const color    = avatarColor(m.displayName ?? '');
+              const firstPick = m.ambassadorPicks?.tip ?? m.ambassadorPicks?.restaurant ?? m.ambassadorPicks?.spot ?? m.ambassadorPicks?.story;
+              return (
+                <TouchableOpacity
+                  key={m.id}
+                  style={[styles.row, styles.legendRow]}
+                  onPress={() => {
+                    if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+                    router.push({ pathname: '/user/[id]', params: { id: m.id, name: m.displayName } });
+                  }}
+                  activeOpacity={0.7}
+                >
+                  {m.avatarUrl ? (
+                    <Image source={{ uri: m.avatarUrl }} style={[styles.avatar, styles.legendAvatar]} />
+                  ) : (
+                    <View style={[styles.avatar, styles.legendAvatar, { backgroundColor: color + '28', borderColor: 'rgba(255,193,7,0.35)' }]}>
+                      <Text style={[styles.avatarText, { color }]}>{initials}</Text>
+                    </View>
+                  )}
+                  <View style={styles.rowInfo}>
+                    <Text style={styles.nickname}>{m.displayName}</Text>
+                    <View style={styles.badgeRow}>
+                      {m.badges.map(k => <BadgePill key={k} badgeKey={k} />)}
+                      <VibePill vibe={m.vibe} />
+                    </View>
+                    {firstPick ? (
+                      <Text style={styles.legendPickPreview} numberOfLines={1}>💡 {firstPick}</Text>
+                    ) : null}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </>
+        )}
+
+        {/* ── Section 3: City crew ── */}
         <View style={[styles.sectionHeader, { marginTop: Spacing.xl }]}>
           <Text style={styles.sectionTitle}>🏙️ City crew</Text>
         </View>
@@ -459,6 +513,20 @@ const styles = StyleSheet.create({
     width: 40, height: 40, borderRadius: 12,
     backgroundColor: '#1A1A1A', borderWidth: 1, borderColor: '#2A2A2A',
     alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+  },
+
+  // ── Legend row ────────────────────────────────────────────────────────────
+  legendRow: {
+    borderColor: 'rgba(255,193,7,0.18)',
+    backgroundColor: 'rgba(255,193,7,0.04)',
+  },
+  legendAvatar: {
+    borderColor: 'rgba(255,193,7,0.35)',
+  },
+  legendPickPreview: {
+    fontSize: FontSizes.xs,
+    color: Colors.muted,
+    marginTop: 2,
   },
 
   // ── Load more ─────────────────────────────────────────────────────────────

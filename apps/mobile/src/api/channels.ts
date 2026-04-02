@@ -110,6 +110,24 @@ export async function fetchCityMembers(
   return api.get<CityMembersResult>(`/channels/${channelId}/members?${q}`);
 }
 
+export interface CityAmbassador extends UserDTO {
+  ambassadorPicks?: {
+    restaurant?: string;
+    spot?: string;
+    tip?: string;
+    story?: string;
+  };
+}
+
+export async function fetchCityAmbassadors(channelId: string): Promise<CityAmbassador[]> {
+  try {
+    const data = await api.get<{ ambassadors: CityAmbassador[] }>(`/channels/${channelId}/ambassadors`);
+    return data.ambassadors ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchMessages(channelId: string): Promise<Message[]> {
   const data = await api.get<{ messages: Message[] }>(`/channels/${channelId}/messages`);
   return data.messages ?? [];

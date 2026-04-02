@@ -261,6 +261,49 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </div>
             )}
 
+            {/* ── Ambassador city picks ── */}
+            {user.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0 && (
+              <div className="pub-profile-picks">
+                <p className="pub-profile-section-label">City picks 👑</p>
+                {user.ambassadorPicks.restaurant && (
+                  <div className="pub-profile-pick-row">
+                    <span className="pub-profile-pick-icon">🍜</span>
+                    <div className="pub-profile-pick-body">
+                      <span className="pub-profile-pick-label">Favorite restaurant</span>
+                      <span className="pub-profile-pick-value">{user.ambassadorPicks.restaurant}</span>
+                    </div>
+                  </div>
+                )}
+                {user.ambassadorPicks.spot && (
+                  <div className="pub-profile-pick-row">
+                    <span className="pub-profile-pick-icon">🗺️</span>
+                    <div className="pub-profile-pick-body">
+                      <span className="pub-profile-pick-label">Best spot</span>
+                      <span className="pub-profile-pick-value">{user.ambassadorPicks.spot}</span>
+                    </div>
+                  </div>
+                )}
+                {user.ambassadorPicks.tip && (
+                  <div className="pub-profile-pick-row">
+                    <span className="pub-profile-pick-icon">💡</span>
+                    <div className="pub-profile-pick-body">
+                      <span className="pub-profile-pick-label">Pro tip</span>
+                      <span className="pub-profile-pick-value">{user.ambassadorPicks.tip}</span>
+                    </div>
+                  </div>
+                )}
+                {user.ambassadorPicks.story && (
+                  <div className="pub-profile-pick-row">
+                    <span className="pub-profile-pick-icon">🎭</span>
+                    <div className="pub-profile-pick-body">
+                      <span className="pub-profile-pick-label">Story</span>
+                      <span className="pub-profile-pick-value">{user.ambassadorPicks.story}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ── Events ── */}
             {events.length > 0 && (
               <div className="pub-profile-events">

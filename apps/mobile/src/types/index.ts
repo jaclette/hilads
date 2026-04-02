@@ -90,6 +90,12 @@ export interface PublicProfile extends UserDTO {
   interests?: string[];
   vibeScore?: number | null;
   vibeCount?: number;
+  ambassadorPicks?: {
+    restaurant?: string;
+    spot?:       string;
+    tip?:        string;
+    story?:      string;
+  } | null;
 }
 
 // ── Event participants ────────────────────────────────────────────────────────

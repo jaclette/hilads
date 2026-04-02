@@ -2231,6 +2231,43 @@ html, body, #root {
   margin-bottom: 10px;
 }
 
+.here-section-header--legends {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.here-legends-hook {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--muted);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.people-drawer-row--legend {
+  border-color: rgba(255, 193, 7, 0.18);
+  background: rgba(255, 193, 7, 0.04);
+}
+
+.online-avatar--legend {
+  border: 1.5px solid rgba(255, 193, 7, 0.35) !important;
+}
+
+.legend-pick-preview {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
 .here-section-dot {
   width: 7px;
   height: 7px;
@@ -2490,6 +2527,51 @@ html, body, #root {
   padding: 2px 5px;
   letter-spacing: 0.06em;
   flex-shrink: 0;
+}
+
+.pub-profile-picks {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pub-profile-pick-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255, 193, 7, 0.05);
+  border: 1px solid rgba(255, 193, 7, 0.15);
+  border-radius: 12px;
+}
+
+.pub-profile-pick-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.pub-profile-pick-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pub-profile-pick-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.pub-profile-pick-value {
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 500;
 }
 
 .pub-profile-cta {

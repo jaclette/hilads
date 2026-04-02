@@ -554,16 +554,28 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     $vibeScore = VibeRepository::scoreForUser($user['id']);
 
     // Base canonical DTO + public profile extensions
+    $ambassadorPicks = null;
+    $ambassadorPicksRaw = array_filter([
+        'restaurant' => $user['ambassador_restaurant'] ?? null,
+        'spot'       => $user['ambassador_spot']       ?? null,
+        'tip'        => $user['ambassador_tip']        ?? null,
+        'story'      => $user['ambassador_story']      ?? null,
+    ], static fn($v) => $v !== null && $v !== '');
+    if (!empty($ambassadorPicksRaw)) {
+        $ambassadorPicks = $ambassadorPicksRaw;
+    }
+
     $dto = array_merge(
         UserResource::fromUser($user, [], ['isFriend' => $isFriend]),
         [
-            'age'       => isset($user['birth_year']) && $user['birth_year'] !== null
-                            ? (int) date('Y') - (int) $user['birth_year']
-                            : null,
-            'homeCity'  => $user['home_city'] ?? null,
-            'interests' => json_decode($user['interests'] ?? '[]', true),
-            'vibeScore' => $vibeScore['score'],
-            'vibeCount' => $vibeScore['count'],
+            'age'             => isset($user['birth_year']) && $user['birth_year'] !== null
+                                  ? (int) date('Y') - (int) $user['birth_year']
+                                  : null,
+            'homeCity'        => $user['home_city'] ?? null,
+            'interests'       => json_decode($user['interests'] ?? '[]', true),
+            'vibeScore'       => $vibeScore['score'],
+            'vibeCount'       => $vibeScore['count'],
+            'ambassadorPicks' => $ambassadorPicks,
         ],
     );
 
@@ -1377,6 +1389,55 @@ $router->add('POST', '/api/v1/uploads', function () {
     }
 
     Response::json(['url' => $url], 201);
+});
+
+// ── Local legends — city ambassadors with their picks ────────────────────────
+// GET /api/v1/channels/{channelId}/ambassadors
+// Public endpoint. Returns up to 10 ambassadors for this city, most recently
+// active first. Each DTO includes ambassadorPicks when the ambassador has set them.
+$router->add('GET', '/api/v1/channels/{channelId}/ambassadors', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+        return;
+    }
+
+    $channelKey = 'city_' . $channelId;
+    $pdo        = Database::pdo();
+
+    $stmt = $pdo->prepare("
+        SELECT u.*,
+               COALESCE(EXTRACT(EPOCH FROM m.last_seen_at)::INTEGER, u.created_at) AS sort_at
+        FROM user_city_roles r
+        JOIN  users u ON u.id = r.user_id
+        LEFT  JOIN user_city_memberships m
+               ON m.user_id = u.id AND m.channel_id = :channel_key
+        WHERE r.city_id = :channel_key2 AND r.role = 'ambassador'
+        ORDER BY sort_at DESC
+        LIMIT 10
+    ");
+    $stmt->execute([':channel_key' => $channelKey, ':channel_key2' => $channelKey]);
+    $rows = $stmt->fetchAll();
+
+    $ambassadors = array_map(static function (array $u): array {
+        $primary = UserBadgeService::primaryForUser($u);
+        $dto     = UserResource::fromUser($u, [$primary['key'], 'host']);
+
+        $picks = array_filter([
+            'restaurant' => $u['ambassador_restaurant'] ?? null,
+            'spot'       => $u['ambassador_spot']       ?? null,
+            'tip'        => $u['ambassador_tip']        ?? null,
+            'story'      => $u['ambassador_story']      ?? null,
+        ], static fn($v) => $v !== null && $v !== '');
+
+        if (!empty($picks)) {
+            $dto['ambassadorPicks'] = $picks;
+        }
+
+        return $dto;
+    }, $rows);
+
+    Response::json(['ambassadors' => $ambassadors]);
 });
 
 // ── City crew — registered users associated with this city ────────────────────
