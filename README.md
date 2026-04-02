@@ -9,21 +9,21 @@ Hilads is a real-time social app. Join a city, see who's online, chat, discover 
 ## What it does
 
 - **City chat** — public real-time chat, one channel per city
-- **Hot screen** — active events in your city (one-shot + recurring venues)
+- **Hot screen** — active events (one-shot + recurring venues + public Ticketmaster events)
 - **Events** — create, join, edit, and delete events; every event has its own real-time chat
-- **Event participants** — see who's joining each event; participant list inside the event screen
-- **Presence** — who's online right now, live join/leave feed
+- **Event participants** — see who's going; tappable participant list inside each event
+- **Presence** — live online users, join/leave feed
 - **Here screen** — browse online users, view profiles, add friends
-- **Ghost mode** — instant access with a persistent ghost identity, no sign-up
+- **Ghost mode** — instant access with a persistent identity, no sign-up
 - **Profiles** — badge, vibe score, friends list, vibes received
 - **Vibe system** — leave a 1–5 star vibe + message on any user's profile
-- **Badge system** — Fresh / Regular — evolves automatically over time
-- **Friends** — add friends from profiles, view friend lists
+- **Badge system** — 🌱 Fresh / ⭐ Regular — evolves automatically over time
+- **Friends** — add from profiles, view friend lists
 - **Direct messages** — 1:1 private chat for registered users
-- **Notifications** — in-app bell + web push + native push (DMs, events, friends, vibes, profile views)
-- **Analytics** — PostHog cross-platform event tracking (web + mobile + backend)
-- **Error monitoring** — Sentry across web, backend, and native app
-- **Native app** — iOS + Android via Expo
+- **Notifications** — in-app bell + web push + native push (Android working, iOS in progress)
+- **Notification preferences** — per-type toggles
+- **Analytics** — PostHog cross-platform (web + mobile + backend)
+- **Error monitoring** — Sentry across web, backend, and native
 
 ---
 
@@ -34,94 +34,11 @@ Open app
   → geolocation resolves your city (or pick manually)
   → see city chat, online users, active events
   → jump in — no account needed (Ghost mode)
-  → register to unlock profile, DMs, friends, and vibes
+  → register to unlock profile, DMs, friends, vibes, and notifications
 ```
 
 **Ghost session:** instant access, persistent 32-char guestId, nickname chosen on entry.
-**Registered account:** full profile, DMs, vibe system, friends, notifications.
-
----
-
-## Identity
-
-### Ghost users
-
-Ghost users get a persistent `guestId` (32-char hex) stored in `localStorage` (web) and `SecureStore` (native). This ID is reused across sessions — not regenerated on every load — so historical feed messages are correctly attributed even after registration.
-
-Ghost profiles show a generated avatar, nickname, and 👻 Ghost badge. No API call required.
-
-### Registered users
-
-Email + password or Google OAuth. Full profile with display name, photo, badge, vibe score, and friends.
-
----
-
-## Badge System
-
-Badges evolve automatically based on account age:
-
-| Badge | Condition |
-|---|---|
-| 🌱 Fresh | Account < 2 months old |
-| ⭐ Regular | Account ≥ 2 months old |
-
-No action required — computed at display time from `users.created_at`.
-
----
-
-## Vibe System
-
-Any registered user can leave a **vibe** (rating + optional message) on another user's profile.
-
-- Rating: 1–5 stars
-- One vibe per user pair — updatable, updates are silent (no repeated notifications)
-- Profile shows: vibe score (e.g. 4.8 ⭐), count, and list of vibes received
-- Receiving a new vibe triggers an in-app + push notification → deep-links to own profile
-
----
-
-## Events
-
-Two types co-exist in the Hot screen:
-
-**One-shot** — created by any user (ghost or registered), custom title/time, own chat, auto-expire.
-
-**Recurring** — seeded curated venues (bars, cafés) per city, daily/weekly schedule, "↻ Every day" badge.
-
-Event creators can edit and delete their events. Creator UX: "👑 Your event" badge + Edit CTA.
-
----
-
-## Notifications
-
-Delivered in-app (bell in channel header) and as push (web VAPID + native Expo).
-
-| Type | Trigger |
-|---|---|
-| `dm_message` | New direct message |
-| `event_message` | Message in an event you joined |
-| `event_join` | Someone joined your event |
-| `new_event` | New event while you're online |
-| `friend_added` | Someone added you as friend |
-| `vibe_received` | Someone left a vibe on your profile |
-| `profile_view` | Someone viewed your profile |
-
-Tapping a `vibe_received` notification deep-links to **your own profile** so you can immediately see the new vibe.
-
-Per-user preference toggles for each type. Anti-noise cooldowns on high-frequency types.
-
----
-
-## Screens
-
-| Screen | Description |
-|---|---|
-| Hot | Events happening now or today |
-| Cities | Switch city, ranked by live activity |
-| Here | Online users in the city |
-| Me | Profile, My Events, friends list (registered) |
-| Messages | DMs + event chats (registered) |
-| Notifications | In-app feed + preferences (registered) |
+**Registered account:** full profile, DMs, vibe system, friends, push notifications.
 
 ---
 
@@ -143,43 +60,25 @@ infra/          Infrastructure notes
 render.yaml     Render service definitions
 ```
 
-**Backend** — intentionally thin: router → repositories → PDO → PostgreSQL. No framework, no ORM.
+**Backend** — thin by design: router → repositories → PDO → PostgreSQL. No framework, no ORM.
 
-**WebSocket server** — handles presence snapshots (join/leave) and real-time message push. PHP broadcasts via internal HTTP.
+**WebSocket server** — handles presence snapshots and real-time message push. PHP broadcasts via internal HTTP call.
 
-**Schema migrations** — applied idempotently inside `Database::pdo()` on first connection. No migration runner required.
+**Push notifications** — web push (VAPID) + native push via Expo Push API (`https://exp.host/--/api/v2/push/send`). Token registration at `POST /api/v1/push/mobile-token`.
 
-**Message retention** — daily cleanup job purges city chat (> today), event chat (event expired + 1h), DMs (> 7 days).
+**Schema migrations** — applied idempotently inside `Database::pdo()` on first connection. No migration runner.
 
----
-
-## Key API Endpoints
-
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/api/v1/guest/session` | Create a ghost session (guestId + nickname) |
-| `GET` | `/api/v1/channels/{id}/messages` | Fetch city chat messages |
-| `POST` | `/api/v1/channels/{id}/messages` | Send a message |
-| `POST` | `/api/v1/channels/{id}/join` | Join a city channel (emits feed bubble) |
-| `GET` | `/api/v1/channels/{id}/events` | List events for a city |
-| `POST` | `/api/v1/events` | Create an event |
-| `GET` | `/api/v1/events/{id}/messages` | Fetch event chat |
-| `POST` | `/api/v1/events/{id}/messages` | Send event chat message |
-| `GET` | `/api/v1/users/{id}` | Get a user's public profile |
-| `GET` | `/api/v1/users/{id}/vibes` | List vibes for a user + score |
-| `POST` | `/api/v1/users/{id}/vibes` | Leave a vibe (auth required) |
-| `GET` | `/api/v1/friends` | Current user's friends list |
-| `POST` | `/api/v1/friends/{id}` | Add a friend |
-| `GET` | `/api/v1/notifications` | List in-app notifications |
-| `POST` | `/api/v1/notifications/mark-read` | Mark notifications read |
-| `GET` | `/api/v1/notification-preferences` | Get push preferences |
-| `PUT` | `/api/v1/notification-preferences` | Update push preferences |
-| `POST` | `/api/v1/push/subscribe` | Register web push subscription |
-| `POST` | `/api/v1/push/mobile-token` | Register Expo push token |
+**Message retention** — daily cron purges city chat (> today), event chat (expired + 1h), DMs (> 7 days).
 
 ---
 
 ## Running Locally
+
+### Prerequisites
+
+- PHP 8.2 + Docker
+- Node.js 18+
+- PostgreSQL (or use DATABASE_URL pointing to a remote instance)
 
 ### Backend API
 
@@ -192,13 +91,15 @@ docker build -t hilads-api .
 docker run -p 8080:80 --env-file .env hilads-api
 ```
 
+API available at `http://localhost:8080`.
+
 ### WebSocket server
 
 ```bash
 cd backend/ws
 npm install
 node server.js
-# WS on :8081 (public), HTTP on :8082 (internal PHP broadcasts)
+# WS on :8081 (public connections), HTTP on :8082 (PHP broadcast calls)
 ```
 
 ### Web frontend
@@ -206,116 +107,145 @@ node server.js
 ```bash
 cd apps/web
 npm install
-cp .env.example .env
-# set VITE_API_URL, VITE_WS_URL
+cp .env.example .env.local
+# set VITE_API_URL=http://localhost:8080
+# set VITE_WS_URL=ws://localhost:8081
 
 npm run dev
 # http://localhost:5173
 ```
 
-### Native app
+### Native app (Expo)
 
 ```bash
 cd apps/mobile
 npm install
-cp .env.example .env
-# set EXPO_PUBLIC_API_URL (LAN IP, not localhost)
-# set EXPO_PUBLIC_WS_URL
+cp .env.example .env.local
+# set EXPO_PUBLIC_API_URL=http://192.168.x.x:8080  ← use LAN IP, not localhost
+# set EXPO_PUBLIC_WS_URL=ws://192.168.x.x:8081
 
-npm run dev        # Expo Go — fastest for dev
-npm run android    # Android emulator / device
+npm run dev        # Expo Go — fastest for iteration
+npm run android    # Android emulator or device
 npm run ios        # iOS simulator (Mac only)
 ```
 
-> Use your machine's LAN IP (`192.168.x.x`) for the native env vars — the device/emulator cannot reach `localhost`.
+> The device/emulator cannot reach `localhost`. Use your machine's LAN IP for `EXPO_PUBLIC_API_URL` and `EXPO_PUBLIC_WS_URL`.
+
+Push notifications require a physical device and an EAS build (see below).
+
+---
+
+## Mobile — Production Build (EAS)
+
+```bash
+npm install -g eas-cli
+eas login
+
+# Android APK (for testing, no store signing)
+eas build --platform android --profile preview
+
+# Android production (signed, for Play Store)
+eas build --platform android --profile production
+
+# iOS (requires Apple Developer account)
+eas build --platform ios --profile production
+```
+
+Build profiles are defined in `apps/mobile/eas.json`.
+
+After a successful build, download the APK/IPA from [expo.dev](https://expo.dev) or install directly via EAS.
 
 ---
 
 ## Environment Variables
 
-### Backend API (`.env`)
+### Backend API (`backend/api/.env`)
 
 | Variable | Description |
 |---|---|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `R2_ACCOUNT_ID` | Cloudflare R2 account |
+| `R2_ACCOUNT_ID` | Cloudflare R2 account ID |
 | `R2_ACCESS_KEY_ID` | R2 access key |
 | `R2_SECRET_ACCESS_KEY` | R2 secret |
 | `R2_BUCKET` | R2 bucket name |
 | `R2_PUBLIC_URL` | Public base URL for uploaded files |
-| `WS_INTERNAL_URL` | Internal URL of the WS server |
+| `WS_INTERNAL_URL` | Internal URL of the WS server (e.g. `http://ws:8082`) |
 | `WS_INTERNAL_TOKEN` | Auth token for WS internal broadcast endpoint |
-| `MIGRATION_KEY` | Secret key for internal admin endpoints |
+| `WS_ALLOWED_ORIGINS` | Comma-separated CORS origins for WS (e.g. `https://hilads.live`) |
+| `MIGRATION_KEY` | Secret for `/internal/*` endpoints |
 | `POSTHOG_API_KEY` | PostHog project API key (server-side capture) |
-| `POSTHOG_HOST` | PostHog ingest host (e.g. `https://eu.i.posthog.com`) |
-| `SENTRY_DSN` | Sentry DSN for `hilads-backend` project |
-| `APP_ENV` | Environment name (`production` / `staging` / `development`) |
+| `POSTHOG_HOST` | PostHog ingest host |
+| `SENTRY_DSN` | Sentry DSN for `hilads-backend` |
+| `APP_ENV` | `production` / `staging` / `development` |
 | `VAPID_PUBLIC_KEY` | VAPID public key for web push |
 | `VAPID_PRIVATE_KEY` | VAPID private key for web push |
-| `VAPID_SUBJECT` | VAPID subject — `mailto:` or HTTPS URL |
+| `VAPID_SUBJECT` | `mailto:` address or HTTPS URL |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret |
 | `ADMIN_USERNAME` | Admin backoffice username |
 | `ADMIN_PASSWORD` | Admin backoffice password |
 
-Generate VAPID keys: `php backend/api/scripts/generate-vapid-keys.php`
+Generate VAPID keys:
+```bash
+php backend/api/scripts/generate-vapid-keys.php
+```
 
-### Web frontend (`.env`)
+### Web frontend (`apps/web/.env.local`)
 
 | Variable | Description |
 |---|---|
 | `VITE_API_URL` | Backend API base URL |
 | `VITE_WS_URL` | WebSocket server URL |
-| `VITE_SENTRY_DSN` | Sentry DSN for `hilads-web` project |
+| `VITE_SENTRY_DSN` | Sentry DSN for `hilads-web` |
 
-### Native app (`.env`)
+### Native app (`apps/mobile/.env.local`)
 
 | Variable | Description |
 |---|---|
 | `EXPO_PUBLIC_API_URL` | Backend API base URL (no trailing slash) |
 | `EXPO_PUBLIC_WS_URL` | WebSocket server URL |
-| `EXPO_PUBLIC_SENTRY_DSN` | Sentry DSN for `hilads-mobile` project |
+| `EXPO_PUBLIC_SENTRY_DSN` | Sentry DSN for `hilads-mobile` |
+
+EAS build env vars are defined in `apps/mobile/eas.json` under each profile's `env` block.
 
 ---
 
-## Deployment
+## Key API Endpoints
 
-| Service | Platform | Notes |
+| Method | Path | Description |
 |---|---|---|
-| PHP API | Render (Docker) | `render.yaml` — auto-deploy on push |
-| WebSocket | Render (Node) | `render.yaml` — persistent WS connection |
-| Web frontend | Vercel | `apps/web` — auto-deploy on push |
-| Native builds | EAS (Expo) | `eas build --platform android/ios` |
-
----
-
-## Analytics
-
-PostHog tracks cross-platform behaviour. Every event includes a `platform` property.
-
-- **Web:** `posthog-js` initialized in `apps/web/src/main.jsx`, wrapped via `apps/web/src/lib/analytics.js`
-- **Mobile:** `posthog-react-native` singleton in `apps/mobile/src/services/analytics.ts` (disabled in `__DEV__`)
-- **Backend:** server-side HTTP capture in `backend/api/src/AnalyticsService.php` (fire-and-forget curl)
-
----
-
-## Error Monitoring (Sentry)
-
-Three separate Sentry projects, one per platform:
-
-| Project | Init location | DSN env var |
-|---|---|---|
-| `hilads-web` | `apps/web/src/main.jsx` | `VITE_SENTRY_DSN` |
-| `hilads-backend` | `backend/api/public/index.php` | `SENTRY_DSN` |
-| `hilads-mobile` | `apps/mobile/app/_layout.tsx` | `EXPO_PUBLIC_SENTRY_DSN` |
-
-All DSNs are env-var only — never hardcoded. Sentry is skipped if the DSN is not set (safe for local dev).
+| `POST` | `/api/v1/guest/session` | Create a ghost session |
+| `POST` | `/api/v1/auth/login` | Registered user login |
+| `POST` | `/api/v1/auth/register` | Register account |
+| `GET` | `/api/v1/auth/me` | Current session info |
+| `GET` | `/api/v1/channels/{id}/messages` | Fetch city chat messages |
+| `POST` | `/api/v1/channels/{id}/messages` | Send a message |
+| `POST` | `/api/v1/channels/{id}/join` | Join a city channel |
+| `GET` | `/api/v1/channels/{id}/events` | List events for a city |
+| `POST` | `/api/v1/events` | Create an event |
+| `GET` | `/api/v1/events/{id}/messages` | Fetch event chat |
+| `POST` | `/api/v1/events/{id}/messages` | Send event chat message |
+| `GET` | `/api/v1/events/{id}/participants` | List event participants |
+| `POST` | `/api/v1/events/{id}/join` | Join an event |
+| `GET` | `/api/v1/users/{id}` | Get a user's public profile |
+| `GET` | `/api/v1/users/{id}/vibes` | List vibes for a user |
+| `POST` | `/api/v1/users/{id}/vibes` | Leave a vibe |
+| `GET` | `/api/v1/friends` | Current user's friends list |
+| `POST` | `/api/v1/friends/{id}` | Add a friend |
+| `GET` | `/api/v1/notifications` | In-app notification feed |
+| `POST` | `/api/v1/notifications/mark-read` | Mark notifications read |
+| `GET` | `/api/v1/notification-preferences` | Get push preferences |
+| `PUT` | `/api/v1/notification-preferences` | Update push preferences |
+| `POST` | `/api/v1/push/subscribe` | Register web push subscription |
+| `POST` | `/api/v1/push/mobile-token` | Register Expo push token (Android/iOS) |
+| `DELETE` | `/api/v1/push/mobile-token` | Unregister push token on logout |
 
 ---
 
 ## Internal Endpoints
 
-All `/internal/*` routes require `?key=YOUR_MIGRATION_KEY` (or `X-Api-Key` header). Returns `404` if `MIGRATION_KEY` is not configured, `403` on wrong key.
+All `/internal/*` routes require `?key=YOUR_MIGRATION_KEY` or `X-Api-Key` header.
+Returns `404` if `MIGRATION_KEY` is not configured, `403` on wrong key.
 
 | Method | Path | Description |
 |---|---|---|
@@ -323,7 +253,6 @@ All `/internal/*` routes require `?key=YOUR_MIGRATION_KEY` (or `X-Api-Key` heade
 | `POST` | `/internal/cleanup` | Purge stale messages + expired channels |
 | `POST` | `/internal/event-series/generate` | Generate recurring event occurrences |
 | `POST` | `/internal/seed-static-venues` | Import venue seed (`{"dryRun": true/false}`) |
-| `GET` | `/internal/sentry-test` | Trigger a test Sentry error (temporary — remove after validation) |
 
 ---
 
@@ -331,12 +260,12 @@ All `/internal/*` routes require `?key=YOUR_MIGRATION_KEY` (or `X-Api-Key` heade
 
 Two daily jobs, both protected by `MIGRATION_KEY`:
 
-**Generate recurring event occurrences** (2:00 AM UTC)
+**Generate recurring event occurrences** — 2:00 AM UTC
 ```
 POST /internal/event-series/generate?key=YOUR_KEY
 ```
 
-**Cleanup stale messages + expired channels** (3:00 AM UTC)
+**Cleanup stale messages + expired channels** — 3:00 AM UTC
 ```
 POST /internal/cleanup?key=YOUR_KEY
 ```
@@ -347,21 +276,44 @@ Set up as Render Cron Jobs or via [cron-job.org](https://cron-job.org).
 
 ## Seeding Recurring Venues
 
-Hilads bootstraps cities with recurring events so the Hot screen is never empty on launch. The venue list lives in `backend/api/src/venues_seed.php`.
+Bootstraps cities with recurring events so the Hot screen is never empty on launch.
 
 ```bash
 # Dry run first
-curl -X POST "https://your-api.onrender.com/internal/seed-static-venues" \
+curl -X POST "https://api.hilads.live/internal/seed-static-venues" \
   -H "X-Api-Key: YOUR_MIGRATION_KEY" \
   -d '{"dryRun": true}'
 
 # Real import
-curl -X POST "https://your-api.onrender.com/internal/seed-static-venues" \
+curl -X POST "https://api.hilads.live/internal/seed-static-venues" \
   -H "X-Api-Key: YOUR_MIGRATION_KEY" \
   -d '{"dryRun": false}'
 
 # Then generate today's occurrences
-POST /internal/event-series/generate?key=YOUR_MIGRATION_KEY
+curl -X POST "https://api.hilads.live/internal/event-series/generate?key=YOUR_KEY"
+```
+
+Venue list: `backend/api/src/venues_seed.php`.
+
+---
+
+## Deployment
+
+| Service | Platform | Config |
+|---|---|---|
+| PHP API | Render (Docker) | `render.yaml` — auto-deploy on push to main |
+| WebSocket | Render (Node) | `render.yaml` — persistent connections |
+| Web frontend | Vercel | `apps/web` — auto-deploy on push to main |
+| Native builds | EAS (Expo) | `eas build --platform android/ios` |
+
+Production URLs:
+- API: `https://api.hilads.live`
+- WebSocket: `wss://ws.hilads.live`
+- Web: `https://hilads.live`
+
+After deploying the API, always run migrations:
+```
+POST /internal/run-migrations?key=YOUR_KEY
 ```
 
 ---
@@ -382,40 +334,95 @@ Auth: env-var credentials (`ADMIN_USERNAME` + `ADMIN_PASSWORD`), PHP session, CS
 
 ---
 
-## Native App (Expo)
+## Native App Structure
 
 ```
 apps/mobile/
   app/
-    _layout.tsx         Root layout + boot sequence
+    _layout.tsx           Root layout + boot sequence + push registration
     (tabs)/
-      hot.tsx           Events happening now
-      cities.tsx        City list + switcher
-      here.tsx          Online users in city
-      messages.tsx      DMs + event chats
-      me.tsx            Profile, My Events, friends
-    notifications.tsx   In-app notifications + preferences
-    user/
-      [id].tsx          Public profile screen
-      guest.tsx         Ghost profile screen
-    event/[id].tsx      Event chat screen
-    dm/[id].tsx         Direct message screen
+      hot.tsx             Events happening now
+      cities.tsx          City list + switcher
+      here.tsx            Online users in city
+      messages.tsx        DMs + event chats
+      me.tsx              Profile, My Events, friends
+    notifications.tsx     In-app notifications + preferences
+    user/[id].tsx         Public profile screen
+    user/guest.tsx        Ghost profile screen
+    event/[id].tsx        Event chat screen
+    dm/[id].tsx           Direct message screen
   src/
-    api/                REST API client (typed)
-    lib/                identity, socket, push
-    context/            AppContext (global state)
-    hooks/              useAppBoot, usePushRegistration
-    features/           notifications/NotificationHandler
-    types/index.ts      Shared TypeScript types
-    constants.ts        Colors, tokens
+    api/                  REST API client (typed)
+    services/             push.ts — token registration, channel setup
+    context/              AppContext (global state)
+    hooks/                useAppBoot, usePushRegistration
+    features/             notifications/NotificationHandler (foreground + deep-link)
+    types/index.ts        Shared TypeScript types
+    constants.ts          Colors, tokens
 ```
 
-**Production build:**
-```bash
-npm install -g eas-cli
-eas login
-eas build --platform android --profile preview
-```
+---
+
+## Analytics
+
+PostHog tracks cross-platform behaviour. Every event includes a `platform` property.
+
+- **Web:** `posthog-js` in `apps/web/src/main.jsx`
+- **Mobile:** `posthog-react-native` in `apps/mobile/src/services/analytics.ts` (disabled in `__DEV__`)
+- **Backend:** server-side HTTP capture in `AnalyticsService.php` (fire-and-forget)
+
+---
+
+## Error Monitoring
+
+| Project | DSN env var |
+|---|---|
+| `hilads-web` | `VITE_SENTRY_DSN` |
+| `hilads-backend` | `SENTRY_DSN` |
+| `hilads-mobile` | `EXPO_PUBLIC_SENTRY_DSN` |
+
+Sentry is skipped if the DSN is not set — safe for local dev.
+
+---
+
+## Known Issues
+
+| Area | Issue |
+|---|---|
+| Performance | Several endpoints respond in 2–4s |
+| Mobile | UI inconsistencies vs web on several screens |
+| Mobile | Input field partially hidden by bottom tab bar on some screens |
+| Mobile iOS | Push notifications not fully tested |
+| My Events | Recurring events appear as duplicates |
+| City chat | Occasionally loads at top instead of latest message |
+| Profile | Duplicate API calls on screen load |
+
+---
+
+## Next Steps
+
+**Performance**
+- Eliminate duplicate API calls on the profile screen
+- Target < 300ms p95 on all feed endpoints
+- Add missing DB indexes on participant counts and message feeds
+
+**iOS Push Notifications**
+- Validate end-to-end on TestFlight (EAS production build)
+- Verify APNs environment entitlement matches build type
+- Do not hardcode `aps-environment` in `app.json` — let EAS manage it
+
+**UX Consistency**
+- Audit all screens: Hot, Event, Profile, DM, Notifications
+- Fix input field overlap with bottom bar
+- Align visual hierarchy and spacing between web and mobile
+- Ensure city chat opens at the latest message on all platforms
+
+**Growth — First 100 Users in a City**
+- Focus on one city: local community, campus, or recurring venue
+- Ensure Hot screen is never empty (venue events always visible)
+- Make Ghost mode feel intentional: "You're browsing as a Ghost — claim your identity"
+- Create shareable city deeplinks: `hilads.live/city/paris`
+- Track and optimize activation funnel: open → join city → first message → join event
 
 ---
 

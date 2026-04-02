@@ -408,11 +408,11 @@ const styles = StyleSheet.create({
   },
   emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
 
-  // ── FAB — web: .fab-create (fixed bottom-right, orange circle) ────────────
+  // ── FAB — sits above the CTA: bottom = tab gap + CTA height (52px) + gap ──
   fab: {
     position:        'absolute',
     right:           Spacing.md,
-    bottom:          Spacing.md,
+    bottom:          Spacing.md + 52 + Spacing.sm, // above CTA (52px) + gap
     width:           58,
     height:          58,
     borderRadius:    29,
@@ -427,12 +427,12 @@ const styles = StyleSheet.create({
   },
   fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
 
-  // ── Upcoming CTA — sticky card floating above the FAB ───────────────────────
+  // ── Upcoming CTA — secondary, sits below the FAB, just above the tab bar ──
   upcomingCta: {
     position:         'absolute',
     left:             Spacing.md,
     right:            Spacing.md,
-    bottom:           Spacing.md + 58 + Spacing.sm, // above FAB (58px) + gap
+    bottom:           Spacing.md,
     backgroundColor:  Colors.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,
