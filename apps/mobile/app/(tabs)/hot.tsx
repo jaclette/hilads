@@ -240,10 +240,12 @@ export default function HotScreen() {
             city ? (
               <TouchableOpacity
                 style={styles.upcomingCta}
-                activeOpacity={0.75}
+                activeOpacity={0.72}
                 onPress={() => router.push(`/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`)}
               >
-                <Text style={styles.upcomingCtaText}>Next 7 days →</Text>
+                <Text style={styles.upcomingCtaEmoji}>🔮</Text>
+                <Text style={styles.upcomingCtaText}>See what's coming</Text>
+                <Ionicons name="chevron-forward" size={15} color="#FF7A3C" style={{ opacity: 0.7 }} />
               </TouchableOpacity>
             ) : null
           }
@@ -417,18 +419,31 @@ const styles = StyleSheet.create({
 
   // ── Upcoming CTA footer ─────────────────────────────────────────────────────
   upcomingCta: {
-    marginTop:         Spacing.md,
-    marginHorizontal:  0,
-    padding:           Spacing.md,
-    backgroundColor:   Colors.bg2,
-    borderRadius:      Radius.lg,
-    borderWidth:       1,
-    borderColor:       Colors.border,
-    alignItems:        'center',
+    marginTop:        Spacing.lg,
+    marginHorizontal: 0,
+    paddingVertical:  Spacing.md + 2,
+    paddingHorizontal: Spacing.lg,
+    backgroundColor:  'rgba(255, 122, 60, 0.07)',
+    borderRadius:     Radius.lg,
+    borderWidth:      1,
+    borderColor:      'rgba(255, 122, 60, 0.22)',
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'center',
+    gap:              10,
+    shadowColor:      '#FF7A3C',
+    shadowOffset:     { width: 0, height: 0 },
+    shadowOpacity:    0.18,
+    shadowRadius:     14,
+    elevation:        3,
+  },
+  upcomingCtaEmoji: {
+    fontSize: 18,
+    lineHeight: 22,
   },
   upcomingCtaText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      Colors.muted,
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.text,
   },
 });

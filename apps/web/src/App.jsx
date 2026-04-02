@@ -2692,12 +2692,12 @@ export default function App() {
               )
             })()}
           </div>
-          {/* Next 7 days CTA */}
+          {/* Upcoming CTA */}
           <button
             className="upcoming-cta"
             onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
           >
-            Next 7 days →
+            See what's coming 🔮
           </button>
 
           {/* Floating action button */}
