@@ -698,7 +698,16 @@ export default function App() {
   useEffect(() => {
     if (!account) { setConversationsHasUnread(false); setConversations(null); return }
     fetchConversationsUnread()
-      .then(d => setConversationsHasUnread(d.has_unread ?? false))
+      .then(d => {
+        if (d === null) {
+          // 401 — session expired mid-session; sign out cleanly
+          localStorage.removeItem(AUTH_FLAG_KEY)
+          accountRef.current = null
+          setAccount(null)
+          return
+        }
+        setConversationsHasUnread(d.has_unread ?? false)
+      })
       .catch(() => {})
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -729,7 +738,19 @@ export default function App() {
   useEffect(() => {
     if (!account) { setNotifUnreadCount(0); return }
     let cancelled = false
-    fetchUnreadCount().then(d => { if (!cancelled) setNotifUnreadCount(d.count) }).catch(() => {})
+    fetchUnreadCount()
+      .then(d => {
+        if (cancelled) return
+        if (d === null) {
+          // 401 — session expired mid-session; sign out cleanly
+          localStorage.removeItem(AUTH_FLAG_KEY)
+          accountRef.current = null
+          setAccount(null)
+          return
+        }
+        setNotifUnreadCount(d.count)
+      })
+      .catch(() => {})
     return () => { cancelled = true }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 

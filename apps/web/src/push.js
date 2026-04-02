@@ -52,7 +52,7 @@ export async function registerPush() {
     })
 
     // 6. Store subscription on the backend
-    await fetch(`${BASE}/push/subscribe`, {
+    const subRes = await fetch(`${BASE}/push/subscribe`, {
       method:      'POST',
       headers:     { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -64,6 +64,7 @@ export async function registerPush() {
         },
       }),
     })
+    if (!subRes.ok) return false
 
     return true
   } catch (err) {

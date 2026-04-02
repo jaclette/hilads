@@ -374,6 +374,7 @@ export async function fetchConversations() {
 
 export async function fetchConversationsUnread() {
   const res = await fetch(`${BASE}/conversations/unread`, { credentials: 'include' })
+  if (res.status === 401) return null   // session gone — caller should clear auth state
   if (!res.ok) throw new Error('Failed to fetch conversations unread')
   return res.json() // { has_unread: bool }
 }
@@ -464,6 +465,7 @@ export async function fetchNotifications() {
 
 export async function fetchUnreadCount() {
   const res = await fetch(`${BASE}/notifications/unread-count`, { credentials: 'include' })
+  if (res.status === 401) return null   // session gone — caller should clear auth state
   if (!res.ok) throw new Error('Failed to fetch unread count')
   return res.json() // { count }
 }
