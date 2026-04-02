@@ -38,6 +38,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
   // Always re-fetch fresh data when the screen mounts so the list is up to date.
   // Result is propagated to the parent (which owns the state) via onConversationsLoaded.
   useEffect(() => {
+    if (!account) return
     setFetchError(false)
     fetchConversations()
       .then(data => {

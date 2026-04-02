@@ -2928,7 +2928,7 @@ export default function App() {
         />
       )}
 
-      {showConversations && !activeDm && (
+      {showConversations && !activeDm && account && (
         <ConversationsScreen
           account={account}
           conversations={conversations}
@@ -2995,6 +2995,12 @@ export default function App() {
             localStorage.removeItem(AUTH_FLAG_KEY) // next boot is guest — skip authMe()
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
+            // Clear all overlay state so authenticated screens don't re-mount
+            // if the user re-enters the app as a guest in the same session.
+            setShowConversations(false)
+            setShowNotifications(false)
+            setActiveDm(null)
+            setViewingProfile(null)
             setStatus('onboarding')
             setShowProfileDrawer(false)
           }}
