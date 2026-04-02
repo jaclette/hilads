@@ -3341,10 +3341,11 @@ html, body, #root {
 
 .er-going {
   font-size: 0.72rem;
-  color: var(--muted);
-  font-weight: 500;
+  color: #FF7A3C;
+  font-weight: 600;
   flex-shrink: 0;
   white-space: nowrap;
+  text-shadow: 0 0 8px rgba(255, 122, 60, 0.35);
 }
 
 .er-going--public {

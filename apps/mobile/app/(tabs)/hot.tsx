@@ -31,6 +31,12 @@ function formatDate(ts: number): string {
   });
 }
 
+function fireEmoji(n: number): string {
+  if (n >= 10) return '🔥🔥🔥';
+  if (n >= 4)  return '🔥🔥';
+  return '🔥';
+}
+
 // ── Event card ────────────────────────────────────────────────────────────────
 
 function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void }) {
@@ -47,9 +53,7 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
         {event.source_type === 'ticketmaster' ? (
           <Text style={styles.publicBadge}>Public</Text>
         ) : (event.participant_count ?? 0) > 0 ? (
-          <View style={styles.goingWrap}>
-            <Text style={styles.goingCount}>👥 {event.participant_count}</Text>
-          </View>
+          <Text style={styles.goingCount}>{fireEmoji(event.participant_count!)} {event.participant_count}</Text>
         ) : null}
       </View>
 
@@ -352,9 +356,14 @@ const styles = StyleSheet.create({
   cardIcon:  { fontSize: 22, marginTop: 1 },
   cardTitle: { flex: 1, fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, lineHeight: 26 },
 
-  goingWrap:    {},
-  goingCount:   { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600', marginTop: 3 },
-  publicBadge:  { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent, marginTop: 3 },
+  goingCount: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.accent,
+    fontWeight: '600',
+    marginTop:  3,
+    flexShrink: 0,
+  },
+  publicBadge: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent, marginTop: 3 },
 
   // Time pill + recurrence badge — web: .event-time pill dark bg, orange time text
   timePillRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },

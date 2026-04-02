@@ -24,6 +24,12 @@ function formatTime(ts: number, tz: string): string {
   });
 }
 
+function fireEmoji(n: number): string {
+  if (n >= 10) return '🔥🔥🔥';
+  if (n >= 4)  return '🔥🔥';
+  return '🔥';
+}
+
 function getDayLabel(ts: number, tz: string): string {
   const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
@@ -78,7 +84,7 @@ function UpcomingCard({ event, tz, onPress }: { event: HiladsEvent; tz: string; 
         {event.source_type === 'ticketmaster' ? (
           <Text style={styles.publicBadge}>Public</Text>
         ) : going > 0 ? (
-          <Text style={styles.goingCount}>👥 {going}</Text>
+          <Text style={styles.goingCount}>{fireEmoji(going)} {going}</Text>
         ) : null}
       </View>
 
@@ -269,7 +275,13 @@ const styles = StyleSheet.create({
   cardTitleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   cardIcon:  { fontSize: 22, marginTop: 1 },
   cardTitle: { flex: 1, fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, lineHeight: 26 },
-  goingCount:  { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600', marginTop: 3 },
+  goingCount: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.accent,
+    fontWeight: '600',
+    marginTop:  3,
+    flexShrink: 0,
+  },
   publicBadge: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent, marginTop: 3 },
 
   timePillRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },

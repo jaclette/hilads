@@ -199,6 +199,13 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
+/** Returns 🔥 / 🔥🔥 / 🔥🔥🔥 based on engagement level. */
+function fireEmoji(n) {
+  if (n >= 10) return '🔥🔥🔥'
+  if (n >= 4)  return '🔥🔥'
+  return '🔥'
+}
+
 // ── My event row (used in both guest and registered Me screens) ──────────────
 
 function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
@@ -2664,7 +2671,7 @@ export default function App() {
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">Public</span>
-                        : going > 0 && <span className="er-going">👥 {going}</span>}
+                        : going > 0 && <span className="er-going">{fireEmoji(going)} {going}</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
