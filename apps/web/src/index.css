@@ -1052,6 +1052,7 @@ html, body, #root {
   height: 88px !important;
   font-size: 2rem !important;
   border-radius: 50% !important;
+  object-fit: cover;
 }
 
 .profile-photo-btn {
@@ -2420,6 +2421,11 @@ html, body, #root {
   width: 80px !important;
   height: 80px !important;
   font-size: 2rem !important;
+  object-fit: cover;
+}
+
+img.pub-profile-avatar {
+  cursor: zoom-in;
 }
 
 .pub-profile-name {

@@ -3020,6 +3020,7 @@ export default function App() {
           account={account}
           onBack={() => setViewingProfile(null)}
           onViewProfile={(uid, nickname) => openProfile(uid, nickname)}
+          onOpenLightbox={setLightboxUrl}
           onSendDm={account ? async (targetUserId) => {
             try {
               const { conversation, otherUser } = await createOrGetDirectConversation(targetUserId)

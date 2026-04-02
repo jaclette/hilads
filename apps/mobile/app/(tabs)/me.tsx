@@ -309,7 +309,7 @@ export default function MeScreen() {
               disabled={photoUploading}
             >
               {photoSrc ? (
-                <Image source={{ uri: photoSrc }} style={styles.avatar} />
+                <Image source={{ uri: photoSrc }} style={styles.avatar} resizeMode="cover" />
               ) : (
                 <View style={[styles.avatarFallback, { backgroundColor: avatarBgColor }]}>
                   <Text style={styles.avatarInitials}>{initials}</Text>

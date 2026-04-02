@@ -10,7 +10,7 @@
 import { useState, useEffect } from 'react';
 import {
   View, Text, Image, ScrollView, TouchableOpacity,
-  ActivityIndicator, StyleSheet, TextInput, Alert,
+  ActivityIndicator, StyleSheet, TextInput, Alert, Modal, Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -164,7 +164,8 @@ export default function PublicProfileScreen() {
   const [vibeBusy,     setVibeBusy]     = useState(false);
   const [vibeRating,   setVibeRating]   = useState(0);
   const [vibeMessage,  setVibeMessage]  = useState('');
-  const [showVibeForm, setShowVibeForm] = useState(false);
+  const [showVibeForm,      setShowVibeForm]      = useState(false);
+  const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
 
   // Route-level guard — catches any missed navigation guards (deep links, etc.)
   useEffect(() => {
@@ -308,7 +309,9 @@ export default function PublicProfileScreen() {
           {/* ── Hero: avatar + name + identity badge + microcopy + city ── */}
           <View style={styles.hero}>
             {user.avatarUrl ? (
-              <Image source={{ uri: user.avatarUrl }} style={styles.avatar} />
+              <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)}>
+                <Image source={{ uri: user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
+              </TouchableOpacity>
             ) : (
               <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: bg }]}>
                 <Text style={styles.avatarInitial}>{initial}</Text>
@@ -449,7 +452,7 @@ export default function PublicProfileScreen() {
                     activeOpacity={0.7}
                   >
                     {f.avatarUrl ? (
-                      <Image source={{ uri: f.avatarUrl }} style={styles.friendAvatar} />
+                      <Image source={{ uri: f.avatarUrl }} style={styles.friendAvatar} resizeMode="cover" />
                     ) : (
                       <View style={[styles.friendAvatar, styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
                         <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>
@@ -546,7 +549,7 @@ export default function PublicProfileScreen() {
                   {vibes.map(v => (
                     <View key={v.id} style={styles.vibeRow}>
                       {v.authorPhoto ? (
-                        <Image source={{ uri: v.authorPhoto }} style={styles.vibeAvatar} />
+                        <Image source={{ uri: v.authorPhoto }} style={styles.vibeAvatar} resizeMode="cover" />
                       ) : (
                         <View style={[styles.vibeAvatar, styles.vibeAvatarFallback, { backgroundColor: avatarBg(v.authorName) }]}>
                           <Text style={styles.vibeAvatarInitial}>{(v.authorName || '?')[0].toUpperCase()}</Text>
@@ -597,6 +600,28 @@ export default function PublicProfileScreen() {
             </View>
           )}
         </ScrollView>
+      ) : null}
+
+      {/* ── Avatar lightbox ── */}
+      {user?.avatarUrl ? (
+        <Modal
+          visible={showAvatarLightbox}
+          transparent
+          animationType="fade"
+          statusBarTranslucent
+          onRequestClose={() => setShowAvatarLightbox(false)}
+        >
+          <Pressable style={styles.lightboxOverlay} onPress={() => setShowAvatarLightbox(false)}>
+            <Image
+              source={{ uri: user.avatarUrl }}
+              style={styles.lightboxImage}
+              resizeMode="contain"
+            />
+            <Pressable style={styles.lightboxClose} onPress={() => setShowAvatarLightbox(false)}>
+              <Text style={styles.lightboxCloseText}>✕</Text>
+            </Pressable>
+          </Pressable>
+        </Modal>
       ) : null}
     </SafeAreaView>
   );
@@ -1080,4 +1105,29 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color:      Colors.white,
   },
+
+  // ── Avatar lightbox ───────────────────────────────────────────────────────
+  lightboxOverlay: {
+    flex:            1,
+    backgroundColor: 'rgba(0,0,0,0.93)',
+    justifyContent:  'center',
+    alignItems:      'center',
+  },
+  lightboxImage: {
+    width:     '92%',
+    aspectRatio: 1,
+    borderRadius: 12,
+  },
+  lightboxClose: {
+    position:        'absolute',
+    top:             52,
+    right:           18,
+    width:           38,
+    height:          38,
+    borderRadius:    19,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems:      'center',
+    justifyContent:  'center',
+  },
+  lightboxCloseText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

@@ -52,7 +52,7 @@ function eventIcon(type) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function PublicProfileScreen({ userId, cityName, cityCountry, account, onBack, onSendDm, onViewProfile }) {
+export default function PublicProfileScreen({ userId, cityName, cityCountry, account, onBack, onSendDm, onViewProfile, onOpenLightbox }) {
   const [user,       setUser]       = useState(null)
   const [events,     setEvents]     = useState([])
   const [friends,    setFriends]    = useState([])
@@ -202,7 +202,12 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             {/* ── Hero ── */}
             <div className="pub-profile-hero">
               {user.avatarUrl
-                ? <img className="pub-profile-avatar" src={user.avatarUrl} alt={name} />
+                ? <img
+                    className="pub-profile-avatar"
+                    src={user.avatarUrl}
+                    alt={name}
+                    onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
+                  />
                 : <span className="pub-profile-avatar pub-profile-avatar--initials" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                     {name[0].toUpperCase()}
                   </span>
