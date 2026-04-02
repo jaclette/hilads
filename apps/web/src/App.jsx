@@ -46,6 +46,25 @@ function pushUrl(path) {
   }
 }
 
+// ── Guest gate copy ────────────────────────────────────────────────────────────
+// Centralised copy for every member-only action gate.
+// All gates share the same UI; only the copy changes.
+
+const GUEST_GATE_COPY = {
+  create_event: {
+    pageTitle: 'Create event',
+    emoji:     '🎉',
+    title:     "Ghosts can vibe, but can't host.",
+    sub:       'Create an account to throw your own event and put your city on the map.',
+  },
+  view_profile: {
+    pageTitle: 'Profile',
+    emoji:     '👻',
+    title:     "Ghosts can vibe, but profiles are for members.",
+    sub:       'Create an account to unlock profiles, connect with people, and build your city crew.',
+  },
+}
+
 function setPageMeta(title, description) {
   document.title = title
   let desc = document.querySelector('meta[name="description"]')
@@ -505,7 +524,7 @@ export default function App() {
   // Central access rule: guest users cannot view registered profiles.
   // Use this everywhere instead of calling setViewingProfile directly.
   function openProfile(userId, nickname = '') {
-    if (!account) { setShowAuthScreen(true); return }
+    if (!account) { setGuestGate({ reason: 'view_profile' }); return }
     setViewingProfile({ userId, nickname })
     track('viewed_profile', { profile_id: userId })
   }
@@ -530,7 +549,7 @@ export default function App() {
 
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
-  const [showGuestEventBlock, setShowGuestEventBlock] = useState(false)
+  const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)
@@ -1713,7 +1732,7 @@ export default function App() {
   // Guard: only registered users can create events
   function openCreateEvent() {
     if (!account) {
-      setShowGuestEventBlock(true)
+      setGuestGate({ reason: 'create_event' })
       return
     }
     setShowCreateEvent(true)
@@ -2577,7 +2596,7 @@ export default function App() {
           </div>
           <div className="page-body page-body--has-fab">
             {(() => {
-              const openCreate = () => { if (!account) { setShowGuestEventBlock(true); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
+              const openCreate = () => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
               const tz = cityTimezone || 'UTC'
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
               const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
@@ -2684,7 +2703,7 @@ export default function App() {
           {/* Floating action button */}
           <button
             className="events-fab"
-            onClick={() => { if (!account) { setShowGuestEventBlock(true); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}
+            onClick={() => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}
             aria-label="Create event"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -3155,32 +3174,26 @@ export default function App() {
         />
       )}
 
-      {/* Guest event block — shown when a ghost user tries to create an event */}
-      {showGuestEventBlock && (
-        <div className="full-page">
-          <div className="page-header">
-            <BackButton onClick={() => setShowGuestEventBlock(false)} />
-            <span className="page-title">Create event</span>
+      {/* Guest gate — shown when a ghost user tries a member-only action */}
+      {guestGate && (() => {
+        const g = GUEST_GATE_COPY[guestGate.reason] ?? GUEST_GATE_COPY.view_profile
+        const openAuth = () => { setGuestGate(null); setShowProfileDrawer(true); setShowAuthScreen(true) }
+        return (
+          <div className="full-page">
+            <div className="page-header">
+              <BackButton onClick={() => setGuestGate(null)} />
+              <span className="page-title">{g.pageTitle}</span>
+            </div>
+            <div className="guest-gate">
+              <span className="guest-gate-emoji">{g.emoji}</span>
+              <h2 className="guest-gate-title">{g.title}</h2>
+              <p className="guest-gate-sub">{g.sub}</p>
+              <button className="modal-submit" onClick={openAuth}>Create account</button>
+              <button className="modal-submit modal-submit--secondary" onClick={openAuth}>Sign in</button>
+            </div>
           </div>
-          <div className="guest-event-block">
-            <span className="guest-event-block-emoji">🎉</span>
-            <h2 className="guest-event-block-title">Ghosts can vibe, but can't host.</h2>
-            <p className="guest-event-block-sub">Create an account to throw your own event and put your city on the map.</p>
-            <button
-              className="modal-submit"
-              onClick={() => { setShowGuestEventBlock(false); setShowProfileDrawer(true); setShowAuthScreen(true) }}
-            >
-              Create account
-            </button>
-            <button
-              className="modal-submit modal-submit--secondary"
-              onClick={() => { setShowGuestEventBlock(false); setShowProfileDrawer(true); setShowAuthScreen(true) }}
-            >
-              Sign in
-            </button>
-          </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Create event — full-screen page */}
       {showCreateEvent && (

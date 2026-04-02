@@ -5219,9 +5219,9 @@ img.dm-header-avatar {
   line-height: 1.6;
 }
 
-/* ── Guest event block ──────────────────────────────────────────────────────── */
+/* ── Guest gate — member-only action blocker ────────────────────────────────── */
 
-.guest-event-block {
+.guest-gate {
   display:         flex;
   flex-direction:  column;
   align-items:     center;
@@ -5232,27 +5232,28 @@ img.dm-header-avatar {
   text-align:      center;
 }
 
-.guest-event-block-emoji {
+.guest-gate-emoji {
   font-size: 3rem;
   line-height: 1;
 }
 
-.guest-event-block-title {
+.guest-gate-title {
   font-size:   1.25rem;
   font-weight: 700;
   color:       var(--text);
   margin:      0;
 }
 
-.guest-event-block-sub {
+.guest-gate-sub {
   font-size:   0.95rem;
   color:       var(--muted);
   line-height: 1.5;
   margin:      0;
 }
 
-.guest-event-block .modal-submit {
+.guest-gate .modal-submit {
   margin-top: 4px;
+  width: 100%;
 }
 
 

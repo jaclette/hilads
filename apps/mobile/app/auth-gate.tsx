@@ -1,14 +1,33 @@
 /**
- * AuthGate — shown when a ghost user tries to access a registered profile.
+ * AuthGate — shown when a ghost user tries a member-only action.
  *
- * Explains what they're missing and offers account creation or sign-in.
+ * Accepts an optional `reason` query param to show context-specific copy:
+ *   - view_profile  (default): "Ghosts can vibe, but profiles are for members."
+ *   - create_event:            "Ghosts can vibe, but can't host."
+ *
+ * All reasons share the same layout and CTAs.
  */
 
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+
+type GateReason = 'view_profile' | 'create_event';
+
+const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: string }> = {
+  view_profile: {
+    emoji:    '👻',
+    title:    "Ghosts can vibe, but profiles are for members.",
+    subtitle: "Create an account to unlock profiles, connect with people, and build your city crew.",
+  },
+  create_event: {
+    emoji:    '🎉',
+    title:    "Ghosts can vibe, but can't host.",
+    subtitle: "Create an account to throw your own event and put your city on the map.",
+  },
+};
 
 const BENEFITS = [
   { emoji: '👤', text: 'View profiles' },
@@ -20,6 +39,8 @@ const BENEFITS = [
 
 export default function AuthGateScreen() {
   const router = useRouter();
+  const { reason } = useLocalSearchParams<{ reason?: string }>();
+  const copy = GATE_COPY[(reason as GateReason) ?? 'view_profile'] ?? GATE_COPY.view_profile;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -32,9 +53,9 @@ export default function AuthGateScreen() {
       <View style={styles.body}>
 
         {/* Hero */}
-        <Text style={styles.ghost}>👻</Text>
-        <Text style={styles.title}>Ghost mode is fun…</Text>
-        <Text style={styles.subtitle}>…but profiles unlock when you join the vibe</Text>
+        <Text style={styles.ghost}>{copy.emoji}</Text>
+        <Text style={styles.title}>{copy.title}</Text>
+        <Text style={styles.subtitle}>{copy.subtitle}</Text>
 
         {/* Benefits */}
         <View style={styles.benefits}>

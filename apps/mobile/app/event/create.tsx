@@ -241,39 +241,8 @@ export default function CreateEventScreen() {
 
   // ── Guest gate — event creation requires a registered account ───────────────
   if (!account) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={20} color={Colors.text} />
-          </TouchableOpacity>
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Create event</Text>
-          </View>
-        </View>
-        <View style={styles.guestGate}>
-          <Text style={styles.guestGateEmoji}>🎉</Text>
-          <Text style={styles.guestGateTitle}>Ghosts can vibe, but can't host.</Text>
-          <Text style={styles.guestGateSub}>
-            Create an account to throw your own event and put your city on the map.
-          </Text>
-          <TouchableOpacity
-            style={styles.guestGateBtn}
-            onPress={() => router.push('/sign-up')}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.guestGateBtnText}>Create account</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.guestGateBtnSecondary}
-            onPress={() => router.push('/sign-in')}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.guestGateBtnSecondaryText}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
+    router.replace('/auth-gate?reason=create_event');
+    return null;
   }
 
   return (
@@ -426,56 +395,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   scroll:    { flex: 1 },
   content:   { paddingHorizontal: 18, paddingTop: 20, gap: 28 },
-
-  // ── Guest gate ────────────────────────────────────────────────────────────
-  guestGate: {
-    flex:            1,
-    alignItems:      'center',
-    justifyContent:  'center',
-    paddingHorizontal: 32,
-    gap:             16,
-  },
-  guestGateEmoji: { fontSize: 52, textAlign: 'center' },
-  guestGateTitle: {
-    fontSize:   FontSizes.xl,
-    fontWeight: '800',
-    color:      Colors.text,
-    textAlign:  'center',
-    lineHeight: 28,
-  },
-  guestGateSub: {
-    fontSize:   FontSizes.sm,
-    color:      Colors.muted,
-    textAlign:  'center',
-    lineHeight: 20,
-  },
-  guestGateBtn: {
-    width:           '100%',
-    paddingVertical: 14,
-    borderRadius:    Radius.lg,
-    backgroundColor: Colors.accent,
-    alignItems:      'center',
-    marginTop:       8,
-  },
-  guestGateBtnText: {
-    fontSize:   FontSizes.md,
-    fontWeight: '700',
-    color:      Colors.white,
-  },
-  guestGateBtnSecondary: {
-    width:           '100%',
-    paddingVertical: 14,
-    borderRadius:    Radius.lg,
-    backgroundColor: Colors.bg2,
-    borderWidth:     1,
-    borderColor:     Colors.border,
-    alignItems:      'center',
-  },
-  guestGateBtnSecondaryText: {
-    fontSize:   FontSizes.md,
-    fontWeight: '600',
-    color:      Colors.text,
-  },
 
   // ── Header ────────────────────────────────────────────────────────────────
   header: {
