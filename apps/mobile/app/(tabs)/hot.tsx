@@ -244,12 +244,12 @@ export default function HotScreen() {
             city ? (
               <TouchableOpacity
                 style={styles.upcomingCta}
-                activeOpacity={0.72}
+                activeOpacity={0.7}
                 onPress={() => router.push(`/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`)}
               >
                 <Text style={styles.upcomingCtaEmoji}>🔮</Text>
                 <Text style={styles.upcomingCtaText}>See what's coming</Text>
-                <Ionicons name="chevron-forward" size={15} color="#FF7A3C" style={{ opacity: 0.7 }} />
+                <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
               </TouchableOpacity>
             ) : null
           }
@@ -426,32 +426,25 @@ const styles = StyleSheet.create({
   },
   fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
 
-  // ── Upcoming CTA footer ─────────────────────────────────────────────────────
+  // ── Upcoming CTA — styled as a feed card, not a banner ─────────────────────
   upcomingCta: {
-    marginTop:        Spacing.lg,
-    marginHorizontal: 0,
-    paddingVertical:  Spacing.md + 2,
-    paddingHorizontal: Spacing.lg,
-    backgroundColor:  'rgba(255, 122, 60, 0.07)',
+    backgroundColor:  Colors.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,
-    borderColor:      'rgba(255, 122, 60, 0.22)',
+    borderColor:      Colors.border,
+    paddingVertical:  Spacing.md,
+    paddingHorizontal: Spacing.md,
     flexDirection:    'row',
     alignItems:       'center',
-    justifyContent:   'center',
     gap:              10,
-    shadowColor:      '#FF7A3C',
-    shadowOffset:     { width: 0, height: 0 },
-    shadowOpacity:    0.18,
-    shadowRadius:     14,
-    elevation:        3,
   },
   upcomingCtaEmoji: {
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize:   22,
+    lineHeight: 28,
   },
   upcomingCtaText: {
-    fontSize:   FontSizes.md,
+    flex:       1,
+    fontSize:   FontSizes.lg,
     fontWeight: '700',
     color:      Colors.text,
   },
