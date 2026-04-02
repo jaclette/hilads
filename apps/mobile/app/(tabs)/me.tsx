@@ -380,13 +380,14 @@ export default function MeScreen() {
             </View>
 
             <View style={styles.upgradeCard}>
-              <Text style={styles.upgradeTitle}>Create a free account</Text>
+              <Text style={styles.upgradeTitle}>Make it yours</Text>
               <Text style={styles.upgradeSub}>
-                Keep your events, access DMs, and stay connected across sessions.
+                Save your name. Keep your vibe. Stay connected across sessions.
               </Text>
               <TouchableOpacity style={styles.upgradePrimary} onPress={() => router.push('/sign-up')} activeOpacity={0.85}>
                 <Text style={styles.upgradePrimaryText}>Create account</Text>
               </TouchableOpacity>
+              <Text style={styles.upgradeSignInHint}>Already have an account?</Text>
               <TouchableOpacity style={styles.upgradeSecondary} onPress={() => router.push('/sign-in')} activeOpacity={0.8}>
                 <Text style={styles.upgradeSecondaryText}>Sign in</Text>
               </TouchableOpacity>
@@ -1080,6 +1081,7 @@ const styles = StyleSheet.create({
   },
   upgradeTitle:   { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
   upgradeSub:     { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
+  upgradeSignInHint: { fontSize: FontSizes.xs, color: Colors.muted, textAlign: 'center', marginTop: Spacing.sm },
   upgradePrimary: {
     backgroundColor: Colors.accent,
     borderRadius:    Radius.lg,

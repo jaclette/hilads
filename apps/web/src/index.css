@@ -1149,6 +1149,20 @@ html, body, #root {
 }
 .me-upgrade-btn:active { transform: scale(0.97); }
 
+.me-upgrade-signin-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 14px 0 8px;
+  text-align: center;
+}
+
+.me-upgrade-btn--secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.me-upgrade-btn--secondary:active { transform: scale(0.97); }
+
 /* ── Auth screen ───────────────────────────────────────── */
 .auth-tabs {
   display: flex;

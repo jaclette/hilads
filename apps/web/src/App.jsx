@@ -535,6 +535,7 @@ export default function App() {
   const [conversationsHasUnread, setConversationsHasUnread] = useState(false) // lightweight dot, set at boot
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
+  const [showAuthScreenTab, setShowAuthScreenTab] = useState('signup') // 'signup' | 'login'
   const [account, setAccount] = useState(null)        // null = guest, object = registered
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
@@ -3125,9 +3126,13 @@ export default function App() {
               </div>
               <div className="me-card">
                 <div className="me-upgrade">
-                  <p className="me-upgrade-hint">Save your profile and keep your identity</p>
-                  <button className="me-upgrade-btn" onClick={() => setShowAuthScreen(true)}>
+                  <p className="me-upgrade-hint">Save your name. Keep your vibe.</p>
+                  <button className="me-upgrade-btn" onClick={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>
                     Create account
+                  </button>
+                  <p className="me-upgrade-signin-hint">Already have an account?</p>
+                  <button className="me-upgrade-btn me-upgrade-btn--secondary" onClick={() => { setShowAuthScreenTab('login'); setShowAuthScreen(true) }}>
+                    Sign in
                   </button>
                 </div>
               </div>
@@ -3162,6 +3167,7 @@ export default function App() {
         <AuthScreen
           guestId={guest?.guestId}
           guestNickname={nickname}
+          initialTab={showAuthScreenTab}
           onSuccess={(user) => {
             localStorage.setItem(AUTH_FLAG_KEY, '1') // skip useless authMe() 401 on next boot
             accountRef.current = user // sync ref so closures see updated identity immediately
