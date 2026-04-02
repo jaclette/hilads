@@ -36,6 +36,20 @@ export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEv
   }
 }
 
+// All Hilads + public events for the next N days — powers the Upcoming screen.
+// Generates missing series occurrences server-side so days 2-7 are always populated.
+export async function fetchUpcomingEvents(channelId: string, days = 7): Promise<HiladsEvent[]> {
+  const data = await api.get<{ events: Record<string, unknown>[] }>(
+    `/channels/${channelId}/events/upcoming`,
+    { params: { days } },
+  );
+  return (data.events ?? []).map(e => ({
+    ...e,
+    event_type: (e.event_type ?? e.type) as HiladsEvent['event_type'],
+    source_type: (e.source_type ?? e.source ?? 'hilads') as HiladsEvent['source_type'],
+  })) as HiladsEvent[];
+}
+
 export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
   const data = await api.get<{ events: HiladsEvent[] }>('/users/me/events', {
     params: { guestId },

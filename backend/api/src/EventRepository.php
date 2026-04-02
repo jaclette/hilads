@@ -219,6 +219,52 @@ class EventRepository
         return $events;
     }
 
+    /**
+     * Returns all Hilads + public events starting in the next $days days.
+     * Generates missing occurrences on-demand so days 2-7 always exist.
+     * No MAX_HILADS cap — this is a browse screen, not the city hotlist.
+     */
+    public static function getUpcoming(int $channelId, int $days = 7): array
+    {
+        $city     = CityRepository::findById($channelId);
+        $timezone = $city['timezone'] ?? 'UTC';
+        $now      = time();
+        $cutoff   = $now + $days * 86400;
+
+        EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $days);
+
+        $stmt = Database::pdo()->prepare(self::SELECT . "
+            WHERE c.parent_id  = :parent_id
+              AND c.type       = 'event'
+              AND c.status     = 'active'
+              AND ce.expires_at > now()
+              AND ce.starts_at  < to_timestamp(:cutoff)
+            ORDER BY ce.starts_at ASC
+        ");
+        $stmt->execute(['parent_id' => 'city_' . $channelId, 'cutoff' => $cutoff]);
+
+        $events = array_map([self::class, 'format'], $stmt->fetchAll());
+
+        if (!empty($events)) {
+            $ids          = array_column($events, 'id');
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $countStmt    = Database::pdo()->prepare("
+                SELECT channel_id, COUNT(*) AS cnt
+                FROM event_participants WHERE channel_id IN ($placeholders)
+                GROUP BY channel_id
+            ");
+            $countStmt->execute($ids);
+            $counts = array_column($countStmt->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');
+
+            foreach ($events as &$event) {
+                $event['participant_count'] = (int) ($counts[$event['id']] ?? 0);
+            }
+            unset($event);
+        }
+
+        return $events;
+    }
+
     public static function getPublicByChannel(int $channelId): array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "

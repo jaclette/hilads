@@ -14,6 +14,7 @@ import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
 import GuestProfileCard from './components/GuestProfileCard'
 import ConversationsScreen from './components/ConversationsScreen'
+import UpcomingEventsScreen from './components/UpcomingEventsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import BackButton from './components/BackButton'
@@ -490,6 +491,7 @@ export default function App() {
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
+  const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [crewMembers,  setCrewMembers]  = useState([])
   const [crewPage,     setCrewPage]     = useState(1)
@@ -2671,6 +2673,14 @@ export default function App() {
               )
             })()}
           </div>
+          {/* Next 7 days CTA */}
+          <button
+            className="upcoming-cta"
+            onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
+          >
+            Next 7 days →
+          </button>
+
           {/* Floating action button */}
           <button
             className="events-fab"
@@ -2683,6 +2693,15 @@ export default function App() {
             </svg>
           </button>
         </div>
+      )}
+
+      {showUpcomingEvents && (
+        <UpcomingEventsScreen
+          channelId={channelId}
+          timezone={cityTimezone}
+          onBack={() => setShowUpcomingEvents(false)}
+          onSelectEvent={(event) => { setShowUpcomingEvents(false); handleSelectEvent(event) }}
+        />
       )}
 
       {showPeopleDrawer && !viewingProfile && (() => {

@@ -3845,6 +3845,50 @@ html, body, #root {
   opacity: 0.88;
 }
 
+/* ── Upcoming events CTA (Next 7 days button in Hot drawer) ─── */
+
+.upcoming-cta {
+  display: block;
+  width: calc(100% - 20px);
+  margin: 12px 10px 0;
+  padding: 14px 16px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--muted2);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.upcoming-cta:hover {
+  color: var(--text);
+  border-color: var(--accent2);
+}
+
+.upcoming-cta:active {
+  opacity: 0.75;
+}
+
+/* ── Upcoming screen day label variant ─── */
+
+.events-group-label--day {
+  color: var(--text);
+  font-size: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 14px !important;
+  margin-top: 4px;
+}
+
+/* ── Live now badge in event rows ─── */
+
+.event-row--live .city-row-current {
+  color: var(--hot-dot);
+}
+
 /* ── Event type selector ─────────────────────────────── */
 
 .event-type-grid {

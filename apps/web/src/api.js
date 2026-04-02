@@ -158,6 +158,12 @@ export async function fetchCityEvents(channelId) {
   return res.json()
 }
 
+export async function fetchUpcomingEvents(channelId, days = 7) {
+  const res = await fetch(`${BASE}/channels/${channelId}/events/upcoming?days=${days}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch upcoming events')
+  return res.json() // { events: [...] }
+}
+
 export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, endsAt, type) {
   const body = { guestId, nickname, title, starts_at: startsAt, ends_at: endsAt, type }
   if (locationHint) body.location_hint = locationHint

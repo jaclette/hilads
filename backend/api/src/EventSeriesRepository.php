@@ -364,6 +364,60 @@ class EventSeriesRepository
         ];
     }
 
+    /**
+     * Ensure occurrences exist for all active series in this city for the next $days days.
+     * Uses a single EXISTS query per series to find gaps, then fills them.
+     * Safe for concurrent calls — createOccurrence uses ON CONFLICT DO NOTHING.
+     */
+    public static function ensureOccurrencesForRange(string $cityDbId, string $timezone, int $days = 7): void
+    {
+        $tz       = new DateTimeZone($timezone);
+        $today    = new DateTime('today', $tz);
+        $todayStr = $today->format('Y-m-d');
+        $endStr   = (clone $today)->modify("+{$days} days")->format('Y-m-d');
+
+        $stmt = Database::pdo()->prepare("
+            SELECT es.*
+            FROM event_series es
+            WHERE es.city_id   = ?
+              AND es.starts_on <= ?
+              AND (es.ends_on IS NULL OR es.ends_on >= ?)
+        ");
+        $stmt->execute([$cityDbId, $endStr, $todayStr]);
+        $allSeries = $stmt->fetchAll();
+
+        if (empty($allSeries)) return;
+
+        // Fetch all already-generated occurrences in this window in one query
+        $seriesIds    = array_column($allSeries, 'id');
+        $placeholders = implode(',', array_fill(0, count($seriesIds), '?'));
+        $existsStmt   = Database::pdo()->prepare("
+            SELECT series_id, occurrence_date::TEXT AS d
+            FROM channel_events
+            WHERE series_id IN ($placeholders)
+              AND occurrence_date >= ?::date
+              AND occurrence_date <= ?::date
+        ");
+        $existsStmt->execute(array_merge($seriesIds, [$todayStr, $endStr]));
+
+        $existing = [];
+        foreach ($existsStmt->fetchAll() as $row) {
+            $existing[$row['series_id'] . ':' . $row['d']] = true;
+        }
+
+        foreach ($allSeries as $series) {
+            $current = clone $today;
+            for ($i = 0; $i <= $days; $i++) {
+                $date = $current->format('Y-m-d');
+                $key  = $series['id'] . ':' . $date;
+                if (!isset($existing[$key]) && self::matchesRecurrence($series, $date)) {
+                    self::createOccurrence($series, $date);
+                }
+                $current->modify('+1 day');
+            }
+        }
+    }
+
     public static function generateOccurrences(array $series, int $lookaheadDays = 7): int
     {
         $pdo       = Database::pdo();

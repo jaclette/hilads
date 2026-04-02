@@ -236,6 +236,17 @@ export default function HotScreen() {
             />
           }
           stickySectionHeadersEnabled={false}
+          ListFooterComponent={
+            city ? (
+              <TouchableOpacity
+                style={styles.upcomingCta}
+                activeOpacity={0.75}
+                onPress={() => router.push(`/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`)}
+              >
+                <Text style={styles.upcomingCtaText}>Next 7 days →</Text>
+              </TouchableOpacity>
+            ) : null
+          }
         />
       )}
 
@@ -403,4 +414,21 @@ const styles = StyleSheet.create({
     elevation:       10,
   },
   fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
+
+  // ── Upcoming CTA footer ─────────────────────────────────────────────────────
+  upcomingCta: {
+    marginTop:         Spacing.md,
+    marginHorizontal:  0,
+    padding:           Spacing.md,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.lg,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    alignItems:        'center',
+  },
+  upcomingCtaText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+    color:      Colors.muted,
+  },
 });

@@ -1550,6 +1550,17 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
     Response::json(['events' => $events]);
 });
 
+$router->add('GET', '/api/v1/channels/{channelId}/events/upcoming', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+    $days = filter_var($_GET['days'] ?? 7, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 30]]);
+    if ($days === false) $days = 7;
+    $events = EventRepository::getUpcoming($channelId, $days);
+    Response::json(['events' => $events]);
+});
+
 $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {
     $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
