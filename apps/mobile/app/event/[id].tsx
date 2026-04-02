@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -16,7 +16,9 @@ import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { canAccessProfile } from '@/lib/profileAccess';
+import { BADGE_META } from '@/types';
 import type { Message, EventParticipant } from '@/types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -57,13 +59,13 @@ function toMs(ts: number | string | undefined): number {
 
 // ── Participants strip ────────────────────────────────────────────────────────
 
-function ParticipantsStrip({ participants }: { participants: EventParticipant[] }) {
+function ParticipantsStrip({ participants, onPress }: { participants: EventParticipant[]; onPress: () => void }) {
   if (participants.length === 0) return null;
   const visible = participants.slice(0, 5);
   const extra   = participants.length - visible.length;
 
   return (
-    <View style={stripStyles.row}>
+    <TouchableOpacity style={stripStyles.row} onPress={onPress} activeOpacity={0.75}>
       <View style={stripStyles.avatars}>
         {visible.map((p, i) => (
           <View
@@ -84,7 +86,8 @@ function ParticipantsStrip({ participants }: { participants: EventParticipant[] 
           ? `${participants[0].displayName} is going`
           : `${participants[0].displayName} + ${participants.length - 1} going`}
       </Text>
-    </View>
+      <Text style={stripStyles.seeAll}>See all →</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -101,9 +104,10 @@ export default function EventDetailScreen() {
     toggling, toggleParticipation,
   } = useEventDetail(id);
 
-  const [participants,  setParticipants]  = useState<EventParticipant[]>([]);
-  const [presenceCount, setPresenceCount] = useState<number | null>(null);
-  const [ambientFeed,   setAmbientFeed]   = useState<Message[]>([]);
+  const [participants,   setParticipants]  = useState<EventParticipant[]>([]);
+  const [presenceCount,  setPresenceCount] = useState<number | null>(null);
+  const [ambientFeed,    setAmbientFeed]   = useState<Message[]>([]);
+  const [showGoingSheet, setShowGoingSheet] = useState(false);
   const messagesRef = useRef<Message[]>([]);
 
   useEffect(() => {
@@ -286,7 +290,17 @@ export default function EventDetailScreen() {
             {formatTime(event.starts_at)}
             {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
             {presenceCount != null ? ` · ${presenceCount} here` : ''}
-            {event.participant_count != null ? ` · ${event.participant_count} going` : ''}
+            {event.participant_count != null ? (
+              <>
+                {' · '}
+                <Text
+                  style={styles.goingLink}
+                  onPress={() => setShowGoingSheet(true)}
+                >
+                  {event.participant_count} going
+                </Text>
+              </>
+            ) : null}
           </Text>
 
           {/* Location — orange in web */}
@@ -300,7 +314,7 @@ export default function EventDetailScreen() {
       )}
 
       {/* ── Participants activity strip ── */}
-      {event && <ParticipantsStrip participants={participants} />}
+      {event && <ParticipantsStrip participants={participants} onPress={() => setShowGoingSheet(true)} />}
 
       {/* Error banner */}
       {msgError && (
@@ -373,6 +387,88 @@ export default function EventDetailScreen() {
           />
         </KeyboardAvoidingView>
       )}
+      {/* ── Going list sheet ── */}
+      <Modal
+        visible={showGoingSheet}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowGoingSheet(false)}
+      >
+        <TouchableOpacity
+          style={sheetStyles.backdrop}
+          activeOpacity={1}
+          onPress={() => setShowGoingSheet(false)}
+        />
+        <View style={sheetStyles.sheet}>
+          {/* Handle */}
+          <View style={sheetStyles.handle} />
+
+          {/* Header */}
+          <View style={sheetStyles.header}>
+            <Text style={sheetStyles.title}>
+              {participants.length > 0
+                ? `${participants.length} going`
+                : event ? `${event.participant_count ?? 0} going` : 'Going'}
+            </Text>
+            <TouchableOpacity onPress={() => setShowGoingSheet(false)} hitSlop={12}>
+              <Text style={sheetStyles.closeBtn}>✕</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* List */}
+          <ScrollView
+            style={sheetStyles.list}
+            contentContainerStyle={sheetStyles.listContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {participants.length === 0 ? (
+              <Text style={sheetStyles.emptyText}>No one yet — be the first to join! 🙌</Text>
+            ) : (
+              participants.map(p => {
+                const isRegistered = p.accountType === 'registered';
+                const badgeKey = p.badges?.[0];
+                const badgeMeta = badgeKey ? BADGE_META[badgeKey] : null;
+                const initials  = (p.displayName ?? '?').slice(0, 2).toUpperCase();
+                const color     = avatarColor(p.displayName ?? '');
+                const canTap    = isRegistered;
+
+                const handleTap = () => {
+                  if (!isRegistered) return;
+                  setShowGoingSheet(false);
+                  if (!canAccessProfile(account)) {
+                    router.push('/auth-gate');
+                    return;
+                  }
+                  router.push({ pathname: '/user/[id]', params: { id: p.id } });
+                };
+
+                return (
+                  <TouchableOpacity
+                    key={p.id}
+                    style={sheetStyles.row}
+                    onPress={canTap ? handleTap : undefined}
+                    activeOpacity={canTap ? 0.7 : 1}
+                    disabled={!canTap}
+                  >
+                    <View style={[sheetStyles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
+                      <Text style={[sheetStyles.avatarText, { color }]}>{initials}</Text>
+                    </View>
+                    <View style={sheetStyles.rowInfo}>
+                      <Text style={sheetStyles.name}>{p.displayName}</Text>
+                      {badgeMeta && (
+                        <View style={[sheetStyles.badge, { backgroundColor: badgeMeta.bg, borderColor: badgeMeta.border }]}>
+                          <Text style={[sheetStyles.badgeText, { color: badgeMeta.color }]}>{badgeMeta.label}</Text>
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -492,6 +588,15 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
+  // "X going" — tappable inline span
+  goingLink: {
+    color:          Colors.text,
+    fontWeight:     '600',
+    textDecorationLine: 'underline',
+    textDecorationStyle: 'dashed',
+    textDecorationColor: 'rgba(255,255,255,0.3)',
+  },
+
   // Web: location — orange accent
   eventLocation: {
     fontSize:   FontSizes.sm,
@@ -552,6 +657,107 @@ const stripStyles = StyleSheet.create({
     fontSize:   FontSizes.sm,
     color:      Colors.muted,
     fontWeight: '500',
-    flexShrink: 1,
+    flex:       1,
   },
+  seeAll: {
+    fontSize:   FontSizes.xs,
+    color:      Colors.accent,
+    fontWeight: '600',
+    flexShrink: 0,
+  },
+});
+
+// ── Going sheet styles ────────────────────────────────────────────────────────
+
+const sheetStyles = StyleSheet.create({
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  sheet: {
+    position:        'absolute',
+    bottom:          0,
+    left:            0,
+    right:           0,
+    backgroundColor: '#161210',
+    borderTopLeftRadius:  24,
+    borderTopRightRadius: 24,
+    borderTopWidth:  1,
+    borderTopColor:  'rgba(255,255,255,0.08)',
+    maxHeight:       '72%',
+  },
+  handle: {
+    width:           40,
+    height:          4,
+    borderRadius:    2,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignSelf:       'center',
+    marginTop:       10,
+    marginBottom:    2,
+  },
+  header: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   14,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  title: {
+    fontSize:      FontSizes.sm,
+    fontWeight:    '700',
+    color:         Colors.muted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  closeBtn: {
+    fontSize: FontSizes.md,
+    color:    Colors.muted,
+  },
+  list:        { flex: 1 },
+  listContent: { padding: Spacing.md, gap: 6 },
+  emptyText: {
+    color:      Colors.muted,
+    fontSize:   FontSizes.sm,
+    textAlign:  'center',
+    paddingVertical: Spacing.lg,
+  },
+  row: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    gap:            14,
+    padding:        14,
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderWidth:    1,
+    borderColor:    'rgba(255,255,255,0.05)',
+    borderRadius:   Radius.lg,
+  },
+  avatar: {
+    width:          40,
+    height:         40,
+    borderRadius:   20,
+    borderWidth:    1.5,
+    alignItems:     'center',
+    justifyContent: 'center',
+    flexShrink:     0,
+  },
+  avatarText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+  },
+  rowInfo: { flex: 1, gap: 4 },
+  name: {
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  badge: {
+    alignSelf:         'flex-start',
+    borderRadius:      999,
+    paddingHorizontal: 7,
+    paddingVertical:   3,
+    borderWidth:       1,
+  },
+  badgeText: { fontSize: 10, fontWeight: '700' },
 });

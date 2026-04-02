@@ -585,6 +585,58 @@ html, body, #root {
   letter-spacing: 0.01em;
 }
 
+/* "X going" — inline button inside event-meta-label, inherits text style */
+.going-count-btn {
+  all: unset;
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 600;
+  border-bottom: 1px dashed rgba(255,255,255,0.25);
+  transition: color 0.12s, border-color 0.12s;
+}
+.going-count-btn:hover {
+  color: #FF7A3C;
+  border-bottom-color: rgba(255,122,60,0.5);
+}
+
+/* Going list modal */
+.going-modal {
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+.going-modal-body {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px 20px;
+}
+.going-modal-empty {
+  color: var(--muted2);
+  font-size: 0.88rem;
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+.going-modal-close {
+  all: unset;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--muted2);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.12s, color 0.12s;
+}
+.going-modal-close:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+}
+
 /* Location line — event header, Hot drawer rows, sidebar rows */
 .event-location {
   font-size: 0.75rem;

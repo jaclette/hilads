@@ -216,6 +216,12 @@ export async function fetchEventParticipants(eventId, sessionId) {
   return res.json() // { count, isIn }
 }
 
+export async function fetchEventGoingList(eventId) {
+  const res = await fetch(`${BASE}/events/${eventId}/participants`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch participants')
+  return res.json() // { participants: UserDTO[], count, isIn }
+}
+
 export async function toggleEventParticipation(eventId, sessionId) {
   const res = await fetch(`${BASE}/events/${eventId}/participants/toggle`, {
     method: 'POST',

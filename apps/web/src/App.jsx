@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -562,6 +562,9 @@ export default function App() {
   const [myFriendsLoaded, setMyFriendsLoaded] = useState(false)
   const [cityTimezone, setCityTimezone] = useState('UTC')
   const [eventPresence, setEventPresence] = useState({}) // { [eventId]: count }
+  const [showGoingModal,    setShowGoingModal]    = useState(false)
+  const [goingList,         setGoingList]         = useState([])
+  const [goingListLoading,  setGoingListLoading]  = useState(false)
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
   const [hotEventsStatus, setHotEventsStatus] = useState('loading') // 'loading' | 'ready' | 'error'
@@ -1692,6 +1695,18 @@ export default function App() {
     }
   }
 
+  async function handleOpenGoingModal() {
+    if (!activeEvent) return
+    setShowGoingModal(true)
+    setGoingListLoading(true)
+    setGoingList([])
+    try {
+      const data = await fetchEventGoingList(activeEvent.id)
+      setGoingList(data.participants ?? [])
+    } catch { /* silent */ }
+    finally { setGoingListLoading(false) }
+  }
+
   // Return to city chat from an event
   function handleBackToCity() {
     if (activeEventIdRef.current) {
@@ -2136,7 +2151,10 @@ export default function App() {
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
                   {activeEvent.ends_at ? ` → ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
-                  {` · ${eventPresence[activeEvent.id] ?? 0} here · ${eventParticipants[activeEvent.id] ?? 0} going`}
+                  {` · ${eventPresence[activeEvent.id] ?? 0} here · `}
+                  <button className="going-count-btn" onClick={handleOpenGoingModal}>
+                    {eventParticipants[activeEvent.id] ?? 0} going
+                  </button>
                 </span>
                 {(() => {
                   const loc = getEventLocation(activeEvent)
@@ -3246,6 +3264,59 @@ export default function App() {
           onDeleted={handleEventDeleted}
           onBack={() => setShowEditEvent(false)}
         />
+      )}
+
+      {/* Going list modal — public, no auth gate */}
+      {showGoingModal && (
+        <div className="modal-overlay" onClick={() => setShowGoingModal(false)}>
+          <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">
+                👥 {goingList.length || (activeEvent && (eventParticipants[activeEvent.id] ?? 0))} going
+              </span>
+              <button className="going-modal-close" onClick={() => setShowGoingModal(false)}>✕</button>
+            </div>
+            <div className="going-modal-body">
+              {goingListLoading ? (
+                <p className="going-modal-empty">Loading…</p>
+              ) : goingList.length === 0 ? (
+                <p className="going-modal-empty">No one yet — be the first to join! 🙌</p>
+              ) : (
+                goingList.map(p => {
+                  const isRegistered = p.accountType === 'registered'
+                  const [c1, c2] = avatarColors(p.displayName)
+                  const badgeKey = p.badges?.[0]
+                  return (
+                    <div
+                      key={p.id}
+                      className={`people-drawer-row${isRegistered ? ' people-drawer-row--tappable' : ''}`}
+                      onClick={isRegistered ? () => { setShowGoingModal(false); openProfile(p.id, p.displayName) } : undefined}
+                    >
+                      {p.avatarUrl ? (
+                        <img src={p.avatarUrl} className="online-avatar" alt="" />
+                      ) : (
+                        <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                          {(p.displayName ?? '?')[0].toUpperCase()}
+                        </span>
+                      )}
+                      <div className="people-drawer-content">
+                        <span className="people-drawer-name">{p.displayName}</span>
+                        {(badgeKey || p.vibe) && (
+                          <div className="people-drawer-meta">
+                            {badgeKey && <span className={`badge-pill badge-pill--${badgeKey}`}>{badgeLabel(badgeKey)}</span>}
+                            {p.vibe && VIBE_META[p.vibe] && (
+                              <span className="vibe-badge">{VIBE_META[p.vibe].emoji} {VIBE_META[p.vibe].label}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Guest gate — shown when a ghost user tries a member-only action */}
