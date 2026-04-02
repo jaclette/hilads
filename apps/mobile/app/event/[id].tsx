@@ -383,7 +383,11 @@ export default function EventDetailScreen() {
             sending={sending}
             onSendText={sendText}
             onSendImage={sendImage}
-            placeholder={`Chat about ${event.title}…`}
+            placeholder={
+              messages.some(m => m.type !== 'system')
+                ? `Say something at ${event.title} ✨`
+                : `Be the first at ${event.title} ✨`
+            }
           />
         </KeyboardAvoidingView>
       )}

@@ -2550,7 +2550,9 @@ export default function App() {
             value={input}
             onChange={handleInputChange}
             placeholder={activeEvent
-              ? `Chat about ${activeEvent.title}…`
+              ? feed.some(f => f.type === 'message')
+                ? `Say something at ${activeEvent.title} ✨`
+                : `Be the first at ${activeEvent.title} ✨`
               : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length]() : ''
             }
             maxLength={1000}
