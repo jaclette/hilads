@@ -1,40 +1,57 @@
-# Frontend
+# =========================
+# Node / Frontend
+# =========================
 node_modules/
 apps/web/node_modules/
 apps/web/node_modules/.vite/
 apps/web/dist/
 
+# =========================
 # Backend storage
+# =========================
 backend/api/storage/*.json
 
+# =========================
 # Env files
+# =========================
 apps/web/.env
 apps/web/.env.local
 
-# Expo
+# =========================
+# Expo (local only)
+# =========================
 .expo/
 apps/mobile/.expo/
 .expo-shared/
 
-# Native builds (Expo managed)
-android/
-ios/
+# =========================
+# Native builds (KEEP android/ios!)
+# =========================
+# ⚠️ DO NOT ignore:
+# apps/mobile/android/
+# apps/mobile/ios/
 
-# iOS
-ios/Pods/
-ios/build/
-*.xcworkspace
+# Android (ignore only build/cache)
+apps/mobile/android/.gradle/
+apps/mobile/android/build/
+apps/mobile/android/app/build/
 
-# Android
-android/.gradle/
-android/build/
+# iOS (ignore only build/cache)
+apps/mobile/ios/build/
+apps/mobile/ios/Pods/
 
+# =========================
 # Build outputs
+# =========================
 dist/
 web-build/
 
+# =========================
 # Package managers
+# =========================
 package-lock.json
 
+# =========================
 # Logs
+# =========================
 *.log
