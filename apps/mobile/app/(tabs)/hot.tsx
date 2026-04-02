@@ -240,20 +240,20 @@ export default function HotScreen() {
             />
           }
           stickySectionHeadersEnabled={false}
-          ListFooterComponent={
-            city ? (
-              <TouchableOpacity
-                style={styles.upcomingCta}
-                activeOpacity={0.7}
-                onPress={() => router.push(`/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`)}
-              >
-                <Text style={styles.upcomingCtaEmoji}>🔮</Text>
-                <Text style={styles.upcomingCtaText}>See what's coming</Text>
-                <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
-              </TouchableOpacity>
-            ) : null
-          }
         />
+      )}
+
+      {/* ── Sticky CTA — always visible above the FAB ── */}
+      {city && (
+        <TouchableOpacity
+          style={styles.upcomingCta}
+          activeOpacity={0.7}
+          onPress={() => router.push(`/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`)}
+        >
+          <Text style={styles.upcomingCtaEmoji}>🔮</Text>
+          <Text style={styles.upcomingCtaText}>See what's coming</Text>
+          <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
+        </TouchableOpacity>
       )}
 
       {/* ── FAB — always visible, matches web "+" button ── */}
@@ -334,7 +334,8 @@ const styles = StyleSheet.create({
     marginVertical:  Spacing.sm,
   },
 
-  list: { paddingBottom: 100, paddingHorizontal: Spacing.md, gap: Spacing.sm },
+  // Extra paddingBottom so last card clears the sticky CTA (~60px) + FAB (~82px) + buffer
+  list: { paddingBottom: 170, paddingHorizontal: Spacing.md, gap: Spacing.sm },
 
   // ── Event card — web: .event-card ──────────────────────────────────────────
 
@@ -410,8 +411,8 @@ const styles = StyleSheet.create({
   // ── FAB — web: .fab-create (fixed bottom-right, orange circle) ────────────
   fab: {
     position:        'absolute',
-    right:           20,
-    bottom:          24,
+    right:           Spacing.md,
+    bottom:          Spacing.md,
     width:           58,
     height:          58,
     borderRadius:    29,
@@ -426,8 +427,12 @@ const styles = StyleSheet.create({
   },
   fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
 
-  // ── Upcoming CTA — styled as a feed card, not a banner ─────────────────────
+  // ── Upcoming CTA — sticky card floating above the FAB ───────────────────────
   upcomingCta: {
+    position:         'absolute',
+    left:             Spacing.md,
+    right:            Spacing.md,
+    bottom:           Spacing.md + 58 + Spacing.sm, // above FAB (58px) + gap
     backgroundColor:  Colors.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,

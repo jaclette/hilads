@@ -122,7 +122,7 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   flex:      { flex: 1 },
-  scroll:    { flexGrow: 1 },
+  scroll:    { flexGrow: 1, paddingBottom: Spacing.xxl },
 
   header:   { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
   backBtn:  { padding: 4, alignSelf: 'flex-start' },
