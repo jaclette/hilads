@@ -41,7 +41,7 @@ const CLEANUP_INTERVAL_MS = 60_000 // check for stale sessions every 60s
 const PING_INTERVAL_MS = 30_000   // detect dead TCP connections
 const TYPING_TTL_MS = 8_000       // auto-clear typing if no typingStop within 8s
 const ALLOWED_ORIGINS = new Set(
-  (process.env.WS_ALLOWED_ORIGINS || 'https://hilads.vercel.app')
+  (process.env.WS_ALLOWED_ORIGINS || 'https://hilads.live,https://hilads.vercel.app')
     .split(',')
     .map(v => v.trim())
     .filter(Boolean)
@@ -398,7 +398,7 @@ wss.on('connection', (ws, req) => {
   //   - "null" origin string (React Native on Android via OkHttp)
   //   - the WS server's own hostname (OkHttp computes origin from the WS URL)
   //   - explicitly allowed web origins (browsers)
-  const wsHost = req.headers.host  // e.g. "hilads-ws.onrender.com"
+  const wsHost = req.headers.host  // e.g. "ws.hilads.live"
   const selfOrigin = wsHost ? `https://${wsHost}` : null
   if (origin && origin !== 'null' && origin !== selfOrigin && !ALLOWED_ORIGINS.has(origin)) {
     console.log(`[WS] rejected origin: "${origin}" (allowed: ${[...ALLOWED_ORIGINS].join(', ')})`)
