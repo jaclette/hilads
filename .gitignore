@@ -7,13 +7,18 @@ apps/web/dist/
 # Backend storage
 backend/api/storage/*.json
 
-# Env files (use platform env vars in production)
+# Env files
 apps/web/.env
 apps/web/.env.local
 
 # Expo
 .expo/
 apps/mobile/.expo/
+.expo-shared/
+
+# Native builds (Expo managed)
+android/
+ios/
 
 # iOS
 ios/Pods/
@@ -24,9 +29,12 @@ ios/build/
 android/.gradle/
 android/build/
 
-# misc
-*.log
+# Build outputs
+dist/
+web-build/
 
-# Native builds (Expo managed)
-android/
-ios/
+# Package managers
+package-lock.json
+
+# Logs
+*.log

@@ -20,9 +20,6 @@
       "android": {
         "buildType": "apk"
       },
-      "ios": {
-        "buildType": "release"
-      },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.hilads.live",
         "EXPO_PUBLIC_WS_URL": "wss://ws.hilads.live"
@@ -32,9 +29,6 @@
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
-      },
-      "ios": {
-        "buildType": "release"
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://api.hilads.live",
