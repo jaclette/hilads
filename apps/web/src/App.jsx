@@ -484,8 +484,7 @@ export default function App() {
   // Events state
   const [events, setEvents] = useState([])
   const [cityEvents, setCityEvents] = useState([])
-  const [previewEvents, setPreviewEvents] = useState([])
-  const [previewEventCount, setPreviewEventCount] = useState(0)
+
   const [previewTimezone, setPreviewTimezone] = useState('UTC')
   const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
   const [activeEventId, setActiveEventId] = useState(null)
@@ -918,20 +917,6 @@ export default function App() {
       setCityCountry(location.country ?? null)
       setPreviewTimezone(location.timezone ?? 'UTC')
       setGeoState('resolved')
-      fetchEvents(location.channelId).then(data => {
-        const tz = location.timezone ?? 'UTC'
-        const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-        const todayEvents = data.events.filter(e =>
-          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-        )
-        setPreviewEventCount(todayEvents.length)
-        const now = Date.now()
-        const filtered = todayEvents
-          .filter(e => (e.starts_at * 1000 - now) / 60000 >= -30)
-          .sort((a, b) => a.starts_at - b.starts_at)
-          .slice(0, 3)
-        setPreviewEvents(filtered)
-      }).catch(() => {})
       return location
     } catch (err) {
       // GeolocationPositionError.PERMISSION_DENIED = code 1
