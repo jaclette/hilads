@@ -130,8 +130,14 @@ class EventRepository
         ");
         $stmt->execute(['parent_id' => 'city_' . $channelId]);
 
-        $events = [];
+        // Two buckets: user-created events always show; imported/seeded venue series fill
+        // remaining slots. Without this split, 6+ seeded venues consume all MAX_HILADS
+        // slots and user-created one-shot events get silently dropped.
+        // Distinction: imported series occurrences have guest_id = NULL (no creator).
+        $userEvents     = []; // one-shot + user-created series (guest_id IS NOT NULL)
+        $importedEvents = []; // seeded/imported venue series occurrences (guest_id IS NULL)
         $seenKeys = [];
+
         foreach ($stmt->fetchAll() as $row) {
             $event = self::format($row);
 
@@ -155,17 +161,27 @@ class EventRepository
                 continue;
             }
             $seenKeys[$dedupeKey] = true;
-            $events[] = $event;
+
+            if ($event['guest_id'] !== null) {
+                $userEvents[] = $event;
+            } else {
+                $importedEvents[] = $event;
+            }
         }
 
-        // Ongoing events (started but not yet ended) appear first, then upcoming sorted by start time.
-        usort($events, function (array $a, array $b) use ($now): int {
+        // Ongoing events first, then by start time — applied to each bucket independently
+        // so user events always sort ahead of imported venue events in the final list.
+        $sortFn = function (array $a, array $b) use ($now): int {
             $aOngoing = $a['starts_at'] <= $now && $a['expires_at'] > $now ? 1 : 0;
             $bOngoing = $b['starts_at'] <= $now && $b['expires_at'] > $now ? 1 : 0;
-            if ($aOngoing !== $bOngoing) return $bOngoing - $aOngoing; // ongoing first
+            if ($aOngoing !== $bOngoing) return $bOngoing - $aOngoing;
             return $a['starts_at'] <=> $b['starts_at'];
-        });
-        $events = array_slice($events, 0, self::MAX_HILADS);
+        };
+        usort($userEvents,     $sortFn);
+        usort($importedEvents, $sortFn);
+
+        $remainingSlots = max(0, self::MAX_HILADS - count($userEvents));
+        $events = array_merge($userEvents, array_slice($importedEvents, 0, $remainingSlots));
 
         // Batch-fetch participant counts — 1 query regardless of event count.
         // Avoids the N+1 pattern where the frontend called /participants per event.
