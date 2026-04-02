@@ -308,6 +308,8 @@ const styles = StyleSheet.create({
   // Web: border-radius 28px; min-height 56px; padding 0 20px; font-size 1.04rem
   input: {
     flex:              1,
+    flexShrink:        1,
+    minWidth:          0,
     minHeight:         62,
     maxHeight:         130,
     backgroundColor:   Colors.bg,
@@ -328,6 +330,7 @@ const styles = StyleSheet.create({
   // Gradient approximated with #B87228 (accent2 — the warm amber end).
   sendBtnWrap: {
     flexShrink:    0,
+    flexGrow:      0,
     shadowColor:   '#C24A38',
     shadowOffset:  { width: 0, height: 6 },
     shadowOpacity: 0.32,

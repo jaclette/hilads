@@ -1707,6 +1707,7 @@ html, body, #root {
 
 .input-bar input {
   flex: 1;
+  min-width: 0;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 28px;
@@ -5310,6 +5311,7 @@ img.dm-header-avatar {
 
 .dm-input {
   flex: 1;
+  min-width: 0;
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px;

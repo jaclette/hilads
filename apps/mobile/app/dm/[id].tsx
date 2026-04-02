@@ -752,6 +752,8 @@ const styles = StyleSheet.create({
   emojiBtnIcon: { fontSize: 18, lineHeight: 22 },
   input: {
     flex:              1,
+    flexShrink:        1,
+    minWidth:          0,
     minHeight:         48,
     maxHeight:         130,
     backgroundColor:   Colors.bg2,
