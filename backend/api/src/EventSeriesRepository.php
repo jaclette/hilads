@@ -12,7 +12,7 @@ class EventSeriesRepository
         return $dt->getTimestamp();
     }
 
-    private static function matchesRecurrence(array $series, string $date): bool
+    public static function matchesRecurrence(array $series, string $date): bool
     {
         $dt  = new DateTime($date);
         $dow = (int) $dt->format('w'); // 0=Sun, 1=Mon, ... 6=Sat
@@ -38,6 +38,11 @@ class EventSeriesRepository
 
     private static function createOccurrence(array $series, string $date): string
     {
+        // Deterministic channel ID: same series + same date always produce the same 16-char hex ID.
+        // This makes concurrent on-demand generation safe — both callers derive the same ID and
+        // the second INSERT just hits ON CONFLICT DO NOTHING, leaving zero orphan rows.
+        $channelId = substr(hash('sha256', 'series:' . $series['id'] . ':' . $date), 0, 16);
+
         $pdo      = Database::pdo();
         $tz       = $series['timezone'];
         $startsAt = self::localToUnix($date, $series['start_time'], $tz);
@@ -48,11 +53,10 @@ class EventSeriesRepository
             $endsAt += 86400;
         }
 
-        $channelId = bin2hex(random_bytes(8));
-
         $pdo->prepare("
             INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
             VALUES (?, 'event', ?, ?, 'active', now(), now())
+            ON CONFLICT (id) DO NOTHING
         ")->execute([$channelId, $series['city_id'], $series['title']]);
 
         $pdo->prepare("
@@ -62,6 +66,7 @@ class EventSeriesRepository
             VALUES
                 (?, 'hilads', ?, ?, ?, ?,
                  ?, to_timestamp(?), to_timestamp(?), ?, ?)
+            ON CONFLICT (channel_id) DO NOTHING
         ")->execute([
             $channelId,
             $series['created_by'] ?? null,
@@ -88,6 +93,44 @@ class EventSeriesRepository
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
+
+    /**
+     * Ensure today's occurrence exists for every active series in this city.
+     * Called at the start of getByChannel so recurring events are always visible
+     * even when the daily cron job hasn't run yet (or failed).
+     *
+     * Uses deterministic channel IDs so concurrent calls are safe — if two
+     * requests fire at once they both try to INSERT the same channel_id and
+     * the loser just hits ON CONFLICT DO NOTHING.
+     */
+    public static function ensureTodayOccurrences(string $cityDbId, string $timezone): void
+    {
+        $tz    = new DateTimeZone($timezone);
+        $today = (new DateTime('today', $tz))->format('Y-m-d');
+
+        // Find active series that should have today's occurrence but don't yet.
+        // The check is against occurrence_date (not expires_at) so a cleaned-up
+        // old occurrence doesn't prevent a fresh one from being generated.
+        $stmt = Database::pdo()->prepare("
+            SELECT es.*
+            FROM event_series es
+            WHERE es.city_id  = ?
+              AND es.starts_on <= ?
+              AND (es.ends_on IS NULL OR es.ends_on >= ?)
+              AND NOT EXISTS (
+                  SELECT 1 FROM channel_events ce
+                  WHERE ce.series_id       = es.id
+                    AND ce.occurrence_date = ?::date
+              )
+        ");
+        $stmt->execute([$cityDbId, $today, $today, $today]);
+
+        foreach ($stmt->fetchAll() as $series) {
+            if (self::matchesRecurrence($series, $today)) {
+                self::createOccurrence($series, $today);
+            }
+        }
+    }
 
     /**
      * Create a user-initiated series (requires authenticated user + guestId).

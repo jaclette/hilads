@@ -115,6 +115,11 @@ class EventRepository
         $today = (new DateTime('now', $tz))->format('Y-m-d');
         $now = time();
 
+        // Safety net: generate today's occurrences for any series whose daily cron entry
+        // is missing (cron failed, city was recently seeded, etc.). Uses deterministic
+        // channel IDs so concurrent requests are safe — second caller hits ON CONFLICT DO NOTHING.
+        EventSeriesRepository::ensureTodayOccurrences('city_' . $channelId, $timezone);
+
         $stmt = Database::pdo()->prepare(self::SELECT . "
             WHERE c.parent_id = :parent_id
               AND c.type       = 'event'
@@ -153,7 +158,13 @@ class EventRepository
             $events[] = $event;
         }
 
-        usort($events, fn(array $a, array $b) => $a['starts_at'] <=> $b['starts_at']);
+        // Ongoing events (started but not yet ended) appear first, then upcoming sorted by start time.
+        usort($events, function (array $a, array $b) use ($now): int {
+            $aOngoing = $a['starts_at'] <= $now && $a['expires_at'] > $now ? 1 : 0;
+            $bOngoing = $b['starts_at'] <= $now && $b['expires_at'] > $now ? 1 : 0;
+            if ($aOngoing !== $bOngoing) return $bOngoing - $aOngoing; // ongoing first
+            return $a['starts_at'] <=> $b['starts_at'];
+        });
         $events = array_slice($events, 0, self::MAX_HILADS);
 
         // Batch-fetch participant counts — 1 query regardless of event count.
