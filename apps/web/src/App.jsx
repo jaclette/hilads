@@ -18,6 +18,7 @@ import UpcomingEventsScreen from './components/UpcomingEventsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import BackButton from './components/BackButton'
+import EmojiPicker from './components/EmojiPicker'
 import SendButton from './components/SendButton'
 import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
@@ -491,6 +492,7 @@ export default function App() {
   const [nickname, setNickname] = useState(() => loadIdentity()?.nickname ?? generateNickname())
   const [feed, setFeed] = useState([])
   const [input, setInput] = useState('')
+  const [showEmoji, setShowEmoji] = useState(false)
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState(null)
   const [onlineCount, setOnlineCount] = useState(null)
@@ -1381,6 +1383,19 @@ export default function App() {
     } finally {
       setUploading(false)
     }
+  }
+
+  function insertEmoji(emoji) {
+    const el = chatInputRef.current
+    if (!el) { setInput(prev => prev + emoji); setShowEmoji(false); return }
+    const start = el.selectionStart ?? input.length
+    const end   = el.selectionEnd   ?? input.length
+    setInput(prev => prev.slice(0, start) + emoji + prev.slice(end))
+    setShowEmoji(false)
+    requestAnimationFrame(() => {
+      el.focus()
+      el.setSelectionRange(start + emoji.length, start + emoji.length)
+    })
   }
 
   async function handleSend(e) {
@@ -2516,6 +2531,19 @@ export default function App() {
           >
             {uploading ? <span className="upload-spinner" /> : <ImageIcon />}
           </button>
+          <div className="emoji-picker-wrap">
+            <button
+              type="button"
+              className={`emoji-trigger${showEmoji ? ' emoji-trigger--active' : ''}`}
+              title="Emoji"
+              onClick={() => setShowEmoji(p => !p)}
+            >
+              😊
+            </button>
+            {showEmoji && (
+              <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
+            )}
+          </div>
           <input
             ref={chatInputRef}
             type="text"

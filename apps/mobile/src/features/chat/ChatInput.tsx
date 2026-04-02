@@ -11,13 +11,14 @@
 import { useState, useRef } from 'react';
 import {
   View, TextInput, TouchableOpacity, Text,
-  ActivityIndicator, StyleSheet, Platform, Alert, Linking
+  ActivityIndicator, StyleSheet, Platform, Alert, Linking, Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { Colors, FontSizes } from '@/constants';
 import { AndroidCameraCapture } from './AndroidCameraCapture';
+import { EmojiPanel } from './EmojiPanel';
 
 
 // ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
@@ -48,10 +49,12 @@ interface Props {
 }
 
 export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…' }: Props) {
-  const [text,            setText]           = useState('');
-  const [uploading,       setUploading]       = useState(false);
-  const [androidCamera,   setAndroidCamera]   = useState(false);
+  const [text,          setText]        = useState('');
+  const [uploading,     setUploading]   = useState(false);
+  const [androidCamera, setAndroidCamera] = useState(false);
+  const [showEmoji,     setShowEmoji]   = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const lastSel  = useRef({ start: 0, end: 0 });
 
   function handleSend() {
     const trimmed = text.trim();
@@ -59,6 +62,19 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onSendText(trimmed);
     setText('');
+  }
+
+  function insertEmoji(emoji: string) {
+    const { start, end } = lastSel.current;
+    const next = text.slice(0, start) + emoji + text.slice(end);
+    setText(next);
+    const pos = start + emoji.length;
+    lastSel.current = { start: pos, end: pos };
+  }
+
+  function handleEmojiToggle() {
+    if (!showEmoji) Keyboard.dismiss();
+    setShowEmoji(p => !p);
   }
 
   async function launchWithUri(uri: string) {
@@ -177,6 +193,10 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         }}
       />
     )}
+
+    {/* ── Emoji panel — appears above composer when emoji mode is active ── */}
+    {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
+
     <View style={styles.container}>
 
       {/* ── Upload button — web: .upload-btn (54×54, rgba bg, border, image SVG) ── */}
@@ -194,12 +214,22 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         )}
       </TouchableOpacity>
 
+      {/* ── Emoji button ── */}
+      <TouchableOpacity
+        style={[styles.emojiBtn, showEmoji && styles.emojiBtnActive]}
+        onPress={handleEmojiToggle}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.emojiBtnIcon}>😊</Text>
+      </TouchableOpacity>
+
       {/* ── Input — web: border-radius 28px, min-height 56px, padding 0 20px ── */}
       <TextInput
         ref={inputRef}
         style={styles.input}
         value={text}
         onChangeText={setText}
+        onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; }}
         placeholder={placeholder}
         placeholderTextColor={Colors.muted2}
         multiline
@@ -208,6 +238,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         blurOnSubmit={Platform.OS !== 'ios'}
         onSubmitEditing={Platform.OS !== 'ios' ? handleSend : undefined}
         editable={!busy}
+        onFocus={() => setShowEmoji(false)}
       />
 
       {/* ── Send button — web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}
@@ -318,4 +349,25 @@ const styles = StyleSheet.create({
   },
 
   btnDisabled: { opacity: 0.35 },
+
+  emojiBtn: {
+    width:           44,
+    height:          44,
+    flexShrink:      0,
+    alignItems:      'center',
+    justifyContent:  'center',
+    borderRadius:    22,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth:     1,
+    borderColor:     'rgba(255, 255, 255, 0.09)',
+    opacity:         0.6,
+  },
+  emojiBtnActive: {
+    opacity:         1,
+    backgroundColor: 'rgba(255, 255, 255, 0.09)',
+  },
+  emojiBtnIcon: {
+    fontSize:   20,
+    lineHeight: 24,
+  },
 });

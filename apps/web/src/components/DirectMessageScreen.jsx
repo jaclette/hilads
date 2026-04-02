@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage } from '../api'
 import BackButton from './BackButton'
 import SendButton from './SendButton'
+import EmojiPicker from './EmojiPicker'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -67,9 +68,11 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const [sending, setSending]     = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError]         = useState(null)
+  const [showEmoji, setShowEmoji] = useState(false)
   const bottomRef                 = useRef(null)
   const knownIds                  = useRef(new Set())
   const fileRef                   = useRef(null)
+  const dmInputRef                = useRef(null)
 
   const otherName = otherUser?.display_name ?? '?'
   const [c1, c2] = avatarColors(otherName)
@@ -132,6 +135,19 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
     } finally {
       setUploading(false)
     }
+  }
+
+  function insertEmoji(emoji) {
+    const el = dmInputRef.current
+    if (!el) { setInput(prev => prev + emoji); setShowEmoji(false); return }
+    const start = el.selectionStart ?? input.length
+    const end   = el.selectionEnd   ?? input.length
+    setInput(prev => prev.slice(0, start) + emoji + prev.slice(end))
+    setShowEmoji(false)
+    requestAnimationFrame(() => {
+      el.focus()
+      el.setSelectionRange(start + emoji.length, start + emoji.length)
+    })
   }
 
   async function handleSend(e) {
@@ -229,7 +245,21 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
             : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           }
         </button>
+        <div className="emoji-picker-wrap">
+          <button
+            type="button"
+            className={`emoji-trigger${showEmoji ? ' emoji-trigger--active' : ''}`}
+            title="Emoji"
+            onClick={() => setShowEmoji(p => !p)}
+          >
+            😊
+          </button>
+          {showEmoji && (
+            <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
+          )}
+        </div>
         <input
+          ref={dmInputRef}
           className="dm-input"
           type="text"
           value={input}

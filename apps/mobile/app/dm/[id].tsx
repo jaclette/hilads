@@ -10,8 +10,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, Image, FlatList, TextInput, TouchableOpacity,
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
-  Animated, Alert, InteractionManager,
+  Animated, Alert, InteractionManager, Keyboard,
 } from 'react-native';
+import { EmojiPanel } from '@/features/chat/EmojiPanel';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -203,6 +204,8 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const [text,      setText]      = useState('');
   const [uploading, setUploading] = useState(false);
   const [focused,   setFocused]   = useState(false);
+  const [showEmoji, setShowEmoji] = useState(false);
+  const lastSel = useRef({ start: 0, end: 0 });
 
   const color   = avatarColor(displayName);
   const initial = displayName.slice(0, 1).toUpperCase();
@@ -293,6 +296,19 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     ]);
   }
 
+  function insertEmoji(emoji: string) {
+    const { start, end } = lastSel.current;
+    const next = text.slice(0, start) + emoji + text.slice(end);
+    setText(next);
+    const pos = start + emoji.length;
+    lastSel.current = { start: pos, end: pos };
+  }
+
+  function handleEmojiToggle() {
+    if (!showEmoji) Keyboard.dismiss();
+    setShowEmoji(p => !p);
+  }
+
   // Inverted FlatList: index 0 = newest (bottom), index n-1 = oldest (top).
   // "isFirst" = oldest in sender run → avatar shown here.
   // "isLast"  = newest in sender run → timestamp shown here.
@@ -353,6 +369,9 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         />
       )}
 
+      {/* ── Emoji panel ── */}
+      {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
+
       {/* ── Composer ── */}
       <View style={[styles.composer, focused && styles.composerFocused]}>
         <TouchableOpacity
@@ -366,11 +385,19 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
             : <Ionicons name="image-outline" size={22} color={Colors.text} />
           }
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.emojiBtn, showEmoji && styles.emojiBtnActive]}
+          onPress={handleEmojiToggle}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.emojiBtnIcon}>😊</Text>
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           value={text}
           onChangeText={setText}
-          onFocus={() => setFocused(true)}
+          onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; }}
+          onFocus={() => { setFocused(true); setShowEmoji(false); }}
           onBlur={() => setFocused(false)}
           placeholder={`Message ${displayName}…`}
           placeholderTextColor={Colors.muted2}
@@ -706,6 +733,23 @@ const styles = StyleSheet.create({
     flexShrink:      0,
   },
   imageBtnDisabled: { opacity: 0.4 },
+  emojiBtn: {
+    width:           36,
+    height:          36,
+    borderRadius:    18,
+    alignItems:      'center',
+    justifyContent:  'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.09)',
+    flexShrink:      0,
+    opacity:         0.6,
+  },
+  emojiBtnActive: {
+    opacity:         1,
+    backgroundColor: 'rgba(255,255,255,0.10)',
+  },
+  emojiBtnIcon: { fontSize: 18, lineHeight: 22 },
   input: {
     flex:              1,
     minHeight:         48,
