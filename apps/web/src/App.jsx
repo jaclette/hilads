@@ -592,6 +592,7 @@ export default function App() {
   }
 
   const bottomRef = useRef(null)
+  const isInitialLoadRef = useRef(true) // true until first non-empty feed renders — forces scroll-to-bottom on channel entry
   const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
   const appendFeed = (items) => setFeed(prev => {
     const next = Array.isArray(items) ? [...prev, ...items] : [...prev, items]
@@ -859,11 +860,29 @@ export default function App() {
     }
   }, [])
 
-  // Auto-scroll to bottom only when already near the bottom — don't interrupt reading.
+  // Scroll to bottom on new messages.
+  // - Initial load (isInitialLoadRef): always scroll to bottom so user lands at latest messages.
+  // - Subsequent messages: only scroll if already near the bottom — don't interrupt history reading.
+  // isInitialLoadRef resets to true whenever feed clears (channel/event switch).
   const messagesContainerRef = useRef(null)
   useEffect(() => {
     const container = messagesContainerRef.current
     if (!container) return
+
+    if (feed.length === 0) {
+      // Channel reset — arm initial-load scroll for next messages batch
+      isInitialLoadRef.current = true
+      return
+    }
+
+    if (isInitialLoadRef.current) {
+      // First batch after channel entry — always jump to bottom
+      isInitialLoadRef.current = false
+      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      return
+    }
+
+    // Subsequent live messages — only scroll if already near the bottom
     const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
     if (distanceFromBottom < 150) {
       bottomRef.current?.scrollIntoView({ behavior: 'instant' })
