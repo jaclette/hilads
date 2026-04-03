@@ -46,7 +46,7 @@ const HOW_IT_WORKS = [
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
 
-function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
+function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
   const noGeo = geoState === 'denied' || geoState === 'error'
   const [c1, c2] = avatarColors(nickname || 'A')
 
@@ -62,10 +62,16 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 {cityFlag(cityCountry)}
               </span>
             </span>
-            <span className="ob-live">
-              <span className="ob-live-fire">🔥</span>{' '}
-              {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now
-            </span>
+            <div className="ob-activity-block">
+              <span className="ob-activity-line">
+                🔥 {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} here right now
+              </span>
+              {previewEventCount > 0 && (
+                <span className="ob-activity-line">
+                  🔥 {previewEventCount} {previewEventCount === 1 ? 'vibe' : 'vibes'} happening today
+                </span>
+              )}
+            </div>
           </>
         ) : noGeo ? (
           <p className="ob-geo-headline">Pick a city<br />and jump in</p>
@@ -175,6 +181,7 @@ export default function LandingPage({
   nickname, setNickname,
   handleJoin,
   previewLiveCount,
+  previewEventCount = 0,
   onSignUp, onSignIn, onOpenCityPicker, retryGeo,
 }) {
   const heroJoinRef = useRef(null)
@@ -228,6 +235,7 @@ export default function LandingPage({
             setNickname={setNickname}
             handleJoin={handleJoinWithTracking}
             previewLiveCount={previewLiveCount}
+            previewEventCount={previewEventCount}
             onOpenCityPicker={onOpenCityPicker}
             retryGeo={retryGeo}
             onSignUp={handleSignUp}
@@ -325,6 +333,7 @@ export default function LandingPage({
           setNickname={setNickname}
           handleJoin={handleJoinWithTracking}
           previewLiveCount={previewLiveCount}
+          previewEventCount={previewEventCount}
           onOpenCityPicker={onOpenCityPicker}
           retryGeo={retryGeo}
           onSignUp={handleSignUp}

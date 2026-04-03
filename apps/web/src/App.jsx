@@ -542,6 +542,8 @@ export default function App() {
 
   const [previewTimezone, setPreviewTimezone] = useState('UTC')
   const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
+  const [previewEventCount, setPreviewEventCount] = useState(0)
+  const [previewChannelId, setPreviewChannelId] = useState(null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
@@ -1006,6 +1008,7 @@ export default function App() {
       setCity(location.city)
       setCityCountry(location.country ?? null)
       setPreviewTimezone(location.timezone ?? 'UTC')
+      setPreviewChannelId(location.channelId ?? null)
       setGeoState('resolved')
       return location
     } catch (err) {
@@ -1031,6 +1034,21 @@ export default function App() {
       navigator.geolocation.getCurrentPosition(resolve, (err) => reject(err))
     })
   }
+
+  // Fetch today's event count for the pre-join activity block
+  useEffect(() => {
+    if (!previewChannelId) return
+    const tz = previewTimezone || 'UTC'
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+    fetchCityEvents(previewChannelId)
+      .then(data => {
+        const count = (data.events ?? []).filter(e =>
+          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
+        ).length
+        setPreviewEventCount(count)
+      })
+      .catch(() => {})
+  }, [previewChannelId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function injectWelcomeCard(cid, cityName) {
     if (!cityName || hasBeenWelcomed(cid)) return
@@ -1948,6 +1966,7 @@ export default function App() {
           setNickname={setNickname}
           handleJoin={handleJoin}
           previewLiveCount={previewLiveCount}
+          previewEventCount={previewEventCount}
           onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
           onSignIn={() => { setObAuthInitialTab('login');  setObShowAuth(true) }}
           onOpenCityPicker={openObCityPicker}

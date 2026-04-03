@@ -222,6 +222,25 @@ html, body, #root {
   50% { transform: scale(1.25); }
 }
 
+/* ── Activity block: people + events together ──────────────────────────────── */
+
+.ob-activity-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 14px;
+  padding: 10px 16px;
+}
+
+.ob-activity-line {
+  font-size: 0.82rem;
+  color: var(--muted2);
+  line-height: 1.4;
+}
+
 .ob-locating {
   font-size: 0.88rem;
   color: var(--muted2);

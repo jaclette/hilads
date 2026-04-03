@@ -300,20 +300,17 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   {/* ob-tagline */}
                   <Text style={styles.tagline}>Stop scrolling. Join the vibe.</Text>
 
-                  {/* ob-live pill */}
-                  <View style={styles.livePill}>
-                    <Text style={styles.liveText}>
-                      🔥 {previewLiveCount}{' '}
-                      {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now
+                  {/* ob-activity-block: people + events together */}
+                  <View style={styles.activityBlock}>
+                    <Text style={styles.activityLine}>
+                      🔥 {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} here right now
                     </Text>
+                    {previewEventCount > 0 && (
+                      <Text style={styles.activityLine}>
+                        🔥 {previewEventCount} {previewEventCount === 1 ? 'vibe' : 'vibes'} happening today
+                      </Text>
+                    )}
                   </View>
-
-                  {/* ob-event-count */}
-                  {previewEventCount > 0 && (
-                    <Text style={styles.eventCountText}>
-                      🔥 {previewEventCount} event{previewEventCount > 1 ? 's' : ''} happening today
-                    </Text>
-                  )}
 
                   {/* ob-events-preview — up to 3 items */}
                   {previewEvents.length > 0 && (
@@ -606,23 +603,22 @@ const styles = StyleSheet.create({
     textAlign:  'center',
     lineHeight: 21,
   },
-  // ob-live: 0.82rem, muted2, pill bg rgba(255,255,255,0.05), border rgba(255,255,255,0.1)
-  livePill: {
-    backgroundColor:   'rgba(255,255,255,0.05)',
+  // ob-activity-block: single container for people + events signals
+  activityBlock: {
+    backgroundColor:   'rgba(255,255,255,0.04)',
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 10,
-    paddingVertical:   3,
+    borderColor:       'rgba(255,255,255,0.09)',
+    borderRadius:      14,
+    paddingHorizontal: 16,
+    paddingVertical:   10,
+    alignItems:        'center',
+    gap:               6,
   },
-  liveText: {
-    fontSize: 13,  // 0.82rem
-    color:    Colors.muted2,
-  },
-  // ob-event-count: 0.85rem, muted2
-  eventCountText: {
-    fontSize: 14,
-    color:    Colors.muted2,
+  activityLine: {
+    fontSize:   13,   // 0.82rem
+    color:      Colors.muted2,
+    lineHeight: 18,
+    textAlign:  'center',
   },
 
   // ob-events-preview: flex column, gap:5, full width
