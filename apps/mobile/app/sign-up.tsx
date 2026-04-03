@@ -7,13 +7,21 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { authSignup } from '@/api/auth';
+import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
+import { socket } from '@/lib/socket';
+import { saveIdentity } from '@/lib/identity';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignUpScreen() {
   const router = useRouter();
-  const { setAccount, setJoined, identity } = useApp();
+  const {
+    setAccount, setJoined, setCity, setIdentity,
+    identity, sessionId,
+    joined,        // false when coming from the pre-join landing screen
+    detectedCity,  // geo-resolved city waiting to be joined
+  } = useApp();
 
   const [name,     setName]     = useState('');
   const [email,    setEmail]    = useState('');
@@ -26,8 +34,8 @@ export default function SignUpScreen() {
     const e = email.trim().toLowerCase();
     const p = password;
 
-    if (!n)        { setError('Display name required'); return; }
-    if (!e)        { setError('Email required'); return; }
+    if (!n)           { setError('Display name required'); return; }
+    if (!e)           { setError('Email required'); return; }
     if (p.length < 8) { setError('Password must be at least 8 characters'); return; }
 
     setLoading(true);
@@ -37,12 +45,44 @@ export default function SignUpScreen() {
       const guestId = identity?.guestId ?? '';
       const { user } = await authSignup(e, p, n, guestId);
       setAccount(user);
-      setJoined(true);   // dismiss LandingScreen if it was showing
       identifyUser(user.id, { account_type: 'registered', username: user.display_name });
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
       track('user_authenticated');
       track('auth_signup');
-      router.back(); // usePushRegistration in _layout.tsx reacts to setAccount above
+
+      // ── Pre-join city restore ─────────────────────────────────────────────
+      // If the user came from the landing screen (joined=false) and geo already
+      // resolved a city, complete the join flow they were about to do before
+      // going to auth. This mirrors LandingScreen.handleJoin() exactly.
+      if (!joined && detectedCity && identity && sessionId) {
+        const nickname = user.display_name;
+        try {
+          await joinChannel(detectedCity.channelId, sessionId, identity.guestId, nickname);
+          setCity(detectedCity);
+          const userId = user.id;
+          if (socket.isConnected) {
+            socket.joinCity(detectedCity.channelId, sessionId, nickname, userId, identity.guestId);
+          } else {
+            socket.on('connected', () =>
+              socket.joinCity(detectedCity.channelId, sessionId, nickname, userId, identity.guestId),
+            );
+          }
+          // Persist channelId so next boot treats user as returning
+          const updated = { ...identity, nickname, channelId: detectedCity.channelId };
+          await saveIdentity(updated);
+          setIdentity(updated);
+          setJoined(true);
+          router.replace('/(tabs)/chat');
+        } catch {
+          // Join failed — authenticate but let user pick a city
+          setJoined(true);
+          router.replace('/(tabs)/cities');
+        }
+      } else {
+        // Normal path: came from inside the app (joined=true) or no pending city
+        setJoined(true);
+        router.back();
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Sign up failed';
       setError(msg.includes('409') || msg.includes('already') ? 'Email already registered' : msg);

@@ -1,19 +1,18 @@
 /**
- * LandingScreen — faithful port of the web onboarding card (.ob-card).
+ * LandingScreen — pixel-perfect port of the web onboarding card.
  *
- * Web source: apps/web/src/App.jsx (status === 'onboarding' branch)
- * Styles:     apps/web/src/index.css (.ob-*)
+ * Web source: apps/web/src/components/LandingPage.jsx (JoinCard)
+ * Styles:     apps/web/src/index.css (.ob-*, .jc-auth-*)
  *
- * Logo: apps/web/src/components/Logo.jsx
- *   SVG icon reproduced using View primitives (scaled 64→46px).
- *   Gradient text approximated with solid Colors.accent2 (no expo-linear-gradient needed).
- *
- * Geo states (matching web exactly):
- *   'pending'   → "› requesting location..."
- *   'resolving' → "› locating..."
- *   'denied'    → badge + "Pick a city / and jump in"
- *   'error'     → badge + "Pick a city / and jump in"
- *   'resolved'  → full city card (name + flag, tagline, live count, events)
+ * Key mappings:
+ *   ob-card         → card View (rgba(22,18,16,0.9), gap:28, padding 36/28/32)
+ *   ob-brand        → brand row (HiladsIcon 46px + wordmark)
+ *   ob-sep          → horizontal LinearGradient fade separator
+ *   ob-city-block   → cityBlock (city, tagline, live pill, event count, preview)
+ *   ob-form         → form (label, input, join btn, hint)
+ *   jc-auth-*       → jcAuth (divider + two side-by-side buttons + hint)
+ *   ob-btn          → LinearGradient(#C24A38→#B87228) full-width CTA
+ *   ob-screen bg    → top warm radial glow via LinearGradient overlay
  */
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -22,6 +21,7 @@ import {
   ActivityIndicator, KeyboardAvoidingView, Platform,
   ScrollView, Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -29,7 +29,7 @@ import { joinChannel } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
-import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
+import { track, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import type { HiladsEvent } from '@/types';
@@ -62,7 +62,6 @@ function cityFlag(countryCode?: string): string {
 }
 
 // ── Random live count — mirrors web previewLiveCount ─────────────────────────
-// Web: `useState(() => 15 + Math.floor(Math.random() * 35))` — generated once.
 
 function randomLiveCount() {
   return 15 + Math.floor(Math.random() * 35);
@@ -76,7 +75,7 @@ const EVENT_ICONS: Record<string, string> = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 };
 
-// ── Today's events in a timezone — mirrors web preview filter ────────────────
+// ── Event filtering — mirrors web preview filter ──────────────────────────────
 
 function filterTodayEvents(events: HiladsEvent[], timezone: string): HiladsEvent[] {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone });
@@ -117,7 +116,7 @@ function PulsingText({ text, style }: { text: string; style?: object }) {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
-  const router = useRouter();
+  const router   = useRouter();
   const pathname = usePathname();
   const {
     identity, sessionId, account,
@@ -125,21 +124,27 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     setIdentity, setCity, setJoined,
   } = useApp();
 
-  const [nickname,     setNickname]     = useState(identity?.nickname ?? '');
-  const [joining,      setJoining]      = useState(false);
-  const [error,        setError]        = useState<string | null>(null);
-  // Show the "browse cities" escape after a delay if geo is still pending/resolving.
-  // Timer ID stored in a ref so the effect cleanup (which runs on every geoState
-  // change) does NOT cancel it when transitioning pending → resolving.
+  const [nickname,      setNickname]      = useState(identity?.nickname ?? '');
+  const [joining,       setJoining]       = useState(false);
+  const [error,         setError]         = useState<string | null>(null);
   const [showGeoEscape, setShowGeoEscape] = useState(false);
   const escapeTimerId = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Events preview — fetched after city is detected (mirrors web startGeolocation)
   const [previewEvents,     setPreviewEvents]     = useState<HiladsEvent[]>([]);
   const [previewEventCount, setPreviewEventCount] = useState(0);
 
-  // Live count — random 15-49, generated once on mount (mirrors web previewLiveCount)
   const previewLiveCount = useMemo(() => randomLiveCount(), []);
+
+  // ── Entrance animation — fade + slide up (mirrors .ob-identity-fadein) ──────
+  const entranceAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(entranceAnim, {
+      toValue:         1,
+      duration:        420,
+      delay:           40,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   // Sync nickname once identity loads
   useEffect(() => {
@@ -148,10 +153,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
   useEffect(() => { track('landing_viewed'); }, []);
 
-  // Escape hatch: reveal "Browse cities" 5s after geo starts.
-  // We store the timer ID in a ref so React's effect cleanup (which runs on
-  // every geoState change) does NOT cancel it during pending → resolving.
-  // The timer is only cancelled when geo leaves the in-flight states.
+  // Geo escape hatch — reveal after 5s in pending/resolving
   useEffect(() => {
     const inFlight = geoState === 'pending' || geoState === 'resolving';
     if (!inFlight) {
@@ -162,15 +164,14 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
       setShowGeoEscape(false);
       return;
     }
-    if (escapeTimerId.current !== null) return; // already counting — don't restart
+    if (escapeTimerId.current !== null) return;
     escapeTimerId.current = setTimeout(() => {
       escapeTimerId.current = null;
       setShowGeoEscape(true);
     }, 5_000);
-    // No cleanup return — the timer must survive pending → resolving transitions
   }, [geoState]);
 
-  // Fetch events when city is detected — mirrors web's fetchEvents() after resolveLocation
+  // Fetch events when city detected
   useEffect(() => {
     if (!detectedCity) return;
     const tz = detectedCity.timezone || 'UTC';
@@ -180,15 +181,14 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
         setPreviewEventCount(todayEvents.length);
         setPreviewEvents(filterPreviewEvents(todayEvents));
       })
-      .catch(() => {}); // non-fatal, preview is optional
+      .catch(() => {});
   }, [detectedCity?.channelId]);
 
-  const city     = detectedCity;
-  const noGeo    = geoState === 'denied' || geoState === 'error';
-  const trimmed  = nickname.trim();
+  const city    = detectedCity;
+  const noGeo   = geoState === 'denied' || geoState === 'error';
+  const trimmed = nickname.trim();
 
-  // Avatar: first color from palette as solid bg
-  const [avatarBg] = avatarColors(trimmed || 'A');
+  const [avatarC1, avatarC2] = avatarColors(trimmed || 'A');
   const avatarLetter = (trimmed[0] || 'A').toUpperCase();
 
   // ── Actions ──────────────────────────────────────────────────────────────────
@@ -197,10 +197,8 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     if (!trimmed || !identity || !sessionId) return;
     setJoining(true);
     setError(null);
-
     try {
       const updated = { ...identity, nickname: trimmed, channelId: city?.channelId };
-
       if (city) {
         await joinChannel(city.channelId, sessionId, identity.guestId, trimmed);
         setCity(city);
@@ -210,7 +208,6 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
           socket.on('connected', () => socket.joinCity(city.channelId, sessionId, trimmed, account?.id));
         }
       }
-
       await saveIdentity(updated);
       setIdentity(updated);
       setAnalyticsContext({
@@ -222,8 +219,6 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
       });
       track('clicked_join_city', { city: city?.name ?? null });
       track('landing_joined', { hasCity: !!city, cityId: city?.channelId });
-      // Navigate to city chat first — mirrors web's setStatus('ready') which renders
-      // the city channel view. setJoined(true) then removes the overlay.
       if (city) router.replace('/(tabs)/chat');
       setJoined(true);
     } catch {
@@ -237,17 +232,23 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     router.replace('/(tabs)/cities');
   }
 
-  // ── Render ───────────────────────────────────────────────────────────────────
-
-  // If the user navigated to an auth screen (sign-up / sign-in), step aside so
-  // the screen below is visible. The overlay would cover modal screens because
-  // it uses absoluteFillObject + zIndex: 100, rendering above the Stack.
+  // Step aside for auth screens so they render above the overlay
   if (pathname === '/sign-up' || pathname === '/sign-in') return null;
 
   const canJoin = !!trimmed && !joining && geoState !== 'pending';
 
   return (
     <SafeAreaView style={styles.screen}>
+
+      {/* Background warm glow — radial(ellipse at 50% -10%) approximated as a vertical fade */}
+      <LinearGradient
+        colors={['rgba(194,74,56,0.12)', 'transparent']}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        style={styles.bgGlow}
+        pointerEvents="none"
+      />
+
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -257,7 +258,20 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.card}>
+
+          {/* ── ob-card ── */}
+          <Animated.View style={[
+            styles.card,
+            {
+              opacity: entranceAnim,
+              transform: [{
+                translateY: entranceAnim.interpolate({
+                  inputRange:  [0, 1],
+                  outputRange: [18, 0],
+                }),
+              }],
+            },
+          ]}>
 
             {/* ── ob-brand: Logo icon + "hilads" wordmark ── */}
             <View style={styles.brand}>
@@ -265,23 +279,28 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
               <Text style={styles.logoWordmark}>hilads</Text>
             </View>
 
-            {/* ── ob-sep ── */}
-            <View style={styles.sep} />
+            {/* ── ob-sep: fading horizontal rule ── */}
+            <LinearGradient
+              colors={['transparent', 'rgba(255,255,255,0.09)', 'transparent']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.sep}
+            />
 
             {/* ── ob-city-block ── */}
             <View style={styles.cityBlock}>
               {city ? (
                 <>
-                  {/* City name + flag — web: {city} + cityFlag(cityCountry) inline */}
+                  {/* ob-city-name — gradient text approximated with accent2 */}
                   <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>
                     {city.name}{' '}
                     <Text style={styles.cityFlagInline}>{cityFlag(city.country)}</Text>
                   </Text>
 
-                  {/* Tagline — web: "Stop scrolling. Join the vibe." */}
+                  {/* ob-tagline */}
                   <Text style={styles.tagline}>Stop scrolling. Join the vibe.</Text>
 
-                  {/* Live count pill — web: "🔥 N person/people hanging out right now" */}
+                  {/* ob-live pill */}
                   <View style={styles.livePill}>
                     <Text style={styles.liveText}>
                       🔥 {previewLiveCount}{' '}
@@ -289,14 +308,14 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     </Text>
                   </View>
 
-                  {/* Events count — web: "🔥 N event(s) happening today" */}
+                  {/* ob-event-count */}
                   {previewEventCount > 0 && (
                     <Text style={styles.eventCountText}>
                       🔥 {previewEventCount} event{previewEventCount > 1 ? 's' : ''} happening today
                     </Text>
                   )}
 
-                  {/* Events preview list — web: ob-events-preview, up to 3 */}
+                  {/* ob-events-preview — up to 3 items */}
                   {previewEvents.length > 0 && (
                     <View style={styles.eventsPreview}>
                       {previewEvents.map(e => (
@@ -314,7 +333,6 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                 </>
               ) : noGeo ? (
                 <>
-                  {/* Geo status badge */}
                   <View style={[
                     styles.geoStatusBadge,
                     geoState === 'error' && styles.geoStatusBadgeWarn,
@@ -326,11 +344,9 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       {geoState === 'denied' ? '📍 Location off' : '📍 Couldn\'t reach your location'}
                     </Text>
                   </View>
-                  {/* Geo headline — web: "Pick a city\nand jump in" */}
                   <Text style={styles.geoHeadline}>Pick a city{'\n'}and jump in</Text>
                 </>
               ) : geoState === 'resolving' ? (
-                /* web: "› locating..." */
                 <>
                   <PulsingText text="› locating..." style={styles.locating} />
                   {showGeoEscape && (
@@ -340,7 +356,6 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   )}
                 </>
               ) : (
-                /* web: "› requesting location..." (geoState = 'pending') */
                 <>
                   <PulsingText text="› requesting location..." style={styles.locating} />
                   {showGeoEscape && (
@@ -356,28 +371,30 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
             <View style={styles.form}>
 
               {noGeo ? (
-                /* No-geo layout: CTA first, then name input (matches web) */
                 <>
-                  <TouchableOpacity
-                    style={styles.btn}
-                    onPress={handleBrowseCities}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.btnText}>Browse cities →</Text>
+                  <TouchableOpacity onPress={handleBrowseCities} activeOpacity={0.85}>
+                    <LinearGradient
+                      colors={['#C24A38', '#B87228']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.btn}
+                    >
+                      <Text style={styles.btnText}>Browse cities →</Text>
+                    </LinearGradient>
                   </TouchableOpacity>
 
                   <Text style={styles.label}>YOUR NAME</Text>
 
                   <View style={styles.inputRow}>
-                    <View style={[styles.avatarCircle, { backgroundColor: avatarBg }]}>
+                    <LinearGradient colors={[avatarC1, avatarC2]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.avatarCircle}>
                       <Text style={styles.avatarLetter}>{avatarLetter}</Text>
-                    </View>
+                    </LinearGradient>
                     <TextInput
                       style={styles.input}
                       value={nickname}
                       onChangeText={setNickname}
                       placeholder="Say hi as..."
-                      placeholderTextColor={Colors.muted}
+                      placeholderTextColor={Colors.muted2}
                       maxLength={20}
                       autoCapitalize="words"
                       autoCorrect={false}
@@ -385,7 +402,6 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     />
                   </View>
 
-                  {/* Retry geo — web: ob-geo-retry */}
                   <TouchableOpacity style={styles.geoRetryBtn} activeOpacity={0.7} onPress={onRetryGeo}>
                     <Text style={styles.geoRetryText}>
                       {geoState === 'error' ? 'Try again' : 'Use my location instead'}
@@ -393,20 +409,19 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   </TouchableOpacity>
                 </>
               ) : (
-                /* Normal layout: name first, join button second (matches web) */
                 <>
                   <Text style={styles.label}>YOUR NAME</Text>
 
                   <View style={styles.inputRow}>
-                    <View style={[styles.avatarCircle, { backgroundColor: avatarBg }]}>
+                    <LinearGradient colors={[avatarC1, avatarC2]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.avatarCircle}>
                       <Text style={styles.avatarLetter}>{avatarLetter}</Text>
-                    </View>
+                    </LinearGradient>
                     <TextInput
                       style={styles.input}
                       value={nickname}
                       onChangeText={setNickname}
                       placeholder="Say hi as..."
-                      placeholderTextColor={Colors.muted}
+                      placeholderTextColor={Colors.muted2}
                       maxLength={20}
                       autoCapitalize="words"
                       autoCorrect={false}
@@ -418,41 +433,70 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
                   <TouchableOpacity
-                    style={[styles.btn, !canJoin && styles.btnDisabled]}
                     onPress={handleJoin}
                     disabled={!canJoin}
                     activeOpacity={0.85}
+                    style={!canJoin && styles.btnDisabled}
                   >
-                    {joining ? (
-                      <ActivityIndicator color={Colors.white} size="small" />
-                    ) : (
-                      <Text style={styles.btnText}>
-                        {city ? `Join ${city.name} →` : 'Join Chat →'}
-                      </Text>
-                    )}
+                    <LinearGradient
+                      colors={['#C24A38', '#B87228']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.btn}
+                    >
+                      {joining ? (
+                        <ActivityIndicator color={Colors.white} size="small" />
+                      ) : (
+                        <Text style={styles.btnText}>
+                          {city ? `Join ${city.name} →` : 'Join Chat →'}
+                        </Text>
+                      )}
+                    </LinearGradient>
                   </TouchableOpacity>
                 </>
               )}
 
-              {/* Identity CTA — web: ob-identity-cta, only shown when !account */}
-              {!account && (
-                <View style={styles.identityCta}>
-                  <Text style={styles.identityHint}>Don't lose your name 👇</Text>
-                  <TouchableOpacity
-                    style={styles.createAccountBtn}
-                    onPress={() => { track('clicked_sign_up'); router.push('/sign-up'); }}
-                    activeOpacity={0.85}
-                  >
-                    <Text style={styles.createAccountText}>✨ Save my identity</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {/* ob-hint */}
-              <Text style={styles.hint}>// anonymous · no sign-up</Text>
+              {/* ob-hint — web: "// anonymous · instant access" */}
+              <Text style={styles.hint}>// anonymous · instant access</Text>
             </View>
 
-          </View>
+            {/* ── jc-auth: divider + Create account / Log in + hint ── */}
+            {!account && (
+              <View style={styles.jcAuth}>
+
+                {/* Divider with lines + "or keep your identity" */}
+                <View style={styles.jcDivider}>
+                  <View style={styles.jcDividerLine} />
+                  <Text style={styles.jcDividerText}>or keep your identity</Text>
+                  <View style={styles.jcDividerLine} />
+                </View>
+
+                {/* Two buttons side by side */}
+                <View style={styles.jcActions}>
+                  <TouchableOpacity
+                    style={styles.jcSignup}
+                    onPress={() => { track('clicked_sign_up'); router.push('/sign-up'); }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.jcSignupText}>✨ Create account</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.jcSignin}
+                    onPress={() => { track('clicked_sign_in'); router.push('/sign-in'); }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.jcSigninText}>Log in</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* jc-auth-hint */}
+                <Text style={styles.jcHint}>Save your name · unlock profiles · add friends</Text>
+
+              </View>
+            )}
+
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -464,12 +508,22 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
 const styles = StyleSheet.create({
+
+  // ── Screen — matches .ob-screen (centered, bg, radial glow approximated) ───
   screen: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.bg,
     zIndex: 100,
   },
-  flex: { flex: 1 },
+  // Top warm glow — approximate of radial-gradient ellipse at 50% -10%
+  bgGlow: {
+    position: 'absolute',
+    top:      0,
+    left:     0,
+    right:    0,
+    height:   '45%',
+  },
+  flex:   { flex: 1 },
   scroll: {
     flexGrow:          1,
     alignItems:        'center',
@@ -478,73 +532,78 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.xl,
   },
 
-  // ── ob-card ──────────────────────────────────────────────────────────────────
+  // ── ob-card ─────────────────────────────────────────────────────────────────
+  // Web: gap:28, padding:36 28 32, bg:rgba(22,18,16,0.9), border:rgba(255,255,255,0.07)
   card: {
     width:           '100%',
     maxWidth:        360,
-    backgroundColor: Colors.bg2,
+    backgroundColor: 'rgba(22,18,16,0.9)',
     borderWidth:     1,
     borderColor:     'rgba(255,255,255,0.07)',
     borderRadius:    20,
-    padding:         Spacing.lg,
-    gap:             Spacing.lg,
+    paddingTop:      36,
+    paddingHorizontal: 28,
+    paddingBottom:   32,
+    gap:             28,
+    // Double shadow: outer depth + subtle ring
     shadowColor:     '#000',
-    shadowOffset:    { width: 0, height: 12 },
+    shadowOffset:    { width: 0, height: 24 },
     shadowOpacity:   0.55,
     shadowRadius:    32,
     elevation:       24,
   },
 
   // ── ob-brand ─────────────────────────────────────────────────────────────────
+  // Web: flex row, centered, size="lg" → icon:46px, fontSize:1.5rem=24px, gap:11
   brand: {
     flexDirection:  'row',
     alignItems:     'center',
     justifyContent: 'center',
-    gap:            11,              // web: gap: 11 at size="lg"
+    gap:            11,
   },
-  // logoWordmark — web: font-weight 800, letter-spacing -0.03em, gradient #C24A38→#B87228
-  // Approximated with solid Colors.accent2 (no gradient-text lib available)
+  // Web logo-wordmark: weight 800, letter-spacing -0.03em, gradient #C24A38→#B87228
   logoWordmark: {
-    fontSize:      24,              // web: 1.5rem at size="lg"
+    fontSize:      24,
     fontWeight:    '800',
-    letterSpacing: -0.72,           // -0.03 * 24
-    color:         '#C24A38',       // gradient start color
+    letterSpacing: -0.72,   // -0.03 × 24
+    color:         '#C24A38',
     lineHeight:    24,
   },
 
-  // ── ob-sep ───────────────────────────────────────────────────────────────────
+  // ── ob-sep: fading horizontal rule ───────────────────────────────────────────
+  // Web: linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent)
   sep: {
-    height:          1,
-    backgroundColor: 'rgba(255,255,255,0.09)',
-    marginVertical:  -4,
+    height:        1,
+    marginVertical: 0,   // gap handles spacing
   },
 
   // ── ob-city-block ────────────────────────────────────────────────────────────
+  // Web: text-align center, gap:6, min-height:60, centered
   cityBlock: {
     alignItems:     'center',
     justifyContent: 'center',
     gap:            6,
     minHeight:      60,
   },
-  // ob-city-name: 2.2rem, font-weight 800, gradient text
-  // Approximated with solid accent color
+  // ob-city-name: 2.2rem=35px, weight 800, gradient text (approximated with accent2)
   cityName: {
     fontSize:      35,
     fontWeight:    '800',
     letterSpacing: -0.7,
-    color:         Colors.accent,
+    color:         '#C24A38',  // gradient start — web: linear-gradient(90deg, --accent, --accent2)
     textAlign:     'center',
     lineHeight:    38,
   },
   cityFlagInline: {
     fontSize: 28,
-    color:    Colors.text,  // flags have no gradient
+    color:    Colors.text,
   },
-  // ob-tagline
+  // ob-tagline: 0.95rem=~15px, muted2, weight 400
   tagline: {
-    fontSize:  15,
-    color:     Colors.muted2,
-    textAlign: 'center',
+    fontSize:   15,
+    fontWeight: '400',
+    color:      Colors.muted2,
+    textAlign:  'center',
     lineHeight: 21,
   },
   // ob-live: 0.82rem, muted2, pill bg rgba(255,255,255,0.05), border rgba(255,255,255,0.1)
@@ -553,26 +612,26 @@ const styles = StyleSheet.create({
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.10)',
     borderRadius:      Radius.full,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: 10,
     paddingVertical:   3,
   },
   liveText: {
-    fontSize:  13,
-    color:     Colors.muted2,
+    fontSize: 13,  // 0.82rem
+    color:    Colors.muted2,
   },
-  // ob-city-sub ob-event-count
+  // ob-event-count: 0.85rem, muted2
   eventCountText: {
     fontSize: 14,
     color:    Colors.muted2,
   },
 
-  // ob-events-preview
+  // ob-events-preview: flex column, gap:5, full width
   eventsPreview: {
-    width: '100%',
-    gap:   5,
+    width:     '100%',
+    gap:       5,
     marginTop: 2,
   },
-  // ob-event-row
+  // ob-event-row: justify-between, padding:7 10, bg:rgba(255,255,255,0.04), radius:8, font-size:0.83rem
   eventRow: {
     flexDirection:     'row',
     justifyContent:    'space-between',
@@ -583,42 +642,41 @@ const styles = StyleSheet.create({
     backgroundColor:   'rgba(255,255,255,0.04)',
     borderRadius:      8,
   },
+  // ob-event-title: var(--text), truncated
   eventTitle: {
     flex:     1,
     color:    Colors.text,
     fontSize: 13,
   },
+  // ob-event-time: muted2, 0.78rem, no-wrap
   eventTime: {
-    color:     Colors.muted2,
-    fontSize:  12,
+    color:      Colors.muted2,
+    fontSize:   12,
     flexShrink: 0,
   },
 
-  // ── Pulsing locating text ─────────────────────────────────────────────────
+  // ── Locating state ────────────────────────────────────────────────────────────
   locating: {
-    fontSize:     14,
-    color:        Colors.muted2,
-    fontFamily:   MONO,
+    fontSize:      14,
+    color:         Colors.muted2,
+    fontFamily:    MONO,
     letterSpacing: 0.3,
   },
 
-  // ── Geo denied / error ────────────────────────────────────────────────────
+  // ── Geo denied / error ────────────────────────────────────────────────────────
   geoStatusBadge: {
     backgroundColor:   'rgba(255,255,255,0.05)',
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.08)',
     borderRadius:      Radius.full,
-    paddingHorizontal: Spacing.sm,
+    paddingHorizontal: 10,
     paddingVertical:   4,
   },
   geoStatusBadgeWarn: {
     backgroundColor: 'rgba(245,158,11,0.08)',
     borderColor:     'rgba(245,158,11,0.2)',
   },
-  geoStatusText: {
-    fontSize: 12,
-    color:    Colors.muted2,
-  },
+  geoStatusText:     { fontSize: 12, color: Colors.muted2 },
   geoStatusTextWarn: { color: '#f59e0b' },
   geoHeadline: {
     fontSize:      25,
@@ -630,18 +688,20 @@ const styles = StyleSheet.create({
     marginTop:     4,
   },
 
-  // ── ob-form ──────────────────────────────────────────────────────────────────
+  // ── ob-form ───────────────────────────────────────────────────────────────────
+  // Web: flex column, gap:12
   form: { gap: 12 },
 
-  // ob-label: 0.72rem, muted2, uppercase, letter-spacing 0.07em, weight 600
+  // ob-label: 0.72rem=12px, muted2, uppercase, letter-spacing:0.07em, weight 600
   label: {
     fontSize:      12,
     color:         Colors.muted2,
     textTransform: 'uppercase',
-    letterSpacing: 1,
+    letterSpacing: 1.0,
     fontWeight:    '600',
   },
-  // ob-input-row: bg surface, border border, radius 14px, padding 10px 14px
+
+  // ob-input-row: gap:10, bg:surface, border, radius:14, padding:10 14
   inputRow: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -653,7 +713,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical:   10,
   },
-  // ob-avatar-preview: 34px circle, gradient bg (solid first palette color)
+  // ob-avatar-preview: 34px circle, gradient bg, box-shadow
   avatarCircle: {
     width:          34,
     height:         34,
@@ -672,7 +732,7 @@ const styles = StyleSheet.create({
     fontSize:   14,
     fontWeight: '700',
   },
-  // ob-input: transparent bg, no border, text var(--text), 1rem, weight 600
+  // ob-input: transparent, no border, text, 1rem, weight 600
   input: {
     flex:       1,
     color:      Colors.text,
@@ -687,14 +747,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ob-btn: gradient #C24A38→#accent, radius 14px, padding 15px, weight 700
+  // ob-btn: gradient(135deg, #C24A38→#B87228), full-width, radius:14, padding:15, weight 700
   btn: {
     width:           '100%',
     paddingVertical: 15,
-    backgroundColor: '#C24A38',         // gradient approximation
     borderRadius:    14,
     alignItems:      'center',
     marginTop:       4,
+    // Shadow — web: box-shadow 0 4px 20px rgba(194,74,56,0.25)
     shadowColor:     '#C24A38',
     shadowOffset:    { width: 0, height: 4 },
     shadowOpacity:   0.25,
@@ -708,17 +768,15 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.md,
   },
 
-  // Geo escape — shown after 10s in pending/resolving so user is never stuck
-  geoEscapeBtn: { alignItems: 'center', paddingVertical: 6, marginTop: 4 },
+  // Geo escape / retry links
+  geoEscapeBtn:  { alignItems: 'center', paddingVertical: 6, marginTop: 4 },
   geoEscapeText: {
     color:               Colors.muted,
     fontSize:            12,
     textDecorationLine:  'underline',
     textDecorationColor: Colors.muted,
   },
-
-  // ob-geo-retry
-  geoRetryBtn: { alignItems: 'center', paddingVertical: 4 },
+  geoRetryBtn:  { alignItems: 'center', paddingVertical: 4 },
   geoRetryText: {
     color:               Colors.muted2,
     fontSize:            13,
@@ -726,35 +784,85 @@ const styles = StyleSheet.create({
     textDecorationColor: Colors.muted2,
   },
 
-  // ob-identity-cta
-  identityCta: { alignItems: 'center', gap: 6 },
-  identityHint: {
-    fontSize:  12,
-    color:     Colors.muted2,
-    textAlign: 'center',
+  // ob-hint: 0.72rem=12px, monospace, var(--muted)
+  hint: {
+    fontSize:      12,
+    color:         Colors.muted,
+    fontFamily:    MONO,
+    letterSpacing: 0.15,
+    textAlign:     'center',
   },
-  // ob-create-account: border accent, radius 10px, padding 12px, weight 600
-  createAccountBtn: {
-    width:           '100%',
-    backgroundColor: 'rgba(255,122,60,0.08)',
-    borderWidth:     1.5,
-    borderColor:     Colors.accent,
-    borderRadius:    Radius.md,
-    paddingVertical: 12,
-    alignItems:      'center',
+
+  // ── jc-auth: secondary auth section ──────────────────────────────────────────
+  // Web: .jc-auth { gap:14, padding-top:4 }
+  jcAuth: {
+    gap:        14,
+    paddingTop: 4,
   },
-  createAccountText: {
-    color:      Colors.accent,
-    fontSize:   FontSizes.md,
+
+  // Divider with lines on each side — web: .jc-auth-divider with ::before/::after pseudo-elements
+  jcDivider: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           10,
+  },
+  jcDividerLine: {
+    flex:            1,
+    height:          1,
+    backgroundColor: 'rgba(255,255,255,0.07)',
+  },
+  // Web: .jc-auth-divider-text { font-size:0.72rem, color:--muted, letter-spacing:0.01em }
+  jcDividerText: {
+    fontSize:      12,
+    color:         Colors.muted,
+    letterSpacing: 0.2,
+  },
+
+  // Two-button row — web: .jc-auth-actions { display:flex, gap:8 }
+  jcActions: {
+    flexDirection: 'row',
+    gap:           8,
+  },
+
+  // Create account — web: .jc-auth-signup { flex:1, border:rgba(194,74,56,0.55), bg:rgba(194,74,56,0.08), color:--accent }
+  jcSignup: {
+    flex:              1,
+    paddingVertical:   10,
+    paddingHorizontal: 14,
+    borderWidth:       1,
+    borderColor:       'rgba(194,74,56,0.55)',
+    borderRadius:      10,
+    backgroundColor:   'rgba(194,74,56,0.08)',
+    alignItems:        'center',
+  },
+  jcSignupText: {
+    color:      Colors.accent2,   // web --accent = #C24A38
+    fontSize:   14,               // 0.88rem
     fontWeight: '600',
   },
 
-  // ob-hint: 0.72rem, muted, monospace
-  hint: {
-    fontSize:     12,
-    color:        Colors.muted,
-    fontFamily:   MONO,
-    letterSpacing: 0.15,
-    textAlign:    'center',
+  // Log in — web: .jc-auth-signin { flex:1, border:rgba(255,255,255,0.08), bg:transparent, color:--muted2 }
+  jcSignin: {
+    flex:              1,
+    paddingVertical:   10,
+    paddingHorizontal: 14,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.08)',
+    borderRadius:      10,
+    backgroundColor:   'transparent',
+    alignItems:        'center',
+  },
+  jcSigninText: {
+    color:      Colors.muted2,
+    fontSize:   14,
+    fontWeight: '500',
+  },
+
+  // jc-auth-hint: 0.68rem=11px, --muted, centered
+  jcHint: {
+    fontSize:      11,
+    color:         Colors.muted,
+    textAlign:     'center',
+    letterSpacing: 0.2,
   },
 });
