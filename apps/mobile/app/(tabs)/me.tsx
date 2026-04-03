@@ -283,7 +283,11 @@ export default function MeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: Spacing.xxl }}
+      >
 
         {/* ── Header — back button left, centered title ── */}
         <View style={styles.header}>
@@ -365,7 +369,12 @@ export default function MeScreen() {
         {/* ── Guest: upgrade CTA ─────────────────────────────────────────── */}
         {isGuest && (
           <>
-            <View style={styles.avatarSection}>
+            {/* Compact top/bottom padding for the guest view — the registered
+                profile uses Spacing.xl/lg to breathe around the avatar form,
+                but the guest block is shorter and needs to fit without scrolling
+                on small screens (13 mini, SE). The upgradeCard's own margin
+                provides the separation below. */}
+            <View style={[styles.avatarSection, { paddingTop: Spacing.md, paddingBottom: Spacing.xs }]}>
               <View style={[styles.avatarFallback, { backgroundColor: avatarBgColor }]}>
                 <Text style={styles.avatarInitials}>{initials}</Text>
               </View>
@@ -638,7 +647,6 @@ export default function MeScreen() {
           <Text style={styles.version}>v{APP_VERSION}</Text>
         </TouchableOpacity>
 
-        <View style={{ height: Spacing.xxl }} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -1081,7 +1089,7 @@ const styles = StyleSheet.create({
   },
   upgradeTitle:   { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
   upgradeSub:     { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
-  upgradeSignInHint: { fontSize: FontSizes.xs, color: Colors.muted, textAlign: 'center', marginTop: Spacing.sm },
+  upgradeSignInHint: { fontSize: FontSizes.xs, color: Colors.muted, textAlign: 'center' },
   upgradePrimary: {
     backgroundColor: Colors.accent,
     borderRadius:    Radius.lg,
