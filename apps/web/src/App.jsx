@@ -32,10 +32,12 @@ function cityToSlug(name) {
 
 function parseDeepLink() {
   const path = window.location.pathname
-  const cityMatch  = path.match(/^\/city\/([^/]+)$/)
-  const eventMatch = path.match(/^\/event\/([a-f0-9]{16})$/)
+  const cityMatch      = path.match(/^\/city\/([^/]+)$/)
+  const eventMatch     = path.match(/^\/event\/([a-f0-9]{16})$/)
+  const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
   if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
+  if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
   return null
@@ -105,6 +107,30 @@ async function share(title, url) {
     document.body.removeChild(el)
     return 'copied'
   } catch (_) {}
+}
+
+// ── Share vibe button ─────────────────────────────────────────────────────────
+
+function ShareVibeBtn({ eventId, title }) {
+  const [copied, setCopied] = useState(false)
+  async function handleShare() {
+    const url = `${window.location.origin}/e/${eventId}`
+    const result = await share(title, url)
+    if (result === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2200)
+    }
+  }
+  return (
+    <button
+      className={`share-vibe-btn${copied ? ' share-vibe-btn--copied' : ''}`}
+      onClick={handleShare}
+      title="Share this vibe"
+      aria-label="Share event"
+    >
+      {copied ? 'Link copied ✨' : 'Share the vibe ✨'}
+    </button>
+  )
 }
 
 // ── Bottom nav icons ──────────────────────────────────────────────────────────
@@ -2102,17 +2128,7 @@ export default function App() {
               <div className="event-header-top">
                 <BackButton onClick={handleBackToCity} label={city} className="event-back-btn" ariaLabel={`Back to ${city}`} />
                 <div className="event-header-actions">
-                  <button
-                    className="header-icon-btn"
-                    onClick={() => share(activeEvent.title, `${window.location.origin}/event/${activeEvent.id}`)}
-                    title="Share this vibe"
-                    aria-label="Share event"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                    </svg>
-                  </button>
+                  <ShareVibeBtn eventId={activeEvent.id} title={activeEvent.title} />
                   {/* Edit entry point moved to title row for better visibility */}
                   {account && (
                     <button

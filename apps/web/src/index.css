@@ -4665,6 +4665,38 @@ img.pub-profile-avatar {
   right: 16px;
 }
 
+/* ── Share vibe button ────────────────────────────────────────────────────── */
+
+.share-vibe-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(194, 74, 56, 0.10);
+  border: 1px solid rgba(194, 74, 56, 0.28);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+  flex-shrink: 0;
+}
+
+.share-vibe-btn:hover {
+  background: rgba(194, 74, 56, 0.18);
+}
+
+.share-vibe-btn:active {
+  transform: scale(0.96);
+}
+
+.share-vibe-btn--copied {
+  background: rgba(74, 194, 120, 0.12);
+  border-color: rgba(74, 194, 120, 0.30);
+  color: #4ac278;
+}
+
 /* ── Header icon buttons (bell + messages) ────────────────────────────────── */
 
 .header-icon-btn {

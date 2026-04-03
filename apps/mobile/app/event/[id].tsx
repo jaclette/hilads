@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView, Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -137,6 +137,13 @@ export default function EventDetailScreen() {
     return off;
   }, [id]);
 
+  async function handleShare() {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const url = `https://hilads.com/e/${id}`;
+    const title = event?.title ?? 'Check out this event on Hilads';
+    await Share.share({ title, url, message: `${title} — ${url}` });
+  }
+
   // Refetch participants after join/leave toggle
   const handleToggle = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -248,9 +255,9 @@ export default function EventDetailScreen() {
           <Text style={styles.backPillText} numberOfLines={1}>{cityName}</Text>
         </TouchableOpacity>
 
-        {/* Share — placeholder; real share sheet can be wired later */}
-        <TouchableOpacity style={styles.iconBtn} activeOpacity={0.75}>
-          <Ionicons name="share-outline" size={20} color={Colors.muted} />
+        <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.75}>
+          <Ionicons name="share-outline" size={16} color={Colors.accent} />
+          <Text style={styles.shareBtnText}>Share the vibe ✨</Text>
         </TouchableOpacity>
       </View>
 
@@ -511,7 +518,24 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
 
-  // Web: share button — same dark pill style
+  shareBtn: {
+    flexDirection:   'row',
+    alignItems:      'center',
+    gap:             6,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius:    14,
+    backgroundColor: 'rgba(194,74,56,0.12)',
+    borderWidth:     1,
+    borderColor:     'rgba(194,74,56,0.30)',
+  },
+  shareBtnText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+    color:      Colors.accent,
+  },
+
+  // Web: share button — same dark pill style (kept for reference)
   iconBtn: {
     width:           40,
     height:          40,

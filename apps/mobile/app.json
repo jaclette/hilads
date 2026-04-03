@@ -19,6 +19,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.hilads.app",
+      "associatedDomains": ["applinks:hilads.com"],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Hilads uses your location to find your city and show you what's happening nearby.",
         "NSCameraUsageDescription": "Hilads lets you send photos in city chats and event conversations.",
@@ -56,6 +57,26 @@
           "data": [
             {
               "scheme": "hilads"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "hilads.com",
+              "pathPrefix": "/e/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.com",
+              "pathPrefix": "/event/"
             }
           ],
           "category": [
