@@ -543,7 +543,8 @@ export default function App() {
   const [previewTimezone, setPreviewTimezone] = useState('UTC')
   const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
   const [previewEventCount, setPreviewEventCount] = useState(0)
-  const [previewChannelId, setPreviewChannelId] = useState(null)
+  const [previewEvents, setPreviewEvents]         = useState([])
+  const [previewChannelId, setPreviewChannelId]   = useState(null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
@@ -1035,19 +1036,29 @@ export default function App() {
     })
   }
 
-  // Fetch today's event count for the pre-join activity block.
-  // Mirrors native LandingScreen: uses /channels/{id}/events (Hilads events, server-side today filter).
-  // Applies same client-side filterTodayEvents as native for timezone safety.
+  // Fetch today's event count + preview list for the pre-join activity block.
+  // Exact port of native LandingScreen logic:
+  //   1. fetchCityEvents → /channels/{id}/events (Hilads events, server-side today filter)
+  //   2. filterTodayEvents: client-side date check using city timezone (safety net)
+  //   3. filterPreviewEvents: exclude ended >30min, sort by start time, cap at 3
   useEffect(() => {
     if (!previewChannelId) return
     const tz = previewTimezone || 'UTC'
     const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
+    const now = Date.now()
     fetchEvents(previewChannelId)
       .then(data => {
-        const count = (data.events ?? []).filter(e =>
+        // filterTodayEvents — same as native
+        const todayEvents = (data.events ?? []).filter(e =>
           new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-        ).length
-        setPreviewEventCount(count)
+        )
+        setPreviewEventCount(todayEvents.length)
+        // filterPreviewEvents — same as native: not ended >30min ago, sorted, max 3
+        const preview = todayEvents
+          .filter(e => (e.starts_at * 1000 - now) / 60_000 >= -30)
+          .sort((a, b) => a.starts_at - b.starts_at)
+          .slice(0, 3)
+        setPreviewEvents(preview)
       })
       .catch(() => {})
   }, [previewChannelId]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -1969,6 +1980,8 @@ export default function App() {
           handleJoin={handleJoin}
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
+          previewEvents={previewEvents}
+          previewTimezone={previewTimezone}
           onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
           onSignIn={() => { setObAuthInitialTab('login');  setObShowAuth(true) }}
           onOpenCityPicker={openObCityPicker}

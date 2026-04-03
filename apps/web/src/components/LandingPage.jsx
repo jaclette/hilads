@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react'
 import { track } from '../lib/analytics'
 import Logo from './Logo'
 import { cityFlag, EVENT_ICONS } from '../cityMeta'
-import { getTimeLabel } from '../eventUtils'
+import { formatTime } from '../eventUtils'
 
 // ── Avatar palette — same set as App.jsx ─────────────────────────────────────
 
@@ -46,7 +46,7 @@ const HOW_IT_WORKS = [
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
 
-function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
+function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
   const noGeo = geoState === 'denied' || geoState === 'error'
   const [c1, c2] = avatarColors(nickname || 'A')
 
@@ -64,14 +64,28 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
             </span>
             <div className="ob-activity-block">
               <span className="ob-activity-line">
-                🔥 {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} here right now
+                🔥 {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now
               </span>
               {previewEventCount > 0 && (
                 <span className="ob-activity-line">
-                  🔥 {previewEventCount} {previewEventCount === 1 ? 'vibe' : 'vibes'} happening today
+                  🔥 {previewEventCount} event{previewEventCount === 1 ? '' : 's'} happening today
                 </span>
               )}
             </div>
+            {previewEvents.length > 0 && (
+              <div className="ob-events-preview">
+                {previewEvents.map(e => (
+                  <div key={e.id} className="ob-event-row">
+                    <span className="ob-event-title">
+                      {EVENT_ICONS[e.event_type] ?? '📌'} {e.title}
+                    </span>
+                    <span className="ob-event-time">
+                      {formatTime(e.starts_at, previewTimezone)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         ) : noGeo ? (
           <p className="ob-geo-headline">Pick a city<br />and jump in</p>
@@ -182,6 +196,8 @@ export default function LandingPage({
   handleJoin,
   previewLiveCount,
   previewEventCount = 0,
+  previewEvents = [],
+  previewTimezone = 'UTC',
   onSignUp, onSignIn, onOpenCityPicker, retryGeo,
 }) {
   const heroJoinRef = useRef(null)
@@ -236,6 +252,8 @@ export default function LandingPage({
             handleJoin={handleJoinWithTracking}
             previewLiveCount={previewLiveCount}
             previewEventCount={previewEventCount}
+            previewEvents={previewEvents}
+            previewTimezone={previewTimezone}
             onOpenCityPicker={onOpenCityPicker}
             retryGeo={retryGeo}
             onSignUp={handleSignUp}
@@ -334,6 +352,8 @@ export default function LandingPage({
           handleJoin={handleJoinWithTracking}
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
+          previewEvents={previewEvents}
+          previewTimezone={previewTimezone}
           onOpenCityPicker={onOpenCityPicker}
           retryGeo={retryGeo}
           onSignUp={handleSignUp}
