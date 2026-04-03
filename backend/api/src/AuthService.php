@@ -487,6 +487,7 @@ class AuthService
         return array_merge(self::publicFields($user), [
             'email'           => $user['email'],
             'guest_id'        => $user['guest_id']  ?? null,
+            'is_verified'     => (bool) ($user['is_verified'] ?? false),
             'isAmbassador'    => $isAmbassador,
             'ambassadorPicks' => $isAmbassador ? (object) $picks : null,
         ]);

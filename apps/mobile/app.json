@@ -19,7 +19,9 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.hilads.app",
-      "associatedDomains": ["applinks:hilads.com"],
+      "associatedDomains": [
+        "applinks:hilads.com"
+      ],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Hilads uses your location to find your city and show you what's happening nearby.",
         "NSCameraUsageDescription": "Hilads lets you send photos in city chats and event conversations.",
@@ -39,7 +41,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 1,
+      "versionCode": 3,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",

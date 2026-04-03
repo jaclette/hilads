@@ -515,6 +515,8 @@ class Database
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_users_guest_id ON users (guest_id) WHERE guest_id IS NOT NULL");
         // Add vibe to existing users tables (migration — safe no-op if column already exists).
         $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS vibe TEXT NOT NULL DEFAULT 'chill'");
+        // Email verification flag — false until the user clicks the verification link.
+        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT false");
 
         // ── Channels (cities + events + future subchannel types) ─────────────
         $pdo->exec("
