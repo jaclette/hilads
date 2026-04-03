@@ -1035,12 +1035,14 @@ export default function App() {
     })
   }
 
-  // Fetch today's event count for the pre-join activity block
+  // Fetch today's event count for the pre-join activity block.
+  // Mirrors native LandingScreen: uses /channels/{id}/events (Hilads events, server-side today filter).
+  // Applies same client-side filterTodayEvents as native for timezone safety.
   useEffect(() => {
     if (!previewChannelId) return
     const tz = previewTimezone || 'UTC'
     const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-    fetchCityEvents(previewChannelId)
+    fetchEvents(previewChannelId)
       .then(data => {
         const count = (data.events ?? []).filter(e =>
           new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
