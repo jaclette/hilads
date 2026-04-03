@@ -20,16 +20,14 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.hilads.app",
       "associatedDomains": [
-        "applinks:hilads.com"
+        "applinks:hilads.live"
       ],
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Hilads uses your location to find your city and show you what's happening nearby.",
         "NSCameraUsageDescription": "Hilads lets you send photos in city chats and event conversations.",
         "NSPhotoLibraryUsageDescription": "Hilads lets you share photos from your library in chats.",
-        "NSUserNotificationUsageDescription": "Hilads sends you notifications for new messages and events in your city.",
         "UIBackgroundModes": [
-          "remote-notification",
-          "fetch"
+          "remote-notification"
         ]
       }
     },
@@ -72,12 +70,12 @@
           "data": [
             {
               "scheme": "https",
-              "host": "hilads.com",
+              "host": "hilads.live",
               "pathPrefix": "/e/"
             },
             {
               "scheme": "https",
-              "host": "hilads.com",
+              "host": "hilads.live",
               "pathPrefix": "/event/"
             }
           ],
@@ -118,8 +116,7 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Hilads uses your location to find your city.",
-          "locationAlwaysAndWhenInUsePermission": "Hilads uses your location to find your city."
+          "locationWhenInUsePermission": "Hilads uses your location to find your city."
         }
       ],
       "expo-font",
