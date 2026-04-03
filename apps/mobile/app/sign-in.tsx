@@ -147,6 +147,10 @@ export default function SignInScreen() {
               }
             </TouchableOpacity>
 
+            <TouchableOpacity onPress={() => router.push('/forgot-password')} activeOpacity={0.7}>
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+
             <TouchableOpacity onPress={() => router.replace('/sign-up')} activeOpacity={0.7}>
               <Text style={styles.switchText}>
                 No account? <Text style={styles.switchLink}>Create one →</Text>
@@ -204,13 +208,19 @@ const styles = StyleSheet.create({
     borderRadius:    Radius.lg,
     paddingVertical: Spacing.md,
     alignItems:      'center',
-    marginTop:       Spacing.sm,
-    height:          52,
     justifyContent:  'center',
+    marginTop:       Spacing.sm,
   },
   submitBtnDisabled: { opacity: 0.6 },
-  submitText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.md },
+  submitText: {
+    color:              Colors.white,
+    fontWeight:         '700',
+    fontSize:           FontSizes.md,
+    lineHeight:         FontSizes.md * 1.25,
+    includeFontPadding: false,
+  },
 
+  forgotText: { fontSize: FontSizes.sm, color: Colors.muted2, textAlign: 'center' },
   switchText: { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', marginTop: Spacing.sm },
   switchLink: { color: Colors.accent, fontWeight: '600' },
 });

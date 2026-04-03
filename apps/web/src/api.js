@@ -277,6 +277,39 @@ export async function authLogout() {
   await fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
 }
 
+export async function authForgotPassword(email) {
+  const res = await fetch(`${BASE}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Request failed')
+  return data
+}
+
+export async function authValidateResetToken(token) {
+  const res = await fetch(`${BASE}/auth/reset-password/validate?token=${encodeURIComponent(token)}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return false
+  const data = await res.json()
+  return data.valid === true
+}
+
+export async function authResetPassword(token, password, passwordConfirmation) {
+  const res = await fetch(`${BASE}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ token, password, passwordConfirmation }),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error(data.error || 'Reset failed')
+  return data // { user, token }
+}
+
 export async function authMe() {
   const res = await fetch(`${BASE}/auth/me`, { credentials: 'include' })
   if (res.status === 401) return null

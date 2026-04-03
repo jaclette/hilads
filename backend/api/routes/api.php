@@ -507,6 +507,44 @@ $router->add('GET', '/api/v1/auth/me', function () {
     Response::json(['user' => AuthService::ownFields($user)]);
 });
 
+$router->add('POST', '/api/v1/auth/forgot-password', function () {
+    enforceRateLimit('auth_forgot_password', 5, 600);
+    $body  = Request::json();
+    $email = trim((string) ($body['email'] ?? ''));
+    // Always call forgotPassword — it handles missing users silently
+    AuthService::forgotPassword($email);
+    Response::json([
+        'success' => true,
+        'message' => "If an account exists for this email, we've sent a reset link.",
+    ]);
+});
+
+$router->add('GET', '/api/v1/auth/reset-password/validate', function () {
+    $token = trim($_GET['token'] ?? '');
+    if ($token === '') {
+        Response::json(['valid' => false]);
+    }
+    Response::json(['valid' => AuthService::validateResetToken($token)]);
+});
+
+$router->add('POST', '/api/v1/auth/reset-password', function () {
+    enforceRateLimit('auth_reset_password', 10, 600);
+    $body     = Request::json();
+    $token    = trim((string) ($body['token']    ?? ''));
+    $password = (string) ($body['password']      ?? '');
+    $confirm  = (string) ($body['passwordConfirmation'] ?? '');
+
+    if ($token === '') {
+        Response::json(['error' => 'Token is required'], 400);
+    }
+    if ($password !== $confirm) {
+        Response::json(['error' => 'Passwords do not match'], 422);
+    }
+
+    $user = AuthService::resetPassword($token, $password);
+    Response::json(['user' => AuthService::ownFields($user), 'token' => $user['_token']]);
+});
+
 // ── Profile ───────────────────────────────────────────────────────────────────
 
 $router->add('PUT', '/api/v1/profile', function () {

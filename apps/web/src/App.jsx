@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -10,6 +10,8 @@ import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
 import AuthScreen from './components/AuthScreen'
+import ForgotPasswordScreen from './components/ForgotPasswordScreen'
+import ResetPasswordScreen from './components/ResetPasswordScreen'
 import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
 import GuestProfileCard from './components/GuestProfileCard'
@@ -32,6 +34,7 @@ function cityToSlug(name) {
 
 function parseDeepLink() {
   const path = window.location.pathname
+  const params = new URLSearchParams(window.location.search)
   const cityMatch      = path.match(/^\/city\/([^/]+)$/)
   const eventMatch     = path.match(/^\/event\/([a-f0-9]{16})$/)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
@@ -40,6 +43,8 @@ function parseDeepLink() {
   if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
+  if (path === '/reset-password') return { type: 'reset-password', token: params.get('token') ?? '' }
+  if (path === '/forgot-password') return { type: 'forgot-password' }
   return null
 }
 
@@ -574,6 +579,8 @@ export default function App() {
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
   const [showAuthScreenTab, setShowAuthScreenTab] = useState('signup') // 'signup' | 'login'
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
@@ -879,8 +886,10 @@ export default function App() {
       })
     }
 
-    if (link.type === 'conversations') openScreenOnJoinRef.current = 'conversations'
-    if (link.type === 'notifications')  openScreenOnJoinRef.current = 'notifications'
+    if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
+    if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
+    if (link.type === 'reset-password')  setResetPasswordToken(link.token)
+    if (link.type === 'forgot-password') setShowForgotPassword(true)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -1945,9 +1954,44 @@ export default function App() {
     )
   }
 
+  // ── Global overlays (shown regardless of app status) ──────────────────────
+
+  if (resetPasswordToken !== null) {
+    return (
+      <ResetPasswordScreen
+        token={resetPasswordToken}
+        onSuccess={(user) => {
+          if (user) {
+            localStorage.setItem(AUTH_FLAG_KEY, '1')
+            accountRef.current = user
+            setAccount(user)
+            identifyUser(user.id, { account_type: 'registered', username: user.display_name })
+            setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })
+            track('user_authenticated')
+          }
+          setResetPasswordToken(null)
+          window.history.replaceState(null, '', '/')
+        }}
+        onRequestNew={() => {
+          setResetPasswordToken(null)
+          window.history.replaceState(null, '', '/')
+          setShowForgotPassword(true)
+        }}
+      />
+    )
+  }
+
   // ── Onboarding ─────────────────────────────────────────────────────────────
 
   if (status === 'onboarding') {
+    if (showForgotPassword) {
+      return (
+        <ForgotPasswordScreen
+          onBack={() => { setShowForgotPassword(false); setObShowAuth(true); setObAuthInitialTab('login') }}
+        />
+      )
+    }
+
     if (obShowAuth) {
       return (
         <AuthScreen
@@ -1965,6 +2009,7 @@ export default function App() {
             handleJoin(null)
           }}
           onBack={() => setObShowAuth(false)}
+          onForgotPassword={() => { setObShowAuth(false); setShowForgotPassword(true) }}
         />
       )
     }
@@ -3306,6 +3351,13 @@ export default function App() {
             track('user_authenticated')
           }}
           onBack={() => setShowAuthScreen(false)}
+          onForgotPassword={() => { setShowAuthScreen(false); setShowForgotPassword(true) }}
+        />
+      )}
+
+      {showForgotPassword && (
+        <ForgotPasswordScreen
+          onBack={() => { setShowForgotPassword(false); setShowAuthScreen(true); setShowAuthScreenTab('login') }}
         />
       )}
 

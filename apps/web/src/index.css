@@ -1272,6 +1272,46 @@ html, body, #root {
   text-align: center;
   margin: 4px 0;
 }
+.auth-hint-top {
+  font-size: 0.88rem;
+  color: var(--muted2);
+  text-align: center;
+  margin-bottom: 16px;
+}
+.auth-forgot-btn {
+  background: none;
+  border: none;
+  color: var(--muted2);
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 8px 0 0;
+  text-align: center;
+  width: 100%;
+}
+.auth-forgot-btn:hover { color: var(--text); }
+.auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 0;
+  text-align: center;
+}
+.auth-success-icon {
+  font-size: 2.5rem;
+  margin-bottom: 4px;
+}
+.auth-success-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.auth-success-body {
+  font-size: 0.88rem;
+  color: var(--muted2);
+  max-width: 280px;
+  line-height: 1.5;
+}
 .modal-submit--secondary {
   background: transparent;
   color: var(--muted2);

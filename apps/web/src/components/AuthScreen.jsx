@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { authSignup, authLogin } from '../api'
 import BackButton from './BackButton'
 
-export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, initialTab = 'signup' }) {
+export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, onForgotPassword, initialTab = 'signup' }) {
   const [tab, setTab]         = useState(initialTab) // 'signup' | 'login'
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
@@ -92,6 +92,12 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
           <button className="modal-submit" type="submit" disabled={loading}>
             {loading ? '...' : tab === 'signup' ? 'Create account' : 'Log in'}
           </button>
+
+          {tab === 'login' && onForgotPassword && (
+            <button type="button" className="auth-forgot-btn" onClick={onForgotPassword}>
+              Forgot password?
+            </button>
+          )}
         </form>
 
         <p className="profile-hint">// your guest messages are kept</p>

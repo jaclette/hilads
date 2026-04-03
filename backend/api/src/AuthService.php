@@ -163,6 +163,188 @@ class AuthService
         return $user;
     }
 
+    // ── Password reset ────────────────────────────────────────────────────────
+
+    /**
+     * Initiate a password reset for the given email.
+     * Always returns a generic message — never reveals whether the email exists.
+     */
+    public static function forgotPassword(string $email): void
+    {
+        $email = strtolower(trim($email));
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            // Return generic success to avoid leaking info
+            return;
+        }
+
+        $user = UserRepository::findByEmail($email);
+        if ($user === null || empty($user['password_hash'])) {
+            // User not found or OAuth-only account — silent success
+            return;
+        }
+
+        $pdo = Database::pdo();
+
+        // Invalidate any unused tokens for this user
+        $pdo->prepare("
+            UPDATE password_reset_tokens
+            SET used_at = now()
+            WHERE user_id = ? AND used_at IS NULL
+        ")->execute([$user['id']]);
+
+        // Generate a cryptographically secure token
+        $rawToken  = bin2hex(random_bytes(32)); // 64-char hex
+        $tokenHash = hash('sha256', $rawToken);
+
+        $pdo->prepare("
+            INSERT INTO password_reset_tokens (user_id, token_hash)
+            VALUES (?, ?)
+        ")->execute([$user['id'], $tokenHash]);
+
+        $resetUrl = rtrim(getenv('APP_URL') ?: 'https://hilads.live', '/')
+                  . '/reset-password?token=' . $rawToken;
+
+        self::sendResetEmail($user['email'], $user['display_name'], $resetUrl);
+    }
+
+    /**
+     * Reset a user's password using a valid, unexpired, unused token.
+     * Returns the user array on success, or calls Response::json with an error.
+     */
+    public static function resetPassword(string $rawToken, string $password): array
+    {
+        if (mb_strlen($password) < 8) {
+            Response::json(['error' => 'Password must be at least 8 characters'], 422);
+        }
+        if (mb_strlen($password) > 72) {
+            Response::json(['error' => 'Password must not exceed 72 characters'], 422);
+        }
+
+        $tokenHash = hash('sha256', $rawToken);
+        $pdo       = Database::pdo();
+
+        $stmt = $pdo->prepare("
+            SELECT prt.id, prt.user_id, prt.expires_at, prt.used_at
+            FROM password_reset_tokens prt
+            WHERE prt.token_hash = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$tokenHash]);
+        $record = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($record === false) {
+            Response::json(['error' => 'This reset link is invalid or expired.'], 400);
+        }
+        if ($record['used_at'] !== null) {
+            Response::json(['error' => 'This reset link has already been used.'], 400);
+        }
+        if (strtotime($record['expires_at']) < time()) {
+            Response::json(['error' => 'This reset link is invalid or expired.'], 400);
+        }
+
+        $userId       = $record['user_id'];
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+
+        // Update password and mark token as used in one transaction
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare("UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?")
+                ->execute([$passwordHash, time(), $userId]);
+
+            $pdo->prepare("UPDATE password_reset_tokens SET used_at = now() WHERE id = ?")
+                ->execute([$record['id']]);
+
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        $user  = UserRepository::findById($userId);
+        $token = self::createDbSession($userId);
+        $user['_token'] = $token;
+
+        return $user;
+    }
+
+    /**
+     * Validate a reset token without consuming it.
+     * Returns true if valid and unexpired, false otherwise.
+     */
+    public static function validateResetToken(string $rawToken): bool
+    {
+        $tokenHash = hash('sha256', $rawToken);
+        $stmt      = Database::pdo()->prepare("
+            SELECT 1 FROM password_reset_tokens
+            WHERE token_hash = ? AND used_at IS NULL AND expires_at > now()
+            LIMIT 1
+        ");
+        $stmt->execute([$tokenHash]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /**
+     * Send the reset email via Resend.
+     */
+    private static function sendResetEmail(string $to, string $name, string $resetUrl): void
+    {
+        $apiKey = getenv('RESEND_API_KEY');
+        if (!$apiKey) {
+            error_log('[AuthService] RESEND_API_KEY not set — skipping reset email');
+            return;
+        }
+
+        $firstName  = explode(' ', $name)[0];
+        $htmlBody   = '<!DOCTYPE html><html><body style="font-family:sans-serif;background:#0d0b09;color:#ede9e5;margin:0;padding:40px 20px">'
+            . '<div style="max-width:480px;margin:0 auto">'
+            . '<h2 style="color:#FF7A3C;margin-bottom:8px">Reset your Hilads password</h2>'
+            . '<p>Hi ' . htmlspecialchars($firstName) . ',</p>'
+            . '<p>Someone requested a password reset for your Hilads account.<br>'
+            . 'If that was you, click the button below to choose a new password.</p>'
+            . '<p style="margin:28px 0">'
+            . '<a href="' . htmlspecialchars($resetUrl) . '" style="background:#FF7A3C;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:700;font-size:16px">Reset password</a>'
+            . '</p>'
+            . '<p style="color:#968880;font-size:14px">This link expires in <strong>1 hour</strong>.</p>'
+            . '<p style="color:#968880;font-size:14px">If you didn\'t request this, you can safely ignore this email. Your password won\'t change.</p>'
+            . '</div></body></html>';
+
+        $textBody = "Reset your Hilads password\n\n"
+            . "Hi $firstName,\n\n"
+            . "Someone requested a password reset for your Hilads account.\n"
+            . "If that was you, use the link below to choose a new password.\n\n"
+            . "$resetUrl\n\n"
+            . "This link expires in 1 hour.\n\n"
+            . "If you didn't request this, you can safely ignore this email.";
+
+        $payload = json_encode([
+            'from'    => 'Hilads <no-reply@hilads.live>',
+            'to'      => [$to],
+            'subject' => 'Reset your Hilads password',
+            'html'    => $htmlBody,
+            'text'    => $textBody,
+        ]);
+
+        $ch = curl_init('https://api.resend.com/emails');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $payload,
+            CURLOPT_HTTPHEADER     => [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_TIMEOUT        => 10,
+        ]);
+        $response = curl_exec($ch);
+        $status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($status < 200 || $status >= 300) {
+            error_log('[AuthService] Resend error ' . $status . ': ' . $response);
+        }
+    }
+
     // ── Profile field sanitisation ────────────────────────────────────────────
 
     /**

@@ -468,6 +468,26 @@ class Database
             $pdo->exec("CREATE INDEX idx_push_subscriptions_user ON push_subscriptions (user_id)");
         }
 
+        // ── Password reset tokens ─────────────────────────────────────────────
+        $resetExist = (bool) $pdo
+            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'password_reset_tokens')")
+            ->fetchColumn();
+
+        if (!$resetExist) {
+            $pdo->exec("
+                CREATE TABLE password_reset_tokens (
+                    id         BIGSERIAL    PRIMARY KEY,
+                    user_id    TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    token_hash TEXT         NOT NULL UNIQUE,
+                    expires_at TIMESTAMPTZ  NOT NULL DEFAULT (now() + INTERVAL '1 hour'),
+                    used_at    TIMESTAMPTZ,
+                    created_at TIMESTAMPTZ  NOT NULL DEFAULT now()
+                )
+            ");
+            $pdo->exec("CREATE INDEX idx_prt_user ON password_reset_tokens (user_id)");
+            $pdo->exec("CREATE INDEX idx_prt_hash ON password_reset_tokens (token_hash) WHERE used_at IS NULL");
+        }
+
         self::$bootstrapped = true;
     }
 

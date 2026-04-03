@@ -79,6 +79,10 @@ function RootLayoutInner() {
               name="sign-up"
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
+            <Stack.Screen
+              name="forgot-password"
+              options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
+            />
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="notifications" />
             <Stack.Screen
