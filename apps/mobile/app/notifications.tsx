@@ -1,18 +1,13 @@
 /**
- * Notifications screen — matches web app UX exactly.
+ * Notifications preview screen — latest 5 notifications + preferences.
  *
- * Sections:
- *   1. Notifications list (from API + real-time WS)
- *   2. Notification Preferences (local toggles)
- *
- * Web parity: back button, centered title, "Mark all read" CTA,
- * orange left accent for unread, dimmed text for read items,
- * unread dot on right, preference toggles with orange thumb.
+ * Fetches only 5 notifications server-side (limit=5).
+ * "See all notifications" navigates to /notifications-history for the full list.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, Switch,
+  View, Text, TouchableOpacity, Switch,
   ActivityIndicator, StyleSheet, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,85 +23,9 @@ import {
 import { socket } from '@/lib/socket';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Notification } from '@/types';
+import { NotifRow, NotifSeparator } from '@/features/notifications/NotifRow';
 
-// ── Relative time — same helper as messages screen ────────────────────────────
-
-function relativeTime(raw?: string | null): string {
-  if (!raw) return '';
-  let ms = Date.parse(raw);
-  if (isNaN(ms)) {
-    const n = Number(raw);
-    if (!isNaN(n)) ms = n < 1e10 ? n * 1000 : n;
-  }
-  if (isNaN(ms)) return '';
-  const diffSec = Math.floor((Date.now() - ms) / 1000);
-  if (diffSec < 60)   return 'now';
-  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
-  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
-  return `${Math.floor(diffSec / 86400)}d ago`;
-}
-
-// ── Notification icon — keyed by type ────────────────────────────────────────
-
-function NotifIcon({ type, unread }: { type: Notification['type']; unread: boolean }) {
-  const iconName: React.ComponentProps<typeof Feather>['name'] =
-    type === 'dm_message'      ? 'message-circle' :
-    type === 'event_message'   ? 'message-square' :
-    type === 'event_join'      ? 'users'           :
-    type === 'new_event'       ? 'zap'             :
-    type === 'channel_message' ? 'hash'            :
-    type === 'city_join'       ? 'user-plus'       :
-    type === 'friend_added'    ? 'user-plus'       :
-    type === 'vibe_received'   ? 'star'            :
-    type === 'profile_view'    ? 'eye'             :
-    /* fallback */               'bell';
-
-  const color = unread ? Colors.white : Colors.muted;
-  const bg    = unread ? 'rgba(255,122,60,0.15)' : Colors.bg3;
-  const border = unread ? 'rgba(255,122,60,0.3)' : Colors.border;
-
-  return (
-    <View style={[styles.notifIcon, { backgroundColor: bg, borderColor: border }]}>
-      <Feather name={iconName} size={20} color={color} />
-    </View>
-  );
-}
-
-// ── Notification row ──────────────────────────────────────────────────────────
-
-function NotifRow({ notif, onPress }: { notif: Notification; onPress: () => void }) {
-  const unread = !notif.is_read;
-  const time   = relativeTime(notif.created_at);
-
-  return (
-    <TouchableOpacity
-      style={[styles.notifRow, unread && styles.notifRowUnread]}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
-      {/* Left accent bar for unread */}
-      {unread && <View style={styles.accentBar} />}
-
-      <NotifIcon type={notif.type} unread={unread} />
-
-      {/* Content */}
-      <View style={styles.notifBody}>
-        <Text style={[styles.notifTitle, !unread && styles.notifTitleRead]} numberOfLines={2}>
-          {notif.title}
-        </Text>
-        {notif.body ? (
-          <Text style={[styles.notifPreview, !unread && styles.notifPreviewRead]} numberOfLines={1}>
-            {notif.body}
-          </Text>
-        ) : null}
-        {time ? <Text style={styles.notifTime}>{time}</Text> : null}
-      </View>
-
-      {/* Unread dot */}
-      {unread && <View style={styles.unreadDot} />}
-    </TouchableOpacity>
-  );
-}
+const PREVIEW_LIMIT = 5;
 
 // ── Preference toggle row ─────────────────────────────────────────────────────
 
@@ -149,7 +68,6 @@ export default function NotificationsScreen() {
   const notifRef = useRef(notifications);
   notifRef.current = notifications;
 
-  // Preferences — loaded from backend, saved on toggle
   const [prefs, setPrefs] = useState<NotificationPreferences>({
     dm_push:              true,
     event_message_push:   true,
@@ -162,35 +80,30 @@ export default function NotificationsScreen() {
     profile_view_push:    true,
   });
 
-  // ── Load notifications + preferences ─────────────────────────────────────
+  // ── Load latest 5 notifications + preferences ─────────────────────────────
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const [{ notifications: list }, loadedPrefs] = await Promise.all([
-        fetchNotifications(),
+        fetchNotifications(PREVIEW_LIMIT),
         fetchNotificationPreferences().catch(() => null),
       ]);
       setNotifications(list);
       if (loadedPrefs) setPrefs(loadedPrefs);
-      // Clear badge — user has opened this screen
-      const unread = list.filter(n => !n.is_read).length;
-      setUnreadNotifications(unread);
+      setUnreadNotifications(list.filter(n => !n.is_read).length);
     } catch { /* silent */ }
     finally { setLoading(false); }
   }, [setUnreadNotifications]);
 
   useEffect(() => { load(); }, [load]);
 
-  // ── Toggle a preference and sync to backend ───────────────────────────────
+  // ── Preference toggle ─────────────────────────────────────────────────────
 
   const togglePref = useCallback((key: keyof NotificationPreferences, value: boolean) => {
     const updated = { ...prefs, [key]: value };
     setPrefs(updated);
-    updateNotificationPreferences({ [key]: value }).catch(() => {
-      // Revert on failure
-      setPrefs(prefs);
-    });
+    updateNotificationPreferences({ [key]: value }).catch(() => setPrefs(prefs));
   }, [prefs]);
 
   // ── Realtime: new notification via WS ────────────────────────────────────
@@ -201,7 +114,8 @@ export default function NotificationsScreen() {
       if (!notif?.id) return;
       setNotifications(prev => {
         if (prev.some(n => n.id === notif.id)) return prev;
-        return [notif, ...prev];
+        // Prepend and keep only PREVIEW_LIMIT items in the preview
+        return [notif, ...prev].slice(0, PREVIEW_LIMIT);
       });
       setUnreadNotifications(prev => prev + 1);
     }
@@ -218,7 +132,7 @@ export default function NotificationsScreen() {
     markNotificationsRead();
   }, [setUnreadNotifications]);
 
-  // ── Tap a notification — mark it read + navigate ──────────────────────────
+  // ── Tap a notification — mark read + navigate ─────────────────────────────
 
   const handleTap = useCallback((notif: Notification) => {
     if (!notif.is_read) {
@@ -230,7 +144,6 @@ export default function NotificationsScreen() {
       ));
       markNotificationsRead([notif.id]);
     }
-    // Navigate to relevant screen
     if (notif.data?.conversationId) {
       router.push(`/dm/${notif.data.conversationId}` as never);
     } else if (notif.data?.eventId) {
@@ -238,15 +151,11 @@ export default function NotificationsScreen() {
     } else if (notif.type === 'channel_message' || notif.type === 'city_join') {
       router.push('/(tabs)/chat' as never);
     } else if (notif.type === 'friend_added' && notif.data?.senderUserId) {
-      if (canAccessProfile(account)) {
-        router.push(`/user/${notif.data.senderUserId}` as never);
-      }
+      if (canAccessProfile(account)) router.push(`/user/${notif.data.senderUserId}` as never);
     } else if (notif.type === 'vibe_received') {
       router.push('/(tabs)/me' as never);
     } else if (notif.type === 'profile_view' && notif.data?.viewerId) {
-      if (canAccessProfile(account)) {
-        router.push(`/user/${notif.data.viewerId}` as never);
-      }
+      if (canAccessProfile(account)) router.push(`/user/${notif.data.viewerId}` as never);
     }
   }, [router, account, setUnreadNotifications]);
 
@@ -277,7 +186,7 @@ export default function NotificationsScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* ── Notifications list ───────────────────────────────────────── */}
+        {/* ── Latest notifications (preview) ───────────────────────────── */}
         {loading ? (
           <View style={styles.center}>
             <ActivityIndicator color={Colors.accent} />
@@ -293,10 +202,22 @@ export default function NotificationsScreen() {
             {notifications.map((n, i) => (
               <View key={n.id}>
                 <NotifRow notif={n} onPress={() => handleTap(n)} />
-                {i < notifications.length - 1 && <View style={styles.separator} />}
+                {i < notifications.length - 1 && <NotifSeparator />}
               </View>
             ))}
           </View>
+        )}
+
+        {/* ── See all CTA ──────────────────────────────────────────────── */}
+        {!loading && (
+          <TouchableOpacity
+            style={styles.seeAllBtn}
+            onPress={() => router.push('/notifications-history' as never)}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.seeAllText}>See all notifications</Text>
+            <Feather name="chevron-right" size={16} color={Colors.accent} />
+          </TouchableOpacity>
         )}
 
         {/* ── Notification Preferences ─────────────────────────────────── */}
@@ -304,68 +225,23 @@ export default function NotificationsScreen() {
           <Text style={styles.prefSectionTitle}>NOTIFICATION PREFERENCES</Text>
 
           <View style={styles.prefCard}>
-            <PrefRow
-              label="New direct messages"
-              subtitle="When someone sends you a private message"
-              value={prefs.dm_push}
-              onChange={v => togglePref('dm_push', v)}
-            />
+            <PrefRow label="New direct messages" subtitle="When someone sends you a private message" value={prefs.dm_push} onChange={v => togglePref('dm_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="Event chat messages"
-              subtitle="When someone messages in an event you joined"
-              value={prefs.event_message_push}
-              onChange={v => togglePref('event_message_push', v)}
-            />
+            <PrefRow label="Event chat messages" subtitle="When someone messages in an event you joined" value={prefs.event_message_push} onChange={v => togglePref('event_message_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="Someone joined your event"
-              subtitle="When a new person joins an event you're going to"
-              value={prefs.event_join_push}
-              onChange={v => togglePref('event_join_push', v)}
-            />
+            <PrefRow label="Someone joined your event" subtitle="When a new person joins an event you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="New events in your city"
-              subtitle="When someone creates an event in your city"
-              value={prefs.new_event_push}
-              onChange={v => togglePref('new_event_push', v)}
-            />
+            <PrefRow label="New events in your city" subtitle="When someone creates an event in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="City chat messages"
-              subtitle="When someone sends a message in your city channel"
-              value={prefs.channel_message_push}
-              onChange={v => togglePref('channel_message_push', v)}
-            />
+            <PrefRow label="City chat messages" subtitle="When someone sends a message in your city channel" value={prefs.channel_message_push} onChange={v => togglePref('channel_message_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="Someone arrived in your city"
-              subtitle="When a registered user joins the city channel you're in"
-              value={prefs.city_join_push}
-              onChange={v => togglePref('city_join_push', v)}
-            />
+            <PrefRow label="Someone arrived in your city" subtitle="When a registered user joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="Friend requests"
-              subtitle="When someone adds you as a friend"
-              value={prefs.friend_added_push}
-              onChange={v => togglePref('friend_added_push', v)}
-            />
+            <PrefRow label="Friend requests" subtitle="When someone adds you as a friend" value={prefs.friend_added_push} onChange={v => togglePref('friend_added_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="Vibes ✨"
-              subtitle="When someone leaves a vibe on your profile"
-              value={prefs.vibe_received_push}
-              onChange={v => togglePref('vibe_received_push', v)}
-            />
+            <PrefRow label="Vibes ✨" subtitle="When someone leaves a vibe on your profile" value={prefs.vibe_received_push} onChange={v => togglePref('vibe_received_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow
-              label="Profile views 👀"
-              subtitle="When someone checks your profile"
-              value={prefs.profile_view_push}
-              onChange={v => togglePref('profile_view_push', v)}
-            />
+            <PrefRow label="Profile views 👀" subtitle="When someone checks your profile" value={prefs.profile_view_push} onChange={v => togglePref('profile_view_push', v)} />
           </View>
         </View>
       </ScrollView>
@@ -380,7 +256,6 @@ const styles = StyleSheet.create({
   flex:          { flex: 1 },
   scrollContent: { paddingBottom: Spacing.xxl },
 
-  // ── Header ────────────────────────────────────────────────────────────────
   header: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -400,17 +275,17 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
   },
   headerTitle: {
-    flex:         1,
-    textAlign:    'center',
-    fontSize:     FontSizes.lg,
-    fontWeight:   '800',
-    color:        Colors.text,
+    flex:          1,
+    textAlign:     'center',
+    fontSize:      FontSizes.lg,
+    fontWeight:    '800',
+    color:         Colors.text,
     letterSpacing: -0.4,
   },
   markReadBtn: {
-    width:           80,
-    alignItems:      'flex-end',
-    justifyContent:  'center',
+    width:          80,
+    alignItems:     'flex-end',
+    justifyContent: 'center',
   },
   markReadText: {
     fontSize:   FontSizes.sm,
@@ -418,88 +293,37 @@ const styles = StyleSheet.create({
     color:      Colors.accent,
   },
 
-  // ── Notifications ─────────────────────────────────────────────────────────
   notifList: { paddingTop: Spacing.xs },
 
-  notifRow: {
+  // ── See all CTA ────────────────────────────────────────────────────────────
+  seeAllBtn: {
     flexDirection:     'row',
-    alignItems:        'flex-start',
-    paddingHorizontal: Spacing.md,
+    alignItems:        'center',
+    justifyContent:    'center',
+    gap:               6,
+    marginHorizontal:  Spacing.md,
+    marginTop:         Spacing.sm,
+    marginBottom:      Spacing.xs,
     paddingVertical:   Spacing.md,
-    gap:               Spacing.sm,
-    position:          'relative',
+    borderRadius:      Radius.lg,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    backgroundColor:   Colors.bg2,
   },
-  notifRowUnread: {
-    backgroundColor: 'rgba(255,122,60,0.04)',
-  },
-
-  // Orange left accent bar for unread
-  accentBar: {
-    position:        'absolute',
-    left:            0,
-    top:             12,
-    bottom:          12,
-    width:           3,
-    borderRadius:    2,
-    backgroundColor: Colors.accent,
-  },
-
-  notifIcon: {
-    width:          44,
-    height:         44,
-    borderRadius:   Radius.md,
-    borderWidth:    1,
-    alignItems:     'center',
-    justifyContent: 'center',
-    flexShrink:     0,
-  },
-
-  notifBody: { flex: 1, gap: 4 },
-
-  notifTitle: {
+  seeAllText: {
     fontSize:   FontSizes.sm,
-    fontWeight: '700',
-    color:      Colors.white,
-    lineHeight: 20,
-  },
-  notifTitleRead: { color: Colors.muted, fontWeight: '500' },
-
-  notifPreview: {
-    fontSize:  FontSizes.sm,
-    color:     Colors.text,
-    lineHeight: 18,
-  },
-  notifPreviewRead: { color: Colors.muted2 },
-
-  notifTime: {
-    fontSize: FontSizes.xs,
-    color:    Colors.muted2,
-    marginTop: 2,
+    fontWeight: '600',
+    color:      Colors.accent,
   },
 
-  unreadDot: {
-    width:           10,
-    height:          10,
-    borderRadius:    5,
-    backgroundColor: Colors.accent,
-    marginTop:       6,
-    flexShrink:      0,
-  },
-
-  separator: {
-    height:          1,
-    backgroundColor: Colors.border,
-    marginLeft:      Spacing.md + 44 + Spacing.sm,
-  },
-
-  // ── Empty state ───────────────────────────────────────────────────────────
+  // ── Empty state ────────────────────────────────────────────────────────────
   center:     { paddingVertical: Spacing.xxl, alignItems: 'center' },
   emptyWrap:  { paddingVertical: Spacing.xxl, alignItems: 'center', gap: Spacing.sm },
   emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
   emptyTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
   emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20, paddingHorizontal: Spacing.xl },
 
-  // ── Preferences ───────────────────────────────────────────────────────────
+  // ── Preferences ────────────────────────────────────────────────────────────
   prefSection: {
     marginTop:         Spacing.xl,
     paddingHorizontal: Spacing.md,
@@ -529,8 +353,8 @@ const styles = StyleSheet.create({
   prefLabel: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
   prefSub:   { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 17 },
   prefDivider: {
-    height:          1,
-    backgroundColor: Colors.border,
+    height:           1,
+    backgroundColor:  Colors.border,
     marginHorizontal: Spacing.md,
   },
 });

@@ -2900,12 +2900,16 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/mark-read', functio
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 
-// GET /api/v1/notifications
-// Returns last 50 notifications for the current user, plus total unread count.
+// GET /api/v1/notifications[?limit=5&offset=0]
+// Returns paginated notifications for the current user plus total unread count.
+// Preview screen: limit=5  |  Full-history screen: limit=50&offset=N
+// limit is capped at 100 server-side.
 $router->add('GET', '/api/v1/notifications', function () {
-    $user = AuthService::requireAuth();
+    $user   = AuthService::requireAuth();
+    $limit  = max(1, min(100, (int) ($_GET['limit']  ?? 50)));
+    $offset = max(0, (int) ($_GET['offset'] ?? 0));
     Response::json([
-        'notifications' => NotificationRepository::listForUser($user['id']),
+        'notifications' => NotificationRepository::listForUser($user['id'], $limit, $offset),
         'unread_count'  => NotificationRepository::unreadCount($user['id']),
     ]);
 });

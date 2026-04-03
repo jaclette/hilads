@@ -463,8 +463,8 @@ export async function sendEventImageMessage(eventId, guestId, nickname, imageUrl
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 
-export async function fetchNotifications() {
-  const res = await fetch(`${BASE}/notifications`, { credentials: 'include' })
+export async function fetchNotifications({ limit = 50, offset = 0 } = {}) {
+  const res = await fetch(`${BASE}/notifications?limit=${limit}&offset=${offset}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch notifications')
   return res.json() // { notifications, unread_count }
 }

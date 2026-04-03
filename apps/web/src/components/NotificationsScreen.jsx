@@ -45,9 +45,13 @@ function Toggle({ checked, onChange, disabled }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+const PREVIEW_LIMIT = 5
+
 export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange, account }) {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading]             = useState(true)
+  const [loadingAll, setLoadingAll]       = useState(false)
+  const [showAll, setShowAll]             = useState(false)
   const [unreadCount, setUnreadCount]     = useState(0)
   const [prefs, setPrefs]                 = useState(null)
   const [prefsSaving, setPrefsSaving]     = useState(false)
@@ -57,7 +61,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
     let cancelled = false
     setLoading(true)
-    fetchNotifications()
+    fetchNotifications({ limit: PREVIEW_LIMIT })
       .then(data => {
         if (cancelled) return
         setNotifications(data.notifications)
@@ -72,6 +76,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
     return () => { cancelled = true }
   }, [account])
+
+  function handleSeeAll() {
+    if (showAll) return
+    setLoadingAll(true)
+    fetchNotifications({ limit: 100 })
+      .then(data => {
+        setNotifications(data.notifications)
+        setShowAll(true)
+      })
+      .catch(() => {})
+      .finally(() => setLoadingAll(false))
+  }
 
   function handleMarkAllRead() {
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })))
@@ -154,6 +170,17 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
               </button>
             ))}
           </div>
+        )}
+
+        {/* ── See all CTA ── */}
+        {!loading && !showAll && (
+          <button
+            className="notif-see-all"
+            onClick={handleSeeAll}
+            disabled={loadingAll}
+          >
+            {loadingAll ? 'Loading…' : 'See all notifications →'}
+          </button>
         )}
 
         {/* ── Preferences ── */}

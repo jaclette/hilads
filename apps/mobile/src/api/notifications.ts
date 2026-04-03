@@ -13,8 +13,11 @@ export interface NotificationPreferences {
   profile_view_push:    boolean;
 }
 
-export async function fetchNotifications(): Promise<{ notifications: Notification[]; unread_count: number }> {
-  return api.get('/notifications');
+export async function fetchNotifications(
+  limit = 50,
+  offset = 0,
+): Promise<{ notifications: Notification[]; unread_count: number }> {
+  return api.get(`/notifications?limit=${limit}&offset=${offset}`);
 }
 
 export async function fetchUnreadCount(): Promise<number> {

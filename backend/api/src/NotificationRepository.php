@@ -166,7 +166,7 @@ class NotificationRepository
 
     // ── Read ──────────────────────────────────────────────────────────────────
 
-    public static function listForUser(string $userId, int $limit = 50): array
+    public static function listForUser(string $userId, int $limit = 50, int $offset = 0): array
     {
         $stmt = Database::pdo()->prepare("
             SELECT id, user_id, type, title, body, data::text, is_read,
@@ -175,8 +175,9 @@ class NotificationRepository
             WHERE user_id = ?
             ORDER BY created_at DESC
             LIMIT ?
+            OFFSET ?
         ");
-        $stmt->execute([$userId, $limit]);
+        $stmt->execute([$userId, $limit, $offset]);
         return array_map([self::class, 'normalise'], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
