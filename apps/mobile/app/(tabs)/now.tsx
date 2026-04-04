@@ -153,7 +153,7 @@ export default function HotScreen() {
             <Ionicons name="chevron-back" size={20} color={Colors.text} />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Hot</Text>
+            <Text style={styles.headerTitle}>Now</Text>
           </View>
         </View>
         <View style={styles.empty}>
@@ -176,7 +176,7 @@ export default function HotScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header — web: BackButton left + "Hot" title centered */}
+      {/* Header — web: BackButton left + "Now" title centered */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -186,7 +186,7 @@ export default function HotScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Hot</Text>
+          <Text style={styles.headerTitle}>Now</Text>
           {city && <Text style={styles.headerSub}>{city.name}</Text>}
         </View>
       </View>

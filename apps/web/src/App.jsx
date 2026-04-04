@@ -2661,10 +2661,10 @@ export default function App() {
             type="button"
             className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
             onClick={() => setShowEventDrawer(true)}
-            aria-label="Hot events"
+            aria-label="Now"
           >
             <span className="bottom-nav-icon"><NavIconEvents /></span>
-            <span className="bottom-nav-label">Hot</span>
+            <span className="bottom-nav-label">Now</span>
           </button>
           <button
             type="button"
@@ -2773,7 +2773,7 @@ export default function App() {
         <div className="full-page">
           <div className="page-header">
             <BackButton onClick={() => setShowEventDrawer(false)} />
-            <span className="page-title">Hot</span>
+            <span className="page-title">Now</span>
           </div>
           <div className="page-body page-body--has-fab">
             {(() => {

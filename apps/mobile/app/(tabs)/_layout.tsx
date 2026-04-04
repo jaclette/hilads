@@ -22,7 +22,7 @@ type TabDef = {
 };
 
 const TABS: TabDef[] = [
-  { name: 'hot',    label: 'Hot',    icon: 'flame',  outline: 'flame-outline'  },
+  { name: 'now',    label: 'Now',    icon: 'flame',  outline: 'flame-outline'  },
   { name: 'cities', label: 'Cities', icon: 'earth',  outline: 'earth-outline'  },
   { name: 'here',   label: 'Here',   icon: 'people', outline: 'people-outline' },
   { name: 'me',     label: 'Me',     icon: 'person', outline: 'person-outline' },
@@ -153,12 +153,12 @@ export default function TabsLayout() {
   // directly without ever rendering the 'hot' tab first.
   return (
     <Tabs
-      initialRouteName={joined ? 'chat' : 'hot'}
+      initialRouteName={joined ? 'chat' : 'now'}
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
       {/* ── 4 primary tabs ─────────────────────────────────────────────── */}
-      <Tabs.Screen name="hot"    options={{ title: 'Hot' }} />
+      <Tabs.Screen name="now"    options={{ title: 'Now' }} />
       <Tabs.Screen name="cities" options={{ title: 'Cities' }} />
       <Tabs.Screen name="here"   options={{ title: 'Here' }} />
       <Tabs.Screen name="me"     options={{ title: 'Me' }} />
