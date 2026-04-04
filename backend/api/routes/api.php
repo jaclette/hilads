@@ -97,6 +97,58 @@ function broadcastNewEventToWs(int $channelId, array $hiladsEvent): void
     }
 }
 
+// ── Now-feed DTO helpers ──────────────────────────────────────────────────────
+// Normalize raw repository rows into a consistent FeedItem shape consumed by
+// both the web app and the React Native app.
+//
+// Canonical fields on EVERY item:
+//   kind             "event" | "topic"
+//   id               string
+//   title            string
+//   description      string|null   (event location/venue -or- topic description)
+//   created_at       int           unix timestamp
+//   last_activity_at int|null      unix timestamp (null for events)
+//   active_now       bool          true if live event or topic active in last 30 min
+//
+// Additional event-only fields:
+//   event_type       string        canonical (same value as legacy "type")
+//   source_type      string        canonical (same value as legacy "source")
+//   type             string        kept for backward-compat web rendering
+//   source           string        kept for backward-compat web rendering
+//   starts_at, ends_at, expires_at, location, venue, participant_count,
+//   is_participating, recurrence_label, guest_id, created_by, series_id
+//
+// Additional topic-only fields:
+//   category, message_count, expires_at, city_id
+
+function normalizeFeedEvent(array $e, int $now): array
+{
+    $isLive = ($e['starts_at'] ?? 0) <= $now && ($e['expires_at'] ?? 0) > $now;
+    return array_merge($e, [
+        'kind'             => 'event',
+        // Canonical aliases — these are the field names native uses
+        'event_type'       => $e['type']   ?? $e['event_type']   ?? 'other',
+        'source_type'      => $e['source'] ?? $e['source_type']  ?? 'hilads',
+        // Shared normalised fields
+        'description'      => $e['location'] ?? $e['venue'] ?? null,
+        'active_now'       => $isLive,
+        'last_activity_at' => null,
+        // Participation defaults so the field is always present
+        'participant_count' => (int) ($e['participant_count'] ?? 0),
+        'is_participating'  => (bool) ($e['is_participating']  ?? false),
+    ]);
+}
+
+function normalizeFeedTopic(array $t, int $now): array
+{
+    $activeNow = isset($t['last_activity_at']) && $t['last_activity_at'] > ($now - 1800);
+    return array_merge($t, [
+        'kind'        => 'topic',
+        'description' => $t['description'] ?? null,
+        'active_now'  => $activeNow,
+    ]);
+}
+
 // ── Conversation broadcast helper ─────────────────────────────────────────────
 // Fire-and-forget: tells the WS server to push a newConversationMessage event.
 function broadcastConversationMessageToWs(string $conversationId, array $message): void
@@ -3511,30 +3563,31 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
         $events = EventRepository::getByChannel($channelId, $participantKey);
         $topics = TopicRepository::getByCity($cityId);
 
-        // Tag each item with its kind.
+        // Normalize each item into a consistent FeedItem DTO.
         $now   = time();
         $items = [];
 
         foreach ($events as $e) {
-            $items[] = array_merge($e, ['kind' => 'event']);
+            $items[] = normalizeFeedEvent($e, $now);
         }
         foreach ($topics as $t) {
-            $activeNow = isset($t['last_activity_at']) && $t['last_activity_at'] > ($now - 1800);
-            $items[] = array_merge($t, ['kind' => 'topic', 'active_now' => $activeNow]);
+            $items[] = normalizeFeedTopic($t, $now);
         }
 
-        // Sort: live events always first, then all items unified by last activity DESC.
+        // Sort: live events first, then all items by most-recent activity DESC.
         // "Live" = event happening right now (started, not yet expired).
         usort($items, function (array $a, array $b) use ($now): int {
-            $aLive = $a['kind'] === 'event' && ($a['starts_at'] ?? 0) <= $now && ($a['expires_at'] ?? 0) > $now;
-            $bLive = $b['kind'] === 'event' && ($b['starts_at'] ?? 0) <= $now && ($b['expires_at'] ?? 0) > $now;
+            $aLive = $a['kind'] === 'event' && $a['active_now'];
+            $bLive = $b['kind'] === 'event' && $b['active_now'];
 
             if ($aLive !== $bLive) return $aLive ? -1 : 1;
 
-            // Both live events: chronological order
+            // Both live events: chronological by start time
             if ($aLive && $bLive) return ($a['starts_at'] ?? 0) <=> ($b['starts_at'] ?? 0);
 
-            // All other items: most recently active first
+            // Everything else: most recently active first.
+            // Events use created_at as proxy (no message activity).
+            // Topics use last_activity_at (last reply timestamp).
             $aAct = $a['last_activity_at'] ?? $a['created_at'] ?? 0;
             $bAct = $b['last_activity_at'] ?? $b['created_at'] ?? 0;
             return $bAct <=> $aAct;

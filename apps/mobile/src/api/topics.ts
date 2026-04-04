@@ -1,27 +1,20 @@
 import { api } from './client';
-import type { Topic, NowItem, HiladsEvent, Message } from '@/types';
+import type { FeedItem, Topic, Message } from '@/types';
 
-// Mixed feed: Hilads events + active topics, sorted by liveness.
-// Returns { items: NowItem[] } — each item tagged with kind: 'event' | 'topic'.
-export async function fetchNowFeed(channelId: string, guestId?: string): Promise<NowItem[]> {
+// ── Now feed ──────────────────────────────────────────────────────────────────
+// GET /channels/{id}/now → { items: FeedItem[] }
+// Backend returns a normalized DTO: both events and topics share a consistent
+// set of top-level fields (kind, title, description, active_now, …).
+// No client-side remapping needed — the backend is the single source of truth.
+export async function fetchNowFeed(channelId: string, guestId?: string): Promise<FeedItem[]> {
   try {
-    const data = await api.get<{ items: Record<string, unknown>[] }>(
+    const data = await api.get<{ items: FeedItem[] }>(
       `/channels/${channelId}/now`,
       guestId ? { params: { guestId } } : undefined,
     );
-    return (data.items ?? []).map(item => {
-      if (item.kind === 'topic') {
-        return item as unknown as NowItem;
-      }
-      // Normalise event field names (API returns `type`/`source` — align to HiladsEvent shape)
-      return {
-        ...item,
-        kind:        'event',
-        event_type:  (item.event_type ?? item.type) as HiladsEvent['event_type'],
-        source_type: (item.source_type ?? item.source ?? 'hilads') as HiladsEvent['source_type'],
-      } as unknown as NowItem;
-    });
-  } catch {
+    return data.items ?? [];
+  } catch (err) {
+    console.warn('[fetchNowFeed] failed:', err);
     return [];
   }
 }

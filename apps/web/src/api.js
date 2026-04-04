@@ -178,6 +178,26 @@ export async function fetchCityTopics(channelId) {
   }
 }
 
+// ── Normalized now feed ────────────────────────────────────────────────────────
+// GET /channels/{id}/now → { items: FeedItem[] }
+// Returns a mixed, sorted feed of Hilads events + active topics.
+// Both events and topics share consistent top-level fields (kind, title,
+// description, active_now, …). Pass sessionId so the backend can annotate
+// is_participating on event items.
+export async function fetchNowFeed(channelId, sessionId = null) {
+  try {
+    const params = new URLSearchParams()
+    if (sessionId) params.set('sessionId', sessionId)
+    const qs = params.toString()
+    const url = `${BASE}/channels/${channelId}/now${qs ? `?${qs}` : ''}`
+    const res = await fetch(url, { credentials: 'include' })
+    if (!res.ok) return { items: [] }
+    return res.json() // { items: FeedItem[] }
+  } catch {
+    return { items: [] }
+  }
+}
+
 export async function fetchTopicById(topicId) {
   const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}`)
   if (res.status === 404) return null

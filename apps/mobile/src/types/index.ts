@@ -71,6 +71,41 @@ export type NowItem =
   | (HiladsEvent & { kind: 'event' })
   | (Topic       & { kind: 'topic' });
 
+// ── Normalized /now feed DTO ──────────────────────────────────────────────────
+// This is the canonical shape returned by GET /channels/{id}/now after
+// backend normalization. Both web and native consume this same contract.
+// Use FeedItem instead of NowItem for the Now screen rendering.
+
+export interface FeedItem {
+  kind:             'event' | 'topic';
+  id:               string;
+  title:            string;
+  description:      string | null;   // event location/venue OR topic description
+  created_at:       number;          // unix timestamp
+  last_activity_at: number | null;   // unix timestamp; null for events
+  active_now:       boolean;         // live event OR topic active in last 30 min
+
+  // ── Event-only fields (present when kind === 'event') ──────────────────────
+  event_type?:        string;          // canonical — same value as legacy 'type'
+  source_type?:       'hilads' | 'ticketmaster';
+  starts_at?:         number;
+  ends_at?:           number | null;
+  expires_at?:        number;
+  location?:          string | null;
+  venue?:             string | null;
+  participant_count?: number;
+  is_participating?:  boolean;
+  recurrence_label?:  string | null;
+  series_id?:         string | null;
+  guest_id?:          string | null;
+  created_by?:        string | null;
+
+  // ── Topic-only fields (present when kind === 'topic') ─────────────────────
+  category?:      string;
+  message_count?: number;
+  city_id?:       string;
+}
+
 // ── Event chat unread state ───────────────────────────────────────────────────
 
 export interface EventChatPreview {

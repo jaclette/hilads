@@ -38,7 +38,7 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
         onClick={() => onSelectEvent(event)}
       >
         <span className="event-row-title">
-          {EVENT_ICONS[event.type] ?? '📌'} {event.title}
+          {EVENT_ICONS[event.event_type ?? event.type] ?? '📌'} {event.title}
         </span>
         <span className="event-row-location">
           {getTimeLabel(event.starts_at, tz)}

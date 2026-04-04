@@ -7,11 +7,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchNowFeed, fetchCityTopics } from '@/api/topics';
+import { fetchNowFeed } from '@/api/topics';
 import { fetchPublicCityEvents } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
-import type { NowItem, HiladsEvent } from '@/types';
+import type { FeedItem, HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { CreateSheet } from '@/components/CreateSheet';
 
@@ -46,11 +46,16 @@ function fireEmoji(n: number): string {
 
 // ── Event card ────────────────────────────────────────────────────────────────
 
-function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void }) {
+function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress: () => void }) {
   const now    = Date.now() / 1000;
-  const isLive = event.starts_at <= now && (event.expires_at ?? 0) > now;
-  const icon   = EVENT_ICONS[event.event_type] ?? '📌';
-  const isPublic = event.source_type === 'ticketmaster';
+  const startsAt  = (event as HiladsEvent).starts_at  ?? 0;
+  const expiresAt = (event as HiladsEvent).expires_at ?? 0;
+  const isLive    = startsAt <= now && expiresAt > now;
+  // FeedItem uses event_type; HiladsEvent also has event_type — canonical field
+  const eventType = (event as FeedItem).event_type ?? (event as HiladsEvent).event_type ?? 'other';
+  const icon      = EVENT_ICONS[eventType] ?? '📌';
+  const sourceType = (event as FeedItem).source_type ?? (event as HiladsEvent).source_type ?? 'hilads';
+  const isPublic   = sourceType === 'ticketmaster';
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={onPress}>
@@ -62,13 +67,13 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
         {!isPublic && (event.participant_count ?? 0) > 0 ? (
-          <Text style={styles.goingCount}>{fireEmoji(event.participant_count!)} {event.participant_count}</Text>
+          <Text style={styles.goingCount}>{fireEmoji(event.participant_count ?? 0)} {event.participant_count}</Text>
         ) : null}
       </View>
       <View style={styles.timePillRow}>
         <View style={[styles.timePill, isLive && styles.timePillLive]}>
           <Text style={styles.timePillText}>
-            🕐 {formatTime(event.starts_at)}{event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
+            🕐 {formatTime(startsAt)}{(event as HiladsEvent).ends_at ? ` → ${formatTime((event as HiladsEvent).ends_at!)}` : ''}
           </Text>
         </View>
         {event.recurrence_label && (
@@ -93,8 +98,8 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
 
 // ── Topic card ────────────────────────────────────────────────────────────────
 
-function TopicCard({ topic, onPress }: { topic: NowItem & { kind: 'topic' }; onPress: () => void }) {
-  const icon      = CATEGORY_ICONS[topic.category] ?? '💬';
+function TopicCard({ topic, onPress }: { topic: FeedItem & { kind: 'topic' }; onPress: () => void }) {
+  const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
   const replies   = topic.message_count ?? 0;
   const lastAct   = topic.last_activity_at;
   const activeNow = topic.active_now === true;
@@ -165,7 +170,7 @@ function FilterEmptyState({ filter, city }: { filter: 'all' | 'events' | 'topics
 export default function NowScreen() {
   const router = useRouter();
   const { city, identity } = useApp();
-  const [items,         setItems]         = useState<NowItem[]>([]);
+  const [items,         setItems]         = useState<FeedItem[]>([]);
   const [publicEvents,  setPublicEvents]  = useState<HiladsEvent[]>([]);
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
@@ -174,7 +179,7 @@ export default function NowScreen() {
   const [filter,        setFilter]        = useState<'all' | 'events' | 'topics'>('all');
 
   // Stable ref for WS participant count patches
-  const itemsRef = useRef<NowItem[]>([]);
+  const itemsRef = useRef<FeedItem[]>([]);
   itemsRef.current = items;
 
   async function load(isRefresh = false) {
@@ -183,28 +188,13 @@ export default function NowScreen() {
     else setLoading(true);
     setError(null);
     try {
-      const [nowData, publicData, topicsData] = await Promise.all([
+      // Single normalized endpoint — backend returns both events and topics
+      // in a consistent FeedItem DTO. No client-side merging needed.
+      const [nowData, publicData] = await Promise.all([
         fetchNowFeed(city.channelId, identity?.guestId),
         fetchPublicCityEvents(city.channelId),
-        fetchCityTopics(city.channelId),
       ]);
-
-      // Merge topics from the dedicated /topics endpoint into the feed.
-      // /now returns both events + topics; /topics is the reliable fallback
-      // in case /now silently drops topics. Deduplication by id prevents doubles.
-      const topicIdsInFeed = new Set(
-        nowData.filter(i => i.kind === 'topic').map(i => i.id),
-      );
-      const nowSec = Date.now() / 1000;
-      const missingTopics: NowItem[] = topicsData
-        .filter(t => !topicIdsInFeed.has(t.id))
-        .map(t => ({
-          ...t,
-          kind:       'topic' as const,
-          active_now: t.last_activity_at !== null && t.last_activity_at > nowSec - 1800,
-        }));
-
-      setItems([...nowData, ...missingTopics]);
+      setItems(nowData);
       setPublicEvents(publicData);
     } catch {
       setError('Could not load feed');
@@ -214,7 +204,12 @@ export default function NowScreen() {
     }
   }
 
+  // Primary trigger: runs when screen gains focus or city changes.
   useFocusEffect(useCallback(() => { load(); }, [city?.channelId]));
+
+  // Safety trigger: if city loads after the screen is already focused,
+  // useFocusEffect may not re-fire. This effect catches that case.
+  useEffect(() => { if (city) load(); }, [city?.channelId]);
 
   // Live participant count patches from WebSocket
   useEffect(() => {
@@ -222,7 +217,7 @@ export default function NowScreen() {
       const { eventId, count } = data as { eventId: string; count: number };
       setItems(prev => prev.map(item =>
         item.kind === 'event' && item.id === eventId
-          ? { ...item, participant_count: count }
+          ? { ...item, participant_count: count as number }
           : item,
       ));
     });
@@ -262,7 +257,7 @@ export default function NowScreen() {
 
   const showPublic = filter !== 'topics' && publicEvents.length > 0;
 
-  const listData: Array<NowItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })> = [
+  const listData: Array<FeedItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })> = [
     ...filteredItems,
     ...(showPublic
       ? [
@@ -325,7 +320,7 @@ export default function NowScreen() {
             if (item.kind === 'topic') {
               return (
                 <TopicCard
-                  topic={item as NowItem & { kind: 'topic' }}
+                  topic={item as FeedItem & { kind: 'topic' }}
                   onPress={() => {
                     track('topic_opened', { topicId: item.id });
                     router.push(`/topic/${item.id}`);
@@ -333,7 +328,7 @@ export default function NowScreen() {
                 />
               );
             }
-            // event or public_event
+            // event or public_event — map FeedItem to HiladsEvent shape for EventCard
             const event = item as HiladsEvent;
             return (
               <EventCard

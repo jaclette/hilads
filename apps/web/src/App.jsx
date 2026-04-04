@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -1332,13 +1332,16 @@ export default function App() {
         }
       })
 
-      // Socket: handle newEvent for real-time events list refresh
+      // Socket: handle newEvent — refresh via unified /now endpoint
       socket.on('newEvent', ({ cityId }) => {
         if (activeChannelRef.current !== cityId) return
-        fetchEvents(cityId, sessionIdRef.current).then(data => {
+        fetchNowFeed(cityId, sessionIdRef.current).then(data => {
           if (activeChannelRef.current === cityId) {
-            const evs = data.events
+            const nowItems = data.items ?? []
+            const evs  = nowItems.filter(i => i.kind === 'event')
+            const tops = nowItems.filter(i => i.kind === 'topic')
             setEvents(evs)
+            setTopics(tops)
             setHotEventsStatus('ready')
             const counts = {}
             evs.forEach(ev => { counts[ev.id] = ev.participant_count ?? 0 })
@@ -1373,23 +1376,27 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // ── Events: initial fetch only; live updates via WS newEvent handler ────
+      // ── Events + Topics: unified fetch via /now ───────────────────────────
+      // The normalized /now endpoint returns both events and topics in a
+      // consistent FeedItem DTO. One call replaces fetchEvents + fetchCityTopics.
       setHotEventsStatus('loading')
       const fetchAllEvents = async () => {
         if (!activeRef.current) return
-        const [hiladsResult, publicResult, topicsResult] = await Promise.allSettled([
-          fetchEvents(location.channelId, sessionIdRef.current),
+        const [nowResult, publicResult] = await Promise.allSettled([
+          fetchNowFeed(location.channelId, sessionIdRef.current),
           fetchCityEvents(location.channelId),
-          fetchCityTopics(location.channelId),
         ])
         if (activeChannelRef.current !== location.channelId) return
 
-        const hiladsOk = hiladsResult.status === 'fulfilled'
+        const nowOk    = nowResult.status === 'fulfilled'
         const publicOk = publicResult.status === 'fulfilled'
 
-        if (hiladsOk) {
-          const evs = hiladsResult.value.events
+        if (nowOk) {
+          const nowItems = nowResult.value.items ?? []
+          const evs      = nowItems.filter(i => i.kind === 'event')
+          const tops     = nowItems.filter(i => i.kind === 'topic')
           setEvents(evs)
+          setTopics(tops)
           const counts = {}
           const participated = new Set()
           evs.forEach(ev => {
@@ -1400,15 +1407,13 @@ export default function App() {
           setParticipatedEvents(participated)
         } else {
           setEvents([])
+          setTopics([])
         }
 
         if (publicOk) setCityEvents(publicResult.value.events)
         else setCityEvents([])
 
-        if (topicsResult.status === 'fulfilled') setTopics(topicsResult.value.topics ?? [])
-        else setTopics([])
-
-        setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
+        setHotEventsStatus(nowOk || publicOk ? 'ready' : 'error')
       }
       fetchAllEvents()
     } catch (err) {
@@ -1697,22 +1702,24 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // Events: initial fetch only; live updates via WS newEvent handler
+      // Events + Topics: unified fetch via /now (same as handleJoin)
       const fetchAllEvents = async () => {
         if (!activeRef.current) return
-        const [hiladsResult, publicResult, topicsResult] = await Promise.allSettled([
-          fetchEvents(newChannelId, sessionIdRef.current),
+        const [nowResult, publicResult] = await Promise.allSettled([
+          fetchNowFeed(newChannelId, sessionIdRef.current),
           fetchCityEvents(newChannelId),
-          fetchCityTopics(newChannelId),
         ])
         if (activeChannelRef.current !== newChannelId) return
 
-        const hiladsOk = hiladsResult.status === 'fulfilled'
+        const nowOk    = nowResult.status === 'fulfilled'
         const publicOk = publicResult.status === 'fulfilled'
 
-        if (hiladsOk) {
-          const evs = hiladsResult.value.events
+        if (nowOk) {
+          const nowItems = nowResult.value.items ?? []
+          const evs      = nowItems.filter(i => i.kind === 'event')
+          const tops     = nowItems.filter(i => i.kind === 'topic')
           setEvents(evs)
+          setTopics(tops)
           const counts = {}
           const participated = new Set()
           evs.forEach(ev => {
@@ -1723,15 +1730,13 @@ export default function App() {
           setParticipatedEvents(participated)
         } else {
           setEvents([])
+          setTopics([])
         }
 
         if (publicOk) setCityEvents(publicResult.value.events)
         else setCityEvents([])
 
-        if (topicsResult.status === 'fulfilled') setTopics(topicsResult.value.topics ?? [])
-        else setTopics([])
-
-        setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
+        setHotEventsStatus(nowOk || publicOk ? 'ready' : 'error')
       }
       fetchAllEvents()
     } catch {
@@ -1932,10 +1937,13 @@ export default function App() {
     // Confirm with server (catches any server-side pruning or ordering)
     const cid = activeChannelRef.current
     if (!cid) return
-    fetchEvents(cid, sessionIdRef.current).then(data => {
+    fetchNowFeed(cid, sessionIdRef.current).then(data => {
       if (activeChannelRef.current === cid) {
-        const evs = data.events
+        const nowItems = data.items ?? []
+        const evs  = nowItems.filter(i => i.kind === 'event')
+        const tops = nowItems.filter(i => i.kind === 'topic')
         setEvents(evs)
+        setTopics(tops)
         setHotEventsStatus('ready')
         const counts = {}
         evs.forEach(ev => { counts[ev.id] = ev.participant_count ?? 0 })
@@ -2917,7 +2925,7 @@ export default function App() {
                   >
                     <div className="er-header">
                       <span className="er-title">
-                        {EVENT_ICONS[event.type] ?? '📌'} {event.title}
+                        {EVENT_ICONS[event.event_type ?? event.type] ?? '📌'} {event.title}
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">Public</span>
