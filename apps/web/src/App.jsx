@@ -1304,12 +1304,9 @@ export default function App() {
       setCityTimezone(location.timezone ?? 'UTC')
       activeChannelRef.current = location.channelId
 
-      // Emit join event before fetching messages so it's included
-      const joinData = await joinChannel(location.channelId, sessionIdRef.current, session.guestId, name)
-      const joinKey = messageKey(joinData.message)
-
-      // Start events + public events fetch immediately — parallel with messages
+      // All four requests start simultaneously — none has a true dependency on the others
       setHotEventsStatus('loading')
+      const joinP       = joinChannel(location.channelId, sessionIdRef.current, session.guestId, name)
       const nowFeedP    = fetchNowFeed(location.channelId, sessionIdRef.current)
       const cityEventsP = fetchCityEvents(location.channelId)
 
@@ -1318,7 +1315,9 @@ export default function App() {
       setHasMoreMessages(false)
       oldestMessageIdRef.current = null
 
-      const data = await fetchMessages(location.channelId, { limit: 50 })
+      const messagesP = fetchMessages(location.channelId, { limit: 50 })
+      const [joinData, data] = await Promise.all([joinP, messagesP])
+      const joinKey = messageKey(joinData.message)
       knownIdsRef.current = new Set(data.messages.map(messageKey))
 
       const total = data.messages.length
@@ -1721,15 +1720,8 @@ export default function App() {
     activeEventIdRef.current = null
 
     try {
-      // Emit join event (also handles leaving previous channel) before fetching
-      const joinData = await joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId)
-
-      // another switch happened while we were joining — discard
-      if (activeChannelRef.current !== newChannelId) return
-
-      const joinKey = messageKey(joinData.message)
-
-      // Start events + public events fetch immediately — parallel with messages
+      // All four requests start simultaneously — none has a true dependency on the others
+      const joinP       = joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId)
       const nowFeedP    = fetchNowFeed(newChannelId, sessionIdRef.current)
       const cityEventsP = fetchCityEvents(newChannelId)
 
@@ -1738,10 +1730,13 @@ export default function App() {
       setHasMoreMessages(false)
       oldestMessageIdRef.current = null
 
-      const data = await fetchMessages(newChannelId, { limit: 50 })
+      const messagesP = fetchMessages(newChannelId, { limit: 50 })
+      const [joinData, data] = await Promise.all([joinP, messagesP])
 
-      // another switch happened while we were fetching — discard this result
+      // another switch happened while we were loading — discard
       if (activeChannelRef.current !== newChannelId) return
+
+      const joinKey = messageKey(joinData.message)
 
       knownIdsRef.current = new Set(data.messages.map(messageKey))
       const total = data.messages.length
