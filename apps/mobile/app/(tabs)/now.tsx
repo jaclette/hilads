@@ -143,6 +143,23 @@ function EmptyState({ city }: { city?: string }) {
   );
 }
 
+function FilterEmptyState({ filter, city }: { filter: 'all' | 'events' | 'topics'; city?: string }) {
+  if (filter === 'all') return <EmptyState city={city} />;
+  return (
+    <View style={styles.empty}>
+      <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '💬'}</Text>
+      <Text style={styles.emptyTitle}>
+        {filter === 'events' ? 'No events right now' : 'No conversations yet'}
+      </Text>
+      <Text style={styles.emptySub}>
+        {filter === 'events'
+          ? `Be the first to create one${city ? ` in ${city}` : ''}`
+          : 'Start a topic and get the city talking'}
+      </Text>
+    </View>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function NowScreen() {
@@ -154,6 +171,7 @@ export default function NowScreen() {
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
   const [showSheet,     setShowSheet]     = useState(false);
+  const [filter,        setFilter]        = useState<'all' | 'events' | 'topics'>('all');
 
   // Stable ref for WS participant count patches
   const itemsRef = useRef<NowItem[]>([]);
@@ -218,10 +236,18 @@ export default function NowScreen() {
     );
   }
 
-  // Build flat list data: mixed items + optional public events section
+  // Apply filter then build flat list data
+  const filteredItems = filter === 'events'
+    ? items.filter(i => i.kind === 'event')
+    : filter === 'topics'
+      ? items.filter(i => i.kind === 'topic')
+      : items;
+
+  const showPublic = filter !== 'topics' && publicEvents.length > 0;
+
   const listData: Array<NowItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })> = [
-    ...items,
-    ...(publicEvents.length > 0
+    ...filteredItems,
+    ...(showPublic
       ? [
           { kind: 'section' as const, label: '🎫 Public Events' },
           ...publicEvents.map(e => ({ ...e, kind: 'public_event' as const })),
@@ -242,6 +268,22 @@ export default function NowScreen() {
         </View>
       </View>
 
+      {/* Filter pills */}
+      <View style={styles.filterBar}>
+        {(['all', 'events', 'topics'] as const).map(f => (
+          <TouchableOpacity
+            key={f}
+            style={[styles.filterPill, filter === f && styles.filterPillActive]}
+            onPress={() => setFilter(f)}
+            activeOpacity={0.75}
+          >
+            <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
+              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Topics'}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       {loading && !refreshing ? (
         <View style={styles.center}>
           <ActivityIndicator color={Colors.accent} size="large" />
@@ -253,8 +295,8 @@ export default function NowScreen() {
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      ) : items.length === 0 && publicEvents.length === 0 ? (
-        <EmptyState city={city?.name} />
+      ) : listData.length === 0 ? (
+        <FilterEmptyState filter={filter} city={city?.name} />
       ) : (
         <FlatList
           data={listData}
@@ -352,6 +394,36 @@ const styles = StyleSheet.create({
   headerCenter: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
   headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
+
+  // ── Filter bar ─────────────────────────────────────────────────────────────
+  filterBar: {
+    flexDirection:     'row',
+    gap:               8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  filterPill: {
+    paddingHorizontal: 14,
+    paddingVertical:   6,
+    borderRadius:      Radius.full,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.12)',
+  },
+  filterPillActive: {
+    backgroundColor: Colors.accent,
+    borderColor:     Colors.accent,
+  },
+  filterPillText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '500',
+    color:      Colors.muted,
+  },
+  filterPillTextActive: {
+    color:      Colors.white,
+    fontWeight: '600',
+  },
 
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   errorText: { fontSize: FontSizes.sm, color: Colors.red, marginBottom: Spacing.md, textAlign: 'center' },
