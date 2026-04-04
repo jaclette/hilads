@@ -551,6 +551,7 @@ export default function App() {
   const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewEvents, setPreviewEvents]         = useState([])
+  const [previewTopicCount, setPreviewTopicCount] = useState(0)
   const [previewChannelId, setPreviewChannelId]   = useState(null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
@@ -1074,6 +1075,9 @@ export default function App() {
           .slice(0, 3)
         setPreviewEvents(preview)
       })
+      .catch(() => {})
+    fetchCityTopics(previewChannelId)
+      .then(data => setPreviewTopicCount((data.topics ?? []).length))
       .catch(() => {})
   }, [previewChannelId]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -2044,6 +2048,7 @@ export default function App() {
           handleJoin={handleJoin}
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
+          previewTopicCount={previewTopicCount}
           previewEvents={previewEvents}
           previewTimezone={previewTimezone}
           onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}

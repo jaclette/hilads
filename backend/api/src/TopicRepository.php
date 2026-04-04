@@ -205,34 +205,47 @@ class TopicRepository
         $id        = bin2hex(random_bytes(8));
         $expiresAt = time() + $ttlHours * 3600;
 
-        $pdo->prepare("
-            INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
-            VALUES (:id, 'topic', :parent_id, :name, 'active', now(), now())
-        ")->execute([
-            'id'        => $id,
-            'parent_id' => $cityId,
-            'name'      => $title,
-        ]);
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare("
+                INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
+                VALUES (:id, 'topic', :parent_id, :name, 'active', now(), now())
+            ")->execute([
+                'id'        => $id,
+                'parent_id' => $cityId,
+                'name'      => $title,
+            ]);
 
-        $pdo->prepare("
-            INSERT INTO channel_topics
-                (channel_id, city_id, created_by, guest_id, title, description, category, expires_at)
-            VALUES
-                (:channel_id, :city_id, :created_by, NULL, :title, :description, :category,
-                 to_timestamp(:expires_at))
-        ")->execute([
-            'channel_id'  => $id,
-            'city_id'     => $cityId,
-            'created_by'  => $creatorId,
-            'title'       => $title,
-            'description' => $description,
-            'category'    => $category,
-            'expires_at'  => $expiresAt,
-        ]);
+            $pdo->prepare("
+                INSERT INTO channel_topics
+                    (channel_id, city_id, created_by, guest_id, title, description, category, expires_at)
+                VALUES
+                    (:channel_id, :city_id, :created_by, NULL, :title, :description, :category,
+                     to_timestamp(:expires_at))
+            ")->execute([
+                'channel_id'  => $id,
+                'city_id'     => $cityId,
+                'created_by'  => $creatorId,
+                'title'       => $title,
+                'description' => $description,
+                'category'    => $category,
+                'expires_at'  => $expiresAt,
+            ]);
+
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
 
         // Auto-subscribe the chosen creator so they get notified on replies.
+        // Run outside the transaction — a subscription failure should not undo topic creation.
         if ($creatorId !== null) {
-            self::subscribe($id, $creatorId);
+            try {
+                self::subscribe($id, $creatorId);
+            } catch (\Throwable $e) {
+                error_log("[topic-admin] subscribe failed for creator {$creatorId} on topic {$id}: " . $e->getMessage());
+            }
         }
 
         return $id;

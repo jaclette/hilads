@@ -52,17 +52,22 @@ if ($method === 'POST') {
 
     if (empty($errors)) {
         $cityChannelId = 'city_' . $cityId;
-        $topicId = TopicRepository::adminCreate(
-            $cityChannelId,
-            $title,
-            $description,
-            $category,
-            $creatorUser['id'] ?? null,
-            $ttlHours
-        );
-        error_log('[admin] topic created: "' . $title . '" (' . $topicId . ') in city ' . $cityId);
-        flash_set('success', 'Topic "' . $title . '" created successfully.');
-        admin_redirect('/admin/topics');
+        try {
+            $topicId = TopicRepository::adminCreate(
+                $cityChannelId,
+                $title,
+                $description,
+                $category,
+                $creatorUser['id'] ?? null,
+                $ttlHours
+            );
+            error_log('[admin] topic created: "' . $title . '" (' . $topicId . ') in city ' . $cityId);
+            flash_set('success', 'Topic "' . $title . '" created successfully.');
+            admin_redirect('/admin/topics');
+        } catch (\Throwable $e) {
+            error_log('[admin] topic create failed: ' . $e->getMessage());
+            $errors[] = 'Database error: ' . $e->getMessage();
+        }
     }
 }
 
