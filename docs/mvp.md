@@ -1,4 +1,4 @@
-# Hilads — MVP v10
+# Hilads — MVP
 
 ## Vision
 
@@ -15,8 +15,8 @@ Not a chat app. A **live social layer on top of cities**.
 ```
 Open app
   → city auto-detected by geolocation (or picked manually)
-  → see who's online + what's happening
-  → chat, join an event, or create one
+  → see who's online, what events are happening, what people are talking about
+  → chat, join an event, join a topic conversation, or create one
   → no sign-up required — instant Ghost mode
   → register to unlock profile, DMs, friends, vibes, and notifications
 ```
@@ -27,12 +27,14 @@ Open app
 
 | Screen | What it does |
 |---|---|
-| **Hot** | Active events in the current city |
-| **Cities** | Switch city — ranked by live activity |
+| **Now** | Mixed live feed: events + topics, filters: All / Events / Topics |
+| **Chat** | City chat — real-time public channel for the current city |
+| **Cities** | Switch city, ranked by live activity score |
 | **Here** | Who's online right now in the city |
-| **Me** | Profile, My Events, friends list (registered) |
-| **Messages** | DMs + event chats (registered) |
-| **Notifications** | Bell icon — in-app feed + push (registered) |
+| **Messages** | DMs + event chats (registered users) |
+| **Me** | Profile, My Events, friends list |
+
+> **Now** is the primary discovery screen. It replaces the old "Hot" screen and extends it with Topics — user-generated conversations that live alongside events.
 
 ---
 
@@ -41,13 +43,12 @@ Open app
 ### Ghost (default)
 
 - Instant entry — no sign-up
-- Persistent identity: 32-char hex guestId stored in localStorage / SecureStore
+- Persistent identity: 32-char hex `guestId` stored in `localStorage` / `SecureStore`
 - Nickname chosen on first join
-- Minimal profile card (ghost badge + avatar initial, no API call)
-- Full access to city chat and events, including creating events
+- Full access to city chat, events, topics, including creating them
 - Cannot access DMs, friends, vibes, or notifications
 
-Ghost identity is **persistent across page loads** — the same guestId is reused so historical feed messages are correctly attributed.
+Ghost identity persists across sessions — the same `guestId` reattaches historical feed messages correctly.
 
 ### Registered
 
@@ -59,30 +60,130 @@ Ghost identity is **persistent across page loads** — the same guestId is reuse
 
 ---
 
+## Now Feed
+
+The central discovery screen. Shows what's happening in the city right now.
+
+### Feed items
+
+| Kind | Source | Description |
+|---|---|---|
+| `event` | Hilads (user-created or recurring) | One-shot events + venue series |
+| `topic` | Hilads (user-created) | City conversation threads |
+| `public_event` | Ticketmaster | External events (no participation tracking) |
+
+### Sort order
+
+1. Live events (currently ongoing) → sorted by start time
+2. Everything else → sorted by most recent activity (`last_activity_at`)
+
+### Filters
+
+All / 🔥 Events / 💬 Topics — filter pills at the top of the screen.
+
+### Feed item DTO
+
+Both the web and native apps consume a single normalized `FeedItem` shape returned by `GET /channels/{id}/now`. Backend normalizes both events and topics to a consistent contract before sending:
+
+- `kind` — `"event"` | `"topic"`
+- `id`, `title`, `description`
+- `event_type`, `source_type` (events only)
+- `starts_at`, `ends_at`, `expires_at` (events only)
+- `location`, `venue` (events only)
+- `participant_count`, `is_participating` (hilads events only)
+- `recurrence_label` (recurring events only)
+- `active_now` — true if live event or recently active topic
+- `last_activity_at` — last reply timestamp (topics only)
+- `message_count` (topics only)
+- `category` (topics only)
+
+Public events are returned in a separate `publicEvents` array within the same response (to avoid a second HTTP round-trip on mobile).
+
+---
+
+## Topics
+
+User-generated conversation threads attached to a city.
+
+- Any user (ghost or registered) can create a topic
+- Topics have a title, optional description, and category (`general`, `tips`, `food`, `drinks`, `help`, `meetup`)
+- Topics appear in the Now feed alongside events
+- Topics have their own chat screen — replies show in the topic thread
+- Topics are visible even with 0 replies
+- Topics expire after 24 hours of inactivity
+- Join CTA links directly to the topic chat
+
+Topics are distinct from city chat: they are scoped conversations, not a general chatroom.
+
+---
+
+## City Chat
+
+- One public real-time chat channel per city
+- Text + photo messages
+- Messages shown in reverse-chronological order (newest at bottom)
+- Initial load: 50 most recent messages
+- Lazy loading: scroll up to fetch older messages (`before_id` cursor pagination)
+- Rate-limited to prevent spam
+- Real-time via WebSocket; 3s poll as fallback
+- Messages retained for the current day only (cleaned up at midnight)
+- System feed items injected for join events and presence changes
+
+---
+
+## Events
+
+### One-shot events
+
+- Created by any user (ghost or registered)
+- Custom title, optional location hint, start/end time
+- Each has its own real-time chat channel
+- Auto-expire at `expires_at`
+
+### Recurring events
+
+- Seeded per city: bars, coffee shops, curated venues
+- Daily/weekly/every-N-days schedule
+- "↻ Every day" / "Mon · Wed · Fri" badge
+- Only today's occurrence shown in the Now feed; all occurrences in Upcoming
+
+### Public events (Ticketmaster)
+
+- Ingested via Ticketmaster API
+- Shown in Now feed (separate "🎫 Public Events" section) and Upcoming feed
+- "Public" badge — no participant tracking, no event chat
+
+### Event participants
+
+- Any user (ghost or registered) can join
+- Participant count shown on event card and event screen
+- Participant list visible inside the event — tappable avatars + names
+- Tapping a registered user opens their profile
+
+### Event ownership
+
+Creator can: replace "Join" with "✏️ Edit event", edit title/location/time, delete the event.
+
+Ownership check: `guest_id = :guest_id OR created_by = :user_id`.
+
+---
+
 ## Profile System
 
 ### Registered Profile
 
-Accessible from: Here screen, feed bubbles, friends list, direct link.
-
-Contains:
 - Display name + avatar (photo or generated initial)
-- Badge (Fresh / Regular — auto-evolving)
-- Self-chosen vibe label
-- Vibe score (average rating) + vibe count
-- List of vibes received
+- Badge (Fresh / Regular — auto-evolving by account age)
+- Vibe score (average rating) + vibe count + vibes received
 - Friends list
 - Add Friend / Message CTA
 
 ### Ghost Profile
 
-Accessible from feed bubbles.
-
-Contains:
 - Generated avatar + nickname
 - 👻 Ghost badge
 - City context
-- No API call — fully client-side rendered
+- Client-side only — no API call
 
 ---
 
@@ -100,7 +201,7 @@ Computed from `users.created_at` at display time. No user action required.
 ## Vibe System
 
 - Any registered user can leave a vibe (1–5 stars + optional message) on another user's profile
-- One vibe per user pair — updatable, edits are silent (no repeated notification)
+- One vibe per user pair — updatable; edits are silent (no repeated notification)
 - Profile shows: vibe score, count, and vibe list
 - Receiving a new vibe triggers in-app + push notification → deep-links to own profile
 
@@ -112,78 +213,6 @@ Computed from `users.created_at` at display time. No user action required.
 - Currently one-directional (follow-style)
 - Own friends list in the Me screen
 - Friend addition triggers in-app + push notification
-
----
-
-## Feed System
-
-City chat includes system items announcing social activity:
-
-| Event | Example |
-|---|---|
-| User joined city | "Jaclette joined the vibe" |
-| User arrived | "Jaclette just landed" |
-| User is active | "Jaclette is live" |
-
-Feed items are clickable — tap opens the user's profile.
-
----
-
-## City Chat
-
-- One public chat channel per city
-- Text + photo messages
-- Timestamped messages (time + date shown under each bubble)
-- Rate-limited to prevent spam
-- Real-time via WebSocket, 3s poll as fallback
-- Messages kept for current day only (cleaned up at midnight)
-- Feed prompts injected client-side when activity is low
-- New users should land at the latest message (bottom of feed)
-
----
-
-## Events — Hot Screen
-
-### One-shot events
-
-- Created by any user (ghost or registered)
-- Custom title, optional location hint, start/end time
-- Each has its own real-time chat
-- Auto-expire at `expires_at`
-
-### Recurring events
-
-- Seeded per city: bars, coffee shops, curated venues
-- Daily/weekly schedule
-- "↻ Every day" badge
-- Only today's occurrence shown in Hot
-
-### Public events (Ticketmaster)
-
-- Ingested via Ticketmaster API
-- Shown in Hot and Upcoming feeds
-- "Public" badge — no participant tracking
-
----
-
-## Event Participants
-
-- Joining registers the user (ghost or registered) as a participant
-- Participant count shown on event card and event screen
-- Participant list visible inside the event — tappable avatars + names (registered users)
-- Tapping a registered user opens their profile
-- Ghost participants shown with nickname only
-
----
-
-## Event Ownership
-
-Creator capabilities:
-- Replace "Join" CTA with "✏️ Edit event"
-- Edit title, location, time
-- Delete the event (with confirmation)
-
-Ownership check: `guest_id = :guest_id OR created_by = :user_id`
 
 ---
 
@@ -215,16 +244,16 @@ Registered users only.
 
 ### Delivery
 
-- **In-app bell** — polled every 30s, real-time via WebSocket when open
+- **In-app bell** — polled every 30s; real-time via WebSocket when open
 - **Web push** — browser VAPID push
-- **Native push** — Expo Push API (Android working; iOS not fully tested)
-  - Deep linking working: DM tap → opens DM, event tap → opens event
-  - Foreground suppression: no alert when user is already viewing the relevant screen
+- **Native push** — Expo Push API (Android working; iOS in progress)
+  - Deep linking working: DM tap → DM, event tap → event
+  - Foreground suppression: no alert when user is already on the relevant screen
   - Anti-noise cooldowns on high-frequency types
 
 ### Notification preferences
 
-Per-user toggles per type. Preference screen is accessible from the Notifications tab.
+Per-user toggles per type, accessible from the Notifications tab.
 
 ---
 
@@ -232,7 +261,7 @@ Per-user toggles per type. Preference screen is accessible from the Notification
 
 - Live user count per city
 - "X joined" system messages in city chat
-- WebSocket-driven: snapshot on join, live updates
+- WebSocket-driven: snapshot on join, live delta updates
 
 ---
 
@@ -254,10 +283,11 @@ Per-user toggles per type. Preference screen is accessible from the Notification
 
 ## Message Retention
 
-| Channel | Kept | Deleted |
+| Channel | Retained | Deleted when |
 |---|---|---|
 | City chat | Current day | Older than today (daily cron) |
-| Event chat | While event is active | 1h after event ends |
+| Topic chat | While topic active | 24h after last activity |
+| Event chat | While event active | 1h after event expires |
 | Direct messages | 7 days | Older than 7 days (daily cron) |
 
 ---
@@ -266,22 +296,38 @@ Per-user toggles per type. Preference screen is accessible from the Notification
 
 ### City Channels
 
-`city_1`, `city_2` etc. One per city. All users share the same channel. Parent of all event subchannels.
+`city_1`, `city_2`, etc. One per city. All users share the same channel. Parent of all event and topic subchannels.
 
 ### Event Subchannels
 
-Hex-id channels of `type='event'`, parented to a city channel.
-Each has a `channel_events` row with: timing, source, series linkage, and creator identity.
+Hex-id channels of `type='event'`, parented to a city channel. Each has a `channel_events` row: timing, source type, series linkage, creator identity.
+
+### Topic Subchannels
+
+Hex-id channels of `type='topic'`, parented to a city channel. Each has a `channel_topics` row: title, description, category, expiry.
 
 ### event_series
 
-Stores the recurrence rule for recurring events. Each series generates occurrence rows in `channel_events`. The series is the source of truth — occurrences are regenerated daily.
+Stores the recurrence rule for recurring events. Daily cron generates occurrence rows from each series. `ensureTodayOccurrences` runs as a post-response deferred call — never blocks the HTTP response.
+
+### Feed DTO
+
+`GET /channels/{id}/now` returns a single normalized response: `{ items: FeedItem[], publicEvents: FeedItem[] }`. Events and topics share a consistent top-level shape; kind-specific fields are present only where relevant. Web and mobile share the same contract — no client-side remapping.
 
 ### Real-time
 
-WebSocket server handles presence snapshots and message push.
-PHP API broadcasts via fire-and-forget internal HTTP.
-3-second poll fallback for clients that can't hold a WS connection.
+WebSocket server handles presence snapshots and message push. PHP API broadcasts via fire-and-forget internal HTTP. 3s poll fallback for clients that can't hold a persistent WS connection. Topics use 5s polling (no WS room join yet).
+
+---
+
+## Performance Strategy
+
+- **Initial message load**: 50 messages (not full history)
+- **Lazy loading**: `before_id` cursor pagination — load older messages on scroll
+- **Parallel requests on city join**: messages + events + topics fetched concurrently
+- **Now screen**: single `/now` call returns events + topics + public events (no second request)
+- **Double-load prevention**: 30s stale threshold in native Now screen prevents concurrent refetches on focus
+- **Deferred writes**: `ensureTodayOccurrences` runs after response dispatch; never blocks API response time
 
 ---
 
@@ -289,11 +335,13 @@ PHP API broadcasts via fire-and-forget internal HTTP.
 
 Internal tool at `/admin` on the API service.
 
-- `GET /admin` — stats dashboard
-- `GET /admin/users` — searchable user list (read-only)
-- `GET /admin/events` — event list with status filters
-- `GET /admin/events/{id}/edit` — edit event fields
-- `POST /admin/events/{id}/delete` — soft delete
+| Route | Description |
+|---|---|
+| `GET /admin` | Stats dashboard |
+| `GET /admin/users` | Searchable user list (read-only) |
+| `GET /admin/events` | Event list with status filters |
+| `GET /admin/events/{id}/edit` | Edit event fields |
+| `POST /admin/events/{id}/delete` | Soft delete |
 
 ---
 
@@ -301,9 +349,9 @@ Internal tool at `/admin` on the API service.
 
 PostHog — cross-platform, `platform` property on every event.
 
-Frontend intent events: `landing_viewed`, `clicked_join_city`, `clicked_sign_up`, `clicked_sign_in`
+**Frontend intent events:** `landing_viewed`, `clicked_join_city`, `clicked_sign_up`, `clicked_sign_in`, `topic_opened`, `event_opened`
 
-Backend success events: `guest_created`, `user_registered`, `user_authenticated`, `joined_city`, `sent_message`, `event_created`, `joined_event`, `friend_added`, `friend_removed`
+**Backend success events:** `guest_created`, `user_registered`, `user_authenticated`, `joined_city`, `sent_message`, `event_created`, `joined_event`, `friend_added`, `friend_removed`
 
 ---
 
@@ -311,74 +359,11 @@ Backend success events: `guest_created`, `user_registered`, `user_authenticated`
 
 | Project | Platform |
 |---|---|
-| `hilads-web` | React (Vite) |
-| `hilads-backend` | PHP |
-| `hilads-mobile` | Expo / React Native |
+| `hilads-web` | React (Vite) — `VITE_SENTRY_DSN` |
+| `hilads-backend` | PHP — `SENTRY_DSN` |
+| `hilads-mobile` | Expo / React Native — `EXPO_PUBLIC_SENTRY_DSN` |
 
-All DSNs are env-var only. Sentry skipped if DSN is not set.
-
----
-
-## Known Issues
-
-| Area | Issue | Severity |
-|---|---|---|
-| Performance | Several API endpoints respond in 2–4s (likely N+1 or missing index) | High |
-| Mobile | UI inconsistencies vs web across several screens | Medium |
-| Mobile | Input field partially hidden by bottom tab bar on some screens | Medium |
-| Mobile | iOS push notifications not fully tested or validated | Medium |
-| My Events | Recurring events appear as duplicates in the "My Events" list | Low |
-| City chat | Users occasionally land at top of feed instead of latest message | Low |
-| Notifications | 500 errors observed on the preferences endpoint (recently fixed) | Low |
-| Profile | Duplicate API calls on profile screen load | Low |
-
----
-
-## What Is Out of Scope
-
-- Algorithmic ranking or recommendations
-- Ticketing or paid events
-- Archival or export
-- Follower graph / feed (beyond friends)
-- Real-time unread badge via WebSocket (currently polled every 30s)
-
----
-
-## Next Steps
-
-### Performance
-
-- Profile screen: eliminate duplicate API calls (deduplicate `useEffect` fetches)
-- Identify and fix the slowest endpoints (target < 300ms p95)
-- Add DB indexes where missing (participant counts, message feeds)
-
-### Push Notifications
-
-- Validate iOS push end-to-end (EAS production build + TestFlight)
-- Verify APNs environment entitlement matches build type
-- Add `channel_message` and `city_join` deep-link routing on mobile
-
-### UX Consistency (Web vs Mobile)
-
-- Audit all screens: Hot, Event, Profile, DM, Notifications
-- Align visual hierarchy, spacing, and interaction patterns
-- Fix input field overlap with bottom bar
-- Ensure city chat scroll-to-bottom on open
-
-### Growth — First 100 Users in a City
-
-- Target one city (local community, university campus, or event venue)
-- Remove all empty-state feelings: always show venue events on Hot even with 0 joins
-- Make Ghost mode visible and desirable ("You're browsing as a Ghost — claim your identity")
-- Share deeplink: `hilads.live/city/london` → drops user directly into a city
-- Track activation funnel: open → join city → send first message → create/join event
-
----
-
-## Product Rule
-
-> **"Does this make the city feel more alive right now?"**
-> If no → don't build it.
+Sentry is skipped if the DSN env var is not set — safe for local dev.
 
 ---
 
@@ -390,8 +375,81 @@ All DSNs are env-var only. Sentry skipped if DSN is not set.
 | Native app | Expo SDK 52 + React Native, TypeScript |
 | Backend | PHP 8.2, plain REST API, no framework |
 | Database | PostgreSQL |
-| Real-time | Node.js WebSocket + 3s poll fallback |
+| Real-time | Node.js WebSocket + 5s poll fallback |
 | Media | Cloudflare R2 |
 | Hosting | Render (API + WS) · Vercel (web) · EAS (native builds) |
 | Analytics | PostHog |
-| Error monitoring | Sentry (hilads-web · hilads-backend · hilads-mobile) |
+| Error monitoring | Sentry |
+
+---
+
+## What Is In Scope
+
+- City-level public chat
+- Events (one-shot, recurring, Ticketmaster public)
+- Topics (user-generated city conversations)
+- Ghost mode (instant, no signup)
+- Registered accounts (optional upgrade)
+- Presence and online user tracking
+- Profile, vibes, badges, friends
+- Direct messages (registered only)
+- In-app + push notifications (registered only)
+- Photo sharing in chats
+- City discovery (350+ cities)
+- Admin backoffice
+
+## What Is Out of Scope
+
+- Algorithmic ranking or recommendations
+- Ticketing or paid events
+- Content archival or export
+- Follower graph / social feeds (beyond friends)
+- Complex moderation or content review tools
+- Real-time unread badge via WebSocket (currently polled every 30s)
+
+---
+
+## Known Issues
+
+| Area | Issue |
+|---|---|
+| Mobile iOS | Push notifications not fully validated end-to-end on TestFlight |
+| My Events | Recurring events may appear as duplicates in the My Events list |
+| Topics | No WebSocket room join yet — uses 5s polling instead of real-time push |
+| City chat | Scroll-to-bottom on open is inconsistent across platforms |
+
+---
+
+## Next Steps
+
+### Push Notifications (iOS)
+- Validate end-to-end on TestFlight (EAS production build)
+- Verify APNs environment entitlement matches build type
+
+### Topics — Real-time
+- Add WS room join for topic channels to eliminate 5s polling
+- Consistent with how event and city channels already work
+
+### Performance — Continued
+- Target < 300ms p95 on all feed endpoints
+- Review DB indexes on participant counts, message feeds, topic queries
+- Now screen skeleton loading state (show placeholders while loading)
+
+### UX Consistency (Web vs Mobile)
+- Audit all screens: Now, Event, Profile, DM, Notifications
+- Fix input field overlap with bottom tab bar
+- Align visual hierarchy and spacing between web and mobile
+
+### Growth — First 100 Users in a City
+- Focus on one city (local community, campus, or recurring venue)
+- Ensure Now screen never feels empty (venue events always visible, topics always surfaced)
+- Ghost mode feels intentional: "Browsing as a Ghost — claim your identity"
+- Shareable deeplinks: `hilads.live/city/paris` → drops user directly into a city
+- Activation funnel: open → join city → first message → create/join event
+
+---
+
+## Product Rule
+
+> **"Does this make the city feel more alive right now?"**
+> If not → don't build it.

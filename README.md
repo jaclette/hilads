@@ -2,25 +2,27 @@
 
 > Open the app. See who's around. Jump into something happening now.
 
-Hilads is a real-time social app. Join a city, see who's online, chat, discover events, and meet people — no sign-up required.
+Hilads is a real-time social app. Join a city, see who's online, chat, discover events, start topic conversations — no sign-up required.
 
 ---
 
 ## What it does
 
-- **City chat** — public real-time chat, one channel per city
-- **Hot screen** — active events (one-shot + recurring venues + public Ticketmaster events)
-- **Events** — create, join, edit, and delete events; every event has its own real-time chat
+- **Now screen** — mixed live feed: events + topics, with All / Events / Topics filter
+- **City chat** — public real-time chat, one channel per city, with lazy-loading message history
+- **Events** — create, join, and edit events; one-shot + recurring venue events + public Ticketmaster events; every event has its own real-time chat
+- **Topics** — user-generated conversation threads attached to a city; appear in the Now feed alongside events
 - **Event participants** — see who's going; tappable participant list inside each event
+- **Upcoming events** — browse the full event calendar for a city
 - **Presence** — live online users, join/leave feed
 - **Here screen** — browse online users, view profiles, add friends
-- **Ghost mode** — instant access with a persistent identity, no sign-up
+- **Ghost mode** — instant access with a persistent identity, no sign-up required
 - **Profiles** — badge, vibe score, friends list, vibes received
 - **Vibe system** — leave a 1–5 star vibe + message on any user's profile
 - **Badge system** — 🌱 Fresh / ⭐ Regular — evolves automatically over time
 - **Friends** — add from profiles, view friend lists
 - **Direct messages** — 1:1 private chat for registered users
-- **Notifications** — in-app bell + web push + native push (Android working, iOS in progress)
+- **Notifications** — in-app bell + web push + native push (Android working; iOS in progress)
 - **Notification preferences** — per-type toggles
 - **Analytics** — PostHog cross-platform (web + mobile + backend)
 - **Error monitoring** — Sentry across web, backend, and native
@@ -32,12 +34,12 @@ Hilads is a real-time social app. Join a city, see who's online, chat, discover 
 ```
 Open app
   → geolocation resolves your city (or pick manually)
-  → see city chat, online users, active events
+  → Now screen: live events + active topic conversations
   → jump in — no account needed (Ghost mode)
   → register to unlock profile, DMs, friends, vibes, and notifications
 ```
 
-**Ghost session:** instant access, persistent 32-char guestId, nickname chosen on entry.
+**Ghost session:** instant access, persistent 32-char `guestId`, nickname chosen on entry.
 **Registered account:** full profile, DMs, vibe system, friends, push notifications.
 
 ---
@@ -49,9 +51,10 @@ apps/
   web/          React 18 + Vite — mobile-first PWA
   mobile/       Expo SDK 52 + React Native (iOS + Android)
 backend/
-  api/          PHP 8.2 REST API (nginx + FPM via Docker)
+  api/          PHP 8.2 REST API (Docker + Apache)
     admin/      Internal backoffice (/admin — ops only)
     src/        Repositories, services, push
+    scripts/    VAPID key generation, seed scripts
   ws/           Node.js WebSocket server
 docs/
   mvp.md        Full product definition
@@ -62,13 +65,17 @@ render.yaml     Render service definitions
 
 **Backend** — thin by design: router → repositories → PDO → PostgreSQL. No framework, no ORM.
 
-**WebSocket server** — handles presence snapshots and real-time message push. PHP broadcasts via internal HTTP call.
+**WebSocket server** — handles presence snapshots and real-time message push. PHP broadcasts via internal HTTP (fire-and-forget).
 
-**Push notifications** — web push (VAPID) + native push via Expo Push API (`https://exp.host/--/api/v2/push/send`). Token registration at `POST /api/v1/push/mobile-token`.
+**Feed DTO** — `GET /channels/{id}/now` returns a single normalized `{ items, publicEvents }` response. Events and topics share a consistent shape; web and mobile consume the same contract.
+
+**Push notifications** — web push (VAPID) + native push via Expo Push API. Token registered at `POST /api/v1/push/mobile-token`.
+
+**Message pagination** — initial load: 50 messages. Older messages fetched via `before_id` cursor (`GET /channels/{id}/messages?before_id=<id>&limit=50`).
 
 **Schema migrations** — applied idempotently inside `Database::pdo()` on first connection. No migration runner.
 
-**Message retention** — daily cron purges city chat (> today), event chat (expired + 1h), DMs (> 7 days).
+**Message retention** — daily cron purges city chat (> today), topic chat (inactive > 24h), event chat (expired + 1h), DMs (> 7 days).
 
 ---
 
@@ -78,7 +85,7 @@ render.yaml     Render service definitions
 
 - PHP 8.2 + Docker
 - Node.js 18+
-- PostgreSQL (or use DATABASE_URL pointing to a remote instance)
+- PostgreSQL (or `DATABASE_URL` pointing to a remote instance)
 
 ### Backend API
 
@@ -131,7 +138,7 @@ npm run ios        # iOS simulator (Mac only)
 
 > The device/emulator cannot reach `localhost`. Use your machine's LAN IP for `EXPO_PUBLIC_API_URL` and `EXPO_PUBLIC_WS_URL`.
 
-Push notifications require a physical device and an EAS build (see below).
+Push notifications require a physical device and an EAS build.
 
 ---
 
@@ -153,8 +160,6 @@ eas build --platform ios --profile production
 
 Build profiles are defined in `apps/mobile/eas.json`.
 
-After a successful build, download the APK/IPA from [expo.dev](https://expo.dev) or install directly via EAS.
-
 ---
 
 ## Environment Variables
@@ -171,7 +176,7 @@ After a successful build, download the APK/IPA from [expo.dev](https://expo.dev)
 | `R2_PUBLIC_URL` | Public base URL for uploaded files |
 | `WS_INTERNAL_URL` | Internal URL of the WS server (e.g. `http://ws:8082`) |
 | `WS_INTERNAL_TOKEN` | Auth token for WS internal broadcast endpoint |
-| `WS_ALLOWED_ORIGINS` | Comma-separated CORS origins for WS (e.g. `https://hilads.live`) |
+| `WS_ALLOWED_ORIGINS` | Comma-separated CORS origins (e.g. `https://hilads.live`) |
 | `MIGRATION_KEY` | Secret for `/internal/*` endpoints |
 | `POSTHOG_API_KEY` | PostHog project API key (server-side capture) |
 | `POSTHOG_HOST` | PostHog ingest host |
@@ -212,32 +217,66 @@ EAS build env vars are defined in `apps/mobile/eas.json` under each profile's `e
 
 ## Key API Endpoints
 
+### Identity & Auth
+
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/api/v1/guest/session` | Create a ghost session |
 | `POST` | `/api/v1/auth/login` | Registered user login |
 | `POST` | `/api/v1/auth/register` | Register account |
 | `GET` | `/api/v1/auth/me` | Current session info |
-| `GET` | `/api/v1/channels/{id}/messages` | Fetch city chat messages |
-| `POST` | `/api/v1/channels/{id}/messages` | Send a message |
+
+### City & Chat
+
+| Method | Path | Description |
+|---|---|---|
 | `POST` | `/api/v1/channels/{id}/join` | Join a city channel |
-| `GET` | `/api/v1/channels/{id}/events` | List events for a city |
-| `POST` | `/api/v1/events` | Create an event |
+| `GET` | `/api/v1/channels/{id}/messages` | Fetch city chat messages (`?before_id=&limit=`) |
+| `POST` | `/api/v1/channels/{id}/messages` | Send a message |
+| `GET` | `/api/v1/channels/{id}/now` | Now feed: events + topics + public events |
+| `GET` | `/api/v1/channels/{id}/events` | List hilads events for a city |
+| `GET` | `/api/v1/channels/{id}/city-events` | List public (Ticketmaster) events |
+| `GET` | `/api/v1/channels/{id}/events/upcoming` | Upcoming events (next N days) |
+
+### Topics
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/v1/channels/{id}/topics` | List active topics for a city |
+| `POST` | `/api/v1/channels/{id}/topics` | Create a topic |
+| `GET` | `/api/v1/topics/{id}` | Get topic metadata |
+| `GET` | `/api/v1/topics/{id}/messages` | Fetch topic messages |
+| `POST` | `/api/v1/topics/{id}/messages` | Send a topic message |
+| `POST` | `/api/v1/topics/{id}/mark-read` | Mark topic as read |
+
+### Events
+
+| Method | Path | Description |
+|---|---|---|
+| `POST` | `/api/v1/channels/{id}/events` | Create an event |
+| `GET` | `/api/v1/events/{id}` | Get event details |
+| `PUT` | `/api/v1/events/{id}` | Update event (creator only) |
+| `DELETE` | `/api/v1/events/{id}` | Delete event (creator only) |
 | `GET` | `/api/v1/events/{id}/messages` | Fetch event chat |
 | `POST` | `/api/v1/events/{id}/messages` | Send event chat message |
-| `GET` | `/api/v1/events/{id}/participants` | List event participants |
-| `POST` | `/api/v1/events/{id}/join` | Join an event |
-| `GET` | `/api/v1/users/{id}` | Get a user's public profile |
-| `GET` | `/api/v1/users/{id}/vibes` | List vibes for a user |
+| `GET` | `/api/v1/events/{id}/participants` | List participants |
+| `POST` | `/api/v1/events/{id}/participants/toggle` | Join / leave event |
+
+### Users & Social
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/api/v1/users/{id}` | Public profile |
+| `GET` | `/api/v1/users/{id}/vibes` | User's vibes |
 | `POST` | `/api/v1/users/{id}/vibes` | Leave a vibe |
 | `GET` | `/api/v1/friends` | Current user's friends list |
 | `POST` | `/api/v1/friends/{id}` | Add a friend |
 | `GET` | `/api/v1/notifications` | In-app notification feed |
-| `POST` | `/api/v1/notifications/mark-read` | Mark notifications read |
+| `POST` | `/api/v1/notifications/mark-read` | Mark read |
 | `GET` | `/api/v1/notification-preferences` | Get push preferences |
 | `PUT` | `/api/v1/notification-preferences` | Update push preferences |
 | `POST` | `/api/v1/push/subscribe` | Register web push subscription |
-| `POST` | `/api/v1/push/mobile-token` | Register Expo push token (Android/iOS) |
+| `POST` | `/api/v1/push/mobile-token` | Register Expo push token |
 | `DELETE` | `/api/v1/push/mobile-token` | Unregister push token on logout |
 
 ---
@@ -249,10 +288,11 @@ Returns `404` if `MIGRATION_KEY` is not configured, `403` on wrong key.
 
 | Method | Path | Description |
 |---|---|---|
-| `POST` | `/internal/run-migrations` | Idempotent DB migrations (run after deploy) |
+| `POST` | `/internal/run-migrations` | Idempotent DB migrations |
 | `POST` | `/internal/cleanup` | Purge stale messages + expired channels |
 | `POST` | `/internal/event-series/generate` | Generate recurring event occurrences |
 | `POST` | `/internal/seed-static-venues` | Import venue seed (`{"dryRun": true/false}`) |
+| `POST` | `/internal/city-events/resync` | Force-refresh Ticketmaster events for a city |
 
 ---
 
@@ -276,7 +316,7 @@ Set up as Render Cron Jobs or via [cron-job.org](https://cron-job.org).
 
 ## Seeding Recurring Venues
 
-Bootstraps cities with recurring events so the Hot screen is never empty on launch.
+Bootstraps cities with recurring events so the Now screen is never empty on launch.
 
 ```bash
 # Dry run first
@@ -301,9 +341,9 @@ Venue list: `backend/api/src/venues_seed.php`.
 
 | Service | Platform | Config |
 |---|---|---|
-| PHP API | Render (Docker) | `render.yaml` — auto-deploy on push to main |
-| WebSocket | Render (Node) | `render.yaml` — persistent connections |
-| Web frontend | Vercel | `apps/web` — auto-deploy on push to main |
+| PHP API | Render (Docker) | `render.yaml` — auto-deploy on push to `main` |
+| WebSocket | Render (Node) | `render.yaml` — persistent process |
+| Web frontend | Vercel | `apps/web` — auto-deploy on push to `main` |
 | Native builds | EAS (Expo) | `eas build --platform android/ios` |
 
 Production URLs:
@@ -311,7 +351,7 @@ Production URLs:
 - WebSocket: `wss://ws.hilads.live`
 - Web: `https://hilads.live`
 
-After deploying the API, always run migrations:
+After any API deployment, run migrations:
 ```
 POST /internal/run-migrations?key=YOUR_KEY
 ```
@@ -320,7 +360,7 @@ POST /internal/run-migrations?key=YOUR_KEY
 
 ## Admin Backoffice
 
-Internal ops tool at `/admin` on the API service. Not part of the product.
+Internal ops tool at `/admin` on the API service.
 
 | Route | Description |
 |---|---|
@@ -339,26 +379,44 @@ Auth: env-var credentials (`ADMIN_USERNAME` + `ADMIN_PASSWORD`), PHP session, CS
 ```
 apps/mobile/
   app/
-    _layout.tsx           Root layout + boot sequence + push registration
+    _layout.tsx              Root layout, boot sequence, push token registration
     (tabs)/
-      hot.tsx             Events happening now
-      cities.tsx          City list + switcher
-      here.tsx            Online users in city
-      messages.tsx        DMs + event chats
-      me.tsx              Profile, My Events, friends
-    notifications.tsx     In-app notifications + preferences
-    user/[id].tsx         Public profile screen
-    user/guest.tsx        Ghost profile screen
-    event/[id].tsx        Event chat screen
-    dm/[id].tsx           Direct message screen
+      now.tsx                Now feed — events + topics + filters
+      chat.tsx               City chat (tab entry point)
+      cities.tsx             City list + switcher
+      here.tsx               Online users in current city
+      messages.tsx           DMs + event chats
+      me.tsx                 Profile, My Events, friends
+    city-chat.tsx            City chat (full-screen, no tabs)
+    notifications.tsx        Notification preferences
+    notifications-history.tsx In-app notification feed
+    upcoming-events.tsx      Full event calendar for a city
+    event/[id].tsx           Event chat screen
+    topic/[id].tsx           Topic chat screen
+    topic/create.tsx         Create topic flow
+    event/create.tsx         Create event flow (via city-chat)
+    user/[id].tsx            Public profile screen
+    dm/[id].tsx              Direct message screen
   src/
-    api/                  REST API client (typed)
-    services/             push.ts — token registration, channel setup
-    context/              AppContext (global state)
-    hooks/                useAppBoot, usePushRegistration
-    features/             notifications/NotificationHandler (foreground + deep-link)
-    types/index.ts        Shared TypeScript types
-    constants.ts          Colors, tokens
+    api/                     Typed REST API client
+      channels.ts            Messages + channel join
+      events.ts              Events + participants
+      topics.ts              Topics + now feed
+      users.ts               Profile + friends + vibes
+      notifications.ts       Notification feed + preferences
+      uploads.ts             Photo upload (Cloudflare R2)
+    services/
+      analytics.ts           PostHog (disabled in __DEV__)
+      push.ts                Expo push token registration
+    context/
+      AppContext.tsx          Global state: identity, city, account
+    hooks/
+      useMessages.ts         Shared message list + pagination + WS
+    features/
+      chat/                  ChatMessage, ChatInput components
+      notifications/         NotificationHandler (foreground + deep-link)
+    types/index.ts           Shared TypeScript types
+    constants.ts             Colors, spacing, font sizes
 ```
 
 ---
@@ -389,46 +447,44 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 
 | Area | Issue |
 |---|---|
-| Performance | Several endpoints respond in 2–4s |
-| Mobile | UI inconsistencies vs web on several screens |
-| Mobile | Input field partially hidden by bottom tab bar on some screens |
-| Mobile iOS | Push notifications not fully tested |
-| My Events | Recurring events appear as duplicates |
-| City chat | Occasionally loads at top instead of latest message |
-| Profile | Duplicate API calls on screen load |
+| Mobile iOS | Push notifications not fully validated end-to-end on TestFlight |
+| My Events | Recurring events may appear as duplicates |
+| Topics | No WebSocket room join yet — uses 5s polling |
+| City chat | Scroll-to-bottom on open inconsistent across platforms |
 
 ---
 
 ## Next Steps
 
-**Performance**
-- Eliminate duplicate API calls on the profile screen
-- Target < 300ms p95 on all feed endpoints
-- Add missing DB indexes on participant counts and message feeds
-
 **iOS Push Notifications**
 - Validate end-to-end on TestFlight (EAS production build)
 - Verify APNs environment entitlement matches build type
-- Do not hardcode `aps-environment` in `app.json` — let EAS manage it
+
+**Topics — Real-time**
+- Add WS room join for topic channels (eliminate 5s polling)
+
+**Performance**
+- Target < 300ms p95 on all feed endpoints
+- Add missing DB indexes on participant counts and topic queries
+- Skeleton loading state for Now screen
 
 **UX Consistency**
-- Audit all screens: Hot, Event, Profile, DM, Notifications
-- Fix input field overlap with bottom bar
+- Audit all screens: Now, Event, Profile, DM, Notifications
+- Fix input field overlap with bottom tab bar
 - Align visual hierarchy and spacing between web and mobile
-- Ensure city chat opens at the latest message on all platforms
 
 **Growth — First 100 Users in a City**
-- Focus on one city: local community, campus, or recurring venue
-- Ensure Hot screen is never empty (venue events always visible)
-- Make Ghost mode feel intentional: "You're browsing as a Ghost — claim your identity"
-- Create shareable city deeplinks: `hilads.live/city/paris`
-- Track and optimize activation funnel: open → join city → first message → join event
+- Focus on one city (local community, campus, or recurring venue)
+- Now screen always populated: venue events visible even with 0 joins
+- Ghost mode feels intentional: "Browsing as a Ghost — claim your identity"
+- Shareable city deeplinks: `hilads.live/city/paris`
+- Track activation funnel: open → join city → first message → join/create event
 
 ---
 
 ## Docs
 
-- [`docs/mvp.md`](docs/mvp.md) — full product definition
+- [`docs/mvp.md`](docs/mvp.md) — full product definition and architecture concepts
 - [`docs/design.md`](docs/design.md) — UX and visual direction
 - [`CLAUDE.md`](CLAUDE.md) — tech lead guidelines for AI agents
 
@@ -436,7 +492,7 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 
 ## Principles
 
-- Mobile-first, always — no web patterns
-- No sign-up friction — Ghost mode is first-class
-- Simplicity over engineering — no framework, no ORM, no abstraction layers
+- Mobile-first, always — no web UI patterns
+- No sign-up friction — Ghost mode is a first-class identity
+- Simplicity over engineering — no framework, no ORM, no premature abstractions
 - One product rule: *does this make the city feel more alive right now?*
