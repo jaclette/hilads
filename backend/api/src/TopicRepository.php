@@ -171,6 +171,85 @@ class TopicRepository
     }
 
     /**
+     * Admin create: no guestId required — sets created_by to the given userId (or null).
+     */
+    public static function adminCreate(
+        string $cityId,
+        string $title,
+        ?string $description,
+        string $category = 'general',
+        ?string $creatorId = null,
+        int $ttlHours = self::DEFAULT_TTL_HOURS
+    ): string {
+        $pdo       = Database::pdo();
+        $id        = bin2hex(random_bytes(8));
+        $expiresAt = time() + $ttlHours * 3600;
+
+        $pdo->prepare("
+            INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
+            VALUES (:id, 'topic', :parent_id, :name, 'active', now(), now())
+        ")->execute([
+            'id'        => $id,
+            'parent_id' => $cityId,
+            'name'      => $title,
+        ]);
+
+        $pdo->prepare("
+            INSERT INTO channel_topics
+                (channel_id, city_id, created_by, guest_id, title, description, category, expires_at)
+            VALUES
+                (:channel_id, :city_id, :created_by, NULL, :title, :description, :category,
+                 to_timestamp(:expires_at))
+        ")->execute([
+            'channel_id'  => $id,
+            'city_id'     => $cityId,
+            'created_by'  => $creatorId,
+            'title'       => $title,
+            'description' => $description,
+            'category'    => $category,
+            'expires_at'  => $expiresAt,
+        ]);
+
+        return $id;
+    }
+
+    /**
+     * Admin update: no ownership check. Pass null for $expiresAt to leave it unchanged.
+     */
+    public static function adminUpdate(
+        string $topicId,
+        string $title,
+        ?string $description,
+        string $category,
+        ?int $expiresAt
+    ): void {
+        $pdo    = Database::pdo();
+        $params = [
+            'title'       => $title,
+            'description' => $description,
+            'category'    => $category,
+            'id'          => $topicId,
+        ];
+
+        $expiryClause = '';
+        if ($expiresAt !== null) {
+            $expiryClause         = ', expires_at = to_timestamp(:expires_at)';
+            $params['expires_at'] = $expiresAt;
+        }
+
+        $pdo->prepare("
+            UPDATE channel_topics
+            SET title = :title, description = :description, category = :category{$expiryClause}
+            WHERE channel_id = :id
+        ")->execute($params);
+
+        // Keep channels.name in sync so any channel-name lookup stays consistent.
+        $pdo->prepare("
+            UPDATE channels SET name = :name, updated_at = now() WHERE id = :id
+        ")->execute(['name' => $title, 'id' => $topicId]);
+    }
+
+    /**
      * Admin hard-delete: no ownership check.
      */
     public static function adminDelete(string $topicId): void

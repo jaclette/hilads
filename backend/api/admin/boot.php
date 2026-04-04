@@ -100,6 +100,13 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/topics') {
     require __DIR__ . '/topics.php';
 
+} elseif ($uri === '/admin/topics/create') {
+    require __DIR__ . '/topic_create.php';
+
+} elseif (preg_match('#^/admin/topics/([a-zA-Z0-9]+)/edit$#', $uri, $m)) {
+    $topicId = $m[1];
+    require __DIR__ . '/topic_edit.php';
+
 } elseif (preg_match('#^/admin/topics/([a-zA-Z0-9]+)/delete$#', $uri, $m) && $method === 'POST') {
     $topicId = $m[1];
     require __DIR__ . '/topic_delete.php';

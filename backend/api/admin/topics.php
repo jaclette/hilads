@@ -83,6 +83,7 @@ admin_nav('/admin/topics');
 <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
         <h1 class="page-title" style="margin-bottom:0">Topics <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+        <a href="/admin/topics/create" class="btn btn-primary btn-sm">+ Create topic</a>
     </div>
 
     <?= flash_html() ?>
@@ -172,6 +173,8 @@ admin_nav('/admin/topics');
                             </td>
                             <td>
                                 <div class="td-actions">
+                                    <a href="/admin/topics/<?= urlencode($t['channel_id']) ?>/edit"
+                                       class="btn btn-secondary btn-sm<?= $isDeleted ? '" style="opacity:.45' : '' ?>">Edit</a>
                                     <?php if (!$isDeleted): ?>
                                         <form method="POST" action="/admin/topics/<?= urlencode($t['channel_id']) ?>/delete"
                                               onsubmit="return confirm('Delete topic «<?= htmlspecialchars(addslashes($t['title']), ENT_QUOTES) ?>»?\n\nThis will remove the topic and all its messages. Cannot be undone.')">
