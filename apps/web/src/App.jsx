@@ -604,6 +604,7 @@ export default function App() {
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
   const [showCreateChooser,  setShowCreateChooser]  = useState(false)
+  const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'events' | 'topics'
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
@@ -2853,6 +2854,17 @@ export default function App() {
             <BackButton onClick={() => setShowEventDrawer(false)} />
             <span className="page-title">Now</span>
           </div>
+          <div className="now-filter-bar">
+            {['all', 'events', 'topics'].map(f => (
+              <button
+                key={f}
+                className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
+                onClick={() => setNowFilter(f)}
+              >
+                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Topics'}
+              </button>
+            ))}
+          </div>
           <div className="page-body page-body--has-fab">
             {(() => {
               const openCreate = () => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
@@ -2992,13 +3004,38 @@ export default function App() {
                 return bAct - aAct
               })
 
+              const filtered = nowFilter === 'events'
+                ? unified.filter(i => i._kind === 'event')
+                : nowFilter === 'topics'
+                  ? unified.filter(i => i._kind === 'topic')
+                  : unified
+
+              if (filtered.length === 0) {
+                return (
+                  <div className="events-empty-state">
+                    <p className="events-empty-title">
+                      {nowFilter === 'events' ? 'No events right now' : 'No conversations yet'}
+                    </p>
+                    <p className="events-empty-sub">
+                      {nowFilter === 'events'
+                        ? `Be the first to create one in ${city}`
+                        : `Start a topic and get the city talking`}
+                    </p>
+                    {nowFilter === 'events'
+                      ? <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a conversation 💬</button>
+                    }
+                  </div>
+                )
+              }
+
               return (
                 <>
-                  {unified.map(item => item._kind === 'topic'
+                  {filtered.map(item => item._kind === 'topic'
                     ? renderTopicRow(item)
                     : renderEventRow(item, 'hilads')
                   )}
-                  {publicEvents.length > 0 && (
+                  {nowFilter !== 'topics' && publicEvents.length > 0 && (
                     <>
                       <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>🎫 Public Events</p>
                       {publicEvents.map(event => renderEventRow(event, 'public'))}
