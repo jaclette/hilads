@@ -203,6 +203,73 @@ class EventSeriesRepository
     }
 
     /**
+     * Admin-only series creation: creator fields are optional (null = seeded/system).
+     * Generates 30 days of occurrences immediately (vs 7 for user-created series).
+     */
+    public static function adminCreate(
+        int     $channelId,
+        string  $title,
+        string  $eventType,
+        ?string $location,
+        string  $startTime,
+        string  $endTime,
+        string  $timezone,
+        string  $recurrenceType,
+        ?array  $weekdays     = null,
+        ?int    $intervalDays = null,
+        ?string $startsOn     = null,
+        ?string $endsOn       = null,
+        ?string $createdBy    = null,
+        ?string $guestId      = null
+    ): array {
+        $pdo    = Database::pdo();
+        $cityId = 'city_' . $channelId;
+        $id     = bin2hex(random_bytes(8));
+
+        if ($startsOn === null) {
+            $startsOn = (new DateTime('today', new DateTimeZone($timezone)))->format('Y-m-d');
+        }
+
+        $pdo->prepare("
+            INSERT INTO event_series
+                (id, city_id, created_by, guest_id, title, event_type, location,
+                 start_time, end_time, timezone, recurrence_type, weekdays,
+                 interval_days, starts_on, ends_on, source)
+            VALUES
+                (?, ?, ?, ?, ?, ?, ?,
+                 ?, ?, ?, ?, ?,
+                 ?, ?, ?, 'admin')
+        ")->execute([
+            $id, $cityId, $createdBy, $guestId, $title, $eventType, $location,
+            $startTime, $endTime, $timezone, $recurrenceType,
+            $weekdays !== null ? json_encode($weekdays) : null,
+            $intervalDays, $startsOn, $endsOn,
+        ]);
+
+        $series = [
+            'id'              => $id,
+            'city_id'         => $cityId,
+            'created_by'      => $createdBy,
+            'guest_id'        => $guestId,
+            'title'           => $title,
+            'event_type'      => $eventType,
+            'location'        => $location,
+            'start_time'      => $startTime,
+            'end_time'        => $endTime,
+            'timezone'        => $timezone,
+            'recurrence_type' => $recurrenceType,
+            'weekdays'        => $weekdays !== null ? json_encode($weekdays) : null,
+            'interval_days'   => $intervalDays,
+            'starts_on'       => $startsOn,
+            'ends_on'         => $endsOn,
+        ];
+
+        self::generateOccurrences($series, 30);
+
+        return ['series_id' => $id];
+    }
+
+    /**
      * Batch-import series from an external source (e.g. places seed script).
      * Each item must include source_key for idempotency.
      * Returns { created, skipped, errors }.

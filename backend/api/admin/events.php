@@ -91,7 +91,10 @@ admin_head('Events');
 admin_nav('/admin/events');
 ?>
 <div class="admin-main">
-    <h1 class="page-title">Events <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <h1 class="page-title" style="margin-bottom:0">Events <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+        <a href="/admin/events/create" class="btn btn-primary btn-sm">+ Create event</a>
+    </div>
 
     <?= flash_html() ?>
 

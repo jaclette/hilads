@@ -617,6 +617,64 @@ class EventRepository
         ];
     }
 
+    /**
+     * Admin-only event creation: no cooldown/cap checks, no start-time cap.
+     * createdBy / guestId may be null for seeded/system events.
+     */
+    public static function adminAdd(
+        int     $channelId,
+        string  $title,
+        string  $eventType,
+        ?string $location,
+        ?string $venue,
+        int     $startsAt,
+        int     $endsAt,
+        ?string $createdBy = null,
+        ?string $guestId   = null
+    ): string {
+        $pdo      = Database::pdo();
+        $parentId = 'city_' . $channelId;
+        $id       = bin2hex(random_bytes(8));
+
+        $pdo->prepare("
+            INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
+            VALUES (:id, 'event', :parent_id, :name, 'active', now(), now())
+        ")->execute(['id' => $id, 'parent_id' => $parentId, 'name' => $title]);
+
+        $pdo->prepare("
+            INSERT INTO channel_events
+                (channel_id, source_type, guest_id, created_by, title, event_type,
+                 location, venue, starts_at, expires_at)
+            VALUES
+                (:channel_id, 'hilads', :guest_id, :created_by, :title, :event_type,
+                 :location, :venue, to_timestamp(:starts_at), to_timestamp(:expires_at))
+        ")->execute([
+            'channel_id' => $id,
+            'guest_id'   => $guestId,
+            'created_by' => $createdBy,
+            'title'      => $title,
+            'event_type' => $eventType,
+            'location'   => $location,
+            'venue'      => $venue,
+            'starts_at'  => $startsAt,
+            'expires_at' => $endsAt,
+        ]);
+
+        if ($guestId !== null) {
+            try {
+                $pdo->prepare("
+                    INSERT INTO event_participants (channel_id, guest_id, user_id)
+                    VALUES (?, ?, ?)
+                    ON CONFLICT (channel_id, guest_id) DO NOTHING
+                ")->execute([$id, $guestId, $createdBy]);
+            } catch (\Throwable $e) {
+                error_log('[adminAdd] auto-join failed (non-fatal): ' . $e->getMessage());
+            }
+        }
+
+        return $id;
+    }
+
     public static function upsertPublic(int $channelId, array $incoming): void
     {
         $pdo      = Database::pdo();

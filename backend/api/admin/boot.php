@@ -43,6 +43,29 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/events') {
     require __DIR__ . '/events.php';
 
+} elseif ($uri === '/admin/events/create') {
+    require __DIR__ . '/event_create.php';
+
+} elseif (preg_match('#^/admin/api/cities/(\d+)/members$#', $uri, $m) && $method === 'GET') {
+    admin_require_login();
+    $cId  = (int) $m[1];
+    $city = CityRepository::findById($cId);
+    if (!$city) { http_response_code(404); echo '[]'; exit; }
+    $ck   = 'city_' . $cId;
+    $stmt = Database::pdo()->prepare("
+        SELECT DISTINCT u.id, u.display_name
+        FROM users u
+        LEFT JOIN user_city_memberships m ON m.user_id = u.id AND m.channel_id = :ck
+        WHERE m.channel_id IS NOT NULL
+           OR LOWER(TRIM(COALESCE(u.home_city, ''))) = LOWER(TRIM(:cn))
+        ORDER BY u.display_name ASC
+        LIMIT 100
+    ");
+    $stmt->execute([':ck' => $ck, ':cn' => $city['name']]);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
+    exit;
+
 } elseif (preg_match('#^/admin/events/([a-zA-Z0-9]+)/edit$#', $uri, $m)) {
     $eventId = $m[1];
     require __DIR__ . '/event_edit.php';
