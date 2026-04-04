@@ -273,6 +273,29 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     );
   }
 
+  // ── Topic feed item — blue pill + "Join →" CTA ────────────────────────────
+  if (message.type === 'topic') {
+    return (
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
+          <View style={styles.topicPill}>
+            <Text style={styles.topicText} numberOfLines={1}>
+              💬 {message.content}
+            </Text>
+            <TouchableOpacity
+              style={styles.topicJoinBtn}
+              activeOpacity={0.8}
+              onPress={() => message.topicId && router.push(`/topic/${message.topicId}`)}
+            >
+              <Text style={styles.topicJoinText}>Join →</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </>
+    );
+  }
+
   // ── System / join message — web: .feed-join (centered pill) ──────────────
   if (message.type === 'system') {
     const text = systemText(message);
@@ -471,6 +494,40 @@ const styles = StyleSheet.create({
     flexShrink:        0,
   },
   eventJoinText: {
+    color:      '#fff',
+    fontSize:   15,
+    fontWeight: '700',
+  },
+
+  // ── Topic feed pill — blue variant of event pill ─────────────────────────
+  topicPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
+    backgroundColor:   'rgba(96,165,250,0.08)',
+    borderWidth:       1,
+    borderColor:       'rgba(96,165,250,0.18)',
+    borderRadius:      22,
+    paddingHorizontal: 16,
+    paddingVertical:   12,
+    maxWidth:          '82%',
+  },
+  topicText: {
+    flexShrink:  1,
+    fontSize:    16,
+    fontWeight:  '600',
+    color:       Colors.text,
+    lineHeight:  22,
+    marginRight: 10,
+  },
+  topicJoinBtn: {
+    backgroundColor:   'rgba(96,165,250,0.25)',
+    borderRadius:      12,
+    paddingHorizontal: 11,
+    paddingVertical:   4,
+    flexShrink:        0,
+  },
+  topicJoinText: {
     color:      '#fff',
     fontSize:   15,
     fontWeight: '700',

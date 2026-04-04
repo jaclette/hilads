@@ -24,6 +24,7 @@ import { useApp } from '@/context/AppContext';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
+import { fetchCityTopics } from '@/api/topics';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -268,6 +269,44 @@ export default function ChatTab() {
     return () => clearInterval(id);
   }, [channelId]);
 
+  // ── Topic feed item synthesis ─────────────────────────────────────────────
+  // Active topics appear as blue pills in the city chat, same pattern as events.
+
+  const seenTopicIds = useRef(new Set<string>());
+  const [topicFeedItems, setTopicFeedItems] = useState<Message[]>([]);
+
+  useEffect(() => {
+    if (!channelId) return;
+    seenTopicIds.current.clear();
+    setTopicFeedItems([]);
+
+    async function loadTopics() {
+      try {
+        const topics = await fetchCityTopics(channelId);
+        const now    = Date.now() / 1000;
+        const fresh: Message[] = [];
+        for (const t of topics) {
+          if (!seenTopicIds.current.has(t.id)) {
+            seenTopicIds.current.add(t.id);
+            fresh.push({
+              id:        `topic-msg-${t.id}`,
+              type:      'topic',
+              topicId:   t.id,
+              content:   t.title,
+              nickname:  '',
+              createdAt: t.created_at ?? now,
+            });
+          }
+        }
+        if (fresh.length > 0) setTopicFeedItems(prev => [...prev, ...fresh]);
+      } catch {}
+    }
+
+    loadTopics();
+    const id = setInterval(loadTopics, 30_000);
+    return () => clearInterval(id);
+  }, [channelId]);
+
   const loadFn = useCallback(
     () => fetchMessages(channelId),
     [channelId],
@@ -317,8 +356,8 @@ export default function ChatTab() {
   // Nothing is pinned. Events scroll with the rest of the list.
   const allMessages = useMemo<Message[]>(() => {
     const chat = messages.filter(m => !(m.type === 'system' && m.event === 'weather'));
-    return [...chat, ...eventFeedItems].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-  }, [messages, eventFeedItems]);
+    return [...chat, ...eventFeedItems, ...topicFeedItems].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
+  }, [messages, eventFeedItems, topicFeedItems]);
 
   // No city yet — prompt to pick one
   if (!city) {
@@ -453,18 +492,20 @@ export default function ChatTab() {
                 olderMsg.guestId === item.guestId &&
                 olderMsg.type !== 'system' &&
                 olderMsg.type !== 'event' &&
+                olderMsg.type !== 'topic' &&
                 item.type !== 'system' &&
-                item.type !== 'event';
+                item.type !== 'event' &&
+                item.type !== 'topic';
               // showTime: last (newest) message in a sender run — newerMsg differs or absent
               const showTime =
-                item.type !== 'system' && item.type !== 'event' && (
+                item.type !== 'system' && item.type !== 'event' && item.type !== 'topic' && (
                   !newerMsg ||
                   newerMsg.guestId !== item.guestId ||
                   newerMsg.type === 'system'
                 );
               // dateLabel: show when this item starts a new calendar day vs the older message
               const dateLabel =
-                item.type !== 'event' && !isSameDay(item.createdAt, olderMsg?.createdAt)
+                item.type !== 'event' && item.type !== 'topic' && !isSameDay(item.createdAt, olderMsg?.createdAt)
                   ? formatDateLabel(item.createdAt)
                   : undefined;
               return (

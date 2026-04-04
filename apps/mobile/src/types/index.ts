@@ -178,7 +178,7 @@ export interface Badge {
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
-  type: 'text' | 'system' | 'image' | 'event';
+  type: 'text' | 'system' | 'image' | 'event' | 'topic';
   event?: string;                 // system message subtype: 'join' | etc.
   guestId?: string;
   userId?: string;
@@ -187,6 +187,7 @@ export interface Message {
   imageUrl?: string;              // image message URL (R2)
   createdAt: number | string;     // unix seconds (number) or ISO string
   eventId?: string;               // for type === 'event' synthetic feed items
+  topicId?: string;               // for type === 'topic' synthetic feed items
   primaryBadge?: Badge;           // identity badge (ghost/fresh/crew)
   contextBadge?: Badge | null;    // city-specific badge (host/local)
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
