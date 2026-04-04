@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Topic, NowItem, HiladsEvent } from '@/types';
+import type { Topic, NowItem, HiladsEvent, Message } from '@/types';
 
 // Mixed feed: Hilads events + active topics, sorted by liveness.
 // Returns { items: NowItem[] } — each item tagged with kind: 'event' | 'topic'.
@@ -34,6 +34,28 @@ export async function fetchCityTopics(channelId: string): Promise<Topic[]> {
   } catch {
     return [];
   }
+}
+
+export async function fetchTopicById(topicId: string): Promise<Topic> {
+  return api.get<Topic>(`/topics/${topicId}`);
+}
+
+export async function fetchTopicMessages(topicId: string): Promise<Message[]> {
+  const data = await api.get<{ messages: Message[] }>(`/topics/${topicId}/messages`);
+  return data.messages ?? [];
+}
+
+export async function sendTopicMessage(
+  topicId: string,
+  guestId: string,
+  nickname: string,
+  content: string,
+): Promise<Message> {
+  return api.post<Message>(`/topics/${topicId}/messages`, { guestId, nickname, content });
+}
+
+export async function markTopicRead(topicId: string, guestId: string): Promise<void> {
+  await api.post(`/topics/${topicId}/mark-read`, { guestId }).catch(() => {});
 }
 
 export async function createTopic(

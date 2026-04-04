@@ -178,6 +178,35 @@ export async function fetchCityTopics(channelId) {
   }
 }
 
+export async function fetchTopicMessages(topicId) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch topic messages')
+  return res.json() // { messages }
+}
+
+export async function sendTopicMessage(topicId, guestId, nickname, content) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, nickname, content }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send message')
+  }
+  return res.json() // { message }
+}
+
+export async function markTopicRead(topicId, guestId) {
+  await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/mark-read`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId }),
+  }).catch(() => {})
+}
+
 export async function createTopic(channelId, guestId, title, description, category) {
   const res = await fetch(`${BASE}/channels/${channelId}/topics`, {
     method: 'POST',

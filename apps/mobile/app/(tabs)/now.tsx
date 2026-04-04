@@ -87,13 +87,13 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
 
 // ── Topic card ────────────────────────────────────────────────────────────────
 
-function TopicCard({ topic }: { topic: NowItem & { kind: 'topic' } }) {
+function TopicCard({ topic, onPress }: { topic: NowItem & { kind: 'topic' }; onPress: () => void }) {
   const icon    = CATEGORY_ICONS[topic.category] ?? '💬';
   const replies = topic.message_count ?? 0;
   const lastAct = topic.last_activity_at;
 
   return (
-    <View style={styles.topicCard}>
+    <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
       <View style={styles.cardKindRow}>
         <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Topic</Text></View>
       </View>
@@ -109,7 +109,7 @@ function TopicCard({ topic }: { topic: NowItem & { kind: 'topic' } }) {
           ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
           : 'No replies yet — be first'}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -248,7 +248,15 @@ export default function NowScreen() {
               return <Text style={styles.sectionLabel}>{item.label}</Text>;
             }
             if (item.kind === 'topic') {
-              return <TopicCard topic={item as NowItem & { kind: 'topic' }} />;
+              return (
+                <TopicCard
+                  topic={item as NowItem & { kind: 'topic' }}
+                  onPress={() => {
+                    track('topic_opened', { topicId: item.id });
+                    router.push(`/topic/${item.id}`);
+                  }}
+                />
+              );
             }
             // event or public_event
             const event = item as HiladsEvent;

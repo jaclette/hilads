@@ -10,6 +10,7 @@ import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
+import TopicChatPage from './components/TopicChatPage'
 import AuthScreen from './components/AuthScreen'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
@@ -598,6 +599,7 @@ export default function App() {
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
+  const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
@@ -2214,6 +2216,8 @@ export default function App() {
         eventPresence={eventPresence}
         eventParticipants={eventParticipants}
         onSelectEvent={handleSelectEvent}
+        onSelectTopic={topic => setActiveTopic(topic)}
+        activeTopicId={activeTopic?.id}
         onCreateClick={openCreateEvent}
         onCreateTopicClick={() => setShowCreateTopic(true)}
       />
@@ -2814,7 +2818,7 @@ export default function App() {
                     })()
                   : null
                 return (
-                  <div key={topic.id} className="city-row event-row-card topic-row">
+                  <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); setActiveTopic(topic) }}>
                     <div className="er-header">
                       <span className="er-title">{icon} {topic.title}</span>
                       <span className="er-going er-going--topic">Topic</span>
@@ -2828,7 +2832,7 @@ export default function App() {
                     {topic.description && (
                       <span className="er-location">{topic.description}</span>
                     )}
-                  </div>
+                  </button>
                 )
               }
               const renderEventRow = (event, group = 'hilads') => {
@@ -3570,6 +3574,16 @@ export default function App() {
           guest={guest}
           onCreated={handleTopicCreated}
           onBack={() => setShowCreateTopic(false)}
+        />
+      )}
+
+      {/* Topic chat — full-screen page */}
+      {activeTopic && (
+        <TopicChatPage
+          topic={activeTopic}
+          guest={guest}
+          nickname={activeNickname}
+          onBack={() => setActiveTopic(null)}
         />
       )}
 

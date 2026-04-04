@@ -22,7 +22,7 @@ function filterAndSort(events, tz) {
 
 const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 
-export default function EventsSidebar({ events, cityEvents, topics, activeEventId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onCreateClick, onCreateTopicClick }) {
+export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick, onCreateTopicClick }) {
   const tz = cityTimezone || 'UTC'
   const hiladsEvents = filterAndSort(events, tz)
   // City events: don't filter by today — TM events are upcoming (backend already prunes expired ones)
@@ -58,13 +58,19 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
   function renderTopicRow(topic) {
     const icon    = CATEGORY_ICONS[topic.category] ?? '💬'
     const replies = topic.message_count ?? 0
+    const isActive = activeTopicId === topic.id
     return (
-      <div key={topic.id} className="event-row" style={{ cursor: 'default', borderColor: 'rgba(96,165,250,0.18)' }}>
+      <button
+        key={topic.id}
+        className={`event-row${isActive ? ' active' : ''}`}
+        style={{ borderColor: isActive ? 'rgba(96,165,250,0.4)' : 'rgba(96,165,250,0.18)', textAlign: 'left' }}
+        onClick={() => onSelectTopic?.(topic)}
+      >
         <span className="event-row-title">{icon} {topic.title}</span>
         <span className="event-row-location" style={{ color: '#60a5fa' }}>
           {replies > 0 ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}` : 'No replies yet'}
         </span>
-      </div>
+      </button>
     )
   }
 
