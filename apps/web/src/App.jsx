@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -40,9 +40,11 @@ function parseDeepLink() {
   const cityMatch      = path.match(/^\/city\/([^/]+)$/)
   const eventMatch     = path.match(/^\/event\/([a-f0-9]{16})$/)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
+  const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
   if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
   if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
+  if (topicMatch)          return { type: 'topic',         id: topicMatch[1] }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
   if (path === '/reset-password') return { type: 'reset-password', token: params.get('token') ?? '' }
@@ -891,6 +893,18 @@ export default function App() {
         // After join the city, open the event — defer until handleJoin completes
         setTimeout(() => handleSelectEvent(event), 800)
         return { channelId: event.channel_id, city: cityName, timezone, country }
+      })
+    }
+
+    if (link.type === 'topic') {
+      locPromiseRef.current = fetchTopicById(link.id).then(data => {
+        if (!data) return null
+        const { topic, channelId, cityName, country, timezone } = data
+        setCity(cityName)
+        setCityCountry(country)
+        setCityTimezone(timezone)
+        setTimeout(() => setActiveTopic(topic), 800)
+        return { channelId, city: cityName, timezone, country }
       })
     }
 

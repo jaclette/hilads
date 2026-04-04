@@ -3569,12 +3569,74 @@ img.pub-profile-avatar {
   overflow: hidden;
 }
 
+/* ── Topic-specific header: back | title (wraps) | share ── */
+.topic-chat-header {
+  align-items: flex-start;
+  padding-top: max(14px, env(safe-area-inset-top));
+  padding-bottom: 14px;
+  min-height: 0;
+  gap: 10px;
+}
+
+.topic-chat-header-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
+  min-width: 0;
+}
+
+.topic-chat-header-icon {
+  font-size: 0.75rem;
+  color: var(--muted2);
+  letter-spacing: 0.02em;
+}
+
+.topic-chat-header-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+  word-break: break-word;
+  letter-spacing: -0.01em;
+}
+
+.topic-share-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s, color 0.12s;
+  margin-top: 2px;
+}
+
+.topic-share-btn:active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.topic-share-copied {
+  font-size: 1rem;
+  color: #4ade80;
+}
+
+/* ── Topic description band ── */
 .topic-chat-desc {
   padding: 10px 20px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted2);
   border-bottom: 1px solid var(--border);
   line-height: 1.5;
+  font-style: italic;
 }
 
 .topic-chat-feed {
@@ -3588,12 +3650,25 @@ img.pub-profile-avatar {
 .topic-chat-empty {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   color: var(--muted2);
   font-size: 14px;
-  padding: 40px 20px;
+  padding: 60px 32px;
   text-align: center;
+}
+
+.topic-chat-empty-icon {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.topic-chat-empty strong {
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .topic-chat-input-row {

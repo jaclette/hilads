@@ -3283,7 +3283,17 @@ $router->add('GET', '/api/v1/topics/{topicId}', function (array $params) {
         Response::json(['error' => 'Topic not found or expired'], 404);
     }
 
-    Response::json($topic);
+    // Resolve city info so the frontend can hydrate city context on deep link.
+    // city_id is stored as 'city_N' — extract the integer part for CityRepository.
+    $cityIntId = (int) substr($topic['city_id'], 5);
+    $city = CityRepository::findById($cityIntId);
+    Response::json([
+        'topic'      => $topic,
+        'channelId'  => $cityIntId,
+        'cityName'   => $city['name'] ?? null,
+        'country'    => $city['country'] ?? null,
+        'timezone'   => $city['timezone'] ?? 'UTC',
+    ]);
 });
 
 // GET /api/v1/topics/{topicId}/messages

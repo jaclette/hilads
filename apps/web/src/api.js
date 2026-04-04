@@ -178,6 +178,13 @@ export async function fetchCityTopics(channelId) {
   }
 }
 
+export async function fetchTopicById(topicId) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch topic')
+  return res.json() // { topic, channelId, cityName, country, timezone }
+}
+
 export async function fetchTopicMessages(topicId) {
   const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch topic messages')

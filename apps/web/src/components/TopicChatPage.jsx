@@ -26,6 +26,28 @@ function formatTime(ts) {
   return new Date(toMs(ts)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+async function shareTopic(title, topicId) {
+  const url = `${window.location.origin}/t/${topicId}`
+  const shareTitle = `💬 ${title}`
+  if (navigator.share) {
+    try { await navigator.share({ title: shareTitle, url }); return null } catch (_) { return null }
+  }
+  if (navigator.clipboard?.writeText) {
+    try { await navigator.clipboard.writeText(url); return 'copied' } catch (_) {}
+  }
+  try {
+    const el = document.createElement('input')
+    el.value = url
+    el.style.cssText = 'position:fixed;top:0;left:0;opacity:0'
+    document.body.appendChild(el)
+    el.focus(); el.select()
+    document.execCommand('copy')
+    document.body.removeChild(el)
+    return 'copied'
+  } catch (_) {}
+  return null
+}
+
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export default function TopicChatPage({ topic, guest, nickname, onBack }) {
@@ -34,6 +56,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack }) {
   const [sending,    setSending]    = useState(false)
   const [error,      setError]      = useState(null)
   const [loading,    setLoading]    = useState(true)
+  const [copied,     setCopied]     = useState(false)
 
   const knownIdsRef = useRef(new Set())
   const bottomRef   = useRef(null)
@@ -58,19 +81,16 @@ export default function TopicChatPage({ topic, guest, nickname, onBack }) {
     }
   }, [topic.id])
 
-  // Initial load
   useEffect(() => {
     loadMessages()
     if (guest?.guestId) markTopicRead(topic.id, guest.guestId)
   }, [topic.id, guest?.guestId, loadMessages])
 
-  // Poll every 4s
   useEffect(() => {
     const id = setInterval(loadMessages, 4_000)
     return () => clearInterval(id)
   }, [loadMessages])
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages.length])
@@ -110,17 +130,42 @@ export default function TopicChatPage({ topic, guest, nickname, onBack }) {
     }
   }
 
+  async function handleShare() {
+    const result = await shareTopic(topic.title, topic.id)
+    if (result === 'copied') {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2200)
+    }
+  }
+
   return (
     <div className="full-page topic-chat-page">
-      {/* Header */}
-      <div className="page-header">
+      {/* Header — topic-specific: back | title (wraps) | share */}
+      <div className="page-header topic-chat-header">
         <BackButton onClick={onBack} />
-        <span className="page-title" style={{ fontSize: 17 }}>
-          {icon} {topic.title}
-        </span>
+        <div className="topic-chat-header-center">
+          <span className="topic-chat-header-icon">{icon}</span>
+          <span className="topic-chat-header-title">{topic.title}</span>
+        </div>
+        <button
+          className="topic-share-btn"
+          onClick={handleShare}
+          aria-label="Share topic"
+          title="Share this conversation"
+        >
+          {copied
+            ? <span className="topic-share-copied">✓</span>
+            : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+            )
+          }
+        </button>
       </div>
 
-      {/* Topic info */}
+      {/* Description band */}
       {topic.description && (
         <div className="topic-chat-desc">{topic.description}</div>
       )}
@@ -128,10 +173,17 @@ export default function TopicChatPage({ topic, guest, nickname, onBack }) {
       {/* Messages area */}
       <div className="topic-chat-feed">
         {loading && messages.length === 0 && (
-          <div className="topic-chat-empty">Loading…</div>
+          <div className="topic-chat-empty">
+            <span className="topic-chat-empty-icon">💬</span>
+            <span>Loading…</span>
+          </div>
         )}
         {!loading && messages.length === 0 && (
-          <div className="topic-chat-empty">No replies yet. Say something! 💬</div>
+          <div className="topic-chat-empty">
+            <span className="topic-chat-empty-icon">✨</span>
+            <strong>No replies yet</strong>
+            <span>Be the first to jump in</span>
+          </div>
         )}
         {messages.map((item, idx) => {
           const isMine    = item.guestId === guest?.guestId
@@ -189,7 +241,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack }) {
           className="topic-chat-input"
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder={messages.length > 0 ? 'Reply to the conversation ✨' : 'Be the first to reply ✨'}
+          placeholder={messages.length > 0 ? 'Reply to the conversation…' : 'Start the vibe ✨'}
           maxLength={1000}
           autoFocus
         />
