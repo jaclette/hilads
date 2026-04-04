@@ -22,7 +22,7 @@ function filterAndSort(events, tz) {
 
 const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 
-export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick, onCreateTopicClick }) {
+export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick }) {
   const tz = cityTimezone || 'UTC'
   const hiladsEvents = filterAndSort(events, tz)
   // City events: don't filter by today — TM events are upcoming (backend already prunes expired ones)
@@ -79,10 +79,7 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
       <div className="events-sidebar-header">
         <span className="events-sidebar-title">Now{totalCount > 0 ? ` (${totalCount})` : ''}</span>
         <div style={{ display: 'flex', gap: 6 }}>
-          {onCreateTopicClick && (
-            <button className="create-event-btn" onClick={onCreateTopicClick} title="Start a conversation" style={{ fontSize: 18 }}>💬</button>
-          )}
-          <button className="create-event-btn" onClick={onCreateClick} title="Create event">+</button>
+            <button className="create-event-btn" onClick={onCreateClick} title="Create">+</button>
         </div>
       </div>
       <div className="events-list">

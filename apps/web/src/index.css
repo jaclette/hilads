@@ -4214,23 +4214,95 @@ img.pub-profile-avatar {
   box-shadow: 0 2px 10px rgba(255, 122, 60, 0.4);
 }
 
-.events-fab--topic {
-  bottom: 96px;
-  width: 46px;
-  height: 46px;
-  right: 23px;
-  background: #1e3a5f;
-  border: 1px solid rgba(96, 165, 250, 0.35);
-  font-size: 20px;
-  box-shadow: 0 3px 14px rgba(96, 165, 250, 0.3), 0 2px 6px rgba(0, 0, 0, 0.3);
+/* ── Creation chooser bottom sheet ─────────────────────────────────────── */
+
+.create-chooser-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 300;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.18s ease-out;
 }
 
-.events-fab--topic:hover {
-  box-shadow: 0 6px 20px rgba(96, 165, 250, 0.45), 0 3px 10px rgba(0, 0, 0, 0.25);
+.create-chooser-sheet {
+  width: 100%;
+  background: #1a1612;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 20px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: slideUp 0.22s ease-out;
 }
 
-.events-fab--topic:active {
-  box-shadow: 0 1px 6px rgba(96, 165, 250, 0.3);
+.create-chooser-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+  align-self: center;
+  margin-bottom: 8px;
+}
+
+.create-chooser-title {
+  font-size: 0.78rem;
+  color: var(--muted2);
+  text-align: center;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.create-chooser-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+}
+
+.create-chooser-option:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.create-chooser-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 40px;
+  text-align: center;
+}
+
+.create-chooser-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.create-chooser-label strong {
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.create-chooser-label span {
+  font-size: 0.78rem;
+  color: var(--muted2);
+}
+
+.create-chooser-arrow {
+  color: var(--muted2);
+  font-size: 1rem;
+  flex-shrink: 0;
 }
 
 .events-empty-state {

@@ -601,6 +601,7 @@ export default function App() {
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
+  const [showCreateChooser,  setShowCreateChooser]  = useState(false)
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
@@ -2243,8 +2244,7 @@ export default function App() {
         onSelectEvent={handleSelectEvent}
         onSelectTopic={topic => setActiveTopic(topic)}
         activeTopicId={activeTopic?.id}
-        onCreateClick={openCreateEvent}
-        onCreateTopicClick={() => setShowCreateTopic(true)}
+        onCreateClick={() => setShowCreateChooser(true)}
       />
 
       <div className="screen chat">
@@ -3002,21 +3002,11 @@ export default function App() {
             See what's coming 🔮
           </button>
 
-          {/* Floating action button — start a topic */}
-          <button
-            className="events-fab events-fab--topic"
-            onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }}
-            aria-label="Start a conversation"
-            title="Start a conversation"
-          >
-            💬
-          </button>
-
-          {/* Floating action button — create event */}
+          {/* Floating action button — creation chooser */}
           <button
             className="events-fab"
-            onClick={() => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}
-            aria-label="Create event"
+            onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
+            aria-label="Create"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -3636,6 +3626,41 @@ export default function App() {
           onCreated={handleTopicCreated}
           onBack={() => setShowCreateTopic(false)}
         />
+      )}
+
+      {/* Creation chooser bottom sheet */}
+      {showCreateChooser && (
+        <div className="create-chooser-overlay" onClick={() => setShowCreateChooser(false)}>
+          <div className="create-chooser-sheet" onClick={e => e.stopPropagation()}>
+            <div className="create-chooser-handle" />
+            <p className="create-chooser-title">What do you want to create?</p>
+            <button
+              className="create-chooser-option"
+              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
+            >
+              <span className="create-chooser-icon">🔥</span>
+              <span className="create-chooser-label">
+                <strong>Create an event</strong>
+                <span>Meetup, party, outing…</span>
+              </span>
+              <span className="create-chooser-arrow">→</span>
+            </button>
+            <button
+              className="create-chooser-option"
+              onClick={() => {
+                setShowCreateChooser(false)
+                setShowCreateTopic(true)
+              }}
+            >
+              <span className="create-chooser-icon">💬</span>
+              <span className="create-chooser-label">
+                <strong>Start a conversation</strong>
+                <span>Ask the city something</span>
+              </span>
+              <span className="create-chooser-arrow">→</span>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Topic chat — full-screen page */}
