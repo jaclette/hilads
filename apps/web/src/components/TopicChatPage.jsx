@@ -150,8 +150,8 @@ export default function TopicChatPage({ topic, guest, nickname, onBack }) {
         <button
           className="topic-share-btn"
           onClick={handleShare}
-          aria-label="Share topic"
-          title="Share this conversation"
+          aria-label="Share pulse"
+          title="Share this pulse"
         >
           {copied
             ? <span className="topic-share-copied">✓</span>

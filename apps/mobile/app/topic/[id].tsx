@@ -102,7 +102,7 @@ export default function TopicChatScreen() {
         </View>
       ) : (
         <View style={styles.infoBlockLoading}>
-          <Text style={styles.errorText}>Topic not found or expired</Text>
+          <Text style={styles.errorText}>Pulse not found or expired</Text>
         </View>
       )}
 

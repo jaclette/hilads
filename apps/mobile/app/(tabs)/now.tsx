@@ -106,7 +106,7 @@ function TopicCard({ topic, onPress }: { topic: FeedItem & { kind: 'topic' }; on
   return (
     <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
       <View style={styles.cardKindRow}>
-        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Topic</Text></View>
+        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Pulse</Text></View>
         {activeNow && (
           <View style={styles.activeNowBadge}>
             <Text style={styles.activeNowText}>● Active now</Text>
@@ -141,7 +141,7 @@ function EmptyState({ city }: { city?: string }) {
       <Text style={styles.emptyTitle}>Nothing happening yet</Text>
       <Text style={styles.emptySub}>
         {city ? `Be the first in ${city}` : 'Start something now'}
-        {'\n'}Create an event or start a conversation.
+        {'\n'}Create an event or start a pulse.
       </Text>
     </View>
   );
@@ -153,12 +153,12 @@ function FilterEmptyState({ filter, city }: { filter: 'all' | 'events' | 'topics
     <View style={styles.empty}>
       <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '💬'}</Text>
       <Text style={styles.emptyTitle}>
-        {filter === 'events' ? 'No events right now' : 'No conversations yet'}
+        {filter === 'events' ? 'No events right now' : 'No pulses yet'}
       </Text>
       <Text style={styles.emptySub}>
         {filter === 'events'
           ? `Be the first to create one${city ? ` in ${city}` : ''}`
-          : 'Start a topic and get the city talking'}
+          : 'Start a pulse and get the city talking'}
       </Text>
     </View>
   );
@@ -299,7 +299,7 @@ export default function NowScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Topics'}
+              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Pulses'}
             </Text>
           </TouchableOpacity>
         ))}

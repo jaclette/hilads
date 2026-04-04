@@ -2094,7 +2094,7 @@ export default function App() {
         <div className="city-row-stats">
           {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
           {eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
-          {topicCount > 0 && <span className="city-row-topics">{topicCount} {topicCount === 1 ? 'conversation' : 'conversations'}</span>}
+          {topicCount > 0 && <span className="city-row-topics">{topicCount} {topicCount === 1 ? 'pulse' : 'pulses'}</span>}
           {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
         </div>
       </button>
@@ -2955,7 +2955,7 @@ export default function App() {
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Topics'}
+                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Pulses'}
               </button>
             ))}
           </div>
@@ -2983,7 +2983,7 @@ export default function App() {
                   <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); setActiveTopic(topic) }}>
                     <div className="er-header">
                       <span className="er-title">{icon} {topic.title}</span>
-                      <span className="er-going er-going--topic">Topic</span>
+                      <span className="er-going er-going--topic">Pulse</span>
                     </div>
                     <div className="er-badges">
                       {activeNow && <span className="now-active-badge">● Active now</span>}
@@ -3079,7 +3079,7 @@ export default function App() {
                     <p className="events-empty-title">Nothing happening yet</p>
                     <p className="events-empty-sub">Be the first to make something happen in {city}</p>
                     <button className="events-empty-cta" onClick={openCreate}>Create event</button>
-                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a conversation 💬</button>
+                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a pulse ⚡</button>
                   </div>
                 )
               }
@@ -3108,16 +3108,16 @@ export default function App() {
                 return (
                   <div className="events-empty-state">
                     <p className="events-empty-title">
-                      {nowFilter === 'events' ? 'No events right now' : 'No conversations yet'}
+                      {nowFilter === 'events' ? 'No events right now' : 'No pulses yet'}
                     </p>
                     <p className="events-empty-sub">
                       {nowFilter === 'events'
                         ? `Be the first to create one in ${city}`
-                        : `Start a topic and get the city talking`}
+                        : `Start a pulse and get the city talking`}
                     </p>
                     {nowFilter === 'events'
                       ? <button className="events-empty-cta" onClick={openCreate}>Create event</button>
-                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a conversation 💬</button>
+                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a pulse ⚡</button>
                     }
                   </div>
                 )
@@ -3799,7 +3799,7 @@ export default function App() {
             >
               <span className="create-chooser-icon">💬</span>
               <span className="create-chooser-label">
-                <strong>Start a conversation</strong>
+                <strong>Start a pulse</strong>
                 <span>Ask the city something</span>
               </span>
               <span className="create-chooser-arrow">→</span>

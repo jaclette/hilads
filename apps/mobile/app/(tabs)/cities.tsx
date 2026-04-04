@@ -111,7 +111,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
         )}
         {(city.topicCount ?? 0) > 0 && (
           <Text style={styles.statTopics}>
-            {city.topicCount} {city.topicCount === 1 ? 'conversation' : 'conversations'}
+            {city.topicCount} {city.topicCount === 1 ? 'pulse' : 'pulses'}
           </Text>
         )}
         {(city.messageCount ?? 0) > 0 && (

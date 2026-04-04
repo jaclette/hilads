@@ -40,7 +40,7 @@ export default function CreateTopicScreen() {
       await createTopic(city.channelId, identity.guestId, t, description.trim() || null, category);
       router.back();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start conversation');
+      setError(err instanceof Error ? err.message : 'Failed to start pulse');
     } finally {
       setSubmitting(false);
     }
@@ -54,7 +54,7 @@ export default function CreateTopicScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Start a conversation</Text>
+          <Text style={styles.headerTitle}>Start a pulse</Text>
         </View>
       </View>
 
@@ -123,7 +123,7 @@ export default function CreateTopicScreen() {
         >
           {submitting
             ? <ActivityIndicator color={Colors.white} size="small" />
-            : <Text style={styles.submitBtnText}>Start conversation 💬</Text>
+            : <Text style={styles.submitBtnText}>Start a pulse ⚡</Text>
           }
         </TouchableOpacity>
 

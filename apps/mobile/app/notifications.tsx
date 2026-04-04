@@ -247,9 +247,9 @@ export default function NotificationsScreen() {
             <View style={styles.prefDivider} />
             <PrefRow label="Profile views 👀" subtitle="When someone checks your profile" value={prefs.profile_view_push} onChange={v => togglePref('profile_view_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Topic replies 💬" subtitle="When someone replies in a topic you joined" value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
+            <PrefRow label="Pulse replies 💬" subtitle="When someone replies in a pulse you joined" value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="New topics in your city" subtitle="When someone starts a new conversation in your city" value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
+            <PrefRow label="New pulses in your city" subtitle="When someone starts a new pulse in your city" value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
           </View>
         </View>
       </ScrollView>

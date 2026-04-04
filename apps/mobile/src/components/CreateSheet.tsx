@@ -101,7 +101,7 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
               <Text style={styles.optionEmoji}>💬</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Start a topic</Text>
+              <Text style={styles.optionLabel}>Start a pulse</Text>
               <Text style={styles.optionSub}>Ask the city</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>

@@ -85,7 +85,7 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
       <div className="events-list">
         {topicList.length > 0 && (
           <>
-            <p className="events-group-label">Conversations</p>
+            <p className="events-group-label">Pulses</p>
             {topicList.map(renderTopicRow)}
           </>
         )}

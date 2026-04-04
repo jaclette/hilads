@@ -73,7 +73,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
               )}
               {previewTopicCount > 0 && (
                 <span className="ob-activity-line">
-                  💬 {previewTopicCount} conversation{previewTopicCount === 1 ? '' : 's'} active
+                  💬 {previewTopicCount} pulse{previewTopicCount === 1 ? '' : 's'} active
                 </span>
               )}
             </div>
