@@ -64,7 +64,7 @@ export default function GuestProfileScreen() {
         </View>
 
         {city ? (
-          <Text style={styles.cityLabel}>Visiting {city}</Text>
+          <Text style={styles.cityLabel}>Visiting {city.name}</Text>
         ) : null}
       </View>
 
