@@ -5740,6 +5740,13 @@ img.dm-header-avatar {
   height: auto;
   border-radius: 14px;
   object-fit: cover;
+  cursor: zoom-in;
+  transition: opacity 0.15s, transform 0.12s;
+}
+
+.dm-image:hover {
+  opacity: 0.92;
+  transform: scale(1.01);
 }
 
 .dm-composer {

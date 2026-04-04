@@ -63,19 +63,27 @@ function formatDateLabel(ts) {
 }
 
 export default function DirectMessageScreen({ conversation, otherUser, account, socket, onBack }) {
-  const [messages, setMessages]   = useState([])
-  const [input, setInput]         = useState('')
-  const [sending, setSending]     = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [error, setError]         = useState(null)
-  const [showEmoji, setShowEmoji] = useState(false)
-  const bottomRef                 = useRef(null)
-  const knownIds                  = useRef(new Set())
-  const fileRef                   = useRef(null)
-  const dmInputRef                = useRef(null)
+  const [messages, setMessages]       = useState([])
+  const [input, setInput]             = useState('')
+  const [sending, setSending]         = useState(false)
+  const [uploading, setUploading]     = useState(false)
+  const [error, setError]             = useState(null)
+  const [showEmoji, setShowEmoji]     = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState(null)
+  const bottomRef                     = useRef(null)
+  const knownIds                      = useRef(new Set())
+  const fileRef                       = useRef(null)
+  const dmInputRef                    = useRef(null)
 
   const otherName = otherUser?.display_name ?? '?'
   const [c1, c2] = avatarColors(otherName)
+
+  // Close lightbox on Escape
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') setLightboxUrl(null) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   // Load message history and mark as read immediately on open
   useEffect(() => {
@@ -208,6 +216,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                       src={msg.image_url}
                       className="dm-image"
                       alt="shared image"
+                      onClick={() => setLightboxUrl(msg.image_url)}
                     />
                   : <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
                       {msg.content}
@@ -270,6 +279,18 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         />
         <SendButton disabled={sending || uploading || !input.trim()} />
       </form>
+
+      {lightboxUrl && (
+        <div className="lightbox-overlay" onClick={() => setLightboxUrl(null)}>
+          <button className="lightbox-close" onClick={() => setLightboxUrl(null)}>✕</button>
+          <img
+            src={lightboxUrl}
+            className="lightbox-img"
+            alt="full-size preview"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   )
 }

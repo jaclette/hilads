@@ -25,6 +25,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { isSameDay, formatDateLabel, formatTime } from '@/lib/messageTime';
+import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
 import type { DmMessage } from '@/types';
 
 // ── Date separator — reused from ChatMessage visual style ─────────────────────
@@ -86,16 +87,17 @@ function avatarColor(str: string): string {
 //   isLast  = newest in the group (bottom of cluster, shows timestamp)
 
 interface RowProps {
-  msg:        DmMessage;
-  isMine:     boolean;
-  isFirst:    boolean;   // first (oldest) msg in this sender's run
-  isLast:     boolean;   // last  (newest) msg in this sender's run
-  color:      string;    // avatar accent color for received messages
-  initial:    string;
-  dateLabel?: string;    // if set, render a date separator above this row
+  msg:          DmMessage;
+  isMine:       boolean;
+  isFirst:      boolean;   // first (oldest) msg in this sender's run
+  isLast:       boolean;   // last  (newest) msg in this sender's run
+  color:        string;    // avatar accent color for received messages
+  initial:      string;
+  dateLabel?:   string;    // if set, render a date separator above this row
+  onImagePress: (uri: string) => void;
 }
 
-function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowProps) {
+function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress }: RowProps) {
   const router = useRouter();
   const { account } = useApp();
   const opacity = useRef(new Animated.Value(0)).current;
@@ -149,19 +151,25 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowP
 
       <View style={[styles.bubbleCol, isMine && styles.bubbleColMine]}>
         {msg.type === 'image' && msg.image_url ? (
-          <View style={[
-            styles.imageBubble,
-            isMine  ? styles.bubbleMine  : styles.bubbleOther,
-            isMine  ? bubbleMineShape    : bubbleOtherShape,
-            isSending && styles.bubbleSending,
-            isFailed  && styles.bubbleFailed,
-          ]}>
-            <Image
-              source={{ uri: msg.image_url }}
-              style={styles.bubbleImage}
-              resizeMode="cover"
-            />
-          </View>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={!isSending && !isFailed ? () => onImagePress(msg.image_url!) : undefined}
+            disabled={isSending || isFailed}
+          >
+            <View style={[
+              styles.imageBubble,
+              isMine  ? styles.bubbleMine  : styles.bubbleOther,
+              isMine  ? bubbleMineShape    : bubbleOtherShape,
+              isSending && styles.bubbleSending,
+              isFailed  && styles.bubbleFailed,
+            ]}>
+              <Image
+                source={{ uri: msg.image_url }}
+                style={styles.bubbleImage}
+                resizeMode="cover"
+              />
+            </View>
+          </TouchableOpacity>
         ) : (
           <View style={[
             styles.bubble,
@@ -201,10 +209,11 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel }: RowP
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { account } = useApp();
   const { messages, loading, sending, error, clearError, sendText, sendImage } = useDMThread(conversationId);
-  const [text,      setText]      = useState('');
-  const [uploading, setUploading] = useState(false);
-  const [focused,   setFocused]   = useState(false);
-  const [showEmoji, setShowEmoji] = useState(false);
+  const [text,       setText]       = useState('');
+  const [uploading,  setUploading]  = useState(false);
+  const [focused,    setFocused]    = useState(false);
+  const [showEmoji,  setShowEmoji]  = useState(false);
+  const [previewUri, setPreviewUri] = useState<string | null>(null);
   const lastSel = useRef({ start: 0, end: 0 });
 
   const color   = avatarColor(displayName);
@@ -331,6 +340,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         color={color}
         initial={initial}
         dateLabel={dateLabel}
+        onImagePress={setPreviewUri}
       />
     );
   }, [messages, account?.id, color, initial]);
@@ -368,6 +378,8 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           }
         />
       )}
+
+      <ImagePreviewModal uri={previewUri} onClose={() => setPreviewUri(null)} />
 
       {/* ── Emoji panel ── */}
       {showEmoji && <EmojiPanel onSelect={insertEmoji} />}

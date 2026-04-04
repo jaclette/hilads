@@ -12,8 +12,9 @@
  *   text   → bubble with avatar + author (grouped = avatar hidden)
  */
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, ActivityIndicator } from 'react-native';
+import { ImagePreviewModal } from './ImagePreviewModal';
 import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
 import { formatTime } from '@/lib/messageTime';
@@ -263,6 +264,9 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   const { opacity, translateY } = useEntryAnimation(200);
   const animStyle = { opacity, transform: [{ translateY }] } as const;
 
+  // Image preview state — must be declared here (before early returns) per hooks rules
+  const [previewUri, setPreviewUri] = useState<string | null>(null);
+
   // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
   if (message.type === 'event') {
     return (
@@ -370,22 +374,28 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             />
           )}
           <View>
-            <Image
-              source={{ uri: message.imageUrl }}
-              style={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
-              resizeMode="cover"
-              onError={() => console.warn('[msg] image load error:', message.imageUrl)}
-            />
-            {isSending && (
-              <View style={styles.imageOverlay}>
-                <ActivityIndicator size="small" color="rgba(255,255,255,0.8)" />
-              </View>
-            )}
-            {isFailed && (
-              <View style={styles.imageOverlay}>
-                <Text style={styles.imageFailedIcon}>!</Text>
-              </View>
-            )}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={!isSending && !isFailed ? () => setPreviewUri(message.imageUrl!) : undefined}
+              disabled={isSending || isFailed}
+            >
+              <Image
+                source={{ uri: message.imageUrl }}
+                style={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
+                resizeMode="cover"
+                onError={() => console.warn('[msg] image load error:', message.imageUrl)}
+              />
+              {isSending && (
+                <View style={styles.imageOverlay}>
+                  <ActivityIndicator size="small" color="rgba(255,255,255,0.8)" />
+                </View>
+              )}
+              {isFailed && (
+                <View style={styles.imageOverlay}>
+                  <Text style={styles.imageFailedIcon}>!</Text>
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
           {showTime && (
             <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
@@ -393,6 +403,8 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             </Text>
           )}
         </Animated.View>
+
+        <ImagePreviewModal uri={previewUri} onClose={() => setPreviewUri(null)} />
       </>
     );
   }
