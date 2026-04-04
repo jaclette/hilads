@@ -6,11 +6,12 @@ admin_require_login();
 
 csrf_verify();
 
-$pdo = Database::pdo();
+$pdo  = Database::pdo();
+$mode = $_POST['mode'] ?? 'single'; // 'single' | 'series'
 
 // Verify event exists
 $stmt = $pdo->prepare("
-    SELECT ce.channel_id, ce.title, c.status
+    SELECT ce.channel_id, ce.title, ce.series_id, c.status
     FROM channel_events ce
     JOIN channels c ON c.id = ce.channel_id
     WHERE ce.channel_id = :id AND c.type = 'event'
@@ -28,17 +29,28 @@ if ($event['status'] === 'deleted') {
     admin_redirect('/admin/events');
 }
 
-// Soft delete: mark channel as deleted + expire immediately.
-// Mirrors the existing product behavior (same as frontend DELETE /api/v1/events/{id}).
-$pdo->prepare("
-    UPDATE channels SET status = 'deleted', updated_at = now() WHERE id = :id
-")->execute([':id' => $eventId]);
+if ($mode === 'series') {
+    if (empty($event['series_id'])) {
+        flash_set('error', 'This event is not part of a recurring series.');
+        admin_redirect('/admin/events');
+    }
 
-$pdo->prepare("
-    UPDATE channel_events SET expires_at = now() WHERE channel_id = :id
-")->execute([':id' => $eventId]);
+    EventSeriesRepository::deleteSeries($event['series_id']);
 
-error_log('[admin] event deleted: ' . $eventId . ' (' . $event['title'] . ')');
+    error_log('[admin] series deleted: series_id=' . $event['series_id'] . ' triggered by event=' . $eventId);
+    flash_set('success', 'Recurring series "' . $event['title'] . '" and all future occurrences deleted.');
+} else {
+    // Single occurrence: soft-delete channel + expire immediately
+    $pdo->prepare("
+        UPDATE channels SET status = 'deleted', updated_at = now() WHERE id = :id
+    ")->execute([':id' => $eventId]);
 
-flash_set('success', 'Event "' . $event['title'] . '" deleted.');
+    $pdo->prepare("
+        UPDATE channel_events SET expires_at = now() WHERE channel_id = :id
+    ")->execute([':id' => $eventId]);
+
+    error_log('[admin] event deleted: ' . $eventId . ' (' . $event['title'] . ')');
+    flash_set('success', 'Event "' . $event['title'] . '" deleted.');
+}
+
 admin_redirect('/admin/events');

@@ -1910,19 +1910,49 @@ $router->add('DELETE', '/api/v1/events/{eventId}', function (array $params) {
 
     $body    = Request::json();
     $guestId = $body['guestId'] ?? null;
+    $mode    = $body['mode']    ?? 'single'; // 'single' | 'series'
 
     if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
 
     $authUser = AuthService::currentUser();
-    $deleted  = EventRepository::delete($eventId, $guestId, $authUser['id'] ?? null);
+    $userId   = $authUser['id'] ?? null;
+    $pdo      = Database::pdo();
 
-    if (!$deleted) {
-        Response::json(['error' => 'Event not found or you are not the creator'], 403);
+    if ($mode === 'series') {
+        // Resolve the series_id from this occurrence
+        $stmt = $pdo->prepare("
+            SELECT ce.series_id, ce.created_by, ce.guest_id
+            FROM channel_events ce
+            WHERE ce.channel_id   = ?
+              AND ce.source_type  = 'hilads'
+              AND ce.series_id IS NOT NULL
+            LIMIT 1
+        ");
+        $stmt->execute([$eventId]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            Response::json(['error' => 'Event is not part of a recurring series'], 400);
+        }
+
+        // Ownership: creator guest_id OR registered user
+        $isOwner = ($row['guest_id'] === $guestId)
+                || ($userId !== null && $row['created_by'] === $userId);
+        if (!$isOwner) {
+            Response::json(['error' => 'You are not the creator of this series'], 403);
+        }
+
+        EventSeriesRepository::deleteSeries($row['series_id']);
+        Response::json(['ok' => true, 'deleted' => 'series']);
+    } else {
+        $deleted = EventRepository::delete($eventId, $guestId, $userId);
+        if (!$deleted) {
+            Response::json(['error' => 'Event not found or you are not the creator'], 403);
+        }
+        Response::json(['ok' => true, 'deleted' => 'occurrence']);
     }
-
-    Response::json(['ok' => true]);
 });
 
 // ── Recurring event series ────────────────────────────────────────────────────

@@ -34,6 +34,8 @@ if (str_starts_with($uri, '/admin')) {
     }
     require_once __DIR__ . '/../vendor/autoload.php';
     require_once __DIR__ . '/../src/Database.php';
+    require_once __DIR__ . '/../src/EventSeriesRepository.php';
+    require_once __DIR__ . '/../src/CityRepository.php';
     require_once __DIR__ . '/../admin/boot.php';
     exit;
 }

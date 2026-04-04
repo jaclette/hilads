@@ -195,10 +195,26 @@ admin_nav('/admin/events');
                                 <div class="td-actions">
                                     <a href="/admin/events/<?= urlencode($ev['channel_id']) ?>/edit" class="btn btn-secondary btn-sm">Edit</a>
                                     <?php if (!$isDeleted): ?>
-                                        <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete" onsubmit="return confirm('Delete event «<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»? This cannot be undone.')">
-                                            <?= csrf_input() ?>
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
+                                        <?php if ($isRecurring): ?>
+                                            <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
+                                                  onsubmit="return confirm('Delete this occurrence only?\n\n«<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»\n\nOther occurrences of this series will not be affected.')">
+                                                <?= csrf_input() ?>
+                                                <input type="hidden" name="mode" value="single">
+                                                <button type="submit" class="btn btn-secondary btn-sm">Del. occurrence</button>
+                                            </form>
+                                            <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
+                                                  onsubmit="return confirm('DELETE ENTIRE SERIES?\n\n«<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»\n\nThis will delete ALL future occurrences and stop new ones from being generated.\n\nThis cannot be undone.')">
+                                                <?= csrf_input() ?>
+                                                <input type="hidden" name="mode" value="series">
+                                                <button type="submit" class="btn btn-danger btn-sm">Del. series</button>
+                                            </form>
+                                        <?php else: ?>
+                                            <form method="POST" action="/admin/events/<?= urlencode($ev['channel_id']) ?>/delete"
+                                                  onsubmit="return confirm('Delete event «<?= htmlspecialchars(addslashes($ev['title']), ENT_QUOTES) ?>»? This cannot be undone.')">
+                                                <?= csrf_input() ?>
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        <?php endif; ?>
                                     <?php else: ?>
                                         <span style="color:#444;font-size:11px">deleted</span>
                                     <?php endif; ?>

@@ -457,6 +457,69 @@ class EventSeriesRepository
         return $created;
     }
 
+    /**
+     * Delete an entire recurring series:
+     *   1. Sets ends_on = yesterday so the cron stops generating new occurrences.
+     *   2. Soft-deletes all future (not yet expired) occurrences in one transaction.
+     *
+     * The occurrence channel IDs are deterministic so no orphan rows are left.
+     */
+    public static function deleteSeries(string $seriesId): bool
+    {
+        $pdo = Database::pdo();
+
+        // Confirm the series exists
+        $stmt = $pdo->prepare("SELECT id FROM event_series WHERE id = ? LIMIT 1");
+        $stmt->execute([$seriesId]);
+        if (!$stmt->fetchColumn()) {
+            return false;
+        }
+
+        // Collect future occurrence channel IDs before touching anything
+        $stmt = $pdo->prepare("
+            SELECT ce.channel_id
+            FROM channel_events ce
+            JOIN channels c ON c.id = ce.channel_id
+            WHERE ce.series_id = ?
+              AND c.status      = 'active'
+              AND ce.expires_at > now()
+        ");
+        $stmt->execute([$seriesId]);
+        $channelIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+
+        $pdo->beginTransaction();
+        try {
+            // Stop future generation: ends_on in the past excludes this series from all
+            // generateAll() / ensureTodayOccurrences() / ensureOccurrencesForRange() calls.
+            $pdo->prepare("
+                UPDATE event_series SET ends_on = CURRENT_DATE - INTERVAL '1 day' WHERE id = ?
+            ")->execute([$seriesId]);
+
+            // Soft-delete every future occurrence
+            if (!empty($channelIds)) {
+                $placeholders = implode(',', array_fill(0, count($channelIds), '?'));
+                $pdo->prepare("
+                    UPDATE channels
+                    SET status = 'deleted', updated_at = now()
+                    WHERE id IN ($placeholders)
+                ")->execute($channelIds);
+
+                $pdo->prepare("
+                    UPDATE channel_events
+                    SET expires_at = now()
+                    WHERE channel_id IN ($placeholders)
+                ")->execute($channelIds);
+            }
+
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        return true;
+    }
+
     public static function generateAll(int $lookaheadDays = 7): array
     {
         $allRows = Database::pdo()->query("
