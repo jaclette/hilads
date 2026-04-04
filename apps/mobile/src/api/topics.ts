@@ -1,21 +1,23 @@
 import { api } from './client';
-import type { FeedItem, Topic, Message } from '@/types';
+import type { FeedItem, HiladsEvent, Topic, Message } from '@/types';
 
 // ── Now feed ──────────────────────────────────────────────────────────────────
-// GET /channels/{id}/now → { items: FeedItem[] }
-// Backend returns a normalized DTO: both events and topics share a consistent
-// set of top-level fields (kind, title, description, active_now, …).
-// No client-side remapping needed — the backend is the single source of truth.
-export async function fetchNowFeed(channelId: string, guestId?: string): Promise<FeedItem[]> {
+// GET /channels/{id}/now → { items: FeedItem[], publicEvents: FeedItem[] }
+// Backend returns a normalized DTO: events, topics, and public events with a
+// consistent set of top-level fields (kind, title, description, active_now, …).
+export async function fetchNowFeed(
+  channelId: string,
+  guestId?: string,
+): Promise<{ items: FeedItem[]; publicEvents: HiladsEvent[] }> {
   try {
-    const data = await api.get<{ items: FeedItem[] }>(
+    const data = await api.get<{ items: FeedItem[]; publicEvents?: HiladsEvent[] }>(
       `/channels/${channelId}/now`,
       guestId ? { params: { guestId } } : undefined,
     );
-    return data.items ?? [];
+    return { items: data.items ?? [], publicEvents: data.publicEvents ?? [] };
   } catch (err) {
     console.warn('[fetchNowFeed] failed:', err);
-    return [];
+    return { items: [], publicEvents: [] };
   }
 }
 

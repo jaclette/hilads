@@ -107,18 +107,27 @@ class EventRepository
      *                                 When provided, each event includes participant_count
      *                                 and is_participating via a single batch query.
      */
-    public static function getByChannel(int $channelId, ?string $participantKey = null): array
+    public static function getByChannel(int $channelId, ?string $participantKey = null, ?array $city = null): array
     {
-        $city = CityRepository::findById($channelId);
+        if ($city === null) {
+            $city = CityRepository::findById($channelId);
+        }
         $timezone = $city['timezone'] ?? 'UTC';
         $tz = new DateTimeZone($timezone);
         $today = (new DateTime('now', $tz))->format('Y-m-d');
         $now = time();
 
-        // Safety net: generate today's occurrences for any series whose daily cron entry
-        // is missing (cron failed, city was recently seeded, etc.). Uses deterministic
-        // channel IDs so concurrent requests are safe — second caller hits ON CONFLICT DO NOTHING.
-        EventSeriesRepository::ensureTodayOccurrences('city_' . $channelId, $timezone);
+        // Deferred safety net: generate missing series occurrences after the response is sent.
+        // Non-critical — runs after PHP shutdown so it never blocks the HTTP response.
+        $cityId   = 'city_' . $channelId;
+        $tzString = $timezone;
+        register_shutdown_function(static function () use ($cityId, $tzString): void {
+            try {
+                EventSeriesRepository::ensureTodayOccurrences($cityId, $tzString);
+            } catch (\Throwable) {
+                // silent — non-critical background task
+            }
+        });
 
         $stmt = Database::pdo()->prepare(self::SELECT . "
             WHERE c.parent_id = :parent_id

@@ -3565,15 +3565,17 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
                     : null);
 
     try {
-        if (CityRepository::findById($channelId) === null) {
+        $city = CityRepository::findById($channelId);
+        if ($city === null) {
             Response::json(['error' => 'Channel not found'], 404);
         }
 
         $cityId = 'city_' . $channelId;
 
-        // Fetch events and topics in parallel (sequential queries — fast on PG).
-        $events = EventRepository::getByChannel($channelId, $participantKey);
-        $topics = TopicRepository::getByCity($cityId);
+        // Pass $city to avoid a redundant CityRepository::findById call inside getByChannel.
+        $events       = EventRepository::getByChannel($channelId, $participantKey, $city);
+        $topics       = TopicRepository::getByCity($cityId);
+        $publicEvents = EventRepository::getPublicByChannel($channelId);
 
         // Normalize each item into a consistent FeedItem DTO.
         $now   = time();
@@ -3612,7 +3614,10 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
             'elapsedMs' => apiElapsedMs($startedAt),
         ]);
 
-        Response::json(['items' => $items]);
+        // Normalize public events and include in response so mobile avoids a second request.
+        $publicEventItems = array_map(fn(array $e) => normalizeFeedEvent($e, $now), $publicEvents);
+
+        Response::json(['items' => $items, 'publicEvents' => $publicEventItems]);
     } catch (\Throwable $e) {
         apiLog('now_feed', 'failure', [
             'channelId' => $channelId,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet,
   ActivityIndicator, TouchableOpacity, RefreshControl,
@@ -8,7 +8,6 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchNowFeed } from '@/api/topics';
-import { fetchPublicCityEvents } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { FeedItem, HiladsEvent } from '@/types';
@@ -182,23 +181,28 @@ export default function NowScreen() {
   const itemsRef = useRef<FeedItem[]>([]);
   itemsRef.current = items;
 
+  // Dedup guard: prevents two concurrent loads (useFocusEffect + useEffect both fire on mount).
+  const loadingRef    = useRef(false);
+  const lastLoadAtRef = useRef(0);
+
   async function load(isRefresh = false) {
     if (!city) { setLoading(false); return; }
+    // Skip if already in-flight or data is fresh — unless it's a manual pull-to-refresh.
+    if (!isRefresh && (loadingRef.current || Date.now() - lastLoadAtRef.current < 30_000)) return;
+
+    loadingRef.current = true;
+    lastLoadAtRef.current = Date.now();
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
     setError(null);
     try {
-      // Single normalized endpoint — backend returns both events and topics
-      // in a consistent FeedItem DTO. No client-side merging needed.
-      const [nowData, publicData] = await Promise.all([
-        fetchNowFeed(city.channelId, identity?.guestId),
-        fetchPublicCityEvents(city.channelId),
-      ]);
-setItems(nowData);
-      setPublicEvents(publicData);
+      const { items: nowData, publicEvents: pubData } = await fetchNowFeed(city.channelId, identity?.guestId);
+      setItems(nowData);
+      setPublicEvents(pubData);
     } catch {
       setError('Could not load feed');
     } finally {
+      loadingRef.current = false;
       setLoading(false);
       setRefreshing(false);
     }
@@ -248,24 +252,29 @@ setItems(nowData);
     );
   }
 
-  // Apply filter then build flat list data
-  const filteredItems = filter === 'events'
-    ? items.filter(i => i.kind === 'event')
-    : filter === 'topics'
-      ? items.filter(i => i.kind === 'topic')
-      : items;
+  // Apply filter then build flat list data — memoized to avoid recreating arrays on every render.
+  const filteredItems = useMemo(
+    () => filter === 'events' ? items.filter(i => i.kind === 'event')
+        : filter === 'topics' ? items.filter(i => i.kind === 'topic')
+        : items,
+    [items, filter],
+  );
 
-  const showPublic = filter !== 'topics' && publicEvents.length > 0;
-
-  const listData: Array<FeedItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })> = [
-    ...filteredItems,
-    ...(showPublic
-      ? [
-          { kind: 'section' as const, label: '🎫 Public Events' },
-          ...publicEvents.map(e => ({ ...e, kind: 'public_event' as const })),
-        ]
-      : []),
-  ];
+  const listData = useMemo<Array<FeedItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })>>(
+    () => {
+      const showPublic = filter !== 'topics' && publicEvents.length > 0;
+      return [
+        ...filteredItems,
+        ...(showPublic
+          ? [
+              { kind: 'section' as const, label: '🎫 Public Events' },
+              ...publicEvents.map(e => ({ ...e, kind: 'public_event' as const })),
+            ]
+          : []),
+      ];
+    },
+    [filteredItems, publicEvents, filter],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -313,6 +322,9 @@ setItems(nowData);
         <FlatList
           data={listData}
           keyExtractor={(item, idx) => ('id' in item ? item.id : `section-${idx}`)}
+          removeClippedSubviews
+          maxToRenderPerBatch={6}
+          windowSize={5}
           renderItem={({ item }) => {
             if (item.kind === 'section') {
               return <Text style={styles.sectionLabel}>{item.label}</Text>;
