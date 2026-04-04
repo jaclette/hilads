@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchNowFeed } from '@/api/topics';
+import { fetchNowFeed, fetchCityTopics } from '@/api/topics';
 import { fetchPublicCityEvents } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
@@ -183,11 +183,28 @@ export default function NowScreen() {
     else setLoading(true);
     setError(null);
     try {
-      const [nowData, publicData] = await Promise.all([
+      const [nowData, publicData, topicsData] = await Promise.all([
         fetchNowFeed(city.channelId, identity?.guestId),
         fetchPublicCityEvents(city.channelId),
+        fetchCityTopics(city.channelId),
       ]);
-      setItems(nowData);
+
+      // Merge topics from the dedicated /topics endpoint into the feed.
+      // /now returns both events + topics; /topics is the reliable fallback
+      // in case /now silently drops topics. Deduplication by id prevents doubles.
+      const topicIdsInFeed = new Set(
+        nowData.filter(i => i.kind === 'topic').map(i => i.id),
+      );
+      const nowSec = Date.now() / 1000;
+      const missingTopics: NowItem[] = topicsData
+        .filter(t => !topicIdsInFeed.has(t.id))
+        .map(t => ({
+          ...t,
+          kind:       'topic' as const,
+          active_now: t.last_activity_at !== null && t.last_activity_at > nowSec - 1800,
+        }));
+
+      setItems([...nowData, ...missingTopics]);
       setPublicEvents(publicData);
     } catch {
       setError('Could not load feed');
