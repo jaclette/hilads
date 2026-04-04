@@ -3393,6 +3393,32 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
 
     broadcastMessageToWs($topicId, $message);
 
+    // Auto-subscribe registered sender + notify other subscribers.
+    // Non-fatal: a notification failure must never prevent the message response.
+    try {
+        if ($senderUserId !== null) {
+            TopicRepository::subscribe($topicId, $senderUserId);
+        }
+        $topicForNotif = TopicRepository::findById($topicId);
+        $topicTitle    = is_array($topicForNotif) ? ($topicForNotif['title'] ?? 'topic') : 'topic';
+        $bodyPreview   = $type === 'image' ? '📸 Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
+        NotificationRepository::notifyTopicSubscribers(
+            $topicId,
+            $senderUserId,
+            'topic_message',
+            $nickname . ' in ' . $topicTitle,
+            $bodyPreview,
+            [
+                'topicId'      => $topicId,
+                'topicTitle'   => $topicTitle,
+                'senderName'   => $nickname,
+                'senderUserId' => $senderUserId,
+            ]
+        );
+    } catch (\Throwable $e) {
+        error_log("[topic-msg] notification error topicId={$topicId}: " . get_class($e) . ': ' . $e->getMessage());
+    }
+
     Response::json($message, 201);
 });
 

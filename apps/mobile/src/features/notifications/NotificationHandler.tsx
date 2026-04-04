@@ -55,6 +55,7 @@ type NotifData = {
   type?:           string;
   conversationId?: string;
   eventId?:        string;
+  topicId?:        string;
   channelId?:      string;
   senderName?:     string;
   senderUserId?:   string; // set by backend for dm_message — used to reject own-sender pushes
@@ -109,6 +110,11 @@ function resolveRoute(data: NotifData): string | null {
     case 'new_event':
       if (data.eventId) return `/event/${data.eventId}`;
       return '/(tabs)/hot';
+
+    case 'topic_message':
+    case 'new_topic':
+      if (data.topicId) return `/topic/${data.topicId}`;
+      return '/(tabs)/now';
 
     case 'channel_message':
     case 'city_join':

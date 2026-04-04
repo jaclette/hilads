@@ -11,6 +11,8 @@ export interface NotificationPreferences {
   friend_added_push:    boolean;
   vibe_received_push:   boolean;
   profile_view_push:    boolean;
+  topic_reply_push:     boolean;
+  new_topic_push:       boolean;
 }
 
 export async function fetchNotifications(

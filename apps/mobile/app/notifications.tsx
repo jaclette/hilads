@@ -78,6 +78,8 @@ export default function NotificationsScreen() {
     friend_added_push:    true,
     vibe_received_push:   true,
     profile_view_push:    true,
+    topic_reply_push:     true,
+    new_topic_push:       false,
   });
 
   // ── Load latest 5 notifications + preferences ─────────────────────────────
@@ -146,6 +148,8 @@ export default function NotificationsScreen() {
     }
     if (notif.data?.conversationId) {
       router.push(`/dm/${notif.data.conversationId}` as never);
+    } else if (notif.data?.topicId) {
+      router.push(`/topic/${notif.data.topicId}` as never);
     } else if (notif.data?.eventId) {
       router.push(`/event/${notif.data.eventId}` as never);
     } else if (notif.type === 'channel_message' || notif.type === 'city_join') {
@@ -242,6 +246,10 @@ export default function NotificationsScreen() {
             <PrefRow label="Vibes ✨" subtitle="When someone leaves a vibe on your profile" value={prefs.vibe_received_push} onChange={v => togglePref('vibe_received_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="Profile views 👀" subtitle="When someone checks your profile" value={prefs.profile_view_push} onChange={v => togglePref('profile_view_push', v)} />
+            <View style={styles.prefDivider} />
+            <PrefRow label="Topic replies 💬" subtitle="When someone replies in a topic you joined" value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
+            <View style={styles.prefDivider} />
+            <PrefRow label="New topics in your city" subtitle="When someone starts a new conversation in your city" value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
           </View>
         </View>
       </ScrollView>

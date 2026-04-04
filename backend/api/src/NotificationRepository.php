@@ -61,6 +61,8 @@ class NotificationRepository
             'friend_added'    => 'friend_added_push',
             'vibe_received'   => 'vibe_received_push',
             'profile_view'    => 'profile_view_push',
+            'topic_message'   => 'topic_reply_push',
+            'new_topic'       => 'new_topic_push',
             default           => null,
         };
     }
@@ -77,6 +79,8 @@ class NotificationRepository
             'friend_added_push'    => true,
             'vibe_received_push'   => true,
             'profile_view_push'    => true,
+            'topic_reply_push'     => true,
+            'new_topic_push'       => false,
         ];
     }
 
@@ -144,6 +148,7 @@ class NotificationRepository
             'friend_added'                    => isset($data['senderUserId']) ? "/user/{$data['senderUserId']}" : '/notifications',
             'vibe_received'                   => '/me',
             'profile_view'                    => isset($data['viewerId']) ? "/user/{$data['viewerId']}" : '/notifications',
+            'topic_message', 'new_topic'      => isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/',
             default                           => '/',
         };
     }
@@ -160,6 +165,8 @@ class NotificationRepository
             'friend_added'    => 'friend-'        . ($data['senderUserId'] ?? 'user'),
             'vibe_received'   => 'vibe-'          . ($data['actorId'] ?? 'user'),
             'profile_view'    => 'profile-view-'  . ($data['viewerId'] ?? 'user'),
+            'topic_message'   => 'topic-'         . ($data['topicId'] ?? 'topic'),
+            'new_topic'       => 'new-topic-'     . ($data['topicId'] ?? 'topic'),
             default           => 'hilads-' . $type,
         };
     }
@@ -269,6 +276,36 @@ class NotificationRepository
         if (empty($userIds)) return;
 
         // Batch-load preferences — 1 query regardless of online user count
+        $enabled = self::batchIsEnabled($userIds, $type);
+        foreach ($userIds as $uid) {
+            if ($enabled[$uid] ?? true) {
+                self::createUnchecked($uid, $type, $title, $body, $data);
+            }
+        }
+    }
+
+    /**
+     * Notify all registered subscribers of a topic, excluding one user (the sender).
+     * Subscribers are added automatically when a user creates or messages in a topic.
+     */
+    public static function notifyTopicSubscribers(
+        string  $topicId,
+        ?string $excludeUserId,
+        string  $type,
+        string  $title,
+        ?string $body,
+        array   $data
+    ): void {
+        $stmt = Database::pdo()->prepare("
+            SELECT user_id FROM topic_subscriptions
+            WHERE topic_id = ?
+              AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
+        ");
+        $stmt->execute([$topicId, $excludeUserId, $excludeUserId]);
+        $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($userIds)) return;
+
+        // Batch-load preferences — 1 query regardless of subscriber count
         $enabled = self::batchIsEnabled($userIds, $type);
         foreach ($userIds as $uid) {
             if ($enabled[$uid] ?? true) {

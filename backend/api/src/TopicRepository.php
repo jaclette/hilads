@@ -127,6 +127,11 @@ class TopicRepository
             'expires_at'  => $expiresAt,
         ]);
 
+        // Auto-subscribe the registered creator so they get notified on replies.
+        if ($userId !== null) {
+            self::subscribe($id, $userId);
+        }
+
         return self::findById($id) ?? [
             'id'               => $id,
             'city_id'          => $cityId,
@@ -170,6 +175,21 @@ class TopicRepository
         return true;
     }
 
+    // ── Subscriptions ─────────────────────────────────────────────────────────
+
+    /**
+     * Subscribe a registered user to a topic's notifications.
+     * Idempotent — safe to call on every message send.
+     */
+    public static function subscribe(string $topicId, string $userId): void
+    {
+        Database::pdo()->prepare("
+            INSERT INTO topic_subscriptions (topic_id, user_id)
+            VALUES (?, ?)
+            ON CONFLICT (topic_id, user_id) DO NOTHING
+        ")->execute([$topicId, $userId]);
+    }
+
     /**
      * Admin create: no guestId required — sets created_by to the given userId (or null).
      */
@@ -209,6 +229,11 @@ class TopicRepository
             'category'    => $category,
             'expires_at'  => $expiresAt,
         ]);
+
+        // Auto-subscribe the chosen creator so they get notified on replies.
+        if ($creatorId !== null) {
+            self::subscribe($id, $creatorId);
+        }
 
         return $id;
     }

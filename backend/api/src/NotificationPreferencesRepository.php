@@ -16,6 +16,8 @@ class NotificationPreferencesRepository
             'friend_added_push'    => true,
             'vibe_received_push'   => true,
             'profile_view_push'    => true,
+            'topic_reply_push'     => true,   // replies in topics I joined
+            'new_topic_push'       => false,  // new topics in my city
         ];
     }
 
@@ -25,7 +27,7 @@ class NotificationPreferencesRepository
             $stmt = Database::pdo()->prepare("
                 SELECT dm_push, event_message_push, event_join_push, new_event_push,
                        channel_message_push, city_join_push, friend_added_push, vibe_received_push,
-                       profile_view_push
+                       profile_view_push, topic_reply_push, new_topic_push
                 FROM notification_preferences
                 WHERE user_id = ?
             ");
@@ -46,6 +48,8 @@ class NotificationPreferencesRepository
                 'friend_added_push'    => (bool) ($row['friend_added_push'] ?? true),
                 'vibe_received_push'   => (bool) ($row['vibe_received_push'] ?? true),
                 'profile_view_push'    => (bool) ($row['profile_view_push'] ?? true),
+                'topic_reply_push'     => (bool) ($row['topic_reply_push'] ?? true),
+                'new_topic_push'       => (bool) ($row['new_topic_push'] ?? false),
             ];
         } catch (\Throwable $e) {
             // Most likely cause: profile_view_push column not yet migrated in production.
@@ -68,6 +72,8 @@ class NotificationPreferencesRepository
         $friendAdded   = isset($prefs['friend_added_push'])    ? (bool) $prefs['friend_added_push']    : $defaults['friend_added_push'];
         $vibeReceived  = isset($prefs['vibe_received_push'])   ? (bool) $prefs['vibe_received_push']   : $defaults['vibe_received_push'];
         $profileView   = isset($prefs['profile_view_push'])    ? (bool) $prefs['profile_view_push']    : $defaults['profile_view_push'];
+        $topicReply    = isset($prefs['topic_reply_push'])     ? (bool) $prefs['topic_reply_push']     : $defaults['topic_reply_push'];
+        $newTopic      = isset($prefs['new_topic_push'])       ? (bool) $prefs['new_topic_push']       : $defaults['new_topic_push'];
 
         $resolved = [
             'dm_push'              => $dm,
@@ -79,6 +85,8 @@ class NotificationPreferencesRepository
             'friend_added_push'    => $friendAdded,
             'vibe_received_push'   => $vibeReceived,
             'profile_view_push'    => $profileView,
+            'topic_reply_push'     => $topicReply,
+            'new_topic_push'       => $newTopic,
         ];
 
         // PDO serialises PHP bool false as "" (empty string) which PostgreSQL rejects for BOOLEAN columns.
@@ -89,8 +97,8 @@ class NotificationPreferencesRepository
             INSERT INTO notification_preferences
                 (user_id, dm_push, event_message_push, event_join_push, new_event_push,
                  channel_message_push, city_join_push, friend_added_push, vibe_received_push,
-                 profile_view_push)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 profile_view_push, topic_reply_push, new_topic_push)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (user_id) DO UPDATE
                SET dm_push              = EXCLUDED.dm_push,
                    event_message_push   = EXCLUDED.event_message_push,
@@ -100,11 +108,14 @@ class NotificationPreferencesRepository
                    city_join_push       = EXCLUDED.city_join_push,
                    friend_added_push    = EXCLUDED.friend_added_push,
                    vibe_received_push   = EXCLUDED.vibe_received_push,
-                   profile_view_push    = EXCLUDED.profile_view_push
+                   profile_view_push    = EXCLUDED.profile_view_push,
+                   topic_reply_push     = EXCLUDED.topic_reply_push,
+                   new_topic_push       = EXCLUDED.new_topic_push
         ")->execute([
             $userId,
             $b($dm), $b($eventMsg), $b($eventJoin), $b($newEvent),
             $b($chanMsg), $b($cityJoin), $b($friendAdded), $b($vibeReceived), $b($profileView),
+            $b($topicReply), $b($newTopic),
         ]);
 
         return $resolved;

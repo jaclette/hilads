@@ -37,6 +37,8 @@ class MobilePushService
             'city_join'       => 'city_join_push',
             'vibe_received'   => 'vibe_received_push',
             'profile_view'    => 'profile_view_push',
+            'topic_message'   => 'topic_reply_push',
+            'new_topic'       => 'new_topic_push',
             default           => null,
         };
     }
@@ -49,6 +51,7 @@ class MobilePushService
             'new_event'       => 3600,  // 1 hour — city events should not spam
             'channel_message' => 300,   // 5 min — one push per city channel per 5 min per recipient
             'city_join'       => 600,   // 10 min — one "X arrived" per city per 10 min per recipient
+            'topic_message'   => 120,   // 2 min — prevents burst spam on active topics
             default           => 0,
         };
     }
@@ -64,6 +67,8 @@ class MobilePushService
             'channel_message',
             'city_join'                    => $data['channelId'] ?? '',
             'profile_view'                 => $data['viewerId'] ?? '',
+            'topic_message',
+            'new_topic'                    => $data['topicId'] ?? '',
             default                        => '',
         };
     }
