@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -612,6 +612,7 @@ export default function App() {
   const [goingListLoading,  setGoingListLoading]  = useState(false)
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
+  const [topics,          setTopics]          = useState([])
   const [hotEventsStatus, setHotEventsStatus] = useState('loading') // 'loading' | 'ready' | 'error'
   const [cityCountry, setCityCountry] = useState(null)
   // 'pending' | 'resolving' | 'denied' | 'error'
@@ -1347,9 +1348,10 @@ export default function App() {
       setHotEventsStatus('loading')
       const fetchAllEvents = async () => {
         if (!activeRef.current) return
-        const [hiladsResult, publicResult] = await Promise.allSettled([
+        const [hiladsResult, publicResult, topicsResult] = await Promise.allSettled([
           fetchEvents(location.channelId, sessionIdRef.current),
           fetchCityEvents(location.channelId),
+          fetchCityTopics(location.channelId),
         ])
         if (activeChannelRef.current !== location.channelId) return
 
@@ -1373,6 +1375,9 @@ export default function App() {
 
         if (publicOk) setCityEvents(publicResult.value.events)
         else setCityEvents([])
+
+        if (topicsResult.status === 'fulfilled') setTopics(topicsResult.value.topics ?? [])
+        else setTopics([])
 
         setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
       }
@@ -1598,6 +1603,7 @@ export default function App() {
     setCityTimezone(newCityTimezone ?? 'UTC')
     setEvents([])
     setCityEvents([])
+    setTopics([])
     setHotEventsStatus('loading')
     setActiveEventId(null)
     pushUrl(`/city/${cityToSlug(newCityName)}`)
@@ -1665,9 +1671,10 @@ export default function App() {
       // Events: initial fetch only; live updates via WS newEvent handler
       const fetchAllEvents = async () => {
         if (!activeRef.current) return
-        const [hiladsResult, publicResult] = await Promise.allSettled([
+        const [hiladsResult, publicResult, topicsResult] = await Promise.allSettled([
           fetchEvents(newChannelId, sessionIdRef.current),
           fetchCityEvents(newChannelId),
+          fetchCityTopics(newChannelId),
         ])
         if (activeChannelRef.current !== newChannelId) return
 
@@ -1691,6 +1698,9 @@ export default function App() {
 
         if (publicOk) setCityEvents(publicResult.value.events)
         else setCityEvents([])
+
+        if (topicsResult.status === 'fulfilled') setTopics(topicsResult.value.topics ?? [])
+        else setTopics([])
 
         setHotEventsStatus(hiladsOk || publicOk ? 'ready' : 'error')
       }
@@ -2191,6 +2201,7 @@ export default function App() {
       <EventsSidebar
         events={events}
         cityEvents={cityEvents}
+        topics={topics}
         activeEventId={activeEventId}
         cityTimezone={cityTimezone}
         eventPresence={eventPresence}
@@ -2782,6 +2793,36 @@ export default function App() {
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
               const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
               const totalVisibleEvents = hiladsEvents.length + publicEvents.length
+              const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
+              const renderTopicRow = (topic) => {
+                const icon = CATEGORY_ICONS[topic.category] ?? '💬'
+                const replies = topic.message_count ?? 0
+                const timeAgo = topic.last_activity_at
+                  ? (() => {
+                      const diff = Math.floor((Date.now() / 1000) - topic.last_activity_at)
+                      if (diff < 60) return 'just now'
+                      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+                      return `${Math.floor(diff / 3600)}h ago`
+                    })()
+                  : null
+                return (
+                  <div key={topic.id} className="city-row event-row-card topic-row">
+                    <div className="er-header">
+                      <span className="er-title">{icon} {topic.title}</span>
+                      <span className="er-going er-going--topic">Topic</span>
+                    </div>
+                    <div className="er-badges">
+                      {replies > 0
+                        ? <span className="city-row-current">💬 {replies} {replies === 1 ? 'reply' : 'replies'}{timeAgo ? ` · ${timeAgo}` : ''}</span>
+                        : <span className="city-row-current">No replies yet — be first</span>
+                      }
+                    </div>
+                    {topic.description && (
+                      <span className="er-location">{topic.description}</span>
+                    )}
+                  </div>
+                )
+              }
               const renderEventRow = (event, group = 'hilads') => {
                 const going = eventParticipants[event.id] ?? 0
                 return (
@@ -2848,10 +2889,10 @@ export default function App() {
                 )
               }
 
-              if (totalVisibleEvents === 0) {
+              if (totalVisibleEvents === 0 && topics.length === 0) {
                 return (
                   <div className="events-empty-state">
-                    <p className="events-empty-title">Nothing on yet</p>
+                    <p className="events-empty-title">Nothing happening yet</p>
                     <p className="events-empty-sub">Be the first to make something happen in {city}</p>
                     <button className="events-empty-cta" onClick={openCreate}>Create event</button>
                   </div>
@@ -2859,7 +2900,13 @@ export default function App() {
               }
               return (
                 <>
-                  <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
+                  {topics.length > 0 && (
+                    <>
+                      <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Conversations</p>
+                      {topics.map(renderTopicRow)}
+                    </>
+                  )}
+                  <p className="events-group-label" style={{ padding: topics.length > 0 ? '18px 12px 2px' : '10px 12px 2px' }}>Hilads Events</p>
                   {hiladsEvents.length === 0
                     ? <p className="events-empty">No Hilads events yet</p>
                     : hiladsEvents.map(event => renderEventRow(event, 'hilads'))}

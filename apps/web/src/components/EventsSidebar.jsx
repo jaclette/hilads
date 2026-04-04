@@ -20,12 +20,15 @@ function filterAndSort(events, tz) {
     })
 }
 
-export default function EventsSidebar({ events, cityEvents, activeEventId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onCreateClick }) {
+const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
+
+export default function EventsSidebar({ events, cityEvents, topics, activeEventId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onCreateClick }) {
   const tz = cityTimezone || 'UTC'
   const hiladsEvents = filterAndSort(events, tz)
   // City events: don't filter by today — TM events are upcoming (backend already prunes expired ones)
   const publicEvents = (cityEvents || []).sort((a, b) => a.starts_at - b.starts_at)
-  const totalCount = hiladsEvents.length + publicEvents.length
+  const topicList   = topics || []
+  const totalCount  = hiladsEvents.length + publicEvents.length + topicList.length
 
   function renderRow(event) {
     return (
@@ -52,13 +55,32 @@ export default function EventsSidebar({ events, cityEvents, activeEventId, cityT
     )
   }
 
+  function renderTopicRow(topic) {
+    const icon    = CATEGORY_ICONS[topic.category] ?? '💬'
+    const replies = topic.message_count ?? 0
+    return (
+      <div key={topic.id} className="event-row" style={{ cursor: 'default', borderColor: 'rgba(96,165,250,0.18)' }}>
+        <span className="event-row-title">{icon} {topic.title}</span>
+        <span className="event-row-location" style={{ color: '#60a5fa' }}>
+          {replies > 0 ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}` : 'No replies yet'}
+        </span>
+      </div>
+    )
+  }
+
   return (
     <aside className="events-sidebar">
       <div className="events-sidebar-header">
-        <span className="events-sidebar-title">🔥 Events{totalCount > 0 ? ` (${totalCount})` : ''}</span>
+        <span className="events-sidebar-title">Now{totalCount > 0 ? ` (${totalCount})` : ''}</span>
         <button className="create-event-btn" onClick={onCreateClick} title="Create event">+</button>
       </div>
       <div className="events-list">
+        {topicList.length > 0 && (
+          <>
+            <p className="events-group-label">Conversations</p>
+            {topicList.map(renderTopicRow)}
+          </>
+        )}
         <p className="events-group-label">Hilads Events</p>
         {hiladsEvents.length === 0
           ? <p className="events-empty">No events today</p>

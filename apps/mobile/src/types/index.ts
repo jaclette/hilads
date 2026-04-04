@@ -47,6 +47,29 @@ export interface HiladsEvent {
   city_channel_id?: string;
 }
 
+// ── Topics ────────────────────────────────────────────────────────────────────
+
+export type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
+
+export interface Topic {
+  id:               string;
+  city_id:          string;
+  created_by:       string | null;
+  guest_id:         string | null;
+  title:            string;
+  description:      string | null;
+  category:         TopicCategory;
+  message_count:    number;
+  last_activity_at: number | null;  // unix timestamp
+  expires_at:       number;          // unix timestamp
+  created_at:       number;          // unix timestamp
+}
+
+/** Item in the /now mixed feed — either an event or a topic. */
+export type NowItem =
+  | (HiladsEvent & { kind: 'event' })
+  | (Topic       & { kind: 'topic' });
+
 // ── Event chat unread state ───────────────────────────────────────────────────
 
 export interface EventChatPreview {
