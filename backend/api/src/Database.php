@@ -488,6 +488,17 @@ class Database
             $pdo->exec("CREATE INDEX idx_prt_hash ON password_reset_tokens (token_hash) WHERE used_at IS NULL");
         }
 
+        // ── User admin columns (deleted_at, is_fake) ─────────────────────────
+        // These are additive — must run on existing databases too, not just fresh ones.
+        $deletedAtExists = (bool) self::$pdo
+            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'deleted_at')")
+            ->fetchColumn();
+
+        if (!$deletedAtExists) {
+            self::$pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL");
+            self::$pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_fake BOOLEAN NOT NULL DEFAULT false");
+        }
+
         self::$bootstrapped = true;
     }
 
