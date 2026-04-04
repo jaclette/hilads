@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -9,6 +9,7 @@ import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
 import CreateEventPage from './components/CreateEventModal'
+import CreateTopicPage from './components/CreateTopicPage'
 import AuthScreen from './components/AuthScreen'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
@@ -596,6 +597,7 @@ export default function App() {
 
   const [profileNickInput, setProfileNickInput] = useState('')
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
+  const [showCreateTopic,    setShowCreateTopic]    = useState(false)
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
@@ -1882,6 +1884,11 @@ export default function App() {
     setShowCreateEvent(true)
   }
 
+  function handleTopicCreated(topic) {
+    setShowCreateTopic(false)
+    if (topic?.id) setTopics(prev => [{ ...topic, message_count: 0, last_activity_at: null, kind: 'topic' }, ...prev])
+  }
+
   // Refresh events list after creation
   function handleEventCreated(newEvent) {
     setShowCreateEvent(false)
@@ -2208,6 +2215,7 @@ export default function App() {
         eventParticipants={eventParticipants}
         onSelectEvent={handleSelectEvent}
         onCreateClick={openCreateEvent}
+        onCreateTopicClick={() => setShowCreateTopic(true)}
       />
 
       <div className="screen chat">
@@ -2895,6 +2903,7 @@ export default function App() {
                     <p className="events-empty-title">Nothing happening yet</p>
                     <p className="events-empty-sub">Be the first to make something happen in {city}</p>
                     <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a conversation 💬</button>
                   </div>
                 )
               }
@@ -2928,7 +2937,17 @@ export default function App() {
             See what's coming 🔮
           </button>
 
-          {/* Floating action button */}
+          {/* Floating action button — start a topic */}
+          <button
+            className="events-fab events-fab--topic"
+            onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }}
+            aria-label="Start a conversation"
+            title="Start a conversation"
+          >
+            💬
+          </button>
+
+          {/* Floating action button — create event */}
           <button
             className="events-fab"
             onClick={() => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }}
@@ -3541,6 +3560,16 @@ export default function App() {
             if (createFromDrawer) { setShowEventDrawer(true) }
             setCreateFromDrawer(false)
           }}
+        />
+      )}
+
+      {/* Create topic — full-screen page */}
+      {showCreateTopic && (
+        <CreateTopicPage
+          channelId={channelId}
+          guest={guest}
+          onCreated={handleTopicCreated}
+          onBack={() => setShowCreateTopic(false)}
         />
       )}
 

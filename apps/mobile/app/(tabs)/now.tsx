@@ -282,7 +282,14 @@ export default function NowScreen() {
         </TouchableOpacity>
       )}
 
-      {/* FAB */}
+      {/* FAB — topic (above event FAB) */}
+      {city && (
+        <TouchableOpacity style={styles.fabTopic} activeOpacity={0.85} onPress={() => router.push('/topic/create')}>
+          <Text style={styles.fabTopicIcon}>💬</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* FAB — create event */}
       <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={() => router.push('/event/create')}>
         <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
@@ -437,6 +444,26 @@ const styles = StyleSheet.create({
     elevation:       10,
   },
   fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
+
+  fabTopic: {
+    position:        'absolute',
+    right:           Spacing.md + 5,
+    bottom:          Spacing.md + 52 + Spacing.sm + 58 + 12,
+    width:           48,
+    height:          48,
+    borderRadius:    24,
+    backgroundColor: '#1e3a5f',
+    borderWidth:     1,
+    borderColor:     'rgba(96,165,250,0.35)',
+    alignItems:      'center',
+    justifyContent:  'center',
+    shadowColor:     '#60a5fa',
+    shadowOffset:    { width: 0, height: 3 },
+    shadowOpacity:   0.35,
+    shadowRadius:    8,
+    elevation:       8,
+  },
+  fabTopicIcon: { fontSize: 22, lineHeight: 26 },
 
   upcomingCta: {
     position:          'absolute',

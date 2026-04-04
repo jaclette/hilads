@@ -178,6 +178,20 @@ export async function fetchCityTopics(channelId) {
   }
 }
 
+export async function createTopic(channelId, guestId, title, description, category) {
+  const res = await fetch(`${BASE}/channels/${channelId}/topics`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, title, description: description || null, category }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to create topic')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, days = 7) {
   const res = await fetch(`${BASE}/channels/${channelId}/events/upcoming?days=${days}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch upcoming events')

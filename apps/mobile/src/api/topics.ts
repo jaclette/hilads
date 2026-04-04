@@ -35,3 +35,18 @@ export async function fetchCityTopics(channelId: string): Promise<Topic[]> {
     return [];
   }
 }
+
+export async function createTopic(
+  channelId: string,
+  guestId: string,
+  title: string,
+  description: string | null,
+  category: string,
+): Promise<Topic> {
+  return api.post<Topic>(`/channels/${channelId}/topics`, {
+    guestId,
+    title,
+    description,
+    category,
+  });
+}
