@@ -23,6 +23,52 @@ require_once __DIR__ . '/layout.php';
 $uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
+// ── Avatar upload helper ───────────────────────────────────────────────────────
+// Validates and uploads an avatar $_FILES entry to R2.
+// Returns the public URL string, null if no file was selected, or throws
+// RuntimeException with a user-friendly message on validation/upload failure.
+function admin_upload_avatar(?array $file): ?string
+{
+    if ($file === null || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new \RuntimeException(match($file['error']) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Avatar exceeds server size limit.',
+            UPLOAD_ERR_PARTIAL => 'Avatar upload was interrupted. Please try again.',
+            default            => 'Avatar upload failed (error code ' . $file['error'] . ').',
+        });
+    }
+
+    if (!is_uploaded_file($file['tmp_name'])) {
+        throw new \RuntimeException('Invalid avatar upload.');
+    }
+
+    if ($file['size'] > 5 * 1024 * 1024) {
+        throw new \RuntimeException('Avatar must be under 5 MB.');
+    }
+
+    $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $finfo->file($file['tmp_name']);
+    $allowed  = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+
+    if (!array_key_exists($mimeType, $allowed)) {
+        throw new \RuntimeException('Avatar must be a JPEG, PNG, or WebP image.');
+    }
+
+    $imageInfo = @getimagesize($file['tmp_name']);
+    if (!$imageInfo || empty($imageInfo[0]) || empty($imageInfo[1])) {
+        throw new \RuntimeException('Invalid image file.');
+    }
+    if ($imageInfo[0] > 6000 || $imageInfo[1] > 6000) {
+        throw new \RuntimeException('Avatar dimensions too large (max 6000×6000 px).');
+    }
+
+    $filename = bin2hex(random_bytes(16)) . '.' . $allowed[$mimeType];
+    return \R2Uploader::put($file['tmp_name'], $filename, $mimeType);
+}
+
 // Simple admin router
 if ($uri === '/admin' || $uri === '/admin/') {
     require __DIR__ . '/dashboard.php';
