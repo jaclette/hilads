@@ -3178,6 +3178,352 @@ $router->add('DELETE', '/api/v1/push/mobile-token', function () {
     Response::json(['ok' => true]);
 });
 
+// ══════════════════════════════════════════════════════════════════════════════
+// TOPICS — city conversation subchannels
+// ══════════════════════════════════════════════════════════════════════════════
+
+// GET /api/v1/channels/{channelId}/topics
+// Returns active topics for a city, sorted by most-recent activity.
+$router->add('GET', '/api/v1/channels/{channelId}/topics', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    try {
+        if (CityRepository::findById($channelId) === null) {
+            Response::json(['error' => 'Channel not found'], 404);
+        }
+
+        $topics = TopicRepository::getByCity('city_' . $channelId);
+        Response::json(['topics' => $topics]);
+    } catch (\Throwable $e) {
+        error_log('[topics] GET list failed ch=' . $channelId . ': ' . $e->getMessage());
+        Response::json(['topics' => []], 200);
+    }
+});
+
+// POST /api/v1/channels/{channelId}/topics
+// Create a new topic. Auth optional — guests can create too.
+$router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId     = $body['guestId']     ?? null;
+    $title       = $body['title']       ?? null;
+    $description = $body['description'] ?? null;
+    $category    = $body['category']    ?? 'general';
+
+    enforceRateLimit('topic_create', 3, 300, (string) $channelId);
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($title) || !is_string($title)) {
+        Response::json(['error' => 'title is required'], 400);
+    }
+
+    $title = mb_substr(trim(strip_tags($title)), 0, 80);
+    if ($title === '') {
+        Response::json(['error' => 'title must not be empty'], 400);
+    }
+
+    if (!in_array($category, TopicRepository::allowedCategories(), true)) {
+        $category = 'general';
+    }
+
+    if ($description !== null) {
+        $description = mb_substr(trim(strip_tags((string) $description)), 0, 200) ?: null;
+    }
+
+    $currentUser = AuthService::currentUser();
+    $userId      = $currentUser['id'] ?? null;
+
+    try {
+        $topic = TopicRepository::create(
+            'city_' . $channelId,
+            $guestId,
+            $title,
+            $description,
+            $category,
+            $userId,
+        );
+        Response::json($topic, 201);
+    } catch (\Throwable $e) {
+        error_log('[topics] POST create failed ch=' . $channelId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to create topic'], 500);
+    }
+});
+
+// GET /api/v1/topics/{topicId}
+// Single topic detail (includes message_count + last_activity_at).
+$router->add('GET', '/api/v1/topics/{topicId}', function (array $params) {
+    $topicId = $params['topicId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+
+    $topic = TopicRepository::findById($topicId);
+    if ($topic === null) {
+        Response::json(['error' => 'Topic not found or expired'], 404);
+    }
+
+    Response::json($topic);
+});
+
+// GET /api/v1/topics/{topicId}/messages
+// Chat messages for a topic — same shape as event messages.
+$router->add('GET', '/api/v1/topics/{topicId}/messages', function (array $params) {
+    $topicId = $params['topicId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+
+    try {
+        if (TopicRepository::findById($topicId) === null) {
+            Response::json(['error' => 'Topic not found or expired'], 404);
+        }
+
+        Response::json(['messages' => MessageRepository::getByChannel($topicId)]);
+    } catch (\Throwable $e) {
+        error_log('[topic-messages] GET failed for topic ' . $topicId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to load messages'], 500);
+    }
+});
+
+// POST /api/v1/topics/{topicId}/messages
+// Send a message to a topic. Reuses event-message logic.
+$router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $params) {
+    $topicId = $params['topicId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+
+    if (TopicRepository::findById($topicId) === null) {
+        Response::json(['error' => 'Topic not found or expired'], 404);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId  = $body['guestId']  ?? null;
+    $nickname = $body['nickname'] ?? null;
+    $content  = $body['content']  ?? null;
+    $type     = $body['type']     ?? 'text';
+    $imageUrl = $body['imageUrl'] ?? null;
+
+    enforceRateLimit('topic_message', 45, 300, $topicId);
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    if (empty($nickname) || !is_string($nickname)) {
+        Response::json(['error' => 'nickname is required'], 400);
+    }
+
+    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+    if ($nickname === '') {
+        Response::json(['error' => 'nickname must not be empty'], 400);
+    }
+
+    if (!in_array($type, ['text', 'image'], true)) {
+        Response::json(['error' => 'type must be text or image'], 400);
+    }
+
+    $senderUser   = AuthService::currentUser();
+    $senderUserId = $senderUser['id'] ?? null;
+
+    if ($type === 'image') {
+        if (empty($imageUrl) || !is_string($imageUrl)) {
+            Response::json(['error' => 'imageUrl is required for image messages'], 400);
+        }
+
+        $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+        if (!str_starts_with($imageUrl, $r2Base)) {
+            Response::json(['error' => 'Invalid image URL'], 400);
+        }
+
+        $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
+        if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
+            Response::json(['error' => 'Invalid image reference'], 400);
+        }
+
+        try {
+            $message = MessageRepository::addImage($topicId, $guestId, $nickname, $imageUrl, $senderUserId);
+        } catch (\Throwable $e) {
+            error_log("[topic-msg] DB error inserting image message topicId={$topicId}: " . $e->getMessage());
+            Response::json(['error' => 'Failed to send message'], 500);
+        }
+    } else {
+        if (empty($content) || !is_string($content)) {
+            Response::json(['error' => 'content is required'], 400);
+        }
+
+        if (strlen($content) > 1000) {
+            Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+        }
+
+        try {
+            $message = MessageRepository::add($topicId, $guestId, $nickname, $content, $senderUserId);
+        } catch (\Throwable $e) {
+            error_log("[topic-msg] DB error inserting message topicId={$topicId}: " . $e->getMessage());
+            Response::json(['error' => 'Failed to send message'], 500);
+        }
+    }
+
+    broadcastMessageToWs($topicId, $message);
+
+    Response::json($message, 201);
+});
+
+// POST /api/v1/topics/{topicId}/mark-read
+// Upserts an event_participants row (reuses same unread-tracking table) and sets last_read_at.
+// Idempotent — safe to call on every topic open.
+$router->add('POST', '/api/v1/topics/{topicId}/mark-read', function (array $params) {
+    $user    = AuthService::requireAuth();
+    $topicId = $params['topicId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+
+    // Upsert participation row (created lazily — topic viewers don't explicitly join).
+    Database::pdo()->prepare("
+        INSERT INTO event_participants (channel_id, guest_id, user_id, last_read_at)
+        VALUES (?, ?, ?, now())
+        ON CONFLICT (channel_id, guest_id) DO UPDATE SET last_read_at = now()
+    ")->execute([$topicId, $user['id'], $user['id']]);
+
+    Response::json(['ok' => true]);
+});
+
+// DELETE /api/v1/topics/{topicId}
+// Soft-deletes a topic. Only the creator can delete their own topic.
+$router->add('DELETE', '/api/v1/topics/{topicId}', function (array $params) {
+    $topicId = $params['topicId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+
+    $body    = Request::json() ?? [];
+    $guestId = $body['guestId'] ?? null;
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $currentUser = AuthService::currentUser();
+    $userId      = $currentUser['id'] ?? null;
+
+    $deleted = TopicRepository::delete($topicId, $guestId, $userId);
+
+    if (!$deleted) {
+        Response::json(['error' => 'Topic not found or not owned by you'], 404);
+    }
+
+    Response::json(['ok' => true]);
+});
+
+// ──────────────────────────────────────────────────────────────────────────────
+// GET /api/v1/channels/{channelId}/now
+// Mixed feed: Hilads events (today) + active topics, sorted for liveness.
+// Events happening now → topics by latest activity → upcoming events.
+// ──────────────────────────────────────────────────────────────────────────────
+$router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params) {
+    $startedAt = microtime(true);
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    $guestId   = trim($_GET['guestId']   ?? '');
+    $sessionId = trim($_GET['sessionId'] ?? '');
+    $participantKey = isValidGuestId($guestId)    ? $guestId
+                    : (isValidSessionId($sessionId) ? $sessionId
+                    : null);
+
+    try {
+        if (CityRepository::findById($channelId) === null) {
+            Response::json(['error' => 'Channel not found'], 404);
+        }
+
+        $cityId = 'city_' . $channelId;
+
+        // Fetch events and topics in parallel (sequential queries — fast on PG).
+        $events = EventRepository::getByChannel($channelId, $participantKey);
+        $topics = TopicRepository::getByCity($cityId);
+
+        // Tag each item with its kind.
+        $now   = time();
+        $items = [];
+
+        foreach ($events as $e) {
+            $items[] = array_merge($e, ['kind' => 'event']);
+        }
+        foreach ($topics as $t) {
+            $items[] = array_merge($t, ['kind' => 'topic']);
+        }
+
+        // Sort: live events (0) → topics (1) → upcoming events (2).
+        // Within each group: topics by last_activity DESC, events by starts_at ASC.
+        usort($items, function (array $a, array $b) use ($now): int {
+            $aLive = $a['kind'] === 'event' && ($a['starts_at'] ?? 0) <= $now && ($a['expires_at'] ?? 0) > $now;
+            $bLive = $b['kind'] === 'event' && ($b['starts_at'] ?? 0) <= $now && ($b['expires_at'] ?? 0) > $now;
+
+            $aRank = $aLive ? 0 : ($a['kind'] === 'topic' ? 1 : 2);
+            $bRank = $bLive ? 0 : ($b['kind'] === 'topic' ? 1 : 2);
+
+            if ($aRank !== $bRank) return $aRank <=> $bRank;
+
+            if ($a['kind'] === 'topic' && $b['kind'] === 'topic') {
+                $aAct = $a['last_activity_at'] ?? $a['created_at'];
+                $bAct = $b['last_activity_at'] ?? $b['created_at'];
+                return $bAct <=> $aAct; // DESC
+            }
+
+            return ($a['starts_at'] ?? 0) <=> ($b['starts_at'] ?? 0); // ASC
+        });
+
+        apiLog('now_feed', 'success', [
+            'channelId' => $channelId,
+            'events'    => count($events),
+            'topics'    => count($topics),
+            'elapsedMs' => apiElapsedMs($startedAt),
+        ]);
+
+        Response::json(['items' => $items]);
+    } catch (\Throwable $e) {
+        apiLog('now_feed', 'failure', [
+            'channelId' => $channelId,
+            'elapsedMs' => apiElapsedMs($startedAt),
+            'error'     => get_class($e) . ': ' . $e->getMessage(),
+        ]);
+        Response::json(['items' => []], 200);
+    }
+});
+
 // ── TEMPORARY: Sentry test endpoint ──────────────────────────────────────────
 // Remove this route once Sentry integration is confirmed.
 // Protected: only active when MIGRATION_KEY is set in env.

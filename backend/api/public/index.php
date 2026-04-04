@@ -139,6 +139,7 @@ require_once __DIR__ . '/../src/EventSeriesRepository.php';
 require_once __DIR__ . '/../src/PlacesService.php';
 require_once __DIR__ . '/../src/VenueSeeder.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
+require_once __DIR__ . '/../src/TopicRepository.php';
 require_once __DIR__ . '/../src/VibeRepository.php';
 require_once __DIR__ . '/../src/ConversationRepository.php';
 require_once __DIR__ . '/../src/NotificationRepository.php';

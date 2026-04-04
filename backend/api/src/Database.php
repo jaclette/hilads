@@ -499,6 +499,29 @@ class Database
             self::$pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_fake BOOLEAN NOT NULL DEFAULT false");
         }
 
+        // ── Topics (city subchannels) ─────────────────────────────────────────
+        $topicsExist = (bool) $pdo
+            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'channel_topics')")
+            ->fetchColumn();
+
+        if (!$topicsExist) {
+            $pdo->exec("
+                CREATE TABLE channel_topics (
+                    channel_id   TEXT        PRIMARY KEY REFERENCES channels(id) ON DELETE CASCADE,
+                    city_id      TEXT        NOT NULL    REFERENCES channels(id),
+                    created_by   TEXT        REFERENCES users(id) ON DELETE SET NULL,
+                    guest_id     TEXT,
+                    title        TEXT        NOT NULL,
+                    description  TEXT,
+                    category     TEXT        NOT NULL DEFAULT 'general',
+                    expires_at   TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '24 hours'),
+                    created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+                )
+            ");
+            $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_topics_city   ON channel_topics (city_id, expires_at DESC)");
+            $pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_topics_expiry ON channel_topics (expires_at)");
+        }
+
         self::$bootstrapped = true;
     }
 
