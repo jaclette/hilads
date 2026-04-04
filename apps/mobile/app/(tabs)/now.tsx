@@ -13,6 +13,7 @@ import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { NowItem, HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { CreateSheet } from '@/components/CreateSheet';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -152,6 +153,7 @@ export default function NowScreen() {
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
+  const [showSheet,     setShowSheet]     = useState(false);
 
   // Stable ref for WS participant count patches
   const itemsRef = useRef<NowItem[]>([]);
@@ -304,17 +306,17 @@ export default function NowScreen() {
         </TouchableOpacity>
       )}
 
-      {/* FAB — topic (above event FAB) */}
-      {city && (
-        <TouchableOpacity style={styles.fabTopic} activeOpacity={0.85} onPress={() => router.push('/topic/create')}>
-          <Text style={styles.fabTopicIcon}>💬</Text>
-        </TouchableOpacity>
-      )}
-
-      {/* FAB — create event */}
-      <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={() => router.push('/event/create')}>
+      {/* FAB — unified create */}
+      <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={() => setShowSheet(true)}>
         <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
+
+      <CreateSheet
+        visible={showSheet}
+        onClose={() => setShowSheet(false)}
+        onSelectEvent={() => router.push('/event/create')}
+        onSelectTopic={() => router.push('/topic/create')}
+      />
     </SafeAreaView>
   );
 }
@@ -503,26 +505,6 @@ const styles = StyleSheet.create({
     elevation:       10,
   },
   fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
-
-  fabTopic: {
-    position:        'absolute',
-    right:           Spacing.md + 5,
-    bottom:          Spacing.md + 52 + Spacing.sm + 58 + 12,
-    width:           48,
-    height:          48,
-    borderRadius:    24,
-    backgroundColor: '#1e3a5f',
-    borderWidth:     1,
-    borderColor:     'rgba(96,165,250,0.35)',
-    alignItems:      'center',
-    justifyContent:  'center',
-    shadowColor:     '#60a5fa',
-    shadowOffset:    { width: 0, height: 3 },
-    shadowOpacity:   0.35,
-    shadowRadius:    8,
-    elevation:       8,
-  },
-  fabTopicIcon: { fontSize: 22, lineHeight: 26 },
 
   upcomingCta: {
     position:          'absolute',
