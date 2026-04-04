@@ -105,4 +105,90 @@ class UserRepository
 
         return self::findById($id);
     }
+
+    /**
+     * Admin-only user creation — skips cooldowns, allows is_fake flag.
+     */
+    public static function adminCreate(array $data): array
+    {
+        $id  = bin2hex(random_bytes(16));
+        $now = time();
+
+        $stmt = Database::pdo()->prepare('
+            INSERT INTO users
+                (id, email, password_hash, display_name, birth_year,
+                 profile_photo_url, home_city, interests, vibe, is_fake, is_verified,
+                 created_at, updated_at)
+            VALUES
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false, ?, ?)
+        ');
+
+        try {
+            $stmt->execute([
+                $id,
+                $data['email']             ?? null,
+                $data['password_hash']     ?? null,
+                $data['display_name'],
+                $data['birth_year']        ?? null,
+                $data['profile_photo_url'] ?? null,
+                $data['home_city']         ?? null,
+                $data['interests']         ?? '[]',
+                $data['vibe']              ?? 'chill',
+                $data['is_fake']           ?? false,
+                $now,
+                $now,
+            ]);
+        } catch (\PDOException $e) {
+            if (str_starts_with((string) $e->getCode(), '23')) {
+                throw new \RuntimeException('email_already_exists');
+            }
+            throw $e;
+        }
+
+        return self::findById($id);
+    }
+
+    /**
+     * Admin-only full update — can touch email, password_hash, is_fake, etc.
+     */
+    public static function adminUpdate(string $id, array $fields): array
+    {
+        $allowed = [
+            'display_name', 'email', 'password_hash', 'birth_year',
+            'profile_photo_url', 'home_city', 'interests', 'vibe', 'is_fake',
+        ];
+        $sets   = [];
+        $values = [];
+
+        foreach ($allowed as $key) {
+            if (array_key_exists($key, $fields)) {
+                $sets[]   = "$key = ?";
+                $values[] = $fields[$key];
+            }
+        }
+
+        if (!empty($sets)) {
+            $sets[]   = 'updated_at = ?';
+            $values[] = time();
+            $values[] = $id;
+
+            Database::pdo()->prepare(
+                'UPDATE users SET ' . implode(', ', $sets) . ' WHERE id = ?'
+            )->execute($values);
+        }
+
+        return self::findById($id);
+    }
+
+    /**
+     * Soft-delete a user: marks deleted_at, kills all sessions and push tokens.
+     * Historical data (messages, events, DMs) is preserved.
+     */
+    public static function softDelete(string $id): void
+    {
+        $pdo = Database::pdo();
+        $pdo->prepare("UPDATE users SET deleted_at = now() WHERE id = ?")->execute([$id]);
+        $pdo->prepare("DELETE FROM user_sessions WHERE user_id = ?")->execute([$id]);
+        $pdo->prepare("DELETE FROM mobile_push_tokens WHERE user_id = ?")->execute([$id]);
+    }
 }

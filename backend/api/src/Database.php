@@ -517,6 +517,10 @@ class Database
         $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS vibe TEXT NOT NULL DEFAULT 'chill'");
         // Email verification flag — false until the user clicks the verification link.
         $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT false");
+        // Soft-delete support — null = active, set = deleted.
+        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL");
+        // Admin-only fake user flag — never exposed in public API responses.
+        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_fake BOOLEAN NOT NULL DEFAULT false");
 
         // ── Channels (cities + events + future subchannel types) ─────────────
         $pdo->exec("

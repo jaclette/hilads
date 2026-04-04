@@ -70,7 +70,7 @@ class AuthService
         $email = strtolower(trim($email));
         $user  = UserRepository::findByEmail($email);
 
-        if ($user === null || empty($user['password_hash']) || !password_verify($password, $user['password_hash'])) {
+        if ($user === null || !empty($user['deleted_at']) || empty($user['password_hash']) || !password_verify($password, $user['password_hash'])) {
             Response::json(['error' => 'Invalid email or password'], 401);
         }
 
@@ -144,7 +144,7 @@ class AuthService
             SELECT u.*
             FROM user_sessions s
             JOIN users u ON u.id = s.user_id
-            WHERE s.id = ? AND s.expires_at > now()
+            WHERE s.id = ? AND s.expires_at > now() AND u.deleted_at IS NULL
         ");
         $stmt->execute([$token]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);

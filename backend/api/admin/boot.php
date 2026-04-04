@@ -36,6 +36,17 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/users') {
     require __DIR__ . '/users.php';
 
+} elseif ($uri === '/admin/users/create') {
+    require __DIR__ . '/user_create.php';
+
+} elseif (preg_match('#^/admin/users/([^/]+)/edit$#', $uri, $m)) {
+    $userId = $m[1];
+    require __DIR__ . '/user_edit.php';
+
+} elseif (preg_match('#^/admin/users/([^/]+)/delete$#', $uri, $m) && $method === 'POST') {
+    $userId = $m[1];
+    require __DIR__ . '/user_delete.php';
+
 } elseif (preg_match('#^/admin/users/([^/]+)/roles$#', $uri, $m)) {
     $userId = $m[1];
     require __DIR__ . '/user_roles.php';
