@@ -61,6 +61,7 @@ export interface Topic {
   category:         TopicCategory;
   message_count:    number;
   last_activity_at: number | null;  // unix timestamp
+  active_now:       boolean;         // true if activity in last 30 min
   expires_at:       number;          // unix timestamp
   created_at:       number;          // unix timestamp
 }

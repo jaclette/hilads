@@ -3483,27 +3483,25 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
             $items[] = array_merge($e, ['kind' => 'event']);
         }
         foreach ($topics as $t) {
-            $items[] = array_merge($t, ['kind' => 'topic']);
+            $activeNow = isset($t['last_activity_at']) && $t['last_activity_at'] > ($now - 1800);
+            $items[] = array_merge($t, ['kind' => 'topic', 'active_now' => $activeNow]);
         }
 
-        // Sort: live events (0) → topics (1) → upcoming events (2).
-        // Within each group: topics by last_activity DESC, events by starts_at ASC.
+        // Sort: live events always first, then all items unified by last activity DESC.
+        // "Live" = event happening right now (started, not yet expired).
         usort($items, function (array $a, array $b) use ($now): int {
             $aLive = $a['kind'] === 'event' && ($a['starts_at'] ?? 0) <= $now && ($a['expires_at'] ?? 0) > $now;
             $bLive = $b['kind'] === 'event' && ($b['starts_at'] ?? 0) <= $now && ($b['expires_at'] ?? 0) > $now;
 
-            $aRank = $aLive ? 0 : ($a['kind'] === 'topic' ? 1 : 2);
-            $bRank = $bLive ? 0 : ($b['kind'] === 'topic' ? 1 : 2);
+            if ($aLive !== $bLive) return $aLive ? -1 : 1;
 
-            if ($aRank !== $bRank) return $aRank <=> $bRank;
+            // Both live events: chronological order
+            if ($aLive && $bLive) return ($a['starts_at'] ?? 0) <=> ($b['starts_at'] ?? 0);
 
-            if ($a['kind'] === 'topic' && $b['kind'] === 'topic') {
-                $aAct = $a['last_activity_at'] ?? $a['created_at'];
-                $bAct = $b['last_activity_at'] ?? $b['created_at'];
-                return $bAct <=> $aAct; // DESC
-            }
-
-            return ($a['starts_at'] ?? 0) <=> ($b['starts_at'] ?? 0); // ASC
+            // All other items: most recently active first
+            $aAct = $a['last_activity_at'] ?? $a['created_at'] ?? 0;
+            $bAct = $b['last_activity_at'] ?? $b['created_at'] ?? 0;
+            return $bAct <=> $aAct;
         });
 
         apiLog('now_feed', 'success', [

@@ -2809,6 +2809,7 @@ export default function App() {
               const renderTopicRow = (topic) => {
                 const icon = CATEGORY_ICONS[topic.category] ?? '💬'
                 const replies = topic.message_count ?? 0
+                const activeNow = topic.active_now === true
                 const timeAgo = topic.last_activity_at
                   ? (() => {
                       const diff = Math.floor((Date.now() / 1000) - topic.last_activity_at)
@@ -2824,6 +2825,7 @@ export default function App() {
                       <span className="er-going er-going--topic">Topic</span>
                     </div>
                     <div className="er-badges">
+                      {activeNow && <span className="now-active-badge">● Active now</span>}
                       {replies > 0
                         ? <span className="city-row-current">💬 {replies} {replies === 1 ? 'reply' : 'replies'}{timeAgo ? ` · ${timeAgo}` : ''}</span>
                         : <span className="city-row-current">No replies yet — be first</span>
@@ -2832,6 +2834,9 @@ export default function App() {
                     {topic.description && (
                       <span className="er-location">{topic.description}</span>
                     )}
+                    <div className="er-join-row">
+                      <span className="er-join-cta">Join →</span>
+                    </div>
                   </button>
                 )
               }
@@ -2849,7 +2854,7 @@ export default function App() {
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">Public</span>
-                        : going > 0 && <span className="er-going">{fireEmoji(going)} {going}</span>}
+                        : <span className="er-going er-going--event">Event</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
@@ -2859,9 +2864,15 @@ export default function App() {
                       {event.recurrence_label && (
                         <span className="recur-badge">↻ {event.recurrence_label}</span>
                       )}
+                      {going > 0 && <span className="city-row-current">{fireEmoji(going)} {going} going</span>}
                     </div>
                     {getEventLocation(event) && (
                       <span className="er-location">📍 {getEventLocation(event)}</span>
+                    )}
+                    {group === 'hilads' && (
+                      <div className="er-join-row">
+                        <span className="er-join-cta">Join →</span>
+                      </div>
                     )}
                   </button>
                 )
@@ -2911,21 +2922,30 @@ export default function App() {
                   </div>
                 )
               }
+
+              // Unified list: merge hilads events + topics, sort by activity
+              const nowTs = Date.now() / 1000
+              const taggedEvents = hiladsEvents.map(e => ({ ...e, _kind: 'event' }))
+              const taggedTopics = topics.map(t => ({ ...t, _kind: 'topic' }))
+              const unified = [...taggedEvents, ...taggedTopics].sort((a, b) => {
+                const aLive = a._kind === 'event' && a.starts_at <= nowTs && (a.expires_at ?? 0) > nowTs
+                const bLive = b._kind === 'event' && b.starts_at <= nowTs && (b.expires_at ?? 0) > nowTs
+                if (aLive !== bLive) return aLive ? -1 : 1
+                if (aLive && bLive) return a.starts_at - b.starts_at
+                const aAct = a.last_activity_at ?? a.created_at ?? 0
+                const bAct = b.last_activity_at ?? b.created_at ?? 0
+                return bAct - aAct
+              })
+
               return (
                 <>
-                  {topics.length > 0 && (
-                    <>
-                      <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Conversations</p>
-                      {topics.map(renderTopicRow)}
-                    </>
+                  {unified.map(item => item._kind === 'topic'
+                    ? renderTopicRow(item)
+                    : renderEventRow(item, 'hilads')
                   )}
-                  <p className="events-group-label" style={{ padding: topics.length > 0 ? '18px 12px 2px' : '10px 12px 2px' }}>Hilads Events</p>
-                  {hiladsEvents.length === 0
-                    ? <p className="events-empty">No Hilads events yet</p>
-                    : hiladsEvents.map(event => renderEventRow(event, 'hilads'))}
                   {publicEvents.length > 0 && (
                     <>
-                      <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>Public Events</p>
+                      <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>🎫 Public Events</p>
                       {publicEvents.map(event => renderEventRow(event, 'public'))}
                     </>
                   )}

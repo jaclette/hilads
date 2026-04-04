@@ -49,18 +49,18 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
   const now    = Date.now() / 1000;
   const isLive = event.starts_at <= now && (event.expires_at ?? 0) > now;
   const icon   = EVENT_ICONS[event.event_type] ?? '📌';
+  const isPublic = event.source_type === 'ticketmaster';
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={onPress}>
       <View style={styles.cardKindRow}>
         <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Event</Text></View>
+        {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>Public</Text></View>}
       </View>
       <View style={styles.cardTitleRow}>
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
-        {event.source_type === 'ticketmaster' ? (
-          <Text style={styles.goingCount}>Public</Text>
-        ) : (event.participant_count ?? 0) > 0 ? (
+        {!isPublic && (event.participant_count ?? 0) > 0 ? (
           <Text style={styles.goingCount}>{fireEmoji(event.participant_count!)} {event.participant_count}</Text>
         ) : null}
       </View>
@@ -81,6 +81,11 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
           📍 {event.location ?? event.venue}
         </Text>
       ) : null}
+      {!isPublic && (
+        <View style={styles.cardFooter}>
+          <View style={styles.joinBtn}><Text style={styles.joinBtnText}>Join →</Text></View>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
@@ -88,14 +93,20 @@ function EventCard({ event, onPress }: { event: HiladsEvent; onPress: () => void
 // ── Topic card ────────────────────────────────────────────────────────────────
 
 function TopicCard({ topic, onPress }: { topic: NowItem & { kind: 'topic' }; onPress: () => void }) {
-  const icon    = CATEGORY_ICONS[topic.category] ?? '💬';
-  const replies = topic.message_count ?? 0;
-  const lastAct = topic.last_activity_at;
+  const icon      = CATEGORY_ICONS[topic.category] ?? '💬';
+  const replies   = topic.message_count ?? 0;
+  const lastAct   = topic.last_activity_at;
+  const activeNow = topic.active_now === true;
 
   return (
     <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
       <View style={styles.cardKindRow}>
         <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Topic</Text></View>
+        {activeNow && (
+          <View style={styles.activeNowBadge}>
+            <Text style={styles.activeNowText}>● Active now</Text>
+          </View>
+        )}
       </View>
       <View style={styles.cardTitleRow}>
         <Text style={styles.cardIcon}>{icon}</Text>
@@ -104,11 +115,14 @@ function TopicCard({ topic, onPress }: { topic: NowItem & { kind: 'topic' }; onP
       {topic.description ? (
         <Text style={styles.topicDesc} numberOfLines={2}>{topic.description}</Text>
       ) : null}
-      <Text style={styles.topicMeta}>
-        {replies > 0
-          ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
-          : 'No replies yet — be first'}
-      </Text>
+      <View style={styles.cardFooter}>
+        <Text style={styles.topicMeta}>
+          {replies > 0
+            ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
+            : 'No replies yet — be first'}
+        </Text>
+        <View style={styles.joinBtn}><Text style={styles.joinBtnText}>Join →</Text></View>
+      </View>
     </TouchableOpacity>
   );
 }
@@ -418,7 +432,44 @@ const styles = StyleSheet.create({
   },
   topicTitle: { color: Colors.text },
   topicDesc:  { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
-  topicMeta:  { fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
+  topicMeta:  { flex: 1, fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
+
+  // ── Shared card footer (meta + Join CTA) ───────────────────────────────────
+  cardFooter: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  joinBtn: {
+    backgroundColor:   'rgba(255,122,60,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 12,
+    paddingVertical:   5,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.22)',
+    flexShrink:        0,
+  },
+  joinBtnText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent },
+
+  // ── Active now badge ───────────────────────────────────────────────────────
+  activeNowBadge: {
+    backgroundColor:   'rgba(34,197,94,0.10)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(34,197,94,0.20)',
+    marginLeft:        6,
+  },
+  activeNowText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
+
+  // ── Public badge ───────────────────────────────────────────────────────────
+  publicBadge: {
+    backgroundColor:   'rgba(255,255,255,0.07)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.10)',
+    marginLeft:        6,
+  },
+  publicBadgeText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
 
   // ── Empty state ────────────────────────────────────────────────────────────
   empty: {
