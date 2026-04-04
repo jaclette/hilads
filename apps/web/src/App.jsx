@@ -552,6 +552,7 @@ export default function App() {
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
+  const [previewTopics,     setPreviewTopics]     = useState([])
   const [previewChannelId, setPreviewChannelId]   = useState(null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
@@ -1077,7 +1078,11 @@ export default function App() {
       })
       .catch(() => {})
     fetchCityTopics(previewChannelId)
-      .then(data => setPreviewTopicCount((data.topics ?? []).length))
+      .then(data => {
+        const t = data.topics ?? []
+        setPreviewTopicCount(t.length)
+        setPreviewTopics(t.slice(0, 3))
+      })
       .catch(() => {})
   }, [previewChannelId]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1945,6 +1950,20 @@ export default function App() {
     prevEventCountRef.current = events.length
   }, [events]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Inject active topics into city feed when topics load or a new topic appears.
+  // Uses same dedup guard as events (prev.some). Topics sorted by activity DESC —
+  // reverse so most-active topic ends up at the bottom (newest position).
+  useEffect(() => {
+    if (!activeRef.current || activeEventIdRef.current) return
+    ;[...topics].reverse().forEach(topic => {
+      const id = `topic-msg-${topic.id}`
+      setFeed(prev => {
+        if (prev.some(f => f.id === id)) return prev
+        return [...prev, { type: 'topic', id, topicId: topic.id }]
+      })
+    })
+  }, [topics]) // eslint-disable-line react-hooks/exhaustive-deps
+
   function cityScore(ch) {
     return ((ch.eventCount ?? 0) * 10) + (ch.activeUsers * 3) + (ch.messageCount * 1)
   }
@@ -2049,6 +2068,7 @@ export default function App() {
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
           previewTopicCount={previewTopicCount}
+          previewTopics={previewTopics}
           previewEvents={previewEvents}
           previewTimezone={previewTimezone}
           onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
@@ -2529,6 +2549,22 @@ export default function App() {
                 <div key={item.id} className="feed-prompt">
                   <span className="feed-prompt-text">{item.text}</span>
                   <button className="feed-prompt-btn" onClick={() => ev && handleSelectEvent(ev)}>{item.cta}</button>
+                </div>
+              )
+            }
+
+            if (item.type === 'topic') {
+              const topic = topics.find(t => t.id === item.topicId)
+              if (!topic) return null
+              const mc = topic.message_count ?? 0
+              const repliesText = mc > 0 ? ` · ${mc} ${mc === 1 ? 'reply' : 'replies'}` : ''
+              return (
+                <div key={item.id} className="feed-prompt feed-prompt--topic">
+                  <span className="feed-prompt-text">💬 {topic.title}{repliesText}</span>
+                  <button
+                    className="feed-prompt-btn feed-prompt-btn--topic"
+                    onClick={() => setActiveTopic(topic)}
+                  >Join</button>
                 </div>
               )
             }

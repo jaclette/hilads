@@ -46,7 +46,7 @@ const HOW_IT_WORKS = [
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
 
-function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
+function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
   const noGeo = geoState === 'denied' || geoState === 'error'
   const [c1, c2] = avatarColors(nickname || 'A')
 
@@ -87,6 +87,18 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                     <span className="ob-event-time">
                       {formatTime(e.starts_at, previewTimezone)}
                     </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {previewTopics.length > 0 && (
+              <div className="ob-events-preview ob-topics-preview">
+                {previewTopics.map(t => (
+                  <div key={t.id} className="ob-event-row ob-topic-row">
+                    <span className="ob-event-title">💬 {t.title}</span>
+                    {(t.message_count ?? 0) > 0 && (
+                      <span className="ob-event-time">{t.message_count} {t.message_count === 1 ? 'reply' : 'replies'}</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -202,6 +214,7 @@ export default function LandingPage({
   previewLiveCount,
   previewEventCount = 0,
   previewTopicCount = 0,
+  previewTopics = [],
   previewEvents = [],
   previewTimezone = 'UTC',
   onSignUp, onSignIn, onOpenCityPicker, retryGeo,
@@ -259,6 +272,7 @@ export default function LandingPage({
             previewLiveCount={previewLiveCount}
             previewEventCount={previewEventCount}
             previewTopicCount={previewTopicCount}
+            previewTopics={previewTopics}
             previewEvents={previewEvents}
             previewTimezone={previewTimezone}
             onOpenCityPicker={onOpenCityPicker}
@@ -360,6 +374,7 @@ export default function LandingPage({
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
           previewTopicCount={previewTopicCount}
+          previewTopics={previewTopics}
           previewEvents={previewEvents}
           previewTimezone={previewTimezone}
           onOpenCityPicker={onOpenCityPicker}
