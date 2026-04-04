@@ -38,6 +38,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/UserRepository.php';
     require_once __DIR__ . '/../src/EventRepository.php';
     require_once __DIR__ . '/../src/EventSeriesRepository.php';
+    require_once __DIR__ . '/../src/TopicRepository.php';
     require_once __DIR__ . '/../src/R2Uploader.php';
     require_once __DIR__ . '/../admin/boot.php';
     exit;

@@ -97,6 +97,13 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $userId = $m[1];
     require __DIR__ . '/user_roles.php';
 
+} elseif ($uri === '/admin/topics') {
+    require __DIR__ . '/topics.php';
+
+} elseif (preg_match('#^/admin/topics/([a-zA-Z0-9]+)/delete$#', $uri, $m) && $method === 'POST') {
+    $topicId = $m[1];
+    require __DIR__ . '/topic_delete.php';
+
 } elseif ($uri === '/admin/events') {
     require __DIR__ . '/events.php';
 

@@ -143,9 +143,10 @@ function admin_nav(string $current = ''): void
     if ($isLoggedIn) {
         echo '<nav>';
         $links = [
-            '/admin'        => 'Dashboard',
-            '/admin/users'  => 'Users',
-            '/admin/events' => 'Events',
+            '/admin'         => 'Dashboard',
+            '/admin/users'   => 'Users',
+            '/admin/events'  => 'Events',
+            '/admin/topics'  => 'Topics',
         ];
         foreach ($links as $href => $label) {
             $active = ($current === $href) ? ' class="active"' : '';
