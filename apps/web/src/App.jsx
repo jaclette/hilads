@@ -1215,7 +1215,7 @@ export default function App() {
       setFeed(prev => {
         if (prev.filter(m => m.type === 'message').length >= 3) return prev
         promptsShownRef.current.add('photo')
-        return [...prev, { type: 'prompt', subtype: 'photo', id: `prompt-photo-${Date.now()}`, text: '📸 Share what\'s happening', cta: 'Upload' }]
+        return [...prev, { type: 'prompt', subtype: 'photo', id: `prompt-photo-${Date.now()}`, text: '📸 Share what\'s happening', cta: 'Shoot' }]
       })
     }, 30000)
 
