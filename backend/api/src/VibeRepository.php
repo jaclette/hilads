@@ -19,12 +19,14 @@ class VibeRepository
                    updated_at = now()
         ")->execute([$authorId, $targetId, $rating, $message]);
 
-        // Return the upserted row
+        // Return the upserted row — LEFT JOIN so deleted authors don't crash the response
         $stmt = $pdo->prepare("
             SELECT v.id, v.rating, v.message, v.created_at, v.updated_at,
-                   u.id AS author_id, u.display_name AS author_name, u.profile_photo_url AS author_photo
+                   v.author_id,
+                   COALESCE(u.display_name, 'Deleted user') AS author_name,
+                   u.profile_photo_url                       AS author_photo
             FROM user_vibes v
-            JOIN users u ON u.id = v.author_id
+            LEFT JOIN users u ON u.id = v.author_id AND u.deleted_at IS NULL
             WHERE v.author_id = ? AND v.target_id = ?
         ");
         $stmt->execute([$authorId, $targetId]);
@@ -38,9 +40,11 @@ class VibeRepository
     {
         $stmt = Database::pdo()->prepare("
             SELECT v.id, v.rating, v.message, v.created_at, v.updated_at,
-                   u.id AS author_id, u.display_name AS author_name, u.profile_photo_url AS author_photo
+                   v.author_id,
+                   COALESCE(u.display_name, 'Deleted user') AS author_name,
+                   u.profile_photo_url                       AS author_photo
             FROM user_vibes v
-            JOIN users u ON u.id = v.author_id
+            LEFT JOIN users u ON u.id = v.author_id AND u.deleted_at IS NULL
             WHERE v.target_id = ?
             ORDER BY v.created_at DESC
             LIMIT ? OFFSET ?

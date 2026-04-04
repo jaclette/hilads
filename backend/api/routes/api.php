@@ -577,7 +577,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     // Try primary userId lookup first; fall back to guest_id for city-channel
     // taps where the navigation ID may be a guestId rather than a registered userId.
     $user = UserRepository::findById($userId) ?? UserRepository::findByGuestId($userId);
-    if ($user === null) {
+    if ($user === null || !empty($user['deleted_at'])) {
         Response::json(['error' => 'User not found'], 404);
     }
 
@@ -697,7 +697,7 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
     }
 
     $target = UserRepository::findById($targetId);
-    if ($target === null) {
+    if ($target === null || !empty($target['deleted_at'])) {
         Response::json(['error' => 'User not found'], 404);
     }
 
@@ -775,7 +775,7 @@ $router->add('GET', '/api/v1/users/{userId}/friends', function (array $params) {
     $stmt = $pdo->prepare("
         SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at
         FROM user_friends f
-        JOIN users u ON u.id = f.friend_id
+        JOIN users u ON u.id = f.friend_id AND u.deleted_at IS NULL
         WHERE f.user_id = :uid
         ORDER BY f.created_at DESC
         LIMIT :limit OFFSET :offset
@@ -811,8 +811,8 @@ $router->add('POST', '/api/v1/users/{userId}/vibes', function (array $params) {
         return;
     }
 
-    // Check target exists
-    $targetStmt = Database::pdo()->prepare("SELECT id FROM users WHERE id = ?");
+    // Check target exists and is not deleted
+    $targetStmt = Database::pdo()->prepare("SELECT id FROM users WHERE id = ? AND deleted_at IS NULL");
     $targetStmt->execute([$targetId]);
     if (!$targetStmt->fetchColumn()) {
         Response::json(['error' => 'User not found'], 404);
@@ -1450,7 +1450,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/ambassadors', function (array 
         JOIN  users u ON u.id = r.user_id
         LEFT  JOIN user_city_memberships m
                ON m.user_id = u.id AND m.channel_id = :channel_key
-        WHERE r.city_id = :channel_key2 AND r.role = 'ambassador'
+        WHERE r.city_id = :channel_key2 AND r.role = 'ambassador' AND u.deleted_at IS NULL
         ORDER BY sort_at DESC
         LIMIT 10
     ");
@@ -1526,9 +1526,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
             WHERE channel_id = :chan_msg AND type = 'text' AND guest_id IS NOT NULL
         ) msg_senders ON msg_senders.guest_id = u.guest_id AND u.guest_id IS NOT NULL";
 
-    $conditions = ["(m.channel_id IS NOT NULL
-                     OR LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name))
-                     OR msg_senders.guest_id IS NOT NULL)"];
+    $conditions = [
+        "u.deleted_at IS NULL",
+        "(m.channel_id IS NOT NULL
+          OR LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name))
+          OR msg_senders.guest_id IS NOT NULL)",
+    ];
     $binds      = [':channel_key' => $channelKey, ':city_name' => $cityName, ':chan_msg' => $channelKey];
 
     if ($vibeFilter !== null) {
@@ -2830,7 +2833,7 @@ $router->add('POST', '/api/v1/conversations/direct', function () {
     }
 
     $target = UserRepository::findById($targetUserId);
-    if (!$target) {
+    if (!$target || !empty($target['deleted_at'])) {
         Response::json(['error' => 'User not found'], 404);
     }
 

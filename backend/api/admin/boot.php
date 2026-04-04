@@ -67,8 +67,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
         SELECT DISTINCT u.id, u.display_name
         FROM users u
         LEFT JOIN user_city_memberships m ON m.user_id = u.id AND m.channel_id = :ck
-        WHERE m.channel_id IS NOT NULL
-           OR LOWER(TRIM(COALESCE(u.home_city, ''))) = LOWER(TRIM(:cn))
+        WHERE u.deleted_at IS NULL
+          AND (m.channel_id IS NOT NULL
+               OR LOWER(TRIM(COALESCE(u.home_city, ''))) = LOWER(TRIM(:cn)))
         ORDER BY u.display_name ASC
         LIMIT 100
     ");

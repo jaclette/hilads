@@ -72,11 +72,11 @@ class ConversationRepository
     {
         $stmt = Database::pdo()->prepare("
             SELECT
-                c.id                    AS id,
-                c.updated_at            AS updated_at,
-                u.id                    AS other_user_id,
-                u.display_name          AS other_display_name,
-                u.profile_photo_url     AS other_photo_url,
+                c.id                                            AS id,
+                c.updated_at                                    AS updated_at,
+                cp2.user_id                                     AS other_user_id,
+                COALESCE(u.display_name, 'Deleted user')        AS other_display_name,
+                u.profile_photo_url                             AS other_photo_url,
                 lm.content              AS last_message,
                 lm.created_at           AS last_message_at,
                 lm.sender_id            AS last_sender_id,
@@ -84,7 +84,8 @@ class ConversationRepository
             FROM conversations c
             JOIN conversation_participants cp  ON cp.conversation_id = c.id AND cp.user_id = :userId
             JOIN conversation_participants cp2 ON cp2.conversation_id = c.id AND cp2.user_id != :userId2
-            JOIN users u ON u.id = cp2.user_id
+            -- LEFT JOIN + deleted_at filter: deleted users produce NULLs → COALESCE shows fallback
+            LEFT JOIN users u ON u.id = cp2.user_id AND u.deleted_at IS NULL
             LEFT JOIN LATERAL (
                 SELECT
                     CASE WHEN type = 'image' THEN '📸 Image' ELSE content END AS content,
@@ -299,10 +300,10 @@ class ConversationRepository
                 cm.type,
                 cm.image_url,
                 cm.created_at,
-                u.display_name      AS sender_name,
-                u.profile_photo_url AS sender_photo
+                COALESCE(u.display_name, 'Deleted user') AS sender_name,
+                u.profile_photo_url                       AS sender_photo
             FROM conversation_messages cm
-            JOIN users u ON u.id = cm.sender_id
+            LEFT JOIN users u ON u.id = cm.sender_id AND u.deleted_at IS NULL
             WHERE cm.conversation_id = ?
             ORDER BY cm.created_at ASC
             LIMIT ?
@@ -322,10 +323,10 @@ class ConversationRepository
                 cm.type,
                 cm.image_url,
                 cm.created_at,
-                u.display_name      AS sender_name,
-                u.profile_photo_url AS sender_photo
+                COALESCE(u.display_name, 'Deleted user') AS sender_name,
+                u.profile_photo_url                       AS sender_photo
             FROM conversation_messages cm
-            JOIN users u ON u.id = cm.sender_id
+            LEFT JOIN users u ON u.id = cm.sender_id AND u.deleted_at IS NULL
             WHERE cm.id = ?
         ");
         $stmt->execute([$id]);
