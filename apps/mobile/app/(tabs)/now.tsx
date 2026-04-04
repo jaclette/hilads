@@ -194,6 +194,20 @@ export default function NowScreen() {
         fetchNowFeed(city.channelId, identity?.guestId),
         fetchPublicCityEvents(city.channelId),
       ]);
+      // DEBUG — remove once topics are verified rendering
+      console.log('[now] feed total:', nowData.length,
+        '| events:', nowData.filter(i => i.kind === 'event').length,
+        '| topics:', nowData.filter(i => i.kind === 'topic').length,
+      );
+      if (nowData.length > 0) {
+        console.log('[now] first item kind:', nowData[0].kind, 'id:', nowData[0].id, 'title:', nowData[0].title);
+      }
+      const topicItems = nowData.filter(i => i.kind === 'topic');
+      if (topicItems.length > 0) {
+        console.log('[now] first topic:', JSON.stringify(topicItems[0]));
+      } else {
+        console.log('[now] NO topics in feed — check backend /now response');
+      }
       setItems(nowData);
       setPublicEvents(publicData);
     } catch {
@@ -318,6 +332,7 @@ export default function NowScreen() {
               return <Text style={styles.sectionLabel}>{item.label}</Text>;
             }
             if (item.kind === 'topic') {
+              console.log('[now] rendering TopicCard id:', item.id);
               return (
                 <TopicCard
                   topic={item as FeedItem & { kind: 'topic' }}
