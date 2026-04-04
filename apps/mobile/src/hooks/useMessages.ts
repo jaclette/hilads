@@ -6,20 +6,23 @@ import type { Message } from '@/types';
 
 interface Params {
   channelId:   string;
-  loadFn:      () => Promise<Message[]>;
+  loadFn:      (opts?: { beforeId?: string }) => Promise<{ messages: Message[]; hasMore: boolean }>;
   postTextFn:  (content: string) => Promise<Message>;
   postImageFn: (imageUrl: string) => Promise<Message>;
 }
 
 interface Result {
-  messages:   Message[];   // newest first (for inverted FlatList)
-  loading:    boolean;
-  sending:    boolean;     // true only during image upload
-  error:      string | null;
-  clearError: () => void;
-  sendText:   (content: string) => Promise<void>;
-  sendImage:  (localUri: string) => Promise<void>;
-  reload:     () => void;
+  messages:     Message[];   // newest first (for inverted FlatList)
+  loading:      boolean;
+  loadingOlder: boolean;     // true while fetching an older page
+  hasMore:      boolean;     // true when older messages exist to load
+  sending:      boolean;     // true only during image upload
+  error:        string | null;
+  clearError:   () => void;
+  sendText:     (content: string) => Promise<void>;
+  sendImage:    (localUri: string) => Promise<void>;
+  loadOlder:    () => Promise<void>;
+  reload:       () => void;
 }
 
 function makeLocalId(prefix = 'local'): string {
@@ -29,13 +32,17 @@ function makeLocalId(prefix = 'local'): string {
 export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Params): Result {
   const { identity, account } = useApp();
 
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [sending,  setSending]  = useState(false);  // image upload only
-  const [error,    setError]    = useState<string | null>(null);
+  const [messages,     setMessages]     = useState<Message[]>([]);
+  const [loading,      setLoading]      = useState(true);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [hasMore,      setHasMore]      = useState(false);
+  const [sending,      setSending]      = useState(false);  // image upload only
+  const [error,        setError]        = useState<string | null>(null);
 
   // Track seen IDs to deduplicate WS + initial load + send
-  const seenIds = useRef(new Set<string>());
+  const seenIds        = useRef(new Set<string>());
+  const oldestIdRef    = useRef<string | null>(null); // cursor for loading older pages
+  const loadingOlderRef = useRef(false);              // guards against concurrent loadOlder calls
 
   // Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
   function toMs(ts: number | string | undefined): number {
@@ -72,13 +79,15 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
     setLoading(true);
     setError(null);
     try {
-      const msgs = await loadFn();
+      const { messages: msgs, hasMore: more } = await loadFn();
       if (__DEV__) {
-        console.log('[messages] count:', msgs.length);
+        console.log('[messages] count:', msgs.length, 'hasMore:', more);
         if (msgs.length > 0) console.log('[messages] sample:', JSON.stringify(msgs[msgs.length - 1]));
       }
-      seenIds.current = new Set(msgs.map(m => msgKey(m)));
-      setMessages([...msgs].reverse());
+      seenIds.current  = new Set(msgs.map(m => msgKey(m)));
+      oldestIdRef.current = msgs.length > 0 ? msgs[0]?.id ?? null : null; // msgs[0] = oldest (ASC from backend)
+      setMessages([...msgs].reverse()); // newest first for inverted FlatList
+      setHasMore(more);
     } catch {
       setError('Failed to load messages');
     } finally {
@@ -102,6 +111,42 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
 
   // New messages arrive via WebSocket (newMessage / message events above).
   // No polling interval — WebSocket is the only real-time source.
+
+  // ── Load older messages (pagination) ──────────────────────────────────────
+  // Fetches the page before the current oldest message and prepends it.
+  // In an inverted FlatList, this extends the visual top (high index).
+
+  const loadOlder = useCallback(async () => {
+    if (loadingOlderRef.current || !hasMore || !oldestIdRef.current) return;
+
+    loadingOlderRef.current = true;
+    setLoadingOlder(true);
+
+    try {
+      const { messages: older, hasMore: moreLeft } = await loadFn({ beforeId: oldestIdRef.current });
+      const fresh = older.filter(m => {
+        const key = msgKey(m);
+        if (seenIds.current.has(key)) return false;
+        seenIds.current.add(key);
+        return true;
+      });
+
+      if (fresh.length > 0) {
+        oldestIdRef.current = older[0]?.id ?? null; // older[0] is the oldest of the new batch (ASC)
+        // Sort newest-first within the batch, then append to end of array
+        // (end = visual top in inverted FlatList)
+        const sorted = [...fresh].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
+        setMessages(prev => [...prev, ...sorted]);
+      }
+
+      setHasMore(moreLeft);
+    } catch {
+      // silent — user can scroll up again to retry
+    } finally {
+      loadingOlderRef.current = false;
+      setLoadingOlder(false);
+    }
+  }, [hasMore, loadFn]);
 
   // ── Reconcile optimistic → server message ─────────────────────────────────
   //
@@ -196,8 +241,8 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
   }, [postImageFn, identity, account]);
 
   return {
-    messages, loading, sending, error,
+    messages, loading, loadingOlder, hasMore, sending, error,
     clearError: () => setError(null),
-    sendText, sendImage, reload: load,
+    sendText, sendImage, loadOlder, reload: load,
   };
 }

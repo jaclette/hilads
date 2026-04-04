@@ -38,12 +38,16 @@ export async function resolveLocation(lat, lng) {
   return res.json()
 }
 
-export async function fetchMessages(channelId) {
-  const res = await fetch(`${BASE}/channels/${channelId}/messages`, {
+export async function fetchMessages(channelId, { beforeId, limit } = {}) {
+  const params = new URLSearchParams()
+  if (limit)    params.set('limit', limit)
+  if (beforeId) params.set('before_id', beforeId)
+  const qs  = params.size ? '?' + params : ''
+  const res = await fetch(`${BASE}/channels/${channelId}/messages${qs}`, {
     credentials: 'include',
   })
   if (!res.ok) throw new Error('Failed to fetch messages')
-  return res.json()
+  return res.json() // { messages, hasMore, onlineUsers, onlineCount }
 }
 
 export async function joinChannel(channelId, sessionId, guestId, nickname, previousChannelId = null) {

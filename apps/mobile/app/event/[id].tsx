@@ -169,7 +169,7 @@ export default function EventDetailScreen() {
   const channelId = event?.id ?? id;
 
   const loadFn = useCallback(
-    () => fetchEventMessages(id),
+    (_opts?: { beforeId?: string }) => fetchEventMessages(id),
     [id],
   );
 

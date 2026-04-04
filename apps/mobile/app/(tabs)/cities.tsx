@@ -99,7 +99,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
         )}
       </View>
 
-      {/* ── Stats row: online · events · msgs ── */}
+      {/* ── Stats row: online · events · conversations · msgs ── */}
       <View style={styles.statsRow}>
         {(city.onlineCount ?? 0) > 0 && (
           <Text style={styles.statOnline}>{city.onlineCount} online</Text>
@@ -107,6 +107,11 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
         {(city.eventCount ?? 0) > 0 && (
           <Text style={styles.statEvents}>
             {city.eventCount} {city.eventCount === 1 ? 'event' : 'events'}
+          </Text>
+        )}
+        {(city.topicCount ?? 0) > 0 && (
+          <Text style={styles.statTopics}>
+            {city.topicCount} {city.topicCount === 1 ? 'conversation' : 'conversations'}
           </Text>
         )}
         {(city.messageCount ?? 0) > 0 && (
@@ -542,6 +547,7 @@ const styles = StyleSheet.create({
   statOnline: { fontSize: 14, fontWeight: '700', color: Colors.green },
   // Web: .city-row-events — 0.82rem, var(--text), weight 600
   statEvents: { fontSize: 14, fontWeight: '600', color: Colors.text },
+  statTopics: { fontSize: 14, fontWeight: '600', color: '#60a5fa' },
   // Web: .city-row-count — 0.82rem, var(--muted), weight 600
   statMsgs:   { fontSize: 14, fontWeight: '600', color: Colors.muted },
 });

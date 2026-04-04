@@ -526,6 +526,8 @@ export default function App() {
   const [guest, setGuest] = useState(null)
   const [nickname, setNickname] = useState(() => loadIdentity()?.nickname ?? generateNickname())
   const [feed, setFeed] = useState([])
+  const [hasMoreMessages, setHasMoreMessages] = useState(false)
+  const [loadingOlder, setLoadingOlder] = useState(false)
   const [input, setInput] = useState('')
   const [showEmoji, setShowEmoji] = useState(false)
   const [sending, setSending] = useState(false)
@@ -683,6 +685,9 @@ export default function App() {
   const bottomRef = useRef(null)
   const isInitialLoadRef = useRef(true) // true until first non-empty feed renders — forces scroll-to-bottom on channel entry
   const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
+  const hasMoreMessagesRef = useRef(false) // mirrors hasMoreMessages state, readable inside scroll handlers
+  const oldestMessageIdRef = useRef(null)  // ID of the oldest message in the feed — pagination cursor
+  const loadingOlderRef    = useRef(false) // true while an older-page fetch is in flight
   const appendFeed = (items) => setFeed(prev => {
     const next = Array.isArray(items) ? [...prev, ...items] : [...prev, items]
     return next.length > FEED_MAX ? next.slice(next.length - FEED_MAX) : next
@@ -1013,6 +1018,69 @@ export default function App() {
     }
   }, [feed])
 
+  // ── Load older messages (pagination) ─────────────────────────────────────
+  // Triggered by the scroll listener below when the user scrolls near the top.
+  // Uses refs throughout to avoid stale closures — the scroll handler is attached once.
+
+  async function loadOlderMessages() {
+    const channelId = activeChannelRef.current
+    if (!channelId || loadingOlderRef.current || !hasMoreMessagesRef.current || !oldestMessageIdRef.current) return
+
+    const container        = messagesContainerRef.current
+    const scrollHeightBefore = container?.scrollHeight ?? 0
+    const scrollTopBefore    = container?.scrollTop    ?? 0
+
+    loadingOlderRef.current = true
+    setLoadingOlder(true)
+
+    try {
+      const data = await fetchMessages(channelId, { beforeId: oldestMessageIdRef.current, limit: 50 })
+      if (activeChannelRef.current !== channelId) return // channel switched while loading
+
+      const msgs  = data.messages ?? []
+      const fresh = msgs.filter(m => !knownIdsRef.current.has(messageKey(m)))
+      fresh.forEach(m => knownIdsRef.current.add(messageKey(m)))
+
+      if (fresh.length > 0) {
+        oldestMessageIdRef.current = msgs[0]?.id ?? null // msgs[0] is oldest (ASC order from backend)
+        setFeed(prev => [...fresh.map(m => toFeedItem(m)), ...prev])
+      }
+
+      const more = data.hasMore ?? false
+      hasMoreMessagesRef.current = more
+      setHasMoreMessages(more)
+
+      // Restore scroll position: pin to the same visual content, not the same pixel offset
+      requestAnimationFrame(() => {
+        if (container) {
+          container.scrollTop = scrollTopBefore + (container.scrollHeight - scrollHeightBefore)
+        }
+      })
+    } catch {
+      // silent — user can scroll up again to retry
+    } finally {
+      loadingOlderRef.current = false
+      setLoadingOlder(false)
+    }
+  }
+
+  // Attach scroll listener to the messages container.
+  // Fires loadOlderMessages when the user scrolls within 200px of the top.
+  // Re-attaches whenever status changes so the ref is always populated.
+  useEffect(() => {
+    const container = messagesContainerRef.current
+    if (!container) return
+
+    const handleScroll = () => {
+      if (container.scrollTop < 200 && !loadingOlderRef.current && hasMoreMessagesRef.current) {
+        loadOlderMessages()
+      }
+    }
+
+    container.addEventListener('scroll', handleScroll, { passive: true })
+    return () => container.removeEventListener('scroll', handleScroll)
+  }, [status]) // re-attach when status changes (e.g. container mounts on 'ready')
+
   useEffect(() => {
     if (!channelId || cityTimezone !== 'UTC') return
 
@@ -1240,7 +1308,17 @@ export default function App() {
       const joinData = await joinChannel(location.channelId, sessionIdRef.current, session.guestId, name)
       const joinKey = messageKey(joinData.message)
 
-      const data = await fetchMessages(location.channelId)
+      // Start events + public events fetch immediately — parallel with messages
+      setHotEventsStatus('loading')
+      const nowFeedP    = fetchNowFeed(location.channelId, sessionIdRef.current)
+      const cityEventsP = fetchCityEvents(location.channelId)
+
+      // Reset pagination state for this channel
+      hasMoreMessagesRef.current = false
+      setHasMoreMessages(false)
+      oldestMessageIdRef.current = null
+
+      const data = await fetchMessages(location.channelId, { limit: 50 })
       knownIdsRef.current = new Set(data.messages.map(messageKey))
 
       const total = data.messages.length
@@ -1251,6 +1329,12 @@ export default function App() {
       }))
 
       setFeed(initialItems)
+
+      // Set pagination cursor: data.messages[0] is the oldest message (backend returns ASC)
+      const more = data.hasMore ?? false
+      hasMoreMessagesRef.current = more
+      setHasMoreMessages(more)
+      if (more && data.messages.length > 0) oldestMessageIdRef.current = data.messages[0]?.id ?? null
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
       setOnlineCount(null) // populated within ~100ms by WS presenceSnapshot
       setStatus('ready')
@@ -1376,16 +1460,8 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // ── Events + Topics: unified fetch via /now ───────────────────────────
-      // The normalized /now endpoint returns both events and topics in a
-      // consistent FeedItem DTO. One call replaces fetchEvents + fetchCityTopics.
-      setHotEventsStatus('loading')
-      const fetchAllEvents = async () => {
-        if (!activeRef.current) return
-        const [nowResult, publicResult] = await Promise.allSettled([
-          fetchNowFeed(location.channelId, sessionIdRef.current),
-          fetchCityEvents(location.channelId),
-        ])
+      // ── Events + Topics: apply results from promises started above ───────────
+      Promise.allSettled([nowFeedP, cityEventsP]).then(([nowResult, publicResult]) => {
         if (activeChannelRef.current !== location.channelId) return
 
         const nowOk    = nowResult.status === 'fulfilled'
@@ -1414,8 +1490,7 @@ export default function App() {
         else setCityEvents([])
 
         setHotEventsStatus(nowOk || publicOk ? 'ready' : 'error')
-      }
-      fetchAllEvents()
+      })
     } catch (err) {
       if (rejoinData) {
         // stored channel may no longer exist — fall back to home
@@ -1654,7 +1729,16 @@ export default function App() {
 
       const joinKey = messageKey(joinData.message)
 
-      const data = await fetchMessages(newChannelId)
+      // Start events + public events fetch immediately — parallel with messages
+      const nowFeedP    = fetchNowFeed(newChannelId, sessionIdRef.current)
+      const cityEventsP = fetchCityEvents(newChannelId)
+
+      // Reset pagination state for the new channel
+      hasMoreMessagesRef.current = false
+      setHasMoreMessages(false)
+      oldestMessageIdRef.current = null
+
+      const data = await fetchMessages(newChannelId, { limit: 50 })
 
       // another switch happened while we were fetching — discard this result
       if (activeChannelRef.current !== newChannelId) return
@@ -1667,6 +1751,12 @@ export default function App() {
         return toFeedItem(m, delay)
       }))
       setFeed(initialItems)
+
+      // Set pagination cursor
+      const switchMore = data.hasMore ?? false
+      hasMoreMessagesRef.current = switchMore
+      setHasMoreMessages(switchMore)
+      if (switchMore && data.messages.length > 0) oldestMessageIdRef.current = data.messages[0]?.id ?? null
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: activeNickname, isMe: true }])
       setOnlineCount(joinData.onlineCount ?? null)
       scheduleEphemeral(joinKey)
@@ -1702,13 +1792,8 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // Events + Topics: unified fetch via /now (same as handleJoin)
-      const fetchAllEvents = async () => {
-        if (!activeRef.current) return
-        const [nowResult, publicResult] = await Promise.allSettled([
-          fetchNowFeed(newChannelId, sessionIdRef.current),
-          fetchCityEvents(newChannelId),
-        ])
+      // Events + Topics: apply results from promises started above
+      Promise.allSettled([nowFeedP, cityEventsP]).then(([nowResult, publicResult]) => {
         if (activeChannelRef.current !== newChannelId) return
 
         const nowOk    = nowResult.status === 'fulfilled'
@@ -1737,8 +1822,7 @@ export default function App() {
         else setCityEvents([])
 
         setHotEventsStatus(nowOk || publicOk ? 'ready' : 'error')
-      }
-      fetchAllEvents()
+      })
     } catch {
       // silently fail — user stays with empty feed for new city
     }
@@ -1989,7 +2073,7 @@ export default function App() {
   }, [topics]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function cityScore(ch) {
-    return ((ch.eventCount ?? 0) * 10) + (ch.activeUsers * 3) + (ch.messageCount * 1)
+    return ((ch.eventCount ?? 0) * 10) + ((ch.topicCount ?? 0) * 5) + (ch.activeUsers * 3) + (ch.messageCount * 1)
   }
 
   // ── Shared city row renderer ────────────────────────────────────────────────
@@ -1997,6 +2081,7 @@ export default function App() {
   function renderCityRow(ch, onClick, isActive = false) {
     const hasActivity = ch.activeUsers > 0
     const eventCount = ch.eventCount ?? 0
+    const topicCount = ch.topicCount ?? 0
     return (
       <button
         key={ch.channelId}
@@ -2014,6 +2099,7 @@ export default function App() {
         <div className="city-row-stats">
           {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
           {eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
+          {topicCount > 0 && <span className="city-row-topics">{topicCount} {topicCount === 1 ? 'conversation' : 'conversations'}</span>}
           {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
         </div>
       </button>
@@ -2479,6 +2565,11 @@ export default function App() {
         </header>
 
         <div className="messages" ref={messagesContainerRef}>
+          {loadingOlder && (
+            <div className="messages-load-older">
+              <span className="messages-load-older-spinner" />
+            </div>
+          )}
           {feed.length === 0 && (
             <div className="empty">
               <p className="empty-icon">{activeEvent ? '💬' : '🔥'}</p>

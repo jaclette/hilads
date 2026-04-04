@@ -270,35 +270,26 @@ export default function ChatTab() {
   }, [channelId]);
 
   // ── Topic feed item synthesis ─────────────────────────────────────────────
-  // Active topics appear as blue pills in the city chat, same pattern as events.
+  // Active topics appear as blue pills in the city chat.
+  // No deduplication needed — topics are a complete list, replaced on each fetch.
 
-  const seenTopicIds = useRef(new Set<string>());
   const [topicFeedItems, setTopicFeedItems] = useState<Message[]>([]);
 
   useEffect(() => {
     if (!channelId) return;
-    seenTopicIds.current.clear();
-    setTopicFeedItems([]);
 
     async function loadTopics() {
       try {
         const topics = await fetchCityTopics(channelId);
-        const now    = Date.now() / 1000;
-        const fresh: Message[] = [];
-        for (const t of topics) {
-          if (!seenTopicIds.current.has(t.id)) {
-            seenTopicIds.current.add(t.id);
-            fresh.push({
-              id:        `topic-msg-${t.id}`,
-              type:      'topic',
-              topicId:   t.id,
-              content:   t.title,
-              nickname:  '',
-              createdAt: t.created_at ?? now,
-            });
-          }
-        }
-        if (fresh.length > 0) setTopicFeedItems(prev => [...prev, ...fresh]);
+        const now = Date.now() / 1000;
+        setTopicFeedItems(topics.map(t => ({
+          id:        `topic-msg-${t.id}`,
+          type:      'topic' as const,
+          topicId:   t.id,
+          content:   t.title,
+          nickname:  '',
+          createdAt: now, // use now so topics appear at the bottom (newest position), like events
+        })));
       } catch {}
     }
 
@@ -308,7 +299,7 @@ export default function ChatTab() {
   }, [channelId]);
 
   const loadFn = useCallback(
-    () => fetchMessages(channelId),
+    (opts?: { beforeId?: string }) => fetchMessages(channelId, opts),
     [channelId],
   );
 
@@ -328,7 +319,7 @@ export default function ChatTab() {
     [channelId, identity, sessionId, nickname],
   );
 
-  const { messages, loading, sending, error, clearError, sendText, sendImage } = useMessages({
+  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder } = useMessages({
     channelId,
     loadFn,
     postTextFn,
@@ -522,6 +513,15 @@ export default function ChatTab() {
             inverted
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
+            onEndReached={hasMore ? loadOlder : undefined}
+            onEndReachedThreshold={0.2}
+            ListFooterComponent={
+              loadingOlder ? (
+                <View style={styles.loadingOlderWrap}>
+                  <ActivityIndicator size="small" color={Colors.muted} />
+                </View>
+              ) : null
+            }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyIcon}>🔥</Text>
@@ -756,6 +756,7 @@ const styles = StyleSheet.create({
   citiesBtnText: { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
 
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
 
   // ── EventBannerStrip ──────────────────────────────────────────────────────
   bannerStrip: {

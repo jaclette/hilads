@@ -1051,8 +1051,9 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
 });
 
 $router->add('GET', '/api/v1/channels', function () {
-    // Four batch queries — no per-city loops
+    // Five batch queries — no per-city loops
     $eventCounts    = EventRepository::getCountsPerCity();
+    $topicCounts    = TopicRepository::getCountsPerCity();
     $messageStats   = MessageRepository::getStatsBatch();
     $presenceCounts = PresenceRepository::getCountBatch();
 
@@ -1071,6 +1072,7 @@ $router->add('GET', '/api/v1/channels', function () {
             'activeUsers'    => $presenceCounts[$id] ?? 0,
             'lastActivityAt' => $stats['lastActivityAt'],
             'eventCount'     => $eventCounts[$id] ?? 0,
+            'topicCount'     => $topicCounts[$id]  ?? 0,
         ];
     }
 
@@ -1336,7 +1338,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             }
         });
 
-        $messages    = MessageRepository::getByChannel($channelId);
+        $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id'])
+            ? trim($_GET['before_id'])
+            : null;
+        $limit    = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
+
+        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit);
+        $messages    = $msgResult['messages'];
+        $hasMore     = $msgResult['hasMore'];
         $onlineUsers = PresenceRepository::getOnline($channelId);
         $onlineCount = count($onlineUsers);
 
@@ -1409,6 +1418,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
 
         Response::json([
             'messages'    => $messages,
+            'hasMore'     => $hasMore,
             'onlineUsers' => $onlineUsers,
             'onlineCount' => $onlineCount,
         ]);
@@ -2479,7 +2489,8 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
             return;
         }
 
-        Response::json(['messages' => MessageRepository::getByChannel($eventId)]);
+        $res = MessageRepository::getByChannel($eventId);
+        Response::json(['messages' => $res['messages']]);
     } catch (\Throwable $e) {
         error_log('[event-messages] GET failed for event ' . $eventId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to load messages'], 500);
@@ -3362,7 +3373,8 @@ $router->add('GET', '/api/v1/topics/{topicId}/messages', function (array $params
             Response::json(['error' => 'Topic not found or expired'], 404);
         }
 
-        Response::json(['messages' => MessageRepository::getByChannel($topicId)]);
+        $res = MessageRepository::getByChannel($topicId);
+        Response::json(['messages' => $res['messages']]);
     } catch (\Throwable $e) {
         error_log('[topic-messages] GET failed for topic ' . $topicId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to load messages'], 500);

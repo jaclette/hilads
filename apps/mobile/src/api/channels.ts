@@ -32,6 +32,7 @@ interface RawChannel {
   activeUsers?: number;          // web: ch.activeUsers — online count
   messageCount?: number;
   eventCount?:   number;
+  topicCount?:   number;
   liveScore?:    number;
 }
 
@@ -46,6 +47,7 @@ export async function fetchChannels(): Promise<City[]> {
     onlineCount:  ch.activeUsers,                                        // normalize activeUsers → onlineCount
     messageCount: ch.messageCount,
     eventCount:   ch.eventCount,
+    topicCount:   ch.topicCount,
     liveScore:    ch.liveScore,
   }));
 }
@@ -128,9 +130,16 @@ export async function fetchCityAmbassadors(channelId: string): Promise<CityAmbas
   }
 }
 
-export async function fetchMessages(channelId: string): Promise<Message[]> {
-  const data = await api.get<{ messages: Message[] }>(`/channels/${channelId}/messages`);
-  return data.messages ?? [];
+export async function fetchMessages(
+  channelId: string,
+  opts: { beforeId?: string; limit?: number } = {},
+): Promise<{ messages: Message[]; hasMore: boolean }> {
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+  if (opts.beforeId) q.set('before_id', opts.beforeId);
+  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
+    `/channels/${channelId}/messages?${q}`,
+  );
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
 }
 
 export async function sendMessage(

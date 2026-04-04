@@ -159,9 +159,9 @@ export async function toggleEventParticipation(
 
 // ── Event chat ────────────────────────────────────────────────────────────────
 
-export async function fetchEventMessages(eventId: string): Promise<Message[]> {
+export async function fetchEventMessages(eventId: string): Promise<{ messages: Message[]; hasMore: boolean }> {
   const data = await api.get<{ messages: Message[] }>(`/events/${eventId}/messages`);
-  return data.messages ?? [];
+  return { messages: data.messages ?? [], hasMore: false };
 }
 
 export async function sendEventMessage(

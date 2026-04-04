@@ -16,6 +16,7 @@ export interface City {
   slug: string;
   onlineCount?: number;
   eventCount?: number;
+  topicCount?: number;
   messageCount?: number;
   liveScore?: number;
 }

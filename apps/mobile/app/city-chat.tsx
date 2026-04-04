@@ -21,7 +21,7 @@ export default function CityChatScreen() {
   const channelId = city?.channelId ?? '';
 
   const loadFn = useCallback(
-    () => fetchMessages(channelId),
+    (opts?: { beforeId?: string }) => fetchMessages(channelId, opts),
     [channelId],
   );
 
@@ -41,7 +41,7 @@ export default function CityChatScreen() {
     [channelId, identity, sessionId, nickname],
   );
 
-  const { messages, loading, sending, error, clearError, sendText, sendImage } = useMessages({
+  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder } = useMessages({
     channelId,
     loadFn,
     postTextFn,
@@ -87,6 +87,15 @@ export default function CityChatScreen() {
             inverted
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
+            onEndReached={hasMore ? loadOlder : undefined}
+            onEndReachedThreshold={0.2}
+            ListFooterComponent={
+              loadingOlder ? (
+                <View style={styles.loadingOlderWrap}>
+                  <ActivityIndicator size="small" color={Colors.muted} />
+                </View>
+              ) : null
+            }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyText}>No messages yet. Say hello 👋</Text>
@@ -127,6 +136,7 @@ const styles = StyleSheet.create({
   errorText:    { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
 
   center:       { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
   listContent:  { paddingVertical: Spacing.sm },
   emptyWrap:    { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   emptyText:    { color: Colors.muted, fontSize: FontSizes.sm, textAlign: 'center' },

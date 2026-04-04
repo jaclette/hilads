@@ -47,6 +47,30 @@ class TopicRepository
     // ── Reads ─────────────────────────────────────────────────────────────────
 
     /**
+     * Active topic count per city — used for the city list summary.
+     * Returns an array keyed by integer city channel ID (e.g. 3), value = count.
+     */
+    public static function getCountsPerCity(): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT ct.city_id, COUNT(*) AS topic_count
+            FROM channel_topics ct
+            JOIN channels c ON c.id = ct.channel_id
+            WHERE c.status     = 'active'
+              AND ct.expires_at > now()
+            GROUP BY ct.city_id
+        ");
+        $stmt->execute();
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            // city_id is stored as 'city_3' — extract the numeric ID to match EventRepository
+            $numericId           = (int) str_replace('city_', '', $row['city_id']);
+            $result[$numericId]  = (int) $row['topic_count'];
+        }
+        return $result;
+    }
+
+    /**
      * Active topics for a city, sorted by last activity DESC.
      * $cityId is the channel ID string, e.g. 'city_3'.
      */

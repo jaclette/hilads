@@ -45,7 +45,7 @@ export default function TopicChatScreen() {
     if (id && identity?.guestId) markTopicRead(id, identity.guestId);
   }, [id, identity?.guestId]);
 
-  const loadFn = useCallback(() => fetchTopicMessages(id), [id]);
+  const loadFn = useCallback((_opts?: { beforeId?: string }) => fetchTopicMessages(id), [id]);
 
   const postTextFn = useCallback(
     (content: string): Promise<Message> => {

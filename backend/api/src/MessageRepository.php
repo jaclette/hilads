@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 class MessageRepository
 {
-    private const LIMIT = 200; // last 200 messages returned per channel
+    private const DEFAULT_LIMIT = 50;
+    private const MAX_LIMIT     = 100;
 
     // ── Channel ID mapping ────────────────────────────────────────────────────
     // City channels: int 1 → DB key 'city_1'
@@ -88,8 +89,20 @@ class MessageRepository
 
     // ── Reads ─────────────────────────────────────────────────────────────────
 
-    public static function getByChannel(int|string $channelId): array
+    /**
+     * Returns paginated messages for a channel, oldest-first.
+     *
+     * @param beforeId  Cursor: fetch messages older than this message ID.
+     *                  null = fetch the most recent $limit messages.
+     * @param limit     Page size (1-100, default 50).
+     * @return array{ messages: array, hasMore: bool }
+     */
+    public static function getByChannel(int|string $channelId, ?string $beforeId = null, int $limit = self::DEFAULT_LIMIT): array
     {
+        $dbChan = self::dbKey($channelId);
+        $limit  = max(1, min(self::MAX_LIMIT, $limit));
+        $fetch  = $limit + 1; // fetch one extra to detect hasMore
+
         // COALESCE(m.user_id, u.id): retroactively resolves the sender's registered userId
         // for chat messages (text/image) where user_id was never written (sent before the
         // api.php fix, or sent as a guest before registering). Uses idx_users_guest_id.
@@ -98,26 +111,62 @@ class MessageRepository
         // (type = 'system', e.g. join events). A ghost join must remain a ghost join even
         // if the guestId was later linked to a registered account — applying COALESCE here
         // would cause clicking "SoftOwl joined" to open the registered user's profile.
-        $stmt = Database::pdo()->prepare("
-            SELECT id, channel_id, type, event,
-                   guest_id, user_id, nickname, content, image_url, created_at
-            FROM (
-                SELECT
-                    m.id, m.channel_id, m.type, m.event,
-                    m.guest_id,
-                    COALESCE(m.user_id, u.id) AS user_id,
-                    m.nickname, m.content, m.image_url,
-                    EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
-                FROM messages m
-                LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
-                WHERE m.channel_id = ?
-                ORDER BY m.created_at DESC
-                LIMIT " . self::LIMIT . "
-            ) sub
-            ORDER BY created_at ASC
-        ");
-        $stmt->execute([self::dbKey($channelId)]);
-        return array_map([self::class, 'format'], $stmt->fetchAll());
+
+        if ($beforeId !== null) {
+            // Cursor-based: fetch messages strictly older than the given message's created_at.
+            // The subquery resolves the cursor's timestamp, avoiding PHP round-trips.
+            $stmt = Database::pdo()->prepare("
+                SELECT id, channel_id, type, event,
+                       guest_id, user_id, nickname, content, image_url, created_at
+                FROM (
+                    SELECT
+                        m.id, m.channel_id, m.type, m.event,
+                        m.guest_id,
+                        COALESCE(m.user_id, u.id) AS user_id,
+                        m.nickname, m.content, m.image_url,
+                        EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
+                    FROM messages m
+                    LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
+                    WHERE m.channel_id = ?
+                      AND m.created_at < (SELECT created_at FROM messages WHERE id = ?)
+                    ORDER BY m.created_at DESC
+                    LIMIT ?
+                ) sub
+                ORDER BY created_at ASC
+            ");
+            $stmt->execute([$dbChan, $beforeId, $fetch]);
+        } else {
+            $stmt = Database::pdo()->prepare("
+                SELECT id, channel_id, type, event,
+                       guest_id, user_id, nickname, content, image_url, created_at
+                FROM (
+                    SELECT
+                        m.id, m.channel_id, m.type, m.event,
+                        m.guest_id,
+                        COALESCE(m.user_id, u.id) AS user_id,
+                        m.nickname, m.content, m.image_url,
+                        EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
+                    FROM messages m
+                    LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
+                    WHERE m.channel_id = ?
+                    ORDER BY m.created_at DESC
+                    LIMIT ?
+                ) sub
+                ORDER BY created_at ASC
+            ");
+            $stmt->execute([$dbChan, $fetch]);
+        }
+
+        $rows    = $stmt->fetchAll();
+        $hasMore = count($rows) > $limit;
+        if ($hasMore) {
+            array_shift($rows); // remove the oldest probe row (index 0 after ASC sort)
+        }
+
+        return [
+            'messages' => array_map([self::class, 'format'], $rows),
+            'hasMore'  => $hasMore,
+        ];
     }
 
     public static function getStats(int $channelId): array

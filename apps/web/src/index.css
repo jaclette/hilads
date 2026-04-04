@@ -1350,6 +1350,24 @@ html, body, #root {
   border-radius: 4px;
 }
 
+.messages-load-older {
+  display: flex;
+  justify-content: center;
+  padding: 14px 0 6px;
+}
+.messages-load-older-spinner {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.12);
+  border-top-color: rgba(255,255,255,0.45);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .empty {
   display: flex;
   flex-direction: column;
@@ -3781,6 +3799,12 @@ img.pub-profile-avatar {
 .city-row-events {
   font-size: 0.82rem;
   color: var(--text);
+  font-weight: 600;
+}
+
+.city-row-topics {
+  font-size: 0.82rem;
+  color: #60a5fa;
   font-weight: 600;
 }
 

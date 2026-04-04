@@ -33,9 +33,9 @@ export async function fetchTopicById(topicId: string): Promise<Topic> {
   return api.get<Topic>(`/topics/${topicId}`);
 }
 
-export async function fetchTopicMessages(topicId: string): Promise<Message[]> {
+export async function fetchTopicMessages(topicId: string): Promise<{ messages: Message[]; hasMore: boolean }> {
   const data = await api.get<{ messages: Message[] }>(`/topics/${topicId}/messages`);
-  return data.messages ?? [];
+  return { messages: data.messages ?? [], hasMore: false };
 }
 
 export async function sendTopicMessage(
