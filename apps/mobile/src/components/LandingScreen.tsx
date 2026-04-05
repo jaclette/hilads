@@ -79,15 +79,18 @@ const EVENT_ICONS: Record<string, string> = {
 
 function filterTodayEvents(events: HiladsEvent[], timezone: string): HiladsEvent[] {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone });
-  return events.filter(e =>
-    new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: timezone }) === today,
-  );
+  const now = Date.now();
+  return events.filter(e => {
+    const startDate = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: timezone });
+    const isLive = e.starts_at * 1000 <= now && (e.expires_at ?? e.ends_at ?? 0) * 1000 > now;
+    return startDate === today || isLive;
+  });
 }
 
 function filterPreviewEvents(todayEvents: HiladsEvent[]): HiladsEvent[] {
   const now = Date.now();
   return todayEvents
-    .filter(e => (e.starts_at * 1000 - now) / 60_000 >= -30)
+    .filter(e => ((e.expires_at ?? e.ends_at ?? 0) * 1000 - now) / 60_000 >= -30)
     .sort((a, b) => a.starts_at - b.starts_at)
     .slice(0, 3);
 }

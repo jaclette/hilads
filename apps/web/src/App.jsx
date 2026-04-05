@@ -1159,14 +1159,18 @@ export default function App() {
     const now = Date.now()
     fetchEvents(previewChannelId)
       .then(data => {
-        // filterTodayEvents — same as native
-        const todayEvents = (data.events ?? []).filter(e =>
-          new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz }) === today
-        )
+        // filterTodayEvents — events starting today OR currently live (started before
+        // today but not yet expired). The backend already applies this, but we recheck
+        // client-side so timezone mismatches don't show tomorrow's events.
+        const todayEvents = (data.events ?? []).filter(e => {
+          const startDate = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
+          const isLive = e.starts_at * 1000 <= now && (e.expires_at ?? e.ends_at) * 1000 > now
+          return startDate === today || isLive
+        })
         setPreviewEventCount(todayEvents.length)
-        // filterPreviewEvents — same as native: not ended >30min ago, sorted, max 3
+        // filterPreviewEvents: not ended >30min ago, sorted by start time, max 3
         const preview = todayEvents
-          .filter(e => (e.starts_at * 1000 - now) / 60_000 >= -30)
+          .filter(e => ((e.expires_at ?? e.ends_at) * 1000 - now) / 60_000 >= -30)
           .sort((a, b) => a.starts_at - b.starts_at)
           .slice(0, 3)
         setPreviewEvents(preview)
