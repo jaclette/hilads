@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -1148,28 +1148,41 @@ export default function App() {
   }
 
   // Fetch landing page preview: events + topics for the pre-join activity block.
-  // Uses /now which returns Hilads events + active topics in one call, plus
-  // publicEvents (Ticketmaster) as a fallback so the city never looks empty.
-  // This avoids the first-request-of-day gap introduced when ensureTodayOccurrences
-  // was moved to register_shutdown_function — on first load, Hilads series events
-  // may not exist yet, but Ticketmaster events always do.
+  // Fallback chain:
+  //   1. /now → today's Hilads events + active topics + Ticketmaster publicEvents
+  //   2. If no events at all → /events/upcoming (generates series occurrences for next 7 days)
+  // Topics from /now are always used if available (24h TTL, user-created).
+  // The upcoming fallback ensures recurring city events (daily/weekly series) always show.
   useEffect(() => {
     if (!previewChannelId) return
     fetchNowFeed(previewChannelId)
-      .then(data => {
-        const items = data.items ?? []
+      .then(async data => {
+        const items        = data.items        ?? []
         const publicEvents = data.publicEvents ?? []
 
         const eventItems = items.filter(i => i.kind === 'event')
-        const topicItems  = items.filter(i => i.kind === 'topic')
+        const topicItems = items.filter(i => i.kind === 'topic')
 
-        // Fall back to Ticketmaster events when no Hilads events are available
-        const eventsToShow = eventItems.length > 0 ? eventItems : publicEvents
+        // Topics: use whatever /now returned
+        setPreviewTopicCount(topicItems.length)
+        setPreviewTopics(topicItems.slice(0, 3))
+
+        // Events: Hilads today → Ticketmaster → upcoming series (next 7 days)
+        let eventsToShow = eventItems.length > 0 ? eventItems : publicEvents
+
+        if (eventsToShow.length === 0) {
+          try {
+            const up = await fetchUpcomingEvents(previewChannelId, 7)
+            eventsToShow = (up.events ?? [])
+              .slice(0, 3)
+              .map(e => ({ ...e, kind: 'event', event_type: e.type ?? 'other' }))
+          } catch {
+            // ignore — leave eventsToShow empty
+          }
+        }
 
         setPreviewEventCount(eventsToShow.length)
         setPreviewEvents(eventsToShow.slice(0, 3))
-        setPreviewTopicCount(topicItems.length)
-        setPreviewTopics(topicItems.slice(0, 3))
       })
       .catch(() => {})
   }, [previewChannelId])

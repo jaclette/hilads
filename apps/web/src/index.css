@@ -515,8 +515,8 @@ html, body, #root {
 }
 .chat-header .logo svg {
   filter:
-    drop-shadow(0 0 14px rgba(194, 74, 56, 0.55))
-    drop-shadow(0 0 4px rgba(194, 74, 56, 0.35));
+    drop-shadow(0 0 16px rgba(255, 140, 60, 0.35))
+    drop-shadow(0 0 5px rgba(255, 200, 120, 0.2));
 }
 
 /* Brand block: logo icon + tagline — stacked on mobile, row on desktop */
