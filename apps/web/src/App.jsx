@@ -684,6 +684,8 @@ export default function App() {
 
   const bottomRef = useRef(null)
   const isInitialLoadRef = useRef(true) // true until first non-empty feed renders — forces scroll-to-bottom on channel entry
+  const hotEventsStatusRef = useRef(hotEventsStatus) // mirrors hotEventsStatus, updated every render — read inside feed effect without adding it as a dep
+  hotEventsStatusRef.current = hotEventsStatus
   const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
   const hasMoreMessagesRef = useRef(false) // mirrors hasMoreMessages state, readable inside scroll handlers
   const oldestMessageIdRef = useRef(null)  // ID of the oldest message in the feed — pagination cursor
@@ -1018,9 +1020,16 @@ export default function App() {
 
     if (isInitialLoadRef.current) {
       // Initial load window — always jump to bottom.
-      // Do NOT reset the flag here; hotEventsStatus effect resets it once
-      // events/topics have loaded so their feed pills are included in the scroll.
       bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      // Release the lock only once events/topics have settled. hotEventsStatusRef is
+      // updated every render so by the time the pill-injecting render's feed effect
+      // runs, the ref already reflects 'ready' — guaranteeing pills are visible before
+      // the lock releases. The separate useEffect([hotEventsStatus]) was wrong because
+      // it ran in the same flush as the pill injection, before the feed effect had a
+      // chance to scroll to the newly added pills.
+      if (hotEventsStatusRef.current !== 'loading') {
+        isInitialLoadRef.current = false
+      }
       return
     }
 
@@ -1030,15 +1039,6 @@ export default function App() {
       bottomRef.current?.scrollIntoView({ behavior: 'instant' })
     }
   }, [feed])
-
-  // Reset the initial-load scroll flag once the events/topics panel resolves.
-  // This ensures the initial scroll window covers the full first render cycle:
-  // messages (fast) + event/topic pills (injected after nowFeedP resolves).
-  useEffect(() => {
-    if (hotEventsStatus === 'ready' || hotEventsStatus === 'error') {
-      isInitialLoadRef.current = false
-    }
-  }, [hotEventsStatus])
 
   // ── Load older messages (pagination) ─────────────────────────────────────
   // Triggered by the scroll listener below when the user scrolls near the top.
