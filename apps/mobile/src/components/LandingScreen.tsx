@@ -25,7 +25,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { joinChannel } from '@/api/channels';
+import { openCity } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
@@ -121,7 +121,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   const {
     identity, sessionId, account,
     geoState, detectedCity,
-    setIdentity, setCity, setJoined,
+    setIdentity, setCity, setJoined, setBootstrapData,
   } = useApp();
 
   const [nickname,      setNickname]      = useState(identity?.nickname ?? '');
@@ -200,7 +200,14 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     try {
       const updated = { ...identity, nickname: trimmed, channelId: city?.channelId };
       if (city) {
-        await joinChannel(city.channelId, sessionId, identity.guestId, trimmed);
+        const openResult = await openCity(city.channelId, sessionId, identity.guestId, trimmed);
+        setBootstrapData({
+          channelId:    city.channelId,
+          messages:     openResult.messages,
+          hasMore:      openResult.hasMore,
+          feedItems:    openResult.feedItems,
+          publicEvents: openResult.publicEvents,
+        });
         setCity(city);
         if (socket.isConnected) {
           socket.joinCity(city.channelId, sessionId, trimmed, account?.id, identity.guestId);

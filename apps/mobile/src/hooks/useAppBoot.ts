@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { loadOrCreateIdentity, generateSessionId } from '@/lib/identity';
 import { socket } from '@/lib/socket';
-import { resolveLocation, joinChannel, fetchChannels } from '@/api/channels';
+import { resolveLocation, openCity, fetchChannels } from '@/api/channels';
 import { authMe } from '@/api/auth';
 import { loadSavedToken } from '@/services/session';
 import { fetchUnreadCount } from '@/api/notifications';
@@ -140,7 +140,7 @@ export function useAppBoot(): Result {
   const {
     setIdentity, setSessionId, setAccount,
     setCity, setBooting, setBootError, setWsConnected, setUnreadDMs,
-    setUnreadNotifications, setGeoState, setDetectedCity, setJoined,
+    setUnreadNotifications, setGeoState, setDetectedCity, setJoined, setBootstrapData,
   } = useApp();
 
   const [retryCount,    setRetryCount]    = useState(0);
@@ -356,7 +356,18 @@ export function useAppBoot(): Result {
               if (saved) {
                 console.log('[boot] auto-rejoining', saved.name);
                 setCity(saved);
-                joinChannel(saved.channelId, sessionId, identity.guestId, displayName)
+                openCity(saved.channelId, sessionId, identity.guestId, displayName)
+                  .then(result => {
+                    if (!cancelled) {
+                      setBootstrapData({
+                        channelId:    saved.channelId,
+                        messages:     result.messages,
+                        hasMore:      result.hasMore,
+                        feedItems:    result.feedItems,
+                        publicEvents: result.publicEvents,
+                      });
+                    }
+                  })
                   .catch(() => {});
                 const userId = user?.id;
                 socket.on('connected', () =>

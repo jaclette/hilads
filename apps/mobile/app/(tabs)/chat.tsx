@@ -135,6 +135,7 @@ export default function ChatTab() {
     unreadDMs, setUnreadDMs,
     unreadNotifications,
     clearEventChatCounts,
+    bootstrapData,
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
@@ -332,11 +333,15 @@ export default function ChatTab() {
     [channelId, identity, sessionId, nickname],
   );
 
+  // Use pre-loaded data from the bootstrap endpoint if available for the current channel.
+  const chatBootstrap = bootstrapData?.channelId === channelId ? bootstrapData : undefined;
+
   const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder } = useMessages({
     channelId,
     loadFn,
     postTextFn,
     postImageFn,
+    initialData: chatBootstrap ? { messages: chatBootstrap.messages, hasMore: chatBootstrap.hasMore } : undefined,
   });
 
   // ── System feed prompts + ambient activity messages ────────────────────────

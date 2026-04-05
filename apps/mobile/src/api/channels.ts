@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { City, Message, UserDTO } from '@/types';
+import type { City, FeedItem, HiladsEvent, Message, UserDTO } from '@/types';
 
 // ── City / channel resolution ─────────────────────────────────────────────────
 
@@ -75,6 +75,45 @@ export async function joinChannel(
     nickname,
     previousChannelId,
   });
+}
+
+export interface OpenCityResult {
+  joinMessage:  Message | null;
+  messages:     Message[];
+  hasMore:      boolean;
+  onlineUsers:  UserDTO[];
+  onlineCount:  number;
+  feedItems:    FeedItem[];
+  publicEvents: HiladsEvent[];
+}
+
+/**
+ * Bootstrap a city open in a single round-trip.
+ * Equivalent to POST /join + GET /messages + GET /now — eliminates 2 extra PHP
+ * bootstrap costs + 2 extra network RTTs on initial city entry.
+ */
+export async function openCity(
+  channelId: string,
+  sessionId: string,
+  guestId: string,
+  nickname: string,
+  previousChannelId?: string,
+): Promise<OpenCityResult> {
+  const data = await api.post<OpenCityResult>(`/channels/${channelId}/open`, {
+    sessionId,
+    guestId,
+    nickname,
+    ...(previousChannelId ? { previousChannelId } : {}),
+  });
+  return {
+    joinMessage:  data.joinMessage  ?? null,
+    messages:     data.messages     ?? [],
+    hasMore:      data.hasMore      ?? false,
+    onlineUsers:  data.onlineUsers  ?? [],
+    onlineCount:  data.onlineCount  ?? 0,
+    feedItems:    data.feedItems    ?? [],
+    publicEvents: data.publicEvents ?? [],
+  };
 }
 
 export async function leaveChannel(channelId: string, sessionId: string): Promise<void> {

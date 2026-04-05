@@ -1253,6 +1253,272 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
     }
 });
 
+// ── Bootstrap endpoint ────────────────────────────────────────────────────────
+// Merges join + messages + now into a single HTTP round-trip.
+// Eliminates 2 extra PHP bootstrap costs + 2 extra network RTTs compared to
+// calling each endpoint individually (the previous mobile flow).
+//
+// Request body: same as /join (sessionId, guestId, nickname, previousChannelId?)
+// Query params: same as /messages (before_id?, limit?) + /now (sessionId?, guestId?)
+//
+// Response:
+//   joinMessage   — join feed entry (or null if re-join)
+//   messages      — last N chat messages (enriched with badges)
+//   hasMore       — pagination flag
+//   onlineUsers   — presence list (enriched with badges)
+//   onlineCount   — integer
+//   feedItems     — now-feed items (events + topics, sorted)
+//   publicEvents  — public events for the city
+$router->add('POST', '/api/v1/channels/{channelId}/open', function (array $params) {
+    $startedAt = microtime(true);
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    try {
+        $body = Request::json();
+
+        if ($body === null) {
+            Response::json(['error' => 'Invalid JSON body'], 400);
+        }
+
+        $sessionId = $body['sessionId'] ?? null;
+        $guestId   = $body['guestId']  ?? null;
+        $nickname  = $body['nickname'] ?? null;
+
+        enforceRateLimit('channel_join', 90, 300);
+
+        $city = CityRepository::findById($channelId);
+        if ($city === null) {
+            Response::json(['error' => 'Channel not found'], 404);
+        }
+
+        if (!isValidSessionId($sessionId)) {
+            Response::json(['error' => 'sessionId is required'], 400);
+        }
+
+        if (!isValidGuestId($guestId)) {
+            Response::json(['error' => 'guestId is required'], 400);
+        }
+
+        if (empty($nickname) || !is_string($nickname)) {
+            Response::json(['error' => 'nickname is required'], 400);
+        }
+
+        $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
+
+        if ($nickname === '') {
+            Response::json(['error' => 'nickname must not be empty'], 400);
+        }
+
+        // ── Phase 1: join ────────────────────────────────────────────────────
+        $t0 = microtime(true);
+
+        $previousChannelId = isset($body['previousChannelId'])
+            ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+            : false;
+
+        if ($previousChannelId !== false && $previousChannelId !== $channelId) {
+            $deferPrevChannel = $previousChannelId;
+            $deferSessionId   = $sessionId;
+            register_shutdown_function(static function () use ($deferPrevChannel, $deferSessionId): void {
+                if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+                try { PresenceRepository::leave($deferPrevChannel, $deferSessionId); }
+                catch (\Throwable $e) { error_log('[open] leave failed (deferred): ' . $e->getMessage()); }
+            });
+        }
+
+        $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+
+        $authUser        = AuthService::currentUser();
+        $deferAuthUserId = $authUser ? $authUser['id'] : null;
+        $deferGuestId    = $guestId;
+        $deferChannel    = 'city_' . $channelId;
+
+        register_shutdown_function(static function () use ($deferAuthUserId, $deferGuestId, $deferChannel): void {
+            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+            try {
+                $pdo = Database::pdo();
+                $memberUserId = $deferAuthUserId;
+                if (!$memberUserId) {
+                    $stmt = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
+                    $stmt->execute([$deferGuestId]);
+                    $memberUserId = $stmt->fetchColumn() ?: null;
+                }
+                if ($memberUserId) {
+                    $pdo->prepare("
+                        INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
+                        VALUES (?, ?, now(), now())
+                        ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
+                    ")->execute([$memberUserId, $deferChannel]);
+                }
+            } catch (\Throwable $e) {
+                error_log('[open] membership upsert failed (deferred): ' . $e->getMessage());
+            }
+        });
+
+        $joinUserId  = $deferAuthUserId;
+        $joinMessage = null;
+        if ($isNewSession) {
+            try {
+                $joinMessage = MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $joinUserId);
+            } catch (\Throwable $e) {
+                error_log('[open] join event write failed: ' . $e->getMessage());
+            }
+        }
+
+        $t1 = microtime(true); // after join
+
+        // ── Phase 2: messages + presence + badges ────────────────────────────
+        $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id'])
+            ? trim($_GET['before_id'])
+            : null;
+        $limit = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
+
+        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit);
+        $messages    = $msgResult['messages'];
+        $hasMore     = $msgResult['hasMore'];
+        $onlineUsers = PresenceRepository::getOnline($channelId);
+        $onlineCount = count($onlineUsers);
+
+        $msgUserIds = [];
+        foreach ($messages as $msg) {
+            $t = $msg['type'] ?? 'text';
+            if (($t === 'text' || $t === 'image') && !empty($msg['userId'])) {
+                $msgUserIds[] = $msg['userId'];
+            }
+        }
+        $presenceUserIds = array_values(array_unique(array_filter(
+            array_column($onlineUsers, 'userId'),
+            fn($id) => !empty($id)
+        )));
+        $allUserIds = array_values(array_unique(array_merge($msgUserIds, $presenceUserIds)));
+        $badgeMap   = UserBadgeService::batchFull($allUserIds, $channelId, $city['name']);
+
+        foreach ($messages as &$msg) {
+            $t = $msg['type'] ?? 'text';
+            if ($t === 'text' || $t === 'image') {
+                if (!empty($msg['userId']) && isset($badgeMap[$msg['userId']])) {
+                    $entry = $badgeMap[$msg['userId']];
+                    $msg['primaryBadge'] = $entry['primaryBadge'];
+                    $msg['contextBadge'] = $entry['contextBadge'];
+                    $msg['vibe']         = $entry['vibe'] ?? 'chill';
+                } else {
+                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['contextBadge'] = null;
+                    $msg['vibe']         = null;
+                }
+            }
+        }
+        unset($msg);
+
+        foreach ($onlineUsers as &$u) {
+            $uid = $u['userId'] ?? null;
+            if (empty($uid)) {
+                $u['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                $u['contextBadge'] = null;
+            } elseif (isset($badgeMap[$uid])) {
+                $entry = $badgeMap[$uid];
+                $u['primaryBadge'] = $entry['primaryBadge'];
+                $u['contextBadge'] = $entry['contextBadge'];
+                $u['vibe']         = $entry['vibe'] ?? 'chill';
+            } else {
+                $u['primaryBadge'] = UserBadgeService::primaryForUser(['created_at' => $u['userCreatedAt']]);
+                $u['contextBadge'] = null;
+                $u['vibe']         = $u['userVibe'] ?? 'chill';
+            }
+            unset($u['userCreatedAt'], $u['userHomeCity'], $u['userVibe']);
+        }
+        unset($u);
+
+        $t2 = microtime(true); // after messages + presence + badges
+
+        // ── Phase 3: now-feed (events + topics) ─────────────────────────────
+        $participantKey = isValidGuestId($guestId)     ? $guestId
+                        : (isValidSessionId($sessionId) ? $sessionId
+                        : null);
+
+        $cityId       = 'city_' . $channelId;
+        $events       = EventRepository::getByChannel($channelId, $participantKey, $city);
+        $topics       = TopicRepository::getByCity($cityId);
+        $publicEvents = EventRepository::getPublicByChannel($channelId);
+
+        $now       = time();
+        $feedItems = [];
+        foreach ($events as $e) { $feedItems[] = normalizeFeedEvent($e, $now); }
+        foreach ($topics as $t) { $feedItems[] = normalizeFeedTopic($t, $now); }
+
+        usort($feedItems, function (array $a, array $b) use ($now): int {
+            $aLive = $a['kind'] === 'event' && $a['active_now'];
+            $bLive = $b['kind'] === 'event' && $b['active_now'];
+            if ($aLive !== $bLive) return $aLive ? -1 : 1;
+            if ($aLive && $bLive) return ($a['starts_at'] ?? 0) <=> ($b['starts_at'] ?? 0);
+            $aAct = $a['last_activity_at'] ?? $a['created_at'] ?? 0;
+            $bAct = $b['last_activity_at'] ?? $b['created_at'] ?? 0;
+            return $bAct <=> $aAct;
+        });
+
+        $publicEventItems = array_map(fn(array $e) => normalizeFeedEvent($e, $now), $publicEvents);
+
+        $t3 = microtime(true); // after now-feed
+
+        // Defer weather injection (same as /messages)
+        $cid = $channelId;
+        $cty = $city;
+        register_shutdown_function(static function () use ($cid, $cty): void {
+            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+            try { WeatherService::maybeInject($cid, $cty); }
+            catch (\Throwable $e) { error_log('[open] weather injection failed: ' . $e->getMessage()); }
+        });
+
+        // Analytics (deferred)
+        if ($isNewSession) {
+            $cityAnalytics = $city;
+            AnalyticsService::defer('joined_city', $deferAuthUserId ?? $guestId, [
+                'channel_id' => $channelId,
+                'city'       => $cityAnalytics['name']    ?? null,
+                'country'    => $cityAnalytics['country'] ?? null,
+                'is_guest'   => $deferAuthUserId === null,
+                'user_id'    => $deferAuthUserId ?? null,
+                'guest_id'   => $deferAuthUserId === null ? $guestId : null,
+            ]);
+        }
+
+        apiLog('channel_open', 'success', [
+            'channelId'   => $channelId,
+            'isNew'       => $isNewSession,
+            'messages'    => count($messages),
+            'onlineCount' => $onlineCount,
+            'feedItems'   => count($feedItems),
+            'elapsedMs'   => apiElapsedMs($startedAt),
+            'phases_ms'   => [
+                'join'     => round(($t1 - $t0) * 1000, 1),
+                'messages' => round(($t2 - $t1) * 1000, 1),
+                'feed'     => round(($t3 - $t2) * 1000, 1),
+            ],
+        ]);
+
+        Response::json([
+            'joinMessage'  => $joinMessage,
+            'messages'     => $messages,
+            'hasMore'      => $hasMore,
+            'onlineUsers'  => $onlineUsers,
+            'onlineCount'  => $onlineCount,
+            'feedItems'    => $feedItems,
+            'publicEvents' => $publicEventItems,
+        ], 201);
+    } catch (\Throwable $e) {
+        apiLog('channel_open', 'failure', [
+            'channelId' => $channelId,
+            'elapsedMs' => apiElapsedMs($startedAt),
+            'error'     => get_class($e) . ': ' . $e->getMessage(),
+        ]);
+        throw $e;
+    }
+});
+
 $router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 

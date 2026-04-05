@@ -5,10 +5,12 @@ import { useApp } from '@/context/AppContext';
 import type { Message } from '@/types';
 
 interface Params {
-  channelId:   string;
-  loadFn:      (opts?: { beforeId?: string }) => Promise<{ messages: Message[]; hasMore: boolean }>;
-  postTextFn:  (content: string) => Promise<Message>;
-  postImageFn: (imageUrl: string) => Promise<Message>;
+  channelId:    string;
+  loadFn:       (opts?: { beforeId?: string }) => Promise<{ messages: Message[]; hasMore: boolean }>;
+  postTextFn:   (content: string) => Promise<Message>;
+  postImageFn:  (imageUrl: string) => Promise<Message>;
+  /** Pre-loaded messages from the bootstrap endpoint — skips the initial loadFn call. */
+  initialData?: { messages: Message[]; hasMore: boolean };
 }
 
 interface Result {
@@ -29,19 +31,28 @@ function makeLocalId(prefix = 'local'): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
-export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Params): Result {
+export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initialData }: Params): Result {
   const { identity, account } = useApp();
 
-  const [messages,     setMessages]     = useState<Message[]>([]);
-  const [loading,      setLoading]      = useState(true);
+  // Ref holds the bootstrap data so it can be consumed once without being a useEffect dep.
+  const initialDataRef = useRef(initialData);
+
+  const [messages,     setMessages]     = useState<Message[]>(() => {
+    if (initialData) {
+      return [...initialData.messages].reverse(); // newest-first for inverted FlatList
+    }
+    return [];
+  });
+  const [loading,      setLoading]      = useState(!initialData); // skip loading state if pre-seeded
   const [loadingOlder, setLoadingOlder] = useState(false);
-  const [hasMore,      setHasMore]      = useState(false);
+  const [hasMore,      setHasMore]      = useState(initialData?.hasMore ?? false);
   const [sending,      setSending]      = useState(false);  // image upload only
   const [error,        setError]        = useState<string | null>(null);
 
   // Track seen IDs to deduplicate WS + initial load + send
-  const seenIds        = useRef(new Set<string>());
-  const oldestIdRef    = useRef<string | null>(null); // cursor for loading older pages
+  const _initKey = (m: Message) => m.id ?? `${m.guestId ?? ''}:${m.createdAt}`;
+  const seenIds        = useRef(new Set<string>(initialData ? initialData.messages.map(_initKey) : []));
+  const oldestIdRef    = useRef<string | null>(initialData && initialData.messages.length > 0 ? initialData.messages[0]?.id ?? null : null);
   const loadingOlderRef = useRef(false);              // guards against concurrent loadOlder calls
 
   // Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
@@ -95,7 +106,15 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn }: Para
     }
   }, [loadFn]);
 
-  useEffect(() => { load(); }, [channelId]);
+  useEffect(() => {
+    // If bootstrap data was provided for this mount, skip the initial fetch.
+    // Consume the ref once — subsequent channelId changes (city switches) fetch normally.
+    if (initialDataRef.current) {
+      initialDataRef.current = undefined;
+      return;
+    }
+    load();
+  }, [channelId]);
 
   // WebSocket — live new messages
   useEffect(() => {

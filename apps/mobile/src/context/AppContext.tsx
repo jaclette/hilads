@@ -5,11 +5,21 @@ import React, {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { GuestIdentity, City, User, OnlineUser, EventChatPreview } from '@/types';
+import type { FeedItem, GuestIdentity, City, HiladsEvent, Message, User, OnlineUser, EventChatPreview } from '@/types';
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 import { unregisterPushToken } from '@/services/push';
 import { track, resetAnalytics } from '@/services/analytics';
+
+// Pre-loaded data returned by POST /channels/{id}/open.
+// Consumed once by chat (messages) and now (feedItems) tabs on first render.
+export interface BootstrapData {
+  channelId:    string;
+  messages:     Message[];
+  hasMore:      boolean;
+  feedItems:    FeedItem[];
+  publicEvents: HiladsEvent[];
+}
 
 // Matches web geoState values exactly:
 // 'pending'   → permission dialog showing ("› requesting location...")
@@ -36,6 +46,7 @@ interface AppState {
   detectedCity:         City | null;     // geo-resolved city, shown on landing screen
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
   onlineUsers:          OnlineUser[];    // live presence list for the current city
+  bootstrapData:        BootstrapData | null; // pre-loaded from /open, consumed once by tabs
 }
 
 interface AppActions {
@@ -57,6 +68,7 @@ interface AppActions {
   setDetectedCity:         (city: City | null) => void;
   setJoined:               (joined: boolean) => void;
   setOnlineUsers:          (users: OnlineUser[]) => void;
+  setBootstrapData:        (data: BootstrapData | null) => void;
   logout:                  () => Promise<void>;
 }
 
@@ -77,8 +89,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [activeDmId,              setActiveDmId]              = useState<string | null>(null);
   const [geoState,                setGeoState]                = useState<GeoState>('pending');
   const [detectedCity, setDetectedCity] = useState<City | null>(null);
-  const [joined,       setJoined]       = useState(false);
-  const [onlineUsers,  setOnlineUsers]  = useState<OnlineUser[]>([]);
+  const [joined,         setJoined]         = useState(false);
+  const [onlineUsers,    setOnlineUsers]    = useState<OnlineUser[]>([]);
+  const [bootstrapData,  setBootstrapData]  = useState<BootstrapData | null>(null);
 
   const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
 
@@ -125,7 +138,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected,
         unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-        geoState, detectedCity, joined, onlineUsers,
+        geoState, detectedCity, joined, onlineUsers, bootstrapData,
         setBooting, setBootError,
         setIdentity,
         setSessionId:            useCallback((id: string) => setSessionId(id), []),
@@ -143,6 +156,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setDetectedCity:         useCallback((c: City | null) => setDetectedCity(c), []),
         setJoined:               useCallback((j: boolean) => setJoined(j), []),
         setOnlineUsers:          useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
+        setBootstrapData:        useCallback((d: BootstrapData | null) => setBootstrapData(d), []),
         logout,
       }}
     >
