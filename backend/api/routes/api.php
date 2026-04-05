@@ -1371,14 +1371,26 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             }
         });
 
-        // ── q4 (conditional): join feed event ─────────────────────────────────
+        // ── q4 (conditional): join feed event — deferred ─────────────────────
+        // The joining user never consumes joinMessage from the bootstrap response
+        // (it is parsed but unused on mobile). Deferring saves ~100ms on new sessions
+        // while ensuring the event still appears for other users on their next poll.
         $joinMessage = null;
         if ($isNewSession) {
-            try {
-                $joinMessage = MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $deferAuthUserId);
-            } catch (\Throwable $e) {
-                error_log('[bootstrap] join event write failed: ' . $e->getMessage());
-            }
+            $deferJoinChannelId = $channelId;
+            $deferJoinGuestId   = $guestId;
+            $deferJoinNickname  = $nickname;
+            $deferJoinUserId    = $deferAuthUserId;
+            register_shutdown_function(
+                static function () use ($deferJoinChannelId, $deferJoinGuestId, $deferJoinNickname, $deferJoinUserId): void {
+                    if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+                    try {
+                        MessageRepository::addJoinEvent($deferJoinChannelId, $deferJoinGuestId, $deferJoinNickname, $deferJoinUserId);
+                    } catch (\Throwable $e) {
+                        error_log('[bootstrap] join event write failed: ' . $e->getMessage());
+                    }
+                }
+            );
         }
 
         $t1 = microtime(true); // after join

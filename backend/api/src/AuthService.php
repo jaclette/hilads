@@ -152,9 +152,15 @@ class AuthService
             return null;
         }
 
-        // Single JOIN — resolves session + user in one round-trip
+        // Single JOIN — resolves session + user + ambassador flag in one round-trip.
+        // The EXISTS subquery adds ~0ms cost but eliminates the separate ambassador
+        // check query in ownFields(), saving one full DB round-trip per /me call.
         $stmt = Database::pdo()->prepare("
-            SELECT u.*
+            SELECT u.*,
+                   EXISTS(
+                       SELECT 1 FROM user_city_roles
+                       WHERE user_id = u.id AND role = 'ambassador' LIMIT 1
+                   ) AS _is_ambassador
             FROM user_sessions s
             JOIN users u ON u.id = s.user_id
             WHERE s.id = ? AND s.expires_at > now() AND u.deleted_at IS NULL
@@ -481,12 +487,18 @@ class AuthService
     /** Own profile — includes email, guest_id, and ambassador state. Never includes password_hash or google_id. */
     public static function ownFields(array $user): array
     {
-        // Single lightweight query to check if the user has any ambassador role.
-        $stmt = Database::pdo()->prepare(
-            "SELECT 1 FROM user_city_roles WHERE user_id = ? AND role = 'ambassador' LIMIT 1"
-        );
-        $stmt->execute([$user['id']]);
-        $isAmbassador = (bool) $stmt->fetchColumn();
+        // Use the ambassador flag pre-fetched by currentUser() to avoid a second query.
+        // Falls back to a direct DB check when $user comes from a path that did not
+        // go through currentUser() (e.g. admin tooling).
+        if (array_key_exists('_is_ambassador', $user)) {
+            $isAmbassador = (bool) $user['_is_ambassador'];
+        } else {
+            $stmt = Database::pdo()->prepare(
+                "SELECT 1 FROM user_city_roles WHERE user_id = ? AND role = 'ambassador' LIMIT 1"
+            );
+            $stmt->execute([$user['id']]);
+            $isAmbassador = (bool) $stmt->fetchColumn();
+        }
 
         $picks = null;
         if ($isAmbassador) {
