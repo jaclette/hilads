@@ -620,27 +620,25 @@ export default function MeScreen() {
       {!isGuest && (
         <View style={[styles.stickyCta, { paddingBottom: Math.max(12, insets.bottom) }]}>
           {saveError ? <Text style={styles.saveError}>{saveError}</Text> : null}
-          <View style={styles.stickyCtaRow}>
-            <TouchableOpacity
-              style={[styles.ctaBtn, styles.ctaBtnSave, { flex: 1 }]}
-              onPress={handleSave}
-              activeOpacity={0.85}
-              disabled={saving || photoUploading}
-            >
-              {saving ? (
-                <ActivityIndicator color={Colors.white} size="small" />
-              ) : (
-                <Text style={styles.ctaBtnText}>{saved ? 'Saved ✓' : 'Save profile'}</Text>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.ctaBtn, styles.ctaBtnSignOut, styles.ctaBtnSignOutSticky]}
-              onPress={handleLogout}
-              activeOpacity={0.85}
-            >
-              <Text style={[styles.ctaBtnText, styles.ctaBtnTextSignOut]}>Sign out</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.ctaBtn, styles.ctaBtnSave]}
+            onPress={handleSave}
+            activeOpacity={0.85}
+            disabled={saving || photoUploading}
+          >
+            {saving ? (
+              <ActivityIndicator color={Colors.white} size="small" />
+            ) : (
+              <Text style={styles.ctaBtnText}>{saved ? 'Saved ✓' : 'Save profile'}</Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.stickySignOut}
+            onPress={handleLogout}
+            activeOpacity={0.6}
+          >
+            <Text style={styles.stickySignOutText}>Sign out</Text>
+          </TouchableOpacity>
         </View>
       )}
     </SafeAreaView>
@@ -1046,11 +1044,16 @@ const styles = StyleSheet.create({
     backgroundColor:   'rgba(14, 14, 16, 0.92)',
     borderTopWidth:    1,
     borderTopColor:    Colors.border,
-    gap:               Spacing.sm,
+    gap:               2,
   },
-  stickyCtaRow: {
-    flexDirection: 'row',
-    gap:           10,
+  stickySignOut: {
+    alignItems:    'center',
+    paddingVertical: 8,
+  },
+  stickySignOutText: {
+    fontSize:   FontSizes.xs,
+    fontWeight: '500',
+    color:      Colors.muted2,
   },
 
   // ── CTAs — web: .profile-actions ──────────────────────────────────────────
@@ -1085,7 +1088,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   ctaBtnTextSignOut: { color: Colors.accent },
-  ctaBtnSignOutSticky: { paddingHorizontal: 20 },
 
   // ── Guest upgrade ──────────────────────────────────────────────────────────
   upgradeCard: {

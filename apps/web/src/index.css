@@ -1214,25 +1214,31 @@ html, body, #root {
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-.profile-sticky-row {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 2px;
 }
 .profile-sticky-save {
-  flex: 1;
+  /* inherits modal-submit full-width orange gradient */
 }
 .profile-sticky-signout {
-  flex-shrink: 0;
-  width: auto;
-  padding-left: 18px;
-  padding-right: 18px;
+  background: none;
+  border: none;
+  color: var(--muted2);
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 6px 0;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  transition: color 0.15s;
 }
+.profile-sticky-signout:hover { color: var(--muted); }
 .profile-sticky-error {
   font-size: 0.78rem;
   color: #f87171;
   text-align: center;
-  margin: 0 0 6px;
+  margin: 0 0 4px;
 }
 
 /* ── Guest upgrade CTA ─────────────────────────────────── */
