@@ -238,7 +238,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         <input
           ref={fileRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp"
+          accept="image/*"
           style={{ display: 'none' }}
           onChange={handleImageSelect}
         />
