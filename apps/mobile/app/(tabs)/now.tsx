@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     color:             Colors.muted,
   },
 
-  list: { paddingBottom: 170, paddingHorizontal: Spacing.md, gap: Spacing.sm },
+  list: { paddingBottom: 90, paddingHorizontal: Spacing.md, gap: Spacing.sm },
 
   // ── Shared card base ───────────────────────────────────────────────────────
   card: {
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     position:          'absolute',
     left:              Spacing.md,
     right:             Spacing.md,
-    bottom:            Spacing.md,
+    bottom:            0,
     backgroundColor:   Colors.bg2,
     borderRadius:      Radius.lg,
     borderWidth:       1,

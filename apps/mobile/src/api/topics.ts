@@ -32,7 +32,8 @@ export async function fetchCityTopics(channelId: string): Promise<Topic[]> {
 }
 
 export async function fetchTopicById(topicId: string): Promise<Topic> {
-  return api.get<Topic>(`/topics/${topicId}`);
+  const data = await api.get<{ topic: Topic }>(`/topics/${topicId}`);
+  return data.topic;
 }
 
 export async function fetchTopicMessages(topicId: string): Promise<{ messages: Message[]; hasMore: boolean }> {

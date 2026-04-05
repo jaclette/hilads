@@ -585,39 +585,41 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ── .feed-prompt — orange card with text + CTA (web: feed-prompt) ────────
-  // Web: align-self center, rgba(255,120,50,0.1) bg, 1px border rgba(255,120,50,0.25),
-  //      border-radius 20px, padding 8 14, gap 10
+  // ── .feed-prompt — matches event pill style exactly (web: feed-prompt) ────
+  // Same tokens as eventPill so prompts feel like feed items, not buttons.
   promptRow: {
     alignSelf:         'center',
     flexDirection:     'row',
     alignItems:        'center',
-    gap:               10,
-    backgroundColor:   'rgba(255,120,50,0.10)',
+    justifyContent:    'space-between',
+    backgroundColor:   'rgba(255,122,60,0.08)',
     borderWidth:       1,
-    borderColor:       'rgba(255,120,50,0.25)',
-    borderRadius:      20,
-    paddingHorizontal: 14,
-    paddingVertical:   8,
-    marginVertical:    6,
-    maxWidth:          '88%',
+    borderColor:       'rgba(255,122,60,0.18)',
+    borderRadius:      22,
+    paddingHorizontal: 16,
+    paddingVertical:   10,
+    marginVertical:    4,
+    maxWidth:          '82%',
   },
   promptText: {
-    flex:     1,
-    fontSize: 13,
-    color:    Colors.muted,
+    flexShrink:  1,
+    fontSize:    15,
+    fontWeight:  '500',
+    color:       Colors.muted,
+    lineHeight:  20,
+    marginRight: 10,
   },
   promptBtn: {
-    backgroundColor:   Colors.accent,
-    borderRadius:      14,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
+    backgroundColor:   'rgba(255,122,60,0.55)',
+    borderRadius:      12,
+    paddingHorizontal: 11,
+    paddingVertical:   4,
     flexShrink:        0,
   },
   promptBtnText: {
     color:      '#fff',
-    fontSize:   12,
-    fontWeight: '600',
+    fontSize:   14,
+    fontWeight: '700',
   },
 
   // ── .feed-join — centered pill ────────────────────────────────────────────
