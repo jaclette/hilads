@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import {
@@ -80,11 +80,15 @@ export default function TopicChatScreen() {
     postImageFn,
   });
 
-  // Poll every 5s since there's no WS room join for topics yet
-  useEffect(() => {
-    const timer = setInterval(reload, 5_000);
+  // Light poll while screen is focused — topics have no WS room yet.
+  // 15s is enough to feel live without spamming the API.
+  // useFocusEffect clears the interval when the user navigates away.
+  const reloadRef = useRef(reload);
+  reloadRef.current = reload;
+  useFocusEffect(useCallback(() => {
+    const timer = setInterval(() => reloadRef.current(), 15_000);
     return () => clearInterval(timer);
-  }, [reload]);
+  }, []));
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -100,7 +104,7 @@ export default function TopicChatScreen() {
           {topic && (
             <>
               <Text style={styles.navIcon}>{CATEGORY_ICONS[topic.category] ?? '💬'}</Text>
-              <Text style={styles.navTitle} numberOfLines={1}>{topic.title}</Text>
+              <Text style={styles.navTitle} numberOfLines={2}>{topic.title}</Text>
             </>
           )}
         </View>
@@ -125,7 +129,7 @@ export default function TopicChatScreen() {
             {topic.description ? (
               <Text style={styles.infoDesc}>{topic.description}</Text>
             ) : null}
-            <Text style={styles.infoExpiry}>⏱ Active for 24 h · {topic.message_count} {topic.message_count === 1 ? 'reply' : 'replies'}</Text>
+            <Text style={styles.infoExpiry}>⏱ Active for 24 h</Text>
           </View>
         ) : null
       ) : (
@@ -240,17 +244,18 @@ const styles = StyleSheet.create({
   navCenter: {
     flex:           1,
     flexDirection:  'row',
-    alignItems:     'center',
+    alignItems:     'flex-start',
     justifyContent: 'center',
     gap:            6,
-    overflow:       'hidden',
   },
-  navIcon:  { fontSize: 18 },
+  navIcon:  { fontSize: 18, lineHeight: 24, marginTop: 1 },
   navTitle: {
-    fontSize:      FontSizes.md,
-    fontWeight:    '700',
-    color:         Colors.text,
-    flexShrink:    1,
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.text,
+    flexShrink: 1,
+    textAlign:  'center',
+    lineHeight: 22,
   },
   shareBtn: {
     width:           44,
