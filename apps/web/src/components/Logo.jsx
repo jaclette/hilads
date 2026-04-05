@@ -3,6 +3,12 @@
 //
 // variant: 'icon' | 'wordmark'  (default: 'wordmark')
 // size:    'sm' | 'md' | 'lg'   (default: 'md')
+//
+// Each instance generates a unique gradient ID via useId() to prevent
+// cross-SVG gradient resolution issues when multiple Logo instances are in
+// the DOM simultaneously (e.g. desktop hidden + mobile visible in chat header).
+
+import { useId } from 'react'
 
 const SIZES = {
   sm: { icon: 22, fontSize: '0.85rem', gap: 6 },
@@ -11,6 +17,8 @@ const SIZES = {
 }
 
 export default function Logo({ variant = 'wordmark', size = 'md' }) {
+  const uid = useId()
+  const gid = `hi-g-${uid.replace(/:/g, '')}`
   const s = SIZES[size] || SIZES.md
   return (
     <span className="logo" style={{ gap: s.gap }}>
@@ -23,14 +31,14 @@ export default function Logo({ variant = 'wordmark', size = 'md' }) {
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id="hi-g" x1="5%" y1="0%" x2="95%" y2="100%">
+          <linearGradient id={gid} x1="5%" y1="0%" x2="95%" y2="100%">
             <stop offset="0%"   stopColor="#C24A38" />
             <stop offset="44%"  stopColor="#B85530" />
             <stop offset="100%" stopColor="#B87228" />
           </linearGradient>
         </defs>
         {/* Background */}
-        <rect width="64" height="64" rx="15" fill="url(#hi-g)" />
+        <rect width="64" height="64" rx="15" fill={`url(#${gid})`} />
         {/* H */}
         <rect x="9"  y="13" width="8" height="38" rx="2.5" fill="white" />
         <rect x="26" y="13" width="8" height="38" rx="2.5" fill="white" />
