@@ -683,9 +683,7 @@ export default function App() {
   }
 
   const bottomRef = useRef(null)
-  const isInitialLoadRef = useRef(true) // true until first non-empty feed renders — forces scroll-to-bottom on channel entry
-  const hotEventsStatusRef = useRef(hotEventsStatus) // mirrors hotEventsStatus, updated every render — read inside feed effect without adding it as a dep
-  hotEventsStatusRef.current = hotEventsStatus
+  const isInitialLoadRef = useRef(true) // true until hotEventsStatus settles — forces scroll-to-bottom on channel entry
   const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
   const hasMoreMessagesRef = useRef(false) // mirrors hasMoreMessages state, readable inside scroll handlers
   const oldestMessageIdRef = useRef(null)  // ID of the oldest message in the feed — pagination cursor
@@ -1001,10 +999,12 @@ export default function App() {
   }, [])
 
   // Scroll to bottom on new messages.
-  // - Initial load window (isInitialLoadRef = true): always jump to bottom.
-  //   The flag stays true until hotEventsStatus settles ('ready'|'error') so that
-  //   event/topic pills injected by the nowFeedP/.then() path are also caught —
-  //   those arrive ~100-300ms after the initial messages in a separate render cycle.
+  // - Initial load window (isInitialLoadRef = true): snap to bottom on every feed change.
+  //   The lock is released by the useEffect([hotEventsStatus]) below — not here — because
+  //   events/topics effects inject pills via setFeed in the SAME render that sets
+  //   hotEventsStatus='ready'. That means hotEventsStatusRef is already 'ready' when this
+  //   effect runs for the initial messages render, so releasing the lock here would free it
+  //   BEFORE the pills are in the DOM.
   // - After initial window: only scroll if already within 150px of the bottom.
   // isInitialLoadRef resets to true on every channel/event switch (feed clears to []).
   const messagesContainerRef = useRef(null)
@@ -1019,29 +1019,31 @@ export default function App() {
     }
 
     if (isInitialLoadRef.current) {
-      // Initial load window — always snap to the true bottom.
-      // Use scrollTop = scrollHeight rather than scrollIntoView: the latter captures
-      // the target element's position at call time, so if CSS smooth-scroll is active
-      // in the browser (or scroll-behavior is set upstream) the animation can complete
-      // at a stale position before event/topic pills have been appended.
-      // scrollTop = scrollHeight always hits the current bottom, instantly.
+      // Snap to true bottom during initial load window
       container.scrollTop = container.scrollHeight
-      // Release the lock only once events/topics have settled. hotEventsStatusRef is
-      // updated every render so by the time the pill-injecting render's feed effect
-      // runs, the ref already reflects 'ready' — guaranteeing pills are visible before
-      // the lock releases.
-      if (hotEventsStatusRef.current !== 'loading') {
-        isInitialLoadRef.current = false
-      }
       return
     }
 
     // Subsequent live messages — only scroll if already near the bottom
     const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
     if (distanceFromBottom < 150) {
-      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      container.scrollTop = container.scrollHeight
     }
   }, [feed])
+
+  // Release the initial-load scroll lock after events/topics have settled.
+  // setTimeout(0) defers to a macrotask — by then React has processed all setFeed calls
+  // queued by the events/topics effects (pill injection), so the final scroll lands at
+  // the true bottom with every pill already in the DOM.
+  useEffect(() => {
+    if (hotEventsStatus === 'loading') return
+    const t = setTimeout(() => {
+      isInitialLoadRef.current = false
+      const container = messagesContainerRef.current
+      if (container) container.scrollTop = container.scrollHeight
+    }, 0)
+    return () => clearTimeout(t)
+  }, [hotEventsStatus])
 
   // ── Load older messages (pagination) ─────────────────────────────────────
   // Triggered by the scroll listener below when the user scrolls near the top.
