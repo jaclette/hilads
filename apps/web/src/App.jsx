@@ -1370,14 +1370,19 @@ export default function App() {
       const socket = socketRef.current ?? createSocket()
       socketRef.current = socket
 
+      // The API returns channelId as a string but the WS server uses integer Map keys,
+      // so the server always sends cityId as a number. Use String() coercion on both
+      // sides so "1" === 1 compares equal instead of being silently filtered out.
+      const matchesChannel = (cityId) => String(activeChannelRef.current) === String(cityId)
+
       socket.on('presenceSnapshot', ({ cityId, users, count }) => {
-        if (activeChannelRef.current !== cityId) return
+        if (!matchesChannel(cityId)) return
         setOnlineUsers(buildOnlineUsers(users, sessionIdRef.current))
         setOnlineCount(count)
       })
 
       socket.on('userJoined', ({ cityId, user }) => {
-        if (activeChannelRef.current !== cityId) return
+        if (!matchesChannel(cityId)) return
         setOnlineUsers((prev) => {
           if (prev.some((u) => u.sessionId === user.sessionId)) return prev
           return [...prev, { id: user.sessionId, sessionId: user.sessionId, nickname: user.nickname, userId: user.userId ?? null, isRegistered: !!user.userId, isMe: false }]
@@ -1385,17 +1390,17 @@ export default function App() {
       })
 
       socket.on('userLeft', ({ cityId, user }) => {
-        if (activeChannelRef.current !== cityId) return
+        if (!matchesChannel(cityId)) return
         setOnlineUsers((prev) => prev.filter((u) => u.sessionId !== user.sessionId))
       })
 
       socket.on('onlineCountUpdated', ({ cityId, count }) => {
-        if (activeChannelRef.current !== cityId) return
+        if (!matchesChannel(cityId)) return
         setOnlineCount(count)
       })
 
       socket.on('typingUsers', ({ cityId, users }) => {
-        if (activeChannelRef.current !== cityId) return
+        if (!matchesChannel(cityId)) return
         setTypingUsers(users)
       })
 
@@ -1411,7 +1416,9 @@ export default function App() {
       // The poll remains as a fallback for when WS is disconnected.
       // Sender's own messages are already in knownIds — they're skipped automatically.
       socket.on('newMessage', ({ channelId, message }) => {
-        const isCityMsg  = channelId === activeChannelRef.current
+        // City channelId is a number from WS but string from API — use String() coercion.
+        // Event channelId is a UUID string on both sides — strict equality works fine.
+        const isCityMsg  = String(channelId) === String(activeChannelRef.current)
         const isEventMsg = channelId === activeEventIdRef.current
 
         if (!isCityMsg && !isEventMsg) return

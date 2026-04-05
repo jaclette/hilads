@@ -61,6 +61,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   const inputRef        = useRef<TextInput>(null);
   const lastSel         = useRef({ start: 0, end: 0 });
   const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTypingRef     = useRef(false); // true while typingStart has been emitted
 
   const clearTypingTimer = useCallback(() => {
     if (typingStopTimer.current !== null) {
@@ -72,16 +73,24 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   function handleChangeText(val: string) {
     setText(val);
     if (val.length > 0) {
-      onTypingStart?.();
+      // Only emit typingStart once per typing session (matches web isTypingRef pattern)
+      if (!isTypingRef.current) {
+        isTypingRef.current = true;
+        onTypingStart?.();
+      }
       clearTypingTimer();
       typingStopTimer.current = setTimeout(() => {
+        isTypingRef.current = false;
         onTypingStop?.();
         typingStopTimer.current = null;
       }, 1500);
     } else {
       // Input cleared (e.g. after send) — stop immediately
       clearTypingTimer();
-      onTypingStop?.();
+      if (isTypingRef.current) {
+        isTypingRef.current = false;
+        onTypingStop?.();
+      }
     }
   }
 
@@ -90,7 +99,10 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     if (!trimmed || sending) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     clearTypingTimer();
-    onTypingStop?.();
+    if (isTypingRef.current) {
+      isTypingRef.current = false;
+      onTypingStop?.();
+    }
     onSendText(trimmed);
     setText('');
   }
@@ -273,7 +285,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         onSubmitEditing={Platform.OS !== 'ios' ? handleSend : undefined}
         editable={!busy}
         onFocus={() => setShowEmoji(false)}
-        onBlur={() => { clearTypingTimer(); onTypingStop?.(); }}
+        onBlur={() => { clearTypingTimer(); if (isTypingRef.current) { isTypingRef.current = false; onTypingStop?.(); } }}
       />
 
       {/* ── Send button — web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}
