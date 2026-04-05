@@ -19,7 +19,7 @@ import {
   View, Text, Image, ScrollView, TouchableOpacity,
   TextInput, ActivityIndicator, Alert, StyleSheet, Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
@@ -100,6 +100,7 @@ function formatDate(ts: number): string {
 
 export default function MeScreen() {
   const router  = useRouter();
+  const insets  = useSafeAreaInsets();
   const { identity, account, setAccount, logout, city } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
@@ -286,7 +287,7 @@ export default function MeScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: Spacing.xxl }}
+        contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}
       >
 
         {/* ── Header — back button left, centered title ── */}
@@ -608,18 +609,20 @@ export default function MeScreen() {
           </View>
         )}
 
-        {/* ── CTAs — web: Save profile + Sign out (gradient buttons) ──────── */}
-        {!isGuest && (
-          <View style={styles.ctaSection}>
+        {/* Version — tap 5× to open debug panel */}
+        <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
+          <Text style={styles.version}>v{APP_VERSION}</Text>
+        </TouchableOpacity>
 
-            {/* Save error */}
-            {saveError ? (
-              <Text style={styles.saveError}>{saveError}</Text>
-            ) : null}
+      </ScrollView>
 
-            {/* Save profile */}
+      {/* ── Sticky CTA bar — registered users only ───────────────────────── */}
+      {!isGuest && (
+        <View style={[styles.stickyCta, { paddingBottom: Math.max(12, insets.bottom) }]}>
+          {saveError ? <Text style={styles.saveError}>{saveError}</Text> : null}
+          <View style={styles.stickyCtaRow}>
             <TouchableOpacity
-              style={[styles.ctaBtn, styles.ctaBtnSave]}
+              style={[styles.ctaBtn, styles.ctaBtnSave, { flex: 1 }]}
               onPress={handleSave}
               activeOpacity={0.85}
               disabled={saving || photoUploading}
@@ -630,24 +633,16 @@ export default function MeScreen() {
                 <Text style={styles.ctaBtnText}>{saved ? 'Saved ✓' : 'Save profile'}</Text>
               )}
             </TouchableOpacity>
-
-            {/* Sign out */}
             <TouchableOpacity
-              style={[styles.ctaBtn, styles.ctaBtnSignOut]}
+              style={[styles.ctaBtn, styles.ctaBtnSignOut, styles.ctaBtnSignOutSticky]}
               onPress={handleLogout}
               activeOpacity={0.85}
             >
               <Text style={[styles.ctaBtnText, styles.ctaBtnTextSignOut]}>Sign out</Text>
             </TouchableOpacity>
           </View>
-        )}
-
-        {/* Version — tap 5× to open debug panel */}
-        <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
-          <Text style={styles.version}>v{APP_VERSION}</Text>
-        </TouchableOpacity>
-
-      </ScrollView>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -1044,6 +1039,20 @@ const styles = StyleSheet.create({
     color:    Colors.muted,
   },
 
+  // ── Sticky CTA bar ────────────────────────────────────────────────────────
+  stickyCta: {
+    paddingHorizontal: Spacing.md,
+    paddingTop:        12,
+    backgroundColor:   'rgba(14, 14, 16, 0.92)',
+    borderTopWidth:    1,
+    borderTopColor:    Colors.border,
+    gap:               Spacing.sm,
+  },
+  stickyCtaRow: {
+    flexDirection: 'row',
+    gap:           10,
+  },
+
   // ── CTAs — web: .profile-actions ──────────────────────────────────────────
   ctaSection: {
     marginHorizontal: Spacing.md,
@@ -1076,6 +1085,7 @@ const styles = StyleSheet.create({
     letterSpacing: -0.2,
   },
   ctaBtnTextSignOut: { color: Colors.accent },
+  ctaBtnSignOutSticky: { paddingHorizontal: 20 },
 
   // ── Guest upgrade ──────────────────────────────────────────────────────────
   upgradeCard: {

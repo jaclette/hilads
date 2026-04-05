@@ -280,8 +280,6 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
           </div>
         )}
 
-        {error && <p className="profile-error">{error}</p>}
-
         {myEvents !== null && myEvents.length > 0 && (
           <div className="profile-card">
             <p className="me-section-label">My events</p>
@@ -337,17 +335,21 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
           </div>
         )}
 
-        <div className="profile-card profile-actions">
+      </div>
+
+      {/* ── Sticky CTA bar ─────────────────────────────────────────────── */}
+      <div className="profile-sticky-cta">
+        {error && <p className="profile-sticky-error">{error}</p>}
+        <div className="profile-sticky-row">
           <button
-            className="modal-submit"
+            className="modal-submit profile-sticky-save"
             onClick={handleSave}
             disabled={saving || uploading || !name.trim()}
           >
-            {uploading ? 'Uploading photo…' : saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save profile'}
+            {uploading ? 'Uploading…' : saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save profile'}
           </button>
-
           <button
-            className="modal-submit modal-submit--secondary"
+            className="modal-submit modal-submit--secondary profile-sticky-signout"
             onClick={onSignOut}
             type="button"
           >

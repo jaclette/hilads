@@ -1205,6 +1205,36 @@ html, body, #root {
   gap: 12px;
 }
 
+/* ── Profile sticky CTA bar ─────────────────────────────── */
+.profile-sticky-cta {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  background: rgba(14, 14, 16, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.profile-sticky-row {
+  display: flex;
+  gap: 10px;
+}
+.profile-sticky-save {
+  flex: 1;
+}
+.profile-sticky-signout {
+  flex-shrink: 0;
+  width: auto;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+.profile-sticky-error {
+  font-size: 0.78rem;
+  color: #f87171;
+  text-align: center;
+  margin: 0 0 6px;
+}
+
 /* ── Guest upgrade CTA ─────────────────────────────────── */
 .me-upgrade {
   margin-top: 0;
