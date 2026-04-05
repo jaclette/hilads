@@ -246,12 +246,25 @@ export default function ChatTab() {
   // ── Event feed item synthesis (mirrors web prevEventCountRef pattern) ───────
   // Web: when events array grows, inject { type: 'event', id: 'event-msg-{id}', ... }
   // into the feed. Native mirrors this: poll cityEvents, synthesize on first sight.
+  // First load is skipped when bootstrap data is available (cityEvents already loaded).
 
-  // Fetch today's events + poll every 30s (same interval as web)
   useEffect(() => {
     if (!channelId) return;
     seenEventIds.current.clear();
     setEventFeedItems([]);
+
+    // Seed from bootstrap if available — eliminates the initial GET /events call.
+    const bootstrapEvts = chatBootstrap?.cityEvents ?? [];
+    if (bootstrapEvts.length > 0) {
+      const now = Date.now() / 1000;
+      const fresh: Message[] = [];
+      for (const e of bootstrapEvts) {
+        seenEventIds.current.add(e.id);
+        fresh.push({ id: `event-msg-${e.id}`, type: 'event', eventId: e.id,
+                     content: e.title, nickname: '', createdAt: now });
+      }
+      if (fresh.length > 0) setEventFeedItems(fresh);
+    }
 
     async function loadEvents() {
       try {
@@ -278,8 +291,9 @@ export default function ChatTab() {
       } catch {}
     }
 
-    loadEvents();
+    // Delay first poll if bootstrap seeded events — let the 30s interval handle refresh.
     const id = setInterval(loadEvents, 30_000);
+    if (bootstrapEvts.length === 0) loadEvents();
     return () => clearInterval(id);
   }, [channelId]);
 

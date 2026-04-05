@@ -14,11 +14,14 @@ import { track, resetAnalytics } from '@/services/analytics';
 // Pre-loaded data returned by POST /channels/{id}/open.
 // Consumed once by chat (messages) and now (feedItems) tabs on first render.
 export interface BootstrapData {
-  channelId:    string;
-  messages:     Message[];
-  hasMore:      boolean;
-  feedItems:    FeedItem[];
-  publicEvents: HiladsEvent[];
+  channelId:            string;
+  messages:             Message[];
+  hasMore:              boolean;
+  feedItems:            FeedItem[];
+  publicEvents:         FeedItem[];
+  cityEvents:           HiladsEvent[];
+  hasUnreadDMs:         boolean | null;
+  unreadNotifications:  number | null;
 }
 
 // Matches web geoState values exactly:
@@ -46,7 +49,7 @@ interface AppState {
   detectedCity:         City | null;     // geo-resolved city, shown on landing screen
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
   onlineUsers:          OnlineUser[];    // live presence list for the current city
-  bootstrapData:        BootstrapData | null; // pre-loaded from /open, consumed once by tabs
+  bootstrapData:        BootstrapData | null; // pre-loaded from /bootstrap, consumed once by tabs
 }
 
 interface AppActions {

@@ -77,42 +77,54 @@ export async function joinChannel(
   });
 }
 
-export interface OpenCityResult {
-  joinMessage:  Message | null;
-  messages:     Message[];
-  hasMore:      boolean;
-  onlineUsers:  UserDTO[];
-  onlineCount:  number;
-  feedItems:    FeedItem[];
-  publicEvents: HiladsEvent[];
+export interface BootstrapResult {
+  joinMessage:          Message | null;
+  messages:             Message[];
+  hasMore:              boolean;
+  onlineUsers:          UserDTO[];
+  onlineCount:          number;
+  feedItems:            FeedItem[];
+  publicEvents:         FeedItem[];
+  cityEvents:           HiladsEvent[];   // raw Hilads events for chat event synthesis
+  hasUnreadDMs:         boolean | null;  // null for guests
+  unreadNotifications:  number | null;   // null for guests
+  currentUser:          Record<string, unknown> | null;
 }
 
 /**
- * Bootstrap a city open in a single round-trip.
- * Equivalent to POST /join + GET /messages + GET /now — eliminates 2 extra PHP
- * bootstrap costs + 2 extra network RTTs on initial city entry.
+ * Single bootstrap call replacing:
+ *   POST /join + GET /messages + GET /now +
+ *   GET /city-events + GET /conversations/unread + GET /notifications/unread-count
+ *
+ * Returns everything needed to render the channel and initialize global state.
+ * Auth-conditional fields (hasUnreadDMs, unreadNotifications, currentUser) are
+ * null for guest users.
  */
-export async function openCity(
+export async function bootstrapChannel(
   channelId: string,
   sessionId: string,
   guestId: string,
   nickname: string,
   previousChannelId?: string,
-): Promise<OpenCityResult> {
-  const data = await api.post<OpenCityResult>(`/channels/${channelId}/open`, {
+): Promise<BootstrapResult> {
+  const data = await api.post<BootstrapResult>(`/channels/${channelId}/bootstrap`, {
     sessionId,
     guestId,
     nickname,
     ...(previousChannelId ? { previousChannelId } : {}),
   });
   return {
-    joinMessage:  data.joinMessage  ?? null,
-    messages:     data.messages     ?? [],
-    hasMore:      data.hasMore      ?? false,
-    onlineUsers:  data.onlineUsers  ?? [],
-    onlineCount:  data.onlineCount  ?? 0,
-    feedItems:    data.feedItems    ?? [],
-    publicEvents: data.publicEvents ?? [],
+    joinMessage:          data.joinMessage          ?? null,
+    messages:             data.messages             ?? [],
+    hasMore:              data.hasMore              ?? false,
+    onlineUsers:          data.onlineUsers          ?? [],
+    onlineCount:          data.onlineCount          ?? 0,
+    feedItems:            data.feedItems            ?? [],
+    publicEvents:         data.publicEvents         ?? [],
+    cityEvents:           data.cityEvents           ?? [],
+    hasUnreadDMs:         data.hasUnreadDMs         ?? null,
+    unreadNotifications:  data.unreadNotifications  ?? null,
+    currentUser:          data.currentUser          ?? null,
   };
 }
 

@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { FeedItem, HiladsEvent, Topic, Message } from '@/types';
+import type { FeedItem, Topic, Message } from '@/types';
 
 // ── Now feed ──────────────────────────────────────────────────────────────────
 // GET /channels/{id}/now → { items: FeedItem[], publicEvents: FeedItem[] }
@@ -8,9 +8,9 @@ import type { FeedItem, HiladsEvent, Topic, Message } from '@/types';
 export async function fetchNowFeed(
   channelId: string,
   guestId?: string,
-): Promise<{ items: FeedItem[]; publicEvents: HiladsEvent[] }> {
+): Promise<{ items: FeedItem[]; publicEvents: FeedItem[] }> {
   try {
-    const data = await api.get<{ items: FeedItem[]; publicEvents?: HiladsEvent[] }>(
+    const data = await api.get<{ items: FeedItem[]; publicEvents?: FeedItem[] }>(
       `/channels/${channelId}/now`,
       guestId ? { params: { guestId } } : undefined,
     );

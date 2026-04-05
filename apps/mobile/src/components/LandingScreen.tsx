@@ -25,7 +25,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { openCity } from '@/api/channels';
+import { bootstrapChannel } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
@@ -122,6 +122,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     identity, sessionId, account,
     geoState, detectedCity,
     setIdentity, setCity, setJoined, setBootstrapData,
+    setUnreadDMs, setUnreadNotifications,
   } = useApp();
 
   const [nickname,      setNickname]      = useState(identity?.nickname ?? '');
@@ -200,14 +201,19 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     try {
       const updated = { ...identity, nickname: trimmed, channelId: city?.channelId };
       if (city) {
-        const openResult = await openCity(city.channelId, sessionId, identity.guestId, trimmed);
+        const boot = await bootstrapChannel(city.channelId, sessionId, identity.guestId, trimmed);
         setBootstrapData({
-          channelId:    city.channelId,
-          messages:     openResult.messages,
-          hasMore:      openResult.hasMore,
-          feedItems:    openResult.feedItems,
-          publicEvents: openResult.publicEvents,
+          channelId:           city.channelId,
+          messages:            boot.messages,
+          hasMore:             boot.hasMore,
+          feedItems:           boot.feedItems,
+          publicEvents:        boot.publicEvents,
+          cityEvents:          boot.cityEvents,
+          hasUnreadDMs:        boot.hasUnreadDMs,
+          unreadNotifications: boot.unreadNotifications,
         });
+        if (boot.unreadNotifications !== null) setUnreadNotifications(boot.unreadNotifications);
+        if (boot.hasUnreadDMs !== null) setUnreadDMs(boot.hasUnreadDMs ? 1 : 0);
         setCity(city);
         if (socket.isConnected) {
           socket.joinCity(city.channelId, sessionId, trimmed, account?.id, identity.guestId);

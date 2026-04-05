@@ -4,10 +4,9 @@ import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { loadOrCreateIdentity, generateSessionId } from '@/lib/identity';
 import { socket } from '@/lib/socket';
-import { resolveLocation, openCity, fetchChannels } from '@/api/channels';
+import { resolveLocation, bootstrapChannel, fetchChannels } from '@/api/channels';
 import { authMe } from '@/api/auth';
 import { loadSavedToken } from '@/services/session';
-import { fetchUnreadCount } from '@/api/notifications';
 import { getAuthToken } from '@/api/client';
 import { getColdStartNotificationRoute } from '@/features/notifications/NotificationHandler';
 
@@ -139,8 +138,9 @@ async function getPosition(): Promise<Location.LocationObject | null> {
 export function useAppBoot(): Result {
   const {
     setIdentity, setSessionId, setAccount,
-    setCity, setBooting, setBootError, setWsConnected, setUnreadDMs,
-    setUnreadNotifications, setGeoState, setDetectedCity, setJoined, setBootstrapData,
+    setCity, setBooting, setBootError, setWsConnected,
+    setUnreadDMs, setUnreadNotifications,
+    setGeoState, setDetectedCity, setJoined, setBootstrapData,
   } = useApp();
 
   const [retryCount,    setRetryCount]    = useState(0);
@@ -314,9 +314,7 @@ export function useAppBoot(): Result {
             console.log('[boot] authMe result:', user ? `user=${user.id}` : 'null (not authenticated)');
             if (!cancelled && user) {
               setAccount(user);  // usePushRegistration in _layout.tsx reacts to this
-              fetchUnreadCount()
-                .then(count => { if (!cancelled) setUnreadNotifications(count); })
-                .catch(() => {});
+              // unreadNotifications is seeded from bootstrapChannel result — no separate fetch needed.
               console.log('[boot] account set — push registration will fire via usePushRegistration');
               console.log('[boot] authToken present:', getAuthToken() !== null ? 'yes' : 'NO');
             } else if (!cancelled) {
@@ -356,16 +354,21 @@ export function useAppBoot(): Result {
               if (saved) {
                 console.log('[boot] auto-rejoining', saved.name);
                 setCity(saved);
-                openCity(saved.channelId, sessionId, identity.guestId, displayName)
-                  .then(result => {
+                bootstrapChannel(saved.channelId, sessionId, identity.guestId, displayName)
+                  .then(boot => {
                     if (!cancelled) {
                       setBootstrapData({
-                        channelId:    saved.channelId,
-                        messages:     result.messages,
-                        hasMore:      result.hasMore,
-                        feedItems:    result.feedItems,
-                        publicEvents: result.publicEvents,
+                        channelId:           saved.channelId,
+                        messages:            boot.messages,
+                        hasMore:             boot.hasMore,
+                        feedItems:           boot.feedItems,
+                        publicEvents:        boot.publicEvents,
+                        cityEvents:          boot.cityEvents,
+                        hasUnreadDMs:        boot.hasUnreadDMs,
+                        unreadNotifications: boot.unreadNotifications,
                       });
+                      if (boot.unreadNotifications !== null) setUnreadNotifications(boot.unreadNotifications);
+                      if (boot.hasUnreadDMs !== null) setUnreadDMs(boot.hasUnreadDMs ? 1 : 0);
                     }
                   })
                   .catch(() => {});

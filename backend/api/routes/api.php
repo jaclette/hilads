@@ -1253,23 +1253,34 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
     }
 });
 
-// ── Bootstrap endpoint ────────────────────────────────────────────────────────
-// Merges join + messages + now into a single HTTP round-trip.
-// Eliminates 2 extra PHP bootstrap costs + 2 extra network RTTs compared to
-// calling each endpoint individually (the previous mobile flow).
+// ── Channel bootstrap ─────────────────────────────────────────────────────────
+// Single endpoint replacing 6 individual calls on channel entry:
+//   POST /join        → presence join + join feed event
+//   GET  /messages    → chat messages + online users + badge enrichment
+//   GET  /now         → events + topics + public events (feed)
+//   GET  /city-events → ticketmaster public events (same data, no extra query)
+//   GET  /conversations/unread     → DM unread flag  (auth users only)
+//   GET  /notifications/unread-count → notification badge (auth users only)
 //
-// Request body: same as /join (sessionId, guestId, nickname, previousChannelId?)
-// Query params: same as /messages (before_id?, limit?) + /now (sessionId?, guestId?)
+// DB queries: 10-12 synchronous (vs ~20+ across 6 calls).
+// Deferred after response: presence-leave, membership upsert, weather inject, TM sync, analytics.
+//
+// Request body: { sessionId, guestId, nickname, previousChannelId? }
+// Query params: before_id?, limit? (for messages pagination)
 //
 // Response:
-//   joinMessage   — join feed entry (or null if re-join)
-//   messages      — last N chat messages (enriched with badges)
-//   hasMore       — pagination flag
-//   onlineUsers   — presence list (enriched with badges)
-//   onlineCount   — integer
-//   feedItems     — now-feed items (events + topics, sorted)
-//   publicEvents  — public events for the city
-$router->add('POST', '/api/v1/channels/{channelId}/open', function (array $params) {
+//   joinMessage        — join feed entry, or null for re-joins
+//   messages           — last N chat messages (badge-enriched)
+//   hasMore            — pagination cursor flag
+//   onlineUsers        — presence list (badge-enriched)
+//   onlineCount        — integer
+//   feedItems          — sorted now-feed (events + topics)
+//   publicEvents       — Ticketmaster city events (normalized FeedItem shape)
+//   cityEvents         — Hilads events in raw shape (for chat event-synthesis)
+//   hasUnreadDMs       — bool (auth users) or null (guests)
+//   unreadNotifications — int (auth users) or null (guests)
+//   currentUser        — public user fields (auth users) or null (guests)
+$router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $params) {
     $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
@@ -1279,7 +1290,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
 
     try {
         $body = Request::json();
-
         if ($body === null) {
             Response::json(['error' => 'Invalid JSON body'], 400);
         }
@@ -1290,6 +1300,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
 
         enforceRateLimit('channel_join', 90, 300);
 
+        // ── q1: city lookup (worker-level cached after first call) ────────────
         $city = CityRepository::findById($channelId);
         if ($city === null) {
             Response::json(['error' => 'Channel not found'], 404);
@@ -1298,17 +1309,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
         if (!isValidSessionId($sessionId)) {
             Response::json(['error' => 'sessionId is required'], 400);
         }
-
         if (!isValidGuestId($guestId)) {
             Response::json(['error' => 'guestId is required'], 400);
         }
-
         if (empty($nickname) || !is_string($nickname)) {
             Response::json(['error' => 'nickname is required'], 400);
         }
 
         $nickname = mb_substr(trim(strip_tags($nickname)), 0, 20);
-
         if ($nickname === '') {
             Response::json(['error' => 'nickname must not be empty'], 400);
         }
@@ -1320,69 +1328,76 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
             ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
             : false;
 
+        // Defer presence-leave — pure side-effect, never blocks response.
         if ($previousChannelId !== false && $previousChannelId !== $channelId) {
-            $deferPrevChannel = $previousChannelId;
-            $deferSessionId   = $sessionId;
-            register_shutdown_function(static function () use ($deferPrevChannel, $deferSessionId): void {
+            $deferPrev = $previousChannelId;
+            $deferSid  = $sessionId;
+            register_shutdown_function(static function () use ($deferPrev, $deferSid): void {
                 if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-                try { PresenceRepository::leave($deferPrevChannel, $deferSessionId); }
-                catch (\Throwable $e) { error_log('[open] leave failed (deferred): ' . $e->getMessage()); }
+                try { PresenceRepository::leave($deferPrev, $deferSid); }
+                catch (\Throwable $e) { error_log('[bootstrap] leave failed: ' . $e->getMessage()); }
             });
         }
 
+        // ── q2: presence join ─────────────────────────────────────────────────
         $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
 
+        // ── q3: auth lookup (request-level cached) ────────────────────────────
         $authUser        = AuthService::currentUser();
         $deferAuthUserId = $authUser ? $authUser['id'] : null;
-        $deferGuestId    = $guestId;
-        $deferChannel    = 'city_' . $channelId;
 
+        // Defer persistent city membership upsert.
+        $deferGuestId = $guestId;
+        $deferChannel = 'city_' . $channelId;
         register_shutdown_function(static function () use ($deferAuthUserId, $deferGuestId, $deferChannel): void {
             if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
             try {
                 $pdo = Database::pdo();
-                $memberUserId = $deferAuthUserId;
-                if (!$memberUserId) {
+                $uid = $deferAuthUserId;
+                if (!$uid) {
                     $stmt = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
                     $stmt->execute([$deferGuestId]);
-                    $memberUserId = $stmt->fetchColumn() ?: null;
+                    $uid = $stmt->fetchColumn() ?: null;
                 }
-                if ($memberUserId) {
+                if ($uid) {
                     $pdo->prepare("
                         INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
                         VALUES (?, ?, now(), now())
                         ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
-                    ")->execute([$memberUserId, $deferChannel]);
+                    ")->execute([$uid, $deferChannel]);
                 }
             } catch (\Throwable $e) {
-                error_log('[open] membership upsert failed (deferred): ' . $e->getMessage());
+                error_log('[bootstrap] membership upsert failed: ' . $e->getMessage());
             }
         });
 
-        $joinUserId  = $deferAuthUserId;
+        // ── q4 (conditional): join feed event ─────────────────────────────────
         $joinMessage = null;
         if ($isNewSession) {
             try {
-                $joinMessage = MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $joinUserId);
+                $joinMessage = MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $deferAuthUserId);
             } catch (\Throwable $e) {
-                error_log('[open] join event write failed: ' . $e->getMessage());
+                error_log('[bootstrap] join event write failed: ' . $e->getMessage());
             }
         }
 
         $t1 = microtime(true); // after join
 
-        // ── Phase 2: messages + presence + badges ────────────────────────────
+        // ── Phase 2: messages + presence + badge enrichment ──────────────────
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id'])
-            ? trim($_GET['before_id'])
-            : null;
+            ? trim($_GET['before_id']) : null;
         $limit = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
 
+        // ── q5: chat messages ─────────────────────────────────────────────────
         $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit);
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
+
+        // ── q6: online presence ───────────────────────────────────────────────
         $onlineUsers = PresenceRepository::getOnline($channelId);
         $onlineCount = count($onlineUsers);
 
+        // ── q7: badge enrichment (1 query covers messages + presence) ─────────
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
@@ -1400,11 +1415,12 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
         foreach ($messages as &$msg) {
             $t = $msg['type'] ?? 'text';
             if ($t === 'text' || $t === 'image') {
-                if (!empty($msg['userId']) && isset($badgeMap[$msg['userId']])) {
-                    $entry = $badgeMap[$msg['userId']];
-                    $msg['primaryBadge'] = $entry['primaryBadge'];
-                    $msg['contextBadge'] = $entry['contextBadge'];
-                    $msg['vibe']         = $entry['vibe'] ?? 'chill';
+                $uid = $msg['userId'] ?? null;
+                if ($uid && isset($badgeMap[$uid])) {
+                    $b = $badgeMap[$uid];
+                    $msg['primaryBadge'] = $b['primaryBadge'];
+                    $msg['contextBadge'] = $b['contextBadge'];
+                    $msg['vibe']         = $b['vibe'] ?? 'chill';
                 } else {
                     $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge'] = null;
@@ -1420,10 +1436,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
                 $u['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                 $u['contextBadge'] = null;
             } elseif (isset($badgeMap[$uid])) {
-                $entry = $badgeMap[$uid];
-                $u['primaryBadge'] = $entry['primaryBadge'];
-                $u['contextBadge'] = $entry['contextBadge'];
-                $u['vibe']         = $entry['vibe'] ?? 'chill';
+                $b = $badgeMap[$uid];
+                $u['primaryBadge'] = $b['primaryBadge'];
+                $u['contextBadge'] = $b['contextBadge'];
+                $u['vibe']         = $b['vibe'] ?? 'chill';
             } else {
                 $u['primaryBadge'] = UserBadgeService::primaryForUser(['created_at' => $u['userCreatedAt']]);
                 $u['contextBadge'] = null;
@@ -1435,20 +1451,25 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
 
         $t2 = microtime(true); // after messages + presence + badges
 
-        // ── Phase 3: now-feed (events + topics) ─────────────────────────────
-        $participantKey = isValidGuestId($guestId)     ? $guestId
+        // ── Phase 3: now-feed ────────────────────────────────────────────────
+        $participantKey = isValidGuestId($guestId)      ? $guestId
                         : (isValidSessionId($sessionId) ? $sessionId
                         : null);
+        $cityId = 'city_' . $channelId;
 
-        $cityId       = 'city_' . $channelId;
-        $events       = EventRepository::getByChannel($channelId, $participantKey, $city);
-        $topics       = TopicRepository::getByCity($cityId);
+        // ── q8: Hilads events ─────────────────────────────────────────────────
+        $events = EventRepository::getByChannel($channelId, $participantKey, $city);
+
+        // ── q9: topics ────────────────────────────────────────────────────────
+        $topics = TopicRepository::getByCity($cityId);
+
+        // ── q10: Ticketmaster public events ───────────────────────────────────
         $publicEvents = EventRepository::getPublicByChannel($channelId);
 
         $now       = time();
         $feedItems = [];
-        foreach ($events as $e) { $feedItems[] = normalizeFeedEvent($e, $now); }
-        foreach ($topics as $t) { $feedItems[] = normalizeFeedTopic($t, $now); }
+        foreach ($events as $e)  { $feedItems[] = normalizeFeedEvent($e, $now); }
+        foreach ($topics as $tp) { $feedItems[] = normalizeFeedTopic($tp, $now); }
 
         usort($feedItems, function (array $a, array $b) use ($now): int {
             $aLive = $a['kind'] === 'event' && $a['active_now'];
@@ -1464,31 +1485,60 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
 
         $t3 = microtime(true); // after now-feed
 
-        // Defer weather injection (same as /messages)
-        $cid = $channelId;
-        $cty = $city;
-        register_shutdown_function(static function () use ($cid, $cty): void {
+        // ── Phase 4: auth-conditional unread data ────────────────────────────
+        // Only run for authenticated users — guests have no DMs or notifications.
+        $hasUnreadDMs        = null;
+        $unreadNotifications = null;
+        $currentUser         = null;
+
+        if ($authUser !== null) {
+            // ── q11: DM + event-chat unread check ────────────────────────────
+            $hasUnreadDMs = ConversationRepository::hasAnyUnread($authUser['id']);
+
+            // ── q12: notification unread count ───────────────────────────────
+            $unreadNotifications = NotificationRepository::unreadCount($authUser['id']);
+
+            // currentUser — no extra query (data already in $authUser row)
+            $currentUser = AuthService::publicFields($authUser);
+        }
+
+        $t4 = microtime(true); // after auth data
+
+        // ── Deferred side-effects ────────────────────────────────────────────
+
+        // Weather injection (after response flush)
+        $bCid = $channelId; $bCty = $city;
+        register_shutdown_function(static function () use ($bCid, $bCty): void {
             if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-            try { WeatherService::maybeInject($cid, $cty); }
-            catch (\Throwable $e) { error_log('[open] weather injection failed: ' . $e->getMessage()); }
+            try { WeatherService::maybeInject($bCid, $bCty); }
+            catch (\Throwable $e) { error_log('[bootstrap] weather failed: ' . $e->getMessage()); }
         });
 
-        // Analytics (deferred)
+        // Ticketmaster sync (replaces /city-events deferred sync)
+        $tmCid  = $channelId;
+        $tmName = $city['name'];
+        register_shutdown_function(static function () use ($tmCid, $tmName): void {
+            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+            try { TicketmasterImporter::syncIfNeeded($tmCid, null, null, $tmName); }
+            catch (\Throwable $e) { error_log('[bootstrap] TM sync failed: ' . $e->getMessage()); }
+        });
+
+        // Analytics
         if ($isNewSession) {
-            $cityAnalytics = $city;
             AnalyticsService::defer('joined_city', $deferAuthUserId ?? $guestId, [
                 'channel_id' => $channelId,
-                'city'       => $cityAnalytics['name']    ?? null,
-                'country'    => $cityAnalytics['country'] ?? null,
+                'city'       => $city['name']    ?? null,
+                'country'    => $city['country'] ?? null,
                 'is_guest'   => $deferAuthUserId === null,
                 'user_id'    => $deferAuthUserId ?? null,
                 'guest_id'   => $deferAuthUserId === null ? $guestId : null,
             ]);
         }
 
-        apiLog('channel_open', 'success', [
+        apiLog('channel_bootstrap', 'success', [
             'channelId'   => $channelId,
             'isNew'       => $isNewSession,
+            'isAuth'      => $authUser !== null,
             'messages'    => count($messages),
             'onlineCount' => $onlineCount,
             'feedItems'   => count($feedItems),
@@ -1497,20 +1547,25 @@ $router->add('POST', '/api/v1/channels/{channelId}/open', function (array $param
                 'join'     => round(($t1 - $t0) * 1000, 1),
                 'messages' => round(($t2 - $t1) * 1000, 1),
                 'feed'     => round(($t3 - $t2) * 1000, 1),
+                'auth'     => round(($t4 - $t3) * 1000, 1),
             ],
         ]);
 
         Response::json([
-            'joinMessage'  => $joinMessage,
-            'messages'     => $messages,
-            'hasMore'      => $hasMore,
-            'onlineUsers'  => $onlineUsers,
-            'onlineCount'  => $onlineCount,
-            'feedItems'    => $feedItems,
-            'publicEvents' => $publicEventItems,
+            'joinMessage'         => $joinMessage,
+            'messages'            => $messages,
+            'hasMore'             => $hasMore,
+            'onlineUsers'         => $onlineUsers,
+            'onlineCount'         => $onlineCount,
+            'feedItems'           => $feedItems,
+            'publicEvents'        => $publicEventItems,
+            'cityEvents'          => $events,          // raw Hilads events for chat event synthesis
+            'hasUnreadDMs'        => $hasUnreadDMs,
+            'unreadNotifications' => $unreadNotifications,
+            'currentUser'         => $currentUser,
         ], 201);
     } catch (\Throwable $e) {
-        apiLog('channel_open', 'failure', [
+        apiLog('channel_bootstrap', 'failure', [
             'channelId' => $channelId,
             'elapsedMs' => apiElapsedMs($startedAt),
             'error'     => get_class($e) . ': ' . $e->getMessage(),

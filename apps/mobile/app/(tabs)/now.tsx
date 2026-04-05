@@ -174,7 +174,7 @@ export default function NowScreen() {
   const nowBootstrap = bootstrapData?.channelId === city?.channelId ? bootstrapData : undefined;
 
   const [items,         setItems]         = useState<FeedItem[]>(nowBootstrap?.feedItems ?? []);
-  const [publicEvents,  setPublicEvents]  = useState<HiladsEvent[]>(nowBootstrap?.publicEvents ?? []);
+  const [publicEvents,  setPublicEvents]  = useState<FeedItem[]>(nowBootstrap?.publicEvents ?? []);
   const [loading,       setLoading]       = useState(!nowBootstrap);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
