@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from '@/context/AppContext';
+import { socket } from '@/lib/socket';
 import { useAppBoot } from '@/hooks/useAppBoot';
 import { useAppLifecycle } from '@/hooks/useAppLifecycle';
 import { usePresenceHeartbeat } from '@/hooks/usePresenceHeartbeat';
@@ -38,7 +39,7 @@ console.log('[layout] ── MODULE LOADED ────────────�
 
 function RootLayoutInner() {
   console.log('[layout] RootLayoutInner rendered');
-  const { booting, bootError, joined } = useApp();
+  const { booting, bootError, joined, account, city, sessionId, identity } = useApp();
   const { retry, retryGeo } = useAppBoot();
   useAppLifecycle();          // foreground/background WS resilience
   usePresenceHeartbeat();     // keep presence alive
@@ -47,6 +48,14 @@ function RootLayoutInner() {
   useEventChatNotifications();     // always-on unread event chat badge + preview updates
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available
+
+  // Re-assert WS presence when login/logout happens mid-session so the Here screen
+  // immediately reflects the updated identity on all clients.
+  useEffect(() => {
+    if (!joined || !city || !sessionId) return;
+    const nickname = account?.display_name ?? identity?.nickname ?? '';
+    socket.joinCity(city.channelId, sessionId, nickname, account?.id ?? undefined, identity?.guestId ?? undefined);
+  }, [account]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!booting) SplashScreen.hideAsync();

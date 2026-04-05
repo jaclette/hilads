@@ -169,9 +169,14 @@ function handleJoinRoom(ws, { cityId, sessionId, nickname, userId, guestId }) {
     }
   }
 
-  const isNew = !room.has(sessionId)
+  const existing = room.get(sessionId)
+  const isNew = !existing
+  // Detect identity change on same-session rejoin (e.g. guest just logged in or out).
+  const identityChanged = !isNew && (
+    existing.userId !== (userId ?? null) || existing.nickname !== nickname
+  )
 
-  console.log(`[WS] joinRoom: ${nickname} (${sessionId.slice(0, 8)}) -> city ${cityId} (${isNew ? 'new' : 'rejoin'})`)
+  console.log(`[WS] joinRoom: ${nickname} (${sessionId.slice(0, 8)}) -> city ${cityId} (${isNew ? 'new' : identityChanged ? 'identity-update' : 'rejoin'})`)
   room.set(sessionId, { sessionId, nickname, userId: userId ?? null, guestId: guestId ?? null, ws, lastSeen: Date.now() })
 
   // Always send full snapshot to the joining client (includes themselves)
@@ -181,6 +186,12 @@ function handleJoinRoom(ws, { cityId, sessionId, nickname, userId, guestId }) {
     // Notify existing clients of the new user
     broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname, userId: userId ?? null, guestId: guestId ?? null } }, ws)
     broadcast(cityId, { event: 'onlineCountUpdated', cityId, count: room.size }, ws)
+  } else if (identityChanged) {
+    // Same session re-joined with changed identity (e.g. guest just logged in or logged out).
+    // Signal the change to all other clients so their Here screen updates immediately.
+    // Online count stays the same — no onlineCountUpdated needed.
+    broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: existing.nickname } }, ws)
+    broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname, userId: userId ?? null, guestId: guestId ?? null } }, ws)
   }
 }
 
