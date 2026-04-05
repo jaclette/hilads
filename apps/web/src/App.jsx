@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
 import { createSocket } from './socket'
@@ -683,7 +683,13 @@ export default function App() {
   }
 
   const bottomRef = useRef(null)
-  const isInitialLoadRef = useRef(true) // true until hotEventsStatus settles — forces scroll-to-bottom on channel entry
+  const isInitialLoadRef = useRef(true) // true until all pills are in the feed — forces scroll-to-bottom on channel entry
+  const eventsRef = useRef(events)
+  eventsRef.current = events   // synced every render — readable in layout effect without stale closure
+  const topicsRef = useRef(topics)
+  topicsRef.current = topics   // same
+  const hotEventsStatusRef = useRef(hotEventsStatus)
+  hotEventsStatusRef.current = hotEventsStatus
   const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
   const hasMoreMessagesRef = useRef(false) // mirrors hasMoreMessages state, readable inside scroll handlers
   const oldestMessageIdRef = useRef(null)  // ID of the oldest message in the feed — pagination cursor
@@ -998,52 +1004,54 @@ export default function App() {
     }
   }, [])
 
-  // Scroll to bottom on new messages.
-  // - Initial load window (isInitialLoadRef = true): snap to bottom on every feed change.
-  //   The lock is released by the useEffect([hotEventsStatus]) below — not here — because
-  //   events/topics effects inject pills via setFeed in the SAME render that sets
-  //   hotEventsStatus='ready'. That means hotEventsStatusRef is already 'ready' when this
-  //   effect runs for the initial messages render, so releasing the lock here would free it
-  //   BEFORE the pills are in the DOM.
-  // - After initial window: only scroll if already within 150px of the bottom.
-  // isInitialLoadRef resets to true on every channel/event switch (feed clears to []).
+  // Scroll to bottom on new feed items.
+  //
+  // Uses useLayoutEffect so the scroll is applied synchronously after every DOM commit,
+  // before the browser paints — the user never sees an intermediate scroll position.
+  //
+  // Initial load window (isInitialLoadRef = true):
+  //   Snap to bottom on every feed change. Release the lock only when hotEventsStatus
+  //   has settled AND the feed already contains all expected event + topic pills.
+  //   eventsRef/topicsRef/hotEventsStatusRef are updated inline every render so they
+  //   always reflect current state without stale closures.
+  //   This approach is timing-independent: no setTimeout, no race with React's scheduler.
+  //
+  // After initial window: only scroll if the user is within 150px of the bottom.
+  // isInitialLoadRef resets to true whenever feed clears (channel/event switch).
   const messagesContainerRef = useRef(null)
-  useEffect(() => {
+  useLayoutEffect(() => {
     const container = messagesContainerRef.current
     if (!container) return
 
     if (feed.length === 0) {
-      // Channel reset — arm initial-load scroll for the next messages batch
       isInitialLoadRef.current = true
       return
     }
 
     if (isInitialLoadRef.current) {
-      // Snap to true bottom during initial load window
       container.scrollTop = container.scrollHeight
+      // Release lock only when status is settled AND every expected pill is in the feed.
+      // If status is ready but pills haven't been injected yet, we stay locked and keep
+      // scrolling on the next render — when the events/topics effects fire setFeed.
+      if (hotEventsStatusRef.current !== 'loading') {
+        const eventPillsInFeed = feed.filter(f => f.type === 'event').length
+        const topicPillsInFeed = feed.filter(f => f.type === 'topic').length
+        if (
+          eventPillsInFeed >= eventsRef.current.length &&
+          topicPillsInFeed >= topicsRef.current.length
+        ) {
+          isInitialLoadRef.current = false
+        }
+      }
       return
     }
 
-    // Subsequent live messages — only scroll if already near the bottom
+    // Live messages — only scroll if already near the bottom
     const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
     if (distanceFromBottom < 150) {
       container.scrollTop = container.scrollHeight
     }
   }, [feed])
-
-  // Release the initial-load scroll lock after events/topics have settled.
-  // setTimeout(0) defers to a macrotask — by then React has processed all setFeed calls
-  // queued by the events/topics effects (pill injection), so the final scroll lands at
-  // the true bottom with every pill already in the DOM.
-  useEffect(() => {
-    if (hotEventsStatus === 'loading') return
-    const t = setTimeout(() => {
-      isInitialLoadRef.current = false
-      const container = messagesContainerRef.current
-      if (container) container.scrollTop = container.scrollHeight
-    }, 0)
-    return () => clearTimeout(t)
-  }, [hotEventsStatus])
 
   // ── Load older messages (pagination) ─────────────────────────────────────
   // Triggered by the scroll listener below when the user scrolls near the top.
