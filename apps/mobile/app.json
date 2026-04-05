@@ -121,8 +121,7 @@
         }
       ],
       "expo-font",
-      "expo-asset",
-      "@sentry/react-native"
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
