@@ -1019,14 +1019,17 @@ export default function App() {
     }
 
     if (isInitialLoadRef.current) {
-      // Initial load window — always jump to bottom.
-      bottomRef.current?.scrollIntoView({ behavior: 'instant' })
+      // Initial load window — always snap to the true bottom.
+      // Use scrollTop = scrollHeight rather than scrollIntoView: the latter captures
+      // the target element's position at call time, so if CSS smooth-scroll is active
+      // in the browser (or scroll-behavior is set upstream) the animation can complete
+      // at a stale position before event/topic pills have been appended.
+      // scrollTop = scrollHeight always hits the current bottom, instantly.
+      container.scrollTop = container.scrollHeight
       // Release the lock only once events/topics have settled. hotEventsStatusRef is
       // updated every render so by the time the pill-injecting render's feed effect
       // runs, the ref already reflects 'ready' — guaranteeing pills are visible before
-      // the lock releases. The separate useEffect([hotEventsStatus]) was wrong because
-      // it ran in the same flush as the pill injection, before the feed effect had a
-      // chance to scroll to the newly added pills.
+      // the lock releases.
       if (hotEventsStatusRef.current !== 'loading') {
         isInitialLoadRef.current = false
       }
