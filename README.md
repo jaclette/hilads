@@ -21,9 +21,11 @@ Hilads is a real-time social app. Join a city, see who's online, chat, discover 
 - **Vibe system** — leave a 1–5 star vibe + message on any user's profile
 - **Badge system** — 🌱 Fresh / ⭐ Regular — evolves automatically over time
 - **Friends** — add from profiles, view friend lists
-- **Direct messages** — 1:1 private chat for registered users
+- **Direct messages** — 1:1 private chat for registered users, with photo sharing
 - **Notifications** — in-app bell + web push + native push (Android working; iOS in progress)
 - **Notification preferences** — per-type toggles
+- **Photo sharing** — city chat, event chats, DMs; native: camera + library; web mobile: camera capture + library; web desktop: file picker
+- **Landing page feed preview** — city activity shown before joining: live count, upcoming events, active topics
 - **Analytics** — PostHog cross-platform (web + mobile + backend)
 - **Error monitoring** — Sentry across web, backend, and native
 
@@ -448,9 +450,10 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 | Area | Issue |
 |---|---|
 | Mobile iOS | Push notifications not fully validated end-to-end on TestFlight |
-| My Events | Recurring events may appear as duplicates |
+| My Events | Recurring events may appear as duplicates in the list |
 | Topics | No WebSocket room join yet — uses 5s polling |
 | City chat | Scroll-to-bottom on open inconsistent across platforms |
+| Performance | Now feed endpoint not benchmarked; DB indexes on participant counts + topic queries not fully optimised |
 
 ---
 
@@ -465,18 +468,18 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 
 **Performance**
 - Target < 300ms p95 on all feed endpoints
-- Add missing DB indexes on participant counts and topic queries
+- Add DB indexes on participant counts and topic queries
 - Skeleton loading state for Now screen
 
-**UX Consistency**
-- Audit all screens: Now, Event, Profile, DM, Notifications
-- Fix input field overlap with bottom tab bar
-- Align visual hierarchy and spacing between web and mobile
+**UX Consistency — remaining**
+- Audit Now, Event, DM screens for web/mobile layout parity
+- Fix input field overlap with bottom tab bar on native
+- Profile screen done ✓ — sticky CTA, correct action hierarchy
+- Logo done ✓ — consistent rendering across all platforms
 
 **Growth — First 100 Users in a City**
 - Focus on one city (local community, campus, or recurring venue)
 - Now screen always populated: venue events visible even with 0 joins
-- Ghost mode feels intentional: "Browsing as a Ghost — claim your identity"
 - Shareable city deeplinks: `hilads.live/city/paris`
 - Track activation funnel: open → join city → first message → join/create event
 

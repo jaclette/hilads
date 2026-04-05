@@ -276,8 +276,16 @@ Per-user toggles per type, accessible from the Notifications tab.
 
 ## Photos
 
-- Share images in city chat and event chats
+- Share images in city chat, event chats, and direct messages
 - Stored on Cloudflare R2
+
+### Platform behavior
+
+| Platform | Source |
+|---|---|
+| Native (iOS + Android) | Camera + photo library (via `expo-image-picker`) |
+| Web (mobile browser) | Camera capture + library (via `accept="image/*"` — browser native sheet) |
+| Web (desktop browser) | File picker (library only — no camera hardware) |
 
 ---
 
@@ -289,6 +297,39 @@ Per-user toggles per type, accessible from the Notifications tab.
 | Topic chat | While topic active | 24h after last activity |
 | Event chat | While event active | 1h after event expires |
 | Direct messages | 7 days | Older than 7 days (daily cron) |
+
+---
+
+## Landing Page
+
+The landing page (`/`) is shown to unauthenticated users before they join a city.
+
+- Shows a live preview of the detected city: online count, upcoming events, active topics
+- Preview uses a three-tier fallback: Hilads events today → Ticketmaster public events → upcoming recurring events (next 7 days)
+- "Join [City]" CTA drops the user directly into the city chat as a Ghost
+- Sign up / Log in available as secondary actions for returning registered users
+- Mobile store badges shown (apps coming soon)
+
+---
+
+## Recent UX Improvements
+
+These changes reflect the current shipped state of the product.
+
+### Profile screen — sticky CTA bar
+- "Save profile" and "Sign out" are now fixed at the bottom of the screen, always visible regardless of scroll position
+- Correct visual hierarchy: Save (full-width orange primary button) + Sign out (small muted text below)
+- Safe area support on native (home indicator inset)
+
+### Logo — platform consistency
+- The Hilads logo SVG uses a unique gradient ID per instance (via React `useId()`)
+- Fixes a rendering bug on mobile web where the responsive layout had two logo instances in the DOM simultaneously, causing the gradient to resolve incorrectly (dark / wrong colors) on the visible instance
+- Logo now renders identically across desktop web, mobile web, and native
+
+### Web camera capture
+- `accept="image/*"` on chat image inputs (was `accept="image/jpeg,image/png,image/webp"`)
+- On mobile browsers this triggers the native OS sheet with camera + library options
+- Desktop behavior unchanged (file picker only)
 
 ---
 
@@ -417,6 +458,7 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 | My Events | Recurring events may appear as duplicates in the My Events list |
 | Topics | No WebSocket room join yet — uses 5s polling instead of real-time push |
 | City chat | Scroll-to-bottom on open is inconsistent across platforms |
+| Performance | Now feed endpoint p95 latency not yet benchmarked; DB indexes on participant counts and topic queries not fully optimised |
 
 ---
 
@@ -428,24 +470,25 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 
 ### Topics — Real-time
 - Add WS room join for topic channels to eliminate 5s polling
-- Consistent with how event and city channels already work
+- Consistent with how city and event channels already work
 
-### Performance — Continued
+### Performance
 - Target < 300ms p95 on all feed endpoints
 - Review DB indexes on participant counts, message feeds, topic queries
 - Now screen skeleton loading state (show placeholders while loading)
 
-### UX Consistency (Web vs Mobile)
-- Audit all screens: Now, Event, Profile, DM, Notifications
-- Fix input field overlap with bottom tab bar
-- Align visual hierarchy and spacing between web and mobile
+### UX Consistency (Web vs Mobile) — remaining
+- Audit Now screen, Event screen, DM screen for layout parity
+- Fix input field overlap with bottom tab bar on native
+- Profile screen: done ✓ (sticky CTA, action hierarchy)
+- Logo: done ✓ (consistent across all platforms)
 
 ### Growth — First 100 Users in a City
 - Focus on one city (local community, campus, or recurring venue)
 - Ensure Now screen never feels empty (venue events always visible, topics always surfaced)
-- Ghost mode feels intentional: "Browsing as a Ghost — claim your identity"
+- Ghost mode: make the identity feel intentional, not a limitation
 - Shareable deeplinks: `hilads.live/city/paris` → drops user directly into a city
-- Activation funnel: open → join city → first message → create/join event
+- Track activation funnel: open → join city → first message → create/join event
 
 ---
 
