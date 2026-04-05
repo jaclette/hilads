@@ -682,14 +682,7 @@ export default function App() {
       .finally(() => { if (crewChannelRef.current === cid) setCrewLoading(false) })
   }
 
-  const bottomRef = useRef(null)
-  const isInitialLoadRef = useRef(true) // true until all pills are in the feed — forces scroll-to-bottom on channel entry
-  const eventsRef = useRef(events)
-  eventsRef.current = events   // synced every render — readable in layout effect without stale closure
-  const topicsRef = useRef(topics)
-  topicsRef.current = topics   // same
-  const hotEventsStatusRef = useRef(hotEventsStatus)
-  hotEventsStatusRef.current = hotEventsStatus
+  const isNearBottomRef = useRef(true) // true = auto-pin viewport to bottom on new content
   const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
   const hasMoreMessagesRef = useRef(false) // mirrors hasMoreMessages state, readable inside scroll handlers
   const oldestMessageIdRef = useRef(null)  // ID of the oldest message in the feed — pagination cursor
@@ -1004,51 +997,29 @@ export default function App() {
     }
   }, [])
 
-  // Scroll to bottom on new feed items.
+  // Sticky-bottom scroll: keep the viewport pinned to the bottom whenever the user
+  // is already there. Fires synchronously after every DOM commit (useLayoutEffect) so
+  // the browser never paints an intermediate scroll position.
   //
-  // Uses useLayoutEffect so the scroll is applied synchronously after every DOM commit,
-  // before the browser paints — the user never sees an intermediate scroll position.
+  // "Near bottom" is tracked by the scroll listener below (isNearBottomRef). It starts
+  // true so the initial load always lands at the bottom. When the user scrolls up it
+  // becomes false; when they scroll back within 150 px of the bottom it becomes true
+  // again. Any new feed item — messages, event pills, topic pills, system items — will
+  // keep them pinned as long as they haven't scrolled away.
   //
-  // Initial load window (isInitialLoadRef = true):
-  //   Snap to bottom on every feed change. Release the lock only when hotEventsStatus
-  //   has settled AND the feed already contains all expected event + topic pills.
-  //   eventsRef/topicsRef/hotEventsStatusRef are updated inline every render so they
-  //   always reflect current state without stale closures.
-  //   This approach is timing-independent: no setTimeout, no race with React's scheduler.
-  //
-  // After initial window: only scroll if the user is within 150px of the bottom.
-  // isInitialLoadRef resets to true whenever feed clears (channel/event switch).
+  // Channel/event switch: feed clears to [] → reset isNearBottomRef = true so the next
+  // channel also starts pinned.
   const messagesContainerRef = useRef(null)
   useLayoutEffect(() => {
     const container = messagesContainerRef.current
     if (!container) return
 
     if (feed.length === 0) {
-      isInitialLoadRef.current = true
+      isNearBottomRef.current = true   // arm pinning for the next channel's content
       return
     }
 
-    if (isInitialLoadRef.current) {
-      container.scrollTop = container.scrollHeight
-      // Release lock only when status is settled AND every expected pill is in the feed.
-      // If status is ready but pills haven't been injected yet, we stay locked and keep
-      // scrolling on the next render — when the events/topics effects fire setFeed.
-      if (hotEventsStatusRef.current !== 'loading') {
-        const eventPillsInFeed = feed.filter(f => f.type === 'event').length
-        const topicPillsInFeed = feed.filter(f => f.type === 'topic').length
-        if (
-          eventPillsInFeed >= eventsRef.current.length &&
-          topicPillsInFeed >= topicsRef.current.length
-        ) {
-          isInitialLoadRef.current = false
-        }
-      }
-      return
-    }
-
-    // Live messages — only scroll if already near the bottom
-    const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
-    if (distanceFromBottom < 150) {
+    if (isNearBottomRef.current) {
       container.scrollTop = container.scrollHeight
     }
   }, [feed])
@@ -1100,13 +1071,18 @@ export default function App() {
   }
 
   // Attach scroll listener to the messages container.
-  // Fires loadOlderMessages when the user scrolls within 200px of the top.
+  // - Tracks isNearBottomRef: true when within 150 px of the bottom, false otherwise.
+  //   This drives the sticky-bottom behavior in useLayoutEffect([feed]) above.
+  // - Fires loadOlderMessages when the user scrolls within 200 px of the top.
   // Re-attaches whenever status changes so the ref is always populated.
   useEffect(() => {
     const container = messagesContainerRef.current
     if (!container) return
 
     const handleScroll = () => {
+      const dist = container.scrollHeight - container.scrollTop - container.clientHeight
+      isNearBottomRef.current = dist < 150
+
       if (container.scrollTop < 200 && !loadingOlderRef.current && hasMoreMessagesRef.current) {
         loadOlderMessages()
       }
@@ -2808,7 +2784,6 @@ export default function App() {
               </div>
             )
           })}
-          <div ref={bottomRef} />
         </div>
 
         {typingLabel && (
