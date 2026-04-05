@@ -9,6 +9,7 @@
     "ios": "expo run:ios",
     "build:android": "eas build --platform android --profile preview",
     "build:ios": "eas build --platform ios --profile preview",
+    "gen:notification-icon": "node scripts/gen-notification-icon.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx"
   },

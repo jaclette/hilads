@@ -108,6 +108,7 @@
         "expo-notifications",
         {
           "googleServicesFile": "./google-services.json",
+          "icon": "./assets/notification-icon.png",
           "color": "#FF7A3C",
           "defaultChannel": "default",
           "sounds": []
