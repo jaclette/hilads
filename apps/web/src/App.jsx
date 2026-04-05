@@ -1147,43 +1147,32 @@ export default function App() {
     })
   }
 
-  // Fetch today's event count + preview list for the pre-join activity block.
-  // Exact port of native LandingScreen logic:
-  //   1. fetchCityEvents → /channels/{id}/events (Hilads events, server-side today filter)
-  //   2. filterTodayEvents: client-side date check using city timezone (safety net)
-  //   3. filterPreviewEvents: exclude ended >30min, sort by start time, cap at 3
+  // Fetch landing page preview: events + topics for the pre-join activity block.
+  // Uses /now which returns Hilads events + active topics in one call, plus
+  // publicEvents (Ticketmaster) as a fallback so the city never looks empty.
+  // This avoids the first-request-of-day gap introduced when ensureTodayOccurrences
+  // was moved to register_shutdown_function — on first load, Hilads series events
+  // may not exist yet, but Ticketmaster events always do.
   useEffect(() => {
     if (!previewChannelId) return
-    const tz = previewTimezone || 'UTC'
-    const today = new Date().toLocaleDateString('en-CA', { timeZone: tz })
-    const now = Date.now()
-    fetchEvents(previewChannelId)
+    fetchNowFeed(previewChannelId)
       .then(data => {
-        // filterTodayEvents — events starting today OR currently live (started before
-        // today but not yet expired). The backend already applies this, but we recheck
-        // client-side so timezone mismatches don't show tomorrow's events.
-        const todayEvents = (data.events ?? []).filter(e => {
-          const startDate = new Date(e.starts_at * 1000).toLocaleDateString('en-CA', { timeZone: tz })
-          const isLive = e.starts_at * 1000 <= now && (e.expires_at ?? e.ends_at) * 1000 > now
-          return startDate === today || isLive
-        })
-        setPreviewEventCount(todayEvents.length)
-        // filterPreviewEvents: not ended >30min ago, sorted by start time, max 3
-        const preview = todayEvents
-          .filter(e => ((e.expires_at ?? e.ends_at) * 1000 - now) / 60_000 >= -30)
-          .sort((a, b) => a.starts_at - b.starts_at)
-          .slice(0, 3)
-        setPreviewEvents(preview)
+        const items = data.items ?? []
+        const publicEvents = data.publicEvents ?? []
+
+        const eventItems = items.filter(i => i.kind === 'event')
+        const topicItems  = items.filter(i => i.kind === 'topic')
+
+        // Fall back to Ticketmaster events when no Hilads events are available
+        const eventsToShow = eventItems.length > 0 ? eventItems : publicEvents
+
+        setPreviewEventCount(eventsToShow.length)
+        setPreviewEvents(eventsToShow.slice(0, 3))
+        setPreviewTopicCount(topicItems.length)
+        setPreviewTopics(topicItems.slice(0, 3))
       })
       .catch(() => {})
-    fetchCityTopics(previewChannelId)
-      .then(data => {
-        const t = data.topics ?? []
-        setPreviewTopicCount(t.length)
-        setPreviewTopics(t.slice(0, 3))
-      })
-      .catch(() => {})
-  }, [previewChannelId]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [previewChannelId])
 
   function injectWelcomeCard(cid, cityName) {
     if (!cityName || hasBeenWelcomed(cid)) return

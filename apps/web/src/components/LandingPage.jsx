@@ -68,7 +68,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
               </span>
               {previewEventCount > 0 && (
                 <span className="ob-activity-line">
-                  🔥 {previewEventCount} event{previewEventCount === 1 ? '' : 's'} happening today
+                  🔥 {previewEventCount} event{previewEventCount === 1 ? '' : 's'} happening
                 </span>
               )}
               {previewTopicCount > 0 && (

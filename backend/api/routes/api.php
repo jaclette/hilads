@@ -3954,7 +3954,20 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
             Response::json(['error' => 'Channel not found'], 404);
         }
 
-        $cityId = 'city_' . $channelId;
+        $cityId   = 'city_' . $channelId;
+        $timezone = $city['timezone'] ?? 'UTC';
+
+        // Ensure today's recurring-event occurrences exist BEFORE querying.
+        // getByChannel() defers this to register_shutdown_function so the HTTP response
+        // returns fast, but the very first /now call of the day would otherwise return
+        // zero series events (they don't exist until after the first response is sent).
+        // Calling synchronously here makes the landing page reliable on first load.
+        // On subsequent calls the underlying INSERT hits ON CONFLICT DO NOTHING instantly.
+        try {
+            EventSeriesRepository::ensureTodayOccurrences($cityId, $timezone);
+        } catch (\Throwable) {
+            // non-critical — proceed even if series generation fails
+        }
 
         // Pass $city to avoid a redundant CityRepository::findById call inside getByChannel.
         $events       = EventRepository::getByChannel($channelId, $participantKey, $city);
