@@ -12,7 +12,7 @@ class Database
      * Once all blocks have run in production, cold workers do ONE pg_catalog query
      * to confirm the version matches and skip all 27+ information_schema checks.
      */
-    private const SCHEMA_VERSION = 1;
+    private const SCHEMA_VERSION = 2;
 
     public static function pdo(): PDO
     {
@@ -406,6 +406,12 @@ class Database
 
         // ── Performance indexes (idempotent — safe to re-run on every cold start) ──
         // These are CREATE IF NOT EXISTS so they are no-ops once created.
+
+        // Missing index: channel_events.channel_id is the JOIN key in every EventRepository
+        // query but had no index. Without it Postgres does a full seq scan of channel_events
+        // for every event fetch (getByChannel, getPublicByChannel, etc.), adding 50-200ms per call.
+        self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_channel_events_channel ON channel_events (channel_id)");
+
         self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_messages_channel_created ON messages (channel_id, created_at DESC)");
         self::$pdo->exec("CREATE INDEX IF NOT EXISTS idx_conv_messages_conv_created ON conversation_messages (conversation_id, created_at DESC)");
 
@@ -445,19 +451,16 @@ class Database
 
     private static function getSchemaVersion(): int
     {
+        // Single query — if the table doesn't exist Postgres throws an exception
+        // which we catch and treat as version 0. Saves 1 DB round-trip vs. the
+        // previous two-step approach (to_regclass check + SELECT).
         try {
-            $exists = (bool) self::$pdo
-                ->query("SELECT to_regclass('public._hilads_schema_ver') IS NOT NULL")
-                ->fetchColumn();
-            if (!$exists) {
-                return 0;
-            }
             $v = self::$pdo
-                ->query("SELECT value FROM _hilads_schema_ver WHERE key = 'version'")
+                ->query("SELECT value FROM _hilads_schema_ver WHERE key = 'version' LIMIT 1")
                 ->fetchColumn();
             return $v !== false ? (int) $v : 0;
-        } catch (\Throwable $e) {
-            return 0;
+        } catch (\Throwable) {
+            return 0; // table does not exist yet — fresh deploy
         }
     }
 

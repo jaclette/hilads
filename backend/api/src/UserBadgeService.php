@@ -123,6 +123,64 @@ final class UserBadgeService
     }
 
     /**
+     * Single-query batch: resolves full badges for ALL given user IDs in one round-trip.
+     * Combines the batchForCity (2 queries) + ambassadorsForCity (1 query) pattern into 1.
+     *
+     * Use this when you need badge data for both messages and presence users simultaneously —
+     * pass all unique IDs at once, then slice the result as needed.
+     *
+     * @param string[] $userIds        All registered user IDs to resolve (messages + presence).
+     * @param int      $cityChannelId  Integer city ID.
+     * @param string   $cityName       City display name.
+     * @return array   [ userId => ['primaryBadge' => …, 'contextBadge' => …, 'vibe' => …] ]
+     */
+    public static function batchFull(array $userIds, int $cityChannelId, string $cityName): array
+    {
+        if (empty($userIds)) {
+            return [];
+        }
+
+        $channelKey = 'city_' . $cityChannelId;
+        $in         = implode(',', array_fill(0, count($userIds), '?'));
+
+        // One query: user profile data + ambassador role (LEFT JOIN, no N+1).
+        $stmt = Database::pdo()->prepare(
+            "SELECT u.id, u.created_at, u.home_city, u.vibe,
+                    (ucr.user_id IS NOT NULL) AS is_ambassador
+             FROM users u
+             LEFT JOIN user_city_roles ucr
+               ON ucr.user_id = u.id AND ucr.city_id = ? AND ucr.role = 'ambassador'
+             WHERE u.id IN ($in)"
+        );
+        $stmt->execute([$channelKey, ...$userIds]);
+
+        $result = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $uid           = $row['id'];
+            $primary       = self::primaryForUser($row);
+            $isAmbassador  = (bool) $row['is_ambassador'];
+
+            if ($isAmbassador) {
+                $context = ['key' => 'host', 'label' => '⭐ Host'];
+            } elseif (!empty($row['home_city'])
+                && strcasecmp(trim($row['home_city']), trim($cityName)) === 0) {
+                $context = ['key' => 'local', 'label' => '🌍 Local'];
+            } else {
+                $context = null;
+            }
+
+            $result[$uid] = [
+                'primaryBadge' => $primary,
+                'contextBadge' => $context,
+                'vibe'         => $row['vibe'] ?? 'chill',
+                'is_ambassador'=> $isAmbassador,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
      * Batch-check ambassador roles only (one query).
      * Used when we already have user data from a JOIN (presence list).
      *

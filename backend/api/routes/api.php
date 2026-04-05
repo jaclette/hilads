@@ -1368,8 +1368,10 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         $onlineCount = count($onlineUsers);
         $tMsg2       = microtime(true); // after presence fetch
 
-        // ── Badge enrichment ──────────────────────────────────────────────────
-        // Collect unique registered user IDs from text/image messages
+        // ── Badge enrichment — 1 query covers both messages and presence ─────────
+        // Collect unique registered user IDs from messages AND presence together,
+        // then call batchFull() once (1 query) instead of the previous 3-query pattern
+        // (batchForCity: 2 queries + ambassadorsForCity: 1 query).
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
@@ -1377,8 +1379,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                 $msgUserIds[] = $msg['userId'];
             }
         }
-        $msgUserIds = array_values(array_unique($msgUserIds));
-        $badgeMap   = UserBadgeService::batchForCity($msgUserIds, $channelId, $city['name']);
+        $presenceUserIds = array_values(array_unique(array_filter(
+            array_column($onlineUsers, 'userId'),
+            fn($id) => !empty($id)
+        )));
+        $allUserIds = array_values(array_unique(array_merge($msgUserIds, $presenceUserIds)));
+        $badgeMap   = UserBadgeService::batchFull($allUserIds, $channelId, $city['name']);
         $tMsg3      = microtime(true); // after badge enrichment
 
         foreach ($messages as &$msg) {
@@ -1398,31 +1404,22 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         }
         unset($msg);
 
-        // Resolve badges for online users (user data already joined in getOnline)
-        $presenceUserIds = array_values(array_unique(array_filter(
-            array_column($onlineUsers, 'userId'),
-            fn($id) => !empty($id)
-        )));
-        $ambassadors = UserBadgeService::ambassadorsForCity($presenceUserIds, $channelId);
-
         foreach ($onlineUsers as &$u) {
             $uid = $u['userId'] ?? null;
             if (empty($uid)) {
                 $u['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                 $u['contextBadge'] = null;
+            } elseif (isset($badgeMap[$uid])) {
+                $entry = $badgeMap[$uid];
+                $u['primaryBadge'] = $entry['primaryBadge'];
+                $u['contextBadge'] = $entry['contextBadge'];
+                $u['vibe']         = $entry['vibe'] ?? 'chill';
             } else {
                 $u['primaryBadge'] = UserBadgeService::primaryForUser([
                     'created_at' => $u['userCreatedAt'],
                 ]);
-                if ($ambassadors[$uid] ?? false) {
-                    $u['contextBadge'] = ['key' => 'host', 'label' => '⭐ Host'];
-                } elseif (!empty($u['userHomeCity'])
-                    && strcasecmp(trim($u['userHomeCity']), trim($city['name'])) === 0) {
-                    $u['contextBadge'] = ['key' => 'local', 'label' => '🌍 Local'];
-                } else {
-                    $u['contextBadge'] = null;
-                }
-                $u['vibe'] = $u['userVibe'] ?? 'chill';
+                $u['contextBadge'] = null;
+                $u['vibe']         = $u['userVibe'] ?? 'chill';
             }
             unset($u['userCreatedAt'], $u['userHomeCity'], $u['userVibe']);
         }

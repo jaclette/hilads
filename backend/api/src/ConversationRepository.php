@@ -216,6 +216,11 @@ class ConversationRepository
      */
     public static function hasAnyUnread(string $userId): bool
     {
+        // Restructured to drive from the user's own rows first (idx_event_participants_user,
+        // conversation_participants index) rather than scanning all active event channels.
+        // The previous version started from `channels WHERE type='event'` and joined outward,
+        // which scanned every active event channel before concluding "no unread" for users
+        // with no event participation.
         $stmt = Database::pdo()->prepare("
             SELECT (
                 EXISTS (
@@ -230,15 +235,25 @@ class ConversationRepository
                 OR
                 EXISTS (
                     SELECT 1
-                    FROM channels ch
-                    JOIN channel_events ce ON ce.channel_id = ch.id
-                    LEFT JOIN event_participants ep ON ep.channel_id = ch.id AND ep.user_id = :u3
-                    JOIN messages m ON m.channel_id = ch.id
-                    WHERE ch.type   = 'event'
-                      AND ch.status = 'active'
+                    FROM event_participants ep
+                    JOIN messages m ON m.channel_id = ep.channel_id
+                    WHERE ep.user_id = :u3
                       AND m.type IN ('text', 'image')
-                      AND (ce.created_by = :u4 OR ep.user_id = :u5)
                       AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
+                    LIMIT 1
+                )
+                OR
+                EXISTS (
+                    SELECT 1
+                    FROM channel_events ce
+                    JOIN messages m ON m.channel_id = ce.channel_id
+                    WHERE ce.created_by = :u4
+                      AND m.type IN ('text', 'image')
+                      AND m.created_at > COALESCE(
+                          (SELECT ep2.last_read_at FROM event_participants ep2
+                           WHERE ep2.channel_id = ce.channel_id AND ep2.user_id = :u5 LIMIT 1),
+                          '-infinity'::timestamptz
+                      )
                     LIMIT 1
                 )
             ) AS has_unread

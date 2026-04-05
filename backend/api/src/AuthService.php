@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 class AuthService
 {
+    /** Request-level cache — avoids a duplicate DB query when currentUser() is called
+     *  more than once within the same request (e.g. join handler + analytics block). */
+    private static bool  $resolved = false;
+    private static ?array $cached  = null;
+
     public const ALLOWED_INTERESTS = [
         'drinks', 'party', 'nightlife', 'music', 'live music', 'culture', 'art',
         'food', 'coffee', 'sport', 'fitness', 'hiking', 'beach', 'wellness',
@@ -125,6 +130,13 @@ class AuthService
 
     public static function currentUser(): ?array
     {
+        // Request-level cache: the token never changes within a single HTTP request,
+        // so a second call always returns the same result without a DB round-trip.
+        if (self::$resolved) {
+            return self::$cached;
+        }
+        self::$resolved = true;
+
         $token = $_COOKIE['hilads_token'] ?? null;
 
         // Mobile clients send the token as a Bearer header when cookies are unavailable
@@ -136,6 +148,7 @@ class AuthService
         }
 
         if ($token === null || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+            self::$cached = null;
             return null;
         }
 
@@ -149,7 +162,8 @@ class AuthService
         $stmt->execute([$token]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        return $row ?: null;
+        self::$cached = $row ?: null;
+        return self::$cached;
     }
 
     /** Returns the current user or sends a 401 and exits. */
