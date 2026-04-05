@@ -3837,6 +3837,8 @@ export default function App() {
           guest={guest}
           nickname={activeNickname}
           onBack={() => setActiveTopic(null)}
+          socket={socketRef.current}
+          sessionId={PAGE_SESSION_ID}
         />
       )}
 

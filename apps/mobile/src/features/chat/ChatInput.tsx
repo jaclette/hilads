@@ -8,7 +8,7 @@
  * Send button:   54×54px circle, gradient accent→accent2, shadow
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View, TextInput, TouchableOpacity, Text,
   ActivityIndicator, StyleSheet, Platform, Alert, Linking, Keyboard,
@@ -42,26 +42,55 @@ export function getPlaceholder(channelId: string): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 interface Props {
-  sending:       boolean;
-  onSendText:    (text: string) => void;
-  onSendImage:   (uri: string) => void;
-  placeholder?:  string;
+  sending:          boolean;
+  onSendText:       (text: string) => void;
+  onSendImage:      (uri: string) => void;
+  placeholder?:     string;
   /** Parent can call pickImageRef.current?.() to trigger the image picker externally (e.g. from a feed prompt CTA). */
-  pickImageRef?: React.MutableRefObject<(() => void) | null>;
+  pickImageRef?:    React.MutableRefObject<(() => void) | null>;
+  /** Typing indicator callbacks — parent wires these to WS typingStart/typingStop. */
+  onTypingStart?:   () => void;
+  onTypingStop?:    () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pickImageRef }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pickImageRef, onTypingStart, onTypingStop }: Props) {
   const [text,          setText]        = useState('');
   const [uploading,     setUploading]   = useState(false);
   const [androidCamera, setAndroidCamera] = useState(false);
   const [showEmoji,     setShowEmoji]   = useState(false);
-  const inputRef = useRef<TextInput>(null);
-  const lastSel  = useRef({ start: 0, end: 0 });
+  const inputRef        = useRef<TextInput>(null);
+  const lastSel         = useRef({ start: 0, end: 0 });
+  const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearTypingTimer = useCallback(() => {
+    if (typingStopTimer.current !== null) {
+      clearTimeout(typingStopTimer.current);
+      typingStopTimer.current = null;
+    }
+  }, []);
+
+  function handleChangeText(val: string) {
+    setText(val);
+    if (val.length > 0) {
+      onTypingStart?.();
+      clearTypingTimer();
+      typingStopTimer.current = setTimeout(() => {
+        onTypingStop?.();
+        typingStopTimer.current = null;
+      }, 1500);
+    } else {
+      // Input cleared (e.g. after send) — stop immediately
+      clearTypingTimer();
+      onTypingStop?.();
+    }
+  }
 
   function handleSend() {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    clearTypingTimer();
+    onTypingStop?.();
     onSendText(trimmed);
     setText('');
   }
@@ -233,7 +262,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         ref={inputRef}
         style={styles.input}
         value={text}
-        onChangeText={setText}
+        onChangeText={handleChangeText}
         onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; }}
         placeholder={placeholder}
         placeholderTextColor={Colors.muted2}
@@ -244,6 +273,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         onSubmitEditing={Platform.OS !== 'ios' ? handleSend : undefined}
         editable={!busy}
         onFocus={() => setShowEmoji(false)}
+        onBlur={() => { clearTypingTimer(); onTypingStop?.(); }}
       />
 
       {/* ── Send button — web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}

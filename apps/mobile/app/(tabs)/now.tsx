@@ -164,6 +164,21 @@ function FilterEmptyState({ filter, city }: { filter: 'all' | 'events' | 'topics
   );
 }
 
+// ── Participant count cache ───────────────────────────────────────────────────
+// Module-level Map so WS patches survive NowScreen unmounts/remounts.
+// When the API loads fresh items, applyCountCache() overlays any WS-received
+// counts so the user never sees a stale number after navigating away and back.
+const participantCountCache = new Map<string, number>(); // eventId → count
+
+function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
+  if (participantCountCache.size === 0) return feedItems;
+  return feedItems.map(item =>
+    item.kind === 'event' && participantCountCache.has(item.id)
+      ? { ...item, participant_count: participantCountCache.get(item.id) }
+      : item,
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function NowScreen() {
@@ -189,6 +204,9 @@ export default function NowScreen() {
   // Pre-seeded from bootstrap → set lastLoadAtRef to now so the first focus doesn't re-fetch.
   const loadingRef    = useRef(false);
   const lastLoadAtRef = useRef(nowBootstrap ? Date.now() : 0);
+  // Mirror load() in a ref so the WS handler always calls the current version without re-registering.
+  const loadRef = useRef(load);
+  loadRef.current = load;
 
   async function load(isRefresh = false) {
     if (!city) { setLoading(false); return; }
@@ -202,7 +220,7 @@ export default function NowScreen() {
     setError(null);
     try {
       const { items: nowData, publicEvents: pubData } = await fetchNowFeed(city.channelId, identity?.guestId);
-      setItems(nowData);
+      setItems(applyCountCache(nowData));
       setPublicEvents(pubData);
     } catch {
       setError('Could not load feed');
@@ -224,11 +242,23 @@ export default function NowScreen() {
   useEffect(() => {
     const off = socket.on('event_participants_update', (data: Record<string, unknown>) => {
       const { eventId, count } = data as { eventId: string; count: number };
+      participantCountCache.set(eventId, count); // persist across remounts
       setItems(prev => prev.map(item =>
         item.kind === 'event' && item.id === eventId
-          ? { ...item, participant_count: count as number }
+          ? { ...item, participant_count: count }
           : item,
       ));
+    });
+    return off;
+  }, []);
+
+  // New event created in this city — server pushes newEvent via WS, bypass the 30s throttle
+  // so the card appears instantly instead of waiting for the next focus refresh.
+  useEffect(() => {
+    const off = socket.on('newEvent', () => {
+      if (loadingRef.current) return; // already fetching, skip
+      lastLoadAtRef.current = 0;      // reset throttle so load() doesn't early-return
+      loadRef.current();
     });
     return off;
   }, []);

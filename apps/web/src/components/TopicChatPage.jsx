@@ -50,7 +50,7 @@ async function shareTopic(title, topicId) {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function TopicChatPage({ topic, guest, nickname, onBack }) {
+export default function TopicChatPage({ topic, guest, nickname, onBack, socket, sessionId }) {
   const [messages,   setMessages]   = useState([])
   const [input,      setInput]      = useState('')
   const [sending,    setSending]    = useState(false)
@@ -86,8 +86,27 @@ export default function TopicChatPage({ topic, guest, nickname, onBack }) {
     if (guest?.guestId) markTopicRead(topic.id, guest.guestId)
   }, [topic.id, guest?.guestId, loadMessages])
 
+  // WS — join topic room for live message delivery, leave on unmount
   useEffect(() => {
-    const id = setInterval(loadMessages, 4_000)
+    if (!socket || !sessionId) return
+    socket.joinTopic(topic.id, sessionId)
+    socket.on('newMessage', (data) => {
+      if (data.channelId !== topic.id) return
+      const msg = data.message
+      if (!msg) return
+      const key = msg.id ?? `${msg.guestId}:${msg.createdAt}`
+      if (knownIdsRef.current.has(key)) return
+      knownIdsRef.current.add(key)
+      setMessages(prev => [...prev, msg].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
+    })
+    return () => {
+      socket.leaveTopic(topic.id, sessionId)
+    }
+  }, [topic.id, socket, sessionId])
+
+  // Fallback poll — catches messages if WS is temporarily down
+  useEffect(() => {
+    const id = setInterval(loadMessages, 30_000)
     return () => clearInterval(id)
   }, [loadMessages])
 

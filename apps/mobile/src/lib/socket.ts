@@ -92,7 +92,23 @@ class HiladsSocket {
     this.send({ event: 'heartbeat', cityId: this._numericCityId(cityId), sessionId });
   }
 
+  typingStart(cityId: string, sessionId: string, nickname: string): void {
+    this.send({ event: 'typingStart', cityId: this._numericCityId(cityId), sessionId, nickname });
+  }
+
+  typingStop(cityId: string, sessionId: string): void {
+    this.send({ event: 'typingStop', cityId: this._numericCityId(cityId), sessionId });
+  }
+
   // Mirrors web socket.js joinConversation() — event name must match server exactly.
+  joinTopic(topicId: string, sessionId: string): void {
+    this.send({ event: 'joinTopic', topicId, sessionId });
+  }
+
+  leaveTopic(topicId: string, sessionId: string): void {
+    this.send({ event: 'leaveTopic', topicId, sessionId });
+  }
+
   joinDm(conversationId: string, userId: string): void {
     this.send({ event: 'joinConversation', conversationId, userId });
   }

@@ -167,6 +167,40 @@ export default function ChatTab() {
 
   const channelId = city?.channelId ?? '';
 
+  // ── Typing indicators ─────────────────────────────────────────────────────
+  // Server broadcasts typingUsers to the city room whenever typingStart/Stop fires.
+  // We filter out our own session so we never show "you are typing".
+
+  type TypingUser = { sessionId: string; nickname: string };
+  const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
+
+  useEffect(() => {
+    const off = socket.on('typingUsers', (data: Record<string, unknown>) => {
+      const users = (data.users as TypingUser[] | undefined) ?? [];
+      setTypingUsers(users);
+    });
+    // Clear on channel switch so stale indicators don't bleed across cities
+    return () => { off(); setTypingUsers([]); };
+  }, [channelId]);
+
+  const typingLabel = useMemo<string | null>(() => {
+    const others = typingUsers.filter(u => u.sessionId !== sessionId);
+    if (others.length === 0) return null;
+    if (others.length === 1) return `${others[0].nickname} is typing…`;
+    if (others.length === 2) return `${others[0].nickname} and ${others[1].nickname} are typing…`;
+    return `${others[0].nickname} and ${others.length - 1} others are typing…`;
+  }, [typingUsers, sessionId]);
+
+  const handleTypingStart = useCallback(() => {
+    if (!city?.channelId || !sessionId) return;
+    socket.typingStart(city.channelId, sessionId, nickname);
+  }, [city?.channelId, sessionId, nickname]);
+
+  const handleTypingStop = useCallback(() => {
+    if (!city?.channelId || !sessionId) return;
+    socket.typingStop(city.channelId, sessionId);
+  }, [city?.channelId, sessionId]);
+
   // ── Ephemeral event banners ────────────────────────────────────────────────
   // New events arrive via WS and show as temporary strips above the input.
   // Up to 3 banners shown simultaneously; each auto-expires independently.
@@ -682,6 +716,13 @@ export default function ChatTab() {
           />
         ))}
 
+        {/* ── Typing indicator bar ── */}
+        {typingLabel && (
+          <View style={styles.typingBar}>
+            <Text style={styles.typingText}>{typingLabel}</Text>
+          </View>
+        )}
+
         {/* ── Input — web: .input-bar ── */}
         <ChatInput
           sending={sending}
@@ -689,6 +730,8 @@ export default function ChatTab() {
           onSendImage={sendImage}
           placeholder={getPlaceholder(channelId)}
           pickImageRef={pickImageRef}
+          onTypingStart={handleTypingStart}
+          onTypingStop={handleTypingStop}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -857,6 +900,18 @@ const styles = StyleSheet.create({
   // ── Error banner ─────────────────────────────────────────────────────────
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
+
+  // ── Typing indicator bar ──────────────────────────────────────────────────
+  // Sits between messages and input. Subtle — just a dim text label.
+  typingBar: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   6,
+  },
+  typingText: {
+    fontSize:   FontSizes.xs,
+    color:      Colors.muted,
+    fontStyle:  'italic',
+  },
 
   // ── Messages ─────────────────────────────────────────────────────────────
   // web: .messages { padding: 22px 18px 14px; gap: 8px }

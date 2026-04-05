@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { socket } from '@/lib/socket';
 import {
   fetchTopicById, fetchTopicMessages,
   sendTopicMessage, markTopicRead,
@@ -25,7 +26,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 export default function TopicChatScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { identity, account } = useApp();
+  const { identity, account, sessionId } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   const [topic, setTopic]   = useState<Topic | null>(null);
@@ -80,15 +81,20 @@ export default function TopicChatScreen() {
     postImageFn,
   });
 
-  // Light poll while screen is focused — topics have no WS room yet.
-  // 15s is enough to feel live without spamming the API.
-  // useFocusEffect clears the interval when the user navigates away.
+  // Join the WS topic room while the screen is focused so new messages arrive
+  // via the newMessage event (handled by useMessages). Leave on blur so the
+  // server can clean up the room when it empties.
+  // A 30s fallback poll is kept in case the WS is temporarily disconnected.
   const reloadRef = useRef(reload);
   reloadRef.current = reload;
   useFocusEffect(useCallback(() => {
-    const timer = setInterval(() => reloadRef.current(), 15_000);
-    return () => clearInterval(timer);
-  }, []));
+    if (id && sessionId) socket.joinTopic(id, sessionId);
+    const timer = setInterval(() => reloadRef.current(), 30_000);
+    return () => {
+      clearInterval(timer);
+      if (id && sessionId) socket.leaveTopic(id, sessionId);
+    };
+  }, [id, sessionId]));
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>

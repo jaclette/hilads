@@ -8,6 +8,8 @@
  *                    heartbeat(cityId, sessionId)
  *                    joinEvent(eventId, sessionId)
  *                    leaveEvent(eventId, sessionId)
+ *                    joinTopic(topicId, sessionId)
+ *                    leaveTopic(topicId, sessionId)
  *                    joinConversation(conversationId, userId)
  *                    leaveConversation(conversationId, userId)
  *
@@ -55,6 +57,9 @@ const typing = new Map()
 
 // eventRooms: Map<eventId, Map<sessionId, { sessionId, ws }>>
 const eventRooms = new Map()
+
+// topicRooms: Map<topicId, Map<sessionId, { sessionId, ws }>>
+const topicRooms = new Map()
 
 // dmRooms: Map<conversationId, Map<userId, { userId, ws }>>
 // Keyed by userId (not sessionId) because DMs are tied to registered accounts.
@@ -264,6 +269,23 @@ function handleLeaveEvent(ws, { eventId, sessionId }) {
   else broadcastEventCount(eventId)
 }
 
+// ── Topic room helpers ──────────────────────────────────────────────────────────
+
+function handleJoinTopic(ws, { topicId, sessionId }) {
+  if (!topicId || !sessionId) return
+  if (!topicRooms.has(topicId)) topicRooms.set(topicId, new Map())
+  topicRooms.get(topicId).set(sessionId, { sessionId, ws })
+  console.log(`[WS] joinTopic: ${sessionId.slice(0, 8)} -> topic ${topicId.slice(0, 8)} (${topicRooms.get(topicId).size} in room)`)
+}
+
+function handleLeaveTopic(ws, { topicId, sessionId }) {
+  const room = topicRooms.get(topicId)
+  if (!room) return
+  room.delete(sessionId)
+  console.log(`[WS] leaveTopic: ${sessionId.slice(0, 8)} <- topic ${topicId.slice(0, 8)} (${room.size} in room)`)
+  if (room.size === 0) topicRooms.delete(topicId)
+}
+
 // ── DM conversation helpers ────────────────────────────────────────────────────
 
 function handleJoinConversation(ws, { conversationId, userId }) {
@@ -308,6 +330,14 @@ function removeWs(ws) {
         room.delete(sessionId)
         if (room.size === 0) eventRooms.delete(eventId)
         else broadcastEventCount(eventId)
+      }
+    }
+  }
+  for (const [topicId, room] of topicRooms) {
+    for (const [sessionId, member] of room) {
+      if (member.ws === ws) {
+        room.delete(sessionId)
+        if (room.size === 0) topicRooms.delete(topicId)
       }
     }
   }
@@ -421,6 +451,8 @@ wss.on('connection', (ws, req) => {
       case 'typingStop':         return handleTypingStop(ws, msg)
       case 'joinEvent':          return handleJoinEvent(ws, msg)
       case 'leaveEvent':         return handleLeaveEvent(ws, msg)
+      case 'joinTopic':          return handleJoinTopic(ws, msg)
+      case 'leaveTopic':         return handleLeaveTopic(ws, msg)
       case 'joinConversation':   return handleJoinConversation(ws, msg)
       case 'leaveConversation':  return handleLeaveConversation(ws, msg)
     }
@@ -455,11 +487,16 @@ function broadcastNewEvent(channelId, hiladsEvent) {
 
 // ── Message broadcast ───────────────────────────────────────────────────────────
 
-// channelId is an integer for city channels, a hex string for event channels.
+// channelId is an integer for city channels, a hex string for event or topic channels.
 // Pushes a newMessage event to all connected clients in that room.
 function broadcastNewMessage(channelId, message) {
-  const isCity = typeof channelId === 'number'
-  const room   = isCity ? rooms.get(channelId) : eventRooms.get(channelId)
+  let room
+  if (typeof channelId === 'number') {
+    room = rooms.get(channelId)
+  } else {
+    // String channelId — could be an event room or a topic room; check both
+    room = eventRooms.get(channelId) ?? topicRooms.get(channelId)
+  }
   if (!room) return
   const msg = JSON.stringify({ event: 'newMessage', channelId, message })
   for (const session of room.values()) {
