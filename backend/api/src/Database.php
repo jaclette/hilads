@@ -37,14 +37,21 @@ class Database
             self::$pdo = new PDO($dsn, $user, $pass, [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                // Reuse the underlying TCP+SSL connection across requests in the
+                // same PHP-FPM worker process. Eliminates the TLS handshake cost
+                // (100–400 ms) that was being paid on every new worker spawn.
+                // Safe for auto-commit read/write operations (no session state leaks).
+                PDO::ATTR_PERSISTENT         => true,
             ]);
 
             // ── Fast path: schema already up to date ─────────────────────────
             // A single pg_catalog lookup replaces 27+ slow information_schema
-            // checks on every cold PHP-FPM worker start. On a warm production DB
-            // this saves 500 ms – 3 s per new worker process.
+            // checks AND the 4–6 bootstrap() pg_catalog checks on every cold
+            // PHP-FPM worker start. The schema version is only written AFTER
+            // bootstrap() completes (see setSchemaVersion below), so a matching
+            // version proves all migrations including bootstrap have already run.
             if (self::getSchemaVersion() >= self::SCHEMA_VERSION) {
-                self::bootstrap(self::$pdo);
+                self::$bootstrapped = true; // skip bootstrap() — proven applied
                 return self::$pdo;
             }
 

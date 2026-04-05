@@ -1138,56 +1138,57 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
             : false;
 
+        // Defer presence-leave for the previous channel — pure side-effect, not needed before response.
         if ($previousChannelId !== false && $previousChannelId !== $channelId) {
-            try {
-                PresenceRepository::leave($previousChannelId, $sessionId);
-            } catch (\Throwable $e) {
-                apiLog('channel_join', 'previous leave failed', [
-                    'channelId' => $channelId,
-                    'previousChannelId' => $previousChannelId,
-                    'error' => $e->getMessage(),
-                ]);
-            }
+            $deferPrevChannel = $previousChannelId;
+            $deferSessionId   = $sessionId;
+            register_shutdown_function(static function () use ($deferPrevChannel, $deferSessionId, $channelId): void {
+                if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+                try {
+                    PresenceRepository::leave($deferPrevChannel, $deferSessionId);
+                } catch (\Throwable $e) {
+                    apiLog('channel_join', 'previous leave failed (deferred)', [
+                        'channelId' => $channelId,
+                        'previousChannelId' => $deferPrevChannel,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            });
         }
 
         $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
         $t2 = microtime(true); // after presence join
 
-        // Resolve the authenticated user once — used for both membership tracking
-        // and for the join feed message (with different semantics, see below).
+        // Resolve the authenticated user — needed for the join feed message.
         $authUser = AuthService::currentUser();
         $t3 = microtime(true); // after auth lookup
 
-        // Record persistent city membership for registered users.
+        // Defer persistent city membership upsert — fire-and-forget, never blocks the join response.
         // Priority: authenticated session (cookie) → guest_id link in users table.
-        // Using the auth session is more reliable — it works even when guest_id
-        // has changed (new device, cleared storage, etc.).
-        // Fire-and-forget: a failure here must never break the join flow.
-        try {
-            $pdo         = Database::pdo();
-            $memberChannelKey = 'city_' . $channelId;
-
-            // 1. Prefer authenticated user from session cookie
-            $memberUserId = $authUser ? $authUser['id'] : null;
-
-            // 2. Fall back to guest_id link in users table — for membership tracking only.
-            // We deliberately do NOT use this resolved ID in the join feed message (see below).
-            if (!$memberUserId) {
-                $memberUser = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
-                $memberUser->execute([$guestId]);
-                $memberUserId = $memberUser->fetchColumn() ?: null;
+        $deferAuthUserId    = $authUser ? $authUser['id'] : null;
+        $deferGuestId       = $guestId;
+        $deferMemberChannel = 'city_' . $channelId;
+        register_shutdown_function(static function () use ($deferAuthUserId, $deferGuestId, $deferMemberChannel): void {
+            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+            try {
+                $pdo = Database::pdo();
+                $memberUserId = $deferAuthUserId;
+                if (!$memberUserId) {
+                    $stmt = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
+                    $stmt->execute([$deferGuestId]);
+                    $memberUserId = $stmt->fetchColumn() ?: null;
+                }
+                if ($memberUserId) {
+                    $pdo->prepare("
+                        INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
+                        VALUES (?, ?, now(), now())
+                        ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
+                    ")->execute([$memberUserId, $deferMemberChannel]);
+                }
+            } catch (\Throwable $e) {
+                error_log('[channel_join] membership upsert failed (deferred): ' . $e->getMessage());
             }
-
-            if ($memberUserId) {
-                $pdo->prepare("
-                    INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
-                    VALUES (?, ?, now(), now())
-                    ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
-                ")->execute([$memberUserId, $memberChannelKey]);
-            }
-        } catch (\Throwable $e) {
-            error_log('[channel_join] membership upsert failed (non-fatal): ' . $e->getMessage());
-        }
+        });
 
         // Only emit a "just landed" feed event for genuinely new joins.
         // Re-joins (foreground transitions, reconnects within TTL) must not
@@ -1227,7 +1228,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         ]);
 
         if ($isNewSession) {
-            $distinctId = $memberUserId ?? $guestId;
+            $distinctId = $deferAuthUserId ?? $guestId;
             $cityInfo   = CityRepository::findById($channelId); // cached in memory
             // defer() schedules the PostHog HTTP call to run AFTER the response is
             // sent — completely off the critical path (via fastcgi_finish_request).
@@ -1235,9 +1236,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
                 'channel_id' => $channelId,
                 'city'       => $cityInfo['name']    ?? null,
                 'country'    => $cityInfo['country'] ?? null,
-                'is_guest'   => $memberUserId === null,
-                'user_id'    => $memberUserId ?? null,
-                'guest_id'   => $memberUserId === null ? $guestId : null,
+                'is_guest'   => $deferAuthUserId === null,
+                'user_id'    => $deferAuthUserId ?? null,
+                'guest_id'   => $deferAuthUserId === null ? $guestId : null,
             ]);
         }
 
