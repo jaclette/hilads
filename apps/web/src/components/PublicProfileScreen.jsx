@@ -405,7 +405,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </div>
             )}
 
-            {/* ── Vibes list ── */}
+            {/* ── Vibes list ── (scrollable — CTAs are in sticky bar below) */}
             <div className="pub-profile-vibes">
               {vibes.length > 0 ? (
                 <>
@@ -439,50 +439,51 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               )}
             </div>
 
-            {/* ── CTAs ── */}
-            {userId !== account?.id && (
-              <div className="pub-profile-cta">
-                {account && !confirmUnfriend && (
-                  <button
-                    className={`pub-profile-friend-btn${isFriend ? ' pub-profile-friend-btn--active' : ''}`}
-                    onClick={handleFriendToggle}
-                    disabled={friendBusy}
-                  >
-                    {isFriend ? '✓ Friend' : '+ Add friend'}
-                  </button>
-                )}
-                {account && confirmUnfriend && (
-                  <div className="pub-profile-unfriend-confirm">
-                    <button
-                      className="pub-profile-unfriend-btn"
-                      onClick={handleFriendToggle}
-                      disabled={friendBusy}
-                    >
-                      {friendBusy ? 'Removing…' : 'Unfriend'}
-                    </button>
-                    <button
-                      className="pub-profile-unfriend-cancel"
-                      onClick={() => setConfirmUnfriend(false)}
-                      disabled={friendBusy}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
-                {onSendDm && (
-                  <button
-                    className="pub-profile-dm-btn"
-                    onClick={handleSendDm}
-                    disabled={dmBusy}
-                  >
-                    {dmBusy ? 'Opening…' : '💬 Message'}
-                  </button>
-                )}
-              </div>
-            )}
           </>
         )}
       </div>
+
+      {/* ── Sticky action bar ── */}
+      {user && userId !== account?.id && (
+        <div className="pub-profile-sticky-bar">
+          {onSendDm && (
+            <button
+              className="pub-profile-dm-btn"
+              onClick={handleSendDm}
+              disabled={dmBusy}
+            >
+              {dmBusy ? 'Opening…' : '💬 Message'}
+            </button>
+          )}
+          {account && !confirmUnfriend && (
+            <button
+              className={`pub-profile-friend-btn${isFriend ? ' pub-profile-friend-btn--active' : ''}`}
+              onClick={handleFriendToggle}
+              disabled={friendBusy}
+            >
+              {friendBusy ? '…' : isFriend ? '✓ Friend' : '+ Friend'}
+            </button>
+          )}
+          {account && confirmUnfriend && (
+            <div className="pub-profile-unfriend-confirm">
+              <button
+                className="pub-profile-unfriend-btn"
+                onClick={handleFriendToggle}
+                disabled={friendBusy}
+              >
+                {friendBusy ? 'Removing…' : 'Unfriend'}
+              </button>
+              <button
+                className="pub-profile-unfriend-cancel"
+                onClick={() => setConfirmUnfriend(false)}
+                disabled={friendBusy}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

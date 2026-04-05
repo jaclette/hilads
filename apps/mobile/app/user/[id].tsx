@@ -12,7 +12,7 @@ import {
   View, Text, Image, ScrollView, TouchableOpacity,
   ActivityIndicator, StyleSheet, TextInput, Alert, Modal, Pressable,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
@@ -146,7 +146,8 @@ function EventPill({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function PublicProfileScreen() {
-  const router = useRouter();
+  const router  = useRouter();
+  const insets  = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { account, city } = useApp();
 
@@ -575,33 +576,33 @@ export default function PublicProfileScreen() {
             </View>
           )}
 
-          {/* ── Action buttons — registered non-self viewers only ── */}
-          {!isSelf && account && (
-            <View style={styles.actionBtns}>
-              <TouchableOpacity
-                style={[styles.friendBtn, isFriend && styles.friendBtnActive]}
-                onPress={handleFriendToggle}
-                activeOpacity={0.85}
-                disabled={friendBusy}
-              >
-                <Ionicons
-                  name={isFriend ? 'person-remove-outline' : 'person-add-outline'}
-                  size={18}
-                  color={isFriend ? Colors.accent : Colors.text}
-                />
-                <Text style={[styles.friendBtnText, isFriend && styles.friendBtnTextActive]}>
-                  {isFriend ? 'Friend' : 'Add friend'}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.dmBtn} onPress={handleDm} activeOpacity={0.85}>
-                <Feather name="message-square" size={18} color={Colors.white} />
-                <Text style={styles.dmBtnText}>Message</Text>
-              </TouchableOpacity>
-            </View>
-          )}
         </ScrollView>
       ) : null}
+
+      {/* ── Sticky action bar — registered non-self viewers only ── */}
+      {user && !isSelf && account && (
+        <View style={[styles.stickyBar, { paddingBottom: Math.max(12, insets.bottom) }]}>
+          <TouchableOpacity style={styles.dmBtn} onPress={handleDm} activeOpacity={0.85}>
+            <Feather name="message-square" size={18} color={Colors.white} />
+            <Text style={styles.dmBtnText}>Message</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.friendBtn, isFriend && styles.friendBtnActive]}
+            onPress={handleFriendToggle}
+            activeOpacity={0.85}
+            disabled={friendBusy}
+          >
+            <Ionicons
+              name={isFriend ? 'person-remove-outline' : 'person-add-outline'}
+              size={18}
+              color={isFriend ? Colors.accent : Colors.text}
+            />
+            <Text style={[styles.friendBtnText, isFriend && styles.friendBtnTextActive]}>
+              {friendBusy ? '…' : isFriend ? 'Friend' : 'Add friend'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* ── Avatar lightbox ── */}
       {user?.avatarUrl ? (
@@ -692,7 +693,7 @@ const styles = StyleSheet.create({
   body: {
     padding:       Spacing.md,
     gap:           Spacing.md,
-    paddingBottom: Spacing.xxl,
+    paddingBottom: 100, // clears sticky bar
   },
 
   // ── Hero ──────────────────────────────────────────────────────────────────
@@ -953,20 +954,31 @@ const styles = StyleSheet.create({
     color:    Colors.muted,
   },
 
-  // ── Action buttons row ────────────────────────────────────────────────────
-  actionBtns: {
+  // ── Sticky action bar ─────────────────────────────────────────────────────
+  stickyBar: {
+    flexDirection:     'row',
+    gap:               10,
+    paddingHorizontal: Spacing.md,
+    paddingTop:        12,
+    backgroundColor:   'rgba(14, 14, 16, 0.92)',
+    borderTopWidth:    1,
+    borderTopColor:    Colors.border,
+  },
+
+  // ── Action buttons (used inside sticky bar) ───────────────────────────────
+  actionBtns: { // kept for safety — no longer rendered
     flexDirection: 'row',
     gap:           Spacing.sm,
     marginTop:     Spacing.sm,
   },
   friendBtn: {
-    flex:              1,
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'center',
     gap:               8,
     paddingVertical:   15,
-    backgroundColor:   Colors.bg2,
+    paddingHorizontal: Spacing.md,
+    backgroundColor:   'transparent',
     borderRadius:      Radius.lg,
     borderWidth:       1,
     borderColor:       Colors.border,
@@ -1087,7 +1099,7 @@ const styles = StyleSheet.create({
 
   // ── DM button ─────────────────────────────────────────────────────────────
   dmBtn: {
-    flex:              1,
+    flex:              1, // primary: takes remaining width
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'center',
