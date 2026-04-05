@@ -320,6 +320,7 @@ export default function HereScreen() {
                 router.push({ pathname: '/user/[id]', params: { id: item.userId! } });
               } : undefined}
               onDm={() => {
+                if (!canAccessProfile(account)) { router.push('/auth-gate?reason=send_dm'); return; }
                 if (item.userId) router.push({ pathname: '/dm/[id]', params: { id: item.userId, name: item.nickname } });
               }}
             />

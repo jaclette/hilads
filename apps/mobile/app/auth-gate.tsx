@@ -14,7 +14,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-type GateReason = 'view_profile' | 'create_event';
+type GateReason = 'view_profile' | 'create_event' | 'send_dm';
 
 const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: string }> = {
   view_profile: {
@@ -26,6 +26,11 @@ const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: st
     emoji:    '🎉',
     title:    "Ghosts can vibe, but can't host.",
     subtitle: "Create an account to throw your own event and put your city on the map.",
+  },
+  send_dm: {
+    emoji:    '💬',
+    title:    "Ghosts can vibe, but can't slide into DMs.",
+    subtitle: "Create an account to message people directly and build your city crew.",
   },
 };
 

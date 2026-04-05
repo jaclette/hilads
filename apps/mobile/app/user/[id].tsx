@@ -264,6 +264,7 @@ export default function PublicProfileScreen() {
 
   function handleDm() {
     if (!user?.id) return;
+    if (!canAccessProfile(account)) { router.push('/auth-gate?reason=send_dm'); return; }
     router.push({
       pathname: '/dm/[id]',
       params: { id: user.id, name: user.displayName },

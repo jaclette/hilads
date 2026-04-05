@@ -444,6 +444,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 export default function DMThreadScreen() {
   const router = useRouter();
   const { id, name, conv } = useLocalSearchParams<{ id: string; name?: string; conv?: string }>();
+  const { account } = useApp();
 
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [resolveError,   setResolveError]   = useState<string | null>(null);
@@ -465,6 +466,12 @@ export default function DMThreadScreen() {
       return;
     }
 
+    // DMs require a registered account — guests don't have a user_id on either side.
+    if (!canAccessProfile(account)) {
+      router.replace('/auth-gate?reason=send_dm');
+      return;
+    }
+
     if (!id) return;
     let cancelled = false;
     // User-profile flow: id is a userId — find or create the DM thread.
@@ -482,7 +489,7 @@ export default function DMThreadScreen() {
         if (!cancelled) setResolveError('Could not open this conversation.');
       });
     return () => { cancelled = true; };
-  }, [id, conv]);
+  }, [id, conv, account]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
