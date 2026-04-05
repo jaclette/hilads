@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -30,6 +30,19 @@ export default function TopicChatScreen() {
 
   const [topic, setTopic]   = useState<Topic | null>(null);
   const [topicLoading, setTopicLoading] = useState(true);
+  const [shared, setShared] = useState(false);
+
+  async function handleShare() {
+    if (!id) return;
+    const url = `https://hilads.app/t/${id}`;
+    try {
+      await Share.share({ message: topic?.title ?? url, url });
+      setShared(true);
+      setTimeout(() => setShared(false), 2000);
+    } catch {
+      // dismissed or error — ignore
+    }
+  }
 
   // Fetch topic metadata
   useEffect(() => {
@@ -76,30 +89,45 @@ export default function TopicChatScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
-      {/* Nav */}
+      {/* Header — back | [icon + title] | share */}
       <View style={styles.nav}>
         <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
           <Ionicons name="chevron-back" size={18} color={Colors.text} />
           <Text style={styles.backPillText} numberOfLines={1}>Back</Text>
         </TouchableOpacity>
+
+        <View style={styles.navCenter}>
+          {topic && (
+            <>
+              <Text style={styles.navIcon}>{CATEGORY_ICONS[topic.category] ?? '💬'}</Text>
+              <Text style={styles.navTitle} numberOfLines={1}>{topic.title}</Text>
+            </>
+          )}
+        </View>
+
+        <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.7}>
+          {shared ? (
+            <Text style={styles.shareBtnCheck}>✓</Text>
+          ) : (
+            <Ionicons name="share-outline" size={20} color={Colors.text} />
+          )}
+        </TouchableOpacity>
       </View>
 
-      {/* Topic info block */}
+      {/* Topic info block — description + expiry only (title is in header) */}
       {topicLoading ? (
         <View style={styles.infoBlockLoading}>
           <ActivityIndicator color={Colors.accent} />
         </View>
       ) : topic ? (
-        <View style={styles.infoBlock}>
-          <View style={styles.infoTitleRow}>
-            <Text style={styles.infoIcon}>{CATEGORY_ICONS[topic.category] ?? '💬'}</Text>
-            <Text style={styles.infoTitle} numberOfLines={3}>{topic.title}</Text>
+        (topic.description || topic.message_count >= 0) ? (
+          <View style={styles.infoBlock}>
+            {topic.description ? (
+              <Text style={styles.infoDesc}>{topic.description}</Text>
+            ) : null}
+            <Text style={styles.infoExpiry}>⏱ Active for 24 h · {topic.message_count} {topic.message_count === 1 ? 'reply' : 'replies'}</Text>
           </View>
-          {topic.description ? (
-            <Text style={styles.infoDesc}>{topic.description}</Text>
-          ) : null}
-          <Text style={styles.infoExpiry}>⏱ Active for 24 h · {topic.message_count} {topic.message_count === 1 ? 'reply' : 'replies'}</Text>
-        </View>
+        ) : null
       ) : (
         <View style={styles.infoBlockLoading}>
           <Text style={styles.errorText}>Pulse not found or expired</Text>
@@ -190,6 +218,7 @@ const styles = StyleSheet.create({
     alignItems:        'center',
     paddingHorizontal: Spacing.md,
     paddingVertical:   10,
+    gap:               8,
   },
   backPill: {
     flexDirection:     'row',
@@ -201,12 +230,43 @@ const styles = StyleSheet.create({
     backgroundColor:   'rgba(255,255,255,0.08)',
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.12)',
-    maxWidth:          180,
+    flexShrink:        0,
   },
   backPillText: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
     color:      Colors.text,
+  },
+  navCenter: {
+    flex:           1,
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'center',
+    gap:            6,
+    overflow:       'hidden',
+  },
+  navIcon:  { fontSize: 18 },
+  navTitle: {
+    fontSize:      FontSizes.md,
+    fontWeight:    '700',
+    color:         Colors.text,
+    flexShrink:    1,
+  },
+  shareBtn: {
+    width:           44,
+    height:          44,
+    flexShrink:      0,
+    alignItems:      'center',
+    justifyContent:  'center',
+    borderRadius:    22,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.10)',
+  },
+  shareBtnCheck: {
+    fontSize:   18,
+    color:      '#4ade80',
+    fontWeight: '700',
   },
 
   infoBlock: {
@@ -215,7 +275,7 @@ const styles = StyleSheet.create({
     paddingBottom:     16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(96,165,250,0.18)',
-    gap:               8,
+    gap:               6,
   },
   infoBlockLoading: {
     paddingHorizontal: Spacing.md,
@@ -223,16 +283,6 @@ const styles = StyleSheet.create({
     alignItems:        'center',
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-  },
-  infoTitleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  infoIcon:     { fontSize: 28, marginTop: 2 },
-  infoTitle: {
-    flex:          1,
-    fontSize:      FontSizes.xl,
-    fontWeight:    '800',
-    color:         Colors.text,
-    letterSpacing: -0.4,
-    lineHeight:    30,
   },
   infoDesc:   { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
   infoExpiry: { fontSize: FontSizes.xs, color: '#60a5fa', fontWeight: '600' },

@@ -179,8 +179,10 @@ export interface Badge {
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
-  type: 'text' | 'system' | 'image' | 'event' | 'topic';
+  type: 'text' | 'system' | 'image' | 'event' | 'topic' | 'activity' | 'prompt';
   event?: string;                 // system message subtype: 'join' | etc.
+  subtype?: string;               // activity/prompt subtype: 'crowd' | 'explore' | 'photo' | 'create-event'
+  cta?: string;                   // prompt CTA button label
   guestId?: string;
   userId?: string;
   nickname: string;

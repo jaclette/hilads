@@ -108,6 +108,19 @@ function PulseDot() {
   );
 }
 
+// ── Ambient activity messages — mirrors web AMBIENT_MESSAGES ─────────────────
+
+const AMBIENT_MESSAGES = [
+  '🔥 People are arriving',
+  "🍻 Who's out tonight?",
+  '💬 The city is waking up',
+  '🌙 Night owls are online',
+  '👀 Someone just arrived',
+  '🔥 New face in the city',
+  '🎉 The vibe is alive right now',
+  '🗺️ Explorers checking in',
+];
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 // ── Screen ────────────────────────────────────────────────────────────────────
@@ -326,6 +339,110 @@ export default function ChatTab() {
     postImageFn,
   });
 
+  // ── System feed prompts + ambient activity messages ────────────────────────
+  // Mirrors web App.jsx schedulePrompts() + scheduleActivity().
+  // Injected locally after join; never sent to the server.
+
+  const [promptItems,    setPromptItems]    = useState<Message[]>([]);
+  const promptsShownRef  = useRef(new Set<string>());
+  const isActiveRef      = useRef(false);
+  const messagesRef      = useRef(messages);
+  messagesRef.current    = messages;          // updated every render — safe to read in timers
+  const activityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const promptTimersRef  = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const pickImageRef     = useRef<(() => void) | null>(null);
+
+  function realMessageCount() {
+    return messagesRef.current.filter(m => m.type === 'text' || m.type === 'image').length;
+  }
+
+  function scheduleActivity(isFirst = false) {
+    if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
+    const delay = isFirst ? 30_000 : 60_000 + Math.random() * 60_000;
+    activityTimerRef.current = setTimeout(() => {
+      if (!isActiveRef.current) return;
+      if (realMessageCount() < 3) {
+        const text = AMBIENT_MESSAGES[Math.floor(Math.random() * AMBIENT_MESSAGES.length)];
+        setPromptItems(prev => [...prev, {
+          id:        `act-${Date.now()}`,
+          type:      'activity' as const,
+          subtype:   'crowd',
+          content:   text,
+          nickname:  '',
+          createdAt: Date.now() / 1000,
+        }]);
+      }
+      scheduleActivity();
+    }, delay);
+  }
+
+  function schedulePrompts() {
+    const t1 = setTimeout(() => {
+      if (!isActiveRef.current || promptsShownRef.current.has('explore')) return;
+      if (realMessageCount() > 0) return; // only inject if feed is still empty
+      promptsShownRef.current.add('explore');
+      setPromptItems(prev => [...prev, {
+        id: `prompt-explore-${Date.now()}`, type: 'prompt' as const,
+        subtype: 'explore', content: "🔥 See what's happening now", cta: 'Explore',
+        nickname: '', createdAt: Date.now() / 1000,
+      }]);
+    }, 15_000);
+
+    const t2 = setTimeout(() => {
+      if (!isActiveRef.current || promptsShownRef.current.has('photo')) return;
+      if (realMessageCount() >= 3) return;
+      promptsShownRef.current.add('photo');
+      setPromptItems(prev => [...prev, {
+        id: `prompt-photo-${Date.now()}`, type: 'prompt' as const,
+        subtype: 'photo', content: "📸 Share what's happening", cta: 'Shoot',
+        nickname: '', createdAt: Date.now() / 1000,
+      }]);
+    }, 30_000);
+
+    const t3 = setTimeout(() => {
+      if (!isActiveRef.current || promptsShownRef.current.has('create-event')) return;
+      if (realMessageCount() >= 3) return;
+      promptsShownRef.current.add('create-event');
+      setPromptItems(prev => [...prev, {
+        id: `prompt-create-${Date.now()}`, type: 'prompt' as const,
+        subtype: 'create-event', content: '🎉 Got a plan tonight?', cta: 'Create event',
+        nickname: '', createdAt: Date.now() / 1000,
+      }]);
+    }, 60_000);
+
+    promptTimersRef.current.push(t1, t2, t3);
+  }
+
+  function handlePromptCta(subtype: string) {
+    setPromptItems(prev => prev.filter(p => p.subtype !== subtype));
+    if (subtype === 'photo') {
+      pickImageRef.current?.();
+    } else if (subtype === 'create-event') {
+      router.push('/event/create');
+    } else if (subtype === 'explore') {
+      router.push('/(tabs)/now');
+    }
+  }
+
+  // Start scheduling when the channel becomes active; cancel on channel change or unmount.
+  useEffect(() => {
+    if (!channelId) return;
+    isActiveRef.current = true;
+    promptsShownRef.current = new Set();
+    setPromptItems([]);
+    promptTimersRef.current.forEach(clearTimeout);
+    promptTimersRef.current = [];
+
+    scheduleActivity(true);
+    schedulePrompts();
+
+    return () => {
+      isActiveRef.current = false;
+      promptTimersRef.current.forEach(clearTimeout);
+      if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
+    };
+  }, [channelId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Weather — extracted from messages for header display, not rendered in the feed.
   const weatherLabel = useMemo<string | null>(() => {
     const w = messages.find(m => m.type === 'system' && m.event === 'weather');
@@ -338,17 +455,13 @@ export default function ChatTab() {
   //   index 0 = bottom of screen (newest message, near input)
   //   high index = top of screen (oldest, user scrolls up)
   //
-  // Event items are synthesised with createdAt = Date.now() at load time.
-  // Sorting by timestamp places them naturally:
-  //   - historical messages (older) → high indices → top of screen
-  //   - event items (timestamp ≈ load time) → middle indices → bottom of history
-  //   - new outgoing/incoming messages (newer) → low indices → visual bottom
-  //
-  // Nothing is pinned. Events scroll with the rest of the list.
+  // Event/topic/prompt items are synthesised with createdAt ≈ load time.
+  // Sorting by timestamp places them naturally at the bottom of history.
   const allMessages = useMemo<Message[]>(() => {
     const chat = messages.filter(m => !(m.type === 'system' && m.event === 'weather'));
-    return [...chat, ...eventFeedItems, ...topicFeedItems].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-  }, [messages, eventFeedItems, topicFeedItems]);
+    return [...chat, ...eventFeedItems, ...topicFeedItems, ...promptItems]
+      .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
+  }, [messages, eventFeedItems, topicFeedItems, promptItems]);
 
   // No city yet — prompt to pick one
   if (!city) {
@@ -484,19 +597,26 @@ export default function ChatTab() {
                 olderMsg.type !== 'system' &&
                 olderMsg.type !== 'event' &&
                 olderMsg.type !== 'topic' &&
+                olderMsg.type !== 'activity' &&
+                olderMsg.type !== 'prompt' &&
                 item.type !== 'system' &&
                 item.type !== 'event' &&
-                item.type !== 'topic';
+                item.type !== 'topic' &&
+                item.type !== 'activity' &&
+                item.type !== 'prompt';
               // showTime: last (newest) message in a sender run — newerMsg differs or absent
               const showTime =
-                item.type !== 'system' && item.type !== 'event' && item.type !== 'topic' && (
+                item.type !== 'system' && item.type !== 'event' && item.type !== 'topic' &&
+                item.type !== 'activity' && item.type !== 'prompt' && (
                   !newerMsg ||
                   newerMsg.guestId !== item.guestId ||
                   newerMsg.type === 'system'
                 );
               // dateLabel: show when this item starts a new calendar day vs the older message
               const dateLabel =
-                item.type !== 'event' && item.type !== 'topic' && !isSameDay(item.createdAt, olderMsg?.createdAt)
+                item.type !== 'event' && item.type !== 'topic' &&
+                item.type !== 'activity' && item.type !== 'prompt' &&
+                !isSameDay(item.createdAt, olderMsg?.createdAt)
                   ? formatDateLabel(item.createdAt)
                   : undefined;
               return (
@@ -507,6 +627,7 @@ export default function ChatTab() {
                   isGrouped={isGrouped}
                   showTime={showTime}
                   dateLabel={dateLabel}
+                  onPromptCta={handlePromptCta}
                 />
               );
             }}
@@ -548,6 +669,7 @@ export default function ChatTab() {
           onSendText={sendText}
           onSendImage={sendImage}
           placeholder={getPlaceholder(channelId)}
+          pickImageRef={pickImageRef}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

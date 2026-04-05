@@ -84,12 +84,13 @@ function useEntryAnimation(duration = 200) {
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
-  message:   Message;
-  myGuestId: string | undefined;
-  isGrouped?: boolean;
-  index?:     number;     // used for stagger delay on event items
-  showTime?:  boolean;    // show timestamp below bubble (last in sender group)
-  dateLabel?: string;     // if set, render a date separator above this item
+  message:      Message;
+  myGuestId:    string | undefined;
+  isGrouped?:   boolean;
+  index?:       number;     // used for stagger delay on event items
+  showTime?:    boolean;    // show timestamp below bubble (last in sender group)
+  dateLabel?:   string;     // if set, render a date separator above this item
+  onPromptCta?: (subtype: string) => void;  // called when a prompt card CTA is tapped
 }
 
 // ── Animated event pill — fade + slide-up on mount, staggered by index ───────
@@ -256,7 +257,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta }: Props) {
   const router = useRouter();
   const { account } = useApp();
 
@@ -297,6 +298,31 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           </View>
         </Animated.View>
       </>
+    );
+  }
+
+  // ── Activity feed item — ambient muted text, no CTA (web: .feed-activity) ──
+  if (message.type === 'activity') {
+    return (
+      <Animated.View style={[styles.activityRow, animStyle]}>
+        <Text style={styles.activityText}>{message.content}</Text>
+      </Animated.View>
+    );
+  }
+
+  // ── Prompt feed item — orange card + CTA button (web: .feed-prompt) ─────────
+  if (message.type === 'prompt') {
+    return (
+      <Animated.View style={[styles.promptRow, animStyle]}>
+        <Text style={styles.promptText}>{message.content}</Text>
+        <TouchableOpacity
+          style={styles.promptBtn}
+          activeOpacity={0.8}
+          onPress={() => onPromptCta?.(message.subtype ?? '')}
+        >
+          <Text style={styles.promptBtnText}>{message.cta}</Text>
+        </TouchableOpacity>
+      </Animated.View>
     );
   }
 
@@ -543,6 +569,55 @@ const styles = StyleSheet.create({
     color:      '#fff',
     fontSize:   15,
     fontWeight: '700',
+  },
+
+  // ── .feed-activity — ambient muted text, centered ────────────────────────
+  // Web: align-self center, 0.8rem, color muted2, border-radius 20px, padding 4 14
+  activityRow: {
+    alignSelf:         'center',
+    marginVertical:    4,
+    paddingHorizontal: 14,
+    paddingVertical:   4,
+  },
+  activityText: {
+    fontSize:  13,
+    color:     Colors.muted2,
+    textAlign: 'center',
+  },
+
+  // ── .feed-prompt — orange card with text + CTA (web: feed-prompt) ────────
+  // Web: align-self center, rgba(255,120,50,0.1) bg, 1px border rgba(255,120,50,0.25),
+  //      border-radius 20px, padding 8 14, gap 10
+  promptRow: {
+    alignSelf:         'center',
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               10,
+    backgroundColor:   'rgba(255,120,50,0.10)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,120,50,0.25)',
+    borderRadius:      20,
+    paddingHorizontal: 14,
+    paddingVertical:   8,
+    marginVertical:    6,
+    maxWidth:          '88%',
+  },
+  promptText: {
+    flex:     1,
+    fontSize: 13,
+    color:    Colors.muted,
+  },
+  promptBtn: {
+    backgroundColor:   Colors.accent,
+    borderRadius:      14,
+    paddingHorizontal: 12,
+    paddingVertical:   5,
+    flexShrink:        0,
+  },
+  promptBtnText: {
+    color:      '#fff',
+    fontSize:   12,
+    fontWeight: '600',
   },
 
   // ── .feed-join — centered pill ────────────────────────────────────────────

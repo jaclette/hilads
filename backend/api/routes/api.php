@@ -1105,6 +1105,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             'ip' => Request::ip(),
         ]);
 
+        // ── Phase timing (server-side, for waterfall debugging) ───────────────
+        $t0 = microtime(true);
+
         enforceRateLimit('channel_join', 90, 300);
 
         if (CityRepository::findById($channelId) === null) {
@@ -1129,6 +1132,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             Response::json(['error' => 'nickname must not be empty'], 400);
         }
 
+        $t1 = microtime(true); // after validation + CityRepository lookup
+
         $previousChannelId = isset($body['previousChannelId'])
             ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
             : false;
@@ -1146,10 +1151,12 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         }
 
         $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+        $t2 = microtime(true); // after presence join
 
         // Resolve the authenticated user once — used for both membership tracking
         // and for the join feed message (with different semantics, see below).
         $authUser = AuthService::currentUser();
+        $t3 = microtime(true); // after auth lookup
 
         // Record persistent city membership for registered users.
         // Priority: authenticated session (cookie) → guest_id link in users table.
@@ -1206,10 +1213,17 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             }
         }
 
+        $t4 = microtime(true); // after join-event write
         apiLog('channel_join', 'success', [
-            'channelId' => $channelId,
-            'isNew'     => $isNewSession,
-            'elapsedMs' => apiElapsedMs($startedAt),
+            'channelId'    => $channelId,
+            'isNew'        => $isNewSession,
+            'elapsedMs'    => apiElapsedMs($startedAt),
+            'phases_ms'    => [
+                'validation'    => round(($t1 - $t0) * 1000, 1),
+                'presence_join' => round(($t2 - $t1) * 1000, 1),
+                'auth_lookup'   => round(($t3 - $t2) * 1000, 1),
+                'event_write'   => round(($t4 - $t3) * 1000, 1),
+            ],
         ]);
 
         if ($isNewSession) {
@@ -1343,11 +1357,15 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             : null;
         $limit    = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
 
+        $tMsg0       = microtime(true);
         $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit);
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
+        $tMsg1       = microtime(true); // after message fetch
+
         $onlineUsers = PresenceRepository::getOnline($channelId);
         $onlineCount = count($onlineUsers);
+        $tMsg2       = microtime(true); // after presence fetch
 
         // ── Badge enrichment ──────────────────────────────────────────────────
         // Collect unique registered user IDs from text/image messages
@@ -1360,6 +1378,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         }
         $msgUserIds = array_values(array_unique($msgUserIds));
         $badgeMap   = UserBadgeService::batchForCity($msgUserIds, $channelId, $city['name']);
+        $tMsg3      = microtime(true); // after badge enrichment
 
         foreach ($messages as &$msg) {
             $t = $msg['type'] ?? 'text';
@@ -1410,10 +1429,15 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         // ─────────────────────────────────────────────────────────────────────
 
         apiLog('channel_messages', 'success', [
-            'channelId' => $channelId,
-            'messages' => count($messages),
+            'channelId'   => $channelId,
+            'messages'    => count($messages),
             'onlineCount' => $onlineCount,
-            'elapsedMs' => apiElapsedMs($startedAt),
+            'elapsedMs'   => apiElapsedMs($startedAt),
+            'phases_ms'   => [
+                'msg_fetch'    => round(($tMsg1 - $tMsg0) * 1000, 1),
+                'presence'     => round(($tMsg2 - $tMsg1) * 1000, 1),
+                'badge_enrich' => round(($tMsg3 - $tMsg2) * 1000, 1),
+            ],
         ]);
 
         Response::json([
@@ -1690,14 +1714,24 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
         $lng = null;
     }
 
-    try {
-        TicketmasterImporter::syncIfNeeded($channelId, $lat, $lng, $city['name']);
-    } catch (\Throwable $e) {
-        apiLog('city_events', 'sync failed', [
-            'channelId' => $channelId,
-            'error' => $e->getMessage(),
-        ]);
-    }
+    // Defer Ticketmaster sync until AFTER the response is sent.
+    // Previously this blocked the entire response by up to 5 s (TIMEOUT) whenever
+    // the 7-day cooldown expired — a synchronous external API call on the hot path.
+    // register_shutdown_function runs after fastcgi_finish_request flushes the response.
+    $syncChannelId = $channelId;
+    $syncLat       = $lat;
+    $syncLng       = $lng;
+    $syncCityName  = $city['name'];
+    register_shutdown_function(static function () use ($syncChannelId, $syncLat, $syncLng, $syncCityName): void {
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
+        try {
+            TicketmasterImporter::syncIfNeeded($syncChannelId, $syncLat, $syncLng, $syncCityName);
+        } catch (\Throwable $e) {
+            error_log("[city-events] TM sync failed (deferred): " . $e->getMessage());
+        }
+    });
 
     try {
         $events = EventRepository::getPublicByChannel($channelId);

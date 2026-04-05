@@ -759,20 +759,24 @@ export default function App() {
 
   // Lightweight unread check at boot — only fetches a boolean, not the full conversations list.
   // Full conversations are loaded by ConversationsScreen when it mounts.
+  // Deferred 2 s so it doesn't compete with join + messages on the critical path.
   useEffect(() => {
     if (!account) { setConversationsHasUnread(false); setConversations(null); return }
-    fetchConversationsUnread()
-      .then(d => {
-        if (d === null) {
-          // 401 — session expired mid-session; sign out cleanly
-          localStorage.removeItem(AUTH_FLAG_KEY)
-          accountRef.current = null
-          setAccount(null)
-          return
-        }
-        setConversationsHasUnread(d.has_unread ?? false)
-      })
-      .catch(() => {})
+    const t = setTimeout(() => {
+      fetchConversationsUnread()
+        .then(d => {
+          if (d === null) {
+            // 401 — session expired mid-session; sign out cleanly
+            localStorage.removeItem(AUTH_FLAG_KEY)
+            accountRef.current = null
+            setAccount(null)
+            return
+          }
+          setConversationsHasUnread(d.has_unread ?? false)
+        })
+        .catch(() => {})
+    }, 2000)
+    return () => clearTimeout(t)
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load "My events" whenever the profile drawer opens — registered users only.
@@ -799,30 +803,35 @@ export default function App() {
   // Badge is kept current via local state transitions:
   //   - NotificationsScreen sets it to the true server count on open
   //   - handleMarkAllRead / handleClickNotif decrement it locally
+  // Deferred 2 s so it doesn't compete with join + messages on the critical path.
   useEffect(() => {
     if (!account) { setNotifUnreadCount(0); return }
     let cancelled = false
-    fetchUnreadCount()
-      .then(d => {
-        if (cancelled) return
-        if (d === null) {
-          // 401 — session expired mid-session; sign out cleanly
-          localStorage.removeItem(AUTH_FLAG_KEY)
-          accountRef.current = null
-          setAccount(null)
-          return
-        }
-        setNotifUnreadCount(d.count)
-      })
-      .catch(() => {})
-    return () => { cancelled = true }
+    const t = setTimeout(() => {
+      fetchUnreadCount()
+        .then(d => {
+          if (cancelled) return
+          if (d === null) {
+            // 401 — session expired mid-session; sign out cleanly
+            localStorage.removeItem(AUTH_FLAG_KEY)
+            accountRef.current = null
+            setAccount(null)
+            return
+          }
+          setNotifUnreadCount(d.count)
+        })
+        .catch(() => {})
+    }, 2000)
+    return () => { cancelled = true; clearTimeout(t) }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Register push when account becomes available (login/register or page reload with session).
   // Also handles silent re-registration when permission was already granted.
+  // Deferred 3 s — completely non-critical, must not compete with join/messages.
   useEffect(() => {
     if (!account) return
-    registerPush().catch(() => {})
+    const t = setTimeout(() => { registerPush().catch(() => {}) }, 3000)
+    return () => clearTimeout(t)
   }, [account?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle navigate messages from the service worker (push notification click).

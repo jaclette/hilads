@@ -7,6 +7,13 @@ class Database
     private static ?PDO $pdo = null;
     private static bool $bootstrapped = false;
 
+    /**
+     * Schema version — bump this integer each time you add a new migration block.
+     * Once all blocks have run in production, cold workers do ONE pg_catalog query
+     * to confirm the version matches and skip all 27+ information_schema checks.
+     */
+    private const SCHEMA_VERSION = 1;
+
     public static function pdo(): PDO
     {
         if (self::$pdo === null) {
@@ -32,10 +39,19 @@ class Database
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
 
+            // ── Fast path: schema already up to date ─────────────────────────
+            // A single pg_catalog lookup replaces 27+ slow information_schema
+            // checks on every cold PHP-FPM worker start. On a warm production DB
+            // this saves 500 ms – 3 s per new worker process.
+            if (self::getSchemaVersion() >= self::SCHEMA_VERSION) {
+                self::bootstrap(self::$pdo);
+                return self::$pdo;
+            }
+
             // Only run DDL migrations when tables don't exist yet (e.g. fresh deploy).
             // Skipping this on every worker startup avoids catalog lock contention.
             $tablesExist = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'channels')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'channels')")
                 ->fetchColumn();
 
             if (!$tablesExist) {
@@ -45,7 +61,7 @@ class Database
             // Additive migrations: run when a new table is absent on an existing DB.
             // Each block is idempotent and safe to re-check on every cold start.
             $convExist = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'conversations')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'conversations')")
                 ->fetchColumn();
 
             if (!$convExist) {
@@ -54,7 +70,7 @@ class Database
 
             // Add last_read_at to conversation_participants if missing (tracks DM unread state).
             $lastReadExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'conversation_participants' AND column_name = 'last_read_at')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.conversation_participants'::regclass AND attname = 'last_read_at' AND NOT attisdropped)")
                 ->fetchColumn();
 
             if (!$lastReadExists) {
@@ -63,7 +79,7 @@ class Database
 
             // Add last_read_at to event_participants if missing (tracks event chat unread state).
             $epLastReadExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'event_participants' AND column_name = 'last_read_at')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.event_participants'::regclass AND attname = 'last_read_at' AND NOT attisdropped)")
                 ->fetchColumn();
 
             if (!$epLastReadExists) {
@@ -72,7 +88,7 @@ class Database
 
             // Add nickname to event_participants if missing (powers the participant strip).
             $epNicknameExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'event_participants' AND column_name = 'nickname')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.event_participants'::regclass AND attname = 'nickname' AND NOT attisdropped)")
                 ->fetchColumn();
 
             if (!$epNicknameExists) {
@@ -81,7 +97,7 @@ class Database
 
             // DB-backed auth sessions (replaces PHP file sessions lost on container restart).
             $userSessionsExist = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_sessions')")
+                ->query("SELECT to_regclass('public.user_sessions') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$userSessionsExist) {
@@ -98,7 +114,7 @@ class Database
 
             // Recurring event series (adds event_series table + two columns on channel_events).
             $seriesTableExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'event_series')")
+                ->query("SELECT to_regclass('public.event_series') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$seriesTableExists) {
@@ -132,7 +148,7 @@ class Database
             } else {
                 // Additive: add source + source_key columns if missing (deployed before this migration)
                 $hasSourceKey = (bool) self::$pdo
-                    ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'event_series' AND column_name = 'source_key')")
+                    ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.event_series'::regclass AND attname = 'source_key' AND NOT attisdropped)")
                     ->fetchColumn();
                 if (!$hasSourceKey) {
                     self::$pdo->exec("ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'user'");
@@ -167,7 +183,7 @@ class Database
 
             // Add created_by to channel_events if missing (event ownership feature).
             $ceCreatedByExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'channel_events' AND column_name = 'created_by')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.channel_events'::regclass AND attname = 'created_by' AND NOT attisdropped)")
                 ->fetchColumn();
 
             if (!$ceCreatedByExists) {
@@ -179,7 +195,7 @@ class Database
             // The original table only had (channel_id, guest_id, joined_at).
             // user_id was added to link registered users to their participation rows.
             $epUserIdExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'event_participants' AND column_name = 'user_id')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.event_participants'::regclass AND attname = 'user_id' AND NOT attisdropped)")
                 ->fetchColumn();
 
             if (!$epUserIdExists) {
@@ -191,7 +207,7 @@ class Database
             // This column was added to NotificationPreferencesRepository but the original
             // bootstrap() CREATE TABLE only had 3 columns — causing SQL crashes in production.
             $ejpExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'event_join_push')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.notification_preferences'::regclass AND attname = 'event_join_push' AND NOT attisdropped)")
                 ->fetchColumn();
 
             if (!$ejpExists) {
@@ -200,14 +216,14 @@ class Database
 
             // Add channel_message_push + city_join_push to notification_preferences if missing.
             $cmpExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'channel_message_push')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.notification_preferences'::regclass AND attname = 'channel_message_push' AND NOT attisdropped)")
                 ->fetchColumn();
             if (!$cmpExists) {
                 self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS channel_message_push BOOLEAN NOT NULL DEFAULT FALSE");
             }
 
             $cjpExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'city_join_push')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.notification_preferences'::regclass AND attname = 'city_join_push' AND NOT attisdropped)")
                 ->fetchColumn();
             if (!$cjpExists) {
                 self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS city_join_push BOOLEAN NOT NULL DEFAULT FALSE");
@@ -215,7 +231,7 @@ class Database
 
             // Add friend_added_push to notification_preferences if missing.
             $fapExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'friend_added_push')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.notification_preferences'::regclass AND attname = 'friend_added_push' AND NOT attisdropped)")
                 ->fetchColumn();
             if (!$fapExists) {
                 self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS friend_added_push BOOLEAN NOT NULL DEFAULT TRUE");
@@ -223,7 +239,7 @@ class Database
 
             // Add vibe_received_push to notification_preferences if missing.
             $vrpExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'notification_preferences' AND column_name = 'vibe_received_push')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.notification_preferences'::regclass AND attname = 'vibe_received_push' AND NOT attisdropped)")
                 ->fetchColumn();
             if (!$vrpExists) {
                 self::$pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS vibe_received_push BOOLEAN NOT NULL DEFAULT TRUE");
@@ -231,7 +247,7 @@ class Database
 
             // Mobile push token registry (one row per device, Expo push tokens).
             $mptExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'mobile_push_tokens')")
+                ->query("SELECT to_regclass('public.mobile_push_tokens') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$mptExists) {
@@ -250,7 +266,7 @@ class Database
                 // Add last_used_at if missing — the ON CONFLICT UPDATE in /push/mobile-token sets it.
                 // Without this column the upsert fails silently and no token is ever stored.
                 $mptLuaExists = (bool) self::$pdo
-                    ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'mobile_push_tokens' AND column_name = 'last_used_at')")
+                    ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.mobile_push_tokens'::regclass AND attname = 'last_used_at' AND NOT attisdropped)")
                     ->fetchColumn();
                 if (!$mptLuaExists) {
                     self::$pdo->exec("ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()");
@@ -259,7 +275,7 @@ class Database
 
             // Add type + image_url to conversation_messages if missing (DM image upload feature).
             $cmTypeExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'conversation_messages' AND column_name = 'type')")
+                ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.conversation_messages'::regclass AND attname = 'type' AND NOT attisdropped)")
                 ->fetchColumn();
             if (!$cmTypeExists) {
                 self::$pdo->exec("ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS type TEXT NOT NULL DEFAULT 'text'");
@@ -268,7 +284,7 @@ class Database
 
             // User city roles (ambassador programme).
             $ucrExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_city_roles')")
+                ->query("SELECT to_regclass('public.user_city_roles') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$ucrExists) {
@@ -289,7 +305,7 @@ class Database
             // User friends — mutual (bilateral) friendship.
             // Both (A→B) and (B→A) rows are always kept in sync by the API.
             $ufExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_friends')")
+                ->query("SELECT to_regclass('public.user_friends') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$ufExists) {
@@ -322,7 +338,7 @@ class Database
             // City memberships (source of truth for City Crew / Here screen).
             // Added after initial deploy — must run as an additive migration on existing DBs.
             $ucmExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_city_memberships')")
+                ->query("SELECT to_regclass('public.user_city_memberships') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$ucmExists) {
@@ -341,7 +357,7 @@ class Database
 
             // Anti-noise push delivery log (cooldown tracking per user/type/ref).
             $pdlExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'push_delivery_log')")
+                ->query("SELECT to_regclass('public.push_delivery_log') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$pdlExists) {
@@ -360,7 +376,7 @@ class Database
             // User vibes — social rating system (1–5 stars + optional message).
             // Added after initial deploy — additive migration.
             $uvExists = (bool) self::$pdo
-                ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_vibes')")
+                ->query("SELECT to_regclass('public.user_vibes') IS NOT NULL")
                 ->fetchColumn();
 
             if (!$uvExists) {
@@ -411,7 +427,40 @@ class Database
 
         self::bootstrap(self::$pdo);
 
+        // Stamp the schema version so future cold starts skip all the checks above.
+        self::setSchemaVersion(self::SCHEMA_VERSION);
+
         return self::$pdo;
+    }
+
+    // ── Schema version helpers ────────────────────────────────────────────────
+    // One fast pg_catalog row replaces 27+ slow information_schema queries.
+
+    private static function getSchemaVersion(): int
+    {
+        try {
+            $exists = (bool) self::$pdo
+                ->query("SELECT to_regclass('public._hilads_schema_ver') IS NOT NULL")
+                ->fetchColumn();
+            if (!$exists) {
+                return 0;
+            }
+            $v = self::$pdo
+                ->query("SELECT value FROM _hilads_schema_ver WHERE key = 'version'")
+                ->fetchColumn();
+            return $v !== false ? (int) $v : 0;
+        } catch (\Throwable $e) {
+            return 0;
+        }
+    }
+
+    private static function setSchemaVersion(int $version): void
+    {
+        self::$pdo->exec("CREATE TABLE IF NOT EXISTS _hilads_schema_ver (key TEXT PRIMARY KEY, value TEXT)");
+        self::$pdo->prepare(
+            "INSERT INTO _hilads_schema_ver (key, value) VALUES ('version', ?)
+             ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value"
+        )->execute([$version]);
     }
 
     private static function bootstrap(PDO $pdo): void
@@ -422,7 +471,7 @@ class Database
 
         // ── Notifications (Phase 1) ───────────────────────────────────────────
         $notifExist = (bool) $pdo
-            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'notifications')")
+            ->query("SELECT to_regclass('public.notifications') IS NOT NULL")
             ->fetchColumn();
 
         if (!$notifExist) {
@@ -470,7 +519,7 @@ class Database
 
         // ── Password reset tokens ─────────────────────────────────────────────
         $resetExist = (bool) $pdo
-            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'password_reset_tokens')")
+            ->query("SELECT to_regclass('public.password_reset_tokens') IS NOT NULL")
             ->fetchColumn();
 
         if (!$resetExist) {
@@ -491,7 +540,7 @@ class Database
         // ── User admin columns (deleted_at, is_fake) ─────────────────────────
         // These are additive — must run on existing databases too, not just fresh ones.
         $deletedAtExists = (bool) self::$pdo
-            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'deleted_at')")
+            ->query("SELECT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'public.users'::regclass AND attname = 'deleted_at' AND NOT attisdropped)")
             ->fetchColumn();
 
         if (!$deletedAtExists) {
@@ -501,7 +550,7 @@ class Database
 
         // ── Topics (city subchannels) ─────────────────────────────────────────
         $topicsExist = (bool) $pdo
-            ->query("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'channel_topics')")
+            ->query("SELECT to_regclass('public.channel_topics') IS NOT NULL")
             ->fetchColumn();
 
         if (!$topicsExist) {

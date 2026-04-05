@@ -8,7 +8,7 @@
  * Send button:   54×54px circle, gradient accent→accent2, shadow
  */
 
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View, TextInput, TouchableOpacity, Text,
   ActivityIndicator, StyleSheet, Platform, Alert, Linking, Keyboard,
@@ -42,13 +42,15 @@ export function getPlaceholder(channelId: string): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 interface Props {
-  sending:     boolean;
-  onSendText:  (text: string) => void;
-  onSendImage: (uri: string) => void;
-  placeholder?: string;
+  sending:       boolean;
+  onSendText:    (text: string) => void;
+  onSendImage:   (uri: string) => void;
+  placeholder?:  string;
+  /** Parent can call pickImageRef.current?.() to trigger the image picker externally (e.g. from a feed prompt CTA). */
+  pickImageRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…' }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pickImageRef }: Props) {
   const [text,          setText]        = useState('');
   const [uploading,     setUploading]   = useState(false);
   const [androidCamera, setAndroidCamera] = useState(false);
@@ -172,6 +174,9 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       { text: 'Cancel', style: 'cancel' },
     ]);
   }
+
+  // Expose handlePickImage to parent so prompt CTAs can trigger the same flow
+  if (pickImageRef) pickImageRef.current = handlePickImage;
 
   const busy       = sending || uploading;
   const canSend    = !!text.trim() && !busy;
