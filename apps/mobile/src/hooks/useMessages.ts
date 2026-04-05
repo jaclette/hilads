@@ -116,7 +116,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     load();
   }, [channelId]);
 
-  // WebSocket — live new messages
+  // WebSocket — live new messages + reconnect catch-up
   useEffect(() => {
     function handler(data: Record<string, unknown>) {
       if ((data.channelId === channelId || data.eventId === channelId) && data.message) {
@@ -125,11 +125,13 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     }
     const off1 = socket.on('newMessage', handler);
     const off2 = socket.on('message', handler);
-    return () => { off1(); off2(); };
-  }, [channelId, addNew]);
 
-  // New messages arrive via WebSocket (newMessage / message events above).
-  // No polling interval — WebSocket is the only real-time source.
+    // On reconnect, fetch the latest page once to catch messages sent during the
+    // disconnect gap. Best-effort: keeps the live feed current after restore.
+    const offConnected = socket.on('connected', load);
+
+    return () => { off1(); off2(); offConnected(); };
+  }, [channelId, addNew, load]);
 
   // ── Load older messages (pagination) ──────────────────────────────────────
   // Fetches the page before the current oldest message and prepends it.

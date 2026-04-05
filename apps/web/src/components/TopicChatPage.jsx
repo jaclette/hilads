@@ -90,7 +90,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   useEffect(() => {
     if (!socket || !sessionId) return
     socket.joinTopic(topic.id, sessionId)
-    socket.on('newMessage', (data) => {
+    const off = socket.on('newMessage', (data) => {
       if (data.channelId !== topic.id) return
       const msg = data.message
       if (!msg) return
@@ -100,6 +100,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       setMessages(prev => [...prev, msg].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
     })
     return () => {
+      off()
       socket.leaveTopic(topic.id, sessionId)
     }
   }, [topic.id, socket, sessionId])

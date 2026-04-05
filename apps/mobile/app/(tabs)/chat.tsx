@@ -300,40 +300,45 @@ export default function ChatTab() {
       if (fresh.length > 0) setEventFeedItems(fresh);
     }
 
-    async function loadEvents() {
-      try {
-        const evts = await fetchCityEvents(channelId);
-        const now   = Date.now() / 1000;
+    // Initial fetch only if bootstrap didn't seed events.
+    if (bootstrapEvts.length === 0) {
+      fetchCityEvents(channelId).then(evts => {
+        const now = Date.now() / 1000;
         const fresh: Message[] = [];
         for (const e of evts) {
           if (!seenEventIds.current.has(e.id)) {
             seenEventIds.current.add(e.id);
-            fresh.push({
-              id:        `event-msg-${e.id}`,
-              type:      'event',
-              eventId:   e.id,
-              content:   e.title,
-              nickname:  '',
-              createdAt: now,
-            });
+            fresh.push({ id: `event-msg-${e.id}`, type: 'event', eventId: e.id,
+                         content: e.title, nickname: '', createdAt: now });
           }
         }
-        if (fresh.length > 0) {
-          setEventFeedItems(prev => [...prev, ...fresh]);
-          console.log('[event-feed] synthesized', fresh.length, 'event feed item(s)');
-        }
-      } catch {}
+        if (fresh.length > 0) setEventFeedItems(prev => [...prev, ...fresh]);
+      }).catch(() => {});
     }
 
-    // Delay first poll if bootstrap seeded events — let the 30s interval handle refresh.
-    const id = setInterval(loadEvents, 30_000);
-    if (bootstrapEvts.length === 0) loadEvents();
-    return () => clearInterval(id);
+    // WS: new event created in this city — append pill immediately (no poll needed).
+    const offEvent = socket.on('new_event', (data: Record<string, unknown>) => {
+      if (String(data.channelId) !== String(channelId)) return;
+      const ev = data.hiladsEvent as Record<string, unknown> | undefined;
+      const eventId = (ev?.id ?? '') as string;
+      if (!eventId || seenEventIds.current.has(eventId)) return;
+      seenEventIds.current.add(eventId);
+      setEventFeedItems(prev => [...prev, {
+        id:        `event-msg-${eventId}`,
+        type:      'event' as const,
+        eventId,
+        content:   (ev?.title as string) ?? '',
+        nickname:  '',
+        createdAt: Date.now() / 1000,
+      }]);
+    });
+
+    return () => { offEvent(); };
   }, [channelId]);
 
   // ── Topic feed item synthesis ─────────────────────────────────────────────
   // Active topics appear as blue pills in the city chat.
-  // No deduplication needed — topics are a complete list, replaced on each fetch.
+  // WS `newTopic` handles instant append; 5-min poll handles expiry cleanup.
 
   const [topicFeedItems, setTopicFeedItems] = useState<Message[]>([]);
 
@@ -350,14 +355,50 @@ export default function ChatTab() {
           topicId:   t.id,
           content:   t.title,
           nickname:  '',
-          createdAt: now, // use now so topics appear at the bottom (newest position), like events
+          createdAt: now,
         })));
       } catch {}
     }
 
     loadTopics();
-    const id = setInterval(loadTopics, 30_000);
-    return () => clearInterval(id);
+
+    // Fallback poll for topic expiry cleanup — runs only when WS is disconnected.
+    // New topics arrive instantly via newTopic WS event; this only removes expired ones.
+    let pollId: ReturnType<typeof setInterval> | null = null;
+
+    function startTopicPoll() {
+      if (pollId !== null) return;
+      pollId = setInterval(loadTopics, 5 * 60_000);
+    }
+    function stopTopicPoll() {
+      if (pollId !== null) { clearInterval(pollId); pollId = null; }
+    }
+
+    if (!socket.isConnected) startTopicPoll();
+    const offDisconnected = socket.on('disconnected', () => startTopicPoll());
+    const offConnected    = socket.on('connected', () => { stopTopicPoll(); loadTopics(); });
+
+    // WS: new topic created — append pill immediately.
+    const offTopic = socket.on('newTopic', (data: Record<string, unknown>) => {
+      if (String(data.channelId) !== String(channelId)) return;
+      const t = data.topic as Record<string, unknown> | undefined;
+      const topicId = (t?.id ?? '') as string;
+      if (!topicId) return;
+      const now = Date.now() / 1000;
+      setTopicFeedItems(prev => {
+        if (prev.some(p => p.topicId === topicId)) return prev;
+        return [...prev, {
+          id:        `topic-msg-${topicId}`,
+          type:      'topic' as const,
+          topicId,
+          content:   (t?.title as string) ?? '',
+          nickname:  '',
+          createdAt: now,
+        }];
+      });
+    });
+
+    return () => { stopTopicPoll(); offDisconnected(); offConnected(); offTopic(); };
   }, [channelId]);
 
   const loadFn = useCallback(

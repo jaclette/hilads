@@ -59,20 +59,17 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     }
 }
 
-// ── New-event broadcast helper ────────────────────────────────────────────────
-// Fire-and-forget: tells the WS server to push a new_event notification to all
-// users currently in the city room, so in-app banners appear without a push.
-// channelId: integer city room key (matches WS server rooms Map).
-function broadcastNewEventToWs(int $channelId, array $hiladsEvent): void
+// ── Broadcast helpers ─────────────────────────────────────────────────────────
+// Fire-and-forget: post a payload to the WS server's internal broadcast endpoint.
+// Shared by new-event and new-topic broadcasts.
+function postToWs(string $path, array $payload): void
 {
     $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
-    $payload = json_encode(['channelId' => $channelId, 'hiladsEvent' => $hiladsEvent]);
+    $json    = json_encode($payload);
     $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
-    $target  = $wsUrl . '/broadcast/new-event';
+    $target  = $wsUrl . $path;
 
-    error_log("[ws-broadcast] → target={$target} channelId={$channelId} token=" . ($token !== '' ? 'set' : 'none'));
-
-    $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
+    $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($json) . "\r\n";
     if ($token !== '') {
         $headers .= "X-Internal-Token: {$token}\r\n";
     }
@@ -81,7 +78,7 @@ function broadcastNewEventToWs(int $channelId, array $hiladsEvent): void
         'http' => [
             'method'        => 'POST',
             'header'        => $headers,
-            'content'       => $payload,
+            'content'       => $json,
             'timeout'       => 2,
             'ignore_errors' => true,
         ],
@@ -93,9 +90,23 @@ function broadcastNewEventToWs(int $channelId, array $hiladsEvent): void
         $err = error_get_last();
         error_log("[ws-broadcast] ✗ FAILED target={$target} error=" . ($err['message'] ?? 'unknown'));
     } else {
-        error_log("[ws-broadcast] ✓ OK status=\"{$status}\" body=" . substr((string)$result, 0, 100));
+        error_log("[ws-broadcast] ✓ OK status=\"{$status}\" path={$path}");
     }
 }
+
+// channelId: integer city room key (matches WS server rooms Map).
+function broadcastNewEventToWs(int $channelId, array $hiladsEvent): void
+{
+    error_log("[ws-broadcast] → new-event channelId={$channelId}");
+    postToWs('/broadcast/new-event', ['channelId' => $channelId, 'hiladsEvent' => $hiladsEvent]);
+}
+
+function broadcastNewTopicToWs(int $channelId, array $topic): void
+{
+    error_log("[ws-broadcast] → new-topic channelId={$channelId} topicId=" . ($topic['id'] ?? 'null'));
+    postToWs('/broadcast/new-topic', ['channelId' => $channelId, 'topic' => $topic]);
+}
+
 
 // ── Now-feed DTO helpers ──────────────────────────────────────────────────────
 // Normalize raw repository rows into a consistent FeedItem shape consumed by
@@ -3690,6 +3701,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
             $category,
             $userId,
         );
+
+        // Broadcast new topic to city room so clients append it instantly (no poll needed).
+        try {
+            broadcastNewTopicToWs($channelId, $topic);
+        } catch (\Throwable $e) {
+            error_log('[topics] ws broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+
         Response::json($topic, 201);
     } catch (\Throwable $e) {
         error_log('[topics] POST create failed ch=' . $channelId . ': ' . $e->getMessage());

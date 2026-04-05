@@ -6,14 +6,34 @@
  * Client → Server  : joinRoom(cityId, sessionId, nickname, userId?)
  *                    leaveRoom(cityId, sessionId)
  *                    heartbeat(cityId, sessionId)
+ *                    typingStart(cityId, sessionId, nickname)
+ *                    typingStop(cityId, sessionId)
  *                    joinEvent(eventId, sessionId)
  *                    leaveEvent(eventId, sessionId)
+ *                    joinTopic(topicId, sessionId)
+ *                    leaveTopic(topicId, sessionId)
+ *                    joinConversation(conversationId, userId)
+ *                    leaveConversation(conversationId, userId)
  *
  * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
  *                    userJoined(cityId, user)
  *                    userLeft(cityId, user)
  *                    onlineCountUpdated(cityId, count)
+ *                    typingUsers(cityId, users[])
+ *                    newMessage(channelId, message)
+ *                    newConversationMessage(conversationId, message)
  *                    event_presence_update(eventId, count)
+ *                    event_participants_update(eventId, count)
+ *                    new_event(channelId, hiladsEvent)
+ *                    newTopic(channelId, topic)
+ *
+ * Lifecycle events (synthetic — not from server):
+ *                    connected   — fired after onopen + room replays
+ *                    disconnected — fired on onclose
+ *
+ * on(event, handler) returns an unsubscribe function. Multiple handlers
+ * can subscribe to the same event name simultaneously (Set-based dispatch),
+ * mirroring native HiladsSocket behaviour.
  */
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8081'
@@ -23,18 +43,32 @@ console.log('[socket] WS_URL =', WS_URL)
 export function createSocket() {
   let ws = null
   let reconnectTimer = null
-  let reconnectMs = 2000   // start at 2s, doubles up to 30s (mirrors native socket.ts)
+  let reconnectMs = 2000   // start at 2s, caps at 30s — matches native socket.ts
   let destroyed = false
-  const handlers = {}
 
-  // Last joinRoom call — replayed automatically on reconnect
-  let pendingJoin = null
-  // Last joinEvent call — replayed automatically on reconnect
-  let pendingEventJoin = null
-  // Last joinConversation call — replayed automatically on reconnect
+  // Multi-handler dispatch: Map<eventName, Set<handler>>
+  // Each on() call adds to the Set; the returned fn removes from it.
+  const handlers = new Map()
+
+  // Last join payloads — replayed on reconnect to restore room membership
+  let pendingJoin             = null
+  let pendingEventJoin        = null
   let pendingConversationJoin = null
-  // Last joinTopic call — replayed automatically on reconnect
-  let pendingTopicJoin = null
+  let pendingTopicJoin        = null
+
+  // ── Dispatch ────────────────────────────────────────────────────────────────
+
+  function dispatch(event, data) {
+    handlers.get(event)?.forEach(h => {
+      try { h(data) } catch (err) { console.error('[socket] handler error:', event, err) }
+    })
+    // Wildcard — useful for debugging; mirrors native HiladsSocket
+    if (event !== '*') handlers.get('*')?.forEach(h => {
+      try { h(data) } catch {}
+    })
+  }
+
+  // ── Connection ──────────────────────────────────────────────────────────────
 
   function connect() {
     if (destroyed) return
@@ -43,33 +77,27 @@ export function createSocket() {
 
     ws.onopen = () => {
       console.log('[socket] ✓ connected')
-      reconnectMs = 2000  // reset backoff on successful connection
-      if (pendingJoin) {
-        console.log('[socket] replaying joinRoom', pendingJoin)
-        send({ event: 'joinRoom', ...pendingJoin })
-      }
-      if (pendingEventJoin) {
-        console.log('[socket] replaying joinEvent', pendingEventJoin)
-        send({ event: 'joinEvent', ...pendingEventJoin })
-      }
-      if (pendingConversationJoin) {
-        console.log('[socket] replaying joinConversation', pendingConversationJoin)
-        send({ event: 'joinConversation', ...pendingConversationJoin })
-      }
-      if (pendingTopicJoin) {
-        console.log('[socket] replaying joinTopic', pendingTopicJoin)
-        send({ event: 'joinTopic', ...pendingTopicJoin })
-      }
+      reconnectMs = 2000  // reset backoff
+
+      // Replay room joins so server restores membership after reconnect
+      if (pendingJoin)             send({ event: 'joinRoom',          ...pendingJoin })
+      if (pendingEventJoin)        send({ event: 'joinEvent',         ...pendingEventJoin })
+      if (pendingConversationJoin) send({ event: 'joinConversation',  ...pendingConversationJoin })
+      if (pendingTopicJoin)        send({ event: 'joinTopic',         ...pendingTopicJoin })
+
+      // Notify subscribers — useful for catch-up fetches after a disconnect gap
+      dispatch('connected', {})
     }
 
     ws.onmessage = (e) => {
       let msg
       try { msg = JSON.parse(e.data) } catch { return }
       console.debug('[socket] ←', msg.event, msg)
-      handlers[msg.event]?.(msg)
+      dispatch(msg.event, msg)
     }
 
     ws.onclose = (e) => {
+      dispatch('disconnected', { code: e.code })
       if (!destroyed) {
         console.warn(`[socket] closed (code=${e.code}). reconnecting in ${reconnectMs}ms…`)
         reconnectTimer = setTimeout(() => {
@@ -103,6 +131,11 @@ export function createSocket() {
   connect()
 
   return {
+    /** True when the WebSocket connection is open. */
+    get isConnected() {
+      return ws?.readyState === WebSocket.OPEN
+    },
+
     /** Join a city room. Replayed automatically on reconnect. */
     joinRoom(cityId, sessionId, nickname, userId = null) {
       const cid = numericCityId(cityId)
@@ -143,11 +176,6 @@ export function createSocket() {
       send({ event: 'leaveEvent', eventId, sessionId })
     },
 
-    /** Toggle participation in an event. */
-    toggleParticipation(eventId, sessionId) {
-      send({ event: 'toggleParticipation', eventId, sessionId })
-    },
-
     /** Join a topic (pulse) room. Replayed automatically on reconnect. */
     joinTopic(topicId, sessionId) {
       pendingTopicJoin = { topicId, sessionId }
@@ -179,9 +207,15 @@ export function createSocket() {
       send({ event: 'heartbeat', cityId: cid, sessionId })
     },
 
-    /** Register a handler for a server event. */
+    /**
+     * Subscribe to a server event. Returns an unsubscribe function.
+     * Multiple handlers for the same event coexist (Set-based dispatch).
+     * Special events: 'connected', 'disconnected' (lifecycle), '*' (all events).
+     */
     on(event, handler) {
-      handlers[event] = handler
+      if (!handlers.has(event)) handlers.set(event, new Set())
+      handlers.get(event).add(handler)
+      return () => handlers.get(event)?.delete(handler)
     },
 
     /** Close the connection and stop reconnecting. */

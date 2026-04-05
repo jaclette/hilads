@@ -25,6 +25,8 @@
  *                    POST /broadcast/event-participants   { eventId, count }
  *                    POST /broadcast/message              { channelId, message }
  *                    POST /broadcast/conversation-message { conversationId, message }
+ *                    POST /broadcast/new-event            { channelId, hiladsEvent }
+ *                    POST /broadcast/new-topic            { channelId, topic }
  *
  * All events are JSON objects with an `event` field.
  *
@@ -401,6 +403,13 @@ function handleBroadcastRequest(req, res) {
         broadcastNewEvent(channelId, hiladsEvent)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/new-topic') {
+        const { channelId, topic } = JSON.parse(body)
+        const room = rooms.get(channelId)
+        console.log(`[internal] broadcast new-topic channelId=${channelId} topicId=${topic?.id} roomSize=${room ? room.size : 0}`)
+        broadcastNewTopic(channelId, topic)
+        res.writeHead(200); res.end('ok')
+
       } else if (req.method === 'GET' && req.url === '/health') {
         // Health check endpoint — Render and uptime monitors can probe this
         res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -480,6 +489,20 @@ function broadcastNewEvent(channelId, hiladsEvent) {
   const room = rooms.get(channelId)
   if (!room) return
   const msg = JSON.stringify({ event: 'new_event', channelId, hiladsEvent })
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+  }
+}
+
+// ── New-topic broadcast ─────────────────────────────────────────────────────────
+
+// Pushes a newTopic notification to all clients in the city room so the topic
+// pill appears instantly in the chat feed without polling.
+// channelId is an integer (city room key).
+function broadcastNewTopic(channelId, topic) {
+  const room = rooms.get(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'newTopic', channelId, topic })
   for (const session of room.values()) {
     if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
   }

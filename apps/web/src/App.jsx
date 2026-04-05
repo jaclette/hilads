@@ -1437,22 +1437,47 @@ export default function App() {
         }
       })
 
-      // Socket: handle newEvent — refresh via unified /now endpoint
-      socket.on('newEvent', ({ cityId }) => {
-        if (activeChannelRef.current !== cityId) return
-        fetchNowFeed(cityId, sessionIdRef.current).then(data => {
-          if (activeChannelRef.current === cityId) {
-            const nowItems = data.items ?? []
-            const evs  = nowItems.filter(i => i.kind === 'event')
-            const tops = nowItems.filter(i => i.kind === 'topic')
-            setEvents(evs)
-            setTopics(tops)
-            setHotEventsStatus('ready')
-            const counts = {}
-            evs.forEach(ev => { counts[ev.id] = ev.participant_count ?? 0 })
-            setEventParticipants(prev => ({ ...prev, ...counts }))
-          }
-        }).catch(() => {})
+      // Socket: handle new_event — append card directly from WS payload (no HTTP fetch).
+      socket.on('new_event', ({ channelId, hiladsEvent }) => {
+        if (String(channelId) !== String(activeChannelRef.current)) return
+        if (!hiladsEvent?.id) return
+        const ev = {
+          kind:             'event',
+          id:               hiladsEvent.id,
+          title:            hiladsEvent.title ?? '',
+          description:      hiladsEvent.location ?? hiladsEvent.venue ?? null,
+          created_at:       hiladsEvent.created_at ?? Math.floor(Date.now() / 1000),
+          last_activity_at: null,
+          active_now:       true,
+          event_type:       hiladsEvent.event_type ?? hiladsEvent.type ?? 'other',
+          source_type:      hiladsEvent.source_type ?? hiladsEvent.source ?? 'hilads',
+          starts_at:        hiladsEvent.starts_at,
+          expires_at:       hiladsEvent.expires_at,
+          location:         hiladsEvent.location ?? null,
+          participant_count: hiladsEvent.participant_count ?? 1,
+          is_participating: false,
+          recurrence_label: hiladsEvent.recurrence_label ?? null,
+        }
+        setEvents(prev => prev.some(e => e.id === ev.id) ? prev : [...prev, ev])
+        setEventParticipants(prev => ({ ...prev, [ev.id]: ev.participant_count }))
+      })
+
+      // Socket: handle newTopic — append pill directly from WS payload.
+      socket.on('newTopic', ({ channelId, topic }) => {
+        if (String(channelId) !== String(activeChannelRef.current)) return
+        if (!topic?.id) return
+        const t = {
+          kind:             'topic',
+          id:               topic.id,
+          title:            topic.title ?? '',
+          description:      topic.description ?? null,
+          created_at:       topic.created_at ?? Math.floor(Date.now() / 1000),
+          last_activity_at: null,
+          active_now:       true,
+          category:         topic.category ?? 'general',
+          message_count:    0,
+        }
+        setTopics(prev => prev.some(p => p.id === t.id) ? prev : [...prev, t])
       })
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null)

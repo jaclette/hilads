@@ -252,16 +252,70 @@ export default function NowScreen() {
     return off;
   }, []);
 
-  // New event created in this city — server pushes newEvent via WS, bypass the 30s throttle
-  // so the card appears instantly instead of waiting for the next focus refresh.
+  // New event created in this city — server pushes new_event via WS.
+  // Append the card directly from the WS payload (no HTTP fetch needed).
+  // Fallback to a full reload if the payload is incomplete.
   useEffect(() => {
-    const off = socket.on('newEvent', () => {
-      if (loadingRef.current) return; // already fetching, skip
-      lastLoadAtRef.current = 0;      // reset throttle so load() doesn't early-return
-      loadRef.current();
+    const off = socket.on('new_event', (data: Record<string, unknown>) => {
+      const ev = data.hiladsEvent as Record<string, unknown> | undefined;
+      if (!ev?.id || !city || String(data.channelId) !== String(city.channelId)) return;
+
+      const id = ev.id as string;
+      setItems(prev => {
+        if (prev.some(i => i.id === id)) return prev; // already in feed
+        const feedItem: FeedItem = {
+          kind:             'event',
+          id,
+          title:            (ev.title as string) ?? '',
+          description:      (ev.location ?? ev.venue ?? null) as string | null,
+          created_at:       (ev.created_at as number) ?? Math.floor(Date.now() / 1000),
+          last_activity_at: null,
+          active_now:       true,
+          event_type:       (ev.event_type ?? ev.type ?? 'other') as string,
+          source_type:      (ev.source_type ?? ev.source ?? 'hilads') as 'hilads' | 'ticketmaster',
+          starts_at:        ev.starts_at as number,
+          expires_at:       ev.expires_at as number,
+          location:         (ev.location ?? null) as string | null,
+          venue:            (ev.venue ?? null) as string | null,
+          participant_count: (ev.participant_count ?? 1) as number,
+          is_participating: false,
+          recurrence_label: (ev.recurrence_label ?? null) as string | null,
+          series_id:        (ev.series_id ?? null) as string | null,
+          guest_id:         (ev.guest_id ?? null) as string | null,
+          created_by:       (ev.created_by ?? null) as string | null,
+        };
+        return [feedItem, ...prev];
+      });
     });
     return off;
-  }, []);
+  }, [city]);
+
+  // New topic created in this city — append card directly from WS payload.
+  useEffect(() => {
+    const off = socket.on('newTopic', (data: Record<string, unknown>) => {
+      const t = data.topic as Record<string, unknown> | undefined;
+      if (!t?.id || !city || String(data.channelId) !== String(city.channelId)) return;
+
+      const id = t.id as string;
+      setItems(prev => {
+        if (prev.some(i => i.id === id)) return prev;
+        const feedItem: FeedItem = {
+          kind:             'topic',
+          id,
+          title:            (t.title as string) ?? '',
+          description:      (t.description ?? null) as string | null,
+          created_at:       (t.created_at as number) ?? Math.floor(Date.now() / 1000),
+          last_activity_at: null,
+          active_now:       true,
+          category:         (t.category ?? 'general') as string,
+          message_count:    0,
+          city_id:          (t.city_id ?? '') as string,
+        };
+        return [feedItem, ...prev];
+      });
+    });
+    return off;
+  }, [city]);
 
   // No city
   if (!city && !loading) {

@@ -84,14 +84,36 @@ export default function TopicChatScreen() {
   // Join the WS topic room while the screen is focused so new messages arrive
   // via the newMessage event (handled by useMessages). Leave on blur so the
   // server can clean up the room when it empties.
-  // A 30s fallback poll is kept in case the WS is temporarily disconnected.
+  // Fallback poll only runs when WS is disconnected; stops and reloads on reconnect.
   const reloadRef = useRef(reload);
   reloadRef.current = reload;
   useFocusEffect(useCallback(() => {
     if (id && sessionId) socket.joinTopic(id, sessionId);
-    const timer = setInterval(() => reloadRef.current(), 30_000);
+
+    let timer: ReturnType<typeof setInterval> | null = null;
+
+    function startFallbackPoll() {
+      if (timer !== null) return;
+      timer = setInterval(() => reloadRef.current(), 30_000);
+    }
+
+    function stopFallbackPoll() {
+      if (timer !== null) { clearInterval(timer); timer = null; }
+    }
+
+    // Start immediately if WS is already down; otherwise wait for a disconnect.
+    if (!socket.isConnected) startFallbackPoll();
+
+    const offDisconnected = socket.on('disconnected', () => startFallbackPoll());
+    const offConnected    = socket.on('connected', () => {
+      stopFallbackPoll();
+      reloadRef.current(); // catch up on messages missed during the gap
+    });
+
     return () => {
-      clearInterval(timer);
+      stopFallbackPoll();
+      offDisconnected();
+      offConnected();
       if (id && sessionId) socket.leaveTopic(id, sessionId);
     };
   }, [id, sessionId]));
