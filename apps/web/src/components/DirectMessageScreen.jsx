@@ -4,6 +4,7 @@ import BackButton from './BackButton'
 import SendButton from './SendButton'
 import EmojiPicker from './EmojiPicker'
 import ShareActionSheet from './ShareActionSheet'
+import LocationPicker from './LocationPicker'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -71,8 +72,9 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const [error, setError]             = useState(null)
   const [showEmoji, setShowEmoji]       = useState(false)
   const [lightboxUrl, setLightboxUrl]   = useState(null)
-  const [showShareSheet, setShowShareSheet] = useState(false)
-  const [spotLoading, setSpotLoading]   = useState(false)
+  const [showShareSheet, setShowShareSheet]         = useState(false)
+  const [spotLoading, setSpotLoading]               = useState(false)
+  const [locationPickerCoords, setLocationPickerCoords] = useState(null)
   const bottomRef                     = useRef(null)
   const knownIds                      = useRef(new Set())
   const fileRef                       = useRef(null)
@@ -191,30 +193,21 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       const pos = await new Promise((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
       )
-      const { latitude, longitude } = pos.coords
-      const resp = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`,
-        { headers: { 'User-Agent': 'Hilads/1.0' } },
-      )
-      const data = await resp.json()
-      const addr = data.address ?? {}
-      const place = addr.quarter
-        ?? addr.neighbourhood
-        ?? addr.suburb
-        ?? addr.city_district
-        ?? addr.district
-        ?? addr.town
-        ?? addr.city
-        ?? (data.display_name?.split(',')[0])
-        ?? 'somewhere'
-      const nickname = account?.display_name ?? 'Someone'
-      await doSendText(`📍 ${nickname} is at ${place}`)
+      setLocationPickerCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude })
     } catch (err) {
       console.error('[spot/dm]', err)
-      setError("Couldn't get your location. Please try again.")
+      setError("Couldn't get your location. Please enable location access and try again.")
     } finally {
       setSpotLoading(false)
     }
+  }
+
+  async function handleLocationConfirm({ place, address }) {
+    setLocationPickerCoords(null)
+    const nickname = account?.display_name ?? 'Someone'
+    const label = place || 'somewhere'
+    const text = address ? `📍 ${nickname} is at ${label}\n${address}` : `📍 ${nickname} is at ${label}`
+    await doSendText(text)
   }
 
   return (
@@ -259,9 +252,24 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                       alt="shared image"
                       onClick={() => setLightboxUrl(msg.image_url)}
                     />
-                  : <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
-                      {msg.content}
-                    </div>
+                  : msg.content?.startsWith('📍')
+                    ? (() => {
+                        const nl    = msg.content.indexOf('\n')
+                        const line1 = nl === -1 ? msg.content : msg.content.slice(0, nl)
+                        const addr  = nl === -1 ? '' : msg.content.slice(nl + 1)
+                        return (
+                          <div className={`loc-bubble${isMe ? ' loc-bubble--me' : ''}`}>
+                            <span className="loc-bubble-icon">📍</span>
+                            <div className="loc-bubble-body">
+                              <span className="loc-bubble-place">{line1.replace('📍 ', '')}</span>
+                              {addr && <span className="loc-bubble-addr">{addr}</span>}
+                            </div>
+                          </div>
+                        )
+                      })()
+                    : <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
+                        {msg.content}
+                      </div>
                 }
               </div>
               {showTime && msg.created_at && (
@@ -273,6 +281,16 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
 
         <div ref={bottomRef} />
       </div>
+
+      {locationPickerCoords && (
+        <LocationPicker
+          initialLat={locationPickerCoords.lat}
+          initialLng={locationPickerCoords.lng}
+          nickname={account?.display_name ?? 'Someone'}
+          onConfirm={handleLocationConfirm}
+          onClose={() => setLocationPickerCoords(null)}
+        />
+      )}
 
       {/* Share action sheet */}
       {showShareSheet && (

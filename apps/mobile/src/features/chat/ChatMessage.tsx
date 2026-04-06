@@ -22,6 +22,61 @@ import type { Message, Badge } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 
+// ── Location message helpers ──────────────────────────────────────────────────
+// Messages starting with '📍' are location shares sent by the LocationPicker.
+// Format: "📍 nickname is at Place Name\nFull Address" (address line optional)
+
+function isLocationMessage(content: string | undefined): boolean {
+  return typeof content === 'string' && content.startsWith('📍');
+}
+
+function parseLocation(content: string): { line1: string; address: string } {
+  const idx = content.indexOf('\n');
+  if (idx === -1) return { line1: content, address: '' };
+  return { line1: content.slice(0, idx), address: content.slice(idx + 1) };
+}
+
+function LocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
+  const { line1, address } = parseLocation(content);
+  return (
+    <View style={[locStyles.card, isMine ? locStyles.cardMine : locStyles.cardOther]}>
+      <Text style={locStyles.icon}>📍</Text>
+      <View style={locStyles.body}>
+        <Text style={[locStyles.line1, isMine && locStyles.textMine]} numberOfLines={2}>{line1.replace('📍 ', '')}</Text>
+        {!!address && <Text style={[locStyles.addr, isMine && locStyles.addrMine]} numberOfLines={2}>{address}</Text>}
+      </View>
+    </View>
+  );
+}
+
+const locStyles = StyleSheet.create({
+  card: {
+    flexDirection:     'row',
+    alignItems:        'flex-start',
+    gap:               10,
+    borderRadius:      16,
+    paddingHorizontal: 14,
+    paddingVertical:   12,
+    maxWidth:          260,
+  },
+  cardOther: {
+    backgroundColor:     Colors.bg3,
+    borderWidth:         1,
+    borderColor:         'rgba(255,255,255,0.07)',
+    borderTopLeftRadius: 4,
+  },
+  cardMine: {
+    backgroundColor:      '#B87228',
+    borderTopRightRadius: 4,
+  },
+  icon:     { fontSize: 22, lineHeight: 28, flexShrink: 0 },
+  body:     { flex: 1, gap: 3 },
+  line1:    { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, lineHeight: 20 },
+  addr:     { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
+  textMine: { color: '#fff' },
+  addrMine: { color: 'rgba(255,255,255,0.65)' },
+});
+
 // ── Avatar palette — mirrors web AVATAR_PALETTES ──────────────────────────────
 
 const AVATAR_PALETTES: [string, string][] = [
@@ -466,17 +521,21 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           />
         )}
 
-        {/* ── Bubble — web: .msg-content ── */}
+        {/* ── Bubble — location card or plain text ── */}
         <View>
-          <View style={[
-            styles.bubble,
-            isMine ? styles.bubbleMine : styles.bubbleOther,
-            isFailed && styles.bubbleFailed,
-          ]}>
-            <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-              {message.content}
-            </Text>
-          </View>
+          {isLocationMessage(message.content) ? (
+            <LocationBubble content={message.content!} isMine={isMine} />
+          ) : (
+            <View style={[
+              styles.bubble,
+              isMine ? styles.bubbleMine : styles.bubbleOther,
+              isFailed && styles.bubbleFailed,
+            ]}>
+              <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
+                {message.content}
+              </Text>
+            </View>
+          )}
           {isFailed && (
             <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
           )}

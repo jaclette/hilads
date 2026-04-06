@@ -22,6 +22,7 @@ import { useApp } from '@/context/AppContext';
 import { AndroidCameraCapture } from './AndroidCameraCapture';
 import { EmojiPanel } from './EmojiPanel';
 import { ShareSheet } from './ShareSheet';
+import { LocationPicker } from './LocationPicker';
 
 
 // ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
@@ -62,8 +63,9 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   const [uploading,     setUploading]   = useState(false);
   const [androidCamera, setAndroidCamera] = useState(false);
   const [showEmoji,     setShowEmoji]   = useState(false);
-  const [showShareSheet, setShowShareSheet] = useState(false);
-  const [spotLoading,   setSpotLoading] = useState(false);
+  const [showShareSheet,   setShowShareSheet]   = useState(false);
+  const [spotLoading,      setSpotLoading]      = useState(false);
+  const [locationCoords,   setLocationCoords]   = useState<{ lat: number; lng: number } | null>(null);
   const inputRef        = useRef<TextInput>(null);
   const lastSel         = useRef({ start: 0, end: 0 });
   const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -225,24 +227,21 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         return;
       }
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      const results = await Location.reverseGeocodeAsync(
-        { latitude: pos.coords.latitude, longitude: pos.coords.longitude },
-        { useGoogleMaps: false },
-      );
-      const r = results[0];
-      const place = r?.district
-        ?? r?.subregion
-        ?? r?.city
-        ?? r?.name
-        ?? 'somewhere';
-      const nickname = account?.display_name ?? identity?.nickname ?? 'Someone';
-      onSendText(`📍 ${nickname} is at ${place}`);
+      setLocationCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
     } catch (err) {
       console.error('[spot]', err);
       Alert.alert('Location unavailable', 'Could not get your location. Please try again.');
     } finally {
       setSpotLoading(false);
     }
+  }
+
+  function handleLocationConfirm({ place, address }: { place: string; address: string }) {
+    setLocationCoords(null);
+    const nickname = account?.display_name ?? identity?.nickname ?? 'Someone';
+    const label = place || 'somewhere';
+    const text = address ? `📍 ${nickname} is at ${label}\n${address}` : `📍 ${nickname} is at ${label}`;
+    onSendText(text);
   }
 
   function handleShare() {
@@ -271,6 +270,17 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
           console.log('[camera] Android camera modal closed');
           setAndroidCamera(false);
         }}
+      />
+    )}
+
+    {/* ── Location picker ── */}
+    {locationCoords && (
+      <LocationPicker
+        visible={!!locationCoords}
+        initialLat={locationCoords.lat}
+        initialLng={locationCoords.lng}
+        onConfirm={handleLocationConfirm}
+        onClose={() => setLocationCoords(null)}
       />
     )}
 

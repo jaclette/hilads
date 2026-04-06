@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { EmojiPanel } from '@/features/chat/EmojiPanel';
 import { ShareSheet } from '@/features/chat/ShareSheet';
+import { LocationPicker } from '@/features/chat/LocationPicker';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -99,6 +100,50 @@ interface RowProps {
   onImagePress: (uri: string) => void;
 }
 
+function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
+  const idx  = content.indexOf('\n');
+  const line1 = idx === -1 ? content : content.slice(0, idx);
+  const addr  = idx === -1 ? '' : content.slice(idx + 1);
+  return (
+    <View style={[dmLocStyles.card, isMine ? dmLocStyles.cardMine : dmLocStyles.cardOther]}>
+      <Text style={dmLocStyles.icon}>📍</Text>
+      <View style={dmLocStyles.body}>
+        <Text style={[dmLocStyles.line1, isMine && dmLocStyles.textMine]} numberOfLines={2}>
+          {line1.replace('📍 ', '')}
+        </Text>
+        {!!addr && <Text style={[dmLocStyles.addr, isMine && dmLocStyles.addrMine]} numberOfLines={2}>{addr}</Text>}
+      </View>
+    </View>
+  );
+}
+
+const dmLocStyles = StyleSheet.create({
+  card: {
+    flexDirection: 'row',
+    alignItems:    'flex-start',
+    gap:           10,
+    borderRadius:  22,
+    padding:       14,
+    maxWidth:      260,
+  },
+  cardOther: {
+    backgroundColor: Colors.bg3,
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.06)',
+    borderBottomLeftRadius: 5,
+  },
+  cardMine: {
+    backgroundColor: Colors.accent,
+    borderBottomRightRadius: 5,
+  },
+  icon:     { fontSize: 20, lineHeight: 26, flexShrink: 0 },
+  body:     { flex: 1, gap: 3 },
+  line1:    { fontSize: 14, fontWeight: '700', color: Colors.text, lineHeight: 20 },
+  addr:     { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
+  textMine: { color: '#fff' },
+  addrMine: { color: 'rgba(255,255,255,0.65)' },
+});
+
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress }: RowProps) {
   const router = useRouter();
   const { account } = useApp();
@@ -172,6 +217,8 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               />
             </View>
           </TouchableOpacity>
+        ) : msg.content?.startsWith('📍') ? (
+          <DmLocationBubble content={msg.content} isMine={isMine} />
         ) : (
           <View style={[
             styles.bubble,
@@ -216,8 +263,9 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const [focused,       setFocused]       = useState(false);
   const [showEmoji,     setShowEmoji]     = useState(false);
   const [previewUri,    setPreviewUri]    = useState<string | null>(null);
-  const [showShareSheet, setShowShareSheet] = useState(false);
-  const [spotLoading,   setSpotLoading]   = useState(false);
+  const [showShareSheet,  setShowShareSheet]  = useState(false);
+  const [spotLoading,     setSpotLoading]     = useState(false);
+  const [locationCoords,  setLocationCoords]  = useState<{ lat: number; lng: number } | null>(null);
   const lastSel = useRef({ start: 0, end: 0 });
 
   const color   = avatarColor(displayName);
@@ -318,20 +366,21 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         return;
       }
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      const results = await Location.reverseGeocodeAsync(
-        { latitude: pos.coords.latitude, longitude: pos.coords.longitude },
-        { useGoogleMaps: false },
-      );
-      const r = results[0];
-      const place = r?.district ?? r?.subregion ?? r?.city ?? r?.name ?? 'somewhere';
-      const nickname = account?.display_name ?? displayName ?? 'Someone';
-      sendText(`📍 ${nickname} is at ${place}`);
+      setLocationCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
     } catch (err) {
       console.error('[spot/dm]', err);
       Alert.alert('Location unavailable', 'Could not get your location. Please try again.');
     } finally {
       setSpotLoading(false);
     }
+  }
+
+  function handleLocationConfirm({ place, address }: { place: string; address: string }) {
+    setLocationCoords(null);
+    const nickname = account?.display_name ?? displayName ?? 'Someone';
+    const label = place || 'somewhere';
+    const text = address ? `📍 ${nickname} is at ${label}\n${address}` : `📍 ${nickname} is at ${label}`;
+    sendText(text);
   }
 
   function insertEmoji(emoji: string) {
@@ -412,6 +461,17 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
       {/* ── Emoji panel ── */}
       {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
+
+      {/* ── Location picker ── */}
+      {locationCoords && (
+        <LocationPicker
+          visible={!!locationCoords}
+          initialLat={locationCoords.lat}
+          initialLng={locationCoords.lng}
+          onConfirm={handleLocationConfirm}
+          onClose={() => setLocationCoords(null)}
+        />
+      )}
 
       {/* ── Share sheet ── */}
       <ShareSheet

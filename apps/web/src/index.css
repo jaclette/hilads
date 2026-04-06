@@ -2066,6 +2066,184 @@ html, body, #root {
   display: block;
 }
 
+/* ── LocationPicker ──────────────────────────────────────────────────────────
+   Full-screen modal with draggable Leaflet map + address confirmation.
+   Pin stays fixed in center; map moves underneath.                           */
+
+.loc-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.loc-picker {
+  width: 100%;
+  max-width: 520px;
+  height: 88vh;
+  background: var(--bg, #120e0b);
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ── Header ── */
+.loc-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.loc-picker-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.loc-picker-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  border-radius: 50%;
+  color: var(--muted2);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.loc-picker-close:hover { background: rgba(255, 255, 255, 0.12); color: var(--text); }
+
+/* ── Map wrap — takes remaining vertical space ── */
+.loc-picker-map-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Fix Leaflet's default gray tile background to match dark theme */
+.loc-picker-map-wrap .leaflet-container {
+  background: #1a1512;
+}
+
+/* Fixed pin — centered over the map, pointer-events: none so map stays draggable */
+.loc-picker-pin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  font-size: 36px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 500;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+}
+
+/* Subtle drag hint at the bottom of the map */
+.loc-picker-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 500;
+  white-space: nowrap;
+}
+
+/* ── Footer ── */
+.loc-picker-footer {
+  flex-shrink: 0;
+  padding: 16px 16px max(env(safe-area-inset-bottom, 0px), 16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg, #120e0b);
+}
+
+.loc-picker-address-card {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  min-height: 58px;
+  justify-content: center;
+}
+
+.loc-picker-geocoding {
+  font-size: 0.85rem;
+  color: var(--muted2);
+}
+
+.loc-picker-place {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+}
+
+.loc-picker-addr {
+  font-size: 0.8rem;
+  color: var(--muted2);
+  display: block;
+}
+
+.loc-picker-confirm {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(194, 74, 56, 0.3);
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.loc-picker-confirm:hover:not(:disabled) { opacity: 0.9; }
+.loc-picker-confirm:active:not(:disabled) { transform: scale(0.98); }
+.loc-picker-confirm:disabled { opacity: 0.4; cursor: default; }
+
+.loc-picker-cancel {
+  width: 100%;
+  padding: 13px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  color: var(--muted2);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.loc-picker-cancel:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+
 .send-btn {
   width: 54px;
   height: 54px;
@@ -5929,6 +6107,64 @@ img.dm-header-avatar {
 .dm-bubble-wrap--grouped {
   margin-top: 6px;
 }
+
+/* ── Location card bubble (city channel + DM) ────────────────────────────────
+   Renders for any message whose content starts with '📍'.
+   Used in city channel (msg-bubble-wrap) and DM (dm-bubble-wrap).            */
+
+.loc-bubble {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border-bottom-left-radius: 5px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 280px;
+  word-break: break-word;
+}
+
+.loc-bubble--me {
+  border-radius: 18px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 18px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border: none;
+  color: #fff;
+}
+
+.loc-bubble-icon {
+  font-size: 20px;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.loc-bubble-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.loc-bubble-place {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+  line-height: 1.35;
+}
+
+.loc-bubble--me .loc-bubble-place { color: #fff; }
+
+.loc-bubble-addr {
+  font-size: 0.75rem;
+  color: var(--muted2);
+  display: block;
+  line-height: 1.4;
+}
+
+.loc-bubble--me .loc-bubble-addr { color: rgba(255, 255, 255, 0.65); }
 
 .dm-time {
   font-size: 0.68rem;

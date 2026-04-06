@@ -27,6 +27,7 @@ import SendButton from './components/SendButton'
 import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
 import ShareActionSheet from './components/ShareActionSheet'
+import LocationPicker from './components/LocationPicker'
 import { registerPush, unregisterPush } from './push'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -547,8 +548,9 @@ export default function App() {
   const [typingUsers, setTypingUsers] = useState([])
   const [uploading, setUploading] = useState(false)
   const [lightboxUrl, setLightboxUrl] = useState(null)
-  const [showShareSheet, setShowShareSheet] = useState(false)
-  const [spotLoading, setSpotLoading] = useState(false)
+  const [showShareSheet, setShowShareSheet]       = useState(false)
+  const [spotLoading, setSpotLoading]             = useState(false)
+  const [locationPickerCoords, setLocationPickerCoords] = useState(null) // { lat, lng }
 
   // Events state
   const [events, setEvents] = useState([])
@@ -1690,30 +1692,21 @@ export default function App() {
       const pos = await new Promise((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
       )
-      const { latitude, longitude } = pos.coords
-      const resp = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`,
-        { headers: { 'User-Agent': 'Hilads/1.0' } },
-      )
-      const data = await resp.json()
-      const addr = data.address ?? {}
-      const place = addr.quarter
-        ?? addr.neighbourhood
-        ?? addr.suburb
-        ?? addr.city_district
-        ?? addr.district
-        ?? addr.town
-        ?? addr.city
-        ?? (data.display_name?.split(',')[0])
-        ?? 'somewhere'
-      await doSendText(`📍 ${activeNickname} is at ${place}`)
+      setLocationPickerCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude })
     } catch (err) {
       console.error('[spot]', err)
-      setSendError("Couldn't get your location. Please try again.")
+      setSendError("Couldn't get your location. Please enable location access and try again.")
       setTimeout(() => setSendError(null), 4000)
     } finally {
       setSpotLoading(false)
     }
+  }
+
+  async function handleLocationConfirm({ place, address }) {
+    setLocationPickerCoords(null)
+    const label = place || 'somewhere'
+    const text = address ? `📍 ${activeNickname} is at ${label}\n${address}` : `📍 ${activeNickname} is at ${label}`
+    await doSendText(text)
   }
 
   async function openCityPicker() {
@@ -2815,6 +2808,21 @@ export default function App() {
                         alt="shared image"
                         onClick={() => setLightboxUrl(item.imageUrl)}
                       />
+                    ) : item.content?.startsWith('📍') ? (
+                      (() => {
+                        const nl = item.content.indexOf('\n')
+                        const line1 = nl === -1 ? item.content : item.content.slice(0, nl)
+                        const addr  = nl === -1 ? '' : item.content.slice(nl + 1)
+                        return (
+                          <div className={`loc-bubble${isMine ? ' loc-bubble--me' : ''}`}>
+                            <span className="loc-bubble-icon">📍</span>
+                            <div className="loc-bubble-body">
+                              <span className="loc-bubble-place">{line1.replace('📍 ', '')}</span>
+                              {addr && <span className="loc-bubble-addr">{addr}</span>}
+                            </div>
+                          </div>
+                        )
+                      })()
                     ) : (
                       <span className="msg-content">{item.content}</span>
                     )}
@@ -2856,6 +2864,16 @@ export default function App() {
 
         {successToast && (
           <div className="success-toast">{successToast.msg}</div>
+        )}
+
+        {locationPickerCoords && (
+          <LocationPicker
+            initialLat={locationPickerCoords.lat}
+            initialLng={locationPickerCoords.lng}
+            nickname={activeNickname}
+            onConfirm={handleLocationConfirm}
+            onClose={() => setLocationPickerCoords(null)}
+          />
         )}
 
         {showShareSheet && (
