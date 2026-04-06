@@ -3207,11 +3207,18 @@ export default function App() {
               }
 
               if (totalVisibleEvents === 0 && topics.length === 0) {
+                const isLocalUser = account?.mode === 'local'
                 return (
                   <div className="events-empty-state">
-                    <p className="events-empty-title">Nothing happening yet</p>
-                    <p className="events-empty-sub">Be the first to make something happen in {city}</p>
-                    <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                    <p className="events-empty-title">{isLocalUser ? 'Host your spot' : 'Nothing happening yet'}</p>
+                    <p className="events-empty-sub">
+                      {isLocalUser
+                        ? `Make ${city} feel alive. Start a recurring hangout at your favorite place.`
+                        : `Be the first to make something happen in ${city}`}
+                    </p>
+                    <button className="events-empty-cta" onClick={openCreate}>
+                      {isLocalUser ? 'Open your place' : 'Create event'}
+                    </button>
                     <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a pulse ⚡</button>
                   </div>
                 )
@@ -3222,6 +3229,10 @@ export default function App() {
               const taggedEvents = hiladsEvents.map(e => ({ ...e, _kind: 'event' }))
               const taggedTopics = topics.map(t => ({ ...t, _kind: 'topic' }))
               const unified = [...taggedEvents, ...taggedTopics].sort((a, b) => {
+                // Recurring events are city anchors — always float to top
+                const aRecur = a._kind === 'event' && !!(a.series_id ?? a.recurrence_label) ? 1 : 0
+                const bRecur = b._kind === 'event' && !!(b.series_id ?? b.recurrence_label) ? 1 : 0
+                if (aRecur !== bRecur) return bRecur - aRecur
                 const aLive = a._kind === 'event' && a.starts_at <= nowTs && (a.expires_at ?? 0) > nowTs
                 const bLive = b._kind === 'event' && b.starts_at <= nowTs && (b.expires_at ?? 0) > nowTs
                 if (aLive !== bLive) return aLive ? -1 : 1
@@ -3280,17 +3291,27 @@ export default function App() {
             See what's coming 🔮
           </button>
 
-          {/* Floating action button — creation chooser */}
-          <button
-            className="events-fab"
-            onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
-            aria-label="Create"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          </button>
+          {/* Floating action button — local hosts get a labeled pill */}
+          {account?.mode === 'local' ? (
+            <button
+              className="events-fab events-fab--local"
+              onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}
+              aria-label="Host your spot"
+            >
+              Host your spot
+            </button>
+          ) : (
+            <button
+              className="events-fab"
+              onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
+              aria-label="Create"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
+          )}
         </div>
       )}
 

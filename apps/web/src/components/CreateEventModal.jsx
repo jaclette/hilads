@@ -174,6 +174,12 @@ const CATEGORY_ICONS = {
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
+const QUICK_PRESETS = [
+  { key: 'daily_spot',    emoji: '☀️', label: 'Daily spot',    desc: 'Every day',    recurrence: 'daily',  startTime: '18:00', endTime: '21:00', weekdays: null },
+  { key: 'every_evening', emoji: '🌙', label: 'Every evening', desc: 'Daily · 8pm',  recurrence: 'daily',  startTime: '20:00', endTime: '23:00', weekdays: null },
+  { key: 'weekends',      emoji: '🎉', label: 'Weekends',      desc: 'Sat & Sun',    recurrence: 'weekly', startTime: null,    endTime: null,    weekdays: [0, 6] },
+]
+
 export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack, onDeleted, editEvent }) {
   const tz = cityTimezone || 'UTC'
   const isEdit = !!editEvent
@@ -191,6 +197,18 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const [recurrence, setRecurrence] = useState('once') // 'once' | 'daily' | 'weekly' | 'every_n_days'
   const [weekdays, setWeekdays] = useState([])           // [0-6] for weekly
   const [intervalDays, setIntervalDays] = useState(2)    // for every_n_days
+  const [selectedPreset, setSelectedPreset] = useState(null)
+
+  const isLocal = account?.mode === 'local'
+
+  function applyPreset(preset) {
+    if (selectedPreset === preset.key) { setSelectedPreset(null); return }
+    setSelectedPreset(preset.key)
+    setRecurrence(preset.recurrence)
+    if (preset.startTime) setStartTime(preset.startTime)
+    if (preset.endTime)   setEndTime(preset.endTime)
+    if (preset.weekdays)  setWeekdays(preset.weekdays)
+  }
 
   function toggleWeekday(dow) {
     setWeekdays(prev =>
@@ -312,7 +330,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{isEdit ? 'Edit event' : 'Create event'}</span>
+        <span className="page-title">{isEdit ? 'Edit event' : isLocal ? 'Host your spot' : 'Create event'}</span>
       </div>
 
       {showConfirm && (
@@ -342,6 +360,27 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
       <div className="page-body">
         <form className="cef-form" onSubmit={handleSubmit}>
+
+          {/* Quick presets — local hosts only, not in edit mode */}
+          {isLocal && !isEdit && (
+            <div className="cef-section">
+              <p className="cef-label">Quick start</p>
+              <div className="cef-preset-row">
+                {QUICK_PRESETS.map(p => (
+                  <button
+                    key={p.key}
+                    type="button"
+                    className={`cef-preset-btn${selectedPreset === p.key ? ' selected' : ''}`}
+                    onClick={() => applyPreset(p)}
+                  >
+                    <span className="cef-preset-emoji">{p.emoji}</span>
+                    <span className="cef-preset-label">{p.label}</span>
+                    <span className="cef-preset-desc">{p.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Category */}
           <div className="cef-section">
@@ -475,7 +514,14 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             className="cef-submit"
             disabled={submitting || !title.trim()}
           >
-            {submitting ? (isEdit ? 'Saving…' : 'Creating…') : (isEdit ? 'Save changes' : 'Create event')}
+            {submitting
+              ? (isEdit ? 'Saving…' : 'Creating…')
+              : isEdit
+                ? 'Save changes'
+                : isLocal
+                  ? (recurrence !== 'once' ? 'Open your spot' : 'Start a hangout')
+                  : 'Create event'
+            }
           </button>
 
           {isEdit && (

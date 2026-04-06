@@ -46,6 +46,7 @@ function fireEmoji(n: number): string {
 // ── Event card ────────────────────────────────────────────────────────────────
 
 function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress: () => void }) {
+  const isRecurring = !!(event.series_id ?? event.recurrence_label);
   const now    = Date.now() / 1000;
   const startsAt  = (event as HiladsEvent).starts_at  ?? 0;
   const expiresAt = (event as HiladsEvent).expires_at ?? 0;
@@ -57,7 +58,7 @@ function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress:
   const isPublic   = sourceType === 'ticketmaster';
 
   return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={onPress}>
+    <TouchableOpacity style={[styles.card, isRecurring && styles.cardRecurring]} activeOpacity={0.7} onPress={onPress}>
       <View style={styles.cardKindRow}>
         <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Event</Text></View>
         {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>Public</Text></View>}
@@ -147,8 +148,19 @@ function EmptyState({ city }: { city?: string }) {
   );
 }
 
-function FilterEmptyState({ filter, city }: { filter: 'all' | 'events' | 'topics'; city?: string }) {
+function FilterEmptyState({ filter, city, userMode }: { filter: 'all' | 'events' | 'topics'; city?: string; userMode?: string | null }) {
   if (filter === 'all') return <EmptyState city={city} />;
+  if (filter === 'events' && userMode === 'local') {
+    return (
+      <View style={styles.empty}>
+        <Text style={styles.emptyEmoji}>🌍</Text>
+        <Text style={styles.emptyTitle}>Host your spot</Text>
+        <Text style={styles.emptySub}>
+          {city ? `Make ${city} feel alive.` : 'Make your city feel alive.'}{'\n'}Start a recurring hangout at your favorite place.
+        </Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.empty}>
       <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '💬'}</Text>
@@ -183,7 +195,8 @@ function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
 
 export default function NowScreen() {
   const router = useRouter();
-  const { city, identity, bootstrapData } = useApp();
+  const { city, identity, account, bootstrapData } = useApp();
+  const userMode = account?.mode ?? identity?.mode ?? null;
 
   // Seed from bootstrap data if available for the current city (avoids initial fetchNowFeed call).
   const nowBootstrap = bootstrapData?.channelId === city?.channelId ? bootstrapData : undefined;
@@ -342,12 +355,17 @@ export default function NowScreen() {
   }
 
   // Apply filter then build flat list data — memoized to avoid recreating arrays on every render.
-  const filteredItems = useMemo(
-    () => filter === 'events' ? items.filter(i => i.kind === 'event')
-        : filter === 'topics' ? items.filter(i => i.kind === 'topic')
-        : items,
-    [items, filter],
-  );
+  const filteredItems = useMemo(() => {
+    const base = filter === 'events' ? items.filter(i => i.kind === 'event')
+               : filter === 'topics' ? items.filter(i => i.kind === 'topic')
+               : items;
+    // Recurring events always float to the top — they're city anchors
+    return [...base].sort((a, b) => {
+      const aRecur = !!(a.series_id ?? a.recurrence_label) ? 1 : 0;
+      const bRecur = !!(b.series_id ?? b.recurrence_label) ? 1 : 0;
+      return bRecur - aRecur;
+    });
+  }, [items, filter]);
 
   const listData = useMemo<Array<FeedItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })>>(
     () => {
@@ -406,7 +424,7 @@ export default function NowScreen() {
           </TouchableOpacity>
         </View>
       ) : listData.length === 0 ? (
-        <FilterEmptyState filter={filter} city={city?.name} />
+        <FilterEmptyState filter={filter} city={city?.name} userMode={userMode} />
       ) : (
         <FlatList
           data={listData}
@@ -461,10 +479,16 @@ export default function NowScreen() {
         </TouchableOpacity>
       )}
 
-      {/* FAB — unified create */}
-      <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={() => setShowSheet(true)}>
-        <Text style={styles.fabIcon}>+</Text>
-      </TouchableOpacity>
+      {/* FAB — local hosts get a labeled CTA, others get the classic "+" */}
+      {userMode === 'local' ? (
+        <TouchableOpacity style={styles.fabLocal} activeOpacity={0.85} onPress={() => setShowSheet(true)}>
+          <Text style={styles.fabLocalText}>Host your spot</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={() => setShowSheet(true)}>
+          <Text style={styles.fabIcon}>+</Text>
+        </TouchableOpacity>
+      )}
 
       <CreateSheet
         visible={showSheet}
@@ -672,6 +696,12 @@ const styles = StyleSheet.create({
   },
   emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
 
+  // ── Recurring event card anchor style ─────────────────────────────────────
+  cardRecurring: {
+    borderColor: 'rgba(184,114,40,0.35)',
+    backgroundColor: 'rgba(184,114,40,0.04)',
+  },
+
   // ── FAB + CTA ──────────────────────────────────────────────────────────────
   fab: {
     position:        'absolute',
@@ -690,6 +720,26 @@ const styles = StyleSheet.create({
     elevation:       10,
   },
   fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
+
+  fabLocal: {
+    position:        'absolute',
+    right:           Spacing.md,
+    bottom:          Spacing.md + 52 + Spacing.sm,
+    paddingHorizontal: 22,
+    height:          52,
+    borderRadius:    26,
+    backgroundColor: Colors.accent,
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexDirection:   'row',
+    gap:             8,
+    shadowColor:     Colors.accent,
+    shadowOffset:    { width: 0, height: 4 },
+    shadowOpacity:   0.45,
+    shadowRadius:    12,
+    elevation:       10,
+  },
+  fabLocalText: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.white, letterSpacing: -0.2 },
 
   upcomingCta: {
     position:          'absolute',

@@ -4711,6 +4711,16 @@ img.pub-profile-avatar {
   box-shadow: 0 2px 10px rgba(255, 122, 60, 0.4);
 }
 
+.events-fab--local {
+  width: auto;
+  border-radius: 28px;
+  padding: 0 22px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
 /* ── Creation chooser bottom sheet ─────────────────────────────────────── */
 
 .create-chooser-overlay {
@@ -5234,6 +5244,48 @@ img.pub-profile-avatar {
 .delete-confirm-ok:hover  { background: rgba(239, 68, 68, 0.22); }
 .delete-confirm-ok:active { opacity: 0.85; transform: scale(0.98); }
 .delete-confirm-ok:disabled { opacity: 0.35; cursor: default; }
+
+/* ── Quick presets ────────────────────────────────────── */
+
+.cef-preset-row {
+  display: flex;
+  gap: 8px;
+}
+
+.cef-preset-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cef-preset-btn.selected {
+  border-color: #FF7A3C;
+  background: rgba(255,122,60,0.10);
+}
+
+.cef-preset-emoji { font-size: 1.25rem; line-height: 1; }
+
+.cef-preset-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.55);
+}
+
+.cef-preset-btn.selected .cef-preset-label { color: #FF7A3C; }
+
+.cef-preset-desc {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.30);
+  text-align: center;
+}
 
 /* ── Recurrence picker ────────────────────────────────── */
 

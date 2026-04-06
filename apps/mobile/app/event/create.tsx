@@ -12,7 +12,7 @@
  *   ✓ Orange (#FF7A3C) Create event button — not red
  */
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
   StyleSheet, ActivityIndicator, Modal, Platform,
@@ -54,6 +54,16 @@ const REPEAT_OPTIONS: { mode: RepeatMode; label: string }[] = [
   { mode: 'daily',       label: 'Daily'      },
   { mode: 'weekly',      label: 'Weekly'     },
   { mode: 'every_n_days', label: 'Every N days' },
+];
+
+// ── Quick presets — one-tap recurring event shortcuts ─────────────────────────
+
+type PresetKey = 'daily_spot' | 'every_evening' | 'weekends';
+
+const PRESETS: { key: PresetKey; emoji: string; label: string; desc: string }[] = [
+  { key: 'daily_spot',    emoji: '☀️', label: 'Daily spot',    desc: 'Every day' },
+  { key: 'every_evening', emoji: '🌙', label: 'Every evening', desc: 'Daily · 8pm' },
+  { key: 'weekends',      emoji: '🎉', label: 'Weekends',      desc: 'Sat & Sun' },
 ];
 
 // ── Time helpers ──────────────────────────────────────────────────────────────
@@ -172,17 +182,36 @@ export default function CreateEventScreen() {
   const guestId  = account?.guest_id ?? identity?.guestId ?? '';
 
   // ── Form state
-  const [type,         setType]         = useState<EventType>('other');
-  const [title,        setTitle]        = useState('');
-  const [startsAt,     setStartsAt]     = useState<Date>(() => nextHalfHour());
-  const [endsAt,       setEndsAt]       = useState<Date>(() => addHours(nextHalfHour(), 2));
-  const [repeat,       setRepeat]       = useState<RepeatMode>('once');
-  const [intervalDays, setIntervalDays] = useState('7');
-  const [location,     setLocation]     = useState('');
-  const [submitting,   setSubmitting]   = useState(false);
-  const [error,        setError]        = useState<string | null>(null);
+  const [type,            setType]            = useState<EventType>('other');
+  const [title,           setTitle]           = useState('');
+  const [startsAt,        setStartsAt]        = useState<Date>(() => nextHalfHour());
+  const [endsAt,          setEndsAt]          = useState<Date>(() => addHours(nextHalfHour(), 2));
+  const [repeat,          setRepeat]          = useState<RepeatMode>('once');
+  const [weekdays,        setWeekdays]        = useState<number[]>(() => [new Date().getDay()]);
+  const [intervalDays,    setIntervalDays]    = useState('7');
+  const [location,        setLocation]        = useState('');
+  const [submitting,      setSubmitting]      = useState(false);
+  const [error,           setError]           = useState<string | null>(null);
+  const [selectedPreset,  setSelectedPreset]  = useState<PresetKey | null>(null);
 
-  const todayWeekday = useMemo(() => new Date().getDay(), []);
+  function applyPreset(key: PresetKey) {
+    setSelectedPreset(prev => prev === key ? null : key);
+    if (selectedPreset === key) return; // toggle off
+    if (key === 'daily_spot') {
+      setRepeat('daily');
+      const s = new Date(); s.setHours(18, 0, 0, 0); setStartsAt(s);
+      const e = new Date(); e.setHours(21, 0, 0, 0); setEndsAt(e);
+    } else if (key === 'every_evening') {
+      setRepeat('daily');
+      const s = new Date(); s.setHours(20, 0, 0, 0); setStartsAt(s);
+      const e = new Date(); e.setHours(23, 0, 0, 0); setEndsAt(e);
+    } else if (key === 'weekends') {
+      setRepeat('weekly');
+      setWeekdays([6, 0]); // Sat + Sun
+    }
+  }
+
+  const isLocal = account?.mode === 'local';
 
   async function handleSubmit() {
     if (!city)        { setError('No city selected'); return; }
@@ -225,7 +254,7 @@ export default function CreateEventScreen() {
               : repeat === 'every_n_days'
                 ? 'every_n_days'
                 : 'daily',
-            ...(repeat === 'weekly'       ? { weekdays:      [todayWeekday] } : {}),
+            ...(repeat === 'weekly'       ? { weekdays: weekdays.length > 0 ? weekdays : [new Date().getDay()] } : {}),
             ...(repeat === 'every_n_days' ? { interval_days: iDays >= 2 ? iDays : 7 } : {}),
             location_hint: location.trim() || undefined,
           },
@@ -253,7 +282,7 @@ export default function CreateEventScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Create event</Text>
+          <Text style={styles.headerTitle}>{isLocal ? 'Host your spot' : 'Create event'}</Text>
         </View>
       </View>
 
@@ -263,6 +292,30 @@ export default function CreateEventScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        {/* ── QUICK PRESETS (locals only) ───────────────────────────────────── */}
+        {isLocal && (
+          <View style={styles.section}>
+            <Text style={styles.fieldLabel}>QUICK START</Text>
+            <View style={styles.presetRow}>
+              {PRESETS.map(p => {
+                const active = selectedPreset === p.key;
+                return (
+                  <TouchableOpacity
+                    key={p.key}
+                    style={[styles.presetBtn, active && styles.presetBtnActive]}
+                    onPress={() => applyPreset(p.key)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={styles.presetEmoji}>{p.emoji}</Text>
+                    <Text style={[styles.presetLabel, active && styles.presetLabelActive]}>{p.label}</Text>
+                    <Text style={styles.presetDesc}>{p.desc}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        )}
+
         {/* ── CATEGORY ──────────────────────────────────────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.fieldLabel}>CATEGORY</Text>
@@ -379,7 +432,11 @@ export default function CreateEventScreen() {
           {submitting ? (
             <ActivityIndicator color={Colors.white} />
           ) : (
-            <Text style={styles.submitText}>Create event</Text>
+            <Text style={styles.submitText}>
+              {isLocal
+                ? (repeat !== 'once' ? 'Open your spot' : 'Start a hangout')
+                : 'Create event'}
+            </Text>
           )}
         </TouchableOpacity>
 
@@ -546,6 +603,22 @@ const styles = StyleSheet.create({
     alignItems:        'center',
   },
   pickerDoneText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.md },
+
+  // ── Quick presets ─────────────────────────────────────────────────────────
+  presetRow: { flexDirection: 'row', gap: 8 },
+  presetBtn: {
+    flex: 1, alignItems: 'center', paddingVertical: 14,
+    backgroundColor: Colors.bg2, borderRadius: 14,
+    borderWidth: 1, borderColor: Colors.border, gap: 4,
+  },
+  presetBtnActive: {
+    borderColor: Colors.accent,
+    backgroundColor: 'rgba(255,122,60,0.08)',
+  },
+  presetEmoji: { fontSize: 20 },
+  presetLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  presetLabelActive: { color: Colors.accent },
+  presetDesc:  { fontSize: 10, color: Colors.muted2, textAlign: 'center' },
 
   // ── Repeat chips — square-ish matching web (not pill) ─────────────────────
   repeatRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
