@@ -3,6 +3,7 @@ import { fetchTopicMessages, sendTopicMessage, markTopicRead } from '../api'
 import BackButton from './BackButton'
 
 const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
+const MODE_META = { local: { emoji: '🌍' }, exploring: { emoji: '🧭' } }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -229,6 +230,12 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
                     {(item.nickname ?? '?')[0].toUpperCase()}
                   </span>
                   <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
+                  {item.mode && MODE_META[item.mode] && (
+                    <span className={`msg-vibe msg-vibe--${item.mode}`}>{MODE_META[item.mode].emoji}</span>
+                  )}
+                  {item.contextBadge?.key === 'host' && (
+                    <span className="badge-pill badge-pill--host">{item.contextBadge.label}</span>
+                  )}
                 </div>
               )}
               <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>

@@ -338,11 +338,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
           {MODE_EMOJI[mode]}
         </Text>
       )}
-      {primaryBadge && <BadgePill badge={primaryBadge} />}
-      {contextBadge && <BadgePill badge={contextBadge} />}
-      {vibe && VIBE_EMOJI[vibe] && (
-        <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
-      )}
+      {contextBadge?.key === 'host' && <BadgePill badge={contextBadge} />}
     </>
   );
 

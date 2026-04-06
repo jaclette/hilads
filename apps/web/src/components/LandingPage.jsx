@@ -370,7 +370,7 @@ export default function LandingPage({
         </h1>
 
         <p className="lp-hero-sub">
-          Meet people around you. Join what's happening now — or open your own spot.
+          Meet locals and explorers around you.<br />Jump into what's happening. Open your own spot.
         </p>
 
         <div ref={heroJoinRef} className="lp-hero-join">
@@ -438,7 +438,7 @@ export default function LandingPage({
             <ul className="lp-split-bullets lp-split-bullets--exploring">
               <li>Discover real-time hangouts</li>
               <li>Meet locals and other explorers</li>
-              <li>Skip tourist traps — go where the city actually lives</li>
+              <li>Skip tourist traps</li>
             </ul>
             <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
               See what's happening
