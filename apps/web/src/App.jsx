@@ -311,6 +311,11 @@ const VIBE_META = {
   chill:       { emoji: '🧘', label: 'Chill' },
 }
 
+const MODE_META = {
+  local:     { emoji: '🌍', label: 'Local'     },
+  exploring: { emoji: '🧭', label: 'Exploring' },
+}
+
 function messageKey(m) {
   if (m.type === 'system' && m.event === 'join') return `system_${m.createdAt}_${m.nickname}`
   return m.id
@@ -514,6 +519,7 @@ function buildOnlineUsers(users, mySessionId) {
     userId: u.userId ?? null,
     isRegistered: !!u.userId,
     isMe: u.sessionId === mySessionId,
+    mode: u.mode ?? null,
   }))
 }
 
@@ -575,6 +581,7 @@ export default function App() {
   const [crewLoading,  setCrewLoading]  = useState(false)
   const [filterBadge,  setFilterBadge]  = useState(null)
   const [filterVibe,   setFilterVibe]   = useState(null)
+  const [filterMode,   setFilterMode]   = useState(null)
   const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
   const [guestProfile,   setGuestProfile]   = useState(null) // { guestId, nickname } for guest-only profiles
 
@@ -660,7 +667,7 @@ export default function App() {
     setCrewPage(1)
     setCrewHasMore(false)
     setCrewLoading(true)
-    fetchCityMembers(cid, { page: 1, badge: filterBadge, vibe: filterVibe })
+    fetchCityMembers(cid, { page: 1, badge: filterBadge, vibe: filterVibe, mode: filterMode })
       .then(data => {
         if (crewChannelRef.current !== cid) return
         setCrewMembers(data.members)
@@ -669,14 +676,14 @@ export default function App() {
       })
       .catch(() => {})
       .finally(() => { if (crewChannelRef.current === cid) setCrewLoading(false) })
-  }, [showPeopleDrawer, channelId, filterBadge, filterVibe])
+  }, [showPeopleDrawer, channelId, filterBadge, filterVibe, filterMode])
 
   function loadMoreCrew() {
     if (!channelId || crewLoading || !crewHasMore) return
     const cid  = channelId
     const next = crewPage + 1
     setCrewLoading(true)
-    fetchCityMembers(cid, { page: next, badge: filterBadge, vibe: filterVibe })
+    fetchCityMembers(cid, { page: next, badge: filterBadge, vibe: filterVibe, mode: filterMode })
       .then(data => {
         if (crewChannelRef.current !== cid) return
         setCrewMembers(prev => [...prev, ...data.members])
@@ -881,6 +888,7 @@ export default function App() {
         sessionIdRef.current,
         nicknameRef.current,
         account?.id ?? null,
+        account?.mode ?? null,
       )
     }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -976,7 +984,7 @@ export default function App() {
       }
       if (!activeRef.current) return
       if (activeChannelRef.current) {
-        socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null)
+        socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null, accountRef.current?.mode ?? null)
       }
       const hiddenMs = tabHiddenAtRef.current ? Date.now() - tabHiddenAtRef.current : Infinity
       tabHiddenAtRef.current = null
@@ -1487,7 +1495,7 @@ export default function App() {
         setTopics(prev => prev.some(p => p.id === t.id) ? prev : [...prev, t])
       })
 
-      socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null)
+      socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? null)
 
       // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
       clearInterval(heartbeatRef.current)
@@ -1837,7 +1845,7 @@ export default function App() {
       schedulePrompts()
 
       // Socket: join new room — existing handlers (set up in handleJoin) remain active
-      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null)
+      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null, accountRef.current?.mode ?? null)
 
       // Restart heartbeat for the new room (same policy — no !document.hidden)
       heartbeatRef.current = setInterval(() => {
@@ -2801,6 +2809,9 @@ export default function App() {
                       {item.vibe && VIBE_META[item.vibe] && (
                         <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                       )}
+                      {item.mode && MODE_META[item.mode] && (
+                        <span className="msg-vibe">{MODE_META[item.mode].emoji}</span>
+                      )}
                     </div>
                   )}
                   <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
@@ -3301,6 +3312,7 @@ export default function App() {
           { key: 'local',   label: '⭐ Local'        },
         ]
         const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
+        const MODE_FILTER_OPTIONS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
 
         // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
         // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from it.
@@ -3317,6 +3329,7 @@ export default function App() {
             primaryBadge:  primaryKey ? { key: primaryKey, label: badgeLabel(primaryKey) } : u.primaryBadge,
             contextBadge:  contextKey ? { key: contextKey, label: badgeLabel(contextKey) } : u.contextBadge,
             vibe:          crew.vibe ?? u.vibe,
+            mode:          crew.mode ?? u.mode,
           }
         })
 
@@ -3329,6 +3342,7 @@ export default function App() {
             if (bk !== filterBadge) return false
           }
           if (filterVibe && !u.isMe && u.vibe !== filterVibe) return false
+          if (filterMode && !u.isMe && u.mode !== filterMode) return false
           return true
         })
 
@@ -3363,6 +3377,9 @@ export default function App() {
                   }
                   {!user.isMe && user.vibe && VIBE_META[user.vibe] && (
                     <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
+                  )}
+                  {!user.isMe && user.mode && MODE_META[user.mode] && (
+                    <span className="vibe-badge">{MODE_META[user.mode].emoji}</span>
                   )}
                 </div>
               </div>
@@ -3405,6 +3422,7 @@ export default function App() {
                     <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
                   ))}
                   {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {VIBE_META[m.vibe].label}</span>}
+                  {m.mode && MODE_META[m.mode] && <span className="vibe-badge">{MODE_META[m.mode].emoji}</span>}
                 </div>
               </div>
             </div>
@@ -3438,6 +3456,17 @@ export default function App() {
                     <button key={opt.key}
                       className={`here-chip${filterVibe === opt.key ? ' here-chip--on' : ''}`}
                       onClick={() => setFilterVibe(v => v === opt.key ? null : opt.key)}
+                    >{opt.label}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="here-filter-row">
+                <span className="here-filter-label">Mode</span>
+                <div className="here-filter-chips">
+                  {MODE_FILTER_OPTIONS.map(opt => (
+                    <button key={opt.key}
+                      className={`here-chip${filterMode === opt.key ? ' here-chip--on' : ''}`}
+                      onClick={() => setFilterMode(v => v === opt.key ? null : opt.key)}
                     >{opt.label}</button>
                   ))}
                 </div>

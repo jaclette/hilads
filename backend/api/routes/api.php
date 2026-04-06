@@ -1931,6 +1931,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $page       = max(1, (int) ($_GET['page']  ?? 1));
     $offset     = ($page - 1) * $limit;
     $vibeFilter = isset($_GET['vibe'])  && $_GET['vibe']  !== '' ? $_GET['vibe']  : null;
+    $modeFilter = isset($_GET['mode'])  && $_GET['mode']  !== '' ? $_GET['mode']  : null;
     $badgeFilter= isset($_GET['badge']) && $_GET['badge'] !== '' ? $_GET['badge'] : null;
 
     $pdo        = Database::pdo();
@@ -1967,6 +1968,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
         $binds[':vibe'] = $vibeFilter;
     }
 
+    if ($modeFilter !== null) {
+        $conditions[] = 'u.mode = :mode';
+        $binds[':mode'] = $modeFilter;
+    }
+
     if ($badgeFilter === 'fresh') {
         // created_at is stored as INTEGER (Unix epoch) — compare against epoch arithmetic
         $conditions[] = "u.created_at > EXTRACT(EPOCH FROM NOW() - INTERVAL '60 days')::INTEGER";
@@ -1991,7 +1997,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     // Paginated fetch — order by last_seen_at so recent visitors appear first.
     // NOTE: m.last_seen_at is TIMESTAMPTZ, u.created_at is INTEGER (Unix epoch).
     //       COALESCE requires matching types — cast both to epoch seconds.
-    $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at, u.home_city,
+    $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.mode, u.created_at, u.home_city,
                    COALESCE(EXTRACT(EPOCH FROM m.last_seen_at)::INTEGER, u.created_at) AS sort_at
             FROM users u
             $baseJoin

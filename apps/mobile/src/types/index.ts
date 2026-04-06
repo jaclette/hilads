@@ -4,6 +4,7 @@ export interface GuestIdentity {
   guestId:   string;    // 32-char hex UUID
   nickname:  string;
   channelId?: string;   // persisted after first city join; used for auto-rejoin
+  mode?:     ModeKey;   // Local / Exploring — chosen by guest, persisted locally
 }
 
 // ── City / Channel ────────────────────────────────────────────────────────────
@@ -139,6 +140,7 @@ export interface UserDTO {
   /** Badge keys in priority order: primary badge first, context badge second if present. */
   badges:      BadgeKey[];
   vibe:        string | null;
+  mode?:       string | null;
   isFriend?:   boolean | null;
   isOnline?:   boolean | null;
 }
@@ -195,6 +197,7 @@ export interface Message {
   primaryBadge?: Badge;           // identity badge (ghost/fresh/crew)
   contextBadge?: Badge | null;    // city-specific badge (host/local)
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
+  mode?: string;                  // user's current mode (local/exploring)
   // Optimistic send state — absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
   status?: 'sending' | 'failed'; // undefined = confirmed
@@ -212,6 +215,7 @@ export interface OnlineUser {
   primaryBadge?: Badge;
   contextBadge?: Badge | null;
   vibe?: string;
+  mode?: string;
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────

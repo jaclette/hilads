@@ -25,6 +25,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMyEvents } from '@/hooks/useMyEvents';
+import { saveIdentity } from '@/lib/identity';
 import { updateProfile } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
@@ -107,7 +108,7 @@ function formatDate(ts: number): string {
 export default function MeScreen() {
   const router  = useRouter();
   const insets  = useSafeAreaInsets();
-  const { identity, account, setAccount, logout, city } = useApp();
+  const { identity, account, setAccount, setIdentity, logout, city } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
   // ── Profile editing state — initialised from account
@@ -115,7 +116,7 @@ export default function MeScreen() {
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
   const [selectedVibe,       setSelectedVibe]         = useState<string>(account?.vibe ?? 'chill');
-  const [selectedMode,       setSelectedMode]         = useState<string | null>(account?.mode ?? null);
+  const [selectedMode,       setSelectedMode]         = useState<string | null>(account?.mode ?? identity?.mode ?? null);
   const [selectedInterests,  setSelectedInterests]   = useState<string[]>(account?.interests ?? []);
   const [pendingPhotoUri,    setPendingPhotoUri]      = useState<string | null>(null);
   const [photoUploading,     setPhotoUploading]      = useState(false);
@@ -145,7 +146,7 @@ export default function MeScreen() {
     setHomeCity(account?.home_city ?? '');
     setAgeStr(account?.age != null ? String(account.age) : '');
     setSelectedVibe(account?.vibe ?? 'chill');
-    setSelectedMode(account?.mode ?? null);
+    setSelectedMode(account?.mode ?? identity?.mode ?? null);
     setSelectedInterests(account?.interests ?? []);
   }, [account?.display_name, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
@@ -280,6 +281,18 @@ export default function MeScreen() {
     }
   }
 
+  // ── Guest mode select ─────────────────────────────────────────────────────────
+
+  function handleGuestMode(key: string) {
+    const next = selectedMode === key ? null : key;
+    setSelectedMode(next);
+    if (identity) {
+      const updated = { ...identity, mode: next ?? undefined };
+      setIdentity(updated);
+      saveIdentity(updated).catch(() => {});
+    }
+  }
+
   // ── Sign out ──────────────────────────────────────────────────────────────────
 
   function handleLogout() {
@@ -361,6 +374,16 @@ export default function MeScreen() {
               </View>
             )}
 
+            {/* Mode pill */}
+            {selectedMode && MODES.find(m => m.key === selectedMode) && (() => {
+              const m = MODES.find(m => m.key === selectedMode)!;
+              return (
+                <View style={styles.modePillHero}>
+                  <Text style={styles.modePillHeroText}>{m.emoji} {m.label}</Text>
+                </View>
+              );
+            })()}
+
             {/* Current city */}
             {city && (
               <View style={styles.cityPill}>
@@ -398,6 +421,28 @@ export default function MeScreen() {
               <Text style={styles.accountType}>Guest session</Text>
             </View>
 
+            {/* Mode selector for guests */}
+            <View style={styles.guestModeCard}>
+              <Text style={styles.guestModeLabel}>MODE</Text>
+              <View style={styles.modeSelectorRow}>
+                {MODES.map(m => {
+                  const active = selectedMode === m.key;
+                  return (
+                    <TouchableOpacity
+                      key={m.key}
+                      style={[styles.modeBtn, active && styles.modeBtnActive]}
+                      onPress={() => handleGuestMode(m.key)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={[styles.modeBtnText, active && styles.modeBtnTextActive]}>
+                        {m.emoji} {m.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
             <View style={styles.upgradeCard}>
               <Text style={styles.upgradeTitle}>Make it yours</Text>
               <Text style={styles.upgradeSub}>
@@ -417,6 +462,28 @@ export default function MeScreen() {
         {/* ── Profile fields — registered users only ─────────────────────── */}
         {!isGuest && (
           <View style={styles.fieldsCard}>
+
+            {/* MODE — primary signal, top of form */}
+            <View style={[styles.fieldGroup, styles.modeFieldGroup]}>
+              <Text style={styles.modeFieldLabel}>MODE</Text>
+              <View style={styles.modeSelectorRow}>
+                {MODES.map(m => {
+                  const active = selectedMode === m.key;
+                  return (
+                    <TouchableOpacity
+                      key={m.key}
+                      style={[styles.modeBtn, active && styles.modeBtnActive]}
+                      onPress={() => setSelectedMode(active ? null : m.key)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={[styles.modeBtnText, active && styles.modeBtnTextActive]}>
+                        {m.emoji} {m.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
 
             {/* DISPLAY NAME */}
             <View style={styles.fieldGroup}>
@@ -472,28 +539,6 @@ export default function MeScreen() {
                 keyboardType="number-pad"
                 maxLength={3}
               />
-            </View>
-
-            {/* YOUR VIBE (mode) */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.fieldLabel}>YOUR VIBE</Text>
-              <View style={styles.chipsWrap}>
-                {MODES.map(m => {
-                  const active = selectedMode === m.key;
-                  return (
-                    <TouchableOpacity
-                      key={m.key}
-                      style={[styles.vibeChip, active && styles.vibeChipActive]}
-                      onPress={() => setSelectedMode(active ? null : m.key)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={[styles.vibeChipText, active && styles.vibeChipTextActive]}>
-                        {m.emoji} {m.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
             </View>
 
             {/* MY VIBE */}
@@ -855,6 +900,80 @@ const styles = StyleSheet.create({
     padding:          Spacing.md,
     gap:              Spacing.md,
   },
+  // ── Mode styles ──────────────────────────────────────────────────────────
+  modePillHero: {
+    marginTop:         6,
+    paddingHorizontal: 14,
+    paddingVertical:   6,
+    borderRadius:      Radius.full,
+    backgroundColor:   'rgba(96,165,250,0.12)',
+    borderWidth:       1,
+    borderColor:       'rgba(96,165,250,0.3)',
+  },
+  modePillHeroText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      '#60a5fa',
+  },
+  guestModeCard: {
+    marginHorizontal: Spacing.md,
+    marginBottom:     Spacing.md,
+    padding:          Spacing.md,
+    backgroundColor:  Colors.bg2,
+    borderRadius:     Radius.lg,
+    borderWidth:      1,
+    borderColor:      Colors.border,
+    gap:              10,
+  },
+  guestModeLabel: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    color:         Colors.muted,
+    letterSpacing: 0.8,
+  },
+  modeFieldGroup: {
+    backgroundColor: 'rgba(96,165,250,0.05)',
+    borderRadius:    Radius.md,
+    padding:         Spacing.md,
+    marginBottom:    4,
+    borderWidth:     1,
+    borderColor:     'rgba(96,165,250,0.15)',
+    borderBottomWidth: 1,
+  },
+  modeFieldLabel: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '800',
+    color:         '#60a5fa',
+    letterSpacing: 1,
+    marginBottom:  4,
+  },
+  modeSelectorRow: {
+    flexDirection: 'row',
+    gap:           10,
+  },
+  modeBtn: {
+    flex:            1,
+    paddingVertical: 14,
+    borderRadius:    Radius.md,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    backgroundColor: 'transparent',
+    alignItems:      'center',
+  },
+  modeBtnActive: {
+    borderColor:     '#60a5fa',
+    backgroundColor: 'rgba(96,165,250,0.15)',
+  },
+  modeBtnText: {
+    fontSize:   FontSizes.md,
+    fontWeight: '600',
+    color:      Colors.muted,
+  },
+  modeBtnTextActive: {
+    color: '#60a5fa',
+    fontWeight: '700',
+  },
+
   fieldGroup: {
     gap: 8,
     borderBottomWidth: 1,

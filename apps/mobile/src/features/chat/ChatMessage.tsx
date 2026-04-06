@@ -290,9 +290,13 @@ const VIBE_EMOJI: Record<string, string> = {
   party: '🔥', board_games: '🎲', coffee: '☕', music: '🎧', food: '🍜', chill: '🧘',
 };
 
+const MODE_EMOJI: Record<string, string> = {
+  local: '🌍', exploring: '🧭',
+};
+
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
-function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe }: {
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode }: {
   nickname:     string;
   color:        string;
   initial:      string;
@@ -301,6 +305,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   primaryBadge?: Badge;
   contextBadge?: Badge | null;
   vibe?:         string;
+  mode?:         string;
 }) {
   const router  = useRouter();
   const { account } = useApp();
@@ -332,6 +337,9 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       {contextBadge && <BadgePill badge={contextBadge} />}
       {vibe && VIBE_EMOJI[vibe] && (
         <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
+      )}
+      {mode && MODE_EMOJI[mode] && (
+        <Text style={styles.vibeLabel}>{MODE_EMOJI[mode]}</Text>
       )}
     </>
   );
@@ -493,6 +501,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               primaryBadge={message.primaryBadge}
               contextBadge={message.contextBadge}
               vibe={message.vibe}
+              mode={message.mode}
             />
           )}
           <View>
@@ -559,6 +568,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             primaryBadge={message.primaryBadge}
             contextBadge={message.contextBadge}
             vibe={message.vibe}
+            mode={message.mode}
           />
         )}
 

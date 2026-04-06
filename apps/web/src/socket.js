@@ -137,11 +137,11 @@ export function createSocket() {
     },
 
     /** Join a city room. Replayed automatically on reconnect. */
-    joinRoom(cityId, sessionId, nickname, userId = null) {
+    joinRoom(cityId, sessionId, nickname, userId = null, mode = null) {
       const cid = numericCityId(cityId)
-      console.log('[socket] → joinRoom', { cityId: cid, sessionId, nickname, userId })
-      pendingJoin = { cityId: cid, sessionId, nickname, userId }
-      send({ event: 'joinRoom', cityId: cid, sessionId, nickname, userId })
+      console.log('[socket] → joinRoom', { cityId: cid, sessionId, nickname, userId, mode })
+      pendingJoin = { cityId: cid, sessionId, nickname, userId, mode }
+      send({ event: 'joinRoom', cityId: cid, sessionId, nickname, userId, ...(mode ? { mode } : {}) })
     },
 
     /** Leave a city room (e.g. before switching cities). */

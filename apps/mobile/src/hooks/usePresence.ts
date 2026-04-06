@@ -15,7 +15,7 @@ import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import type { OnlineUser } from '@/types';
 
-type RawUser = { sessionId: string; nickname: string; userId?: string | null };
+type RawUser = { sessionId: string; nickname: string; userId?: string | null; mode?: string | null };
 
 function toOnlineUser(u: RawUser): OnlineUser {
   return {
@@ -24,6 +24,7 @@ function toOnlineUser(u: RawUser): OnlineUser {
     userId:           u.userId ?? undefined,
     nickname:         u.nickname ?? '',
     isRegistered:     Boolean(u.userId),
+    mode:             u.mode ?? undefined,
   };
 }
 

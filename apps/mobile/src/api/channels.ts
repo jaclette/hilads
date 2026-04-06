@@ -155,11 +155,12 @@ export interface CityMembersResult {
 
 export async function fetchCityMembers(
   channelId: string,
-  opts: { page?: number; limit?: number; badge?: string | null; vibe?: string | null } = {},
+  opts: { page?: number; limit?: number; badge?: string | null; vibe?: string | null; mode?: string | null } = {},
 ): Promise<CityMembersResult> {
   const q = new URLSearchParams({ page: String(opts.page ?? 1), limit: String(opts.limit ?? 10) });
   if (opts.badge) q.set('badge', opts.badge);
   if (opts.vibe)  q.set('vibe',  opts.vibe);
+  if (opts.mode)  q.set('mode',  opts.mode);
   return api.get<CityMembersResult>(`/channels/${channelId}/members?${q}`);
 }
 

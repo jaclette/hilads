@@ -82,7 +82,7 @@ final class UserResource
     /**
      * Build a DTO for an anonymous guest session.
      */
-    public static function fromGuest(string $guestId, string $nickname): array
+    public static function fromGuest(string $guestId, string $nickname, ?string $mode = null): array
     {
         return [
             'id'          => $guestId,
@@ -91,6 +91,7 @@ final class UserResource
             'avatarUrl'   => null,
             'badges'      => ['ghost'],
             'vibe'        => null,
+            'mode'        => $mode,
             'isFriend'    => null,
             'isOnline'    => null,
         ];

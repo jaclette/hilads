@@ -39,6 +39,11 @@ function BadgePill({ badgeKey }: { badgeKey: string }) {
 
 // ── Vibe pill ─────────────────────────────────────────────────────────────────
 
+const MODE_META: Record<string, { emoji: string; label: string }> = {
+  local:     { emoji: '🌍', label: 'Local'     },
+  exploring: { emoji: '🧭', label: 'Exploring' },
+};
+
 const VIBE_META: Record<string, { emoji: string; label: string; color: string; bg: string; border: string }> = {
   party:       { emoji: '🔥', label: 'Party',       color: '#f97316', bg: 'rgba(249,115,22,0.12)',  border: 'rgba(249,115,22,0.25)'  },
   board_games: { emoji: '🎲', label: 'Board Games', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)', border: 'rgba(167,139,250,0.25)' },
@@ -78,6 +83,7 @@ function avatarColor(str: string): string {
 
 // ── Filter config ─────────────────────────────────────────────────────────────
 
+const MODE_FILTERS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }));
 const BADGE_FILTERS = [
   { key: 'fresh',   label: '✨ Fresh'  },
   { key: 'regular', label: '😎 Crew'         },
@@ -113,6 +119,9 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
           )}
           {!isMe && user.contextBadge && <BadgePill badgeKey={user.contextBadge.key} />}
           {!isMe && <VibePill vibe={user.vibe} />}
+          {!isMe && user.mode && MODE_META[user.mode] && (
+            <Text style={{ fontSize: 14 }}>{MODE_META[user.mode].emoji}</Text>
+          )}
         </View>
       </View>
       {!isMe && user.userId && (
@@ -143,6 +152,9 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
         <View style={styles.badgeRow}>
           {member.badges.map(k => <BadgePill key={k} badgeKey={k} />)}
           <VibePill vibe={member.vibe} />
+          {member.mode && MODE_META[member.mode] && (
+            <Text style={{ fontSize: 14 }}>{MODE_META[member.mode].emoji}</Text>
+          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -157,6 +169,7 @@ export default function HereScreen() {
 
   const [filterBadge, setFilterBadge] = useState<string | null>(null);
   const [filterVibe,  setFilterVibe]  = useState<string | null>(null);
+  const [filterMode,  setFilterMode]  = useState<string | null>(null);
 
   const [legends,      setLegends]      = useState<CityAmbassador[]>([]);
 
@@ -184,13 +197,14 @@ export default function HereScreen() {
         limit: 10,
         badge: filterBadge ?? undefined,
         vibe:  filterVibe  ?? undefined,
+        mode:  filterMode  ?? undefined,
       });
       setCrewMembers(prev => reset ? data.members : [...prev, ...data.members]);
       setCrewHasMore(data.hasMore);
       setCrewPage(page);
     } catch { /* silent */ }
     finally  { setCrewLoading(false); }
-  }, [city?.channelId, filterBadge, filterVibe]);
+  }, [city?.channelId, filterBadge, filterVibe, filterMode]);
 
   useEffect(() => {
     loadCrew(1, true);
@@ -215,6 +229,7 @@ export default function HereScreen() {
       primaryBadge:  primaryKey ? { key: primaryKey, label: BADGE_META[primaryKey as keyof typeof BADGE_META]?.label ?? primaryKey } : u.primaryBadge,
       contextBadge:  contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : u.contextBadge,
       vibe:          crew.vibe ?? u.vibe,
+      mode:          crew.mode ?? u.mode,
     };
   }), [onlineUsers, crewLookup, mySessionId]);
 
@@ -229,6 +244,7 @@ export default function HereScreen() {
       }
     }
     if (filterVibe && u.sessionId !== mySessionId && u.vibe !== filterVibe) return false;
+    if (filterMode && u.sessionId !== mySessionId && u.mode !== filterMode) return false;
     return true;
   });
 
@@ -292,6 +308,18 @@ export default function HereScreen() {
               activeOpacity={0.7}
             >
               <Text style={[styles.chipText, filterVibe === f.key && styles.chipTextOn]}>{f.label}</Text>
+            </TouchableOpacity>
+          ))}
+          <View style={styles.filterDivider} />
+          <Text style={styles.filterGroupLabel}>Mode</Text>
+          {MODE_FILTERS.map(f => (
+            <TouchableOpacity
+              key={f.key}
+              style={[styles.chip, filterMode === f.key && styles.chipOn]}
+              onPress={() => setFilterMode(v => v === f.key ? null : f.key)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.chipText, filterMode === f.key && styles.chipTextOn]}>{f.label}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
