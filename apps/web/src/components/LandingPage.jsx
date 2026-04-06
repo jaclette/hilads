@@ -28,13 +28,13 @@ const HOW_IT_WORKS = [
     icon: '📍',
     num: '01',
     title: 'Open the app',
-    desc: 'See your city live — who\'s around, what\'s happening right now.',
+    desc: 'See your city live. Who\'s around, what\'s happening right now.',
   },
   {
     icon: '🎯',
     num: '02',
     title: 'Choose your mode',
-    desc: 'Local — you know the city.\nExploring — you want to feel it.',
+    desc: 'Local. You know the city.\nExploring. You want to feel it.',
   },
   {
     icon: '✨',
@@ -256,7 +256,7 @@ function ExploringMockup() {
   return (
     <PhoneFrame>
       <div className="lp-app-header lp-app-header--explore">
-        <span className="lp-app-city">🔥 Now — Barcelona 🇪🇸</span>
+        <span className="lp-app-city">🔥 Now · Barcelona 🇪🇸</span>
         <span className="lp-app-count">● 14 online</span>
       </div>
       <div className="lp-phone-body">

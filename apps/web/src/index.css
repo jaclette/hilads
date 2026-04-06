@@ -6870,9 +6870,13 @@ img.dm-header-avatar {
 
 @media (max-width: 640px) {
   .lp-split-row,
-  .lp-split-row--local,
-  .lp-split-row--exploring {
+  .lp-split-row--local {
     flex-direction: column !important;
+    padding: 48px 20px;
+    gap: 36px;
+  }
+  .lp-split-row--exploring {
+    flex-direction: column-reverse !important;
     padding: 48px 20px;
     gap: 36px;
   }
