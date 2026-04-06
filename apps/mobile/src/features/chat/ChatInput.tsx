@@ -16,9 +16,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 import { Colors, FontSizes } from '@/constants';
+import { useApp } from '@/context/AppContext';
 import { AndroidCameraCapture } from './AndroidCameraCapture';
 import { EmojiPanel } from './EmojiPanel';
+import { ShareSheet } from './ShareSheet';
 
 
 // ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
@@ -54,10 +57,13 @@ interface Props {
 }
 
 export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pickImageRef, onTypingStart, onTypingStop }: Props) {
+  const { account, identity } = useApp();
   const [text,          setText]        = useState('');
   const [uploading,     setUploading]   = useState(false);
   const [androidCamera, setAndroidCamera] = useState(false);
   const [showEmoji,     setShowEmoji]   = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
+  const [spotLoading,   setSpotLoading] = useState(false);
   const inputRef        = useRef<TextInput>(null);
   const lastSel         = useRef({ start: 0, end: 0 });
   const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -202,24 +208,52 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   }
 
   function handlePickImage() {
-    if (sending || uploading) return;
-    console.log('[camera] handlePickImage called');
     Alert.alert('Send a photo', undefined, [
-      // On Android, setTimeout(fn, 0) lets the Alert dialog fully dismiss before
-      // launching the camera. InteractionManager.runAfterInteractions blocks
-      // indefinitely on Android when screen/tab animations are registered.
-      // On iOS, the action sheet dismiss animation (~300ms) is also safely covered
-      // by the JS event loop flush that setTimeout(fn, 0) provides.
       { text: 'Take Photo',          onPress: () => setTimeout(openCamera, 0) },
       { text: 'Choose from Library', onPress: () => setTimeout(openLibrary, 0) },
       { text: 'Cancel', style: 'cancel' },
     ]);
   }
 
-  // Expose handlePickImage to parent so prompt CTAs can trigger the same flow
-  if (pickImageRef) pickImageRef.current = handlePickImage;
+  async function handleMySpot() {
+    setShowShareSheet(false);
+    setSpotLoading(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Location needed', 'Allow location access to share your spot.');
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const results = await Location.reverseGeocodeAsync(
+        { latitude: pos.coords.latitude, longitude: pos.coords.longitude },
+        { useGoogleMaps: false },
+      );
+      const r = results[0];
+      const place = r?.district
+        ?? r?.subregion
+        ?? r?.city
+        ?? r?.name
+        ?? 'somewhere';
+      const nickname = account?.display_name ?? identity?.nickname ?? 'Someone';
+      onSendText(`📍 ${nickname} is at ${place}`);
+    } catch (err) {
+      console.error('[spot]', err);
+      Alert.alert('Location unavailable', 'Could not get your location. Please try again.');
+    } finally {
+      setSpotLoading(false);
+    }
+  }
 
-  const busy       = sending || uploading;
+  function handleShare() {
+    if (sending || uploading || spotLoading) return;
+    setShowShareSheet(true);
+  }
+
+  // Expose handleShare to parent so prompt CTAs can trigger the share sheet
+  if (pickImageRef) pickImageRef.current = handleShare;
+
+  const busy       = sending || uploading || spotLoading;
   const canSend    = !!text.trim() && !busy;
 
   return (
@@ -240,23 +274,31 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       />
     )}
 
+    {/* ── Share sheet ── */}
+    <ShareSheet
+      visible={showShareSheet}
+      onSnap={() => { setShowShareSheet(false); setTimeout(handlePickImage, 0); }}
+      onSpot={handleMySpot}
+      onClose={() => setShowShareSheet(false)}
+      spotLoading={spotLoading}
+    />
+
     {/* ── Emoji panel — appears above composer when emoji mode is active ── */}
     {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
 
     <View style={styles.container}>
 
-      {/* ── Upload button — web: .upload-btn (54×54, rgba bg, border, image SVG) ── */}
+      {/* ── Share button ── */}
       <TouchableOpacity
         style={[styles.uploadBtn, busy && styles.btnDisabled]}
-        onPress={handlePickImage}
+        onPress={handleShare}
         activeOpacity={0.7}
         disabled={busy}
       >
-        {uploading ? (
+        {uploading || spotLoading ? (
           <ActivityIndicator size="small" color={Colors.accent} />
         ) : (
-          // Web: ImageIcon SVG 22px — Ionicons 'image-outline' is visually equivalent
-          <Ionicons name="image-outline" size={22} color={Colors.text} />
+          <Text style={styles.shareBtnIcon}>+</Text>
         )}
       </TouchableOpacity>
 
@@ -399,6 +441,13 @@ const styles = StyleSheet.create({
   },
 
   btnDisabled: { opacity: 0.35 },
+
+  shareBtnIcon: {
+    fontSize:   26,
+    lineHeight: 28,
+    color:      Colors.text,
+    fontWeight: '400',
+  },
 
   emojiBtn: {
     width:           44,

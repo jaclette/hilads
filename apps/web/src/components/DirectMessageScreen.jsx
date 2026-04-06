@@ -3,6 +3,7 @@ import { fetchConversationMessages, sendConversationMessage, sendConversationIma
 import BackButton from './BackButton'
 import SendButton from './SendButton'
 import EmojiPicker from './EmojiPicker'
+import ShareActionSheet from './ShareActionSheet'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -68,8 +69,10 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const [sending, setSending]         = useState(false)
   const [uploading, setUploading]     = useState(false)
   const [error, setError]             = useState(null)
-  const [showEmoji, setShowEmoji]     = useState(false)
-  const [lightboxUrl, setLightboxUrl] = useState(null)
+  const [showEmoji, setShowEmoji]       = useState(false)
+  const [lightboxUrl, setLightboxUrl]   = useState(null)
+  const [showShareSheet, setShowShareSheet] = useState(false)
+  const [spotLoading, setSpotLoading]   = useState(false)
   const bottomRef                     = useRef(null)
   const knownIds                      = useRef(new Set())
   const fileRef                       = useRef(null)
@@ -158,9 +161,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
     })
   }
 
-  async function handleSend(e) {
-    e.preventDefault()
-    const content = input.trim()
+  async function doSendText(content) {
     if (!content || sending) return
     setSending(true)
     setError(null)
@@ -168,11 +169,51 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       const { message } = await sendConversationMessage(conversation.id, content)
       knownIds.current.add(message.id)
       setMessages(prev => [...prev, message])
-      setInput('')
     } catch (err) {
       setError(err.message)
     } finally {
       setSending(false)
+    }
+  }
+
+  async function handleSend(e) {
+    e.preventDefault()
+    const content = input.trim()
+    if (!content) return
+    setInput('')
+    await doSendText(content)
+  }
+
+  async function handleMySpot() {
+    setShowShareSheet(false)
+    setSpotLoading(true)
+    try {
+      const pos = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
+      )
+      const { latitude, longitude } = pos.coords
+      const resp = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`,
+        { headers: { 'User-Agent': 'Hilads/1.0' } },
+      )
+      const data = await resp.json()
+      const addr = data.address ?? {}
+      const place = addr.quarter
+        ?? addr.neighbourhood
+        ?? addr.suburb
+        ?? addr.city_district
+        ?? addr.district
+        ?? addr.town
+        ?? addr.city
+        ?? (data.display_name?.split(',')[0])
+        ?? 'somewhere'
+      const nickname = account?.display_name ?? 'Someone'
+      await doSendText(`📍 ${nickname} is at ${place}`)
+    } catch (err) {
+      console.error('[spot/dm]', err)
+      setError("Couldn't get your location. Please try again.")
+    } finally {
+      setSpotLoading(false)
     }
   }
 
@@ -233,6 +274,16 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         <div ref={bottomRef} />
       </div>
 
+      {/* Share action sheet */}
+      {showShareSheet && (
+        <ShareActionSheet
+          onSnap={() => { setShowShareSheet(false); fileRef.current?.click() }}
+          onSpot={handleMySpot}
+          onClose={() => setShowShareSheet(false)}
+          spotLoading={spotLoading}
+        />
+      )}
+
       {/* Composer */}
       <form className="dm-composer" onSubmit={handleSend}>
         <input
@@ -244,15 +295,12 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         />
         <button
           type="button"
-          className="dm-upload-btn"
-          title="Send image"
-          disabled={uploading || sending}
-          onClick={() => fileRef.current?.click()}
+          className="dm-share-btn"
+          title="Share"
+          disabled={uploading || sending || spotLoading}
+          onClick={() => setShowShareSheet(true)}
         >
-          {uploading
-            ? <span className="upload-spinner" />
-            : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          }
+          {uploading ? <span className="upload-spinner" style={{ width: 16, height: 16 }} /> : '+'}
         </button>
         <div className="emoji-picker-wrap">
           <button

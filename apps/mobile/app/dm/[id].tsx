@@ -13,8 +13,10 @@ import {
   Animated, Alert, InteractionManager, Keyboard,
 } from 'react-native';
 import { EmojiPanel } from '@/features/chat/EmojiPanel';
+import { ShareSheet } from '@/features/chat/ShareSheet';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
@@ -209,16 +211,18 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { account } = useApp();
   const { messages, loading, sending, error, clearError, sendText, sendImage } = useDMThread(conversationId);
-  const [text,       setText]       = useState('');
-  const [uploading,  setUploading]  = useState(false);
-  const [focused,    setFocused]    = useState(false);
-  const [showEmoji,  setShowEmoji]  = useState(false);
-  const [previewUri, setPreviewUri] = useState<string | null>(null);
+  const [text,          setText]          = useState('');
+  const [uploading,     setUploading]     = useState(false);
+  const [focused,       setFocused]       = useState(false);
+  const [showEmoji,     setShowEmoji]     = useState(false);
+  const [previewUri,    setPreviewUri]    = useState<string | null>(null);
+  const [showShareSheet, setShowShareSheet] = useState(false);
+  const [spotLoading,   setSpotLoading]   = useState(false);
   const lastSel = useRef({ start: 0, end: 0 });
 
   const color   = avatarColor(displayName);
   const initial = displayName.slice(0, 1).toUpperCase();
-  const busy    = sending || uploading;
+  const busy    = sending || uploading || spotLoading;
 
   function handleSend() {
     const t = text.trim();
@@ -297,12 +301,37 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
   function handlePickImage() {
     if (busy) return;
-    console.log('[camera/dm] handlePickImage called');
     Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: () => { console.log('[camera/dm] Take Photo tapped'); InteractionManager.runAfterInteractions(() => openCamera()); } },
+      { text: 'Take Photo',          onPress: () => InteractionManager.runAfterInteractions(() => openCamera()) },
       { text: 'Choose from Library', onPress: () => InteractionManager.runAfterInteractions(() => openLibrary()) },
       { text: 'Cancel', style: 'cancel' },
     ]);
+  }
+
+  async function handleMySpot() {
+    setShowShareSheet(false);
+    setSpotLoading(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Location needed', 'Allow location access to share your spot.');
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const results = await Location.reverseGeocodeAsync(
+        { latitude: pos.coords.latitude, longitude: pos.coords.longitude },
+        { useGoogleMaps: false },
+      );
+      const r = results[0];
+      const place = r?.district ?? r?.subregion ?? r?.city ?? r?.name ?? 'somewhere';
+      const nickname = account?.display_name ?? displayName ?? 'Someone';
+      sendText(`📍 ${nickname} is at ${place}`);
+    } catch (err) {
+      console.error('[spot/dm]', err);
+      Alert.alert('Location unavailable', 'Could not get your location. Please try again.');
+    } finally {
+      setSpotLoading(false);
+    }
   }
 
   function insertEmoji(emoji: string) {
@@ -384,17 +413,26 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
       {/* ── Emoji panel ── */}
       {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
 
+      {/* ── Share sheet ── */}
+      <ShareSheet
+        visible={showShareSheet}
+        onSnap={() => { setShowShareSheet(false); setTimeout(handlePickImage, 0); }}
+        onSpot={handleMySpot}
+        onClose={() => setShowShareSheet(false)}
+        spotLoading={spotLoading}
+      />
+
       {/* ── Composer ── */}
       <View style={[styles.composer, focused && styles.composerFocused]}>
         <TouchableOpacity
           style={[styles.imageBtn, busy && styles.imageBtnDisabled]}
-          onPress={handlePickImage}
+          onPress={() => { if (!busy) setShowShareSheet(true); }}
           disabled={busy}
           activeOpacity={0.7}
         >
-          {uploading
+          {uploading || spotLoading
             ? <ActivityIndicator size="small" color={Colors.accent} />
-            : <Ionicons name="image-outline" size={22} color={Colors.text} />
+            : <Text style={styles.shareBtnIcon}>+</Text>
           }
         </TouchableOpacity>
         <TouchableOpacity
@@ -752,6 +790,12 @@ const styles = StyleSheet.create({
     flexShrink:      0,
   },
   imageBtnDisabled: { opacity: 0.4 },
+  shareBtnIcon: {
+    fontSize:   26,
+    lineHeight: 28,
+    color:      Colors.text,
+    fontWeight: '400',
+  },
   emojiBtn: {
     width:           36,
     height:          36,

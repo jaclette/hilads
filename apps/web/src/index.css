@@ -1905,6 +1905,167 @@ html, body, #root {
   display: block;
 }
 
+/* ── Share button (replaces upload-btn) ──────────────────────────────────────
+   Same size/shape as .upload-btn; uses a + icon instead of an image icon.     */
+.share-btn {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: color 0.12s, border-color 0.12s, background 0.12s, transform 0.1s, box-shadow 0.15s;
+}
+
+.share-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(194, 74, 56, 0.45);
+  background: rgba(194, 74, 56, 0.1);
+  box-shadow: 0 0 0 1px rgba(194, 74, 56, 0.08), 0 0 18px rgba(194, 74, 56, 0.12);
+}
+
+.share-btn:not(:disabled):active { transform: scale(0.95); }
+
+.share-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ── ShareActionSheet ────────────────────────────────────────────────────────
+   Mobile-native style bottom sheet that slides up from the bottom.            */
+.share-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 120;
+  animation: fadeIn 0.15s ease;
+}
+
+.share-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 121;
+  background: var(--bg2, #1a1512);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 16px max(env(safe-area-inset-bottom, 0px), 16px);
+  animation: slideUp 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.45);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.share-sheet-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted2);
+  text-align: center;
+  margin: 0 0 16px;
+  letter-spacing: 0.02em;
+}
+
+.share-sheet-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.share-sheet-action {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s, border-color 0.12s, transform 0.1s;
+}
+
+.share-sheet-action:not(:disabled):active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.share-sheet-action:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.share-sheet-action:disabled { opacity: 0.5; cursor: default; }
+
+.share-sheet-action-icon {
+  font-size: 28px;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-sheet-action-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.share-sheet-action-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  display: block;
+}
+
+.share-sheet-action-desc {
+  font-size: 0.8rem;
+  color: var(--muted2);
+  display: block;
+}
+
+.share-sheet-cancel {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  color: var(--muted2);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.share-sheet-cancel:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+
+.share-sheet-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: block;
+}
+
 .send-btn {
   width: 54px;
   height: 54px;
@@ -5830,6 +5991,34 @@ img.dm-header-avatar {
 }
 
 .dm-upload-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.dm-share-btn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.dm-share-btn:hover:not(:disabled) {
+  color: var(--accent);
+  border-color: rgba(194, 74, 56, 0.4);
+  background: rgba(194, 74, 56, 0.08);
+}
+
+.dm-share-btn:disabled {
   opacity: 0.35;
   cursor: default;
 }

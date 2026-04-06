@@ -26,6 +26,7 @@ import EmojiPicker from './components/EmojiPicker'
 import SendButton from './components/SendButton'
 import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
+import ShareActionSheet from './components/ShareActionSheet'
 import { registerPush, unregisterPush } from './push'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -546,6 +547,8 @@ export default function App() {
   const [typingUsers, setTypingUsers] = useState([])
   const [uploading, setUploading] = useState(false)
   const [lightboxUrl, setLightboxUrl] = useState(null)
+  const [showShareSheet, setShowShareSheet] = useState(false)
+  const [spotLoading, setSpotLoading] = useState(false)
 
   // Events state
   const [events, setEvents] = useState([])
@@ -1626,14 +1629,11 @@ export default function App() {
     })
   }
 
-  async function handleSend(e) {
-    e.preventDefault()
-    const content = input.trim()
+  async function doSendText(content) {
     if (!content || sending) return
     stopTyping()
 
     // Optimistic insert — message appears instantly without waiting for HTTP.
-    // Uses a local placeholder ID so the WS echo can be reconciled correctly.
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
     const optimistic = {
       type:      'message',
@@ -1645,7 +1645,6 @@ export default function App() {
       createdAt: Date.now() / 1000,
     }
     setFeed(prev => [...prev, optimistic])
-    setInput('')
 
     setSending(true)
     try {
@@ -1656,20 +1655,10 @@ export default function App() {
         msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content)
       }
 
-      // Add server ID to knownIds so future WS echoes are skipped.
       knownIdsRef.current.add(msg.id)
-      // sent_message is tracked server-side — no frontend duplicate
 
-      // Reconcile the optimistic placeholder with the confirmed server message.
-      // Two cases:
-      //   WS arrived first → server message already in feed; just remove the placeholder.
-      //   HTTP arrived first → replace placeholder with server-confirmed message.
       setFeed(prev => {
-        if (prev.some(f => f.id === msg.id)) {
-          // WS beat HTTP — server message is already present; drop the placeholder only.
-          return prev.filter(f => f.id !== localId)
-        }
-        // HTTP beat WS — swap placeholder for server message.
+        if (prev.some(f => f.id === msg.id)) return prev.filter(f => f.id !== localId)
         return prev.map(f => f.id === localId ? { type: 'message', ...msg } : f)
       })
 
@@ -1678,12 +1667,52 @@ export default function App() {
       }
     } catch (err) {
       console.error('[send] failed:', err)
-      // Remove the optimistic placeholder so the user can retry cleanly.
       setFeed(prev => prev.filter(f => f.id !== localId))
       setSendError("Couldn't send message. Please try again.")
       setTimeout(() => setSendError(null), 4000)
     } finally {
       setSending(false)
+    }
+  }
+
+  async function handleSend(e) {
+    e.preventDefault()
+    const content = input.trim()
+    if (!content) return
+    setInput('')
+    await doSendText(content)
+  }
+
+  async function handleMySpot() {
+    setShowShareSheet(false)
+    setSpotLoading(true)
+    try {
+      const pos = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
+      )
+      const { latitude, longitude } = pos.coords
+      const resp = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=en`,
+        { headers: { 'User-Agent': 'Hilads/1.0' } },
+      )
+      const data = await resp.json()
+      const addr = data.address ?? {}
+      const place = addr.quarter
+        ?? addr.neighbourhood
+        ?? addr.suburb
+        ?? addr.city_district
+        ?? addr.district
+        ?? addr.town
+        ?? addr.city
+        ?? (data.display_name?.split(',')[0])
+        ?? 'somewhere'
+      await doSendText(`📍 ${activeNickname} is at ${place}`)
+    } catch (err) {
+      console.error('[spot]', err)
+      setSendError("Couldn't get your location. Please try again.")
+      setTimeout(() => setSendError(null), 4000)
+    } finally {
+      setSpotLoading(false)
     }
   }
 
@@ -2829,8 +2858,17 @@ export default function App() {
           <div className="success-toast">{successToast.msg}</div>
         )}
 
+        {showShareSheet && (
+          <ShareActionSheet
+            onSnap={() => { setShowShareSheet(false); fileInputRef.current?.click() }}
+            onSpot={handleMySpot}
+            onClose={() => setShowShareSheet(false)}
+            spotLoading={spotLoading}
+          />
+        )}
+
         <form className="input-bar" onSubmit={handleSend}>
-          {/* Hidden file picker — triggered by the image button */}
+          {/* Hidden file picker — triggered via share sheet */}
           <input
             ref={fileInputRef}
             type="file"
@@ -2840,12 +2878,12 @@ export default function App() {
           />
           <button
             type="button"
-            className="upload-btn"
-            title="Send image"
-            disabled={uploading || sending}
-            onClick={() => fileInputRef.current?.click()}
+            className="share-btn"
+            title="Share"
+            disabled={uploading || sending || spotLoading}
+            onClick={() => setShowShareSheet(true)}
           >
-            {uploading ? <span className="upload-spinner" /> : <ImageIcon />}
+            {uploading ? <span className="upload-spinner" /> : '+'}
           </button>
           <div className="emoji-picker-wrap">
             <button
