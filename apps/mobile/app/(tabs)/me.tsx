@@ -434,8 +434,10 @@ export default function MeScreen() {
                       onPress={() => handleGuestMode(m.key)}
                       activeOpacity={0.75}
                     >
-                      <Text style={[styles.modeBtnText, active && styles.modeBtnTextActive]}>
-                        {m.emoji} {m.label}
+                      <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
+                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
+                      <Text style={styles.modeBtnDesc}>
+                        {m.key === 'local' ? 'You know this city' : "You're discovering it"}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -463,7 +465,7 @@ export default function MeScreen() {
         {!isGuest && (
           <View style={styles.fieldsCard}>
 
-            {/* MODE — primary signal, top of form */}
+            {/* MODE — primary identity signal, top of form */}
             <View style={[styles.fieldGroup, styles.modeFieldGroup]}>
               <Text style={styles.modeFieldLabel}>MODE</Text>
               <View style={styles.modeSelectorRow}>
@@ -476,8 +478,10 @@ export default function MeScreen() {
                       onPress={() => setSelectedMode(active ? null : m.key)}
                       activeOpacity={0.75}
                     >
-                      <Text style={[styles.modeBtnText, active && styles.modeBtnTextActive]}>
-                        {m.emoji} {m.label}
+                      <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
+                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
+                      <Text style={styles.modeBtnDesc}>
+                        {m.key === 'local' ? 'You know this city' : "You're discovering it"}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -902,16 +906,16 @@ const styles = StyleSheet.create({
   },
   // ── Mode styles ──────────────────────────────────────────────────────────
   modePillHero: {
-    marginTop:         6,
-    paddingHorizontal: 14,
-    paddingVertical:   6,
+    marginTop:         4,
+    paddingHorizontal: 16,
+    paddingVertical:   7,
     borderRadius:      Radius.full,
-    backgroundColor:   'rgba(96,165,250,0.12)',
-    borderWidth:       1,
-    borderColor:       'rgba(96,165,250,0.3)',
+    backgroundColor:   'rgba(96,165,250,0.14)',
+    borderWidth:       1.5,
+    borderColor:       'rgba(96,165,250,0.35)',
   },
   modePillHeroText: {
-    fontSize:   FontSizes.sm,
+    fontSize:   FontSizes.md,
     fontWeight: '700',
     color:      '#60a5fa',
   },
@@ -932,13 +936,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   modeFieldGroup: {
-    backgroundColor: 'rgba(96,165,250,0.05)',
+    backgroundColor: 'rgba(96,165,250,0.06)',
     borderRadius:    Radius.md,
     padding:         Spacing.md,
     marginBottom:    4,
-    borderWidth:     1,
-    borderColor:     'rgba(96,165,250,0.15)',
-    borderBottomWidth: 1,
+    borderWidth:     1.5,
+    borderColor:     'rgba(96,165,250,0.22)',
   },
   modeFieldLabel: {
     fontSize:      FontSizes.xs,
@@ -953,25 +956,36 @@ const styles = StyleSheet.create({
   },
   modeBtn: {
     flex:            1,
-    paddingVertical: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 8,
     borderRadius:    Radius.md,
-    borderWidth:     1,
+    borderWidth:     1.5,
     borderColor:     Colors.border,
     backgroundColor: 'transparent',
     alignItems:      'center',
+    gap:             3,
   },
   modeBtnActive: {
     borderColor:     '#60a5fa',
-    backgroundColor: 'rgba(96,165,250,0.15)',
+    backgroundColor: 'rgba(96,165,250,0.16)',
   },
-  modeBtnText: {
+  modeBtnEmoji: {
+    fontSize: 26,
+    lineHeight: 30,
+  },
+  modeBtnLabel: {
     fontSize:   FontSizes.md,
-    fontWeight: '600',
+    fontWeight: '700',
     color:      Colors.muted,
   },
-  modeBtnTextActive: {
-    color: '#60a5fa',
-    fontWeight: '700',
+  modeBtnLabelActive: {
+    color: '#fff',
+  },
+  modeBtnDesc: {
+    fontSize:  FontSizes.xs,
+    color:     Colors.muted2,
+    textAlign: 'center',
+    lineHeight: 16,
   },
 
   fieldGroup: {

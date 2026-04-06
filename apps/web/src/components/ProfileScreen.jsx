@@ -160,9 +160,16 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </button>
             <div className="profile-hero-copy">
               <h2 className="profile-hero-name">{name || 'Your profile'}</h2>
-              {account.primaryBadge && (
-                <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
-              )}
+              <div className="profile-hero-badges">
+                {account.primaryBadge && (
+                  <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
+                )}
+                {mode && MODES.find(m => m.key === mode) && (
+                  <span className="profile-hero-mode">
+                    {MODES.find(m => m.key === mode).emoji} {MODES.find(m => m.key === mode).label}
+                  </span>
+                )}
+              </div>
               <p className="profile-hero-sub">Update how people see you in Hilads.</p>
             </div>
           </div>
@@ -176,6 +183,28 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         </div>
 
         <div className="profile-card profile-fields">
+
+          {/* ── Mode — primary identity, top of form ── */}
+          <div className="profile-mode-section">
+            <span className="profile-mode-label">Mode</span>
+            <div className="profile-mode-btns">
+              {MODES.map(m => (
+                <button
+                  key={m.key}
+                  type="button"
+                  className={`profile-mode-btn${mode === m.key ? ' profile-mode-btn--on' : ''}`}
+                  onClick={() => setMode(mode === m.key ? null : m.key)}
+                >
+                  <span className="profile-mode-btn-emoji">{m.emoji}</span>
+                  <span className="profile-mode-btn-name">{m.label}</span>
+                  <span className="profile-mode-btn-desc">
+                    {m.key === 'local' ? 'You know this city' : 'You\'re discovering it'}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="modal-field">
             <label className="modal-label">Display name</label>
             <input
@@ -221,22 +250,6 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               max={100}
               placeholder="Your age"
             />
-          </div>
-
-          <div className="modal-field">
-            <label className="modal-label">Your vibe</label>
-            <div className="vibe-grid">
-              {MODES.map(m => (
-                <button
-                  key={m.key}
-                  type="button"
-                  className={`vibe-chip${mode === m.key ? ' vibe-chip--on' : ''}`}
-                  onClick={() => setMode(mode === m.key ? null : m.key)}
-                >
-                  {m.emoji} {m.label}
-                </button>
-              ))}
-            </div>
           </div>
 
           <div className="modal-field">

@@ -1113,6 +1113,99 @@ html, body, #root {
   line-height: 1.45;
 }
 
+.profile-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.profile-hero-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(96,165,250,0.12);
+  border: 1px solid rgba(96,165,250,0.28);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #60a5fa;
+}
+
+/* ── Profile mode selector ─────────────────────────────────────────────────── */
+
+.profile-mode-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: rgba(96,165,250,0.05);
+  border: 1.5px solid rgba(96,165,250,0.2);
+  border-radius: 12px;
+}
+
+.profile-mode-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+  color: #60a5fa;
+  text-transform: uppercase;
+}
+
+.profile-mode-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.profile-mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 16px 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255,255,255,0.09);
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.profile-mode-btn:hover {
+  border-color: rgba(96,165,250,0.35);
+  background: rgba(96,165,250,0.07);
+}
+
+.profile-mode-btn--on {
+  border-color: #60a5fa;
+  background: rgba(96,165,250,0.16);
+}
+
+.profile-mode-btn-emoji {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.profile-mode-btn-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.profile-mode-btn--on .profile-mode-btn-name {
+  color: #fff;
+}
+
+.profile-mode-btn-desc {
+  font-size: 0.72rem;
+  color: var(--muted2);
+  text-align: center;
+  line-height: 1.3;
+}
+
 .profile-photo-badge {
   position: absolute;
   bottom: 2px;
