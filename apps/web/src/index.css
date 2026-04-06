@@ -2854,6 +2854,16 @@ html, body, #root {
   white-space: nowrap;
 }
 
+.msg-mode {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.8;
+  letter-spacing: 0.01em;
+  margin-left: 4px;
+}
+.msg-mode--local     { color: #FF7A3C; }
+.msg-mode--exploring { color: #60a5fa; }
+
 .msg-vibe {
   font-size: 0.85rem;
   opacity: 0.5;

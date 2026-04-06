@@ -2805,7 +2805,10 @@ export default function App() {
                       </span>
                       <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                       {item.mode && MODE_META[item.mode] && (
-                        <span className={`msg-vibe msg-vibe--${item.mode}`}>{MODE_META[item.mode].emoji}</span>
+                        <span className={`msg-mode msg-mode--${item.mode}`}>{MODE_META[item.mode].emoji} {MODE_META[item.mode].label}</span>
+                      )}
+                      {item.vibe && VIBE_META[item.vibe] && (
+                        <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                       )}
                       {item.contextBadge?.key === 'host' && (
                         <span className="badge-pill badge-pill--host">{item.contextBadge.label}</span>

@@ -293,6 +293,9 @@ const VIBE_EMOJI: Record<string, string> = {
 const MODE_EMOJI: Record<string, string> = {
   local: '🌍', exploring: '🧭',
 };
+const MODE_LABEL: Record<string, string> = {
+  local: 'Local', exploring: 'Exploring',
+};
 
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
@@ -334,9 +337,12 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       </View>
       <Text style={[styles.author, { color }]}>{nickname}</Text>
       {mode && MODE_EMOJI[mode] && (
-        <Text style={[styles.vibeLabel, mode === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
-          {MODE_EMOJI[mode]}
+        <Text style={[styles.modeLabel, mode === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
+          {MODE_EMOJI[mode]} {MODE_LABEL[mode]}
         </Text>
+      )}
+      {vibe && VIBE_EMOJI[vibe] && (
+        <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
       )}
       {contextBadge?.key === 'host' && <BadgePill badge={contextBadge} />}
     </>
@@ -796,9 +802,10 @@ const styles = StyleSheet.create({
 
   // ── .msg-author ───────────────────────────────────────────────────────────
   author:    { fontSize: 13, fontWeight: '700', opacity: 0.9 },
-  vibeLabel: { fontSize: 13, opacity: 0.55 },
-  modeLabelLocal:     { color: '#FF7A3C', opacity: 0.8 },
-  modeLabelExploring: { color: '#60a5fa', opacity: 0.8 },
+  modeLabel:          { fontSize: 11, fontWeight: '600' },
+  vibeLabel:          { fontSize: 13, opacity: 0.55 },
+  modeLabelLocal:     { color: '#FF7A3C', opacity: 0.85 },
+  modeLabelExploring: { color: '#60a5fa', opacity: 0.85 },
 
   // ── .msg-content ──────────────────────────────────────────────────────────
   bubble: {
