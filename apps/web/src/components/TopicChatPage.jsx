@@ -231,9 +231,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
                     {(item.nickname ?? '?')[0].toUpperCase()}
                   </span>
                   <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
-                  {item.mode && MODE_META[item.mode] && (
-                    <span className={`msg-mode msg-mode--${item.mode}`}>{MODE_META[item.mode].emoji} {MODE_META[item.mode].label}</span>
-                  )}
+                  {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {MODE_META[m].label}</span> : null; })()}
                   {item.vibe && VIBE_META[item.vibe] && (
                     <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                   )}

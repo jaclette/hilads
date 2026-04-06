@@ -336,11 +336,11 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
         <Text style={styles.avatarLetter}>{initial}</Text>
       </View>
       <Text style={[styles.author, { color }]}>{nickname}</Text>
-      {mode && MODE_EMOJI[mode] && (
-        <Text style={[styles.modeLabel, mode === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
-          {MODE_EMOJI[mode]} {MODE_LABEL[mode]}
+      {(() => { const m = mode || 'exploring'; return MODE_EMOJI[m] ? (
+        <Text style={[styles.modeLabel, m === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
+          {MODE_EMOJI[m]} {MODE_LABEL[m]}
         </Text>
-      )}
+      ) : null; })()}
       {vibe && VIBE_EMOJI[vibe] && (
         <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
       )}

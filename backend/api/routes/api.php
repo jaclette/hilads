@@ -69,7 +69,7 @@ function enrichBroadcastMessage(array $message, ?array $senderUser): array
 {
     if ($senderUser !== null) {
         $message['primaryBadge'] = UserBadgeService::primaryForUser($senderUser);
-        $message['mode']         = $senderUser['mode'] ?? null;
+        $message['mode']         = $senderUser['mode'] ?? 'exploring';
         $message['vibe']         = $senderUser['vibe'] ?? null;
     } else {
         $message['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
@@ -1466,7 +1466,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     $msg['primaryBadge'] = $b['primaryBadge'];
                     $msg['contextBadge'] = $b['contextBadge'];
                     $msg['vibe']         = $b['vibe'] ?? 'chill';
-                    $msg['mode']         = $b['mode'] ?? null;
+                    $msg['mode']         = $b['mode'] ?? 'exploring';
                 } else {
                     $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge'] = null;
@@ -1765,7 +1765,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                     $msg['primaryBadge'] = $entry['primaryBadge'];
                     $msg['contextBadge'] = $entry['contextBadge'];
                     $msg['vibe']         = $entry['vibe'] ?? 'chill';
-                    $msg['mode']         = $entry['mode'] ?? null;
+                    $msg['mode']         = $entry['mode'] ?? 'exploring';
                 } else {
                     $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge'] = null;
