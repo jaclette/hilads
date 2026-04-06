@@ -2,11 +2,13 @@
 
 ## Vision
 
-Hilads makes cities feel alive in real time.
+Hilads makes cities feel alive through people.
 
-Open the app → see who's around → jump into something happening now.
+**Locals open their city. Explorers experience it.**
 
-Not a chat app. A **live social layer on top of cities**.
+Open the app → detect your city → choose your mode → see who's around → join or host.
+
+Not a chat app. A **live social layer on top of cities**, powered by the people who know them.
 
 ---
 
@@ -15,11 +17,36 @@ Not a chat app. A **live social layer on top of cities**.
 ```
 Open app
   → city auto-detected by geolocation (or picked manually)
-  → see who's online, what events are happening, what people are talking about
-  → chat, join an event, join a topic conversation, or create one
-  → no sign-up required — instant Ghost mode
+  → choose mode: 🌍 Local (you know this city) or 🧭 Exploring (you want to feel it)
+  → Now screen: recurring spots, live events, active topic conversations
+  → jump in — no sign-up required (Ghost mode)
+  → Locals: host your spot, open a recurring hangout, bring people to places you love
+  → Explorers: discover what's happening, meet locals, skip the tourist traps
   → register to unlock profile, DMs, friends, vibes, and notifications
 ```
+
+---
+
+## Modes
+
+Mode is the primary identity signal. It shapes every screen, every CTA, every experience.
+
+### 🌍 Local
+
+- You know the city
+- You are an anchor — you make things happen
+- You host recurring events at your favorite spots
+- Your recurrence creates supply → the city always feels alive
+- CTA language: **"Host your spot"**, **"Open your place"**, **"Start a hangout"**
+
+### 🧭 Exploring
+
+- You're new, visiting, or discovering
+- You experience what locals create
+- You find real-time hangouts, meet locals and other explorers
+- CTA language: **"See what's happening"**, **"Join"**, **"Going"**
+
+Mode is set on first join, stored on the profile, visible as an emoji badge in Here and chats (🌍 / 🧭).
 
 ---
 
@@ -27,14 +54,14 @@ Open app
 
 | Screen | What it does |
 |---|---|
-| **Now** | Mixed live feed: events + topics, filters: All / Events / Topics |
-| **Chat** | City chat — real-time public channel for the current city |
+| **Now** | Mixed live feed: recurring spots + events + topics. Recurring events float to top. Mode-aware empty states and FAB. |
+| **Chat** | City chat — real-time public channel. Mode emoji shown per message. |
 | **Cities** | Switch city, ranked by live activity score |
-| **Here** | Who's online right now in the city |
+| **Here** | Who's online right now. Mode filter chips (🌍 Local / 🧭 Exploring). Mode emoji per user. |
 | **Messages** | DMs + event chats (registered users) |
-| **Me** | Profile, My Events, friends list |
+| **Me** | Profile, mode identity, My Events, friends list |
 
-> **Now** is the primary discovery screen. It replaces the old "Hot" screen and extends it with Topics — user-generated conversations that live alongside events.
+> **Now** is the primary discovery screen. Recurring events are the anchors that keep it alive — sorted first, visually distinct (gold border). Locals are the primary creators of these anchors.
 
 ---
 
@@ -44,7 +71,7 @@ Open app
 
 - Instant entry — no sign-up
 - Persistent identity: 32-char hex `guestId` stored in `localStorage` / `SecureStore`
-- Nickname chosen on first join
+- Nickname + mode chosen on first join
 - Full access to city chat, events, topics, including creating them
 - Cannot access DMs, friends, vibes, or notifications
 
@@ -53,7 +80,7 @@ Ghost identity persists across sessions — the same `guestId` reattaches histor
 ### Registered
 
 - Email + password or Google OAuth
-- Persistent profile: display name, photo, home city, age, bio
+- Persistent profile: display name, photo, home city, age, bio, **mode**
 - Unlocks: DMs, friends, vibe system, push notifications, full profile
 - Seamless upgrade from ghost — history preserved
 - Badge evolves automatically over time
@@ -74,12 +101,19 @@ The central discovery screen. Shows what's happening in the city right now.
 
 ### Sort order
 
-1. Live events (currently ongoing) → sorted by start time
-2. Everything else → sorted by most recent activity (`last_activity_at`)
+1. **Recurring events** (series_id or recurrence_label present) → float to top, gold border
+2. Live events (currently ongoing) → sorted by start time
+3. Everything else → sorted by most recent activity (`last_activity_at`)
 
 ### Filters
 
 All / 🔥 Events / 💬 Topics — filter pills at the top of the screen.
+
+### Empty states (mode-aware)
+
+- **Local + Events filter**: "Host your spot" CTA — create a recurring event
+- **Local + no events**: "Open your place" prompt
+- **Exploring**: "Nothing here yet — check back soon"
 
 ### Feed item DTO
 
@@ -92,12 +126,69 @@ Both the web and native apps consume a single normalized `FeedItem` shape return
 - `location`, `venue` (events only)
 - `participant_count`, `is_participating` (hilads events only)
 - `recurrence_label` (recurring events only)
+- `series_id` (recurring events — presence signals anchor status)
 - `active_now` — true if live event or recently active topic
 - `last_activity_at` — last reply timestamp (topics only)
 - `message_count` (topics only)
 - `category` (topics only)
 
-Public events are returned in a separate `publicEvents` array within the same response (to avoid a second HTTP round-trip on mobile).
+Public events are returned in a separate `publicEvents` array within the same response.
+
+---
+
+## Events
+
+### Recurring events (anchors)
+
+The primary supply mechanism. Locals create these to anchor their city.
+
+- Created by any user — but designed for Locals
+- Recurrence: daily / every N days / weekly (specific weekdays)
+- Badge: "↻ Every day" / "Mon · Wed · Fri" / "Weekends"
+- Only today's occurrence shown in the Now feed; all occurrences in Upcoming
+- Displayed first in the feed — gold card border on web and mobile
+- System-seeded recurring events per city as baseline supply
+
+**Quick presets for Locals:**
+- 🏠 Daily spot — daily 18:00–21:00
+- 🌙 Every evening — daily 20:00–23:00
+- 🎉 Weekends — Sat + Sun
+
+### One-shot events
+
+- Created by any user (ghost or registered)
+- Custom title, optional location hint, start/end time
+- Each has its own real-time chat channel
+- Auto-expire at `expires_at`
+
+### Public events (Ticketmaster)
+
+- Ingested via Ticketmaster API
+- Shown in Now feed (separate "🎫 Public Events" section) and Upcoming feed
+- "Public" badge — no participant tracking, no event chat
+
+### Event participants
+
+- Any user (ghost or registered) can join
+- Participant count shown on event card and event screen
+- Participant list visible inside the event — tappable avatars + names
+- Tapping a registered user opens their profile
+
+### Event ownership
+
+Creator can: replace "Join" with "✏️ Edit event", edit title/location/time, delete the event.
+
+Ownership check: `guest_id = :guest_id OR created_by = :user_id`.
+
+### Language (mode-aware)
+
+| Context | Local | Exploring |
+|---|---|---|
+| Create screen title | "Host your spot" | "Create event" |
+| Submit (recurring) | "Open your spot" | "Create event" |
+| Submit (one-shot) | "Start a hangout" | "Create event" |
+| FAB | Wide pill: "Host your spot" | Circle: "+" |
+| Empty state | "Host your spot →" | Standard empty state |
 
 ---
 
@@ -121,6 +212,7 @@ Topics are distinct from city chat: they are scoped conversations, not a general
 
 - One public real-time chat channel per city
 - Text + photo messages
+- Mode emoji (🌍 / 🧭) shown alongside each message sender
 - Messages shown in reverse-chronological order (newest at bottom)
 - Initial load: 50 most recent messages
 - Lazy loading: scroll up to fetch older messages (`before_id` cursor pagination)
@@ -131,40 +223,14 @@ Topics are distinct from city chat: they are scoped conversations, not a general
 
 ---
 
-## Events
+## Here Screen
 
-### One-shot events
+Who's online right now in the city.
 
-- Created by any user (ghost or registered)
-- Custom title, optional location hint, start/end time
-- Each has its own real-time chat channel
-- Auto-expire at `expires_at`
-
-### Recurring events
-
-- Seeded per city: bars, coffee shops, curated venues
-- Daily/weekly/every-N-days schedule
-- "↻ Every day" / "Mon · Wed · Fri" badge
-- Only today's occurrence shown in the Now feed; all occurrences in Upcoming
-
-### Public events (Ticketmaster)
-
-- Ingested via Ticketmaster API
-- Shown in Now feed (separate "🎫 Public Events" section) and Upcoming feed
-- "Public" badge — no participant tracking, no event chat
-
-### Event participants
-
-- Any user (ghost or registered) can join
-- Participant count shown on event card and event screen
-- Participant list visible inside the event — tappable avatars + names
-- Tapping a registered user opens their profile
-
-### Event ownership
-
-Creator can: replace "Join" with "✏️ Edit event", edit title/location/time, delete the event.
-
-Ownership check: `guest_id = :guest_id OR created_by = :user_id`.
+- Mode filter chips: 🌍 Local / 🧭 Exploring / (all)
+- Mode emoji badge per user in the list
+- Live WS presence — enriched from crew API (registered users' stored mode)
+- Crew member profiles show mode badge
 
 ---
 
@@ -173,6 +239,7 @@ Ownership check: `guest_id = :guest_id OR created_by = :user_id`.
 ### Registered Profile
 
 - Display name + avatar (photo or generated initial)
+- **Mode** (🌍 Local / 🧭 Exploring) — primary identity signal
 - Badge (Fresh / Regular — auto-evolving by account age)
 - Vibe score (average rating) + vibe count + vibes received
 - Friends list
@@ -181,6 +248,7 @@ Ownership check: `guest_id = :guest_id OR created_by = :user_id`.
 ### Ghost Profile
 
 - Generated avatar + nickname
+- Mode chosen on entry (🌍 / 🧭)
 - 👻 Ghost badge
 - City context
 - Client-side only — no API call
@@ -304,32 +372,14 @@ Per-user toggles per type, accessible from the Notifications tab.
 
 The landing page (`/`) is shown to unauthenticated users before they join a city.
 
-- Shows a live preview of the detected city: online count, upcoming events, active topics
-- Preview uses a three-tier fallback: Hilads events today → Ticketmaster public events → upcoming recurring events (next 7 days)
+- Hero: "Feel local. Anywhere."
+- Split section: 🌍 Local vs 🧭 Exploring — two distinct CTAs and value propositions
+- Live preview of the detected city: online count, upcoming events, active topics
 - "Join [City]" CTA drops the user directly into the city chat as a Ghost
 - Sign up / Log in available as secondary actions for returning registered users
 - Mobile store badges shown (apps coming soon)
 
----
-
-## Recent UX Improvements
-
-These changes reflect the current shipped state of the product.
-
-### Profile screen — sticky CTA bar
-- "Save profile" and "Sign out" are now fixed at the bottom of the screen, always visible regardless of scroll position
-- Correct visual hierarchy: Save (full-width orange primary button) + Sign out (small muted text below)
-- Safe area support on native (home indicator inset)
-
-### Logo — platform consistency
-- The Hilads logo SVG uses a unique gradient ID per instance (via React `useId()`)
-- Fixes a rendering bug on mobile web where the responsive layout had two logo instances in the DOM simultaneously, causing the gradient to resolve incorrectly (dark / wrong colors) on the visible instance
-- Logo now renders identically across desktop web, mobile web, and native
-
-### Web camera capture
-- `accept="image/*"` on chat image inputs (was `accept="image/jpeg,image/png,image/webp"`)
-- On mobile browsers this triggers the native OS sheet with camera + library options
-- Desktop behavior unchanged (file picker only)
+Preview uses a three-tier fallback: Hilads events today → Ticketmaster public events → upcoming recurring events (next 7 days).
 
 ---
 
@@ -350,6 +400,18 @@ Hex-id channels of `type='topic'`, parented to a city channel. Each has a `chann
 ### event_series
 
 Stores the recurrence rule for recurring events. Daily cron generates occurrence rows from each series. `ensureTodayOccurrences` runs as a post-response deferred call — never blocks the HTTP response.
+
+Recurring events with a `series_id` are the primary anchors of the Now feed — they are sorted first client-side and rendered with a distinct gold border.
+
+### Mode
+
+`mode: 'local' | 'exploring'` stored on:
+- `users.mode` (registered users — DB)
+- `GuestIdentity.mode` (ghost users — localStorage / AsyncStorage)
+- WS presence snapshot (live, per-session)
+
+Enriched in Here screen: crew API provides stored DB mode; WS presence provides live mode.
+Broadcast in WS joinRoom: 5th argument `mode` passed from client on every join.
 
 ### Feed DTO
 
@@ -426,12 +488,14 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 
 ## What Is In Scope
 
-- City-level public chat
+- City-level public chat (with mode emoji per message)
 - Events (one-shot, recurring, Ticketmaster public)
+- Recurring events as anchors — sorted first, gold border, Local-first creation
+- Mode system (Local / Exploring) — identity, CTA, filter, badge
 - Topics (user-generated city conversations)
-- Ghost mode (instant, no signup)
-- Registered accounts (optional upgrade)
-- Presence and online user tracking
+- Ghost mode (instant, no signup — includes mode selection)
+- Registered accounts (optional upgrade — mode persisted on profile)
+- Presence and online user tracking (with mode in Here screen)
 - Profile, vibes, badges, friends
 - Direct messages (registered only)
 - In-app + push notifications (registered only)
@@ -464,31 +528,51 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 
 ## Next Steps
 
+### Mode — Depth
+
+- Mode picker on profile edit screen (registered users can change mode)
+- Mode shown on landing page city preview (X Locals, Y Explorers online)
+- Mode-aware onboarding nudge: Locals prompted to create a recurring event on first join
+
+### Growth — Local Host Flywheel
+
+- Focus on one city: recruit 5–10 local hosts who open recurring spots
+- Track: host creates recurring event → others discover + join → city feels alive → more explorers
+- Shareable event deeplinks: `hilads.live/event/[id]` → lands on event screen
+- Shareable city deeplinks: `hilads.live/city/paris` → drops user directly into a city
+- Track activation funnel: open → join city → choose mode → first message → create/join event
+
 ### Push Notifications (iOS)
+
 - Validate end-to-end on TestFlight (EAS production build)
 - Verify APNs environment entitlement matches build type
 
 ### Topics — Real-time
+
 - Add WS room join for topic channels to eliminate 5s polling
-- Consistent with how city and event channels already work
 
 ### Performance
+
 - Target < 300ms p95 on all feed endpoints
 - Review DB indexes on participant counts, message feeds, topic queries
-- Now screen skeleton loading state (show placeholders while loading)
+- Now screen skeleton loading state
 
-### UX Consistency (Web vs Mobile) — remaining
-- Audit Now screen, Event screen, DM screen for layout parity
-- Fix input field overlap with bottom tab bar on native
-- Profile screen: done ✓ (sticky CTA, action hierarchy)
-- Logo: done ✓ (consistent across all platforms)
+---
 
-### Growth — First 100 Users in a City
-- Focus on one city (local community, campus, or recurring venue)
-- Ensure Now screen never feels empty (venue events always visible, topics always surfaced)
-- Ghost mode: make the identity feel intentional, not a limitation
-- Shareable deeplinks: `hilads.live/city/paris` → drops user directly into a city
-- Track activation funnel: open → join city → first message → create/join event
+## Product Direction
+
+Hilads is built around **local hosts**.
+
+The supply that makes a city feel alive — recurring events, anchored spots, known hangouts — comes from people who know and love their city. These are **Locals**. Without them the city is empty. With them, Explorers have somewhere to go.
+
+The product flywheel:
+1. A Local opens a recurring spot (bar, café, park, rooftop)
+2. The spot appears in the Now feed, every day, anchored at the top
+3. Explorers find it, join it, meet the Local and each other
+4. The city feels alive — which attracts more Explorers, which motivates more Locals
+5. The city becomes a destination
+
+Every design decision should support this flywheel.
 
 ---
 

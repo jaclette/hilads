@@ -1,23 +1,25 @@
 # Hilads
 
-> Open the app. See who's around. Jump into something happening now.
+> Locals open their city. Explorers experience it.
 
-Hilads is a real-time social app. Join a city, see who's online, chat, discover events, start topic conversations — no sign-up required.
+Hilads makes cities feel alive through people. Open the app, choose your mode — 🌍 Local or 🧭 Exploring — and jump into what's happening right now. No sign-up required.
 
 ---
 
 ## What it does
 
-- **Now screen** — mixed live feed: events + topics, with All / Events / Topics filter
-- **City chat** — public real-time chat, one channel per city, with lazy-loading message history
-- **Events** — create, join, and edit events; one-shot + recurring venue events + public Ticketmaster events; every event has its own real-time chat
+- **Mode system** — 🌍 Local (you host, you make things happen) vs 🧭 Exploring (you discover, you meet locals); mode shapes every CTA, filter, and experience
+- **Now screen** — mixed live feed: recurring spots + events + topics; recurring events float to top (gold border); mode-aware empty states and FAB
+- **City chat** — public real-time chat, one channel per city, mode emoji per message
+- **Events** — create, join, and edit events; one-shot + recurring venue events (Local hosts) + public Ticketmaster events; every event has its own real-time chat
+- **Recurring events as anchors** — Locals create daily/weekly recurring spots; system-seeded baseline per city; quick presets: Daily spot / Every evening / Weekends
 - **Topics** — user-generated conversation threads attached to a city; appear in the Now feed alongside events
 - **Event participants** — see who's going; tappable participant list inside each event
 - **Upcoming events** — browse the full event calendar for a city
 - **Presence** — live online users, join/leave feed
-- **Here screen** — browse online users, view profiles, add friends
-- **Ghost mode** — instant access with a persistent identity, no sign-up required
-- **Profiles** — badge, vibe score, friends list, vibes received
+- **Here screen** — browse online users with mode filter chips (🌍 / 🧭), view profiles, add friends
+- **Ghost mode** — instant access with a persistent identity + mode, no sign-up required
+- **Profiles** — mode identity, badge, vibe score, friends list, vibes received
 - **Vibe system** — leave a 1–5 star vibe + message on any user's profile
 - **Badge system** — 🌱 Fresh / ⭐ Regular — evolves automatically over time
 - **Friends** — add from profiles, view friend lists
@@ -25,7 +27,7 @@ Hilads is a real-time social app. Join a city, see who's online, chat, discover 
 - **Notifications** — in-app bell + web push + native push (Android working; iOS in progress)
 - **Notification preferences** — per-type toggles
 - **Photo sharing** — city chat, event chats, DMs; native: camera + library; web mobile: camera capture + library; web desktop: file picker
-- **Landing page feed preview** — city activity shown before joining: live count, upcoming events, active topics
+- **Landing page** — "Feel local. Anywhere." hero + Local vs Exploring split section + live city preview (count, events, topics)
 - **Analytics** — PostHog cross-platform (web + mobile + backend)
 - **Error monitoring** — Sentry across web, backend, and native
 
@@ -36,13 +38,16 @@ Hilads is a real-time social app. Join a city, see who's online, chat, discover 
 ```
 Open app
   → geolocation resolves your city (or pick manually)
-  → Now screen: live events + active topic conversations
-  → jump in — no account needed (Ghost mode)
+  → choose mode: 🌍 Local or 🧭 Exploring
+  → Now screen: recurring spots + live events + active topic conversations
+  → Locals: host a recurring spot, open your place, bring people to where you love
+  → Explorers: discover what's happening, meet locals, feel the city
+  → no account needed (Ghost mode)
   → register to unlock profile, DMs, friends, vibes, and notifications
 ```
 
-**Ghost session:** instant access, persistent 32-char `guestId`, nickname chosen on entry.
-**Registered account:** full profile, DMs, vibe system, friends, push notifications.
+**Ghost session:** instant access, persistent 32-char `guestId`, nickname + mode chosen on entry.
+**Registered account:** full profile with mode identity, DMs, vibe system, friends, push notifications.
 
 ---
 
@@ -459,6 +464,18 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 
 ## Next Steps
 
+**Mode — Depth**
+- Mode picker on profile edit screen (registered users can change mode)
+- Mode shown on landing page city preview (X Locals, Y Explorers online)
+- Mode-aware onboarding nudge: Locals prompted to create a recurring event on first join
+
+**Growth — Local Host Flywheel**
+- Recruit 5–10 local hosts per city who open recurring spots
+- Track: host creates recurring event → others discover + join → city feels alive → more explorers
+- Shareable event deeplinks: `hilads.live/event/[id]`
+- Shareable city deeplinks: `hilads.live/city/paris`
+- Activation funnel: open → join city → choose mode → first message → create/join event
+
 **iOS Push Notifications**
 - Validate end-to-end on TestFlight (EAS production build)
 - Verify APNs environment entitlement matches build type
@@ -470,18 +487,6 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 - Target < 300ms p95 on all feed endpoints
 - Add DB indexes on participant counts and topic queries
 - Skeleton loading state for Now screen
-
-**UX Consistency — remaining**
-- Audit Now, Event, DM screens for web/mobile layout parity
-- Fix input field overlap with bottom tab bar on native
-- Profile screen done ✓ — sticky CTA, correct action hierarchy
-- Logo done ✓ — consistent rendering across all platforms
-
-**Growth — First 100 Users in a City**
-- Focus on one city (local community, campus, or recurring venue)
-- Now screen always populated: venue events visible even with 0 joins
-- Shareable city deeplinks: `hilads.live/city/paris`
-- Track activation funnel: open → join city → first message → join/create event
 
 ---
 
@@ -496,6 +501,8 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 ## Principles
 
 - Mobile-first, always — no web UI patterns
-- No sign-up friction — Ghost mode is a first-class identity
+- No sign-up friction — Ghost mode is a first-class identity (includes mode selection)
+- Locals are the supply — their recurring spots are what make the city feel alive
+- Mode shapes everything — Local vs Exploring is not a label, it's a role
 - Simplicity over engineering — no framework, no ORM, no premature abstractions
 - One product rule: *does this make the city feel more alive right now?*
