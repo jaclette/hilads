@@ -30,18 +30,21 @@ function isLocationMessage(content: string | undefined): boolean {
   return typeof content === 'string' && content.startsWith('📍');
 }
 
-function parseLocation(content: string): { line1: string; lat?: number; lng?: number; address: string } {
+function parseLocation(content: string): { line1: string; place: string; lat?: number; lng?: number; address: string } {
   const parts = content.split('\n');
   const line1 = parts[0] ?? '';
+  // Extract the place name from "📍 nick is at Place" — the part after " is at "
+  const isAtIdx = line1.indexOf(' is at ');
+  const place = isAtIdx !== -1 ? line1.slice(isAtIdx + 7).trim() : '';
   if (parts.length >= 2) {
     const coordParts = (parts[1] ?? '').split(',');
     const lat = parseFloat(coordParts[0] ?? '');
     const lng = parseFloat(coordParts[1] ?? '');
     if (!isNaN(lat) && !isNaN(lng) && coordParts.length === 2) {
-      return { line1, lat, lng, address: parts.slice(2).join('\n') };
+      return { line1, place, lat, lng, address: parts.slice(2).join('\n') };
     }
   }
-  return { line1, address: parts.slice(1).join('\n') };
+  return { line1, place, address: parts.slice(1).join('\n') };
 }
 
 function openMaps(lat: number, lng: number, label: string) {
@@ -55,21 +58,23 @@ function openMaps(lat: number, lng: number, label: string) {
 }
 
 function LocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
-  const { line1, lat, lng, address } = parseLocation(content);
-  const hasCords = lat !== undefined && lng !== undefined;
+  const { line1, place, lat, lng, address } = parseLocation(content);
+  const hasCoords = lat !== undefined && lng !== undefined;
   const card = (
     <View style={[locStyles.card, isMine ? locStyles.cardMine : locStyles.cardOther]}>
       <Text style={locStyles.icon}>📍</Text>
       <View style={locStyles.body}>
         <Text style={[locStyles.line1, isMine && locStyles.textMine]} numberOfLines={2}>{line1.replace('📍 ', '')}</Text>
         {!!address && <Text style={[locStyles.addr, isMine && locStyles.addrMine]} numberOfLines={2}>{address}</Text>}
-        {hasCords && <Text style={[locStyles.tapHint, isMine && locStyles.tapHintMine]}>Tap to open in maps</Text>}
+        {hasCoords && <Text style={[locStyles.tapHint, isMine && locStyles.tapHintMine]}>Tap to open in maps</Text>}
       </View>
     </View>
   );
-  if (hasCords) {
+  if (hasCoords) {
+    // Use place name or address as the map label — never the social display wording ("nick is at ...")
+    const mapLabel = place || address;
     return (
-      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, line1.replace('📍 ', ''))}>
+      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, mapLabel)}>
         {card}
       </TouchableOpacity>
     );

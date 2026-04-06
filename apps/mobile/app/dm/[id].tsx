@@ -101,18 +101,21 @@ interface RowProps {
   onImagePress: (uri: string) => void;
 }
 
-function parseDmLocation(content: string): { line1: string; lat?: number; lng?: number; addr: string } {
+function parseDmLocation(content: string): { line1: string; place: string; lat?: number; lng?: number; addr: string } {
   const parts = content.split('\n');
   const line1 = parts[0] ?? '';
+  // Extract the place name from "📍 nick is at Place" — the part after " is at "
+  const isAtIdx = line1.indexOf(' is at ');
+  const place = isAtIdx !== -1 ? line1.slice(isAtIdx + 7).trim() : '';
   if (parts.length >= 2) {
     const coordParts = (parts[1] ?? '').split(',');
     const lat = parseFloat(coordParts[0] ?? '');
     const lng = parseFloat(coordParts[1] ?? '');
     if (!isNaN(lat) && !isNaN(lng) && coordParts.length === 2) {
-      return { line1, lat, lng, addr: parts.slice(2).join('\n') };
+      return { line1, place, lat, lng, addr: parts.slice(2).join('\n') };
     }
   }
-  return { line1, addr: parts.slice(1).join('\n') };
+  return { line1, place, addr: parts.slice(1).join('\n') };
 }
 
 function openMaps(lat: number, lng: number, label: string) {
@@ -126,7 +129,7 @@ function openMaps(lat: number, lng: number, label: string) {
 }
 
 function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
-  const { line1, lat, lng, addr } = parseDmLocation(content);
+  const { line1, place, lat, lng, addr } = parseDmLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
   const card = (
     <View style={[dmLocStyles.card, isMine ? dmLocStyles.cardMine : dmLocStyles.cardOther]}>
@@ -141,8 +144,10 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
     </View>
   );
   if (hasCoords) {
+    // Use place name or address as the map label — never the social display wording ("nick is at ...")
+    const mapLabel = place || addr;
     return (
-      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, line1.replace('📍 ', ''))}>
+      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, mapLabel)}>
         {card}
       </TouchableOpacity>
     );
