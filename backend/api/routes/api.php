@@ -59,6 +59,27 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     }
 }
 
+// ── Enrich broadcast message with sender identity ─────────────────────────────
+// Attaches primaryBadge, contextBadge, mode, and vibe to a message array before
+// it is broadcast over WS, so real-time recipients get the same context as
+// messages loaded from history.
+// contextBadge is always null here (ambassador check costs an extra query;
+// the rare ambassador user still gets it on history reload).
+function enrichBroadcastMessage(array $message, ?array $senderUser): array
+{
+    if ($senderUser !== null) {
+        $message['primaryBadge'] = UserBadgeService::primaryForUser($senderUser);
+        $message['mode']         = $senderUser['mode'] ?? null;
+        $message['vibe']         = $senderUser['vibe'] ?? null;
+    } else {
+        $message['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+        $message['mode']         = null;
+        $message['vibe']         = null;
+    }
+    $message['contextBadge'] = null;
+    return $message;
+}
+
 // ── Broadcast helpers ─────────────────────────────────────────────────────────
 // Fire-and-forget: post a payload to the WS server's internal broadcast endpoint.
 // Shared by new-event and new-topic broadcasts.
@@ -1445,10 +1466,12 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     $msg['primaryBadge'] = $b['primaryBadge'];
                     $msg['contextBadge'] = $b['contextBadge'];
                     $msg['vibe']         = $b['vibe'] ?? 'chill';
+                    $msg['mode']         = $b['mode'] ?? null;
                 } else {
                     $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge'] = null;
                     $msg['vibe']         = null;
+                    $msg['mode']         = null;
                 }
             }
         }
@@ -1464,10 +1487,12 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                 $u['primaryBadge'] = $b['primaryBadge'];
                 $u['contextBadge'] = $b['contextBadge'];
                 $u['vibe']         = $b['vibe'] ?? 'chill';
+                $u['mode']         = $b['mode'] ?? null;
             } else {
                 $u['primaryBadge'] = UserBadgeService::primaryForUser(['created_at' => $u['userCreatedAt']]);
                 $u['contextBadge'] = null;
                 $u['vibe']         = $u['userVibe'] ?? 'chill';
+                $u['mode']         = null;
             }
             unset($u['userCreatedAt'], $u['userHomeCity'], $u['userVibe']);
         }
@@ -1740,10 +1765,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                     $msg['primaryBadge'] = $entry['primaryBadge'];
                     $msg['contextBadge'] = $entry['contextBadge'];
                     $msg['vibe']         = $entry['vibe'] ?? 'chill';
+                    $msg['mode']         = $entry['mode'] ?? null;
                 } else {
                     $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge'] = null;
                     $msg['vibe']         = null;
+                    $msg['mode']         = null;
                 }
             }
         }
@@ -2967,6 +2994,7 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
 
     error_log("[event-msg] message saved id={$message['id']} eventId={$eventId}");
 
+    $message = enrichBroadcastMessage($message, $senderUser ?? null);
     broadcastMessageToWs($eventId, $message);
 
     // Notify registered event participants — non-fatal: a notification failure must never
@@ -3197,6 +3225,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         $message = MessageRepository::add($channelId, $guestId, $nickname, $content, $msgSenderUserId);
     }
 
+    $message = enrichBroadcastMessage($message, $msgSender ?? null);
     broadcastMessageToWs($channelId, $message);
 
     // Notify registered users currently online in this city — non-fatal side effect.
@@ -3351,6 +3380,7 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
         $message = ConversationRepository::addMessage($conversationId, $user['id'], $content);
     }
 
+    $message = enrichBroadcastMessage($message, $user);
     broadcastConversationMessageToWs($conversationId, $message);
 
     // Sending a message also implicitly reads the conversation for the sender
@@ -3854,6 +3884,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
         }
     }
 
+    $message = enrichBroadcastMessage($message, $senderUser ?? null);
     broadcastMessageToWs($topicId, $message);
 
     // Auto-subscribe registered sender + notify other subscribers.

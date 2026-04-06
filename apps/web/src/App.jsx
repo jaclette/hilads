@@ -2804,13 +2804,13 @@ export default function App() {
                         {(item.nickname ?? '?')[0].toUpperCase()}
                       </span>
                       <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
+                      {item.mode && MODE_META[item.mode] && (
+                        <span className={`msg-vibe msg-vibe--${item.mode}`}>{MODE_META[item.mode].emoji}</span>
+                      )}
                       {item.primaryBadge && <span className={`badge-pill badge-pill--${item.primaryBadge.key}`}>{item.primaryBadge.label}</span>}
                       {item.contextBadge && <span className={`badge-pill badge-pill--${item.contextBadge.key}`}>{item.contextBadge.label}</span>}
                       {item.vibe && VIBE_META[item.vibe] && (
                         <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
-                      )}
-                      {item.mode && MODE_META[item.mode] && (
-                        <span className={`msg-vibe msg-vibe--${item.mode}`}>{MODE_META[item.mode].emoji}</span>
                       )}
                     </div>
                   )}

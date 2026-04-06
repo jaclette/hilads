@@ -138,7 +138,7 @@ final class UserBadgeService
 
         // One query: user profile data + ambassador role (LEFT JOIN, no N+1).
         $stmt = Database::pdo()->prepare(
-            "SELECT u.id, u.created_at, u.home_city, u.vibe,
+            "SELECT u.id, u.created_at, u.home_city, u.vibe, u.mode,
                     (ucr.user_id IS NOT NULL) AS is_ambassador
              FROM users u
              LEFT JOIN user_city_roles ucr
@@ -163,6 +163,7 @@ final class UserBadgeService
                 'primaryBadge' => $primary,
                 'contextBadge' => $context,
                 'vibe'         => $row['vibe'] ?? 'chill',
+                'mode'         => $row['mode'] ?? null,
                 'is_ambassador'=> $isAmbassador,
             ];
         }
