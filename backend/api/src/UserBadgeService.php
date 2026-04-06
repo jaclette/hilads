@@ -11,8 +11,7 @@ declare(strict_types=1);
  *   regular  😎 Crew  — registered user, account ≥ 60 days old
  *
  * Context badge   (at most one, city-specific):
- *   host   👑 Local Legend — ambassador role for this city  (priority)
- *   local  ⭐ Local        — home_city matches the current city
+ *   host   👑 Legend — ambassador role for this city
  *   null              — no context badge
  */
 final class UserBadgeService
@@ -46,10 +45,7 @@ final class UserBadgeService
             ");
             $stmt->execute([$user['id'], $channelKey]);
             if ($stmt->fetchColumn()) {
-                $context = ['key' => 'host', 'label' => '👑 Local Legend'];
-            } elseif (!empty($user['home_city'])
-                && strcasecmp(trim($user['home_city']), trim($cityName)) === 0) {
-                $context = ['key' => 'local', 'label' => '⭐ Local'];
+                $context = ['key' => 'host', 'label' => '👑 Legend'];
             }
         }
 
@@ -105,10 +101,7 @@ final class UserBadgeService
 
             if ($u !== null) {
                 if (isset($ambassadors[$userId])) {
-                    $context = ['key' => 'host', 'label' => '👑 Local Legend'];
-                } elseif (!empty($u['home_city'])
-                    && strcasecmp(trim($u['home_city']), trim($cityName)) === 0) {
-                    $context = ['key' => 'local', 'label' => '⭐ Local'];
+                    $context = ['key' => 'host', 'label' => '👑 Legend'];
                 }
             }
 
@@ -161,10 +154,7 @@ final class UserBadgeService
             $isAmbassador  = (bool) $row['is_ambassador'];
 
             if ($isAmbassador) {
-                $context = ['key' => 'host', 'label' => '👑 Local Legend'];
-            } elseif (!empty($row['home_city'])
-                && strcasecmp(trim($row['home_city']), trim($cityName)) === 0) {
-                $context = ['key' => 'local', 'label' => '⭐ Local'];
+                $context = ['key' => 'host', 'label' => '👑 Legend'];
             } else {
                 $context = null;
             }

@@ -121,15 +121,14 @@ export interface EventChatPreview {
 // user data: public profile, friends, city crew, event participants.
 // Note: /auth/me (own profile) still uses the legacy User shape below.
 
-export type BadgeKey = 'ghost' | 'fresh' | 'regular' | 'local' | 'host';
+export type BadgeKey = 'ghost' | 'fresh' | 'regular' | 'host';
 
 /** Badge metadata for rendering — badge labels/colors are a UI concern. */
 export const BADGE_META: Record<BadgeKey, { label: string; color: string; bg: string; border: string }> = {
   ghost:   { label: '👻 Ghost', color: '#888',    bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.10)' },
   fresh:   { label: '✨ Fresh', color: '#4ade80', bg: 'rgba(74,222,128,0.12)',  border: 'rgba(74,222,128,0.22)'  },
-  regular: { label: '😎 Crew',         color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.22)'  },
-  local:   { label: '⭐ Local',         color: '#34d399', bg: 'rgba(52,211,153,0.12)',  border: 'rgba(52,211,153,0.22)'  },
-  host:    { label: '👑 Local Legend',  color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.28)'  },
+  regular: { label: '😎 Crew',   color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.22)'  },
+  host:    { label: '👑 Legend', color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.28)'  },
 };
 
 export interface UserDTO {
@@ -195,7 +194,7 @@ export interface Message {
   eventId?: string;               // for type === 'event' synthetic feed items
   topicId?: string;               // for type === 'topic' synthetic feed items
   primaryBadge?: Badge;           // identity badge (ghost/fresh/crew)
-  contextBadge?: Badge | null;    // city-specific badge (host/local)
+  contextBadge?: Badge | null;    // city-specific badge (host = Legend)
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
   mode?: string;                  // user's current mode (local/exploring)
   // Optimistic send state — absent on confirmed server messages

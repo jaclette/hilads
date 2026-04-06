@@ -377,9 +377,12 @@ export default function MeScreen() {
             {/* Mode pill */}
             {selectedMode && MODES.find(m => m.key === selectedMode) && (() => {
               const m = MODES.find(m => m.key === selectedMode)!;
+              const isLocal = m.key === 'local';
               return (
-                <View style={styles.modePillHero}>
-                  <Text style={styles.modePillHeroText}>{m.emoji} {m.label}</Text>
+                <View style={[styles.modePillHero, isLocal ? styles.modePillHeroLocal : styles.modePillHeroExploring]}>
+                  <Text style={[styles.modePillHeroText, isLocal ? styles.modePillHeroTextLocal : styles.modePillHeroTextExploring]}>
+                    {m.emoji} {m.label}
+                  </Text>
                 </View>
               );
             })()}
@@ -910,14 +913,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   7,
     borderRadius:      Radius.full,
-    backgroundColor:   'rgba(96,165,250,0.14)',
     borderWidth:       1.5,
-    borderColor:       'rgba(96,165,250,0.35)',
+    /* default neutral — overridden by Local/Exploring variants */
+    backgroundColor:   'rgba(255,255,255,0.06)',
+    borderColor:       'rgba(255,255,255,0.12)',
+  },
+  modePillHeroLocal: {
+    backgroundColor: 'rgba(255,122,60,0.14)',
+    borderColor:     'rgba(255,122,60,0.38)',
+  },
+  modePillHeroExploring: {
+    backgroundColor: 'rgba(96,165,250,0.14)',
+    borderColor:     'rgba(96,165,250,0.35)',
   },
   modePillHeroText: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      '#60a5fa',
+    color:      Colors.muted, // overridden below
+  },
+  modePillHeroTextLocal: {
+    color: '#FF7A3C',
+  },
+  modePillHeroTextExploring: {
+    color: '#60a5fa',
   },
   guestModeCard: {
     marginHorizontal: Spacing.md,

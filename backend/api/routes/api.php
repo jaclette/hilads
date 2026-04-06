@@ -1913,7 +1913,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/ambassadors', function (array 
 // Query params:
 //   page  (int, default 1)
 //   limit (int, default 10, max 50)
-//   badge (fresh|regular|host|local — optional)
+//   badge (fresh|regular|host — optional)
 //   vibe  (party|coffee|etc — optional)
 $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -1986,8 +1986,6 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
         )";
         $binds[':city_key'] = $channelKey;
     }
-    // badge=local: all members are local — no extra condition needed
-
     $where = implode(' AND ', $conditions);
 
     // Total count

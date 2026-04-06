@@ -333,13 +333,15 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
         <Text style={styles.avatarLetter}>{initial}</Text>
       </View>
       <Text style={[styles.author, { color }]}>{nickname}</Text>
+      {mode && MODE_EMOJI[mode] && (
+        <Text style={[styles.vibeLabel, mode === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
+          {MODE_EMOJI[mode]}
+        </Text>
+      )}
       {primaryBadge && <BadgePill badge={primaryBadge} />}
       {contextBadge && <BadgePill badge={contextBadge} />}
       {vibe && VIBE_EMOJI[vibe] && (
         <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
-      )}
-      {mode && MODE_EMOJI[mode] && (
-        <Text style={styles.vibeLabel}>{MODE_EMOJI[mode]}</Text>
       )}
     </>
   );
@@ -799,6 +801,8 @@ const styles = StyleSheet.create({
   // ── .msg-author ───────────────────────────────────────────────────────────
   author:    { fontSize: 13, fontWeight: '700', opacity: 0.9 },
   vibeLabel: { fontSize: 13, opacity: 0.55 },
+  modeLabelLocal:     { color: '#FF7A3C', opacity: 0.8 },
+  modeLabelExploring: { color: '#60a5fa', opacity: 0.8 },
 
   // ── .msg-content ──────────────────────────────────────────────────────────
   bubble: {

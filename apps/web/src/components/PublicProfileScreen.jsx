@@ -20,11 +20,10 @@ function avatarColors(name) {
 // ── Badge microcopy — short, playful, 1-line ──────────────────────────────────
 
 const BADGE_MICROCOPY = {
-  ghost: 'Just browsing 👀',
-  fresh: 'Just landed 👶',
+  ghost:   'Just browsing 👀',
+  fresh:   'Just landed 👶',
   regular: 'Shows up often',
-  local: 'Knows the city',
-  host:  'Makes it happen 🔥',
+  host:    'Makes it happen 🔥',
 }
 
 // ── Vibe display ──────────────────────────────────────────────────────────────

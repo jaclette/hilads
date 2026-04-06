@@ -165,7 +165,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                   <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
                 )}
                 {mode && MODES.find(m => m.key === mode) && (
-                  <span className="profile-hero-mode">
+                  <span className={`profile-hero-mode profile-hero-mode--${mode}`}>
                     {MODES.find(m => m.key === mode).emoji} {MODES.find(m => m.key === mode).label}
                   </span>
                 )}

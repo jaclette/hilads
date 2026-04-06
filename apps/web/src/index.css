@@ -1126,10 +1126,23 @@ html, body, #root {
   gap: 4px;
   padding: 3px 10px;
   border-radius: 20px;
-  background: rgba(96,165,250,0.12);
-  border: 1px solid rgba(96,165,250,0.28);
   font-size: 0.75rem;
   font-weight: 700;
+  /* default — neutral */
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--muted);
+}
+
+.profile-hero-mode--local {
+  background: rgba(255,122,60,0.12);
+  border-color: rgba(255,122,60,0.3);
+  color: #FF7A3C;
+}
+
+.profile-hero-mode--exploring {
+  background: rgba(96,165,250,0.12);
+  border-color: rgba(96,165,250,0.28);
   color: #60a5fa;
 }
 
@@ -2847,6 +2860,9 @@ html, body, #root {
   margin-left: 2px;
 }
 
+.msg-vibe--local    { opacity: 0.65; }
+.msg-vibe--exploring { opacity: 0.65; }
+
 .people-drawer-name {
   font-size: 1.04rem;
   font-weight: 700;
@@ -2939,6 +2955,23 @@ html, body, #root {
   border-color: color-mix(in srgb, var(--accent) 40%, transparent);
   color: var(--accent);
 }
+
+/* Mode-specific active colors for Here filter chips */
+.here-chip--on-local {
+  background: rgba(255,122,60,0.14);
+  border-color: rgba(255,122,60,0.38);
+  color: #FF7A3C;
+}
+
+.here-chip--on-exploring {
+  background: rgba(96,165,250,0.14);
+  border-color: rgba(96,165,250,0.38);
+  color: #60a5fa;
+}
+
+/* Mode-specific color for vibe-badge (Here user rows) */
+.vibe-badge--local    { color: #FF7A3C !important; opacity: 1; }
+.vibe-badge--exploring { color: #60a5fa !important; opacity: 1; }
 
 /* ── Here section headers ─────────────────────────────── */
 

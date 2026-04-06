@@ -23,7 +23,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-const CONTEXT_BADGE_KEYS = new Set(['host', 'local']);
+const CONTEXT_BADGE_KEYS = new Set(['host']);
 
 // ── Badge pill ────────────────────────────────────────────────────────────────
 // Accepts a badge key string; derives label and colors from shared BADGE_META.
@@ -86,9 +86,8 @@ function avatarColor(str: string): string {
 const MODE_FILTERS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }));
 const BADGE_FILTERS = [
   { key: 'fresh',   label: '✨ Fresh'  },
-  { key: 'regular', label: '😎 Crew'         },
-  { key: 'host',    label: '👑 Local Legend' },
-  { key: 'local',   label: '⭐ Local'        },
+  { key: 'regular', label: '😎 Crew'   },
+  { key: 'host',    label: '👑 Legend' },
 ];
 const VIBE_FILTERS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }));
 
@@ -112,16 +111,19 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
         <View style={styles.badgeRow}>
           {isMe ? (
             <View style={styles.liveNowBadge}><Text style={styles.liveNowText}>LIVE NOW</Text></View>
-          ) : user.primaryBadge ? (
-            <BadgePill badgeKey={user.primaryBadge.key} />
-          ) : (
-            <BadgePill badgeKey={user.isRegistered ? 'regular' : 'ghost'} />
-          )}
-          {!isMe && user.contextBadge && <BadgePill badgeKey={user.contextBadge.key} />}
-          {!isMe && <VibePill vibe={user.vibe} />}
-          {!isMe && user.mode && MODE_META[user.mode] && (
-            <Text style={{ fontSize: 14 }}>{MODE_META[user.mode].emoji}</Text>
-          )}
+          ) : <>
+            {user.mode && MODE_META[user.mode] && (
+              <Text style={[{ fontSize: 14 }, user.mode === 'local' ? styles.modeEmojiLocal : styles.modeEmojiExploring]}>
+                {MODE_META[user.mode].emoji}
+              </Text>
+            )}
+            {user.primaryBadge
+              ? <BadgePill badgeKey={user.primaryBadge.key} />
+              : <BadgePill badgeKey={user.isRegistered ? 'regular' : 'ghost'} />
+            }
+            {user.contextBadge && <BadgePill badgeKey={user.contextBadge.key} />}
+            <VibePill vibe={user.vibe} />
+          </>}
         </View>
       </View>
       {!isMe && user.userId && (
@@ -150,11 +152,13 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
       <View style={styles.rowInfo}>
         <Text style={styles.nickname}>{member.displayName}</Text>
         <View style={styles.badgeRow}>
+          {member.mode && MODE_META[member.mode] && (
+            <Text style={[{ fontSize: 14 }, member.mode === 'local' ? styles.modeEmojiLocal : styles.modeEmojiExploring]}>
+              {MODE_META[member.mode].emoji}
+            </Text>
+          )}
           {member.badges.map(k => <BadgePill key={k} badgeKey={k} />)}
           <VibePill vibe={member.vibe} />
-          {member.mode && MODE_META[member.mode] && (
-            <Text style={{ fontSize: 14 }}>{MODE_META[member.mode].emoji}</Text>
-          )}
         </View>
       </View>
     </TouchableOpacity>
@@ -238,8 +242,7 @@ export default function HereScreen() {
     if (filterBadge) {
       const isMe = u.sessionId === mySessionId;
       if (!isMe) {
-        if (filterBadge === 'host')  return u.contextBadge?.key === 'host';
-        if (filterBadge === 'local') return u.contextBadge?.key === 'local';
+        if (filterBadge === 'host') return u.contextBadge?.key === 'host';
         if (u.primaryBadge?.key !== filterBadge) return false;
       }
     }
@@ -315,11 +318,11 @@ export default function HereScreen() {
           {MODE_FILTERS.map(f => (
             <TouchableOpacity
               key={f.key}
-              style={[styles.chip, filterMode === f.key && styles.chipOn]}
+              style={[styles.chip, filterMode === f.key && (f.key === 'local' ? styles.chipOnLocal : styles.chipOnExploring)]}
               onPress={() => setFilterMode(v => v === f.key ? null : f.key)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.chipText, filterMode === f.key && styles.chipTextOn]}>{f.label}</Text>
+              <Text style={[styles.chipText, filterMode === f.key && (f.key === 'local' ? styles.chipTextOnLocal : styles.chipTextOnExploring)]}>{f.label}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -360,9 +363,9 @@ export default function HereScreen() {
           <>
             <View style={[styles.sectionHeader, { marginTop: Spacing.xl, flexDirection: 'column', alignItems: 'flex-start', gap: 2 }]}>
               <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: Colors.text }]}>
-                👑 Local Legends
+                👑 Hilads Legends
               </Text>
-              <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>People who know this city</Text>
+              <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>They make the city happen</Text>
             </View>
             {legends.map(m => {
               const initials = (m.displayName ?? '?').slice(0, 2).toUpperCase();
@@ -485,8 +488,12 @@ const styles = StyleSheet.create({
     borderColor: Colors.accent,
     backgroundColor: 'rgba(194,74,56,0.12)',
   },
-  chipText:   { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
-  chipTextOn: { color: Colors.accent },
+  chipOnLocal:     { borderColor: '#FF7A3C', backgroundColor: 'rgba(255,122,60,0.12)' },
+  chipOnExploring: { borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.12)' },
+  chipText:           { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
+  chipTextOn:         { color: Colors.accent },
+  chipTextOnLocal:     { color: '#FF7A3C' },
+  chipTextOnExploring: { color: '#60a5fa' },
 
   // ── Scroll content ────────────────────────────────────────────────────────
   scrollContent: { padding: Spacing.md, gap: Spacing.sm, paddingBottom: 40 },
@@ -577,4 +584,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent, borderRadius: Radius.full,
   },
   emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
+
+  // ── Mode emoji colors ─────────────────────────────────────────────────────
+  modeEmojiLocal:     { color: '#FF7A3C', opacity: 0.85 },
+  modeEmojiExploring: { color: '#60a5fa', opacity: 0.85 },
 });

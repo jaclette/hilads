@@ -2810,7 +2810,7 @@ export default function App() {
                         <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                       )}
                       {item.mode && MODE_META[item.mode] && (
-                        <span className="msg-vibe">{MODE_META[item.mode].emoji}</span>
+                        <span className={`msg-vibe msg-vibe--${item.mode}`}>{MODE_META[item.mode].emoji}</span>
                       )}
                     </div>
                   )}
@@ -3327,17 +3327,16 @@ export default function App() {
       {showPeopleDrawer && !viewingProfile && (() => {
         // ── helpers scoped to this render ──────────────────────────────────────
         const BADGE_FILTER_OPTIONS = [
-          { key: 'fresh',   label: '✨ Fresh'   },
-          { key: 'regular', label: '😎 Crew'         },
-          { key: 'host',    label: '👑 Local Legend' },
-          { key: 'local',   label: '⭐ Local'        },
+          { key: 'fresh',   label: '✨ Fresh'  },
+          { key: 'regular', label: '😎 Crew'   },
+          { key: 'host',    label: '👑 Legend' },
         ]
         const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
         const MODE_FILTER_OPTIONS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
 
         // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
         // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from it.
-        const CONTEXT_BADGE_KEYS_WEB = new Set(['host', 'local'])
+        const CONTEXT_BADGE_KEYS_WEB = new Set(['host'])
         const crewLookupMap = new Map(crewMembers.map(m => [m.id, m]))
         const enrichedOnline = onlineUsers.map(u => {
           if (!u.userId || u.isMe) return u
@@ -3358,8 +3357,7 @@ export default function App() {
         const filteredOnline = enrichedOnline.filter(u => {
           if (filterBadge && !u.isMe) {
             const bk = u.primaryBadge?.key
-            if (filterBadge === 'host')    return u.contextBadge?.key === 'host'
-            if (filterBadge === 'local')   return u.contextBadge?.key === 'local'
+            if (filterBadge === 'host') return u.contextBadge?.key === 'host'
             if (bk !== filterBadge) return false
           }
           if (filterVibe && !u.isMe && u.vibe !== filterVibe) return false
@@ -3390,18 +3388,21 @@ export default function App() {
                 <div className="people-drawer-meta">
                   {user.isMe
                     ? <span className="people-member-badge people-member-badge--you">live now</span>
-                    : user.primaryBadge
-                      ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
-                      : user.isRegistered
-                        ? <span className="badge-pill badge-pill--regular">Regular</span>
-                        : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
+                    : <>
+                      {user.mode && MODE_META[user.mode] && (
+                        <span className={`vibe-badge vibe-badge--${user.mode}`}>{MODE_META[user.mode].emoji}</span>
+                      )}
+                      {user.primaryBadge
+                        ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
+                        : user.isRegistered
+                          ? <span className="badge-pill badge-pill--regular">Regular</span>
+                          : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
+                      }
+                      {user.vibe && VIBE_META[user.vibe] && (
+                        <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
+                      )}
+                    </>
                   }
-                  {!user.isMe && user.vibe && VIBE_META[user.vibe] && (
-                    <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
-                  )}
-                  {!user.isMe && user.mode && MODE_META[user.mode] && (
-                    <span className="vibe-badge">{MODE_META[user.mode].emoji}</span>
-                  )}
                 </div>
               </div>
               {!user.isMe && user.isRegistered && (
@@ -3439,11 +3440,11 @@ export default function App() {
               <div className="people-drawer-content">
                 <span className="people-drawer-name">{m.displayName}</span>
                 <div className="people-drawer-meta">
+                  {m.mode && MODE_META[m.mode] && <span className={`vibe-badge vibe-badge--${m.mode}`}>{MODE_META[m.mode].emoji}</span>}
                   {(m.badges ?? []).map(k => (
                     <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
                   ))}
                   {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {VIBE_META[m.vibe].label}</span>}
-                  {m.mode && MODE_META[m.mode] && <span className="vibe-badge">{MODE_META[m.mode].emoji}</span>}
                 </div>
               </div>
             </div>
@@ -3486,7 +3487,7 @@ export default function App() {
                 <div className="here-filter-chips">
                   {MODE_FILTER_OPTIONS.map(opt => (
                     <button key={opt.key}
-                      className={`here-chip${filterMode === opt.key ? ' here-chip--on' : ''}`}
+                      className={`here-chip${filterMode === opt.key ? ` here-chip--on-${opt.key}` : ''}`}
                       onClick={() => setFilterMode(v => v === opt.key ? null : opt.key)}
                     >{opt.label}</button>
                   ))}
@@ -3510,8 +3511,8 @@ export default function App() {
               {legends.length > 0 && (
                 <>
                   <div className="here-section-header here-section-header--legends" style={{ marginTop: 20 }}>
-                    👑 Local Legends
-                    <span className="here-legends-hook">People who know this city</span>
+                    👑 Hilads Legends
+                    <span className="here-legends-hook">They make the city happen</span>
                   </div>
                   {legends.map(m => {
                     const [c1, c2] = avatarColors(m.displayName)

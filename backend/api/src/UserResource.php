@@ -12,7 +12,7 @@ declare(strict_types=1);
  *   displayName  string        Human-readable name.
  *   avatarUrl    string|null   R2 profile photo URL, or null.
  *   badges       string[]      Badge keys in display order: primary first, then context.
- *                              Known keys: ghost · fresh · regular · local · host
+ *                              Known keys: ghost · fresh · regular · host
  *   vibe         string|null   User-chosen vibe key, or null for guests.
  *   isFriend     bool|null     Viewer-relative. Omit (null) when not applicable.
  *   isOnline     bool|null     Presence-relative. Omit (null) when not applicable.
@@ -51,11 +51,11 @@ final class UserResource
 
     /**
      * Build a DTO for a registered user in a city context.
-     * Resolves the context badge (host / local) from the pre-fetched ambassadors map.
+     * Resolves the context badge (host) from the pre-fetched ambassadors map.
      *
      * @param array  $user        Full user DB row — must include home_city.
      * @param array  $ambassadors Map of userId => true for city ambassadors (from UserBadgeService::ambassadorsForCity).
-     * @param string $cityName    City display name used for the 'local' badge comparison.
+     * @param string $cityName    City display name (kept for signature compat).
      * @param array  $opts        Optional flags: isFriend, isOnline.
      */
     public static function fromUserInCity(
@@ -69,11 +69,6 @@ final class UserResource
 
         if (isset($ambassadors[$user['id']])) {
             $badges[] = 'host';
-        } elseif (
-            !empty($user['home_city'])
-            && strcasecmp(trim($user['home_city']), trim($cityName)) === 0
-        ) {
-            $badges[] = 'local';
         }
 
         return self::fromUser($user, $badges, $opts);
