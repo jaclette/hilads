@@ -34,7 +34,7 @@ const PLACEHOLDERS = [
   'Say hi 👋',
   "Who's out tonight?",
   'Any plans? 👀',
-  "What's the vibe right now?",
+  "What's happening here?",
   'Anyone up for something? 🍻',
   'Drop a message…',
 ];
@@ -68,7 +68,6 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   const [androidCamera, setAndroidCamera] = useState(false);
   const [showEmoji,     setShowEmoji]   = useState(false);
   const [showShareSheet,   setShowShareSheet]   = useState(false);
-  const [spotLoading,      setSpotLoading]      = useState(false);
   const [locationCoords,   setLocationCoords]   = useState<{ lat: number; lng: number } | null>(null);
   const inputRef        = useRef<TextInput>(null);
 
@@ -247,43 +246,39 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
 
   async function handleMySpot() {
     setShowShareSheet(false);
-    setSpotLoading(true);
-    try {
-      // Check existing permission — avoids a redundant dialog if already granted,
-      // and prevents a second concurrent requestForeground call from conflicting
-      // with the one in useAppBoot (which also requests foreground permission).
-      const existing = await Location.getForegroundPermissionsAsync();
-      let granted = existing.status === 'granted';
 
-      if (!granted) {
-        if (!existing.canAskAgain) {
-          Alert.alert(
-            'Location access required',
-            'Please enable location in Settings → Hilads → Location.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Open Settings', onPress: () => Linking.openSettings() },
-            ],
-          );
-          return;
-        }
-        // Show the system dialog — wait for the actual user response (no timeout).
-        const result = await Location.requestForegroundPermissionsAsync();
-        granted = result.status === 'granted';
-        if (!granted) {
-          Alert.alert('Location needed', 'Allow location access to share your spot.');
-          return;
-        }
+    // Permission check (fast if already granted on boot; shows dialog only on first use)
+    const existing = await Location.getForegroundPermissionsAsync();
+    let granted = existing.status === 'granted';
+    if (!granted) {
+      if (!existing.canAskAgain) {
+        Alert.alert(
+          'Location access required',
+          'Please enable location in Settings → Hilads → Location.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ],
+        );
+        return;
       }
-
-      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      setLocationCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-    } catch (err) {
-      console.error('[spot]', err);
-      Alert.alert('Location unavailable', 'Could not get your location. Please try again.');
-    } finally {
-      setSpotLoading(false);
+      const result = await Location.requestForegroundPermissionsAsync();
+      granted = result.status === 'granted';
+      if (!granted) {
+        Alert.alert('Location needed', 'Allow location access to share your spot.');
+        return;
+      }
     }
+
+    // Use last known position (instant cache lookup) to open the picker immediately.
+    // LocationPicker will refine to accurate GPS internally via injectJavaScript.
+    let lat = 0, lng = 0;
+    try {
+      const last = await Location.getLastKnownPositionAsync();
+      if (last) { lat = last.coords.latitude; lng = last.coords.longitude; }
+    } catch {}
+
+    setLocationCoords({ lat, lng });
   }
 
   function handleLocationConfirm({ place, address, lat, lng }: { place: string; address: string; lat: number; lng: number }) {
@@ -298,14 +293,14 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   }
 
   function handleShare() {
-    if (sending || uploading || spotLoading) return;
+    if (sending || uploading) return;
     setShowShareSheet(true);
   }
 
   // Expose handleShare to parent so prompt CTAs can trigger the share sheet
   if (pickImageRef) pickImageRef.current = handleShare;
 
-  const busy       = sending || uploading || spotLoading;
+  const busy       = sending || uploading;
   const canSend    = !!text.trim() && !busy;
 
   return (
@@ -343,7 +338,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       onSnap={() => { setShowShareSheet(false); setTimeout(handlePickImage, 0); }}
       onSpot={handleMySpot}
       onClose={() => setShowShareSheet(false)}
-      spotLoading={spotLoading}
+      spotLoading={false}
     />
 
     {/* ── Emoji panel — appears above composer when emoji mode is active ── */}
@@ -372,7 +367,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
             end={{ x: 1, y: 1 }}
             style={styles.vibeBtn}
           >
-            {uploading || spotLoading ? (
+            {uploading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text style={styles.vibeBtnIcon}>✨</Text>

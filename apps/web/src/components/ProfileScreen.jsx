@@ -16,6 +16,11 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
+const MODES = [
+  { key: 'local',     emoji: '🌍', label: 'Local'     },
+  { key: 'exploring', emoji: '🧭', label: 'Exploring' },
+]
+
 // Must match AuthService allowed list on the backend
 const VIBES = [
   { key: 'party',       emoji: '🔥', label: 'Party'       },
@@ -40,6 +45,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [homeCity, setHomeCity]   = useState(account.home_city ?? '')
   const [age, setAge]             = useState(account.age != null ? String(account.age) : '')
   const [vibe, setVibe]           = useState(account.vibe ?? 'chill')
+  const [mode, setMode]           = useState(account.mode ?? null)
   const [interests, setInterests] = useState(new Set(account.interests ?? []))
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving]       = useState(false)
@@ -95,6 +101,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         home_city:         homeCity.trim() || null,
         interests:         [...interests],
         vibe,
+        mode,
         profile_photo_url: photoUrl,
       }
       if (account.isAmbassador) {
@@ -214,6 +221,22 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               max={100}
               placeholder="Your age"
             />
+          </div>
+
+          <div className="modal-field">
+            <label className="modal-label">Your vibe</label>
+            <div className="vibe-grid">
+              {MODES.map(m => (
+                <button
+                  key={m.key}
+                  type="button"
+                  className={`vibe-chip${mode === m.key ? ' vibe-chip--on' : ''}`}
+                  onClick={() => setMode(mode === m.key ? null : m.key)}
+                >
+                  {m.emoji} {m.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="modal-field">

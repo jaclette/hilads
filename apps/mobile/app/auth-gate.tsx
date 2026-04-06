@@ -19,17 +19,17 @@ type GateReason = 'view_profile' | 'create_event' | 'send_dm';
 const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: string }> = {
   view_profile: {
     emoji:    '👻',
-    title:    "Ghosts can vibe, but profiles are for members.",
+    title:    "Ghosts can browse, but profiles are for members.",
     subtitle: "Create an account to unlock profiles, connect with people, and build your city crew.",
   },
   create_event: {
     emoji:    '🎉',
-    title:    "Ghosts can vibe, but can't host.",
+    title:    "Ghosts can browse, but can't host.",
     subtitle: "Create an account to throw your own event and put your city on the map.",
   },
   send_dm: {
     emoji:    '💬',
-    title:    "Ghosts can vibe, but can't slide into DMs.",
+    title:    "Ghosts can browse, but can't DM.",
     subtitle: "Create an account to message people directly and build your city crew.",
   },
 };

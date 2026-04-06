@@ -43,6 +43,7 @@ final class UserResource
             'avatarUrl'   => $user['profile_photo_url'] ?? null,
             'badges'      => $badges,
             'vibe'        => $user['vibe'] ?? null,
+            'mode'        => $user['mode'] ?? null,
             'isFriend'    => $opts['isFriend'] ?? null,
             'isOnline'    => $opts['isOnline'] ?? null,
         ];

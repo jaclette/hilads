@@ -445,6 +445,15 @@ class AuthService
             $fields['vibe'] = $vibe;
         }
 
+        if (array_key_exists('mode', $body)) {
+            $allowed = ['local', 'exploring'];
+            $mode    = $body['mode'];
+            if ($mode !== null && !in_array($mode, $allowed, true)) {
+                Response::json(['error' => 'Invalid mode'], 422);
+            }
+            $fields['mode'] = $mode;
+        }
+
         // ── Ambassador picks — editable only by ambassadors, but sanitised for all ──
         // The UI only shows these fields to ambassadors, so non-ambassador writes are harmless.
         $pickFields = [
@@ -480,6 +489,7 @@ class AuthService
             'home_city'         => $user['home_city'],
             'interests'         => json_decode($user['interests'] ?? '[]', true),
             'vibe'              => $user['vibe'] ?? 'chill',
+            'mode'              => $user['mode'] ?? null,
             'primaryBadge'      => UserBadgeService::primaryForUser($user),
         ];
     }

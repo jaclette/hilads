@@ -29,6 +29,11 @@ const BADGE_MICROCOPY = {
 
 // ── Vibe display ──────────────────────────────────────────────────────────────
 
+const MODE_META = {
+  local:     { emoji: '🌍', label: 'Local'     },
+  exploring: { emoji: '🧭', label: 'Exploring' },
+}
+
 const VIBE_META = {
   party:       { emoji: '🔥', label: 'Party' },
   board_games: { emoji: '🎲', label: 'Board Games' },
@@ -179,6 +184,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const name     = user?.displayName ?? '?'
   const [c1, c2] = avatarColors(name)
   const vibe     = user?.vibe && VIBE_META[user.vibe] ? user.vibe : null
+  const mode     = user?.mode && MODE_META[user.mode] ? user.mode : null
   const now      = Date.now() / 1000
 
   return (
@@ -235,6 +241,17 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
             {/* ── Detail rows ── */}
             <div className="pub-profile-details">
+              {mode && (
+                <div className="pub-profile-detail-row">
+                  <span className="pub-profile-detail-label">Here as</span>
+                  <span className="pub-profile-detail-value">
+                    {MODE_META[mode].emoji}{' '}
+                    {mode === 'local'
+                      ? `Local${user.homeCity ? ` in ${user.homeCity}` : ''}`
+                      : `Exploring${cityName ? ` ${cityName}` : ''}`}
+                  </span>
+                </div>
+              )}
               {vibe && (
                 <div className="pub-profile-detail-row">
                   <span className="pub-profile-detail-label">Vibe</span>
@@ -377,7 +394,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               <div className="pub-profile-vibe-cta">
                 {!showVibeForm ? (
                   <button className="pub-profile-vibe-btn" onClick={() => setShowVibeForm(true)}>
-                    {myVibe ? `✏️ Update your vibe (${myVibe.rating}★)` : '⭐ Leave a vibe'}
+                    {myVibe ? `✏️ Update your note (${myVibe.rating}★)` : '⭐ Leave a note'}
                   </button>
                 ) : (
                   <div className="pub-profile-vibe-form">
@@ -397,7 +414,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                     <div className="pub-profile-vibe-form-actions">
                       <button className="pub-profile-vibe-cancel" onClick={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? ''); }}>Cancel</button>
                       <button className="pub-profile-vibe-submit" onClick={handleSubmitVibe} disabled={vibeBusy || vibeRating === 0}>
-                        {vibeBusy ? 'Sending…' : 'Send vibe ✨'}
+                        {vibeBusy ? 'Sending…' : 'Send note ✨'}
                       </button>
                     </div>
                   </div>
@@ -409,7 +426,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             <div className="pub-profile-vibes">
               {vibes.length > 0 ? (
                 <>
-                  <p className="pub-profile-section-label">Vibes · {vibeCount}</p>
+                  <p className="pub-profile-section-label">Notes · {vibeCount}</p>
                   {vibes.map(v => {
                     const [vc1, vc2] = avatarColors(v.authorName || '?')
                     return (
@@ -433,8 +450,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 </>
               ) : vibeCount === 0 && (
                 <div className="pub-profile-vibes-empty">
-                  <p>No vibes yet</p>
-                  <p>Be the first to leave a vibe ✨</p>
+                  <p>No notes yet</p>
+                  <p>Be the first to leave a note ✨</p>
                 </div>
               )}
             </div>

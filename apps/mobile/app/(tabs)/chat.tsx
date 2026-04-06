@@ -117,8 +117,8 @@ const AMBIENT_MESSAGES = [
   '🌙 Night owls are online',
   '👀 Someone just arrived',
   '🔥 New face in the city',
-  '🎉 The vibe is alive right now',
-  '🗺️ Explorers checking in',
+  '🎉 People are here right now',
+  '🌆 Locals checking in',
 ];
 
 // ── Screen ────────────────────────────────────────────────────────────────────
@@ -643,7 +643,7 @@ export default function ChatTab() {
           <View style={styles.iconGlow}>
             <HiladsIcon size={46} />
           </View>
-          <Text style={styles.headerTagline} numberOfLines={1}>Stop scrolling. Join the vibe.</Text>
+          <Text style={styles.headerTagline} numberOfLines={1}>Feel local. Anywhere.</Text>
         </View>
         <View style={styles.heroCity}>
           <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>

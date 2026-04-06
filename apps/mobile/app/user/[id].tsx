@@ -76,6 +76,13 @@ function avatarBg(name: string): string {
   return AVATAR_BG[hash % AVATAR_BG.length];
 }
 
+// ── Mode meta ─────────────────────────────────────────────────────────────────
+
+const MODE_META: Record<string, { emoji: string; label: string }> = {
+  local:     { emoji: '🌍', label: 'Local'     },
+  exploring: { emoji: '🧭', label: 'Exploring' },
+};
+
 // ── Vibe meta — mirrors web PublicProfileScreen.jsx ───────────────────────────
 
 const VIBE_META: Record<string, { emoji: string; label: string; caption: string }> = {
@@ -354,6 +361,21 @@ export default function PublicProfileScreen() {
             </View>
           ) : null}
 
+          {/* ── Mode card ── */}
+          {user.mode && MODE_META[user.mode] ? (
+            <View style={styles.vibeCard}>
+              <Text style={styles.vibeEmoji}>{MODE_META[user.mode].emoji}</Text>
+              <View style={styles.vibeText}>
+                <Text style={styles.vibeLabel}>{MODE_META[user.mode].label}</Text>
+                <Text style={styles.vibeCaption}>
+                  {user.mode === 'local'
+                    ? `Local in ${user.homeCity ?? city?.name ?? 'this city'}`
+                    : `Exploring ${city?.name ?? 'this city'}`}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
           {/* ── Details: home city + age ── */}
           {(user.homeCity || user.age != null) && (
             <View style={styles.detailsCard}>
@@ -496,7 +518,7 @@ export default function PublicProfileScreen() {
                   activeOpacity={0.8}
                 >
                   <Text style={styles.vibeCtaBtnText}>
-                    {myVibe ? `✏️ Update your vibe (${myVibe.rating}★)` : '⭐ Leave a vibe'}
+                    {myVibe ? `✏️ Update your note (${myVibe.rating}★)` : '⭐ Leave a note'}
                   </Text>
                 </TouchableOpacity>
               ) : (
@@ -532,7 +554,7 @@ export default function PublicProfileScreen() {
                       activeOpacity={0.8}
                       disabled={vibeBusy || vibeRating === 0}
                     >
-                      <Text style={styles.vibeSubmitBtnText}>{vibeBusy ? 'Sending…' : 'Send vibe ✨'}</Text>
+                      <Text style={styles.vibeSubmitBtnText}>{vibeBusy ? 'Sending…' : 'Send note ✨'}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -544,7 +566,7 @@ export default function PublicProfileScreen() {
           {(vibeCount > 0 || true) && (
             <View style={styles.section}>
               <Text style={styles.sectionLabel}>
-                {vibeCount > 0 ? `Vibes · ${vibeCount}` : 'Vibes'}
+                {vibeCount > 0 ? `Notes · ${vibeCount}` : 'Notes'}
               </Text>
               {vibes.length > 0 ? (
                 <View style={styles.vibeList}>
@@ -569,8 +591,8 @@ export default function PublicProfileScreen() {
                 </View>
               ) : (
                 <View style={styles.vibeEmpty}>
-                  <Text style={styles.vibeEmptyTitle}>No vibes yet</Text>
-                  <Text style={styles.vibeEmptySubtitle}>Be the first to leave a vibe ✨</Text>
+                  <Text style={styles.vibeEmptyTitle}>No notes yet</Text>
+                  <Text style={styles.vibeEmptySubtitle}>Be the first to leave a note ✨</Text>
                 </View>
               )}
             </View>

@@ -237,8 +237,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
-              <span className="notif-pref-name">Vibes ✨</span>
-              <span className="notif-pref-desc">When someone leaves a vibe on your profile</span>
+              <span className="notif-pref-name">Notes ✨</span>
+              <span className="notif-pref-desc">When someone leaves a note on your profile</span>
             </div>
             <Toggle
               checked={prefs?.vibe_received_push ?? true}

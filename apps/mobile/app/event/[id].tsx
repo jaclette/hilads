@@ -43,11 +43,11 @@ function avatarColor(name: string): string {
 
 const AMBIENT = [
   '🔥 People are arriving',
-  '🎉 The vibe is alive right now',
+  '🎉 People are here right now',
   '💬 The city is waking up',
   '👀 Someone just arrived',
   '🔥 New face in the city',
-  '🗺️ Explorers checking in',
+  '🌆 Locals checking in',
   '🍻 Who\'s out tonight?',
 ];
 

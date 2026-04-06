@@ -47,7 +47,7 @@ export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Pr
           >
             <Text style={styles.actionIcon}>📸</Text>
             <View style={styles.actionBody}>
-              <Text style={styles.actionLabel}>Snap the vibe</Text>
+              <Text style={styles.actionLabel}>Snap a photo</Text>
               <Text style={styles.actionDesc}>Take or upload a photo</Text>
             </View>
           </TouchableOpacity>
@@ -64,7 +64,7 @@ export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Pr
               : <Text style={styles.actionIcon}>📍</Text>
             }
             <View style={styles.actionBody}>
-              <Text style={styles.actionLabel}>Drop where you at</Text>
+              <Text style={styles.actionLabel}>Drop your spot</Text>
               <Text style={styles.actionDesc}>
                 {spotLoading ? 'Getting your location…' : 'Share your current spot'}
               </Text>

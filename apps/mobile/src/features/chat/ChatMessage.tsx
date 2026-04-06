@@ -142,7 +142,7 @@ function avatarColors(name: string): [string, string] {
 
 const JOIN_TEMPLATES: ((n: string) => string)[] = [
   (n) => `👋 ${n} just landed`,
-  (n) => `🔥 ${n} joined the vibe`,
+  (n) => `🔥 ${n} joined them`,
   (n) => `🍻 ${n} is here`,
   (n) => `👀 ${n} just showed up`,
   (n) => `✨ ${n} arrived`,

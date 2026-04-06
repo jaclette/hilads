@@ -39,8 +39,8 @@ const HOW_IT_WORKS = [
   {
     icon: '🔥',
     num: '03',
-    title: 'Join the vibe',
-    desc: 'Discover events, meet locals, make something happen.',
+    title: 'Join them',
+    desc: 'See who's around and jump in.',
   },
 ]
 
@@ -254,11 +254,11 @@ export default function LandingPage({
         </div>
 
         <h1 className="lp-hero-h1">
-          Stop scrolling<br />Join the vibe
+          Feel local.<br />Anywhere.
         </h1>
 
         <p className="lp-hero-sub">
-          See who's around and what's happening in your city right now.
+          See where people are. Join them.
         </p>
 
         <div ref={heroJoinRef} className="lp-hero-join">

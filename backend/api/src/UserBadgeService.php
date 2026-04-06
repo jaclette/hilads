@@ -8,11 +8,11 @@ declare(strict_types=1);
  * Primary badge   (always one):
  *   ghost  👻 Ghost  — anonymous guest session (no registered account)
  *   fresh  ✨ Fresh  — registered user, account < 60 days old
- *   regular  Regular  — registered user, account ≥ 60 days old
+ *   regular  😎 Crew  — registered user, account ≥ 60 days old
  *
  * Context badge   (at most one, city-specific):
- *   host   ⭐ Host   — ambassador role for this city  (priority)
- *   local  🌍 Local  — home_city matches the current city
+ *   host   👑 Local Legend — ambassador role for this city  (priority)
+ *   local  ⭐ Local        — home_city matches the current city
  *   null              — no context badge
  */
 final class UserBadgeService
@@ -46,10 +46,10 @@ final class UserBadgeService
             ");
             $stmt->execute([$user['id'], $channelKey]);
             if ($stmt->fetchColumn()) {
-                $context = ['key' => 'host', 'label' => '⭐ Host'];
+                $context = ['key' => 'host', 'label' => '👑 Local Legend'];
             } elseif (!empty($user['home_city'])
                 && strcasecmp(trim($user['home_city']), trim($cityName)) === 0) {
-                $context = ['key' => 'local', 'label' => '🌍 Local'];
+                $context = ['key' => 'local', 'label' => '⭐ Local'];
             }
         }
 
@@ -105,10 +105,10 @@ final class UserBadgeService
 
             if ($u !== null) {
                 if (isset($ambassadors[$userId])) {
-                    $context = ['key' => 'host', 'label' => '⭐ Host'];
+                    $context = ['key' => 'host', 'label' => '👑 Local Legend'];
                 } elseif (!empty($u['home_city'])
                     && strcasecmp(trim($u['home_city']), trim($cityName)) === 0) {
-                    $context = ['key' => 'local', 'label' => '🌍 Local'];
+                    $context = ['key' => 'local', 'label' => '⭐ Local'];
                 }
             }
 
@@ -161,10 +161,10 @@ final class UserBadgeService
             $isAmbassador  = (bool) $row['is_ambassador'];
 
             if ($isAmbassador) {
-                $context = ['key' => 'host', 'label' => '⭐ Host'];
+                $context = ['key' => 'host', 'label' => '👑 Local Legend'];
             } elseif (!empty($row['home_city'])
                 && strcasecmp(trim($row['home_city']), trim($cityName)) === 0) {
-                $context = ['key' => 'local', 'label' => '🌍 Local'];
+                $context = ['key' => 'local', 'label' => '⭐ Local'];
             } else {
                 $context = null;
             }
@@ -227,6 +227,6 @@ final class UserBadgeService
             return ['key' => 'fresh', 'label' => '✨ Fresh'];
         }
 
-        return ['key' => 'regular', 'label' => 'Regular'];
+        return ['key' => 'regular', 'label' => '😎 Crew'];
     }
 }

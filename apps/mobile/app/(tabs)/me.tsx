@@ -33,6 +33,12 @@ import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
 import type { HiladsEvent, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 
+// ── Mode — matches backend AuthService allowed list ──────────────────────────
+const MODES = [
+  { key: 'local',     emoji: '🌍', label: 'Local'     },
+  { key: 'exploring', emoji: '🧭', label: 'Exploring' },
+] as const;
+
 // ── Vibes — matches backend AuthService allowed list ─────────────────────────
 const VIBES = [
   { key: 'party',       emoji: '🔥', label: 'Party'       },
@@ -109,6 +115,7 @@ export default function MeScreen() {
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
   const [selectedVibe,       setSelectedVibe]         = useState<string>(account?.vibe ?? 'chill');
+  const [selectedMode,       setSelectedMode]         = useState<string | null>(account?.mode ?? null);
   const [selectedInterests,  setSelectedInterests]   = useState<string[]>(account?.interests ?? []);
   const [pendingPhotoUri,    setPendingPhotoUri]      = useState<string | null>(null);
   const [photoUploading,     setPhotoUploading]      = useState(false);
@@ -138,8 +145,9 @@ export default function MeScreen() {
     setHomeCity(account?.home_city ?? '');
     setAgeStr(account?.age != null ? String(account.age) : '');
     setSelectedVibe(account?.vibe ?? 'chill');
+    setSelectedMode(account?.mode ?? null);
     setSelectedInterests(account?.interests ?? []);
-  }, [account?.display_name, account?.home_city, account?.age, account?.vibe, account?.interests]);
+  }, [account?.display_name, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
   // Version tap easter egg
   const tapCount = useRef(0);
@@ -256,6 +264,7 @@ export default function MeScreen() {
         home_city:         homeCity.trim() || null,
         interests:         selectedInterests,
         vibe:              selectedVibe,
+        mode:              selectedMode,
         profile_photo_url: photoUrl,
         ...(birthYear !== undefined ? { birth_year: birthYear } : {}),
       } as unknown as Parameters<typeof updateProfile>[0];
@@ -392,7 +401,7 @@ export default function MeScreen() {
             <View style={styles.upgradeCard}>
               <Text style={styles.upgradeTitle}>Make it yours</Text>
               <Text style={styles.upgradeSub}>
-                Save your name. Keep your vibe. Stay connected across sessions.
+                Save your name. Stay in the loop.
               </Text>
               <TouchableOpacity style={styles.upgradePrimary} onPress={() => router.push('/sign-up')} activeOpacity={0.85}>
                 <Text style={styles.upgradePrimaryText}>Create account</Text>
@@ -463,6 +472,28 @@ export default function MeScreen() {
                 keyboardType="number-pad"
                 maxLength={3}
               />
+            </View>
+
+            {/* YOUR VIBE (mode) */}
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>YOUR VIBE</Text>
+              <View style={styles.chipsWrap}>
+                {MODES.map(m => {
+                  const active = selectedMode === m.key;
+                  return (
+                    <TouchableOpacity
+                      key={m.key}
+                      style={[styles.vibeChip, active && styles.vibeChipActive]}
+                      onPress={() => setSelectedMode(active ? null : m.key)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={[styles.vibeChipText, active && styles.vibeChipTextActive]}>
+                        {m.emoji} {m.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
 
             {/* MY VIBE */}

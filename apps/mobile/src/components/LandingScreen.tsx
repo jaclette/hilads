@@ -326,7 +326,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   </Text>
 
                   {/* ob-tagline */}
-                  <Text style={styles.tagline}>Stop scrolling. Join the vibe.</Text>
+                  <Text style={styles.tagline}>Feel local. Anywhere.</Text>
 
                   {/* ob-activity-block: people + events together */}
                   <View style={styles.activityBlock}>

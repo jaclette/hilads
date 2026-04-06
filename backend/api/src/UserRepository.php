@@ -79,7 +79,7 @@ class UserRepository
     public static function update(string $id, array $fields): array
     {
         $allowed = [
-            'display_name', 'birth_year', 'profile_photo_url', 'home_city', 'interests', 'vibe',
+            'display_name', 'birth_year', 'profile_photo_url', 'home_city', 'interests', 'vibe', 'mode',
             'ambassador_restaurant', 'ambassador_spot', 'ambassador_tip', 'ambassador_story',
         ];
         $sets    = [];

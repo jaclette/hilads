@@ -17,6 +17,7 @@ import {
   View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Modal,
 } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
+import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
@@ -98,14 +99,47 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
   const [geocoding, setGeocoding] = useState(true);
   const currentCoords             = useRef({ lat: initialLat, lng: initialLng });
 
+  // WebView ref for JS injection
+  const webViewRef   = useRef<WebView>(null);
+  const webViewReady = useRef(false);
+  const pendingPan   = useRef<{ lat: number; lng: number } | null>(null);
+
   // html is stable for the lifetime of this open — rebuild only when initial coords change
   const html = useRef(buildMapHtml(initialLat, initialLng));
   useEffect(() => {
     if (visible) {
       html.current = buildMapHtml(initialLat, initialLng);
+      webViewReady.current = false;
+      pendingPan.current   = null;
       setGeocoding(true);
     }
   }, [visible, initialLat, initialLng]);
+
+  // After picker opens: refine to accurate GPS without blocking the UI.
+  // The caller already provided last-known position as initialLat/Lng so the map
+  // renders immediately. Here we silently upgrade to precise GPS and pan the map.
+  useEffect(() => {
+    if (!visible) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+        if (cancelled) return;
+        const { latitude: lat, longitude: lng } = pos.coords;
+        // Only pan if the accurate fix differs meaningfully from the initial center
+        const d = Math.abs(lat - currentCoords.current.lat) + Math.abs(lng - currentCoords.current.lng);
+        if (d < 0.0001) return; // already close enough
+        currentCoords.current = { lat, lng };
+        const js = `map.setView([${lat},${lng}],16);true;`;
+        if (webViewReady.current) {
+          webViewRef.current?.injectJavaScript(js);
+        } else {
+          pendingPan.current = { lat, lng };
+        }
+      } catch { /* stay at last-known position */ }
+    })();
+    return () => { cancelled = true; };
+  }, [visible]);
 
   const geocode = useCallback(async (lat: number, lng: number) => {
     setGeocoding(true);
@@ -125,7 +159,18 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
   function handleWebViewMessage(event: WebViewMessageEvent) {
     try {
       const msg = JSON.parse(event.nativeEvent.data);
-      if (msg.type === 'ready' || msg.type === 'move') {
+      if (msg.type === 'ready') {
+        webViewReady.current = true;
+        // Apply any pending pan from accurate GPS that arrived before WebView was ready
+        if (pendingPan.current) {
+          const { lat, lng } = pendingPan.current;
+          pendingPan.current = null;
+          webViewRef.current?.injectJavaScript(`map.setView([${lat},${lng}],16);true;`);
+          // moveend will fire → geocode. Skip geocoding the initial center.
+          return;
+        }
+        geocode(msg.lat, msg.lng);
+      } else if (msg.type === 'move') {
         geocode(msg.lat, msg.lng);
       }
     } catch { /* ignore */ }
@@ -153,6 +198,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
         {/* ── Map ── */}
         <View style={styles.mapWrap}>
           <WebView
+            ref={webViewRef}
             style={styles.webview}
             source={{ html: html.current }}
             onMessage={handleWebViewMessage}

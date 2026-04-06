@@ -307,7 +307,6 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const [showEmoji,     setShowEmoji]     = useState(false);
   const [previewUri,    setPreviewUri]    = useState<string | null>(null);
   const [showShareSheet,  setShowShareSheet]  = useState(false);
-  const [spotLoading,     setSpotLoading]     = useState(false);
   const [locationCoords,  setLocationCoords]  = useState<{ lat: number; lng: number } | null>(null);
   const lastSel   = useRef({ start: 0, end: 0 });
   const vibScale  = useRef(new Animated.Value(1)).current;
@@ -321,7 +320,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
   const color   = avatarColor(displayName);
   const initial = displayName.slice(0, 1).toUpperCase();
-  const busy    = sending || uploading || spotLoading;
+  const busy    = sending || uploading;
 
   function handleSend() {
     const t = text.trim();
@@ -409,39 +408,39 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
   async function handleMySpot() {
     setShowShareSheet(false);
-    setSpotLoading(true);
-    try {
-      const existing = await Location.getForegroundPermissionsAsync();
-      let granted = existing.status === 'granted';
 
-      if (!granted) {
-        if (!existing.canAskAgain) {
-          Alert.alert(
-            'Location access required',
-            'Please enable location in Settings → Hilads → Location.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Open Settings', onPress: () => Linking.openSettings() },
-            ],
-          );
-          return;
-        }
-        const result = await Location.requestForegroundPermissionsAsync();
-        granted = result.status === 'granted';
-        if (!granted) {
-          Alert.alert('Location needed', 'Allow location access to share your spot.');
-          return;
-        }
+    // Permission check (fast if already granted on boot; shows dialog only on first use)
+    const existing = await Location.getForegroundPermissionsAsync();
+    let granted = existing.status === 'granted';
+    if (!granted) {
+      if (!existing.canAskAgain) {
+        Alert.alert(
+          'Location access required',
+          'Please enable location in Settings → Hilads → Location.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ],
+        );
+        return;
       }
-
-      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      setLocationCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-    } catch (err) {
-      console.error('[spot/dm]', err);
-      Alert.alert('Location unavailable', 'Could not get your location. Please try again.');
-    } finally {
-      setSpotLoading(false);
+      const result = await Location.requestForegroundPermissionsAsync();
+      granted = result.status === 'granted';
+      if (!granted) {
+        Alert.alert('Location needed', 'Allow location access to share your spot.');
+        return;
+      }
     }
+
+    // Use last known position (instant cache lookup) to open the picker immediately.
+    // LocationPicker will refine to accurate GPS internally via injectJavaScript.
+    let lat = 0, lng = 0;
+    try {
+      const last = await Location.getLastKnownPositionAsync();
+      if (last) { lat = last.coords.latitude; lng = last.coords.longitude; }
+    } catch {}
+
+    setLocationCoords({ lat, lng });
   }
 
   function handleLocationConfirm({ place, address, lat, lng }: { place: string; address: string; lat: number; lng: number }) {
@@ -551,7 +550,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         onSnap={() => { setShowShareSheet(false); setTimeout(handlePickImage, 0); }}
         onSpot={handleMySpot}
         onClose={() => setShowShareSheet(false)}
-        spotLoading={spotLoading}
+        spotLoading={false}
       />
 
       {/* ── Composer ── */}
@@ -569,7 +568,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
               end={{ x: 1, y: 1 }}
               style={styles.vibeBtn}
             >
-              {uploading || spotLoading
+              {uploading
                 ? <ActivityIndicator size="small" color="#fff" />
                 : <Text style={styles.vibeBtnIcon}>✨</Text>
               }

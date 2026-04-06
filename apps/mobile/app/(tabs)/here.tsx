@@ -80,9 +80,9 @@ function avatarColor(str: string): string {
 
 const BADGE_FILTERS = [
   { key: 'fresh',   label: '✨ Fresh'  },
-  { key: 'regular', label: 'Regular'   },
-  { key: 'host',    label: '⭐ Host'   },
-  { key: 'local',   label: '🌍 Local'  },
+  { key: 'regular', label: '😎 Crew'         },
+  { key: 'host',    label: '👑 Local Legend' },
+  { key: 'local',   label: '⭐ Local'        },
 ];
 const VIBE_FILTERS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }));
 
@@ -332,7 +332,7 @@ export default function HereScreen() {
           <>
             <View style={[styles.sectionHeader, { marginTop: Spacing.xl, flexDirection: 'column', alignItems: 'flex-start', gap: 2 }]}>
               <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: Colors.text }]}>
-                👑 Local legends
+                👑 Local Legends
               </Text>
               <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>People who know this city</Text>
             </View>

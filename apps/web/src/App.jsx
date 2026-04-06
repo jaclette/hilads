@@ -68,13 +68,13 @@ const GUEST_GATE_COPY = {
   create_event: {
     pageTitle: 'Create event',
     emoji:     '🎉',
-    title:     "Ghosts can vibe, but can't host.",
+    title:     "Ghosts can browse, but can't host.",
     sub:       'Create an account to throw your own event and put your city on the map.',
   },
   view_profile: {
     pageTitle: 'Profile',
     emoji:     '👻',
-    title:     "Ghosts can vibe, but profiles are for members.",
+    title:     "Ghosts can browse, but profiles are for members.",
     sub:       'Create an account to unlock profiles, connect with people, and build your city crew.',
   },
 }
@@ -271,7 +271,7 @@ const PLACEHOLDERS = [
   () => `Say hi 👋`,
   () => `Who's out tonight?`,
   () => `Any plans? 👀`,
-  () => `What's the vibe right now?`,
+  () => `What's happening here?`,
   () => `Anyone up for something? 🍻`,
   () => `Drop a message…`,
 ]
@@ -283,8 +283,8 @@ const AMBIENT_MESSAGES = [
   () => `🌙 Night owls are online`,
   () => `👀 Someone just arrived`,
   () => `🔥 New face in the city`,
-  () => `🎉 The vibe is alive right now`,
-  () => `🗺️ Explorers checking in`,
+  () => `🎉 People are here right now`,
+  () => `🌆 Locals checking in`,
 ]
 
 function randomActivity() {
@@ -365,7 +365,7 @@ function formatMsgDateLabel(ts) {
 
 const JOIN_TEMPLATES = [
   (n) => `👋 ${n} just landed`,
-  (n) => `🔥 ${n} joined the vibe`,
+  (n) => `🔥 ${n} joined them`,
   (n) => `🍻 ${n} is here`,
   (n) => `👀 ${n} just showed up`,
   (n) => `✨ ${n} arrived`,
@@ -1226,7 +1226,7 @@ export default function App() {
       setFeed(prev => {
         if (prev.filter(m => m.type === 'message').length > 0) return prev
         promptsShownRef.current.add('explore')
-        return [...prev, { type: 'prompt', subtype: 'explore', id: `prompt-explore-${Date.now()}`, text: '🔥 See what\'s happening now', cta: 'Explore' }]
+        return [...prev, { type: 'prompt', subtype: 'explore', id: `prompt-explore-${Date.now()}`, text: '🔥 See what\'s happening now', cta: 'See what\'s happening' }]
       })
     }, 15000)
 
@@ -2379,7 +2379,7 @@ export default function App() {
       <div className={className}>
         <div className="header-hero-brand">
           <Logo variant="icon" size="lg" />
-          <span className="header-tagline">Stop scrolling Join the vibe</span>
+          <span className="header-tagline">Feel local. Anywhere.</span>
         </div>
         <div className="header-hero-city">
           <span className="header-hero-name">
@@ -3296,9 +3296,9 @@ export default function App() {
         // ── helpers scoped to this render ──────────────────────────────────────
         const BADGE_FILTER_OPTIONS = [
           { key: 'fresh',   label: '✨ Fresh'   },
-          { key: 'regular', label: 'Regular'    },
-          { key: 'host',    label: '⭐ Host'    },
-          { key: 'local',   label: '🌍 Local'   },
+          { key: 'regular', label: '😎 Crew'         },
+          { key: 'host',    label: '👑 Local Legend' },
+          { key: 'local',   label: '⭐ Local'        },
         ]
         const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
 
@@ -3460,7 +3460,7 @@ export default function App() {
               {legends.length > 0 && (
                 <>
                   <div className="here-section-header here-section-header--legends" style={{ marginTop: 20 }}>
-                    👑 Local legends
+                    👑 Local Legends
                     <span className="here-legends-hook">People who know this city</span>
                   </div>
                   {legends.map(m => {
@@ -3686,7 +3686,7 @@ export default function App() {
               </div>
               <div className="me-card">
                 <div className="me-upgrade">
-                  <p className="me-upgrade-hint">Save your name. Keep your vibe.</p>
+                  <p className="me-upgrade-hint">Save your name. Stay local.</p>
                   <button className="me-upgrade-btn" onClick={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>
                     Create account
                   </button>

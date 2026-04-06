@@ -16,7 +16,7 @@ export default function ShareActionSheet({ onSnap, onSpot, onClose, spotLoading 
           <button className="share-sheet-action" onClick={onSnap} disabled={spotLoading}>
             <span className="share-sheet-action-icon">📸</span>
             <div className="share-sheet-action-body">
-              <span className="share-sheet-action-label">Snap the vibe</span>
+              <span className="share-sheet-action-label">Snap a photo</span>
               <span className="share-sheet-action-desc">Take or upload a photo</span>
             </div>
           </button>
@@ -25,7 +25,7 @@ export default function ShareActionSheet({ onSnap, onSpot, onClose, spotLoading 
               {spotLoading ? <span className="share-sheet-spinner" /> : '📍'}
             </span>
             <div className="share-sheet-action-body">
-              <span className="share-sheet-action-label">Drop where you at</span>
+              <span className="share-sheet-action-label">Drop your spot</span>
               <span className="share-sheet-action-desc">
                 {spotLoading ? 'Getting your location…' : 'Share your current spot'}
               </span>
