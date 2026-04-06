@@ -40,7 +40,7 @@ const HOW_IT_WORKS = [
     icon: '🔥',
     num: '03',
     title: 'Join them',
-    desc: 'See who's around and jump in.',
+    desc: "See who's around and jump in.",
   },
 ]
 
