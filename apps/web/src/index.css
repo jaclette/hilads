@@ -6695,7 +6695,155 @@ img.dm-header-avatar {
   margin: 0;
 }
 
-/* ── 2. HOW IT WORKS ──────────────────────────────────────────────────────── */
+/* ── 2. SPLIT — Local vs Exploring ───────────────────────────────────────── */
+
+.lp-split-section {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+@media (min-width: 640px) {
+  .lp-split-section {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.lp-split-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 48px 32px 40px;
+}
+
+.lp-split-card--local {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,122,60,0.09) 0%, transparent 65%),
+    rgba(255,122,60,0.025);
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+.lp-split-card--exploring {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(96,165,250,0.09) 0%, transparent 65%),
+    rgba(96,165,250,0.02);
+}
+
+@media (max-width: 639px) {
+  .lp-split-card--local {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+}
+
+.lp-split-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: rgba(255,122,60,0.12);
+  border: 1px solid rgba(255,122,60,0.22);
+  color: #FF7A3C;
+}
+
+.lp-split-badge--exploring {
+  background: rgba(96,165,250,0.12);
+  border-color: rgba(96,165,250,0.22);
+  color: #60a5fa;
+}
+
+.lp-split-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--text);
+  margin: 0;
+}
+
+.lp-split-tagline {
+  font-size: 0.95rem;
+  color: var(--muted2);
+  margin: -8px 0 0;
+  line-height: 1.5;
+}
+
+.lp-split-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.lp-split-bullets li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 0.92rem;
+  color: var(--muted2);
+  line-height: 1.5;
+}
+
+.lp-split-bullets li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.8rem;
+  top: 1px;
+}
+
+.lp-split-card--exploring .lp-split-bullets li::before {
+  color: #60a5fa;
+}
+
+.lp-split-cta {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lp-split-cta--local {
+  background: #FF7A3C;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255,122,60,0.35);
+}
+
+.lp-split-cta--local:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(255,122,60,0.5);
+}
+
+.lp-split-cta--exploring {
+  background: rgba(96,165,250,0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(96,165,250,0.25);
+}
+
+.lp-split-cta--exploring:hover {
+  background: rgba(96,165,250,0.18);
+  transform: translateY(-2px);
+}
+
+/* ── 3. HOW IT WORKS ──────────────────────────────────────────────────────── */
 
 .lp-how {
   border-top: 1px solid rgba(255, 255, 255, 0.05);

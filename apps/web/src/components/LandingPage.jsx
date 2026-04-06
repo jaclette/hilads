@@ -25,22 +25,22 @@ function avatarColors(name) {
 
 const HOW_IT_WORKS = [
   {
-    icon: '👀',
+    icon: '📍',
     num: '01',
-    title: 'See who\'s around',
-    desc: 'Your city is live. Find out who\'s hanging out right now.',
+    title: 'Open the app',
+    desc: 'See your city live — who\'s around, what\'s happening right now.',
   },
   {
-    icon: '👋',
+    icon: '🎯',
     num: '02',
-    title: 'Say hi instantly',
-    desc: 'Jump into the city chat. No account needed. Just a name.',
+    title: 'Choose your mode',
+    desc: 'Local — you know the city.\nExploring — you want to feel it.',
   },
   {
-    icon: '🔥',
+    icon: '✨',
     num: '03',
-    title: 'Join them',
-    desc: "See who's around and jump in.",
+    title: 'Join or host',
+    desc: 'Jump into a hangout or open your own spot. Real life starts here.',
   },
 ]
 
@@ -258,7 +258,7 @@ export default function LandingPage({
         </h1>
 
         <p className="lp-hero-sub">
-          See where people are. Join them.
+          Meet people around you. Join what's happening now — or open your own spot.
         </p>
 
         <div ref={heroJoinRef} className="lp-hero-join">
@@ -291,10 +291,41 @@ export default function LandingPage({
         <div className="lp-scroll-hint" aria-hidden="true">↓</div>
       </section>
 
-      {/* ── 2. HOW IT WORKS ─────────────────────────────────────────────────── */}
+      {/* ── 2. SPLIT — Local vs Exploring ───────────────────────────────────── */}
+      <section className="lp-split-section">
+        <div className="lp-split-card lp-split-card--local">
+          <div className="lp-split-badge">🌍 Local</div>
+          <h2 className="lp-split-title">Open your city</h2>
+          <p className="lp-split-tagline">Your city is yours to shape.</p>
+          <ul className="lp-split-bullets">
+            <li>Host recurring hangouts at bars, cafes, chill spots</li>
+            <li>Bring people to places you love</li>
+            <li>Become the one who makes things happen</li>
+          </ul>
+          <button className="lp-split-cta lp-split-cta--local" onClick={scrollToJoin}>
+            Host your spot
+          </button>
+        </div>
+
+        <div className="lp-split-card lp-split-card--exploring">
+          <div className="lp-split-badge lp-split-badge--exploring">🧭 Exploring</div>
+          <h2 className="lp-split-title">Feel local instantly</h2>
+          <p className="lp-split-tagline">Wherever you land, find your people.</p>
+          <ul className="lp-split-bullets">
+            <li>Discover real-time hangouts</li>
+            <li>Meet locals and other explorers</li>
+            <li>Skip tourist traps — go where the city actually lives</li>
+          </ul>
+          <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
+            See what's happening
+          </button>
+        </div>
+      </section>
+
+      {/* ── 3. HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section className="lp-section lp-how">
         <p className="lp-section-eyebrow">How it works</p>
-        <h2 className="lp-section-title">Three seconds to feel the energy.</h2>
+        <h2 className="lp-section-title">Three steps to feel the city.</h2>
 
         <div className="lp-steps">
           {HOW_IT_WORKS.map(s => (
@@ -333,24 +364,24 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* ── 4. CONCEPT ──────────────────────────────────────────────────────── */}
+      {/* ── 5. CONCEPT ──────────────────────────────────────────────────────── */}
       <section className="lp-section lp-concept">
         <div className="lp-concept-inner">
           <h2 className="lp-concept-h2">
-            Cities are alive.<br />We just show you where.
+            Not a social network.<br />A city, live.
           </h2>
           <div className="lp-concept-rules">
-            <p>Not a social network.</p>
             <p>No followers. No feeds. No algorithms.</p>
-            <p>Real people, in real cities, right now.</p>
+            <p>See who's around. Join what's happening.</p>
+            <p>Real people. Real places. Right now.</p>
           </div>
         </div>
       </section>
 
-      {/* ── 5. DOWNLOAD ─────────────────────────────────────────────────────── */}
+      {/* ── 6. DOWNLOAD ─────────────────────────────────────────────────────── */}
       <section className="lp-section lp-download">
         <p className="lp-section-eyebrow">Mobile apps</p>
-        <h2 className="lp-section-title">Take the vibe everywhere.</h2>
+        <h2 className="lp-section-title">Your city in your pocket.</h2>
         <p className="lp-download-sub">Native apps coming soon.</p>
         <div className="lp-store-badges">
           <StoreBadge icon="🍎" top="Download on the" bottom="App Store" />
@@ -358,7 +389,7 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* ── 6. REPEAT CTA ───────────────────────────────────────────────────── */}
+      {/* ── 7. REPEAT CTA ───────────────────────────────────────────────────── */}
       <section className="lp-section lp-cta">
         <p className="lp-section-eyebrow">Jump in</p>
         <h2 className="lp-section-title">
@@ -387,7 +418,7 @@ export default function LandingPage({
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
       <footer className="lp-footer">
         <Logo variant="icon" size="sm" />
-        <span className="lp-footer-tagline">Stop scrolling Join the vibe</span>
+        <span className="lp-footer-tagline">Feel local. Anywhere.</span>
       </footer>
 
     </div>
