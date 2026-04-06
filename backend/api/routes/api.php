@@ -520,6 +520,7 @@ $router->add('POST', '/api/v1/auth/signup', function () {
         password:    $body['password']     ?? '',
         displayName: $body['display_name'] ?? '',
         guestId:     isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null,
+        mode:        isset($body['mode'])    && is_string($body['mode'])    ? $body['mode']    : null,
     );
 
     AnalyticsService::capture('user_registered', $user['id'], [

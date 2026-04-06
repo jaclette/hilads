@@ -12,9 +12,9 @@ class UserRepository
         $stmt = Database::pdo()->prepare('
             INSERT INTO users
                 (id, email, password_hash, google_id, display_name, birth_year,
-                 profile_photo_url, home_city, interests, guest_id, is_verified, created_at, updated_at)
+                 profile_photo_url, home_city, interests, guest_id, mode, is_verified, created_at, updated_at)
             VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ');
 
         try {
@@ -29,6 +29,7 @@ class UserRepository
                 $data['home_city']         ?? null,
                 $data['interests']         ?? '[]',
                 $data['guest_id']          ?? null,
+                $data['mode']              ?? null,
                 false,                            // email not yet verified
                 $now,
                 $now,

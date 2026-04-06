@@ -22,7 +22,8 @@ class AuthService
         string $email,
         string $password,
         string $displayName,
-        ?string $guestId = null
+        ?string $guestId = null,
+        ?string $mode = null
     ): array {
         $email       = strtolower(trim($email));
         $displayName = mb_substr(trim(strip_tags($displayName)), 0, 30);
@@ -43,6 +44,11 @@ class AuthService
             Response::json(['error' => 'Display name is required'], 422);
         }
 
+        $allowedModes = ['local', 'exploring'];
+        if ($mode !== null && !in_array($mode, $allowedModes, true)) {
+            Response::json(['error' => 'Invalid mode'], 422);
+        }
+
         if (UserRepository::findByEmail($email) !== null) {
             Response::json(['error' => 'An account with this email already exists'], 409);
         }
@@ -53,6 +59,7 @@ class AuthService
                 'password_hash' => password_hash($password, PASSWORD_BCRYPT),
                 'display_name'  => $displayName,
                 'guest_id'      => $guestId,
+                'mode'          => $mode ?? 'exploring',
             ]);
         } catch (\RuntimeException $e) {
             if ($e->getMessage() === 'email_already_exists') {

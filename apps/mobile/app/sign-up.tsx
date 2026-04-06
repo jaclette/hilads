@@ -14,6 +14,11 @@ import { saveIdentity } from '@/lib/identity';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
+const MODES = [
+  { key: 'local',     emoji: '🌍', label: 'Local',     desc: 'You know this city'    },
+  { key: 'exploring', emoji: '🧭', label: 'Exploring', desc: "You're discovering it" },
+] as const;
+
 export default function SignUpScreen() {
   const router = useRouter();
   const {
@@ -26,6 +31,7 @@ export default function SignUpScreen() {
   const [name,     setName]     = useState('');
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
+  const [mode,     setMode]     = useState<string | null>(null);
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
@@ -35,6 +41,7 @@ export default function SignUpScreen() {
     const p = password;
 
     if (!n)           { setError('Display name required'); return; }
+    if (!mode)        { setError('Please choose a mode to continue'); return; }
     if (!e)           { setError('Email required'); return; }
     if (p.length < 8) { setError('Password must be at least 8 characters'); return; }
 
@@ -43,7 +50,7 @@ export default function SignUpScreen() {
     try {
       // Pass guestId so the backend can merge existing guest events/data
       const guestId = identity?.guestId ?? '';
-      const { user } = await authSignup(e, p, n, guestId);
+      const { user } = await authSignup(e, p, n, guestId, mode);
       setAccount(user);
       identifyUser(user.id, { account_type: 'registered', username: user.display_name });
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
@@ -123,6 +130,29 @@ export default function SignUpScreen() {
                 autoCorrect={false}
                 editable={!loading}
               />
+            </View>
+
+            {/* Mode selector */}
+            <View style={styles.modeSection}>
+              <Text style={styles.modeLabel}>MODE</Text>
+              <View style={styles.modeRow}>
+                {MODES.map(m => {
+                  const active = mode === m.key;
+                  return (
+                    <TouchableOpacity
+                      key={m.key}
+                      style={[styles.modeBtn, active && styles.modeBtnActive]}
+                      onPress={() => setMode(m.key)}
+                      activeOpacity={0.75}
+                      disabled={loading}
+                    >
+                      <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
+                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
+                      <Text style={styles.modeBtnDesc}>{m.desc}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
 
             <View style={styles.field}>
@@ -240,4 +270,56 @@ const styles = StyleSheet.create({
 
   switchText: { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', marginTop: Spacing.sm },
   switchLink: { color: Colors.accent, fontWeight: '600' },
+
+  modeSection: {
+    padding:         Spacing.md,
+    backgroundColor: 'rgba(96,165,250,0.06)',
+    borderRadius:    Radius.md,
+    borderWidth:     1.5,
+    borderColor:     'rgba(96,165,250,0.22)',
+    gap:             10,
+  },
+  modeLabel: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '800',
+    color:         '#60a5fa',
+    letterSpacing: 1,
+  },
+  modeRow: {
+    flexDirection: 'row',
+    gap:           8,
+  },
+  modeBtn: {
+    flex:              1,
+    paddingVertical:   16,
+    paddingHorizontal: 8,
+    borderRadius:      Radius.md,
+    borderWidth:       1.5,
+    borderColor:       Colors.border,
+    backgroundColor:   'transparent',
+    alignItems:        'center',
+    gap:               3,
+  },
+  modeBtnActive: {
+    borderColor:     '#60a5fa',
+    backgroundColor: 'rgba(96,165,250,0.16)',
+  },
+  modeBtnEmoji: {
+    fontSize:   26,
+    lineHeight: 30,
+  },
+  modeBtnLabel: {
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.muted,
+  },
+  modeBtnLabelActive: {
+    color: '#fff',
+  },
+  modeBtnDesc: {
+    fontSize:   FontSizes.xs,
+    color:      Colors.muted2,
+    textAlign:  'center',
+    lineHeight: 16,
+  },
 });

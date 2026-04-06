@@ -334,12 +334,12 @@ export async function sendEventMessage(eventId, guestId, nickname, content) {
 
 // ── Auth & profile ────────────────────────────────────────────────────────────
 
-export async function authSignup(email, password, displayName, guestId) {
+export async function authSignup(email, password, displayName, guestId, mode = null) {
   const res = await fetch(`${BASE}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ email, password, display_name: displayName, guest_id: guestId }),
+    body: JSON.stringify({ email, password, display_name: displayName, guest_id: guestId, mode }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || 'Signup failed')

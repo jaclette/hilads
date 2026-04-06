@@ -2,21 +2,31 @@ import { useState } from 'react'
 import { authSignup, authLogin } from '../api'
 import BackButton from './BackButton'
 
+const MODES = [
+  { key: 'local',     emoji: '🌍', label: 'Local',     desc: 'You know this city'    },
+  { key: 'exploring', emoji: '🧭', label: 'Exploring', desc: "You're discovering it" },
+]
+
 export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, onForgotPassword, initialTab = 'signup' }) {
   const [tab, setTab]         = useState(initialTab) // 'signup' | 'login'
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
   const [name, setName]       = useState(guestNickname || '')
+  const [mode, setMode]       = useState(null)
   const [error, setError]     = useState(null)
   const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError(null)
+    if (tab === 'signup' && !mode) {
+      setError('Please choose a mode to continue')
+      return
+    }
     setLoading(true)
     try {
       const data = tab === 'signup'
-        ? await authSignup(email, password, name, guestId)
+        ? await authSignup(email, password, name, guestId, mode)
         : await authLogin(email, password)
       onSuccess(data.user)
     } catch (err) {
@@ -47,19 +57,39 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
 
         <form className="auth-form" onSubmit={handleSubmit}>
           {tab === 'signup' && (
-            <div className="modal-field">
-              <label className="modal-label">Display name</label>
-              <input
-                className="modal-input"
-                type="text"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="How you'll appear in the app"
-                maxLength={30}
-                required
-                autoFocus
-              />
-            </div>
+            <>
+              <div className="modal-field">
+                <label className="modal-label">Display name</label>
+                <input
+                  className="modal-input"
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="How you'll appear in the app"
+                  maxLength={30}
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div className="profile-mode-section">
+                <span className="profile-mode-label">Mode</span>
+                <div className="profile-mode-btns">
+                  {MODES.map(m => (
+                    <button
+                      key={m.key}
+                      type="button"
+                      className={`profile-mode-btn${mode === m.key ? ' profile-mode-btn--on' : ''}`}
+                      onClick={() => setMode(m.key)}
+                    >
+                      <span className="profile-mode-btn-emoji">{m.emoji}</span>
+                      <span className="profile-mode-btn-name">{m.label}</span>
+                      <span className="profile-mode-btn-desc">{m.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
 
           <div className="modal-field">

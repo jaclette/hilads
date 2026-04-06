@@ -191,6 +191,107 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
   )
 }
 
+// ── Phone frame wrapper ────────────────────────────────────────────────────────
+
+function PhoneFrame({ children }) {
+  return (
+    <div className="lp-phone">
+      <div className="lp-phone-notch" />
+      <div className="lp-phone-screen">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// ── Local mockup: "Host your spot" event creation ─────────────────────────────
+
+function LocalMockup() {
+  return (
+    <PhoneFrame>
+      <div className="lp-app-header">
+        <span className="lp-app-back">←</span>
+        <span className="lp-app-title">Host your spot</span>
+      </div>
+      <div className="lp-phone-body">
+        <div className="lp-mock-section-label">QUICK START</div>
+        <div className="lp-mock-presets">
+          <div className="lp-mock-preset lp-mock-preset--on">
+            <span className="lp-mock-preset-emoji">🏠</span>
+            <span className="lp-mock-preset-label">Daily spot</span>
+          </div>
+          <div className="lp-mock-preset">
+            <span className="lp-mock-preset-emoji">🌙</span>
+            <span className="lp-mock-preset-label">Every eve</span>
+          </div>
+          <div className="lp-mock-preset">
+            <span className="lp-mock-preset-emoji">🎉</span>
+            <span className="lp-mock-preset-label">Weekends</span>
+          </div>
+        </div>
+
+        <div className="lp-mock-field-label">TITLE</div>
+        <div className="lp-mock-field">Friday drinks @ Le Marais</div>
+
+        <div className="lp-mock-inline-row">
+          <span className="lp-mock-field-label">REPEAT</span>
+          <span className="lp-mock-toggle">Every day</span>
+        </div>
+
+        <div className="lp-mock-field-label">TIME</div>
+        <div className="lp-mock-time-row">
+          <span className="lp-mock-time">18:00</span>
+          <span className="lp-mock-time-sep">→</span>
+          <span className="lp-mock-time">21:00</span>
+        </div>
+      </div>
+      <div className="lp-mock-submit lp-mock-submit--local">Open your spot →</div>
+    </PhoneFrame>
+  )
+}
+
+// ── Exploring mockup: Now feed with live events ────────────────────────────────
+
+function ExploringMockup() {
+  return (
+    <PhoneFrame>
+      <div className="lp-app-header lp-app-header--explore">
+        <span className="lp-app-city">🔥 Now — Barcelona 🇪🇸</span>
+        <span className="lp-app-count">● 14 online</span>
+      </div>
+      <div className="lp-phone-body">
+        <div className="lp-mock-card lp-mock-card--recurring">
+          <div className="lp-mock-badges">
+            <span className="lp-mock-badge lp-mock-badge--recur">↻ Every Fri</span>
+            <span className="lp-mock-badge lp-mock-badge--live">LIVE</span>
+          </div>
+          <div className="lp-mock-card-title">🍺 La Terraza Drinks</div>
+          <div className="lp-mock-card-meta">📍 Barceloneta · 18:00 → 22:00</div>
+          <div className="lp-mock-card-footer">
+            <span className="lp-mock-going">12 going</span>
+            <span className="lp-mock-join lp-mock-join--live">Join</span>
+          </div>
+        </div>
+
+        <div className="lp-mock-card">
+          <div className="lp-mock-card-title">☕ Nomad coffee morning</div>
+          <div className="lp-mock-card-meta">📍 Poblenou · 10:00</div>
+          <div className="lp-mock-card-footer">
+            <span className="lp-mock-going">5 going</span>
+            <span className="lp-mock-join">Join</span>
+          </div>
+        </div>
+
+        <div className="lp-mock-here">
+          <span>🌍 3 locals</span>
+          <span>·</span>
+          <span>🧭 11 explorers</span>
+        </div>
+      </div>
+    </PhoneFrame>
+  )
+}
+
 // ── Store badge button ─────────────────────────────────────────────────────────
 
 function StoreBadge({ icon, top, bottom }) {
@@ -293,33 +394,47 @@ export default function LandingPage({
 
       {/* ── 2. SPLIT — Local vs Exploring ───────────────────────────────────── */}
       <section className="lp-split-section">
-        <div className="lp-split-card lp-split-card--local">
-          <div className="lp-split-badge">🌍 Local</div>
-          <h2 className="lp-split-title">Open your city</h2>
-          <p className="lp-split-tagline">Your city is yours to shape.</p>
-          <ul className="lp-split-bullets">
-            <li>Host recurring hangouts at bars, cafes, chill spots</li>
-            <li>Bring people to places you love</li>
-            <li>Become the one who makes things happen</li>
-          </ul>
-          <button className="lp-split-cta lp-split-cta--local" onClick={scrollToJoin}>
-            Host your spot
-          </button>
+
+        {/* Local — text left, phone right */}
+        <div className="lp-split-row lp-split-row--local">
+          <div className="lp-split-text">
+            <div className="lp-split-badge">🌍 Local</div>
+            <h2 className="lp-split-title">Open your city</h2>
+            <p className="lp-split-tagline">Your city is yours to shape.</p>
+            <ul className="lp-split-bullets">
+              <li>Host recurring hangouts at bars, cafes, chill spots</li>
+              <li>Bring people to places you love</li>
+              <li>Become the one who makes things happen</li>
+            </ul>
+            <button className="lp-split-cta lp-split-cta--local" onClick={scrollToJoin}>
+              Host your spot
+            </button>
+          </div>
+          <div className="lp-split-visual">
+            <LocalMockup />
+          </div>
         </div>
 
-        <div className="lp-split-card lp-split-card--exploring">
-          <div className="lp-split-badge lp-split-badge--exploring">🧭 Exploring</div>
-          <h2 className="lp-split-title">Feel local instantly</h2>
-          <p className="lp-split-tagline">Wherever you land, find your people.</p>
-          <ul className="lp-split-bullets">
-            <li>Discover real-time hangouts</li>
-            <li>Meet locals and other explorers</li>
-            <li>Skip tourist traps — go where the city actually lives</li>
-          </ul>
-          <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
-            See what's happening
-          </button>
+        {/* Exploring — phone left, text right */}
+        <div className="lp-split-row lp-split-row--exploring">
+          <div className="lp-split-visual">
+            <ExploringMockup />
+          </div>
+          <div className="lp-split-text">
+            <div className="lp-split-badge lp-split-badge--exploring">🧭 Exploring</div>
+            <h2 className="lp-split-title">Feel local instantly</h2>
+            <p className="lp-split-tagline">Wherever you land, find your people.</p>
+            <ul className="lp-split-bullets lp-split-bullets--exploring">
+              <li>Discover real-time hangouts</li>
+              <li>Meet locals and other explorers</li>
+              <li>Skip tourist traps — go where the city actually lives</li>
+            </ul>
+            <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
+              See what's happening
+            </button>
+          </div>
         </div>
+
       </section>
 
       {/* ── 3. HOW IT WORKS ─────────────────────────────────────────────────── */}

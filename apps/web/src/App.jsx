@@ -888,7 +888,7 @@ export default function App() {
         sessionIdRef.current,
         nicknameRef.current,
         account?.id ?? null,
-        account?.mode ?? null,
+        account?.mode ?? 'exploring',
       )
     }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -984,7 +984,7 @@ export default function App() {
       }
       if (!activeRef.current) return
       if (activeChannelRef.current) {
-        socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null, accountRef.current?.mode ?? null)
+        socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
       }
       const hiddenMs = tabHiddenAtRef.current ? Date.now() - tabHiddenAtRef.current : Infinity
       tabHiddenAtRef.current = null
@@ -1495,7 +1495,7 @@ export default function App() {
         setTopics(prev => prev.some(p => p.id === t.id) ? prev : [...prev, t])
       })
 
-      socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? null)
+      socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
 
       // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
       clearInterval(heartbeatRef.current)
@@ -1845,7 +1845,7 @@ export default function App() {
       schedulePrompts()
 
       // Socket: join new room — existing handlers (set up in handleJoin) remain active
-      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null, accountRef.current?.mode ?? null)
+      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
 
       // Restart heartbeat for the new room (same policy — no !document.hidden)
       heartbeatRef.current = setInterval(() => {

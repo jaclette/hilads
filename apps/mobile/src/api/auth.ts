@@ -38,12 +38,14 @@ export async function authSignup(
   password: string,
   displayName: string,
   guestId: string,
+  mode: string | null = null,
 ): Promise<{ user: User }> {
   const res = await api.post<{ user: User; token?: string }>('/auth/signup', {
     email,
     password,
     display_name: displayName,
     guest_id: guestId,
+    mode,
   });
   if (res.token) {
     setAuthToken(res.token);

@@ -66,6 +66,7 @@ export async function loadOrCreateIdentity(): Promise<GuestIdentity> {
   const identity: GuestIdentity = {
     guestId:  generateGuestId(),
     nickname: generateNickname(),
+    mode:     'exploring',
   };
 
   await saveIdentity(identity);
