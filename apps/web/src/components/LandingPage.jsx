@@ -250,7 +250,7 @@ function LocalMockup() {
   )
 }
 
-// ── Exploring mockup: Now feed with live events ────────────────────────────────
+// ── Exploring mockup: Hot / Events feed ───────────────────────────────────────
 
 function ExploringMockup() {
   return (
@@ -260,13 +260,14 @@ function ExploringMockup() {
         <span className="lp-app-count">● 14 online</span>
       </div>
       <div className="lp-phone-body">
+
         <div className="lp-mock-card lp-mock-card--recurring">
           <div className="lp-mock-badges">
             <span className="lp-mock-badge lp-mock-badge--recur">↻ Every Fri</span>
             <span className="lp-mock-badge lp-mock-badge--live">LIVE</span>
           </div>
-          <div className="lp-mock-card-title">🍺 La Terraza Drinks</div>
-          <div className="lp-mock-card-meta">📍 Barceloneta · 18:00 → 22:00</div>
+          <div className="lp-mock-card-title">🍻 Drinks in District 1</div>
+          <div className="lp-mock-card-meta">📍 El Born · 18:00 → 22:00</div>
           <div className="lp-mock-card-footer">
             <span className="lp-mock-going">12 going</span>
             <span className="lp-mock-join lp-mock-join--live">Join</span>
@@ -274,20 +275,30 @@ function ExploringMockup() {
         </div>
 
         <div className="lp-mock-card">
-          <div className="lp-mock-card-title">☕ Nomad coffee morning</div>
+          <div className="lp-mock-card-title">☕ Coffee &amp; chill</div>
           <div className="lp-mock-card-meta">📍 Poblenou · 10:00</div>
           <div className="lp-mock-card-footer">
-            <span className="lp-mock-going">5 going</span>
+            <span className="lp-mock-going">5 here</span>
             <span className="lp-mock-join">Join</span>
           </div>
         </div>
 
-        <div className="lp-mock-here">
-          <span>🌍 3 locals</span>
-          <span>·</span>
-          <span>🧭 11 explorers</span>
+        <div className="lp-mock-card">
+          <div className="lp-mock-card-title">🎶 Live music tonight</div>
+          <div className="lp-mock-card-meta">📍 Gracia · 21:00</div>
+          <div className="lp-mock-card-footer">
+            <span className="lp-mock-going">20 joined</span>
+            <span className="lp-mock-join">Join</span>
+          </div>
         </div>
+
+        <div className="lp-mock-activity">
+          <span className="lp-mock-activity-dot" />
+          jack joined the city
+        </div>
+
       </div>
+      <div className="lp-mock-submit lp-mock-submit--exploring">See what's happening →</div>
     </PhoneFrame>
   )
 }
