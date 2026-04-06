@@ -8,11 +8,13 @@
  * Send button:   54×54px circle, gradient accent→accent2, shadow
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
-  View, TextInput, TouchableOpacity, Text,
+  View, TextInput, TouchableOpacity, Text, Pressable,
   ActivityIndicator, StyleSheet, Platform, Alert, Linking, Keyboard,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
@@ -50,6 +52,8 @@ interface Props {
   onSendText:       (text: string) => void;
   onSendImage:      (uri: string) => void;
   placeholder?:     string;
+  /** Activates a subtle pulse glow to signal live activity in the channel. */
+  pulse?:           boolean;
   /** Parent can call pickImageRef.current?.() to trigger the image picker externally (e.g. from a feed prompt CTA). */
   pickImageRef?:    React.MutableRefObject<(() => void) | null>;
   /** Typing indicator callbacks — parent wires these to WS typingStart/typingStop. */
@@ -57,7 +61,7 @@ interface Props {
   onTypingStop?:    () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pickImageRef, onTypingStart, onTypingStop }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pulse = false, pickImageRef, onTypingStart, onTypingStop }: Props) {
   const { account, identity } = useApp();
   const [text,          setText]        = useState('');
   const [uploading,     setUploading]   = useState(false);
@@ -67,6 +71,30 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   const [spotLoading,      setSpotLoading]      = useState(false);
   const [locationCoords,   setLocationCoords]   = useState<{ lat: number; lng: number } | null>(null);
   const inputRef        = useRef<TextInput>(null);
+
+  // ── Vibe button animations ─────────────────────────────────────────────────
+  const vibScale  = useRef(new Animated.Value(1)).current;
+  const vibGlow   = useRef(new Animated.Value(0)).current; // 0 = resting, 1 = full pulse
+
+  function vibePressIn() {
+    Animated.timing(vibScale, { toValue: 1.1, duration: 150, useNativeDriver: true }).start();
+  }
+  function vibePressOut() {
+    Animated.timing(vibScale, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+  }
+
+  // Pulse loop when channel has live activity
+  useEffect(() => {
+    if (!pulse) { vibGlow.stopAnimation(); vibGlow.setValue(0); return; }
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(vibGlow, { toValue: 1, duration: 1200, useNativeDriver: false }),
+        Animated.timing(vibGlow, { toValue: 0, duration: 1200, useNativeDriver: false }),
+      ]),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [pulse]);
   const lastSel         = useRef({ start: 0, end: 0 });
   const typingStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef     = useRef(false); // true while typingStart has been emitted
@@ -221,11 +249,33 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     setShowShareSheet(false);
     setSpotLoading(true);
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Location needed', 'Allow location access to share your spot.');
-        return;
+      // Check existing permission — avoids a redundant dialog if already granted,
+      // and prevents a second concurrent requestForeground call from conflicting
+      // with the one in useAppBoot (which also requests foreground permission).
+      const existing = await Location.getForegroundPermissionsAsync();
+      let granted = existing.status === 'granted';
+
+      if (!granted) {
+        if (!existing.canAskAgain) {
+          Alert.alert(
+            'Location access required',
+            'Please enable location in Settings → Hilads → Location.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            ],
+          );
+          return;
+        }
+        // Show the system dialog — wait for the actual user response (no timeout).
+        const result = await Location.requestForegroundPermissionsAsync();
+        granted = result.status === 'granted';
+        if (!granted) {
+          Alert.alert('Location needed', 'Allow location access to share your spot.');
+          return;
+        }
       }
+
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
       setLocationCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
     } catch (err) {
@@ -298,19 +348,35 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
 
     <View style={styles.container}>
 
-      {/* ── Share button ── */}
-      <TouchableOpacity
-        style={[styles.uploadBtn, busy && styles.btnDisabled]}
-        onPress={handleShare}
-        activeOpacity={0.7}
-        disabled={busy}
-      >
-        {uploading || spotLoading ? (
-          <ActivityIndicator size="small" color={Colors.accent} />
-        ) : (
-          <Text style={styles.shareBtnIcon}>+</Text>
-        )}
-      </TouchableOpacity>
+      {/* ── Vibe button ── */}
+      <Animated.View style={[
+        styles.vibeBtnGlow,
+        { transform: [{ scale: vibScale }] },
+        busy && styles.btnDisabled,
+        pulse && {
+          shadowOpacity: vibGlow.interpolate({ inputRange: [0, 1], outputRange: [0.45, 0.75] }),
+        },
+      ]}>
+        <Pressable
+          onPress={handleShare}
+          onPressIn={vibePressIn}
+          onPressOut={vibePressOut}
+          disabled={busy}
+        >
+          <LinearGradient
+            colors={['#C24A38', '#B87228']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.vibeBtn}
+          >
+            {uploading || spotLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.vibeBtnIcon}>✨</Text>
+            )}
+          </LinearGradient>
+        </Pressable>
+      </Animated.View>
 
       {/* ── Emoji button ── */}
       <TouchableOpacity
@@ -388,19 +454,24 @@ const styles = StyleSheet.create({
     elevation:         30, // must exceed tab bar (elevation: 24) to render above its upward shadow
   },
 
-  // ── .upload-btn ────────────────────────────────────────────────────────────
-  // Web: 54×54px; bg rgba(255,255,255,0.05); border 1px rgba(255,255,255,0.09);
-  //      border-radius 50%; icon 22px
-  uploadBtn: {
-    width:           60,
-    height:          60,
-    flexShrink:      0,
-    alignItems:      'center',
-    justifyContent:  'center',
-    borderRadius:    30,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth:     1,
-    borderColor:     'rgba(255, 255, 255, 0.09)',
+  // ── Vibe button ────────────────────────────────────────────────────────────
+  // Glow wrapper — shadow lives here so it's unclipped by LinearGradient
+  vibeBtnGlow: {
+    flexShrink:    0,
+    borderRadius:  30,
+    shadowColor:   '#C24A38',
+    shadowOffset:  { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius:  14,
+    elevation:     10,
+  },
+  // Gradient pill — clips the corners
+  vibeBtn: {
+    width:          60,
+    height:         60,
+    borderRadius:   30,
+    alignItems:     'center',
+    justifyContent: 'center',
   },
 
   // ── .input-bar input ───────────────────────────────────────────────────────
@@ -452,11 +523,10 @@ const styles = StyleSheet.create({
 
   btnDisabled: { opacity: 0.35 },
 
-  shareBtnIcon: {
-    fontSize:   26,
-    lineHeight: 28,
-    color:      Colors.text,
-    fontWeight: '400',
+  vibeBtnIcon: {
+    fontSize:   22,
+    lineHeight: 26,
+    color:      '#fff',
   },
 
   emojiBtn: {

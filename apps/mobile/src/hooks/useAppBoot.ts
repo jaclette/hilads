@@ -26,10 +26,6 @@ const GEO_CURRENT_TIMEOUT_MS = 8_000;
 // getLastKnownPositionAsync: accept cached positions up to 10 minutes old.
 const LAST_KNOWN_MAX_AGE_MS = 10 * 60 * 1000;
 
-// requestForegroundPermissionsAsync: OS dialog can hang on some Android builds
-// if the window is not yet focused. Race against this timeout.
-const PERM_TIMEOUT_MS = 6_000;
-
 // Absolute ceiling for the entire geo flow (services + permission + position + resolve).
 // If we haven't exited by this point, force the error state so the user isn't stuck.
 const GEO_ABSOLUTE_TIMEOUT_MS = 20_000;
@@ -197,30 +193,37 @@ export function useAppBoot(): Result {
       }
 
       // ── Step 1: Permission ───────────────────────────────────────────────
-      console.log('[geo] requestForegroundPermissionsAsync (timeout:', PERM_TIMEOUT_MS, 'ms)...');
-      const permResult = await Promise.race([
-        Location.requestForegroundPermissionsAsync(),
-        new Promise<{ status: string }>(resolve =>
-          setTimeout(() => {
-            console.warn('[geo] permission dialog timed out after', PERM_TIMEOUT_MS, 'ms');
-            resolve({ status: 'timeout' });
-          }, PERM_TIMEOUT_MS),
-        ),
-      ]);
+      // Check existing status first — avoids showing a dialog if permission is
+      // already determined, and prevents a second concurrent requestForeground
+      // call (from handleMySpot) from racing against a still-pending dialog.
+      console.log('[geo] getForegroundPermissionsAsync...');
+      const existing = await Location.getForegroundPermissionsAsync();
       if (isCancelled()) return;
+      console.log('[geo] existing permission: status=' + existing.status
+        + ' canAskAgain=' + String(existing.canAskAgain));
 
-      const status = permResult.status;
-      const canAskAgain = (permResult as { canAskAgain?: boolean }).canAskAgain;
-      console.log('[geo] permission result: status=' + status
-        + ' canAskAgain=' + String(canAskAgain ?? '?'));
+      let granted = existing.status === 'granted';
 
-      if (status !== 'granted') {
-        if (!isCancelled()) {
-          console.warn('[geo] permission not granted (' + status + ') → '
-            + (status === 'timeout' ? 'error' : 'denied') + ' state');
-          setGeoState(status === 'timeout' ? 'error' : 'denied');
+      if (!granted) {
+        if (!existing.canAskAgain || existing.status === 'denied') {
+          console.warn('[geo] permission denied, cannot ask → denied state');
+          if (!isCancelled()) setGeoState('denied');
+          return;
         }
-        return;
+        // Undetermined — show the system dialog. The 400 ms GEO_START_DELAY_MS
+        // above ensures the Android window is interactive before we get here.
+        // No timeout race: we wait for the user's actual response.
+        console.log('[geo] requesting foreground permissions...');
+        const result = await Location.requestForegroundPermissionsAsync();
+        if (isCancelled()) return;
+        console.log('[geo] permission result: status=' + result.status
+          + ' canAskAgain=' + String(result.canAskAgain));
+        granted = result.status === 'granted';
+        if (!granted) {
+          console.warn('[geo] permission not granted (' + result.status + ') → denied state');
+          if (!isCancelled()) setGeoState('denied');
+          return;
+        }
       }
 
       // ── Step 2: Position ─────────────────────────────────────────────────

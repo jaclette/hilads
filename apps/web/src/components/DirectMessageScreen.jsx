@@ -313,12 +313,12 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         />
         <button
           type="button"
-          className="dm-share-btn"
-          title="Share"
+          className="dm-vibe-btn"
+          title="Share something"
           disabled={uploading || sending || spotLoading}
           onClick={() => setShowShareSheet(true)}
         >
-          {uploading ? <span className="upload-spinner" style={{ width: 16, height: 16 }} /> : '+'}
+          {uploading || spotLoading ? <span className="upload-spinner" style={{ width: 16, height: 16 }} /> : '✨'}
         </button>
         <div className="emoji-picker-wrap">
           <button

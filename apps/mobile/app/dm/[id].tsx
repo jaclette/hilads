@@ -8,10 +8,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  View, Text, Image, FlatList, TextInput, TouchableOpacity,
+  View, Text, Image, FlatList, TextInput, TouchableOpacity, Pressable,
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
-  Animated, Alert, InteractionManager, Keyboard,
+  Animated, Alert, Linking, InteractionManager, Keyboard,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { EmojiPanel } from '@/features/chat/EmojiPanel';
 import { ShareSheet } from '@/features/chat/ShareSheet';
 import { LocationPicker } from '@/features/chat/LocationPicker';
@@ -124,6 +125,9 @@ const dmLocStyles = StyleSheet.create({
     gap:           10,
     borderRadius:  22,
     padding:       14,
+    // minWidth required: parent bubble row shrinks children to content-width in
+    // React Native yoga; without a concrete width, flex:1 on body collapses to 0.
+    minWidth:      190,
     maxWidth:      260,
   },
   cardOther: {
@@ -137,7 +141,7 @@ const dmLocStyles = StyleSheet.create({
     borderBottomRightRadius: 5,
   },
   icon:     { fontSize: 20, lineHeight: 26, flexShrink: 0 },
-  body:     { flex: 1, gap: 3 },
+  body:     { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
   line1:    { fontSize: 14, fontWeight: '700', color: Colors.text, lineHeight: 20 },
   addr:     { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
   textMine: { color: '#fff' },
@@ -266,7 +270,15 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const [showShareSheet,  setShowShareSheet]  = useState(false);
   const [spotLoading,     setSpotLoading]     = useState(false);
   const [locationCoords,  setLocationCoords]  = useState<{ lat: number; lng: number } | null>(null);
-  const lastSel = useRef({ start: 0, end: 0 });
+  const lastSel   = useRef({ start: 0, end: 0 });
+  const vibScale  = useRef(new Animated.Value(1)).current;
+
+  function vibePressIn() {
+    Animated.timing(vibScale, { toValue: 1.1, duration: 150, useNativeDriver: true }).start();
+  }
+  function vibePressOut() {
+    Animated.timing(vibScale, { toValue: 1, duration: 200, useNativeDriver: true }).start();
+  }
 
   const color   = avatarColor(displayName);
   const initial = displayName.slice(0, 1).toUpperCase();
@@ -360,11 +372,29 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     setShowShareSheet(false);
     setSpotLoading(true);
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Location needed', 'Allow location access to share your spot.');
-        return;
+      const existing = await Location.getForegroundPermissionsAsync();
+      let granted = existing.status === 'granted';
+
+      if (!granted) {
+        if (!existing.canAskAgain) {
+          Alert.alert(
+            'Location access required',
+            'Please enable location in Settings → Hilads → Location.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            ],
+          );
+          return;
+        }
+        const result = await Location.requestForegroundPermissionsAsync();
+        granted = result.status === 'granted';
+        if (!granted) {
+          Alert.alert('Location needed', 'Allow location access to share your spot.');
+          return;
+        }
       }
+
       const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
       setLocationCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude });
     } catch (err) {
@@ -484,17 +514,26 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
       {/* ── Composer ── */}
       <View style={[styles.composer, focused && styles.composerFocused]}>
-        <TouchableOpacity
-          style={[styles.imageBtn, busy && styles.imageBtnDisabled]}
-          onPress={() => { if (!busy) setShowShareSheet(true); }}
-          disabled={busy}
-          activeOpacity={0.7}
-        >
-          {uploading || spotLoading
-            ? <ActivityIndicator size="small" color={Colors.accent} />
-            : <Text style={styles.shareBtnIcon}>+</Text>
-          }
-        </TouchableOpacity>
+        <Animated.View style={[styles.vibeBtnGlow, { transform: [{ scale: vibScale }] }, busy && styles.imageBtnDisabled]}>
+          <Pressable
+            onPress={() => { if (!busy) setShowShareSheet(true); }}
+            onPressIn={vibePressIn}
+            onPressOut={vibePressOut}
+            disabled={busy}
+          >
+            <LinearGradient
+              colors={['#C24A38', '#B87228']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.vibeBtn}
+            >
+              {uploading || spotLoading
+                ? <ActivityIndicator size="small" color="#fff" />
+                : <Text style={styles.vibeBtnIcon}>✨</Text>
+              }
+            </LinearGradient>
+          </Pressable>
+        </Animated.View>
         <TouchableOpacity
           style={[styles.emojiBtn, showEmoji && styles.emojiBtnActive]}
           onPress={handleEmojiToggle}
@@ -838,23 +877,27 @@ const styles = StyleSheet.create({
   composerFocused: {
     borderTopColor: 'rgba(255,122,60,0.3)',
   },
-  imageBtn: {
-    width:           SEND_BTN,
-    height:          SEND_BTN,
-    borderRadius:    Radius.full,
-    backgroundColor: Colors.bg2,
-    borderWidth:     1,
-    borderColor:     Colors.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
+  vibeBtnGlow: {
+    flexShrink:    0,
+    borderRadius:  Radius.full,
+    shadowColor:   '#C24A38',
+    shadowOffset:  { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius:  12,
+    elevation:     10,
+  },
+  vibeBtn: {
+    width:          SEND_BTN,
+    height:         SEND_BTN,
+    borderRadius:   Radius.full,
+    alignItems:     'center',
+    justifyContent: 'center',
   },
   imageBtnDisabled: { opacity: 0.4 },
-  shareBtnIcon: {
-    fontSize:   26,
-    lineHeight: 28,
-    color:      Colors.text,
-    fontWeight: '400',
+  vibeBtnIcon: {
+    fontSize:   20,
+    lineHeight: 24,
+    color:      '#fff',
   },
   emojiBtn: {
     width:           36,

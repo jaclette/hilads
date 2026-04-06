@@ -57,6 +57,11 @@ const locStyles = StyleSheet.create({
     borderRadius:      16,
     paddingHorizontal: 14,
     paddingVertical:   12,
+    // minWidth is required: styles.row uses alignItems:'flex-end/start' which
+    // shrinks children to content-width in React Native's yoga engine. Without a
+    // known width the card's flex-row has no basis for distributing flex to body,
+    // collapsing it to 0px and leaving only the pin icon visible.
+    minWidth:          200,
     maxWidth:          260,
   },
   cardOther: {
@@ -70,7 +75,8 @@ const locStyles = StyleSheet.create({
     borderTopRightRadius: 4,
   },
   icon:     { fontSize: 22, lineHeight: 28, flexShrink: 0 },
-  body:     { flex: 1, gap: 3 },
+  // flex:1 + flexShrink:1 + minWidth:0: expand to fill card, allow shrink, never overflow
+  body:     { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
   line1:    { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, lineHeight: 20 },
   addr:     { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
   textMine: { color: '#fff' },

@@ -2896,12 +2896,12 @@ export default function App() {
           />
           <button
             type="button"
-            className="share-btn"
-            title="Share"
+            className="vibe-btn"
+            title="Share something"
             disabled={uploading || sending || spotLoading}
             onClick={() => setShowShareSheet(true)}
           >
-            {uploading ? <span className="upload-spinner" /> : '+'}
+            {uploading || spotLoading ? <span className="upload-spinner" /> : '✨'}
           </button>
           <div className="emoji-picker-wrap">
             <button
