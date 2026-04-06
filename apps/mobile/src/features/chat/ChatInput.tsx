@@ -286,11 +286,14 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     }
   }
 
-  function handleLocationConfirm({ place, address }: { place: string; address: string }) {
+  function handleLocationConfirm({ place, address, lat, lng }: { place: string; address: string; lat: number; lng: number }) {
     setLocationCoords(null);
     const nickname = account?.display_name ?? identity?.nickname ?? 'Someone';
     const label = place || 'somewhere';
-    const text = address ? `📍 ${nickname} is at ${label}\n${address}` : `📍 ${nickname} is at ${label}`;
+    const coordLine = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+    const text = address
+      ? `📍 ${nickname} is at ${label}\n${coordLine}\n${address}`
+      : `📍 ${nickname} is at ${label}\n${coordLine}`;
     onSendText(text);
   }
 

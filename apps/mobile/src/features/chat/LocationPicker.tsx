@@ -86,7 +86,7 @@ interface Props {
   visible:    boolean;
   initialLat: number;
   initialLng: number;
-  onConfirm:  (result: { place: string; address: string }) => void;
+  onConfirm:  (result: { place: string; address: string; lat: number; lng: number }) => void;
   onClose:    () => void;
 }
 
@@ -96,6 +96,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
   const [place,     setPlace]     = useState('');
   const [address,   setAddress]   = useState('');
   const [geocoding, setGeocoding] = useState(true);
+  const currentCoords             = useRef({ lat: initialLat, lng: initialLng });
 
   // html is stable for the lifetime of this open — rebuild only when initial coords change
   const html = useRef(buildMapHtml(initialLat, initialLng));
@@ -108,6 +109,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
   const geocode = useCallback(async (lat: number, lng: number) => {
     setGeocoding(true);
+    currentCoords.current = { lat, lng };
     try {
       const result = await nominatimReverse(lat, lng);
       setPlace(result.place);
@@ -189,7 +191,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
           <TouchableOpacity
             style={[styles.confirmBtn, geocoding && styles.confirmBtnDisabled]}
-            onPress={() => onConfirm({ place: place || 'Your location', address })}
+            onPress={() => onConfirm({ place: place || 'Your location', address, lat: currentCoords.current.lat, lng: currentCoords.current.lng })}
             disabled={geocoding}
             activeOpacity={0.85}
           >

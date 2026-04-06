@@ -13,7 +13,7 @@
  */
 
 import { useRef, useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, ActivityIndicator, Platform, Linking } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { useRouter } from 'expo-router';
 import { Colors, FontSizes } from '@/constants';
@@ -30,23 +30,51 @@ function isLocationMessage(content: string | undefined): boolean {
   return typeof content === 'string' && content.startsWith('📍');
 }
 
-function parseLocation(content: string): { line1: string; address: string } {
-  const idx = content.indexOf('\n');
-  if (idx === -1) return { line1: content, address: '' };
-  return { line1: content.slice(0, idx), address: content.slice(idx + 1) };
+function parseLocation(content: string): { line1: string; lat?: number; lng?: number; address: string } {
+  const parts = content.split('\n');
+  const line1 = parts[0] ?? '';
+  if (parts.length >= 2) {
+    const coordParts = (parts[1] ?? '').split(',');
+    const lat = parseFloat(coordParts[0] ?? '');
+    const lng = parseFloat(coordParts[1] ?? '');
+    if (!isNaN(lat) && !isNaN(lng) && coordParts.length === 2) {
+      return { line1, lat, lng, address: parts.slice(2).join('\n') };
+    }
+  }
+  return { line1, address: parts.slice(1).join('\n') };
+}
+
+function openMaps(lat: number, lng: number, label: string) {
+  const encoded = encodeURIComponent(label);
+  const url = Platform.OS === 'ios'
+    ? `maps://?ll=${lat},${lng}&q=${encoded}`
+    : `geo:${lat},${lng}?q=${encoded}`;
+  Linking.openURL(url).catch(() => {
+    Linking.openURL(`https://maps.google.com/?q=${lat},${lng}`);
+  });
 }
 
 function LocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
-  const { line1, address } = parseLocation(content);
-  return (
+  const { line1, lat, lng, address } = parseLocation(content);
+  const hasCords = lat !== undefined && lng !== undefined;
+  const card = (
     <View style={[locStyles.card, isMine ? locStyles.cardMine : locStyles.cardOther]}>
       <Text style={locStyles.icon}>📍</Text>
       <View style={locStyles.body}>
         <Text style={[locStyles.line1, isMine && locStyles.textMine]} numberOfLines={2}>{line1.replace('📍 ', '')}</Text>
         {!!address && <Text style={[locStyles.addr, isMine && locStyles.addrMine]} numberOfLines={2}>{address}</Text>}
+        {hasCords && <Text style={[locStyles.tapHint, isMine && locStyles.tapHintMine]}>Tap to open in maps</Text>}
       </View>
     </View>
   );
+  if (hasCords) {
+    return (
+      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, line1.replace('📍 ', ''))}>
+        {card}
+      </TouchableOpacity>
+    );
+  }
+  return card;
 }
 
 const locStyles = StyleSheet.create({
@@ -77,10 +105,12 @@ const locStyles = StyleSheet.create({
   icon:     { fontSize: 22, lineHeight: 28, flexShrink: 0 },
   // flex:1 + flexShrink:1 + minWidth:0: expand to fill card, allow shrink, never overflow
   body:     { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
-  line1:    { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, lineHeight: 20 },
-  addr:     { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
-  textMine: { color: '#fff' },
-  addrMine: { color: 'rgba(255,255,255,0.65)' },
+  line1:       { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, lineHeight: 20 },
+  addr:        { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
+  textMine:    { color: '#fff' },
+  addrMine:    { color: 'rgba(255,255,255,0.65)' },
+  tapHint:     { fontSize: 11, color: Colors.muted2, marginTop: 2, opacity: 0.6 },
+  tapHintMine: { color: 'rgba(255,255,255,0.5)' },
 });
 
 // ── Avatar palette — mirrors web AVATAR_PALETTES ──────────────────────────────

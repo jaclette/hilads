@@ -1702,10 +1702,13 @@ export default function App() {
     }
   }
 
-  async function handleLocationConfirm({ place, address }) {
+  async function handleLocationConfirm({ place, address, lat, lng }) {
     setLocationPickerCoords(null)
     const label = place || 'somewhere'
-    const text = address ? `📍 ${activeNickname} is at ${label}\n${address}` : `📍 ${activeNickname} is at ${label}`
+    const coordLine = `${lat.toFixed(6)},${lng.toFixed(6)}`
+    const text = address
+      ? `📍 ${activeNickname} is at ${label}\n${coordLine}\n${address}`
+      : `📍 ${activeNickname} is at ${label}\n${coordLine}`
     await doSendText(text)
   }
 
@@ -2810,15 +2813,30 @@ export default function App() {
                       />
                     ) : item.content?.startsWith('📍') ? (
                       (() => {
-                        const nl = item.content.indexOf('\n')
-                        const line1 = nl === -1 ? item.content : item.content.slice(0, nl)
-                        const addr  = nl === -1 ? '' : item.content.slice(nl + 1)
+                        const parts = item.content.split('\n')
+                        const line1 = parts[0] ?? ''
+                        let lat, lng, addr
+                        if (parts.length >= 3) {
+                          const coordParts = (parts[1] ?? '').split(',')
+                          lat = parseFloat(coordParts[0] ?? '')
+                          lng = parseFloat(coordParts[1] ?? '')
+                          if (isNaN(lat) || isNaN(lng) || coordParts.length !== 2) { lat = undefined; lng = undefined }
+                          addr = lat !== undefined ? parts.slice(2).join('\n') : parts.slice(1).join('\n')
+                        } else {
+                          addr = parts.slice(1).join('\n')
+                        }
+                        const hasCoords = lat !== undefined && lng !== undefined
+                        const mapsUrl = hasCoords ? `https://maps.google.com/?q=${lat},${lng}` : null
                         return (
-                          <div className={`loc-bubble${isMine ? ' loc-bubble--me' : ''}`}>
+                          <div
+                            className={`loc-bubble${isMine ? ' loc-bubble--me' : ''}${hasCoords ? ' loc-bubble--tappable' : ''}`}
+                            onClick={mapsUrl ? () => window.open(mapsUrl, '_blank', 'noopener') : undefined}
+                          >
                             <span className="loc-bubble-icon">📍</span>
                             <div className="loc-bubble-body">
                               <span className="loc-bubble-place">{line1.replace('📍 ', '')}</span>
                               {addr && <span className="loc-bubble-addr">{addr}</span>}
+                              {hasCoords && <span className="loc-bubble-tap">Tap to open in maps</span>}
                             </div>
                           </div>
                         )

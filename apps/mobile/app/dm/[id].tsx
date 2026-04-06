@@ -101,11 +101,34 @@ interface RowProps {
   onImagePress: (uri: string) => void;
 }
 
+function parseDmLocation(content: string): { line1: string; lat?: number; lng?: number; addr: string } {
+  const parts = content.split('\n');
+  const line1 = parts[0] ?? '';
+  if (parts.length >= 2) {
+    const coordParts = (parts[1] ?? '').split(',');
+    const lat = parseFloat(coordParts[0] ?? '');
+    const lng = parseFloat(coordParts[1] ?? '');
+    if (!isNaN(lat) && !isNaN(lng) && coordParts.length === 2) {
+      return { line1, lat, lng, addr: parts.slice(2).join('\n') };
+    }
+  }
+  return { line1, addr: parts.slice(1).join('\n') };
+}
+
+function openMaps(lat: number, lng: number, label: string) {
+  const encoded = encodeURIComponent(label);
+  const url = Platform.OS === 'ios'
+    ? `maps://?ll=${lat},${lng}&q=${encoded}`
+    : `geo:${lat},${lng}?q=${encoded}`;
+  Linking.openURL(url).catch(() => {
+    Linking.openURL(`https://maps.google.com/?q=${lat},${lng}`);
+  });
+}
+
 function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
-  const idx  = content.indexOf('\n');
-  const line1 = idx === -1 ? content : content.slice(0, idx);
-  const addr  = idx === -1 ? '' : content.slice(idx + 1);
-  return (
+  const { line1, lat, lng, addr } = parseDmLocation(content);
+  const hasCoords = lat !== undefined && lng !== undefined;
+  const card = (
     <View style={[dmLocStyles.card, isMine ? dmLocStyles.cardMine : dmLocStyles.cardOther]}>
       <Text style={dmLocStyles.icon}>📍</Text>
       <View style={dmLocStyles.body}>
@@ -113,9 +136,18 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
           {line1.replace('📍 ', '')}
         </Text>
         {!!addr && <Text style={[dmLocStyles.addr, isMine && dmLocStyles.addrMine]} numberOfLines={2}>{addr}</Text>}
+        {hasCoords && <Text style={[dmLocStyles.tapHint, isMine && dmLocStyles.tapHintMine]}>Tap to open in maps</Text>}
       </View>
     </View>
   );
+  if (hasCoords) {
+    return (
+      <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, line1.replace('📍 ', ''))}>
+        {card}
+      </TouchableOpacity>
+    );
+  }
+  return card;
 }
 
 const dmLocStyles = StyleSheet.create({
@@ -142,10 +174,12 @@ const dmLocStyles = StyleSheet.create({
   },
   icon:     { fontSize: 20, lineHeight: 26, flexShrink: 0 },
   body:     { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
-  line1:    { fontSize: 14, fontWeight: '700', color: Colors.text, lineHeight: 20 },
-  addr:     { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
-  textMine: { color: '#fff' },
-  addrMine: { color: 'rgba(255,255,255,0.65)' },
+  line1:       { fontSize: 14, fontWeight: '700', color: Colors.text, lineHeight: 20 },
+  addr:        { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
+  textMine:    { color: '#fff' },
+  addrMine:    { color: 'rgba(255,255,255,0.65)' },
+  tapHint:     { fontSize: 11, color: Colors.muted2, marginTop: 2, opacity: 0.6 },
+  tapHintMine: { color: 'rgba(255,255,255,0.5)' },
 });
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress }: RowProps) {
@@ -405,11 +439,14 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     }
   }
 
-  function handleLocationConfirm({ place, address }: { place: string; address: string }) {
+  function handleLocationConfirm({ place, address, lat, lng }: { place: string; address: string; lat: number; lng: number }) {
     setLocationCoords(null);
     const nickname = account?.display_name ?? displayName ?? 'Someone';
     const label = place || 'somewhere';
-    const text = address ? `📍 ${nickname} is at ${label}\n${address}` : `📍 ${nickname} is at ${label}`;
+    const coordLine = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+    const text = address
+      ? `📍 ${nickname} is at ${label}\n${coordLine}\n${address}`
+      : `📍 ${nickname} is at ${label}\n${coordLine}`;
     sendText(text);
   }
 
