@@ -39,7 +39,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 3,
+      "versionCode": 6,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -91,6 +91,15 @@
       "@sentry/react-native/expo",
       "./plugins/withSingleTopActivity",
       "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35
+          }
+        }
+      ],
       [
         "expo-camera",
         {

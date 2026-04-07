@@ -23,7 +23,8 @@
     }
   ],
   "rewrites": [
-    { "source": "/privacy", "destination": "/privacy.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/privacy",       "destination": "/privacy.html" },
+    { "source": "/child-safety",  "destination": "/child-safety.html" },
+    { "source": "/(.*)",          "destination": "/index.html" }
   ]
 }

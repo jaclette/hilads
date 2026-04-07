@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hilads – Feature Graphic Generator</title>
+  <style>
+    body {
+      margin: 0;
+      background: #080706;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      gap: 24px;
+    }
+    canvas {
+      border-radius: 6px;
+      box-shadow: 0 8px 60px rgba(0,0,0,0.8);
+      max-width: 100%;
+    }
+    button {
+      padding: 14px 36px;
+      background: linear-gradient(135deg, #FF7A3C, #C24A38);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+    }
+    button:hover { opacity: 0.9; }
+    p { color: rgba(255,255,255,0.35); font-size: 13px; margin: 0; }
+  </style>
+</head>
+<body>
+  <canvas id="c" width="1024" height="500"></canvas>
+  <button onclick="download()">Download PNG (1024 x 500)</button>
+  <p>Open in Chrome or Safari for best font rendering</p>
+
+  <script>
+  (function () {
+    const canvas = document.getElementById('c');
+    const ctx    = canvas.getContext('2d');
+    const W = 1024, H = 500;
+
+    // ── 1. Base background ────────────────────────────────────────────────────
+    const bg = ctx.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0,   '#110e0c');
+    bg.addColorStop(0.5, '#1c1209');
+    bg.addColorStop(1,   '#0f0d0b');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // ── 2. Primary warm glow (center-left) ───────────────────────────────────
+    const glow1 = ctx.createRadialGradient(340, 270, 0, 340, 270, 440);
+    glow1.addColorStop(0,   'rgba(194, 74, 56,  0.52)');
+    glow1.addColorStop(0.35,'rgba(184,114, 40,  0.28)');
+    glow1.addColorStop(0.65,'rgba(140, 60, 20,  0.10)');
+    glow1.addColorStop(1,   'rgba( 15, 13, 11,  0)');
+    ctx.fillStyle = glow1;
+    ctx.fillRect(0, 0, W, H);
+
+    // ── 3. Accent glow (top-right) ────────────────────────────────────────────
+    const glow2 = ctx.createRadialGradient(880, 60, 0, 880, 60, 320);
+    glow2.addColorStop(0,   'rgba(255,122, 60, 0.14)');
+    glow2.addColorStop(0.5, 'rgba(184, 82, 30, 0.06)');
+    glow2.addColorStop(1,   'rgba( 15, 13, 11, 0)');
+    ctx.fillStyle = glow2;
+    ctx.fillRect(0, 0, W, H);
+
+    // ── 4. Subtle noise texture ───────────────────────────────────────────────
+    // (lightweight grain — draws semi-transparent pixels in batches)
+    ctx.save();
+    for (let i = 0; i < 18000; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const a = Math.random() * 0.055;
+      ctx.fillStyle = `rgba(255,200,140,${a.toFixed(3)})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+    ctx.restore();
+
+    // ── 5. City silhouette (bottom) ───────────────────────────────────────────
+    // Buildings are dark silhouettes with a faint orange rim-light
+    const buildings = [
+      // [x, roofY, w]
+      [0,   408, 54],
+      [50,  368, 48],
+      [94,  422, 36],
+      [126, 340, 72],
+      [194, 388, 42],
+      [232, 448, 32],
+      [260, 352, 78],
+      [334, 406, 44],
+      [374, 364, 58],
+      [428, 432, 38],
+      // right cluster
+      [670, 372, 52],
+      [718, 336, 68],
+      [782, 396, 44],
+      [822, 362, 58],
+      [876, 308, 82],
+      [954, 388, 52],
+      [1002,430, 40],
+    ];
+
+    // Rim-light pass (thin orange line just above each building)
+    ctx.save();
+    for (const [x, y, w] of buildings) {
+      ctx.fillStyle = 'rgba(255,120,40,0.18)';
+      ctx.fillRect(x, y - 2, w, 3);
+    }
+    ctx.restore();
+
+    // Building fill
+    ctx.save();
+    for (const [x, y, w] of buildings) {
+      const bldGrad = ctx.createLinearGradient(0, y, 0, H);
+      bldGrad.addColorStop(0, 'rgba(10,7,5,0.72)');
+      bldGrad.addColorStop(1, 'rgba(5,3,2,0.95)');
+      ctx.fillStyle = bldGrad;
+      ctx.fillRect(x, y, w, H - y + 4);
+    }
+    // A few bright windows
+    const windows = [
+      [136,360],[138,375],[206,400],[274,368],[274,385],[880,326],[882,342],[728,356]
+    ];
+    for (const [wx, wy] of windows) {
+      ctx.fillStyle = 'rgba(255,200,100,0.65)';
+      ctx.fillRect(wx, wy, 5, 4);
+    }
+    ctx.restore();
+
+    // ── 6. Presence dots (right side — people nearby) ─────────────────────────
+    const presenceDots = [
+      [760,120,5], [810,175,4], [840,108,3], [880,160,5],
+      [912,95, 3], [790,230,3], [856,252,4], [930,188,3],
+      [950,268,5], [970,130,3], [660,165,4], [706,218,3],
+      [740,270,2], [982,220,4], [630,240,3],
+    ];
+    ctx.save();
+    for (const [dx, dy, dr] of presenceDots) {
+      // soft halo
+      const halo = ctx.createRadialGradient(dx, dy, 0, dx, dy, dr * 6);
+      halo.addColorStop(0,   'rgba(255,140,60,0.35)');
+      halo.addColorStop(0.5, 'rgba(255,100,40,0.10)');
+      halo.addColorStop(1,   'rgba(255,80, 20,0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(dx, dy, dr * 6, 0, Math.PI * 2);
+      ctx.fill();
+      // core dot
+      ctx.fillStyle = 'rgba(255,195,120,0.95)';
+      ctx.beginPath();
+      ctx.arc(dx, dy, dr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    // Faint connection lines between nearby dots
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,130,60,0.10)';
+    ctx.lineWidth = 1;
+    const pairs = [[0,1],[1,2],[3,4],[5,6],[7,8],[9,10],[10,11],[12,13]];
+    for (const [a, b] of pairs) {
+      const [ax, ay] = presenceDots[a];
+      const [bx, by] = presenceDots[b];
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(bx, by);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // ── 7. Bottom fade ────────────────────────────────────────────────────────
+    const bottomFade = ctx.createLinearGradient(0, H - 100, 0, H);
+    bottomFade.addColorStop(0, 'rgba(10,7,5,0)');
+    bottomFade.addColorStop(1, 'rgba(6,4,3,0.88)');
+    ctx.fillStyle = bottomFade;
+    ctx.fillRect(0, 0, W, H);
+
+    // ── 8. Logo mark ──────────────────────────────────────────────────────────
+    const lx = 98, ly = 162, ls = 78, lr = 18;
+    const logoGrad = ctx.createLinearGradient(lx, ly, lx + ls, ly + ls);
+    logoGrad.addColorStop(0, '#FF7A3C');
+    logoGrad.addColorStop(1, '#C24A38');
+    ctx.fillStyle = logoGrad;
+    ctx.beginPath();
+    ctx.roundRect(lx, ly, ls, ls, lr);
+    ctx.fill();
+
+    // Subtle inner highlight on logo
+    ctx.fillStyle = 'rgba(255,255,255,0.10)';
+    ctx.beginPath();
+    ctx.roundRect(lx, ly, ls, ls / 2, [lr, lr, 0, 0]);
+    ctx.fill();
+
+    // "Hi" text inside logo
+    ctx.save();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold 30px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif`;
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor  = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur   = 4;
+    ctx.fillText('Hi', lx + ls / 2, ly + ls / 2 + 1);
+    ctx.restore();
+
+    // ── 9. "lads" wordmark ────────────────────────────────────────────────────
+    ctx.save();
+    ctx.fillStyle    = '#f0ece6';
+    ctx.font         = `700 62px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif`;
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor  = 'rgba(0,0,0,0.4)';
+    ctx.shadowBlur   = 12;
+    ctx.fillText('lads', lx + ls + 14, ly + ls / 2 + 1);
+    ctx.restore();
+
+    // ── 10. Tagline ────────────────────────────────────────────────────────────
+    ctx.save();
+    ctx.fillStyle    = 'rgba(255,185,110,0.72)';
+    ctx.font         = `500 21px -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif`;
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillText('See what\u2019s happening around you.', lx, ly + ls + 26);
+    ctx.restore();
+
+    // ── 11. Thin orange divider line ──────────────────────────────────────────
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,122,60,0.22)';
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(lx, ly + ls + 16);
+    ctx.lineTo(lx + 320, ly + ls + 16);
+    ctx.stroke();
+    ctx.restore();
+
+    // ── Done ─────────────────────────────────────────────────────────────────
+    function download() {
+      const a     = document.createElement('a');
+      a.download  = 'hilads-feature-graphic-1024x500.png';
+      a.href      = canvas.toDataURL('image/png');
+      a.click();
+    }
+    window.download = download;
+  })();
+  </script>
+</body>
+</html>
