@@ -79,7 +79,8 @@ export default function NotificationsHistoryScreen() {
       markNotificationsRead([notif.id]);
     }
     if (notif.data?.conversationId) {
-      router.push(`/dm/${notif.data.conversationId}` as never);
+      const namePart = notif.data.senderName ? `&name=${encodeURIComponent(notif.data.senderName)}` : '';
+      router.push(`/dm/${notif.data.conversationId}?conv=${encodeURIComponent(notif.data.conversationId)}${namePart}` as never);
     } else if (notif.data?.eventId) {
       router.push(`/event/${notif.data.eventId}` as never);
     } else if (notif.type === 'channel_message' || notif.type === 'city_join') {
