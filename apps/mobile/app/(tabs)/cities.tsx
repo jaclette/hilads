@@ -127,7 +127,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 
 export default function CitiesScreen() {
   const router                                              = useRouter();
-  const { city: activeCity, setCity, identity, sessionId, setIdentity, account } = useApp();
+  const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   const [cities,        setCities]        = useState<City[]>([]);
   const [filtered,      setFiltered]      = useState<City[]>([]);
@@ -164,6 +164,25 @@ export default function CitiesScreen() {
       ));
     }
   }, [query, cities]);
+
+  function switchToCity(item: City) {
+    setCity(item);
+    if (identity) {
+      const updated = { ...identity, channelId: item.channelId };
+      saveIdentity(updated).catch(() => {});
+      setIdentity(updated);
+    }
+    if (identity && sessionId) {
+      joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
+      if (socket.isConnected) {
+        socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
+      } else {
+        socket.on('connected', () => socket.joinCity(item.channelId, sessionId, nickname, account?.id));
+      }
+    }
+    track('city_selected', { cityId: item.channelId, cityName: item.name });
+    router.push('/(tabs)/chat');
+  }
 
   // Section label — web: "Top cities right now" when any city has activity, else "Cities"
   // Rendered uppercase via textTransform → "TOP CITIES RIGHT NOW" / "CITIES"
@@ -222,6 +241,22 @@ export default function CitiesScreen() {
         </View>
       </View>
 
+      {/* ── Back to my location CTA — visible only when detected city ≠ active city ── */}
+      {detectedCity && detectedCity.channelId !== activeCity?.channelId && (
+        <TouchableOpacity
+          style={styles.backToLocationBtn}
+          onPress={() => switchToCity(detectedCity)}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="locate" size={18} color={Colors.accent} style={styles.backToLocationIcon} />
+          <View style={styles.backToLocationText}>
+            <Text style={styles.backToLocationLabel}>Back to my location</Text>
+            <Text style={styles.backToLocationSub}>{detectedCity.name}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
+        </TouchableOpacity>
+      )}
+
       {/* ── City list ── */}
       {loading ? (
         <View style={styles.center}>
@@ -243,28 +278,7 @@ export default function CitiesScreen() {
             <CityCard
               city={item}
               isActive={item.channelId === activeCity?.channelId}
-              onPress={() => {
-                setCity(item);
-                // Persist new channelId so relaunch restores the correct city.
-                // Bug: without this, identity.channelId stays stale in AsyncStorage
-                // and the boot auto-rejoin restores the OLD city on next launch.
-                if (identity) {
-                  const updated = { ...identity, channelId: item.channelId };
-                  saveIdentity(updated).catch(() => {});
-                  setIdentity(updated);
-                }
-                // Join new city on the server and socket
-                if (identity && sessionId) {
-                  joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
-                  if (socket.isConnected) {
-                    socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
-                  } else {
-                    socket.on('connected', () => socket.joinCity(item.channelId, sessionId, nickname, account?.id));
-                  }
-                }
-                track('city_selected', { cityId: item.channelId, cityName: item.name });
-                router.push('/(tabs)/chat');
-              }}
+              onPress={() => switchToCity(item)}
             />
           )}
           refreshControl={
@@ -375,6 +389,35 @@ const styles = StyleSheet.create({
     letterSpacing:     1.1,
     textTransform:     'uppercase',
     color:             Colors.muted,
+  },
+
+  // ── Back to my location CTA ──────────────────────────────────────────────
+  backToLocationBtn: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    marginHorizontal:  12,
+    marginTop:         12,
+    marginBottom:      4,
+    paddingHorizontal: 18,
+    paddingVertical:   14,
+    borderRadius:      16,
+    backgroundColor:   'rgba(194,74,56,0.10)',
+    borderWidth:       1,
+    borderColor:       'rgba(194,74,56,0.22)',
+  },
+  backToLocationIcon: { marginRight: 12 },
+  backToLocationText: { flex: 1 },
+  backToLocationLabel: {
+    fontSize:    15,
+    fontWeight:  '700',
+    color:       Colors.accent,
+    letterSpacing: -0.1,
+  },
+  backToLocationSub: {
+    fontSize:   13,
+    fontWeight: '500',
+    color:      Colors.muted,
+    marginTop:  1,
   },
 
   listContent: { paddingBottom: 24 },

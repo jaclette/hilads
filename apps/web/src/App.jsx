@@ -575,6 +575,8 @@ export default function App() {
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
   const [previewTopics,     setPreviewTopics]     = useState([])
   const [previewChannelId, setPreviewChannelId]   = useState(null)
+  const [geoChannelId,    setGeoChannelId]        = useState(null)  // geo-resolved channelId, never changes on city switch
+  const [geoCity,         setGeoCity]             = useState(null)  // geo-resolved city name
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
@@ -1148,6 +1150,8 @@ export default function App() {
       setCityCountry(location.country ?? null)
       setPreviewTimezone(location.timezone ?? 'UTC')
       setPreviewChannelId(location.channelId ?? null)
+      setGeoChannelId(location.channelId ?? null)
+      setGeoCity(location.city ?? null)
       setGeoState('resolved')
       return location
     } catch (err) {
@@ -3103,6 +3107,23 @@ export default function App() {
               autoFocus
             />
           </div>
+          {geoChannelId && geoChannelId !== channelId && (() => {
+            const geoCh = channels.find(ch => ch.channelId === geoChannelId)
+            if (!geoCh) return null
+            return (
+              <button
+                className="back-to-location-btn"
+                onClick={() => switchCity(geoCh.channelId, geoCh.city, geoCh.timezone, geoCh.country)}
+              >
+                <span className="back-to-location-icon">📍</span>
+                <span className="back-to-location-text">
+                  <span className="back-to-location-label">Back to my location</span>
+                  <span className="back-to-location-sub">{geoCh.city}</span>
+                </span>
+                <span className="back-to-location-arrow">→</span>
+              </button>
+            )
+          })()}
           <div className="page-body">
             {channelsLoading ? (
               <div className="city-skeleton">

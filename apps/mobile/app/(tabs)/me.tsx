@@ -29,7 +29,8 @@ import { saveIdentity } from '@/lib/identity';
 import { updateProfile } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
-import { fetchUserFriends } from '@/api/users';
+import { fetchUserFriends, fetchUserVibes } from '@/api/users';
+import type { UserVibe } from '@/api/users';
 import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
 import type { HiladsEvent, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
@@ -126,6 +127,10 @@ export default function MeScreen() {
   const [saveError,          setSaveError]           = useState<string | null>(null);
   const [myFriends,          setMyFriends]           = useState<UserDTO[]>([]);
   const [friendsLoading,     setFriendsLoading]      = useState(false);
+  const [myReceivedVibes,    setMyReceivedVibes]     = useState<UserVibe[]>([]);
+  const [myVibeScore,        setMyVibeScore]         = useState<number | null>(null);
+  const [myVibeCount,        setMyVibeCount]         = useState(0);
+  const [vibesLoading,       setVibesLoading]        = useState(true);
 
   // Re-sync local events when hook loads
   useEffect(() => { setLocalEvents(rawEvents); }, [rawEvents]);
@@ -138,6 +143,19 @@ export default function MeScreen() {
       .then(data => setMyFriends(data.friends))
       .catch(() => {})
       .finally(() => setFriendsLoading(false));
+  }, [account?.id]);
+
+  // Load vibes received on my own profile
+  useEffect(() => {
+    if (!account?.id) { setVibesLoading(false); return; }
+    fetchUserVibes(account.id)
+      .then(data => {
+        setMyReceivedVibes(data.vibes ?? []);
+        setMyVibeScore(data.score);
+        setMyVibeCount(data.count ?? 0);
+      })
+      .catch(() => {})
+      .finally(() => setVibesLoading(false));
   }, [account?.id]);
 
   // Re-sync form state if account changes externally (e.g. after login)
@@ -692,6 +710,52 @@ export default function MeScreen() {
           </View>
         )}
 
+        {/* ── Vibes received ─────────────────────────────────────────────── */}
+        {!isGuest && !vibesLoading && (
+          <View style={styles.eventsCard}>
+            <Text style={styles.eventsLabel}>VIBES RECEIVED</Text>
+            {myVibeCount > 0 && (
+              <View style={styles.vibeScoreCard}>
+                <View style={styles.vibeStarsRow}>
+                  {[1,2,3,4,5].map(s => (
+                    <Text key={s} style={s <= Math.round(myVibeScore ?? 0) ? styles.vibeStarOn : styles.vibeStarOff}>★</Text>
+                  ))}
+                </View>
+                <Text style={styles.vibeScoreAvg}>{myVibeScore?.toFixed(1)} vibe score</Text>
+                <Text style={styles.vibeScoreCount}>based on {myVibeCount} vibe{myVibeCount !== 1 ? 's' : ''}</Text>
+              </View>
+            )}
+            {myReceivedVibes.length > 0 ? (
+              myReceivedVibes.map((v, idx) => (
+                <View key={v.id}>
+                  {(idx > 0 || myVibeCount > 0) && <View style={styles.eventDivider} />}
+                  <View style={styles.receivedVibeRow}>
+                    {v.authorPhoto ? (
+                      <Image source={{ uri: v.authorPhoto }} style={styles.receivedVibeAvatar} resizeMode="cover" />
+                    ) : (
+                      <View style={[styles.receivedVibeAvatar, styles.receivedVibeAvatarFallback, { backgroundColor: avatarBg(v.authorName) }]}>
+                        <Text style={styles.receivedVibeAvatarInitial}>{(v.authorName || '?')[0].toUpperCase()}</Text>
+                      </View>
+                    )}
+                    <View style={styles.receivedVibeContent}>
+                      <View style={styles.receivedVibeHeader}>
+                        <Text style={styles.receivedVibeAuthor}>{v.authorName}</Text>
+                        <Text style={styles.receivedVibeRating}>{'★'.repeat(v.rating)}</Text>
+                      </View>
+                      {v.message ? <Text style={styles.receivedVibeMsg}>{v.message}</Text> : null}
+                    </View>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <>
+                <Text style={styles.eventsEmpty}>No vibes yet.</Text>
+                <Text style={styles.eventsEmpty}>Your score will appear once people leave you a note ✨</Text>
+              </>
+            )}
+          </View>
+        )}
+
         {/* Version — tap 5× to open debug panel */}
         <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
           <Text style={styles.version}>v{APP_VERSION}</Text>
@@ -1217,6 +1281,71 @@ const styles = StyleSheet.create({
   friendBadgeText: {
     fontSize: FontSizes.xs,
     color:    Colors.muted,
+  },
+
+  // ── Received vibes (self profile) ────────────────────────────────────────
+  vibeScoreCard: {
+    alignItems:      'center',
+    gap:             4,
+    padding:         Spacing.md,
+    marginBottom:    Spacing.sm,
+    backgroundColor: 'rgba(251,191,36,0.04)',
+    borderRadius:    Radius.lg,
+    borderWidth:     1,
+    borderColor:     'rgba(251,191,36,0.12)',
+  },
+  vibeStarsRow:  { flexDirection: 'row', gap: 4 },
+  vibeStarOn:    { fontSize: 20, color: '#fbbf24' },
+  vibeStarOff:   { fontSize: 20, color: 'rgba(255,255,255,0.12)' },
+  vibeScoreAvg: {
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  vibeScoreCount: {
+    fontSize: FontSizes.xs,
+    color:    Colors.muted2,
+  },
+  receivedVibeRow: {
+    flexDirection: 'row',
+    alignItems:    'flex-start',
+    gap:           10,
+    paddingVertical: Spacing.xs,
+  },
+  receivedVibeAvatar: {
+    width:        36,
+    height:       36,
+    borderRadius: 18,
+    flexShrink:   0,
+  },
+  receivedVibeAvatarFallback: {
+    alignItems:     'center',
+    justifyContent: 'center',
+  },
+  receivedVibeAvatarInitial: {
+    fontSize:   14,
+    fontWeight: '700',
+    color:      '#fff',
+  },
+  receivedVibeContent: { flex: 1, gap: 2 },
+  receivedVibeHeader: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'space-between',
+  },
+  receivedVibeAuthor: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  receivedVibeRating: {
+    fontSize: FontSizes.sm,
+    color:    '#fbbf24',
+  },
+  receivedVibeMsg: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    lineHeight: 18,
   },
 
   // ── Sticky CTA bar ────────────────────────────────────────────────────────

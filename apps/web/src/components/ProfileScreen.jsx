@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react'
-import { updateProfile, uploadImage } from '../api'
+import { useState, useEffect, useRef } from 'react'
+import { updateProfile, uploadImage, fetchUserVibes } from '../api'
 import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
@@ -57,6 +57,23 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [pickTip, setPickTip]               = useState(account.ambassadorPicks?.tip ?? '')
   const [pickStory, setPickStory]           = useState(account.ambassadorPicks?.story ?? '')
   const fileRef = useRef(null)
+
+  const [myReceivedVibes, setMyReceivedVibes] = useState([])
+  const [myVibeScore,     setMyVibeScore]     = useState(null)
+  const [myVibeCount,     setMyVibeCount]     = useState(0)
+  const [vibesLoading,    setVibesLoading]    = useState(true)
+
+  useEffect(() => {
+    if (!account?.id) { setVibesLoading(false); return }
+    fetchUserVibes(account.id)
+      .then(data => {
+        setMyReceivedVibes(data.vibes ?? [])
+        setMyVibeScore(data.score)
+        setMyVibeCount(data.count ?? 0)
+      })
+      .catch(() => {})
+      .finally(() => setVibesLoading(false))
+  }, [account?.id])
 
   function toggleInterest(i) {
     setInterests(prev => {
@@ -368,6 +385,52 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                 </div>
               )
             })}
+          </div>
+        )}
+
+        {!vibesLoading && (
+          <div className="profile-card">
+            <p className="me-section-label">Vibes received</p>
+            {myVibeCount > 0 && (
+              <div className="pub-profile-vibe-score">
+                <div className="pub-profile-vibe-stars">
+                  {[1,2,3,4,5].map(s => (
+                    <span key={s} className={s <= Math.round(myVibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}>★</span>
+                  ))}
+                </div>
+                <span className="pub-profile-vibe-avg">{myVibeScore?.toFixed(1)} vibe score</span>
+                <span className="pub-profile-vibe-count">based on {myVibeCount} vibe{myVibeCount !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+            {myReceivedVibes.length > 0 ? (
+              <div className="pub-profile-vibes">
+                {myReceivedVibes.map(v => {
+                  const [vc1, vc2] = avatarColors(v.authorName || '?')
+                  return (
+                    <div key={v.id} className="pub-profile-vibe-row">
+                      {v.authorPhoto
+                        ? <img className="pub-profile-vibe-avatar" src={v.authorPhoto} alt={v.authorName} />
+                        : <span className="pub-profile-vibe-avatar pub-profile-vibe-avatar--initials" style={{ background: `linear-gradient(135deg, ${vc1}, ${vc2})` }}>
+                            {(v.authorName || '?')[0].toUpperCase()}
+                          </span>
+                      }
+                      <div className="pub-profile-vibe-content">
+                        <div className="pub-profile-vibe-header">
+                          <span className="pub-profile-vibe-author">{v.authorName}</span>
+                          <span className="pub-profile-vibe-rating">{'★'.repeat(v.rating)}</span>
+                        </div>
+                        {v.message && <p className="pub-profile-vibe-msg">{v.message}</p>}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ) : (
+              <div className="pub-profile-vibes-empty">
+                <p>No vibes yet</p>
+                <p>Your score will appear here once people leave you a note ✨</p>
+              </div>
+            )}
           </div>
         )}
 

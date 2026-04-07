@@ -1,5 +1,6 @@
-import { Tabs } from 'expo-router';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRef, useCallback } from 'react';
+import { Tabs, useFocusEffect } from 'expo-router';
+import { View, Text, TouchableOpacity, StyleSheet, BackHandler, ToastAndroid, Platform } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -147,6 +148,28 @@ const styles = StyleSheet.create({
 
 export default function TabsLayout() {
   const { joined } = useApp();
+
+  // ── Android hardware back — double-press to exit ───────────────────────────
+  // useFocusEffect scopes this handler to when the tab group is focused.
+  // It auto-cleans up when a root-stack screen (event, DM, etc.) gains focus,
+  // so back navigation on those screens is unaffected.
+  const lastBackPressRef = useRef(0);
+  useFocusEffect(
+    useCallback(() => {
+      if (Platform.OS !== 'android') return;
+      const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+        const now = Date.now();
+        if (now - lastBackPressRef.current < 2000) {
+          return false; // second press → let the OS exit
+        }
+        lastBackPressRef.current = now;
+        ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
+        return true; // first press → show toast, block exit
+      });
+      return () => sub.remove();
+    }, []),
+  );
+
   // initialRouteName is only read at first mount. Since useAppBoot delays
   // setBooting(false) until after setJoined(true) for returning users, joined
   // is already true when this navigator first mounts — so it opens on 'chat'
