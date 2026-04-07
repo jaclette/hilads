@@ -8,6 +8,15 @@ export const API_URL =
 export const WS_URL =
   process.env.EXPO_PUBLIC_WS_URL ?? 'ws://localhost:8081';
 
+export const BASE_URL =
+  process.env.EXPO_PUBLIC_BASE_URL ?? 'https://hilads.live';
+
+// ── Link builders ─────────────────────────────────────────────────────────────
+
+export function buildEventUrl(eventId: string): string {
+  return `${BASE_URL}/e/${eventId}`;
+}
+
 // ── Env diagnostics — unconditional, fires in both dev and production APK ─────
 console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined — will use localhost fallback!)');
 console.log('[env] API_URL (resolved)  =', API_URL);

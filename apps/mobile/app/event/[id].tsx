@@ -16,7 +16,7 @@ import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
 import type { Message, EventParticipant, ReplyRef } from '@/types';
@@ -154,9 +154,9 @@ export default function EventDetailScreen() {
 
   async function handleShare() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const url = `https://hilads.com/e/${id}`;
+    const url = buildEventUrl(id);
     const title = event?.title ?? 'Check out this event on Hilads';
-    await Share.share({ title, url, message: `${title} — ${url}` });
+    await Share.share({ title, url, message: `${title} ${url}` });
   }
 
   // Refetch participants after join/leave toggle
