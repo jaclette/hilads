@@ -86,12 +86,17 @@ class MessageRepository
             'createdAt' => $createdAt,
         ];
 
-        if (!empty($row['reply_to_id'])) {
+        // reply_to_id may be absent from the row if the migration has not run yet,
+        // or if the parent was deleted (ON DELETE SET NULL → null).
+        // Use ?? null throughout so a missing key never causes an undefined-index notice
+        // or a 500 — replies degrade silently rather than breaking message delivery.
+        $replyId = $row['reply_to_id'] ?? null;
+        if (!empty($replyId)) {
             $msg['replyTo'] = [
-                'id'       => $row['reply_to_id'],
+                'id'       => $replyId,
                 'nickname' => $row['reply_to_nickname'] ?? '',
-                'content'  => $row['reply_to_content'] ?? '',
-                'type'     => $row['reply_to_type']    ?? 'text',
+                'content'  => $row['reply_to_content']  ?? '',
+                'type'     => $row['reply_to_type']     ?? 'text',
             ];
         }
 
