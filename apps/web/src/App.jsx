@@ -3946,7 +3946,7 @@ export default function App() {
               ) : (
                 goingList.map(p => {
                   const isRegistered = p.accountType === 'registered'
-                  const [c1, c2] = avatarColors(p.displayName)
+                  const [c1, c2] = avatarColors(p.id)
                   const badgeKey = p.badges?.[0]
                   return (
                     <div

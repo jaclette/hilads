@@ -70,7 +70,7 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
         {visible.map((p, i) => (
           <View
             key={p.id}
-            style={[stripStyles.avatar, { backgroundColor: avatarColor(p.displayName), marginLeft: i > 0 ? -10 : 0 }]}
+            style={[stripStyles.avatar, { backgroundColor: avatarColor(p.id), marginLeft: i > 0 ? -10 : 0 }]}
           >
             <Text style={stripStyles.avatarLetter}>{(p.displayName[0] ?? '?').toUpperCase()}</Text>
           </View>
@@ -469,7 +469,7 @@ export default function EventDetailScreen() {
                 const badgeKey = p.badges?.[0];
                 const badgeMeta = badgeKey ? BADGE_META[badgeKey] : null;
                 const initials  = (p.displayName ?? '?').slice(0, 2).toUpperCase();
-                const color     = avatarColor(p.displayName ?? '');
+                const color     = avatarColor(p.id);
                 const canTap    = isRegistered;
 
                 const handleTap = () => {
