@@ -1,21 +1,28 @@
 {
-  "routes": [
+  "redirects": [
     {
-      "src": "/manifest.webmanifest",
-      "headers": {
-        "Content-Type": "application/manifest+json; charset=utf-8",
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      },
-      "dest": "/manifest.webmanifest"
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "hilads.vercel.app" }],
+      "destination": "https://hilads.live/$1",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/manifest.webmanifest",
+      "headers": [
+        { "key": "Content-Type",  "value": "application/manifest+json; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
     },
     {
-      "src": "/sw.js",
-      "headers": {
-        "Cache-Control": "public, max-age=0, must-revalidate"
-      },
-      "dest": "/sw.js"
-    },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

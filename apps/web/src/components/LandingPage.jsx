@@ -366,11 +366,11 @@ export default function LandingPage({
         </div>
 
         <h1 className="lp-hero-h1">
-          Meet locals.<br />Find events.<br />Feel the city.
+          Feel local.<br />Anywhere.
         </h1>
 
         <p className="lp-hero-sub">
-          See what's happening near you, right now.<br />Join in or open your own spot.
+          The city is alive around you.<br />Find people, join what's on, or open your own spot.
         </p>
 
         <div ref={heroJoinRef} className="lp-hero-join">
