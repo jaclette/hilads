@@ -103,6 +103,17 @@ export default function EventDetailScreen() {
   const replyingToRef = useRef<ReplyRef | null>(null);
   replyingToRef.current = replyingTo;
 
+  const flatListRef = useRef<FlatList<Message>>(null);
+  const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
+
+  function scrollToMessage(id: string) {
+    const idx = feed.findIndex(m => m.id === id);
+    if (idx === -1) return;
+    flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    setHighlightedMsgId(id);
+    setTimeout(() => setHighlightedMsgId(null), 1500);
+  }
+
   const {
     event, loading: eventLoading, error: eventError,
     toggling, toggleParticipation,
@@ -341,6 +352,7 @@ export default function EventDetailScreen() {
           behavior="padding"
         >
           <FlatList
+            ref={flatListRef}
             data={feed}
             keyExtractor={(m, i) => m.id ?? String(i)}
             renderItem={({ item, index }) => {
@@ -368,16 +380,19 @@ export default function EventDetailScreen() {
                   isGrouped={isGrouped}
                   showTime={showTime}
                   dateLabel={dateLabel}
+                  isHighlighted={highlightedMsgId === item.id}
                   onLongPress={(msg) => {
                     if (!msg.id) return;
                     setReplyingTo({ id: msg.id, nickname: msg.nickname, content: msg.content ?? '', type: msg.type });
                   }}
+                  onReplyQuotePress={scrollToMessage}
                 />
               );
             }}
             inverted
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
+            onScrollToIndexFailed={() => {}}
             ListHeaderComponent={
               msgsLoading ? (
                 <View style={styles.msgsLoading}>

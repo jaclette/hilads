@@ -91,15 +91,17 @@ function avatarColor(str: string): string {
 //   isLast  = newest in the group (bottom of cluster, shows timestamp)
 
 interface RowProps {
-  msg:          DmMessage;
-  isMine:       boolean;
-  isFirst:      boolean;   // first (oldest) msg in this sender's run
-  isLast:       boolean;   // last  (newest) msg in this sender's run
-  color:        string;    // avatar accent color for received messages
-  initial:      string;
-  dateLabel?:   string;    // if set, render a date separator above this row
-  onImagePress: (uri: string) => void;
-  onLongPress?: (msg: DmMessage) => void;
+  msg:                DmMessage;
+  isMine:             boolean;
+  isFirst:            boolean;   // first (oldest) msg in this sender's run
+  isLast:             boolean;   // last  (newest) msg in this sender's run
+  color:              string;    // avatar accent color for received messages
+  initial:            string;
+  dateLabel?:         string;    // if set, render a date separator above this row
+  onImagePress:       (uri: string) => void;
+  onLongPress?:       (msg: DmMessage) => void;
+  onReplyQuotePress?: (replyToId: string) => void;
+  isHighlighted?:     boolean;
 }
 
 function parseDmLocation(content: string): { line1: string; place: string; lat?: number; lng?: number; addr: string } {
@@ -188,11 +190,12 @@ const dmLocStyles = StyleSheet.create({
   tapHintMine: { color: 'rgba(255,255,255,0.5)' },
 });
 
-function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress }: RowProps) {
+function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted }: RowProps) {
   const router = useRouter();
   const { account } = useApp();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(6)).current;
+  const highlightAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -200,6 +203,12 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
       Animated.timing(translateY, { toValue: 0, duration: 180, useNativeDriver: true }),
     ]).start();
   }, []);
+
+  useEffect(() => {
+    if (!isHighlighted) return;
+    highlightAnim.setValue(0.22);
+    Animated.timing(highlightAnim, { toValue: 0, duration: 1400, useNativeDriver: false }).start();
+  }, [isHighlighted]);
 
   const isSending = msg.status === 'sending';
   const isFailed  = msg.status === 'failed';
@@ -218,6 +227,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
         isMine ? styles.rowWrapperMine : styles.rowWrapperOther,
         isFirst ? styles.rowFirst : styles.rowGrouped,
         { opacity, transform: [{ translateY }] },
+        { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.22], outputRange: ['transparent', 'rgba(255,122,60,0.15)'] }) },
       ]}>
       {/* Received: small avatar dot to the left, visible only on first of group */}
       {/* Tap avatar → open sender's public profile */}
@@ -278,12 +288,18 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               isFailed  && styles.bubbleFailed,
             ]}>
               {msg.replyTo && (
-                <View style={[dmReplyStyles.quote, isMine ? dmReplyStyles.quoteMine : dmReplyStyles.quoteOther]}>
-                  <Text style={[dmReplyStyles.name, isMine && dmReplyStyles.nameMine]}>{msg.replyTo.nickname}</Text>
-                  <Text style={[dmReplyStyles.text, isMine && dmReplyStyles.textMine]} numberOfLines={2}>
-                    {msg.replyTo.type === 'image' ? '📷 Photo' : (msg.replyTo.content || 'Original message unavailable')}
-                  </Text>
-                </View>
+                <TouchableOpacity
+                  activeOpacity={msg.replyTo.id && onReplyQuotePress ? 0.65 : 1}
+                  onPress={msg.replyTo.id && onReplyQuotePress ? () => onReplyQuotePress!(msg.replyTo!.id!) : undefined}
+                  disabled={!msg.replyTo.id || !onReplyQuotePress}
+                >
+                  <View style={[dmReplyStyles.quote, isMine ? dmReplyStyles.quoteMine : dmReplyStyles.quoteOther]}>
+                    <Text style={[dmReplyStyles.name, isMine && dmReplyStyles.nameMine]}>{msg.replyTo.nickname}</Text>
+                    <Text style={[dmReplyStyles.text, isMine && dmReplyStyles.textMine]} numberOfLines={2}>
+                      {msg.replyTo.type === 'image' ? '📷 Photo' : (msg.replyTo.content || 'Original message unavailable')}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               )}
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                 {msg.content}
@@ -327,7 +343,17 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const [replyingTo,    setReplyingTo]    = useState<ReplyRef | null>(null);
   const replyingToRef = useRef<ReplyRef | null>(null);
   replyingToRef.current = replyingTo;
+  const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
+  const flatListRef = useRef<FlatList<DmMessage>>(null);
   const lastSel   = useRef({ start: 0, end: 0 });
+
+  function scrollToMessage(id: string) {
+    const idx = messages.findIndex(m => m.id === id);
+    if (idx === -1) return;
+    flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    setHighlightedMsgId(id);
+    setTimeout(() => setHighlightedMsgId(null), 1500);
+  }
   const vibScale  = useRef(new Animated.Value(1)).current;
 
   function vibePressIn() {
@@ -511,13 +537,15 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         initial={initial}
         dateLabel={dateLabel}
         onImagePress={setPreviewUri}
+        isHighlighted={highlightedMsgId === item.id}
+        onReplyQuotePress={scrollToMessage}
         onLongPress={(msg) => {
           if (!msg.id || msg.id.startsWith('local-')) return;
           setReplyingTo({ id: msg.id, nickname: msg.sender_name, content: msg.content ?? '', type: msg.type ?? 'text' });
         }}
       />
     );
-  }, [messages, account?.id, color, initial]);
+  }, [messages, account?.id, color, initial, highlightedMsgId]);
 
   return (
     <KeyboardAvoidingView
@@ -536,6 +564,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         </View>
       ) : (
         <FlatList
+          ref={flatListRef}
           data={messages}
           keyExtractor={(m) => m.id}
           renderItem={renderItem}
@@ -543,6 +572,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          onScrollToIndexFailed={() => {}}
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <Text style={styles.emptyEmoji}>💬</Text>
@@ -749,26 +779,36 @@ export default function DMThreadScreen() {
 
 // ── DM Reply quote styles ─────────────────────────────────────────────────────
 
+// DM bubbles: paddingHorizontal 18, paddingVertical 12 (see styles.bubble)
 const dmReplyStyles = StyleSheet.create({
   quote: {
-    borderRadius:      8,
-    paddingHorizontal: 10,
-    paddingVertical:   6,
-    marginBottom:      6,
+    marginTop:    -12,
+    marginLeft:   -18,
+    marginRight:  -18,
+    marginBottom:  9,
+    paddingHorizontal: 18,
+    paddingVertical:   8,
     borderLeftWidth:   3,
+    borderBottomWidth: 1,
   },
   quoteOther: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderLeftColor: 'rgba(255,255,255,0.25)',
+    backgroundColor:   'rgba(0,0,0,0.12)',
+    borderLeftColor:   'rgba(255,122,60,0.75)',
+    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderTopLeftRadius:  18,
+    borderTopRightRadius: 18,
   },
   quoteMine: {
-    backgroundColor: 'rgba(0,0,0,0.18)',
-    borderLeftColor: 'rgba(255,255,255,0.45)',
+    backgroundColor:   'rgba(0,0,0,0.2)',
+    borderLeftColor:   'rgba(255,255,255,0.45)',
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderTopLeftRadius:  18,
+    borderTopRightRadius: 18,
   },
-  name:     { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.55)', marginBottom: 2 },
-  nameMine: { color: 'rgba(255,255,255,0.75)' },
+  name:     { fontSize: 11, fontWeight: '700', color: '#FF7A3C', marginBottom: 2, lineHeight: 15 },
+  nameMine: { color: 'rgba(255,255,255,0.8)' },
   text:     { fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 16 },
-  textMine: { color: 'rgba(255,255,255,0.6)' },
+  textMine: { color: 'rgba(255,255,255,0.55)' },
 });
 
 const dmComposerReplyStyles = StyleSheet.create({

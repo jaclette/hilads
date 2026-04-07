@@ -541,6 +541,8 @@ export default function App() {
   const [sending, setSending] = useState(false)
   const [replyingTo, setReplyingTo] = useState(null)   // { id, nickname, content, type }
   const [actionBubble, setActionBubble] = useState(null) // { msg, x, y }
+  const [highlightedMsgId, setHighlightedMsgId] = useState(null)
+  const msgRefsMap = useRef(new Map())
   const [sendError, setSendError] = useState(null)
   const [onlineCount, setOnlineCount] = useState(null)
   const weatherLabel = useMemo(() => {
@@ -1083,6 +1085,14 @@ export default function App() {
       loadingOlderRef.current = false
       setLoadingOlder(false)
     }
+  }
+
+  function scrollToMessage(id) {
+    const el = msgRefsMap.current.get(id)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setHighlightedMsgId(id)
+    setTimeout(() => setHighlightedMsgId(null), 1500)
   }
 
   // Attach scroll listener to the messages container.
@@ -2787,14 +2797,14 @@ export default function App() {
             const [c1, c2] = avatarColors(item.nickname)
 
             return (
-              <div key={item.id}>
+              <div key={item.id} ref={el => { if (el) msgRefsMap.current.set(item.id, el); else msgRefsMap.current.delete(item.id) }}>
                 {dateLabel && (
                   <div className="date-sep">
                     <span className="date-sep-label">{dateLabel}</span>
                   </div>
                 )}
                 <div
-                  className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate'].filter(Boolean).join(' ')}
+                  className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate', highlightedMsgId === item.id ? 'msg-highlight' : ''].filter(Boolean).join(' ')}
                   style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
                 >
                   {!isMine && !isGrouped && (
@@ -2827,14 +2837,6 @@ export default function App() {
                       setActionBubble({ msg: item, x: rect.left, y: rect.top, isMine })
                     }}
                   >
-                    {item.replyTo && (
-                      <div className="msg-reply-quote">
-                        <span className="msg-reply-quote-name">{item.replyTo.nickname}</span>
-                        <span className="msg-reply-quote-text">
-                          {item.replyTo.type === 'image' ? '📷 Photo' : (item.replyTo.content || 'Original message unavailable')}
-                        </span>
-                      </div>
-                    )}
                     {item.type === 'image' ? (
                       <img
                         src={item.imageUrl}
@@ -2873,7 +2875,20 @@ export default function App() {
                         )
                       })()
                     ) : (
-                      <span className="msg-content">{item.content}</span>
+                      <div className="msg-content">
+                        {item.replyTo && (
+                          <div
+                            className={`msg-reply-quote${item.replyTo.id ? ' msg-reply-quote--tappable' : ''}`}
+                            onClick={item.replyTo.id ? (e) => { e.stopPropagation(); scrollToMessage(item.replyTo.id) } : undefined}
+                          >
+                            <span className="msg-reply-quote-name">{item.replyTo.nickname}</span>
+                            <span className="msg-reply-quote-text">
+                              {item.replyTo.type === 'image' ? '📷 Photo' : (item.replyTo.content || 'Original message unavailable')}
+                            </span>
+                          </div>
+                        )}
+                        <span className="msg-text">{item.content}</span>
+                      </div>
                     )}
                   </div>
                   {showTime && item.createdAt && (

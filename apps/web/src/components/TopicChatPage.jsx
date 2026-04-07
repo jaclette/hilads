@@ -60,9 +60,11 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   const [loading,    setLoading]    = useState(true)
   const [copied,     setCopied]     = useState(false)
 
-  const knownIdsRef = useRef(new Set())
-  const bottomRef   = useRef(null)
-  const inputRef    = useRef(null)
+  const knownIdsRef  = useRef(new Set())
+  const bottomRef    = useRef(null)
+  const inputRef     = useRef(null)
+  const msgRefsMap   = useRef(new Map())
+  const [highlightedMsgId, setHighlightedMsgId] = useState(null)
 
   const icon = CATEGORY_ICONS[topic.category] ?? '💬'
 
@@ -152,6 +154,14 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
     }
   }
 
+  function scrollToMessage(id) {
+    const el = msgRefsMap.current.get(id)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setHighlightedMsgId(id)
+    setTimeout(() => setHighlightedMsgId(null), 1500)
+  }
+
   async function handleShare() {
     const result = await shareTopic(topic.title, topic.id)
     if (result === 'copied') {
@@ -224,7 +234,11 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
           }
 
           return (
-            <div key={item.id ?? idx} className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate'].filter(Boolean).join(' ')}>
+            <div
+              key={item.id ?? idx}
+              ref={el => { if (item.id) { if (el) msgRefsMap.current.set(item.id, el); else msgRefsMap.current.delete(item.id) } }}
+              className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate', highlightedMsgId === item.id ? 'msg-highlight' : ''].filter(Boolean).join(' ')}
+            >
               {!isMine && !isGrouped && (
                 <div className="msg-meta">
                   <span className="msg-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
@@ -240,10 +254,24 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
                   )}
                 </div>
               )}
-              <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
-                <span className="msg-content" style={item.status === 'failed' ? { opacity: 0.5 } : item.status === 'sending' ? { opacity: 0.7 } : undefined}>
-                  {item.content}
-                </span>
+              <div
+                className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}
+                style={item.status === 'failed' ? { opacity: 0.5 } : item.status === 'sending' ? { opacity: 0.7 } : undefined}
+              >
+                <div className="msg-content">
+                  {item.replyTo && (
+                    <div
+                      className={`msg-reply-quote${item.replyTo.id ? ' msg-reply-quote--tappable' : ''}`}
+                      onClick={item.replyTo.id ? () => scrollToMessage(item.replyTo.id) : undefined}
+                    >
+                      <span className="msg-reply-quote-name">{item.replyTo.nickname}</span>
+                      <span className="msg-reply-quote-text">
+                        {item.replyTo.type === 'image' ? '📷 Photo' : (item.replyTo.content || 'Original message unavailable')}
+                      </span>
+                    </div>
+                  )}
+                  <span className="msg-text">{item.content}</span>
+                </div>
               </div>
               {showTime && (
                 <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(item.createdAt)}</span>

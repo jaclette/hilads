@@ -24,6 +24,17 @@ export default function CityChatScreen() {
   const replyingToRef = useRef<ReplyRef | null>(null);
   replyingToRef.current = replyingTo;
 
+  const flatListRef = useRef<FlatList<Message>>(null);
+  const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
+
+  function scrollToMessage(id: string) {
+    const idx = messages.findIndex(m => m.id === id);
+    if (idx === -1) return;
+    flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    setHighlightedMsgId(id);
+    setTimeout(() => setHighlightedMsgId(null), 1500);
+  }
+
   const loadFn = useCallback(
     (opts?: { beforeId?: string }) => fetchMessages(channelId, opts),
     [channelId],
@@ -83,21 +94,25 @@ export default function CityChatScreen() {
           </View>
         ) : (
           <FlatList
+            ref={flatListRef}
             data={messages}
             keyExtractor={(m) => m.id}
             renderItem={({ item }) => (
               <ChatMessage
                 message={item}
                 myGuestId={identity?.guestId}
+                isHighlighted={highlightedMsgId === item.id}
                 onLongPress={(msg) => {
                   if (!msg.id) return;
                   setReplyingTo({ id: msg.id, nickname: msg.nickname, content: msg.content ?? '', type: msg.type });
                 }}
+                onReplyQuotePress={scrollToMessage}
               />
             )}
             inverted
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
+            onScrollToIndexFailed={() => {}}
             onEndReached={hasMore ? loadOlder : undefined}
             onEndReachedThreshold={0.2}
             ListFooterComponent={

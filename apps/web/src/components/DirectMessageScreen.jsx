@@ -79,6 +79,8 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const knownIds                      = useRef(new Set())
   const fileRef                       = useRef(null)
   const dmInputRef                    = useRef(null)
+  const msgRefsMap                    = useRef(new Map())
+  const [highlightedMsgId, setHighlightedMsgId] = useState(null)
 
   const otherName = otherUser?.display_name ?? '?'
   const [c1, c2] = avatarColors(otherName)
@@ -122,6 +124,14 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  function scrollToMessage(id) {
+    const el = msgRefsMap.current.get(id)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    setHighlightedMsgId(id)
+    setTimeout(() => setHighlightedMsgId(null), 1500)
+  }
 
   async function handleImageSelect(e) {
     const file = e.target.files?.[0]
@@ -241,13 +251,16 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
           const showTime  = !nextMsg || nextMsg.sender_id !== msg.sender_id
           const dateLabel = !isSameDay(msg.created_at, prevMsg?.created_at) ? formatDateLabel(msg.created_at) : null
           return (
-            <div key={msg.id ?? msg.localId ?? i}>
+            <div
+              key={msg.id ?? msg.localId ?? i}
+              ref={el => { if (msg.id) { if (el) msgRefsMap.current.set(msg.id, el); else msgRefsMap.current.delete(msg.id) } }}
+            >
               {dateLabel && (
                 <div className="date-sep">
                   <span className="date-sep-label">{dateLabel}</span>
                 </div>
               )}
-              <div className={`dm-bubble-wrap${isMe ? ' dm-bubble-wrap--me' : ''}${isGrouped ? ' dm-bubble-wrap--grouped' : ''}`}>
+              <div className={`dm-bubble-wrap${isMe ? ' dm-bubble-wrap--me' : ''}${isGrouped ? ' dm-bubble-wrap--grouped' : ''}${highlightedMsgId === msg.id ? ' dm-bubble-wrap--highlight' : ''}`}>
                 {msg.type === 'image'
                   ? <img
                       src={msg.image_url}
@@ -286,7 +299,18 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                         )
                       })()
                     : <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
-                        {msg.content}
+                        {msg.replyTo && (
+                          <div
+                            className={`dm-reply-quote${msg.replyTo.id ? ' dm-reply-quote--tappable' : ''}`}
+                            onClick={msg.replyTo.id ? () => scrollToMessage(msg.replyTo.id) : undefined}
+                          >
+                            <span className="dm-reply-quote-name">{msg.replyTo.nickname}</span>
+                            <span className="dm-reply-quote-text">
+                              {msg.replyTo.type === 'image' ? '📷 Photo' : (msg.replyTo.content || 'Original message unavailable')}
+                            </span>
+                          </div>
+                        )}
+                        <span className="msg-text">{msg.content}</span>
                       </div>
                 }
               </div>

@@ -189,6 +189,8 @@ interface Props {
   dateLabel?:   string;     // if set, render a date separator above this item
   onPromptCta?: (subtype: string) => void;  // called when a prompt card CTA is tapped
   onLongPress?: (msg: Message) => void;     // called on long-press; parent handles reply UI
+  onReplyQuotePress?: (replyToId: string) => void;  // tap on quoted preview → scroll to parent
+  isHighlighted?: boolean;                          // true = briefly flash orange highlight
 }
 
 // ── Animated event pill — fade + slide-up on mount, staggered by index ───────
@@ -367,13 +369,21 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted }: Props) {
   const router = useRouter();
   const { account } = useApp();
 
   // Hook called unconditionally — React rules require this before any early return
   const { opacity, translateY } = useEntryAnimation(200);
   const animStyle = { opacity, transform: [{ translateY }] } as const;
+
+  // Highlight flash when scroll-to-parent lands on this message
+  const highlightAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (!isHighlighted) return;
+    highlightAnim.setValue(0.28);
+    Animated.timing(highlightAnim, { toValue: 0, duration: 1400, useNativeDriver: false }).start();
+  }, [isHighlighted]);
 
   // Image preview state — must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);
@@ -569,6 +579,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         isGrouped ? styles.rowGrouped : styles.rowFirst,
         animStyle,
         isSending && styles.rowSending,
+        { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.28], outputRange: ['transparent', 'rgba(255,122,60,0.18)'] }) },
       ]}>
 
         {/* ── Avatar + author — web: .msg-meta ── */}
@@ -597,14 +608,20 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               isFailed && styles.bubbleFailed,
             ]}>
               {message.replyTo && (
-                <View style={[styles.replyQuote, isMine ? styles.replyQuoteMine : styles.replyQuoteOther]}>
-                  <Text style={[styles.replyQuoteName, isMine && styles.replyQuoteNameMine]}>
-                    {message.replyTo.nickname}
-                  </Text>
-                  <Text style={[styles.replyQuoteText, isMine && styles.replyQuoteTextMine]} numberOfLines={2}>
-                    {message.replyTo.type === 'image' ? '📷 Photo' : (message.replyTo.content || 'Original message unavailable')}
-                  </Text>
-                </View>
+                <TouchableOpacity
+                  activeOpacity={message.replyTo.id && onReplyQuotePress ? 0.65 : 1}
+                  onPress={message.replyTo.id && onReplyQuotePress ? () => onReplyQuotePress!(message.replyTo!.id!) : undefined}
+                  disabled={!message.replyTo.id || !onReplyQuotePress}
+                >
+                  <View style={[styles.replyQuote, isMine ? styles.replyQuoteMine : styles.replyQuoteOther]}>
+                    <Text style={[styles.replyQuoteName, isMine && styles.replyQuoteNameMine]}>
+                      {message.replyTo.nickname}
+                    </Text>
+                    <Text style={[styles.replyQuoteText, isMine && styles.replyQuoteTextMine]} numberOfLines={2}>
+                      {message.replyTo.type === 'image' ? '📷 Photo' : (message.replyTo.content || 'Original message unavailable')}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               )}
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                 {message.content}
@@ -898,35 +915,48 @@ const styles = StyleSheet.create({
   timestampMine:  { textAlign: 'right',  paddingRight: 2 },
   timestampOther: { textAlign: 'left',   paddingLeft: 2 },
 
-  // ── Reply quote block — appears inside bubble above message text ─────────
+  // ── Reply quote — bleeds to bubble edges (negative margins cancel padding) ─
+  // Mirrors the web bleed technique: quote spans full bubble width,
+  // a bottom border acts as a visual separator before the message text.
   replyQuote: {
-    borderRadius:      8,
-    paddingHorizontal: 10,
-    paddingVertical:   6,
-    marginBottom:      6,
+    // cancel bubble's own padding so the quote background spans edge-to-edge
+    marginTop:    -8,   // cancel paddingVertical
+    marginLeft:   -12,  // cancel paddingHorizontal
+    marginRight:  -12,
+    marginBottom: 8,
+    paddingHorizontal: 12,
+    paddingVertical:   7,
     borderLeftWidth:   3,
+    borderBottomWidth: 1,
   },
   replyQuoteOther: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderLeftColor: 'rgba(255,255,255,0.25)',
+    backgroundColor:  'rgba(0,0,0,0.12)',
+    borderLeftColor:  'rgba(255,122,60,0.75)',
+    borderBottomColor:'rgba(255,255,255,0.06)',
+    borderTopLeftRadius:  4,
+    borderTopRightRadius: 16,
   },
   replyQuoteMine: {
-    backgroundColor: 'rgba(0,0,0,0.18)',
-    borderLeftColor: 'rgba(255,255,255,0.45)',
+    backgroundColor:  'rgba(0,0,0,0.2)',
+    borderLeftColor:  'rgba(255,255,255,0.45)',
+    borderBottomColor:'rgba(255,255,255,0.1)',
+    borderTopLeftRadius:  16,
+    borderTopRightRadius: 4,
   },
   replyQuoteName: {
-    fontSize:   11,
-    fontWeight: '700',
-    color:      Colors.muted,
+    fontSize:     11,
+    fontWeight:   '700',
+    color:        '#FF7A3C',
     marginBottom: 2,
+    lineHeight:   15,
   },
-  replyQuoteNameMine: { color: 'rgba(255,255,255,0.75)' },
+  replyQuoteNameMine: { color: 'rgba(255,255,255,0.8)' },
   replyQuoteText: {
-    fontSize:  12,
-    color:     Colors.muted2,
+    fontSize:   12,
+    color:      Colors.muted2,
     lineHeight: 16,
   },
-  replyQuoteTextMine: { color: 'rgba(255,255,255,0.6)' },
+  replyQuoteTextMine: { color: 'rgba(255,255,255,0.55)' },
 
   // ── .msg-image ────────────────────────────────────────────────────────────
   image: { width: 280, height: 240, marginTop: 2 },
