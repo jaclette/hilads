@@ -7465,7 +7465,25 @@ img.dm-header-avatar {
   font-weight: 600;
 }
 
-/* ── 5. DOWNLOAD ──────────────────────────────────────────────────────────── */
+/* ── 6. SEO ───────────────────────────────────────────────────────────────── */
+
+.lp-seo {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.lp-seo-body {
+  max-width: 680px;
+  margin: 0 auto;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--muted2);
+  opacity: 0.55;
+  text-align: center;
+}
+
+/* ── 7. DOWNLOAD ──────────────────────────────────────────────────────────── */
 
 .lp-download {
   border-top: 1px solid rgba(255, 255, 255, 0.05);

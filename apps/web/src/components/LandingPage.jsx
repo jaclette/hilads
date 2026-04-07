@@ -28,19 +28,19 @@ const HOW_IT_WORKS = [
     icon: '📍',
     num: '01',
     title: 'Open the app',
-    desc: 'See your city live. Who\'s around, what\'s happening right now.',
+    desc: 'See who\'s around you and what\'s happening near you right now.',
   },
   {
     icon: '🎯',
     num: '02',
-    title: 'Choose your mode',
+    title: 'Pick your mode',
     desc: 'Local. You know the city.\nExploring. You want to feel it.',
   },
   {
     icon: '✨',
     num: '03',
-    title: 'Join or host',
-    desc: 'Jump into a hangout or open your own spot. Real life starts here.',
+    title: 'Jump in',
+    desc: 'Join a hangout or open your own spot. Real life starts here.',
   },
 ]
 
@@ -366,11 +366,11 @@ export default function LandingPage({
         </div>
 
         <h1 className="lp-hero-h1">
-          Feel local.<br />Anywhere.
+          Meet locals.<br />Find events.<br />Feel the city.
         </h1>
 
         <p className="lp-hero-sub">
-          Meet locals and explorers around you.<br />Jump into what's happening. Open your own spot.
+          See what's happening near you, right now.<br />Join in or open your own spot.
         </p>
 
         <div ref={heroJoinRef} className="lp-hero-join">
@@ -410,12 +410,12 @@ export default function LandingPage({
         <div className="lp-split-row lp-split-row--local">
           <div className="lp-split-text">
             <div className="lp-split-badge">🌍 Local</div>
-            <h2 className="lp-split-title">Open your city</h2>
-            <p className="lp-split-tagline">Your city is yours to shape.</p>
+            <h2 className="lp-split-title">Make things happen</h2>
+            <p className="lp-split-tagline">You know the best spots. Now share them.</p>
             <ul className="lp-split-bullets">
-              <li>Host recurring hangouts at bars, cafes, chill spots</li>
+              <li>Host recurring hangouts at your favorite local spots</li>
               <li>Bring people to places you love</li>
-              <li>Become the one who makes things happen</li>
+              <li>Become the reason people show up</li>
             </ul>
             <button className="lp-split-cta lp-split-cta--local" onClick={scrollToJoin}>
               Host your spot
@@ -433,12 +433,12 @@ export default function LandingPage({
           </div>
           <div className="lp-split-text">
             <div className="lp-split-badge lp-split-badge--exploring">🧭 Exploring</div>
-            <h2 className="lp-split-title">Feel local instantly</h2>
+            <h2 className="lp-split-title">Find real moments in any city</h2>
             <p className="lp-split-tagline">Wherever you land, find your people.</p>
             <ul className="lp-split-bullets lp-split-bullets--exploring">
-              <li>Discover real-time hangouts</li>
-              <li>Meet locals and other explorers</li>
-              <li>Skip tourist traps</li>
+              <li>Find real-time events near you</li>
+              <li>Meet locals and other explorers instantly</li>
+              <li>Skip tourist traps. Discover the real city.</li>
             </ul>
             <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
               See what's happening
@@ -451,7 +451,7 @@ export default function LandingPage({
       {/* ── 3. HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section className="lp-section lp-how">
         <p className="lp-section-eyebrow">How it works</p>
-        <h2 className="lp-section-title">Three steps to feel the city.</h2>
+        <h2 className="lp-section-title">Three steps to meet people near you.</h2>
 
         <div className="lp-steps">
           {HOW_IT_WORKS.map(s => (
@@ -494,17 +494,27 @@ export default function LandingPage({
       <section className="lp-section lp-concept">
         <div className="lp-concept-inner">
           <h2 className="lp-concept-h2">
-            Not a social network.<br />A city, live.
+            Not another social network.<br />Your city, live.
           </h2>
           <div className="lp-concept-rules">
             <p>No followers. No feeds. No algorithms.</p>
-            <p>See who's around. Join what's happening.</p>
+            <p>See who's around. Join what's happening near you.</p>
             <p>Real people. Real places. Right now.</p>
           </div>
         </div>
       </section>
 
-      {/* ── 6. DOWNLOAD ─────────────────────────────────────────────────────── */}
+      {/* ── 6. SEO ──────────────────────────────────────────────────────────── */}
+      <section className="lp-section lp-seo" aria-label="About Hilads">
+        <p className="lp-seo-body">
+          Hilads is a real-time social app that helps you meet people nearby and discover things to do in your city.
+          Find events near you, meet locals, and connect with travelers wherever you are.
+          Looking for things to do in Paris? Want to meet locals in Barcelona? Exploring Lisbon and want to find what's happening tonight?
+          Hilads shows you the city, live. No account needed. Just show up.
+        </p>
+      </section>
+
+      {/* ── 7. DOWNLOAD ─────────────────────────────────────────────────────── */}
       <section className="lp-section lp-download">
         <p className="lp-section-eyebrow">Mobile apps</p>
         <h2 className="lp-section-title">Your city in your pocket.</h2>
