@@ -24,6 +24,7 @@ import NotificationsScreen from './components/NotificationsScreen'
 import BackButton from './components/BackButton'
 import EmojiPicker from './components/EmojiPicker'
 import SendButton from './components/SendButton'
+import DeleteAccountPage from './components/DeleteAccountPage'
 import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
 import ShareActionSheet from './components/ShareActionSheet'
@@ -50,7 +51,8 @@ function parseDeepLink() {
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
   if (path === '/reset-password') return { type: 'reset-password', token: params.get('token') ?? '' }
-  if (path === '/forgot-password') return { type: 'forgot-password' }
+  if (path === '/forgot-password')   return { type: 'forgot-password' }
+  if (path === '/delete-account')    return { type: 'delete-account' }
   return null
 }
 
@@ -2200,6 +2202,10 @@ export default function App() {
   }
 
   // ── Global overlays (shown regardless of app status) ──────────────────────
+
+  if (window.location.pathname === '/delete-account') {
+    return <DeleteAccountPage />
+  }
 
   if (resetPasswordToken !== null) {
     return (
