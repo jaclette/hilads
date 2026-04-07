@@ -169,8 +169,11 @@ export async function sendEventMessage(
   guestId: string,
   nickname: string,
   content: string,
+  replyToMessageId?: string | null,
 ): Promise<Message> {
-  return api.post<Message>(`/events/${eventId}/messages`, { guestId, nickname, content });
+  const body: Record<string, unknown> = { guestId, nickname, content };
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId;
+  return api.post<Message>(`/events/${eventId}/messages`, body);
 }
 
 export async function sendEventImageMessage(

@@ -200,13 +200,11 @@ export async function sendMessage(
   guestId: string,
   nickname: string,
   content: string,
+  replyToMessageId?: string | null,
 ): Promise<Message> {
-  return api.post<Message>(`/channels/${channelId}/messages`, {
-    sessionId,
-    guestId,
-    nickname,
-    content,
-  });
+  const body: Record<string, unknown> = { sessionId, guestId, nickname, content };
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId;
+  return api.post<Message>(`/channels/${channelId}/messages`, body);
 }
 
 export async function sendImageMessage(

@@ -22,10 +22,13 @@ export async function fetchDmMessages(conversationId: string): Promise<DmMessage
 export async function sendDmMessage(
   conversationId: string,
   content: string,
+  replyToMessageId?: string | null,
 ): Promise<DmMessage> {
+  const body: Record<string, unknown> = { content };
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId;
   const data = await api.post<{ message: DmMessage }>(
     `/conversations/${conversationId}/messages`,
-    { content },
+    body,
   );
   return data.message;
 }

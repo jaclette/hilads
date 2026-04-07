@@ -30,7 +30,7 @@ import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { isSameDay, formatDateLabel, formatTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
-import type { DmMessage } from '@/types';
+import type { DmMessage, ReplyRef } from '@/types';
 
 // ── Date separator — reused from ChatMessage visual style ─────────────────────
 
@@ -99,6 +99,7 @@ interface RowProps {
   initial:      string;
   dateLabel?:   string;    // if set, render a date separator above this row
   onImagePress: (uri: string) => void;
+  onLongPress?: (msg: DmMessage) => void;
 }
 
 function parseDmLocation(content: string): { line1: string; place: string; lat?: number; lng?: number; addr: string } {
@@ -187,7 +188,7 @@ const dmLocStyles = StyleSheet.create({
   tapHintMine: { color: 'rgba(255,255,255,0.5)' },
 });
 
-function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress }: RowProps) {
+function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress }: RowProps) {
   const router = useRouter();
   const { account } = useApp();
   const opacity = useRef(new Animated.Value(0)).current;
@@ -244,6 +245,8 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={!isSending && !isFailed ? () => onImagePress(msg.image_url!) : undefined}
+            onLongPress={onLongPress ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(msg); } : undefined}
+            delayLongPress={350}
             disabled={isSending || isFailed}
           >
             <View style={[
@@ -263,17 +266,30 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
         ) : msg.content?.startsWith('📍') ? (
           <DmLocationBubble content={msg.content} isMine={isMine} />
         ) : (
-          <View style={[
-            styles.bubble,
-            isMine  ? styles.bubbleMine  : styles.bubbleOther,
-            isMine  ? bubbleMineShape    : bubbleOtherShape,
-            isSending && styles.bubbleSending,
-            isFailed  && styles.bubbleFailed,
-          ]}>
-            <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-              {msg.content}
-            </Text>
-          </View>
+          <Pressable
+            onLongPress={onLongPress ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(msg); } : undefined}
+            delayLongPress={350}
+          >
+            <View style={[
+              styles.bubble,
+              isMine  ? styles.bubbleMine  : styles.bubbleOther,
+              isMine  ? bubbleMineShape    : bubbleOtherShape,
+              isSending && styles.bubbleSending,
+              isFailed  && styles.bubbleFailed,
+            ]}>
+              {msg.replyTo && (
+                <View style={[dmReplyStyles.quote, isMine ? dmReplyStyles.quoteMine : dmReplyStyles.quoteOther]}>
+                  <Text style={[dmReplyStyles.name, isMine && dmReplyStyles.nameMine]}>{msg.replyTo.nickname}</Text>
+                  <Text style={[dmReplyStyles.text, isMine && dmReplyStyles.textMine]} numberOfLines={2}>
+                    {msg.replyTo.type === 'image' ? '📷 Photo' : (msg.replyTo.content || 'Original message unavailable')}
+                  </Text>
+                </View>
+              )}
+              <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
+                {msg.content}
+              </Text>
+            </View>
+          </Pressable>
         )}
 
         {/* Status / timestamp row — only on last message of group */}
@@ -308,6 +324,9 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const [previewUri,    setPreviewUri]    = useState<string | null>(null);
   const [showShareSheet,  setShowShareSheet]  = useState(false);
   const [locationCoords,  setLocationCoords]  = useState<{ lat: number; lng: number } | null>(null);
+  const [replyingTo,    setReplyingTo]    = useState<ReplyRef | null>(null);
+  const replyingToRef = useRef<ReplyRef | null>(null);
+  replyingToRef.current = replyingTo;
   const lastSel   = useRef({ start: 0, end: 0 });
   const vibScale  = useRef(new Animated.Value(1)).current;
 
@@ -326,7 +345,9 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     const t = text.trim();
     if (!t || busy) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    sendText(t);
+    const reply = replyingToRef.current;
+    setReplyingTo(null);
+    sendText(t, reply);
     setText('');
   }
 
@@ -490,6 +511,10 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         initial={initial}
         dateLabel={dateLabel}
         onImagePress={setPreviewUri}
+        onLongPress={(msg) => {
+          if (!msg.id || msg.id.startsWith('local-')) return;
+          setReplyingTo({ id: msg.id, nickname: msg.sender_name, content: msg.content ?? '', type: msg.type ?? 'text' });
+        }}
       />
     );
   }, [messages, account?.id, color, initial]);
@@ -552,6 +577,21 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         onClose={() => setShowShareSheet(false)}
         spotLoading={false}
       />
+
+      {/* ── Reply preview strip ── */}
+      {replyingTo && (
+        <View style={dmComposerReplyStyles.strip}>
+          <View style={dmComposerReplyStyles.body}>
+            <Text style={dmComposerReplyStyles.name}>{replyingTo.nickname}</Text>
+            <Text style={dmComposerReplyStyles.preview} numberOfLines={1}>
+              {replyingTo.type === 'image' ? '📷 Photo' : replyingTo.content}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={() => setReplyingTo(null)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Text style={dmComposerReplyStyles.close}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* ── Composer ── */}
       <View style={[styles.composer, focused && styles.composerFocused]}>
@@ -706,6 +746,47 @@ export default function DMThreadScreen() {
     </SafeAreaView>
   );
 }
+
+// ── DM Reply quote styles ─────────────────────────────────────────────────────
+
+const dmReplyStyles = StyleSheet.create({
+  quote: {
+    borderRadius:      8,
+    paddingHorizontal: 10,
+    paddingVertical:   6,
+    marginBottom:      6,
+    borderLeftWidth:   3,
+  },
+  quoteOther: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderLeftColor: 'rgba(255,255,255,0.25)',
+  },
+  quoteMine: {
+    backgroundColor: 'rgba(0,0,0,0.18)',
+    borderLeftColor: 'rgba(255,255,255,0.45)',
+  },
+  name:     { fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.55)', marginBottom: 2 },
+  nameMine: { color: 'rgba(255,255,255,0.75)' },
+  text:     { fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 16 },
+  textMine: { color: 'rgba(255,255,255,0.6)' },
+});
+
+const dmComposerReplyStyles = StyleSheet.create({
+  strip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 16,
+    paddingVertical:   8,
+    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderTopWidth:    1,
+    borderTopColor:    'rgba(255,255,255,0.08)',
+    gap:               10,
+  },
+  body:    { flex: 1, minWidth: 0 },
+  name:    { fontSize: 12, fontWeight: '700', color: Colors.accent, marginBottom: 2 },
+  preview: { fontSize: 12, color: Colors.muted2 },
+  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
+});
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 

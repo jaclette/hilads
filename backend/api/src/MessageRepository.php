@@ -76,7 +76,7 @@ class MessageRepository
             ];
         }
 
-        return [
+        $msg = [
             'id'        => $row['id'],
             'channelId' => $channelId,
             'guestId'   => $row['guest_id'],
@@ -85,6 +85,17 @@ class MessageRepository
             'content'   => $row['content'],
             'createdAt' => $createdAt,
         ];
+
+        if (!empty($row['reply_to_id'])) {
+            $msg['replyTo'] = [
+                'id'       => $row['reply_to_id'],
+                'nickname' => $row['reply_to_nickname'] ?? '',
+                'content'  => $row['reply_to_content'] ?? '',
+                'type'     => $row['reply_to_type']    ?? 'text',
+            ];
+        }
+
+        return $msg;
     }
 
     // ── Reads ─────────────────────────────────────────────────────────────────
@@ -117,13 +128,15 @@ class MessageRepository
             // The subquery resolves the cursor's timestamp, avoiding PHP round-trips.
             $stmt = Database::pdo()->prepare("
                 SELECT id, channel_id, type, event,
-                       guest_id, user_id, nickname, content, image_url, created_at
+                       guest_id, user_id, nickname, content, image_url, created_at,
+                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
                 FROM (
                     SELECT
                         m.id, m.channel_id, m.type, m.event,
                         m.guest_id,
                         COALESCE(m.user_id, u.id) AS user_id,
                         m.nickname, m.content, m.image_url,
+                        m.reply_to_id, m.reply_to_nickname, m.reply_to_content, m.reply_to_type,
                         EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
                     FROM messages m
                     LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
@@ -138,13 +151,15 @@ class MessageRepository
         } else {
             $stmt = Database::pdo()->prepare("
                 SELECT id, channel_id, type, event,
-                       guest_id, user_id, nickname, content, image_url, created_at
+                       guest_id, user_id, nickname, content, image_url, created_at,
+                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
                 FROM (
                     SELECT
                         m.id, m.channel_id, m.type, m.event,
                         m.guest_id,
                         COALESCE(m.user_id, u.id) AS user_id,
                         m.nickname, m.content, m.image_url,
+                        m.reply_to_id, m.reply_to_nickname, m.reply_to_content, m.reply_to_type,
                         EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
                     FROM messages m
                     LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
@@ -285,16 +300,30 @@ class MessageRepository
         ];
     }
 
-    public static function add(int|string $channelId, string $guestId, string $nickname, string $content, ?string $userId = null): array
-    {
+    public static function add(
+        int|string $channelId,
+        string $guestId,
+        string $nickname,
+        string $content,
+        ?string $userId = null,
+        ?string $replyToId = null,
+        ?string $replyToNickname = null,
+        ?string $replyToContent = null,
+        string $replyToType = 'text'
+    ): array {
         $id = bin2hex(random_bytes(8));
 
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, guest_id, user_id, nickname, content)
-            VALUES (?, ?, 'text', ?, ?, ?, ?)
-        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $content]);
+            INSERT INTO messages
+                (id, channel_id, type, guest_id, user_id, nickname, content,
+                 reply_to_id, reply_to_nickname, reply_to_content, reply_to_type)
+            VALUES (?, ?, 'text', ?, ?, ?, ?, ?, ?, ?, ?)
+        ")->execute([
+            $id, self::dbKey($channelId), $guestId, $userId, $nickname, $content,
+            $replyToId, $replyToNickname, $replyToContent, $replyToType,
+        ]);
 
-        return [
+        $result = [
             'id'        => $id,
             'channelId' => $channelId,
             'guestId'   => $guestId,
@@ -303,6 +332,17 @@ class MessageRepository
             'content'   => $content,
             'createdAt' => time(),
         ];
+
+        if ($replyToId !== null) {
+            $result['replyTo'] = [
+                'id'       => $replyToId,
+                'nickname' => $replyToNickname ?? '',
+                'content'  => $replyToContent  ?? '',
+                'type'     => $replyToType,
+            ];
+        }
+
+        return $result;
     }
 
     public static function addImage(int|string $channelId, string $guestId, string $nickname, string $imageUrl, ?string $userId = null): array

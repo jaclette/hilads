@@ -80,6 +80,36 @@ function enrichBroadcastMessage(array $message, ?array $senderUser): array
     return $message;
 }
 
+// ── Reply snapshot helper ─────────────────────────────────────────────────────
+// Looks up a message by ID and returns the snapshot fields needed to store with
+// a reply. Returns null when the ID is missing or invalid (no 400 error — we
+// just store a reply without a snapshot rather than blocking the send).
+function resolveReplySnapshot(?string $replyToId, string $table = 'messages'): ?array
+{
+    if (empty($replyToId)) return null;
+    $col = $table === 'conversation_messages' ? 'cm' : 'm';
+    $sql = $table === 'conversation_messages'
+        ? "SELECT cm.id,
+                  COALESCE(u.display_name, 'Deleted user') AS nickname,
+                  cm.content, cm.type
+             FROM conversation_messages cm
+             LEFT JOIN users u ON u.id = cm.sender_id
+            WHERE cm.id = ?"
+        : "SELECT m.id, m.nickname, m.content, m.type
+             FROM messages m
+            WHERE m.id = ?";
+    $stmt = Database::pdo()->prepare($sql);
+    $stmt->execute([$replyToId]);
+    $row = $stmt->fetch();
+    if (!$row) return null;
+    return [
+        'id'       => $row['id'],
+        'nickname' => $row['nickname'] ?? '',
+        'content'  => $row['type'] === 'image' ? '' : mb_substr((string)($row['content'] ?? ''), 0, 200),
+        'type'     => $row['type'] ?? 'text',
+    ];
+}
+
 // ── Broadcast helpers ─────────────────────────────────────────────────────────
 // Fire-and-forget: post a payload to the WS server's internal broadcast endpoint.
 // Shared by new-event and new-topic broadcasts.
@@ -2985,7 +3015,14 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
         try {
             $senderUser   = AuthService::currentUser();
             $senderUserId = $senderUser['id'] ?? null;
-            $message = MessageRepository::add($eventId, $guestId, $nickname, $content, $senderUserId);
+            $replySnap    = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+            $message = MessageRepository::add(
+                $eventId, $guestId, $nickname, $content, $senderUserId,
+                $replySnap['id'] ?? null,
+                $replySnap['nickname'] ?? null,
+                $replySnap['content']  ?? null,
+                $replySnap['type']     ?? 'text'
+            );
         } catch (\Throwable $e) {
             error_log("[event-msg] DB error inserting message eventId={$eventId}: " . $e->getMessage());
             Response::json(['error' => 'Failed to send message'], 500);
@@ -3222,7 +3259,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
 
         $msgSender       = AuthService::currentUser();
         $msgSenderUserId = $msgSender['id'] ?? null;
-        $message = MessageRepository::add($channelId, $guestId, $nickname, $content, $msgSenderUserId);
+        $replySnap       = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+        $message = MessageRepository::add(
+            $channelId, $guestId, $nickname, $content, $msgSenderUserId,
+            $replySnap['id'] ?? null,
+            $replySnap['nickname'] ?? null,
+            $replySnap['content']  ?? null,
+            $replySnap['type']     ?? 'text'
+        );
     }
 
     $message = enrichBroadcastMessage($message, $msgSender ?? null);
@@ -3377,7 +3421,14 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
             Response::json(['error' => 'content must not exceed 1000 characters'], 400);
         }
 
-        $message = ConversationRepository::addMessage($conversationId, $user['id'], $content);
+        $replySnap = resolveReplySnapshot($body['replyToMessageId'] ?? null, 'conversation_messages');
+        $message = ConversationRepository::addMessage(
+            $conversationId, $user['id'], $content,
+            $replySnap['id'] ?? null,
+            $replySnap['nickname'] ?? null,
+            $replySnap['content']  ?? null,
+            $replySnap['type']     ?? 'text'
+        );
     }
 
     $message = enrichBroadcastMessage($message, $user);
@@ -3877,7 +3928,14 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
         }
 
         try {
-            $message = MessageRepository::add($topicId, $guestId, $nickname, $content, $senderUserId);
+            $replySnap = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+            $message = MessageRepository::add(
+                $topicId, $guestId, $nickname, $content, $senderUserId,
+                $replySnap['id'] ?? null,
+                $replySnap['nickname'] ?? null,
+                $replySnap['content']  ?? null,
+                $replySnap['type']     ?? 'text'
+            );
         } catch (\Throwable $e) {
             error_log("[topic-msg] DB error inserting message topicId={$topicId}: " . $e->getMessage());
             Response::json(['error' => 'Failed to send message'], 500);

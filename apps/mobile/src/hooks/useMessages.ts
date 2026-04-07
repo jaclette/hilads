@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { socket } from '@/lib/socket';
 import { uploadFile } from '@/api/uploads';
 import { useApp } from '@/context/AppContext';
-import type { Message } from '@/types';
+import type { Message, ReplyRef } from '@/types';
 
 interface Params {
   channelId:    string;
   loadFn:       (opts?: { beforeId?: string }) => Promise<{ messages: Message[]; hasMore: boolean }>;
-  postTextFn:   (content: string) => Promise<Message>;
+  postTextFn:   (content: string, replyToId?: string | null) => Promise<Message>;
   postImageFn:  (imageUrl: string) => Promise<Message>;
   /** Pre-loaded messages from the bootstrap endpoint — skips the initial loadFn call. */
   initialData?: { messages: Message[]; hasMore: boolean };
@@ -21,7 +21,7 @@ interface Result {
   sending:      boolean;     // true only during image upload
   error:        string | null;
   clearError:   () => void;
-  sendText:     (content: string) => Promise<void>;
+  sendText:     (content: string, replyTo?: ReplyRef | null) => Promise<void>;
   sendImage:    (localUri: string) => Promise<void>;
   loadOlder:    () => Promise<void>;
   reload:       () => void;
@@ -196,7 +196,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
 
   // ── Send text (optimistic) ─────────────────────────────────────────────────
 
-  const sendText = useCallback(async (content: string) => {
+  const sendText = useCallback(async (content: string, replyTo?: ReplyRef | null) => {
     const trimmed = content.trim();
     if (!trimmed) return;
 
@@ -211,6 +211,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       createdAt: Date.now() / 1000,
       localId,
       status:    'sending',
+      replyTo:   replyTo ?? undefined,
     };
 
     // Show message instantly
@@ -218,7 +219,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     setError(null);
 
     try {
-      const msg = await postTextFn(trimmed);
+      const msg = await postTextFn(trimmed, replyTo?.id ?? null);
       reconcile(localId, msg);
       // sent_message is tracked server-side — no frontend duplicate
     } catch {

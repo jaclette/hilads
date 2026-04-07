@@ -539,6 +539,8 @@ export default function App() {
   const [input, setInput] = useState('')
   const [showEmoji, setShowEmoji] = useState(false)
   const [sending, setSending] = useState(false)
+  const [replyingTo, setReplyingTo] = useState(null)   // { id, nickname, content, type }
+  const [actionBubble, setActionBubble] = useState(null) // { msg, x, y }
   const [sendError, setSendError] = useState(null)
   const [onlineCount, setOnlineCount] = useState(null)
   const weatherLabel = useMemo(() => {
@@ -1643,6 +1645,9 @@ export default function App() {
     if (!content || sending) return
     stopTyping()
 
+    const currentReply = replyingTo
+    setReplyingTo(null)
+
     // Optimistic insert — message appears instantly without waiting for HTTP.
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
     const optimistic = {
@@ -1653,6 +1658,7 @@ export default function App() {
       nickname:  activeNickname,
       content:   content.trim(),
       createdAt: Date.now() / 1000,
+      replyTo:   currentReply ?? undefined,
     }
     setFeed(prev => [...prev, optimistic])
 
@@ -1660,9 +1666,9 @@ export default function App() {
     try {
       let msg
       if (activeEventIdRef.current) {
-        msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, activeNickname, content)
+        msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null)
       } else {
-        msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content)
+        msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null)
       }
 
       knownIdsRef.current.add(msg.id)
@@ -2813,7 +2819,22 @@ export default function App() {
                       )}
                     </div>
                   )}
-                  <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}>
+                  <div
+                    className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}
+                    onClick={e => {
+                      if (item.type === 'system' || item.type === 'event' || item.type === 'topic') return
+                      const rect = e.currentTarget.getBoundingClientRect()
+                      setActionBubble({ msg: item, x: rect.left, y: rect.top, isMine })
+                    }}
+                  >
+                    {item.replyTo && (
+                      <div className="msg-reply-quote">
+                        <span className="msg-reply-quote-name">{item.replyTo.nickname}</span>
+                        <span className="msg-reply-quote-text">
+                          {item.replyTo.type === 'image' ? '📷 Photo' : (item.replyTo.content || 'Original message unavailable')}
+                        </span>
+                      </div>
+                    )}
                     {item.type === 'image' ? (
                       <img
                         src={item.imageUrl}
@@ -2873,6 +2894,36 @@ export default function App() {
           </div>
         )}
 
+        {actionBubble && (
+          <div className="action-bubble-overlay" onClick={() => setActionBubble(null)}>
+            <div
+              className="action-bubble"
+              style={{
+                top:   Math.max(8, actionBubble.y - 48),
+                left:  actionBubble.isMine ? 'auto' : actionBubble.x,
+                right: actionBubble.isMine ? 16 : 'auto',
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                className="action-bubble-btn"
+                onClick={() => {
+                  setReplyingTo({
+                    id:       actionBubble.msg.id,
+                    nickname: actionBubble.msg.nickname,
+                    content:  actionBubble.msg.content ?? '',
+                    type:     actionBubble.msg.type ?? 'text',
+                  })
+                  setActionBubble(null)
+                  chatInputRef.current?.focus()
+                }}
+              >
+                ↩ Reply
+              </button>
+            </div>
+          </div>
+        )}
+
         {showInstallBanner && installBannerUsesBottomNav && (
           <div className="chat-install-slot">
             <InstallPromptBanner
@@ -2911,6 +2962,18 @@ export default function App() {
             onClose={() => setShowShareSheet(false)}
             spotLoading={spotLoading}
           />
+        )}
+
+        {replyingTo && (
+          <div className="reply-preview">
+            <div className="reply-preview-body">
+              <span className="reply-preview-name">{replyingTo.nickname}</span>
+              <span className="reply-preview-text">
+                {replyingTo.type === 'image' ? '📷 Photo' : replyingTo.content}
+              </span>
+            </div>
+            <button className="reply-preview-close" type="button" onClick={() => setReplyingTo(null)}>✕</button>
+          </div>
         )}
 
         <form className="input-bar" onSubmit={handleSend}>

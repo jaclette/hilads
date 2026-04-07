@@ -97,12 +97,14 @@ export async function fetchChannels() {
   return res.json()
 }
 
-export async function sendMessage(channelId, sessionId, guestId, nickname, content) {
+export async function sendMessage(channelId, sessionId, guestId, nickname, content, replyToMessageId = null) {
+  const body = { sessionId, guestId, nickname, content }
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId
   const res = await fetch(`${BASE}/channels/${channelId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ sessionId, guestId, nickname, content }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error('Failed to send message')
   return res.json()
@@ -318,12 +320,14 @@ export async function toggleEventParticipation(eventId, sessionId) {
   return res.json() // { count, isIn }
 }
 
-export async function sendEventMessage(eventId, guestId, nickname, content) {
+export async function sendEventMessage(eventId, guestId, nickname, content, replyToMessageId = null) {
+  const body = { guestId, nickname, content }
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId
   const res = await fetch(`${BASE}/events/${eventId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, nickname, content }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
@@ -539,12 +543,14 @@ export async function markEventRead(eventId) {
   }).catch(() => {})
 }
 
-export async function sendConversationMessage(conversationId, content) {
+export async function sendConversationMessage(conversationId, content, replyToMessageId = null) {
+  const body = { content }
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId
   const res = await fetch(`${BASE}/conversations/${conversationId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ content }),
+    body: JSON.stringify(body),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || 'Failed to send message')

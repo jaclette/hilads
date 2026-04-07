@@ -21,6 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { Colors, FontSizes } from '@/constants';
 import { useApp } from '@/context/AppContext';
+import type { ReplyRef } from '@/types';
 import { AndroidCameraCapture } from './AndroidCameraCapture';
 import { EmojiPanel } from './EmojiPanel';
 import { ShareSheet } from './ShareSheet';
@@ -59,9 +60,12 @@ interface Props {
   /** Typing indicator callbacks — parent wires these to WS typingStart/typingStop. */
   onTypingStart?:   () => void;
   onTypingStop?:    () => void;
+  /** Reply context — shown as a preview strip above the input until cancelled. */
+  replyingTo?:      ReplyRef | null;
+  onCancelReply?:   () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pulse = false, pickImageRef, onTypingStart, onTypingStop }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply }: Props) {
   const { account, identity } = useApp();
   const [text,          setText]        = useState('');
   const [uploading,     setUploading]   = useState(false);
@@ -344,6 +348,21 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     {/* ── Emoji panel — appears above composer when emoji mode is active ── */}
     {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
 
+    {/* ── Reply preview strip ── */}
+    {replyingTo && (
+      <View style={replyStyles.strip}>
+        <View style={replyStyles.body}>
+          <Text style={replyStyles.name}>{replyingTo.nickname}</Text>
+          <Text style={replyStyles.preview} numberOfLines={1}>
+            {replyingTo.type === 'image' ? '📷 Photo' : replyingTo.content}
+          </Text>
+        </View>
+        <TouchableOpacity onPress={onCancelReply} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Text style={replyStyles.close}>✕</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+
     <View style={styles.container}>
 
       {/* ── Vibe button ── */}
@@ -547,4 +566,21 @@ const styles = StyleSheet.create({
     fontSize:   20,
     lineHeight: 24,
   },
+});
+
+const replyStyles = StyleSheet.create({
+  strip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 16,
+    paddingVertical:   8,
+    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderTopWidth:    1,
+    borderTopColor:    Colors.border,
+    gap:               10,
+  },
+  body:    { flex: 1, minWidth: 0 },
+  name:    { fontSize: 12, fontWeight: '700', color: Colors.accent, marginBottom: 2 },
+  preview: { fontSize: 12, color: Colors.muted2 },
+  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
 });

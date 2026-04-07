@@ -178,6 +178,14 @@ export interface Badge {
 //
 // API returns camelCase. All field names here match the actual wire format.
 
+/** Snapshot of the message being replied to, stored with the reply for resilience. */
+export interface ReplyRef {
+  id:       string;
+  nickname: string;
+  content:  string;
+  type:     string;
+}
+
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
@@ -197,6 +205,7 @@ export interface Message {
   contextBadge?: Badge | null;    // city-specific badge (host = Legend)
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
   mode?: string;                  // user's current mode (local/exploring)
+  replyTo?: ReplyRef;             // snapshot of the message this is a reply to
   // Optimistic send state — absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
   status?: 'sending' | 'failed'; // undefined = confirmed
@@ -264,6 +273,7 @@ export interface DmMessage {
   created_at: string;
   sender_name: string;
   sender_photo?: string;
+  replyTo?: ReplyRef;
   // Optimistic send state — absent on confirmed server messages
   localId?: string;
   status?: 'sending' | 'failed';

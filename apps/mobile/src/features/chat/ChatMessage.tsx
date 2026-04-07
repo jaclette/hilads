@@ -13,9 +13,10 @@
  */
 
 import { useRef, useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Animated, ActivityIndicator, Platform, Linking } from 'react-native';
+import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Animated, ActivityIndicator, Platform, Linking } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
 import { formatTime } from '@/lib/messageTime';
 import type { Message, Badge } from '@/types';
@@ -187,6 +188,7 @@ interface Props {
   showTime?:    boolean;    // show timestamp below bubble (last in sender group)
   dateLabel?:   string;     // if set, render a date separator above this item
   onPromptCta?: (subtype: string) => void;  // called when a prompt card CTA is tapped
+  onLongPress?: (msg: Message) => void;     // called on long-press; parent handles reply UI
 }
 
 // ── Animated event pill — fade + slide-up on mount, staggered by index ───────
@@ -365,7 +367,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress }: Props) {
   const router = useRouter();
   const { account } = useApp();
 
@@ -375,6 +377,12 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
 
   // Image preview state — must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);
+
+  function handleLongPress() {
+    if (!onLongPress) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onLongPress(message);
+  }
 
   // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
   if (message.type === 'event') {
@@ -512,6 +520,8 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={!isSending && !isFailed ? () => setPreviewUri(message.imageUrl!) : undefined}
+              onLongPress={handleLongPress}
+              delayLongPress={350}
               disabled={isSending || isFailed}
             >
               <Image
@@ -577,7 +587,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         )}
 
         {/* ── Bubble — location card or plain text ── */}
-        <View>
+        <Pressable onLongPress={handleLongPress} delayLongPress={350}>
           {isLocationMessage(message.content) ? (
             <LocationBubble content={message.content!} isMine={isMine} />
           ) : (
@@ -586,6 +596,16 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               isMine ? styles.bubbleMine : styles.bubbleOther,
               isFailed && styles.bubbleFailed,
             ]}>
+              {message.replyTo && (
+                <View style={[styles.replyQuote, isMine ? styles.replyQuoteMine : styles.replyQuoteOther]}>
+                  <Text style={[styles.replyQuoteName, isMine && styles.replyQuoteNameMine]}>
+                    {message.replyTo.nickname}
+                  </Text>
+                  <Text style={[styles.replyQuoteText, isMine && styles.replyQuoteTextMine]} numberOfLines={2}>
+                    {message.replyTo.type === 'image' ? '📷 Photo' : (message.replyTo.content || 'Original message unavailable')}
+                  </Text>
+                </View>
+              )}
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                 {message.content}
               </Text>
@@ -599,7 +619,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               {formatTime(message.createdAt)}
             </Text>
           )}
-        </View>
+        </Pressable>
 
       </Animated.View>
     </>
@@ -877,6 +897,36 @@ const styles = StyleSheet.create({
   },
   timestampMine:  { textAlign: 'right',  paddingRight: 2 },
   timestampOther: { textAlign: 'left',   paddingLeft: 2 },
+
+  // ── Reply quote block — appears inside bubble above message text ─────────
+  replyQuote: {
+    borderRadius:      8,
+    paddingHorizontal: 10,
+    paddingVertical:   6,
+    marginBottom:      6,
+    borderLeftWidth:   3,
+  },
+  replyQuoteOther: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderLeftColor: 'rgba(255,255,255,0.25)',
+  },
+  replyQuoteMine: {
+    backgroundColor: 'rgba(0,0,0,0.18)',
+    borderLeftColor: 'rgba(255,255,255,0.45)',
+  },
+  replyQuoteName: {
+    fontSize:   11,
+    fontWeight: '700',
+    color:      Colors.muted,
+    marginBottom: 2,
+  },
+  replyQuoteNameMine: { color: 'rgba(255,255,255,0.75)' },
+  replyQuoteText: {
+    fontSize:  12,
+    color:     Colors.muted2,
+    lineHeight: 16,
+  },
+  replyQuoteTextMine: { color: 'rgba(255,255,255,0.6)' },
 
   // ── .msg-image ────────────────────────────────────────────────────────────
   image: { width: 280, height: 240, marginTop: 2 },

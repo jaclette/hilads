@@ -278,13 +278,23 @@ class ConversationRepository
 
     // ── Messages ──────────────────────────────────────────────────────────────
 
-    public static function addMessage(string $conversationId, string $senderId, string $content): array
-    {
+    public static function addMessage(
+        string $conversationId,
+        string $senderId,
+        string $content,
+        ?string $replyToId = null,
+        ?string $replyToNickname = null,
+        ?string $replyToContent = null,
+        string $replyToType = 'text'
+    ): array {
         $id = bin2hex(random_bytes(16));
         Database::pdo()->prepare("
-            INSERT INTO conversation_messages (id, conversation_id, sender_id, content, type)
-            VALUES (?, ?, ?, ?, 'text')
-        ")->execute([$id, $conversationId, $senderId, $content]);
+            INSERT INTO conversation_messages
+                (id, conversation_id, sender_id, content, type,
+                 reply_to_id, reply_to_nickname, reply_to_content, reply_to_type)
+            VALUES (?, ?, ?, ?, 'text', ?, ?, ?, ?)
+        ")->execute([$id, $conversationId, $senderId, $content,
+                     $replyToId, $replyToNickname, $replyToContent, $replyToType]);
 
         self::touchUpdatedAt($conversationId);
 
@@ -315,6 +325,10 @@ class ConversationRepository
                 cm.type,
                 cm.image_url,
                 cm.created_at,
+                cm.reply_to_id,
+                cm.reply_to_nickname,
+                cm.reply_to_content,
+                cm.reply_to_type,
                 COALESCE(u.display_name, 'Deleted user') AS sender_name,
                 u.profile_photo_url                       AS sender_photo
             FROM conversation_messages cm
@@ -338,6 +352,10 @@ class ConversationRepository
                 cm.type,
                 cm.image_url,
                 cm.created_at,
+                cm.reply_to_id,
+                cm.reply_to_nickname,
+                cm.reply_to_content,
+                cm.reply_to_type,
                 COALESCE(u.display_name, 'Deleted user') AS sender_name,
                 u.profile_photo_url                       AS sender_photo
             FROM conversation_messages cm

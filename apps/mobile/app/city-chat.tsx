@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   View, FlatList, ActivityIndicator, Text,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform,
@@ -11,7 +11,7 @@ import { fetchMessages, sendMessage, sendImageMessage } from '@/api/channels';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { Colors, FontSizes, Spacing } from '@/constants';
-import type { Message } from '@/types';
+import type { Message, ReplyRef } from '@/types';
 
 export default function CityChatScreen() {
   const router = useRouter();
@@ -20,15 +20,19 @@ export default function CityChatScreen() {
 
   const channelId = city?.channelId ?? '';
 
+  const [replyingTo, setReplyingTo] = useState<ReplyRef | null>(null);
+  const replyingToRef = useRef<ReplyRef | null>(null);
+  replyingToRef.current = replyingTo;
+
   const loadFn = useCallback(
     (opts?: { beforeId?: string }) => fetchMessages(channelId, opts),
     [channelId],
   );
 
   const postTextFn = useCallback(
-    (content: string): Promise<Message> => {
+    (content: string, replyToId?: string | null): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendMessage(channelId, sessionId, identity.guestId, nickname, content);
+      return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId);
     },
     [channelId, identity, sessionId, nickname],
   );
@@ -82,7 +86,14 @@ export default function CityChatScreen() {
             data={messages}
             keyExtractor={(m) => m.id}
             renderItem={({ item }) => (
-              <ChatMessage message={item} myGuestId={identity?.guestId} />
+              <ChatMessage
+                message={item}
+                myGuestId={identity?.guestId}
+                onLongPress={(msg) => {
+                  if (!msg.id) return;
+                  setReplyingTo({ id: msg.id, nickname: msg.nickname, content: msg.content ?? '', type: msg.type });
+                }}
+              />
             )}
             inverted
             contentContainerStyle={styles.listContent}
@@ -107,8 +118,14 @@ export default function CityChatScreen() {
         {/* Composer */}
         <ChatInput
           sending={sending}
-          onSendText={sendText}
+          onSendText={(text) => {
+            const reply = replyingToRef.current;
+            setReplyingTo(null);
+            sendText(text, reply);
+          }}
           onSendImage={sendImage}
+          replyingTo={replyingTo}
+          onCancelReply={() => setReplyingTo(null)}
         />
       </KeyboardAvoidingView>
     </SafeAreaView>

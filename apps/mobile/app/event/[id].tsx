@@ -19,7 +19,7 @@ import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
-import type { Message, EventParticipant } from '@/types';
+import type { Message, EventParticipant, ReplyRef } from '@/types';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -99,6 +99,10 @@ export default function EventDetailScreen() {
   const { identity, sessionId, city, account, setActiveEventId, removeEventChatPreview } = useApp(); // sessionId still used for WS joinEvent
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
+  const [replyingTo, setReplyingTo] = useState<ReplyRef | null>(null);
+  const replyingToRef = useRef<ReplyRef | null>(null);
+  replyingToRef.current = replyingTo;
+
   const {
     event, loading: eventLoading, error: eventError,
     toggling, toggleParticipation,
@@ -174,9 +178,9 @@ export default function EventDetailScreen() {
   );
 
   const postTextFn = useCallback(
-    (content: string): Promise<Message> => {
+    (content: string, replyToId?: string | null): Promise<Message> => {
       if (!identity) return Promise.reject(new Error('Not ready'));
-      return sendEventMessage(id, identity.guestId, nickname, content);
+      return sendEventMessage(id, identity.guestId, nickname, content, replyToId);
     },
     [id, identity, nickname],
   );
@@ -364,6 +368,10 @@ export default function EventDetailScreen() {
                   isGrouped={isGrouped}
                   showTime={showTime}
                   dateLabel={dateLabel}
+                  onLongPress={(msg) => {
+                    if (!msg.id) return;
+                    setReplyingTo({ id: msg.id, nickname: msg.nickname, content: msg.content ?? '', type: msg.type });
+                  }}
                 />
               );
             }}
@@ -388,13 +396,19 @@ export default function EventDetailScreen() {
 
           <ChatInput
             sending={sending}
-            onSendText={sendText}
+            onSendText={(text) => {
+              const reply = replyingToRef.current;
+              setReplyingTo(null);
+              sendText(text, reply);
+            }}
             onSendImage={sendImage}
             placeholder={
               messages.some(m => m.type !== 'system')
                 ? `Say something at ${event.title} ✨`
                 : `Be the first at ${event.title} ✨`
             }
+            replyingTo={replyingTo}
+            onCancelReply={() => setReplyingTo(null)}
           />
         </KeyboardAvoidingView>
       )}

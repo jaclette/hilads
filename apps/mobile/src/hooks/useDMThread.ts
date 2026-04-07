@@ -4,7 +4,7 @@ import { uploadFile } from '@/api/uploads';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
-import type { DmMessage } from '@/types';
+import type { DmMessage, ReplyRef } from '@/types';
 
 interface Result {
   messages:    DmMessage[];  // newest first (inverted FlatList)
@@ -12,7 +12,7 @@ interface Result {
   sending:     boolean;      // kept for interface compat — always false (optimistic)
   error:       string | null;
   clearError:  () => void;
-  sendText:    (content: string) => Promise<void>;
+  sendText:    (content: string, replyTo?: ReplyRef | null) => Promise<void>;
   sendImage:   (localUri: string) => Promise<void>;
 }
 
@@ -79,7 +79,7 @@ export function useDMThread(conversationId: string): Result {
 
   // ── Send text (optimistic) ─────────────────────────────────────────────────
 
-  const sendText = useCallback(async (content: string) => {
+  const sendText = useCallback(async (content: string, replyTo?: ReplyRef | null) => {
     const trimmed = content.trim();
     if (!trimmed) return;
 
@@ -94,13 +94,14 @@ export function useDMThread(conversationId: string): Result {
       sender_name:     account?.display_name ?? '',
       localId,
       status:          'sending',
+      replyTo:         replyTo ?? undefined,
     };
 
     setMessages(prev => [optimistic, ...prev]);
     setError(null);
 
     try {
-      const msg = await sendDmMessage(conversationId, trimmed);
+      const msg = await sendDmMessage(conversationId, trimmed, replyTo?.id ?? null);
       seenIds.current.add(msg.id);
       setMessages(prev => {
         if (prev.some(m => m.id === msg.id && m.id !== localId)) {
