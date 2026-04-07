@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Hilads</title>
+  <meta name="description" content="Privacy Policy for Hilads — the real-time city social app." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f0d0b;
+      --surface:  #1a1612;
+      --border:   rgba(255,255,255,0.08);
+      --text:     #f0ece6;
+      --muted:    #a09486;
+      --accent:   #FF7A3C;
+      --radius:   12px;
+      --max-w:    740px;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      padding: 0 16px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 56px 0 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      margin-bottom: 28px;
+    }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #FF7A3C, #C24A38);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    header h1 {
+      font-size: clamp(26px, 5vw, 34px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .meta {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    /* ── Content ── */
+    main {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding-top: 40px;
+    }
+
+    section {
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 .num {
+      display: inline-block;
+      color: var(--accent);
+      margin-right: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    p {
+      color: rgba(240,236,230,0.85);
+      margin-bottom: 12px;
+    }
+
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    li {
+      color: rgba(240,236,230,0.85);
+      margin-bottom: 6px;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ── Info card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      margin-top: 16px;
+    }
+
+    .card p { margin-bottom: 8px; }
+    .card p:last-child { margin-bottom: 0; }
+
+    /* ── Data table ── */
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .data-grid .row {
+      display: contents;
+    }
+
+    .data-grid .cell {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    .data-grid .row:last-child .cell {
+      border-bottom: none;
+    }
+
+    .data-grid .cell.label {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      border-right: 1px solid var(--border);
+    }
+
+    .data-grid .cell.value {
+      background: rgba(255,255,255,0.02);
+      color: rgba(240,236,230,0.8);
+    }
+
+    /* ── Highlight box ── */
+    .highlight {
+      border-left: 3px solid var(--accent);
+      background: rgba(255,122,60,0.06);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 14px 18px;
+      margin-top: 16px;
+    }
+
+    .highlight p { margin-bottom: 0; font-size: 15px; }
+
+    /* ── Contact ── */
+    .contact-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 16px;
+    }
+
+    .contact-block a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .contact-block a:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    footer {
+      max-width: var(--max-w);
+      margin: 60px auto 0;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .data-grid {
+        grid-template-columns: 1fr;
+      }
+      .data-grid .cell.label {
+        border-right: none;
+        border-bottom: none;
+        padding-bottom: 4px;
+      }
+      .data-grid .cell.value {
+        padding-top: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="https://hilads.live" class="logo">
+      <div class="logo-mark">🌍</div>
+      <span class="logo-name">Hilads</span>
+    </a>
+    <h1>Privacy Policy</h1>
+    <p class="meta">Last updated: April 2026</p>
+  </header>
+
+  <main>
+
+    <!-- Intro -->
+    <section>
+      <p>
+        Hilads ("we", "our", or "us") operates the Hilads mobile and web application — a real-time city social platform that helps people discover what's happening around them, connect with locals and travellers, and join live events.
+      </p>
+      <p>
+        This Privacy Policy explains what data we collect, how we use it, and the rights you have over your information. By using Hilads, you agree to the practices described here.
+      </p>
+    </section>
+
+    <!-- 1. Data Collected -->
+    <section id="data-collected">
+      <h2><span class="num">01</span>Data We Collect</h2>
+      <p>We collect the following categories of data depending on how you use the app:</p>
+
+      <div class="data-grid">
+        <div class="row">
+          <div class="cell label">Location</div>
+          <div class="cell value">Approximate and precise GPS coordinates, used to assign you to a city channel and show nearby events. Collected only while the app is in use.</div>
+        </div>
+        <div class="row">
+          <div class="cell label">Messages &amp; Content</div>
+          <div class="cell value">Text messages, replies, and chat history sent in public city channels, event chats, topic threads, and private direct messages.</div>
+        </div>
+        <div class="row">
+          <div class="cell label">Photos</div>
+          <div class="cell value">Images you choose to upload and share in chats or your profile. Photos are stored on our secure cloud infrastructure.</div>
+        </div>
+        <div class="row">
+          <div class="cell label">Account Data</div>
+          <div class="cell value">If you register: display name, email address, profile photo, home city, age (optional), interests (optional), and chosen vibe/mode.</div>
+        </div>
+        <div class="row">
+          <div class="cell label">Usage &amp; Device Data</div>
+          <div class="cell value">Anonymous session identifiers, device type, operating system version, app version, and basic interaction events (e.g. channel joined, event created). No advertising identifiers are collected.</div>
+        </div>
+        <div class="row">
+          <div class="cell label">Notifications</div>
+          <div class="cell value">Push notification tokens, used only to deliver in-app alerts such as new messages, event updates, and friend activity.</div>
+        </div>
+      </div>
+
+      <div class="highlight">
+        <p><strong>Guest mode:</strong> You can use Hilads without creating an account. In guest mode, only a randomly generated device identifier, your chosen nickname, and your location are processed.</p>
+      </div>
+    </section>
+
+    <!-- 2. How We Use Data -->
+    <section id="data-usage">
+      <h2><span class="num">02</span>How We Use Your Data</h2>
+      <p>We use the data we collect solely to provide and improve the Hilads experience:</p>
+      <ul>
+        <li><strong>Location</strong> — to resolve your city, show relevant events and channels, and enable presence features.</li>
+        <li><strong>Messages &amp; photos</strong> — to deliver real-time communication between users in public and private contexts.</li>
+        <li><strong>Account data</strong> — to personalise your profile, enable friend connections, and display badges.</li>
+        <li><strong>Usage data</strong> — to monitor app stability, diagnose errors, and improve features.</li>
+        <li><strong>Notifications</strong> — to alert you to activity relevant to you (new messages, events, replies).</li>
+      </ul>
+      <p>We do <strong>not</strong> use your data for targeted advertising, sell your data to third parties, or use it for profiling unrelated to the app's core purpose.</p>
+    </section>
+
+    <!-- 3. Data Sharing -->
+    <section id="data-sharing">
+      <h2><span class="num">03</span>Data Sharing</h2>
+      <p>We do not sell your personal data. We share data only in the following limited circumstances:</p>
+      <ul>
+        <li><strong>Other users</strong> — your display name, avatar, vibe, mode, and public messages are visible to other users in the same city channel or event. Direct messages are visible only to the conversation participants.</li>
+        <li><strong>Service providers</strong> — we use trusted infrastructure providers (cloud hosting, storage, push notifications) who process data only on our behalf under strict confidentiality agreements.</li>
+        <li><strong>Legal obligations</strong> — we may disclose data if required by law, court order, or to protect the safety of users or the public.</li>
+        <li><strong>Business transfers</strong> — in the event of a merger or acquisition, user data may be transferred to the successor entity under equivalent privacy protections.</li>
+      </ul>
+    </section>
+
+    <!-- 4. User-Generated Content -->
+    <section id="ugc">
+      <h2><span class="num">04</span>User-Generated Content</h2>
+      <p>
+        Hilads is a social platform. Messages, photos, events, and other content you post in public channels are visible to other users of that channel. Do not share sensitive personal information (ID numbers, financial data, passwords) in public chats.
+      </p>
+      <p>
+        Content posted in public city channels or event chats may be seen by any user present in that channel. Direct messages are private and visible only to participants of that conversation.
+      </p>
+      <p>
+        We reserve the right to remove content that violates our Terms of Service, including spam, abusive content, or illegal material. You retain ownership of content you create; by posting it you grant Hilads a limited licence to store and display it within the platform.
+      </p>
+    </section>
+
+    <!-- 5. Security -->
+    <section id="security">
+      <h2><span class="num">05</span>Security</h2>
+      <p>
+        We take reasonable technical and organisational measures to protect your data against unauthorised access, loss, or misuse. These include:
+      </p>
+      <ul>
+        <li>HTTPS encryption for all data in transit.</li>
+        <li>Secure cloud storage with access controls for uploaded media.</li>
+        <li>Hashed passwords — we never store passwords in plain text.</li>
+        <li>Server-side session validation for all authenticated requests.</li>
+      </ul>
+      <p>
+        No method of transmission over the internet is 100% secure. While we strive to protect your data, we cannot guarantee absolute security.
+      </p>
+    </section>
+
+    <!-- 6. Data Retention -->
+    <section id="retention">
+      <h2><span class="num">06</span>Data Retention</h2>
+      <p>We retain data for the following periods:</p>
+      <ul>
+        <li><strong>Public chat messages</strong> — retained for up to 90 days, after which older messages may be automatically purged.</li>
+        <li><strong>Direct messages</strong> — retained while your account is active. Deleted when you delete your account.</li>
+        <li><strong>Events</strong> — retained for up to 30 days after the event expires.</li>
+        <li><strong>Account data</strong> — retained until you delete your account.</li>
+        <li><strong>Guest session data</strong> — retained for up to 30 days of inactivity, then automatically removed.</li>
+        <li><strong>Photos</strong> — retained until the associated message or account is deleted.</li>
+      </ul>
+      <p>
+        Anonymised, aggregated analytics data (e.g. total messages sent per city) may be retained indefinitely as it contains no personally identifiable information.
+      </p>
+    </section>
+
+    <!-- 7. User Rights -->
+    <section id="user-rights">
+      <h2><span class="num">07</span>Your Rights</h2>
+      <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+      <ul>
+        <li><strong>Access</strong> — request a copy of the data we hold about you.</li>
+        <li><strong>Correction</strong> — update inaccurate or incomplete data via your profile settings.</li>
+        <li><strong>Deletion</strong> — request deletion of your account and associated personal data.</li>
+        <li><strong>Portability</strong> — request an export of your data in a machine-readable format.</li>
+        <li><strong>Objection</strong> — object to certain processing activities.</li>
+        <li><strong>Withdraw consent</strong> — revoke permissions (e.g. location access) at any time via your device settings.</li>
+      </ul>
+
+      <div class="card">
+        <p><strong>Account deletion</strong></p>
+        <p>
+          You can delete your account at any time from <strong>Profile → Settings → Delete Account</strong> within the app.
+          Upon deletion, your personal data (name, email, messages in DMs, profile photo) will be permanently removed within 30 days.
+          Public messages you sent in city channels may be anonymised rather than deleted to preserve conversation continuity.
+        </p>
+        <p>
+          You may also request deletion by emailing <a href="mailto:contact@hilads.live" style="color:#FF7A3C;">contact@hilads.live</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- 8. Children -->
+    <section id="children">
+      <h2><span class="num">08</span>Children's Privacy</h2>
+      <p>
+        Hilads is not directed at children under the age of 13. We do not knowingly collect personal data from anyone under 13 years old.
+      </p>
+      <p>
+        If you are a parent or guardian and believe your child has provided us with personal information, please contact us at <a href="mailto:contact@hilads.live" style="color:#FF7A3C;">contact@hilads.live</a> and we will promptly delete the relevant data.
+      </p>
+    </section>
+
+    <!-- 9. Third-Party Services -->
+    <section id="third-party">
+      <h2><span class="num">09</span>Third-Party Services</h2>
+      <p>Hilads integrates with the following third-party services. Each has their own privacy policy:</p>
+      <ul>
+        <li><strong>Cloudflare R2</strong> — secure cloud storage for uploaded photos.</li>
+        <li><strong>Firebase Cloud Messaging (FCM) / APNs</strong> — push notification delivery.</li>
+        <li><strong>Expo</strong> — mobile app runtime and over-the-air updates.</li>
+      </ul>
+      <p>
+        We do not integrate with advertising networks or social media tracking SDKs.
+      </p>
+    </section>
+
+    <!-- 10. Changes -->
+    <section id="changes">
+      <h2><span class="num">10</span>Changes to This Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time. When we do, we will revise the "Last updated" date at the top of this page. For significant changes, we will notify registered users via email or an in-app notice.
+      </p>
+      <p>
+        Continued use of Hilads after changes are posted constitutes your acceptance of the revised policy.
+      </p>
+    </section>
+
+    <!-- 11. Contact -->
+    <section id="contact">
+      <h2><span class="num">11</span>Contact Us</h2>
+      <p>If you have questions, concerns, or requests regarding your privacy, please reach out:</p>
+      <div class="contact-block">
+        <p><strong>Hilads</strong></p>
+        <p>Email: <a href="mailto:contact@hilads.live">contact@hilads.live</a></p>
+        <p>Website: <a href="https://hilads.live">hilads.live</a></p>
+      </div>
+      <p style="margin-top:16px; font-size:14px; color: var(--muted);">
+        We aim to respond to all privacy-related requests within 30 days.
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Hilads &mdash; <a href="https://hilads.live">hilads.live</a></p>
+  </footer>
+
+</body>
+</html>
