@@ -30,7 +30,7 @@ class UserRepository
                 $data['interests']         ?? '[]',
                 $data['guest_id']          ?? null,
                 $data['mode']              ?? null,
-                false,                            // email not yet verified
+                0,                                // is_verified: false (PDO coerces PHP bool to '' which breaks PostgreSQL)
                 $now,
                 $now,
             ]);
@@ -135,7 +135,7 @@ class UserRepository
                 $data['home_city']         ?? null,
                 $data['interests']         ?? '[]',
                 $data['vibe']              ?? 'chill',
-                $data['is_fake']           ?? false,
+                $data['is_fake']           ?? 0,
                 $now,
                 $now,
             ]);
