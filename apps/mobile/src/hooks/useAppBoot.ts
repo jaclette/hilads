@@ -390,6 +390,7 @@ export function useAppBoot(): Result {
                 // Release the boot screen now — joined=true is already set so the Stack
                 // mounts directly on chat (via index.tsx redirect). No router.replace needed.
                 setBooting(false);
+                startGeo(); // resolve detectedCity in background → powers "Back to my location" CTA
 
                 if (notifRoute) {
                   console.log('[push-nav] notification deep link at boot:', notifRoute);
