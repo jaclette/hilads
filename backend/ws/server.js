@@ -38,6 +38,12 @@
 import { WebSocketServer } from 'ws'
 import { createServer, get as httpGet } from 'http'
 
+// Prevent any uncaught exception or unhandled rejection from killing the process.
+// The server must stay alive for WebSocket clients — a single bad message or
+// timer callback should never take down all connected sessions.
+process.on('uncaughtException',  (err) => console.error('[server] uncaughtException:',  err))
+process.on('unhandledRejection', (reason) => console.error('[server] unhandledRejection:', reason))
+
 const PORT = process.env.PORT || 8081
 const INTERNAL_TOKEN = process.env.WS_INTERNAL_TOKEN || ''
 const HEARTBEAT_TTL_MS = 120_000  // session expires after 120s without heartbeat
@@ -453,6 +459,7 @@ wss.on('connection', (ws, req) => {
   //   - explicitly allowed web origins (browsers)
   const wsHost = req.headers.host  // e.g. "ws.hilads.live"
   const selfOrigin = wsHost ? `https://${wsHost}` : null
+  console.log(`[WS] new connection — origin: "${origin ?? 'none'}" host: "${wsHost}"`)
   if (origin && origin !== 'null' && origin !== selfOrigin && !ALLOWED_ORIGINS.has(origin)) {
     console.log(`[WS] rejected origin: "${origin}" (allowed: ${[...ALLOWED_ORIGINS].join(', ')})`)
     ws.close(1008, 'Origin not allowed')
