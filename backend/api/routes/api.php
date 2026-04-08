@@ -693,6 +693,18 @@ $router->add('POST', '/api/v1/auth/login', function () {
     Response::json(['user' => AuthService::ownFields($user), 'token' => $user['_token']]);
 });
 
+// ── DELETE /api/v1/auth/me — soft-delete the current user's account ──────────
+// Marks deleted_at, kills all sessions + push tokens.
+// Historical data (messages, events, DMs) is preserved for data integrity.
+$router->add('DELETE', '/api/v1/auth/me', function () {
+    $user = AuthService::requireAuth();
+    enforceRateLimit('delete_account', 3, 3600);
+    UserRepository::softDelete($user['id']);
+    // Destroy the current session cookie so the client is immediately signed out
+    AuthService::destroyDbSession();
+    Response::json(['ok' => true]);
+});
+
 $router->add('POST', '/api/v1/auth/logout', function () {
     $user = AuthService::currentUser(); // capture before session is destroyed
     AuthService::destroyDbSession();

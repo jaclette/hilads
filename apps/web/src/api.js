@@ -366,6 +366,14 @@ export async function authLogout() {
   await fetch(`${BASE}/auth/logout`, { method: 'POST', credentials: 'include' })
 }
 
+export async function deleteAccount() {
+  const res = await fetch(`${BASE}/auth/me`, { method: 'DELETE', credentials: 'include' })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error ?? 'Failed to delete account')
+  }
+}
+
 export async function authForgotPassword(email) {
   const res = await fetch(`${BASE}/auth/forgot-password`, {
     method: 'POST',

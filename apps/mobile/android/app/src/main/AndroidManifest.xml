@@ -41,16 +41,11 @@
         <data android:scheme="com.hilads.app"/>
         <data android:scheme="exp+hilads"/>
       </intent-filter>
-      <intent-filter android:autoVerify="true" data-generated="true">
-        <action android:name="android.intent.action.VIEW"/>
-        <data android:scheme="hilads"/>
-        <category android:name="android.intent.category.BROWSABLE"/>
-        <category android:name="android.intent.category.DEFAULT"/>
-      </intent-filter>
-      <intent-filter android:autoVerify="true" data-generated="true">
+      <intent-filter android:autoVerify="true">
         <action android:name="android.intent.action.VIEW"/>
         <data android:scheme="https" android:host="hilads.live" android:pathPrefix="/e/"/>
         <data android:scheme="https" android:host="hilads.live" android:pathPrefix="/event/"/>
+        <data android:scheme="https" android:host="hilads.live" android:pathPrefix="/city/"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>

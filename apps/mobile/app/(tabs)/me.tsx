@@ -26,7 +26,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMyEvents } from '@/hooks/useMyEvents';
 import { saveIdentity } from '@/lib/identity';
-import { updateProfile } from '@/api/auth';
+import { updateProfile, deleteAccount } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
@@ -318,6 +318,29 @@ export default function MeScreen() {
       { text: 'Cancel', style: 'cancel' },
       { text: 'Sign out', style: 'destructive', onPress: () => logout() },
     ]);
+  }
+
+  function handleDeleteAccount() {
+    Alert.alert(
+      'Delete account?',
+      'Your profile, friends, and settings will be permanently removed.\n\nYour messages and events will remain in city chats anonymously.\n\nThis cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete my account',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteAccount();
+              // Session already cleared server-side — mirror logout teardown
+              await logout();
+            } catch {
+              Alert.alert('Error', 'Could not delete account. Try again.');
+            }
+          },
+        },
+      ],
+    );
   }
 
   // ── Render ────────────────────────────────────────────────────────────────────
@@ -779,13 +802,22 @@ export default function MeScreen() {
               <Text style={styles.ctaBtnText}>{saved ? 'Saved ✓' : 'Save profile'}</Text>
             )}
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.stickySignOut}
-            onPress={handleLogout}
-            activeOpacity={0.6}
-          >
-            <Text style={styles.stickySignOutText}>Sign out</Text>
-          </TouchableOpacity>
+          <View style={styles.stickyBottomRow}>
+            <TouchableOpacity
+              style={styles.stickySignOut}
+              onPress={handleLogout}
+              activeOpacity={0.6}
+            >
+              <Text style={styles.stickySignOutText}>Sign out</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.stickyDeleteAccount}
+              onPress={handleDeleteAccount}
+              activeOpacity={0.6}
+            >
+              <Text style={styles.stickyDeleteAccountText}>Delete account</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </SafeAreaView>
@@ -1357,14 +1389,27 @@ const styles = StyleSheet.create({
     borderTopColor:    Colors.border,
     gap:               2,
   },
+  stickyBottomRow: {
+    flexDirection:  'row',
+    justifyContent: 'space-between',
+    alignItems:     'center',
+    paddingHorizontal: 4,
+  },
   stickySignOut: {
-    alignItems:    'center',
     paddingVertical: 8,
   },
   stickySignOutText: {
     fontSize:   FontSizes.xs,
     fontWeight: '500',
     color:      Colors.muted2,
+  },
+  stickyDeleteAccount: {
+    paddingVertical: 8,
+  },
+  stickyDeleteAccountText: {
+    fontSize:   FontSizes.xs,
+    fontWeight: '500',
+    color:      'rgba(248,113,113,0.35)',
   },
 
   // ── CTAs — web: .profile-actions ──────────────────────────────────────────

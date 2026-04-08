@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { updateProfile, uploadImage, fetchUserVibes } from '../api'
+import { updateProfile, uploadImage, fetchUserVibes, deleteAccount } from '../api'
 import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
@@ -39,7 +39,7 @@ const INTERESTS = [
   'hangout', 'socializing', 'gaming', 'tech', 'dating',
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount }) {
   const [photoUrl, setPhotoUrl]   = useState(account.profile_photo_url ?? null)
   const [name, setName]           = useState(account.display_name ?? '')
   const [homeCity, setHomeCity]   = useState(account.home_city ?? '')
@@ -62,6 +62,10 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [myVibeScore,     setMyVibeScore]     = useState(null)
   const [myVibeCount,     setMyVibeCount]     = useState(0)
   const [vibesLoading,    setVibesLoading]    = useState(true)
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteError,       setDeleteError]       = useState(null)
+  const [deleteLoading,     setDeleteLoading]     = useState(false)
 
   useEffect(() => {
     if (!account?.id) { setVibesLoading(false); return }
@@ -143,6 +147,19 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
       setError(err.message || 'Save failed. Try again.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setDeleteLoading(true)
+    setDeleteError(null)
+    try {
+      await deleteAccount()
+      onDeleteAccount?.()
+    } catch (err) {
+      setDeleteError(err.message ?? 'Something went wrong. Try again.')
+    } finally {
+      setDeleteLoading(false)
     }
   }
 
@@ -446,14 +463,54 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         >
           {uploading ? 'Uploading…' : saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save profile'}
         </button>
-        <button
-          className="profile-sticky-signout"
-          onClick={onSignOut}
-          type="button"
-        >
-          Sign out
-        </button>
+        <div className="profile-sticky-bottom-row">
+          <button
+            className="profile-sticky-signout"
+            onClick={onSignOut}
+            type="button"
+          >
+            Sign out
+          </button>
+          <button
+            className="profile-sticky-delete"
+            onClick={() => { setShowDeleteConfirm(true); setDeleteError(null) }}
+            type="button"
+          >
+            Delete account
+          </button>
+        </div>
       </div>
+
+      {/* ── Delete account confirmation overlay ── */}
+      {showDeleteConfirm && (
+        <div className="delete-account-overlay" onClick={() => !deleteLoading && setShowDeleteConfirm(false)}>
+          <div className="delete-account-sheet" onClick={e => e.stopPropagation()}>
+            <p className="delete-account-icon">⚠️</p>
+            <h3 className="delete-account-title">Delete account?</h3>
+            <p className="delete-account-body">
+              Your profile, friends, and settings will be permanently removed.
+              Your messages and events will remain in city chats anonymously.
+              <br /><br />
+              <strong>This cannot be undone.</strong>
+            </p>
+            {deleteError && <p className="delete-account-error">{deleteError}</p>}
+            <button
+              className="delete-account-confirm"
+              onClick={handleDeleteAccount}
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? 'Deleting…' : 'Yes, delete my account'}
+            </button>
+            <button
+              className="delete-account-cancel"
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={deleteLoading}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

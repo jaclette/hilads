@@ -53,7 +53,6 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "autoVerify": true,
           "data": [
             {
               "scheme": "hilads"
@@ -77,6 +76,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/event/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/city/"
             }
           ],
           "category": [

@@ -1327,6 +1327,11 @@ html, body, #root {
 .profile-sticky-save {
   /* inherits modal-submit full-width orange gradient */
 }
+.profile-sticky-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .profile-sticky-signout {
   background: none;
   border: none;
@@ -1335,17 +1340,107 @@ html, body, #root {
   font-weight: 500;
   padding: 6px 0;
   cursor: pointer;
-  text-align: center;
-  width: 100%;
+  text-align: left;
   transition: color 0.15s;
 }
 .profile-sticky-signout:hover { color: var(--muted); }
+.profile-sticky-delete {
+  background: none;
+  border: none;
+  color: rgba(248, 113, 113, 0.35);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 6px 0;
+  cursor: pointer;
+  text-align: right;
+  transition: color 0.15s;
+}
+.profile-sticky-delete:hover { color: rgba(248, 113, 113, 0.65); }
 .profile-sticky-error {
   font-size: 0.78rem;
   color: #f87171;
   text-align: center;
   margin: 0 0 4px;
 }
+
+/* ── Delete account confirmation overlay ───────────────────────────────────── */
+.delete-account-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 9999;
+  padding: 0 0 env(safe-area-inset-bottom);
+}
+.delete-account-sheet {
+  width: 100%;
+  max-width: 480px;
+  background: #1a1512;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px 20px 0 0;
+  padding: 28px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+.delete-account-icon {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+.delete-account-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f0ece6;
+  margin: 0;
+}
+.delete-account-body {
+  font-size: 0.875rem;
+  color: rgba(240, 236, 230, 0.6);
+  line-height: 1.55;
+  margin: 0;
+}
+.delete-account-error {
+  font-size: 0.8rem;
+  color: #f87171;
+  margin: 0;
+}
+.delete-account-confirm {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.delete-account-confirm:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+.delete-account-confirm:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.delete-account-cancel {
+  background: none;
+  border: none;
+  color: rgba(240, 236, 230, 0.4);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.delete-account-cancel:hover:not(:disabled) { color: rgba(240, 236, 230, 0.65); }
+.delete-account-cancel:disabled { opacity: 0.5; cursor: default; }
 
 /* ── Guest upgrade CTA ─────────────────────────────────── */
 .me-upgrade {

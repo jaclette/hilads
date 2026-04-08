@@ -60,6 +60,10 @@ export async function authLogout(): Promise<void> {
   await api.post('/auth/logout').catch(() => {});
 }
 
+export async function deleteAccount(): Promise<void> {
+  await api.delete('/auth/me');
+}
+
 export async function updateProfile(
   fields: Partial<User>,
 ): Promise<{ user: User }> {

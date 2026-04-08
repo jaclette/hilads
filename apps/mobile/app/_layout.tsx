@@ -80,6 +80,7 @@ function RootLayoutInner() {
             <Stack.Screen name="event/create" />
             <Stack.Screen name="event/[id]" />
             <Stack.Screen name="e/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="city/[slug]" options={{ headerShown: false }} />
             <Stack.Screen
               name="sign-in"
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
