@@ -453,6 +453,10 @@ export default function ChatTab() {
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
 
+  useEffect(() => {
+    if (__DEV__) console.log('[chat] actionSheetMsg state →', actionSheetMsg ? `id:${actionSheetMsg.id} type:${actionSheetMsg.type}` : 'null');
+  }, [actionSheetMsg]);
+
   function realMessageCount() {
     return messagesRef.current.filter(m => m.type === 'text' || m.type === 'image').length;
   }
@@ -575,8 +579,16 @@ export default function ChatTab() {
   }, [allMessages]);
 
   const handleMessageLongPress = useCallback((msg: Message) => {
-    if (!msg.id || msg.id.startsWith('local-')) return;
-    if (msg.type !== 'text' && msg.type !== 'image') return;
+    if (__DEV__) console.log('[chat] handleMessageLongPress called — id:', msg.id, 'type:', msg.type);
+    if (!msg.id || msg.id.startsWith('local-')) {
+      if (__DEV__) console.log('[chat] early return: no id or local id');
+      return;
+    }
+    if (msg.type !== 'text' && msg.type !== 'image') {
+      if (__DEV__) console.log('[chat] early return: type not text/image, actual:', msg.type);
+      return;
+    }
+    if (__DEV__) console.log('[chat] calling setActionSheetMsg for id:', msg.id);
     setActionSheetMsg(msg);
   }, []);
 
