@@ -371,6 +371,14 @@ function removeWs(ws) {
 // to the HTTP handler — no separate internal port needed.
 
 function handleBroadcastRequest(req, res) {
+  // Health check is unauthenticated — Render, Cloudflare, and uptime monitors
+  // must be able to reach it without the internal token.
+  if (req.method === 'GET' && req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ ok: true, clients: wss ? wss.clients.size : 0 }))
+    return
+  }
+
   let body = ''
   req.on('data', chunk => { body += chunk })
   req.on('end', () => {
@@ -420,11 +428,6 @@ function handleBroadcastRequest(req, res) {
         console.log(`[internal] broadcast new-topic channelId=${channelId} topicId=${topic?.id} roomSize=${room ? room.size : 0}`)
         broadcastNewTopic(channelId, topic)
         res.writeHead(200); res.end('ok')
-
-      } else if (req.method === 'GET' && req.url === '/health') {
-        // Health check endpoint — Render and uptime monitors can probe this
-        res.writeHead(200, { 'Content-Type': 'application/json' })
-        res.end(JSON.stringify({ ok: true, clients: wss.clients.size }))
 
       } else {
         console.log(`[internal] ✗ unknown route ${req.method} ${req.url}`)
