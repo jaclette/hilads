@@ -576,6 +576,7 @@ export default function ChatTab() {
 
   const handleMessageLongPress = useCallback((msg: Message) => {
     if (!msg.id || msg.id.startsWith('local-')) return;
+    if (msg.type !== 'text' && msg.type !== 'image') return;
     setActionSheetMsg(msg);
   }, []);
 
@@ -771,11 +772,7 @@ export default function ChatTab() {
                   showTime={showTime}
                   dateLabel={dateLabel}
                   onPromptCta={handlePromptCta}
-                  onLongPress={
-                    (item.type === 'text' || item.type === 'image') && item.id && !item.id.startsWith('local-')
-                      ? handleMessageLongPress
-                      : undefined
-                  }
+                  onLongPress={handleMessageLongPress}
                   onReplyQuotePress={scrollToMessage}
                   isHighlighted={highlightedMsgId === item.id}
                   onReact={handleReact}

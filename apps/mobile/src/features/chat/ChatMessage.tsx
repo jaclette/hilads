@@ -393,14 +393,15 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // Image preview state — must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);
 
-  function handleActionPress() {
-    if (!onLongPress) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onLongPress(message);
-  }
-
-  // Keep long-press as alias for discoverability
-  const handleLongPress = handleActionPress;
+  // Inline handlers — mirrors DmRow pattern to avoid stale-closure issues.
+  // onPress/onLongPress are undefined when no handler is provided so the
+  // Pressable doesn't participate in the responder system unnecessarily.
+  const handlePress     = onLongPress
+    ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);  onLongPress(message); }
+    : undefined;
+  const handleLongPress = onLongPress
+    ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(message); }
+    : undefined;
 
   // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
   if (message.type === 'event') {
@@ -609,7 +610,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         )}
 
         {/* ── Bubble — location card or plain text ── */}
-        <Pressable onPress={handleActionPress} onLongPress={handleLongPress} delayLongPress={350}>
+        <Pressable onPress={handlePress} onLongPress={handleLongPress} delayLongPress={350}>
           {isLocationMessage(message.content) ? (
             <LocationBubble content={message.content!} isMine={isMine} />
           ) : (
