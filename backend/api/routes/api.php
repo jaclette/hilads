@@ -201,20 +201,29 @@ function toggleMessageReaction(string $messageId, string $emoji, ?string $guestI
         Response::json(['error' => 'Actor identity required (guestId or auth token)'], 400);
     }
 
-    // Return updated reactions for this message with self flag for current actor
+    // Return updated reactions for this message with self flag for current actor.
+    // Dynamic self-expression avoids ? IS NULL / ? IS NOT NULL — PostgreSQL native
+    // prepared statements cannot infer the type of a NULL parameter with no context.
+    $selfExpr   = 'FALSE';
+    $selfParams = [];
+    if ($userId !== null) {
+        $selfExpr   = 'user_id = ?';
+        $selfParams = [$userId];
+    } elseif ($guestId !== null) {
+        $selfExpr   = '(guest_id = ? AND user_id IS NULL)';
+        $selfParams = [$guestId];
+    }
+
     $stmt2 = $pdo->prepare("
         SELECT emoji,
-               COUNT(*)                                                     AS cnt,
-               BOOL_OR(
-                 (user_id  = ? AND ? IS NOT NULL)
-                 OR (guest_id = ? AND user_id IS NULL AND ? IS NULL)
-               ) AS self_reacted
+               COUNT(*)               AS cnt,
+               BOOL_OR({$selfExpr})   AS self_reacted
           FROM message_reactions
          WHERE message_id = ?
          GROUP BY emoji
          ORDER BY MIN(created_at) ASC
     ");
-    $stmt2->execute([$userId, $userId, $guestId, $userId, $messageId]);
+    $stmt2->execute(array_merge($selfParams, [$messageId]));
 
     $reactions = array_map(fn($r) => [
         'emoji' => $r['emoji'],
