@@ -393,11 +393,14 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // Image preview state — must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);
 
-  function handleLongPress() {
+  function handleActionPress() {
     if (!onLongPress) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onLongPress(message);
   }
+
+  // Keep long-press as alias for discoverability
+  const handleLongPress = handleActionPress;
 
   // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
   if (message.type === 'event') {
@@ -606,7 +609,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         )}
 
         {/* ── Bubble — location card or plain text ── */}
-        <Pressable onLongPress={handleLongPress} delayLongPress={350}>
+        <Pressable onPress={handleActionPress} onLongPress={handleLongPress} delayLongPress={350}>
           {isLocationMessage(message.content) ? (
             <LocationBubble content={message.content!} isMine={isMine} />
           ) : (

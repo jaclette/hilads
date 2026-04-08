@@ -280,6 +280,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
           <DmLocationBubble content={msg.content} isMine={isMine} />
         ) : (
           <Pressable
+            onPress={onLongPress ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); onLongPress(msg); } : undefined}
             onLongPress={onLongPress ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(msg); } : undefined}
             delayLongPress={350}
           >
