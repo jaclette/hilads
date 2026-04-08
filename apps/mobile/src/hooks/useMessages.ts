@@ -120,7 +120,11 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
   // WebSocket — live new messages + reconnect catch-up
   useEffect(() => {
     function handler(data: Record<string, unknown>) {
-      if ((data.channelId === channelId || data.eventId === channelId) && data.message) {
+      // City channelId arrives as an integer from the WS server (rooms Map uses
+      // integer keys) but channelId here is always a string from React state.
+      // Use String() coercion to match — same fix as App.jsx:1452 on the webapp.
+      const match = String(data.channelId) === channelId || data.eventId === channelId;
+      if (match && data.message) {
         addNew([data.message as Message]);
       }
     }
