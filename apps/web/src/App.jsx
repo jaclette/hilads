@@ -2830,11 +2830,11 @@ export default function App() {
                   className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate', highlightedMsgId === item.id ? 'msg-highlight' : ''].filter(Boolean).join(' ')}
                   style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
                 >
-                  {!isGrouped && (
+                  {!isMine && !isGrouped && (
                     <div
-                      className={`msg-meta${isMine ? ' mine' : ''}${item.userId ? ' msg-meta--tappable' : ''}`}
-                      onClick={item.userId && !isMine ? () => openProfile(item.userId, item.nickname) : undefined}
-                      title={item.userId && !isMine ? `View ${item.nickname}'s profile` : undefined}
+                      className={`msg-meta${item.userId ? ' msg-meta--tappable' : ''}`}
+                      onClick={item.userId ? () => openProfile(item.userId, item.nickname) : undefined}
+                      title={item.userId ? `View ${item.nickname}'s profile` : undefined}
                     >
                       <span
                         className="msg-avatar"

@@ -17,7 +17,7 @@
   --text: #ede9e5;
   --muted: #635650;
   --muted2: #968880;
-  --mine-bg: #2a1f13;
+  --mine-bg: #8C3427;
   --other-bg: #1c1610;
   --mobile-tabbar-height: 78px;
 }
@@ -1660,14 +1660,6 @@ html, body, #root {
 
 .message.mine {
   align-self: flex-end;
-  align-items: flex-end;
-}
-
-/* Own message author row — right-aligned to match bubble alignment */
-.msg-meta.mine {
-  flex-direction: row-reverse;
-  padding-left:   0;
-  padding-right:  2px;
 }
 
 /* fade-in for new and initial messages */
@@ -1751,10 +1743,10 @@ html, body, #root {
 
 .msg-bubble-wrap.mine .msg-content {
   background: var(--mine-bg);
-  border-color: rgba(255, 122, 60, 0.22);
+  border-color: transparent;
   border-radius: 18px 4px 18px 18px;
-  color: rgba(255, 255, 255, 0.92);
-  box-shadow: none;
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(158, 58, 44, 0.35), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
 
 /* ── Typing indicator ─────────────────────────────────── */

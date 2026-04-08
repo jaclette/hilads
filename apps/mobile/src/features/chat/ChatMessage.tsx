@@ -522,7 +522,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           animStyle,
           isSending && styles.rowSending,
         ]}>
-          {!isGrouped && (
+          {!isMine && !isGrouped && (
             <SenderMeta
               nickname={message.nickname ?? '?'}
               color={c1}
@@ -595,8 +595,8 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.28], outputRange: ['transparent', 'rgba(255,122,60,0.18)'] }) },
       ]}>
 
-        {/* ── Avatar + author — shown for all messages (own + others), hidden when grouped ── */}
-        {!isGrouped && (
+        {/* ── Avatar + author — web: .msg-meta ── */}
+        {!isMine && !isGrouped && (
           <SenderMeta
             nickname={message.nickname ?? '?'}
             color={c1}
@@ -875,13 +875,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 4,
   },
   bubbleMine: {
-    backgroundColor:      '#2a1f13',   // dark warm brown — same family as bg3, clearly mine but not jarring
-    borderWidth:          1,
-    borderColor:          'rgba(255,122,60,0.22)',
+    backgroundColor:      '#B87228',
     borderTopRightRadius: 4,
+    shadowColor:          '#8a5418',
+    shadowOffset:         { width: 0, height: 2 },
+    shadowOpacity:        0.35,
+    shadowRadius:         6,
+    elevation:            4,
   },
   bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 22 },
-  bubbleTextMine: { color: 'rgba(255,255,255,0.92)' },
+  bubbleTextMine: { color: '#fff' },
 
   // Failed state
   bubbleFailed: {
