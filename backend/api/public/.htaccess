@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Health check — bypass the catch-all completely, serve health.php directly.
+# This fires before any RewriteCond so the response is instant.
+RewriteRule ^health$ health.php [L]
+
 # If file exists → serve it
 RewriteCond %{REQUEST_FILENAME} !-f
 

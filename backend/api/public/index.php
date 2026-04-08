@@ -46,36 +46,12 @@ if (str_starts_with($uri, '/admin')) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 if ($method === 'GET' && $uri === '/health') {
+    // Fast path — no DB, no bootstrap. Render just needs 200 to pass the deploy check.
+    // (The .htaccess rewrite sends /health → health.php before this ever runs,
+    //  but this fallback keeps the endpoint working even if .htaccess is bypassed.)
     http_response_code(200);
     header('Content-Type: application/json; charset=utf-8');
-
-    $dbUrl    = getenv('DATABASE_URL') ?: null;
-    $dbStatus = $dbUrl ? 'configured' : 'no DATABASE_URL';
-    $dbError  = null;
-
-    if ($dbUrl) {
-        $p = parse_url($dbUrl);
-        try {
-            $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=require',
-                $p['host'], $p['port'] ?? 5432, ltrim($p['path'], '/'));
-            new PDO($dsn,
-                isset($p['user']) ? urldecode($p['user']) : null,
-                isset($p['pass']) ? urldecode($p['pass']) : null,
-                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-            $dbStatus = 'connected';
-        } catch (Throwable $ex) {
-            $dbStatus = 'connection_failed';
-            error_log('[hilads] health DB check failed: ' . $ex->getMessage());
-            $dbError  = 'redacted';
-        }
-    }
-
-    echo json_encode([
-        'status'     => 'ok',
-        'service'    => 'hilads-api',
-        'db_status'  => $dbStatus,
-        'db_error'   => $dbError ?? null,
-    ], JSON_UNESCAPED_UNICODE);
+    echo '{"status":"ok","service":"hilads-api"}';
     exit();
 }
 
