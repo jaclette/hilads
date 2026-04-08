@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { HiladsEvent, Message, EventParticipant } from '@/types';
+import type { HiladsEvent, Message, EventParticipant, Reaction } from '@/types';
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
@@ -188,4 +188,17 @@ export async function sendEventImageMessage(
     image_url: imageUrl,
     type: 'image',
   });
+}
+
+export async function toggleEventReaction(
+  eventId: string,
+  messageId: string,
+  emoji: string,
+  guestId: string,
+): Promise<Reaction[]> {
+  const data = await api.post<{ reactions: Reaction[] }>(
+    `/events/${eventId}/messages/${messageId}/reactions`,
+    { emoji, guestId },
+  );
+  return data.reactions;
 }

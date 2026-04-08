@@ -4,16 +4,17 @@ import { uploadFile } from '@/api/uploads';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
-import type { DmMessage, ReplyRef } from '@/types';
+import type { DmMessage, Reaction, ReplyRef } from '@/types';
 
 interface Result {
-  messages:    DmMessage[];  // newest first (inverted FlatList)
-  loading:     boolean;
-  sending:     boolean;      // kept for interface compat — always false (optimistic)
-  error:       string | null;
-  clearError:  () => void;
-  sendText:    (content: string, replyTo?: ReplyRef | null) => Promise<void>;
-  sendImage:   (localUri: string) => Promise<void>;
+  messages:            DmMessage[];  // newest first (inverted FlatList)
+  loading:             boolean;
+  sending:             boolean;      // kept for interface compat — always false (optimistic)
+  error:               string | null;
+  clearError:          () => void;
+  sendText:            (content: string, replyTo?: ReplyRef | null) => Promise<void>;
+  sendImage:           (localUri: string) => Promise<void>;
+  setMessageReactions: (messageId: string, reactions: Reaction[]) => void;
 }
 
 function makeLocalId(): string {
@@ -157,10 +158,15 @@ export function useDMThread(conversationId: string): Result {
     }
   }, [conversationId, account]);
 
+  function setMessageReactions(messageId: string, reactions: Reaction[]) {
+    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));
+  }
+
   return {
     messages, loading, sending: false, error,
     clearError: () => setError(null),
     sendText,
     sendImage,
+    setMessageReactions,
   };
 }

@@ -582,4 +582,46 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_vibes_author ON user_vibes (autho
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_topics_city   ON channel_topics (city_id, expires_at DESC)", 'idx_channel_topics_city');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_topics_expiry ON channel_topics (expires_at)", 'idx_channel_topics_expiry');
 
+// ── Reactions ─────────────────────────────────────────────────────────────────
+
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS message_reactions (
+        id         BIGSERIAL   PRIMARY KEY,
+        message_id TEXT        NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+        guest_id   TEXT,
+        user_id    TEXT        REFERENCES users(id) ON DELETE CASCADE,
+        emoji      TEXT        NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'message_reactions');
+
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS conversation_message_reactions (
+        id         BIGSERIAL   PRIMARY KEY,
+        message_id TEXT        NOT NULL REFERENCES conversation_messages(id) ON DELETE CASCADE,
+        user_id    TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        emoji      TEXT        NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (message_id, user_id, emoji)
+    )
+", 'conversation_message_reactions');
+
+// One reaction per emoji per registered user (across all messages)
+run($pdo, "
+    CREATE UNIQUE INDEX IF NOT EXISTS uniq_msg_rxn_user
+    ON message_reactions (message_id, user_id, emoji)
+    WHERE user_id IS NOT NULL
+", 'uniq_msg_rxn_user');
+
+// One reaction per emoji per guest (only when no registered user_id is set)
+run($pdo, "
+    CREATE UNIQUE INDEX IF NOT EXISTS uniq_msg_rxn_guest
+    ON message_reactions (message_id, guest_id, emoji)
+    WHERE guest_id IS NOT NULL AND user_id IS NULL
+", 'uniq_msg_rxn_guest');
+
+// Efficient batch-fetch by message_id
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_msg_rxn_message ON message_reactions (message_id)", 'idx_msg_rxn_message');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_conv_msg_rxn_message ON conversation_message_reactions (message_id)", 'idx_conv_msg_rxn_message');
+
 echo "\nDone.\n";

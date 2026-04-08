@@ -23,13 +23,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useDMThread } from '@/hooks/useDMThread';
-import { findOrCreateDM } from '@/api/conversations';
+import { findOrCreateDM, toggleDmReaction } from '@/api/conversations';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { isSameDay, formatDateLabel, formatTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
+import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { ReactionPills } from '@/features/chat/ReactionPills';
 import type { DmMessage, ReplyRef } from '@/types';
 
 // ── Date separator — reused from ChatMessage visual style ─────────────────────
@@ -102,6 +104,7 @@ interface RowProps {
   onLongPress?:       (msg: DmMessage) => void;
   onReplyQuotePress?: (replyToId: string) => void;
   isHighlighted?:     boolean;
+  onReact?:           (msg: DmMessage, emoji: string) => void;
 }
 
 function parseDmLocation(content: string): { line1: string; place: string; lat?: number; lng?: number; addr: string } {
@@ -190,7 +193,7 @@ const dmLocStyles = StyleSheet.create({
   tapHintMine: { color: 'rgba(255,255,255,0.5)' },
 });
 
-function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted }: RowProps) {
+function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted, onReact }: RowProps) {
   const router = useRouter();
   const { account } = useApp();
   const opacity = useRef(new Animated.Value(0)).current;
@@ -308,6 +311,11 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
           </Pressable>
         )}
 
+        {/* Reaction pills */}
+        {msg.reactions && msg.reactions.length > 0 && onReact && (
+          <ReactionPills reactions={msg.reactions} onReact={e => onReact(msg, e)} isMine={isMine} />
+        )}
+
         {/* Status / timestamp row — only on last message of group */}
         {isLast && (
           <View style={[styles.metaRow, isMine && styles.metaRowMine]}>
@@ -332,7 +340,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { account } = useApp();
-  const { messages, loading, sending, error, clearError, sendText, sendImage } = useDMThread(conversationId);
+  const { messages, loading, sending, error, clearError, sendText, sendImage, setMessageReactions } = useDMThread(conversationId);
   const [text,          setText]          = useState('');
   const [uploading,     setUploading]     = useState(false);
   const [focused,       setFocused]       = useState(false);
@@ -344,6 +352,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const replyingToRef = useRef<ReplyRef | null>(null);
   replyingToRef.current = replyingTo;
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
+  const [actionSheetMsg,   setActionSheetMsg]   = useState<DmMessage | null>(null);
   const flatListRef = useRef<FlatList<DmMessage>>(null);
   const lastSel   = useRef({ start: 0, end: 0 });
 
@@ -541,11 +550,20 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         onReplyQuotePress={scrollToMessage}
         onLongPress={(msg) => {
           if (!msg.id || msg.id.startsWith('local-')) return;
-          setReplyingTo({ id: msg.id, nickname: msg.sender_name, content: msg.content ?? '', type: msg.type ?? 'text' });
+          setActionSheetMsg(msg);
+        }}
+        onReact={async (msg, emoji) => {
+          if (!msg.id) return;
+          try {
+            const reactions = await toggleDmReaction(conversationId, msg.id, emoji);
+            setMessageReactions(msg.id, reactions);
+          } catch (e) {
+            console.warn('[dm] reaction failed:', e);
+          }
         }}
       />
     );
-  }, [messages, account?.id, color, initial, highlightedMsgId]);
+  }, [messages, account?.id, color, initial, highlightedMsgId, setMessageReactions, conversationId]);
 
   return (
     <KeyboardAvoidingView
@@ -680,6 +698,24 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           }
         </TouchableOpacity>
       </View>
+
+      <MessageActionSheet
+        visible={actionSheetMsg !== null}
+        reactions={actionSheetMsg?.reactions ?? []}
+        onReact={async (emoji) => {
+          if (!actionSheetMsg?.id) return;
+          try {
+            const reactions = await toggleDmReaction(conversationId, actionSheetMsg.id, emoji);
+            setMessageReactions(actionSheetMsg.id, reactions);
+          } catch (e) {
+            console.warn('[dm] reaction failed:', e);
+          }
+        }}
+        onReply={actionSheetMsg ? () => {
+          setReplyingTo({ id: actionSheetMsg.id, nickname: actionSheetMsg.sender_name, content: actionSheetMsg.content ?? '', type: actionSheetMsg.type ?? 'text' });
+        } : undefined}
+        onClose={() => setActionSheetMsg(null)}
+      />
     </KeyboardAvoidingView>
   );
 }

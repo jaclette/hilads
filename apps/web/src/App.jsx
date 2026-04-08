@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -2904,6 +2904,25 @@ export default function App() {
                   {showTime && item.createdAt && (
                     <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatMsgTime(item.createdAt)}</span>
                   )}
+                  {item.reactions && item.reactions.length > 0 && (
+                    <div className={`reaction-pills${isMine ? ' mine' : ''}`}>
+                      {item.reactions.map(r => (
+                        <button
+                          key={r.emoji}
+                          className={`reaction-pill${r.self ? ' self' : ''}`}
+                          onClick={async (e) => {
+                            e.stopPropagation()
+                            try {
+                              const data = await toggleChannelReaction(channelId, item.id, r.emoji, guest?.guestId)
+                              setFeed(prev => prev.map(m => m.id === item.id ? { ...m, reactions: data.reactions } : m))
+                            } catch {}
+                          }}
+                        >
+                          {r.emoji}{r.count > 1 && <span className="reaction-count">{r.count}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )
@@ -2924,12 +2943,33 @@ export default function App() {
             <div
               className="action-bubble"
               style={{
-                top:   Math.max(8, actionBubble.y - 48),
+                top:   Math.max(8, actionBubble.y - 64),
                 left:  actionBubble.isMine ? 'auto' : actionBubble.x,
                 right: actionBubble.isMine ? 16 : 'auto',
               }}
               onClick={e => e.stopPropagation()}
             >
+              {/* Emoji reaction strip */}
+              <div className="action-bubble-emojis">
+                {['❤️', '👍', '😂', '😮', '🔥'].map(emoji => {
+                  const selfReacted = (actionBubble.msg.reactions ?? []).some(r => r.emoji === emoji && r.self)
+                  return (
+                    <button
+                      key={emoji}
+                      className={`action-bubble-emoji${selfReacted ? ' active' : ''}`}
+                      onClick={async () => {
+                        try {
+                          const data = await toggleChannelReaction(channelId, actionBubble.msg.id, emoji, guest?.guestId)
+                          setFeed(prev => prev.map(m => m.id === actionBubble.msg.id ? { ...m, reactions: data.reactions } : m))
+                        } catch {}
+                        setActionBubble(null)
+                      }}
+                    >
+                      {emoji}
+                    </button>
+                  )
+                })}
+              </div>
               <button
                 className="action-bubble-btn"
                 onClick={() => {

@@ -146,6 +146,85 @@ function postToWs(string $path, array $payload): void
 }
 
 // channelId: integer city room key (matches WS server rooms Map).
+// ── Reaction broadcast helper ─────────────────────────────────────────────────
+// Fire-and-forget: pushes a reactionUpdate event to channel/conversation rooms.
+function broadcastReactionToWs(int|string $channelId, string $messageId, array $reactions): void
+{
+    postToWs('/broadcast/reaction', [
+        'channelId' => $channelId,
+        'messageId' => $messageId,
+        'reactions' => $reactions,
+    ]);
+}
+
+function broadcastDmReactionToWs(string $conversationId, string $messageId, array $reactions): void
+{
+    postToWs('/broadcast/dm-reaction', [
+        'conversationId' => $conversationId,
+        'messageId'      => $messageId,
+        'reactions'      => $reactions,
+    ]);
+}
+
+// ── Reaction toggle helper ────────────────────────────────────────────────────
+// Shared by channel and event reaction endpoints (both use `message_reactions` table).
+// Returns ['reactions' => [...], 'added' => bool].
+function toggleMessageReaction(string $messageId, string $emoji, ?string $guestId, ?string $userId): array
+{
+    $pdo = Database::pdo();
+
+    if ($userId !== null) {
+        // Registered user — keyed on user_id
+        $stmt = $pdo->prepare("SELECT id FROM message_reactions WHERE message_id = ? AND user_id = ? AND emoji = ?");
+        $stmt->execute([$messageId, $userId, $emoji]);
+        $existing = $stmt->fetch();
+        if ($existing) {
+            $pdo->prepare("DELETE FROM message_reactions WHERE message_id = ? AND user_id = ? AND emoji = ?")->execute([$messageId, $userId, $emoji]);
+            $added = false;
+        } else {
+            $pdo->prepare("INSERT INTO message_reactions (message_id, user_id, guest_id, emoji) VALUES (?, ?, ?, ?)")->execute([$messageId, $userId, $guestId, $emoji]);
+            $added = true;
+        }
+    } elseif ($guestId !== null) {
+        // Guest user — keyed on guest_id, no user_id row
+        $stmt = $pdo->prepare("SELECT id FROM message_reactions WHERE message_id = ? AND guest_id = ? AND user_id IS NULL AND emoji = ?");
+        $stmt->execute([$messageId, $guestId, $emoji]);
+        $existing = $stmt->fetch();
+        if ($existing) {
+            $pdo->prepare("DELETE FROM message_reactions WHERE message_id = ? AND guest_id = ? AND user_id IS NULL AND emoji = ?")->execute([$messageId, $guestId, $emoji]);
+            $added = false;
+        } else {
+            $pdo->prepare("INSERT INTO message_reactions (message_id, guest_id, emoji) VALUES (?, ?, ?)")->execute([$messageId, $guestId, $emoji]);
+            $added = true;
+        }
+    } else {
+        Response::json(['error' => 'Actor identity required (guestId or auth token)'], 400);
+    }
+
+    // Return updated reactions for this message with self flag for current actor
+    $stmt2 = $pdo->prepare("
+        SELECT emoji,
+               COUNT(*)                                                     AS cnt,
+               BOOL_OR(
+                 (user_id  = ? AND ? IS NOT NULL)
+                 OR (guest_id = ? AND user_id IS NULL AND ? IS NULL)
+               ) AS self_reacted
+          FROM message_reactions
+         WHERE message_id = ?
+         GROUP BY emoji
+         ORDER BY MIN(created_at) ASC
+    ");
+    $stmt2->execute([$userId, $userId, $guestId, $userId, $messageId]);
+
+    $reactions = array_map(fn($r) => [
+        'emoji' => $r['emoji'],
+        'count' => (int) $r['cnt'],
+        'self'  => (bool) $r['self_reacted'],
+    ], $stmt2->fetchAll());
+
+    return ['reactions' => $reactions, 'added' => $added];
+}
+
 function broadcastNewEventToWs(int $channelId, array $hiladsEvent): void
 {
     error_log("[ws-broadcast] → new-event channelId={$channelId}");
@@ -1828,6 +1907,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         unset($u);
         // ─────────────────────────────────────────────────────────────────────
 
+        // Attach emoji reactions — reads viewer identity from request context
+        $viewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+        $viewerUserId  = AuthService::currentUser()['id'] ?? null;
+        MessageRepository::attachReactions($messages, $viewerGuestId ?: null, $viewerUserId);
+
         apiLog('channel_messages', 'success', [
             'channelId'   => $channelId,
             'messages'    => count($messages),
@@ -2927,8 +3011,14 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
             return;
         }
 
-        $res = MessageRepository::getByChannel($eventId);
-        Response::json(['messages' => $res['messages']]);
+        $res      = MessageRepository::getByChannel($eventId);
+        $messages = $res['messages'];
+
+        $viewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+        $viewerUserId  = AuthService::currentUser()['id'] ?? null;
+        MessageRepository::attachReactions($messages, $viewerGuestId ?: null, $viewerUserId);
+
+        Response::json(['messages' => $messages]);
     } catch (\Throwable $e) {
         error_log('[event-messages] GET failed for event ' . $eventId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to load messages'], 500);
@@ -3054,6 +3144,38 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
     }
 
     Response::json($message, 201);
+});
+
+// POST /api/v1/events/{eventId}/messages/{messageId}/reactions
+$router->add('POST', '/api/v1/events/{eventId}/messages/{messageId}/reactions', function (array $params) {
+    $eventId   = $params['eventId']   ?? '';
+    $messageId = $params['messageId'] ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+    if (empty($messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+
+    $body    = Request::json();
+    $emoji   = trim((string) ($body['emoji'] ?? ''));
+    $guestId = $body['guestId'] ?? null;
+
+    $allowedEmojis = ['❤️', '👍', '😂', '😮', '🔥'];
+    if (!in_array($emoji, $allowedEmojis, true)) {
+        Response::json(['error' => 'Invalid emoji'], 400);
+    }
+
+    $userId = AuthService::currentUser()['id'] ?? null;
+    if ($userId === null && !isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId or auth token required'], 400);
+    }
+
+    $result = toggleMessageReaction($messageId, $emoji, $guestId, $userId);
+    broadcastReactionToWs($eventId, $messageId, $result['reactions']);
+
+    Response::json(['reactions' => $result['reactions']]);
 });
 
 $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $params) {
@@ -3306,6 +3428,38 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     Response::json($message, 201);
 });
 
+// POST /api/v1/channels/{channelId}/messages/{messageId}/reactions
+$router->add('POST', '/api/v1/channels/{channelId}/messages/{messageId}/reactions', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $messageId = $params['messageId'] ?? '';
+
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+    if (empty($messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+
+    $body    = Request::json();
+    $emoji   = trim((string) ($body['emoji'] ?? ''));
+    $guestId = $body['guestId'] ?? null;
+
+    $allowedEmojis = ['❤️', '👍', '😂', '😮', '🔥'];
+    if (!in_array($emoji, $allowedEmojis, true)) {
+        Response::json(['error' => 'Invalid emoji'], 400);
+    }
+
+    $userId = AuthService::currentUser()['id'] ?? null;
+    if ($userId === null && !isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId or auth token required'], 400);
+    }
+
+    $result = toggleMessageReaction($messageId, $emoji, $guestId, $userId);
+    broadcastReactionToWs("city_{$channelId}", $messageId, $result['reactions']);
+
+    Response::json(['reactions' => $result['reactions']]);
+});
+
 // ── Conversations ─────────────────────────────────────────────────────────────
 
 // GET /api/v1/conversations
@@ -3372,6 +3526,7 @@ $router->add('GET', '/api/v1/conversations/{conversationId}/messages', function 
     }
 
     $messages = ConversationRepository::listMessages($conversationId);
+    MessageRepository::attachReactions($messages, null, $user['id'], 'conversation_message_reactions');
 
     Response::json(['messages' => $messages]);
 });
@@ -3461,6 +3616,57 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     }
 
     Response::json(['message' => $message], 201);
+});
+
+// POST /api/v1/conversations/{conversationId}/messages/{messageId}/reactions
+$router->add('POST', '/api/v1/conversations/{conversationId}/messages/{messageId}/reactions', function (array $params) {
+    $user           = AuthService::requireAuth();
+    $conversationId = $params['conversationId'] ?? '';
+    $messageId      = $params['messageId']      ?? '';
+
+    if (!ConversationRepository::isParticipant($conversationId, $user['id'])) {
+        Response::json(['error' => 'Not a participant'], 403);
+    }
+    if (empty($messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+
+    $body  = Request::json();
+    $emoji = trim((string) ($body['emoji'] ?? ''));
+
+    $allowedEmojis = ['❤️', '👍', '😂', '😮', '🔥'];
+    if (!in_array($emoji, $allowedEmojis, true)) {
+        Response::json(['error' => 'Invalid emoji'], 400);
+    }
+
+    $pdo = Database::pdo();
+    $stmt = $pdo->prepare("SELECT id FROM conversation_message_reactions WHERE message_id = ? AND user_id = ? AND emoji = ?");
+    $stmt->execute([$messageId, $user['id'], $emoji]);
+    if ($stmt->fetch()) {
+        $pdo->prepare("DELETE FROM conversation_message_reactions WHERE message_id = ? AND user_id = ? AND emoji = ?")->execute([$messageId, $user['id'], $emoji]);
+    } else {
+        $pdo->prepare("INSERT INTO conversation_message_reactions (message_id, user_id, emoji) VALUES (?, ?, ?)")->execute([$messageId, $user['id'], $emoji]);
+    }
+
+    // Return updated reactions with self flag
+    $stmt2 = $pdo->prepare("
+        SELECT emoji, COUNT(*) AS cnt,
+               BOOL_OR(user_id = ?) AS self_reacted
+          FROM conversation_message_reactions
+         WHERE message_id = ?
+         GROUP BY emoji
+         ORDER BY MIN(created_at) ASC
+    ");
+    $stmt2->execute([$user['id'], $messageId]);
+    $reactions = array_map(fn($r) => [
+        'emoji' => $r['emoji'],
+        'count' => (int) $r['cnt'],
+        'self'  => (bool) $r['self_reacted'],
+    ], $stmt2->fetchAll());
+
+    broadcastDmReactionToWs($conversationId, $messageId, $reactions);
+
+    Response::json(['reactions' => $reactions]);
 });
 
 // POST /api/v1/events/{eventId}/mark-read

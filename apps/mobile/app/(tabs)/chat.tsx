@@ -22,17 +22,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMessages } from '@/hooks/useMessages';
-import { fetchMessages, sendMessage, sendImageMessage } from '@/api/channels';
+import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
 import { fetchCityEvents } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
+import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { Colors, FontSizes, Spacing } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
-import type { Message } from '@/types';
+import type { Message, ReplyRef } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
 // Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.
@@ -407,9 +408,9 @@ export default function ChatTab() {
   );
 
   const postTextFn = useCallback(
-    (content: string): Promise<Message> => {
+    (content: string, replyToId?: string | null): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendMessage(channelId, sessionId, identity.guestId, nickname, content);
+      return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId);
     },
     [channelId, identity, sessionId, nickname],
   );
@@ -425,7 +426,7 @@ export default function ChatTab() {
   // Use pre-loaded data from the bootstrap endpoint if available for the current channel.
   const chatBootstrap = bootstrapData?.channelId === channelId ? bootstrapData : undefined;
 
-  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder } = useMessages({
+  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions } = useMessages({
     channelId,
     loadFn,
     postTextFn,
@@ -445,6 +446,12 @@ export default function ChatTab() {
   const activityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const promptTimersRef  = useRef<ReturnType<typeof setTimeout>[]>([]);
   const pickImageRef     = useRef<(() => void) | null>(null);
+  const flatListRef      = useRef<FlatList<Message>>(null);
+  const [replyingTo,       setReplyingTo]       = useState<ReplyRef | null>(null);
+  const replyingToRef    = useRef<ReplyRef | null>(null);
+  replyingToRef.current  = replyingTo;
+  const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
+  const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
 
   function realMessageCount() {
     return messagesRef.current.filter(m => m.type === 'text' || m.type === 'image').length;
@@ -556,6 +563,47 @@ export default function ChatTab() {
     return [...chat, ...eventFeedItems, ...topicFeedItems, ...promptItems]
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
   }, [messages, eventFeedItems, topicFeedItems, promptItems]);
+
+  // ── Reply callbacks ───────────────────────────────────────────────────────────
+
+  const scrollToMessage = useCallback((id: string) => {
+    const idx = allMessages.findIndex(m => m.id === id);
+    if (idx === -1) return;
+    flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    setHighlightedMsgId(id);
+    setTimeout(() => setHighlightedMsgId(null), 1500);
+  }, [allMessages]);
+
+  const handleMessageLongPress = useCallback((msg: Message) => {
+    if (!msg.id || msg.id.startsWith('local-')) return;
+    setActionSheetMsg(msg);
+  }, []);
+
+  const handleReply = useCallback((msg: Message) => {
+    setReplyingTo({
+      id:       msg.id,
+      nickname: msg.nickname,
+      content:  msg.content ?? '',
+      type:     msg.type ?? 'text',
+    });
+  }, []);
+
+  // Wraps useMessages sendText to inject the current replyingTo before clearing it.
+  const handleSendText = useCallback((text: string) => {
+    const reply = replyingToRef.current;
+    setReplyingTo(null);
+    sendText(text, reply);
+  }, [sendText]);
+
+  const handleReact = useCallback(async (msg: Message, emoji: string) => {
+    if (!msg.id || !identity) return;
+    try {
+      const reactions = await toggleChannelReaction(String(channelId), msg.id, emoji, identity.guestId);
+      setMessageReactions(msg.id, reactions);
+    } catch (e) {
+      console.warn('[chat] reaction failed:', e);
+    }
+  }, [channelId, identity, setMessageReactions]);
 
   // No city yet — prompt to pick one
   if (!city) {
@@ -680,6 +728,7 @@ export default function ChatTab() {
           </View>
         ) : (
           <FlatList
+            ref={flatListRef}
             data={allMessages}
             keyExtractor={(m, idx) => (m.id ? m.id : String(idx))}
             renderItem={({ item, index }) => {
@@ -722,6 +771,14 @@ export default function ChatTab() {
                   showTime={showTime}
                   dateLabel={dateLabel}
                   onPromptCta={handlePromptCta}
+                  onLongPress={
+                    (item.type === 'text' || item.type === 'image') && item.id && !item.id.startsWith('local-')
+                      ? handleMessageLongPress
+                      : undefined
+                  }
+                  onReplyQuotePress={scrollToMessage}
+                  isHighlighted={highlightedMsgId === item.id}
+                  onReact={handleReact}
                 />
               );
             }}
@@ -767,14 +824,24 @@ export default function ChatTab() {
         {/* ── Input — web: .input-bar ── */}
         <ChatInput
           sending={sending}
-          onSendText={sendText}
+          onSendText={handleSendText}
           onSendImage={sendImage}
           placeholder={getPlaceholder(channelId)}
           pickImageRef={pickImageRef}
           onTypingStart={handleTypingStart}
           onTypingStop={handleTypingStop}
+          replyingTo={replyingTo}
+          onCancelReply={() => setReplyingTo(null)}
         />
       </KeyboardAvoidingView>
+
+      <MessageActionSheet
+        visible={actionSheetMsg !== null}
+        reactions={actionSheetMsg?.reactions ?? []}
+        onReact={emoji => { if (actionSheetMsg) handleReact(actionSheetMsg, emoji); }}
+        onReply={actionSheetMsg ? () => handleReply(actionSheetMsg) : undefined}
+        onClose={() => setActionSheetMsg(null)}
+      />
     </SafeAreaView>
   );
 }

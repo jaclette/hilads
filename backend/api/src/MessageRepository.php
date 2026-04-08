@@ -350,6 +350,77 @@ class MessageRepository
         return $result;
     }
 
+    // ── Reactions ─────────────────────────────────────────────────────────────
+
+    /**
+     * Batch-loads reactions for a list of message IDs and injects them into
+     * the messages array in-place.  One query for counts, one for self-detection.
+     *
+     * Each message gains: "reactions": [{"emoji":"❤️","count":2,"self":false}, …]
+     * Sorted by first-reaction time so the order is stable.
+     *
+     * @param array   $messages         Reference — modified in place.
+     * @param ?string $viewerGuestId    Current viewer's guestId (may be null).
+     * @param ?string $viewerUserId     Current viewer's userId  (may be null).
+     * @param string  $table            'message_reactions' or 'conversation_message_reactions'.
+     */
+    public static function attachReactions(
+        array  &$messages,
+        ?string $viewerGuestId,
+        ?string $viewerUserId,
+        string  $table = 'message_reactions'
+    ): void {
+        $ids = array_filter(array_column($messages, 'id'), fn($id) => !empty($id));
+        if (empty($ids)) return;
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        // Aggregate counts per (message_id, emoji) and detect self-reaction in one pass.
+        // BOOL_OR handles the three possible viewer states:
+        //   registered viewer  → match on user_id
+        //   guest viewer       → match on guest_id (only when user_id IS NULL — prevents
+        //                        a registered user from double-counting via their old guestId)
+        //   no viewer info     → always false
+        $selfUserExpr  = ($viewerUserId  !== null) ? 'user_id = ?' : 'FALSE';
+        $selfGuestExpr = ($viewerGuestId !== null) ? '(guest_id = ? AND user_id IS NULL)' : 'FALSE';
+        $selfExpr      = "BOOL_OR({$selfUserExpr} OR {$selfGuestExpr})";
+
+        // Build execute params: IDs for IN clause, then viewer identity for BOOL_OR
+        $execParams = array_values($ids);
+        if ($viewerUserId  !== null) $execParams[] = $viewerUserId;
+        if ($viewerGuestId !== null) $execParams[] = $viewerGuestId;
+
+        $sql = "
+            SELECT message_id,
+                   emoji,
+                   COUNT(*)   AS cnt,
+                   {$selfExpr} AS self_reacted
+              FROM {$table}
+             WHERE message_id IN ({$placeholders})
+             GROUP BY message_id, emoji
+             ORDER BY MIN(created_at) ASC
+        ";
+
+        $stmt = Database::pdo()->prepare($sql);
+        $stmt->execute($execParams);
+        $rows = $stmt->fetchAll();
+
+        // Build a map: message_id → [{emoji, count, self}]
+        $map = [];
+        foreach ($rows as $r) {
+            $map[$r['message_id']][] = [
+                'emoji' => $r['emoji'],
+                'count' => (int) $r['cnt'],
+                'self'  => (bool) $r['self_reacted'],
+            ];
+        }
+
+        foreach ($messages as &$msg) {
+            $msg['reactions'] = $map[$msg['id'] ?? ''] ?? [];
+        }
+        unset($msg);
+    }
+
     public static function addImage(int|string $channelId, string $guestId, string $nickname, string $imageUrl, ?string $userId = null): array
     {
         $id = bin2hex(random_bytes(8));

@@ -11,9 +11,10 @@ import { useApp } from '@/context/AppContext';
 import * as Haptics from 'expo-haptics';
 import { useEventDetail } from '@/hooks/useEventDetail';
 import { useMessages } from '@/hooks/useMessages';
-import { fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants } from '@/api/events';
+import { fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventReaction } from '@/api/events';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
+import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
@@ -105,6 +106,7 @@ export default function EventDetailScreen() {
 
   const flatListRef = useRef<FlatList<Message>>(null);
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
+  const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
 
   function scrollToMessage(id: string) {
     const idx = feed.findIndex(m => m.id === id);
@@ -204,7 +206,7 @@ export default function EventDetailScreen() {
     [id, identity, nickname],
   );
 
-  const { messages, loading: msgsLoading, sending, error: msgError, clearError, sendText, sendImage } = useMessages({
+  const { messages, loading: msgsLoading, sending, error: msgError, clearError, sendText, sendImage, setMessageReactions } = useMessages({
     channelId,
     loadFn,
     postTextFn,
@@ -382,10 +384,19 @@ export default function EventDetailScreen() {
                   dateLabel={dateLabel}
                   isHighlighted={highlightedMsgId === item.id}
                   onLongPress={(msg) => {
-                    if (!msg.id) return;
-                    setReplyingTo({ id: msg.id, nickname: msg.nickname, content: msg.content ?? '', type: msg.type });
+                    if (!msg.id || msg.id.startsWith('local-')) return;
+                    setActionSheetMsg(msg);
                   }}
                   onReplyQuotePress={scrollToMessage}
+                  onReact={async (msg, emoji) => {
+                    if (!msg.id || !identity) return;
+                    try {
+                      const reactions = await toggleEventReaction(id, msg.id, emoji, identity.guestId);
+                      setMessageReactions(msg.id, reactions);
+                    } catch (e) {
+                      console.warn('[event] reaction failed:', e);
+                    }
+                  }}
                 />
               );
             }}
@@ -427,6 +438,24 @@ export default function EventDetailScreen() {
           />
         </KeyboardAvoidingView>
       )}
+      <MessageActionSheet
+        visible={actionSheetMsg !== null}
+        reactions={actionSheetMsg?.reactions ?? []}
+        onReact={async (emoji) => {
+          if (!actionSheetMsg?.id || !identity) return;
+          try {
+            const reactions = await toggleEventReaction(id, actionSheetMsg.id, emoji, identity.guestId);
+            setMessageReactions(actionSheetMsg.id, reactions);
+          } catch (e) {
+            console.warn('[event] reaction failed:', e);
+          }
+        }}
+        onReply={actionSheetMsg ? () => {
+          setReplyingTo({ id: actionSheetMsg.id, nickname: actionSheetMsg.nickname, content: actionSheetMsg.content ?? '', type: actionSheetMsg.type });
+        } : undefined}
+        onClose={() => setActionSheetMsg(null)}
+      />
+
       {/* ── Going list sheet ── */}
       <Modal
         visible={showGoingSheet}

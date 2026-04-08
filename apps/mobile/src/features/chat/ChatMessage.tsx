@@ -15,6 +15,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Animated, ActivityIndicator, Platform, Linking } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
+import { ReactionPills } from './ReactionPills';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
@@ -191,6 +192,7 @@ interface Props {
   onLongPress?: (msg: Message) => void;     // called on long-press; parent handles reply UI
   onReplyQuotePress?: (replyToId: string) => void;  // tap on quoted preview → scroll to parent
   isHighlighted?: boolean;                          // true = briefly flash orange highlight
+  onReact?: (msg: Message, emoji: string) => void;  // called when a reaction pill is tapped
 }
 
 // ── Animated event pill — fade + slide-up on mount, staggered by index ───────
@@ -319,6 +321,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
   // Navigate to a registered profile only when viewer is registered.
   // If viewer is a ghost, redirect to AuthGate instead.
+  // Ghost/guest authors navigate to /user/guest (no API call) — not /user/[id].
   function handlePress() {
     if (userId) {
       if (!canAccessProfile(account)) {
@@ -327,8 +330,10 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       }
       router.push({ pathname: '/user/[id]', params: { id: userId } });
     } else if (guestId) {
-      // Guest profiles are always viewable (minimal public info)
-      router.push({ pathname: '/user/[id]', params: { id: guestId } });
+      // Ghost profiles are always viewable — route to the guest screen, not the
+      // registered profile screen. /user/[id] calls GET /users/{id} which only
+      // accepts registered user IDs and returns 404 for guestIds.
+      router.push({ pathname: '/user/guest', params: { guestId, nickname } });
     }
   }
 
@@ -369,7 +374,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact }: Props) {
   const router = useRouter();
   const { account } = useApp();
 
@@ -557,6 +562,9 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               {formatTime(message.createdAt)}
             </Text>
           )}
+          {message.reactions && message.reactions.length > 0 && onReact && (
+            <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
+          )}
         </Animated.View>
 
         <ImagePreviewModal uri={previewUri} onClose={() => setPreviewUri(null)} />
@@ -637,6 +645,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             </Text>
           )}
         </Pressable>
+
+        {message.reactions && message.reactions.length > 0 && onReact && (
+          <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
+        )}
 
       </Animated.View>
     </>

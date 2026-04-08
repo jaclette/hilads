@@ -186,6 +186,12 @@ export interface ReplyRef {
   type:     string;
 }
 
+export interface Reaction {
+  emoji: string;
+  count: number;
+  self: boolean;   // true if current viewer has reacted with this emoji
+}
+
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
@@ -206,6 +212,7 @@ export interface Message {
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
   mode?: string;                  // user's current mode (local/exploring)
   replyTo?: ReplyRef;             // snapshot of the message this is a reply to
+  reactions?: Reaction[];         // emoji reactions (empty array = none)
   // Optimistic send state — absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
   status?: 'sending' | 'failed'; // undefined = confirmed
@@ -274,6 +281,7 @@ export interface DmMessage {
   sender_name: string;
   sender_photo?: string;
   replyTo?: ReplyRef;
+  reactions?: Reaction[];
   // Optimistic send state — absent on confirmed server messages
   localId?: string;
   status?: 'sending' | 'failed';

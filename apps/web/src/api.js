@@ -658,3 +658,38 @@ export async function postVibe(userId, { rating, message }) {
   if (!res.ok) throw new Error('Failed to post vibe')
   return res.json()
 }
+
+// ── Reactions ─────────────────────────────────────────────────────────────────
+
+export async function toggleChannelReaction(channelId, messageId, emoji, guestId) {
+  const res = await fetch(`${BASE}/channels/${channelId}/messages/${encodeURIComponent(messageId)}/reactions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ emoji, guestId }),
+  })
+  if (!res.ok) throw new Error('Failed to toggle reaction')
+  return res.json() // { reactions: [{emoji, count, self}] }
+}
+
+export async function toggleEventReaction(eventId, messageId, emoji, guestId) {
+  const res = await fetch(`${BASE}/events/${eventId}/messages/${encodeURIComponent(messageId)}/reactions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ emoji, guestId }),
+  })
+  if (!res.ok) throw new Error('Failed to toggle reaction')
+  return res.json()
+}
+
+export async function toggleDmReaction(conversationId, messageId, emoji) {
+  const res = await fetch(`${BASE}/conversations/${conversationId}/messages/${encodeURIComponent(messageId)}/reactions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ emoji }),
+  })
+  if (!res.ok) throw new Error('Failed to toggle reaction')
+  return res.json()
+}

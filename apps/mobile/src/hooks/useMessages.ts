@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { socket } from '@/lib/socket';
 import { uploadFile } from '@/api/uploads';
 import { useApp } from '@/context/AppContext';
-import type { Message, ReplyRef } from '@/types';
+import type { Message, Reaction, ReplyRef } from '@/types';
 
 interface Params {
   channelId:    string;
@@ -21,9 +21,10 @@ interface Result {
   sending:      boolean;     // true only during image upload
   error:        string | null;
   clearError:   () => void;
-  sendText:     (content: string, replyTo?: ReplyRef | null) => Promise<void>;
-  sendImage:    (localUri: string) => Promise<void>;
-  loadOlder:    () => Promise<void>;
+  sendText:          (content: string, replyTo?: ReplyRef | null) => Promise<void>;
+  sendImage:         (localUri: string) => Promise<void>;
+  loadOlder:         () => Promise<void>;
+  setMessageReactions: (messageId: string, reactions: Reaction[]) => void;
   reload:       () => void;
 }
 
@@ -262,9 +263,13 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     }
   }, [postImageFn, identity, account]);
 
+  function setMessageReactions(messageId: string, reactions: Reaction[]) {
+    setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));
+  }
+
   return {
     messages, loading, loadingOlder, hasMore, sending, error,
     clearError: () => setError(null),
-    sendText, sendImage, loadOlder, reload: load,
+    sendText, sendImage, loadOlder, reload: load, setMessageReactions,
   };
 }

@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { Conversation, DmMessage } from '@/types';
+import type { Conversation, DmMessage, Reaction } from '@/types';
 
 export async function fetchConversations(): Promise<Conversation[]> {
   const data = await api.get<{ dms: Conversation[] }>('/conversations');
@@ -46,4 +46,16 @@ export async function sendDmImageMessage(
 
 export async function markDmRead(conversationId: string): Promise<void> {
   await api.post(`/conversations/${conversationId}/mark-read`).catch(() => {});
+}
+
+export async function toggleDmReaction(
+  conversationId: string,
+  messageId: string,
+  emoji: string,
+): Promise<Reaction[]> {
+  const data = await api.post<{ reactions: Reaction[] }>(
+    `/conversations/${conversationId}/messages/${messageId}/reactions`,
+    { emoji },
+  );
+  return data.reactions;
 }

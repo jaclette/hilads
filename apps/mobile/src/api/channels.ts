@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { City, FeedItem, HiladsEvent, Message, UserDTO } from '@/types';
+import type { City, FeedItem, HiladsEvent, Message, Reaction, UserDTO } from '@/types';
 
 // ── City / channel resolution ─────────────────────────────────────────────────
 
@@ -217,4 +217,17 @@ export async function sendImageMessage(
   const payload = { sessionId, guestId, nickname, imageUrl, type: 'image' };
   console.log('[image-upload] sending message payload =', JSON.stringify(payload));
   return api.post<Message>(`/channels/${channelId}/messages`, payload);
+}
+
+export async function toggleChannelReaction(
+  channelId: string,
+  messageId: string,
+  emoji: string,
+  guestId: string,
+): Promise<Reaction[]> {
+  const data = await api.post<{ reactions: Reaction[] }>(
+    `/channels/${channelId}/messages/${messageId}/reactions`,
+    { emoji, guestId },
+  );
+  return data.reactions;
 }
