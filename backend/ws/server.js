@@ -36,7 +36,7 @@
  */
 
 import { WebSocketServer } from 'ws'
-import { createServer } from 'http'
+import { createServer, get as httpGet } from 'http'
 
 const PORT = process.env.PORT || 8081
 const INTERNAL_TOKEN = process.env.WS_INTERNAL_TOKEN || ''
@@ -548,7 +548,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
   // Self-ping every 5 minutes to prevent Render free-tier sleep (15 min inactivity threshold).
   // A local HTTP request to /health counts as activity and keeps the process warm.
   setInterval(() => {
-    const req = require('http').get(`http://localhost:${PORT}/health`, (res) => {
+    const req = httpGet(`http://localhost:${PORT}/health`, (res) => {
       console.log(`[keepalive] pinged /health → ${res.statusCode}`)
     })
     req.on('error', (err) => console.warn('[keepalive] ping failed:', err.message))
