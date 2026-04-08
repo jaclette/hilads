@@ -51,15 +51,6 @@ WORKDIR /var/www/html
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Pre-warm OPcache by scanning all PHP files at build time.
-# Apache/PHP still needs to load them on first request, but the compiled
-# bytecode is already in the cache file so it's near-instant.
-RUN php -r "
-\$it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('/var/www/html'));
-foreach (\$it as \$f) {
-    if (\$f->getExtension() === 'php') opcache_compile_file(\$f->getPathname());
-}" 2>/dev/null || true
-
 RUN mkdir -p /var/www/html/storage \
     && chown -R www-data:www-data /var/www/html/storage \
     && chmod -R 775 /var/www/html/storage
