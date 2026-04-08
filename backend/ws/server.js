@@ -544,4 +544,13 @@ function broadcastNewMessage(channelId, message) {
 httpServer.listen(PORT, '0.0.0.0', () => {
   console.log(`Hilads server listening on port ${PORT} (WS + HTTP broadcast)`)
   console.log(`INTERNAL_TOKEN=${INTERNAL_TOKEN ? 'set' : 'none'} ALLOWED_ORIGINS=${[...ALLOWED_ORIGINS].join(',')}`)
+
+  // Self-ping every 5 minutes to prevent Render free-tier sleep (15 min inactivity threshold).
+  // A local HTTP request to /health counts as activity and keeps the process warm.
+  setInterval(() => {
+    const req = require('http').get(`http://localhost:${PORT}/health`, (res) => {
+      console.log(`[keepalive] pinged /health → ${res.statusCode}`)
+    })
+    req.on('error', (err) => console.warn('[keepalive] ping failed:', err.message))
+  }, 5 * 60 * 1000)
 })
