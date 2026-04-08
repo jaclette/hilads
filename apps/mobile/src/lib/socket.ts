@@ -6,12 +6,21 @@ type Handler = (data: Record<string, unknown>) => void;
 // The WS server uses { event: '...' } for both directions (not { type: '...' }).
 // Dispatch is keyed on `data.event`. Use '*' to receive all messages.
 
+// During a Render cold start (~30-50s) the server hasn't bound to the port
+// yet, so every attempt closes with 1006 in <100ms. Rather than letting the
+// exponential backoff climb to 15-30s (making the user wait long after the
+// server is actually up), we retry at a fixed 3s for the first
+// RAPID_RETRY_MAX attempts, then switch to normal backoff.
+const RAPID_RETRY_MAX = 15;   // 15 × 3s = 45s fast window
+const RAPID_RETRY_MS  = 3000;
+
 class HiladsSocket {
   private ws:             WebSocket | null = null;
   private handlers:       Map<string, Set<Handler>> = new Map();
   private shouldConnect:  boolean = false;
   private reconnectMs:    number  = 2000;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private rapidRetries:   number  = 0;
 
   // ── Connection ──────────────────────────────────────────────────────────────
 
@@ -128,6 +137,7 @@ class HiladsSocket {
       this.ws.onopen = () => {
         console.log('[WS] connected');
         this.reconnectMs = 2000;
+        this.rapidRetries = 0;
         this._dispatch('connected', {});
       };
 
@@ -161,10 +171,17 @@ class HiladsSocket {
 
   private _scheduleReconnect(): void {
     this._clearReconnect();
-    this.reconnectTimer = setTimeout(() => {
+    let delay: number;
+    if (this.rapidRetries < RAPID_RETRY_MAX) {
+      // Fast retry: server may be cold-starting (Render free tier).
+      this.rapidRetries++;
+      delay = RAPID_RETRY_MS;
+    } else {
+      // Server appears persistently unavailable — back off normally.
+      delay = this.reconnectMs;
       this.reconnectMs = Math.min(this.reconnectMs * 1.5, 30_000);
-      this._connect();
-    }, this.reconnectMs);
+    }
+    this.reconnectTimer = setTimeout(() => this._connect(), delay);
   }
 
   private _clearReconnect(): void {

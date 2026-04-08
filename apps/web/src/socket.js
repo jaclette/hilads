@@ -43,8 +43,17 @@ console.log('[socket] WS_URL =', WS_URL)
 export function createSocket() {
   let ws = null
   let reconnectTimer = null
-  let reconnectMs = 2000   // start at 2s, caps at 30s — matches native socket.ts
+  let reconnectMs = 2000   // used after rapid-retry window expires
+  let rapidRetries = 0     // counts fast retries during cold-start window
   let destroyed = false
+
+  // During a Render cold start (~30-50s) the server hasn't bound to the port
+  // yet, so every attempt closes with 1006 in <100ms. Rather than letting the
+  // exponential backoff climb to 15-30s (making the user wait long after the
+  // server is actually up), we retry at a fixed 3s for the first
+  // RAPID_RETRY_MAX attempts, then switch to normal backoff.
+  const RAPID_RETRY_MAX = 15   // 15 × 3s = 45s fast window
+  const RAPID_RETRY_MS  = 3000
 
   // Multi-handler dispatch: Map<eventName, Set<handler>>
   // Each on() call adds to the Set; the returned fn removes from it.
@@ -78,6 +87,7 @@ export function createSocket() {
     ws.onopen = () => {
       console.log('[socket] ✓ connected')
       reconnectMs = 2000  // reset backoff
+      rapidRetries = 0    // reset cold-start counter
 
       // Replay room joins so server restores membership after reconnect
       if (pendingJoin)             send({ event: 'joinRoom',          ...pendingJoin })
@@ -99,11 +109,19 @@ export function createSocket() {
     ws.onclose = (e) => {
       dispatch('disconnected', { code: e.code })
       if (!destroyed) {
-        console.warn(`[socket] closed (code=${e.code}). reconnecting in ${reconnectMs}ms…`)
-        reconnectTimer = setTimeout(() => {
+        let delay
+        if (rapidRetries < RAPID_RETRY_MAX) {
+          // Fast retry: server may be cold-starting (Render free tier).
+          // Keep hammering every 3s so we connect quickly once it's up.
+          rapidRetries++
+          delay = RAPID_RETRY_MS
+        } else {
+          // Server appears persistently unavailable — back off normally.
+          delay = reconnectMs
           reconnectMs = Math.min(reconnectMs * 1.5, 30_000)
-          connect()
-        }, reconnectMs)
+        }
+        console.warn(`[socket] closed (code=${e.code}). reconnecting in ${delay}ms… (retry ${rapidRetries}/${RAPID_RETRY_MAX})`)
+        reconnectTimer = setTimeout(connect, delay)
       } else {
         console.warn(`[socket] closed (code=${e.code}). not reconnecting (destroyed)`)
       }

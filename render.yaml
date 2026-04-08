@@ -10,6 +10,9 @@ services:
         value: 8080
 
   # Node.js WebSocket presence server
+  # NOTE: free plan sleeps after 15min of no connections → ~35s cold start → WS
+  # code 1006 until port is bound. Upgrade to `plan: starter` to eliminate this.
+  # Alternatively, add an external uptime monitor pinging /health every 5min.
   - type: web
     name: hilads-ws
     runtime: node
@@ -17,6 +20,7 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     healthCheckPath: /health
+    plan: free
     envVars:
       - key: PORT
         value: 10000
