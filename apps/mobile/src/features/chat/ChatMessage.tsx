@@ -397,18 +397,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // onPress/onLongPress are undefined when no handler is provided so the
   // Pressable doesn't participate in the responder system unnecessarily.
   const handlePress     = onLongPress
-    ? () => {
-        if (__DEV__) console.log('[ChatMessage] onPress fired, type:', message.type, 'id:', message.id, 'hasHandler:', !!onLongPress);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onLongPress(message);
-      }
+    ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);  onLongPress(message); }
     : undefined;
   const handleLongPress = onLongPress
-    ? () => {
-        if (__DEV__) console.log('[ChatMessage] onLongPress fired, type:', message.type, 'id:', message.id);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        onLongPress(message);
-      }
+    ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(message); }
     : undefined;
 
   // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
@@ -618,12 +610,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         )}
 
         {/* ── Bubble — location card or plain text ── */}
-        <Pressable
-          onPress={handlePress}
-          onLongPress={handleLongPress}
-          delayLongPress={350}
-          onPressIn={() => { if (__DEV__) console.log('[ChatMessage] onPressIn, type:', message.type, 'id:', message.id); }}
-        >
+        <Pressable onPress={handlePress} onLongPress={handleLongPress} delayLongPress={350}>
           {isLocationMessage(message.content) ? (
             <LocationBubble content={message.content!} isMine={isMine} />
           ) : (
