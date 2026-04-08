@@ -522,7 +522,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           animStyle,
           isSending && styles.rowSending,
         ]}>
-          {!isMine && !isGrouped && (
+          {!isGrouped && (
             <SenderMeta
               nickname={message.nickname ?? '?'}
               color={c1}
@@ -535,6 +535,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               mode={message.mode}
             />
           )}
+          {/* Wrap image + reactions so pills stay visually attached to the bubble */}
           <View>
             <TouchableOpacity
               activeOpacity={0.85}
@@ -560,15 +561,15 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                 </View>
               )}
             </TouchableOpacity>
+            {showTime && (
+              <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
+                {formatTime(message.createdAt)}
+              </Text>
+            )}
+            {message.reactions && message.reactions.length > 0 && onReact && (
+              <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
+            )}
           </View>
-          {showTime && (
-            <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
-              {formatTime(message.createdAt)}
-            </Text>
-          )}
-          {message.reactions && message.reactions.length > 0 && onReact && (
-            <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
-          )}
         </Animated.View>
 
         <ImagePreviewModal uri={previewUri} onClose={() => setPreviewUri(null)} />
@@ -594,8 +595,8 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.28], outputRange: ['transparent', 'rgba(255,122,60,0.18)'] }) },
       ]}>
 
-        {/* ── Avatar + author — web: .msg-meta ── */}
-        {!isMine && !isGrouped && (
+        {/* ── Avatar + author — shown for all messages (own + others), hidden when grouped ── */}
+        {!isGrouped && (
           <SenderMeta
             nickname={message.nickname ?? '?'}
             color={c1}
@@ -609,50 +610,51 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           />
         )}
 
-        {/* ── Bubble — location card or plain text ── */}
-        <Pressable onPress={handlePress} onLongPress={handleLongPress} delayLongPress={350}>
-          {isLocationMessage(message.content) ? (
-            <LocationBubble content={message.content!} isMine={isMine} />
-          ) : (
-            <View style={[
-              styles.bubble,
-              isMine ? styles.bubbleMine : styles.bubbleOther,
-              isFailed && styles.bubbleFailed,
-            ]}>
-              {message.replyTo && (
-                <TouchableOpacity
-                  activeOpacity={message.replyTo.id && onReplyQuotePress ? 0.65 : 1}
-                  onPress={message.replyTo.id && onReplyQuotePress ? () => onReplyQuotePress!(message.replyTo!.id!) : undefined}
-                  disabled={!message.replyTo.id || !onReplyQuotePress}
-                >
-                  <View style={[styles.replyQuote, isMine ? styles.replyQuoteMine : styles.replyQuoteOther]}>
-                    <Text style={[styles.replyQuoteName, isMine && styles.replyQuoteNameMine]}>
-                      {message.replyTo.nickname}
-                    </Text>
-                    <Text style={[styles.replyQuoteText, isMine && styles.replyQuoteTextMine]} numberOfLines={2}>
-                      {message.replyTo.type === 'image' ? '📷 Photo' : (message.replyTo.content || 'Original message unavailable')}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-              <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-                {message.content}
-              </Text>
-            </View>
-          )}
-          {isFailed && (
-            <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
-          )}
+        {/* ── Bubble + timestamp + reactions — wrapped so reactions stay attached ── */}
+        <View>
+          <Pressable onPress={handlePress} onLongPress={handleLongPress} delayLongPress={350}>
+            {isLocationMessage(message.content) ? (
+              <LocationBubble content={message.content!} isMine={isMine} />
+            ) : (
+              <View style={[
+                styles.bubble,
+                isMine ? styles.bubbleMine : styles.bubbleOther,
+                isFailed && styles.bubbleFailed,
+              ]}>
+                {message.replyTo && (
+                  <TouchableOpacity
+                    activeOpacity={message.replyTo.id && onReplyQuotePress ? 0.65 : 1}
+                    onPress={message.replyTo.id && onReplyQuotePress ? () => onReplyQuotePress!(message.replyTo!.id!) : undefined}
+                    disabled={!message.replyTo.id || !onReplyQuotePress}
+                  >
+                    <View style={[styles.replyQuote, isMine ? styles.replyQuoteMine : styles.replyQuoteOther]}>
+                      <Text style={[styles.replyQuoteName, isMine && styles.replyQuoteNameMine]}>
+                        {message.replyTo.nickname}
+                      </Text>
+                      <Text style={[styles.replyQuoteText, isMine && styles.replyQuoteTextMine]} numberOfLines={2}>
+                        {message.replyTo.type === 'image' ? '📷 Photo' : (message.replyTo.content || 'Original message unavailable')}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+                <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
+                  {message.content}
+                </Text>
+              </View>
+            )}
+            {isFailed && (
+              <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
+            )}
+          </Pressable>
           {showTime && (
             <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
               {formatTime(message.createdAt)}
             </Text>
           )}
-        </Pressable>
-
-        {message.reactions && message.reactions.length > 0 && onReact && (
-          <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
-        )}
+          {message.reactions && message.reactions.length > 0 && onReact && (
+            <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
+          )}
+        </View>
 
       </Animated.View>
     </>
@@ -873,16 +875,13 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 4,
   },
   bubbleMine: {
-    backgroundColor:      '#B87228',   // web gradient end — warm orange, not red
+    backgroundColor:      '#2a1f13',   // dark warm brown — same family as bg3, clearly mine but not jarring
+    borderWidth:          1,
+    borderColor:          'rgba(255,122,60,0.22)',
     borderTopRightRadius: 4,
-    shadowColor:          '#8a5418',
-    shadowOffset:         { width: 0, height: 2 },
-    shadowOpacity:        0.35,
-    shadowRadius:         6,
-    elevation:            4,
   },
   bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 22 },
-  bubbleTextMine: { color: '#fff' },
+  bubbleTextMine: { color: 'rgba(255,255,255,0.92)' },
 
   // Failed state
   bubbleFailed: {

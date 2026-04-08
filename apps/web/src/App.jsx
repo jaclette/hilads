@@ -1513,6 +1513,19 @@ export default function App() {
         setTopics(prev => prev.some(p => p.id === t.id) ? prev : [...prev, t])
       })
 
+      // Reaction updates — PHP sends "city_N" for city channels, plain eventId for events.
+      socket.on('reactionUpdate', ({ channelId: ch, messageId, reactions }) => {
+        const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
+        const isEventMatch = ch === activeEventIdRef.current
+        if (!isCityMatch && !isEventMatch) return
+        setFeed(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
+      })
+
+      // DM reaction updates — update by messageId match (IDs are globally unique).
+      socket.on('dmReactionUpdate', ({ messageId, reactions }) => {
+        setFeed(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
+      })
+
       socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
 
       // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
@@ -2817,11 +2830,11 @@ export default function App() {
                   className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate', highlightedMsgId === item.id ? 'msg-highlight' : ''].filter(Boolean).join(' ')}
                   style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
                 >
-                  {!isMine && !isGrouped && (
+                  {!isGrouped && (
                     <div
-                      className={`msg-meta${item.userId ? ' msg-meta--tappable' : ''}`}
-                      onClick={item.userId ? () => openProfile(item.userId, item.nickname) : undefined}
-                      title={item.userId ? `View ${item.nickname}'s profile` : undefined}
+                      className={`msg-meta${isMine ? ' mine' : ''}${item.userId ? ' msg-meta--tappable' : ''}`}
+                      onClick={item.userId && !isMine ? () => openProfile(item.userId, item.nickname) : undefined}
+                      title={item.userId && !isMine ? `View ${item.nickname}'s profile` : undefined}
                     >
                       <span
                         className="msg-avatar"

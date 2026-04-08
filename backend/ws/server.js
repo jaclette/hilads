@@ -435,6 +435,18 @@ function handleBroadcastRequest(req, res) {
         broadcastNewTopic(channelId, topic)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/reaction') {
+        const { channelId, messageId, reactions } = JSON.parse(body)
+        console.log(`[internal] broadcast reaction channelId=${JSON.stringify(channelId)} msgId=${messageId}`)
+        broadcastReactionUpdate(channelId, messageId, reactions)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'POST' && req.url === '/broadcast/dm-reaction') {
+        const { conversationId, messageId, reactions } = JSON.parse(body)
+        console.log(`[internal] broadcast dm-reaction convId=${conversationId ? conversationId.slice(0, 8) : 'null'} msgId=${messageId}`)
+        broadcastDmReactionUpdate(conversationId, messageId, reactions)
+        res.writeHead(200); res.end('ok')
+
       } else {
         console.log(`[internal] ✗ unknown route ${req.method} ${req.url}`)
         res.writeHead(404); res.end('not found')
@@ -545,6 +557,33 @@ function broadcastNewMessage(channelId, message) {
   const msg = JSON.stringify({ event: 'newMessage', channelId, message })
   for (const session of room.values()) {
     if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+  }
+}
+
+// ── Reaction broadcast ──────────────────────────────────────────────────────────
+
+// PHP sends channelId as "city_N" for city channels, plain eventId for event channels.
+// Pushes a reactionUpdate event so all room members see emoji counts instantly.
+function broadcastReactionUpdate(channelId, messageId, reactions) {
+  let room
+  if (typeof channelId === 'string' && channelId.startsWith('city_')) {
+    room = rooms.get(parseInt(channelId.slice(5), 10))
+  } else {
+    room = eventRooms.get(channelId) ?? topicRooms.get(channelId)
+  }
+  if (!room) return
+  const msg = JSON.stringify({ event: 'reactionUpdate', channelId, messageId, reactions })
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+  }
+}
+
+function broadcastDmReactionUpdate(conversationId, messageId, reactions) {
+  const room = dmRooms.get(conversationId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'dmReactionUpdate', conversationId, messageId, reactions })
+  for (const [, { ws }] of room) {
+    if (ws.readyState === 1 /* OPEN */) ws.send(msg)
   }
 }
 

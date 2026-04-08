@@ -117,7 +117,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     load();
   }, [channelId]);
 
-  // WebSocket — live new messages + reconnect catch-up
+  // WebSocket — live new messages + reaction updates + reconnect catch-up
   useEffect(() => {
     function handler(data: Record<string, unknown>) {
       // City channelId arrives as an integer from the WS server (rooms Map uses
@@ -131,11 +131,25 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     const off1 = socket.on('newMessage', handler);
     const off2 = socket.on('message', handler);
 
+    // Reaction updates — PHP broadcasts via /broadcast/reaction (city/event) and
+    // /broadcast/dm-reaction (DMs). City channels use "city_N" as channelId.
+    function reactionHandler(data: Record<string, unknown>) {
+      const incoming = String(data.channelId ?? data.conversationId ?? '');
+      const match = incoming === channelId || incoming === `city_${channelId}`;
+      if (match && data.messageId && Array.isArray(data.reactions)) {
+        setMessages(prev => prev.map(m =>
+          m.id === String(data.messageId) ? { ...m, reactions: data.reactions as Reaction[] } : m
+        ));
+      }
+    }
+    const off3 = socket.on('reactionUpdate', reactionHandler);
+    const off4 = socket.on('dmReactionUpdate', reactionHandler);
+
     // On reconnect, fetch the latest page once to catch messages sent during the
     // disconnect gap. Best-effort: keeps the live feed current after restore.
     const offConnected = socket.on('connected', load);
 
-    return () => { off1(); off2(); offConnected(); };
+    return () => { off1(); off2(); off3(); off4(); offConnected(); };
   }, [channelId, addNew, load]);
 
   // ── Load older messages (pagination) ──────────────────────────────────────
