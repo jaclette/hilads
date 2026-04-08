@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, submitReport } from '../api'
 import { cityFlag } from '../cityMeta'
 import { badgeLabel, BADGE_META } from '../badgeMeta'
 import BackButton from './BackButton'
@@ -56,7 +56,7 @@ function eventIcon(type) {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function PublicProfileScreen({ userId, cityName, cityCountry, account, onBack, onSendDm, onViewProfile, onOpenLightbox }) {
+export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox }) {
   const [user,       setUser]       = useState(null)
   const [events,     setEvents]     = useState([])
   const [friends,    setFriends]    = useState([])
@@ -73,6 +73,11 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [vibeRating,   setVibeRating]   = useState(0)
   const [vibeMessage,  setVibeMessage]  = useState('')
   const [showVibeForm, setShowVibeForm] = useState(false)
+  const [showReportForm,  setShowReportForm]  = useState(false)
+  const [reportReason,    setReportReason]    = useState('')
+  const [reportBusy,      setReportBusy]      = useState(false)
+  const [reportSent,      setReportSent]      = useState(false)
+  const [reportError,     setReportError]     = useState(null)
 
   // vibeCount from the profile response — used to skip fetchUserVibes when 0
   const profileVibeCountRef = useRef(0)
@@ -178,6 +183,29 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
       setShowVibeForm(false)
     } catch { /* ignore */ }
     finally { setVibeBusy(false) }
+  }
+
+  async function handleSubmitReport(e) {
+    e.preventDefault()
+    const reason = reportReason.trim()
+    if (reason.length < 10 || reportBusy) return
+    setReportBusy(true)
+    setReportError(null)
+    try {
+      await submitReport({
+        reason,
+        guestId:         account ? undefined : guest?.guestId,
+        targetUserId:    userId,
+        targetNickname:  user?.displayName,
+      })
+      setReportSent(true)
+      setReportReason('')
+      setTimeout(() => { setShowReportForm(false); setReportSent(false) }, 2500)
+    } catch (err) {
+      setReportError(err?.message ?? 'Could not send report. Try again.')
+    } finally {
+      setReportBusy(false)
+    }
   }
 
   const name     = user?.displayName ?? '?'
@@ -497,6 +525,52 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 Cancel
               </button>
             </div>
+          )}
+          <button
+            className="pub-profile-report-btn"
+            onClick={() => { setShowReportForm(f => !f); setReportSent(false); setReportError(null) }}
+            title="Report user"
+          >
+            🚩
+          </button>
+        </div>
+      )}
+
+      {/* ── Inline report form ── */}
+      {user && userId !== account?.id && showReportForm && (
+        <div className="pub-profile-report-form-wrap">
+          {reportSent ? (
+            <p className="pub-profile-report-sent">Report sent. Thanks for letting us know.</p>
+          ) : (
+            <form className="pub-profile-report-form" onSubmit={handleSubmitReport}>
+              <textarea
+                className="pub-profile-report-textarea"
+                placeholder="Describe the issue (min 10 characters)…"
+                value={reportReason}
+                onChange={e => setReportReason(e.target.value)}
+                maxLength={500}
+                rows={3}
+                disabled={reportBusy}
+              />
+              {reportError && <p className="pub-profile-report-error">{reportError}</p>}
+              <div className="pub-profile-report-actions">
+                <button
+                  type="submit"
+                  className="pub-profile-report-submit"
+                  disabled={reportReason.trim().length < 10 || reportBusy}
+                >
+                  {reportBusy ? 'Sending…' : 'Send report'}
+                </button>
+                <button
+                  type="button"
+                  className="pub-profile-report-cancel"
+                  onClick={() => setShowReportForm(false)}
+                  disabled={reportBusy}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           )}
         </div>
       )}

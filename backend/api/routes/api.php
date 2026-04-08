@@ -4334,6 +4334,57 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
     }
 });
 
+// ── POST /api/v1/reports — submit a user report ──────────────────────────────
+$router->add('POST', '/api/v1/reports', function () use ($pdo) {
+    $body    = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    // Resolve reporter identity: registered user takes priority over guest.
+    $viewer  = AuthService::currentUser();
+    $reporterUserId  = $viewer['id'] ?? null;
+    // Guests pass their guestId in the body (same pattern as messages/reactions).
+    $reporterGuestId = ($reporterUserId === null)
+        ? (isValidGuestId($body['guestId'] ?? null) ? $body['guestId'] : null)
+        : null;
+
+    if ($reporterUserId === null && $reporterGuestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+
+    enforceRateLimit('user_report', 5, 3600);
+
+    $reason         = trim($body['reason']          ?? '');
+    $targetUserId   = $body['target_user_id']        ?? null;
+    $targetGuestId  = $body['target_guest_id']       ?? null;
+    $targetNickname = trim($body['target_nickname']  ?? '');
+
+    if (strlen($reason) < 10) {
+        Response::json(['error' => 'Reason must be at least 10 characters'], 422);
+    }
+    if (empty($targetUserId) && empty($targetGuestId)) {
+        Response::json(['error' => 'Target identity required'], 422);
+    }
+    if (!empty($targetUserId) && $targetUserId === $reporterUserId) {
+        Response::json(['error' => 'Cannot report yourself'], 422);
+    }
+
+    $stmt = $pdo->prepare("
+        INSERT INTO user_reports
+            (reporter_user_id, reporter_guest_id,
+             target_user_id, target_guest_id, target_nickname, reason)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->execute([
+        $reporterUserId,
+        $reporterGuestId,
+        $targetUserId  ?: null,
+        $targetGuestId ?: null,
+        $targetNickname ?: null,
+        $reason,
+    ]);
+
+    Response::json(['ok' => true], 201);
+});
+
 // ── TEMPORARY: Sentry test endpoint ──────────────────────────────────────────
 // Remove this route once Sentry integration is confirmed.
 // Protected: only active when MIGRATION_KEY is set in env.

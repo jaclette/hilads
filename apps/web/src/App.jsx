@@ -3726,6 +3726,7 @@ export default function App() {
           cityName={city}
           cityCountry={cityCountry}
           account={account}
+          guest={guest}
           onBack={() => setViewingProfile(null)}
           onViewProfile={(uid, nickname) => openProfile(uid, nickname)}
           onOpenLightbox={setLightboxUrl}

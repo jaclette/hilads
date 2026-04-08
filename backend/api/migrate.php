@@ -624,4 +624,28 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_msg_rxn_message ON message_reactions (message_id)", 'idx_msg_rxn_message');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_conv_msg_rxn_message ON conversation_message_reactions (message_id)", 'idx_conv_msg_rxn_message');
 
+// ── User reports ──────────────────────────────────────────────────────────────
+
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS user_reports (
+        id                BIGSERIAL   PRIMARY KEY,
+        reporter_user_id  TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        reporter_guest_id TEXT,
+        target_user_id    TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        target_guest_id   TEXT,
+        target_nickname   TEXT,
+        reason            TEXT        NOT NULL,
+        status            TEXT        NOT NULL DEFAULT 'open',
+        created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+        CONSTRAINT chk_reporter_identity CHECK (reporter_user_id IS NOT NULL OR reporter_guest_id IS NOT NULL),
+        CONSTRAINT chk_target_identity   CHECK (target_user_id   IS NOT NULL OR target_guest_id   IS NOT NULL),
+        CONSTRAINT chk_no_self_report    CHECK (reporter_user_id IS NULL OR reporter_user_id != target_user_id),
+        CONSTRAINT chk_status            CHECK (status IN ('open', 'reviewed', 'dismissed'))
+    )
+", 'user_reports');
+
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_target_user   ON user_reports (target_user_id)  WHERE target_user_id IS NOT NULL", 'idx_user_reports_target_user');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_target_guest  ON user_reports (target_guest_id) WHERE target_guest_id IS NOT NULL", 'idx_user_reports_target_guest');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_status_time   ON user_reports (status, created_at DESC)", 'idx_user_reports_status_time');
+
 echo "\nDone.\n";

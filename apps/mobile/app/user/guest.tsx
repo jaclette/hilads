@@ -7,6 +7,7 @@
  * Does NOT call the /users/{id} API endpoint.
  */
 
+import { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -14,6 +15,7 @@ import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { ReportModal } from '@/features/profile/ReportModal';
 
 // ── Avatar palette — mirrors ChatMessage.tsx / [id].tsx ───────────────────────
 
@@ -32,11 +34,13 @@ function avatarBg(name: string): string {
 export default function GuestProfileScreen() {
   const router = useRouter();
   const { nickname, guestId } = useLocalSearchParams<{ nickname: string; guestId: string }>();
-  const { city } = useApp();
+  const { city, identity, account } = useApp();
 
   const name    = nickname || 'Ghost';
   const initial = name[0].toUpperCase();
   const bg      = avatarBg(name);
+
+  const [showReportModal, setShowReportModal] = useState(false);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -69,6 +73,22 @@ export default function GuestProfileScreen() {
       </View>
 
       <Text style={styles.note}>Floating around as a ghost 👻</Text>
+
+      <TouchableOpacity
+        style={styles.reportLink}
+        onPress={() => setShowReportModal(true)}
+        activeOpacity={0.6}
+      >
+        <Text style={styles.reportLinkText}>Report user</Text>
+      </TouchableOpacity>
+
+      <ReportModal
+        visible={showReportModal}
+        reporterGuestId={account ? undefined : identity?.guestId}
+        targetGuestId={guestId}
+        targetNickname={name}
+        onClose={() => setShowReportModal(false)}
+      />
 
     </SafeAreaView>
   );
@@ -165,5 +185,13 @@ const styles = StyleSheet.create({
     opacity:           0.6,
     paddingHorizontal: Spacing.xl,
     marginTop:         Spacing.sm,
+  },
+  reportLink: {
+    alignItems:  'center',
+    marginTop:   Spacing.xl,
+  },
+  reportLinkText: {
+    fontSize: FontSizes.xs,
+    color:    'rgba(255,255,255,0.2)',
   },
 });

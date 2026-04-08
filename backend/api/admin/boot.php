@@ -111,6 +111,13 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $topicId = $m[1];
     require __DIR__ . '/topic_delete.php';
 
+} elseif ($uri === '/admin/reports') {
+    require __DIR__ . '/reports.php';
+
+} elseif (preg_match('#^/admin/reports/(\d+)/status$#', $uri, $m) && $method === 'POST') {
+    $reportId = (int) $m[1];
+    require __DIR__ . '/report_status.php';
+
 } elseif ($uri === '/admin/events') {
     require __DIR__ . '/events.php';
 

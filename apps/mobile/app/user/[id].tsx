@@ -21,6 +21,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
+import { ReportModal } from '@/features/profile/ReportModal';
 
 // ── Badge microcopy — mirrors web PublicProfileScreen.jsx & me.tsx ────────────
 
@@ -174,6 +175,7 @@ export default function PublicProfileScreen() {
   const [vibeMessage,  setVibeMessage]  = useState('');
   const [showVibeForm,      setShowVibeForm]      = useState(false);
   const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
+  const [showReportModal,   setShowReportModal]   = useState(false);
 
   // Route-level guard — catches any missed navigation guards (deep links, etc.)
   useEffect(() => {
@@ -623,7 +625,24 @@ export default function PublicProfileScreen() {
               {friendBusy ? '…' : isFriend ? 'Friend' : 'Add friend'}
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.reportBtn}
+            onPress={() => setShowReportModal(true)}
+            activeOpacity={0.75}
+          >
+            <Ionicons name="flag-outline" size={18} color="rgba(255,255,255,0.35)" />
+          </TouchableOpacity>
         </View>
+      )}
+
+      {/* ── Report modal ── */}
+      {user && !isSelf && (
+        <ReportModal
+          visible={showReportModal}
+          targetUserId={user.id}
+          targetNickname={user.displayName}
+          onClose={() => setShowReportModal(false)}
+        />
       )}
 
       {/* ── Avatar lightbox ── */}
@@ -1139,6 +1158,17 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.sm,
     fontWeight: '700',
     color:      Colors.white,
+  },
+
+  reportBtn: {
+    width:           44,
+    height:          44,
+    alignItems:      'center',
+    justifyContent:  'center',
+    borderRadius:    Radius.lg,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.08)',
   },
 
   // ── Avatar lightbox ───────────────────────────────────────────────────────

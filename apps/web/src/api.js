@@ -693,3 +693,24 @@ export async function toggleDmReaction(conversationId, messageId, emoji) {
   if (!res.ok) throw new Error('Failed to toggle reaction')
   return res.json()
 }
+
+
+export async function submitReport({ reason, guestId, targetUserId, targetGuestId, targetNickname }) {
+  const res = await fetch(`${BASE}/reports`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      reason,
+      guestId:         guestId       ?? undefined,
+      target_user_id:  targetUserId  ?? null,
+      target_guest_id: targetGuestId ?? null,
+      target_nickname: targetNickname ?? null,
+    }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error ?? 'Failed to submit report')
+  }
+  return res.json()
+}
