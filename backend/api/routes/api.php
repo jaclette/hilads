@@ -4347,7 +4347,8 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
 });
 
 // ── POST /api/v1/reports — submit a user report ──────────────────────────────
-$router->add('POST', '/api/v1/reports', function () use ($pdo) {
+$router->add('POST', '/api/v1/reports', function () {
+    $pdo     = Database::pdo();
     $body    = json_decode(file_get_contents('php://input'), true) ?? [];
 
     // Resolve reporter identity: registered user takes priority over guest.
