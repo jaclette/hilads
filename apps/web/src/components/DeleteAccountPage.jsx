@@ -13,8 +13,8 @@ export default function DeleteAccountPage() {
           To delete your Hilads account and all associated data, send an email to:
         </p>
 
-        <a href="mailto:jacques.huynh@gmail.com" style={styles.email}>
-          jacques.huynh@gmail.com
+        <a href="mailto:contact@hilads.live" style={styles.email}>
+          contact@hilads.live
         </a>
 
         <div style={styles.divider} />
