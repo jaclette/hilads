@@ -1660,6 +1660,8 @@ html, body, #root {
 
 .message.mine {
   align-self: flex-end;
+  width: fit-content;
+  margin-left: auto;
 }
 
 /* fade-in for new and initial messages */
