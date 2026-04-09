@@ -5,12 +5,14 @@ declare(strict_types=1);
 admin_require_login();
 
 /**
- * Parse a multi-email string (comma or newline separated) into a validated array.
+ * Parse a multi-email string into a validated array.
+ * Supports comma, semicolon, and newline separators.
  * Returns ['emails' => [...], 'invalid' => [...]]
  */
 function parse_emails(string $raw): array
 {
-    $tokens  = preg_split('/[\s,]+/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+    // Split on comma, semicolon, or any whitespace (including \r\n, \n, spaces)
+    $tokens  = preg_split('/[\s,;]+/', $raw, -1, PREG_SPLIT_NO_EMPTY);
     $valid   = [];
     $invalid = [];
     foreach ($tokens as $token) {
@@ -20,9 +22,12 @@ function parse_emails(string $raw): array
             $valid[] = $email;
         } else {
             $invalid[] = $email;
+            error_log('[admin/email] parse_emails: invalid address skipped: ' . $email);
         }
     }
-    return ['emails' => array_unique($valid), 'invalid' => $invalid];
+    $unique = array_values(array_unique($valid)); // array_values = reset keys → proper JSON array
+    error_log('[admin/email] parse_emails: ' . count($unique) . ' valid, ' . count($invalid) . ' invalid — [' . implode(', ', $unique) . ']');
+    return ['emails' => $unique, 'invalid' => $invalid];
 }
 
 /**
@@ -55,12 +60,10 @@ if ($method === 'POST') {
         $toParsed  = parse_emails($toRaw);
         $bccParsed = $bccRaw !== '' ? parse_emails($bccRaw) : ['emails' => [], 'invalid' => []];
 
+        // Hard block only when zero valid To addresses — invalid ones are skipped with a warning
         if (empty($toParsed['emails'])) {
-            $error = 'No valid "To" email addresses found.';
-        } elseif (!empty($toParsed['invalid'])) {
-            $error = 'Invalid "To" address(es): ' . implode(', ', $toParsed['invalid']);
-        } elseif (!empty($bccParsed['invalid'])) {
-            $error = 'Invalid "BCC" address(es): ' . implode(', ', $bccParsed['invalid']);
+            $error = 'No valid "To" email addresses found.'
+                . (!empty($toParsed['invalid']) ? ' Invalid: ' . implode(', ', $toParsed['invalid']) : '');
         } else {
             $apiKey = getenv('RESEND_API_KEY');
             if (!$apiKey) {
@@ -68,21 +71,29 @@ if ($method === 'POST') {
             } else {
                 $html = prepare_html($body);
 
+                $toCount  = count($toParsed['emails']);
+                $bccCount = count($bccParsed['emails']);
+
                 $payload = [
                     'from'    => $from,
                     'to'      => $toParsed['emails'],
                     'subject' => $isTest ? '[TEST] ' . $subject : $subject,
                     'html'    => $html,
                 ];
-                if (!empty($bccParsed['emails'])) {
+                if ($bccCount > 0) {
                     $payload['bcc'] = $bccParsed['emails'];
                 }
+
+                $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE);
+                error_log('[admin/email] sending — to:' . $toCount . ' bcc:' . $bccCount
+                    . ' subject:"' . $subject . '"'
+                    . ' bcc_list:[' . implode(', ', $bccParsed['emails']) . ']');
 
                 $ch = curl_init('https://api.resend.com/emails');
                 curl_setopt_array($ch, [
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_POST           => true,
-                    CURLOPT_POSTFIELDS     => json_encode($payload),
+                    CURLOPT_POSTFIELDS     => $jsonPayload,
                     CURLOPT_HTTPHEADER     => [
                         'Authorization: Bearer ' . $apiKey,
                         'Content-Type: application/json',
@@ -93,15 +104,20 @@ if ($method === 'POST') {
                 $code     = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
 
+                error_log('[admin/email] resend response HTTP ' . $code . ': ' . $respBody);
+
                 if ($code >= 200 && $code < 300) {
-                    $toCount  = count($toParsed['emails']);
-                    $bccCount = count($bccParsed['emails']);
-                    $label    = $isTest ? 'Test email' : 'Email';
-                    $detail   = $toCount . ' recipient' . ($toCount !== 1 ? 's' : '');
+                    $label   = $isTest ? 'Test email' : 'Email';
+                    $detail  = $toCount . ' recipient' . ($toCount !== 1 ? 's' : '');
                     if ($bccCount > 0) {
                         $detail .= ', ' . $bccCount . ' BCC';
                     }
                     $success = $label . ' sent successfully (' . $detail . ').';
+                    // Surface skipped addresses as a non-blocking warning
+                    $skipped = array_merge($toParsed['invalid'], $bccParsed['invalid']);
+                    if (!empty($skipped)) {
+                        $success .= ' Skipped invalid: ' . implode(', ', array_map('htmlspecialchars', $skipped)) . '.';
+                    }
                 } else {
                     $decoded = json_decode($respBody, true);
                     $msg     = $decoded['message'] ?? $decoded['name'] ?? 'Unknown error';
