@@ -16,16 +16,19 @@ $where  = [];
 $params = [];
 
 if ($status !== 'all') {
-    $where[]            = 'r.status = :status';
-    $params[':status']  = $status;
+    $where[]           = 'r.status = :status';
+    $params[':status'] = $status;
 }
 
+// JOINs must come before WHERE — keep them in the base FROM clause
+$baseFrom    = "FROM user_reports r
+    LEFT JOIN users ru ON ru.id = r.reporter_user_id
+    LEFT JOIN users tu ON tu.id = r.target_user_id";
 $whereClause = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
-$baseQuery   = "FROM user_reports r $whereClause";
 
 // ── Count ─────────────────────────────────────────────────────────────────────
 
-$countStmt = $pdo->prepare("SELECT COUNT(*) $baseQuery");
+$countStmt = $pdo->prepare("SELECT COUNT(*) $baseFrom $whereClause");
 $countStmt->execute($params);
 $total = (int)$countStmt->fetchColumn();
 $pages = (int)ceil($total / $perPage);
@@ -41,9 +44,8 @@ $stmt = $pdo->prepare("
            r.target_user_id,   r.target_guest_id, r.target_nickname,
            ru.display_name AS reporter_name,
            tu.display_name AS target_name
-    $baseQuery
-    LEFT JOIN users ru ON ru.id = r.reporter_user_id
-    LEFT JOIN users tu ON tu.id = r.target_user_id
+    $baseFrom
+    $whereClause
     ORDER BY r.created_at DESC
     LIMIT :lim OFFSET :off
 ");
