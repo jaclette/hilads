@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "XXXXXXXXXX.com.hilads.app",
+        "paths": ["/e/*", "/event/*", "/city/*"]
+      }
+    ]
+  }
+}

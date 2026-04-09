@@ -7,6 +7,7 @@ export default function ShortEventLink() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   useEffect(() => {
+    if (!id) return;
     router.replace(`/event/${id}`);
   }, [id]);
 

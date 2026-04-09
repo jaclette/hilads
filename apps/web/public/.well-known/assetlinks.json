@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.hilads.app",
       "sha256_cert_fingerprints": [
-        "CD:49:A3:34:E0:0B:C9:13:B6:28:E4:EF:26:77:E7:5B:B9:7B:DB:85:E8:11:E3:1E:BC:14:03:7D:6A:37:AA:71"
+        "CD:49:A3:34:E0:0B:C9:13:B6:28:E4:EF:26:77:E7:5B:B9:7B:DB:85:E8:11:E3:1E:BC:14:03:7D:6A:37:AA:71",
+        "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C"
       ]
     }
   }
