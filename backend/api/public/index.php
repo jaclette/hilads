@@ -6,12 +6,27 @@ ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
 
 set_exception_handler(function (Throwable $e) {
+    $uri     = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+    $isAdmin = str_starts_with($uri, '/admin');
     error_log('[hilads] ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
     if (!headers_sent()) {
         http_response_code(500);
-        header('Content-Type: application/json; charset=utf-8');
+        if ($isAdmin) {
+            header('Content-Type: text/html; charset=utf-8');
+            echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Admin Error</title>'
+               . '<style>body{font-family:system-ui,sans-serif;background:#0f0f0f;color:#e0e0e0;padding:40px}'
+               . 'h1{color:#f87171;margin-bottom:16px}pre{background:#1a1a1a;border:1px solid #2a2a2a;'
+               . 'border-radius:6px;padding:16px;font-size:13px;overflow:auto;white-space:pre-wrap}'
+               . 'a{color:#FF7A3C}</style></head><body>'
+               . '<h1>Admin Error (500)</h1>'
+               . '<pre>' . htmlspecialchars($e->getMessage() . "\n\nin " . $e->getFile() . ':' . $e->getLine(), ENT_QUOTES) . '</pre>'
+               . '<p style="margin-top:20px"><a href="/admin">← Dashboard</a></p>'
+               . '</body></html>';
+        } else {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['error' => 'Internal server error'], JSON_UNESCAPED_UNICODE);
+        }
     }
-    echo json_encode(['error' => 'Internal server error'], JSON_UNESCAPED_UNICODE);
     exit();
 });
 

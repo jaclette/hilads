@@ -625,7 +625,35 @@ $router->add('GET', '/internal/run-migrations', function () {
         }
     }
 
-    // ── 6. Summary query ──────────────────────────────────────────────────────
+    // ── 6. user_reports table (added post-launch) ─────────────────────────────
+
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS user_reports (
+                id                BIGSERIAL   PRIMARY KEY,
+                reporter_user_id  TEXT        REFERENCES users(id) ON DELETE SET NULL,
+                reporter_guest_id TEXT,
+                target_user_id    TEXT        REFERENCES users(id) ON DELETE SET NULL,
+                target_guest_id   TEXT,
+                target_nickname   TEXT,
+                reason            TEXT        NOT NULL,
+                status            TEXT        NOT NULL DEFAULT 'open',
+                created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+                CONSTRAINT chk_reporter_identity CHECK (reporter_user_id IS NOT NULL OR reporter_guest_id IS NOT NULL),
+                CONSTRAINT chk_target_identity   CHECK (target_user_id   IS NOT NULL OR target_guest_id   IS NOT NULL),
+                CONSTRAINT chk_no_self_report    CHECK (reporter_user_id IS NULL OR reporter_user_id != target_user_id),
+                CONSTRAINT chk_status            CHECK (status IN ('open', 'reviewed', 'dismissed'))
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_reports_target_user  ON user_reports (target_user_id)  WHERE target_user_id IS NOT NULL");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_reports_target_guest ON user_reports (target_guest_id) WHERE target_guest_id IS NOT NULL");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_reports_status_time  ON user_reports (status, created_at DESC)");
+        $log[] = "user_reports: table and indexes ensured";
+    } catch (\Throwable $e) {
+        $errors[] = "user_reports: " . $e->getMessage();
+    }
+
+    // ── 7. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
     $eventCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events")->fetchColumn();
