@@ -2220,6 +2220,7 @@ html, body, #root {
   justify-content: flex-end;
   padding-left: 0;
   padding-right: 4px;
+  align-self: flex-end;
 }
 
 .reaction-pill {
