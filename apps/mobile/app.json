@@ -39,7 +39,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 9,
+      "versionCode": 10,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -70,17 +70,17 @@
             {
               "scheme": "https",
               "host": "hilads.live",
-              "pathPrefix": "/e/"
+              "pathPrefix": "/e"
             },
             {
               "scheme": "https",
               "host": "hilads.live",
-              "pathPrefix": "/event/"
+              "pathPrefix": "/event"
             },
             {
               "scheme": "https",
               "host": "hilads.live",
-              "pathPrefix": "/city/"
+              "pathPrefix": "/city"
             }
           ],
           "category": [

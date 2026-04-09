@@ -121,6 +121,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/events') {
     require __DIR__ . '/events.php';
 
+} elseif ($uri === '/admin/email') {
+    require __DIR__ . '/email.php';
+
 } elseif ($uri === '/admin/events/create') {
     require __DIR__ . '/event_create.php';
 
