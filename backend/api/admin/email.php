@@ -43,6 +43,7 @@ function prepare_html(string $body): string
 
 $error   = null;
 $success = null;
+$debug   = null; // array shown in the debug panel after send
 
 if ($method === 'POST') {
     csrf_verify();
@@ -84,10 +85,16 @@ if ($method === 'POST') {
                     $payload['bcc'] = $bccParsed['emails'];
                 }
 
+                // Build debug snapshot (no API key)
+                $debugPayload = $payload;
+                $debugPayload['html'] = '[' . strlen($html) . ' bytes]';
+
                 $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE);
                 error_log('[admin/email] sending — to:' . $toCount . ' bcc:' . $bccCount
                     . ' subject:"' . $subject . '"'
+                    . ' to_list:[' . implode(', ', $toParsed['emails']) . ']'
                     . ' bcc_list:[' . implode(', ', $bccParsed['emails']) . ']');
+                error_log('[admin/email] payload: ' . json_encode($debugPayload, JSON_UNESCAPED_UNICODE));
 
                 $ch = curl_init('https://api.resend.com/emails');
                 curl_setopt_array($ch, [
@@ -104,7 +111,21 @@ if ($method === 'POST') {
                 $code     = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 curl_close($ch);
 
-                error_log('[admin/email] resend response HTTP ' . $code . ': ' . $respBody);
+                error_log('[admin/email] resend HTTP ' . $code . ': ' . $respBody);
+
+                $decoded = json_decode($respBody, true);
+
+                $debug = [
+                    'to'           => $toParsed['emails'],
+                    'bcc'          => $bccParsed['emails'],
+                    'to_invalid'   => $toParsed['invalid'],
+                    'bcc_invalid'  => $bccParsed['invalid'],
+                    'payload_keys' => array_keys($payload),
+                    'bcc_in_payload' => isset($payload['bcc']) ? $payload['bcc'] : null,
+                    'http_code'    => $code,
+                    'resend_id'    => $decoded['id'] ?? null,
+                    'resend_raw'   => $decoded,
+                ];
 
                 if ($code >= 200 && $code < 300) {
                     $label   = $isTest ? 'Test email' : 'Email';
@@ -112,16 +133,17 @@ if ($method === 'POST') {
                     if ($bccCount > 0) {
                         $detail .= ', ' . $bccCount . ' BCC';
                     }
-                    $success = $label . ' sent successfully (' . $detail . ').';
+                    $resendId = $decoded['id'] ?? null;
+                    $success  = $label . ' sent successfully (' . $detail . ').'
+                        . ($resendId ? ' Resend ID: ' . htmlspecialchars($resendId, ENT_QUOTES) : '');
                     // Surface skipped addresses as a non-blocking warning
                     $skipped = array_merge($toParsed['invalid'], $bccParsed['invalid']);
                     if (!empty($skipped)) {
                         $success .= ' Skipped invalid: ' . implode(', ', array_map('htmlspecialchars', $skipped)) . '.';
                     }
                 } else {
-                    $decoded = json_decode($respBody, true);
-                    $msg     = $decoded['message'] ?? $decoded['name'] ?? 'Unknown error';
-                    $error   = 'Resend error (HTTP ' . $code . '): ' . $msg;
+                    $msg   = $decoded['message'] ?? $decoded['name'] ?? 'Unknown error';
+                    $error = 'Resend error (HTTP ' . $code . '): ' . $msg;
                 }
             }
         }
@@ -154,6 +176,65 @@ if ($success) {
 }
 if ($error) {
     echo '<div class="flash flash-error">' . htmlspecialchars($error, ENT_QUOTES) . '</div>';
+}
+
+if ($debug !== null) {
+    $dp = $debug;
+    echo '<div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:16px;margin-bottom:20px;font-size:12px;font-family:monospace">';
+    echo '<div style="color:#666;text-transform:uppercase;letter-spacing:.5px;font-size:10px;margin-bottom:10px">Debug — last send</div>';
+
+    echo '<div style="display:grid;grid-template-columns:140px 1fr;gap:4px 0">';
+
+    // To
+    echo '<span style="color:#555">to (' . count($dp['to']) . ')</span>';
+    echo '<span style="color:#ccc">' . htmlspecialchars(implode(', ', $dp['to']), ENT_QUOTES) . '</span>';
+
+    // BCC
+    echo '<span style="color:#555">bcc (' . count($dp['bcc']) . ')</span>';
+    $bccDisplay = !empty($dp['bcc']) ? htmlspecialchars(implode(', ', $dp['bcc']), ENT_QUOTES) : '<em style="color:#444">none</em>';
+    echo '<span style="color:#ccc">' . $bccDisplay . '</span>';
+
+    // bcc actually in payload
+    echo '<span style="color:#555">bcc in payload</span>';
+    if ($dp['bcc_in_payload'] === null) {
+        echo '<span style="color:#f87171">NOT SET (empty BCC was given or count was 0)</span>';
+    } else {
+        $count = count($dp['bcc_in_payload']);
+        echo '<span style="color:#4ade80">' . $count . ' address' . ($count !== 1 ? 'es' : '') . ': '
+            . htmlspecialchars(implode(', ', $dp['bcc_in_payload']), ENT_QUOTES) . '</span>';
+    }
+
+    // Invalid
+    if (!empty($dp['to_invalid']) || !empty($dp['bcc_invalid'])) {
+        echo '<span style="color:#555">skipped invalid</span>';
+        $all = array_merge($dp['to_invalid'], $dp['bcc_invalid']);
+        echo '<span style="color:#fbbf24">' . htmlspecialchars(implode(', ', $all), ENT_QUOTES) . '</span>';
+    }
+
+    // HTTP code
+    echo '<span style="color:#555">Resend HTTP</span>';
+    $codeColor = ($dp['http_code'] >= 200 && $dp['http_code'] < 300) ? '#4ade80' : '#f87171';
+    echo '<span style="color:' . $codeColor . '">' . (int)$dp['http_code'] . '</span>';
+
+    // Resend ID
+    echo '<span style="color:#555">Resend ID</span>';
+    if ($dp['resend_id']) {
+        echo '<span style="color:#60a5fa">' . htmlspecialchars($dp['resend_id'], ENT_QUOTES) . '</span>';
+    } else {
+        echo '<span style="color:#f87171">no ID returned</span>';
+    }
+
+    // Raw response
+    echo '<span style="color:#555">Raw response</span>';
+    echo '<span style="color:#888">' . htmlspecialchars(json_encode($dp['resend_raw'], JSON_UNESCAPED_UNICODE), ENT_QUOTES) . '</span>';
+
+    echo '</div>'; // grid
+
+    if ($dp['resend_id']) {
+        echo '<div style="margin-top:12px;color:#555">Check delivery in the <a href="https://resend.com/emails/' . htmlspecialchars($dp['resend_id'], ENT_QUOTES) . '" target="_blank" style="color:#FF7A3C">Resend dashboard →</a></div>';
+    }
+
+    echo '</div>';
 }
 
 echo '<form method="POST" action="/admin/email">';
