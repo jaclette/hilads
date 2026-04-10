@@ -3530,7 +3530,7 @@ $router->add('GET', '/api/v1/conversations', function () {
 // Used for the Messages icon dot on city channel; avoids running the full conversations query on boot.
 $router->add('GET', '/api/v1/conversations/unread', function () {
     $user = AuthService::requireAuth();
-    Response::json(['has_unread' => ConversationRepository::hasAnyUnread($user['id'])]);
+    Response::json(ConversationRepository::hasAnyUnreadDebug($user['id']));
 });
 
 // POST /api/v1/conversations/direct

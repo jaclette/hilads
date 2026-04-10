@@ -217,31 +217,38 @@ class ConversationRepository
      */
     public static function hasAnyUnread(string $userId): bool
     {
+        return (bool) self::hasAnyUnreadDebug($userId)['has_unread'];
+    }
+
+    /**
+     * Debug version — returns full breakdown of which clause fires and the offending rows.
+     * Used temporarily on /conversations/unread to diagnose false-positive badge.
+     * REMOVE after diagnosis is complete.
+     */
+    public static function hasAnyUnreadDebug(string $userId): array
+    {
         $pdo = Database::pdo();
         $uid = $userId;
 
         // ── Clause 1: DM conversations ────────────────────────────────────────
         $s1 = $pdo->prepare("
-            SELECT cm.id, cm.conversation_id, cm.created_at, cp.last_read_at
+            SELECT cm.id, cm.conversation_id, cm.sender_id,
+                   cm.created_at AS msg_at, cp.last_read_at
             FROM conversation_participants cp
             JOIN conversation_messages cm ON cm.conversation_id = cp.conversation_id
             WHERE cp.user_id = ?
               AND cm.sender_id != ?
               AND (cp.last_read_at IS NULL OR cm.created_at > cp.last_read_at)
             ORDER BY cm.created_at DESC
-            LIMIT 3
+            LIMIT 5
         ");
         $s1->execute([$uid, $uid]);
         $dmRows = $s1->fetchAll(\PDO::FETCH_ASSOC);
-        $hasDm = !empty($dmRows);
-        error_log("[unread-debug] userId={$uid} | DM unread=" . ($hasDm ? 'YES' : 'no') . " rows=" . count($dmRows));
-        foreach ($dmRows as $r) {
-            error_log("[unread-debug]   DM offender: conv={$r['conversation_id']} msg={$r['id']} msg_at={$r['created_at']} last_read={$r['last_read_at']}");
-        }
 
-        // ── Clause 2: event channels (joined via event_participants) ──────────
+        // ── Clause 2: event chats (joined as participant) ─────────────────────
         $s2 = $pdo->prepare("
-            SELECT m.id, m.channel_id, m.user_id AS msg_user, m.type, m.created_at, ep.last_read_at
+            SELECT m.id, m.channel_id, m.user_id AS msg_user_id, m.guest_id AS msg_guest_id,
+                   m.nickname, m.type, m.created_at AS msg_at, ep.last_read_at
             FROM event_participants ep
             JOIN messages m ON m.channel_id = ep.channel_id
             WHERE ep.user_id = ?
@@ -249,19 +256,15 @@ class ConversationRepository
               AND m.user_id IS DISTINCT FROM ?
               AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
             ORDER BY m.created_at DESC
-            LIMIT 3
+            LIMIT 5
         ");
         $s2->execute([$uid, $uid]);
         $evParticipantRows = $s2->fetchAll(\PDO::FETCH_ASSOC);
-        $hasEvParticipant = !empty($evParticipantRows);
-        error_log("[unread-debug] userId={$uid} | EventChat(participant) unread=" . ($hasEvParticipant ? 'YES' : 'no') . " rows=" . count($evParticipantRows));
-        foreach ($evParticipantRows as $r) {
-            error_log("[unread-debug]   EventChat offender: ch={$r['channel_id']} msg={$r['id']} msg_user={$r['msg_user']} type={$r['type']} msg_at={$r['created_at']} last_read={$r['last_read_at']}");
-        }
 
-        // ── Clause 3: event channels (created by user, with participant row) ──
+        // ── Clause 3: event chats (created by user, has participant row) ──────
         $s3 = $pdo->prepare("
-            SELECT m.id, m.channel_id, m.user_id AS msg_user, m.type, m.created_at, ep2.last_read_at
+            SELECT m.id, m.channel_id, m.user_id AS msg_user_id, m.guest_id AS msg_guest_id,
+                   m.nickname, m.type, m.created_at AS msg_at, ep2.last_read_at
             FROM channel_events ce
             JOIN event_participants ep2 ON ep2.channel_id = ce.channel_id AND ep2.user_id = ?
             JOIN messages m ON m.channel_id = ce.channel_id
@@ -270,19 +273,24 @@ class ConversationRepository
               AND m.user_id IS DISTINCT FROM ?
               AND (ep2.last_read_at IS NULL OR m.created_at > ep2.last_read_at)
             ORDER BY m.created_at DESC
-            LIMIT 3
+            LIMIT 5
         ");
         $s3->execute([$uid, $uid, $uid]);
         $evCreatorRows = $s3->fetchAll(\PDO::FETCH_ASSOC);
-        $hasEvCreator = !empty($evCreatorRows);
-        error_log("[unread-debug] userId={$uid} | EventChat(creator+participant) unread=" . ($hasEvCreator ? 'YES' : 'no') . " rows=" . count($evCreatorRows));
-        foreach ($evCreatorRows as $r) {
-            error_log("[unread-debug]   EventCreator offender: ch={$r['channel_id']} msg={$r['id']} msg_user={$r['msg_user']} type={$r['type']} msg_at={$r['created_at']} last_read={$r['last_read_at']}");
-        }
 
-        $result = $hasDm || $hasEvParticipant || $hasEvCreator;
-        error_log("[unread-debug] userId={$uid} | FINAL hasAnyUnread=" . ($result ? 'TRUE' : 'FALSE'));
-        return $result;
+        $hasDm          = !empty($dmRows);
+        $hasEvPart      = !empty($evParticipantRows);
+        $hasEvCreator   = !empty($evCreatorRows);
+        $hasUnread      = $hasDm || $hasEvPart || $hasEvCreator;
+
+        return [
+            'has_unread'  => $hasUnread,
+            '_debug' => [
+                'dm'                => ['fires' => $hasDm,        'rows' => $dmRows],
+                'event_participant' => ['fires' => $hasEvPart,    'rows' => $evParticipantRows],
+                'event_creator'     => ['fires' => $hasEvCreator, 'rows' => $evCreatorRows],
+            ],
+        ];
     }
 
     /**
