@@ -162,7 +162,7 @@ function BackButton() {
   const router = useRouter();
   const handleBack = () => {
     if (router.canGoBack()) router.back();
-    else router.replace('/(tabs)/hot');
+    else router.replace('/(tabs)/chat');
   };
   return (
     <TouchableOpacity style={styles.backBtn} onPress={handleBack} activeOpacity={0.7}>

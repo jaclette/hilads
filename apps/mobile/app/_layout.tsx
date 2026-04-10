@@ -98,6 +98,7 @@ function RootLayoutInner() {
             <Stack.Screen name="event/create" />
             <Stack.Screen name="event/[id]" />
             <Stack.Screen name="e/[id]" options={{ headerShown: false }} />
+            <Stack.Screen name="t/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="city/[slug]" options={{ headerShown: false }} />
             <Stack.Screen
               name="sign-in"
@@ -112,6 +113,7 @@ function RootLayoutInner() {
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
             <Stack.Screen name="dm/[id]" />
+            <Stack.Screen name="messages" />
             <Stack.Screen name="notifications" />
             <Stack.Screen
               name="debug"

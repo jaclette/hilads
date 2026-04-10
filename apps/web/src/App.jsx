@@ -3249,7 +3249,7 @@ export default function App() {
               </button>
             ))}
           </div>
-          <div className="page-body page-body--has-fab">
+          <div className="page-body">
             {(() => {
               const openCreate = () => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
               const tz = cityTimezone || 'UTC'
@@ -3440,6 +3440,35 @@ export default function App() {
               )
             })()}
           </div>
+          {/* Bottom action bar — Start a pulse + create button, then upcoming CTA */}
+          <div className="now-actions-bar">
+            <button
+              className="now-pulse-btn"
+              onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }}
+            >
+              Start a pulse ⚡
+            </button>
+            {account?.mode === 'local' ? (
+              <button
+                className="now-create-btn now-create-btn--local"
+                onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}
+                aria-label="Host your spot"
+              >
+                Host your spot
+              </button>
+            ) : (
+              <button
+                className="now-create-btn"
+                onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
+                aria-label="Create"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
+            )}
+          </div>
           {/* Upcoming CTA */}
           <button
             className="upcoming-cta"
@@ -3447,28 +3476,6 @@ export default function App() {
           >
             See what's coming 🔮
           </button>
-
-          {/* Floating action button — local hosts get a labeled pill */}
-          {account?.mode === 'local' ? (
-            <button
-              className="events-fab events-fab--local"
-              onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}
-              aria-label="Host your spot"
-            >
-              Host your spot
-            </button>
-          ) : (
-            <button
-              className="events-fab"
-              onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
-              aria-label="Create"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </button>
-          )}
         </div>
       )}
 

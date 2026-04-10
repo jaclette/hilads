@@ -100,7 +100,7 @@ function resolveRoute(data: NotifData): string | null {
         console.log('[push-nav] tapped DM notification with conversationId=', data.conversationId);
         return `/dm/${data.conversationId}?conv=${encodeURIComponent(data.conversationId)}${namePart}`;
       }
-      return '/(tabs)/messages';
+      return '/messages';
 
     case 'event_message':
     case 'event_join':

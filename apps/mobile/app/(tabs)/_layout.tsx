@@ -187,8 +187,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="me"     options={{ title: 'Me' }} />
 
       {/* ── Secondary screens — hidden from nav ────────────────────────── */}
-      <Tabs.Screen name="chat"     options={{ href: null }} />
-      <Tabs.Screen name="messages" options={{ href: null }} />
+      <Tabs.Screen name="chat" options={{ href: null }} />
     </Tabs>
   );
 }

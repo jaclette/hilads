@@ -676,7 +676,7 @@ export default function ChatTab() {
             onPress={() => {
               setUnreadDMs(0);
               clearEventChatCounts();
-              router.push('/(tabs)/messages');
+              router.push('/messages');
             }}
           >
             <Feather name="message-square" size={28} color={Colors.white} />

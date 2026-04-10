@@ -35,7 +35,7 @@ export default function TopicChatScreen() {
 
   async function handleShare() {
     if (!id) return;
-    const url = `https://hilads.app/t/${id}`;
+    const url = `https://hilads.live/t/${id}`;
     try {
       await Share.share({ message: topic?.title ?? url, url });
       setShared(true);

@@ -139,11 +139,11 @@ function TimePicker({
             <View style={styles.pickerClock}>
               {/* Hours column */}
               <View style={styles.pickerCol}>
-                <TouchableOpacity style={styles.pickerArrow} onPress={() => setH(v => (v - 1 + 24) % 24)}>
+                <TouchableOpacity style={styles.pickerArrow} onPress={() => setH(v => (v + 1) % 24)}>
                   <Ionicons name="chevron-up" size={22} color={Colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.pickerVal}>{String(h).padStart(2, '0')}</Text>
-                <TouchableOpacity style={styles.pickerArrow} onPress={() => setH(v => (v + 1) % 24)}>
+                <TouchableOpacity style={styles.pickerArrow} onPress={() => setH(v => (v - 1 + 24) % 24)}>
                   <Ionicons name="chevron-down" size={22} color={Colors.text} />
                 </TouchableOpacity>
               </View>
@@ -152,11 +152,11 @@ function TimePicker({
 
               {/* Minutes column */}
               <View style={styles.pickerCol}>
-                <TouchableOpacity style={styles.pickerArrow} onPress={prevM}>
+                <TouchableOpacity style={styles.pickerArrow} onPress={nextM}>
                   <Ionicons name="chevron-up" size={22} color={Colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.pickerVal}>{String(m).padStart(2, '0')}</Text>
-                <TouchableOpacity style={styles.pickerArrow} onPress={nextM}>
+                <TouchableOpacity style={styles.pickerArrow} onPress={prevM}>
                   <Ionicons name="chevron-down" size={22} color={Colors.text} />
                 </TouchableOpacity>
               </View>
