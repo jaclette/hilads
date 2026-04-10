@@ -31,6 +31,9 @@
     <link rel="manifest" href="/manifest.webmanifest">
   </head>
   <body>
+    <!-- Stub for Zalo in-app browser SDK — prevents ReferenceError when zaloJSV2
+         is accessed by Zalo's injected script before the SDK fully initialises. -->
+    <script>window.zaloJSV2 = window.zaloJSV2 || {};</script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
