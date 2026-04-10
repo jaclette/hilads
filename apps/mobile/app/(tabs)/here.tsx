@@ -100,8 +100,14 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
   const color    = avatarColor(user.nickname ?? '');
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress}>
-      <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
-        <Text style={[styles.avatarText, { color }]}>{initials}</Text>
+      <View style={styles.avatarWrap}>
+        {user.profilePhotoUrl ? (
+          <Image source={{ uri: user.profilePhotoUrl }} style={styles.avatar} />
+        ) : (
+          <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
+            <Text style={[styles.avatarText, { color }]}>{initials}</Text>
+          </View>
+        )}
         <View style={styles.liveDot} />
       </View>
       <View style={styles.rowInfo}>
@@ -220,7 +226,7 @@ export default function HereScreen() {
     fetchCityAmbassadors(city.channelId).then(setLegends).catch(() => {});
   }, [city?.channelId]);
 
-  // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
+  // Enrich HERE NOW users with badge/vibe/avatar from crew data (WS presence has no badges).
   // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from the array.
   const enrichedOnline = useMemo(() => onlineUsers.map(u => {
     if (!u.userId || u.sessionId === mySessionId) return u;
@@ -230,10 +236,11 @@ export default function HereScreen() {
     const contextKey = crew.badges.find(k => CONTEXT_BADGE_KEYS.has(k));
     return {
       ...u,
-      primaryBadge:  primaryKey ? { key: primaryKey, label: BADGE_META[primaryKey as keyof typeof BADGE_META]?.label ?? primaryKey } : u.primaryBadge,
-      contextBadge:  contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : u.contextBadge,
-      vibe:          crew.vibe ?? u.vibe,
-      mode:          crew.mode ?? u.mode,
+      primaryBadge:    primaryKey ? { key: primaryKey, label: BADGE_META[primaryKey as keyof typeof BADGE_META]?.label ?? primaryKey } : u.primaryBadge,
+      contextBadge:    contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : u.contextBadge,
+      vibe:            crew.vibe ?? u.vibe,
+      mode:            crew.mode ?? u.mode,
+      profilePhotoUrl: crew.avatarUrl ?? u.profilePhotoUrl,
     };
   }), [onlineUsers, crewLookup, mySessionId]);
 
@@ -523,9 +530,12 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: Colors.border,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, gap: Spacing.md,
   },
+  avatarWrap: {
+    width: 44, height: 44, position: 'relative',
+  },
   avatar: {
     width: 44, height: 44, borderRadius: Radius.full,
-    borderWidth: 1, alignItems: 'center', justifyContent: 'center', position: 'relative',
+    borderWidth: 1, alignItems: 'center', justifyContent: 'center',
   },
   avatarText: { fontWeight: '700', fontSize: FontSizes.sm },
   liveDot: {

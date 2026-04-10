@@ -3507,6 +3507,7 @@ export default function App() {
             contextBadge:  contextKey ? { key: contextKey, label: badgeLabel(contextKey) } : u.contextBadge,
             vibe:          crew.vibe ?? u.vibe,
             mode:          crew.mode ?? u.mode,
+            avatarUrl:     crew.avatarUrl ?? u.avatarUrl,
           }
         })
 
@@ -3535,9 +3536,12 @@ export default function App() {
               className={`people-drawer-row${tappable ? ' people-drawer-row--tappable' : ''}`}
               onClick={(!user.isMe && (tappable || !account)) ? handleTap : undefined}
             >
-              <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }} data-me={user.isMe ? 'true' : undefined}>
-                {(user.nickname ?? '?')[0].toUpperCase()}
-              </span>
+              {user.avatarUrl
+                ? <img className="online-avatar" src={user.avatarUrl} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
+                : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }} data-me={user.isMe ? 'true' : undefined}>
+                    {(user.nickname ?? '?')[0].toUpperCase()}
+                  </span>
+              }
               <div className="people-drawer-content">
                 <span className="people-drawer-name">
                   {user.nickname}{user.isMe && <span className="people-drawer-you"> (you)</span>}
@@ -3555,6 +3559,9 @@ export default function App() {
                           ? <span className="badge-pill badge-pill--regular">Regular</span>
                           : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
                       }
+                      {user.contextBadge && (
+                        <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{user.contextBadge.label}</span>
+                      )}
                       {user.vibe && VIBE_META[user.vibe] && (
                         <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
                       )}
