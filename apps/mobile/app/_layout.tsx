@@ -1,6 +1,7 @@
 import '@/polyfills'; // must be first — polyfills WeakRef for Hermes + old arch
 import * as Sentry from '@sentry/react-native';
 import { useEffect } from 'react';
+import { Linking } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -40,6 +41,23 @@ console.log('[layout] ── MODULE LOADED ────────────�
 function RootLayoutInner() {
   console.log('[layout] RootLayoutInner rendered');
   const { booting, bootError, joined, account, city, sessionId, identity } = useApp();
+
+  // ── Deep link URL logging ─────────────────────────────────────────────────
+  useEffect(() => {
+    // Cold-start: URL that opened the app (null if not a deep link launch)
+    Linking.getInitialURL().then(url => {
+      console.log('[deeplink] cold-start URL:', url ?? 'none');
+    }).catch(err => {
+      console.warn('[deeplink] getInitialURL error:', err);
+    });
+
+    // Foreground: URLs arriving while app is already running
+    const sub = Linking.addEventListener('url', ({ url }) => {
+      console.log('[deeplink] incoming URL:', url);
+    });
+
+    return () => sub.remove();
+  }, []);
   const { retry, retryGeo } = useAppBoot();
   useAppLifecycle();          // foreground/background WS resilience
   usePresenceHeartbeat();     // keep presence alive
