@@ -190,9 +190,10 @@ class ConversationRepository
             FROM messages
             WHERE channel_id IN ($placeholders)
               AND type IN ('text', 'image')
+              AND user_id IS DISTINCT FROM ?
             GROUP BY channel_id
         ");
-        $unreadStmt->execute($channelIds);
+        $unreadStmt->execute([...$channelIds, $userId]);
         $lastMsgAt = [];
         foreach ($unreadStmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
             $lastMsgAt[$r['channel_id']] = $r['last_msg_at'];
@@ -239,6 +240,7 @@ class ConversationRepository
                     JOIN messages m ON m.channel_id = ep.channel_id
                     WHERE ep.user_id = :u3
                       AND m.type IN ('text', 'image')
+                      AND m.user_id IS DISTINCT FROM :u6
                       AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
                     LIMIT 1
                 )
@@ -250,12 +252,13 @@ class ConversationRepository
                     JOIN messages m ON m.channel_id = ce.channel_id
                     WHERE ce.created_by = :u4
                       AND m.type IN ('text', 'image')
+                      AND m.user_id IS DISTINCT FROM :u7
                       AND (ep2.last_read_at IS NULL OR m.created_at > ep2.last_read_at)
                     LIMIT 1
                 )
             ) AS has_unread
         ");
-        $stmt->execute([':u1' => $userId, ':u2' => $userId, ':u3' => $userId, ':u4' => $userId, ':u5' => $userId]);
+        $stmt->execute([':u1' => $userId, ':u2' => $userId, ':u3' => $userId, ':u4' => $userId, ':u5' => $userId, ':u6' => $userId, ':u7' => $userId]);
         return (bool) $stmt->fetchColumn();
     }
 
