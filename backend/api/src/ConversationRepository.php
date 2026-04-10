@@ -246,14 +246,11 @@ class ConversationRepository
                 EXISTS (
                     SELECT 1
                     FROM channel_events ce
+                    JOIN event_participants ep2 ON ep2.channel_id = ce.channel_id AND ep2.user_id = :u5
                     JOIN messages m ON m.channel_id = ce.channel_id
                     WHERE ce.created_by = :u4
                       AND m.type IN ('text', 'image')
-                      AND m.created_at > COALESCE(
-                          (SELECT ep2.last_read_at FROM event_participants ep2
-                           WHERE ep2.channel_id = ce.channel_id AND ep2.user_id = :u5 LIMIT 1),
-                          '-infinity'::timestamptz
-                      )
+                      AND (ep2.last_read_at IS NULL OR m.created_at > ep2.last_read_at)
                     LIMIT 1
                 )
             ) AS has_unread

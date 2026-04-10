@@ -49,11 +49,14 @@ export function useGlobalDmNotifications() {
         socket.joinDm(c.id, uid);
         if (__DEV__) console.log('[dmChat] joined conversation', c.id.slice(0, 8), c.other_display_name);
       });
-      if (__DEV__) console.log('[dmChat] subscribed to', convs.length, 'DM rooms');
+      // Override stale bootstrap flag with actual server state
+      const unreadCount = convs.filter(c => c.has_unread).length;
+      setUnreadDMs(unreadCount);
+      if (__DEV__) console.log('[dmChat] subscribed to', convs.length, 'DM rooms, unread:', unreadCount);
     } catch (err) {
       if (__DEV__) console.warn('[dmChat] joinAll failed:', err);
     }
-  }, []); // stable — uses refs only
+  }, [setUnreadDMs]);
 
   // Re-join WS rooms using cached IDs only — no HTTP fetch.
   // Used on WS reconnect where the conversation list hasn't changed.
