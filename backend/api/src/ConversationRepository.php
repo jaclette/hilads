@@ -217,49 +217,72 @@ class ConversationRepository
      */
     public static function hasAnyUnread(string $userId): bool
     {
-        // Restructured to drive from the user's own rows first (idx_event_participants_user,
-        // conversation_participants index) rather than scanning all active event channels.
-        // The previous version started from `channels WHERE type='event'` and joined outward,
-        // which scanned every active event channel before concluding "no unread" for users
-        // with no event participation.
-        $stmt = Database::pdo()->prepare("
-            SELECT (
-                EXISTS (
-                    SELECT 1
-                    FROM conversation_participants cp
-                    JOIN conversation_messages cm ON cm.conversation_id = cp.conversation_id
-                    WHERE cp.user_id = :u1
-                      AND cm.sender_id != :u2
-                      AND (cp.last_read_at IS NULL OR cm.created_at > cp.last_read_at)
-                    LIMIT 1
-                )
-                OR
-                EXISTS (
-                    SELECT 1
-                    FROM event_participants ep
-                    JOIN messages m ON m.channel_id = ep.channel_id
-                    WHERE ep.user_id = :u3
-                      AND m.type IN ('text', 'image')
-                      AND m.user_id IS DISTINCT FROM :u6
-                      AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
-                    LIMIT 1
-                )
-                OR
-                EXISTS (
-                    SELECT 1
-                    FROM channel_events ce
-                    JOIN event_participants ep2 ON ep2.channel_id = ce.channel_id AND ep2.user_id = :u5
-                    JOIN messages m ON m.channel_id = ce.channel_id
-                    WHERE ce.created_by = :u4
-                      AND m.type IN ('text', 'image')
-                      AND m.user_id IS DISTINCT FROM :u7
-                      AND (ep2.last_read_at IS NULL OR m.created_at > ep2.last_read_at)
-                    LIMIT 1
-                )
-            ) AS has_unread
+        $pdo = Database::pdo();
+        $uid = $userId;
+
+        // ── Clause 1: DM conversations ────────────────────────────────────────
+        $s1 = $pdo->prepare("
+            SELECT cm.id, cm.conversation_id, cm.created_at, cp.last_read_at
+            FROM conversation_participants cp
+            JOIN conversation_messages cm ON cm.conversation_id = cp.conversation_id
+            WHERE cp.user_id = ?
+              AND cm.sender_id != ?
+              AND (cp.last_read_at IS NULL OR cm.created_at > cp.last_read_at)
+            ORDER BY cm.created_at DESC
+            LIMIT 3
         ");
-        $stmt->execute([':u1' => $userId, ':u2' => $userId, ':u3' => $userId, ':u4' => $userId, ':u5' => $userId, ':u6' => $userId, ':u7' => $userId]);
-        return (bool) $stmt->fetchColumn();
+        $s1->execute([$uid, $uid]);
+        $dmRows = $s1->fetchAll(\PDO::FETCH_ASSOC);
+        $hasDm = !empty($dmRows);
+        error_log("[unread-debug] userId={$uid} | DM unread=" . ($hasDm ? 'YES' : 'no') . " rows=" . count($dmRows));
+        foreach ($dmRows as $r) {
+            error_log("[unread-debug]   DM offender: conv={$r['conversation_id']} msg={$r['id']} msg_at={$r['created_at']} last_read={$r['last_read_at']}");
+        }
+
+        // ── Clause 2: event channels (joined via event_participants) ──────────
+        $s2 = $pdo->prepare("
+            SELECT m.id, m.channel_id, m.user_id AS msg_user, m.type, m.created_at, ep.last_read_at
+            FROM event_participants ep
+            JOIN messages m ON m.channel_id = ep.channel_id
+            WHERE ep.user_id = ?
+              AND m.type IN ('text', 'image')
+              AND m.user_id IS DISTINCT FROM ?
+              AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
+            ORDER BY m.created_at DESC
+            LIMIT 3
+        ");
+        $s2->execute([$uid, $uid]);
+        $evParticipantRows = $s2->fetchAll(\PDO::FETCH_ASSOC);
+        $hasEvParticipant = !empty($evParticipantRows);
+        error_log("[unread-debug] userId={$uid} | EventChat(participant) unread=" . ($hasEvParticipant ? 'YES' : 'no') . " rows=" . count($evParticipantRows));
+        foreach ($evParticipantRows as $r) {
+            error_log("[unread-debug]   EventChat offender: ch={$r['channel_id']} msg={$r['id']} msg_user={$r['msg_user']} type={$r['type']} msg_at={$r['created_at']} last_read={$r['last_read_at']}");
+        }
+
+        // ── Clause 3: event channels (created by user, with participant row) ──
+        $s3 = $pdo->prepare("
+            SELECT m.id, m.channel_id, m.user_id AS msg_user, m.type, m.created_at, ep2.last_read_at
+            FROM channel_events ce
+            JOIN event_participants ep2 ON ep2.channel_id = ce.channel_id AND ep2.user_id = ?
+            JOIN messages m ON m.channel_id = ce.channel_id
+            WHERE ce.created_by = ?
+              AND m.type IN ('text', 'image')
+              AND m.user_id IS DISTINCT FROM ?
+              AND (ep2.last_read_at IS NULL OR m.created_at > ep2.last_read_at)
+            ORDER BY m.created_at DESC
+            LIMIT 3
+        ");
+        $s3->execute([$uid, $uid, $uid]);
+        $evCreatorRows = $s3->fetchAll(\PDO::FETCH_ASSOC);
+        $hasEvCreator = !empty($evCreatorRows);
+        error_log("[unread-debug] userId={$uid} | EventChat(creator+participant) unread=" . ($hasEvCreator ? 'YES' : 'no') . " rows=" . count($evCreatorRows));
+        foreach ($evCreatorRows as $r) {
+            error_log("[unread-debug]   EventCreator offender: ch={$r['channel_id']} msg={$r['id']} msg_user={$r['msg_user']} type={$r['type']} msg_at={$r['created_at']} last_read={$r['last_read_at']}");
+        }
+
+        $result = $hasDm || $hasEvParticipant || $hasEvCreator;
+        error_log("[unread-debug] userId={$uid} | FINAL hasAnyUnread=" . ($result ? 'TRUE' : 'FALSE'));
+        return $result;
     }
 
     /**
