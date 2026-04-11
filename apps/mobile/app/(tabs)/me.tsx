@@ -19,7 +19,7 @@ import {
   TextInput, ActivityIndicator, Alert, StyleSheet, Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -120,10 +120,13 @@ function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BA
 export default function MeScreen() {
   const router  = useRouter();
   const insets  = useSafeAreaInsets();
+  const { tab: tabParam } = useLocalSearchParams<{ tab?: string }>();
   const { identity, account, setAccount, setIdentity, logout, city } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
-  const [activeTab,          setActiveTab]          = useState<ProfileTab>('interests');
+  const validTabs = PROFILE_TABS.map(t => t.key);
+  const initialTab = (validTabs.includes(tabParam as ProfileTab) ? tabParam : 'interests') as ProfileTab;
+  const [activeTab,          setActiveTab]          = useState<ProfileTab>(initialTab);
   const [displayName,        setDisplayName]        = useState(account?.display_name ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
@@ -144,6 +147,14 @@ export default function MeScreen() {
   const [vibesLoading,       setVibesLoading]       = useState(true);
 
   useEffect(() => { setLocalEvents(rawEvents); }, [rawEvents]);
+
+  // If navigated here via push notification with a tab param, switch to that tab
+  useEffect(() => {
+    if (tabParam && validTabs.includes(tabParam as ProfileTab)) {
+      setActiveTab(tabParam as ProfileTab);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabParam]);
 
   useEffect(() => {
     if (!account?.id) return;

@@ -122,8 +122,8 @@ function resolveRoute(data: NotifData): string | null {
       return '/(tabs)/chat';
 
     case 'vibe_received':
-      // Open own profile — that's where the new vibe is visible.
-      return '/(tabs)/me';
+      // Open own profile on the Vibes tab — that's where the new vibe is visible.
+      return '/(tabs)/me?tab=vibes';
 
     default:
       return null;
