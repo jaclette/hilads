@@ -185,7 +185,7 @@ export async function sendEventImageMessage(
   return api.post<Message>(`/events/${eventId}/messages`, {
     guestId,
     nickname,
-    image_url: imageUrl,
+    imageUrl,
     type: 'image',
   });
 }

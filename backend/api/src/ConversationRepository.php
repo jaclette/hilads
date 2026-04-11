@@ -167,6 +167,7 @@ class ConversationRepository
               ON ep.channel_id = ch.id AND ep.user_id = :userId2
             WHERE ch.type   = 'event'
               AND ch.status = 'active'
+              AND ce.expires_at > now()
               AND (ce.created_by = :userId3 OR ep.user_id = :userId4)
               AND (
                   ce.occurrence_date IS NULL
@@ -248,6 +249,7 @@ class ConversationRepository
                     JOIN channel_events ce ON ce.channel_id = ep.channel_id
                     JOIN messages m ON m.channel_id = ep.channel_id
                     WHERE ep.user_id = :u3
+                      AND ce.expires_at > now()
                       AND m.type IN ('text', 'image')
                       AND m.user_id IS DISTINCT FROM :u4
                       AND (ep.last_read_at IS NULL OR m.created_at > ep.last_read_at)
