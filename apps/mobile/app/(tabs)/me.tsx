@@ -63,12 +63,14 @@ const EVENT_ICONS: Record<string, string> = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 };
 
-type ProfileTab = 'personal' | 'friends' | 'vibes';
+type ProfileTab = 'interests' | 'going' | 'hosting' | 'friends' | 'vibes';
 
 const PROFILE_TABS: { key: ProfileTab; label: string }[] = [
-  { key: 'personal', label: 'Personal Info' },
-  { key: 'friends',  label: 'Friends'       },
-  { key: 'vibes',    label: 'Vibes'         },
+  { key: 'interests', label: 'Interests' },
+  { key: 'going',     label: 'Going To'  },
+  { key: 'hosting',   label: 'Hosting'   },
+  { key: 'friends',   label: 'Friends'   },
+  { key: 'vibes',     label: 'Vibes'     },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -121,7 +123,7 @@ export default function MeScreen() {
   const { identity, account, setAccount, setIdentity, logout, city } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
-  const [activeTab,          setActiveTab]          = useState<ProfileTab>('personal');
+  const [activeTab,          setActiveTab]          = useState<ProfileTab>('interests');
   const [displayName,        setDisplayName]        = useState(account?.display_name ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
@@ -182,6 +184,10 @@ export default function MeScreen() {
     tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 2000);
     if (tapCount.current >= 5) { tapCount.current = 0; router.push('/debug'); }
   }
+
+  const myGuestId     = account?.guest_id ?? identity?.guestId ?? '';
+  const hostingEvents = localEvents.filter(e => e.guest_id === myGuestId);
+  const goingEvents   = localEvents.filter(e => e.guest_id !== myGuestId);
 
   const isGuest      = !account;
   const avatarBgColor = avatarBg(account?.display_name ?? identity?.nickname ?? '');
@@ -359,14 +365,24 @@ export default function MeScreen() {
               <Text style={styles.identityName} numberOfLines={1}>
                 {account?.display_name ?? '—'}
               </Text>
-              {account?.primaryBadge && (
-                <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
-                  <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
-                    {account.primaryBadge.label}
-                  </Text>
-                </View>
-              )}
-              <Text style={styles.identitySub}>Update how people see you.</Text>
+              <View style={styles.identityMetaRow}>
+                {account?.primaryBadge && (
+                  <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
+                    <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
+                      {account.primaryBadge.label}
+                    </Text>
+                  </View>
+                )}
+                {homeCity ? (
+                  <Text style={styles.identityMetaCity} numberOfLines={1}>📍 {homeCity}</Text>
+                ) : null}
+              </View>
+              {selectedVibe && VIBES.find(v => v.key === selectedVibe) ? (
+                <Text style={styles.identityMetaVibe}>
+                  {VIBES.find(v => v.key === selectedVibe)!.emoji}{' '}
+                  {VIBES.find(v => v.key === selectedVibe)!.label}
+                </Text>
+              ) : null}
             </View>
           </View>
 
@@ -392,8 +408,12 @@ export default function MeScreen() {
             </View>
           </View>
 
-          {/* Filter pills */}
-          <View style={styles.filterBar}>
+          {/* Filter pills — scrollable for 5 tabs */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterBar}
+          >
             {PROFILE_TABS.map(({ key, label }) => (
               <TouchableOpacity
                 key={key}
@@ -406,7 +426,7 @@ export default function MeScreen() {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
         </View>
       )}
 
@@ -470,8 +490,8 @@ export default function MeScreen() {
           </>
         )}
 
-        {/* ── Tab: Personal Info ── */}
-        {!isGuest && activeTab === 'personal' && (
+        {/* ── Tab: Interests ── */}
+        {!isGuest && activeTab === 'interests' && (
           <>
             <View style={styles.fieldsCard}>
               {/* DISPLAY NAME */}
@@ -578,65 +598,110 @@ export default function MeScreen() {
               </View>
             </View>
 
-            {/* My Events */}
-            <View style={styles.eventsCard}>
-              <Text style={styles.eventsLabel}>MY EVENTS</Text>
-              {eventsLoading ? (
-                <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
-              ) : localEvents.length === 0 ? (
-                <Text style={styles.eventsEmpty}>No events yet. Create one from the Hot tab.</Text>
-              ) : (
-                localEvents.map((event, idx) => {
-                  const now    = Date.now() / 1000;
-                  const isLive = event.starts_at <= now && event.expires_at > now;
-                  const icon   = EVENT_ICONS[event.event_type] ?? '📌';
-                  return (
-                    <View key={event.id}>
-                      {idx > 0 && <View style={styles.divider} />}
-                      <TouchableOpacity
-                        style={styles.eventRow}
-                        onPress={() => router.push(`/event/${event.id}`)}
-                        activeOpacity={0.7}
-                      >
-                        <Text style={styles.eventIcon}>{icon}</Text>
-                        <View style={styles.eventInfo}>
-                          <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-                          {event.recurrence_label && (
-                            <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
-                          )}
-                          <View style={styles.eventBadgeRow}>
-                            {isLive && (
-                              <View style={styles.livePill}>
-                                <Text style={styles.livePillText}>LIVE</Text>
-                              </View>
-                            )}
-                            {event.recurrence_label && (
-                              <View style={styles.recurPill}>
-                                <Ionicons name="refresh" size={10} color={Colors.violet} />
-                                <Text style={styles.recurPillText}>RECURRING</Text>
-                              </View>
-                            )}
-                          </View>
-                        </View>
-                        <TouchableOpacity
-                          style={styles.deleteBtn}
-                          onPress={() => handleDeleteEvent(event)}
-                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                        >
-                          <Text style={styles.deleteBtnText}>×</Text>
-                        </TouchableOpacity>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })
-              )}
-            </View>
-
             {/* Version tap */}
             <TouchableOpacity onPress={handleVersionTap} activeOpacity={1} style={styles.versionWrap}>
               <Text style={styles.version}>v{APP_VERSION}</Text>
             </TouchableOpacity>
           </>
+        )}
+
+        {/* ── Tab: Going To ── */}
+        {!isGuest && activeTab === 'going' && (
+          <View style={styles.eventsCard}>
+            <Text style={styles.eventsLabel}>GOING TO</Text>
+            {eventsLoading ? (
+              <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
+            ) : goingEvents.length === 0 ? (
+              <Text style={styles.eventsEmpty}>Not going to any events yet. Browse the Hot tab to find one.</Text>
+            ) : (
+              goingEvents.map((event, idx) => {
+                const now    = Date.now() / 1000;
+                const isLive = event.starts_at <= now && event.expires_at > now;
+                const icon   = EVENT_ICONS[event.event_type] ?? '📌';
+                return (
+                  <View key={event.id}>
+                    {idx > 0 && <View style={styles.divider} />}
+                    <TouchableOpacity
+                      style={styles.eventRow}
+                      onPress={() => router.push(`/event/${event.id}`)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.eventIcon}>{icon}</Text>
+                      <View style={styles.eventInfo}>
+                        <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+                        {event.recurrence_label && (
+                          <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
+                        )}
+                        <View style={styles.eventBadgeRow}>
+                          {isLive && (
+                            <View style={styles.livePill}>
+                              <Text style={styles.livePillText}>LIVE</Text>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })
+            )}
+          </View>
+        )}
+
+        {/* ── Tab: Hosting ── */}
+        {!isGuest && activeTab === 'hosting' && (
+          <View style={styles.eventsCard}>
+            <Text style={styles.eventsLabel}>HOSTING</Text>
+            {eventsLoading ? (
+              <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
+            ) : hostingEvents.length === 0 ? (
+              <Text style={styles.eventsEmpty}>No events hosted yet. Create one from the Hot tab.</Text>
+            ) : (
+              hostingEvents.map((event, idx) => {
+                const now    = Date.now() / 1000;
+                const isLive = event.starts_at <= now && event.expires_at > now;
+                const icon   = EVENT_ICONS[event.event_type] ?? '📌';
+                return (
+                  <View key={event.id}>
+                    {idx > 0 && <View style={styles.divider} />}
+                    <TouchableOpacity
+                      style={styles.eventRow}
+                      onPress={() => router.push(`/event/${event.id}`)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.eventIcon}>{icon}</Text>
+                      <View style={styles.eventInfo}>
+                        <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+                        {event.recurrence_label && (
+                          <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
+                        )}
+                        <View style={styles.eventBadgeRow}>
+                          {isLive && (
+                            <View style={styles.livePill}>
+                              <Text style={styles.livePillText}>LIVE</Text>
+                            </View>
+                          )}
+                          {event.recurrence_label && (
+                            <View style={styles.recurPill}>
+                              <Ionicons name="refresh" size={10} color={Colors.violet} />
+                              <Text style={styles.recurPillText}>RECURRING</Text>
+                            </View>
+                          )}
+                        </View>
+                      </View>
+                      <TouchableOpacity
+                        style={styles.deleteBtn}
+                        onPress={() => handleDeleteEvent(event)}
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      >
+                        <Text style={styles.deleteBtnText}>×</Text>
+                      </TouchableOpacity>
+                    </TouchableOpacity>
+                  </View>
+                );
+              })
+            )}
+          </View>
         )}
 
         {/* ── Tab: Friends ── */}
@@ -871,9 +936,21 @@ const styles = StyleSheet.create({
     color:         Colors.text,
     letterSpacing: -0.3,
   },
-  identitySub: {
-    fontSize: FontSizes.xs,
-    color:    Colors.muted2,
+  identityMetaRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    flexWrap:      'wrap',
+    gap:           6,
+  },
+  identityMetaCity: {
+    fontSize:   FontSizes.xs,
+    color:      Colors.muted,
+    fontWeight: '500',
+  },
+  identityMetaVibe: {
+    fontSize:   FontSizes.xs,
+    color:      Colors.muted,
+    fontWeight: '500',
   },
 
   // Mode selector (compact, inside sticky identity block)
@@ -921,12 +998,13 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
 
-  // Filter pills
+  // Filter pills — used as contentContainerStyle of horizontal ScrollView
   filterBar: {
-    flexDirection:     'row',
-    paddingHorizontal: Spacing.md,
-    paddingBottom:     Spacing.sm,
-    gap:               8,
+    flexDirection:  'row',
+    paddingLeft:    Spacing.md,
+    paddingRight:   Spacing.md,
+    paddingBottom:  Spacing.sm,
+    gap:            8,
   },
   filterPill: {
     paddingHorizontal: 12,

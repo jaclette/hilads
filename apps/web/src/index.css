@@ -1096,19 +1096,30 @@ html, body, #root {
   gap: 6px;
 }
 
-.profile-identity-sub {
-  font-size: 0.78rem;
+.profile-identity-city {
+  font-size: 0.74rem;
   color: var(--muted);
-  margin: 0;
+  font-weight: 500;
 }
 
-/* Filter pills */
+.profile-identity-vibe {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Filter pills — scrollable for 5 tabs */
 .profile-tabs {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 0 16px 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.profile-tabs::-webkit-scrollbar { display: none; }
 
 .profile-tab-pill {
   display: flex;

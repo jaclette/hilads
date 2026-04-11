@@ -37,9 +37,11 @@ const INTERESTS = [
 ]
 
 const PROFILE_TABS = [
-  { key: 'personal', label: 'Personal Info' },
-  { key: 'friends',  label: 'Friends'       },
-  { key: 'vibes',    label: 'Vibes'         },
+  { key: 'interests', label: 'Interests' },
+  { key: 'going',     label: 'Going To'  },
+  { key: 'hosting',   label: 'Hosting'   },
+  { key: 'friends',   label: 'Friends'   },
+  { key: 'vibes',     label: 'Vibes'     },
 ]
 
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount }) {
@@ -54,7 +56,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [saving,          setSaving]          = useState(false)
   const [saved,           setSaved]           = useState(false)
   const [error,           setError]           = useState(null)
-  const [activeTab,       setActiveTab]       = useState('personal')
+  const [activeTab,       setActiveTab]       = useState('interests')
   const [pickRestaurant,  setPickRestaurant]  = useState(account.ambassadorPicks?.restaurant ?? '')
   const [pickSpot,        setPickSpot]        = useState(account.ambassadorPicks?.spot ?? '')
   const [pickTip,         setPickTip]         = useState(account.ambassadorPicks?.tip ?? '')
@@ -203,8 +205,15 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               {account.primaryBadge && (
                 <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
               )}
+              {homeCity && (
+                <span className="profile-identity-city">📍 {homeCity}</span>
+              )}
             </div>
-            <p className="profile-identity-sub">Update how people see you in Hilads.</p>
+            {vibe && VIBES.find(v => v.key === vibe) && (
+              <p className="profile-identity-vibe">
+                {VIBES.find(v => v.key === vibe).emoji} {VIBES.find(v => v.key === vibe).label}
+              </p>
+            )}
           </div>
         </div>
 
@@ -244,8 +253,8 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
       {/* ══ SCROLLABLE CONTENT ══════════════════════════════════════════════ */}
       <div className="page-body profile-body">
 
-        {/* ── Tab: Personal Info ── */}
-        {activeTab === 'personal' && (
+        {/* ── Tab: Interests ── */}
+        {activeTab === 'interests' && (
           <>
             <div className="profile-card profile-fields">
               <div className="modal-field">
@@ -359,34 +368,75 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               </div>
             )}
 
-            {myEvents !== null && myEvents.length > 0 && (
-              <div className="profile-card">
-                <p className="me-section-label">My events</p>
-                {myEvents.map(ev => {
-                  const now = Date.now() / 1000
-                  const isLive = ev.starts_at <= now && ev.expires_at > now
-                  const tz = cityTimezone || 'UTC'
-                  return (
-                    <div key={ev.id} className="my-event-row">
-                      <button className="my-event-row-body" onClick={() => onSelectEvent?.(ev)}>
-                        <span className="my-event-title">{EVENT_ICONS[ev.type] ?? '📌'} {ev.title}</span>
-                        <span className="my-event-meta">
-                          {ev.recurrence_label
-                            ? ev.recurrence_label
-                            : getTimeLabel(ev.starts_at, tz) + (ev.ends_at ? ` → ${formatTime(ev.ends_at, tz)}` : '')}
-                        </span>
-                        <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (ev.recurrence_label ? ' my-event-badge--recurring' : '')}`}>
-                          {isLive ? 'Live' : (ev.recurrence_label ? '↻ Recurring' : 'Upcoming')}
-                        </span>
-                      </button>
-                      <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label="Delete event">✕</button>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
           </>
         )}
+
+        {/* ── Tab: Going To ── */}
+        {activeTab === 'going' && (() => {
+          const gid = account.guest_id
+          const goingEvts = (myEvents ?? []).filter(ev => ev.guest_id !== gid)
+          return (
+            <div className="profile-card">
+              <p className="me-section-label">Going to</p>
+              {goingEvts.length === 0 ? (
+                <p className="profile-tab-empty">Not going to any events yet. Browse events to find one.</p>
+              ) : goingEvts.map(ev => {
+                const now    = Date.now() / 1000
+                const isLive = ev.starts_at <= now && ev.expires_at > now
+                const tz     = cityTimezone || 'UTC'
+                return (
+                  <div key={ev.id} className="my-event-row">
+                    <button className="my-event-row-body" onClick={() => onSelectEvent?.(ev)}>
+                      <span className="my-event-title">{EVENT_ICONS[ev.type] ?? '📌'} {ev.title}</span>
+                      <span className="my-event-meta">
+                        {ev.recurrence_label
+                          ? ev.recurrence_label
+                          : getTimeLabel(ev.starts_at, tz) + (ev.ends_at ? ` → ${formatTime(ev.ends_at, tz)}` : '')}
+                      </span>
+                      <span className={`my-event-badge${isLive ? ' my-event-badge--live' : ''}`}>
+                        {isLive ? 'Live' : 'Upcoming'}
+                      </span>
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })()}
+
+        {/* ── Tab: Hosting ── */}
+        {activeTab === 'hosting' && (() => {
+          const gid = account.guest_id
+          const hostingEvts = (myEvents ?? []).filter(ev => ev.guest_id === gid)
+          return (
+            <div className="profile-card">
+              <p className="me-section-label">Hosting</p>
+              {hostingEvts.length === 0 ? (
+                <p className="profile-tab-empty">No events hosted yet. Create one from the city chat.</p>
+              ) : hostingEvts.map(ev => {
+                const now    = Date.now() / 1000
+                const isLive = ev.starts_at <= now && ev.expires_at > now
+                const tz     = cityTimezone || 'UTC'
+                return (
+                  <div key={ev.id} className="my-event-row">
+                    <button className="my-event-row-body" onClick={() => onSelectEvent?.(ev)}>
+                      <span className="my-event-title">{EVENT_ICONS[ev.type] ?? '📌'} {ev.title}</span>
+                      <span className="my-event-meta">
+                        {ev.recurrence_label
+                          ? ev.recurrence_label
+                          : getTimeLabel(ev.starts_at, tz) + (ev.ends_at ? ` → ${formatTime(ev.ends_at, tz)}` : '')}
+                      </span>
+                      <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (ev.recurrence_label ? ' my-event-badge--recurring' : '')}`}>
+                        {isLive ? 'Live' : (ev.recurrence_label ? '↻ Recurring' : 'Upcoming')}
+                      </span>
+                    </button>
+                    <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label="Delete event">✕</button>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })()}
 
         {/* ── Tab: Friends ── */}
         {activeTab === 'friends' && (
