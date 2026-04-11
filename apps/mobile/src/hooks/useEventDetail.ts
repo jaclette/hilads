@@ -5,6 +5,7 @@ import type { HiladsEvent } from '@/types';
 
 interface Result {
   event:            HiladsEvent | null;
+  cityName:         string | null;
   loading:          boolean;
   error:            string | null;
   toggling:         boolean;
@@ -21,6 +22,7 @@ export function useEventDetail(eventId: string): Result {
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   const [event,    setEvent]    = useState<HiladsEvent | null>(null);
+  const [cityName, setCityName] = useState<string | null>(null);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
   const [toggling, setToggling] = useState(false);
@@ -33,6 +35,7 @@ export function useEventDetail(eventId: string): Result {
       // directly in the event object — no secondary fetch needed, no race condition.
       const res = await fetchEventById(eventId, guestId ?? undefined);
       setEvent(res?.event ?? null);
+      setCityName(res?.cityName ?? null);
     } catch {
       setError('Failed to load event');
     } finally {
@@ -64,5 +67,5 @@ export function useEventDetail(eventId: string): Result {
     identity && event?.guest_id && event.guest_id === identity.guestId,
   );
 
-  return { event, loading, error, toggling, isOwner, toggleParticipation, reload: load };
+  return { event, cityName, loading, error, toggling, isOwner, toggleParticipation, reload: load };
 }

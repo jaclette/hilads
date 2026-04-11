@@ -117,7 +117,7 @@ export default function EventDetailScreen() {
   }
 
   const {
-    event, loading: eventLoading, error: eventError,
+    event, cityName: eventCityName, loading: eventLoading, error: eventError,
     toggling, toggleParticipation,
   } = useEventDetail(id);
 
@@ -255,8 +255,8 @@ export default function EventDetailScreen() {
     );
   }, [messages, ambientFeed]);
 
-  // City name for back button — prefer live city, fall back to event metadata
-  const cityName = city?.name ?? event?.city_name ?? 'Back';
+  // City name for back button — prefer API response (works for deeplinks), fall back to context city
+  const cityName = eventCityName ?? city?.name ?? 'Back';
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -265,7 +265,7 @@ export default function EventDetailScreen() {
       <View style={styles.nav}>
         <TouchableOpacity
           style={styles.backPill}
-          onPress={() => router.back()}
+          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/chat')}
           activeOpacity={0.75}
         >
           <Ionicons name="chevron-back" size={18} color={Colors.text} />
