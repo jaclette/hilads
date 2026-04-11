@@ -3503,18 +3503,18 @@ export default function App() {
         const CONTEXT_BADGE_KEYS_WEB = new Set(['host'])
         const crewLookupMap = new Map(crewMembers.map(m => [m.id, m]))
         const enrichedOnline = onlineUsers.map(u => {
-          if (!u.userId || u.isMe) return u
+          if (!u.userId) return u // guest: no enrichment possible
           const crew = crewLookupMap.get(u.userId)
-          if (!crew) return u
-          const primaryKey = (crew.badges ?? []).find(k => !CONTEXT_BADGE_KEYS_WEB.has(k))
-          const contextKey = (crew.badges ?? []).find(k => CONTEXT_BADGE_KEYS_WEB.has(k))
+          if (!crew && !u.isMe) return u
+          const primaryKey = (crew?.badges ?? []).find(k => !CONTEXT_BADGE_KEYS_WEB.has(k))
+          const contextKey = (crew?.badges ?? []).find(k => CONTEXT_BADGE_KEYS_WEB.has(k))
           return {
             ...u,
             primaryBadge:  primaryKey ? { key: primaryKey, label: badgeLabel(primaryKey) } : u.primaryBadge,
             contextBadge:  contextKey ? { key: contextKey, label: badgeLabel(contextKey) } : u.contextBadge,
-            vibe:          crew.vibe ?? u.vibe,
-            mode:          crew.mode ?? u.mode,
-            avatarUrl:     crew.avatarUrl ?? u.avatarUrl,
+            vibe:          crew?.vibe ?? u.vibe,
+            mode:          crew?.mode ?? u.mode,
+            avatarUrl:     crew?.avatarUrl ?? (u.isMe ? account?.profile_photo_url : undefined) ?? u.avatarUrl,
           }
         })
 
@@ -3554,26 +3554,21 @@ export default function App() {
                   {user.nickname}{user.isMe && <span className="people-drawer-you"> (you)</span>}
                 </span>
                 <div className="people-drawer-meta">
-                  {user.isMe
-                    ? <span className="people-member-badge people-member-badge--you">live now</span>
-                    : <>
-                      {user.mode && MODE_META[user.mode] && (
-                        <span className={`vibe-badge vibe-badge--${user.mode}`}>{MODE_META[user.mode].emoji}</span>
-                      )}
-                      {user.primaryBadge
-                        ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
-                        : user.isRegistered
-                          ? <span className="badge-pill badge-pill--regular">Regular</span>
-                          : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
-                      }
-                      {user.contextBadge && (
-                        <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{user.contextBadge.label}</span>
-                      )}
-                      {user.vibe && VIBE_META[user.vibe] && (
-                        <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
-                      )}
-                    </>
+                  {user.mode && MODE_META[user.mode] && (
+                    <span className={`vibe-badge vibe-badge--${user.mode}`}>{MODE_META[user.mode].emoji}</span>
+                  )}
+                  {user.primaryBadge
+                    ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
+                    : user.isRegistered
+                      ? <span className="badge-pill badge-pill--regular">Regular</span>
+                      : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
                   }
+                  {user.contextBadge && (
+                    <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{user.contextBadge.label}</span>
+                  )}
+                  {user.vibe && VIBE_META[user.vibe] && (
+                    <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
+                  )}
                 </div>
               </div>
               {!user.isMe && user.isRegistered && (

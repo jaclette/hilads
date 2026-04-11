@@ -115,21 +115,17 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
           {user.nickname}{isMe ? <Text style={styles.youLabel}> (you)</Text> : ''}
         </Text>
         <View style={styles.badgeRow}>
-          {isMe ? (
-            <View style={styles.liveNowBadge}><Text style={styles.liveNowText}>LIVE NOW</Text></View>
-          ) : <>
-            {user.mode && MODE_META[user.mode] && (
-              <Text style={[{ fontSize: 14 }, user.mode === 'local' ? styles.modeEmojiLocal : styles.modeEmojiExploring]}>
-                {MODE_META[user.mode].emoji}
-              </Text>
-            )}
-            {user.primaryBadge
-              ? <BadgePill badgeKey={user.primaryBadge.key} />
-              : <BadgePill badgeKey={user.isRegistered ? 'regular' : 'ghost'} />
-            }
-            {user.contextBadge && <BadgePill badgeKey={user.contextBadge.key} />}
-            <VibePill vibe={user.vibe} />
-          </>}
+          {user.mode && MODE_META[user.mode] && (
+            <Text style={[{ fontSize: 14 }, user.mode === 'local' ? styles.modeEmojiLocal : styles.modeEmojiExploring]}>
+              {MODE_META[user.mode].emoji}
+            </Text>
+          )}
+          {user.primaryBadge
+            ? <BadgePill badgeKey={user.primaryBadge.key} />
+            : <BadgePill badgeKey={user.isRegistered ? 'regular' : 'ghost'} />
+          }
+          {user.contextBadge && <BadgePill badgeKey={user.contextBadge.key} />}
+          <VibePill vibe={user.vibe} />
         </View>
       </View>
       {!isMe && user.userId && (
@@ -227,22 +223,23 @@ export default function HereScreen() {
   }, [city?.channelId]);
 
   // Enrich HERE NOW users with badge/vibe/avatar from crew data (WS presence has no badges).
-  // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from the array.
+  // Self entry is enriched the same way; photo falls back to account data if not in crew list.
   const enrichedOnline = useMemo(() => onlineUsers.map(u => {
-    if (!u.userId || u.sessionId === mySessionId) return u;
-    const crew = crewLookup.get(u.userId);
-    if (!crew) return u;
-    const primaryKey = crew.badges.find(k => !CONTEXT_BADGE_KEYS.has(k));
-    const contextKey = crew.badges.find(k => CONTEXT_BADGE_KEYS.has(k));
+    if (!u.userId) return u; // guest: no enrichment possible
+    const isSelf = u.sessionId === mySessionId;
+    const crew   = crewLookup.get(u.userId);
+    if (!crew && !isSelf) return u;
+    const primaryKey = crew?.badges.find(k => !CONTEXT_BADGE_KEYS.has(k));
+    const contextKey = crew?.badges.find(k => CONTEXT_BADGE_KEYS.has(k));
     return {
       ...u,
       primaryBadge:    primaryKey ? { key: primaryKey, label: BADGE_META[primaryKey as keyof typeof BADGE_META]?.label ?? primaryKey } : u.primaryBadge,
       contextBadge:    contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : u.contextBadge,
-      vibe:            crew.vibe ?? u.vibe,
-      mode:            crew.mode ?? u.mode,
-      profilePhotoUrl: crew.avatarUrl ?? u.profilePhotoUrl,
+      vibe:            crew?.vibe ?? u.vibe,
+      mode:            crew?.mode ?? u.mode,
+      profilePhotoUrl: crew?.avatarUrl ?? (isSelf ? (account?.profile_photo_url ?? undefined) : undefined) ?? u.profilePhotoUrl,
     };
-  }), [onlineUsers, crewLookup, mySessionId]);
+  }), [onlineUsers, crewLookup, mySessionId, account]);
 
   // Apply badge + vibe filters to live users (client-side — small list)
   const filteredOnline = enrichedOnline.filter(u => {
@@ -547,13 +544,6 @@ const styles = StyleSheet.create({
   badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 4 },
   nickname:  { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
   youLabel:  { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '400' },
-
-  liveNowBadge: {
-    alignSelf: 'flex-start', backgroundColor: 'rgba(61,220,132,0.12)',
-    borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 3,
-    borderWidth: 1, borderColor: 'rgba(61,220,132,0.25)',
-  },
-  liveNowText: { color: Colors.green, fontSize: FontSizes.xs, fontWeight: '700', letterSpacing: 0.4 },
 
   dmBtn: {
     width: 40, height: 40, borderRadius: 12,

@@ -3314,25 +3314,6 @@ html, body, #root {
   transform: scale(0.985);
 }
 
-.people-member-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  border: 1px solid rgba(194, 74, 56, 0.16);
-  border-radius: 999px;
-  padding: 4px 8px;
-  vertical-align: middle;
-}
-
-.people-member-badge--you {
-  color: var(--green);
-  background: rgba(61, 220, 132, 0.1);
-  border-color: rgba(61, 220, 132, 0.18);
-}
-
 /* ── Here filters ────────────────────────────────────── */
 
 .here-filters {
