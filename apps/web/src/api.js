@@ -232,6 +232,20 @@ export async function sendTopicMessage(topicId, guestId, nickname, content) {
   return res.json() // { message }
 }
 
+export async function sendTopicImageMessage(topicId, guestId, nickname, imageUrl) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, nickname, type: 'image', imageUrl }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send image')
+  }
+  return res.json() // { message }
+}
+
 export async function markTopicRead(topicId, guestId) {
   await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/mark-read`, {
     method: 'POST',

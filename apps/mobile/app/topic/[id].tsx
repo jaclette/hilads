@@ -10,7 +10,7 @@ import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import {
   fetchTopicById, fetchTopicMessages,
-  sendTopicMessage, markTopicRead,
+  sendTopicMessage, sendTopicImageMessage, markTopicRead,
 } from '@/api/topics';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -70,11 +70,14 @@ export default function TopicChatScreen() {
   );
 
   const postImageFn = useCallback(
-    (_imageUrl: string): Promise<Message> => Promise.reject(new Error('Images not supported in topics yet')),
-    [],
+    (imageUrl: string): Promise<Message> => {
+      if (!identity) return Promise.reject(new Error('Not ready'));
+      return sendTopicImageMessage(id, identity.guestId, nickname, imageUrl);
+    },
+    [id, identity, nickname],
   );
 
-  const { messages, loading: msgsLoading, sending, error: msgError, clearError, sendText, reload } = useMessages({
+  const { messages, loading: msgsLoading, sending, error: msgError, clearError, sendText, sendImage, reload } = useMessages({
     channelId: id,
     loadFn,
     postTextFn,
@@ -228,7 +231,7 @@ export default function TopicChatScreen() {
         <ChatInput
           sending={sending}
           onSendText={sendText}
-          onSendImage={() => {}}
+          onSendImage={sendImage}
           placeholder={
             messages.some(m => m.type !== 'system')
               ? `Reply to the conversation ✨`

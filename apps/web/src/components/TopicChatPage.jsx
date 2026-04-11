@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { fetchTopicMessages, sendTopicMessage, markTopicRead } from '../api'
+import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage } from '../api'
 import BackButton from './BackButton'
 
 const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
@@ -56,6 +56,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   const [messages,   setMessages]   = useState([])
   const [input,      setInput]      = useState('')
   const [sending,    setSending]    = useState(false)
+  const [uploading,  setUploading]  = useState(false)
   const [error,      setError]      = useState(null)
   const [loading,    setLoading]    = useState(true)
   const [copied,     setCopied]     = useState(false)
@@ -63,6 +64,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   const knownIdsRef  = useRef(new Set())
   const bottomRef    = useRef(null)
   const inputRef     = useRef(null)
+  const fileInputRef = useRef(null)
   const msgRefsMap   = useRef(new Map())
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
 
@@ -170,6 +172,40 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
     }
   }
 
+  async function handleImageSelect(e) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file || !guest) return
+
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowed.includes(file.type)) {
+      setError('Please select a JPEG, PNG, or WebP image.')
+      return
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Image too large. Max 10 MB.')
+      return
+    }
+
+    setUploading(true)
+    setError(null)
+    try {
+      const { url } = await uploadImage(file)
+      const data = await sendTopicImageMessage(topic.id, guest.guestId, nickname, url)
+      const msg = data.message ?? data
+      knownIdsRef.current.add(msg.id)
+      setMessages(prev => {
+        if (prev.some(m => m.id === msg.id)) return prev
+        return [...prev, msg].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
+      })
+    } catch (err) {
+      console.error('[topic-send-image] failed:', err)
+      setError("Couldn't send image. Please try again.")
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <div className="full-page topic-chat-page">
       {/* Header — topic-specific: back | title (wraps) | share */}
@@ -270,7 +306,10 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
                       </span>
                     </div>
                   )}
-                  <span className="msg-text">{item.content}</span>
+                  {item.type === 'image' && item.imageUrl
+                    ? <img src={item.imageUrl} alt="" className="msg-image" style={{ maxWidth: '100%', borderRadius: 10, display: 'block' }} />
+                    : <span className="msg-text">{item.content}</span>
+                  }
                 </div>
               </div>
               {showTime && (
@@ -292,6 +331,23 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
 
       {/* Input */}
       <form className="topic-chat-input-row" onSubmit={handleSend}>
+        {/* Hidden file picker */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImageSelect}
+        />
+        <button
+          type="button"
+          className="vibe-btn"
+          title="Send a photo"
+          disabled={uploading || sending}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          {uploading ? <span className="upload-spinner" /> : '📷'}
+        </button>
         <input
           ref={inputRef}
           type="text"
@@ -302,7 +358,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
           maxLength={1000}
           autoFocus
         />
-        <button type="submit" className="send-btn" disabled={!input.trim() || sending}>
+        <button type="submit" className="send-btn" disabled={!input.trim() || sending || uploading}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="22" y1="2" x2="11" y2="13" />
             <polygon points="22 2 15 22 11 13 2 9 22 2" />

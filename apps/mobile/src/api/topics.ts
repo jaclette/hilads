@@ -50,6 +50,20 @@ export async function sendTopicMessage(
   return api.post<Message>(`/topics/${topicId}/messages`, { guestId, nickname, content });
 }
 
+export async function sendTopicImageMessage(
+  topicId: string,
+  guestId: string,
+  nickname: string,
+  imageUrl: string,
+): Promise<Message> {
+  return api.post<Message>(`/topics/${topicId}/messages`, {
+    guestId,
+    nickname,
+    imageUrl,
+    type: 'image',
+  });
+}
+
 export async function markTopicRead(topicId: string, guestId: string): Promise<void> {
   await api.post(`/topics/${topicId}/mark-read`, { guestId }).catch(() => {});
 }
