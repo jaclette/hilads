@@ -97,8 +97,13 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
 export default function EventDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { identity, sessionId, city, account, setActiveEventId, removeEventChatPreview } = useApp(); // sessionId still used for WS joinEvent
+  const { identity, sessionId, city, account, setActiveEventId, removeEventChatPreview, setUnreadDMs, eventChatPreviews } = useApp(); // sessionId still used for WS joinEvent
   const nickname = account?.display_name ?? identity?.nickname ?? '';
+
+  // Stable ref so the cleanup effect can read the current preview count without
+  // adding eventChatPreviews to the dependency array (which would re-run the effect).
+  const eventChatPreviewsRef = useRef(eventChatPreviews);
+  eventChatPreviewsRef.current = eventChatPreviews;
 
   const [replyingTo, setReplyingTo] = useState<ReplyRef | null>(null);
   const replyingToRef = useRef<ReplyRef | null>(null);
@@ -132,13 +137,16 @@ export default function EventDetailScreen() {
   }, [id]);
 
   // Register this as the active event so useEventChatNotifications skips unread for it.
-  // Also clear any accumulated unread preview for this event on open.
+  // Also clear any accumulated unread preview for this event on open, and deduct
+  // the event's unread count from the global badge so the dot clears correctly.
   useEffect(() => {
     if (!id) return;
     setActiveEventId(id);
+    const count = eventChatPreviewsRef.current[id]?.count ?? 0;
     removeEventChatPreview(id);
+    if (count > 0) setUnreadDMs(prev => Math.max(0, prev - count));
     return () => setActiveEventId(null);
-  }, [id, setActiveEventId, removeEventChatPreview]);
+  }, [id, setActiveEventId, removeEventChatPreview, setUnreadDMs]);
 
   useEffect(() => {
     if (!id) return;
