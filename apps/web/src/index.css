@@ -6476,8 +6476,56 @@ img.pub-profile-avatar {
 
 /* ── Conversations screen ─────────────────────────────────────────────────── */
 
+/* Tab bar */
+.conv-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.conv-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.conv-tab-label {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.conv-tab--active .conv-tab-label {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.conv-tab--active {
+  border-bottom-color: var(--accent);
+}
+
+.conv-tab-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
 .conv-body {
   padding: 8px 0;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .conv-loading,

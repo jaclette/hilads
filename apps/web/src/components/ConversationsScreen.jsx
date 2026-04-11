@@ -9,7 +9,6 @@ import BackButton from './BackButton'
 // Returns null for missing/invalid values — caller must guard against null.
 function formatConvTime(isoStr) {
   if (!isoStr) return null
-  // Safari rejects "YYYY-MM-DD HH:mm:ss" (space separator) — normalise to "T"
   const normalised = typeof isoStr === 'string' ? isoStr.replace(' ', 'T') : isoStr
   const d = new Date(normalised)
   if (isNaN(d.getTime())) return null
@@ -34,9 +33,8 @@ function avatarColors(name) {
 
 export default function ConversationsScreen({ account, conversations, onConversationsLoaded, onBack, onOpenDm, onOpenEvent }) {
   const [fetchError, setFetchError] = useState(false)
+  const [activeTab,  setActiveTab]  = useState('dms')
 
-  // Always re-fetch fresh data when the screen mounts so the list is up to date.
-  // Result is propagated to the parent (which owns the state) via onConversationsLoaded.
   useEffect(() => {
     if (!account) return
     setFetchError(false)
@@ -46,7 +44,6 @@ export default function ConversationsScreen({ account, conversations, onConversa
         onConversationsLoaded(data)
       })
       .catch(err => {
-        // Log to help diagnose Safari / cookie / network issues
         console.warn('[hilads] Messages failed to load:', err?.message ?? String(err))
         setFetchError(true)
       })
@@ -54,15 +51,35 @@ export default function ConversationsScreen({ account, conversations, onConversa
 
   const dms    = conversations?.dms    ?? []
   const events = conversations?.events ?? []
-  // loading only while fetch is in-flight — a fetch error must not leave us stuck
   const loading = conversations === null && !fetchError
-  const isEmpty = !loading && !fetchError && dms.length === 0 && events.length === 0
+
+  const dmUnread     = dms.some(dm => dm.has_unread)
+  const eventsUnread = events.some(ev => ev.has_unread)
 
   return (
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
         <span className="page-title">Messages</span>
+      </div>
+
+      {/* Tab bar */}
+      <div className="conv-tabs">
+        {['dms', 'events'].map(tab => {
+          const isActive  = activeTab === tab
+          const hasUnread = tab === 'dms' ? dmUnread : eventsUnread
+          const label     = tab === 'dms' ? 'Direct Messages' : 'Event Chats'
+          return (
+            <button
+              key={tab}
+              className={`conv-tab${isActive ? ' conv-tab--active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              <span className="conv-tab-label">{label}</span>
+              {hasUnread && <span className="conv-tab-dot" />}
+            </button>
+          )
+        })}
       </div>
 
       <div className="page-body conv-body">
@@ -76,78 +93,88 @@ export default function ConversationsScreen({ account, conversations, onConversa
           </div>
         )}
 
-        {isEmpty && (
-          <div className="conv-empty">
-            <p className="conv-empty-icon">💬</p>
-            <p className="conv-empty-title">No conversations yet</p>
-            <p className="conv-empty-sub">
-              Tap the message icon next to someone in the city to start a DM
-            </p>
-          </div>
+        {/* Direct Messages tab */}
+        {!loading && !fetchError && activeTab === 'dms' && (
+          dms.length === 0 ? (
+            <div className="conv-empty">
+              <p className="conv-empty-icon">💬</p>
+              <p className="conv-empty-title">No direct messages yet</p>
+              <p className="conv-empty-sub">
+                Tap the message icon next to someone in the city to start a DM.
+              </p>
+            </div>
+          ) : (
+            <section className="conv-section">
+              {dms.map(dm => {
+                const name = dm.other_display_name ?? '?'
+                const [c1, c2] = avatarColors(name)
+                const timeLabel = formatConvTime(dm.last_message_at)
+                return (
+                  <button
+                    key={dm.id}
+                    className={`conv-row${dm.has_unread ? ' conv-row--unread' : ''}`}
+                    onClick={() => onOpenDm(dm)}
+                  >
+                    {dm.other_photo_url
+                      ? <img className="online-avatar conv-avatar" src={dm.other_photo_url} alt={name} />
+                      : <span className="online-avatar conv-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                          {name[0].toUpperCase()}
+                        </span>
+                    }
+                    <div className="conv-row-body">
+                      <span className="conv-row-name">{name}</span>
+                      <span className="conv-row-preview">
+                        {dm.last_message
+                          ? (dm.last_sender_id === account?.id ? `You: ${dm.last_message}` : dm.last_message)
+                          : 'Start the conversation'
+                        }
+                      </span>
+                    </div>
+                    <div className="conv-row-meta">
+                      {timeLabel && <span className="conv-row-time">{timeLabel}</span>}
+                      {dm.has_unread && <span className="conv-unread-dot" />}
+                    </div>
+                  </button>
+                )
+              })}
+            </section>
+          )
         )}
 
-        {dms.length > 0 && (
-          <section className="conv-section">
-            <p className="conv-section-label">Direct messages</p>
-            {dms.map(dm => {
-              const name = dm.other_display_name ?? '?'
-              const [c1, c2] = avatarColors(name)
-              const timeLabel = formatConvTime(dm.last_message_at)
-              return (
+        {/* Event Chats tab */}
+        {!loading && !fetchError && activeTab === 'events' && (
+          events.length === 0 ? (
+            <div className="conv-empty">
+              <p className="conv-empty-icon">🔥</p>
+              <p className="conv-empty-title">No event chats yet</p>
+              <p className="conv-empty-sub">
+                Create or join an event to chat with people going.
+              </p>
+            </div>
+          ) : (
+            <section className="conv-section">
+              {events.map(ev => (
                 <button
-                  key={dm.id}
-                  className={`conv-row${dm.has_unread ? ' conv-row--unread' : ''}`}
-                  onClick={() => onOpenDm(dm)}
+                  key={ev.channel_id}
+                  className={`conv-row${ev.has_unread ? ' conv-row--unread' : ''}`}
+                  onClick={() => onOpenEvent(ev)}
                 >
-                  {dm.other_photo_url
-                    ? <img className="online-avatar conv-avatar" src={dm.other_photo_url} alt={name} />
-                    : <span className="online-avatar conv-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                        {name[0].toUpperCase()}
-                      </span>
-                  }
+                  <span className="conv-event-icon">🔥</span>
                   <div className="conv-row-body">
-                    <span className="conv-row-name">{name}</span>
+                    <span className="conv-row-name">{ev.title}</span>
                     <span className="conv-row-preview">
-                      {dm.last_message
-                        ? (dm.last_sender_id === account?.id ? `You: ${dm.last_message}` : dm.last_message)
-                        : 'Start the conversation'
-                      }
+                      {ev.is_creator ? 'You created this' : 'You joined this'}
                     </span>
                   </div>
-                  <div className="conv-row-meta">
-                    {timeLabel && <span className="conv-row-time">{timeLabel}</span>}
-                    {dm.has_unread && <span className="conv-unread-dot" />}
-                  </div>
+                  {ev.has_unread && (
+                    <div className="conv-row-meta">
+                      <span className="conv-unread-dot" />
+                    </div>
+                  )}
                 </button>
-              )
-            })}
-          </section>
-        )}
-
-        {events.length > 0 && (
-          <section className="conv-section">
-            <p className="conv-section-label">Event chats</p>
-            {events.map(ev => (
-              <button
-                key={ev.channel_id}
-                className={`conv-row${ev.has_unread ? ' conv-row--unread' : ''}`}
-                onClick={() => onOpenEvent(ev)}
-              >
-                <span className="conv-event-icon">🔥</span>
-                <div className="conv-row-body">
-                  <span className="conv-row-name">{ev.title}</span>
-                  <span className="conv-row-preview">
-                    {ev.is_creator ? 'You created this' : 'You joined this'}
-                  </span>
-                </div>
-                {ev.has_unread && (
-                  <div className="conv-row-meta">
-                    <span className="conv-unread-dot" />
-                  </div>
-                )}
-              </button>
-            ))}
-          </section>
+              ))}
+            </section>
+          )
         )}
       </div>
     </div>

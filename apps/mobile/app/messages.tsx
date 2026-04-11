@@ -1,17 +1,17 @@
 /**
- * Messages screen — port of web "Messages" page.
+ * Messages screen — Direct Messages + Event Chats in two tabs.
  *
- * Two sections:
- *   1. DIRECT MESSAGES — 1:1 conversations (DMs)
+ * Tab bar at the top switches between:
+ *   1. DIRECT MESSAGES — 1:1 conversations
  *   2. EVENT CHATS — events the user created / joined
  *
- * Web parity: section labels, large colored avatars, last-message preview,
- * relative timestamps, orange unread dot.
+ * Each tab carries an orange unread badge so users know what needs attention
+ * before they tap.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, SectionList, TouchableOpacity, Image,
+  View, Text, FlatList, TouchableOpacity, Image,
   ActivityIndicator, RefreshControl, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,6 +23,8 @@ import { fetchMyEvents } from '@/api/events';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
+
+type TabKey = 'dms' | 'events';
 
 // ── Avatar palette — same hash system as People here / DM screen ──────────────
 
@@ -39,11 +41,10 @@ function avatarColor(str: string): string {
   return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
 }
 
-// ── Relative timestamp — never shows "Invalid Date" ──────────────────────────
+// ── Relative timestamp ────────────────────────────────────────────────────────
 
 function relativeTime(raw?: string | null): string {
   if (!raw) return '';
-  // Try ISO string then epoch ms then epoch seconds
   let ms = Date.parse(raw);
   if (isNaN(ms)) {
     const n = Number(raw);
@@ -51,8 +52,8 @@ function relativeTime(raw?: string | null): string {
   }
   if (isNaN(ms)) return '';
   const diffSec = Math.floor((Date.now() - ms) / 1000);
-  if (diffSec < 60)  return 'now';
-  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m`;
+  if (diffSec < 60)    return 'now';
+  if (diffSec < 3600)  return `${Math.floor(diffSec / 60)}m`;
   if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h`;
   return `${Math.floor(diffSec / 86400)}d`;
 }
@@ -60,14 +61,13 @@ function relativeTime(raw?: string | null): string {
 // ── DM row ────────────────────────────────────────────────────────────────────
 
 function DMRow({ convo, onPress }: { convo: Conversation; onPress: () => void }) {
-  const name  = convo.other_display_name;
-  const color = avatarColor(name);
+  const name    = convo.other_display_name;
+  const color   = avatarColor(name);
   const initial = name.slice(0, 1).toUpperCase();
-  const time = relativeTime(convo.last_message_at);
+  const time    = relativeTime(convo.last_message_at);
 
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
-      {/* Avatar */}
       {convo.other_photo_url ? (
         <Image source={{ uri: convo.other_photo_url }} style={styles.avatar} />
       ) : (
@@ -75,8 +75,6 @@ function DMRow({ convo, onPress }: { convo: Conversation; onPress: () => void })
           <Text style={[styles.avatarInitial, { color }]}>{initial}</Text>
         </View>
       )}
-
-      {/* Name + preview */}
       <View style={styles.rowBody}>
         <View style={styles.rowTop}>
           <Text style={[styles.rowName, convo.has_unread && styles.rowNameUnread]} numberOfLines={1}>
@@ -93,8 +91,6 @@ function DMRow({ convo, onPress }: { convo: Conversation; onPress: () => void })
           </Text>
         ) : null}
       </View>
-
-      {/* Unread dot */}
       {convo.has_unread && <View style={styles.unreadDot} />}
     </TouchableOpacity>
   );
@@ -118,12 +114,9 @@ function EventRow({
 
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
-      {/* Icon tile */}
       <View style={styles.eventIcon}>
         <Text style={styles.eventEmoji}>🔥</Text>
       </View>
-
-      {/* Name + preview */}
       <View style={styles.rowBody}>
         <View style={styles.rowTop}>
           <Text style={[styles.rowName, hasUnread && styles.rowNameUnread]} numberOfLines={1}>
@@ -135,68 +128,91 @@ function EventRow({
           {preview}
         </Text>
       </View>
-
-      {/* Unread dot */}
       {hasUnread && <View style={styles.unreadDot} />}
     </TouchableOpacity>
   );
 }
 
-// ── Section header ────────────────────────────────────────────────────────────
+// ── Tab bar ───────────────────────────────────────────────────────────────────
 
-function SectionHeader({ title }: { title: string }) {
+function TabBar({
+  active, dmUnread, eventsUnread, onSelect,
+}: {
+  active:       TabKey;
+  dmUnread:     boolean;
+  eventsUnread: boolean;
+  onSelect:     (tab: TabKey) => void;
+}) {
   return (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+    <View style={styles.tabBar}>
+      {(['dms', 'events'] as TabKey[]).map(tab => {
+        const isActive  = active === tab;
+        const hasUnread = tab === 'dms' ? dmUnread : eventsUnread;
+        const label     = tab === 'dms' ? 'Direct Messages' : 'Event Chats';
+        return (
+          <TouchableOpacity
+            key={tab}
+            style={[styles.tab, isActive && styles.tabActive]}
+            onPress={() => onSelect(tab)}
+            activeOpacity={0.7}
+          >
+            <View style={styles.tabLabelRow}>
+              <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
+                {label}
+              </Text>
+              {hasUnread && <View style={styles.tabDot} />}
+            </View>
+            {isActive && <View style={styles.tabUnderline} />}
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
 
-// ── Screen ────────────────────────────────────────────────────────────────────
-
-type Section =
-  | { key: 'dms';    title: string; data: Conversation[] }
-  | { key: 'events'; title: string; data: HiladsEvent[] };
+// ── Back button ───────────────────────────────────────────────────────────────
 
 function BackButton() {
   const router = useRouter();
-  const handleBack = () => {
-    if (router.canGoBack()) router.back();
-    else router.replace('/(tabs)/chat');
-  };
   return (
-    <TouchableOpacity style={styles.backBtn} onPress={handleBack} activeOpacity={0.7}>
+    <TouchableOpacity
+      style={styles.backBtn}
+      onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/chat')}
+      activeOpacity={0.7}
+    >
       <Feather name="chevron-left" size={22} color={Colors.text} />
     </TouchableOpacity>
   );
 }
+
+// ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function MessagesScreen() {
   const router = useRouter();
   const { account, identity, eventChatPreviews, clearEventChatCounts, setUnreadDMs } = useApp();
   const { conversations, loading: loadingDMs, error, reload: reloadDMs, markAllRead: markDMsRead } = useConversations();
 
-  const hasUnread =
-    conversations.some(c => c.has_unread) ||
-    Object.values(eventChatPreviews).some(p => p.count > 0);
+  const [activeTab, setActiveTab] = useState<TabKey>('dms');
+
+  const dmUnread     = conversations.some(c => c.has_unread);
+  const eventsUnread = Object.values(eventChatPreviews).some(p => p.count > 0);
+  const hasUnread    = dmUnread || eventsUnread;
 
   const markAllRead = useCallback(() => {
     markDMsRead();
     clearEventChatCounts();
   }, [markDMsRead, clearEventChatCounts]);
 
-  // When this screen comes into focus: clear all event chat unread dots and
-  // zero the header badge (useConversations will re-set it to the DM-only count).
   useFocusEffect(useCallback(() => {
     clearEventChatCounts();
     setUnreadDMs(0);
   }, [clearEventChatCounts, setUnreadDMs]));
 
-  const [events,       setEvents]       = useState<HiladsEvent[]>([]);
-  const [loadingEvts,  setLoadingEvts]  = useState(false);
+  const [events,      setEvents]      = useState<HiladsEvent[]>([]);
+  const [loadingEvts, setLoadingEvts] = useState(false);
 
   const loadEvents = useCallback(async () => {
-    if (!account || !identity?.guestId) return; // registered users only
+    if (!account || !identity?.guestId) return;
     setLoadingEvts(true);
     try {
       const evts = await fetchMyEvents(identity.guestId);
@@ -209,7 +225,6 @@ export default function MessagesScreen() {
 
   const reload = useCallback(() => { reloadDMs(); loadEvents(); }, [reloadDMs, loadEvents]);
 
-  // Guest: upgrade prompt
   if (!account) {
     return (
       <SafeAreaView style={styles.container}>
@@ -226,17 +241,7 @@ export default function MessagesScreen() {
     );
   }
 
-  const loading = loadingDMs && conversations.length === 0 && events.length === 0;
-
-  const sections: Section[] = [];
-  if (conversations.length > 0) {
-    sections.push({ key: 'dms', title: 'DIRECT MESSAGES', data: conversations });
-  }
-  if (events.length > 0) {
-    sections.push({ key: 'events', title: 'EVENT CHATS', data: events });
-  }
-
-  const isEmpty = !loading && conversations.length === 0 && events.length === 0;
+  const initialLoading = loadingDMs && conversations.length === 0 && events.length === 0;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -254,7 +259,16 @@ export default function MessagesScreen() {
         )}
       </View>
 
-      {loading || loadingEvts && events.length === 0 ? (
+      {/* Tab bar */}
+      <TabBar
+        active={activeTab}
+        dmUnread={dmUnread}
+        eventsUnread={eventsUnread}
+        onSelect={setActiveTab}
+      />
+
+      {/* Tab content */}
+      {initialLoading ? (
         <View style={styles.center}>
           <ActivityIndicator color={Colors.accent} />
         </View>
@@ -265,53 +279,63 @@ export default function MessagesScreen() {
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      ) : isEmpty ? (
-        <View style={styles.center}>
-          <Text style={styles.emptyIcon}>💬</Text>
-          <Text style={styles.emptyTitle}>No messages yet</Text>
-          <Text style={styles.emptySub}>Connect with people you meet in the city.</Text>
-        </View>
-      ) : (
-        <SectionList
-          sections={sections}
-          keyExtractor={(item, i) => ('id' in item ? item.id : String(i))}
-          renderSectionHeader={({ section }) => <SectionHeader title={section.title} />}
-          renderItem={({ item, section }) => {
-            if (section.key === 'dms') {
-              const convo = item as Conversation;
-              return (
-                <DMRow
-                  convo={convo}
-                  onPress={() => router.push({
-                    pathname: '/dm/[id]',
-                    // Pass other_user_id — DM screen resolves to conversationId via findOrCreateDM
-                    params: { id: convo.other_user_id, name: convo.other_display_name },
-                  })}
-                />
-              );
-            }
-            const event = item as HiladsEvent;
-            return (
-              <EventRow
-                event={event}
-                unread={eventChatPreviews[event.id]}
+      ) : activeTab === 'dms' ? (
+        conversations.length === 0 ? (
+          <View style={styles.center}>
+            <Text style={styles.emptyIcon}>💬</Text>
+            <Text style={styles.emptyTitle}>No direct messages yet</Text>
+            <Text style={styles.emptySub}>Tap the message icon next to someone in the city to start a DM.</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={conversations}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => (
+              <DMRow
+                convo={item}
                 onPress={() => router.push({
-                  pathname: '/event/[id]',
-                  params: { id: event.id },
+                  pathname: '/dm/[id]',
+                  params: { id: item.other_user_id, name: item.other_display_name },
                 })}
               />
-            );
-          }}
-          refreshControl={
-            <RefreshControl
-              refreshing={loadingDMs || loadingEvts}
-              onRefresh={reload}
-              tintColor={Colors.accent}
-            />
-          }
-          stickySectionHeadersEnabled={false}
-          contentContainerStyle={styles.listContent}
-        />
+            )}
+            refreshControl={
+              <RefreshControl refreshing={loadingDMs} onRefresh={reloadDMs} tintColor={Colors.accent} />
+            }
+            contentContainerStyle={styles.listContent}
+          />
+        )
+      ) : (
+        loadingEvts && events.length === 0 ? (
+          <View style={styles.center}>
+            <ActivityIndicator color={Colors.accent} />
+          </View>
+        ) : events.length === 0 ? (
+          <View style={styles.center}>
+            <Text style={styles.emptyIcon}>🔥</Text>
+            <Text style={styles.emptyTitle}>No event chats yet</Text>
+            <Text style={styles.emptySub}>Create or join an event to chat with people going.</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={events}
+            keyExtractor={item => item.id}
+            renderItem={({ item }) => (
+              <EventRow
+                event={item}
+                unread={eventChatPreviews[item.id]}
+                onPress={() => router.push({
+                  pathname: '/event/[id]',
+                  params: { id: item.id },
+                })}
+              />
+            )}
+            refreshControl={
+              <RefreshControl refreshing={loadingEvts} onRefresh={loadEvents} tintColor={Colors.accent} />
+            }
+            contentContainerStyle={styles.listContent}
+          />
+        )
       )}
     </SafeAreaView>
   );
@@ -361,18 +385,47 @@ const styles = StyleSheet.create({
     color:      Colors.accent,
   },
 
-  // ── Section header ────────────────────────────────────────────────────────
-  sectionHeader: {
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.lg,
-    paddingBottom:     Spacing.sm,
+  // ── Tab bar ───────────────────────────────────────────────────────────────
+  tabBar: {
+    flexDirection:     'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
-  sectionTitle: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    color:         Colors.muted2,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
+  tab: {
+    flex:            1,
+    alignItems:      'center',
+    paddingVertical: 12,
+    position:        'relative',
+  },
+  tabActive: {},
+  tabLabelRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           6,
+  },
+  tabLabel: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+    color:      Colors.muted,
+  },
+  tabLabelActive: {
+    color:      Colors.text,
+    fontWeight: '700',
+  },
+  tabDot: {
+    width:           7,
+    height:          7,
+    borderRadius:    4,
+    backgroundColor: Colors.accent,
+  },
+  tabUnderline: {
+    position:        'absolute',
+    bottom:          0,
+    left:            '15%' as any,
+    right:           '15%' as any,
+    height:          2,
+    borderRadius:    1,
+    backgroundColor: Colors.accent,
   },
 
   // ── Row ───────────────────────────────────────────────────────────────────
@@ -384,7 +437,6 @@ const styles = StyleSheet.create({
     gap:               Spacing.md,
   },
 
-  // DM avatar — colored circle
   avatar: {
     width: 52, height: 52, borderRadius: Radius.full,
   },
@@ -402,7 +454,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Event icon tile
   eventIcon: {
     width:           52,
     height:          52,
@@ -416,7 +467,6 @@ const styles = StyleSheet.create({
   },
   eventEmoji: { fontSize: 24 },
 
-  // Row body
   rowBody: { flex: 1, gap: 5 },
   rowTop:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
 
@@ -429,18 +479,17 @@ const styles = StyleSheet.create({
   rowNameUnread: { fontWeight: '800', color: Colors.white },
 
   rowTime: {
-    fontSize:  FontSizes.xs,
-    color:     Colors.muted2,
+    fontSize:   FontSizes.xs,
+    color:      Colors.muted2,
     flexShrink: 0,
   },
   rowPreview: {
-    fontSize:  FontSizes.sm,
-    color:     Colors.muted,
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
     lineHeight: 20,
   },
   rowPreviewUnread: { color: Colors.text },
 
-  // Unread dot
   unreadDot: {
     width:           10,
     height:          10,
