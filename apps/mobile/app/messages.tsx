@@ -1,17 +1,18 @@
 /**
- * Messages screen — Direct Messages + Event Chats in two tabs.
+ * Messages screen — Direct Messages + Event Chats with filter pills.
  *
- * Tab bar at the top switches between:
- *   1. DIRECT MESSAGES — 1:1 conversations
- *   2. EVENT CHATS — events the user created / joined
+ * Three filter pills at the top:
+ *   All            → both sections visible (default)
+ *   Direct Messages → DM section only
+ *   Event Chats     → Event Chats section only
  *
- * Each tab carries an orange unread badge so users know what needs attention
- * before they tap.
+ * Filtering is purely visual — no re-fetch on switch.
+ * Each pill shows an orange dot when its section has unread items.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, Image,
+  View, Text, ScrollView, TouchableOpacity, Image,
   ActivityIndicator, RefreshControl, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,9 +25,9 @@ import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
 
-type TabKey = 'dms' | 'events';
+type FilterKey = 'all' | 'dms' | 'events';
 
-// ── Avatar palette — same hash system as People here / DM screen ──────────────
+// ── Avatar palette ────────────────────────────────────────────────────────────
 
 const AVATAR_PALETTE = [
   '#C24A38', '#B87228', '#3ddc84', '#8B5CF6',
@@ -133,36 +134,46 @@ function EventRow({
   );
 }
 
-// ── Tab bar ───────────────────────────────────────────────────────────────────
+// ── Section header ────────────────────────────────────────────────────────────
 
-function TabBar({
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+  );
+}
+
+// ── Filter pills ──────────────────────────────────────────────────────────────
+
+const FILTERS: { key: FilterKey; label: string }[] = [
+  { key: 'all',    label: 'All' },
+  { key: 'dms',    label: 'Direct Messages' },
+  { key: 'events', label: 'Event Chats' },
+];
+
+function FilterBar({
   active, dmUnread, eventsUnread, onSelect,
 }: {
-  active:       TabKey;
+  active:       FilterKey;
   dmUnread:     boolean;
   eventsUnread: boolean;
-  onSelect:     (tab: TabKey) => void;
+  onSelect:     (f: FilterKey) => void;
 }) {
   return (
-    <View style={styles.tabBar}>
-      {(['dms', 'events'] as TabKey[]).map(tab => {
-        const isActive  = active === tab;
-        const hasUnread = tab === 'dms' ? dmUnread : eventsUnread;
-        const label     = tab === 'dms' ? 'Direct Messages' : 'Event Chats';
+    <View style={styles.filterBar}>
+      {FILTERS.map(({ key, label }) => {
+        const isActive  = active === key;
+        const hasUnread = key === 'dms' ? dmUnread : key === 'events' ? eventsUnread : (dmUnread || eventsUnread);
         return (
           <TouchableOpacity
-            key={tab}
-            style={[styles.tab, isActive && styles.tabActive]}
-            onPress={() => onSelect(tab)}
+            key={key}
+            style={[styles.pill, isActive && styles.pillActive]}
+            onPress={() => onSelect(key)}
             activeOpacity={0.7}
           >
-            <View style={styles.tabLabelRow}>
-              <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
-                {label}
-              </Text>
-              {hasUnread && <View style={styles.tabDot} />}
-            </View>
-            {isActive && <View style={styles.tabUnderline} />}
+            <Text style={[styles.pillLabel, isActive && styles.pillLabelActive]}>{label}</Text>
+            {hasUnread && <View style={[styles.pillDot, isActive && styles.pillDotActive]} />}
           </TouchableOpacity>
         );
       })}
@@ -192,7 +203,7 @@ export default function MessagesScreen() {
   const { account, identity, eventChatPreviews, clearEventChatCounts, setUnreadDMs } = useApp();
   const { conversations, loading: loadingDMs, error, reload: reloadDMs, markAllRead: markDMsRead } = useConversations();
 
-  const [activeTab, setActiveTab] = useState<TabKey>('dms');
+  const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
 
   const dmUnread     = conversations.some(c => c.has_unread);
   const eventsUnread = Object.values(eventChatPreviews).some(p => p.count > 0);
@@ -243,6 +254,16 @@ export default function MessagesScreen() {
 
   const initialLoading = loadingDMs && conversations.length === 0 && events.length === 0;
 
+  // Which sections to show based on active filter
+  const showDMs    = activeFilter === 'all' || activeFilter === 'dms';
+  const showEvents = activeFilter === 'all' || activeFilter === 'events';
+
+  // Empty state: nothing to show for the current filter
+  const filteredEmpty =
+    !initialLoading && !error &&
+    (showDMs    ? conversations.length === 0 : true) &&
+    (showEvents ? events.length === 0        : true);
+
   return (
     <SafeAreaView style={styles.container}>
 
@@ -259,15 +280,15 @@ export default function MessagesScreen() {
         )}
       </View>
 
-      {/* Tab bar */}
-      <TabBar
-        active={activeTab}
+      {/* Filter pills */}
+      <FilterBar
+        active={activeFilter}
         dmUnread={dmUnread}
         eventsUnread={eventsUnread}
-        onSelect={setActiveTab}
+        onSelect={setActiveFilter}
       />
 
-      {/* Tab content */}
+      {/* Content */}
       {initialLoading ? (
         <View style={styles.center}>
           <ActivityIndicator color={Colors.accent} />
@@ -279,63 +300,72 @@ export default function MessagesScreen() {
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      ) : activeTab === 'dms' ? (
-        conversations.length === 0 ? (
-          <View style={styles.center}>
-            <Text style={styles.emptyIcon}>💬</Text>
-            <Text style={styles.emptyTitle}>No direct messages yet</Text>
-            <Text style={styles.emptySub}>Tap the message icon next to someone in the city to start a DM.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={conversations}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => (
-              <DMRow
-                convo={item}
-                onPress={() => router.push({
-                  pathname: '/dm/[id]',
-                  params: { id: item.other_user_id, name: item.other_display_name },
-                })}
-              />
-            )}
-            refreshControl={
-              <RefreshControl refreshing={loadingDMs} onRefresh={reloadDMs} tintColor={Colors.accent} />
-            }
-            contentContainerStyle={styles.listContent}
-          />
-        )
+      ) : filteredEmpty ? (
+        <View style={styles.center}>
+          <Text style={styles.emptyIcon}>
+            {activeFilter === 'events' ? '🔥' : '💬'}
+          </Text>
+          <Text style={styles.emptyTitle}>
+            {activeFilter === 'events' ? 'No event chats yet' : 'No messages yet'}
+          </Text>
+          <Text style={styles.emptySub}>
+            {activeFilter === 'events'
+              ? 'Create or join an event to chat with people going.'
+              : 'Connect with people you meet in the city.'}
+          </Text>
+        </View>
       ) : (
-        loadingEvts && events.length === 0 ? (
-          <View style={styles.center}>
-            <ActivityIndicator color={Colors.accent} />
-          </View>
-        ) : events.length === 0 ? (
-          <View style={styles.center}>
-            <Text style={styles.emptyIcon}>🔥</Text>
-            <Text style={styles.emptyTitle}>No event chats yet</Text>
-            <Text style={styles.emptySub}>Create or join an event to chat with people going.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={events}
-            keyExtractor={item => item.id}
-            renderItem={({ item }) => (
-              <EventRow
-                event={item}
-                unread={eventChatPreviews[item.id]}
-                onPress={() => router.push({
-                  pathname: '/event/[id]',
-                  params: { id: item.id },
-                })}
-              />
-            )}
-            refreshControl={
-              <RefreshControl refreshing={loadingEvts} onRefresh={loadEvents} tintColor={Colors.accent} />
-            }
-            contentContainerStyle={styles.listContent}
-          />
-        )
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={loadingDMs || loadingEvts}
+              onRefresh={reload}
+              tintColor={Colors.accent}
+            />
+          }
+          contentContainerStyle={styles.listContent}
+        >
+          {/* Direct Messages section */}
+          {showDMs && conversations.length > 0 && (
+            <>
+              {activeFilter === 'all' && <SectionHeader title="DIRECT MESSAGES" />}
+              {conversations.map(convo => (
+                <DMRow
+                  key={convo.id}
+                  convo={convo}
+                  onPress={() => router.push({
+                    pathname: '/dm/[id]',
+                    params: { id: convo.other_user_id, name: convo.other_display_name },
+                  })}
+                />
+              ))}
+            </>
+          )}
+
+          {/* Event Chats section */}
+          {showEvents && (
+            loadingEvts && events.length === 0 ? (
+              <View style={styles.sectionLoader}>
+                <ActivityIndicator color={Colors.accent} size="small" />
+              </View>
+            ) : events.length > 0 ? (
+              <>
+                {activeFilter === 'all' && <SectionHeader title="EVENT CHATS" />}
+                {events.map(event => (
+                  <EventRow
+                    key={event.id}
+                    event={event}
+                    unread={eventChatPreviews[event.id]}
+                    onPress={() => router.push({
+                      pathname: '/event/[id]',
+                      params: { id: event.id },
+                    })}
+                  />
+                ))}
+              </>
+            ) : activeFilter === 'events' ? null : null
+          )}
+        </ScrollView>
       )}
     </SafeAreaView>
   );
@@ -385,47 +415,65 @@ const styles = StyleSheet.create({
     color:      Colors.accent,
   },
 
-  // ── Tab bar ───────────────────────────────────────────────────────────────
-  tabBar: {
+  // ── Filter pills ──────────────────────────────────────────────────────────
+  filterBar: {
     flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   10,
+    gap:               8,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  tab: {
-    flex:            1,
-    alignItems:      'center',
-    paddingVertical: 12,
-    position:        'relative',
+  pill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               5,
+    paddingHorizontal: 12,
+    paddingVertical:   6,
+    borderRadius:      20,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    backgroundColor:   Colors.bg2,
   },
-  tabActive: {},
-  tabLabelRow: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           6,
+  pillActive: {
+    borderColor:     Colors.accent,
+    backgroundColor: Colors.accent + '18',
   },
-  tabLabel: {
+  pillLabel: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
     color:      Colors.muted,
   },
-  tabLabelActive: {
-    color:      Colors.text,
-    fontWeight: '700',
+  pillLabelActive: {
+    color: Colors.accent,
   },
-  tabDot: {
-    width:           7,
-    height:          7,
-    borderRadius:    4,
+  pillDot: {
+    width:           6,
+    height:          6,
+    borderRadius:    3,
+    backgroundColor: Colors.muted,
+  },
+  pillDotActive: {
     backgroundColor: Colors.accent,
   },
-  tabUnderline: {
-    position:        'absolute',
-    bottom:          0,
-    left:            '15%' as any,
-    right:           '15%' as any,
-    height:          2,
-    borderRadius:    1,
-    backgroundColor: Colors.accent,
+
+  // ── Section header ────────────────────────────────────────────────────────
+  sectionHeader: {
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.lg,
+    paddingBottom:     Spacing.sm,
+  },
+  sectionTitle: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    color:         Colors.muted2,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  sectionLoader: {
+    paddingVertical: Spacing.lg,
+    alignItems:      'center',
   },
 
   // ── Row ───────────────────────────────────────────────────────────────────

@@ -6476,49 +6476,43 @@ img.pub-profile-avatar {
 
 /* ── Conversations screen ─────────────────────────────────────────────────── */
 
-/* Tab bar */
-.conv-tabs {
+/* Filter pills */
+.conv-filters {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
-.conv-tab {
-  flex: 1;
+.conv-filter-pill {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px 8px;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  cursor: pointer;
-  transition: border-color 0.15s, color 0.15s;
-}
-
-.conv-tab-label {
-  font-size: 0.87rem;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg2, rgba(255,255,255,0.05));
+  font-size: 0.83rem;
   font-weight: 600;
   color: var(--muted);
-  transition: color 0.15s;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+  white-space: nowrap;
 }
 
-.conv-tab--active .conv-tab-label {
-  color: var(--text);
-  font-weight: 700;
+.conv-filter-pill--active {
+  border-color: var(--accent);
+  background: rgba(255, 107, 0, 0.1);
+  color: var(--accent);
 }
 
-.conv-tab--active {
-  border-bottom-color: var(--accent);
-}
-
-.conv-tab-dot {
-  width: 7px;
-  height: 7px;
+.conv-filter-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--accent);
+  background: currentColor;
   flex-shrink: 0;
 }
 
