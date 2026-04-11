@@ -7,7 +7,7 @@ export async function submitReport(params: {
   targetGuestId?: string | null;
   targetNickname?: string | null;
 }): Promise<void> {
-  await api.post('/api/v1/reports', {
+  await api.post('/reports', {
     reason:          params.reason,
     guestId:         params.guestId         ?? undefined,
     target_user_id:  params.targetUserId    ?? null,

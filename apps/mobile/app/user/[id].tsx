@@ -157,7 +157,7 @@ export default function PublicProfileScreen() {
   const router  = useRouter();
   const insets  = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { account, city } = useApp();
+  const { account, identity, city } = useApp();
 
   const [user,         setUser]         = useState<PublicProfile | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
@@ -639,6 +639,7 @@ export default function PublicProfileScreen() {
       {user && !isSelf && (
         <ReportModal
           visible={showReportModal}
+          reporterGuestId={account ? undefined : identity?.guestId}
           targetUserId={user.id}
           targetNickname={user.displayName}
           onClose={() => setShowReportModal(false)}
