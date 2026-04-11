@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage } from '../api'
 import BackButton from './BackButton'
+import ShareActionSheet from './ShareActionSheet'
+import LocationPicker from './LocationPicker'
 
 const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 const MODE_META  = { local: { emoji: '🌍', label: 'Local' }, exploring: { emoji: '🧭', label: 'Exploring' } }
@@ -58,6 +60,9 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   const [sending,    setSending]    = useState(false)
   const [uploading,  setUploading]  = useState(false)
   const [error,      setError]      = useState(null)
+  const [showShareSheet,       setShowShareSheet]       = useState(false)
+  const [spotLoading,          setSpotLoading]          = useState(false)
+  const [locationPickerCoords, setLocationPickerCoords] = useState(null)
   const [loading,    setLoading]    = useState(true)
   const [copied,     setCopied]     = useState(false)
 
@@ -169,6 +174,50 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
     if (result === 'copied') {
       setCopied(true)
       setTimeout(() => setCopied(false), 2200)
+    }
+  }
+
+  async function handleMySpot() {
+    setShowShareSheet(false)
+    setSpotLoading(true)
+    try {
+      const pos = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
+      )
+      setLocationPickerCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+    } catch (err) {
+      console.error('[spot/pulse]', err)
+      setError("Couldn't get your location. Please enable location access and try again.")
+    } finally {
+      setSpotLoading(false)
+    }
+  }
+
+  async function handleLocationConfirm({ place, address, lat, lng }) {
+    setLocationPickerCoords(null)
+    const label = place || 'somewhere'
+    const coordLine = `${lat.toFixed(6)},${lng.toFixed(6)}`
+    const text = address
+      ? `📍 ${nickname} is at ${label}\n${coordLine}\n${address}`
+      : `📍 ${nickname} is at ${label}\n${coordLine}`
+    // Send as a regular text message
+    const localId = `local-${Date.now()}`
+    const optimistic = {
+      id: localId, type: 'text', guestId: guest.guestId, nickname,
+      content: text, createdAt: Date.now() / 1000, _local: true,
+    }
+    setMessages(prev => [...prev, optimistic])
+    setSending(true)
+    try {
+      const data = await sendTopicMessage(topic.id, guest.guestId, nickname, text)
+      const msg = data.message ?? data
+      knownIdsRef.current.add(msg.id)
+      setMessages(prev => prev.map(m => m.id === localId ? msg : m))
+    } catch (err) {
+      setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
+      setError(err.message)
+    } finally {
+      setSending(false)
     }
   }
 
@@ -329,6 +378,27 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         </div>
       )}
 
+      {/* Location picker */}
+      {locationPickerCoords && (
+        <LocationPicker
+          initialLat={locationPickerCoords.lat}
+          initialLng={locationPickerCoords.lng}
+          nickname={nickname}
+          onConfirm={handleLocationConfirm}
+          onClose={() => setLocationPickerCoords(null)}
+        />
+      )}
+
+      {/* Share action sheet */}
+      {showShareSheet && (
+        <ShareActionSheet
+          onSnap={() => { setShowShareSheet(false); fileInputRef.current?.click() }}
+          onSpot={handleMySpot}
+          onClose={() => setShowShareSheet(false)}
+          spotLoading={spotLoading}
+        />
+      )}
+
       {/* Input */}
       <form className="topic-chat-input-row" onSubmit={handleSend}>
         {/* Hidden file picker */}
@@ -342,11 +412,11 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         <button
           type="button"
           className="vibe-btn"
-          title="Send a photo"
-          disabled={uploading || sending}
-          onClick={() => fileInputRef.current?.click()}
+          title="Share something"
+          disabled={uploading || sending || spotLoading}
+          onClick={() => setShowShareSheet(true)}
         >
-          {uploading ? <span className="upload-spinner" /> : '📷'}
+          {uploading || spotLoading ? <span className="upload-spinner" /> : '✨'}
         </button>
         <input
           ref={inputRef}
@@ -358,7 +428,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
           maxLength={1000}
           autoFocus
         />
-        <button type="submit" className="send-btn" disabled={!input.trim() || sending || uploading}>
+        <button type="submit" className="send-btn" disabled={!input.trim() || sending || uploading || spotLoading}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="22" y1="2" x2="11" y2="13" />
             <polygon points="22 2 15 22 11 13 2 9 22 2" />
