@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, submitReport } from '../api'
 import { cityFlag } from '../cityMeta'
-import { badgeLabel, BADGE_META } from '../badgeMeta'
+import { badgeLabel } from '../badgeMeta'
 import BackButton from './BackButton'
 
-// ── Avatar palette — mirrors App.jsx / DirectMessageScreen ────────────────────
+// ── Avatar palette ────────────────────────────────────────────────────────────
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -17,7 +17,7 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-// ── Badge microcopy — short, playful, 1-line ──────────────────────────────────
+// ── Constants ─────────────────────────────────────────────────────────────────
 
 const BADGE_MICROCOPY = {
   ghost:   'Just browsing 👀',
@@ -26,20 +26,18 @@ const BADGE_MICROCOPY = {
   host:    'Makes it happen 🔥',
 }
 
-// ── Vibe display ──────────────────────────────────────────────────────────────
-
 const MODE_META = {
   local:     { emoji: '🌍', label: 'Local'     },
   exploring: { emoji: '🧭', label: 'Exploring' },
 }
 
 const VIBE_META = {
-  party:       { emoji: '🔥', label: 'Party' },
+  party:       { emoji: '🔥', label: 'Party'       },
   board_games: { emoji: '🎲', label: 'Board Games' },
-  coffee:      { emoji: '☕', label: 'Coffee' },
-  music:       { emoji: '🎧', label: 'Music' },
-  food:        { emoji: '🍜', label: 'Food' },
-  chill:       { emoji: '🧘', label: 'Chill' },
+  coffee:      { emoji: '☕', label: 'Coffee'       },
+  music:       { emoji: '🎧', label: 'Music'        },
+  food:        { emoji: '🍜', label: 'Food'         },
+  chill:       { emoji: '🧘', label: 'Chill'        },
 }
 
 const VIBE_TAGLINES = {
@@ -51,17 +49,13 @@ const VIBE_TAGLINES = {
   chill:       'Low key, high vibes',
 }
 
-// ── Event type icons ──────────────────────────────────────────────────────────
-
 const EVENT_ICONS = {
   drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
   'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 }
 
-function eventIcon(type) {
-  return EVENT_ICONS[type] ?? '📌'
-}
+function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -87,11 +81,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [reportBusy,      setReportBusy]      = useState(false)
   const [reportSent,      setReportSent]      = useState(false)
   const [reportError,     setReportError]     = useState(null)
+  const [activeTab, setActiveTab] = useState('events')
 
-  // vibeCount from the profile response — used to skip fetchUserVibes when 0
   const profileVibeCountRef = useRef(0)
 
-  // Phase 1: profile + events — controls the loading state, needed for first paint
   useEffect(() => {
     setUser(null)
     setEvents([])
@@ -106,13 +99,13 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setVibeRating(0)
     setVibeMessage('')
     setShowVibeForm(false)
+    setActiveTab('events')
     profileVibeCountRef.current = 0
 
     fetchPublicProfile(userId)
       .then(data => {
         setUser(data.user)
         setIsFriend(data.user?.isFriend ?? false)
-        // Seed score/count immediately from profile — vibes request will overwrite with full detail
         const vc = data.user?.vibeCount ?? 0
         profileVibeCountRef.current = vc
         if (data.user?.vibeScore != null) setVibeScore(data.user.vibeScore)
@@ -125,11 +118,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
       .catch(() => {})
   }, [userId])
 
-  // Phase 2: secondary data — fires after profile renders (user is non-null).
-  // Friends and vibes detail are below-fold and not needed for first paint.
-  // vibeCount === 0 from profile → skip fetchUserVibes entirely (no detail to show).
   useEffect(() => {
-    if (!user) return // wait for phase 1 to complete
+    if (!user) return
     const id = userId
 
     fetchUserFriends(id)
@@ -161,10 +151,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
   async function handleFriendToggle() {
     if (!account || friendBusy) return
-    if (isFriend && !confirmUnfriend) {
-      setConfirmUnfriend(true)
-      return
-    }
+    if (isFriend && !confirmUnfriend) { setConfirmUnfriend(true); return }
     setFriendBusy(true)
     try {
       if (isFriend) {
@@ -203,9 +190,9 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     try {
       await submitReport({
         reason,
-        guestId:         account ? undefined : guest?.guestId,
-        targetUserId:    userId,
-        targetNickname:  user?.displayName,
+        guestId:        account ? undefined : guest?.guestId,
+        targetUserId:   userId,
+        targetNickname: user?.displayName,
       })
       setReportSent(true)
       setReportReason('')
@@ -223,7 +210,15 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const mode     = user?.mode && MODE_META[user.mode] ? user.mode : null
   const now      = Date.now() / 1000
 
-  const hasPicks = user?.isAmbassador && user.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0
+  // Legend = user has ambassador picks
+  const hasPicks = !!(user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0)
+
+  const tabs = [
+    { key: 'events',  label: 'Events'       },
+    { key: 'friends', label: 'Friends'      },
+    { key: 'vibes',   label: 'Vibes'        },
+    ...(hasPicks ? [{ key: 'picks', label: 'City Picks 👑' }] : []),
+  ]
 
   return (
     <div className="full-page pub-profile-page">
@@ -234,16 +229,16 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
         <span className="page-title">Profile</span>
       </div>
 
-      <div className="pub-profile-scroll">
-        {error && <p className="profile-error" style={{ margin: '20px 18px' }}>{error}</p>}
+      {/* ── Loading / Error ── */}
+      {!user && !error && <p className="pub-profile-loading">Loading…</p>}
+      {error && <p className="pub-profile-error-inline">{error}</p>}
 
-        {!user && !error && (
-          <p className="pub-profile-loading">Loading…</p>
-        )}
+      {user && (
+        <>
+          {/* ── Sticky identity section ── */}
+          <div className="pub-profile-sticky-identity">
 
-        {user && (
-          <>
-            {/* ── 1. Identity Section ── */}
+            {/* Hero: avatar + name + badge + city */}
             <div className="pub-profile-hero">
               {user.avatarUrl
                 ? <img
@@ -252,24 +247,20 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                     alt={name}
                     onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
                   />
-                : <span className="pub-profile-avatar pub-profile-avatar--initials" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                : <span
+                    className="pub-profile-avatar pub-profile-avatar--initials"
+                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                  >
                     {name[0].toUpperCase()}
                   </span>
               }
-
               <h2 className="pub-profile-name">{name}</h2>
-
-              {/* Badge + microcopy */}
               {(user.badges ?? []).map(k => (
                 <div key={k} className="pub-profile-badge-block">
                   <span className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
-                  {BADGE_MICROCOPY[k] && (
-                    <span className="pub-profile-badge-micro">{BADGE_MICROCOPY[k]}</span>
-                  )}
+                  {BADGE_MICROCOPY[k] && <span className="pub-profile-badge-micro">{BADGE_MICROCOPY[k]}</span>}
                 </div>
               ))}
-
-              {/* City pill */}
               {cityName && (
                 <div className="pub-profile-city">
                   <span>{cityFlag(cityCountry)} {cityName}</span>
@@ -277,7 +268,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               )}
             </div>
 
-            {/* ── 2. Identity Cards — Vibe & Mode ── */}
+            {/* Identity cards: vibe + mode */}
             {(vibe || mode) && (
               <div className="pub-profile-identity-cards">
                 {vibe && (
@@ -301,7 +292,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </div>
             )}
 
-            {/* ── 3. Info Rows — From & Age ── */}
+            {/* Info rows: From + Age */}
             {(user.homeCity || user.age != null) && (
               <div className="pub-profile-info-rows">
                 {user.homeCity && (
@@ -319,19 +310,166 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </div>
             )}
 
-            {/* ── Interests ── */}
-            {user.interests?.length > 0 && (
-              <div className="pub-profile-interests">
-                {user.interests.map(i => (
-                  <span key={i} className="interest-chip interest-chip--on interest-chip--readonly">{i}</span>
-                ))}
+            {/* Tab bar */}
+            <div className="profile-tabs pub-profile-tabs-bar">
+              {tabs.map(t => (
+                <button
+                  key={t.key}
+                  className={`profile-tab-pill${activeTab === t.key ? ' profile-tab-pill--active' : ''}`}
+                  onClick={() => setActiveTab(t.key)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Tab content ── */}
+          <div className="pub-profile-body">
+
+            {/* Events tab */}
+            {activeTab === 'events' && (
+              <div className="pub-profile-events">
+                {events.length === 0
+                  ? <p className="pub-profile-tab-empty">No events yet</p>
+                  : events.map(ev => {
+                      const isLive = ev.starts_at <= now && ev.expires_at > now
+                      return (
+                        <div key={ev.id} className="pub-profile-event-row">
+                          <span className="pub-profile-event-icon">{eventIcon(ev.event_type)}</span>
+                          <div className="pub-profile-event-info">
+                            <span className="pub-profile-event-title">{ev.title}</span>
+                            {isLive && <span className="pub-profile-event-live">LIVE</span>}
+                          </div>
+                        </div>
+                      )
+                    })
+                }
               </div>
             )}
 
-            {/* ── 4. City Picks Section ── */}
-            {hasPicks && (
+            {/* Friends tab */}
+            {activeTab === 'friends' && (
+              <div className="pub-profile-friends">
+                {friends.length === 0
+                  ? <p className="pub-profile-tab-empty">No friends yet</p>
+                  : friends.map(f => {
+                      const [fc1, fc2] = avatarColors(f.displayName || '?')
+                      return (
+                        <div
+                          key={f.id}
+                          className="pub-profile-friend-row"
+                          onClick={() => onViewProfile ? onViewProfile(f.id, f.displayName) : undefined}
+                          style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
+                        >
+                          {f.avatarUrl
+                            ? <img className="pub-profile-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
+                            : <span
+                                className="pub-profile-friend-avatar pub-profile-friend-avatar--initials"
+                                style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}
+                              >
+                                {(f.displayName || '?')[0].toUpperCase()}
+                              </span>
+                          }
+                          <div className="pub-profile-friend-info">
+                            <span className="pub-profile-friend-name">{f.displayName}</span>
+                            {f.badges?.[0] && <span className="pub-profile-friend-badge">{badgeLabel(f.badges[0])}</span>}
+                          </div>
+                        </div>
+                      )
+                    })
+                }
+              </div>
+            )}
+
+            {/* Vibes tab */}
+            {activeTab === 'vibes' && (
+              <>
+                {vibeCount > 0 && (
+                  <div className="pub-profile-vibe-score">
+                    <div className="pub-profile-vibe-stars">
+                      {[1,2,3,4,5].map(s => (
+                        <span key={s} className={s <= Math.round(vibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}>★</span>
+                      ))}
+                    </div>
+                    <span className="pub-profile-vibe-avg">{vibeScore?.toFixed(1)} vibe score</span>
+                    <span className="pub-profile-vibe-count">based on {vibeCount} vibe{vibeCount !== 1 ? 's' : ''}</span>
+                  </div>
+                )}
+
+                {account && userId !== account?.id && (
+                  <div className="pub-profile-vibe-cta">
+                    {!showVibeForm ? (
+                      <button className="pub-profile-vibe-btn" onClick={() => setShowVibeForm(true)}>
+                        {myVibe ? `✏️ Update your note (${myVibe.rating}★)` : '⭐ Leave a note'}
+                      </button>
+                    ) : (
+                      <div className="pub-profile-vibe-form">
+                        <div className="pub-profile-vibe-form-stars">
+                          {[1,2,3,4,5].map(s => (
+                            <button key={s} className={`vibe-star-btn${vibeRating >= s ? ' on' : ''}`} onClick={() => setVibeRating(s)}>★</button>
+                          ))}
+                        </div>
+                        <textarea
+                          className="pub-profile-vibe-input"
+                          placeholder="Say something nice… (optional)"
+                          value={vibeMessage}
+                          onChange={e => setVibeMessage(e.target.value)}
+                          maxLength={300}
+                          rows={2}
+                        />
+                        <div className="pub-profile-vibe-form-actions">
+                          <button className="pub-profile-vibe-cancel" onClick={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? '') }}>Cancel</button>
+                          <button className="pub-profile-vibe-submit" onClick={handleSubmitVibe} disabled={vibeBusy || vibeRating === 0}>
+                            {vibeBusy ? 'Sending…' : 'Send note ✨'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="pub-profile-vibes">
+                  {vibes.length > 0 ? (
+                    <>
+                      <p className="pub-profile-section-label">Notes · {vibeCount}</p>
+                      {vibes.map(v => {
+                        const [vc1, vc2] = avatarColors(v.authorName || '?')
+                        return (
+                          <div key={v.id} className="pub-profile-vibe-row">
+                            {v.authorPhoto
+                              ? <img className="pub-profile-vibe-avatar" src={v.authorPhoto} alt={v.authorName} />
+                              : <span
+                                  className="pub-profile-vibe-avatar pub-profile-vibe-avatar--initials"
+                                  style={{ background: `linear-gradient(135deg, ${vc1}, ${vc2})` }}
+                                >
+                                  {(v.authorName || '?')[0].toUpperCase()}
+                                </span>
+                            }
+                            <div className="pub-profile-vibe-content">
+                              <div className="pub-profile-vibe-header">
+                                <span className="pub-profile-vibe-author">{v.authorName}</span>
+                                <span className="pub-profile-vibe-rating">{'★'.repeat(v.rating)}</span>
+                              </div>
+                              {v.message && <p className="pub-profile-vibe-msg">{v.message}</p>}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </>
+                  ) : (
+                    <div className="pub-profile-vibes-empty">
+                      <p>No notes yet</p>
+                      <p>Be the first to leave a note ✨</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* City Picks tab — legend only */}
+            {activeTab === 'picks' && hasPicks && (
               <div className="pub-profile-picks">
-                <p className="pub-profile-section-label">CITY PICKS 👑</p>
                 {user.ambassadorPicks.restaurant && (
                   <div className="pub-profile-pick-card">
                     <span className="pub-profile-pick-card-title">FAVORITE RESTAURANT</span>
@@ -359,149 +497,15 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </div>
             )}
 
-            {/* ── Events ── */}
-            {events.length > 0 && (
-              <div className="pub-profile-events">
-                <p className="pub-profile-section-label">Events</p>
-                {events.map(ev => {
-                  const isLive = ev.starts_at <= now && ev.expires_at > now
-                  return (
-                    <div key={ev.id} className="pub-profile-event-row">
-                      <span className="pub-profile-event-icon">{eventIcon(ev.event_type)}</span>
-                      <div className="pub-profile-event-info">
-                        <span className="pub-profile-event-title">{ev.title}</span>
-                        {isLive && <span className="pub-profile-event-live">LIVE</span>}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+          </div>
+        </>
+      )}
 
-            {/* ── Friends ── */}
-            {friends.length > 0 && (
-              <div className="pub-profile-friends">
-                <p className="pub-profile-section-label">Friends · {friends.length}</p>
-                {friends.map(f => {
-                  const [fc1, fc2] = avatarColors(f.displayName || '?')
-                  return (
-                    <div
-                      key={f.id}
-                      className="pub-profile-friend-row"
-                      onClick={() => onViewProfile ? onViewProfile(f.id, f.displayName) : undefined}
-                      style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
-                    >
-                      {f.avatarUrl
-                        ? <img className="pub-profile-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
-                        : <span className="pub-profile-friend-avatar pub-profile-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
-                            {(f.displayName || '?')[0].toUpperCase()}
-                          </span>
-                      }
-                      <div className="pub-profile-friend-info">
-                        <span className="pub-profile-friend-name">{f.displayName}</span>
-                        {f.badges?.[0] && (
-                          <span className="pub-profile-friend-badge">{badgeLabel(f.badges[0])}</span>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {/* ── Vibe score ── */}
-            {vibeCount > 0 && (
-              <div className="pub-profile-vibe-score">
-                <div className="pub-profile-vibe-stars">
-                  {[1,2,3,4,5].map(s => (
-                    <span key={s} className={s <= Math.round(vibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}>★</span>
-                  ))}
-                </div>
-                <span className="pub-profile-vibe-avg">{vibeScore?.toFixed(1)} vibe score</span>
-                <span className="pub-profile-vibe-count">based on {vibeCount} vibe{vibeCount !== 1 ? 's' : ''}</span>
-              </div>
-            )}
-
-            {/* ── Leave a vibe form ── */}
-            {account && userId !== account?.id && (
-              <div className="pub-profile-vibe-cta">
-                {!showVibeForm ? (
-                  <button className="pub-profile-vibe-btn" onClick={() => setShowVibeForm(true)}>
-                    {myVibe ? `✏️ Update your note (${myVibe.rating}★)` : '⭐ Leave a note'}
-                  </button>
-                ) : (
-                  <div className="pub-profile-vibe-form">
-                    <div className="pub-profile-vibe-form-stars">
-                      {[1,2,3,4,5].map(s => (
-                        <button key={s} className={`vibe-star-btn${vibeRating >= s ? ' on' : ''}`} onClick={() => setVibeRating(s)}>★</button>
-                      ))}
-                    </div>
-                    <textarea
-                      className="pub-profile-vibe-input"
-                      placeholder="Say something nice… (optional)"
-                      value={vibeMessage}
-                      onChange={e => setVibeMessage(e.target.value)}
-                      maxLength={300}
-                      rows={2}
-                    />
-                    <div className="pub-profile-vibe-form-actions">
-                      <button className="pub-profile-vibe-cancel" onClick={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? ''); }}>Cancel</button>
-                      <button className="pub-profile-vibe-submit" onClick={handleSubmitVibe} disabled={vibeBusy || vibeRating === 0}>
-                        {vibeBusy ? 'Sending…' : 'Send note ✨'}
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* ── Vibes list ── (scrollable — CTAs are in sticky bar below) */}
-            <div className="pub-profile-vibes">
-              {vibes.length > 0 ? (
-                <>
-                  <p className="pub-profile-section-label">Notes · {vibeCount}</p>
-                  {vibes.map(v => {
-                    const [vc1, vc2] = avatarColors(v.authorName || '?')
-                    return (
-                      <div key={v.id} className="pub-profile-vibe-row">
-                        {v.authorPhoto
-                          ? <img className="pub-profile-vibe-avatar" src={v.authorPhoto} alt={v.authorName} />
-                          : <span className="pub-profile-vibe-avatar pub-profile-vibe-avatar--initials" style={{ background: `linear-gradient(135deg, ${vc1}, ${vc2})` }}>
-                              {(v.authorName || '?')[0].toUpperCase()}
-                            </span>
-                        }
-                        <div className="pub-profile-vibe-content">
-                          <div className="pub-profile-vibe-header">
-                            <span className="pub-profile-vibe-author">{v.authorName}</span>
-                            <span className="pub-profile-vibe-rating">{'★'.repeat(v.rating)}</span>
-                          </div>
-                          {v.message && <p className="pub-profile-vibe-msg">{v.message}</p>}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </>
-              ) : vibeCount === 0 && (
-                <div className="pub-profile-vibes-empty">
-                  <p>No notes yet</p>
-                  <p>Be the first to leave a note ✨</p>
-                </div>
-              )}
-            </div>
-
-          </>
-        )}
-      </div>
-
-      {/* ── 5. Sticky action bar ── */}
+      {/* ── Sticky action bar ── */}
       {user && userId !== account?.id && (
         <div className="pub-profile-sticky-bar">
           {onSendDm && (
-            <button
-              className="pub-profile-dm-btn"
-              onClick={handleSendDm}
-              disabled={dmBusy}
-            >
+            <button className="pub-profile-dm-btn" onClick={handleSendDm} disabled={dmBusy}>
               {dmBusy ? 'Opening…' : '💬 Message'}
             </button>
           )}
@@ -516,18 +520,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
           )}
           {account && confirmUnfriend && (
             <div className="pub-profile-unfriend-confirm">
-              <button
-                className="pub-profile-unfriend-btn"
-                onClick={handleFriendToggle}
-                disabled={friendBusy}
-              >
+              <button className="pub-profile-unfriend-btn" onClick={handleFriendToggle} disabled={friendBusy}>
                 {friendBusy ? 'Removing…' : 'Unfriend'}
               </button>
-              <button
-                className="pub-profile-unfriend-cancel"
-                onClick={() => setConfirmUnfriend(false)}
-                disabled={friendBusy}
-              >
+              <button className="pub-profile-unfriend-cancel" onClick={() => setConfirmUnfriend(false)} disabled={friendBusy}>
                 Cancel
               </button>
             </div>
@@ -560,19 +556,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               />
               {reportError && <p className="pub-profile-report-error">{reportError}</p>}
               <div className="pub-profile-report-actions">
-                <button
-                  type="submit"
-                  className="pub-profile-report-submit"
-                  disabled={reportReason.trim().length < 10 || reportBusy}
-                >
+                <button type="submit" className="pub-profile-report-submit" disabled={reportReason.trim().length < 10 || reportBusy}>
                   {reportBusy ? 'Sending…' : 'Send report'}
                 </button>
-                <button
-                  type="button"
-                  className="pub-profile-report-cancel"
-                  onClick={() => setShowReportForm(false)}
-                  disabled={reportBusy}
-                >
+                <button type="button" className="pub-profile-report-cancel" onClick={() => setShowReportForm(false)} disabled={reportBusy}>
                   Cancel
                 </button>
               </div>

@@ -3512,12 +3512,50 @@ html, body, #root {
 
 /* ── Public profile screen ────────────────────────────── */
 
-.pub-profile-body {
+/* Sticky identity block — always visible above tab content */
+.pub-profile-sticky-identity {
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding-top: 32px;
+  gap: 10px;
+  padding: 16px 18px 0;
+  background: var(--bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Override .profile-tabs padding when used inside pub-profile-sticky-identity */
+.pub-profile-tabs-bar {
+  width: 100%;
+  max-width: 360px;
+  padding: 8px 0 12px;
+  justify-content: flex-start;
+}
+
+/* Scrollable area for tab content */
+.pub-profile-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pub-profile-tab-empty {
+  font-size: 0.87rem;
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+
+.pub-profile-error-inline {
+  color: #f87171;
+  font-size: 0.9rem;
+  margin: 20px 18px;
 }
 
 .pub-profile-hero {
