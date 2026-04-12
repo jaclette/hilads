@@ -47,6 +47,7 @@ const PROFILE_TABS = [
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount }) {
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [name,            setName]            = useState(account.display_name ?? '')
+  const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
   const [age,             setAge]             = useState(account.age != null ? String(account.age) : '')
   const [vibe,            setVibe]            = useState(account.vibe ?? 'chill')
@@ -119,6 +120,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     try {
       const fields = {
         display_name:      trimmedName,
+        about_me:          aboutMe.trim() || null,
         home_city:         homeCity.trim() || null,
         interests:         [...interests],
         vibe,
@@ -266,6 +268,18 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                   onChange={e => setName(e.target.value)}
                   maxLength={30}
                   placeholder="How you'll appear"
+                />
+              </div>
+
+              <div className="modal-field">
+                <label className="modal-label">About me <span className="modal-label-muted">— {150 - aboutMe.length} left</span></label>
+                <textarea
+                  className="modal-input modal-textarea"
+                  value={aboutMe}
+                  onChange={e => setAboutMe(e.target.value)}
+                  maxLength={150}
+                  rows={2}
+                  placeholder="Love street food and random convos"
                 />
               </div>
 

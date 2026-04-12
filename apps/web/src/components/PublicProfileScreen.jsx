@@ -266,6 +266,11 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                   <span>{cityFlag(cityCountry)} {cityName}</span>
                 </div>
               )}
+
+              {/* About me */}
+              {user.aboutMe && (
+                <p className="pub-profile-about">{user.aboutMe}</p>
+              )}
             </div>
 
             {/* Identity cards: vibe + mode */}

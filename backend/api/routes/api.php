@@ -853,6 +853,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
                                   ? (int) date('Y') - (int) $user['birth_year']
                                   : null,
             'homeCity'        => $user['home_city'] ?? null,
+            'aboutMe'         => $user['about_me'] ?? null,
             'interests'       => json_decode($user['interests'] ?? '[]', true),
             'vibeScore'       => $vibeScore['score'],
             'vibeCount'       => $vibeScore['count'],

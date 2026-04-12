@@ -148,6 +148,7 @@ export interface UserDTO {
 export interface PublicProfile extends UserDTO {
   age?:       number | null;
   homeCity?:  string | null;
+  aboutMe?:   string | null;
   interests?: string[];
   mode?:      ModeKey | null;
   vibeScore?: number | null;
@@ -244,6 +245,7 @@ export interface User {
   display_name: string;
   profile_photo_url?: string;
   home_city?: string;
+  about_me?: string | null;
   interests?: string[];
   age?: number;
   vibe?: VibeKey;

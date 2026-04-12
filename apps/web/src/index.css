@@ -3683,6 +3683,15 @@ img.pub-profile-avatar {
   color: var(--muted);
 }
 
+.pub-profile-about {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.45;
+  max-width: 260px;
+  margin: 0;
+}
+
 .pub-profile-city {
   font-size: 0.82rem;
   color: var(--muted);
@@ -6181,6 +6190,12 @@ img.pub-profile-avatar {
 
 .modal-input:focus {
   border-color: var(--accent);
+}
+
+.modal-textarea {
+  resize: none;
+  line-height: 1.45;
+  min-height: 56px;
 }
 
 .modal-error {

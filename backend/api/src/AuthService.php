@@ -461,6 +461,15 @@ class AuthService
             $fields['mode'] = $mode;
         }
 
+        if (array_key_exists('about_me', $body)) {
+            $bio = $body['about_me'];
+            if ($bio !== null) {
+                $bio = mb_substr(trim(strip_tags((string) $bio)), 0, 150);
+                $bio = $bio === '' ? null : $bio;
+            }
+            $fields['about_me'] = $bio;
+        }
+
         // ── Ambassador picks — editable only by ambassadors, but sanitised for all ──
         // The UI only shows these fields to ambassadors, so non-ambassador writes are harmless.
         $pickFields = [
@@ -494,6 +503,7 @@ class AuthService
             'age'               => self::computeAge($user['birth_year'] ?? null),
             'profile_photo_url' => $user['profile_photo_url'],
             'home_city'         => $user['home_city'],
+            'about_me'          => $user['about_me'] ?? null,
             'interests'         => json_decode($user['interests'] ?? '[]', true),
             'vibe'              => $user['vibe'] ?? 'chill',
             'mode'              => $user['mode'] ?? null,

@@ -336,6 +336,11 @@ export default function PublicProfileScreen() {
               ) : null}
             </View>
 
+            {/* About me */}
+            {user.aboutMe ? (
+              <Text style={styles.aboutMe}>{user.aboutMe}</Text>
+            ) : null}
+
             {/* Identity cards: vibe + mode — side by side */}
             {(user.vibe && VIBE_META[user.vibe] || user.mode && MODE_META[user.mode]) ? (
               <View style={styles.identityCards}>
@@ -767,6 +772,15 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.sm,
     color:      Colors.muted,
     fontWeight: '500',
+  },
+  aboutMe: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    textAlign:  'center',
+    lineHeight: FontSizes.sm * 1.45,
+    maxWidth:   260,
+    alignSelf:  'center',
+    marginTop:  8,
   },
 
   // ── Identity cards: vibe + mode — side by side ────────────────────────────

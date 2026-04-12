@@ -128,6 +128,7 @@ export default function MeScreen() {
   const initialTab = (validTabs.includes(tabParam as ProfileTab) ? tabParam : 'interests') as ProfileTab;
   const [activeTab,          setActiveTab]          = useState<ProfileTab>(initialTab);
   const [displayName,        setDisplayName]        = useState(account?.display_name ?? '');
+  const [aboutMe,            setAboutMe]            = useState(account?.about_me ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
   const [selectedVibe,       setSelectedVibe]        = useState<string>(account?.vibe ?? 'chill');
@@ -179,12 +180,13 @@ export default function MeScreen() {
 
   useEffect(() => {
     setDisplayName(account?.display_name ?? '');
+    setAboutMe(account?.about_me ?? '');
     setHomeCity(account?.home_city ?? '');
     setAgeStr(account?.age != null ? String(account.age) : '');
     setSelectedVibe(account?.vibe ?? 'chill');
     setSelectedMode(account?.mode ?? identity?.mode ?? null);
     setSelectedInterests(account?.interests ?? []);
-  }, [account?.display_name, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
+  }, [account?.display_name, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
   // Version tap easter egg
   const tapCount = useRef(0);
@@ -275,6 +277,7 @@ export default function MeScreen() {
           : undefined;
       const fields = {
         display_name:      displayName.trim(),
+        about_me:          aboutMe.trim() || null,
         home_city:         homeCity.trim() || null,
         interests:         selectedInterests,
         vibe:              selectedVibe,
@@ -516,6 +519,22 @@ export default function MeScreen() {
                   placeholderTextColor={Colors.muted2}
                   maxLength={30}
                   autoCorrect={false}
+                />
+              </View>
+
+              {/* ABOUT ME */}
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>ABOUT ME <Text style={styles.fieldLabelMeta}>{150 - aboutMe.length} left</Text></Text>
+                <TextInput
+                  style={[styles.fieldInput, styles.fieldInputMultiline]}
+                  value={aboutMe}
+                  onChangeText={setAboutMe}
+                  placeholder="Love street food and random convos"
+                  placeholderTextColor={Colors.muted2}
+                  maxLength={150}
+                  multiline
+                  numberOfLines={2}
+                  textAlignVertical="top"
                 />
               </View>
 
@@ -1146,6 +1165,17 @@ const styles = StyleSheet.create({
   fieldInputReadOnly: {
     color:           Colors.muted,
     backgroundColor: Colors.bg,
+  },
+  fieldInputMultiline: {
+    minHeight:        56,
+    textAlignVertical: 'top',
+    paddingTop:        Platform.OS === 'ios' ? 13 : 10,
+  },
+  fieldLabelMeta: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '400',
+    color:         Colors.muted2,
+    letterSpacing: 0,
   },
 
   // Chips
