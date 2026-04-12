@@ -17,6 +17,7 @@ import {
   Modal, View, TouchableOpacity, ActivityIndicator,
   StyleSheet, SafeAreaView, Text, Image,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import type { CameraViewRef } from 'expo-camera';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
@@ -44,6 +45,7 @@ const JPEG_QUALITY = 0.78;
 
 export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
   const cameraRef = useRef<CameraViewRef>(null);
+  const insets    = useSafeAreaInsets();
 
   const [screen,      setScreen]      = useState<Screen>('camera');
   const [ready,       setReady]       = useState(false);
@@ -175,8 +177,8 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
               <Ionicons name="close" size={26} color="#fff" />
             </TouchableOpacity>
 
-            {/* Action bar */}
-            <View style={styles.previewBar}>
+            {/* Action bar — paddingBottom absorbs bottom nav bar on Android */}
+            <View style={[styles.previewBar, insets.bottom > 0 && { paddingBottom: 20 + insets.bottom }]}>
 
               {/* Retake */}
               <TouchableOpacity
@@ -235,7 +237,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
             </View>
 
             {/* ── Bottom bar: shutter + flip ───────────────────────────── */}
-            <View style={styles.bottomBar}>
+            <View style={[styles.bottomBar, insets.bottom > 0 && { height: 120 + insets.bottom, paddingBottom: 16 + insets.bottom }]}>
 
               {/* Spacer (keeps shutter centred) */}
               <View style={styles.iconBtn} />
