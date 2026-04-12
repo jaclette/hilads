@@ -42,6 +42,15 @@ const VIBE_META = {
   chill:       { emoji: '🧘', label: 'Chill' },
 }
 
+const VIBE_TAGLINES = {
+  party:       'Here for the night life',
+  board_games: 'Bring snacks and dice',
+  coffee:      'Coffee first, everything else later',
+  music:       'Always chasing a good beat',
+  food:        'Eats first, questions later',
+  chill:       'Low key, high vibes',
+}
+
 // ── Event type icons ──────────────────────────────────────────────────────────
 
 const EVENT_ICONS = {
@@ -214,6 +223,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const mode     = user?.mode && MODE_META[user.mode] ? user.mode : null
   const now      = Date.now() / 1000
 
+  const hasPicks = user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0
+
   return (
     <div className="full-page pub-profile-page">
 
@@ -232,7 +243,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
         {user && (
           <>
-            {/* ── Hero ── */}
+            {/* ── 1. Identity Section ── */}
             <div className="pub-profile-hero">
               {user.avatarUrl
                 ? <img
@@ -248,7 +259,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
               <h2 className="pub-profile-name">{name}</h2>
 
-              {/* Badges + microcopy */}
+              {/* Badge + microcopy */}
               {(user.badges ?? []).map(k => (
                 <div key={k} className="pub-profile-badge-block">
                   <span className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
@@ -258,7 +269,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 </div>
               ))}
 
-              {/* City pill — the channel this profile is being viewed from */}
+              {/* City pill */}
               {cityName && (
                 <div className="pub-profile-city">
                   <span>{cityFlag(cityCountry)} {cityName}</span>
@@ -266,40 +277,47 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               )}
             </div>
 
-            {/* ── Detail rows ── */}
-            <div className="pub-profile-details">
-              {mode && (
-                <div className="pub-profile-detail-row">
-                  <span className="pub-profile-detail-label">Here as</span>
-                  <span className="pub-profile-detail-value">
-                    {MODE_META[mode].emoji}{' '}
-                    {mode === 'local'
-                      ? `Local${user.homeCity ? ` in ${user.homeCity}` : ''}`
-                      : `Exploring${cityName ? ` ${cityName}` : ''}`}
-                  </span>
-                </div>
-              )}
-              {vibe && (
-                <div className="pub-profile-detail-row">
-                  <span className="pub-profile-detail-label">Vibe</span>
-                  <span className="pub-profile-detail-value">
-                    {VIBE_META[vibe].emoji} {VIBE_META[vibe].label}
-                  </span>
-                </div>
-              )}
-              {user.homeCity && (
-                <div className="pub-profile-detail-row">
-                  <span className="pub-profile-detail-label">From</span>
-                  <span className="pub-profile-detail-value">{user.homeCity}</span>
-                </div>
-              )}
-              {user.age != null && (
-                <div className="pub-profile-detail-row">
-                  <span className="pub-profile-detail-label">Age</span>
-                  <span className="pub-profile-detail-value">{user.age}</span>
-                </div>
-              )}
-            </div>
+            {/* ── 2. Identity Cards — Vibe & Mode ── */}
+            {(vibe || mode) && (
+              <div className="pub-profile-identity-cards">
+                {vibe && (
+                  <div className="pub-profile-identity-card">
+                    <span className="pub-profile-identity-card-icon">{VIBE_META[vibe].emoji}</span>
+                    <span className="pub-profile-identity-card-title">{VIBE_META[vibe].label}</span>
+                    <span className="pub-profile-identity-card-sub">{VIBE_TAGLINES[vibe]}</span>
+                  </div>
+                )}
+                {mode && (
+                  <div className="pub-profile-identity-card">
+                    <span className="pub-profile-identity-card-icon">{MODE_META[mode].emoji}</span>
+                    <span className="pub-profile-identity-card-title">{MODE_META[mode].label}</span>
+                    <span className="pub-profile-identity-card-sub">
+                      {mode === 'local'
+                        ? `Local${user.homeCity ? ` in ${user.homeCity}` : cityName ? ` in ${cityName}` : ''}`
+                        : `Exploring${cityName ? ` ${cityName}` : ''}`}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── 3. Info Rows — From & Age ── */}
+            {(user.homeCity || user.age != null) && (
+              <div className="pub-profile-info-rows">
+                {user.homeCity && (
+                  <div className="pub-profile-info-row">
+                    <span className="pub-profile-info-label">From</span>
+                    <span className="pub-profile-info-value">{user.homeCity}</span>
+                  </div>
+                )}
+                {user.age != null && (
+                  <div className="pub-profile-info-row">
+                    <span className="pub-profile-info-label">Age</span>
+                    <span className="pub-profile-info-value">{user.age}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ── Interests ── */}
             {user.interests?.length > 0 && (
@@ -310,44 +328,32 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </div>
             )}
 
-            {/* ── Ambassador city picks ── */}
-            {user.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0 && (
+            {/* ── 4. City Picks Section ── */}
+            {hasPicks && (
               <div className="pub-profile-picks">
-                <p className="pub-profile-section-label">City picks 👑</p>
+                <p className="pub-profile-section-label">CITY PICKS 👑</p>
                 {user.ambassadorPicks.restaurant && (
-                  <div className="pub-profile-pick-row">
-                    <span className="pub-profile-pick-icon">🍜</span>
-                    <div className="pub-profile-pick-body">
-                      <span className="pub-profile-pick-label">Favorite restaurant</span>
-                      <span className="pub-profile-pick-value">{user.ambassadorPicks.restaurant}</span>
-                    </div>
+                  <div className="pub-profile-pick-card">
+                    <span className="pub-profile-pick-card-title">FAVORITE RESTAURANT</span>
+                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.restaurant}</span>
                   </div>
                 )}
                 {user.ambassadorPicks.spot && (
-                  <div className="pub-profile-pick-row">
-                    <span className="pub-profile-pick-icon">🗺️</span>
-                    <div className="pub-profile-pick-body">
-                      <span className="pub-profile-pick-label">Best spot</span>
-                      <span className="pub-profile-pick-value">{user.ambassadorPicks.spot}</span>
-                    </div>
+                  <div className="pub-profile-pick-card">
+                    <span className="pub-profile-pick-card-title">HIDDEN GEM</span>
+                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.spot}</span>
                   </div>
                 )}
                 {user.ambassadorPicks.tip && (
-                  <div className="pub-profile-pick-row">
-                    <span className="pub-profile-pick-icon">💡</span>
-                    <div className="pub-profile-pick-body">
-                      <span className="pub-profile-pick-label">Pro tip</span>
-                      <span className="pub-profile-pick-value">{user.ambassadorPicks.tip}</span>
-                    </div>
+                  <div className="pub-profile-pick-card">
+                    <span className="pub-profile-pick-card-title">LOCAL TIP</span>
+                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.tip}</span>
                   </div>
                 )}
                 {user.ambassadorPicks.story && (
-                  <div className="pub-profile-pick-row">
-                    <span className="pub-profile-pick-icon">🎭</span>
-                    <div className="pub-profile-pick-body">
-                      <span className="pub-profile-pick-label">Story</span>
-                      <span className="pub-profile-pick-value">{user.ambassadorPicks.story}</span>
-                    </div>
+                  <div className="pub-profile-pick-card">
+                    <span className="pub-profile-pick-card-title">STORY</span>
+                    <span className="pub-profile-pick-card-content">{user.ambassadorPicks.story}</span>
                   </div>
                 )}
               </div>
@@ -487,7 +493,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
         )}
       </div>
 
-      {/* ── Sticky action bar ── */}
+      {/* ── 5. Sticky action bar ── */}
       {user && userId !== account?.id && (
         <div className="pub-profile-sticky-bar">
           {onSendDm && (

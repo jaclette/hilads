@@ -3712,6 +3712,81 @@ img.pub-profile-avatar {
   flex-shrink: 0;
 }
 
+/* ── Identity cards — Vibe & Mode ─────────────────────── */
+
+.pub-profile-identity-cards {
+  width: 100%;
+  max-width: 360px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.pub-profile-identity-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.pub-profile-identity-card-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.pub-profile-identity-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pub-profile-identity-card-sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+/* ── Info rows — From & Age ────────────────────────────── */
+
+.pub-profile-info-rows {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pub-profile-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pub-profile-info-row:last-child {
+  border-bottom: none;
+}
+
+.pub-profile-info-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.pub-profile-info-value {
+  font-size: 0.88rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ── City Picks cards ──────────────────────────────────── */
+
 .pub-profile-picks {
   width: 100%;
   max-width: 360px;
@@ -3720,41 +3795,29 @@ img.pub-profile-avatar {
   gap: 8px;
 }
 
-.pub-profile-pick-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 14px;
-  background: rgba(255, 193, 7, 0.05);
-  border: 1px solid rgba(255, 193, 7, 0.15);
-  border-radius: 12px;
-}
-
-.pub-profile-pick-icon {
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.pub-profile-pick-body {
+.pub-profile-pick-card {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  gap: 6px;
+  padding: 14px 16px;
+  background: rgba(255, 193, 7, 0.05);
+  border: 1px solid rgba(255, 193, 7, 0.15);
+  border-radius: 14px;
 }
 
-.pub-profile-pick-label {
-  font-size: 0.68rem;
+.pub-profile-pick-card-title {
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
+  letter-spacing: 0.08em;
+  color: rgba(255, 193, 7, 0.7);
 }
 
-.pub-profile-pick-value {
-  font-size: 0.88rem;
+.pub-profile-pick-card-content {
+  font-size: 0.9rem;
   color: var(--text);
   font-weight: 500;
+  line-height: 1.45;
 }
 
 /* ── Sticky action bar (replaces old inline .pub-profile-cta) ── */
