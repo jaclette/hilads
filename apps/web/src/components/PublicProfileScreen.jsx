@@ -223,7 +223,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const mode     = user?.mode && MODE_META[user.mode] ? user.mode : null
   const now      = Date.now() / 1000
 
-  const hasPicks = user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0
+  const hasPicks = user?.isAmbassador && user.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0
 
   return (
     <div className="full-page pub-profile-page">
