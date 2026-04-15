@@ -525,7 +525,7 @@ export default function App() {
   const installPrompt = useBeforeInstallPrompt()
   const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
   const [error, setError] = useState(null)
-  const [city, setCity] = useState(null)
+  const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
   const [channelId, setChannelId] = useState(null)
   const [guest, setGuest] = useState(null)
   const [nickname, setNickname] = useState(() => loadIdentity()?.nickname ?? generateNickname())
@@ -562,13 +562,13 @@ export default function App() {
   const [events, setEvents] = useState([])
   const [cityEvents, setCityEvents] = useState([])
 
-  const [previewTimezone, setPreviewTimezone] = useState('UTC')
+  const [previewTimezone, setPreviewTimezone] = useState(() => loadIdentity()?.timezone ?? 'UTC')
   const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
   const [previewTopics,     setPreviewTopics]     = useState([])
-  const [previewChannelId, setPreviewChannelId]   = useState(null)
+  const [previewChannelId, setPreviewChannelId]   = useState(() => loadIdentity()?.channelId ?? null)
   const [geoChannelId,    setGeoChannelId]        = useState(null)  // geo-resolved channelId, never changes on city switch
   const [geoCity,         setGeoCity]             = useState(null)  // geo-resolved city name
   const [activeEventId, setActiveEventId] = useState(null)
@@ -1781,6 +1781,8 @@ export default function App() {
     setObPickingCity(false)
     setCity(cityName)
     setCityCountry(country ?? null)
+    setPreviewChannelId(newChannelId)
+    setPreviewTimezone(timezone ?? 'UTC')
     locPromiseRef.current = Promise.resolve({ channelId: newChannelId, city: cityName, timezone: timezone ?? 'UTC', country: country ?? null })
     handleJoin(null)
   }
