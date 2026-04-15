@@ -13,7 +13,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
 
 const CATEGORIES: { value: TopicCategory; label: string; icon: string }[] = [
-  { value: 'general', label: 'General',  icon: '💬' },
+  { value: 'general', label: 'General',  icon: '🗣️' },
   { value: 'tips',    label: 'Tips',     icon: '💡' },
   { value: 'food',    label: 'Food',     icon: '🍴' },
   { value: 'drinks',  label: 'Drinks',   icon: '🍺' },

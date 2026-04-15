@@ -20,7 +20,7 @@ function filterAndSort(events, tz) {
     })
 }
 
-const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
+const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 
 export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick }) {
   const tz = cityTimezone || 'UTC'

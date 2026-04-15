@@ -3,7 +3,7 @@ import { createTopic } from '../api'
 import BackButton from './BackButton'
 
 const CATEGORIES = [
-  { value: 'general', label: 'General',  icon: '💬' },
+  { value: 'general', label: 'General',  icon: '🗣️' },
   { value: 'tips',    label: 'Tips',     icon: '💡' },
   { value: 'food',    label: 'Food',     icon: '🍴' },
   { value: 'drinks',  label: 'Drinks',   icon: '🍺' },

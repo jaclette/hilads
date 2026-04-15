@@ -20,7 +20,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Message, Topic } from '@/types';
 
 const CATEGORY_ICONS: Record<string, string> = {
-  general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
 };
 
 export default function TopicChatScreen() {

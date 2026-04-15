@@ -23,7 +23,7 @@ const EVENT_ICONS: Record<string, string> = {
 };
 
 const CATEGORY_ICONS: Record<string, string> = {
-  general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
 };
 
 function formatTime(ts: number): string {
@@ -150,7 +150,7 @@ function FilterEmptyState({ filter, city, userMode }: { filter: 'all' | 'events'
   }
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '💬'}</Text>
+      <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '🗣️'}</Text>
       <Text style={styles.emptyTitle}>
         {filter === 'events' ? 'No events right now' : 'No pulses yet'}
       </Text>
@@ -393,7 +393,7 @@ export default function NowScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Pulses'}
+              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Pulses'}
             </Text>
           </TouchableOpacity>
         ))}

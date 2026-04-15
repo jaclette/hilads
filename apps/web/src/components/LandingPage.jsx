@@ -73,7 +73,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
               )}
               {previewTopicCount > 0 && (
                 <span className="ob-activity-line">
-                  💬 {previewTopicCount} pulse{previewTopicCount === 1 ? '' : 's'} active
+                  🗣️ {previewTopicCount} pulse{previewTopicCount === 1 ? '' : 's'} active
                 </span>
               )}
             </div>
@@ -95,7 +95,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
               <div className="ob-events-preview ob-topics-preview">
                 {previewTopics.map(t => (
                   <div key={t.id} className="ob-event-row ob-topic-row">
-                    <span className="ob-event-title">💬 {t.title}</span>
+                    <span className="ob-event-title">🗣️ {t.title}</span>
                     {(t.message_count ?? 0) > 0 && (
                       <span className="ob-event-time">{t.message_count} {t.message_count === 1 ? 'reply' : 'replies'}</span>
                     )}

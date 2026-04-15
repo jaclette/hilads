@@ -4,7 +4,7 @@ import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
 
-const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
+const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 const MODE_META  = { local: { emoji: '🌍', label: 'Local' }, exploring: { emoji: '🧭', label: 'Exploring' } }
 const VIBE_META  = { party: { emoji: '🔥' }, board_games: { emoji: '🎲' }, coffee: { emoji: '☕' }, music: { emoji: '🎵' }, food: { emoji: '🍜' }, chill: { emoji: '🧘' } }
 

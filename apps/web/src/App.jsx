@@ -2784,7 +2784,7 @@ export default function App() {
               const repliesText = mc > 0 ? ` · ${mc} ${mc === 1 ? 'reply' : 'replies'}` : ''
               return (
                 <div key={item.id} className="feed-prompt feed-prompt--topic">
-                  <span className="feed-prompt-text">💬 {topic.title}{repliesText}</span>
+                  <span className="feed-prompt-text">🗣️ {topic.title}{repliesText}</span>
                   <button
                     className="feed-prompt-btn feed-prompt-btn--topic"
                     onClick={() => setActiveTopic(topic)}
@@ -3239,7 +3239,7 @@ export default function App() {
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '💬 Pulses'}
+                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Pulses'}
               </button>
             ))}
           </div>
@@ -3250,9 +3250,9 @@ export default function App() {
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
               const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
               const totalVisibleEvents = hiladsEvents.length + publicEvents.length
-              const CATEGORY_ICONS = { general: '💬', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
+              const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
               const renderTopicRow = (topic) => {
-                const icon = CATEGORY_ICONS[topic.category] ?? '💬'
+                const icon = CATEGORY_ICONS[topic.category] ?? '🗣️'
                 const replies = topic.message_count ?? 0
                 const activeNow = topic.active_now === true
                 const timeAgo = topic.last_activity_at
@@ -4139,7 +4139,7 @@ export default function App() {
                 setShowCreateTopic(true)
               }}
             >
-              <span className="create-chooser-icon">💬</span>
+              <span className="create-chooser-icon">🗣️</span>
               <span className="create-chooser-label">
                 <strong>Start a pulse</strong>
                 <span>Ask the city something</span>
