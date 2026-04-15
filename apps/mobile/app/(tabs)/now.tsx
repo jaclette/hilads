@@ -37,11 +37,6 @@ function timeAgo(ts: number): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
-function fireEmoji(n: number): string {
-  if (n >= 10) return '🔥🔥🔥';
-  if (n >= 4)  return '🔥🔥';
-  return '🔥';
-}
 
 // ── Event card ────────────────────────────────────────────────────────────────
 
@@ -67,7 +62,7 @@ function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress:
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
         {!isPublic && (event.participant_count ?? 0) > 0 ? (
-          <Text style={styles.goingCount}>{fireEmoji(event.participant_count ?? 0)} {event.participant_count}</Text>
+          <Text style={styles.goingCount}>🙌 {event.participant_count} going</Text>
         ) : null}
       </View>
       <View style={styles.timePillRow}>

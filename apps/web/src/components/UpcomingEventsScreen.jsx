@@ -9,11 +9,6 @@ const EVENT_ICONS = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 }
 
-function fireEmoji(n) {
-  if (n >= 10) return '🔥🔥🔥'
-  if (n >= 4)  return '🔥🔥'
-  return '🔥'
-}
 
 function getDayLabel(unixTs, tz) {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -136,7 +131,7 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
                       <span className="er-title">{icon} {event.title}</span>
                       {isPublic
                         ? <span className="er-going er-going--public">Public</span>
-                        : going > 0 && <span className="er-going">{fireEmoji(going)} {going}</span>}
+                        : going > 0 && <span className="er-going">🙌 {going} going</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">

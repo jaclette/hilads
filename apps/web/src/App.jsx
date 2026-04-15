@@ -239,12 +239,6 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-/** Returns 🔥 / 🔥🔥 / 🔥🔥🔥 based on engagement level. */
-function fireEmoji(n) {
-  if (n >= 10) return '🔥🔥🔥'
-  if (n >= 4)  return '🔥🔥'
-  return '🔥'
-}
 
 // ── My event row (used in both guest and registered Me screens) ──────────────
 
@@ -3315,7 +3309,7 @@ export default function App() {
                       {event.recurrence_label && (
                         <span className="recur-badge">↻ {event.recurrence_label}</span>
                       )}
-                      {going > 0 && <span className="city-row-current">{fireEmoji(going)} {going} going</span>}
+                      {going > 0 && <span className="city-row-current">🙌 {going} going</span>}
                     </div>
                     {getEventLocation(event) && (
                       <span className="er-location">📍 {getEventLocation(event)}</span>

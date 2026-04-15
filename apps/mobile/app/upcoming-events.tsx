@@ -24,11 +24,6 @@ function formatTime(ts: number, tz: string): string {
   });
 }
 
-function fireEmoji(n: number): string {
-  if (n >= 10) return '🔥🔥🔥';
-  if (n >= 4)  return '🔥🔥';
-  return '🔥';
-}
 
 function getDayLabel(ts: number, tz: string): string {
   const formatter = new Intl.DateTimeFormat('en-US', {
@@ -84,7 +79,7 @@ function UpcomingCard({ event, tz, onPress }: { event: HiladsEvent; tz: string; 
         {event.source_type === 'ticketmaster' ? (
           <Text style={styles.publicBadge}>Public</Text>
         ) : going > 0 ? (
-          <Text style={styles.goingCount}>{fireEmoji(going)} {going}</Text>
+          <Text style={styles.goingCount}>🙌 {going} going</Text>
         ) : null}
       </View>
 
