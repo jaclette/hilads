@@ -3279,9 +3279,6 @@ export default function App() {
                     {topic.description && (
                       <span className="er-location">{topic.description}</span>
                     )}
-                    <div className="er-join-row">
-                      <span className="er-join-cta">Join →</span>
-                    </div>
                   </button>
                 )
               }
@@ -3313,11 +3310,6 @@ export default function App() {
                     </div>
                     {getEventLocation(event) && (
                       <span className="er-location">📍 {getEventLocation(event)}</span>
-                    )}
-                    {group === 'hilads' && (
-                      <div className="er-join-row">
-                        <span className="er-join-cta">Join →</span>
-                      </div>
                     )}
                   </button>
                 )

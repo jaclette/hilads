@@ -82,11 +82,6 @@ function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress:
           📍 {event.location ?? event.venue}
         </Text>
       ) : null}
-      {!isPublic && (
-        <View style={styles.cardFooter}>
-          <View style={styles.joinBtn}><Text style={styles.joinBtnText}>Join →</Text></View>
-        </View>
-      )}
     </TouchableOpacity>
   );
 }
@@ -116,14 +111,11 @@ function TopicCard({ topic, onPress }: { topic: FeedItem & { kind: 'topic' }; on
       {topic.description ? (
         <Text style={styles.topicDesc} numberOfLines={2}>{topic.description}</Text>
       ) : null}
-      <View style={styles.cardFooter}>
-        <Text style={styles.topicMeta}>
-          {replies > 0
-            ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
-            : 'No replies yet — be first'}
-        </Text>
-        <View style={styles.joinBtn}><Text style={styles.joinBtnText}>Join →</Text></View>
-      </View>
+      <Text style={styles.topicMeta}>
+        {replies > 0
+          ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
+          : 'No replies yet — be first'}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -639,19 +631,6 @@ const styles = StyleSheet.create({
   topicTitle: { color: Colors.text },
   topicDesc:  { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
   topicMeta:  { flex: 1, fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
-
-  // ── Shared card footer (meta + Join CTA) ───────────────────────────────────
-  cardFooter: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  joinBtn: {
-    backgroundColor:   'rgba(255,122,60,0.12)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.22)',
-    flexShrink:        0,
-  },
-  joinBtnText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent },
 
   // ── Active now badge ───────────────────────────────────────────────────────
   activeNowBadge: {
