@@ -141,7 +141,7 @@ function ShareVibeBtn({ eventId, title }) {
       title="Share this vibe"
       aria-label="Share event"
     >
-      {copied ? 'Link copied ✨' : 'Share the vibe ✨'}
+      {copied ? 'Link copied ✨' : 'Bring people ✨'}
     </button>
   )
 }

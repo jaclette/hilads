@@ -282,7 +282,7 @@ export default function EventDetailScreen() {
 
         <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.75}>
           <Ionicons name="share-outline" size={16} color={Colors.accent} />
-          <Text style={styles.shareBtnText}>Share the vibe ✨</Text>
+          <Text style={styles.shareBtnText}>Bring people ✨</Text>
         </TouchableOpacity>
       </View>
 
