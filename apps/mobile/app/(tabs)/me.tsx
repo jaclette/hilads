@@ -63,12 +63,11 @@ const EVENT_ICONS: Record<string, string> = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 };
 
-type ProfileTab = 'interests' | 'going' | 'hosting' | 'friends' | 'vibes';
+type ProfileTab = 'interests' | 'events' | 'friends' | 'vibes';
 
 const PROFILE_TABS: { key: ProfileTab; label: string }[] = [
   { key: 'interests', label: 'Interests' },
-  { key: 'going',     label: 'Going To'  },
-  { key: 'hosting',   label: 'Hosting'   },
+  { key: 'events',    label: 'Events'    },
   { key: 'friends',   label: 'Friends'   },
   { key: 'vibes',     label: 'Vibes'     },
 ];
@@ -635,101 +634,94 @@ export default function MeScreen() {
           </>
         )}
 
-        {/* ── Tab: Going To ── */}
-        {!isGuest && activeTab === 'going' && (
+        {/* ── Tab: Events (Going + Hosting) ── */}
+        {!isGuest && activeTab === 'events' && (
           <View style={styles.eventsCard}>
-            <Text style={styles.eventsLabel}>GOING TO</Text>
             {eventsLoading ? (
               <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
-            ) : goingEvents.length === 0 ? (
-              <Text style={styles.eventsEmpty}>Not going to any events yet. Browse the Hot tab to find one.</Text>
             ) : (
-              goingEvents.map((event, idx) => {
-                const now    = Date.now() / 1000;
-                const isLive = event.starts_at <= now && event.expires_at > now;
-                const icon   = EVENT_ICONS[event.event_type] ?? '📌';
-                return (
-                  <View key={event.id}>
-                    {idx > 0 && <View style={styles.divider} />}
-                    <TouchableOpacity
-                      style={styles.eventRow}
-                      onPress={() => router.push(`/event/${event.id}`)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.eventIcon}>{icon}</Text>
-                      <View style={styles.eventInfo}>
-                        <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-                        {event.recurrence_label && (
-                          <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
-                        )}
-                        <View style={styles.eventBadgeRow}>
-                          {isLive && (
-                            <View style={styles.livePill}>
-                              <Text style={styles.livePillText}>LIVE</Text>
-                            </View>
-                          )}
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })
-            )}
-          </View>
-        )}
-
-        {/* ── Tab: Hosting ── */}
-        {!isGuest && activeTab === 'hosting' && (
-          <View style={styles.eventsCard}>
-            <Text style={styles.eventsLabel}>HOSTING</Text>
-            {eventsLoading ? (
-              <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
-            ) : hostingEvents.length === 0 ? (
-              <Text style={styles.eventsEmpty}>No events hosted yet. Create one from the Hot tab.</Text>
-            ) : (
-              hostingEvents.map((event, idx) => {
-                const now    = Date.now() / 1000;
-                const isLive = event.starts_at <= now && event.expires_at > now;
-                const icon   = EVENT_ICONS[event.event_type] ?? '📌';
-                return (
-                  <View key={event.id}>
-                    {idx > 0 && <View style={styles.divider} />}
-                    <TouchableOpacity
-                      style={styles.eventRow}
-                      onPress={() => router.push(`/event/${event.id}`)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.eventIcon}>{icon}</Text>
-                      <View style={styles.eventInfo}>
-                        <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-                        {event.recurrence_label && (
-                          <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
-                        )}
-                        <View style={styles.eventBadgeRow}>
-                          {isLive && (
-                            <View style={styles.livePill}>
-                              <Text style={styles.livePillText}>LIVE</Text>
-                            </View>
-                          )}
-                          {event.recurrence_label && (
-                            <View style={styles.recurPill}>
-                              <Ionicons name="refresh" size={10} color={Colors.violet} />
-                              <Text style={styles.recurPillText}>RECURRING</Text>
-                            </View>
-                          )}
-                        </View>
-                      </View>
+              <>
+                <Text style={styles.eventsLabel}>GOING</Text>
+                {goingEvents.length === 0 ? (
+                  <Text style={styles.eventsEmpty}>No plans yet — find something 🔥</Text>
+                ) : goingEvents.map((event, idx) => {
+                  const now    = Date.now() / 1000;
+                  const isLive = event.starts_at <= now && event.expires_at > now;
+                  const icon   = EVENT_ICONS[event.event_type] ?? '📌';
+                  return (
+                    <View key={event.id}>
+                      {idx > 0 && <View style={styles.divider} />}
                       <TouchableOpacity
-                        style={styles.deleteBtn}
-                        onPress={() => handleDeleteEvent(event)}
-                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        style={styles.eventRow}
+                        onPress={() => router.push(`/event/${event.id}`)}
+                        activeOpacity={0.7}
                       >
-                        <Text style={styles.deleteBtnText}>×</Text>
+                        <Text style={styles.eventIcon}>{icon}</Text>
+                        <View style={styles.eventInfo}>
+                          <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+                          {event.recurrence_label && (
+                            <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
+                          )}
+                          <View style={styles.eventBadgeRow}>
+                            {isLive && (
+                              <View style={styles.livePill}>
+                                <Text style={styles.livePillText}>LIVE</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
                       </TouchableOpacity>
-                    </TouchableOpacity>
-                  </View>
-                );
-              })
+                    </View>
+                  );
+                })}
+
+                <Text style={[styles.eventsLabel, { marginTop: 20 }]}>HOSTING</Text>
+                {hostingEvents.length === 0 ? (
+                  <Text style={styles.eventsEmpty}>Nothing hosted yet — start something ✨</Text>
+                ) : hostingEvents.map((event, idx) => {
+                  const now    = Date.now() / 1000;
+                  const isLive = event.starts_at <= now && event.expires_at > now;
+                  const icon   = EVENT_ICONS[event.event_type] ?? '📌';
+                  return (
+                    <View key={event.id}>
+                      {idx > 0 && <View style={styles.divider} />}
+                      <TouchableOpacity
+                        style={styles.eventRow}
+                        onPress={() => router.push(`/event/${event.id}`)}
+                        activeOpacity={0.7}
+                      >
+                        <Text style={styles.eventIcon}>{icon}</Text>
+                        <View style={styles.eventInfo}>
+                          <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+                          {event.recurrence_label && (
+                            <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
+                          )}
+                          <View style={styles.eventBadgeRow}>
+                            {isLive && (
+                              <View style={styles.livePill}>
+                                <Text style={styles.livePillText}>LIVE</Text>
+                              </View>
+                            )}
+                            {event.recurrence_label && (
+                              <View style={styles.recurPill}>
+                                <Ionicons name="refresh" size={10} color={Colors.violet} />
+                                <Text style={styles.recurPillText}>RECURRING</Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          style={styles.deleteBtn}
+                          onPress={() => handleDeleteEvent(event)}
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        >
+                          <Text style={styles.deleteBtnText}>×</Text>
+                        </TouchableOpacity>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+              </>
             )}
           </View>
         )}
