@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
-import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
+import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, bootstrapChannel, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
@@ -1371,8 +1371,7 @@ export default function App() {
       })
       if (!savedGuestId) {
         saveGuestId(session.guestId)
-        identifyUser(session.guestId, { account_type: 'guest' })
-        track('guest_created')
+        // identifyUser / guest_created deferred to after bootstrap — see below
       }
       setGuest(session)
       setChannelId(location.channelId)
@@ -1409,7 +1408,17 @@ export default function App() {
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
       setOnlineCount(boot.onlineCount ?? null)
       setStatus('ready')
-      track('joined_city', { city: location.city ?? rejoinData?.city ?? null, channel_id: location.channelId })
+
+      // ── Analytics after critical path ────────────────────────────────────────
+      // Deferred so PostHog HTTP requests don't compete with /now fetch or the
+      // first paint of the city channel. Context (_ctx) is captured at call-time
+      // inside trackDeferred so city/country/user are still correct.
+      if (!savedGuestId) {
+        identifyUser(session.guestId, { account_type: 'guest' })
+        trackDeferred('guest_created')
+      }
+      trackDeferred('joined_city', { city: location.city ?? rejoinData?.city ?? null, channel_id: location.channelId })
+
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
