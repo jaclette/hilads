@@ -23,11 +23,30 @@ function avatarColors(name = '') {
 function toMs(ts) {
   if (!ts) return 0
   if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts
-  return new Date(ts).getTime()
+  const normalized = typeof ts === 'string'
+    ? ts.replace(' ', 'T').replace(/(\.\d{3})\d+/, '$1').replace(/([+-]\d{2})$/, '$1:00')
+    : ts
+  return new Date(normalized).getTime()
+}
+
+function startOfDay(d) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate())
 }
 
 function formatTime(ts) {
-  return new Date(toMs(ts)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const ms = toMs(ts)
+  if (!ms) return ''
+  const d   = new Date(ms)
+  const now = new Date()
+  const time      = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  const today     = startOfDay(now)
+  const yesterday = new Date(today.getTime() - 86_400_000)
+  const msgDay    = startOfDay(d)
+  if (msgDay.getTime() === today.getTime())     return time
+  if (msgDay.getTime() === yesterday.getTime()) return `Yesterday · ${time}`
+  const opts = { month: 'short', day: 'numeric' }
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
+  return `${d.toLocaleDateString([], opts)} · ${time}`
 }
 
 async function shareTopic(title, topicId) {

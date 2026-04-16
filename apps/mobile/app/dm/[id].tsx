@@ -28,7 +28,7 @@ import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import { isSameDay, formatDateLabel, formatTime } from '@/lib/messageTime';
+import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ReactionPills } from '@/features/chat/ReactionPills';
@@ -327,7 +327,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               <Text style={styles.metaTextFailed}>Failed · tap to retry</Text>
             )}
             {!isSending && !isFailed && (
-              <Text style={styles.metaText}>{formatTime(msg.created_at)}</Text>
+              <Text style={styles.metaText}>{formatSmartTime(msg.created_at)}</Text>
             )}
           </View>
         )}
