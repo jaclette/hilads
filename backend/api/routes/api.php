@@ -1313,6 +1313,22 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         // ── Phase timing ──────────────────────────────────────────────────────
         $t0 = microtime(true);
 
+        // ── DB connection acquisition (timed separately from query execution) ─
+        //
+        // SINGLE CONNECTION GUARANTEE: Database::pdo() is a per-request singleton.
+        // All subsequent calls (joinWithAuth, membership upsert, MessageRepository)
+        // return the same PDO instance — no multiple connections per request.
+        //
+        // With PDO::ATTR_PERSISTENT, PHP-FPM reuses the underlying TCP socket
+        // across requests in the same worker process:
+        //   <5 ms  → TCP reused (warm worker, persistent conn alive)
+        //   >100 ms → new TCP+TLS handshake (cold worker or Supabase idle timeout)
+        //
+        // Database::lastConnMs() tells us which case we're in so we can distinguish
+        // "slow query" from "slow connection" in the logs.
+        Database::pdo();
+        $tConn = microtime(true);
+
         enforceRateLimit('channel_join', 90, 300);
 
         $tRateLimit = microtime(true);
@@ -1382,12 +1398,24 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         $tDone = microtime(true);
         apiLog('channel_join', 'success', [
-            'channelId'  => $channelId,
-            'isNew'      => $isNewSession,
-            'isAuth'     => $joinUserId !== null,
-            'elapsedMs'  => apiElapsedMs($startedAt),
-            'phases_ms'  => [
-                'rate_limit'    => round(($tRateLimit    - $t0)            * 1000, 1),
+            'channelId'   => $channelId,
+            'isNew'       => $isNewSession,
+            'isAuth'      => $joinUserId !== null,
+            'elapsedMs'   => apiElapsedMs($startedAt),
+            // ── Per-phase breakdown ───────────────────────────────────────────
+            // conn_acquire: time to call Database::pdo() — <5ms = TCP reused,
+            //               >100ms = new TCP+TLS handshake to Supabase pooler.
+            // conn_new_tcp: true when new PDO() took >50ms (new TCP connection).
+            // rate_limit:   APCu lookup — should always be ~0ms.
+            // validation:   input parsing — should always be ~0ms.
+            // presence_auth: the CTE query RTT (upsert + optional auth lookup).
+            //                This is PURE query time, no connection setup included.
+            // build:        JSON assembly — should always be ~0ms.
+            // ─────────────────────────────────────────────────────────────────
+            'phases_ms'   => [
+                'conn_acquire'  => round(($tConn         - $t0)            * 1000, 1),
+                'conn_new_tcp'  => Database::lastConnMs() > 50,
+                'rate_limit'    => round(($tRateLimit    - $tConn)         * 1000, 1),
                 'validation'    => round(($tValidation   - $tRateLimit)    * 1000, 1),
                 'presence_auth' => round(($tPresenceAuth - $tValidation)   * 1000, 1),
                 'build'         => round(($tDone         - $tPresenceAuth) * 1000, 1),
