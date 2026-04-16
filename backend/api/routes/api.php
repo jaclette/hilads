@@ -1341,36 +1341,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         $tValidation = microtime(true);
 
-        $previousChannelId = isset($body['previousChannelId'])
-            ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
-            : false;
-
-        // Defer presence-leave for the previous channel — pure side-effect.
-        if ($previousChannelId !== false && $previousChannelId !== $channelId) {
-            $deferPrevChannel = $previousChannelId;
-            $deferSessionId   = $sessionId;
-            register_shutdown_function(static function () use ($deferPrevChannel, $deferSessionId, $channelId): void {
-                if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-                try {
-                    PresenceRepository::leave($deferPrevChannel, $deferSessionId);
-                } catch (\Throwable $e) {
-                    apiLog('channel_join', 'previous leave failed (deferred)', [
-                        'channelId' => $channelId,
-                        'previousChannelId' => $deferPrevChannel,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            });
-        }
-
         // ── Single DB round-trip: presence upsert + auth user resolution ──────
         //
-        // Previously two sequential queries (~400-800ms combined):
-        //   1. PresenceRepository::join()      → presence upsert + is_new check
-        //   2. AuthService::currentUser()      → session JOIN users
-        //
-        // Now one CTE handles both in one round trip. The auth subquery is a
-        // simple PK lookup on user_sessions — adds ~0ms overhead to the upsert.
+        // One CTE handles presence upsert, new-session check, and auth lookup.
+        // The auth subquery is a simple PK lookup — ~0ms overhead over the upsert.
         // Guests (no cookie/token) skip the auth subquery entirely.
         $authToken = $_COOKIE['hilads_token'] ?? null;
         if ($authToken === null) {
@@ -1386,42 +1360,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         $tPresenceAuth = microtime(true);
 
-        // ── Defer city membership upsert — off critical path entirely ─────────
-        // $joinUserId already resolved above — no second DB lookup needed here.
-        $deferAuthUserId    = $joinUserId;
-        $deferGuestId       = $guestId;
-        $deferMemberChannel = 'city_' . $channelId;
-        register_shutdown_function(static function () use ($deferAuthUserId, $deferGuestId, $deferMemberChannel): void {
-            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-            try {
-                $pdo = Database::pdo();
-                $memberUserId = $deferAuthUserId;
-                if (!$memberUserId) {
-                    $stmt = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
-                    $stmt->execute([$deferGuestId]);
-                    $memberUserId = $stmt->fetchColumn() ?: null;
-                }
-                if ($memberUserId) {
-                    $pdo->prepare("
-                        INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
-                        VALUES (?, ?, now(), now())
-                        ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
-                    ")->execute([$memberUserId, $deferMemberChannel]);
-                }
-            } catch (\Throwable $e) {
-                error_log('[channel_join] membership upsert failed (deferred): ' . $e->getMessage());
-            }
-        });
-
-        // ── Build join message + defer DB write — off critical path ───────────
-        //
-        // We return the message shape immediately without waiting for the INSERT.
-        // The DB write is deferred to after fastcgi_finish_request so it never
-        // blocks the HTTP response.
-        //
-        // IDENTITY RULE: userId must come from the authenticated session only —
-        // never from a guest_id→users table lookup. Enforced by joinWithAuth()
-        // which only resolves the user if a valid session token is present.
+        // ── Build response message (no DB — pure PHP) ─────────────────────────
+        // IDENTITY RULE: userId comes strictly from the authenticated session token —
+        // never from a guest_id → users table lookup.
         $message = null;
         if ($isNewSession) {
             $message = [
@@ -1432,19 +1373,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
                 'nickname'  => $nickname,
                 'createdAt' => time(),
             ];
-
-            $deferMsgChannelId = $channelId;
-            $deferMsgGuestId   = $guestId;
-            $deferMsgNickname  = $nickname;
-            $deferMsgUserId    = $joinUserId;
-            register_shutdown_function(static function () use ($deferMsgChannelId, $deferMsgGuestId, $deferMsgNickname, $deferMsgUserId): void {
-                if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-                try {
-                    MessageRepository::addJoinEvent($deferMsgChannelId, $deferMsgGuestId, $deferMsgNickname, $deferMsgUserId);
-                } catch (\Throwable $e) {
-                    error_log('[channel_join] join event write failed (deferred): ' . $e->getMessage());
-                }
-            });
         }
 
         $tDone = microtime(true);
@@ -1454,26 +1382,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             'isAuth'     => $joinUserId !== null,
             'elapsedMs'  => apiElapsedMs($startedAt),
             'phases_ms'  => [
-                'rate_limit'    => round(($tRateLimit   - $t0)           * 1000, 1),
-                'validation'    => round(($tValidation  - $tRateLimit)   * 1000, 1),
-                'presence_auth' => round(($tPresenceAuth - $tValidation) * 1000, 1),
-                'build'         => round(($tDone        - $tPresenceAuth) * 1000, 1),
+                'rate_limit'    => round(($tRateLimit    - $t0)            * 1000, 1),
+                'validation'    => round(($tValidation   - $tRateLimit)    * 1000, 1),
+                'presence_auth' => round(($tPresenceAuth - $tValidation)   * 1000, 1),
+                'build'         => round(($tDone         - $tPresenceAuth) * 1000, 1),
             ],
         ]);
 
-        if ($isNewSession) {
-            $cityInfo = CityRepository::findById($channelId); // in-process cache — 0ms
-            AnalyticsService::defer('joined_city', $deferAuthUserId ?? $guestId, [
-                'channel_id' => $channelId,
-                'city'       => $cityInfo['name']    ?? null,
-                'country'    => $cityInfo['country'] ?? null,
-                'is_guest'   => $joinUserId === null,
-                'user_id'    => $joinUserId ?? null,
-                'guest_id'   => $joinUserId === null ? $guestId : null,
-            ]);
-        }
-
-        Response::json(['message' => $message], 201);
     } catch (\Throwable $e) {
         apiLog('channel_join', 'failure', [
             'channelId' => $channelId,
@@ -1482,6 +1397,84 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         ]);
         throw $e;
     }
+
+    // ── Flush response to client immediately ──────────────────────────────────
+    //
+    // We echo + fastcgi_finish_request() here, BEFORE any deferred DB work.
+    // This guarantees the client receives the response right after the single
+    // DB round trip (joinWithAuth), regardless of what post-response work does.
+    //
+    // Previously: register_shutdown_function() relied on fastcgi_finish_request()
+    // being the FIRST thing called inside the first shutdown hook. If anything
+    // delayed that (output buffering, proxy, Docker, mod_php), ALL deferred work
+    // ran synchronously before the response — including the analytics curl
+    // which has a 2-second timeout. That alone explains the ~1.8s observation.
+    //
+    // Now: response is unconditionally flushed here. Deferred work below is
+    // truly invisible to the client.
+    http_response_code(201);
+    echo json_encode(['message' => $message ?? null]);
+
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request(); // close FPM ↔ web-server pipe — client has response now
+    }
+
+    // ── Post-response: previous channel leave ─────────────────────────────────
+    $previousChannelId = isset($body['previousChannelId'])
+        ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+        : false;
+
+    if ($previousChannelId !== false && $previousChannelId !== $channelId) {
+        try {
+            PresenceRepository::leave($previousChannelId, $sessionId);
+        } catch (\Throwable $e) {
+            error_log('[channel_join] previous leave failed: ' . $e->getMessage());
+        }
+    }
+
+    // ── Post-response: city membership upsert ─────────────────────────────────
+    try {
+        $pdo          = Database::pdo();
+        $memberUserId = $joinUserId;
+        if (!$memberUserId) {
+            $stmt = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
+            $stmt->execute([$guestId]);
+            $memberUserId = $stmt->fetchColumn() ?: null;
+        }
+        if ($memberUserId) {
+            $pdo->prepare("
+                INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
+                VALUES (?, ?, now(), now())
+                ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
+            ")->execute([$memberUserId, 'city_' . $channelId]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[channel_join] membership upsert failed: ' . $e->getMessage());
+    }
+
+    // ── Post-response: join message INSERT ────────────────────────────────────
+    if ($isNewSession) {
+        try {
+            MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $joinUserId);
+        } catch (\Throwable $e) {
+            error_log('[channel_join] join event write failed: ' . $e->getMessage());
+        }
+    }
+
+    // ── Post-response: analytics ──────────────────────────────────────────────
+    if ($isNewSession) {
+        $cityInfo = CityRepository::findById($channelId); // in-process cache — 0ms
+        AnalyticsService::capture('joined_city', $joinUserId ?? $guestId, [
+            'channel_id' => $channelId,
+            'city'       => $cityInfo['name']    ?? null,
+            'country'    => $cityInfo['country'] ?? null,
+            'is_guest'   => $joinUserId === null,
+            'user_id'    => $joinUserId ?? null,
+            'guest_id'   => $joinUserId === null ? $guestId : null,
+        ]);
+    }
+
+    exit;
 });
 
 // ── Channel bootstrap ─────────────────────────────────────────────────────────

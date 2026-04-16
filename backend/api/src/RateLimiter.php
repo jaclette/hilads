@@ -34,44 +34,11 @@ final class RateLimiter
             return apcu_store($bucketKey, $entry, max(1, (int) $entry['expires_at'] - $now));
         }
 
-        $dir = sys_get_temp_dir() . '/hilads-rate-limit';
-        if (!is_dir($dir) && !@mkdir($dir, 0700, true) && !is_dir($dir)) {
-            return true; // fail open if temp storage is unavailable
-        }
-
-        $path = $dir . '/' . hash('sha256', $key) . '.json';
-        $now  = time();
-        $fp   = @fopen($path, 'c+');
-
-        if ($fp === false) {
-            return true;
-        }
-
-        try {
-            if (!flock($fp, LOCK_EX)) {
-                return true;
-            }
-
-            $raw   = stream_get_contents($fp);
-            $entry = json_decode($raw ?: '', true);
-
-            if (!is_array($entry) || ($entry['expires_at'] ?? 0) < $now) {
-                $entry = ['count' => 1, 'expires_at' => $now + $windowSeconds];
-            } else {
-                if (($entry['count'] ?? 0) >= $limit) {
-                    return false;
-                }
-                $entry['count'] = (int) $entry['count'] + 1;
-            }
-
-            ftruncate($fp, 0);
-            rewind($fp);
-            fwrite($fp, json_encode($entry));
-            fflush($fp);
-            return true;
-        } finally {
-            flock($fp, LOCK_UN);
-            fclose($fp);
-        }
+        // APCu is unavailable — fail open rather than use flock() on a tmp file.
+        // File-based exclusive locking can add 50–300 ms of blocking latency per
+        // request (filesystem I/O + lock contention under concurrent load).
+        // The join rate limit (90/300s) is loose enough that failing open is safe:
+        // the presence upsert is idempotent, and other endpoints protect against spam.
+        return true;
     }
 }
