@@ -1466,7 +1466,7 @@ export default function App() {
       // run concurrently — critical path = max(join, messages) instead of their sum.
       const [joinData, messagesData] = await Promise.all([
         joinChannel(location.channelId, sessionIdRef.current, session.guestId, name),
-        fetchLeanMessages(location.channelId, { limit: 30 }),
+        fetchLeanMessages(location.channelId, { limit: 50 }),
       ])
       const boot = {
         joinMessage: joinData.message ?? null,
@@ -2025,7 +2025,7 @@ export default function App() {
       // Parallel fetch: join + lean messages fire concurrently
       const [switchJoinData, switchMsgsData] = await Promise.all([
         joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId),
-        fetchLeanMessages(newChannelId, { limit: 30 }),
+        fetchLeanMessages(newChannelId, { limit: 50 }),
       ])
       const boot = {
         joinMessage: switchJoinData.message ?? null,

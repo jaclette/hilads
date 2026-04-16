@@ -53,7 +53,7 @@ export async function fetchMessages(channelId, { beforeId, limit } = {}) {
 // Lean messages fetch — skips presence + badge enrichment on the server.
 // Used as one half of the parallel join+messages critical path.
 // Badges are enriched deferred via fetchMessageBadges after first render.
-export async function fetchLeanMessages(channelId, { beforeId, limit = 30 } = {}) {
+export async function fetchLeanMessages(channelId, { beforeId, limit = 50 } = {}) {
   const params = new URLSearchParams({ lean: '1', limit: String(limit) })
   if (beforeId) params.set('before_id', beforeId)
   const res = await fetch(`${BASE}/channels/${channelId}/messages?${params}`, {
