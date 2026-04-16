@@ -1317,9 +1317,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         $tRateLimit = microtime(true);
 
-        if (CityRepository::findById($channelId) === null) {
-            Response::json(['error' => 'Channel not found'], 404);
-        }
+        // City validation intentionally removed from the synchronous path.
+        // Previously: CityRepository::findById triggered a DB round-trip on cold
+        // workers (the first call establishes the DB connection AND runs a
+        // SELECT FROM channels JOIN cities — adding up to 400ms before joinWithAuth).
+        // The client always provides a valid channelId (from the /channels list),
+        // so a 404 guard here has no practical value. An invalid channelId would
+        // fail at the presence upsert with a FK violation (→ 500), which is fine.
+        // City data is still loaded (APCu-cached) in post-response analytics below.
 
         if (!isValidSessionId($sessionId)) {
             Response::json(['error' => 'sessionId is required'], 400);

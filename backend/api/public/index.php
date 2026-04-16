@@ -104,12 +104,22 @@ if (file_exists($envFile)) {
     }
 }
 
+// Buffer output so fastcgi_finish_request() reliably flushes the full response
+// before any post-response deferred work runs.
+ob_start();
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
-if (getenv('SENTRY_DSN')) {
+// Guard: initialize Sentry only once per FPM worker process.
+// Without this, \Sentry\init() runs on every request — it re-registers error
+// handlers, creates a new Hub/Client, and registers shutdown functions each time.
+// define() persists for the lifetime of the worker process.
+if (getenv('SENTRY_DSN') && !defined('SENTRY_INITIALIZED')) {
+    define('SENTRY_INITIALIZED', true);
     \Sentry\init([
-        'dsn'         => getenv('SENTRY_DSN'),
-        'environment' => getenv('APP_ENV') ?: 'production',
+        'dsn'                => getenv('SENTRY_DSN'),
+        'environment'        => getenv('APP_ENV') ?: 'production',
+        'traces_sample_rate' => 0.0, // disable performance tracing overhead
     ]);
 }
 

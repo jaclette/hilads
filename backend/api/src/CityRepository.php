@@ -13,6 +13,18 @@ class CityRepository
             return self::$cities;
         }
 
+        // APCu cross-worker cache — cities change at most a few times per year.
+        // Eliminates the DB round-trip (and the DB connection establishment cost
+        // on cold workers) for every endpoint that validates or looks up a city.
+        // TTL: 1 hour. Cleared automatically when APCu is restarted on deploy.
+        if (function_exists('apcu_fetch') && PHP_SAPI !== 'cli') {
+            $cached = apcu_fetch('hilads_cities_v1');
+            if (is_array($cached)) {
+                self::$cities = $cached;
+                return self::$cities;
+            }
+        }
+
         $rows = Database::pdo()
             ->query("
                 SELECT
@@ -41,6 +53,10 @@ class CityRepository
                 'timezone' => $row['timezone'],
             ];
         }, $rows);
+
+        if (function_exists('apcu_store') && PHP_SAPI !== 'cli') {
+            apcu_store('hilads_cities_v1', self::$cities, 3600);
+        }
 
         return self::$cities;
     }
