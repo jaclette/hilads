@@ -4,6 +4,9 @@
     "minishlink/web-push": "^10.0",
     "sentry/sentry": "^4.23"
   },
+  "require-dev": {
+    "phpunit/phpunit": "^11.0"
+  },
   "config": {
     "optimize-autoloader": true
   }

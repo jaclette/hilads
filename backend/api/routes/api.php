@@ -2422,13 +2422,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
 
     // Event creation requires a registered account — guests may browse and chat
     // but cannot host events.
-    $authUser = AuthService::requireAuth();
-    $userId   = $authUser['id'];
+    $authUser     = AuthService::requireAuth();
+    $userId       = $authUser['id'];
+    $isAmbassador = (bool) ($authUser['_is_ambassador'] ?? false);
 
-    error_log("[event-create] channelId={$channelId} guestId={$guestId} userId={$userId} title=" . json_encode($title));
+    error_log("[event-create] channelId={$channelId} guestId={$guestId} userId={$userId} ambassador=" . ($isAmbassador ? 'yes' : 'no') . " title=" . json_encode($title));
 
     try {
-        $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $userId);
+        $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $userId, $isAmbassador);
     } catch (\Throwable $e) {
         error_log("[event-create] FAILED: " . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
         throw $e; // re-throw so global handler returns 500 — but now it's in the logs

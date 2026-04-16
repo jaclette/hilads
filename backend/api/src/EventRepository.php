@@ -521,7 +521,8 @@ class EventRepository
         int $startsAt,
         int $endsAt,
         string $type = 'other',
-        ?string $userId = null
+        ?string $userId = null,
+        bool $isAmbassador = false
     ): array {
         $pdo      = Database::pdo();
         $parentId = 'city_' . $channelId;
@@ -541,19 +542,9 @@ class EventRepository
             Response::json(['error' => 'You must wait 5 minutes before creating another event'], 429);
         }
 
-        // Cap: 1 active event per guest per channel
-        $capCheck = $pdo->prepare("
-            SELECT 1 FROM channels c
-            JOIN channel_events ce ON ce.channel_id = c.id
-            WHERE c.parent_id    = :parent_id
-              AND ce.source_type = 'hilads'
-              AND ce.guest_id    = :guest_id
-              AND c.status       = 'active'
-              AND ce.expires_at  > now()
-            LIMIT 1
-        ");
-        $capCheck->execute(['parent_id' => $parentId, 'guest_id' => $guestId]);
-        if ($capCheck->fetchColumn()) {
+        // Cap: 1 active event per guest per channel.
+        // Ambassadors are exempt — they may host multiple concurrent events.
+        if (!$isAmbassador && self::guestHasActiveEvent($pdo, $parentId, $guestId)) {
             Response::json(['error' => 'You already have an active event in this channel'], 429);
         }
 
@@ -751,5 +742,28 @@ class EventRepository
                 'external_url'=> $ev['external_url'],
             ]);
         }
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * Returns true when the guest already has at least one non-expired active
+     * hilads event in the given parent channel.  Extracted so it can be tested
+     * independently with a mock PDO without needing a live database.
+     */
+    public static function guestHasActiveEvent(PDO $pdo, string $parentId, string $guestId): bool
+    {
+        $stmt = $pdo->prepare("
+            SELECT 1 FROM channels c
+            JOIN channel_events ce ON ce.channel_id = c.id
+            WHERE c.parent_id    = :parent_id
+              AND ce.source_type = 'hilads'
+              AND ce.guest_id    = :guest_id
+              AND c.status       = 'active'
+              AND ce.expires_at  > now()
+            LIMIT 1
+        ");
+        $stmt->execute(['parent_id' => $parentId, 'guest_id' => $guestId]);
+        return (bool) $stmt->fetchColumn();
     }
 }
