@@ -1348,20 +1348,64 @@ export default function App() {
     setNickname(name)
     nicknameRef.current = name
     setStatus('joining')
+
+    const _t0 = performance.now()
+
     try {
-      const location = rejoinData
-        ? await hydrateSavedLocation(rejoinData)
-        : await locPromiseRef.current
+      const savedGuestId   = loadGuestId()
+      const savedIdentity  = loadIdentity()
+
+      // ── Guest session: start early, in parallel with location resolution ─────
+      // For new users: createGuestSession and geo are both network calls with no
+      // dependency on each other. Starting sessionPromise here saves ~200ms that
+      // was previously sequential (geo resolved first, then createGuestSession).
+      const sessionPromise = savedGuestId
+        ? Promise.resolve({ guestId: savedGuestId, nickname: name })
+        : createGuestSession(name)
+
+      // ── Location: fast path for returning users ───────────────────────────────
+      // Problem: `await locPromiseRef.current` (GPS fix + resolve API) blocks for
+      // 700ms–3400ms before bootstrap even starts — but returning users have
+      // channelId already in localStorage and don't need geo at all.
+      //
+      // Fast path: if savedIdentity.channelId exists, use it immediately.
+      //   → bootstrap fires in <5ms (just localStorage reads, no network).
+      //
+      // Slow path: first-time users with no saved channelId must wait for geo
+      //   to discover which city they're in.
+      //
+      // Geo continues running in background regardless — it updates geoCity /
+      // geoChannelId / cityCountry for UI display, but is no longer on the
+      // bootstrap critical path.
+      let location
+      if (rejoinData) {
+        console.debug('[hilads:join] path=rejoin ms=0')
+        location = await hydrateSavedLocation(rejoinData)
+      } else if (savedIdentity?.channelId) {
+        // Instant — no network call, no GPS wait
+        location = {
+          channelId: savedIdentity.channelId,
+          city:      savedIdentity.city     ?? null,
+          timezone:  savedIdentity.timezone ?? 'UTC',
+          country:   null,
+        }
+        console.debug('[hilads:join] path=saved-identity channelId=' + savedIdentity.channelId + ' ms=' + Math.round(performance.now() - _t0))
+      } else {
+        // First-time user: wait for GPS + city resolve
+        console.debug('[hilads:join] path=geo-wait ms=' + Math.round(performance.now() - _t0))
+        location = await locPromiseRef.current
+        console.debug('[hilads:join] geo-resolved ms=' + Math.round(performance.now() - _t0))
+      }
+
       if (!location && !rejoinData) {
         // Geo was denied before a city was selected — return to onboarding
         setStatus('onboarding')
         return
       }
       if (rejoinData?.city) setCity(rejoinData.city)
-      const savedGuestId = loadGuestId()
-      const session = savedGuestId
-        ? { guestId: savedGuestId, nickname: name }
-        : await createGuestSession(name)
+
+      const session = await sessionPromise
+      console.debug('[hilads:join] session-ready → bootstrap ms=' + Math.round(performance.now() - _t0))
       setAnalyticsContext({
         city:     location.city ?? null,
         country:  location.country ?? null,
