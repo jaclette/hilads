@@ -1545,12 +1545,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         }
 
         // ── q2: presence join + online count (single round-trip) ────────────────
+        $tq2a         = microtime(true);
         $joinResult   = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
         $isNewSession = $joinResult['isNew'];
         $onlineCount  = $joinResult['onlineCount'];
+        $tq2b         = microtime(true);
 
         // ── q3: auth lookup (request-level cached) ────────────────────────────
         $authUser        = AuthService::currentUser();
+        $tq3b            = microtime(true);
         $deferAuthUserId = $authUser ? $authUser['id'] : null;
 
         // Defer persistent city membership upsert.
@@ -1609,12 +1612,16 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         // removes 1 sequential DB query (DISTINCT ON + LEFT JOIN) from the critical path.
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id'])
             ? trim($_GET['before_id']) : null;
-        $limit = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
+        // 25 messages for initial bootstrap — faster query + smaller payload.
+        // Client can fetch older pages via before_id pagination.
+        $limit = min(100, max(10, (int) ($_GET['limit'] ?? 25)));
 
         // ── q5: chat messages ─────────────────────────────────────────────────
+        $tq5a        = microtime(true);
         $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit);
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
+        $tq5b        = microtime(true);
 
         // ── q6: badge enrichment for message authors ──────────────────────────
         // Only registered users need a DB lookup — guest messages use the ghost badge.
@@ -1627,7 +1634,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             }
         }
         $msgUserIds = array_values(array_unique($msgUserIds));
+        $tq6a       = microtime(true);
         $badgeMap   = UserBadgeService::batchFull($msgUserIds, $channelId, $city['name']);
+        $tq6b       = microtime(true);
 
         foreach ($messages as &$msg) {
             $t = $msg['type'] ?? 'text';
@@ -1657,15 +1666,21 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $unreadNotifications = null;
         $currentUser         = null;
 
+        $tq7a = microtime(true);
         if ($authUser !== null) {
-            // ── q11: DM + event-chat unread check ────────────────────────────
+            // ── q7: DM + event-chat unread check ─────────────────────────────
             $hasUnreadDMs = ConversationRepository::hasAnyUnread($authUser['id']);
+            $tq7b = microtime(true);
 
-            // ── q12: notification unread count ───────────────────────────────
+            // ── q8: notification unread count ─────────────────────────────────
             $unreadNotifications = NotificationRepository::unreadCount($authUser['id']);
+            $tq8b = microtime(true);
 
             // currentUser — no extra query (data already in $authUser row)
             $currentUser = AuthService::publicFields($authUser);
+        } else {
+            $tq7b = $tq7a;
+            $tq8b = $tq7a;
         }
 
         $t3 = microtime(true); // after auth data
@@ -1712,6 +1727,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                 'join'     => round(($t1 - $t0) * 1000, 1),
                 'messages' => round(($t2 - $t1) * 1000, 1),
                 'auth'     => round(($t3 - $t2) * 1000, 1),
+            ],
+            'queries_ms'  => [
+                'presence'  => round(($tq2b - $tq2a) * 1000, 1),
+                'auth_user' => round(($tq3b - $tq2b) * 1000, 1),
+                'messages'  => round(($tq5b - $tq5a) * 1000, 1),
+                'badges'    => round(($tq6b - $tq6a) * 1000, 1),
+                'unread_dm' => round(($tq7b - $tq7a) * 1000, 1),
+                'notif_cnt' => round(($tq8b - $tq7b) * 1000, 1),
             ],
         ]);
 
@@ -4261,27 +4284,17 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
         $cityId   = 'city_' . $channelId;
         $timezone = $city['timezone'] ?? 'UTC';
 
-        // Ensure today's recurring-event occurrences exist — deferred so the HTTP response
-        // is never blocked. The daily cron pre-generates occurrences, so this fallback
-        // usually finds nothing to do. On the very first /now call of a new day the
-        // freshly-generated occurrences will appear on the next request, not this one.
-        // EventRepository::getByChannel() already defers the same call from bootstrap,
-        // so occurrences are always correct within one request of being needed.
-        $deferCityId   = $cityId;
-        $deferTimezone = $timezone;
-        register_shutdown_function(static function () use ($deferCityId, $deferTimezone): void {
-            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-            try {
-                EventSeriesRepository::ensureTodayOccurrences($deferCityId, $deferTimezone);
-            } catch (\Throwable) {
-                // non-critical
-            }
-        });
+        // One round-trip for both hilads + ticketmaster events (was two separate calls).
+        // getAllByChannel defers ensureTodayOccurrences internally.
+        // getAllByChannel uses SELECT_CITY (no channels JOIN) + combined WHERE source_type IN (...)
+        $t0       = microtime(true);
+        $allEvs   = EventRepository::getAllByChannel($channelId, $participantKey, $city);
+        $events   = $allEvs['hilads'];
+        $publicEvents = $allEvs['ticketmaster'];
+        $t1       = microtime(true);
 
-        // Pass $city to avoid a redundant CityRepository::findById call inside getByChannel.
-        $events       = EventRepository::getByChannel($channelId, $participantKey, $city);
-        $topics       = TopicRepository::getByCity($cityId);
-        $publicEvents = EventRepository::getPublicByChannel($channelId);
+        $topics   = TopicRepository::getByCity($cityId);
+        $t2       = microtime(true);
 
         // Normalize each item into a consistent FeedItem DTO.
         $now   = time();
@@ -4314,10 +4327,15 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
         });
 
         apiLog('now_feed', 'success', [
-            'channelId' => $channelId,
-            'events'    => count($events),
-            'topics'    => count($topics),
-            'elapsedMs' => apiElapsedMs($startedAt),
+            'channelId'   => $channelId,
+            'events'      => count($events),
+            'publicEvents'=> count($publicEvents),
+            'topics'      => count($topics),
+            'elapsedMs'   => apiElapsedMs($startedAt),
+            'phases_ms'   => [
+                'events' => round(($t1 - $t0) * 1000, 1),
+                'topics' => round(($t2 - $t1) * 1000, 1),
+            ],
         ]);
 
         // Normalize public events and include in response so mobile avoids a second request.

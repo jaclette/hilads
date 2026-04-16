@@ -440,6 +440,14 @@ run($pdo,
     "UPDATE channel_events ce SET city_id = c.parent_id FROM channels c WHERE c.id = ce.channel_id AND ce.city_id IS NULL",
     'channel_events.city_id backfill'
 );
+// Denormalized created_at: mirrors channels.created_at so we can drop the channels JOIN
+// from city-channel event queries entirely (previously needed c.created_at in SELECT)
+run($pdo, "ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'channel_events.created_at');
+// Backfill from channels.created_at — idempotent (re-run just sets the same value)
+run($pdo,
+    "UPDATE channel_events ce SET created_at = c.created_at FROM channels c WHERE c.id = ce.channel_id",
+    'channel_events.created_at backfill'
+);
 
 // event_participants
 run($pdo, "ALTER TABLE event_participants ADD COLUMN IF NOT EXISTS user_id TEXT REFERENCES users(id) ON DELETE SET NULL", 'event_participants.user_id');

@@ -10,6 +10,7 @@ class EventRepository
 
     // ── Shared SELECT columns ─────────────────────────────────────────────────
 
+    // Full SELECT with channels JOIN — used for user/admin queries that need c.status.
     private const SELECT = "
         SELECT
             c.id,
@@ -36,6 +37,37 @@ class EventRepository
             EXTRACT(EPOCH FROM c.created_at)::INTEGER   AS created_at
         FROM channel_events ce
         JOIN channels c ON c.id = ce.channel_id
+        LEFT JOIN event_series es ON es.id = ce.series_id
+    ";
+
+    // City-optimised SELECT — no channels JOIN.
+    // Uses denormalized ce.channel_id (event ID), ce.city_id (parent), ce.created_at.
+    // Safe for city-scoped queries where expires_at > now() already excludes deleted events.
+    private const SELECT_CITY = "
+        SELECT
+            ce.channel_id                               AS id,
+            ce.city_id                                  AS parent_id,
+            ce.source_type                              AS source,
+            ce.external_id,
+            ce.guest_id,
+            ce.created_by,
+            ce.title,
+            ce.event_type                               AS type,
+            ce.venue,
+            ce.location,
+            ce.location                                 AS location_hint,
+            ce.venue_lat,
+            ce.venue_lng,
+            ce.image_url,
+            ce.external_url,
+            ce.series_id,
+            es.recurrence_type,
+            es.weekdays                                 AS series_weekdays,
+            es.interval_days,
+            EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
+            EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
+            EXTRACT(EPOCH FROM ce.created_at)::INTEGER  AS created_at
+        FROM channel_events ce
         LEFT JOIN event_series es ON es.id = ce.series_id
     ";
 
@@ -129,7 +161,7 @@ class EventRepository
             }
         });
 
-        $stmt = Database::pdo()->prepare(self::SELECT . "
+        $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
             WHERE ce.city_id     = :city_id
               AND ce.source_type = 'hilads'
               AND ce.expires_at  > now()
@@ -240,7 +272,7 @@ class EventRepository
 
         EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $days);
 
-        $stmt = Database::pdo()->prepare(self::SELECT . "
+        $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
             WHERE ce.city_id    = :city_id
               AND ce.expires_at  > now()
               AND ce.starts_at   < to_timestamp(:cutoff)
@@ -272,7 +304,7 @@ class EventRepository
 
     public static function getPublicByChannel(int $channelId): array
     {
-        $stmt = Database::pdo()->prepare(self::SELECT . "
+        $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
             WHERE ce.city_id     = :city_id
               AND ce.source_type = 'ticketmaster'
               AND ce.expires_at  > now()
@@ -281,6 +313,115 @@ class EventRepository
         );
         $stmt->execute(['city_id' => 'city_' . $channelId]);
         return array_map([self::class, 'format'], $stmt->fetchAll());
+    }
+
+    /**
+     * Fetches both Hilads AND Ticketmaster events for a city in ONE DB round-trip.
+     * Replaces the two-call pattern getByChannel() + getPublicByChannel() in /now,
+     * saving one sequential DB query (one less network RTT).
+     *
+     * Returns: [ 'hilads' => [...processed+participant-enriched...], 'ticketmaster' => [...] ]
+     */
+    public static function getAllByChannel(int $channelId, ?string $participantKey = null, ?array $city = null): array
+    {
+        if ($city === null) {
+            $city = CityRepository::findById($channelId);
+        }
+        $timezone = $city['timezone'] ?? 'UTC';
+        $tz       = new DateTimeZone($timezone);
+        $today    = (new DateTime('now', $tz))->format('Y-m-d');
+        $now      = time();
+
+        $cityId   = 'city_' . $channelId;
+        $tzString = $timezone;
+        register_shutdown_function(static function () use ($cityId, $tzString): void {
+            try { EventSeriesRepository::ensureTodayOccurrences($cityId, $tzString); }
+            catch (\Throwable) {}
+        });
+
+        // One query for both source types — hits idx_channel_events_city_active
+        $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
+            WHERE ce.city_id      = :city_id
+              AND ce.source_type IN ('hilads', 'ticketmaster')
+              AND ce.expires_at   > now()
+            ORDER BY ce.source_type ASC, ce.starts_at ASC
+        ");
+        // ORDER BY source_type ASC: 'hilads' < 'ticketmaster' — hilads rows arrive first
+        $stmt->execute(['city_id' => $cityId]);
+
+        $userEvents     = [];
+        $importedEvents = [];
+        $publicEvents   = [];
+        $seenKeys       = [];
+
+        foreach ($stmt->fetchAll() as $row) {
+            $event = self::format($row);
+
+            if ($event['source'] === 'ticketmaster') {
+                if (count($publicEvents) < self::MAX_PUBLIC) {
+                    $publicEvents[] = $event;
+                }
+                continue;
+            }
+
+            // Hilads: apply date visibility filter
+            $startDate = (new DateTime('@' . $event['starts_at']))->setTimezone($tz)->format('Y-m-d');
+            $endDate   = (new DateTime('@' . $event['expires_at']))->setTimezone($tz)->format('Y-m-d');
+            $isVisible = $startDate >= $today || ($event['starts_at'] <= $now && $endDate >= $today);
+            if (!$isVisible) continue;
+
+            // Deduplicate recurring series
+            $dedupeKey = $event['series_id'] ?: $event['id'];
+            if (isset($seenKeys[$dedupeKey])) continue;
+            $seenKeys[$dedupeKey] = true;
+
+            if ($event['guest_id'] !== null) {
+                $userEvents[] = $event;
+            } else {
+                $importedEvents[] = $event;
+            }
+        }
+
+        // Sort + cap hilads events (same logic as getByChannel)
+        $sortFn = function (array $a, array $b) use ($now): int {
+            $aOn = $a['starts_at'] <= $now && $a['expires_at'] > $now ? 1 : 0;
+            $bOn = $b['starts_at'] <= $now && $b['expires_at'] > $now ? 1 : 0;
+            if ($aOn !== $bOn) return $bOn - $aOn;
+            return $a['starts_at'] <=> $b['starts_at'];
+        };
+        usort($userEvents,     $sortFn);
+        usort($importedEvents, $sortFn);
+        $slots  = max(0, self::MAX_HILADS - count($userEvents));
+        $events = array_merge($userEvents, array_slice($importedEvents, 0, $slots));
+
+        // Batch participant counts (1 query regardless of event count)
+        if (!empty($events)) {
+            $ids          = array_column($events, 'id');
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+            $cntStmt = Database::pdo()->prepare(
+                "SELECT channel_id, COUNT(*) AS cnt FROM event_participants WHERE channel_id IN ($placeholders) GROUP BY channel_id"
+            );
+            $cntStmt->execute($ids);
+            $counts = array_column($cntStmt->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');
+
+            $isIn = [];
+            if ($participantKey !== null) {
+                $inStmt = Database::pdo()->prepare(
+                    "SELECT channel_id FROM event_participants WHERE channel_id IN ($placeholders) AND guest_id = ?"
+                );
+                $inStmt->execute(array_merge($ids, [$participantKey]));
+                $isIn = array_fill_keys($inStmt->fetchAll(\PDO::FETCH_COLUMN), true);
+            }
+
+            foreach ($events as &$event) {
+                $event['participant_count'] = (int) ($counts[$event['id']] ?? 0);
+                $event['is_participating']  = $participantKey !== null ? isset($isIn[$event['id']]) : null;
+            }
+            unset($event);
+        }
+
+        return ['hilads' => $events, 'ticketmaster' => $publicEvents];
     }
 
     public static function findById(string $eventId): ?array
