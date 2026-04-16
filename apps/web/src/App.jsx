@@ -737,7 +737,6 @@ export default function App() {
   const lastJoinAtRef = useRef(0)          // throttle: timestamp of last join shown in feed
   const promptsShownRef = useRef(new Set())// tracks which prompt subtypes have been injected
   const prevEventCountRef = useRef(0)      // detects new events added to the events list
-  const skipEventCardsRef = useRef(false)  // suppresses bulk-load from injecting "new event" cards
   const locPromiseRef = useRef(null)
   const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
@@ -1385,7 +1384,7 @@ export default function App() {
       setCityTimezone(location.timezone ?? 'UTC')
       activeChannelRef.current = location.channelId
 
-      setHotEventsStatus('idle')
+      setHotEventsStatus('loading')
 
       // Reset pagination state for this channel
       hasMoreMessagesRef.current = false
@@ -1586,9 +1585,28 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // Events + Topics are NOT fetched here. They load lazily when the user opens
-      // the Hot/Events drawer (loadChannelEvents). This keeps bootstrap the sole
-      // request on city channel entry. /now belongs to the discovery screen only.
+      // ── Events + Topics: fetch in background after messages are shown ────────
+      // Bootstrap no longer includes events — /now fires separately so it never
+      // blocks the initial chat render. hotEventsStatus was set to 'loading' above.
+      const joinChannelId = location.channelId
+      fetchNowFeed(joinChannelId, sessionIdRef.current).then(data => {
+        if (activeChannelRef.current !== joinChannelId) return
+        const nowItems = data.items ?? []
+        const evs  = nowItems.filter(i => i.kind === 'event')
+        const tops = nowItems.filter(i => i.kind === 'topic')
+        setEvents(evs)
+        setTopics(tops)
+        const counts = {}
+        const participated = new Set()
+        evs.forEach(ev => {
+          counts[ev.id] = ev.participant_count ?? 0
+          if (ev.is_participating) participated.add(ev.id)
+        })
+        setEventParticipants(counts)
+        setParticipatedEvents(participated)
+        setCityEvents(data.publicEvents ?? [])
+        setHotEventsStatus('ready')
+      }).catch(() => setHotEventsStatus('ready'))
     } catch (err) {
       if (rejoinData) {
         // stored channel may no longer exist — fall back to home
@@ -1847,7 +1865,7 @@ export default function App() {
     setEvents([])
     setCityEvents([])
     setTopics([])
-    setHotEventsStatus('idle')
+    setHotEventsStatus('loading')
     setActiveEventId(null)
     pushUrl(`/city/${cityToSlug(newCityName)}`)
     setPageMeta(`Who's in ${newCityName} right now | Hilads`, `See who's online and what's happening in ${newCityName} right now.`)
@@ -1917,7 +1935,26 @@ export default function App() {
         }
       }
       pollFnRef.current = doRefresh
-      // Events + Topics load lazily when the user opens the Hot/Events drawer.
+
+      // Events + Topics: fetch in background after messages are shown
+      fetchNowFeed(newChannelId, sessionIdRef.current).then(data => {
+        if (activeChannelRef.current !== newChannelId) return
+        const nowItems = data.items ?? []
+        const evs  = nowItems.filter(i => i.kind === 'event')
+        const tops = nowItems.filter(i => i.kind === 'topic')
+        setEvents(evs)
+        setTopics(tops)
+        const counts = {}
+        const participated = new Set()
+        evs.forEach(ev => {
+          counts[ev.id] = ev.participant_count ?? 0
+          if (ev.is_participating) participated.add(ev.id)
+        })
+        setEventParticipants(counts)
+        setParticipatedEvents(participated)
+        setCityEvents(data.publicEvents ?? [])
+        setHotEventsStatus('ready')
+      }).catch(() => setHotEventsStatus('ready'))
     } catch {
       // silently fail — user stays with empty feed for new city
     }
@@ -2123,46 +2160,6 @@ export default function App() {
     setTimeout(() => setSuccessToast(null), 3000)
   }
 
-  // ── Events + Topics lazy loader ──────────────────────────────────────────────
-  // Called only when the user opens the Hot/Events drawer (or after event creation).
-  // Keeping this off the join path means bootstrap completes faster and the city
-  // channel never calls /now — that endpoint belongs to the discovery screen only.
-  async function loadChannelEvents(cid) {
-    if (!cid) return
-    setHotEventsStatus('loading')
-    try {
-      const data = await fetchNowFeed(cid, sessionIdRef.current)
-      if (activeChannelRef.current !== cid) return // channel switched while loading
-      const nowItems = data.items ?? []
-      const evs  = nowItems.filter(i => i.kind === 'event')
-      const tops = nowItems.filter(i => i.kind === 'topic')
-      const counts = {}
-      const participated = new Set()
-      evs.forEach(ev => {
-        counts[ev.id] = ev.participant_count ?? 0
-        if (ev.is_participating) participated.add(ev.id)
-      })
-      // Suppress "new event" cards — this is a bulk load, not a live new-event signal.
-      skipEventCardsRef.current = true
-      setEvents(evs)
-      setTopics(tops)
-      setEventParticipants(counts)
-      setParticipatedEvents(participated)
-      setCityEvents(data.publicEvents ?? [])
-      setHotEventsStatus('ready')
-    } catch {
-      setHotEventsStatus('ready')
-    }
-  }
-
-  // Trigger events load the first time the user opens the Hot drawer.
-  // Subsequent opens reuse the already-loaded state; WS keeps it live via new_event / newTopic.
-  useEffect(() => {
-    if (!showEventDrawer || !channelId) return
-    if (hotEventsStatus !== 'idle') return
-    loadChannelEvents(channelId)
-  }, [showEventDrawer]) // eslint-disable-line react-hooks/exhaustive-deps
-
   // Guard: only registered users can create events
   function openCreateEvent() {
     if (!account) {
@@ -2192,22 +2189,28 @@ export default function App() {
     }
     // Confirm with server (catches any server-side pruning or ordering)
     const cid = activeChannelRef.current
-    if (cid) loadChannelEvents(cid)
+    if (!cid) return
+    fetchNowFeed(cid, sessionIdRef.current).then(data => {
+      if (activeChannelRef.current === cid) {
+        const nowItems = data.items ?? []
+        const evs  = nowItems.filter(i => i.kind === 'event')
+        const tops = nowItems.filter(i => i.kind === 'topic')
+        setEvents(evs)
+        setTopics(tops)
+        setHotEventsStatus('ready')
+        const counts = {}
+        evs.forEach(ev => { counts[ev.id] = ev.participant_count ?? 0 })
+        setEventParticipants(prev => ({ ...prev, ...counts }))
+      }
+    }).catch(() => {})
   }
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current)
 
-  // Inject a new-event message when events array grows (real-time event added via WS).
+  // Inject a new-event message when events array grows (real-time event added).
   // Only in city chat. Stays in feed permanently like a normal message.
-  // skipEventCardsRef suppresses bulk-load (initial fetch) from flooding the feed.
   useEffect(() => {
     if (!activeRef.current || activeEventIdRef.current) {
-      prevEventCountRef.current = events.length
-      return
-    }
-    // Bulk load from loadChannelEvents — update counter, skip card injection.
-    if (skipEventCardsRef.current) {
-      skipEventCardsRef.current = false
       prevEventCountRef.current = events.length
       return
     }
@@ -3400,7 +3403,7 @@ export default function App() {
                 </div>
               )
 
-              if (hotEventsStatus === 'loading' || hotEventsStatus === 'idle') {
+              if (hotEventsStatus === 'loading') {
                 return (
                   <>
                     <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
