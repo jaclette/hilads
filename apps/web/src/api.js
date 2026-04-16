@@ -63,6 +63,31 @@ export async function joinChannel(channelId, sessionId, guestId, nickname, previ
   return res.json()
 }
 
+export async function bootstrapChannel(channelId, sessionId, guestId, nickname, previousChannelId = null) {
+  const body = { sessionId, guestId, nickname }
+  if (previousChannelId) body.previousChannelId = previousChannelId
+  const res = await fetch(`${BASE}/channels/${channelId}/bootstrap`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error('Failed to bootstrap channel')
+  const data = await res.json()
+  return {
+    joinMessage:         data.joinMessage         ?? null,
+    messages:            data.messages            ?? [],
+    hasMore:             data.hasMore             ?? false,
+    onlineUsers:         data.onlineUsers         ?? [],
+    onlineCount:         data.onlineCount         ?? 0,
+    feedItems:           data.feedItems           ?? [],
+    publicEvents:        data.publicEvents        ?? [],
+    cityEvents:          data.cityEvents          ?? [],
+    hasUnreadDMs:        data.hasUnreadDMs        ?? null,
+    unreadNotifications: data.unreadNotifications ?? null,
+  }
+}
+
 export async function leaveChannel(channelId, sessionId) {
   const res = await fetch(`${BASE}/channels/${channelId}/leave`, {
     method: 'POST',

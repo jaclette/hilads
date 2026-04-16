@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, bootstrapChannel, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -1359,25 +1359,21 @@ export default function App() {
       setCityTimezone(location.timezone ?? 'UTC')
       activeChannelRef.current = location.channelId
 
-      // All four requests start simultaneously — none has a true dependency on the others
       setHotEventsStatus('loading')
-      const joinP       = joinChannel(location.channelId, sessionIdRef.current, session.guestId, name)
-      const nowFeedP    = fetchNowFeed(location.channelId, sessionIdRef.current)
-      const cityEventsP = fetchCityEvents(location.channelId)
 
       // Reset pagination state for this channel
       hasMoreMessagesRef.current = false
       setHasMoreMessages(false)
       oldestMessageIdRef.current = null
 
-      const messagesP = fetchMessages(location.channelId, { limit: 50 })
-      const [joinData, data] = await Promise.all([joinP, messagesP])
-      // joinData.message is null for re-joins within presence TTL — handle gracefully
-      const joinKey = joinData.message ? messageKey(joinData.message) : null
-      knownIdsRef.current = new Set(data.messages.map(messageKey).filter(Boolean))
+      // Single bootstrap call replaces: join + messages + now-feed + city-events
+      const boot = await bootstrapChannel(location.channelId, sessionIdRef.current, session.guestId, name)
+      // boot.joinMessage is null for re-joins within presence TTL — handle gracefully
+      const joinKey = boot.joinMessage ? messageKey(boot.joinMessage) : null
+      knownIdsRef.current = new Set(boot.messages.map(messageKey).filter(Boolean))
 
-      const total = data.messages.length
-      const initialItems = dedupeWeather(data.messages.map((m, idx) => {
+      const total = boot.messages.length
+      const initialItems = dedupeWeather(boot.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
         const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
         return toFeedItem(m, delay)
@@ -1385,13 +1381,13 @@ export default function App() {
 
       setFeed(initialItems)
 
-      // Set pagination cursor: data.messages[0] is the oldest message (backend returns ASC)
-      const more = data.hasMore ?? false
+      // Set pagination cursor: boot.messages[0] is the oldest message (backend returns ASC)
+      const more = boot.hasMore ?? false
       hasMoreMessagesRef.current = more
       setHasMoreMessages(more)
-      if (more && data.messages.length > 0) oldestMessageIdRef.current = data.messages[0]?.id ?? null
+      if (more && boot.messages.length > 0) oldestMessageIdRef.current = boot.messages[0]?.id ?? null
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
-      setOnlineCount(null) // populated within ~100ms by WS presenceSnapshot
+      setOnlineCount(boot.onlineCount ?? null)
       setStatus('ready')
       track('joined_city', { city: location.city ?? rejoinData?.city ?? null, channel_id: location.channelId })
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
@@ -1548,7 +1544,7 @@ export default function App() {
       // New messages arrive via WebSocket; this only runs when the tab was hidden.
       const doRefresh = async () => {
         if (!activeRef.current) return
-        const latest = await fetchMessages(location.channelId)
+        const latest = await fetchMessages(location.channelId, { limit: 50 })
         if (activeChannelRef.current !== location.channelId) return // discard if switched away
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
@@ -1560,37 +1556,22 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // ── Events + Topics: apply results from promises started above ───────────
-      Promise.allSettled([nowFeedP, cityEventsP]).then(([nowResult, publicResult]) => {
-        if (activeChannelRef.current !== location.channelId) return
-
-        const nowOk    = nowResult.status === 'fulfilled'
-        const publicOk = publicResult.status === 'fulfilled'
-
-        if (nowOk) {
-          const nowItems = nowResult.value.items ?? []
-          const evs      = nowItems.filter(i => i.kind === 'event')
-          const tops     = nowItems.filter(i => i.kind === 'topic')
-          setEvents(evs)
-          setTopics(tops)
-          const counts = {}
-          const participated = new Set()
-          evs.forEach(ev => {
-            counts[ev.id] = ev.participant_count ?? 0
-            if (ev.is_participating) participated.add(ev.id)
-          })
-          setEventParticipants(counts)
-          setParticipatedEvents(participated)
-        } else {
-          setEvents([])
-          setTopics([])
-        }
-
-        if (publicOk) setCityEvents(publicResult.value.events)
-        else setCityEvents([])
-
-        setHotEventsStatus(nowOk || publicOk ? 'ready' : 'error')
+      // ── Events + Topics: apply from bootstrap result ─────────────────────────
+      const bootNowItems = boot.feedItems ?? []
+      const bootEvs      = bootNowItems.filter(i => i.kind === 'event')
+      const bootTops     = bootNowItems.filter(i => i.kind === 'topic')
+      setEvents(bootEvs)
+      setTopics(bootTops)
+      const bootCounts = {}
+      const bootParticipated = new Set()
+      bootEvs.forEach(ev => {
+        bootCounts[ev.id] = ev.participant_count ?? 0
+        if (ev.is_participating) bootParticipated.add(ev.id)
       })
+      setEventParticipants(bootCounts)
+      setParticipatedEvents(bootParticipated)
+      setCityEvents(boot.publicEvents ?? [])
+      setHotEventsStatus('ready')
     } catch (err) {
       if (rejoinData) {
         // stored channel may no longer exist — fall back to home
@@ -1863,28 +1844,23 @@ export default function App() {
     activeEventIdRef.current = null
 
     try {
-      // All four requests start simultaneously — none has a true dependency on the others
-      const joinP       = joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId)
-      const nowFeedP    = fetchNowFeed(newChannelId, sessionIdRef.current)
-      const cityEventsP = fetchCityEvents(newChannelId)
-
       // Reset pagination state for the new channel
       hasMoreMessagesRef.current = false
       setHasMoreMessages(false)
       oldestMessageIdRef.current = null
 
-      const messagesP = fetchMessages(newChannelId, { limit: 50 })
-      const [joinData, data] = await Promise.all([joinP, messagesP])
+      // Single bootstrap call replaces: join + messages + now-feed + city-events
+      const boot = await bootstrapChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId)
 
       // another switch happened while we were loading — discard
       if (activeChannelRef.current !== newChannelId) return
 
-      // joinData.message is null for re-joins within presence TTL — handle gracefully
-      const joinKey = joinData.message ? messageKey(joinData.message) : null
+      // boot.joinMessage is null for re-joins within presence TTL — handle gracefully
+      const joinKey = boot.joinMessage ? messageKey(boot.joinMessage) : null
 
-      knownIdsRef.current = new Set(data.messages.map(messageKey).filter(Boolean))
-      const total = data.messages.length
-      const initialItems = dedupeWeather(data.messages.map((m, idx) => {
+      knownIdsRef.current = new Set(boot.messages.map(messageKey).filter(Boolean))
+      const total = boot.messages.length
+      const initialItems = dedupeWeather(boot.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
         const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
         return toFeedItem(m, delay)
@@ -1892,12 +1868,12 @@ export default function App() {
       setFeed(initialItems)
 
       // Set pagination cursor
-      const switchMore = data.hasMore ?? false
+      const switchMore = boot.hasMore ?? false
       hasMoreMessagesRef.current = switchMore
       setHasMoreMessages(switchMore)
-      if (switchMore && data.messages.length > 0) oldestMessageIdRef.current = data.messages[0]?.id ?? null
+      if (switchMore && boot.messages.length > 0) oldestMessageIdRef.current = boot.messages[0]?.id ?? null
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: activeNickname, isMe: true }])
-      setOnlineCount(joinData.onlineCount ?? null)
+      setOnlineCount(boot.onlineCount ?? null)
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(newChannelId, newCityName)
 
@@ -1919,7 +1895,7 @@ export default function App() {
       // Tab-focus refresh only — new messages arrive via WebSocket
       const doRefresh = async () => {
         if (!activeRef.current) return
-        const latest = await fetchMessages(newChannelId)
+        const latest = await fetchMessages(newChannelId, { limit: 50 })
         if (activeChannelRef.current !== newChannelId) return // discard if switched away again
         const newMsgs = latest.messages.filter((m) => !knownIdsRef.current.has(messageKey(m)))
         if (newMsgs.length > 0) {
@@ -1931,37 +1907,22 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // Events + Topics: apply results from promises started above
-      Promise.allSettled([nowFeedP, cityEventsP]).then(([nowResult, publicResult]) => {
-        if (activeChannelRef.current !== newChannelId) return
-
-        const nowOk    = nowResult.status === 'fulfilled'
-        const publicOk = publicResult.status === 'fulfilled'
-
-        if (nowOk) {
-          const nowItems = nowResult.value.items ?? []
-          const evs      = nowItems.filter(i => i.kind === 'event')
-          const tops     = nowItems.filter(i => i.kind === 'topic')
-          setEvents(evs)
-          setTopics(tops)
-          const counts = {}
-          const participated = new Set()
-          evs.forEach(ev => {
-            counts[ev.id] = ev.participant_count ?? 0
-            if (ev.is_participating) participated.add(ev.id)
-          })
-          setEventParticipants(counts)
-          setParticipatedEvents(participated)
-        } else {
-          setEvents([])
-          setTopics([])
-        }
-
-        if (publicOk) setCityEvents(publicResult.value.events)
-        else setCityEvents([])
-
-        setHotEventsStatus(nowOk || publicOk ? 'ready' : 'error')
+      // Events + Topics: apply from bootstrap result
+      const switchNowItems = boot.feedItems ?? []
+      const switchEvs = switchNowItems.filter(i => i.kind === 'event')
+      const switchTops = switchNowItems.filter(i => i.kind === 'topic')
+      setEvents(switchEvs)
+      setTopics(switchTops)
+      const switchCounts = {}
+      const switchParticipated = new Set()
+      switchEvs.forEach(ev => {
+        switchCounts[ev.id] = ev.participant_count ?? 0
+        if (ev.is_participating) switchParticipated.add(ev.id)
       })
+      setEventParticipants(switchCounts)
+      setParticipatedEvents(switchParticipated)
+      setCityEvents(boot.publicEvents ?? [])
+      setHotEventsStatus('ready')
     } catch {
       // silently fail — user stays with empty feed for new city
     }
@@ -2083,7 +2044,7 @@ export default function App() {
     }
 
     // Re-fetch city messages
-    fetchMessages(cid).then(data => {
+    fetchMessages(cid, { limit: 50 }).then(data => {
       if (activeEventIdRef.current !== null || activeChannelRef.current !== cid) return
       knownIdsRef.current = new Set(data.messages.map(messageKey))
       const total = data.messages.length
@@ -2097,7 +2058,7 @@ export default function App() {
     // Tab-focus refresh only — new messages arrive via WebSocket
     const doRefresh = async () => {
       if (!activeRef.current) return
-      const latest = await fetchMessages(cid)
+      const latest = await fetchMessages(cid, { limit: 50 })
       if (activeChannelRef.current !== cid || activeEventIdRef.current !== null) return
       const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(messageKey(m)))
       if (newMsgs.length > 0) {
