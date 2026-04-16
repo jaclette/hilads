@@ -313,6 +313,7 @@ const MODE_META = {
 }
 
 function messageKey(m) {
+  if (!m) return null
   if (m.type === 'system' && m.event === 'join') return `system_${m.createdAt}_${m.nickname}`
   return m.id
 }
@@ -1359,8 +1360,9 @@ export default function App() {
 
       const messagesP = fetchMessages(location.channelId, { limit: 50 })
       const [joinData, data] = await Promise.all([joinP, messagesP])
-      const joinKey = messageKey(joinData.message)
-      knownIdsRef.current = new Set(data.messages.map(messageKey))
+      // joinData.message is null for re-joins within presence TTL — handle gracefully
+      const joinKey = joinData.message ? messageKey(joinData.message) : null
+      knownIdsRef.current = new Set(data.messages.map(messageKey).filter(Boolean))
 
       const total = data.messages.length
       const initialItems = dedupeWeather(data.messages.map((m, idx) => {
@@ -1381,7 +1383,7 @@ export default function App() {
       setStatus('ready')
       track('joined_city', { city: location.city ?? rejoinData?.city ?? null, channel_id: location.channelId })
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
-      scheduleEphemeral(joinKey)
+      if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
@@ -1849,9 +1851,10 @@ export default function App() {
       // another switch happened while we were loading — discard
       if (activeChannelRef.current !== newChannelId) return
 
-      const joinKey = messageKey(joinData.message)
+      // joinData.message is null for re-joins within presence TTL — handle gracefully
+      const joinKey = joinData.message ? messageKey(joinData.message) : null
 
-      knownIdsRef.current = new Set(data.messages.map(messageKey))
+      knownIdsRef.current = new Set(data.messages.map(messageKey).filter(Boolean))
       const total = data.messages.length
       const initialItems = dedupeWeather(data.messages.map((m, idx) => {
         const staggerIndex = Math.max(0, idx - (total - 8))
@@ -1867,7 +1870,7 @@ export default function App() {
       if (switchMore && data.messages.length > 0) oldestMessageIdRef.current = data.messages[0]?.id ?? null
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: activeNickname, isMe: true }])
       setOnlineCount(joinData.onlineCount ?? null)
-      scheduleEphemeral(joinKey)
+      if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(newChannelId, newCityName)
 
       activeRef.current = true
@@ -3828,6 +3831,9 @@ export default function App() {
             localStorage.removeItem(AUTH_FLAG_KEY) // next boot is guest — skip authMe()
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
+            // Reset geolocation so the next join triggers a fresh city resolution
+            // rather than silently reusing the member's stale location.
+            locPromiseRef.current = startGeolocation()
             // Clear all overlay state so authenticated screens don't re-mount
             // if the user re-enters the app as a guest in the same session.
             setShowConversations(false)
