@@ -1311,6 +1311,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         $nickname  = $body['nickname'] ?? null;
 
         // ── Phase timing ──────────────────────────────────────────────────────
+        // $startedAt is set at handler entry (before body parse).
+        // $t0 is set here, after body parse.
+        // 'pre_phase' in the log captures: router scan + Request::json().
+        // Should be ~0ms. If >5ms, something unexpected is blocking body parse.
         $t0 = microtime(true);
 
         // ── DB connection acquisition (timed separately from query execution) ─
@@ -1413,10 +1417,17 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             // build:        JSON assembly — should always be ~0ms.
             // ─────────────────────────────────────────────────────────────────
             'phases_ms'   => [
+                // pre_phase: time from handler entry to start of phase tracking.
+                // Covers router scan (82 routes × regex) + Request::json() body parse.
+                // Should be ~0–2ms. If higher, investigate Request::json() or OPcache.
+                'pre_phase'     => round(($t0            - $startedAt)     * 1000, 1),
+                // conn_acquire: new PDO() call. <5ms = TCP reused; >100ms = new TCP+TLS.
                 'conn_acquire'  => round(($tConn         - $t0)            * 1000, 1),
                 'conn_new_tcp'  => Database::lastConnMs() > 50,
                 'rate_limit'    => round(($tRateLimit    - $tConn)         * 1000, 1),
                 'validation'    => round(($tValidation   - $tRateLimit)    * 1000, 1),
+                // presence_auth: pure query RTT (no connection setup — that's conn_acquire).
+                // Expected: ~2× one-way network RTT to Supabase + query execution time.
                 'presence_auth' => round(($tPresenceAuth - $tValidation)   * 1000, 1),
                 'build'         => round(($tDone         - $tPresenceAuth) * 1000, 1),
             ],
@@ -1431,25 +1442,27 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         throw $e;
     }
 
-    // ── Flush response to client immediately ──────────────────────────────────
+    // ── Flush response to client ──────────────────────────────────────────────
     //
-    // We echo + fastcgi_finish_request() here, BEFORE any deferred DB work.
-    // This guarantees the client receives the response right after the single
-    // DB round trip (joinWithAuth), regardless of what post-response work does.
+    // Explicitly drain ALL output buffer levels before fastcgi_finish_request().
     //
-    // Previously: register_shutdown_function() relied on fastcgi_finish_request()
-    // being the FIRST thing called inside the first shutdown hook. If anything
-    // delayed that (output buffering, proxy, Docker, mod_php), ALL deferred work
-    // ran synchronously before the response — including the analytics curl
-    // which has a 2-second timeout. That alone explains the ~1.8s observation.
+    // Why: index.php calls ob_start(), and PHP-FPM may also enable output_buffering
+    // in php.ini (typically 4096 bytes). That creates two ob levels. If the inner
+    // level is not flushed first, fastcgi_finish_request() may not deliver the
+    // response to the client before post-response work begins — causing all deferred
+    // DB queries + analytics curl to block the client.
     //
-    // Now: response is unconditionally flushed here. Deferred work below is
-    // truly invisible to the client.
+    // The explicit while-loop guarantees every ob level is flushed regardless of
+    // environment (Render, Docker, nginx proxy, php.ini settings).
     http_response_code(201);
     echo json_encode(['message' => $message ?? null]);
 
+    while (ob_get_level() > 0) {
+        ob_end_flush();
+    }
+    flush();
     if (function_exists('fastcgi_finish_request')) {
-        fastcgi_finish_request(); // close FPM ↔ web-server pipe — client has response now
+        fastcgi_finish_request(); // close FPM ↔ nginx FastCGI pipe — client has response NOW
     }
 
     // ── Post-response: previous channel leave ─────────────────────────────────
@@ -1465,24 +1478,24 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         }
     }
 
-    // ── Post-response: city membership upsert ─────────────────────────────────
-    try {
-        $pdo          = Database::pdo();
-        $memberUserId = $joinUserId;
-        if (!$memberUserId) {
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE guest_id = ?");
-            $stmt->execute([$guestId]);
-            $memberUserId = $stmt->fetchColumn() ?: null;
-        }
-        if ($memberUserId) {
-            $pdo->prepare("
+    // ── Post-response: city membership upsert (auth users only) ──────────────
+    // Only tracked for authenticated users — $joinUserId comes from the CTE
+    // resolved in joinWithAuth(), no extra query needed.
+    //
+    // Guests without an auth token are intentionally excluded: looking up a
+    // user by guest_id would add a full DB round trip (~220ms to Tokyo) for
+    // near-zero value. If a guest later registers, the membership is written
+    // on their first authenticated join.
+    if ($joinUserId) {
+        try {
+            Database::pdo()->prepare("
                 INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
                 VALUES (?, ?, now(), now())
                 ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
-            ")->execute([$memberUserId, 'city_' . $channelId]);
+            ")->execute([$joinUserId, 'city_' . $channelId]);
+        } catch (\Throwable $e) {
+            error_log('[channel_join] membership upsert failed: ' . $e->getMessage());
         }
-    } catch (\Throwable $e) {
-        error_log('[channel_join] membership upsert failed: ' . $e->getMessage());
     }
 
     // ── Post-response: join message INSERT ────────────────────────────────────

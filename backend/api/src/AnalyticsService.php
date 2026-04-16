@@ -38,9 +38,13 @@ class AnalyticsService
                 CURLOPT_POST           => true,
                 CURLOPT_POSTFIELDS     => $payload,
                 CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT        => 2,
-                CURLOPT_CONNECTTIMEOUT => 2,
+                CURLOPT_RETURNTRANSFER => false, // don't buffer response — fire and forget
+                // Keep timeouts short: this call runs post-fastcgi_finish_request so it is
+                // normally invisible to the client. If the flush ever fails and this runs
+                // synchronously, 500 ms caps the worst-case damage instead of 2 s.
+                CURLOPT_TIMEOUT_MS        => 500,
+                CURLOPT_CONNECTTIMEOUT_MS => 300,
+                CURLOPT_NOSIGNAL          => 1, // required when using ms timeouts under 1 s
             ]);
             curl_exec($ch);
             curl_close($ch);
