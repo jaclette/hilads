@@ -693,7 +693,7 @@ export default function ChatTab() {
         {/* ── Hero: logo + tagline + city + online pill ── */}
         <View style={styles.logoBrand}>
           <View style={styles.iconGlow}>
-            <HiladsIcon size={46} />
+            <HiladsIcon size={38} />
           </View>
           <Text style={styles.headerTagline} numberOfLines={1}>Feel local. Anywhere.</Text>
         </View>
@@ -854,15 +854,15 @@ const styles = StyleSheet.create({
 
   // ── .chat-header ─────────────────────────────────────────────────────────
   // Web: radial-gradient(ellipse 90% 55% at 50% -10%, rgba(194,74,56,0.10), transparent), var(--surface)
-  // Web: .header-hero → flex col, center, gap 18, min-height 148px, position relative
+  // Web: .header-hero → flex col, center, gap 10, min-height 116px, position relative
   header: {
     flexDirection:     'column',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               20,
-    minHeight:         168,
-    paddingTop:        22,
-    paddingBottom:     20,
+    gap:               12,
+    minHeight:         128,
+    paddingTop:        16,
+    paddingBottom:     14,
     paddingHorizontal: Spacing.md,
     backgroundColor:   Colors.bg2,
     borderBottomWidth: 1,
@@ -881,7 +881,7 @@ const styles = StyleSheet.create({
   headerIconBtn: {
     position:        'absolute',
     left:            18,
-    top:             16,
+    top:             10,
     width:           52,
     height:          52,
     borderRadius:    16,
@@ -894,7 +894,7 @@ const styles = StyleSheet.create({
   headerIconBtnRight: {
     position:        'absolute',
     right:           18,
-    top:             16,
+    top:             10,
     width:           52,
     height:          52,
     borderRadius:    16,
@@ -955,26 +955,26 @@ const styles = StyleSheet.create({
   // .header-hero-city
   heroCity: {
     alignItems: 'center',
-    gap:        8,
+    gap:        6,
   },
 
-  // .header-hero-name: clamp(2.15rem, 7.8vw, 2.65rem), weight 800, letter-spacing -0.04em
+  // .header-hero-name: clamp(1.9rem, 7vw, 2.3rem), weight 800, letter-spacing -0.04em
   cityName: {
-    fontSize:      42,      // ≈ 2.65rem at 16px base — upper end of web clamp
+    fontSize:      36,      // ≈ 2.25rem at 16px base — matches tightened web clamp
     fontWeight:    '800',
-    letterSpacing: -1.68,   // -0.04em × 42px
+    letterSpacing: -1.44,   // -0.04em × 36px
     color:         Colors.text,
     textAlign:     'center',
-    lineHeight:    46,
+    lineHeight:    40,
   },
 
-  // .online-label: pill, gap 8, padding 6 12, bg rgba(255,255,255,0.05), border rgba(255,255,255,0.07)
+  // .online-label: pill, gap 8, padding 5 12, bg rgba(255,255,255,0.05), border rgba(255,255,255,0.07)
   onlinePill: {
     flexDirection:     'row',
     alignItems:        'center',
     gap:               8,
-    paddingHorizontal: 14,
-    paddingVertical:   7,
+    paddingHorizontal: 12,
+    paddingVertical:   5,
     borderRadius:      999,
     backgroundColor:   'rgba(255,255,255,0.05)',
     borderWidth:       1,
@@ -990,9 +990,9 @@ const styles = StyleSheet.create({
     flexShrink:      0,
   },
 
-  // online count text: 1rem = 16px
+  // online count text: mirrors web .online-label 1rem, dialed to 14px for compact header
   onlineText: {
-    fontSize: 16,
+    fontSize: 14,
     color:    Colors.text,
   },
 
