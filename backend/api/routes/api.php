@@ -1559,7 +1559,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
 
         // ── q2: presence join + online count (single round-trip) ────────────────
         $tq2a         = microtime(true);
-        $joinResult   = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+        $joinResult   = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname, true);
         $isNewSession = $joinResult['isNew'];
         $onlineCount  = $joinResult['onlineCount'];
         $tq2b         = microtime(true);
