@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, bootstrapChannel, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -749,6 +749,11 @@ export default function App() {
   const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
   const accountRef  = useRef(account)  // tracks current account for use in closures
   const heartbeatRef = useRef(null)   // periodic heartbeat interval
+  // Tracks status for use inside effects without adding status as a reactive dep
+  const statusRef = useRef('onboarding')
+  // AbortController for the landing-page preview /now fetch. Aborted when bootstrap starts
+  // so the preview never competes with the critical join + messages requests.
+  const previewNowAbortRef = useRef(null)
   const typingTimeoutRef = useRef(null) // debounce timer for typingStop
   const isTypingRef = useRef(false)     // true while typingStart has been sent
   const fileInputRef = useRef(null)
@@ -909,6 +914,9 @@ export default function App() {
     navigator.serviceWorker.addEventListener('message', handler)
     return () => navigator.serviceWorker.removeEventListener('message', handler)
   }, [events, cityEvents]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep statusRef in sync so effects can read current status without reactive deps.
+  useEffect(() => { statusRef.current = status }, [status])
 
   // Keep accountRef + nicknameRef in sync so closures always see the latest identity.
   // Also re-assert WS presence when login/logout happens mid-session.
@@ -1212,10 +1220,26 @@ export default function App() {
   //   2. If no events at all → /events/upcoming (generates series occurrences for next 7 days)
   // Topics from /now are always used if available (24h TTL, user-created).
   // The upcoming fallback ensures recurring city events (daily/weekly series) always show.
+  //
+  // Critical path guard:
+  //   - Skip entirely when status is already 'joining' or 'ready' — the post-join
+  //     fetchNowFeed (inside handleJoin) will load events after bootstrap.
+  //   - Store the AbortController in previewNowAbortRef so handleJoin can cancel this
+  //     request the moment bootstrap starts, preventing /now from competing with
+  //     POST /join + GET /messages?lean=1 for server resources.
   useEffect(() => {
     if (!previewChannelId) return
-    fetchNowFeed(previewChannelId)
+    // Don't fire if we're already joining or in the channel — post-join fetchNowFeed handles it.
+    if (statusRef.current !== 'onboarding') return
+
+    // Cancel any previous in-flight preview /now before starting a new one.
+    previewNowAbortRef.current?.abort()
+    const controller = new AbortController()
+    previewNowAbortRef.current = controller
+
+    fetchNowFeed(previewChannelId, null, { signal: controller.signal })
       .then(async data => {
+        if (controller.signal.aborted) return
         const items        = data.items        ?? []
         const publicEvents = data.publicEvents ?? []
 
@@ -1244,6 +1268,8 @@ export default function App() {
         setPreviewEvents(eventsToShow.slice(0, 3))
       })
       .catch(() => {})
+
+    return () => { controller.abort(); previewNowAbortRef.current = null }
   }, [previewChannelId])
 
   function injectWelcomeCard(cid, cityName) {
@@ -1431,8 +1457,24 @@ export default function App() {
       setHasMoreMessages(false)
       oldestMessageIdRef.current = null
 
-      // Single bootstrap call replaces: join + messages + now-feed + city-events
-      const boot = await bootstrapChannel(location.channelId, sessionIdRef.current, session.guestId, name)
+      // Abort any in-flight landing-page preview /now so it doesn't compete with
+      // the critical bootstrap requests on the server side.
+      previewNowAbortRef.current?.abort()
+      previewNowAbortRef.current = null
+
+      // Parallel fetch: join (presence CTE + join event) and messages (read-only, lean)
+      // run concurrently — critical path = max(join, messages) instead of their sum.
+      const [joinData, messagesData] = await Promise.all([
+        joinChannel(location.channelId, sessionIdRef.current, session.guestId, name),
+        fetchLeanMessages(location.channelId, { limit: 10 }),
+      ])
+      const boot = {
+        joinMessage: joinData.message ?? null,
+        messages:    messagesData.messages ?? [],
+        hasMore:     messagesData.hasMore  ?? false,
+        onlineCount: null, // WS presenceSnapshot will set this immediately after socket join
+      }
+
       // boot.joinMessage is null for re-joins within presence TTL — handle gracefully
       const joinKey = boot.joinMessage ? messageKey(boot.joinMessage) : null
       knownIdsRef.current = new Set(boot.messages.map(messageKey).filter(Boolean))
@@ -1980,8 +2022,17 @@ export default function App() {
       setHasMoreMessages(false)
       oldestMessageIdRef.current = null
 
-      // Single bootstrap call replaces: join + messages + now-feed + city-events
-      const boot = await bootstrapChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId)
+      // Parallel fetch: join + lean messages fire concurrently
+      const [switchJoinData, switchMsgsData] = await Promise.all([
+        joinChannel(newChannelId, sessionIdRef.current, guest.guestId, activeNickname, channelId),
+        fetchLeanMessages(newChannelId, { limit: 10 }),
+      ])
+      const boot = {
+        joinMessage: switchJoinData.message ?? null,
+        messages:    switchMsgsData.messages ?? [],
+        hasMore:     switchMsgsData.hasMore  ?? false,
+        onlineCount: null, // WS presenceSnapshot restores this after socket room join
+      }
 
       // another switch happened while we were loading — discard
       if (activeChannelRef.current !== newChannelId) return

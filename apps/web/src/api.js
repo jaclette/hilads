@@ -50,6 +50,19 @@ export async function fetchMessages(channelId, { beforeId, limit } = {}) {
   return res.json() // { messages, hasMore, onlineUsers, onlineCount }
 }
 
+// Lean messages fetch — skips presence + badge enrichment on the server.
+// Used as one half of the parallel join+messages critical path.
+// Badges are enriched deferred via fetchMessageBadges after first render.
+export async function fetchLeanMessages(channelId, { beforeId, limit = 10 } = {}) {
+  const params = new URLSearchParams({ lean: '1', limit: String(limit) })
+  if (beforeId) params.set('before_id', beforeId)
+  const res = await fetch(`${BASE}/channels/${channelId}/messages?${params}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to fetch messages')
+  return res.json() // { messages, hasMore }
+}
+
 export async function joinChannel(channelId, sessionId, guestId, nickname, previousChannelId = null) {
   const body = { sessionId, guestId, nickname }
   if (previousChannelId) body.previousChannelId = previousChannelId
@@ -233,13 +246,13 @@ export async function fetchCityTopics(channelId) {
 // Both events and topics share consistent top-level fields (kind, title,
 // description, active_now, …). Pass sessionId so the backend can annotate
 // is_participating on event items.
-export async function fetchNowFeed(channelId, sessionId = null) {
+export async function fetchNowFeed(channelId, sessionId = null, { signal } = {}) {
   try {
     const params = new URLSearchParams()
     if (sessionId) params.set('sessionId', sessionId)
     const qs = params.toString()
     const url = `${BASE}/channels/${channelId}/now${qs ? `?${qs}` : ''}`
-    const res = await fetch(url, { credentials: 'include' })
+    const res = await fetch(url, { credentials: 'include', signal: signal ?? undefined })
     if (!res.ok) return { items: [] }
     return res.json() // { items: FeedItem[] }
   } catch {

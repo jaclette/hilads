@@ -1928,6 +1928,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             }
         });
 
+        // lean=1: skip presence + badge enrichment — web uses this for the parallel
+        // fast-path fetch (fired concurrently with POST /join). Badges are enriched
+        // deferred via GET /message-badges after first render.
+        $lean = isset($_GET['lean']) && $_GET['lean'] === '1';
+
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id'])
             ? trim($_GET['before_id'])
             : null;
@@ -1938,6 +1943,30 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
         $tMsg1       = microtime(true); // after message fetch
+
+        if ($lean) {
+            // Ghost badges for all messages — client enriches deferred
+            foreach ($messages as &$msg) {
+                $t = $msg['type'] ?? 'text';
+                if ($t === 'text' || $t === 'image') {
+                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['contextBadge'] = null;
+                    $msg['vibe']         = null;
+                    $msg['mode']         = null;
+                }
+            }
+            unset($msg);
+
+            apiLog('channel_messages', 'success', [
+                'channelId' => $channelId,
+                'messages'  => count($messages),
+                'lean'      => true,
+                'elapsedMs' => apiElapsedMs($startedAt),
+                'phases_ms' => ['msg_fetch' => round(($tMsg1 - $tMsg0) * 1000, 1)],
+            ]);
+
+            Response::json(['messages' => $messages, 'hasMore' => $hasMore]);
+        }
 
         $onlineUsers = PresenceRepository::getOnline($channelId);
         $onlineCount = count($onlineUsers);
