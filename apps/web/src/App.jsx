@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, bootstrapChannel, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, sendMessage, fetchChannels, bootstrapChannel, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -1453,6 +1453,28 @@ export default function App() {
       setOnlineCount(boot.onlineCount ?? null)
       setStatus('ready')
 
+      // ── Deferred badge enrichment ────────────────────────────────────────────
+      // Bootstrap (lean=1) skips the badge DB query — messages arrive with ghost
+      // badges by default. Enrich registered-user messages immediately after the
+      // screen is usable so badges appear within ~200 ms of first render.
+      const joinBadgeIds = [...new Set(
+        boot.messages
+          .filter(m => (m.type === 'text' || m.type === 'image') && m.userId)
+          .map(m => m.userId)
+      )]
+      const joinBadgeChannel = location.channelId
+      if (joinBadgeIds.length > 0) {
+        fetchMessageBadges(joinBadgeChannel, joinBadgeIds).then(badges => {
+          if (activeChannelRef.current !== joinBadgeChannel) return
+          if (!badges || Object.keys(badges).length === 0) return
+          setFeed(prev => prev.map(item => {
+            if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
+            const b = badges[item.userId]
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null }
+          }))
+        })
+      }
+
       // ── Analytics after critical path ────────────────────────────────────────
       // Deferred so PostHog HTTP requests don't compete with /now fetch or the
       // first paint of the city channel. Context (_ctx) is captured at call-time
@@ -1953,6 +1975,24 @@ export default function App() {
       setOnlineCount(boot.onlineCount ?? null)
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(newChannelId, newCityName)
+
+      // Deferred badge enrichment — same pattern as handleJoin
+      const switchBadgeIds = [...new Set(
+        boot.messages
+          .filter(m => (m.type === 'text' || m.type === 'image') && m.userId)
+          .map(m => m.userId)
+      )]
+      if (switchBadgeIds.length > 0) {
+        fetchMessageBadges(newChannelId, switchBadgeIds).then(badges => {
+          if (activeChannelRef.current !== newChannelId) return
+          if (!badges || Object.keys(badges).length === 0) return
+          setFeed(prev => prev.map(item => {
+            if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
+            const b = badges[item.userId]
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null }
+          }))
+        })
+      }
 
       activeRef.current = true
       scheduleActivity(true)

@@ -1534,6 +1534,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             Response::json(['error' => 'nickname must not be empty'], 400);
         }
 
+        // ?lean=1 — skip auth queries (q3/q7/q8) and badge enrichment (q6).
+        // Web passes this flag; mobile omits it and gets the full response.
+        // Saves 3–5 sequential DB queries on the critical path for web clients.
+        $lean = isset($_GET['lean']) && $_GET['lean'] === '1';
+
         // ── Phase 1: join ────────────────────────────────────────────────────
         $t0 = microtime(true);
 
@@ -1560,7 +1565,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $tq2b         = microtime(true);
 
         // ── q3: auth lookup (request-level cached) ────────────────────────────
-        $authUser        = AuthService::currentUser();
+        // Skipped in lean mode — web never reads currentUser/unread from bootstrap.
+        $authUser        = $lean ? null : AuthService::currentUser();
         $tq3b            = microtime(true);
         $deferAuthUserId = $authUser ? $authUser['id'] : null;
 
@@ -1632,8 +1638,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $tq5b        = microtime(true);
 
         // ── q6: badge enrichment for message authors ──────────────────────────
-        // Only registered users need a DB lookup — guest messages use the ghost badge.
-        // In all-guest rooms this array is empty → batchFull skips the query entirely.
+        // Skipped in lean mode — web fetches badges via /message-badges after first render.
+        // In all-guest rooms msgUserIds is empty → batchFull skips the query anyway.
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
@@ -1642,9 +1648,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             }
         }
         $msgUserIds = array_values(array_unique($msgUserIds));
-        $tq6a       = microtime(true);
-        $badgeMap   = UserBadgeService::batchFull($msgUserIds, $channelId, $city['name']);
-        $tq6b       = microtime(true);
+        $tq6a = microtime(true);
+
+        if (!$lean && !empty($msgUserIds)) {
+            $badgeMap = UserBadgeService::batchFull($msgUserIds, $channelId, $city['name']);
+        } else {
+            $badgeMap = [];
+        }
+        $tq6b = microtime(true);
 
         foreach ($messages as &$msg) {
             $t = $msg['type'] ?? 'text';
@@ -1666,16 +1677,17 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         }
         unset($msg);
 
-        $t2 = microtime(true); // after messages + badges
+        $t2 = microtime(true); // after messages + badges (lean: messages only)
 
         // ── Phase 3: auth-conditional unread data ────────────────────────────
-        // Only run for authenticated users — guests have no DMs or notifications.
+        // Skipped entirely in lean mode — web fetches these independently with a 2 s delay.
+        // For full (mobile) mode: only run for authenticated users.
         $hasUnreadDMs        = null;
         $unreadNotifications = null;
         $currentUser         = null;
 
         $tq7a = microtime(true);
-        if ($authUser !== null) {
+        if (!$lean && $authUser !== null) {
             // ── q7: DM + event-chat unread check ─────────────────────────────
             $hasUnreadDMs = ConversationRepository::hasAnyUnread($authUser['id']);
             $tq7b = microtime(true);
@@ -1691,7 +1703,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             $tq8b = $tq7a;
         }
 
-        $t3 = microtime(true); // after auth data
+        $t3 = microtime(true); // after auth data (lean: instant, no queries)
 
         // ── Deferred side-effects ────────────────────────────────────────────
 
@@ -1745,10 +1757,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         // register_shutdown_function calls, this apiLog call itself).
         apiLog('channel_bootstrap', 'success', [
             'channelId'    => $channelId,
+            'lean'         => $lean,
             'isNew'        => $isNewSession,
             'isAuth'       => $authUser !== null,
             'msgCount'     => count($messages),
-            'badgeUsers'   => count($msgUserIds),
+            'badgeUsers'   => $lean ? 0 : count($msgUserIds),
             'onlineCount'  => $onlineCount,
             'elapsedMs'    => apiElapsedMs($startedAt),
             'phases_ms'    => [
@@ -1762,11 +1775,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                 'rate_limit'  => round(($tRlB  - $tRlA)  * 1000, 1),
                 'city_lookup' => round(($tCityB - $tCityA) * 1000, 1),
                 'presence'    => round(($tq2b  - $tq2a)  * 1000, 1),
-                'auth_user'   => round(($tq3b  - $tq2b)  * 1000, 1),
+                'auth_user'   => $lean ? null : round(($tq3b  - $tq2b)  * 1000, 1),
                 'messages'    => round(($tq5b  - $tq5a)  * 1000, 1),
-                'badges'      => round(($tq6b  - $tq6a)  * 1000, 1),
-                'unread_dm'   => round(($tq7b  - $tq7a)  * 1000, 1),
-                'notif_cnt'   => round(($tq8b  - $tq7b)  * 1000, 1),
+                'badges'      => $lean ? null : round(($tq6b  - $tq6a)  * 1000, 1),
+                'unread_dm'   => $lean ? null : round(($tq7b  - $tq7a)  * 1000, 1),
+                'notif_cnt'   => $lean ? null : round(($tq8b  - $tq7b)  * 1000, 1),
             ],
         ]);
 
@@ -1779,6 +1792,40 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         ]);
         throw $e;
     }
+});
+
+// ── Message badge enrichment (deferred — called by web after first render) ──────
+// GET /api/v1/channels/{channelId}/message-badges?ids[]=uid1&ids[]=uid2
+// Returns badge data for the given registered user IDs.
+// Web uses lean bootstrap (no badges), then enriches the feed with this endpoint
+// after the city channel is already usable — keeping bootstrap under 500 ms.
+$router->add('GET', '/api/v1/channels/{channelId}/message-badges', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+
+    $city = CityRepository::findById($channelId);
+    if ($city === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    // Collect and validate user IDs from query string: ?ids[]=uid1&ids[]=uid2
+    $rawIds = isset($_GET['ids']) && is_array($_GET['ids']) ? $_GET['ids'] : [];
+    $ids    = array_values(array_unique(array_filter(
+        array_map('strval', $rawIds),
+        static fn($id) => preg_match('/^[0-9a-f\-]{8,64}$/i', $id) === 1
+    )));
+
+    if (empty($ids)) {
+        Response::json(['badges' => (object) []]);
+    }
+
+    // Limit to 50 IDs — a page of 25 messages has at most ~25 unique authors
+    $ids     = array_slice($ids, 0, 50);
+    $badges  = UserBadgeService::batchFull($ids, $channelId, $city['name']);
+
+    Response::json(['badges' => empty($badges) ? (object) [] : $badges]);
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/leave', function (array $params) {

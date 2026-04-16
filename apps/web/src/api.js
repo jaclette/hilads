@@ -66,7 +66,9 @@ export async function joinChannel(channelId, sessionId, guestId, nickname, previ
 export async function bootstrapChannel(channelId, sessionId, guestId, nickname, previousChannelId = null) {
   const body = { sessionId, guestId, nickname }
   if (previousChannelId) body.previousChannelId = previousChannelId
-  const res = await fetch(`${BASE}/channels/${channelId}/bootstrap`, {
+  // lean=1: skip badge enrichment + auth queries on the critical path.
+  // Web fetches badges via fetchMessageBadges after first render.
+  const res = await fetch(`${BASE}/channels/${channelId}/bootstrap?lean=1`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
@@ -82,6 +84,23 @@ export async function bootstrapChannel(channelId, sessionId, guestId, nickname, 
     onlineCount:         data.onlineCount         ?? 0,
     hasUnreadDMs:        data.hasUnreadDMs        ?? null,
     unreadNotifications: data.unreadNotifications ?? null,
+  }
+}
+
+// Fetches badge data for registered message authors — called after first render
+// to enrich the chat feed without blocking the initial bootstrap.
+export async function fetchMessageBadges(channelId, userIds) {
+  if (!userIds || userIds.length === 0) return {}
+  const qs = userIds.map(id => `ids[]=${encodeURIComponent(id)}`).join('&')
+  try {
+    const res = await fetch(`${BASE}/channels/${channelId}/message-badges?${qs}`, {
+      credentials: 'include',
+    })
+    if (!res.ok) return {}
+    const data = await res.json()
+    return data.badges ?? {}
+  } catch {
+    return {}
   }
 }
 
