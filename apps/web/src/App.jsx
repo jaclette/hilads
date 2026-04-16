@@ -755,6 +755,14 @@ export default function App() {
   // Events refs
   const activeEventIdRef = useRef(null)
 
+  // City feed cache — saved when entering event chat, restored on return to city.
+  // Avoids an extra GET /messages round-trip every time the user leaves an event.
+  const cityFeedCacheRef    = useRef([])           // feed snapshot before event entry
+  const cityKnownIdsCacheRef = useRef(new Set())   // knownIds snapshot before event entry
+  // City messages received via WS while the user is in event mode (normally filtered out).
+  // Buffered here so they can be replayed on return — eliminates the delta fetchMessages call.
+  const cityMsgBufferRef    = useRef([])           // { message } objects buffered during event mode
+
   const hasInstallFeedPrompt = feed.some(item => item.type === 'prompt' && item.subtype === 'install')
   const installBannerUsesBottomNav = !showCityPicker && !showEventDrawer && !showPeopleDrawer
   const showInstallOnMainSurface = status === 'ready' && (
@@ -1474,8 +1482,12 @@ export default function App() {
         const isEventMsg = channelId === activeEventIdRef.current
 
         if (!isCityMsg && !isEventMsg) return
-        // In event mode: only accept messages for the active event
-        if (activeEventIdRef.current && !isEventMsg) return
+        // In event mode: buffer city messages rather than discarding them.
+        // handleBackToCity will replay the buffer so no delta GET /messages is needed.
+        if (activeEventIdRef.current && !isEventMsg) {
+          cityMsgBufferRef.current.push(message)
+          return
+        }
 
         const key = isEventMsg ? message.id : messageKey(message)
         if (!key || knownIdsRef.current.has(key)) return
@@ -1842,7 +1854,10 @@ export default function App() {
     // reset all room-specific state immediately so UI never shows stale data
     setFeed([])
     setOnlineUsers([])
-    knownIdsRef.current = new Set()
+    knownIdsRef.current      = new Set()
+    cityFeedCacheRef.current     = []
+    cityKnownIdsCacheRef.current = new Set()
+    cityMsgBufferRef.current     = []
     setCity(newCityName)
     setChannelId(newChannelId)
     saveIdentity(activeNickname, newChannelId, newCityName, newCityTimezone ?? null)
@@ -1961,6 +1976,15 @@ export default function App() {
     clearInterval(pollRef.current)
     pollFnRef.current = null
 
+    // Save city feed + known IDs before entering event mode.
+    // Restored by handleBackToCity so we don't need a GET /messages round-trip on return.
+    if (!activeEventIdRef.current) {
+      // Only cache when coming from city (not switching between events)
+      cityFeedCacheRef.current     = feed
+      cityKnownIdsCacheRef.current = new Set(knownIdsRef.current)
+      cityMsgBufferRef.current     = [] // clear buffer for this event session
+    }
+
     const eid = event.id
     activeEventIdRef.current = eid
     socketRef.current?.joinEvent(eid, sessionIdRef.current)
@@ -2053,24 +2077,52 @@ export default function App() {
     activeEventIdRef.current = null
     setActiveEventId(null)
     setActiveEvent(null)
-    setFeed([])
-    knownIdsRef.current = new Set()
     if (city) {
       pushUrl(`/city/${cityToSlug(city)}`)
       setPageMeta(`Who's in ${city} right now | Hilads`, `See who's online and what's happening in ${city} right now.`)
     }
 
-    // Re-fetch city messages
-    fetchMessages(cid, { limit: 50 }).then(data => {
-      if (activeEventIdRef.current !== null || activeChannelRef.current !== cid) return
-      knownIdsRef.current = new Set(data.messages.map(messageKey))
-      const total = data.messages.length
-      setFeed(dedupeWeather(data.messages.map((m, idx) => {
-        const staggerIndex = Math.max(0, idx - (total - 8))
-        const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
-        return toFeedItem(m, delay)
-      })))
-    }).catch(() => {})
+    // Restore the city feed snapshot cached when entering event mode.
+    // Also replay any city WS messages that were buffered during event mode
+    // (the newMessage handler buffers them instead of discarding while in event mode).
+    // This gives instant UX continuity with no GET /messages call.
+    const cachedFeed   = cityFeedCacheRef.current
+    const cachedIds    = cityKnownIdsCacheRef.current
+    const buffered     = cityMsgBufferRef.current
+    if (cachedFeed.length > 0) {
+      // Restore snapshot
+      knownIdsRef.current = cachedIds
+      // Replay buffered city messages that arrived during event mode
+      const bufferedNew = buffered.filter(m => {
+        const k = messageKey(m)
+        if (!k || knownIdsRef.current.has(k)) return false
+        knownIdsRef.current.add(k)
+        return true
+      })
+      const restoredFeed = bufferedNew.length > 0
+        ? [...cachedFeed, ...bufferedNew.map(m => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)]
+        : cachedFeed
+      setFeed(restoredFeed)
+    } else {
+      // No cache (e.g. user entered event before city feed loaded) — fetch fresh.
+      knownIdsRef.current = new Set()
+      setFeed([])
+      fetchMessages(cid, { limit: 50 }).then(data => {
+        if (activeEventIdRef.current !== null || activeChannelRef.current !== cid) return
+        knownIdsRef.current = new Set(data.messages.map(messageKey))
+        const total = data.messages.length
+        setFeed(dedupeWeather(data.messages.map((m, idx) => {
+          const staggerIndex = Math.max(0, idx - (total - 8))
+          const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
+          return toFeedItem(m, delay)
+        })))
+      }).catch(() => {})
+    }
+
+    // Clear cache + buffer so they don't persist across city switches
+    cityFeedCacheRef.current     = []
+    cityKnownIdsCacheRef.current = new Set()
+    cityMsgBufferRef.current     = []
 
     // Tab-focus refresh only — new messages arrive via WebSocket
     const doRefresh = async () => {
