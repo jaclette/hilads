@@ -742,6 +742,7 @@ export default function App() {
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
   const chatInputRef = useRef(null)
   const sessionIdRef = useRef(PAGE_SESSION_ID)
+  const guestIdRef   = useRef(null)   // always-current guestId for own-message WS echo detection
   const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
   const tabHiddenAtRef = useRef(null) // timestamp when tab was last hidden — guards doRefresh against rapid cycles
   const socketRef = useRef(null)      // WebSocket presence client
@@ -1417,6 +1418,7 @@ export default function App() {
         saveGuestId(session.guestId)
         // identifyUser / guest_created deferred to after bootstrap — see below
       }
+      guestIdRef.current = session.guestId
       setGuest(session)
       setChannelId(location.channelId)
       setCityTimezone(location.timezone ?? 'UTC')
@@ -1544,7 +1546,6 @@ export default function App() {
 
       // Socket: push new messages instantly instead of waiting for the 3s poll.
       // The poll remains as a fallback for when WS is disconnected.
-      // Sender's own messages are already in knownIds — they're skipped automatically.
       socket.on('newMessage', ({ channelId, message }) => {
         // City channelId is a number from WS but string from API — use String() coercion.
         // Event channelId is a UUID string on both sides — strict equality works fine.
@@ -1563,13 +1564,44 @@ export default function App() {
         if (!key || knownIdsRef.current.has(key)) return
         knownIdsRef.current.add(key)
 
+        // Own-message echo detection: if WS delivers our own message while an optimistic
+        // placeholder (localId) is still in the feed, replace it atomically instead of
+        // appending. This eliminates the brief duplicate that appears when WS beats the
+        // POST /messages API response.
+        const myGuestId = guestIdRef.current
+        const myUserId  = accountRef.current?.id
+        const isOwnMsg  = (myGuestId && message.guestId === myGuestId) ||
+                          (myUserId  && message.userId  === myUserId)
+
         if (isEventMsg) {
-          appendFeed({ type: 'message', ...message })
+          setFeed(prev => {
+            if (isOwnMsg) {
+              const pendingIdx = prev.findIndex(f => f.localId != null)
+              if (pendingIdx !== -1) {
+                const updated = [...prev]
+                updated[pendingIdx] = { type: 'message', ...message }
+                return updated.length > FEED_MAX ? updated.slice(updated.length - FEED_MAX) : updated
+              }
+            }
+            const next = [...prev, { type: 'message', ...message }]
+            return next.length > FEED_MAX ? next.slice(next.length - FEED_MAX) : next
+          })
         } else {
           const item = toFeedItem(message, undefined, lastJoinAtRef)
-          if (!item) return // throttled join
-          appendFeed(item)
+          if (!item) return // throttled join or unhandled system message
           if (item.subtype === 'join') scheduleEphemeral(item.id)
+          setFeed(prev => {
+            if (isOwnMsg && item.type === 'message') {
+              const pendingIdx = prev.findIndex(f => f.localId != null)
+              if (pendingIdx !== -1) {
+                const updated = [...prev]
+                updated[pendingIdx] = item
+                return updated.length > FEED_MAX ? updated.slice(updated.length - FEED_MAX) : updated
+              }
+            }
+            const next = [...prev, item]
+            return next.length > FEED_MAX ? next.slice(next.length - FEED_MAX) : next
+          })
         }
       })
 

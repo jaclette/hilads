@@ -69,13 +69,10 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
   }
 
   // Add new messages (newest first order for inverted FlatList).
-  // Skips local optimistic placeholders (those start with 'local-').
   const addNew = useCallback((incoming: Message[]) => {
     const fresh = incoming.filter(m => {
       const key = msgKey(m);
       if (seenIds.current.has(key)) return false;
-      // Never overwrite a still-pending optimistic placeholder via WS/poll
-      // (the replacement happens in sendText/sendImage reconciliation instead)
       return true;
     });
     if (fresh.length === 0) return;
@@ -83,7 +80,23 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     const sorted = [...fresh].sort(
       (a, b) => toMs(a.createdAt) - toMs(b.createdAt),
     ).reverse();
-    setMessages(prev => [...sorted, ...prev]);
+    setMessages(prev => {
+      // Own-message echo detection: if WS delivers our own message while an optimistic
+      // placeholder (localId) is still in the list, skip the append — reconcile() will
+      // atomically replace the placeholder when the API response returns.
+      // This prevents the brief double-bubble when WS beats the POST response.
+      const toInsert = sorted.filter(serverMsg => {
+        const hasPendingFromSender = prev.some(pending =>
+          pending.localId != null && (
+            (serverMsg.guestId && pending.guestId && serverMsg.guestId === pending.guestId) ||
+            (serverMsg.userId  && pending.userId  && serverMsg.userId  === pending.userId)
+          ),
+        );
+        return !hasPendingFromSender;
+      });
+      if (toInsert.length === 0) return prev;
+      return [...toInsert, ...prev];
+    });
   }, []);
 
   // Initial load

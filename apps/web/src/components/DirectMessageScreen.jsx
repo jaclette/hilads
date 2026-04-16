@@ -122,7 +122,20 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       if (conversationId !== conversation.id) return
       if (knownIds.current.has(message.id)) return
       knownIds.current.add(message.id)
-      setMessages(prev => [...prev, message])
+      // Own-message echo: if we have a pending optimistic from the same sender,
+      // replace it instead of appending to avoid a brief duplicate bubble.
+      const isOwnMsg = message.sender_id === account.id
+      setMessages(prev => {
+        if (isOwnMsg) {
+          const pendingIdx = prev.findIndex(m => m.localId != null)
+          if (pendingIdx !== -1) {
+            const updated = [...prev]
+            updated[pendingIdx] = message
+            return updated
+          }
+        }
+        return [...prev, message]
+      })
     })
 
     return () => {
@@ -162,7 +175,8 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       const { url } = await uploadImage(file)
       const { message } = await sendConversationImageMessage(conversation.id, url)
       knownIds.current.add(message.id)
-      setMessages(prev => [...prev, message])
+      // Dedup: WS may have delivered the message while the upload was in-flight
+      setMessages(prev => prev.some(m => m.id === message.id) ? prev : [...prev, message])
     } catch (err) {
       setError(err.message || "Couldn't send image. Please try again.")
     } finally {
@@ -185,13 +199,37 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
 
   async function doSendText(content) {
     if (!content || sending) return
+
+    // Optimistic insert — message appears instantly without waiting for HTTP.
+    const localId = `local-dm-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+    const optimistic = {
+      id:          localId,
+      localId,
+      sender_id:   account?.id ?? '',
+      sender_name: account?.display_name ?? '',
+      content,
+      type:        'text',
+      created_at:  new Date().toISOString(),
+      status:      'sending',
+    }
+    knownIds.current.add(localId)
+    setMessages(prev => [...prev, optimistic])
+
     setSending(true)
     setError(null)
     try {
       const { message } = await sendConversationMessage(conversation.id, content)
       knownIds.current.add(message.id)
-      setMessages(prev => [...prev, message])
+      setMessages(prev => {
+        // Case B — WS already replaced the optimistic: just clean up (no localId left)
+        if (prev.some(m => m.id === message.id && m.id !== localId)) {
+          return prev.filter(m => m.id !== localId)
+        }
+        // Case A — replace optimistic with confirmed server message
+        return prev.map(m => m.id === localId ? message : m)
+      })
     } catch (err) {
+      setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
       setError(err.message)
     } finally {
       setSending(false)

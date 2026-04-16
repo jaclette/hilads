@@ -35,7 +35,18 @@ export function useDMThread(conversationId: string): Result {
     const sorted = [...fresh].sort(
       (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     ).reverse();
-    setMessages(prev => [...sorted, ...prev]);
+    setMessages(prev => {
+      // Own-message echo detection: if WS delivers our own message while an optimistic
+      // placeholder is still pending, skip the append — sendText reconcile() handles it.
+      const toInsert = sorted.filter(serverMsg => {
+        const hasPendingFromSender = prev.some(pending =>
+          pending.localId != null && pending.sender_id === serverMsg.sender_id,
+        );
+        return !hasPendingFromSender;
+      });
+      if (toInsert.length === 0) return prev;
+      return [...toInsert, ...prev];
+    });
   }, []);
 
   // Initial load
