@@ -5,21 +5,19 @@ import React, {
   useCallback,
   type ReactNode,
 } from 'react';
-import type { FeedItem, GuestIdentity, City, HiladsEvent, Message, User, OnlineUser, EventChatPreview } from '@/types';
+import type { GuestIdentity, City, Message, User, OnlineUser, EventChatPreview } from '@/types';
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 import { unregisterPushToken } from '@/services/push';
 import { track, resetAnalytics } from '@/services/analytics';
 
-// Pre-loaded data returned by POST /channels/{id}/open.
-// Consumed once by chat (messages) and now (feedItems) tabs on first render.
+// Pre-loaded data returned by POST /channels/{id}/bootstrap.
+// Consumed once by chat (messages) tab on first render.
+// Events and topics are fetched separately via GET /channels/{id}/now.
 export interface BootstrapData {
   channelId:            string;
   messages:             Message[];
   hasMore:              boolean;
-  feedItems:            FeedItem[];
-  publicEvents:         FeedItem[];
-  cityEvents:           HiladsEvent[];
   hasUnreadDMs:         boolean | null;
   unreadNotifications:  number | null;
 }

@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { City, FeedItem, HiladsEvent, Message, Reaction, UserDTO } from '@/types';
+import type { City, Message, Reaction, UserDTO } from '@/types';
 
 // ── City / channel resolution ─────────────────────────────────────────────────
 
@@ -86,9 +86,6 @@ export interface BootstrapResult {
   hasMore:              boolean;
   onlineUsers:          UserDTO[];
   onlineCount:          number;
-  feedItems:            FeedItem[];
-  publicEvents:         FeedItem[];
-  cityEvents:           HiladsEvent[];   // raw Hilads events for chat event synthesis
   hasUnreadDMs:         boolean | null;  // null for guests
   unreadNotifications:  number | null;   // null for guests
   currentUser:          Record<string, unknown> | null;
@@ -122,9 +119,6 @@ export async function bootstrapChannel(
     hasMore:              data.hasMore              ?? false,
     onlineUsers:          data.onlineUsers          ?? [],
     onlineCount:          data.onlineCount          ?? 0,
-    feedItems:            data.feedItems            ?? [],
-    publicEvents:         data.publicEvents         ?? [],
-    cityEvents:           data.cityEvents           ?? [],
     hasUnreadDMs:         data.hasUnreadDMs         ?? null,
     unreadNotifications:  data.unreadNotifications  ?? null,
     currentUser:          data.currentUser          ?? null,

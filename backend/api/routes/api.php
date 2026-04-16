@@ -1466,15 +1466,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 });
 
 // ── Channel bootstrap ─────────────────────────────────────────────────────────
-// Single endpoint replacing 6 individual calls on channel entry:
-//   POST /join        → presence join + join feed event
-//   GET  /messages    → chat messages + online users + badge enrichment
-//   GET  /now         → events + topics + public events (feed)
-//   GET  /city-events → ticketmaster public events (same data, no extra query)
-//   GET  /conversations/unread     → DM unread flag  (auth users only)
-//   GET  /notifications/unread-count → notification badge (auth users only)
+// Fast join endpoint: presence + messages + auth badges only.
+// Events and topics are NOT included — clients fetch /now in background after render.
 //
-// DB queries: 10-12 synchronous (vs ~20+ across 6 calls).
+// DB queries: 6-8 synchronous.
 // Deferred after response: presence-leave, membership upsert, weather inject, TM sync, analytics.
 //
 // Request body: { sessionId, guestId, nickname, previousChannelId? }
@@ -1486,9 +1481,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 //   hasMore            — pagination cursor flag
 //   onlineUsers        — presence list (badge-enriched)
 //   onlineCount        — integer
-//   feedItems          — sorted now-feed (events + topics)
-//   publicEvents       — Ticketmaster city events (normalized FeedItem shape)
-//   cityEvents         — Hilads events in raw shape (for chat event-synthesis)
 //   hasUnreadDMs       — bool (auth users) or null (guests)
 //   unreadNotifications — int (auth users) or null (guests)
 //   currentUser        — public user fields (auth users) or null (guests)
@@ -1679,41 +1671,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
 
         $t2 = microtime(true); // after messages + presence + badges
 
-        // ── Phase 3: now-feed ────────────────────────────────────────────────
-        $participantKey = isValidGuestId($guestId)      ? $guestId
-                        : (isValidSessionId($sessionId) ? $sessionId
-                        : null);
-        $cityId = 'city_' . $channelId;
-
-        // ── q8: Hilads events ─────────────────────────────────────────────────
-        $events = EventRepository::getByChannel($channelId, $participantKey, $city);
-
-        // ── q9: topics ────────────────────────────────────────────────────────
-        $topics = TopicRepository::getByCity($cityId);
-
-        // ── q10: Ticketmaster public events ───────────────────────────────────
-        $publicEvents = EventRepository::getPublicByChannel($channelId);
-
-        $now       = time();
-        $feedItems = [];
-        foreach ($events as $e)  { $feedItems[] = normalizeFeedEvent($e, $now); }
-        foreach ($topics as $tp) { $feedItems[] = normalizeFeedTopic($tp, $now); }
-
-        usort($feedItems, function (array $a, array $b) use ($now): int {
-            $aLive = $a['kind'] === 'event' && $a['active_now'];
-            $bLive = $b['kind'] === 'event' && $b['active_now'];
-            if ($aLive !== $bLive) return $aLive ? -1 : 1;
-            if ($aLive && $bLive) return ($a['starts_at'] ?? 0) <=> ($b['starts_at'] ?? 0);
-            $aAct = $a['last_activity_at'] ?? $a['created_at'] ?? 0;
-            $bAct = $b['last_activity_at'] ?? $b['created_at'] ?? 0;
-            return $bAct <=> $aAct;
-        });
-
-        $publicEventItems = array_map(fn(array $e) => normalizeFeedEvent($e, $now), $publicEvents);
-
-        $t3 = microtime(true); // after now-feed
-
-        // ── Phase 4: auth-conditional unread data ────────────────────────────
+        // ── Phase 3: auth-conditional unread data ────────────────────────────
         // Only run for authenticated users — guests have no DMs or notifications.
         $hasUnreadDMs        = null;
         $unreadNotifications = null;
@@ -1730,7 +1688,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             $currentUser = AuthService::publicFields($authUser);
         }
 
-        $t4 = microtime(true); // after auth data
+        $t3 = microtime(true); // after auth data
 
         // ── Deferred side-effects ────────────────────────────────────────────
 
@@ -1769,13 +1727,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             'isAuth'      => $authUser !== null,
             'messages'    => count($messages),
             'onlineCount' => $onlineCount,
-            'feedItems'   => count($feedItems),
             'elapsedMs'   => apiElapsedMs($startedAt),
             'phases_ms'   => [
                 'join'     => round(($t1 - $t0) * 1000, 1),
                 'messages' => round(($t2 - $t1) * 1000, 1),
-                'feed'     => round(($t3 - $t2) * 1000, 1),
-                'auth'     => round(($t4 - $t3) * 1000, 1),
+                'auth'     => round(($t3 - $t2) * 1000, 1),
             ],
         ]);
 
@@ -1785,9 +1741,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             'hasMore'             => $hasMore,
             'onlineUsers'         => $onlineUsers,
             'onlineCount'         => $onlineCount,
-            'feedItems'           => $feedItems,
-            'publicEvents'        => $publicEventItems,
-            'cityEvents'          => $events,          // raw Hilads events for chat event synthesis
             'hasUnreadDMs'        => $hasUnreadDMs,
             'unreadNotifications' => $unreadNotifications,
             'currentUser'         => $currentUser,

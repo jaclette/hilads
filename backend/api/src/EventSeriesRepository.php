@@ -62,10 +62,10 @@ class EventSeriesRepository
         $pdo->prepare("
             INSERT INTO channel_events
                 (channel_id, source_type, created_by, guest_id, title, event_type,
-                 location, starts_at, expires_at, series_id, occurrence_date)
+                 location, starts_at, expires_at, series_id, occurrence_date, city_id)
             VALUES
                 (?, 'hilads', ?, ?, ?, ?,
-                 ?, to_timestamp(?), to_timestamp(?), ?, ?)
+                 ?, to_timestamp(?), to_timestamp(?), ?, ?, ?)
             ON CONFLICT (channel_id) DO NOTHING
         ")->execute([
             $channelId,
@@ -78,6 +78,7 @@ class EventSeriesRepository
             $endsAt,
             $series['id'],
             $date,
+            $series['city_id'],
         ]);
 
         // Auto-join creator if this is a user-created series

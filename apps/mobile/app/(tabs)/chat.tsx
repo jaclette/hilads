@@ -280,42 +280,26 @@ export default function ChatTab() {
 
   // ── Event feed item synthesis (mirrors web prevEventCountRef pattern) ───────
   // Web: when events array grows, inject { type: 'event', id: 'event-msg-{id}', ... }
-  // into the feed. Native mirrors this: poll cityEvents, synthesize on first sight.
-  // First load is skipped when bootstrap data is available (cityEvents already loaded).
+  // into the feed. Native mirrors this: on channel load, fetch events and synthesize.
 
   useEffect(() => {
     if (!channelId) return;
     seenEventIds.current.clear();
     setEventFeedItems([]);
 
-    // Seed from bootstrap if available — eliminates the initial GET /events call.
-    const bootstrapEvts = chatBootstrap?.cityEvents ?? [];
-    if (bootstrapEvts.length > 0) {
+    // Fetch current events for this city and synthesize feed pills.
+    fetchCityEvents(channelId).then(evts => {
       const now = Date.now() / 1000;
       const fresh: Message[] = [];
-      for (const e of bootstrapEvts) {
-        seenEventIds.current.add(e.id);
-        fresh.push({ id: `event-msg-${e.id}`, type: 'event', eventId: e.id,
-                     content: e.title, nickname: '', createdAt: now });
-      }
-      if (fresh.length > 0) setEventFeedItems(fresh);
-    }
-
-    // Initial fetch only if bootstrap didn't seed events.
-    if (bootstrapEvts.length === 0) {
-      fetchCityEvents(channelId).then(evts => {
-        const now = Date.now() / 1000;
-        const fresh: Message[] = [];
-        for (const e of evts) {
-          if (!seenEventIds.current.has(e.id)) {
-            seenEventIds.current.add(e.id);
-            fresh.push({ id: `event-msg-${e.id}`, type: 'event', eventId: e.id,
-                         content: e.title, nickname: '', createdAt: now });
-          }
+      for (const e of evts) {
+        if (!seenEventIds.current.has(e.id)) {
+          seenEventIds.current.add(e.id);
+          fresh.push({ id: `event-msg-${e.id}`, type: 'event', eventId: e.id,
+                       content: e.title, nickname: '', createdAt: now });
         }
-        if (fresh.length > 0) setEventFeedItems(prev => [...prev, ...fresh]);
-      }).catch(() => {});
-    }
+      }
+      if (fresh.length > 0) setEventFeedItems(prev => [...prev, ...fresh]);
+    }).catch(() => {});
 
     // WS: new event created in this city — append pill immediately (no poll needed).
     const offEvent = socket.on('new_event', (data: Record<string, unknown>) => {

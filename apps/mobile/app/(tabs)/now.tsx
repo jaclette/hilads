@@ -182,15 +182,12 @@ function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
 
 export default function NowScreen() {
   const router = useRouter();
-  const { city, identity, account, bootstrapData } = useApp();
+  const { city, identity, account } = useApp();
   const userMode = account?.mode ?? identity?.mode ?? null;
 
-  // Seed from bootstrap data if available for the current city (avoids initial fetchNowFeed call).
-  const nowBootstrap = bootstrapData?.channelId === city?.channelId ? bootstrapData : undefined;
-
-  const [items,         setItems]         = useState<FeedItem[]>(nowBootstrap?.feedItems ?? []);
-  const [publicEvents,  setPublicEvents]  = useState<FeedItem[]>(nowBootstrap?.publicEvents ?? []);
-  const [loading,       setLoading]       = useState(!nowBootstrap);
+  const [items,         setItems]         = useState<FeedItem[]>([]);
+  const [publicEvents,  setPublicEvents]  = useState<FeedItem[]>([]);
+  const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
   const [showSheet,     setShowSheet]     = useState(false);
@@ -201,9 +198,8 @@ export default function NowScreen() {
   itemsRef.current = items;
 
   // Dedup guard: prevents two concurrent loads (useFocusEffect + useEffect both fire on mount).
-  // Pre-seeded from bootstrap → set lastLoadAtRef to now so the first focus doesn't re-fetch.
   const loadingRef    = useRef(false);
-  const lastLoadAtRef = useRef(nowBootstrap ? Date.now() : 0);
+  const lastLoadAtRef = useRef(0);
   // Mirror load() in a ref so the WS handler always calls the current version without re-registering.
   const loadRef = useRef(load);
   loadRef.current = load;

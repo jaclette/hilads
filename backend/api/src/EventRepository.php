@@ -13,7 +13,7 @@ class EventRepository
     private const SELECT = "
         SELECT
             c.id,
-            c.parent_id,
+            COALESCE(ce.city_id, c.parent_id)           AS parent_id,
             ce.source_type                              AS source,
             ce.external_id,
             ce.guest_id,
@@ -34,8 +34,8 @@ class EventRepository
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
             EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
             EXTRACT(EPOCH FROM c.created_at)::INTEGER   AS created_at
-        FROM channels c
-        JOIN channel_events ce ON ce.channel_id = c.id
+        FROM channel_events ce
+        JOIN channels c ON c.id = ce.channel_id
         LEFT JOIN event_series es ON es.id = ce.series_id
     ";
 
@@ -130,14 +130,12 @@ class EventRepository
         });
 
         $stmt = Database::pdo()->prepare(self::SELECT . "
-            WHERE c.parent_id = :parent_id
-              AND c.type       = 'event'
-              AND c.status     = 'active'
+            WHERE ce.city_id     = :city_id
               AND ce.source_type = 'hilads'
               AND ce.expires_at  > now()
             ORDER BY ce.starts_at ASC
         ");
-        $stmt->execute(['parent_id' => 'city_' . $channelId]);
+        $stmt->execute(['city_id' => 'city_' . $channelId]);
 
         // Two buckets: user-created events always show; imported/seeded venue series fill
         // remaining slots. Without this split, 6+ seeded venues consume all MAX_HILADS
@@ -243,14 +241,12 @@ class EventRepository
         EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $days);
 
         $stmt = Database::pdo()->prepare(self::SELECT . "
-            WHERE c.parent_id  = :parent_id
-              AND c.type       = 'event'
-              AND c.status     = 'active'
-              AND ce.expires_at > now()
-              AND ce.starts_at  < to_timestamp(:cutoff)
+            WHERE ce.city_id    = :city_id
+              AND ce.expires_at  > now()
+              AND ce.starts_at   < to_timestamp(:cutoff)
             ORDER BY ce.starts_at ASC
         ");
-        $stmt->execute(['parent_id' => 'city_' . $channelId, 'cutoff' => $cutoff]);
+        $stmt->execute(['city_id' => 'city_' . $channelId, 'cutoff' => $cutoff]);
 
         $events = array_map([self::class, 'format'], $stmt->fetchAll());
 
@@ -277,15 +273,13 @@ class EventRepository
     public static function getPublicByChannel(int $channelId): array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "
-            WHERE c.parent_id = :parent_id
-              AND c.type         = 'event'
-              AND c.status       = 'active'
+            WHERE ce.city_id     = :city_id
               AND ce.source_type = 'ticketmaster'
               AND ce.expires_at  > now()
             ORDER BY ce.starts_at ASC
             LIMIT " . self::MAX_PUBLIC
         );
-        $stmt->execute(['parent_id' => 'city_' . $channelId]);
+        $stmt->execute(['city_id' => 'city_' . $channelId]);
         return array_map([self::class, 'format'], $stmt->fetchAll());
     }
 
@@ -488,18 +482,16 @@ class EventRepository
         $rows = Database::pdo()
             ->query("
                 SELECT
-                    CAST(SUBSTRING(c.parent_id FROM 6) AS INTEGER) AS city_id,
+                    CAST(SUBSTRING(ce.city_id FROM 6) AS INTEGER) AS city_id,
                     COUNT(*) AS event_count
-                FROM channels c
-                JOIN channel_events ce ON ce.channel_id = c.id
-                WHERE c.type     = 'event'
-                  AND c.status   = 'active'
+                FROM channel_events ce
+                WHERE ce.city_id IS NOT NULL
                   AND ce.expires_at > now()
                   AND (
                       ce.occurrence_date IS NULL
                       OR ce.occurrence_date = CURRENT_DATE
                   )
-                GROUP BY c.parent_id
+                GROUP BY ce.city_id
             ")
             ->fetchAll(PDO::FETCH_ASSOC);
 
@@ -565,10 +557,10 @@ class EventRepository
         $pdo->prepare("
             INSERT INTO channel_events
                 (channel_id, source_type, guest_id, created_by, title, event_type, location,
-                 starts_at, expires_at)
+                 starts_at, expires_at, city_id)
             VALUES
                 (:channel_id, 'hilads', :guest_id, :created_by, :title, :event_type, :location,
-                 to_timestamp(:starts_at), to_timestamp(:expires_at))
+                 to_timestamp(:starts_at), to_timestamp(:expires_at), :city_id)
         ")->execute([
             'channel_id' => $id,
             'guest_id'   => $guestId,
@@ -578,6 +570,7 @@ class EventRepository
             'location'   => $locationHint,
             'starts_at'  => $startsAt,
             'expires_at' => $expiresAt,
+            'city_id'    => $parentId,
         ]);
 
         // Auto-join: creator is always the first participant (idempotent via ON CONFLICT).
@@ -644,10 +637,10 @@ class EventRepository
         $pdo->prepare("
             INSERT INTO channel_events
                 (channel_id, source_type, guest_id, created_by, title, event_type,
-                 location, venue, starts_at, expires_at)
+                 location, venue, starts_at, expires_at, city_id)
             VALUES
                 (:channel_id, 'hilads', :guest_id, :created_by, :title, :event_type,
-                 :location, :venue, to_timestamp(:starts_at), to_timestamp(:expires_at))
+                 :location, :venue, to_timestamp(:starts_at), to_timestamp(:expires_at), :city_id)
         ")->execute([
             'channel_id' => $id,
             'guest_id'   => $guestId,
@@ -658,6 +651,7 @@ class EventRepository
             'venue'      => $venue,
             'starts_at'  => $startsAt,
             'expires_at' => $endsAt,
+            'city_id'    => $parentId,
         ]);
 
         if ($guestId !== null) {
@@ -695,12 +689,12 @@ class EventRepository
             INSERT INTO channel_events
                 (channel_id, source_type, external_id, title,
                  venue, location, venue_lat, venue_lng,
-                 starts_at, expires_at, image_url, external_url, synced_at)
+                 starts_at, expires_at, image_url, external_url, synced_at, city_id)
             VALUES
                 (:channel_id, 'ticketmaster', :external_id, :title,
                  :venue, :location, :venue_lat, :venue_lng,
                  to_timestamp(:starts_at), to_timestamp(:expires_at),
-                 :image_url, :external_url, now())
+                 :image_url, :external_url, now(), :city_id)
             ON CONFLICT (source_type, external_id) DO UPDATE SET
                 title        = EXCLUDED.title,
                 venue        = EXCLUDED.venue,
@@ -711,6 +705,7 @@ class EventRepository
                 expires_at   = EXCLUDED.expires_at,
                 image_url    = EXCLUDED.image_url,
                 external_url = EXCLUDED.external_url,
+                city_id      = EXCLUDED.city_id,
                 synced_at    = now()
         ");
 
@@ -740,6 +735,7 @@ class EventRepository
                 'expires_at'  => $ev['expires_at'],
                 'image_url'   => $ev['image_url'],
                 'external_url'=> $ev['external_url'],
+                'city_id'     => $parentId,
             ]);
         }
     }

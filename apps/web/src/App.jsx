@@ -1568,22 +1568,28 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // ── Events + Topics: apply from bootstrap result ─────────────────────────
-      const bootNowItems = boot.feedItems ?? []
-      const bootEvs      = bootNowItems.filter(i => i.kind === 'event')
-      const bootTops     = bootNowItems.filter(i => i.kind === 'topic')
-      setEvents(bootEvs)
-      setTopics(bootTops)
-      const bootCounts = {}
-      const bootParticipated = new Set()
-      bootEvs.forEach(ev => {
-        bootCounts[ev.id] = ev.participant_count ?? 0
-        if (ev.is_participating) bootParticipated.add(ev.id)
-      })
-      setEventParticipants(bootCounts)
-      setParticipatedEvents(bootParticipated)
-      setCityEvents(boot.publicEvents ?? [])
-      setHotEventsStatus('ready')
+      // ── Events + Topics: fetch in background after messages are shown ────────
+      // Bootstrap no longer includes events — /now fires separately so it never
+      // blocks the initial chat render. hotEventsStatus was set to 'loading' above.
+      const joinChannelId = location.channelId
+      fetchNowFeed(joinChannelId, sessionIdRef.current).then(data => {
+        if (activeChannelRef.current !== joinChannelId) return
+        const nowItems = data.items ?? []
+        const evs  = nowItems.filter(i => i.kind === 'event')
+        const tops = nowItems.filter(i => i.kind === 'topic')
+        setEvents(evs)
+        setTopics(tops)
+        const counts = {}
+        const participated = new Set()
+        evs.forEach(ev => {
+          counts[ev.id] = ev.participant_count ?? 0
+          if (ev.is_participating) participated.add(ev.id)
+        })
+        setEventParticipants(counts)
+        setParticipatedEvents(participated)
+        setCityEvents(data.publicEvents ?? [])
+        setHotEventsStatus('ready')
+      }).catch(() => setHotEventsStatus('ready'))
     } catch (err) {
       if (rejoinData) {
         // stored channel may no longer exist — fall back to home
@@ -1910,22 +1916,25 @@ export default function App() {
       }
       pollFnRef.current = doRefresh
 
-      // Events + Topics: apply from bootstrap result
-      const switchNowItems = boot.feedItems ?? []
-      const switchEvs = switchNowItems.filter(i => i.kind === 'event')
-      const switchTops = switchNowItems.filter(i => i.kind === 'topic')
-      setEvents(switchEvs)
-      setTopics(switchTops)
-      const switchCounts = {}
-      const switchParticipated = new Set()
-      switchEvs.forEach(ev => {
-        switchCounts[ev.id] = ev.participant_count ?? 0
-        if (ev.is_participating) switchParticipated.add(ev.id)
-      })
-      setEventParticipants(switchCounts)
-      setParticipatedEvents(switchParticipated)
-      setCityEvents(boot.publicEvents ?? [])
-      setHotEventsStatus('ready')
+      // Events + Topics: fetch in background after messages are shown
+      fetchNowFeed(newChannelId, sessionIdRef.current).then(data => {
+        if (activeChannelRef.current !== newChannelId) return
+        const nowItems = data.items ?? []
+        const evs  = nowItems.filter(i => i.kind === 'event')
+        const tops = nowItems.filter(i => i.kind === 'topic')
+        setEvents(evs)
+        setTopics(tops)
+        const counts = {}
+        const participated = new Set()
+        evs.forEach(ev => {
+          counts[ev.id] = ev.participant_count ?? 0
+          if (ev.is_participating) participated.add(ev.id)
+        })
+        setEventParticipants(counts)
+        setParticipatedEvents(participated)
+        setCityEvents(data.publicEvents ?? [])
+        setHotEventsStatus('ready')
+      }).catch(() => setHotEventsStatus('ready'))
     } catch {
       // silently fail — user stays with empty feed for new city
     }

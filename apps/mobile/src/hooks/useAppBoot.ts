@@ -364,9 +364,6 @@ export function useAppBoot(): Result {
                         channelId:           saved.channelId,
                         messages:            boot.messages,
                         hasMore:             boot.hasMore,
-                        feedItems:           boot.feedItems,
-                        publicEvents:        boot.publicEvents,
-                        cityEvents:          boot.cityEvents,
                         hasUnreadDMs:        boot.hasUnreadDMs,
                         unreadNotifications: boot.unreadNotifications,
                       });
