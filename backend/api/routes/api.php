@@ -882,7 +882,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
                 NotificationRepository::create(
                     $targetId,
                     'profile_view',
-                    "👀 {$viewerName} checked your vibe",
+                    "👀 {$viewerName} checked your profile",
                     null,
                     ['viewerId' => $viewerId, 'viewerName' => $viewerName, 'senderUserId' => $viewerId]
                 );

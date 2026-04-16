@@ -125,6 +125,11 @@ function resolveRoute(data: NotifData): string | null {
       // Open own profile on the Vibes tab — that's where the new vibe is visible.
       return '/(tabs)/me?tab=vibes';
 
+    case 'profile_view':
+      // Navigate to the viewer's profile so the recipient can see who visited.
+      if (data.viewerId) return `/user/${data.viewerId}`;
+      return null;
+
     default:
       return null;
   }
