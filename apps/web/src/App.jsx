@@ -663,6 +663,18 @@ export default function App() {
   const [citySearchQuery, setCitySearchQuery] = useState('')
   const [cityFilter, setCityFilter] = useState('active') // 'active' | 'events' | 'online'
 
+  // ── Lazy-load full channel list — only fetched when user actually searches ───
+  // The ranked top-10 (loadChannels) is fetched on open; the full unsorted list
+  // is only needed for search filtering, so we defer it until the first keystroke.
+  useEffect(() => {
+    if (!showCityPicker || !citySearchQuery.trim() || allChannels.length > 0) return
+    let cancelled = false
+    fetchChannels(null)
+      .then(d => { if (!cancelled) setAllChannels(d.channels ?? []) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [showCityPicker, citySearchQuery, allChannels.length]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Local legends fetch — ambassadors for this city (no filter dependency) ──
   useEffect(() => {
     if (!showPeopleDrawer || viewingProfile || !channelId) return
@@ -1747,16 +1759,8 @@ export default function App() {
   async function loadChannels(sort) {
     setChannelsLoading(true)
     try {
-      // Fetch ranked top-10 (for default mode) and all channels (for search) in parallel
-      const [ranked, all] = await Promise.all([
-        fetchChannels(sort).then(d => d.channels).catch(() => []),
-        // Only fetch full list if not already loaded
-        allChannels.length > 0
-          ? Promise.resolve(allChannels)
-          : fetchChannels(null).then(d => d.channels).catch(() => []),
-      ])
-      setChannels(ranked)
-      setAllChannels(all)
+      const data = await fetchChannels(sort)
+      setChannels(data.channels ?? [])
     } finally {
       setChannelsLoading(false)
     }
@@ -1765,7 +1769,6 @@ export default function App() {
   async function openCityPicker() {
     setShowCityPicker(true)
     setCitySearchQuery('')
-    setAllChannels([]) // reset so full list is re-fetched fresh on open
     loadChannels(cityFilter)
   }
 

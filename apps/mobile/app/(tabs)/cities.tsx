@@ -143,12 +143,8 @@ export default function CitiesScreen() {
     else if (cities.length === 0) setLoading(true);
     setError(false);
     try {
-      const [ranked, all] = await Promise.all([
-        fetchChannels(sort),
-        allCities.length > 0 ? Promise.resolve(allCities) : fetchChannels(),
-      ]);
+      const ranked = await fetchChannels(sort);
       setCities(ranked);
-      setAllCities(all);
     } catch {
       setError(true);
     } finally {
@@ -156,6 +152,15 @@ export default function CitiesScreen() {
       setRefreshing(false);
     }
   }
+
+  // Lazy-load full channel list — only fetched when user actually types a search query.
+  // Avoids a second parallel request on screen mount; the full list is only needed for search.
+  useEffect(() => {
+    if (!query.trim() || allCities.length > 0) return;
+    let cancelled = false;
+    fetchChannels().then(all => { if (!cancelled) setAllCities(all); }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [query, allCities.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { load(filter); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
