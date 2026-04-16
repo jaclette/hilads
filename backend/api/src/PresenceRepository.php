@@ -91,6 +91,94 @@ class PresenceRepository
         ];
     }
 
+    /**
+     * Combined presence upsert + auth resolution in ONE DB round trip.
+     *
+     * Used exclusively by the POST /join endpoint to eliminate the second sequential
+     * DB query that was previously needed to resolve the authenticated user.
+     *
+     * $authToken — raw session token from Cookie or Bearer header.
+     *   If null or invalid format: auth subquery is skipped (guest path).
+     *   If valid: a correlated subquery resolves the user ID in the same round trip.
+     *
+     * Returns: [ 'isNew' => bool, 'authUserId' => ?string ]
+     *   isNew      — true if this is a genuinely new session (emit join feed event)
+     *   authUserId — resolved user ID, or null for guests / invalid tokens
+     */
+    public static function joinWithAuth(int $channelId, string $sessionId, string $guestId, string $nickname, ?string $authToken): array
+    {
+        $key = self::dbKey($channelId);
+        $ttl = self::TTL;
+
+        $hasToken = $authToken !== null && preg_match('/^[a-f0-9]{64}$/', $authToken) === 1;
+
+        if ($hasToken) {
+            // Single round-trip: upsert presence AND resolve the authenticated user.
+            // The auth subquery adds ~0ms overhead — it's a simple PK lookup on user_sessions.
+            $stmt = Database::pdo()->prepare("
+                WITH
+                existing AS (
+                    SELECT last_seen_at
+                    FROM presence
+                    WHERE session_id = ? AND channel_id = ?
+                ),
+                upserted AS (
+                    INSERT INTO presence (session_id, channel_id, guest_id, nickname, last_seen_at)
+                    VALUES (?, ?, ?, ?, now())
+                    ON CONFLICT (session_id, channel_id) DO UPDATE SET
+                        nickname     = EXCLUDED.nickname,
+                        last_seen_at = now()
+                    RETURNING channel_id
+                )
+                SELECT
+                    NOT EXISTS(
+                        SELECT 1 FROM existing
+                        WHERE last_seen_at > now() - interval '$ttl seconds'
+                    ) AS is_new_session,
+                    (
+                        SELECT u.id FROM user_sessions s
+                        JOIN users u ON u.id = s.user_id
+                        WHERE s.id = ? AND s.expires_at > now() AND u.deleted_at IS NULL
+                        LIMIT 1
+                    ) AS auth_user_id
+                FROM upserted
+            ");
+            $stmt->execute([$sessionId, $key, $sessionId, $key, $guestId, $nickname, $authToken]);
+        } else {
+            // Guest path: no token — skip the auth subquery entirely.
+            $stmt = Database::pdo()->prepare("
+                WITH
+                existing AS (
+                    SELECT last_seen_at
+                    FROM presence
+                    WHERE session_id = ? AND channel_id = ?
+                ),
+                upserted AS (
+                    INSERT INTO presence (session_id, channel_id, guest_id, nickname, last_seen_at)
+                    VALUES (?, ?, ?, ?, now())
+                    ON CONFLICT (session_id, channel_id) DO UPDATE SET
+                        nickname     = EXCLUDED.nickname,
+                        last_seen_at = now()
+                    RETURNING channel_id
+                )
+                SELECT
+                    NOT EXISTS(
+                        SELECT 1 FROM existing
+                        WHERE last_seen_at > now() - interval '$ttl seconds'
+                    ) AS is_new_session,
+                    NULL AS auth_user_id
+                FROM upserted
+            ");
+            $stmt->execute([$sessionId, $key, $sessionId, $key, $guestId, $nickname]);
+        }
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return [
+            'isNew'      => (bool)   ($row['is_new_session'] ?? true),
+            'authUserId' => $row['auth_user_id'] ?? null,
+        ];
+    }
+
     public static function leave(int $channelId, string $sessionId): void
     {
         Database::pdo()->prepare("
