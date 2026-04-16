@@ -12,39 +12,48 @@ class PresenceRepository
     }
 
     /**
-     * Upserts presence for the session in a single round-trip.
-     * Returns true if this is a genuinely new join (session was absent or expired),
-     * false if the session was already active within the TTL (re-join / heartbeat).
-     * Use the return value to decide whether to emit a "just landed" feed event.
+     * Upserts presence for the session and returns both the new-session flag and
+     * the current online count — all in a single DB round-trip.
      *
-     * Uses a CTE to capture the pre-upsert last_seen_at so the "is new?" check
-     * and the upsert happen in one query instead of two.
+     * Returns: [ 'isNew' => bool, 'onlineCount' => int ]
+     *   isNew        — true if session was absent or expired (emit "just landed" event)
+     *   onlineCount  — distinct guest count currently online in this channel
      */
-    public static function join(int $channelId, string $sessionId, string $guestId, string $nickname): bool
+    public static function join(int $channelId, string $sessionId, string $guestId, string $nickname): array
     {
         $key  = self::dbKey($channelId);
         $ttl  = self::TTL;
         $stmt = Database::pdo()->prepare("
-            WITH existing AS (
+            WITH
+            existing AS (
                 SELECT last_seen_at
                 FROM presence
                 WHERE session_id = ? AND channel_id = ?
+            ),
+            upserted AS (
+                INSERT INTO presence (session_id, channel_id, guest_id, nickname, last_seen_at)
+                VALUES (?, ?, ?, ?, now())
+                ON CONFLICT (session_id, channel_id) DO UPDATE SET
+                    nickname     = EXCLUDED.nickname,
+                    last_seen_at = now()
+                RETURNING channel_id
             )
-            INSERT INTO presence (session_id, channel_id, guest_id, nickname, last_seen_at)
-            VALUES (?, ?, ?, ?, now())
-            ON CONFLICT (session_id, channel_id) DO UPDATE SET
-                nickname     = EXCLUDED.nickname,
-                last_seen_at = now()
-            RETURNING (
-                NOT EXISTS (
+            SELECT
+                NOT EXISTS(
                     SELECT 1 FROM existing
                     WHERE last_seen_at > now() - interval '$ttl seconds'
-                )
-            ) AS is_new_session
+                ) AS is_new_session,
+                (SELECT COUNT(DISTINCT guest_id) FROM presence
+                 WHERE channel_id = ? AND last_seen_at > now() - interval '$ttl seconds'
+                ) AS online_count
+            FROM upserted
         ");
-        $stmt->execute([$sessionId, $key, $sessionId, $key, $guestId, $nickname]);
+        $stmt->execute([$sessionId, $key, $sessionId, $key, $guestId, $nickname, $key]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return (bool) ($row['is_new_session'] ?? true);
+        return [
+            'isNew'       => (bool) ($row['is_new_session'] ?? true),
+            'onlineCount' => (int)  ($row['online_count']   ?? 1),
+        ];
     }
 
     public static function leave(int $channelId, string $sessionId): void

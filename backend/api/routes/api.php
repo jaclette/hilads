@@ -1368,7 +1368,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             });
         }
 
-        $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+        $joinResult   = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+        $isNewSession = $joinResult['isNew'];
         $t2 = microtime(true); // after presence join
 
         // Resolve the authenticated user — needed for the join feed message.
@@ -1469,7 +1470,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 // Fast join endpoint: presence + messages + auth badges only.
 // Events and topics are NOT included — clients fetch /now in background after render.
 //
-// DB queries: 6-8 synchronous.
+// DB queries: 4-6 synchronous.
 // Deferred after response: presence-leave, membership upsert, weather inject, TM sync, analytics.
 //
 // Request body: { sessionId, guestId, nickname, previousChannelId? }
@@ -1479,8 +1480,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 //   joinMessage        — join feed entry, or null for re-joins
 //   messages           — last N chat messages (badge-enriched)
 //   hasMore            — pagination cursor flag
-//   onlineUsers        — presence list (badge-enriched)
-//   onlineCount        — integer
+//   onlineUsers        — always [] (clients use WebSocket presenceSnapshot)
+//   onlineCount        — integer (from presence UPSERT, no extra query)
 //   hasUnreadDMs       — bool (auth users) or null (guests)
 //   unreadNotifications — int (auth users) or null (guests)
 //   currentUser        — public user fields (auth users) or null (guests)
@@ -1543,8 +1544,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             });
         }
 
-        // ── q2: presence join ─────────────────────────────────────────────────
-        $isNewSession = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+        // ── q2: presence join + online count (single round-trip) ────────────────
+        $joinResult   = PresenceRepository::join($channelId, $sessionId, $guestId, $nickname);
+        $isNewSession = $joinResult['isNew'];
+        $onlineCount  = $joinResult['onlineCount'];
 
         // ── q3: auth lookup (request-level cached) ────────────────────────────
         $authUser        = AuthService::currentUser();
@@ -1599,7 +1602,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
 
         $t1 = microtime(true); // after join
 
-        // ── Phase 2: messages + presence + badge enrichment ──────────────────
+        // ── Phase 2: messages + badge enrichment ────────────────────────────────
+        // Online presence (full list) is intentionally NOT fetched here.
+        // Clients receive presence via the WebSocket presenceSnapshot event immediately
+        // after connecting, which always supersedes any bootstrap list. Skipping getOnline
+        // removes 1 sequential DB query (DISTINCT ON + LEFT JOIN) from the critical path.
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id'])
             ? trim($_GET['before_id']) : null;
         $limit = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
@@ -1609,11 +1616,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
 
-        // ── q6: online presence ───────────────────────────────────────────────
-        $onlineUsers = PresenceRepository::getOnline($channelId);
-        $onlineCount = count($onlineUsers);
-
-        // ── q7: badge enrichment (1 query covers messages + presence) ─────────
+        // ── q6: badge enrichment for message authors ──────────────────────────
+        // Only registered users need a DB lookup — guest messages use the ghost badge.
+        // In all-guest rooms this array is empty → batchFull skips the query entirely.
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
@@ -1621,12 +1626,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                 $msgUserIds[] = $msg['userId'];
             }
         }
-        $presenceUserIds = array_values(array_unique(array_filter(
-            array_column($onlineUsers, 'userId'),
-            fn($id) => !empty($id)
-        )));
-        $allUserIds = array_values(array_unique(array_merge($msgUserIds, $presenceUserIds)));
-        $badgeMap   = UserBadgeService::batchFull($allUserIds, $channelId, $city['name']);
+        $msgUserIds = array_values(array_unique($msgUserIds));
+        $badgeMap   = UserBadgeService::batchFull($msgUserIds, $channelId, $city['name']);
 
         foreach ($messages as &$msg) {
             $t = $msg['type'] ?? 'text';
@@ -1648,28 +1649,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         }
         unset($msg);
 
-        foreach ($onlineUsers as &$u) {
-            $uid = $u['userId'] ?? null;
-            if (empty($uid)) {
-                $u['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
-                $u['contextBadge'] = null;
-            } elseif (isset($badgeMap[$uid])) {
-                $b = $badgeMap[$uid];
-                $u['primaryBadge'] = $b['primaryBadge'];
-                $u['contextBadge'] = $b['contextBadge'];
-                $u['vibe']         = $b['vibe'] ?? 'chill';
-                $u['mode']         = $b['mode'] ?? null;
-            } else {
-                $u['primaryBadge'] = UserBadgeService::primaryForUser(['created_at' => $u['userCreatedAt']]);
-                $u['contextBadge'] = null;
-                $u['vibe']         = $u['userVibe'] ?? 'chill';
-                $u['mode']         = null;
-            }
-            unset($u['userCreatedAt'], $u['userHomeCity'], $u['userVibe']);
-        }
-        unset($u);
-
-        $t2 = microtime(true); // after messages + presence + badges
+        $t2 = microtime(true); // after messages + badges
 
         // ── Phase 3: auth-conditional unread data ────────────────────────────
         // Only run for authenticated users — guests have no DMs or notifications.
@@ -1739,7 +1719,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             'joinMessage'         => $joinMessage,
             'messages'            => $messages,
             'hasMore'             => $hasMore,
-            'onlineUsers'         => $onlineUsers,
+            'onlineUsers'         => [],
             'onlineCount'         => $onlineCount,
             'hasUnreadDMs'        => $hasUnreadDMs,
             'unreadNotifications' => $unreadNotifications,

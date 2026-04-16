@@ -1203,8 +1203,13 @@ export default function App() {
   //   2. If no events at all → /events/upcoming (generates series occurrences for next 7 days)
   // Topics from /now are always used if available (24h TTL, user-created).
   // The upcoming fallback ensures recurring city events (daily/weekly series) always show.
+  //
+  // Skip for returning users (loadGuestId() set): they auto-rejoin immediately and
+  // fetch /now with sessionId after bootstrap. Firing it here produces a duplicate
+  // no-sessionId request for a landing page the user never sees.
   useEffect(() => {
     if (!previewChannelId) return
+    if (loadGuestId()) return
     fetchNowFeed(previewChannelId)
       .then(async data => {
         const items        = data.items        ?? []
