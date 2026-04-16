@@ -129,21 +129,26 @@ export default function CitiesScreen() {
   const router                                              = useRouter();
   const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
-  const [cities,        setCities]        = useState<City[]>([]);
-  const [filtered,      setFiltered]      = useState<City[]>([]);
+  const [cities,        setCities]        = useState<City[]>([]);  // ranked top-10 (filter mode)
+  const [allCities,     setAllCities]     = useState<City[]>([]);  // all cities unranked (search mode)
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState(false);
   const [query,         setQuery]         = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
+  const [filter,        setFilter]        = useState<'active' | 'events' | 'online'>('active');
 
-  async function load(isRefresh = false) {
+  async function load(sort: string, isRefresh = false) {
     if (isRefresh) setRefreshing(true);
+    else if (cities.length === 0) setLoading(true);
     setError(false);
     try {
-      const data = await fetchChannels();
-      setCities(data);
-      setFiltered(data);
+      const [ranked, all] = await Promise.all([
+        fetchChannels(sort),
+        allCities.length > 0 ? Promise.resolve(allCities) : fetchChannels(),
+      ]);
+      setCities(ranked);
+      setAllCities(all);
     } catch {
       setError(true);
     } finally {
@@ -152,18 +157,12 @@ export default function CitiesScreen() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(filter); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    if (!query.trim()) {
-      setFiltered(cities);
-    } else {
-      const q = query.toLowerCase();
-      setFiltered(cities.filter(c =>
-        c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q),
-      ));
-    }
-  }, [query, cities]);
+  function changeFilter(f: 'active' | 'events' | 'online') {
+    setFilter(f);
+    load(f);
+  }
 
   function switchToCity(item: City) {
     setCity(item);
@@ -184,21 +183,30 @@ export default function CitiesScreen() {
     router.push('/(tabs)/chat');
   }
 
-  // Section label — web: "Top cities right now" when any city has activity, else "Cities"
-  // Rendered uppercase via textTransform → "TOP CITIES RIGHT NOW" / "CITIES"
+  // Section label — "Top cities right now" when any city has activity, else "Cities"
   const hasActivity  = cities.some(c => (c.onlineCount ?? 0) > 0);
   const sectionLabel = query.trim() ? null : (hasActivity ? 'Top cities right now' : 'Cities');
 
-  // Current city always first — regardless of server ordering.
-  // Default (no query): top 10 only — mirrors web getDefaultCityTargets(limit=10).
-  // Search: all matching results — mirrors web getSearchCityTargets(limit=12, but unbounded here).
-  const ranked = activeCity
-    ? [
-        ...filtered.filter(c => c.channelId === activeCity.channelId),
-        ...filtered.filter(c => c.channelId !== activeCity.channelId),
-      ]
-    : filtered;
-  const sortedFiltered = query.trim() ? ranked : ranked.slice(0, 10);
+  // Search mode: filter all cities by query, pin active city first
+  // Default mode: use backend-ranked top-10, pin active city first
+  const displayList = (() => {
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      const matches = allCities.filter(c =>
+        c.name.toLowerCase().includes(q) || c.country.toLowerCase().includes(q),
+      );
+      if (!activeCity) return matches;
+      return [
+        ...matches.filter(c => c.channelId === activeCity.channelId),
+        ...matches.filter(c => c.channelId !== activeCity.channelId),
+      ];
+    }
+    if (!activeCity) return cities;
+    return [
+      ...cities.filter(c => c.channelId === activeCity.channelId),
+      ...cities.filter(c => c.channelId !== activeCity.channelId),
+    ];
+  })();
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -241,6 +249,28 @@ export default function CitiesScreen() {
         </View>
       </View>
 
+      {/* ── Ranking filters — hidden during search ── */}
+      {!query.trim() && (
+        <View style={styles.filterRow}>
+          {([
+            { id: 'active', label: '🔥 Most active' },
+            { id: 'events', label: '🎉 Most events' },
+            { id: 'online', label: '🟢 Most online' },
+          ] as const).map(f => (
+            <TouchableOpacity
+              key={f.id}
+              style={[styles.filterPill, filter === f.id && styles.filterPillActive]}
+              onPress={() => { if (filter !== f.id) changeFilter(f.id); }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.filterPillText, filter === f.id && styles.filterPillTextActive]}>
+                {f.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+
       {/* ── Back to my location CTA — visible only when detected city ≠ active city ── */}
       {detectedCity && detectedCity.channelId !== activeCity?.channelId && (
         <TouchableOpacity
@@ -271,7 +301,7 @@ export default function CitiesScreen() {
         </View>
       ) : (
         <FlatList
-          data={sortedFiltered}
+          data={displayList}
           keyExtractor={(c) => c.channelId}
           keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
@@ -284,14 +314,14 @@ export default function CitiesScreen() {
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
-              onRefresh={() => load(true)}
+              onRefresh={() => load(filter, true)}
               tintColor={Colors.accent}
             />
           }
           ListHeaderComponent={sectionLabel ? (
             <Text style={styles.sectionLabel}>{sectionLabel}</Text>
           ) : null}
-          contentContainerStyle={sortedFiltered.length === 0 ? styles.flex1 : styles.listContent}
+          contentContainerStyle={displayList.length === 0 ? styles.flex1 : styles.listContent}
           ListEmptyComponent={
             <View style={styles.center}>
               <Text style={styles.emptyText}>
@@ -376,6 +406,36 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     color:           Colors.text,
     fontSize:        FontSizes.md,
+  },
+
+  // ── Ranking filter pills ─────────────────────────────────────────────────
+  filterRow: {
+    flexDirection:     'row',
+    gap:               8,
+    paddingHorizontal: 14,
+    paddingVertical:   10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  filterPill: {
+    paddingHorizontal: 14,
+    paddingVertical:   8,
+    borderRadius:      20,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.12)',
+    backgroundColor:   'transparent',
+  },
+  filterPillActive: {
+    backgroundColor: Colors.accent,
+    borderColor:     Colors.accent,
+  },
+  filterPillText: {
+    fontSize:   14,
+    fontWeight: '600',
+    color:      Colors.muted,
+  },
+  filterPillTextActive: {
+    color: '#fff',
   },
 
   // ── .city-list-label ──────────────────────────────────────────────────────

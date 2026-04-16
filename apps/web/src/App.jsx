@@ -548,7 +548,8 @@ export default function App() {
     return w?.text ?? null
   }, [feed])
   const [showCityPicker, setShowCityPicker] = useState(false)
-  const [channels, setChannels] = useState([])
+  const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
+  const [allChannels, setAllChannels] = useState([])    // all channels unranked (used in search mode)
   const [channelsLoading, setChannelsLoading] = useState(false)
   const [fadingIds, setFadingIds] = useState(new Set())
   const [onlineUsers, setOnlineUsers] = useState([])
@@ -650,6 +651,7 @@ export default function App() {
   const [obChannels, setObChannels] = useState([])
   const [obChannelsLoading, setObChannelsLoading] = useState(false)
   const [citySearchQuery, setCitySearchQuery] = useState('')
+  const [cityFilter, setCityFilter] = useState('active') // 'active' | 'events' | 'online'
 
   // ── Local legends fetch — ambassadors for this city (no filter dependency) ──
   useEffect(() => {
@@ -1751,18 +1753,34 @@ export default function App() {
     await doSendText(text)
   }
 
-  async function openCityPicker() {
-    setShowCityPicker(true)
-    setCitySearchQuery('')
+  async function loadChannels(sort) {
     setChannelsLoading(true)
     try {
-      const data = await fetchChannels()
-      setChannels(data.channels)
-    } catch {
-      setChannels([])
+      // Fetch ranked top-10 (for default mode) and all channels (for search) in parallel
+      const [ranked, all] = await Promise.all([
+        fetchChannels(sort).then(d => d.channels).catch(() => []),
+        // Only fetch full list if not already loaded
+        allChannels.length > 0
+          ? Promise.resolve(allChannels)
+          : fetchChannels(null).then(d => d.channels).catch(() => []),
+      ])
+      setChannels(ranked)
+      setAllChannels(all)
     } finally {
       setChannelsLoading(false)
     }
+  }
+
+  async function openCityPicker() {
+    setShowCityPicker(true)
+    setCitySearchQuery('')
+    setAllChannels([]) // reset so full list is re-fetched fresh on open
+    loadChannels(cityFilter)
+  }
+
+  function changeCityFilter(f) {
+    setCityFilter(f)
+    loadChannels(f)
   }
 
   async function openObCityPicker() {
@@ -3159,6 +3177,23 @@ export default function App() {
               autoFocus
             />
           </div>
+          {!citySearchQuery.trim() && (
+            <div className="city-filter-tabs">
+              {[
+                { id: 'active', label: '🔥 Most active' },
+                { id: 'events', label: '🎉 Most events' },
+                { id: 'online', label: '🟢 Most online' },
+              ].map(f => (
+                <button
+                  key={f.id}
+                  className={`city-filter-tab${cityFilter === f.id ? ' active' : ''}`}
+                  onClick={() => { if (cityFilter !== f.id) changeCityFilter(f.id) }}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+          )}
           {geoChannelId && geoChannelId !== channelId && (() => {
             const geoCh = channels.find(ch => ch.channelId === geoChannelId)
             if (!geoCh) return null
@@ -3194,8 +3229,8 @@ export default function App() {
               const q = citySearchQuery.trim().toLowerCase()
 
               if (q) {
-                // Search mode — filter all channels, sort active-first then alpha
-                const results = [...channels]
+                // Search mode — query against all channels (full unranked list)
+                const results = [...allChannels]
                   .filter(ch => ch.city.toLowerCase().includes(q))
                   .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
                 if (results.length === 0) return <div className="city-no-results">No city found for "{q}"</div>
@@ -3206,16 +3241,11 @@ export default function App() {
                 ))
               }
 
-              // Default mode — active cities by score, then fill to 10 with well-known cities (ID order)
-              const active = [...channels]
-                .filter(ch => cityScore(ch) > 0)
-                .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
-              const fillerIds = new Set(active.map(ch => ch.channelId))
-              const filler = [...channels]
-                .filter(ch => !fillerIds.has(ch.channelId))
-                .sort((a, b) => a.channelId - b.channelId)
-              const top10 = [...active, ...filler].slice(0, 10)
-              const label = active.length > 0 ? 'Top cities right now' : 'Cities'
+              // Default mode — backend already sorted & sliced to top 10, pin current city first
+              const activeCh = channels.find(ch => ch.channelId === channelId)
+              const others   = channels.filter(ch => ch.channelId !== channelId)
+              const top10    = activeCh ? [activeCh, ...others] : others
+              const label    = channels.some(ch => (ch.activeUsers ?? 0) > 0) ? 'Top cities right now' : 'Cities'
               return (
                 <>
                   <div className="city-list-label">{label}</div>

@@ -10,16 +10,17 @@ export interface GuestIdentity {
 // ── City / Channel ────────────────────────────────────────────────────────────
 
 export interface City {
-  channelId: string;
-  name: string;
-  country: string;
-  timezone: string;
-  slug: string;
-  onlineCount?: number;
-  eventCount?: number;
-  topicCount?: number;
-  messageCount?: number;
-  liveScore?: number;
+  channelId:           string;
+  name:                string;
+  country:             string;
+  timezone:            string;
+  slug:                string;
+  onlineCount?:        number;
+  eventCount?:         number;
+  topicCount?:         number;
+  messageCount?:       number;
+  recentMessageCount?: number;
+  liveScore?:          number;
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────

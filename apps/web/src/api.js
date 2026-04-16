@@ -91,8 +91,9 @@ export function disconnectBeacon(sessionId) {
   navigator.sendBeacon(`${BASE}/disconnect`, payload)
 }
 
-export async function fetchChannels() {
-  const res = await fetch(`${BASE}/channels`, { credentials: 'include' })
+export async function fetchChannels(sort = null) {
+  const url = sort ? `${BASE}/channels?sort=${encodeURIComponent(sort)}` : `${BASE}/channels`
+  const res = await fetch(url, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch channels')
   return res.json()
 }

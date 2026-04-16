@@ -25,30 +25,33 @@ export async function resolveLocation(lat: number, lng: number): Promise<City> {
 
 // Raw shape returned by GET /channels — fields differ from the City type.
 interface RawChannel {
-  channelId:    string | number;
-  city:         string;          // web: ch.city — city display name
-  country:      string | null;
-  timezone:     string | null;
-  activeUsers?: number;          // web: ch.activeUsers — online count
-  messageCount?: number;
-  eventCount?:   number;
-  topicCount?:   number;
-  liveScore?:    number;
+  channelId:           string | number;
+  city:                string;          // web: ch.city — city display name
+  country:             string | null;
+  timezone:            string | null;
+  activeUsers?:        number;          // web: ch.activeUsers — online count
+  messageCount?:       number;
+  recentMessageCount?: number;          // messages in last 24 h — used for "most active" ranking
+  eventCount?:         number;
+  topicCount?:         number;
+  liveScore?:          number;
 }
 
-export async function fetchChannels(): Promise<City[]> {
-  const data = await api.get<{ channels: RawChannel[] }>('/channels');
+export async function fetchChannels(sort?: string): Promise<City[]> {
+  const url = sort ? `/channels?sort=${encodeURIComponent(sort)}` : '/channels';
+  const data = await api.get<{ channels: RawChannel[] }>(url);
   return (data.channels ?? []).map(ch => ({
-    channelId:    String(ch.channelId),
-    name:         ch.city,                                               // normalize city → name
-    country:      ch.country ?? '',
-    timezone:     ch.timezone ?? 'UTC',
-    slug:         (ch.city ?? '').toLowerCase().replace(/\s+/g, '-'),
-    onlineCount:  ch.activeUsers,                                        // normalize activeUsers → onlineCount
-    messageCount: ch.messageCount,
-    eventCount:   ch.eventCount,
-    topicCount:   ch.topicCount,
-    liveScore:    ch.liveScore,
+    channelId:           String(ch.channelId),
+    name:                ch.city,                                               // normalize city → name
+    country:             ch.country ?? '',
+    timezone:            ch.timezone ?? 'UTC',
+    slug:                (ch.city ?? '').toLowerCase().replace(/\s+/g, '-'),
+    onlineCount:         ch.activeUsers,                                        // normalize activeUsers → onlineCount
+    messageCount:        ch.messageCount,
+    recentMessageCount:  ch.recentMessageCount,
+    eventCount:          ch.eventCount,
+    topicCount:          ch.topicCount,
+    liveScore:           ch.liveScore,
   }));
 }
 

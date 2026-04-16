@@ -4538,6 +4538,41 @@ img.pub-profile-avatar {
   flex-shrink: 0;
 }
 
+.city-filter-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.city-filter-tabs::-webkit-scrollbar { display: none; }
+
+.city-filter-tab {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.city-filter-tab:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+}
+.city-filter-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 .city-no-results {
   text-align: center;
   padding: 40px 24px;

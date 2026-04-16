@@ -1253,19 +1253,39 @@ $router->add('GET', '/api/v1/channels', function () {
 
     foreach (CityRepository::all() as $city) {
         $id    = $city['id'];
-        $stats = $messageStats[$id] ?? ['messageCount' => 0, 'lastActivityAt' => null];
+        $stats = $messageStats[$id] ?? ['messageCount' => 0, 'recentMessageCount' => 0, 'lastActivityAt' => null];
 
         $channels[] = [
-            'channelId'      => $id,
-            'city'           => $city['name'],
-            'country'        => $city['country'] ?? null,
-            'timezone'       => $city['timezone'],
-            'messageCount'   => $stats['messageCount'],
-            'activeUsers'    => $presenceCounts[$id] ?? 0,
-            'lastActivityAt' => $stats['lastActivityAt'],
-            'eventCount'     => $eventCounts[$id] ?? 0,
-            'topicCount'     => $topicCounts[$id]  ?? 0,
+            'channelId'          => $id,
+            'city'               => $city['name'],
+            'country'            => $city['country'] ?? null,
+            'timezone'           => $city['timezone'],
+            'messageCount'       => $stats['messageCount'],
+            'recentMessageCount' => $stats['recentMessageCount'] ?? 0,
+            'activeUsers'        => $presenceCounts[$id] ?? 0,
+            'lastActivityAt'     => $stats['lastActivityAt'],
+            'eventCount'         => $eventCounts[$id] ?? 0,
+            'topicCount'         => $topicCounts[$id]  ?? 0,
         ];
+    }
+
+    // Optional ranking filter — sort + return top 10 when ?sort= is provided
+    $sort = $_GET['sort'] ?? null;
+    if ($sort !== null) {
+        usort($channels, function ($a, $b) use ($sort) {
+            switch ($sort) {
+                case 'events':
+                    $d = ($b['eventCount'] ?? 0) <=> ($a['eventCount'] ?? 0);
+                    return $d !== 0 ? $d : (($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0));
+                case 'online':
+                    $d = ($b['activeUsers'] ?? 0) <=> ($a['activeUsers'] ?? 0);
+                    return $d !== 0 ? $d : (($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0));
+                default: // 'active' — most messages in last 24 h, tiebreak total messages
+                    $d = ($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0);
+                    return $d !== 0 ? $d : (($b['messageCount'] ?? 0) <=> ($a['messageCount'] ?? 0));
+            }
+        });
+        $channels = array_slice($channels, 0, 10);
     }
 
     Response::json(['channels' => $channels]);

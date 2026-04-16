@@ -219,8 +219,9 @@ class MessageRepository
             ->query("
                 SELECT
                     m.channel_id,
-                    COUNT(*)                                         AS message_count,
-                    EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER   AS last_activity_at
+                    COUNT(*)                                                                         AS message_count,
+                    COUNT(*) FILTER (WHERE m.created_at > NOW() - INTERVAL '24 hours')              AS recent_message_count,
+                    EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER                                   AS last_activity_at
                 FROM messages m
                 JOIN channels c ON c.id = m.channel_id AND c.type = 'city'
                 GROUP BY m.channel_id
@@ -229,10 +230,11 @@ class MessageRepository
 
         $stats = [];
         foreach ($rows as $row) {
-            $cityId          = (int) substr($row['channel_id'], 5);
-            $stats[$cityId]  = [
-                'messageCount'   => (int) $row['message_count'],
-                'lastActivityAt' => $row['last_activity_at'] ? (int) $row['last_activity_at'] : null,
+            $cityId         = (int) substr($row['channel_id'], 5);
+            $stats[$cityId] = [
+                'messageCount'       => (int) $row['message_count'],
+                'recentMessageCount' => (int) $row['recent_message_count'],
+                'lastActivityAt'     => $row['last_activity_at'] ? (int) $row['last_activity_at'] : null,
             ];
         }
         return $stats;
