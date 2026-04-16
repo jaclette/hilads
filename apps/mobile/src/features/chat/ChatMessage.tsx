@@ -19,7 +19,7 @@ import { ReactionPills } from './ReactionPills';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
-import { formatTime } from '@/lib/messageTime';
+import { formatSmartTime } from '@/lib/messageTime';
 import type { Message, Badge } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
@@ -464,7 +464,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // ── System / join message — web: .feed-join (centered pill) ──────────────
   if (message.type === 'system') {
     const text = systemText(message);
-    const time = message.createdAt ? formatTime(message.createdAt) : null;
+    const time = message.createdAt ? formatSmartTime(message.createdAt) : null;
     // Only join messages carry user identity — other system events (weather, etc.) are not tappable.
     // Distinguish registered user (userId) from guest (guestId only) to avoid routing guests
     // through the registered-user profile endpoint, which would return 404.
@@ -563,7 +563,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             </TouchableOpacity>
             {showTime && (
               <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
-                {formatTime(message.createdAt)}
+                {formatSmartTime(message.createdAt)}
               </Text>
             )}
             {message.reactions && message.reactions.length > 0 && onReact && (
@@ -648,7 +648,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           </Pressable>
           {showTime && (
             <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
-              {formatTime(message.createdAt)}
+              {formatSmartTime(message.createdAt)}
             </Text>
           )}
           {message.reactions && message.reactions.length > 0 && onReact && (

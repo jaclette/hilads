@@ -347,7 +347,17 @@ function msgIsSameDay(ts1, ts2) {
 function formatMsgTime(ts) {
   const ms = tsToMs(ts)
   if (!ms) return ''
-  return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const d   = new Date(ms)
+  const now = new Date()
+  const time      = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  const today     = startOfDay(now)
+  const yesterday = new Date(today.getTime() - 86_400_000)
+  const msgDay    = startOfDay(d)
+  if (msgDay.getTime() === today.getTime())     return time
+  if (msgDay.getTime() === yesterday.getTime()) return `Yesterday · ${time}`
+  const opts = { month: 'short', day: 'numeric' }
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
+  return `${d.toLocaleDateString([], opts)} · ${time}`
 }
 
 function formatMsgDateLabel(ts) {

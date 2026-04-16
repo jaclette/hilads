@@ -26,11 +26,40 @@ export function toMs(ts: number | string | undefined): number {
   return isNaN(ms) ? 0 : ms;
 }
 
-/** "18:42" — short local time for the timestamp under a bubble. */
+/** "18:42" — short local time. Kept for backward compatibility; prefer formatSmartTime. */
 export function formatTime(ts: number | string | undefined): string {
   const ms = toMs(ts);
   if (!ms) return '';
-  return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+/**
+ * Smart timestamp for message bubbles and feed items:
+ *   Today      → "3:04 PM"
+ *   Yesterday  → "Yesterday · 3:04 PM"
+ *   This year  → "Apr 16 · 3:04 PM"
+ *   Older      → "Apr 16, 2025 · 3:04 PM"
+ */
+export function formatSmartTime(ts: number | string | undefined): string {
+  const ms = toMs(ts);
+  if (!ms) return '';
+  const d   = new Date(ms);
+  const now = new Date();
+
+  const time      = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const today     = startOfDay(now);
+  const yesterday = new Date(today.getTime() - 86_400_000);
+  const msgDay    = startOfDay(d);
+
+  if (msgDay.getTime() === today.getTime())     return time;
+  if (msgDay.getTime() === yesterday.getTime()) return `Yesterday · ${time}`;
+
+  const datePart = d.toLocaleDateString([], {
+    month: 'short',
+    day:   'numeric',
+    ...(d.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}),
+  });
+  return `${datePart} · ${time}`;
 }
 
 /**
