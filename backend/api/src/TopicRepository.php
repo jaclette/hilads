@@ -73,20 +73,87 @@ class TopicRepository
     /**
      * Active topics for a city, sorted by last activity DESC.
      * $cityId is the channel ID string, e.g. 'city_3'.
+     *
+     * Uses two targeted queries instead of one expensive LEFT JOIN + GROUP BY:
+     *   1. Fetch active topic metadata (fast index scan on idx_channel_topics_city)
+     *   2. Batch-fetch message stats for those topic IDs (uses idx_messages_channel_type_time)
+     * PHP merges and sorts the results, then slices to 20.
      */
     public static function getByCity(string $cityId): array
     {
-        $stmt = Database::pdo()->prepare(self::SELECT . "
-            WHERE ct.city_id   = :city_id
-              AND c.status     = 'active'
+        $pdo = Database::pdo();
+
+        // Query 1: active topic metadata — no message aggregation.
+        // Uses idx_channel_topics_city (city_id, expires_at DESC).
+        $stmt = $pdo->prepare("
+            SELECT
+                c.id,
+                ct.city_id,
+                ct.created_by,
+                ct.guest_id,
+                ct.title,
+                ct.description,
+                ct.category,
+                EXTRACT(EPOCH FROM ct.expires_at)::INTEGER AS expires_at,
+                EXTRACT(EPOCH FROM c.created_at)::INTEGER  AS created_at
+            FROM channels c
+            JOIN channel_topics ct ON ct.channel_id = c.id
+            WHERE ct.city_id    = :city_id
+              AND c.status      = 'active'
               AND ct.expires_at > now()
-            GROUP BY c.id, ct.city_id, ct.created_by, ct.guest_id,
-                     ct.title, ct.description, ct.category, ct.expires_at
-            ORDER BY COALESCE(MAX(m.created_at), c.created_at) DESC
-            LIMIT 20
         ");
         $stmt->execute(['city_id' => $cityId]);
-        return array_map([self::class, 'format'], $stmt->fetchAll());
+        $topics = $stmt->fetchAll();
+
+        if (empty($topics)) return [];
+
+        // Query 2: message stats for those topic channels in one batch.
+        // Uses idx_messages_channel_type_time (channel_id, type, created_at DESC)
+        // WHERE type IN ('text', 'image').
+        $ids      = array_column($topics, 'id');
+        $in       = implode(',', array_fill(0, count($ids), '?'));
+        $stmt     = $pdo->prepare("
+            SELECT
+                channel_id,
+                COUNT(*)                                       AS message_count,
+                EXTRACT(EPOCH FROM MAX(created_at))::INTEGER   AS last_activity_at
+            FROM messages
+            WHERE channel_id IN ($in)
+              AND type IN ('text', 'image')
+            GROUP BY channel_id
+        ");
+        $stmt->execute($ids);
+        $statsMap = [];
+        foreach ($stmt->fetchAll() as $row) {
+            $statsMap[$row['channel_id']] = $row;
+        }
+
+        // Merge, format, sort by most recent activity DESC, slice to 20.
+        $result = [];
+        foreach ($topics as $topic) {
+            $stats    = $statsMap[$topic['id']] ?? null;
+            $result[] = self::format([
+                'id'               => $topic['id'],
+                'city_id'          => $topic['city_id'],
+                'created_by'       => $topic['created_by'],
+                'guest_id'         => $topic['guest_id'],
+                'title'            => $topic['title'],
+                'description'      => $topic['description'],
+                'category'         => $topic['category'],
+                'message_count'    => $stats !== null ? $stats['message_count']    : 0,
+                'last_activity_at' => $stats !== null ? $stats['last_activity_at'] : null,
+                'expires_at'       => $topic['expires_at'],
+                'created_at'       => $topic['created_at'],
+            ]);
+        }
+
+        usort($result, static function (array $a, array $b): int {
+            $aAct = $a['last_activity_at'] ?? $a['created_at'] ?? 0;
+            $bAct = $b['last_activity_at'] ?? $b['created_at'] ?? 0;
+            return $bAct <=> $aAct;
+        });
+
+        return array_slice($result, 0, 20);
     }
 
     /**

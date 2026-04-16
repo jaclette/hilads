@@ -521,12 +521,15 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_starts   ON channel_eve
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_expires  ON channel_events (expires_at)", 'idx_channel_events_expires');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_guest    ON channel_events (guest_id) WHERE guest_id IS NOT NULL", 'idx_channel_events_guest');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_ext_id   ON channel_events (external_id) WHERE external_id IS NOT NULL", 'idx_channel_events_ext_id');
-run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_series   ON channel_events (series_id) WHERE series_id IS NOT NULL", 'idx_channel_events_series');
-run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_created_by ON channel_events (created_by) WHERE created_by IS NOT NULL", 'idx_channel_events_created_by');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_series      ON channel_events (series_id) WHERE series_id IS NOT NULL", 'idx_channel_events_series');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_created_by  ON channel_events (created_by) WHERE created_by IS NOT NULL", 'idx_channel_events_created_by');
+// Speeds up ensureTodayOccurrences NOT EXISTS check (series_id + occurrence_date lookup)
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_series_date ON channel_events (series_id, occurrence_date) WHERE series_id IS NOT NULL AND occurrence_date IS NOT NULL", 'idx_channel_events_series_date');
 
 // messages
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_channel          ON messages (channel_id, created_at DESC)", 'idx_messages_channel');
-run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_channel_created  ON messages (channel_id, created_at DESC)", 'idx_messages_channel_created');
+// Drop the duplicate index (identical definition to idx_messages_channel above)
+run($pdo, "DROP INDEX IF EXISTS idx_messages_channel_created", 'drop_idx_messages_channel_created');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_guest            ON messages (guest_id) WHERE guest_id IS NOT NULL", 'idx_messages_guest');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_crew_lookup      ON messages (channel_id, type, guest_id) WHERE type = 'text' AND guest_id IS NOT NULL", 'idx_messages_crew_lookup');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_channel_type_time ON messages (channel_id, type, created_at DESC) WHERE type IN ('text', 'image')", 'idx_messages_channel_type_time');

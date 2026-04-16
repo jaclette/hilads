@@ -119,35 +119,32 @@ class MessageRepository
         $limit  = max(1, min(self::MAX_LIMIT, $limit));
         $fetch  = $limit + 1; // fetch one extra to detect hasMore
 
-        // COALESCE(m.user_id, u.id): retroactively resolves the sender's registered userId
-        // for chat messages (text/image) where user_id was never written (sent before the
-        // api.php fix, or sent as a guest before registering). Uses idx_users_guest_id.
+        // Fetch messages with a pure index scan — no JOIN inside the LIMIT subquery.
+        // The LEFT JOIN to users for retroactive userId resolution is done as a separate
+        // batch query below, applied only to the small set of rows that actually need it.
+        // This guarantees the planner uses idx_messages_channel (channel_id, created_at DESC)
+        // as a straight index scan + LIMIT, with no risk of a hash-join strategy that would
+        // scan the entire channel before applying the limit.
         //
-        // IMPORTANT: the retroactive join is intentionally excluded for system messages
-        // (type = 'system', e.g. join events). A ghost join must remain a ghost join even
-        // if the guestId was later linked to a registered account — applying COALESCE here
-        // would cause clicking "SoftOwl joined" to open the registered user's profile.
+        // IMPORTANT: retroactive resolution is intentionally skipped for system messages
+        // (type = 'system'). A ghost join must remain a ghost join — see original comment.
 
         if ($beforeId !== null) {
             // Cursor-based: fetch messages strictly older than the given message's created_at.
-            // The subquery resolves the cursor's timestamp, avoiding PHP round-trips.
             $stmt = Database::pdo()->prepare("
                 SELECT id, channel_id, type, event,
                        guest_id, user_id, nickname, content, image_url, created_at,
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
                 FROM (
                     SELECT
-                        m.id, m.channel_id, m.type, m.event,
-                        m.guest_id,
-                        COALESCE(m.user_id, u.id) AS user_id,
-                        m.nickname, m.content, m.image_url,
-                        m.reply_to_id, m.reply_to_nickname, m.reply_to_content, m.reply_to_type,
-                        EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
-                    FROM messages m
-                    LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
-                    WHERE m.channel_id = ?
-                      AND m.created_at < (SELECT created_at FROM messages WHERE id = ?)
-                    ORDER BY m.created_at DESC
+                        id, channel_id, type, event,
+                        guest_id, user_id, nickname, content, image_url,
+                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+                    FROM messages
+                    WHERE channel_id = ?
+                      AND created_at < (SELECT created_at FROM messages WHERE id = ?)
+                    ORDER BY created_at DESC
                     LIMIT ?
                 ) sub
                 ORDER BY created_at ASC
@@ -160,16 +157,13 @@ class MessageRepository
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
                 FROM (
                     SELECT
-                        m.id, m.channel_id, m.type, m.event,
-                        m.guest_id,
-                        COALESCE(m.user_id, u.id) AS user_id,
-                        m.nickname, m.content, m.image_url,
-                        m.reply_to_id, m.reply_to_nickname, m.reply_to_content, m.reply_to_type,
-                        EXTRACT(EPOCH FROM m.created_at)::INTEGER AS created_at
-                    FROM messages m
-                    LEFT JOIN users u ON u.guest_id = m.guest_id AND m.user_id IS NULL AND m.type != 'system'
-                    WHERE m.channel_id = ?
-                    ORDER BY m.created_at DESC
+                        id, channel_id, type, event,
+                        guest_id, user_id, nickname, content, image_url,
+                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+                    FROM messages
+                    WHERE channel_id = ?
+                    ORDER BY created_at DESC
                     LIMIT ?
                 ) sub
                 ORDER BY created_at ASC
@@ -181,6 +175,38 @@ class MessageRepository
         $hasMore = count($rows) > $limit;
         if ($hasMore) {
             array_shift($rows); // remove the oldest probe row (index 0 after ASC sort)
+        }
+
+        // Retroactive userId resolution — only for text/image messages where user_id was
+        // never written (messages sent before account linking or before the api.php fix).
+        // In practice this is rare on modern data; the batch query typically touches 0 rows.
+        $needsResolution = array_filter(
+            $rows,
+            static fn($r) => ($r['type'] === 'text' || $r['type'] === 'image')
+                          && empty($r['user_id'])
+                          && !empty($r['guest_id'])
+        );
+
+        if (!empty($needsResolution)) {
+            $guestIds    = array_values(array_unique(array_column($needsResolution, 'guest_id')));
+            $in          = implode(',', array_fill(0, count($guestIds), '?'));
+            $ustmt       = Database::pdo()->prepare(
+                "SELECT id, guest_id FROM users WHERE guest_id IN ($in)"
+            );
+            $ustmt->execute($guestIds);
+            $guestToUser = array_column($ustmt->fetchAll(), 'id', 'guest_id');
+
+            foreach ($rows as &$row) {
+                if (
+                    empty($row['user_id'])
+                    && !empty($row['guest_id'])
+                    && ($row['type'] === 'text' || $row['type'] === 'image')
+                    && isset($guestToUser[$row['guest_id']])
+                ) {
+                    $row['user_id'] = $guestToUser[$row['guest_id']];
+                }
+            }
+            unset($row);
         }
 
         return [

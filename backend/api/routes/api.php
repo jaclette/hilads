@@ -4328,17 +4328,22 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
         $cityId   = 'city_' . $channelId;
         $timezone = $city['timezone'] ?? 'UTC';
 
-        // Ensure today's recurring-event occurrences exist BEFORE querying.
-        // getByChannel() defers this to register_shutdown_function so the HTTP response
-        // returns fast, but the very first /now call of the day would otherwise return
-        // zero series events (they don't exist until after the first response is sent).
-        // Calling synchronously here makes the landing page reliable on first load.
-        // On subsequent calls the underlying INSERT hits ON CONFLICT DO NOTHING instantly.
-        try {
-            EventSeriesRepository::ensureTodayOccurrences($cityId, $timezone);
-        } catch (\Throwable) {
-            // non-critical — proceed even if series generation fails
-        }
+        // Ensure today's recurring-event occurrences exist — deferred so the HTTP response
+        // is never blocked. The daily cron pre-generates occurrences, so this fallback
+        // usually finds nothing to do. On the very first /now call of a new day the
+        // freshly-generated occurrences will appear on the next request, not this one.
+        // EventRepository::getByChannel() already defers the same call from bootstrap,
+        // so occurrences are always correct within one request of being needed.
+        $deferCityId   = $cityId;
+        $deferTimezone = $timezone;
+        register_shutdown_function(static function () use ($deferCityId, $deferTimezone): void {
+            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+            try {
+                EventSeriesRepository::ensureTodayOccurrences($deferCityId, $deferTimezone);
+            } catch (\Throwable) {
+                // non-critical
+            }
+        });
 
         // Pass $city to avoid a redundant CityRepository::findById call inside getByChannel.
         $events       = EventRepository::getByChannel($channelId, $participantKey, $city);
