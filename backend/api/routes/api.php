@@ -1503,10 +1503,18 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $guestId   = $body['guestId']  ?? null;
         $nickname  = $body['nickname'] ?? null;
 
+        // ── startup timing: rate-limit + city lookup ──────────────────────────
+        // These run before $t0. Rate-limit uses APCu (fast) or file-lock (slow).
+        // City lookup runs a DB query only on the first call per worker; subsequent
+        // calls hit the in-process cache. Both are invisible in the old phases_ms.
+        $tRlA = microtime(true);
         enforceRateLimit('channel_join', 90, 300);
+        $tRlB = microtime(true);
 
         // ── q1: city lookup (worker-level cached after first call) ────────────
+        $tCityA = microtime(true);
         $city = CityRepository::findById($channelId);
+        $tCityB = microtime(true);
         if ($city === null) {
             Response::json(['error' => 'Channel not found'], 404);
         }
@@ -1716,29 +1724,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             ]);
         }
 
-        apiLog('channel_bootstrap', 'success', [
-            'channelId'   => $channelId,
-            'isNew'       => $isNewSession,
-            'isAuth'      => $authUser !== null,
-            'messages'    => count($messages),
-            'onlineCount' => $onlineCount,
-            'elapsedMs'   => apiElapsedMs($startedAt),
-            'phases_ms'   => [
-                'join'     => round(($t1 - $t0) * 1000, 1),
-                'messages' => round(($t2 - $t1) * 1000, 1),
-                'auth'     => round(($t3 - $t2) * 1000, 1),
-            ],
-            'queries_ms'  => [
-                'presence'  => round(($tq2b - $tq2a) * 1000, 1),
-                'auth_user' => round(($tq3b - $tq2b) * 1000, 1),
-                'messages'  => round(($tq5b - $tq5a) * 1000, 1),
-                'badges'    => round(($tq6b - $tq6a) * 1000, 1),
-                'unread_dm' => round(($tq7b - $tq7a) * 1000, 1),
-                'notif_cnt' => round(($tq8b - $tq7b) * 1000, 1),
-            ],
-        ]);
-
-        Response::json([
+        // ── serialize: measure json_encode cost on the full response payload ────
+        $responsePayload = [
             'joinMessage'         => $joinMessage,
             'messages'            => $messages,
             'hasMore'             => $hasMore,
@@ -1747,7 +1734,43 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             'hasUnreadDMs'        => $hasUnreadDMs,
             'unreadNotifications' => $unreadNotifications,
             'currentUser'         => $currentUser,
-        ], 201);
+        ];
+        $tSerA = microtime(true);
+        $responseJson = json_encode($responsePayload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $tSerB = microtime(true);
+
+        // phases_ms accounts for every millisecond in elapsedMs:
+        //   startup + join + messages + auth + serialize + overhead ≈ elapsedMs
+        // "overhead" is the tiny gap between phase boundaries (array construction,
+        // register_shutdown_function calls, this apiLog call itself).
+        apiLog('channel_bootstrap', 'success', [
+            'channelId'    => $channelId,
+            'isNew'        => $isNewSession,
+            'isAuth'       => $authUser !== null,
+            'msgCount'     => count($messages),
+            'badgeUsers'   => count($msgUserIds),
+            'onlineCount'  => $onlineCount,
+            'elapsedMs'    => apiElapsedMs($startedAt),
+            'phases_ms'    => [
+                'startup'   => round(($t0 - $startedAt) * 1000, 1),
+                'join'      => round(($t1 - $t0) * 1000, 1),
+                'messages'  => round(($t2 - $t1) * 1000, 1),
+                'auth'      => round(($t3 - $t2) * 1000, 1),
+                'serialize' => round(($tSerB - $tSerA) * 1000, 1),
+            ],
+            'queries_ms'   => [
+                'rate_limit'  => round(($tRlB  - $tRlA)  * 1000, 1),
+                'city_lookup' => round(($tCityB - $tCityA) * 1000, 1),
+                'presence'    => round(($tq2b  - $tq2a)  * 1000, 1),
+                'auth_user'   => round(($tq3b  - $tq2b)  * 1000, 1),
+                'messages'    => round(($tq5b  - $tq5a)  * 1000, 1),
+                'badges'      => round(($tq6b  - $tq6a)  * 1000, 1),
+                'unread_dm'   => round(($tq7b  - $tq7a)  * 1000, 1),
+                'notif_cnt'   => round(($tq8b  - $tq7b)  * 1000, 1),
+            ],
+        ]);
+
+        Response::json($responsePayload, 201, $responseJson);
     } catch (\Throwable $e) {
         apiLog('channel_bootstrap', 'failure', [
             'channelId' => $channelId,
