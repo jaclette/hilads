@@ -563,7 +563,10 @@ export default function App() {
   const weatherLabel = useMemo(() => {
     // Find the most recent weather item (last in chronological feed)
     const w = [...feed].reverse().find(item => item.type === 'activity' && item.subtype === 'weather')
-    return w?.text ?? null
+    if (!w?.text) return null
+    // Strip legacy "in City Name" from messages stored before the format change.
+    // Matches " in Ho Chi Minh City — " → "· " and " in City" (no dash) → ""
+    return w.text.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_, dash) => dash ? '\u00B7 ' : '').trim()
   }, [feed])
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)

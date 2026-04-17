@@ -531,7 +531,10 @@ export default function ChatTab() {
   // Weather — extracted from messages for header display, not rendered in the feed.
   const weatherLabel = useMemo<string | null>(() => {
     const w = messages.find(m => m.type === 'system' && m.event === 'weather');
-    return w?.content ?? null;
+    if (!w?.content) return null;
+    // Strip legacy "in City Name" from messages stored before the format change.
+    // Matches " in Ho Chi Minh City — " → "· " and " in City" (no dash) → ""
+    return w.content.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_: string, dash: string) => dash ? '\u00B7 ' : '').trim();
   }, [messages]);
 
   // Unified feed — weather excluded (shown in header only).
