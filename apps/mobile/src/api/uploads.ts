@@ -2,6 +2,20 @@ import { API_URL } from '@/constants';
 import { getAuthToken } from './client';
 
 /**
+ * Derives the thumbnail URL for a profile photo.
+ * Backend stores thumbnails as `thumb_{basename}.jpg` alongside the original in R2.
+ * Returns null if url is falsy. Use as the Image `source` URI with the full URL as fallback.
+ */
+export function profileThumbUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const slash = url.lastIndexOf('/');
+  const file  = url.slice(slash + 1);
+  const dot   = file.lastIndexOf('.');
+  const name  = dot !== -1 ? file.slice(0, dot) : file;
+  return url.slice(0, slash + 1) + 'thumb_' + name + '.jpg';
+}
+
+/**
  * Upload a local image URI to Cloudflare R2 via the backend.
  * Returns the public URL.
  *
@@ -41,7 +55,7 @@ export async function uploadFile(localUri: string, mimeType?: string | null): Pr
     throw new Error(body?.error ?? 'Upload failed');
   }
 
-  const { url } = await res.json();
-  console.log('[image-upload] upload success url=', url);
-  return url as string;
+  const data = await res.json();
+  console.log('[image-upload] upload success url=', data.url);
+  return data.url as string;
 }

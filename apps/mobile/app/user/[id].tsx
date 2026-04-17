@@ -18,6 +18,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
+import { profileThumbUrl } from '@/api/uploads';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -166,6 +167,7 @@ export default function PublicProfileScreen() {
   const [vibeMessage,  setVibeMessage]  = useState('');
   const [showVibeForm,       setShowVibeForm]       = useState(false);
   const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
+  const [lightboxLoading,    setLightboxLoading]    = useState(false);
   const [showReportModal,    setShowReportModal]    = useState(false);
   const [activeTab,    setActiveTab]    = useState<TabKey>('events');
 
@@ -305,7 +307,7 @@ export default function PublicProfileScreen() {
             <View style={styles.hero}>
               {user.avatarUrl ? (
                 <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)}>
-                  <Image source={{ uri: user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
+                  <Image source={{ uri: profileThumbUrl(user.avatarUrl) ?? user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
                 </TouchableOpacity>
               ) : (
                 <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: bg }]}>
@@ -628,7 +630,16 @@ export default function PublicProfileScreen() {
           onRequestClose={() => setShowAvatarLightbox(false)}
         >
           <Pressable style={styles.lightboxOverlay} onPress={() => setShowAvatarLightbox(false)}>
-            <Image source={{ uri: user.avatarUrl }} style={styles.lightboxImage} resizeMode="contain" />
+            <Image
+              source={{ uri: user.avatarUrl }}
+              style={styles.lightboxImage}
+              resizeMode="contain"
+              onLoadStart={() => setLightboxLoading(true)}
+              onLoadEnd={() => setLightboxLoading(false)}
+            />
+            {lightboxLoading && (
+              <ActivityIndicator color="#fff" size="large" style={styles.lightboxSpinner} />
+            )}
             <Pressable style={styles.lightboxClose} onPress={() => setShowAvatarLightbox(false)}>
               <Text style={styles.lightboxCloseText}>✕</Text>
             </Pressable>
@@ -1134,4 +1145,5 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
   },
   lightboxCloseText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  lightboxSpinner: { position: 'absolute' },
 });

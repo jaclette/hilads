@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, submitReport } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, submitReport, profileThumbUrl } from '../api'
 import { cityFlag } from '../cityMeta'
 import { badgeLabel } from '../badgeMeta'
 import BackButton from './BackButton'
@@ -243,8 +243,9 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               {user.avatarUrl
                 ? <img
                     className="pub-profile-avatar"
-                    src={user.avatarUrl}
+                    src={profileThumbUrl(user.avatarUrl)}
                     alt={name}
+                    onError={e => { e.currentTarget.src = user.avatarUrl }}
                     onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
                   />
                 : <span
@@ -368,7 +369,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                           style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
                         >
                           {f.avatarUrl
-                            ? <img className="pub-profile-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
+                            ? <img className="pub-profile-friend-avatar" src={profileThumbUrl(f.avatarUrl)} alt={f.displayName} onError={e => { e.currentTarget.src = f.avatarUrl }} />
                             : <span
                                 className="pub-profile-friend-avatar pub-profile-friend-avatar--initials"
                                 style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}

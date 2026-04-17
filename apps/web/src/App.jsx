@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, profileThumbUrl } from './api'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -3821,7 +3821,7 @@ export default function App() {
               onClick={(!user.isMe && (tappable || !account)) ? handleTap : undefined}
             >
               {user.avatarUrl
-                ? <img className="online-avatar" src={user.avatarUrl} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
+                ? <img className="online-avatar" src={profileThumbUrl(user.avatarUrl)} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} onError={e => { e.currentTarget.src = user.avatarUrl }} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }} data-me={user.isMe ? 'true' : undefined}>
                     {(user.nickname ?? '?')[0].toUpperCase()}
                   </span>
@@ -3875,7 +3875,7 @@ export default function App() {
               onClick={() => openProfile(m.id, m.displayName)}
             >
               {m.avatarUrl
-                ? <img className="online-avatar" src={m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                ? <img className="online-avatar" src={profileThumbUrl(m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} onError={e => { e.currentTarget.src = m.avatarUrl }} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                     {(m.displayName ?? '?')[0].toUpperCase()}
                   </span>
@@ -3964,7 +3964,7 @@ export default function App() {
                         onClick={() => openProfile(m.id, m.displayName)}
                       >
                         {m.avatarUrl
-                          ? <img className="online-avatar" src={m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                          ? <img className="online-avatar" src={profileThumbUrl(m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} onError={e => { e.currentTarget.src = m.avatarUrl }} />
                           : <span className="online-avatar online-avatar--legend" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                               {(m.displayName ?? '?')[0].toUpperCase()}
                             </span>
@@ -4335,7 +4335,7 @@ export default function App() {
                       onClick={isRegistered ? () => { setShowGoingModal(false); openProfile(p.id, p.displayName) } : undefined}
                     >
                       {p.avatarUrl ? (
-                        <img src={p.avatarUrl} className="online-avatar" alt="" />
+                        <img src={profileThumbUrl(p.avatarUrl)} className="online-avatar" alt="" onError={e => { e.currentTarget.src = p.avatarUrl }} />
                       ) : (
                         <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                           {(p.displayName ?? '?')[0].toUpperCase()}

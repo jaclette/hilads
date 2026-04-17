@@ -26,7 +26,7 @@ import { useApp } from '@/context/AppContext';
 import { useMyEvents } from '@/hooks/useMyEvents';
 import { saveIdentity } from '@/lib/identity';
 import { updateProfile, deleteAccount } from '@/api/auth';
-import { uploadFile } from '@/api/uploads';
+import { uploadFile, profileThumbUrl } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
 import type { UserVibe } from '@/api/users';
@@ -135,6 +135,7 @@ export default function MeScreen() {
   const [selectedInterests,  setSelectedInterests]  = useState<string[]>(account?.interests ?? []);
   const [pendingPhotoUri,    setPendingPhotoUri]     = useState<string | null>(null);
   const [photoUploading,     setPhotoUploading]     = useState(false);
+  const [avatarThumbFailed,  setAvatarThumbFailed]  = useState(false);
   const [localEvents,        setLocalEvents]         = useState<HiladsEvent[]>([]);
   const [saving,             setSaving]             = useState(false);
   const [saved,              setSaved]              = useState(false);
@@ -187,6 +188,9 @@ export default function MeScreen() {
     setSelectedInterests(account?.interests ?? []);
   }, [account?.display_name, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
+  // Reset thumbnail failure flag when photo URL changes (e.g. after new upload)
+  useEffect(() => { setAvatarThumbFailed(false); }, [account?.profile_photo_url]);
+
   // Version tap easter egg
   const tapCount = useRef(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -204,7 +208,8 @@ export default function MeScreen() {
   const isGuest      = !account;
   const avatarBgColor = avatarBg(account?.display_name ?? identity?.nickname ?? '');
   const initials     = (account?.display_name ?? identity?.nickname ?? '?').slice(0, 2).toUpperCase();
-  const photoSrc     = pendingPhotoUri ?? account?.profile_photo_url ?? null;
+  const photoSrc     = pendingPhotoUri ?? profileThumbUrl(account?.profile_photo_url) ?? null;
+  const photoFullSrc = account?.profile_photo_url ?? null;
 
   // ── Photo picker ─────────────────────────────────────────────────────────────
 
@@ -357,7 +362,12 @@ export default function MeScreen() {
               disabled={photoUploading}
             >
               {photoSrc ? (
-                <Image source={{ uri: photoSrc }} style={styles.avatarSm} resizeMode="cover" />
+                <Image
+                  source={{ uri: avatarThumbFailed ? (photoFullSrc ?? photoSrc) : photoSrc }}
+                  style={styles.avatarSm}
+                  resizeMode="cover"
+                  onError={() => { if (!avatarThumbFailed && !pendingPhotoUri) setAvatarThumbFailed(true); }}
+                />
               ) : (
                 <View style={[styles.avatarSmFallback, { backgroundColor: avatarBgColor }]}>
                   <Text style={styles.avatarSmInitials}>{initials}</Text>
@@ -744,7 +754,7 @@ export default function MeScreen() {
                     activeOpacity={0.7}
                   >
                     {f.avatarUrl ? (
-                      <Image source={{ uri: f.avatarUrl }} style={styles.friendAvatar} />
+                      <Image source={{ uri: profileThumbUrl(f.avatarUrl) ?? f.avatarUrl }} style={styles.friendAvatar} />
                     ) : (
                       <View style={[styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
                         <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>

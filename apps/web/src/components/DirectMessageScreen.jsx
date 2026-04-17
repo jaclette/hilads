@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage } from '../api'
+import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage, profileThumbUrl } from '../api'
 import BackButton from './BackButton'
 import SendButton from './SendButton'
 import EmojiPicker from './EmojiPicker'
@@ -278,7 +278,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         <BackButton onClick={onBack} />
         <div className="dm-header-identity">
           {otherUser?.profile_photo_url
-            ? <img className="online-avatar dm-header-avatar" src={otherUser.profile_photo_url} alt={otherName} />
+            ? <img className="online-avatar dm-header-avatar" src={profileThumbUrl(otherUser.profile_photo_url)} alt={otherName} onError={e => { e.currentTarget.src = otherUser.profile_photo_url }} />
             : <span className="online-avatar dm-header-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                 {otherName[0].toUpperCase()}
               </span>

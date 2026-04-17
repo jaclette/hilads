@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { updateProfile, uploadImage, fetchUserVibes, deleteAccount } from '../api'
+import { updateProfile, uploadImage, fetchUserVibes, deleteAccount, profileThumbUrl } from '../api'
 import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
@@ -186,7 +186,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             aria-label="Change profile photo"
           >
             {photoUrl
-              ? <img className="online-avatar profile-avatar-identity" src={photoUrl} alt={name} />
+              ? <img className="online-avatar profile-avatar-identity" src={profileThumbUrl(photoUrl)} alt={name} onError={e => { e.currentTarget.src = photoUrl }} />
               : <span className="online-avatar profile-avatar-identity" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                   {(name || '?')[0].toUpperCase()}
                 </span>
@@ -445,7 +445,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                     style={{ cursor: onViewFriend ? 'pointer' : 'default' }}
                   >
                     {f.avatarUrl
-                      ? <img className="my-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
+                      ? <img className="my-friend-avatar" src={profileThumbUrl(f.avatarUrl)} alt={f.displayName} onError={e => { e.currentTarget.src = f.avatarUrl }} />
                       : <span className="my-friend-avatar my-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
                           {(f.displayName || '?')[0].toUpperCase()}
                         </span>
