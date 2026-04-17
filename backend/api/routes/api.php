@@ -762,8 +762,10 @@ $router->add('POST', '/api/v1/auth/forgot-password', function () {
     ]);
 });
 
-$router->add('GET', '/api/v1/auth/reset-password/validate', function () {
-    $token = trim($_GET['token'] ?? '');
+$router->add('POST', '/api/v1/auth/reset-password/validate', function () {
+    enforceRateLimit('auth_validate_reset', 20, 600);
+    $body  = Request::json();
+    $token = trim((string) ($body['token'] ?? ''));
     if ($token === '') {
         Response::json(['valid' => false]);
     }

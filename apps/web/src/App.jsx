@@ -989,7 +989,10 @@ export default function App() {
 
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
-    if (link.type === 'reset-password')  setResetPasswordToken(link.token)
+    if (link.type === 'reset-password') {
+      window.history.replaceState(null, '', '/reset-password')
+      setResetPasswordToken(link.token)
+    }
     if (link.type === 'forgot-password') setShowForgotPassword(true)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
