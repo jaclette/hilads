@@ -534,7 +534,15 @@ function buildOnlineUsers(users, mySessionId) {
 
 export default function App() {
   const installPrompt = useBeforeInstallPrompt()
-  const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
+  // 'restoring' is used when we know a registered session exists (AUTH_FLAG_KEY set)
+  // and there is a saved channelId — we show a loading screen instead of the landing
+  // page to avoid the flash of onboarding content before authMe() confirms the session.
+  const [status, setStatus] = useState(() => {
+    if (localStorage.getItem(AUTH_FLAG_KEY) && loadIdentity()?.channelId) {
+      return 'restoring'
+    }
+    return 'onboarding'
+  }) // onboarding | restoring | joining | ready | error
   const [error, setError] = useState(null)
   const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
   const [channelId, setChannelId] = useState(null)
@@ -1000,12 +1008,28 @@ export default function App() {
           if (data) {
             accountRef.current = data.user // sync ref so handleJoin reads it immediately
             setAccount(data.user)
+            // ── Auto-rejoin on page refresh ─────────────────────────────────
+            // Auth succeeded. If there is a saved channelId, skip the landing
+            // page entirely and go straight into the app — the saved-identity
+            // fast path in handleJoin uses localStorage, no GPS wait needed.
+            if (loadIdentity()?.channelId) {
+              handleJoin(null)
+            } else {
+              // Auth OK but no saved city (new device / localStorage cleared).
+              // Show the landing page so the user can pick a city.
+              setStatus('onboarding')
+            }
           } else {
             // 401 — session expired; clear the flag so future mounts skip this call
             localStorage.removeItem(AUTH_FLAG_KEY)
+            setStatus('onboarding')
           }
         })
-        .catch(() => {/* network error — keep flag, session may still be valid */})
+        .catch(() => {
+          // Network error — keep flag (session may still be valid later).
+          // Fall back to landing page so the user isn't stuck on the loading screen.
+          setStatus('onboarding')
+        })
     }
 
     // Remove this tab from presence on close — sendBeacon survives page unload
@@ -2598,6 +2622,19 @@ export default function App() {
           </div>
         )}
       </>
+    )
+  }
+
+  // ── Restoring session ─────────────────────────────────────────────────────
+  // Shown while authMe() is in flight for a returning registered user.
+  // Replaced immediately by the 'joining' → 'ready' flow on success,
+  // or by 'onboarding' if the session has expired or a network error occurs.
+
+  if (status === 'restoring') {
+    return (
+      <div className="screen center">
+        <div className="loading-spinner" />
+      </div>
     )
   }
 
