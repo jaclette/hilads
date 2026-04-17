@@ -2701,10 +2701,14 @@ export default function App() {
             <span className="header-hero-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
             <span>{city}</span>
           </span>
-          <span className="online-label">
+          <button
+            type="button"
+            className="online-label"
+            onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+          >
             <span className="online-pulse" />
             {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-          </span>
+          </button>
           {weatherLabel && (
             <span className="header-weather">{weatherLabel}</span>
           )}

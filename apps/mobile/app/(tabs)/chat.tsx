@@ -685,12 +685,16 @@ export default function ChatTab() {
           <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>
             {flag ? `${flag} ` : ''}{city.name}
           </Text>
-          <View style={styles.onlinePill}>
+          <TouchableOpacity
+            style={styles.onlinePill}
+            onPress={() => router.push('/(tabs)/here')}
+            activeOpacity={0.7}
+          >
             <PulseDot />
             <Animated.Text style={[styles.onlineText, { transform: [{ scale: countScale }] }]}>
               {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
             </Animated.Text>
-          </View>
+          </TouchableOpacity>
           {weatherLabel && (
             <Text style={styles.weatherLabel}>{weatherLabel}</Text>
           )}
