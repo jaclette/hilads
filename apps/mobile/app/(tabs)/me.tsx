@@ -204,7 +204,7 @@ export default function MeScreen() {
   const isGuest      = !account;
   const avatarBgColor = avatarBg(account?.display_name ?? identity?.nickname ?? '');
   const initials     = (account?.display_name ?? identity?.nickname ?? '?').slice(0, 2).toUpperCase();
-  const photoSrc     = pendingPhotoUri ?? account?.profile_photo_url ?? null;
+  const photoSrc     = pendingPhotoUri ?? account?.thumbAvatarUrl ?? account?.profile_photo_url ?? null;
 
   // ── Photo picker ─────────────────────────────────────────────────────────────
 
@@ -225,8 +225,11 @@ export default function MeScreen() {
     setPendingPhotoUri(asset.uri);
     setPhotoUploading(true);
     try {
-      const url = await uploadFile(asset.uri, asset.mimeType);
-      const { user } = await updateProfile({ profile_photo_url: url } as Parameters<typeof updateProfile>[0]);
+      const { url, thumbUrl } = await uploadFile(asset.uri, asset.mimeType);
+      const { user } = await updateProfile({
+        profile_photo_url:       url,
+        profile_thumb_photo_url: thumbUrl ?? null,
+      } as Parameters<typeof updateProfile>[0]);
       setAccount(user);
       setPendingPhotoUri(null);
     } catch {

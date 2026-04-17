@@ -243,7 +243,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               {user.avatarUrl
                 ? <img
                     className="pub-profile-avatar"
-                    src={user.avatarUrl}
+                    src={user.thumbAvatarUrl ?? user.avatarUrl}
                     alt={name}
                     onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
                   />

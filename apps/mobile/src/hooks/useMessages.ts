@@ -283,7 +283,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     setError(null);
 
     try {
-      const imageUrl = await uploadFile(localUri);
+      const { url: imageUrl } = await uploadFile(localUri);
       const msg = await postImageFn(imageUrl);
       reconcile(localId, msg);
     } catch (e) {

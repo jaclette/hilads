@@ -2122,6 +2122,77 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
     }
 });
 
+// ── Avatar thumbnail generation ───────────────────────────────────────────────
+//
+// Called from the upload endpoint. Scales the source image down to ≤400 px on
+// its longest side and re-encodes as JPEG (quality 80).
+//
+// Returns the path to a temporary file on success, or null on any failure
+// (missing GD extension, unsupported type, or an error during resizing).
+// Callers MUST unlink the returned path when done with it.
+//
+// Safe to call on any valid image: if the source is already small, it is
+// re-encoded as JPEG but not enlarged.
+function generateAvatarThumbnail(string $srcPath, string $srcMime, int $maxDim = 400, int $quality = 80): ?string
+{
+    if (!extension_loaded('gd')) {
+        return null;
+    }
+
+    $info = @getimagesize($srcPath);
+    if (!$info || empty($info[0]) || empty($info[1])) {
+        return null;
+    }
+
+    [$srcW, $srcH] = $info;
+
+    $src = match ($srcMime) {
+        'image/jpeg' => @imagecreatefromjpeg($srcPath),
+        'image/png'  => @imagecreatefrompng($srcPath),
+        'image/webp' => @imagecreatefromwebp($srcPath),
+        default      => null,
+    };
+    if (!$src) {
+        return null;
+    }
+
+    if ($srcW >= $srcH) {
+        $newW = min($srcW, $maxDim);
+        $newH = (int) round($srcH * $newW / $srcW);
+    } else {
+        $newH = min($srcH, $maxDim);
+        $newW = (int) round($srcW * $newH / $srcH);
+    }
+
+    $dst = imagecreatetruecolor($newW, $newH);
+    if (!$dst) {
+        imagedestroy($src);
+        return null;
+    }
+
+    // Preserve transparency for PNG sources
+    imagealphablending($dst, false);
+    imagesavealpha($dst, true);
+    $white = imagecolorallocate($dst, 255, 255, 255);
+    imagefilledrectangle($dst, 0, 0, $newW, $newH, $white);
+    imagealphablending($dst, true);
+
+    imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $srcW, $srcH);
+
+    $tmpPath = tempnam(sys_get_temp_dir(), 'hilads_thumb_');
+    $ok      = imagejpeg($dst, $tmpPath, $quality);
+
+    imagedestroy($src);
+    imagedestroy($dst);
+
+    if (!$ok) {
+        @unlink($tmpPath);
+        return null;
+    }
+
+    return $tmpPath;
+}
+
 $router->add('POST', '/api/v1/uploads', function () {
     enforceRateLimit('uploads', 20, 600);
     $file = $_FILES['file'] ?? null;
@@ -2178,7 +2249,23 @@ $router->add('POST', '/api/v1/uploads', function () {
         Response::json(['error' => $e->getMessage()], 500);
     }
 
-    Response::json(['url' => $url], 201);
+    // ── Generate avatar thumbnail ──────────────────────────────────────────────
+    // Max 400px longest side, JPEG 80%. If anything fails we return thumbUrl: null
+    // and the client falls back to the full-size URL — no broken images.
+    $thumbUrl = null;
+    $thumbTmp = generateAvatarThumbnail($file['tmp_name'], $mimeType);
+    if ($thumbTmp !== null) {
+        try {
+            $thumbFilename = 'thumb_' . bin2hex(random_bytes(8)) . '.jpg';
+            $thumbUrl      = R2Uploader::put($thumbTmp, $thumbFilename, 'image/jpeg');
+        } catch (RuntimeException) {
+            // Thumbnail upload failed — not fatal; caller uses full URL as fallback
+        } finally {
+            @unlink($thumbTmp);
+        }
+    }
+
+    Response::json(['url' => $url, 'thumbUrl' => $thumbUrl], 201);
 });
 
 // ── Local legends — city ambassadors with their picks ────────────────────────

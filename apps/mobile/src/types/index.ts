@@ -133,16 +133,18 @@ export const BADGE_META: Record<BadgeKey, { label: string; color: string; bg: st
 };
 
 export interface UserDTO {
-  id:          string;
-  accountType: 'guest' | 'registered';
-  displayName: string;
-  avatarUrl:   string | null;
+  id:             string;
+  accountType:    'guest' | 'registered';
+  displayName:    string;
+  avatarUrl:      string | null;
+  /** Thumbnail URL (≤400 px). Falls back to avatarUrl server-side — never null when avatarUrl is set. */
+  thumbAvatarUrl: string | null;
   /** Badge keys in priority order: primary badge first, context badge second if present. */
-  badges:      BadgeKey[];
-  vibe:        string | null;
-  mode?:       string | null;
-  isFriend?:   boolean | null;
-  isOnline?:   boolean | null;
+  badges:         BadgeKey[];
+  vibe:           string | null;
+  mode?:          string | null;
+  isFriend?:      boolean | null;
+  isOnline?:      boolean | null;
 }
 
 /** Public profile — UserDTO + profile-specific extensions. */
@@ -245,6 +247,8 @@ export interface User {
   email?: string;
   display_name: string;
   profile_photo_url?: string;
+  /** Thumbnail URL (≤400 px). Falls back to profile_photo_url server-side. */
+  thumbAvatarUrl?: string | null;
   home_city?: string;
   about_me?: string | null;
   interests?: string[];

@@ -151,7 +151,7 @@ export function useDMThread(conversationId: string): Result {
     setError(null);
 
     try {
-      const remoteUrl = await uploadFile(localUri);
+      const { url: remoteUrl } = await uploadFile(localUri);
       const msg = await sendDmImageMessage(conversationId, remoteUrl);
       seenIds.current.add(msg.id);
       setMessages(prev => {

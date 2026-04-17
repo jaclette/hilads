@@ -36,16 +36,23 @@ final class UserResource
             $badges  = [$primary['key']];
         }
 
+        // thumbAvatarUrl: use dedicated thumbnail if one was generated at upload time;
+        // fall back to the full-size URL for all existing users (no thumbnail column yet).
+        // This guarantees no 404 regardless of whether profile_thumb_photo_url is set.
+        $fullUrl  = $user['profile_photo_url']       ?? null;
+        $thumbUrl = $user['profile_thumb_photo_url'] ?? null;
+
         return [
-            'id'          => $user['id'],
-            'accountType' => 'registered',
-            'displayName' => $user['display_name'],
-            'avatarUrl'   => $user['profile_photo_url'] ?? null,
-            'badges'      => $badges,
-            'vibe'        => $user['vibe'] ?? null,
-            'mode'        => $user['mode'] ?? null,
-            'isFriend'    => $opts['isFriend'] ?? null,
-            'isOnline'    => $opts['isOnline'] ?? null,
+            'id'            => $user['id'],
+            'accountType'   => 'registered',
+            'displayName'   => $user['display_name'],
+            'avatarUrl'     => $fullUrl,
+            'thumbAvatarUrl'=> $thumbUrl ?? $fullUrl,  // null only when no photo at all
+            'badges'        => $badges,
+            'vibe'          => $user['vibe'] ?? null,
+            'mode'          => $user['mode'] ?? null,
+            'isFriend'      => $opts['isFriend'] ?? null,
+            'isOnline'      => $opts['isOnline'] ?? null,
         ];
     }
 

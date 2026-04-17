@@ -305,7 +305,7 @@ export default function PublicProfileScreen() {
             <View style={styles.hero}>
               {user.avatarUrl ? (
                 <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)}>
-                  <Image source={{ uri: user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
+                  <Image source={{ uri: user.thumbAvatarUrl ?? user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
                 </TouchableOpacity>
               ) : (
                 <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: bg }]}>

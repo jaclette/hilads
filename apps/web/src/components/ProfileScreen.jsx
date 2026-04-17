@@ -45,6 +45,7 @@ const PROFILE_TABS = [
 
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount }) {
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
+  const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [name,            setName]            = useState(account.display_name ?? '')
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
@@ -100,9 +101,13 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     setUploading(true)
     setError(null)
     try {
-      const { url } = await uploadImage(file)
-      const { user } = await updateProfile({ profile_photo_url: url })
+      const { url, thumbUrl } = await uploadImage(file)
+      const { user } = await updateProfile({
+        profile_photo_url:       url,
+        profile_thumb_photo_url: thumbUrl ?? null,
+      })
       setPhotoUrl(url)
+      setThumbPhotoUrl(thumbUrl ?? url)
       onSave(user)
     } catch {
       setError('Photo upload failed. Try again.')
@@ -186,7 +191,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             aria-label="Change profile photo"
           >
             {photoUrl
-              ? <img className="online-avatar profile-avatar-identity" src={photoUrl} alt={name} />
+              ? <img className="online-avatar profile-avatar-identity" src={thumbPhotoUrl ?? photoUrl} alt={name} />
               : <span className="online-avatar profile-avatar-identity" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                   {(name || '?')[0].toUpperCase()}
                 </span>

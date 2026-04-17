@@ -689,7 +689,7 @@ export default function ChatTab() {
             <Text style={styles.cityName} numberOfLines={1}>
               {flag ? `${flag} ` : ''}{city.name}
             </Text>
-            <Text style={styles.citySep} aria-hidden="true">·</Text>
+            <Text style={styles.citySep} aria-hidden={true}>·</Text>
             <TouchableOpacity
               activeOpacity={0.65}
               onPress={() => router.push('/(tabs)/here' as never)}
