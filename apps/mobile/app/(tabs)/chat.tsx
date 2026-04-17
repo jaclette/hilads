@@ -531,7 +531,10 @@ export default function ChatTab() {
   // Weather — extracted from messages for header display, not rendered in the feed.
   const weatherLabel = useMemo<string | null>(() => {
     const w = messages.find(m => m.type === 'system' && m.event === 'weather');
-    return w?.content ?? null;
+    if (!w?.content) return null;
+    // Strip " in CityName — " to avoid repeating the city name already shown in the header
+    // e.g. "☀️ 22°C in Paris — it's gorgeous" → "☀️ 22°C · it's gorgeous"
+    return w.content.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_: string, dash: string) => dash ? '\u00B7 ' : '').trim();
   }, [messages]);
 
   // Unified feed — weather excluded (shown in header only).
@@ -682,20 +685,23 @@ export default function ChatTab() {
           <Text style={styles.headerTagline} numberOfLines={1}>Feel local. Anywhere.</Text>
         </View>
         <View style={styles.heroCity}>
-          <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>
-            {flag ? `${flag} ` : ''}{city.name}
-          </Text>
-          <TouchableOpacity
-            style={styles.onlinePill}
-            activeOpacity={0.65}
-            onPress={() => router.push('/(tabs)/here' as never)}
-            accessibilityLabel="See who's here"
-          >
-            <PulseDot />
-            <Animated.Text style={[styles.onlineText, { transform: [{ scale: countScale }] }]}>
-              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-            </Animated.Text>
-          </TouchableOpacity>
+          <View style={styles.heroCityLine}>
+            <Text style={styles.cityName} numberOfLines={1}>
+              {flag ? `${flag} ` : ''}{city.name}
+            </Text>
+            <Text style={styles.citySep} aria-hidden="true">·</Text>
+            <TouchableOpacity
+              activeOpacity={0.65}
+              onPress={() => router.push('/(tabs)/here' as never)}
+              accessibilityLabel="See who's here"
+              style={styles.heroCityOnline}
+            >
+              <PulseDot />
+              <Animated.Text style={[styles.heroCityOnlineText, { transform: [{ scale: countScale }] }]}>
+                {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+              </Animated.Text>
+            </TouchableOpacity>
+          </View>
           {weatherLabel && (
             <Text style={styles.weatherLabel}>{weatherLabel}</Text>
           )}
@@ -941,56 +947,67 @@ const styles = StyleSheet.create({
     elevation:     10,
   },
 
-  // .header-hero-city
+  // Compact city block — column: city-line row + weather
   heroCity: {
     alignItems: 'center',
-    gap:        6,
+    gap:        3,
   },
 
-  // .header-hero-name: clamp(1.9rem, 7vw, 2.3rem), weight 800, letter-spacing -0.04em
+  // Single line: flag · city name · pulse · X hanging out
+  heroCityLine: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    gap:            7,
+    flexWrap:       'wrap',
+    justifyContent: 'center',
+  },
+
+  // City name — compact, no huge hero sizing
   cityName: {
-    fontSize:      36,      // ≈ 2.25rem at 16px base — matches tightened web clamp
-    fontWeight:    '800',
-    letterSpacing: -1.44,   // -0.04em × 36px
+    fontSize:      20,
+    fontWeight:    '700',
+    letterSpacing: -0.5,
     color:         Colors.text,
-    textAlign:     'center',
-    lineHeight:    40,
+    lineHeight:    24,
+    flexShrink:    1,
   },
 
-  // .online-label: pill, gap 8, padding 5 12, bg rgba(255,255,255,0.05), border rgba(255,255,255,0.07)
-  onlinePill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               8,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
-    borderRadius:      999,
-    backgroundColor:   'rgba(255,255,255,0.05)',
-    borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.07)',
+  // Dot separator between city name and hanging out
+  citySep: {
+    fontSize:  14,
+    color:     Colors.text,
+    opacity:   0.4,
+    lineHeight: 24,
+  },
+
+  // Inline presence — no pill, no border
+  heroCityOnline: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           5,
+  },
+
+  heroCityOnlineText: {
+    fontSize: 13,
+    color:    Colors.text,
+    opacity:  0.8,
   },
 
   // .online-pulse: 7px, #C24A38
   pulseDot: {
-    width:           8,
-    height:          8,
+    width:           7,
+    height:          7,
     borderRadius:    4,
     backgroundColor: '#C24A38',
     flexShrink:      0,
   },
 
-  // online count text: mirrors web .online-label 1rem, dialed to 14px for compact header
-  onlineText: {
-    fontSize: 14,
-    color:    Colors.text,
-  },
-
-  // Weather context line — subtle, below presence pill
+  // Weather context line — subtle, below city line
   weatherLabel: {
     fontSize:  FontSizes.xs,
     color:     Colors.muted,
-    opacity:   0.75,
-    marginTop: 2,
+    opacity:   0.7,
+    marginTop: 1,
     textAlign: 'center',
   },
 

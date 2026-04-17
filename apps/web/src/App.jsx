@@ -555,7 +555,10 @@ export default function App() {
   const weatherLabel = useMemo(() => {
     // Find the most recent weather item (last in chronological feed)
     const w = [...feed].reverse().find(item => item.type === 'activity' && item.subtype === 'weather')
-    return w?.text ?? null
+    if (!w?.text) return null
+    // Strip " in CityName — " so we don't repeat the city name already shown in the header
+    // e.g. "☀️ 22°C in Paris — it's gorgeous" → "☀️ 22°C · it's gorgeous"
+    return w.text.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_, dash) => dash ? '\u00B7 ' : '').trim()
   }, [feed])
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
@@ -2657,19 +2660,22 @@ export default function App() {
           <span className="header-tagline">Feel local. Anywhere.</span>
         </div>
         <div className="header-hero-city">
-          <span className="header-hero-name">
-            <span className="header-hero-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
-            <span>{city}</span>
-          </span>
-          <button
-            type="button"
-            className="online-label online-label--btn"
-            onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-            aria-label="See who's here"
-          >
-            <span className="online-pulse" />
-            {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-          </button>
+          <div className="header-city-line">
+            <span className="header-city-name">
+              <span className="header-city-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
+              <span>{city}</span>
+            </span>
+            <span className="header-city-sep" aria-hidden="true">·</span>
+            <button
+              type="button"
+              className="header-city-online"
+              onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+              aria-label="See who's here"
+            >
+              <span className="online-pulse" />
+              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+            </button>
+          </div>
           {weatherLabel && (
             <span className="header-weather">{weatherLabel}</span>
           )}
