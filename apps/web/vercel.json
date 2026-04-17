@@ -10,7 +10,7 @@
   "headers": [
     {
       "source": "/(.*)",
-      "has": [{ "type": "header", "key": "accept", "value": "text/html" }],
+      "has": [{ "type": "header", "key": "sec-fetch-dest", "value": "document" }],
       "headers": [
         {
           "key": "Content-Security-Policy",
