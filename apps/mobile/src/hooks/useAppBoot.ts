@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { loadOrCreateIdentity, generateSessionId } from '@/lib/identity';
+import { loadOrCreateIdentity, generateSessionId, saveDetectedCity, loadDetectedCity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
 import { resolveLocation, bootstrapChannel, fetchChannels } from '@/api/channels';
 import { authMe } from '@/api/auth';
@@ -266,6 +266,7 @@ export function useAppBoot(): Result {
 
       if (isCancelled()) return;
       setDetectedCity(city);
+      saveDetectedCity(city).catch(() => {}); // persist so "Back to my location" is immediate on next boot
       const nextState = city ? 'resolved' : 'error';
       setGeoState(nextState);
       console.log('[geo] ── flow complete → geoState:', nextState, '─────────');
@@ -288,11 +289,19 @@ export function useAppBoot(): Result {
       try {
         // Phase 1: Identity + session (~10ms, AsyncStorage reads)
         console.log('[boot] phase 1: identity');
-        const identity  = await loadOrCreateIdentity();
+        const [identity, cachedDetectedCity] = await Promise.all([
+          loadOrCreateIdentity(),
+          loadDetectedCity(),
+        ]);
         const sessionId = generateSessionId();
         if (cancelled) return;
         setIdentity(identity);
         setSessionId(sessionId);
+        // Restore last-known geo city immediately so "Back to my location" is
+        // available before live geo resolves (which takes a few seconds).
+        if (cachedDetectedCity) {
+          setDetectedCity(cachedDetectedCity);
+        }
 
         // Phase 2: WebSocket
         console.log('[boot] phase 2: ws connect');

@@ -466,6 +466,27 @@ function clearIdentity() {
   localStorage.removeItem(IDENTITY_KEY)
 }
 
+// ── Geo city persistence ──────────────────────────────────────────────────────
+// The geolocated city is stored separately from the selected city so that
+// "Back to my location" survives page refreshes and city switches.
+const GEO_CITY_KEY = 'hilads_geo_city'
+
+function saveGeoCity({ channelId, city, country, timezone }) {
+  if (!channelId) return
+  localStorage.setItem(GEO_CITY_KEY, JSON.stringify({ channelId, city: city ?? null, country: country ?? null, timezone: timezone ?? null }))
+}
+
+function loadGeoCity() {
+  try {
+    const raw = localStorage.getItem(GEO_CITY_KEY)
+    if (!raw) return null
+    const d = JSON.parse(raw)
+    return d?.channelId ? d : null
+  } catch {
+    return null
+  }
+}
+
 async function hydrateSavedLocation(rejoinData) {
   if (!rejoinData?.channelId) return null
   if (rejoinData.timezone) {
@@ -584,8 +605,12 @@ export default function App() {
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
   const [previewTopics,     setPreviewTopics]     = useState([])
   const [previewChannelId, setPreviewChannelId]   = useState(() => loadIdentity()?.channelId ?? null)
-  const [geoChannelId,    setGeoChannelId]        = useState(null)  // geo-resolved channelId, never changes on city switch
-  const [geoCity,         setGeoCity]             = useState(null)  // geo-resolved city name
+  // Geo-resolved city — persisted to localStorage so "Back to my location" survives
+  // page refreshes. These are set once when geo resolves and never overwritten on city switch.
+  const [geoChannelId,    setGeoChannelId]        = useState(() => loadGeoCity()?.channelId ?? null)
+  const [geoCity,         setGeoCity]             = useState(() => loadGeoCity()?.city      ?? null)
+  const [geoCountry,      setGeoCountry]          = useState(() => loadGeoCity()?.country   ?? null)
+  const [geoTimezone,     setGeoTimezone]         = useState(() => loadGeoCity()?.timezone  ?? null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
@@ -1191,6 +1216,10 @@ export default function App() {
       setPreviewChannelId(location.channelId ?? null)
       setGeoChannelId(location.channelId ?? null)
       setGeoCity(location.city ?? null)
+      setGeoCountry(location.country ?? null)
+      setGeoTimezone(location.timezone ?? null)
+      // Persist so "Back to my location" survives page refreshes
+      saveGeoCity({ channelId: location.channelId, city: location.city, country: location.country, timezone: location.timezone })
       setGeoState('resolved')
       return location
     } catch (err) {
@@ -3416,23 +3445,19 @@ export default function App() {
               ))}
             </div>
           )}
-          {geoChannelId && geoChannelId !== channelId && (() => {
-            const geoCh = channels.find(ch => ch.channelId === geoChannelId)
-            if (!geoCh) return null
-            return (
-              <button
-                className="back-to-location-btn"
-                onClick={() => switchCity(geoCh.channelId, geoCh.city, geoCh.timezone, geoCh.country)}
-              >
-                <span className="back-to-location-icon">📍</span>
-                <span className="back-to-location-text">
-                  <span className="back-to-location-label">Back to my location</span>
-                  <span className="back-to-location-sub">{geoCh.city}</span>
-                </span>
-                <span className="back-to-location-arrow">→</span>
-              </button>
-            )
-          })()}
+          {geoChannelId && geoChannelId !== channelId && geoCity && (
+            <button
+              className="back-to-location-btn"
+              onClick={() => switchCity(geoChannelId, geoCity, geoTimezone ?? 'UTC', geoCountry)}
+            >
+              <span className="back-to-location-icon">📍</span>
+              <span className="back-to-location-text">
+                <span className="back-to-location-label">Back to my location</span>
+                <span className="back-to-location-sub">{geoCity}</span>
+              </span>
+              <span className="back-to-location-arrow">→</span>
+            </button>
+          )}
           <div className="page-body">
             {channelsLoading ? (
               <div className="city-skeleton">

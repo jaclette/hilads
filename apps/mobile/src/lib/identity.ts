@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { GuestIdentity } from '@/types';
+import type { City, GuestIdentity } from '@/types';
 
 const STORAGE_KEY = 'hilads_guest_identity';
 
@@ -79,4 +79,33 @@ export async function saveIdentity(identity: GuestIdentity): Promise<void> {
 
 export async function clearIdentity(): Promise<void> {
   await AsyncStorage.removeItem(STORAGE_KEY);
+}
+
+// ── Detected (geo) city persistence ──────────────────────────────────────────
+// Stored separately from the session identity so that "Back to my location"
+// is immediately available on app start, before the background geo resolves.
+
+const DETECTED_CITY_KEY = 'hilads_detected_city';
+
+export async function saveDetectedCity(city: City | null): Promise<void> {
+  try {
+    if (!city) {
+      await AsyncStorage.removeItem(DETECTED_CITY_KEY);
+    } else {
+      await AsyncStorage.setItem(DETECTED_CITY_KEY, JSON.stringify(city));
+    }
+  } catch {
+    // Non-critical — worst case the button appears a few seconds late
+  }
+}
+
+export async function loadDetectedCity(): Promise<City | null> {
+  try {
+    const raw = await AsyncStorage.getItem(DETECTED_CITY_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as City;
+    return parsed?.channelId ? parsed : null;
+  } catch {
+    return null;
+  }
 }
