@@ -1778,11 +1778,11 @@ html, body, #root {
   gap: 3px;
   max-width: 80%;
   align-self: flex-start;
-  margin-top: 22px;
+  margin-top: 16px;
 }
 
 .message.grouped {
-  margin-top: 8px;
+  margin-top: 5px;
 }
 
 .message.mine {
@@ -1862,9 +1862,9 @@ html, body, #root {
   background: var(--other-bg);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 4px 18px 18px 18px;
-  padding: 12px 15px;
-  font-size: 1.02rem;
-  line-height: 1.55;
+  padding: 7px 11px;
+  font-size: 0.9rem;
+  line-height: 1.45;
   word-break: break-word;
   color: var(--text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);

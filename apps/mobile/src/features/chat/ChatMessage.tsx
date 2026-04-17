@@ -826,8 +826,8 @@ const styles = StyleSheet.create({
   // alignItems shrinks children to content width so short bubbles don't stretch
   rowOther:   { alignSelf: 'flex-start', alignItems: 'flex-start', paddingLeft: 14 },
   rowMine:    { alignSelf: 'flex-end',   alignItems: 'flex-end',   paddingRight: 14 },
-  rowFirst:   { marginTop: 16 },
-  rowGrouped: { marginTop: 8 },
+  rowFirst:   { marginTop: 12 },
+  rowGrouped: { marginTop: 5 },
   rowSending: { opacity: 0.65 },
 
   // ── .msg-meta ─────────────────────────────────────────────────────────────
@@ -865,8 +865,8 @@ const styles = StyleSheet.create({
   // ── .msg-content ──────────────────────────────────────────────────────────
   bubble: {
     borderRadius:      16,
-    paddingHorizontal: 12,
-    paddingVertical:   8,
+    paddingHorizontal: 10,
+    paddingVertical:   6,
   },
   bubbleOther: {
     backgroundColor:     Colors.bg3,
@@ -883,7 +883,7 @@ const styles = StyleSheet.create({
     shadowRadius:         6,
     elevation:            4,
   },
-  bubbleText:     { fontSize: FontSizes.md, color: Colors.text,  lineHeight: 22 },
+  bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
 
   // Failed state
