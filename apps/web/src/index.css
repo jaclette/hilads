@@ -582,6 +582,20 @@ html, body, #root {
   border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
+.online-label--btn {
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition: background 0.15s, border-color 0.15s;
+}
+.online-label--btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.online-label--btn:active {
+  background: rgba(255, 255, 255, 0.14);
+}
+
 .header-weather {
   font-size: 0.78rem;
   color: var(--text-muted);
