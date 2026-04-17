@@ -9,7 +9,7 @@
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/((?!manifest\\.webmanifest$|sw\\.js$|logo/).*)",
       "has": [{ "type": "header", "key": "sec-fetch-dest", "value": "document" }],
       "headers": [
         {
