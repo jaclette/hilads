@@ -2697,18 +2697,19 @@ export default function App() {
           <span className="header-tagline">Feel local. Anywhere.</span>
         </div>
         <div className="header-hero-city">
-          <span className="header-hero-name">
+          <div className="header-city-row">
             <span className="header-hero-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
-            <span>{city}</span>
-          </span>
-          <button
-            type="button"
-            className="online-label"
-            onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-          >
-            <span className="online-pulse" />
-            {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-          </button>
+            <span className="header-hero-name">{city}</span>
+            <span className="header-city-sep" aria-hidden="true">·</span>
+            <button
+              type="button"
+              className="header-presence-btn"
+              onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+            >
+              <span className="online-pulse" />
+              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+            </button>
+          </div>
           {weatherLabel && (
             <span className="header-weather">{weatherLabel}</span>
           )}

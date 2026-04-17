@@ -682,19 +682,23 @@ export default function ChatTab() {
           <Text style={styles.headerTagline} numberOfLines={1}>Feel local. Anywhere.</Text>
         </View>
         <View style={styles.heroCity}>
-          <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>
-            {flag ? `${flag} ` : ''}{city.name}
-          </Text>
-          <TouchableOpacity
-            style={styles.onlinePill}
-            onPress={() => router.push('/(tabs)/here')}
-            activeOpacity={0.7}
-          >
-            <PulseDot />
-            <Animated.Text style={[styles.onlineText, { transform: [{ scale: countScale }] }]}>
-              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-            </Animated.Text>
-          </TouchableOpacity>
+          {/* Single row: flag + city name · presence button */}
+          <View style={styles.cityPresenceRow}>
+            <Text style={styles.cityName} numberOfLines={1}>
+              {flag ? `${flag} ` : ''}{city.name}
+            </Text>
+            <Text style={styles.cityPresenceSep}>·</Text>
+            <TouchableOpacity
+              style={styles.presenceInline}
+              onPress={() => router.push('/(tabs)/here')}
+              activeOpacity={0.7}
+            >
+              <PulseDot />
+              <Animated.Text style={[styles.onlineText, { transform: [{ scale: countScale }] }]}>
+                {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+              </Animated.Text>
+            </TouchableOpacity>
+          </View>
           {weatherLabel && (
             <Text style={styles.weatherLabel}>{weatherLabel}</Text>
           )}
@@ -841,21 +845,18 @@ const styles = StyleSheet.create({
   flex:      { flex: 1 },
 
   // ── .chat-header ─────────────────────────────────────────────────────────
-  // Web: radial-gradient(ellipse 90% 55% at 50% -10%, rgba(194,74,56,0.10), transparent), var(--surface)
-  // Web: .header-hero → flex col, center, gap 10, min-height 116px, position relative
   header: {
     flexDirection:     'column',
     alignItems:        'center',
     justifyContent:    'center',
-    gap:               12,
-    minHeight:         128,
-    paddingTop:        16,
-    paddingBottom:     14,
+    gap:               8,
+    minHeight:         88,
+    paddingTop:        12,
+    paddingBottom:     10,
     paddingHorizontal: Spacing.md,
     backgroundColor:   Colors.bg2,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.06)',
-    // Approximates web radial-gradient warm glow at top
     shadowColor:     '#C24A38',
     shadowOffset:    { width: 0, height: 6 },
     shadowOpacity:   0.08,
@@ -940,33 +941,44 @@ const styles = StyleSheet.create({
     elevation:     10,
   },
 
-  // .header-hero-city
+  // heroCity: column, tight gap
   heroCity: {
     alignItems: 'center',
-    gap:        6,
+    gap:        3,
   },
 
-  // .header-hero-name: clamp(1.9rem, 7vw, 2.3rem), weight 800, letter-spacing -0.04em
+  // Single row: flag+city name · pulse dot + count
+  cityPresenceRow: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    gap:            7,
+    flexWrap:       'wrap',
+    justifyContent: 'center',
+  },
+
+  // City name: compact, weight 600
   cityName: {
-    fontSize:      36,      // ≈ 2.25rem at 16px base — matches tightened web clamp
-    fontWeight:    '800',
-    letterSpacing: -1.44,   // -0.04em × 36px
+    fontSize:      20,
+    fontWeight:    '600',
+    letterSpacing: -0.2,
     color:         Colors.text,
-    textAlign:     'center',
-    lineHeight:    40,
+    lineHeight:    26,
+    flexShrink:    1,
   },
 
-  // .online-label: pill, gap 8, padding 5 12, bg rgba(255,255,255,0.05), border rgba(255,255,255,0.07)
-  onlinePill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               8,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
-    borderRadius:      999,
-    backgroundColor:   'rgba(255,255,255,0.05)',
-    borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.07)',
+  // Inline separator between city name and presence
+  cityPresenceSep: {
+    fontSize:  13,
+    color:     Colors.muted,
+    opacity:   0.45,
+    lineHeight: 20,
+  },
+
+  // Inline presence row (pulse dot + count) — tappable
+  presenceInline: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           5,
   },
 
   // .online-pulse: 7px, #C24A38
@@ -978,18 +990,17 @@ const styles = StyleSheet.create({
     flexShrink:      0,
   },
 
-  // online count text: mirrors web .online-label 1rem, dialed to 14px for compact header
+  // Presence count — muted, smaller
   onlineText: {
-    fontSize: 14,
-    color:    Colors.text,
+    fontSize: 13,
+    color:    Colors.muted,
   },
 
-  // Weather context line — subtle, below presence pill
+  // Weather — de-emphasized, below city row
   weatherLabel: {
     fontSize:  FontSizes.xs,
     color:     Colors.muted,
-    opacity:   0.75,
-    marginTop: 2,
+    opacity:   0.65,
     textAlign: 'center',
   },
 

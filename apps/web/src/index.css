@@ -497,10 +497,10 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  min-height: 116px;
+  gap: 8px;
+  min-height: 76px;
   width: 100%;
-  padding: max(14px, env(safe-area-inset-top)) 0 6px;
+  padding: max(10px, env(safe-area-inset-top)) 0 6px;
 }
 
 .header-hero--desktop,
@@ -543,55 +543,62 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 7px;
+  gap: 3px;
   text-align: center;
   position: relative;
   width: 100%;
 }
 
-.header-hero-name {
+/* Single row: flag · city name · separator · presence button */
+.header-city-row {
   display: inline-flex;
   align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  width: 100%;
-  font-size: clamp(1.9rem, 7vw, 2.3rem);
-  font-weight: 800;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
-  text-wrap: pretty;
-  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+.header-hero-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .header-hero-flag {
   flex-shrink: 0;
-  font-size: 0.82em;
+  font-size: 1em;
   line-height: 1;
-  transform: translateY(1px);
 }
 
-.online-label {
+.header-city-sep {
+  color: var(--text-muted);
+  opacity: 0.4;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+/* Inline presence button — no pill, subtle muted style */
+.header-presence-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  gap: 8px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  /* interactive */
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  font: inherit;
-  color: inherit;
-  transition: background 0.15s, border-color 0.15s;
+  font-family: inherit;
+  transition: color 0.15s;
 }
-.online-label:hover {
-  background: rgba(255, 255, 255, 0.10);
-  border-color: rgba(255, 255, 255, 0.15);
+.header-presence-btn:hover {
+  color: var(--text);
 }
-.online-label:active {
-  background: rgba(255, 255, 255, 0.14);
+.header-presence-btn:active {
+  opacity: 0.7;
 }
 
 .header-weather {
@@ -815,13 +822,11 @@ html, body, #root {
   }
 
   .header-hero--desktop .header-hero-name {
-    font-size: clamp(1.1rem, 1.5vw, 1.4rem);
-    width: auto;
-    justify-content: flex-start;
-    letter-spacing: -0.025em;
+    font-size: clamp(1.0rem, 1.4vw, 1.25rem);
+    letter-spacing: -0.015em;
   }
 
-  .header-hero--desktop .online-label {
+  .header-hero--desktop .header-presence-btn {
     font-size: 0.74rem;
   }
 
