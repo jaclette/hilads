@@ -45,14 +45,33 @@ class Database
         }
 
         $parts = parse_url($url);
-        $dsn   = sprintf(
-            'pgsql:host=%s;port=%s;dbname=%s;sslmode=require',
-            $parts['host'],
-            $parts['port'] ?? 5432,
-            ltrim($parts['path'], '/')
+        $host  = $parts['host'] ?? '';
+        $port  = (int) ($parts['port'] ?? 5432);
+
+        // ── Supabase pooler mode detection ────────────────────────────────────
+        // Supabase offers two pooler modes on the same host:
+        //   port 5432 → Session mode   (one real DB connection per client session)
+        //   port 6543 → Transaction mode (connections returned to pool per transaction)
+        //
+        // Session mode exhausts the pool when Apache has many workers, each holding
+        // a persistent connection indefinitely. Always use Transaction mode (6543).
+        //
+        // ACTION REQUIRED: update DATABASE_URL on your server to use port 6543:
+        //   postgresql://postgres.[ref]:[pass]@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres
+        if ($port === 5432 && str_contains($host, 'pooler.supabase.com')) {
+            error_log('[db] WARNING: DATABASE_URL uses session-mode port 5432 on Supabase pooler. '
+                    . 'Switch to port 6543 (transaction mode) to prevent connection exhaustion.');
+        }
+
+        // connect_timeout: abort quickly if DB is unreachable rather than hanging requests.
+        $dsn = sprintf(
+            'pgsql:host=%s;port=%d;dbname=%s;sslmode=require;connect_timeout=5',
+            $host,
+            $port,
+            ltrim($parts['path'] ?? '', '/')
         );
 
-        // parse_url() returns URL-encoded credentials — PDO needs the decoded values
+        // parse_url() returns URL-encoded credentials — PDO needs decoded values.
         $user = isset($parts['user']) ? urldecode($parts['user']) : null;
         $pass = isset($parts['pass']) ? urldecode($parts['pass']) : null;
 
@@ -61,23 +80,32 @@ class Database
         self::$pdo = new PDO($dsn, $user, $pass, [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            // Reuse the underlying TCP+SSL connection across requests in the same
-            // PHP-FPM worker process. Eliminates the TLS handshake cost (100–400ms)
-            // on new worker spawns. Safe for auto-commit read/write operations.
-            PDO::ATTR_PERSISTENT         => true,
+            // IMPORTANT: Do NOT use PDO::ATTR_PERSISTENT here.
+            //
+            // With Apache prefork + session-mode pooler, persistent connections cause
+            // each Apache worker to hold a dedicated DB connection for its entire
+            // lifetime. 20–50 workers = 20–50 open connections at all times, which
+            // immediately exhausts Supabase's pool limit ("MaxClientsInSessionMode").
+            //
+            // In transaction mode (port 6543) persistent connections are safe because
+            // pgbouncer returns the real DB connection to its pool after each
+            // transaction. But we keep this off to be safe across deployment modes.
+            //
+            // PDO::ATTR_EMULATE_PREPARES: required for pgbouncer transaction mode.
+            // Without it, PDO uses server-side named prepared statements which are
+            // session-scoped and incompatible with transaction mode pooling.
+            PDO::ATTR_EMULATE_PREPARES   => true,
         ]);
 
-        self::$lastConnMs    = round((microtime(true) - $t) * 1000, 2);
+        self::$lastConnMs     = round((microtime(true) - $t) * 1000, 2);
         self::$lastConnWasNew = true;
 
-        // Log slow connection establishment so Render logs reveal cold-start patterns.
-        // A reused persistent connection completes new PDO() in <5ms.
-        // A new TCP+TLS handshake to Supabase ap-northeast-1 takes 200–600ms.
-        if (self::$lastConnMs > 50) {
+        if (self::$lastConnMs > 200) {
             error_log(sprintf(
-                '[db] new TCP connection established in %.1f ms (host=%s)',
+                '[db] slow connection: %.1f ms (host=%s port=%d)',
                 self::$lastConnMs,
-                $parts['host'] ?? 'unknown'
+                $host,
+                $port,
             ));
         }
 
