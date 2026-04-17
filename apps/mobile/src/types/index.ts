@@ -133,10 +133,11 @@ export const BADGE_META: Record<BadgeKey, { label: string; color: string; bg: st
 };
 
 export interface UserDTO {
-  id:          string;
-  accountType: 'guest' | 'registered';
-  displayName: string;
-  avatarUrl:   string | null;
+  id:             string;
+  accountType:    'guest' | 'registered';
+  displayName:    string;
+  avatarUrl:      string | null;
+  thumbAvatarUrl: string | null;
   /** Badge keys in priority order: primary badge first, context badge second if present. */
   badges:      BadgeKey[];
   vibe:        string | null;
@@ -245,6 +246,7 @@ export interface User {
   email?: string;
   display_name: string;
   profile_photo_url?: string;
+  profile_thumb_photo_url?: string | null;
   home_city?: string;
   about_me?: string | null;
   interests?: string[];

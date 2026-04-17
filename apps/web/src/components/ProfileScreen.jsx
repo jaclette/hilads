@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { updateProfile, uploadImage, fetchUserVibes, deleteAccount, profileThumbUrl } from '../api'
+import { updateProfile, uploadImage, fetchUserVibes, deleteAccount } from '../api'
 import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
@@ -45,6 +45,7 @@ const PROFILE_TABS = [
 
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount }) {
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
+  const [thumbUrl,        setThumbUrl]        = useState(account.profile_thumb_photo_url ?? null)
   const [name,            setName]            = useState(account.display_name ?? '')
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
@@ -100,9 +101,11 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     setUploading(true)
     setError(null)
     try {
-      const { url } = await uploadImage(file)
-      const { user } = await updateProfile({ profile_photo_url: url })
+      const { url, thumbUrl: newThumb } = await uploadImage(file)
+      const thumb = (newThumb && newThumb !== url) ? newThumb : null
+      const { user } = await updateProfile({ profile_photo_url: url, profile_thumb_photo_url: thumb })
       setPhotoUrl(url)
+      setThumbUrl(thumb)
       onSave(user)
     } catch {
       setError('Photo upload failed. Try again.')
@@ -186,7 +189,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             aria-label="Change profile photo"
           >
             {photoUrl
-              ? <img className="online-avatar profile-avatar-identity" src={profileThumbUrl(photoUrl)} alt={name} onError={e => { e.currentTarget.src = photoUrl }} />
+              ? <img className="online-avatar profile-avatar-identity" src={thumbUrl ?? photoUrl} alt={name} />
               : <span className="online-avatar profile-avatar-identity" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                   {(name || '?')[0].toUpperCase()}
                 </span>
@@ -445,7 +448,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                     style={{ cursor: onViewFriend ? 'pointer' : 'default' }}
                   >
                     {f.avatarUrl
-                      ? <img className="my-friend-avatar" src={profileThumbUrl(f.avatarUrl)} alt={f.displayName} onError={e => { e.currentTarget.src = f.avatarUrl }} />
+                      ? <img className="my-friend-avatar" src={f.thumbAvatarUrl ?? f.avatarUrl} alt={f.displayName} />
                       : <span className="my-friend-avatar my-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
                           {(f.displayName || '?')[0].toUpperCase()}
                         </span>

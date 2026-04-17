@@ -18,7 +18,6 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
-import { profileThumbUrl } from '@/api/uploads';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -307,7 +306,7 @@ export default function PublicProfileScreen() {
             <View style={styles.hero}>
               {user.avatarUrl ? (
                 <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)}>
-                  <Image source={{ uri: profileThumbUrl(user.avatarUrl) ?? user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
+                  <Image source={{ uri: user.thumbAvatarUrl ?? user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
                 </TouchableOpacity>
               ) : (
                 <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: bg }]}>

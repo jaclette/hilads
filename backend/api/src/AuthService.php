@@ -427,6 +427,20 @@ class AuthService
             $fields['profile_photo_url'] = $url;
         }
 
+        if (array_key_exists('profile_thumb_photo_url', $body)) {
+            $thumbUrl = $body['profile_thumb_photo_url'];
+            if ($thumbUrl !== null) {
+                if (!is_string($thumbUrl) || !str_starts_with($thumbUrl, $r2Base)) {
+                    Response::json(['error' => 'Invalid profile_thumb_photo_url'], 422);
+                }
+                $thumbFilename = basename(parse_url($thumbUrl, PHP_URL_PATH) ?? '');
+                if (!preg_match('/^thumb_[a-f0-9]{32}\.jpg$/', $thumbFilename)) {
+                    Response::json(['error' => 'Invalid profile_thumb_photo_url'], 422);
+                }
+            }
+            $fields['profile_thumb_photo_url'] = $thumbUrl;
+        }
+
         if (array_key_exists('interests', $body)) {
             $raw = $body['interests'];
             if (!is_array($raw)) {
@@ -498,11 +512,12 @@ class AuthService
     public static function publicFields(array $user): array
     {
         return [
-            'id'                => $user['id'],
-            'display_name'      => $user['display_name'],
-            'age'               => self::computeAge($user['birth_year'] ?? null),
-            'profile_photo_url' => $user['profile_photo_url'],
-            'home_city'         => $user['home_city'],
+            'id'                       => $user['id'],
+            'display_name'             => $user['display_name'],
+            'age'                      => self::computeAge($user['birth_year'] ?? null),
+            'profile_photo_url'        => $user['profile_photo_url'],
+            'profile_thumb_photo_url'  => $user['profile_thumb_photo_url'] ?? null,
+            'home_city'                => $user['home_city'],
             'about_me'          => $user['about_me'] ?? null,
             'interests'         => json_decode($user['interests'] ?? '[]', true),
             'vibe'              => $user['vibe'] ?? 'chill',

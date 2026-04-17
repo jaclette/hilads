@@ -1,17 +1,5 @@
 const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
 
-// Derives the thumbnail URL for a profile photo. The backend stores thumbnails
-// as `thumb_{basename}.jpg` alongside the original in R2.
-// Returns null if url is falsy, falls back gracefully on the frontend via onError.
-export function profileThumbUrl(url) {
-  if (!url) return null
-  const slash = url.lastIndexOf('/')
-  const file  = url.slice(slash + 1)
-  const dot   = file.lastIndexOf('.')
-  const name  = dot !== -1 ? file.slice(0, dot) : file
-  return url.slice(0, slash + 1) + 'thumb_' + name + '.jpg'
-}
-
 // ── Deep link resolution ───────────────────────────────────────────────────────
 
 export async function fetchCityBySlug(slug) {

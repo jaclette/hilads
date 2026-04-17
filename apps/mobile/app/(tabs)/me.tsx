@@ -26,7 +26,7 @@ import { useApp } from '@/context/AppContext';
 import { useMyEvents } from '@/hooks/useMyEvents';
 import { saveIdentity } from '@/lib/identity';
 import { updateProfile, deleteAccount } from '@/api/auth';
-import { uploadFile, profileThumbUrl } from '@/api/uploads';
+import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
 import type { UserVibe } from '@/api/users';
@@ -135,7 +135,6 @@ export default function MeScreen() {
   const [selectedInterests,  setSelectedInterests]  = useState<string[]>(account?.interests ?? []);
   const [pendingPhotoUri,    setPendingPhotoUri]     = useState<string | null>(null);
   const [photoUploading,     setPhotoUploading]     = useState(false);
-  const [avatarThumbFailed,  setAvatarThumbFailed]  = useState(false);
   const [localEvents,        setLocalEvents]         = useState<HiladsEvent[]>([]);
   const [saving,             setSaving]             = useState(false);
   const [saved,              setSaved]              = useState(false);
@@ -188,8 +187,6 @@ export default function MeScreen() {
     setSelectedInterests(account?.interests ?? []);
   }, [account?.display_name, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
-  // Reset thumbnail failure flag when photo URL changes (e.g. after new upload)
-  useEffect(() => { setAvatarThumbFailed(false); }, [account?.profile_photo_url]);
 
   // Version tap easter egg
   const tapCount = useRef(0);
@@ -208,8 +205,7 @@ export default function MeScreen() {
   const isGuest      = !account;
   const avatarBgColor = avatarBg(account?.display_name ?? identity?.nickname ?? '');
   const initials     = (account?.display_name ?? identity?.nickname ?? '?').slice(0, 2).toUpperCase();
-  const photoSrc     = pendingPhotoUri ?? profileThumbUrl(account?.profile_photo_url) ?? null;
-  const photoFullSrc = account?.profile_photo_url ?? null;
+  const photoSrc = pendingPhotoUri ?? account?.profile_thumb_photo_url ?? account?.profile_photo_url ?? null;
 
   // ── Photo picker ─────────────────────────────────────────────────────────────
 
@@ -230,8 +226,11 @@ export default function MeScreen() {
     setPendingPhotoUri(asset.uri);
     setPhotoUploading(true);
     try {
-      const url = await uploadFile(asset.uri, asset.mimeType);
-      const { user } = await updateProfile({ profile_photo_url: url } as Parameters<typeof updateProfile>[0]);
+      const { url, thumbUrl } = await uploadFile(asset.uri, asset.mimeType);
+      const { user } = await updateProfile({
+        profile_photo_url:       url,
+        profile_thumb_photo_url: thumbUrl ?? null,
+      } as Parameters<typeof updateProfile>[0]);
       setAccount(user);
       setPendingPhotoUri(null);
     } catch {
@@ -363,10 +362,9 @@ export default function MeScreen() {
             >
               {photoSrc ? (
                 <Image
-                  source={{ uri: avatarThumbFailed ? (photoFullSrc ?? photoSrc) : photoSrc }}
+                  source={{ uri: photoSrc }}
                   style={styles.avatarSm}
                   resizeMode="cover"
-                  onError={() => { if (!avatarThumbFailed && !pendingPhotoUri) setAvatarThumbFailed(true); }}
                 />
               ) : (
                 <View style={[styles.avatarSmFallback, { backgroundColor: avatarBgColor }]}>
@@ -754,7 +752,7 @@ export default function MeScreen() {
                     activeOpacity={0.7}
                   >
                     {f.avatarUrl ? (
-                      <Image source={{ uri: profileThumbUrl(f.avatarUrl) ?? f.avatarUrl }} style={styles.friendAvatar} />
+                      <Image source={{ uri: f.thumbAvatarUrl ?? f.avatarUrl }} style={styles.friendAvatar} />
                     ) : (
                       <View style={[styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
                         <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>
