@@ -132,95 +132,95 @@ final class WeatherService
 
         // Clear sky
         if ($code === 0 && $isDay && $temp >= 30) {
-            return "☀️ {$temp}°C · gorgeous out there";
+            return "☀️ {$temp}°C in {$cityName} — it's gorgeous out there";
         }
         if ($code === 0 && $isDay) {
-            return "☀️ {$temp}°C · clear skies";
+            return "☀️ {$temp}°C and clear skies in {$cityName} right now";
         }
         if ($code === 0) {
-            return "🌙 {$temp}°C · clear tonight";
+            return "🌙 {$temp}°C and clear tonight in {$cityName}";
         }
 
         // Mainly clear
         if ($code === 1 && $isDay) {
-            return "🌤️ {$temp}°C · mainly clear";
+            return "🌤️ {$temp}°C in {$cityName} right now";
         }
         if ($code === 1) {
-            return "🌙 {$temp}°C · mainly clear tonight";
+            return "🌙 {$temp}°C in {$cityName} tonight";
         }
 
         // Partly cloudy
         if ($code === 2) {
-            return "⛅ {$temp}°C · a few clouds around";
+            return "⛅ {$temp}°C in {$cityName} — a few clouds around";
         }
 
         // Overcast
         if ($code === 3) {
-            return "☁️ {$temp}°C · grey skies today";
+            return "☁️ {$temp}°C in {$cityName} — grey skies today";
         }
 
         // Fog
         if ($code === 45 || $code === 48) {
-            return "🌫️ {$temp}°C · foggy out there";
+            return "🌫️ Foggy in {$cityName} right now — {$temp}°C";
         }
 
         // Drizzle
         if ($code >= 51 && $code <= 55) {
-            return "🌦️ {$temp}°C · light drizzle, grab a jacket";
+            return "🌦️ Light drizzle in {$cityName} — {$temp}°C, grab a jacket";
         }
         if ($code === 56 || $code === 57) {
-            return "🌦️ {$temp}°C · freezing drizzle, stay warm";
+            return "🌦️ Freezing drizzle in {$cityName} — {$temp}°C, stay warm";
         }
 
         // Rain
         if ($code === 61) {
-            return "🌧️ {$temp}°C · light rain";
+            return "🌧️ Light rain in {$cityName} — maybe choose an indoor spot";
         }
         if ($code === 63) {
-            return "🌧️ {$temp}°C · raining right now";
+            return "🌧️ {$temp}°C and raining in {$cityName} right now";
         }
         if ($code === 65) {
-            return "🌧️ {$temp}°C · heavy rain, stay covered";
+            return "🌧️ Heavy rain in {$cityName} — {$temp}°C, best to stay covered";
         }
         if ($code === 66 || $code === 67) {
-            return "🌧️ {$temp}°C · freezing rain, be careful";
+            return "🌧️ Freezing rain in {$cityName} — be careful out there";
         }
 
         // Snow
         if ($code === 71) {
-            return "❄️ {$temp}°C · light snow";
+            return "❄️ Light snow in {$cityName} — {$temp}°C";
         }
         if ($code === 73 || $code === 75) {
-            return "❄️ {$temp}°C · snowing!";
+            return "❄️ It's snowing in {$cityName}! {$temp}°C out there";
         }
         if ($code === 77) {
-            return "❄️ {$temp}°C · snow grains";
+            return "❄️ Snow grains in {$cityName} — {$temp}°C";
         }
 
         // Showers
         if ($code === 80) {
-            return "🌦️ {$temp}°C · light showers";
+            return "🌦️ Light showers in {$cityName} — {$temp}°C";
         }
         if ($code === 81) {
-            return "🌧️ {$temp}°C · rain showers";
+            return "🌧️ Rain showers in {$cityName} — {$temp}°C right now";
         }
         if ($code === 82) {
-            return "⛈️ {$temp}°C · heavy showers, take cover";
+            return "⛈️ Heavy showers in {$cityName} — {$temp}°C, take cover";
         }
         if ($code === 85 || $code === 86) {
-            return "🌨️ {$temp}°C · snow showers";
+            return "🌨️ Snow showers in {$cityName} — {$temp}°C";
         }
 
         // Thunderstorm
         if ($code === 95) {
-            return "⛈️ {$temp}°C · thunderstorm, stay safe";
+            return "⛈️ Thunderstorm in {$cityName} — {$temp}°C, stay safe out there";
         }
         if ($code === 96 || $code === 99) {
-            return "⛈️ {$temp}°C · thunderstorm with hail, stay indoors";
+            return "⛈️ Thunderstorm with hail in {$cityName} — stay indoors";
         }
 
         // Fallback (unknown code)
-        return "🌡️ {$temp}°C right now";
+        return "🌡️ {$temp}°C in {$cityName} right now";
     }
 
     // ── Cache: APCu (preferred) or /tmp file fallback ─────────────────────────

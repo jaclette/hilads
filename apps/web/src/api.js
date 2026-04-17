@@ -456,11 +456,8 @@ export async function authForgotPassword(email) {
 }
 
 export async function authValidateResetToken(token) {
-  const res = await fetch(`${BASE}/auth/reset-password/validate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const res = await fetch(`${BASE}/auth/reset-password/validate?token=${encodeURIComponent(token)}`, {
     credentials: 'include',
-    body: JSON.stringify({ token }),
   })
   if (!res.ok) return false
   const data = await res.json()

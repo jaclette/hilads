@@ -10,8 +10,7 @@ declare(strict_types=1);
  *   id           string        Registered user UUID, or guestId for guests.
  *   accountType  string        'registered' | 'guest'
  *   displayName  string        Human-readable name.
- *   avatarUrl      string|null   R2 profile photo (full-size), or null.
- *   thumbAvatarUrl string|null   R2 profile photo thumbnail (≤400px JPEG), or null if not yet generated.
+ *   avatarUrl    string|null   R2 profile photo URL, or null.
  *   badges       string[]      Badge keys in display order: primary first, then context.
  *                              Known keys: ghost · fresh · regular · host
  *   vibe         string|null   User-chosen vibe key, or null for guests.
@@ -38,11 +37,10 @@ final class UserResource
         }
 
         return [
-            'id'             => $user['id'],
-            'accountType'    => 'registered',
-            'displayName'    => $user['display_name'],
-            'avatarUrl'      => $user['profile_photo_url']       ?? null,
-            'thumbAvatarUrl' => $user['profile_thumb_photo_url'] ?? null,
+            'id'          => $user['id'],
+            'accountType' => 'registered',
+            'displayName' => $user['display_name'],
+            'avatarUrl'   => $user['profile_photo_url'] ?? null,
             'badges'      => $badges,
             'vibe'        => $user['vibe'] ?? null,
             'mode'        => $user['mode'] ?? null,

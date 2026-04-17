@@ -187,7 +187,6 @@ export default function MeScreen() {
     setSelectedInterests(account?.interests ?? []);
   }, [account?.display_name, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
-
   // Version tap easter egg
   const tapCount = useRef(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -205,7 +204,7 @@ export default function MeScreen() {
   const isGuest      = !account;
   const avatarBgColor = avatarBg(account?.display_name ?? identity?.nickname ?? '');
   const initials     = (account?.display_name ?? identity?.nickname ?? '?').slice(0, 2).toUpperCase();
-  const photoSrc = pendingPhotoUri ?? account?.profile_thumb_photo_url ?? account?.profile_photo_url ?? null;
+  const photoSrc     = pendingPhotoUri ?? account?.profile_photo_url ?? null;
 
   // ── Photo picker ─────────────────────────────────────────────────────────────
 
@@ -226,11 +225,8 @@ export default function MeScreen() {
     setPendingPhotoUri(asset.uri);
     setPhotoUploading(true);
     try {
-      const { url, thumbUrl } = await uploadFile(asset.uri, asset.mimeType);
-      const { user } = await updateProfile({
-        profile_photo_url:       url,
-        profile_thumb_photo_url: thumbUrl ?? null,
-      } as Parameters<typeof updateProfile>[0]);
+      const url = await uploadFile(asset.uri, asset.mimeType);
+      const { user } = await updateProfile({ profile_photo_url: url } as Parameters<typeof updateProfile>[0]);
       setAccount(user);
       setPendingPhotoUri(null);
     } catch {
@@ -361,11 +357,7 @@ export default function MeScreen() {
               disabled={photoUploading}
             >
               {photoSrc ? (
-                <Image
-                  source={{ uri: photoSrc }}
-                  style={styles.avatarSm}
-                  resizeMode="cover"
-                />
+                <Image source={{ uri: photoSrc }} style={styles.avatarSm} resizeMode="cover" />
               ) : (
                 <View style={[styles.avatarSmFallback, { backgroundColor: avatarBgColor }]}>
                   <Text style={styles.avatarSmInitials}>{initials}</Text>
@@ -752,7 +744,7 @@ export default function MeScreen() {
                     activeOpacity={0.7}
                   >
                     {f.avatarUrl ? (
-                      <Image source={{ uri: f.thumbAvatarUrl ?? f.avatarUrl }} style={styles.friendAvatar} />
+                      <Image source={{ uri: f.avatarUrl }} style={styles.friendAvatar} />
                     ) : (
                       <View style={[styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
                         <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>

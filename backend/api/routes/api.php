@@ -762,10 +762,8 @@ $router->add('POST', '/api/v1/auth/forgot-password', function () {
     ]);
 });
 
-$router->add('POST', '/api/v1/auth/reset-password/validate', function () {
-    enforceRateLimit('auth_validate_reset', 20, 600);
-    $body  = Request::json();
-    $token = trim((string) ($body['token'] ?? ''));
+$router->add('GET', '/api/v1/auth/reset-password/validate', function () {
+    $token = trim($_GET['token'] ?? '');
     if ($token === '') {
         Response::json(['valid' => false]);
     }
@@ -2124,43 +2122,6 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
     }
 });
 
-function generateThumbnail(string $srcPath, string $destPath, int $maxDim = 400, int $quality = 85): bool {
-    if (!function_exists('imagecreatefromjpeg')) return false;
-    $info = @getimagesize($srcPath);
-    if (!$info) return false;
-    $srcW = $info[0]; $srcH = $info[1];
-    if ($srcW <= $maxDim && $srcH <= $maxDim) {
-        // Already small enough — just copy to destPath as JPEG
-        switch ($info['mime']) {
-            case 'image/jpeg': $src = @imagecreatefromjpeg($srcPath); break;
-            case 'image/png':  $src = @imagecreatefrompng($srcPath);  break;
-            case 'image/webp': $src = @imagecreatefromwebp($srcPath); break;
-            default:           return false;
-        }
-        if (!$src) return false;
-        $ok = imagejpeg($src, $destPath, $quality);
-        imagedestroy($src);
-        return $ok !== false;
-    }
-    if ($srcW >= $srcH) { $newW = $maxDim; $newH = (int)round($srcH * $maxDim / $srcW); }
-    else                { $newH = $maxDim; $newW = (int)round($srcW * $maxDim / $srcH); }
-    switch ($info['mime']) {
-        case 'image/jpeg': $src = @imagecreatefromjpeg($srcPath); break;
-        case 'image/png':  $src = @imagecreatefrompng($srcPath);  break;
-        case 'image/webp': $src = @imagecreatefromwebp($srcPath); break;
-        default:           return false;
-    }
-    if (!$src) return false;
-    $dst   = imagecreatetruecolor($newW, $newH);
-    $white = imagecolorallocate($dst, 255, 255, 255);
-    imagefill($dst, 0, 0, $white);
-    imagecopyresampled($dst, $src, 0, 0, 0, 0, $newW, $newH, $srcW, $srcH);
-    $ok = imagejpeg($dst, $destPath, $quality);
-    imagedestroy($src);
-    imagedestroy($dst);
-    return $ok !== false;
-}
-
 $router->add('POST', '/api/v1/uploads', function () {
     enforceRateLimit('uploads', 20, 600);
     $file = $_FILES['file'] ?? null;
@@ -2217,18 +2178,7 @@ $router->add('POST', '/api/v1/uploads', function () {
         Response::json(['error' => $e->getMessage()], 500);
     }
 
-    // Generate thumbnail (max 400 px, JPEG 85%)
-    $basename  = pathinfo($filename, PATHINFO_FILENAME);
-    $thumbName = 'thumb_' . $basename . '.jpg';
-    $thumbTmp  = sys_get_temp_dir() . '/' . bin2hex(random_bytes(4)) . '_t.jpg';
-    $thumbUrl  = $url; // fallback: same as original
-    if (generateThumbnail($file['tmp_name'], $thumbTmp, 400, 85)) {
-        try { $thumbUrl = R2Uploader::put($thumbTmp, $thumbName, 'image/jpeg'); }
-        catch (RuntimeException) {}
-        @unlink($thumbTmp);
-    }
-
-    Response::json(['url' => $url, 'thumbUrl' => $thumbUrl], 201);
+    Response::json(['url' => $url], 201);
 });
 
 // ── Local legends — city ambassadors with their picks ────────────────────────

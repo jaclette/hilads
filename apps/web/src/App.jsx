@@ -534,15 +534,7 @@ function buildOnlineUsers(users, mySessionId) {
 
 export default function App() {
   const installPrompt = useBeforeInstallPrompt()
-  // 'restoring' is used when we know a registered session exists (AUTH_FLAG_KEY set)
-  // and there is a saved channelId — we show a loading screen instead of the landing
-  // page to avoid the flash of onboarding content before authMe() confirms the session.
-  const [status, setStatus] = useState(() => {
-    if (localStorage.getItem(AUTH_FLAG_KEY) && loadIdentity()?.channelId) {
-      return 'restoring'
-    }
-    return 'onboarding'
-  }) // onboarding | restoring | joining | ready | error
+  const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
   const [error, setError] = useState(null)
   const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
   const [channelId, setChannelId] = useState(null)
@@ -563,10 +555,7 @@ export default function App() {
   const weatherLabel = useMemo(() => {
     // Find the most recent weather item (last in chronological feed)
     const w = [...feed].reverse().find(item => item.type === 'activity' && item.subtype === 'weather')
-    if (!w?.text) return null
-    // Strip legacy "in City Name" from messages stored before the format change.
-    // Matches " in Ho Chi Minh City — " → "· " and " in City" (no dash) → ""
-    return w.text.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_, dash) => dash ? '\u00B7 ' : '').trim()
+    return w?.text ?? null
   }, [feed])
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
@@ -992,10 +981,7 @@ export default function App() {
 
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
-    if (link.type === 'reset-password') {
-      window.history.replaceState(null, '', '/reset-password')
-      setResetPasswordToken(link.token)
-    }
+    if (link.type === 'reset-password')  setResetPasswordToken(link.token)
     if (link.type === 'forgot-password') setShowForgotPassword(true)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1014,28 +1000,12 @@ export default function App() {
           if (data) {
             accountRef.current = data.user // sync ref so handleJoin reads it immediately
             setAccount(data.user)
-            // ── Auto-rejoin on page refresh ─────────────────────────────────
-            // Auth succeeded. If there is a saved channelId, skip the landing
-            // page entirely and go straight into the app — the saved-identity
-            // fast path in handleJoin uses localStorage, no GPS wait needed.
-            if (loadIdentity()?.channelId) {
-              handleJoin(null)
-            } else {
-              // Auth OK but no saved city (new device / localStorage cleared).
-              // Show the landing page so the user can pick a city.
-              setStatus('onboarding')
-            }
           } else {
             // 401 — session expired; clear the flag so future mounts skip this call
             localStorage.removeItem(AUTH_FLAG_KEY)
-            setStatus('onboarding')
           }
         })
-        .catch(() => {
-          // Network error — keep flag (session may still be valid later).
-          // Fall back to landing page so the user isn't stuck on the loading screen.
-          setStatus('onboarding')
-        })
+        .catch(() => {/* network error — keep flag, session may still be valid */})
     }
 
     // Remove this tab from presence on close — sendBeacon survives page unload
@@ -2631,19 +2601,6 @@ export default function App() {
     )
   }
 
-  // ── Restoring session ─────────────────────────────────────────────────────
-  // Shown while authMe() is in flight for a returning registered user.
-  // Replaced immediately by the 'joining' → 'ready' flow on success,
-  // or by 'onboarding' if the session has expired or a network error occurs.
-
-  if (status === 'restoring') {
-    return (
-      <div className="screen center">
-        <div className="loading-spinner" />
-      </div>
-    )
-  }
-
   // ── Joining (transition) ───────────────────────────────────────────────────
 
   if (status === 'joining') {
@@ -2700,19 +2657,14 @@ export default function App() {
           <span className="header-tagline">Feel local. Anywhere.</span>
         </div>
         <div className="header-hero-city">
-          <div className="header-city-row">
+          <span className="header-hero-name">
             <span className="header-hero-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
-            <span className="header-hero-name">{city}</span>
-            <span className="header-city-sep" aria-hidden="true">·</span>
-            <button
-              type="button"
-              className="header-presence-btn"
-              onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-            >
-              <span className="online-pulse" />
-              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-            </button>
-          </div>
+            <span>{city}</span>
+          </span>
+          <span className="online-label">
+            <span className="online-pulse" />
+            {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+          </span>
           {weatherLabel && (
             <span className="header-weather">{weatherLabel}</span>
           )}
@@ -3824,7 +3776,7 @@ export default function App() {
               onClick={(!user.isMe && (tappable || !account)) ? handleTap : undefined}
             >
               {user.avatarUrl
-                ? <img className="online-avatar" src={user.thumbAvatarUrl ?? user.avatarUrl} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
+                ? <img className="online-avatar" src={user.avatarUrl} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }} data-me={user.isMe ? 'true' : undefined}>
                     {(user.nickname ?? '?')[0].toUpperCase()}
                   </span>
@@ -3878,7 +3830,7 @@ export default function App() {
               onClick={() => openProfile(m.id, m.displayName)}
             >
               {m.avatarUrl
-                ? <img className="online-avatar" src={m.thumbAvatarUrl ?? m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                ? <img className="online-avatar" src={m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                     {(m.displayName ?? '?')[0].toUpperCase()}
                   </span>
@@ -3967,7 +3919,7 @@ export default function App() {
                         onClick={() => openProfile(m.id, m.displayName)}
                       >
                         {m.avatarUrl
-                          ? <img className="online-avatar" src={m.thumbAvatarUrl ?? m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                          ? <img className="online-avatar" src={m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
                           : <span className="online-avatar online-avatar--legend" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                               {(m.displayName ?? '?')[0].toUpperCase()}
                             </span>
@@ -4338,7 +4290,7 @@ export default function App() {
                       onClick={isRegistered ? () => { setShowGoingModal(false); openProfile(p.id, p.displayName) } : undefined}
                     >
                       {p.avatarUrl ? (
-                        <img src={p.thumbAvatarUrl ?? p.avatarUrl} className="online-avatar" alt="" />
+                        <img src={p.avatarUrl} className="online-avatar" alt="" />
                       ) : (
                         <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                           {(p.displayName ?? '?')[0].toUpperCase()}
