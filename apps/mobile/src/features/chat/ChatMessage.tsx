@@ -563,13 +563,13 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                 </View>
               )}
             </TouchableOpacity>
+            {message.reactions && message.reactions.length > 0 && onReact && (
+              <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
+            )}
             {showTime && (
               <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
                 {formatSmartTime(message.createdAt)}
               </Text>
-            )}
-            {message.reactions && message.reactions.length > 0 && onReact && (
-              <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
             )}
           </View>
         </Animated.View>
@@ -648,11 +648,6 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
             )}
           </Pressable>
-          {showTime && (
-            <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
-              {formatSmartTime(message.createdAt)}
-            </Text>
-          )}
           {message.reactions && message.reactions.length > 0 && onReact && (
             <ReactionPills
               reactions={message.reactions}
@@ -665,6 +660,11 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           )}
           {message.id && (
             <ReactionBurstOverlay messageId={message.id} isMine={isMine} />
+          )}
+          {showTime && (
+            <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
+              {formatSmartTime(message.createdAt)}
+            </Text>
           )}
         </View>
 

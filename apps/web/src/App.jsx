@@ -3227,9 +3227,6 @@ export default function App() {
                       </div>
                     )}
                   </div>
-                  {showTime && item.createdAt && (
-                    <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatMsgTime(item.createdAt)}</span>
-                  )}
                   {item.reactions && item.reactions.length > 0 && (
                     <div className={`reaction-pills${isMine ? ' mine' : ''}`}>
                       {item.reactions.map(r => (
@@ -3250,6 +3247,9 @@ export default function App() {
                         </button>
                       ))}
                     </div>
+                  )}
+                  {showTime && item.createdAt && (
+                    <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatMsgTime(item.createdAt)}</span>
                   )}
                 </div>
               </div>

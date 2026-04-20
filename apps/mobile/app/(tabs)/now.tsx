@@ -182,7 +182,7 @@ function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
 
 export default function NowScreen() {
   const router = useRouter();
-  const { city, identity, account } = useApp();
+  const { city, identity, account, booting } = useApp();
   const userMode = account?.mode ?? identity?.mode ?? null;
 
   const [items,         setItems]         = useState<FeedItem[]>([]);
@@ -204,11 +204,31 @@ export default function NowScreen() {
   const loadRef = useRef(load);
   loadRef.current = load;
 
-  async function load(isRefresh = false) {
-    if (!city) { setLoading(false); return; }
-    // Skip if already in-flight or data is fresh — unless it's a manual pull-to-refresh.
-    if (!isRefresh && (loadingRef.current || Date.now() - lastLoadAtRef.current < 30_000)) return;
+  // Track the city we last loaded for — reset the 30s guard on city change.
+  const loadedCityRef = useRef<string | undefined>(undefined);
 
+  async function load(isRefresh = false) {
+    if (!city) {
+      // Don't set loading=false here — keep showing the spinner while app boots.
+      // The city will arrive shortly for returning users; for fresh users the
+      // booting/joined state drives the "no city" render below.
+      console.log('[NowScreen] load() skipped — city not yet available');
+      return;
+    }
+
+    // Reset the freshness guard whenever the city changes so we always fetch on switch.
+    if (loadedCityRef.current !== city.channelId) {
+      lastLoadAtRef.current = 0;
+      loadedCityRef.current = city.channelId;
+    }
+
+    // Skip if already in-flight or data is fresh — unless it's a manual pull-to-refresh.
+    if (!isRefresh && (loadingRef.current || Date.now() - lastLoadAtRef.current < 30_000)) {
+      console.log('[NowScreen] load() skipped — in-flight or data fresh', { inFlight: loadingRef.current, age: Date.now() - lastLoadAtRef.current });
+      return;
+    }
+
+    console.log('[NowScreen] fetch start —', city.name, city.channelId);
     loadingRef.current = true;
     lastLoadAtRef.current = Date.now();
     if (isRefresh) setRefreshing(true);
@@ -216,9 +236,11 @@ export default function NowScreen() {
     setError(null);
     try {
       const { items: nowData, publicEvents: pubData } = await fetchNowFeed(city.channelId, identity?.guestId);
+      console.log('[NowScreen] fetch done —', nowData.length, 'items,', pubData.length, 'public events');
       setItems(applyCountCache(nowData));
       setPublicEvents(pubData);
-    } catch {
+    } catch (err) {
+      console.warn('[NowScreen] fetch error:', err);
       setError('Could not load feed');
     } finally {
       loadingRef.current = false;
@@ -228,11 +250,24 @@ export default function NowScreen() {
   }
 
   // Primary trigger: runs when screen gains focus or city changes.
-  useFocusEffect(useCallback(() => { load(); }, [city?.channelId]));
+  useFocusEffect(useCallback(() => {
+    console.log('[NowScreen] focus —', city?.name ?? 'no city');
+    load();
+  }, [city?.channelId]));
 
   // Safety trigger: if city loads after the screen is already focused,
   // useFocusEffect may not re-fire. This effect catches that case.
-  useEffect(() => { if (city) load(); }, [city?.channelId]);
+  useEffect(() => {
+    if (city) {
+      console.log('[NowScreen] city changed →', city.name);
+      load();
+    }
+  }, [city?.channelId]);
+
+  // Once boot completes with no city and no join, stop the spinner.
+  useEffect(() => {
+    if (!booting && !city) setLoading(false);
+  }, [booting, city]);
 
   // Live participant count patches from WebSocket
   useEffect(() => {
@@ -313,8 +348,19 @@ export default function NowScreen() {
     return off;
   }, [city]);
 
-  // No city
-  if (!city && !loading) {
+  // Still booting or waiting for city — keep showing spinner.
+  if (!city && (booting || loading)) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.center}>
+          <ActivityIndicator color={Colors.accent} size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Boot finished but user has no city.
+  if (!city && !booting && !loading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
