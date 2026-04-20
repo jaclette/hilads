@@ -237,12 +237,14 @@ export function createSocket() {
     },
 
     /**
-     * Broadcast a ❤️ reaction animation to everyone in the same city channel.
-     * This is purely visual — it does not affect stored reaction counts.
+     * Broadcast a reaction animation to everyone in the same city channel.
+     * type: 'heart' | 'like' | 'laugh' | 'wow' | 'fire'
+     * Purely visual — does not affect stored reaction counts.
      */
-    sendHeartReaction(messageId, cityId, userId) {
+    sendReaction(type, messageId, cityId, userId) {
       send({
-        event:     'reaction_heart',
+        event:     'reaction',
+        type,
         messageId,
         cityId:    numericCityId(cityId),
         userId:    userId ?? null,

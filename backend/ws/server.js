@@ -12,7 +12,7 @@
  *                    leaveTopic(topicId, sessionId)
  *                    joinConversation(conversationId, userId)
  *                    leaveConversation(conversationId, userId)
- *                    reaction_heart(messageId, cityId, userId?, timestamp)
+ *                    reaction(type, messageId, cityId, userId?, timestamp)
  *
  * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
  *                    userJoined(cityId, user)
@@ -498,7 +498,7 @@ wss.on('connection', (ws, req) => {
       case 'leaveTopic':         return handleLeaveTopic(ws, msg)
       case 'joinConversation':   return handleJoinConversation(ws, msg)
       case 'leaveConversation':  return handleLeaveConversation(ws, msg)
-      case 'reaction_heart':     return handleHeartReaction(ws, msg)
+      case 'reaction':           return handleReactionBurst(ws, msg)
     }
   })
 
@@ -589,15 +589,17 @@ function broadcastDmReactionUpdate(conversationId, messageId, reactions) {
   }
 }
 
-// ── Heart reaction broadcast ────────────────────────────────────────────────────
+// ── Reaction burst broadcast ────────────────────────────────────────────────────
 
-// Client → Server: { event: 'reaction_heart', messageId, cityId, userId?, timestamp }
-// Relays the event to every other session in the same city room (sender excluded).
-function handleHeartReaction(ws, { messageId, cityId, userId, timestamp }) {
-  if (!messageId || !cityId) return
+const VALID_REACTION_TYPES = new Set(['heart', 'like', 'laugh', 'wow', 'fire'])
+
+// Client → Server: { event: 'reaction', type, messageId, cityId, userId?, timestamp }
+// Relays to every other session in the same city room (sender excluded). Purely visual.
+function handleReactionBurst(ws, { type, messageId, cityId, userId, timestamp }) {
+  if (!messageId || !cityId || !VALID_REACTION_TYPES.has(type)) return
   const room = rooms.get(parseInt(cityId, 10))
   if (!room) return
-  const payload = JSON.stringify({ event: 'reaction_heart', messageId, userId: userId ?? null, timestamp: timestamp ?? Date.now() })
+  const payload = JSON.stringify({ event: 'reaction', type, messageId, userId: userId ?? null, timestamp: timestamp ?? Date.now() })
   for (const session of room.values()) {
     if (session.ws !== ws && session.ws.readyState === 1 /* OPEN */) {
       session.ws.send(payload)
