@@ -236,6 +236,20 @@ export function createSocket() {
       return () => handlers.get(event)?.delete(handler)
     },
 
+    /**
+     * Broadcast a ❤️ reaction animation to everyone in the same city channel.
+     * This is purely visual — it does not affect stored reaction counts.
+     */
+    sendHeartReaction(messageId, cityId, userId) {
+      send({
+        event:     'reaction_heart',
+        messageId,
+        cityId:    numericCityId(cityId),
+        userId:    userId ?? null,
+        timestamp: Date.now(),
+      })
+    },
+
     /** Close the connection and stop reconnecting. */
     disconnect() {
       destroyed = true

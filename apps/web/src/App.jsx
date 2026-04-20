@@ -29,6 +29,7 @@ import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
 import ShareActionSheet from './components/ShareActionSheet'
 import LocationPicker from './components/LocationPicker'
+import FloatingHeartsLayer from './components/FloatingHeartsLayer'
 import { registerPush, unregisterPush } from './push'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -573,6 +574,9 @@ export default function App() {
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
   const msgRefsMap = useRef(new Map())
   const [sendError, setSendError] = useState(null)
+  const [heartBursts, setHeartBursts] = useState([])
+  const heartBurstIdRef = useRef(0)
+  const triggerHeartBurstRef = useRef(null)
   const [onlineCount, setOnlineCount] = useState(null)
   const weatherLabel = useMemo(() => {
     // Find the most recent weather item (last in chronological feed)
@@ -1174,6 +1178,19 @@ export default function App() {
     setTimeout(() => setHighlightedMsgId(null), 1500)
   }
 
+  function triggerHeartBurst(messageId) {
+    const el = msgRefsMap.current.get(messageId)
+    if (!el) return // message not visible — skip
+    const rect = el.getBoundingClientRect()
+    // anchor to the horizontal centre of the bubble, near its top
+    const x = rect.left + rect.width / 2
+    const y = rect.top + rect.height * 0.3
+    const id = ++heartBurstIdRef.current
+    setHeartBursts(prev => [...prev, { id, x, y }])
+  }
+  // Keep ref current so the socket listener always calls the latest version
+  triggerHeartBurstRef.current = triggerHeartBurst
+
   // Attach scroll listener to the messages container.
   // - Tracks isNearBottomRef: true when within 150 px of the bottom, false otherwise.
   //   This drives the sticky-bottom behavior in useLayoutEffect([feed]) above.
@@ -1744,6 +1761,11 @@ export default function App() {
       // DM reaction updates — update by messageId match (IDs are globally unique).
       socket.on('dmReactionUpdate', ({ messageId, reactions }) => {
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
+      })
+
+      // Real-time ❤️ animation — purely visual, no stored state changed.
+      socket.on('reaction_heart', ({ messageId }) => {
+        triggerHeartBurstRef.current?.(messageId)
       })
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
@@ -3214,6 +3236,10 @@ export default function App() {
                           className={`reaction-pill${r.self ? ' self' : ''}`}
                           onClick={async (e) => {
                             e.stopPropagation()
+                            if (r.emoji === '❤️') {
+                              triggerHeartBurst(item.id)
+                              socketRef.current?.sendHeartReaction(item.id, channelId, accountRef.current?.id ?? null)
+                            }
                             try {
                               const data = await toggleChannelReaction(channelId, item.id, r.emoji, guest?.guestId)
                               setFeed(prev => prev.map(m => m.id === item.id ? { ...m, reactions: data.reactions } : m))
@@ -3260,9 +3286,14 @@ export default function App() {
                       key={emoji}
                       className={`action-bubble-emoji${selfReacted ? ' active' : ''}`}
                       onClick={async () => {
+                        const msgId = actionBubble.msg.id
+                        if (emoji === '❤️') {
+                          triggerHeartBurst(msgId)
+                          socketRef.current?.sendHeartReaction(msgId, channelId, accountRef.current?.id ?? null)
+                        }
                         try {
-                          const data = await toggleChannelReaction(channelId, actionBubble.msg.id, emoji, guest?.guestId)
-                          setFeed(prev => prev.map(m => m.id === actionBubble.msg.id ? { ...m, reactions: data.reactions } : m))
+                          const data = await toggleChannelReaction(channelId, msgId, emoji, guest?.guestId)
+                          setFeed(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
                         } catch {}
                         setActionBubble(null)
                       }}
@@ -4503,6 +4534,11 @@ export default function App() {
           />
         </div>
       )}
+
+      <FloatingHeartsLayer
+        bursts={heartBursts}
+        onDone={id => setHeartBursts(prev => prev.filter(b => b.id !== id))}
+      />
     </div>
   )
 }
