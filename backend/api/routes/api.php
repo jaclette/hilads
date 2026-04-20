@@ -1736,6 +1736,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
 
         $t2 = microtime(true); // after messages + badges (lean: messages only)
 
+        // ── reactions ────────────────────────────────────────────────────────
+        // Attach emoji reactions to every message in the bootstrap payload.
+        // The $guestId comes from the POST body. userId is derived from the
+        // active session (same AuthService call used by the messages endpoint;
+        // it's request-level cached so calling it here costs nothing in lean mode).
+        $bootstrapViewerUserId = AuthService::currentUser()['id'] ?? null;
+        MessageRepository::attachReactions($messages, $guestId ?: null, $bootstrapViewerUserId);
+
         // ── Phase 3: auth-conditional unread data ────────────────────────────
         // Skipped entirely in lean mode — web fetches these independently with a 2 s delay.
         // For full (mobile) mode: only run for authenticated users.
@@ -2013,6 +2021,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                 }
             }
             unset($msg);
+
+            // Reactions are not skipped in lean mode — they're small and must be
+            // present on initial load so users see stored reactions immediately.
+            $leanViewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+            $leanViewerUserId  = AuthService::currentUser()['id'] ?? null;
+            MessageRepository::attachReactions($messages, $leanViewerGuestId ?: null, $leanViewerUserId);
 
             apiLog('channel_messages', 'success', [
                 'channelId' => $channelId,
