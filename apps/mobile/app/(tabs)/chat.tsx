@@ -27,6 +27,7 @@ import { fetchCityEvents } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
+import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
@@ -588,13 +589,19 @@ export default function ChatTab() {
 
   const handleReact = useCallback(async (msg: Message, emoji: string) => {
     if (!msg.id || !identity) return;
+    // Fire local animation + broadcast to other clients
+    const type = EMOJI_TO_TYPE[emoji];
+    if (type) {
+      reactionEmitter.emit(msg.id, type);
+      socket.sendReaction(type, msg.id, String(channelId), account?.id ?? null);
+    }
     try {
       const reactions = await toggleChannelReaction(String(channelId), msg.id, emoji, identity.guestId);
       setMessageReactions(msg.id, reactions);
     } catch (e) {
       console.warn('[chat] reaction failed:', e);
     }
-  }, [channelId, identity, setMessageReactions]);
+  }, [channelId, identity, account, setMessageReactions]);
 
   // No city yet — prompt to pick one
   if (!city) {

@@ -16,6 +16,8 @@ import { useRef, useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Animated, ActivityIndicator, Platform, Linking } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { ReactionPills } from './ReactionPills';
+import { ReactionBurstOverlay } from './ReactionBurstOverlay';
+import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
@@ -611,7 +613,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         )}
 
         {/* ── Bubble + timestamp + reactions — wrapped so reactions stay attached ── */}
-        <View>
+        <View style={styles.bubbleWrap}>
           <Pressable onPress={handlePress} onLongPress={handleLongPress} delayLongPress={350}>
             {isLocationMessage(message.content) ? (
               <LocationBubble content={message.content!} isMine={isMine} />
@@ -652,7 +654,17 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             </Text>
           )}
           {message.reactions && message.reactions.length > 0 && onReact && (
-            <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
+            <ReactionPills
+              reactions={message.reactions}
+              onReact={e => {
+                if (message.id) reactionEmitter.emit(message.id, EMOJI_TO_TYPE[e] ?? 'heart');
+                onReact(message, e);
+              }}
+              isMine={isMine}
+            />
+          )}
+          {message.id && (
+            <ReactionBurstOverlay messageId={message.id} isMine={isMine} />
           )}
         </View>
 
@@ -664,6 +676,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
+
+  bubbleWrap: {
+    position: 'relative', // establishes stacking context for the absolute overlay
+  },
 
   // ── .feed-prompt — event orange pill ─────────────────────────────────────
   // Centered column: title on top, Join button below — handles any title length cleanly

@@ -196,6 +196,8 @@ export interface Reaction {
   self: boolean;   // true if current viewer has reacted with this emoji
 }
 
+export type { ReactionType } from '@/lib/reactionEmitter';
+
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;

@@ -118,6 +118,22 @@ class HiladsSocket {
     this.send({ event: 'leaveTopic', topicId, sessionId });
   }
 
+  /**
+   * Broadcast a reaction animation to everyone in the same city channel.
+   * type: 'heart' | 'like' | 'laugh' | 'wow' | 'fire'
+   * Purely visual — does not affect stored reaction counts.
+   */
+  sendReaction(type: string, messageId: string, cityId: string, userId?: string | null): void {
+    this.send({
+      event:     'reaction',
+      type,
+      messageId,
+      cityId:    this._numericCityId(cityId),
+      userId:    userId ?? null,
+      timestamp: Date.now(),
+    });
+  }
+
   joinDm(conversationId: string, userId: string): void {
     this.send({ event: 'joinConversation', conversationId, userId });
   }

@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { socket } from '@/lib/socket';
 import { uploadFile } from '@/api/uploads';
 import { useApp } from '@/context/AppContext';
-import type { Message, Reaction, ReplyRef } from '@/types';
+import { reactionEmitter } from '@/lib/reactionEmitter';
+import type { Message, Reaction, ReplyRef, ReactionType } from '@/types';
 
 interface Params {
   channelId:    string;
@@ -158,11 +159,20 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     const off3 = socket.on('reactionUpdate', reactionHandler);
     const off4 = socket.on('dmReactionUpdate', reactionHandler);
 
+    // Real-time reaction animations — purely visual, no stored state changed.
+    // Server relays: { event: 'reaction', type, messageId, userId, timestamp }
+    const off5 = socket.on('reaction', (data) => {
+      const type = data.type as string;
+      const msgId = data.messageId as string;
+      if (!type || !msgId) return;
+      reactionEmitter.emit(msgId, type as ReactionType);
+    });
+
     // On reconnect, fetch the latest page once to catch messages sent during the
     // disconnect gap. Best-effort: keeps the live feed current after restore.
     const offConnected = socket.on('connected', load);
 
-    return () => { off1(); off2(); off3(); off4(); offConnected(); };
+    return () => { off1(); off2(); off3(); off4(); off5(); offConnected(); };
   }, [channelId, addNew, load]);
 
   // ── Load older messages (pagination) ──────────────────────────────────────
