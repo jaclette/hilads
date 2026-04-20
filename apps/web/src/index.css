@@ -726,6 +726,7 @@ html, body, #root {
   color: var(--text);
   line-height: 1.2;
   letter-spacing: -0.02em;
+  text-align: center;
 }
 
 /* Section 3: context chips */
@@ -733,6 +734,7 @@ html, body, #root {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .header-chip {

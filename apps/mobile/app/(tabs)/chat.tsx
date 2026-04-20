@@ -961,13 +961,15 @@ const styles = StyleSheet.create({
     color:         Colors.text,
     lineHeight:    29,
     letterSpacing: -0.3,
+    textAlign:     'center',
   },
 
   // ── Section 3: Context chips ───────────────────────────────────────────────
   chipsRow: {
-    flexDirection: 'row',
-    flexWrap:      'wrap',
-    gap:           8,
+    flexDirection:  'row',
+    flexWrap:       'wrap',
+    gap:            8,
+    justifyContent: 'center',
   },
   chip: {
     flexDirection:     'row',
