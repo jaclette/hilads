@@ -556,6 +556,7 @@ function buildOnlineUsers(users, mySessionId) {
 export default function App() {
   const installPrompt = useBeforeInstallPrompt()
   const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
+  const [rehydrating, setRehydrating] = useState(() => !!localStorage.getItem(AUTH_FLAG_KEY))
   const [error, setError] = useState(null)
   const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
   const [channelId, setChannelId] = useState(null)
@@ -1028,12 +1029,22 @@ export default function App() {
           if (data) {
             accountRef.current = data.user // sync ref so handleJoin reads it immediately
             setAccount(data.user)
+            // Auto-rejoin if the user has a saved city — skip the landing page entirely
+            const saved = loadIdentity()
+            if (saved?.channelId) {
+              handleJoin(null)
+              return
+            }
           } else {
             // 401 — session expired; clear the flag so future mounts skip this call
             localStorage.removeItem(AUTH_FLAG_KEY)
           }
+          setRehydrating(false)
         })
-        .catch(() => {/* network error — keep flag, session may still be valid */})
+        .catch(() => {
+          setRehydrating(false)
+          /* network error — keep flag, session may still be valid */
+        })
     }
 
     // Remove this tab from presence on close — sendBeacon survives page unload
@@ -2506,6 +2517,16 @@ export default function App() {
           setShowForgotPassword(true)
         }}
       />
+    )
+  }
+
+  // ── Rehydrating (auth session check in progress) ───────────────────────────
+
+  if (rehydrating && status === 'onboarding') {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: '#111' }}>
+        <div style={{ width: 32, height: 32, border: '3px solid #333', borderTopColor: '#f60', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+      </div>
     )
   }
 
