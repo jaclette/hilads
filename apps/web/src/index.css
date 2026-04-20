@@ -668,7 +668,130 @@ html, body, #root {
   50%       { transform: scale(1.25); opacity: 1;   box-shadow: 0 0 0 5px rgba(194, 74, 56, 0); }
 }
 
-/* Event mode meta info (time, counts) */
+/* ── New mobile header — 3-section redesign ──────────────── */
+
+/* Shown only on mobile; desktop uses header-desktop-layout */
+.header-new {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0 4px;
+}
+
+/* Section 1: top bar */
+.header-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header-top-left,
+.header-top-right {
+  display: flex;
+  align-items: flex-start;
+  /* Fixed min-width keeps center block truly centered */
+  min-width: 36px;
+}
+
+.header-top-right {
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.header-top-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  padding: 0 8px;
+}
+
+/* Smaller icon buttons in the top bar: 36×36, border-radius 10 */
+.header-icon-btn--sm {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+
+.header-icon-btn--sm svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Section 2: city hero name */
+.header-city-row {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* Section 3: context chips */
+.header-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.header-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s;
+}
+
+.header-chip:hover  { opacity: 0.8; }
+.header-chip:active { opacity: 0.65; transform: scale(0.97); }
+
+.header-chip--weather {
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* WCAG AA check: #fca5a5 on rgba(239,68,68,0.12) over ~#111 = ~#1d0c0c bg
+   Effective bg ≈ rgb(35,16,16). #fca5a5 contrast ratio ≈ 6.2:1 — passes AA. */
+.header-chip--online {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.28);
+  color: #fca5a5;
+}
+
+/* Red pulsing live dot */
+.chip-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+  animation: chip-pulse 2s ease-in-out infinite;
+}
+
+@keyframes chip-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip-live-dot { animation: none; }
+}
+
+/* Hide new mobile header on desktop */
+@media (min-width: 768px) {
+  .header-new { display: none; }
+}
+
+/* ── Event mode meta info (time, counts) ──────────────────── */
 .event-meta-label {
   font-size: 0.75rem;
   color: var(--muted2);
@@ -901,13 +1024,8 @@ html, body, #root {
 
 @media (max-width: 767px) {
   .chat-header {
+    /* horizontal padding lives on .header-new children; only keep bottom pad */
     padding: 0 18px 12px;
-  }
-
-  /* Slightly smaller logo on mobile — saves vertical space without losing brand */
-  .header-hero--mobile .logo svg {
-    width: 38px;
-    height: 38px;
   }
 
   .bottom-nav {

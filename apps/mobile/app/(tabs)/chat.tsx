@@ -14,7 +14,7 @@ import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Platform,
-  TouchableOpacity, Animated,
+  TouchableOpacity, Animated, Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -32,7 +32,7 @@ import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { HiladsIcon } from '@/components/HiladsIcon';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import type { Message, ReplyRef } from '@/types';
 
@@ -83,30 +83,23 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
-// ── Animated pulse dot — mirrors web .online-pulse keyframe ──────────────────
-// Web: background var(--accent) #C24A38, 7px circle, scale+opacity pulse 2.2s
+// ── Chip live dot — red pulsing dot for the "hanging out" chip ───────────────
+// Gentle scale 1→1.15→1 over 2s, matching web .chip-live-dot @keyframes.
 
-function PulseDot() {
-  const scale   = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0.9)).current;
+function ChipLiveDot() {
+  const scale = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.parallel([
-          Animated.timing(scale,   { toValue: 1.25, duration: 1100, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 1,    duration: 1100, useNativeDriver: true }),
-        ]),
-        Animated.parallel([
-          Animated.timing(scale,   { toValue: 1,   duration: 1100, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0.9, duration: 1100, useNativeDriver: true }),
-        ]),
+        Animated.timing(scale, { toValue: 1.15, duration: 1000, useNativeDriver: true }),
+        Animated.timing(scale, { toValue: 1,    duration: 1000, useNativeDriver: true }),
       ]),
     ).start();
   }, []);
 
   return (
-    <Animated.View style={[styles.pulseDot, { transform: [{ scale }], opacity }]} />
+    <Animated.View style={[styles.chipLiveDot, { transform: [{ scale }] }]} />
   );
 }
 
@@ -143,29 +136,16 @@ export default function ChatTab() {
 
   // Online count — populated by WS presenceSnapshot, fallback "live now"
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
-  const countScale = useRef(new Animated.Value(1)).current;
-
-  const pulseCount = useCallback(() => {
-    Animated.sequence([
-      Animated.timing(countScale, { toValue: 1.18, duration: 120, useNativeDriver: true }),
-      Animated.timing(countScale, { toValue: 1,    duration: 180, useNativeDriver: true }),
-    ]).start();
-  }, [countScale]);
 
   useEffect(() => {
     const off = socket.on('presenceSnapshot', (data: { count?: number; users?: unknown[] }) => {
       const next = data.count != null ? data.count
                  : Array.isArray(data.users) ? data.users.length
                  : null;
-      if (next !== null) {
-        setOnlineCount(prev => {
-          if (prev !== null && prev !== next) pulseCount();
-          return next;
-        });
-      }
+      if (next !== null) setOnlineCount(next);
     });
     return off;
-  }, [pulseCount]);
+  }, []);
 
   const channelId = city?.channelId ?? '';
 
@@ -629,89 +609,112 @@ export default function ChatTab() {
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: 0 }]} edges={['top']}>
 
-      {/* ── Header — web: .chat-header + renderCityHero() (mobile variant) ── */}
-      {/*                                                                      */}
-      {/* Web structure:                                                        */}
-      {/*   .chat-header { radial-gradient bg, border-bottom }                 */}
-      {/*   .header-hero { flex col, center, gap 18, min-height 148 }          */}
-      {/*     Logo icon                                                         */}
-      {/*     .header-hero-city                                                 */}
-      {/*       .header-hero-name: flag + city name (clamp 2.15-2.65rem, 800)  */}
-      {/*       .online-label: pulse dot + "N hanging out" / "live now"         */}
-
+      {/* ── Header — 3-section redesign ── */}
       <View style={styles.header}>
 
-        {/* ── Side controls — web: .header-side-control (absolute positioned) ── */}
-        {/* Only shown when account exists — mirrors web: {!activeEvent && account && ...} */}
+        {/* ── Section 1: Top bar — bell | logo+tagline | share+DMs ── */}
+        <View style={styles.topBar}>
 
-        {/* Left: notification bell + badge count */}
-        {account && (
-          <TouchableOpacity
-            style={[styles.headerIconBtn, unreadNotifications > 0 && styles.headerIconBtnUnread]}
-            activeOpacity={0.65}
-            onPress={() => router.push('/notifications' as never)}
-          >
-            <Ionicons name="notifications-outline" size={28} color={Colors.white} />
-            {unreadNotifications > 0 && (
-              <View style={styles.headerIconBadge}>
-                <Text style={styles.headerIconBadgeText}>
-                  {unreadNotifications > 9 ? '9+' : String(unreadNotifications)}
-                </Text>
-              </View>
+          {/* Left: notification bell */}
+          <View style={styles.topLeft}>
+            {account && (
+              <TouchableOpacity
+                style={[styles.iconBtn, unreadNotifications > 0 && styles.iconBtnUnread]}
+                activeOpacity={0.65}
+                onPress={() => router.push('/notifications' as never)}
+                accessibilityLabel="Notifications"
+              >
+                <Ionicons name="notifications-outline" size={20} color={Colors.text} />
+                {unreadNotifications > 0 && (
+                  <View style={styles.iconBadge}>
+                    <Text style={styles.iconBadgeText}>
+                      {unreadNotifications > 9 ? '9+' : String(unreadNotifications)}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
             )}
-          </TouchableOpacity>
-        )}
-
-        {/* Right: DM icon + unread dot */}
-        {account && (
-          <TouchableOpacity
-            style={[styles.headerIconBtnRight, unreadDMs > 0 && styles.headerIconBtnUnread]}
-            activeOpacity={0.65}
-            onPress={() => {
-              setUnreadDMs(0);
-              clearEventChatCounts();
-              router.push('/messages');
-            }}
-          >
-            <Feather name="message-square" size={28} color={Colors.white} />
-            {unreadDMs > 0 && (
-              <View style={styles.headerIconBadge}>
-                <Text style={styles.headerIconBadgeText}>
-                  {unreadDMs > 9 ? '9+' : String(unreadDMs)}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        )}
-
-        {/* ── Hero: logo + tagline + city + online pill ── */}
-        <View style={styles.logoBrand}>
-          <View style={styles.iconGlow}>
-            <HiladsIcon size={38} />
           </View>
-          <Text style={styles.headerTagline} numberOfLines={1}>Feel local. Anywhere.</Text>
+
+          {/* Center: logo + tagline stacked */}
+          <View style={styles.topCenter}>
+            <View style={styles.iconGlow}>
+              <HiladsIcon size={36} />
+            </View>
+            <Text style={styles.headerTagline}>Feel local. Anywhere.</Text>
+          </View>
+
+          {/* Right: share + DMs */}
+          <View style={styles.topRight}>
+            {city && (
+              <TouchableOpacity
+                style={styles.iconBtn}
+                activeOpacity={0.65}
+                onPress={async () => {
+                  const url = `${BASE_URL}/city/${city.slug}`;
+                  await Share.share({ title: `Who's in ${city.name} right now | Hilads`, url, message: `Who's in ${city.name} right now | Hilads ${url}` });
+                }}
+                accessibilityLabel="Share city"
+              >
+                <Feather name="share" size={18} color={Colors.text} />
+              </TouchableOpacity>
+            )}
+            {account && (
+              <TouchableOpacity
+                style={[styles.iconBtn, unreadDMs > 0 && styles.iconBtnUnread]}
+                activeOpacity={0.65}
+                onPress={() => {
+                  setUnreadDMs(0);
+                  clearEventChatCounts();
+                  router.push('/messages');
+                }}
+                accessibilityLabel="Messages"
+              >
+                <Feather name="message-square" size={18} color={Colors.text} />
+                {unreadDMs > 0 && (
+                  <View style={styles.iconBadge}>
+                    <Text style={styles.iconBadgeText}>
+                      {unreadDMs > 9 ? '9+' : String(unreadDMs)}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
+
         </View>
-        <View style={styles.heroCity}>
-          <View style={styles.heroCityLine}>
-            <Text style={styles.cityName} numberOfLines={1}>
-              {flag ? `${flag} ` : ''}{city.name}
-            </Text>
-            <Text style={styles.citySep} aria-hidden={true}>·</Text>
-            <TouchableOpacity
-              activeOpacity={0.65}
-              onPress={() => router.push('/(tabs)/here' as never)}
-              accessibilityLabel="See who's here"
-              style={styles.heroCityOnline}
-            >
-              <PulseDot />
-              <Animated.Text style={[styles.heroCityOnlineText, { transform: [{ scale: countScale }] }]}>
-                {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
-              </Animated.Text>
-            </TouchableOpacity>
-          </View>
+
+        {/* ── Section 2: City hero name ── */}
+        <Text style={styles.cityHeroName} numberOfLines={2}>
+          {flag ? `${flag} ` : ''}{city.name}
+        </Text>
+
+        {/* ── Section 3: Context chips ── */}
+        <View style={styles.chipsRow}>
           {weatherLabel && (
-            <Text style={styles.weatherLabel}>{weatherLabel}</Text>
+            <TouchableOpacity
+              style={[styles.chip, styles.chipWeather]}
+              activeOpacity={0.75}
+              onPress={() => { /* TODO: open weather detail view */ }}
+              accessibilityLabel={`Current weather: ${weatherLabel}`}
+              accessibilityRole="button"
+            >
+              <Ionicons name="cloud-outline" size={13} color="rgba(255,255,255,0.45)" />
+              <Text style={styles.chipWeatherText}>{weatherLabel}</Text>
+            </TouchableOpacity>
           )}
+          <TouchableOpacity
+            style={[styles.chip, styles.chipOnline]}
+            activeOpacity={0.75}
+            onPress={() => router.push('/(tabs)/here' as never)}
+            accessibilityLabel={`${onlineCount ?? 0} people hanging out, tap to see who`}
+            accessibilityRole="button"
+          >
+            <ChipLiveDot />
+            <Text style={styles.chipOnlineText}>
+              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
       </View>
@@ -854,98 +857,95 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   flex:      { flex: 1 },
 
-  // ── .chat-header ─────────────────────────────────────────────────────────
-  // Web: radial-gradient(ellipse 90% 55% at 50% -10%, rgba(194,74,56,0.10), transparent), var(--surface)
-  // Web: .header-hero → flex col, center, gap 10, min-height 116px, position relative
+  // ── Header container ───────────────────────────────────────────────────────
   header: {
     flexDirection:     'column',
-    alignItems:        'center',
-    justifyContent:    'center',
-    gap:               12,
-    minHeight:         128,
-    paddingTop:        16,
-    paddingBottom:     14,
-    paddingHorizontal: Spacing.md,
+    gap:               14,
+    paddingTop:        14,
+    paddingBottom:     16,
+    paddingHorizontal: 16,
     backgroundColor:   Colors.bg2,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.06)',
-    // Approximates web radial-gradient warm glow at top
-    shadowColor:     '#C24A38',
-    shadowOffset:    { width: 0, height: 6 },
-    shadowOpacity:   0.08,
-    shadowRadius:    20,
-    elevation:       3,
+    shadowColor:       '#C24A38',
+    shadowOffset:      { width: 0, height: 6 },
+    shadowOpacity:     0.08,
+    shadowRadius:      20,
+    elevation:         3,
   },
 
-  // ── .header-side-control — absolute icon buttons ─────────────────────────
-  // 48×48 touch area, white icon, visible border for definition on dark bg
-  // Web: dark rounded square, subtle border for definition on dark header
-  headerIconBtn: {
-    position:        'absolute',
-    left:            18,
-    top:             10,
-    width:           52,
-    height:          52,
-    borderRadius:    16,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+  // ── Section 1: Top bar ─────────────────────────────────────────────────────
+  topBar: {
+    flexDirection:  'row',
+    justifyContent: 'space-between',
+    alignItems:     'flex-start',
+  },
+  topLeft: {
+    flexDirection: 'row',
+    alignItems:    'flex-start',
+    // Fixed width matches topRight so center stays truly centered
+    minWidth:      36,
+  },
+  topCenter: {
+    flex:       1,
+    alignItems: 'center',
+    gap:        4,
+    paddingHorizontal: 8,
+  },
+  topRight: {
+    flexDirection: 'row',
+    alignItems:    'flex-start',
+    gap:           8,
+  },
+
+  // Icon buttons — 36×36, border-radius 10
+  iconBtn: {
+    width:           36,
+    height:          36,
+    borderRadius:    10,
+    backgroundColor: 'rgba(255,255,255,0.07)',
     borderWidth:     1,
     borderColor:     'rgba(255,255,255,0.10)',
     alignItems:      'center',
     justifyContent:  'center',
+    position:        'relative',
   },
-  headerIconBtnRight: {
-    position:        'absolute',
-    right:           18,
-    top:             10,
-    width:           52,
-    height:          52,
-    borderRadius:    16,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
-    alignItems:      'center',
-    justifyContent:  'center',
+  iconBtnUnread: {
+    backgroundColor: 'rgba(255,122,60,0.08)',
+    borderColor:     'rgba(255,122,60,0.18)',
   },
-  // Unread state: no extra border/glow — badge alone signals unread
-  headerIconBtnUnread: {},
-  // Badge — small circle, top-right, no glow, matches web dot style
-  headerIconBadge: {
+  iconBadge: {
     position:          'absolute',
-    top:               7,
-    right:             7,
-    minWidth:          17,
-    height:            17,
-    borderRadius:      9,
-    backgroundColor:   '#C0392B',
+    top:               -5,
+    right:             -5,
+    minWidth:          16,
+    height:            16,
+    borderRadius:      8,
+    backgroundColor:   '#ef4444',
     borderWidth:       1.5,
     borderColor:       Colors.bg2,
     alignItems:        'center',
     justifyContent:    'center',
-    paddingHorizontal: 3,
+    paddingHorizontal: 2,
   },
-  headerIconBadgeText: {
+  iconBadgeText: {
     color:      Colors.white,
-    fontSize:   10,
+    fontSize:   9,
     fontWeight: '700',
-    lineHeight: 12,
+    lineHeight: 11,
   },
 
-  // ── Brand block: logo + tagline ──────────────────────────────────────────
-  logoBrand: {
-    alignItems: 'center',
-    gap:        3,
-  },
+  // Logo + tagline
   headerTagline: {
-    fontSize:      11,
+    fontSize:      10,
     color:         Colors.muted,
-    opacity:       0.78,
+    opacity:       0.75,
     fontWeight:    '400',
     letterSpacing: 0.3,
     textAlign:     'center',
   },
 
   // ── Logo glow — web: .chat-header .logo svg { drop-shadow orange } ─────────
-  // drop-shadow(0 0 14px rgba(194,74,56,0.55)) drop-shadow(0 0 4px rgba(194,74,56,0.35))
   iconGlow: {
     shadowColor:   '#C24A38',
     shadowOffset:  { width: 0, height: 0 },
@@ -954,68 +954,55 @@ const styles = StyleSheet.create({
     elevation:     10,
   },
 
-  // Compact city block — column: city-line row + weather
-  heroCity: {
-    alignItems: 'center',
-    gap:        3,
-  },
-
-  // Single line: flag · city name · pulse · X hanging out
-  heroCityLine: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    gap:            7,
-    flexWrap:       'wrap',
-    justifyContent: 'center',
-  },
-
-  // City name — compact, no huge hero sizing
-  cityName: {
-    fontSize:      20,
-    fontWeight:    '700',
-    letterSpacing: -0.5,
+  // ── Section 2: City hero name ─────────────────────────────────────────────
+  cityHeroName: {
+    fontSize:      24,
+    fontWeight:    '500',
     color:         Colors.text,
-    lineHeight:    24,
-    flexShrink:    1,
+    lineHeight:    29,
+    letterSpacing: -0.3,
   },
 
-  // Dot separator between city name and hanging out
-  citySep: {
-    fontSize:  14,
-    color:     Colors.text,
-    opacity:   0.4,
-    lineHeight: 24,
-  },
-
-  // Inline presence — no pill, no border
-  heroCityOnline: {
+  // ── Section 3: Context chips ───────────────────────────────────────────────
+  chipsRow: {
     flexDirection: 'row',
-    alignItems:    'center',
-    gap:           5,
+    flexWrap:      'wrap',
+    gap:           8,
   },
-
-  heroCityOnlineText: {
-    fontSize: 13,
-    color:    Colors.text,
-    opacity:  0.8,
+  chip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               6,
+    paddingVertical:   7,
+    paddingHorizontal: 13,
+    borderRadius:      999,
+    borderWidth:       1,
   },
-
-  // .online-pulse: 7px, #C24A38
-  pulseDot: {
+  chipWeather: {
+    backgroundColor: '#1a1a1a',
+    borderColor:     'rgba(255,255,255,0.08)',
+  },
+  chipWeatherText: {
+    fontSize:   12,
+    fontWeight: '500',
+    color:      'rgba(255,255,255,0.45)',
+  },
+  chipOnline: {
+    backgroundColor: 'rgba(239,68,68,0.12)',
+    borderColor:     'rgba(239,68,68,0.28)',
+  },
+  chipOnlineText: {
+    fontSize:   12,
+    fontWeight: '500',
+    color:      '#fca5a5',
+  },
+  // Red animated dot inside the online chip
+  chipLiveDot: {
     width:           7,
     height:          7,
     borderRadius:    4,
-    backgroundColor: '#C24A38',
+    backgroundColor: '#ef4444',
     flexShrink:      0,
-  },
-
-  // Weather context line — subtle, below city line
-  weatherLabel: {
-    fontSize:  FontSizes.xs,
-    color:     Colors.muted,
-    opacity:   0.7,
-    marginTop: 1,
-    textAlign: 'center',
   },
 
   // ── Error banner ─────────────────────────────────────────────────────────
