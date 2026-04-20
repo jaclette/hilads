@@ -305,14 +305,26 @@ function ExploringMockup() {
 
 // ── Store badge button ─────────────────────────────────────────────────────────
 
-function StoreBadge({ icon, top, bottom }) {
-  return (
-    <button className="lp-store-btn" disabled title="Coming soon">
+function StoreBadge({ icon, top, bottom, href }) {
+  const inner = (
+    <>
       <span className="lp-store-icon">{icon}</span>
       <span className="lp-store-label">
         <span className="lp-store-top">{top}</span>
         <strong className="lp-store-bottom">{bottom}</strong>
       </span>
+    </>
+  )
+  if (href) {
+    return (
+      <a className="lp-store-btn lp-store-btn--live" href={href} target="_blank" rel="noopener noreferrer">
+        {inner}
+      </a>
+    )
+  }
+  return (
+    <button className="lp-store-btn" disabled title="Coming soon">
+      {inner}
     </button>
   )
 }
@@ -396,8 +408,7 @@ export default function LandingPage({
         </div>
 
         <div className="lp-hero-stores">
-          <StoreBadge icon="🍎" top="Download on the" bottom="App Store" />
-          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" />
+          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" />
         </div>
 
         <div className="lp-scroll-hint" aria-hidden="true">↓</div>
@@ -520,8 +531,7 @@ export default function LandingPage({
         <h2 className="lp-section-title">Your city in your pocket.</h2>
         <p className="lp-download-sub">Native apps coming soon.</p>
         <div className="lp-store-badges">
-          <StoreBadge icon="🍎" top="Download on the" bottom="App Store" />
-          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" />
+          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" />
         </div>
       </section>
 
