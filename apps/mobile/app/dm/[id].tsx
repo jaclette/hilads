@@ -32,6 +32,8 @@ import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ReactionPills } from '@/features/chat/ReactionPills';
+import { ReactionBurstOverlay } from '@/features/chat/ReactionBurstOverlay';
+import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import type { DmMessage, ReplyRef } from '@/types';
 
 // ── Date separator — reused from ChatMessage visual style ─────────────────────
@@ -312,10 +314,18 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
           </Pressable>
         )}
 
-        {/* Reaction pills */}
+        {/* Reaction pills + burst overlay */}
         {msg.reactions && msg.reactions.length > 0 && onReact && (
-          <ReactionPills reactions={msg.reactions} onReact={e => onReact(msg, e)} isMine={isMine} />
+          <ReactionPills
+            reactions={msg.reactions}
+            onReact={e => {
+              if (msg.id) reactionEmitter.emit(msg.id, EMOJI_TO_TYPE[e] ?? 'heart');
+              onReact(msg, e);
+            }}
+            isMine={isMine}
+          />
         )}
+        {msg.id && <ReactionBurstOverlay messageId={msg.id} isMine={isMine} />}
 
         {/* Status / timestamp row — only on last message of group */}
         {isLast && (

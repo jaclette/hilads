@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchDmMessages, sendDmMessage, sendDmImageMessage, markDmRead } from '@/api/conversations';
 import { uploadFile } from '@/api/uploads';
 import { socket } from '@/lib/socket';
+import { reactionEmitter } from '@/lib/reactionEmitter';
+import type { ReactionType } from '@/lib/reactionEmitter';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
 import type { DmMessage, Reaction, ReplyRef } from '@/types';
@@ -81,8 +83,19 @@ export function useDMThread(conversationId: string): Result {
         markDmRead(conversationId);
       }
     });
+
+    // Incoming reaction animation — server relays { event: 'reaction', type, messageId }
+    // for both channel and DM reactions so burst particles play for the other person's tap.
+    const offReaction = socket.on('reaction', (data) => {
+      const type = data.type as string;
+      const msgId = data.messageId as string;
+      if (!type || !msgId) return;
+      reactionEmitter.emit(msgId, type as ReactionType);
+    });
+
     return () => {
       off();
+      offReaction();
       setActiveDmId(null);
     };
   }, [conversationId, account, addNew, setActiveDmId]);
