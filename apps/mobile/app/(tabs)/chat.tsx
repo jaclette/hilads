@@ -878,23 +878,26 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection:  'row',
     justifyContent: 'space-between',
-    alignItems:     'flex-start',
+    alignItems:     'center',
   },
   topLeft: {
     flexDirection: 'row',
-    alignItems:    'flex-start',
-    // Fixed width matches topRight so center stays truly centered
+    alignItems:    'center',
+    // Fixed min-width keeps center block truly centered
     minWidth:      36,
   },
+  // Center block: logo + tagline side-by-side
   topCenter: {
-    flex:       1,
-    alignItems: 'center',
-    gap:        4,
+    flex:             1,
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'center',
+    gap:              8,
     paddingHorizontal: 8,
   },
   topRight: {
     flexDirection: 'row',
-    alignItems:    'flex-start',
+    alignItems:    'center',
     gap:           8,
   },
 
@@ -937,12 +940,13 @@ const styles = StyleSheet.create({
 
   // Logo + tagline
   headerTagline: {
-    fontSize:      10,
-    color:         Colors.muted,
-    opacity:       0.75,
+    fontSize:      11,
+    lineHeight:    14,   /* 11 × 1.3 ≈ 14 */
+    color:         'rgba(255,255,255,0.5)',
     fontWeight:    '400',
-    letterSpacing: 0.3,
-    textAlign:     'center',
+    letterSpacing: 0.2,
+    // Narrow enough to force "Feel local." / "Anywhere." onto separate lines
+    maxWidth:      72,
   },
 
   // ── Logo glow — web: .chat-header .logo svg { drop-shadow orange } ─────────
