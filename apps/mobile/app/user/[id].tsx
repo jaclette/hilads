@@ -266,9 +266,9 @@ export default function PublicProfileScreen() {
   );
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: 'events',  label: 'Events'       },
-    { key: 'friends', label: 'Friends'      },
-    { key: 'vibes',   label: 'Vibes'        },
+    { key: 'events',  label: events.length  > 0 ? `Events · ${events.length}`   : 'Events'  },
+    { key: 'friends', label: friends.length > 0 ? `Friends · ${friends.length}` : 'Friends' },
+    { key: 'vibes',   label: vibeCount      > 0 ? `Vibes · ${vibeCount}`        : 'Vibes'   },
     ...(hasPicks ? [{ key: 'picks' as TabKey, label: 'City Picks 👑' }] : []),
   ];
 
@@ -385,25 +385,26 @@ export default function PublicProfileScreen() {
           </View>
 
           {/* ── 2. Tab bar ── */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.tabBarWrap}
-            contentContainerStyle={styles.tabBar}
-          >
-            {tabs.map(t => (
-              <TouchableOpacity
-                key={t.key}
-                style={[styles.tabPill, activeTab === t.key && styles.tabPillActive]}
-                onPress={() => setActiveTab(t.key)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.tabPillText, activeTab === t.key && styles.tabPillTextActive]}>
-                  {t.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          <View style={styles.tabBarWrap}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.tabBar}
+            >
+              {tabs.map(t => (
+                <TouchableOpacity
+                  key={t.key}
+                  style={[styles.tabPill, activeTab === t.key && styles.tabPillActive]}
+                  onPress={() => setActiveTab(t.key)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.tabPillText, activeTab === t.key && styles.tabPillTextActive]}>
+                    {t.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
 
           {/* ── 3. Tab content ── */}
           <ScrollView
