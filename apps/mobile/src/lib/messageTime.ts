@@ -13,10 +13,17 @@
  */
 
 function normalizePostgresTimestamp(ts: string): string {
-  return ts
-    .replace(' ', 'T')             // "2024-03-15 18:30:00" → "2024-03-15T18:30:00"
-    .replace(/(\.\d{3})\d+/, '$1') // truncate microseconds → milliseconds
-    .replace(/([+-]\d{2})$/, '$1:00'); // "+00" suffix → "+00:00"
+  // 1. Replace PostgreSQL's space separator with ISO "T"
+  let s = ts.replace(' ', 'T');
+  // 2. Truncate sub-millisecond precision (microseconds → milliseconds)
+  s = s.replace(/(\.\d{3})\d+/, '$1');
+  // 3. Expand short timezone offset: "+07" → "+07:00"
+  s = s.replace(/([+-]\d{2})$/, '$1:00');
+  // 4. If still no timezone designator, assume UTC.
+  //    Without this, JavaScript treats naive datetimes as local time, which
+  //    produces wrong calendar dates for users in non-UTC timezones.
+  if (!/Z$|[+-]\d{2}:\d{2}$/.test(s)) s += 'Z';
+  return s;
 }
 
 export function toMs(ts: number | string | undefined): number {
