@@ -75,11 +75,13 @@ class Database
         $user = isset($parts['user']) ? urldecode($parts['user']) : null;
         $pass = isset($parts['pass']) ? urldecode($parts['pass']) : null;
 
-        $t = microtime(true);
-
-        self::$pdo = new PDO($dsn, $user, $pass, [
+        $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            // Fail fast at the PDO layer too. connect_timeout=5 in the DSN covers
+            // the libpq TCP handshake; ATTR_TIMEOUT is belt-and-braces for driver
+            // paths that honor it.
+            PDO::ATTR_TIMEOUT            => 5,
             // IMPORTANT: Do NOT use PDO::ATTR_PERSISTENT here.
             //
             // With Apache prefork + session-mode pooler, persistent connections cause
@@ -90,12 +92,28 @@ class Database
             // In transaction mode (port 6543) persistent connections are safe because
             // pgbouncer returns the real DB connection to its pool after each
             // transaction. But we keep this off to be safe across deployment modes.
-            //
+            PDO::ATTR_PERSISTENT         => false,
             // PDO::ATTR_EMULATE_PREPARES: required for pgbouncer transaction mode.
             // Without it, PDO uses server-side named prepared statements which are
-            // session-scoped and incompatible with transaction mode pooling.
+            // session-scoped and incompatible with transaction mode pooling. Also
+            // required for queries that reuse named parameters (e.g. dup-check in
+            // POST /reports).
             PDO::ATTR_EMULATE_PREPARES   => true,
-        ]);
+        ];
+
+        $t = microtime(true);
+
+        self::$pdo = self::connectWithRetry($dsn, $user, $pass, $options, $host, $port);
+
+        // Tag connections for Supabase pg_stat_activity visibility.
+        // Done post-connect rather than via DSN options= to avoid libpq string
+        // escaping quirks.
+        try {
+            self::$pdo->exec("SET application_name = 'hilads-api'");
+        } catch (\Throwable $e) {
+            // Non-fatal — connection tagging is observability, not correctness.
+            error_log('[db] failed to set application_name: ' . $e->getMessage());
+        }
 
         self::$lastConnMs     = round((microtime(true) - $t) * 1000, 2);
         self::$lastConnWasNew = true;
@@ -110,5 +128,45 @@ class Database
         }
 
         return self::$pdo;
+    }
+
+    /**
+     * Connect with up to 3 attempts and exponential backoff (200ms, 400ms).
+     * Transient pool saturation on Supabase Nano (~3 free slots) usually clears
+     * within a second. After 3 failures we rethrow so the caller sees a 500
+     * within ~15–20s worst case instead of hanging for 60s.
+     */
+    private static function connectWithRetry(
+        string $dsn,
+        ?string $user,
+        ?string $pass,
+        array $options,
+        string $host,
+        int $port,
+    ): PDO {
+        $maxAttempts = 3;
+        $lastException = null;
+
+        for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+            try {
+                return new PDO($dsn, $user, $pass, $options);
+            } catch (PDOException $e) {
+                $lastException = $e;
+                error_log(sprintf(
+                    '[db] connection attempt %d/%d failed (host=%s port=%d): %s',
+                    $attempt,
+                    $maxAttempts,
+                    $host,
+                    $port,
+                    $e->getMessage(),
+                ));
+                if ($attempt < $maxAttempts) {
+                    // 200ms, 400ms
+                    usleep((int) (pow(2, $attempt) * 100_000));
+                }
+            }
+        }
+
+        throw $lastException;
     }
 }
