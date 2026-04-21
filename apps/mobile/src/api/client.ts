@@ -22,7 +22,7 @@ interface FetchOptions extends RequestInit {
 }
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(public status: number, message: string, public body: any = null) {
     super(message);
     this.name = 'ApiError';
   }
@@ -86,7 +86,7 @@ async function request<T = unknown>(
   const body = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    throw new ApiError(res.status, body?.error ?? `HTTP ${res.status}`);
+    throw new ApiError(res.status, body?.error ?? `HTTP ${res.status}`, body);
   }
 
   return body as T;

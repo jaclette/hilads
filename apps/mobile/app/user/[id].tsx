@@ -24,6 +24,8 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { ReportModal } from '@/features/profile/ReportModal';
+import { fetchReportStatus, type ExistingReport } from '@/api/reports';
+import { formatDateLabel } from '@/lib/messageTime';
 
 // ── Badge microcopy ────────────────────────────────────────────────────────────
 
@@ -167,6 +169,7 @@ export default function PublicProfileScreen() {
   const [showVibeForm,       setShowVibeForm]       = useState(false);
   const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
   const [showReportModal,    setShowReportModal]    = useState(false);
+  const [existingReport,     setExistingReport]     = useState<ExistingReport | null>(null);
   const [activeTab,    setActiveTab]    = useState<TabKey>('events');
 
   useEffect(() => {
@@ -191,6 +194,16 @@ export default function PublicProfileScreen() {
       .finally(() => setLoading(false));
 
     fetchUserFriends(id).then(fr => setFriends(fr.friends)).catch(() => {});
+
+    // Preflight: already-reported state (logged-in users only — guests can't
+    // report from this screen, gated by `account` at the button site).
+    if (account && account.id !== id) {
+      fetchReportStatus({ targetUserId: id })
+        .then(r => setExistingReport(r.reported ? (r.existing ?? null) : null))
+        .catch(() => {});
+    } else {
+      setExistingReport(null);
+    }
     fetchUserVibes(id)
       .then(vib => {
         setVibes(vib.vibes);
@@ -600,7 +613,16 @@ export default function PublicProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.reportBtn}
-            onPress={() => setShowReportModal(true)}
+            onPress={() => {
+              if (existingReport) {
+                Alert.alert(
+                  'Already reported',
+                  `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
+                );
+                return;
+              }
+              setShowReportModal(true);
+            }}
             activeOpacity={0.75}
           >
             <Ionicons name="flag-outline" size={18} color="rgba(255,255,255,0.35)" />

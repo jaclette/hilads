@@ -7,8 +7,8 @@
  * Does NOT call the /users/{id} API endpoint.
  */
 
-import { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
@@ -16,6 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { ReportModal } from '@/features/profile/ReportModal';
+import { fetchReportStatus, type ExistingReport } from '@/api/reports';
+import { formatDateLabel } from '@/lib/messageTime';
 
 // ── Avatar palette — mirrors ChatMessage.tsx / [id].tsx ───────────────────────
 
@@ -41,6 +43,17 @@ export default function GuestProfileScreen() {
   const bg      = avatarBg(name);
 
   const [showReportModal, setShowReportModal] = useState(false);
+  const [existingReport,  setExistingReport]  = useState<ExistingReport | null>(null);
+
+  useEffect(() => {
+    if (!guestId) return;
+    fetchReportStatus({
+      guestId: account ? undefined : identity?.guestId ?? undefined,
+      targetGuestId: guestId,
+    })
+      .then(r => setExistingReport(r.reported ? (r.existing ?? null) : null))
+      .catch(() => {});
+  }, [guestId, account, identity?.guestId]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -76,10 +89,21 @@ export default function GuestProfileScreen() {
 
       <TouchableOpacity
         style={styles.reportLink}
-        onPress={() => setShowReportModal(true)}
+        onPress={() => {
+          if (existingReport) {
+            Alert.alert(
+              'Already reported',
+              `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
+            );
+            return;
+          }
+          setShowReportModal(true);
+        }}
         activeOpacity={0.6}
       >
-        <Text style={styles.reportLinkText}>Report user</Text>
+        <Text style={styles.reportLinkText}>
+          {existingReport ? 'Already reported' : 'Report user'}
+        </Text>
       </TouchableOpacity>
 
       <ReportModal

@@ -772,6 +772,14 @@ export async function toggleDmReaction(conversationId, messageId, emoji) {
 }
 
 
+export class DuplicateReportError extends Error {
+  constructor(existing) {
+    super('already_reported')
+    this.name     = 'DuplicateReportError'
+    this.existing = existing // { id, created_at, status }
+  }
+}
+
 export async function submitReport({ reason, guestId, targetUserId, targetGuestId, targetNickname }) {
   const res = await fetch(`${BASE}/reports`, {
     method: 'POST',
@@ -785,9 +793,25 @@ export async function submitReport({ reason, guestId, targetUserId, targetGuestI
       target_nickname: targetNickname ?? null,
     }),
   })
+  if (res.status === 409) {
+    const data = await res.json().catch(() => ({}))
+    throw new DuplicateReportError(data.existing_report ?? null)
+  }
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
     throw new Error(data.error ?? 'Failed to submit report')
   }
   return res.json()
+}
+
+export async function fetchReportStatus({ guestId, targetUserId, targetGuestId }) {
+  const qs = new URLSearchParams()
+  if (guestId)       qs.set('guestId',         guestId)
+  if (targetUserId)  qs.set('target_user_id',  targetUserId)
+  if (targetGuestId) qs.set('target_guest_id', targetGuestId)
+  const res = await fetch(`${BASE}/reports/status?${qs.toString()}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return { reported: false }
+  return res.json() // { reported: bool, existing_report?: {...} }
 }

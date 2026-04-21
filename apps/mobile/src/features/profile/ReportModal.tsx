@@ -10,7 +10,8 @@ import {
   Modal, View, Text, TextInput, TouchableOpacity,
   TouchableWithoutFeedback, ActivityIndicator, StyleSheet, Alert,
 } from 'react-native';
-import { submitReport } from '@/api/reports';
+import { submitReport, DuplicateReportError } from '@/api/reports';
+import { formatDateLabel } from '@/lib/messageTime';
 
 interface Props {
   visible:         boolean;
@@ -42,7 +43,17 @@ export function ReportModal({ visible, reporterGuestId, targetUserId, targetGues
       onClose();
       Alert.alert('Report sent', 'Thanks for letting us know. Our team will review it.');
     } catch (err: any) {
-      Alert.alert('Error', err?.message ?? 'Could not send report. Try again.');
+      if (err instanceof DuplicateReportError) {
+        const when = formatDateLabel(err.existing.created_at);
+        setReason('');
+        onClose();
+        Alert.alert(
+          'Already reported',
+          `You reported this user on ${when}. Your report is being reviewed.`,
+        );
+      } else {
+        Alert.alert('Error', err?.message ?? 'Could not send report. Try again.');
+      }
     } finally {
       setLoading(false);
     }

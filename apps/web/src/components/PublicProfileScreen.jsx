@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, submitReport } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
 import { cityFlag } from '../cityMeta'
 import { badgeLabel } from '../badgeMeta'
 import BackButton from './BackButton'
@@ -81,6 +81,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [reportBusy,      setReportBusy]      = useState(false)
   const [reportSent,      setReportSent]      = useState(false)
   const [reportError,     setReportError]     = useState(null)
+  const [existingReport,  setExistingReport]  = useState(null) // { id, created_at, status } | null
   const [activeTab, setActiveTab] = useState('events')
 
   const profileVibeCountRef = useRef(0)
@@ -100,7 +101,19 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setVibeMessage('')
     setShowVibeForm(false)
     setActiveTab('events')
+    setExistingReport(null)
+    setShowReportForm(false)
     profileVibeCountRef.current = 0
+
+    // Preflight: has the viewer already reported this user?
+    if (userId !== account?.id) {
+      fetchReportStatus({
+        guestId: account ? undefined : guest?.guestId,
+        targetUserId: userId,
+      })
+        .then(r => setExistingReport(r?.reported ? (r.existing_report ?? null) : null))
+        .catch(() => {})
+    }
 
     fetchPublicProfile(userId)
       .then(data => {
@@ -198,7 +211,12 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
       setReportReason('')
       setTimeout(() => { setShowReportForm(false); setReportSent(false) }, 2500)
     } catch (err) {
-      setReportError(err?.message ?? 'Could not send report. Try again.')
+      if (err instanceof DuplicateReportError) {
+        setExistingReport(err.existing)
+        setReportReason('')
+      } else {
+        setReportError(err?.message ?? 'Could not send report. Try again.')
+      }
     } finally {
       setReportBusy(false)
     }
@@ -546,7 +564,11 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
       {/* ── Inline report form ── */}
       {user && userId !== account?.id && showReportForm && (
         <div className="pub-profile-report-form-wrap">
-          {reportSent ? (
+          {existingReport ? (
+            <p className="pub-profile-report-sent">
+              You reported this user on {new Date(existingReport.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}. Your report is being reviewed.
+            </p>
+          ) : reportSent ? (
             <p className="pub-profile-report-sent">Report sent. Thanks for letting us know.</p>
           ) : (
             <form className="pub-profile-report-form" onSubmit={handleSubmitReport}>

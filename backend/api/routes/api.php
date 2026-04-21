@@ -4643,23 +4643,133 @@ $router->add('POST', '/api/v1/reports', function () {
         Response::json(['error' => 'Cannot report yourself'], 422);
     }
 
-    $stmt = $pdo->prepare("
-        INSERT INTO user_reports
-            (reporter_user_id, reporter_guest_id,
-             target_user_id, target_guest_id, target_nickname, reason)
-        VALUES (?, ?, ?, ?, ?, ?)
-    ");
-    $stmt->execute([
+    // Dup check: one report per (reporter, target) pair forever, across all statuses.
+    $existing = findExistingUserReport(
+        $pdo,
         $reporterUserId,
         $reporterGuestId,
         $targetUserId  ?: null,
-        $targetGuestId ?: null,
-        $targetNickname ?: null,
-        $reason,
-    ]);
+        $targetGuestId ?: null
+    );
+    if ($existing) {
+        Response::json([
+            'error'           => 'already_reported',
+            'message'         => 'You have already reported this user.',
+            'existing_report' => $existing,
+        ], 409);
+    }
+
+    try {
+        $stmt = $pdo->prepare("
+            INSERT INTO user_reports
+                (reporter_user_id, reporter_guest_id,
+                 target_user_id, target_guest_id, target_nickname, reason)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([
+            $reporterUserId,
+            $reporterGuestId,
+            $targetUserId  ?: null,
+            $targetGuestId ?: null,
+            $targetNickname ?: null,
+            $reason,
+        ]);
+    } catch (\PDOException $e) {
+        // Race: another request for the same pair won the unique index first.
+        if ((string) $e->getCode() === '23505') {
+            $existing = findExistingUserReport(
+                $pdo,
+                $reporterUserId,
+                $reporterGuestId,
+                $targetUserId  ?: null,
+                $targetGuestId ?: null
+            );
+            Response::json([
+                'error'           => 'already_reported',
+                'message'         => 'You have already reported this user.',
+                'existing_report' => $existing,
+            ], 409);
+        }
+        throw $e;
+    }
 
     Response::json(['ok' => true], 201);
 });
+
+// ── GET /api/v1/reports/status — has the viewer already reported this target? ─
+$router->add('GET', '/api/v1/reports/status', function () {
+    $pdo = Database::pdo();
+
+    $viewer          = AuthService::currentUser();
+    $reporterUserId  = $viewer['id'] ?? null;
+    $reporterGuestId = ($reporterUserId === null)
+        ? (isValidGuestId($_GET['guestId'] ?? null) ? $_GET['guestId'] : null)
+        : null;
+
+    if ($reporterUserId === null && $reporterGuestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+
+    $targetUserId  = $_GET['target_user_id']  ?? null;
+    $targetGuestId = $_GET['target_guest_id'] ?? null;
+
+    if (empty($targetUserId) && empty($targetGuestId)) {
+        Response::json(['error' => 'Target identity required'], 422);
+    }
+
+    $existing = findExistingUserReport(
+        $pdo,
+        $reporterUserId,
+        $reporterGuestId,
+        $targetUserId  ?: null,
+        $targetGuestId ?: null
+    );
+
+    Response::json($existing
+        ? ['reported' => true, 'existing_report' => $existing]
+        : ['reported' => false]
+    );
+});
+
+/**
+ * Look up an existing user_report for the given (reporter, target) pair.
+ * Returns [id, created_at, status] or null. Queries all statuses — one per pair forever.
+ */
+function findExistingUserReport(
+    PDO $pdo,
+    ?string $reporterUserId,
+    ?string $reporterGuestId,
+    ?string $targetUserId,
+    ?string $targetGuestId
+): ?array {
+    $stmt = $pdo->prepare("
+        SELECT id, created_at, status
+          FROM user_reports
+         WHERE (
+                 (:ruid::text IS NOT NULL AND reporter_user_id  = :ruid) OR
+                 (:rgid::text IS NOT NULL AND reporter_guest_id = :rgid)
+               )
+           AND (
+                 (:tuid::text IS NOT NULL AND target_user_id  = :tuid) OR
+                 (:tgid::text IS NOT NULL AND target_guest_id = :tgid)
+               )
+         ORDER BY created_at ASC
+         LIMIT 1
+    ");
+    $stmt->execute([
+        ':ruid' => $reporterUserId,
+        ':rgid' => $reporterGuestId,
+        ':tuid' => $targetUserId,
+        ':tgid' => $targetGuestId,
+    ]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) return null;
+    return [
+        'id'         => (int) $row['id'],
+        'created_at' => $row['created_at'],
+        'status'     => $row['status'],
+    ];
+}
 
 // ── TEMPORARY: Sentry test endpoint ──────────────────────────────────────────
 // Remove this route once Sentry integration is confirmed.

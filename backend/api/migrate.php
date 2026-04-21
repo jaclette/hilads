@@ -670,4 +670,35 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_target_user   ON user_rep
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_target_guest  ON user_reports (target_guest_id) WHERE target_guest_id IS NOT NULL", 'idx_user_reports_target_guest');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_status_time   ON user_reports (status, created_at DESC)", 'idx_user_reports_status_time');
 
+// ── Dedup user_reports: one report per (reporter, target) pair forever ────────
+// Dismiss all but the oldest report per pair so the partial unique index can be
+// created and duplicate audit context is preserved.
+run($pdo, "
+    WITH ranked AS (
+        SELECT id,
+               ROW_NUMBER() OVER (
+                   PARTITION BY
+                       COALESCE(reporter_user_id, '@g:' || reporter_guest_id),
+                       COALESCE(target_user_id,   '@g:' || target_guest_id)
+                   ORDER BY created_at ASC, id ASC
+               ) AS rn
+          FROM user_reports
+    )
+    UPDATE user_reports
+       SET status = 'dismissed'
+     WHERE id IN (SELECT id FROM ranked WHERE rn > 1)
+       AND status <> 'dismissed'
+", 'user_reports dedup backfill');
+
+// Partial unique index — race defense. Active pairs (non-dismissed) must be unique.
+// The '@g:' prefix guarantees user IDs and guest IDs cannot collide in the key.
+run($pdo, "
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_user_reports_unique_active_pair
+      ON user_reports (
+          COALESCE(reporter_user_id, '@g:' || reporter_guest_id),
+          COALESCE(target_user_id,   '@g:' || target_guest_id)
+      )
+      WHERE status <> 'dismissed'
+", 'idx_user_reports_unique_active_pair');
+
 echo "\nDone.\n";
