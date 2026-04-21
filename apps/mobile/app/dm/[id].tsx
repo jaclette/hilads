@@ -715,6 +715,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         reactions={actionSheetMsg?.reactions ?? []}
         onReact={async (emoji) => {
           if (!actionSheetMsg?.id) return;
+          reactionEmitter.emit(actionSheetMsg.id, EMOJI_TO_TYPE[emoji] ?? 'heart');
           try {
             const reactions = await toggleDmReaction(conversationId, actionSheetMsg.id, emoji);
             setMessageReactions(actionSheetMsg.id, reactions);

@@ -19,6 +19,7 @@ import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
 import { canAccessProfile } from '@/lib/profileAccess';
+import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { BADGE_META } from '@/types';
 import type { Message, EventParticipant, ReplyRef } from '@/types';
 
@@ -451,6 +452,7 @@ export default function EventDetailScreen() {
         reactions={actionSheetMsg?.reactions ?? []}
         onReact={async (emoji) => {
           if (!actionSheetMsg?.id || !identity) return;
+          reactionEmitter.emit(actionSheetMsg.id, EMOJI_TO_TYPE[emoji] ?? 'heart');
           try {
             const reactions = await toggleEventReaction(id, actionSheetMsg.id, emoji, identity.guestId);
             setMessageReactions(actionSheetMsg.id, reactions);
