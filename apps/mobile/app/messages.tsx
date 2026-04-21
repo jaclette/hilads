@@ -10,7 +10,7 @@
  * Each pill shows an orange dot when its section has unread items.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, Image,
   ActivityIndicator, RefreshControl, StyleSheet,
@@ -214,10 +214,18 @@ export default function MessagesScreen() {
     clearEventChatCounts();
   }, [markDMsRead, clearEventChatCounts]);
 
+  // Skip refetch on initial mount — useConversations already loads on mount.
+  // On subsequent focuses (returning from a DM) refetch so has_unread flags reflect
+  // what the user has actually read.
+  const hasMountedRef = useRef(false);
   useFocusEffect(useCallback(() => {
     clearEventChatCounts();
     setUnreadDMs(0);
-  }, [clearEventChatCounts, setUnreadDMs]));
+    if (hasMountedRef.current) {
+      reloadDMs();
+    }
+    hasMountedRef.current = true;
+  }, [reloadDMs, clearEventChatCounts, setUnreadDMs]));
 
   const [events,      setEvents]      = useState<HiladsEvent[]>([]);
   const [loadingEvts, setLoadingEvts] = useState(false);
