@@ -1,0 +1,84 @@
+# Local development stack for Hilads backend.
+#
+# Brings up:
+#   - Postgres 16 on localhost:5432
+#   - PHP API   on http://localhost:8080  (reuses backend/api/Dockerfile)
+#   - Node WS   on ws://localhost:8081    (node:20-slim + bind mount + --watch)
+#
+# The React web app (Vite) and React Native mobile app (Expo) run natively on
+# the host — see DEV.md for the full workflow.
+#
+# Usage:
+#   docker compose up         # first run builds the PHP image
+#   docker compose up --build # rebuild after Dockerfile changes
+#   docker compose down       # stop; keeps the hilads_pgdata volume
+#   docker compose down -v    # nuke the DB too (fresh slate)
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB:       hilads
+      POSTGRES_USER:     hilads
+      POSTGRES_PASSWORD: hilads_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - hilads_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:     ["CMD-SHELL", "pg_isready -U hilads -d hilads"]
+      interval: 2s
+      timeout:  2s
+      retries:  30
+
+  api:
+    build:
+      context:    ./backend/api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      DATABASE_URL:       postgres://hilads:hilads_dev@db:5432/hilads
+      PG_SSLMODE:         disable
+      APP_ENV:            development
+      WS_INTERNAL_URL:    http://ws:8081
+      WS_INTERNAL_TOKEN:  dev-internal-token
+      CORS_ORIGINS:       http://localhost:5173,http://localhost:8081
+      MIGRATION_KEY:      dev-migration-key
+      # Leave R2 / Sentry / PostHog blank — those paths degrade gracefully in dev.
+    volumes:
+      # Bind-mount source for live edits.
+      - ./backend/api:/var/www/html
+      # Preserve the image's composer vendor/ — the bind mount would otherwise
+      # shadow it and break autoload.
+      - /var/www/html/vendor
+      # Dev OPcache override: validate_timestamps=1 so PHP picks up file edits
+      # without a container restart.
+      - ./backend/api/docker/dev-opcache.ini:/usr/local/etc/php/conf.d/opcache.ini:ro
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ws:
+    image: node:20-slim
+    working_dir: /app
+    ports:
+      - "8081:8081"
+    environment:
+      PORT:                 "8081"
+      WS_INTERNAL_TOKEN:    dev-internal-token
+      WS_ALLOWED_ORIGINS:   http://localhost:5173,http://localhost:8080
+    volumes:
+      - ./backend/ws:/app
+      # Named volume so npm install state survives restarts and doesn't
+      # clobber host node_modules if the host ran npm install natively.
+      - hilads_ws_node_modules:/app/node_modules
+    command: >
+      sh -c '
+        [ -d node_modules ] || npm install --omit=dev;
+        exec node --watch server.js
+      '
+
+volumes:
+  hilads_pgdata:
+  hilads_ws_node_modules:

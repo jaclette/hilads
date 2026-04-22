@@ -1,8 +1,11 @@
 services:
   # PHP REST API
+  # autoDeploy:false — deploys are manual. Push to main freely; hit "Manual Deploy"
+  # in the Render dashboard (or the render CLI) when you want the change live.
   - type: web
     name: hilads-api
     runtime: docker
+    autoDeploy: false
     dockerfilePath: ./backend/api/Dockerfile
     dockerContext: ./backend/api
     envVars:
@@ -18,6 +21,7 @@ services:
   - type: web
     name: hilads-ws
     runtime: node
+    autoDeploy: false
     rootDir: backend/ws
     buildCommand: npm install
     startCommand: node server.js

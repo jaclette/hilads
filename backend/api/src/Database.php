@@ -63,12 +63,16 @@ class Database
                     . 'Switch to port 6543 (transaction mode) to prevent connection exhaustion.');
         }
 
+        // sslmode: default to 'require' for prod safety. Override with PG_SSLMODE=disable
+        // for a local Postgres container that doesn't have SSL configured.
         // connect_timeout: abort quickly if DB is unreachable rather than hanging requests.
+        $sslmode = getenv('PG_SSLMODE') ?: 'require';
         $dsn = sprintf(
-            'pgsql:host=%s;port=%d;dbname=%s;sslmode=require;connect_timeout=5',
+            'pgsql:host=%s;port=%d;dbname=%s;sslmode=%s;connect_timeout=5',
             $host,
             $port,
-            ltrim($parts['path'] ?? '', '/')
+            ltrim($parts['path'] ?? '', '/'),
+            $sslmode,
         );
 
         // parse_url() returns URL-encoded credentials — PDO needs decoded values.

@@ -36,12 +36,14 @@ if (!$url) {
     exit(1);
 }
 
-$parts = parse_url($url);
-$dsn   = sprintf(
-    'pgsql:host=%s;port=%s;dbname=%s;sslmode=require',
+$parts   = parse_url($url);
+$sslmode = getenv('PG_SSLMODE') ?: 'require';
+$dsn     = sprintf(
+    'pgsql:host=%s;port=%s;dbname=%s;sslmode=%s',
     $parts['host'],
     $parts['port'] ?? 5432,
-    ltrim($parts['path'], '/')
+    ltrim($parts['path'], '/'),
+    $sslmode,
 );
 
 $user = isset($parts['user']) ? urldecode($parts['user']) : null;
