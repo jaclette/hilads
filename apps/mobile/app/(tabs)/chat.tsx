@@ -628,13 +628,14 @@ export default function ChatTab() {
             <TouchableOpacity
               style={styles.iconBtn}
               activeOpacity={0.65}
+              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
               onPress={async () => {
                 const url = `${BASE_URL}/city/${city.slug}`;
                 await Share.share({ title: `Who's in ${city.name} right now | Hilads`, url, message: `Who's in ${city.name} right now | Hilads ${url}` });
               }}
               accessibilityLabel="Share city"
             >
-              <Feather name="share" size={18} color={Colors.text} />
+              <Feather name="share" size={20} color={Colors.text} />
             </TouchableOpacity>
           )}
         />
@@ -871,11 +872,12 @@ const styles = StyleSheet.create({
     gap:           8,
   },
 
-  // Icon buttons — 36×36, border-radius 10
+  // Icon buttons — must match AppHeader's iconBtn (40×40, radius 12). Only
+  // used here for the Share button passed in via AppHeader's rightExtra slot.
   iconBtn: {
-    width:           36,
-    height:          36,
-    borderRadius:    10,
+    width:           40,
+    height:          40,
+    borderRadius:    12,
     backgroundColor: 'rgba(255,255,255,0.07)',
     borderWidth:     1,
     borderColor:     'rgba(255,255,255,0.10)',

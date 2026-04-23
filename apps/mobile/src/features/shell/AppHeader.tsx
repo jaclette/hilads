@@ -44,10 +44,11 @@ export function AppHeader({ rightExtra }: Props) {
           <TouchableOpacity
             style={[styles.iconBtn, unreadNotifications > 0 && styles.iconBtnUnread]}
             activeOpacity={0.65}
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             onPress={() => router.push('/notifications' as never)}
             accessibilityLabel="Notifications"
           >
-            <Ionicons name="notifications-outline" size={20} color={Colors.text} />
+            <Ionicons name="notifications-outline" size={22} color={Colors.text} />
             {unreadNotifications > 0 && (
               <View style={styles.iconBadge}>
                 <Text style={styles.iconBadgeText}>
@@ -74,6 +75,7 @@ export function AppHeader({ rightExtra }: Props) {
           <TouchableOpacity
             style={[styles.iconBtn, unreadDMs > 0 && styles.iconBtnUnread]}
             activeOpacity={0.65}
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             onPress={() => {
               setUnreadDMs(0);
               clearEventChatCounts();
@@ -81,7 +83,7 @@ export function AppHeader({ rightExtra }: Props) {
             }}
             accessibilityLabel="Messages"
           >
-            <Feather name="message-square" size={18} color={Colors.text} />
+            <Feather name="message-square" size={20} color={Colors.text} />
             {unreadDMs > 0 && (
               <View style={styles.iconBadge}>
                 <Text style={styles.iconBadgeText}>
@@ -125,9 +127,13 @@ const styles = StyleSheet.create({
     gap:           8,
   },
   iconBtn: {
-    width:           36,
-    height:          36,
-    borderRadius:    10,
+    // Bumped from 36 to match web's visual weight — Ionicons outline and
+    // Feather strokes render lighter than the web SVGs (stroke 2.1), so
+    // container + glyph both need a hair more room. hitSlop on each pressable
+    // brings the effective touch to 48pt (exceeds Apple HIG 44pt, Android 48dp).
+    width:           40,
+    height:          40,
+    borderRadius:    12,
     backgroundColor: 'rgba(255,255,255,0.07)',
     borderWidth:     1,
     borderColor:     'rgba(255,255,255,0.10)',
