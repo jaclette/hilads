@@ -32,6 +32,7 @@ import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { HiladsIcon } from '@/components/HiladsIcon';
+import { AppHeader } from '@/features/shell/AppHeader';
 import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import type { Message, ReplyRef } from '@/types';
@@ -612,77 +613,23 @@ export default function ChatTab() {
       {/* ── Header — 3-section redesign ── */}
       <View style={styles.header}>
 
-        {/* ── Section 1: Top bar — bell | logo+tagline | share+DMs ── */}
-        <View style={styles.topBar}>
-
-          {/* Left: notification bell */}
-          <View style={styles.topLeft}>
-            {account && (
-              <TouchableOpacity
-                style={[styles.iconBtn, unreadNotifications > 0 && styles.iconBtnUnread]}
-                activeOpacity={0.65}
-                onPress={() => router.push('/notifications' as never)}
-                accessibilityLabel="Notifications"
-              >
-                <Ionicons name="notifications-outline" size={20} color={Colors.text} />
-                {unreadNotifications > 0 && (
-                  <View style={styles.iconBadge}>
-                    <Text style={styles.iconBadgeText}>
-                      {unreadNotifications > 9 ? '9+' : String(unreadNotifications)}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Center: logo + tagline stacked */}
-          <View style={styles.topCenter}>
-            <View style={styles.iconGlow}>
-              <HiladsIcon size={36} />
-            </View>
-            <Text style={styles.headerTagline}>Feel local. Anywhere.</Text>
-          </View>
-
-          {/* Right: share + DMs */}
-          <View style={styles.topRight}>
-            {city && (
-              <TouchableOpacity
-                style={styles.iconBtn}
-                activeOpacity={0.65}
-                onPress={async () => {
-                  const url = `${BASE_URL}/city/${city.slug}`;
-                  await Share.share({ title: `Who's in ${city.name} right now | Hilads`, url, message: `Who's in ${city.name} right now | Hilads ${url}` });
-                }}
-                accessibilityLabel="Share city"
-              >
-                <Feather name="share" size={18} color={Colors.text} />
-              </TouchableOpacity>
-            )}
-            {account && (
-              <TouchableOpacity
-                style={[styles.iconBtn, unreadDMs > 0 && styles.iconBtnUnread]}
-                activeOpacity={0.65}
-                onPress={() => {
-                  setUnreadDMs(0);
-                  clearEventChatCounts();
-                  router.push('/messages');
-                }}
-                accessibilityLabel="Messages"
-              >
-                <Feather name="message-square" size={18} color={Colors.text} />
-                {unreadDMs > 0 && (
-                  <View style={styles.iconBadge}>
-                    <Text style={styles.iconBadgeText}>
-                      {unreadDMs > 9 ? '9+' : String(unreadDMs)}
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-
-        </View>
+        {/* ── Section 1: App header — persistent across all 4 tabs ── */}
+        {/* Share lives here (MY-CITY-only) as a tab-specific extra. */}
+        <AppHeader
+          rightExtra={city && (
+            <TouchableOpacity
+              style={styles.iconBtn}
+              activeOpacity={0.65}
+              onPress={async () => {
+                const url = `${BASE_URL}/city/${city.slug}`;
+                await Share.share({ title: `Who's in ${city.name} right now | Hilads`, url, message: `Who's in ${city.name} right now | Hilads ${url}` });
+              }}
+              accessibilityLabel="Share city"
+            >
+              <Feather name="share" size={18} color={Colors.text} />
+            </TouchableOpacity>
+          )}
+        />
 
         {/* ── Section 2: City hero name — tappable → switch city ── */}
         <TouchableOpacity

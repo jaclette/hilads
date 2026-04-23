@@ -2093,6 +2093,66 @@ export default function App() {
     loadChannels(f)
   }
 
+  // ── Shared app header ──────────────────────────────────────────────────────
+  // Persistent across all 4 tabs (mobile viewport) so Notifications + Messages
+  // stay one tap away from any screen. Share is MY-CITY-only and passed in via
+  // withShare so it renders left of the DM icon on the home tab.
+  function renderAppHeader({ withShare = false } = {}) {
+    return (
+      <div className="header-top-bar">
+        <div className="header-top-left">
+          {account && (
+            <button
+              className={`header-icon-btn header-icon-btn--sm${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
+              onClick={() => setShowNotifications(true)}
+              aria-label="Notifications"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              {notifUnreadCount > 0 && (
+                <span className="header-icon-badge">
+                  {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
+                </span>
+              )}
+            </button>
+          )}
+        </div>
+        <div className="header-top-center">
+          <Logo variant="icon" size="md" />
+          <span className="header-tagline">Feel local. Anywhere.</span>
+        </div>
+        <div className="header-top-right">
+          {withShare && city && (
+            <button
+              className="header-icon-btn header-icon-btn--sm"
+              onClick={() => share(`Who's in ${city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(city)}`)}
+              aria-label="Share city"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+            </button>
+          )}
+          {account && (
+            <button
+              className={`header-icon-btn header-icon-btn--sm${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
+              onClick={() => setShowConversations(true)}
+              aria-label="Messages"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   async function openObCityPicker() {
     setObPickingCity(true)
     setCitySearchQuery('')
@@ -3027,58 +3087,8 @@ export default function App() {
               {/* ── Mobile layout — new 3-section design, hidden on desktop ── */}
               <div className="header-new">
 
-                {/* Section 1: top bar — bell | logo+tagline | share+DMs */}
-                <div className="header-top-bar">
-                  <div className="header-top-left">
-                    {account && (
-                      <button
-                        className={`header-icon-btn header-icon-btn--sm${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
-                        onClick={() => setShowNotifications(true)}
-                        aria-label="Notifications"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                        </svg>
-                        {notifUnreadCount > 0 && (
-                          <span className="header-icon-badge">
-                            {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
-                          </span>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                  <div className="header-top-center">
-                    <Logo variant="icon" size="md" />
-                    <span className="header-tagline">Feel local. Anywhere.</span>
-                  </div>
-                  <div className="header-top-right">
-                    {city && (
-                      <button
-                        className="header-icon-btn header-icon-btn--sm"
-                        onClick={() => share(`Who's in ${city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(city)}`)}
-                        aria-label="Share city"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-                        </svg>
-                      </button>
-                    )}
-                    {account && (
-                      <button
-                        className={`header-icon-btn header-icon-btn--sm${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
-                        onClick={() => setShowConversations(true)}
-                        aria-label="Messages"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg>
-                        {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
-                      </button>
-                    )}
-                  </div>
-                </div>
+                {/* Section 1: shared app header (Share is MY-CITY-only) */}
+                {renderAppHeader({ withShare: true })}
 
                 {/* Section 2: city hero name — tappable → switch city */}
                 {city && (
@@ -3701,6 +3711,9 @@ export default function App() {
 
       {showEventDrawer && (
         <div className="full-page full-page--tab">
+          <div className="tab-app-header">
+            {renderAppHeader()}
+          </div>
           <div className="page-header">
             <span className="page-title">Now</span>
           </div>
@@ -4080,6 +4093,9 @@ export default function App() {
 
         return (
           <div className="full-page full-page--tab">
+            <div className="tab-app-header">
+              {renderAppHeader()}
+            </div>
             <div className="page-header">
               <span className="page-title">People here</span>
             </div>
@@ -4278,6 +4294,7 @@ export default function App() {
           myFriends={myFriendsLoaded ? myFriends : null}
           cityTimezone={cityTimezone}
           tabMode
+          renderAppHeader={renderAppHeader}
           onSave={setAccount}
           onViewFriend={(uid, nickname) => {
             setShowProfileDrawer(false)
@@ -4333,6 +4350,9 @@ export default function App() {
 
       {showProfileDrawer && !showAuthScreen && !account && (
         <div className="full-page full-page--tab">
+          <div className="tab-app-header">
+            {renderAppHeader()}
+          </div>
           <div className="page-header">
             <span className="page-title">Me</span>
           </div>

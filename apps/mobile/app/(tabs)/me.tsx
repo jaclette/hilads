@@ -33,6 +33,7 @@ import type { UserVibe } from '@/api/users';
 import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
 import type { HiladsEvent, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
+import { AppHeader } from '@/features/shell/AppHeader';
 
 // ── Constants — must match backend allowed lists ──────────────────────────────
 
@@ -336,6 +337,11 @@ export default function MeScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+
+      {/* Persistent app header */}
+      <View style={styles.appHeaderWrap}>
+        <AppHeader />
+      </View>
 
       {/* ══ STICKY: Page header ══════════════════════════════════════════════ */}
       <View style={styles.header}>
@@ -866,6 +872,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
     backgroundColor:   Colors.bg,
+  },
+  appHeaderWrap: {
+    paddingHorizontal: Spacing.md,
+    paddingTop:        10,
+    paddingBottom:     12,
+    backgroundColor:   Colors.bg2,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   headerCenter: {
     flex:       1,

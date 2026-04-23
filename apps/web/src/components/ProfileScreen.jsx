@@ -43,7 +43,7 @@ const PROFILE_TABS = [
   { key: 'vibes',     label: 'Vibes'     },
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount, tabMode = false }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [name,            setName]            = useState(account.display_name ?? '')
@@ -173,6 +173,11 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
 
   return (
     <div className={`full-page${tabMode ? ' full-page--tab' : ''}`}>
+      {renderAppHeader && (
+        <div className="tab-app-header">
+          {renderAppHeader()}
+        </div>
+      )}
       <div className="page-header">
         {onBack && <BackButton onClick={onBack} />}
         <span className="page-title">My Profile</span>

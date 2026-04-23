@@ -22,6 +22,7 @@ import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { AppHeader } from '@/features/shell/AppHeader';
 
 const CONTEXT_BADGE_KEYS = new Set(['host']);
 
@@ -262,6 +263,9 @@ export default function HereScreen() {
   if (!city) {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={styles.appHeaderWrap}>
+          <AppHeader />
+        </View>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>People here</Text>
         </View>
@@ -280,7 +284,12 @@ export default function HereScreen() {
   return (
     <SafeAreaView style={styles.container}>
 
-      {/* Header */}
+      {/* Persistent app header */}
+      <View style={styles.appHeaderWrap}>
+        <AppHeader />
+      </View>
+
+      {/* Tab-specific sub-header */}
       <View style={styles.header}>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>People here</Text>
@@ -454,6 +463,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.md,
     borderBottomWidth: 1, borderBottomColor: Colors.border, minHeight: 56,
+  },
+  appHeaderWrap: {
+    paddingHorizontal: Spacing.md,
+    paddingTop:        10,
+    paddingBottom:     12,
+    backgroundColor:   Colors.bg2,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
