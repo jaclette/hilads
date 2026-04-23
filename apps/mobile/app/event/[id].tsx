@@ -124,7 +124,7 @@ export default function EventDetailScreen() {
 
   const {
     event, cityName: eventCityName, loading: eventLoading, error: eventError,
-    toggling, toggleParticipation,
+    toggling, toggleParticipation, isOwner,
   } = useEventDetail(id);
 
   const [participants,   setParticipants]  = useState<EventParticipant[]>([]);
@@ -298,23 +298,37 @@ export default function EventDetailScreen() {
         </View>
       ) : (
         <View style={styles.eventBlock}>
-          {/* Title row + Join button */}
+          {/* Title row + Join/Edit button */}
           <View style={styles.titleRow}>
             <Text style={styles.eventTitle} numberOfLines={3}>{event.title}</Text>
-            <TouchableOpacity
-              style={[styles.joinBtn, event.is_participating && styles.joinBtnActive]}
-              onPress={handleToggle}
-              disabled={toggling}
-              activeOpacity={0.8}
-            >
-              {toggling ? (
-                <ActivityIndicator size="small" color={Colors.accent} />
-              ) : (
-                <Text style={[styles.joinBtnText, event.is_participating && styles.joinBtnTextActive]}>
-                  {event.is_participating ? 'Going ✓' : 'Join'}
+            {isOwner ? (
+              <TouchableOpacity
+                style={[styles.joinBtn, styles.editBtn]}
+                onPress={() => router.push(`/event/${event.id}/edit` as never)}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="Edit event"
+              >
+                <Text style={[styles.joinBtnText, styles.editBtnText]}>
+                  ✏️ Edit event
                 </Text>
-              )}
-            </TouchableOpacity>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={[styles.joinBtn, event.is_participating && styles.joinBtnActive]}
+                onPress={handleToggle}
+                disabled={toggling}
+                activeOpacity={0.8}
+              >
+                {toggling ? (
+                  <ActivityIndicator size="small" color={Colors.accent} />
+                ) : (
+                  <Text style={[styles.joinBtnText, event.is_participating && styles.joinBtnTextActive]}>
+                    {event.is_participating ? 'Going ✓' : 'Join'}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Time + here + going — mirrors web: "HH:MM → HH:MM · X here · X going" */}
@@ -675,6 +689,15 @@ const styles = StyleSheet.create({
   },
   joinBtnTextActive: {
     color: Colors.white,
+  },
+  // Host-only "Edit event" CTA — violet to distinguish from the orange Join
+  // button (matches web .event-join-btn--edit).
+  editBtn: {
+    borderColor:     Colors.violet,
+  },
+  editBtnText: {
+    color:     Colors.violet,
+    fontSize:  FontSizes.md,
   },
 
   // Web: time + participants — single muted line

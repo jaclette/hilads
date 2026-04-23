@@ -109,10 +109,18 @@ export async function createEventSeries(
   return api.post(`/channels/${channelId}/event-series`, { guestId, ...payload });
 }
 
+// Full event edit. Backend requires all of (title, starts_at, ends_at, type) —
+// `location_hint` is the only truly optional field.
 export async function updateEvent(
   eventId: string,
   guestId: string,
-  fields: Partial<{ title: string; location: string; starts_at: number; ends_at: number }>,
+  fields: {
+    title:          string;
+    location_hint:  string | null;
+    starts_at:      number;
+    ends_at:        number;
+    type:           string;
+  },
 ): Promise<HiladsEvent> {
   return api.put<HiladsEvent>(`/events/${eventId}`, { guestId, ...fields });
 }
