@@ -364,9 +364,6 @@ export default function NowScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => router.push('/(tabs)/chat')} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={20} color={Colors.text} />
-          </TouchableOpacity>
           <View style={styles.headerCenter}>
             <Text style={styles.headerTitle}>Now</Text>
           </View>
@@ -416,9 +413,6 @@ export default function NowScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.push('/(tabs)/chat')} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
-        </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Now</Text>
           {city && <Text style={styles.headerSub}>{city.name}</Text>}
@@ -545,19 +539,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
     minHeight:         56,
   },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-    zIndex:          1,
-  },
-  headerCenter: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
+  headerCenter: { flex: 1, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
   headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
 

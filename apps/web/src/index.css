@@ -1092,7 +1092,13 @@ html, body, #root {
     box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.55);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
-    z-index: 40;
+    /* Above .full-page (200) so tab drawers don't overlay the nav */
+    z-index: 300;
+  }
+
+  /* Reserve space below so drawer content doesn't hide under the fixed nav */
+  .full-page {
+    padding-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
   }
 
   .messages {

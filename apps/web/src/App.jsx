@@ -2018,6 +2018,39 @@ export default function App() {
     setViewingProfile(null)
   }
 
+  // Bottom-tab handlers for NOW / HERE / ME — each clears every other
+  // top-level flag before setting its own. Without this, tapping e.g. NOW
+  // then HERE leaves both drawer flags true and closing the top one reveals
+  // the one underneath instead of returning to the City Channel.
+  function goToNowTab() {
+    setShowCityPicker(false)
+    setShowPeopleDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    setShowEventDrawer(true)
+  }
+  function goToHereTab() {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    setShowPeopleDrawer(true)
+  }
+  function goToMeTab() {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowPeopleDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    setProfileNickInput(activeNickname)
+    setShowProfileDrawer(true)
+  }
+
   function changeCityFilter(f) {
     setCityFilter(f)
     loadChannels(f)
@@ -3488,7 +3521,7 @@ export default function App() {
           <button
             type="button"
             className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
-            onClick={() => setShowEventDrawer(true)}
+            onClick={goToNowTab}
             aria-label="Now"
           >
             <span className="bottom-nav-icon"><NavIconEvents /></span>
@@ -3510,7 +3543,7 @@ export default function App() {
           <button
             type="button"
             className={`bottom-nav-tab${showPeopleDrawer ? ' active' : ''}`}
-            onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+            onClick={goToHereTab}
             aria-label="People here"
           >
             <span className="bottom-nav-icon"><NavIconPeople /></span>
@@ -3519,7 +3552,7 @@ export default function App() {
           <button
             type="button"
             className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
-            onClick={() => { setProfileNickInput(activeNickname); setShowProfileDrawer(true) }}
+            onClick={goToMeTab}
             aria-label="Profile"
           >
             <span className="bottom-nav-icon"><NavIconProfile /></span>
@@ -3629,7 +3662,6 @@ export default function App() {
       {showEventDrawer && (
         <div className="full-page">
           <div className="page-header">
-            <BackButton onClick={() => setShowEventDrawer(false)} />
             <span className="page-title">Now</span>
           </div>
           <div className="now-filter-bar">
@@ -4006,7 +4038,6 @@ export default function App() {
         return (
           <div className="full-page">
             <div className="page-header">
-              <BackButton onClick={() => { setShowPeopleDrawer(false); setViewingProfile(null) }} />
               <span className="page-title">People here</span>
             </div>
 
@@ -4204,7 +4235,6 @@ export default function App() {
           myFriends={myFriendsLoaded ? myFriends : null}
           cityTimezone={cityTimezone}
           onSave={setAccount}
-          onBack={() => setShowProfileDrawer(false)}
           onViewFriend={(uid, nickname) => {
             setShowProfileDrawer(false)
             openProfile(uid, nickname)
@@ -4260,7 +4290,6 @@ export default function App() {
       {showProfileDrawer && !showAuthScreen && !account && (
         <div className="full-page">
           <div className="page-header">
-            <BackButton onClick={() => setShowProfileDrawer(false)} />
             <span className="page-title">Me</span>
           </div>
           <div className="page-body me-page-body">

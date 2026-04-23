@@ -339,9 +339,6 @@ export default function MeScreen() {
 
       {/* ══ STICKY: Page header ══════════════════════════════════════════════ */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.push('/(tabs)/chat')} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
-        </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>My Profile</Text>
         </View>
@@ -870,22 +867,8 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
     backgroundColor:   Colors.bg,
   },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-    zIndex:          1,
-  },
   headerCenter: {
-    position:   'absolute',
-    left:       0,
-    right:      0,
+    flex:       1,
     alignItems: 'center',
   },
   headerTitle: {

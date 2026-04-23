@@ -174,7 +174,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   return (
     <div className="full-page">
       <div className="page-header">
-        <BackButton onClick={onBack} />
+        {onBack && <BackButton onClick={onBack} />}
         <span className="page-title">My Profile</span>
       </div>
 
