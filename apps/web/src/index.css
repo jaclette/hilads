@@ -5098,6 +5098,17 @@ img.pub-profile-avatar {
   text-overflow: ellipsis;
 }
 
+/* "Hosted by X" — secondary info on event list rows + event detail header. */
+.er-host,
+.event-host {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+.er-host { margin-top: 2px; }
+.event-host { margin-top: 4px; }
+
 .activity-dot {
   width: 9px;
   height: 9px;

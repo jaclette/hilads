@@ -19,6 +19,7 @@ class EventRepository
             ce.external_id,
             ce.guest_id,
             ce.created_by,
+            ce.host_nickname,
             ce.title,
             ce.event_type                               AS type,
             ce.venue,
@@ -51,6 +52,7 @@ class EventRepository
             ce.external_id,
             ce.guest_id,
             ce.created_by,
+            ce.host_nickname,
             ce.title,
             ce.event_type                               AS type,
             ce.venue,
@@ -114,6 +116,7 @@ class EventRepository
             'external_id'      => $row['external_id'],
             'guest_id'         => $row['guest_id'],
             'created_by'       => $row['created_by'],
+            'host_nickname'    => $row['host_nickname'] ?? null,
             'title'            => $row['title'],
             'type'             => $row['type'],
             'location_hint'    => $row['location_hint'],
@@ -697,21 +700,22 @@ class EventRepository
 
         $pdo->prepare("
             INSERT INTO channel_events
-                (channel_id, source_type, guest_id, created_by, title, event_type, location,
+                (channel_id, source_type, guest_id, created_by, host_nickname, title, event_type, location,
                  starts_at, expires_at, city_id)
             VALUES
-                (:channel_id, 'hilads', :guest_id, :created_by, :title, :event_type, :location,
+                (:channel_id, 'hilads', :guest_id, :created_by, :host_nickname, :title, :event_type, :location,
                  to_timestamp(:starts_at), to_timestamp(:expires_at), :city_id)
         ")->execute([
-            'channel_id' => $id,
-            'guest_id'   => $guestId,
-            'created_by' => $userId,
-            'title'      => $title,
-            'event_type' => $type,
-            'location'   => $locationHint,
-            'starts_at'  => $startsAt,
-            'expires_at' => $expiresAt,
-            'city_id'    => $parentId,
+            'channel_id'    => $id,
+            'guest_id'      => $guestId,
+            'created_by'    => $userId,
+            'host_nickname' => $nickname !== '' ? $nickname : null,
+            'title'         => $title,
+            'event_type'    => $type,
+            'location'      => $locationHint,
+            'starts_at'     => $startsAt,
+            'expires_at'    => $expiresAt,
+            'city_id'       => $parentId,
         ]);
 
         // Auto-join: creator is always the first participant (idempotent via ON CONFLICT).

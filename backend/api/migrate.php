@@ -672,6 +672,25 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_target_user   ON user_rep
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_target_guest  ON user_reports (target_guest_id) WHERE target_guest_id IS NOT NULL", 'idx_user_reports_target_guest');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_reports_status_time   ON user_reports (status, created_at DESC)", 'idx_user_reports_status_time');
 
+// ── Event host nickname ───────────────────────────────────────────────────────
+// Stored denormalised on channel_events so the event list/detail can show
+// "Hosted by X" without a JOIN. Mirrors the pattern used on messages/presence/
+// event_participants. Guest hosts have no recoverable history pre-fix, so the
+// backfill only covers events with a registered creator (created_by).
+
+run($pdo, "
+    ALTER TABLE channel_events
+    ADD COLUMN IF NOT EXISTS host_nickname TEXT
+", 'channel_events host_nickname');
+
+run($pdo, "
+    UPDATE channel_events ce
+       SET host_nickname = u.display_name
+      FROM users u
+     WHERE ce.created_by = u.id
+       AND ce.host_nickname IS NULL
+", 'channel_events host_nickname backfill');
+
 // ── Dedup user_reports: one report per (reporter, target) pair forever ────────
 // Dismiss all but the oldest report per pair so the partial unique index can be
 // created and duplicate audit context is preserved.

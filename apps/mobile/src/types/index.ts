@@ -44,6 +44,7 @@ export interface HiladsEvent {
   recurrence_label?: string;
   guest_id?: string;
   created_by?: string;
+  host_nickname?: string | null;
   participant_count?: number;
   is_participating?: boolean;
   city_name?: string;
@@ -102,6 +103,7 @@ export interface FeedItem {
   series_id?:         string | null;
   guest_id?:          string | null;
   created_by?:        string | null;
+  host_nickname?:     string | null;
 
   // ── Topic-only fields (present when kind === 'topic') ─────────────────────
   category?:      string;

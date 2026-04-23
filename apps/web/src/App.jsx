@@ -2914,6 +2914,9 @@ export default function App() {
                   )
                   return <span className="event-location event-location--muted">📍 {loc ?? 'Location not available yet'}</span>
                 })()}
+                {activeEvent.host_nickname && !isMyEvent && (
+                  <span className="event-host">Hosted by {activeEvent.host_nickname}</span>
+                )}
               </div>
             </div>
           ) : (
@@ -3742,6 +3745,9 @@ export default function App() {
                     </div>
                     {getEventLocation(event) && (
                       <span className="er-location">📍 {getEventLocation(event)}</span>
+                    )}
+                    {event.host_nickname && (
+                      <span className="er-host">Hosted by {event.host_nickname}</span>
                     )}
                   </button>
                 )

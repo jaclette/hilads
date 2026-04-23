@@ -357,6 +357,13 @@ export default function EventDetailScreen() {
               {event.location ?? event.venue}
             </Text>
           ) : null}
+
+          {/* Host name — suppressed for the host themselves since the Edit button already signals ownership */}
+          {event.host_nickname && !isOwner ? (
+            <Text style={styles.eventHost} numberOfLines={1}>
+              Hosted by {event.host_nickname}
+            </Text>
+          ) : null}
         </View>
       )}
 
@@ -722,6 +729,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color:      Colors.accent,
     lineHeight: 20,
+  },
+  eventHost: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '500',
+    color:      Colors.muted,
+    marginTop:  2,
   },
 
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },

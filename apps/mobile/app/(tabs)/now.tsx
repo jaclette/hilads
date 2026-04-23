@@ -82,6 +82,11 @@ function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress:
           📍 {event.location ?? event.venue}
         </Text>
       ) : null}
+      {(event as HiladsEvent).host_nickname ? (
+        <Text style={styles.cardHost} numberOfLines={1}>
+          Hosted by {(event as HiladsEvent).host_nickname}
+        </Text>
+      ) : null}
     </TouchableOpacity>
   );
 }
@@ -642,6 +647,7 @@ const styles = StyleSheet.create({
   recurBadge:       { backgroundColor: 'rgba(184,114,40,0.15)', borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: 'rgba(184,114,40,0.25)' },
   recurBadgeText:   { color: Colors.accent3, fontSize: FontSizes.sm, fontWeight: '600' },
   cardLocation:     { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
+  cardHost:         { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
 
   // ── Topic card fields ──────────────────────────────────────────────────────
   topicCard: {
