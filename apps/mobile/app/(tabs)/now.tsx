@@ -375,7 +375,7 @@ export default function NowScreen() {
           <Text style={styles.emptyEmoji}>🌍</Text>
           <Text style={styles.emptyTitle}>No city selected</Text>
           <Text style={styles.emptySub}>Pick a city to see what's happening.</Text>
-          <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/(tabs)/cities')} activeOpacity={0.85}>
+          <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/switch-city' as never)} activeOpacity={0.85}>
             <Text style={styles.emptyBtnText}>Browse cities</Text>
           </TouchableOpacity>
         </View>

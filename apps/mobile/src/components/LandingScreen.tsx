@@ -254,7 +254,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
   function handleBrowseCities() {
     setJoined(true);
-    router.replace('/(tabs)/cities');
+    router.replace('/switch-city' as never);
   }
 
   // Step aside for auth screens so they render above the overlay

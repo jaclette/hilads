@@ -2006,6 +2006,18 @@ export default function App() {
     loadChannels(cityFilter)
   }
 
+  // "My city" bottom-tab handler — closes every drawer so the City Channel
+  // (the implicit default render) becomes visible.
+  function goToCityChannel() {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowPeopleDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+  }
+
   function changeCityFilter(f) {
     setCityFilter(f)
     loadChannels(f)
@@ -2995,11 +3007,25 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Section 2: city hero name */}
+                {/* Section 2: city hero name — tappable → switch city */}
                 {city && (
-                  <div className="header-city-row">
+                  <button
+                    type="button"
+                    className="header-city-row header-city-row-button"
+                    onClick={openCityPicker}
+                    aria-label="Change city"
+                  >
                     <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{city}
-                  </div>
+                    <svg
+                      className="header-city-row-chevron"
+                      width="14" height="14" viewBox="0 0 24 24"
+                      fill="none" stroke="currentColor" strokeWidth="2.4"
+                      strokeLinecap="round" strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
                 )}
 
                 {/* Section 3: context chips */}
@@ -3470,12 +3496,16 @@ export default function App() {
           </button>
           <button
             type="button"
-            className={`bottom-nav-tab${showCityPicker ? ' active' : ''}`}
-            onClick={openCityPicker}
-            aria-label="Cities"
+            className={`bottom-nav-tab${
+              !showEventDrawer && !showCityPicker && !showPeopleDrawer &&
+              !showProfileDrawer && !showConversations && !showNotifications
+                ? ' active' : ''
+            }`}
+            onClick={goToCityChannel}
+            aria-label="My city"
           >
             <span className="bottom-nav-icon"><NavIconCity /></span>
-            <span className="bottom-nav-label">Cities</span>
+            <span className="bottom-nav-label">My city</span>
           </button>
           <button
             type="button"

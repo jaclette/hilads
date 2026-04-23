@@ -83,7 +83,7 @@ export default function SignUpScreen() {
         } catch {
           // Join failed — authenticate but let user pick a city
           setJoined(true);
-          router.replace('/(tabs)/cities');
+          router.replace('/switch-city' as never);
         }
       } else {
         // Normal path: came from inside the app (joined=true) or no pending city

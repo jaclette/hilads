@@ -23,10 +23,10 @@ type TabDef = {
 };
 
 const TABS: TabDef[] = [
-  { name: 'now',    label: 'Now',    icon: 'flame',  outline: 'flame-outline'  },
-  { name: 'cities', label: 'Cities', icon: 'earth',  outline: 'earth-outline'  },
-  { name: 'here',   label: 'Here',   icon: 'people', outline: 'people-outline' },
-  { name: 'me',     label: 'Me',     icon: 'person', outline: 'person-outline' },
+  { name: 'now',  label: 'Now',     icon: 'flame',  outline: 'flame-outline'  },
+  { name: 'chat', label: 'My city', icon: 'earth',  outline: 'earth-outline'  },
+  { name: 'here', label: 'Here',    icon: 'people', outline: 'people-outline' },
+  { name: 'me',   label: 'Me',      icon: 'person', outline: 'person-outline' },
 ];
 
 // ── Custom tab bar — faithful port of web .bottom-nav ────────────────────────
@@ -181,13 +181,10 @@ export default function TabsLayout() {
       screenOptions={{ headerShown: false }}
     >
       {/* ── 4 primary tabs ─────────────────────────────────────────────── */}
-      <Tabs.Screen name="now"    options={{ title: 'Now' }} />
-      <Tabs.Screen name="cities" options={{ title: 'Cities' }} />
-      <Tabs.Screen name="here"   options={{ title: 'Here' }} />
-      <Tabs.Screen name="me"     options={{ title: 'Me' }} />
-
-      {/* ── Secondary screens — hidden from nav ────────────────────────── */}
-      <Tabs.Screen name="chat" options={{ href: null }} />
+      <Tabs.Screen name="now"  options={{ title: 'Now' }} />
+      <Tabs.Screen name="chat" options={{ title: 'My city' }} />
+      <Tabs.Screen name="here" options={{ title: 'Here' }} />
+      <Tabs.Screen name="me"   options={{ title: 'Me' }} />
     </Tabs>
   );
 }

@@ -749,6 +749,32 @@ html, body, #root {
   text-align: center;
 }
 
+/* Tappable variant — applied when the city row is a <button> that opens
+   the Switch City picker. Resets button chrome, keeps the text styling,
+   and inlines a chevron-down glyph to signal it's tappable. */
+.header-city-row-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0 auto;
+  padding: 2px 8px;
+  background: none;
+  border: 0;
+  border-radius: 10px;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 120ms ease, opacity 120ms ease;
+}
+.header-city-row-button:hover  { background-color: rgba(255, 255, 255, 0.04); }
+.header-city-row-button:active { opacity: 0.7; }
+
+.header-city-row-chevron {
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+
 /* Section 3: context chips */
 .header-chips {
   display: flex;

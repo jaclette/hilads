@@ -1,11 +1,16 @@
 /**
- * Cities screen — faithful port of the web "Switch city" full-page screen.
+ * Switch-city screen — full-page list of cities with search + ranking filters.
+ *
+ * Non-tab route: opened from the City Channel header (tap the city name) and
+ * from "Browse cities" fallbacks on other screens. Previously lived at
+ * (tabs)/cities.tsx as a visible bottom tab — moved here when that slot was
+ * repurposed for the "My city" tab pointing at the City Channel.
  *
  * Web source: App.jsx showCityPicker block + renderCityRow()
  *             index.css (.full-page, .city-row, .city-row-*, .city-list-label, .city-search-*)
  *
  * Structure:
- *   Header:  back button (→ chat) + centered "Switch city" title
+ *   Header:  back button + centered "Switch city" title
  *   Search:  full-width pill input, placeholder "Search a city…"
  *   Label:   "Top cities right now" / "Cities"
  *   Cards:   two-row cards:
@@ -125,7 +130,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-export default function CitiesScreen() {
+export default function SwitchCityScreen() {
   const router                                              = useRouter();
   const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
@@ -185,7 +190,8 @@ export default function CitiesScreen() {
       }
     }
     track('city_selected', { cityId: item.channelId, cityName: item.name });
-    router.push('/(tabs)/chat');
+    // replace (not push) — back from the City Channel shouldn't return here.
+    router.replace('/(tabs)/chat');
   }
 
   // Section label — "Top cities right now" when any city has activity, else "Cities"
@@ -220,7 +226,7 @@ export default function CitiesScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
-          onPress={() => router.push('/(tabs)/chat')}
+          onPress={() => router.back()}
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
@@ -300,7 +306,7 @@ export default function CitiesScreen() {
       ) : error ? (
         <View style={styles.center}>
           <Text style={styles.emptyText}>Couldn't load cities</Text>
-          <TouchableOpacity style={styles.retryBtn} onPress={() => load()} activeOpacity={0.7}>
+          <TouchableOpacity style={styles.retryBtn} onPress={() => load(filter)} activeOpacity={0.7}>
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>

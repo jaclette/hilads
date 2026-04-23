@@ -594,7 +594,7 @@ export default function ChatTab() {
           </Text>
           <TouchableOpacity
             style={styles.citiesBtn}
-            onPress={() => router.push('/(tabs)/cities')}
+            onPress={() => router.push('/switch-city' as never)}
             activeOpacity={0.8}
           >
             <Text style={styles.citiesBtnText}>Browse cities →</Text>
@@ -684,10 +684,25 @@ export default function ChatTab() {
 
         </View>
 
-        {/* ── Section 2: City hero name ── */}
-        <Text style={styles.cityHeroName} numberOfLines={2}>
-          {flag ? `${flag} ` : ''}{city.name}
-        </Text>
+        {/* ── Section 2: City hero name — tappable → switch city ── */}
+        <TouchableOpacity
+          style={styles.cityHeroRow}
+          onPress={() => router.push('/switch-city' as never)}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 12, right: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel="Change city"
+        >
+          <Text style={styles.cityHeroName} numberOfLines={2}>
+            {flag ? `${flag} ` : ''}{city.name}
+          </Text>
+          <Ionicons
+            name="chevron-down"
+            size={18}
+            color="rgba(255,255,255,0.45)"
+            style={styles.cityHeroChevron}
+          />
+        </TouchableOpacity>
 
         {/* ── Section 3: Context chips ── */}
         <View style={styles.chipsRow}>
@@ -959,6 +974,12 @@ const styles = StyleSheet.create({
   },
 
   // ── Section 2: City hero name ─────────────────────────────────────────────
+  cityHeroRow: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'center',
+    gap:            6,
+  },
   cityHeroName: {
     fontSize:      24,
     fontWeight:    '500',
@@ -966,6 +987,9 @@ const styles = StyleSheet.create({
     lineHeight:    29,
     letterSpacing: -0.3,
     textAlign:     'center',
+  },
+  cityHeroChevron: {
+    marginTop: 2,   // visually align with the text x-height, not its box
   },
 
   // ── Section 3: Context chips ───────────────────────────────────────────────
