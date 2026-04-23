@@ -652,6 +652,43 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
 
+  // ── Tab scroll preservation ─────────────────────────────────────────────────
+  // Each of the 3 inline tab drawers (NOW / HERE / ME-guest) has its own scroll
+  // container. Drawers unmount when their flag flips false, so we stash the
+  // last scrollTop in a ref and restore it the next time the tab opens.
+  // ProfileScreen (signed-in ME) has its own internal scroll — not preserved
+  // here; see TODO in ProfileScreen.jsx if that becomes important.
+  const tabScrollTops = useRef({ now: 0, here: 0, meGuest: 0 })
+  const nowBodyRef     = useRef(null)
+  const hereBodyRef    = useRef(null)
+  const meGuestBodyRef = useRef(null)
+
+  useEffect(() => {
+    if (!showEventDrawer) return
+    const el = nowBodyRef.current
+    if (!el) return
+    el.scrollTop = tabScrollTops.current.now
+    return () => { tabScrollTops.current.now = el.scrollTop }
+  }, [showEventDrawer])
+
+  useEffect(() => {
+    if (!showPeopleDrawer) return
+    const el = hereBodyRef.current
+    if (!el) return
+    el.scrollTop = tabScrollTops.current.here
+    return () => { tabScrollTops.current.here = el.scrollTop }
+  }, [showPeopleDrawer])
+
+  useEffect(() => {
+    // Only applies to the guest ME path (inline drawer). Signed-in ME uses
+    // <ProfileScreen /> which manages its own scroll.
+    if (!showProfileDrawer || account) return
+    const el = meGuestBodyRef.current
+    if (!el) return
+    el.scrollTop = tabScrollTops.current.meGuest
+    return () => { tabScrollTops.current.meGuest = el.scrollTop }
+  }, [showProfileDrawer, account])
+
   // Single source of truth for the current user's display name.
   // Registered users always use backend display_name; guests use localStorage nickname.
   const activeNickname = account?.display_name ?? nickname
@@ -3663,7 +3700,7 @@ export default function App() {
       )}
 
       {showEventDrawer && (
-        <div className="full-page">
+        <div className="full-page full-page--tab">
           <div className="page-header">
             <span className="page-title">Now</span>
           </div>
@@ -3678,7 +3715,7 @@ export default function App() {
               </button>
             ))}
           </div>
-          <div className="page-body">
+          <div className="page-body" ref={nowBodyRef}>
             {(() => {
               const openCreate = () => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
               const tz = cityTimezone || 'UTC'
@@ -4042,7 +4079,7 @@ export default function App() {
         }
 
         return (
-          <div className="full-page">
+          <div className="full-page full-page--tab">
             <div className="page-header">
               <span className="page-title">People here</span>
             </div>
@@ -4084,7 +4121,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="page-body people-page-body">
+            <div className="page-body people-page-body" ref={hereBodyRef}>
 
               {/* ── Section 1: Here now ── */}
               <div className="here-section-header">
@@ -4240,6 +4277,7 @@ export default function App() {
           myEvents={myEventsLoaded ? myEvents : null}
           myFriends={myFriendsLoaded ? myFriends : null}
           cityTimezone={cityTimezone}
+          tabMode
           onSave={setAccount}
           onViewFriend={(uid, nickname) => {
             setShowProfileDrawer(false)
@@ -4294,11 +4332,11 @@ export default function App() {
       )}
 
       {showProfileDrawer && !showAuthScreen && !account && (
-        <div className="full-page">
+        <div className="full-page full-page--tab">
           <div className="page-header">
             <span className="page-title">Me</span>
           </div>
-          <div className="page-body me-page-body">
+          <div className="page-body me-page-body" ref={meGuestBodyRef}>
             <>
               {(() => {
                 const [c1, c2] = avatarColors(profileNickInput || nickname)

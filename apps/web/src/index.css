@@ -4489,6 +4489,15 @@ img.pub-profile-avatar {
   will-change: transform;
 }
 
+/* Tab drawers (NOW / HERE / ME) are parallel destinations, not sub-screens,
+   so they mustn't slide in — users expect instant switching like Instagram,
+   Twitter, Airbnb. Sub-screens (Switch City, Conversations, Notifications,
+   Profile detail, etc.) keep .full-page's slide animation. */
+.full-page--tab {
+  animation:   none;
+  will-change: auto;
+}
+
 .page-header {
   display: flex;
   align-items: center;
