@@ -266,6 +266,9 @@ const styles = StyleSheet.create({
     bottom:        16,
     pointerEvents: 'none',
     zIndex:        99,
+    // Android has a separate stacking model (`elevation`) that ignores `zIndex`
+    // for siblings. Without this, particles render behind adjacent bubbles.
+    elevation:     99,
   },
   left: {
     left: 44,   // aligns roughly with the bubble left edge (after avatar)

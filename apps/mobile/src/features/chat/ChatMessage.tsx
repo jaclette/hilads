@@ -678,7 +678,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
 const styles = StyleSheet.create({
 
   bubbleWrap: {
-    position: 'relative', // establishes stacking context for the absolute overlay
+    // No `position: 'relative'` here — that would anchor the ReactionBurstOverlay
+    // INSIDE this wrap, putting particles behind the bubble on Android and
+    // clipping them inside the FlatList row. Matches DM's bubbleCol pattern so
+    // the overlay anchors at the screen root and bursts from a fixed corner.
   },
 
   // ── .feed-prompt — event orange pill ─────────────────────────────────────
