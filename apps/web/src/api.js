@@ -330,6 +330,16 @@ export async function fetchUpcomingEvents(channelId, days = 7) {
   return res.json() // { events: [...] }
 }
 
+// Thrown by createEvent / createEventSeries when the backend returns the
+// structured `event_limit_reached` error. Callers should route to the
+// limit-reached screen instead of surfacing a red error.
+export class EventLimitReachedError extends Error {
+  constructor() {
+    super('event_limit_reached')
+    this.name = 'EventLimitReachedError'
+  }
+}
+
 export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, endsAt, type) {
   const body = { guestId, nickname, title, starts_at: startsAt, ends_at: endsAt, type }
   if (locationHint) body.location_hint = locationHint
@@ -341,6 +351,7 @@ export async function createEvent(channelId, guestId, nickname, title, locationH
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
+    if (data.error === 'event_limit_reached') throw new EventLimitReachedError()
     throw new Error(data.error || 'Failed to create event')
   }
   return res.json()
@@ -355,6 +366,7 @@ export async function createEventSeries(channelId, guestId, payload) {
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
+    if (data.error === 'event_limit_reached') throw new EventLimitReachedError()
     throw new Error(data.error || 'Failed to create event series')
   }
   return res.json() // { series_id, first_event }
@@ -543,6 +555,21 @@ export async function fetchMyEvents(guestId) {
   const res = await fetch(`${BASE}/users/me/events?guestId=${encodeURIComponent(guestId)}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch my events')
   return res.json() // { events }
+}
+
+// Preflight for the 1-event-per-day rule. Cheap COUNT; safe on every CTA tap.
+// Returns { canCreate, isLegend, todayCount, limit }.
+export async function fetchCanCreateEvent(channelId, guestId) {
+  const qs = new URLSearchParams()
+  if (channelId) qs.set('channelId', String(channelId))
+  if (guestId)   qs.set('guestId',   guestId)
+  const res = await fetch(`${BASE}/users/me/can-create-event?${qs.toString()}`, { credentials: 'include' })
+  if (!res.ok) {
+    // On any non-2xx, assume the user CAN create — the POST will enforce the
+    // rule server-side and route to the limit screen via the error code.
+    return { canCreate: true, isLegend: false, todayCount: 0, limit: 1 }
+  }
+  return res.json()
 }
 
 export async function updateEvent(eventId, guestId, fields) {

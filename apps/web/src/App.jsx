@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction } from './api'
+import { createGuestSession, resolveLocation, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError } from './api'
+import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -651,6 +652,11 @@ export default function App() {
   const [account, setAccount] = useState(null)        // null = guest, object = registered
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
+
+  // Event limit reached — shown when a non-Legend user has already created
+  // their event today (preflight check), or when the POST returns the
+  // `event_limit_reached` error code (race safety).
+  const [showEventLimitReached, setShowEventLimitReached] = useState(false)
 
   // ── Tab scroll preservation ─────────────────────────────────────────────────
   // Each of the 3 inline tab drawers (NOW / HERE / ME-guest) has its own scroll
@@ -2541,10 +2547,37 @@ export default function App() {
   }
 
   // Guard: only registered users can create events
+  // Legacy name kept so existing callers don't need to change — now just
+  // delegates to tryOpenCreateEvent so every entry point gets the preflight.
   function openCreateEvent() {
+    tryOpenCreateEvent()
+  }
+
+  // Preflights the 1-event-per-day rule before opening the form. On limit
+  // hit → show the friendly limit screen. On network error → optimistically
+  // open the form (server enforces on POST and surfaces the same screen).
+  //
+  // `fromDrawer` = true closes the NOW drawer on open and records that the
+  // user came from there (so creation can return them to it via
+  // `createFromDrawer`).
+  async function tryOpenCreateEvent({ fromDrawer = false } = {}) {
     if (!account) {
       setGuestGate({ reason: 'create_event' })
       return
+    }
+    try {
+      const r = await fetchCanCreateEvent(channelId, guest?.guestId)
+      if (!r.canCreate) {
+        if (fromDrawer) setShowEventDrawer(false)
+        setShowEventLimitReached(true)
+        return
+      }
+    } catch {
+      // Fall through — optimistic open.
+    }
+    if (fromDrawer) {
+      setShowEventDrawer(false)
+      setCreateFromDrawer(true)
     }
     setShowCreateEvent(true)
   }
@@ -3730,7 +3763,7 @@ export default function App() {
           </div>
           <div className="page-body" ref={nowBodyRef}>
             {(() => {
-              const openCreate = () => { if (!account) { setGuestGate({ reason: 'create_event' }); return }; setShowEventDrawer(false); setShowCreateEvent(true); setCreateFromDrawer(true) }
+              const openCreate = () => { tryOpenCreateEvent({ fromDrawer: true }) }
               const tz = cityTimezone || 'UTC'
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
               const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
@@ -3925,7 +3958,7 @@ export default function App() {
             {account?.mode === 'local' ? (
               <button
                 className="now-create-btn now-create-btn--local"
-                onClick={() => { setShowEventDrawer(false); setShowCreateEvent(true) }}
+                onClick={() => tryOpenCreateEvent({ fromDrawer: true })}
                 aria-label="Host your spot"
               >
                 Host your spot
@@ -4593,6 +4626,11 @@ export default function App() {
           cityTimezone={cityTimezone}
           account={account}
           onCreated={handleEventCreated}
+          onLimitReached={() => {
+            setShowCreateEvent(false)
+            setCreateFromDrawer(false)
+            setShowEventLimitReached(true)
+          }}
           onBack={() => {
             setShowCreateEvent(false)
             if (createFromDrawer) { setShowEventDrawer(true) }
@@ -4609,6 +4647,11 @@ export default function App() {
           onCreated={handleTopicCreated}
           onBack={() => setShowCreateTopic(false)}
         />
+      )}
+
+      {/* Event limit reached — friendly full-page over the feed/drawer. */}
+      {showEventLimitReached && (
+        <EventLimitReachedScreen onClose={() => setShowEventLimitReached(false)} />
       )}
 
       {/* Creation chooser bottom sheet */}

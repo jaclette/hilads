@@ -8,6 +8,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchNowFeed } from '@/api/topics';
+import { fetchCanCreateEvent } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { FeedItem, HiladsEvent } from '@/types';
@@ -530,7 +531,19 @@ export default function NowScreen() {
       <CreateSheet
         visible={showSheet}
         onClose={() => setShowSheet(false)}
-        onSelectEvent={() => router.push('/event/create')}
+        onSelectEvent={async () => {
+          setShowSheet(false);
+          // Preflight the 1-event-per-day rule. Server still enforces on POST.
+          // Any transient failure (network, etc.) falls through to the form —
+          // the server safety net will route to the limit screen if needed.
+          try {
+            if (city) {
+              const r = await fetchCanCreateEvent(city.channelId, identity?.guestId);
+              if (!r.canCreate) { router.push('/event/limit-reached' as never); return; }
+            }
+          } catch { /* fall through — optimistic open */ }
+          router.push('/event/create');
+        }}
         onSelectTopic={() => router.push('/topic/create')}
       />
     </SafeAreaView>

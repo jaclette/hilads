@@ -262,6 +262,14 @@ export default function CreateEventScreen() {
         router.replace(`/event/${first_event.id}`);
       }
     } catch (e: unknown) {
+      // Server safety net for the 1-event-per-day rule. If the preflight at
+      // the CTA was stale (or the client skipped it), route to the same
+      // friendly limit screen instead of showing a red error.
+      const body = (e as { body?: { error?: string } } | null)?.body ?? null;
+      if (body?.error === 'event_limit_reached') {
+        router.replace('/event/limit-reached' as never);
+        return;
+      }
       setError(e instanceof Error ? e.message : 'Failed to create event');
     } finally {
       setSubmitting(false);

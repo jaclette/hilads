@@ -678,10 +678,21 @@ class EventRepository
             Response::json(['error' => 'You must wait 5 minutes before creating another event'], 429);
         }
 
-        // Cap: 1 active event per guest per channel.
-        // Ambassadors are exempt — they may host multiple concurrent events.
-        if (!$isAmbassador && self::guestHasActiveEvent($pdo, $parentId, $guestId)) {
-            Response::json(['error' => 'You already have an active event in this channel'], 429);
+        // Daily cap: 1 event per calendar day, global across all cities.
+        // Ambassadors (Legends) are exempt. TZ resolves from the target city —
+        // "today" is the creator's city-local day. Race with the insert is fine:
+        // worst case two rapid requests both pass, and the client shows the
+        // limit screen via the structured `event_limit_reached` error.
+        if (!$isAmbassador) {
+            $city = CityRepository::findById($channelId);
+            $tz   = $city['timezone'] ?? 'UTC';
+            $todayCount = self::guestCreatedEventTodayCount($pdo, $userId, $guestId, $tz);
+            if ($todayCount >= 1) {
+                Response::json([
+                    'error'   => 'event_limit_reached',
+                    'message' => "You've already created your event today.",
+                ], 429);
+            }
         }
 
         $now       = time();
@@ -906,5 +917,40 @@ class EventRepository
         ");
         $stmt->execute(['parent_id' => $parentId, 'guest_id' => $guestId]);
         return (bool) $stmt->fetchColumn();
+    }
+
+    /**
+     * Count of events this identity has created during the current calendar
+     * day in `$tz`. Matches on `created_by` for registered users AND
+     * `guest_id` for anonymous, so moving from guest → account on the same
+     * day still counts previously-created events. Global across cities.
+     */
+    public static function guestCreatedEventTodayCount(
+        PDO $pdo,
+        ?string $userId,
+        ?string $guestId,
+        string $tz,
+    ): int {
+        // Midnight in city-local TZ, expressed as a UTC instant for the WHERE.
+        $dayStart = (new \DateTime('now', new \DateTimeZone($tz)))
+            ->setTime(0, 0, 0)
+            ->setTimezone(new \DateTimeZone('UTC'))
+            ->format('Y-m-d H:i:s');
+
+        $stmt = $pdo->prepare("
+            SELECT COUNT(*) FROM channel_events
+             WHERE source_type = 'hilads'
+               AND created_at >= :day_start
+               AND (
+                     (:user_id::text  IS NOT NULL AND created_by = :user_id) OR
+                     (:guest_id::text IS NOT NULL AND guest_id   = :guest_id)
+                   )
+        ");
+        $stmt->execute([
+            'day_start' => $dayStart,
+            'user_id'   => $userId,
+            'guest_id'  => $guestId,
+        ]);
+        return (int) $stmt->fetchColumn();
     }
 }

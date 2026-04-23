@@ -910,6 +910,40 @@ $router->add('GET', '/api/v1/users/me/events', function () {
     Response::json(['events' => $events]);
 });
 
+// Preflight for the "1 event per calendar day" rule. Cheap (single COUNT),
+// idempotent, safe to call on every CTA tap. Guests allowed (rule applies
+// to them too, keyed by guest_id).
+//
+//   GET /api/v1/users/me/can-create-event?channelId=N&guestId=...
+//   →   { canCreate, isLegend, todayCount, limit }
+$router->add('GET', '/api/v1/users/me/can-create-event', function () {
+    $authUser = AuthService::currentUser();         // nullable — guests too
+    $guestId  = $_GET['guestId']   ?? null;
+    $channel  = (int) ($_GET['channelId'] ?? 0);
+
+    if (!isValidGuestId($guestId) && $authUser === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+
+    $city = $channel > 0 ? CityRepository::findById($channel) : null;
+    $tz   = $city['timezone'] ?? 'UTC';
+
+    $isLegend = (bool) ($authUser['_is_ambassador'] ?? false);
+    $count    = EventRepository::guestCreatedEventTodayCount(
+        Database::pdo(),
+        $authUser['id'] ?? null,
+        $guestId,
+        $tz,
+    );
+
+    Response::json([
+        'canCreate'  => $isLegend || $count === 0,
+        'isLegend'   => $isLegend,
+        'todayCount' => $count,
+        'limit'      => 1,
+    ]);
+});
+
 $router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
     $userId = $params['userId'] ?? '';
     if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {

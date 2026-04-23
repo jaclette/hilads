@@ -98,6 +98,7 @@ function RootLayoutInner() {
             <Stack.Screen name="event/create" />
             <Stack.Screen name="event/[id]" />
             <Stack.Screen name="event/[id]/edit" />
+            <Stack.Screen name="event/limit-reached" />
             <Stack.Screen name="e/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="t/[id]" options={{ headerShown: false }} />
             <Stack.Screen name="city/[slug]" options={{ headerShown: false }} />

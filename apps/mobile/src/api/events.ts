@@ -129,6 +129,30 @@ export async function deleteEvent(eventId: string, guestId: string): Promise<voi
   await api.delete(`/events/${eventId}`, { guestId });
 }
 
+// ── Create-event preflight ────────────────────────────────────────────────────
+// Mirrors the backend's 1-event-per-day rule so the client can skip the form
+// and go straight to the friendly limit screen when the quota is used. The
+// server still enforces the rule on POST — this is UX, not security.
+
+export interface CanCreateEventResponse {
+  canCreate:  boolean;
+  isLegend:   boolean;
+  todayCount: number;
+  limit:      number;
+}
+
+export async function fetchCanCreateEvent(
+  channelId: number | string,
+  guestId?:  string,
+): Promise<CanCreateEventResponse> {
+  return api.get<CanCreateEventResponse>('/users/me/can-create-event', {
+    params: {
+      channelId: String(channelId),
+      guestId,
+    },
+  });
+}
+
 // ── Event participants ────────────────────────────────────────────────────────
 // GET /events/{id}/participants?sessionId={sid}
 // Returns { participants, count, isIn } — mirrors web fetchEventParticipants(eventId, sessionId)

@@ -23,7 +23,7 @@ import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
-import { fetchCityEvents } from '@/api/events';
+import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
@@ -480,11 +480,19 @@ export default function ChatTab() {
     promptTimersRef.current.push(t1, t2, t3);
   }
 
-  function handlePromptCta(subtype: string) {
+  async function handlePromptCta(subtype: string) {
     setPromptItems(prev => prev.filter(p => p.subtype !== subtype));
     if (subtype === 'photo') {
       pickImageRef.current?.();
     } else if (subtype === 'create-event') {
+      // Preflight the 1-event-per-day rule; fall through to the form on
+      // transient failure (server still enforces on POST).
+      try {
+        if (city) {
+          const r = await fetchCanCreateEvent(city.channelId, identity?.guestId);
+          if (!r.canCreate) { router.push('/event/limit-reached' as never); return; }
+        }
+      } catch { /* fall through */ }
       router.push('/event/create');
     } else if (subtype === 'explore') {
       router.push('/(tabs)/now');

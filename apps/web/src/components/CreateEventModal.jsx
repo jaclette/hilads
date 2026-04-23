@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createEvent, createEventSeries, updateEvent, deleteEvent } from '../api'
+import { createEvent, createEventSeries, updateEvent, deleteEvent, EventLimitReachedError } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 import BackButton from './BackButton'
 
@@ -180,7 +180,7 @@ const QUICK_PRESETS = [
   { key: 'weekends',      emoji: '🎉', label: 'Weekends',      desc: 'Sat & Sun',    recurrence: 'weekly', startTime: null,    endTime: null,    weekdays: [0, 6] },
 ]
 
-export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack, onDeleted, editEvent }) {
+export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack, onDeleted, onLimitReached, editEvent }) {
   const tz = cityTimezone || 'UTC'
   const isEdit = !!editEvent
   const [type, setType] = useState(() => editEvent?.type || 'other')
@@ -274,6 +274,10 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
         )
         onCreated(newEvent)
       } catch (err) {
+        if (err instanceof EventLimitReachedError) {
+          onLimitReached?.()
+          return
+        }
         setError(err.message)
       } finally {
         setSubmitting(false)
@@ -308,6 +312,10 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
         onBack()
       }
     } catch (err) {
+      if (err instanceof EventLimitReachedError) {
+        onLimitReached?.()
+        return
+      }
       setError(err.message)
     } finally {
       setSubmitting(false)
