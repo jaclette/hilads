@@ -829,6 +829,9 @@ const styles = StyleSheet.create({
   flex:      { flex: 1 },
 
   // ── Header container ───────────────────────────────────────────────────────
+  // The orange halo around the logo used to live here; it now lives inside
+  // AppHeader's own glowWrap so every tab consuming AppHeader gets it
+  // consistently (no more drift between MY CITY and NOW/HERE/ME).
   header: {
     flexDirection:     'column',
     gap:               14,
@@ -838,11 +841,6 @@ const styles = StyleSheet.create({
     backgroundColor:   Colors.bg2,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.06)',
-    shadowColor:       '#C24A38',
-    shadowOffset:      { width: 0, height: 6 },
-    shadowOpacity:     0.08,
-    shadowRadius:      20,
-    elevation:         3,
   },
 
   // ── Section 1: Top bar ─────────────────────────────────────────────────────

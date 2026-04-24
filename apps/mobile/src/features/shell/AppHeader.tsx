@@ -36,6 +36,7 @@ export function AppHeader({ rightExtra }: Props) {
   } = useApp();
 
   return (
+    <View style={styles.glowWrap}>
     <View style={styles.topBar}>
 
       {/* Left: notification bell */}
@@ -96,6 +97,7 @@ export function AppHeader({ rightExtra }: Props) {
       </View>
 
     </View>
+    </View>
   );
 }
 
@@ -103,6 +105,19 @@ export function AppHeader({ rightExtra }: Props) {
 // pixel-for-pixel. Do not change these without updating the MY CITY context
 // sections below this component (city row, chips) which sit on the same rhythm.
 const styles = StyleSheet.create({
+  // Single source of truth for the soft orange "halo" around the logo row.
+  // Previously lived on chat.tsx's styles.header, which meant only MY CITY
+  // got the glow; moving it here so every tab consuming AppHeader matches.
+  // Background matches parent surfaces (bg2) so the shadow — not the box —
+  // is what creates visual interest.
+  glowWrap: {
+    backgroundColor: Colors.bg2,
+    shadowColor:     '#C24A38',
+    shadowOffset:    { width: 0, height: 6 },
+    shadowOpacity:   0.08,
+    shadowRadius:    20,
+    elevation:       3,
+  },
   topBar: {
     flexDirection:  'row',
     justifyContent: 'space-between',

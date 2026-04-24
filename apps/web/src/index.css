@@ -681,12 +681,12 @@ html, body, #root {
 /* Wrapper that frames the shared AppHeader inside tab drawers (NOW/HERE/ME).
    Mirrors .header-new's horizontal rhythm so the bell/logo/DM row lands in
    the same place visually as on MY CITY. */
-/* No border-bottom — header flows directly into the tab sub-header, matching
-   MY CITY's look. Background kept so the header strip still reads as a
-   surface distinct from the screen bg. */
+/* Header wrapper for NOW/HERE/ME tab drawers. No background — reads on the
+   drawer's raw bg, matching .header-new on MY CITY so the logo feels
+   visually identical across all 4 tabs. No border-bottom — header flows
+   directly into the tab sub-header. */
 .tab-app-header {
   padding: 16px 18px 12px;
-  background: var(--surface);
 }
 @media (min-width: 768px) {
   /* Desktop keeps its own 3-zone header inside the city feed; this wrapper

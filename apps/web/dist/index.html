@@ -2,30 +2,40 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hilads — feel the city</title>
-    <meta name="description" content="Join a city instantly. See who's around. Discover what's happening now." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Hilads: Feel Local, Anywhere</title>
+    <meta name="description" content="Meet locals and explorers in your city. Discover real-time events near you and join what's happening now. No sign-up needed." />
     <meta name="theme-color" content="#161210" />
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Hilads" />
+    <link rel="apple-touch-icon" href="/logo/icon.svg" />
 
     <!-- Open Graph -->
     <meta property="og:type"        content="website" />
     <meta property="og:site_name"   content="Hilads" />
-    <meta property="og:title"       content="Hilads — feel the city" />
-    <meta property="og:description" content="Join a city instantly. See who's around. Discover what's happening now." />
-    <meta property="og:image"       content="/logo/hilads-icon-128.png" />
+    <meta property="og:title"       content="Hilads: Feel Local, Anywhere" />
+    <meta property="og:description" content="Meet locals and explorers in your city. Discover real-time events near you and join what's happening now. No sign-up needed." />
+    <meta property="og:image"       content="/logo/icon.svg" />
 
     <!-- Twitter / X card -->
     <meta name="twitter:card"        content="summary" />
-    <meta name="twitter:title"       content="Hilads — feel the city" />
-    <meta name="twitter:description" content="Join a city instantly. See who's around. Discover what's happening now." />
-    <meta name="twitter:image"       content="/logo/hilads-icon-128.png" />
+    <meta name="twitter:title"       content="Hilads: Feel Local, Anywhere" />
+    <meta name="twitter:description" content="Meet locals and explorers in your city. Discover real-time events near you and join what's happening now. No sign-up needed." />
+    <meta name="twitter:image"       content="/logo/icon.svg" />
 
+    <link rel="canonical" href="https://hilads.live" />
     <link rel="icon" type="image/svg+xml" href="/logo/icon.svg">
     <link rel="manifest" href="/manifest.webmanifest">
-    <script type="module" crossorigin src="/assets/index-Df8eXgIf.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-ugNKbPEn.css">
+    <script type="module" crossorigin src="/assets/index-Dsqlusbd.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Ca9f_g04.css">
   </head>
   <body>
+    <!-- Stub for Zalo in-app browser SDK — prevents ReferenceError when zaloJSV2
+         is accessed by Zalo's injected script before the SDK fully initialises. -->
+    <script>window.zaloJSV2 = window.zaloJSV2 || {};</script>
     <div id="root"></div>
   </body>
 </html>
