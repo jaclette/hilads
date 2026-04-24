@@ -127,23 +127,21 @@ const styles = StyleSheet.create({
     gap:           8,
   },
   iconBtn: {
-    // Bumped from 36 to match web's visual weight — Ionicons outline and
-    // Feather strokes render lighter than the web SVGs (stroke 2.1), so
-    // container + glyph both need a hair more room. hitSlop on each pressable
-    // brings the effective touch to 48pt (exceeds Apple HIG 44pt, Android 48dp).
+    // Flat icon container (no bg, no border) so the header reads as simple
+    // icons, matching MY CITY's look across all tabs. The 40×40 size remains
+    // to ensure a comfortable tap area; hitSlop brings the effective touch
+    // target to 48pt (exceeds Apple HIG 44pt and Android Material 48dp).
+    // The red notification badge (.iconBadge) stays positioned relative to
+    // this box, so badge placement is unchanged.
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
     alignItems:      'center',
     justifyContent:  'center',
   },
-  iconBtnUnread: {
-    backgroundColor: 'rgba(255,122,60,0.08)',
-    borderColor:     'rgba(255,122,60,0.18)',
-  },
+  // Retained as a no-op so the conditional style array at call sites keeps
+  // working without touching the JSX. The red badge is the unread cue now.
+  iconBtnUnread: {},
   iconBadge: {
     position:          'absolute',
     top:               -5,

@@ -873,13 +873,13 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
     backgroundColor:   Colors.bg,
   },
+  // No borderBottom — header flows directly into the tab sub-header,
+  // matching MY CITY's look.
   appHeaderWrap: {
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
     paddingBottom:     12,
     backgroundColor:   Colors.bg2,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   headerCenter: {
     flex:       1,

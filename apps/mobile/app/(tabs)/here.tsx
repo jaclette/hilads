@@ -464,13 +464,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.md,
     borderBottomWidth: 1, borderBottomColor: Colors.border, minHeight: 56,
   },
+  // No borderBottom — header flows directly into the tab sub-header,
+  // matching MY CITY's look.
   appHeaderWrap: {
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
     paddingBottom:     12,
     backgroundColor:   Colors.bg2,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },

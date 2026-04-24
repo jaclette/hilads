@@ -872,15 +872,14 @@ const styles = StyleSheet.create({
     gap:           8,
   },
 
-  // Icon buttons — must match AppHeader's iconBtn (40×40, radius 12). Only
-  // used here for the Share button passed in via AppHeader's rightExtra slot.
+  // Icon buttons — must match AppHeader's iconBtn: flat, 40×40, radius 12.
+  // Only used here for the Share button passed in via AppHeader's rightExtra
+  // slot. No background / border so Share is visually consistent with the
+  // flat bell + DM icons rendered by AppHeader itself.
   iconBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
     alignItems:      'center',
     justifyContent:  'center',
     position:        'relative',

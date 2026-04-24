@@ -567,13 +567,14 @@ const styles = StyleSheet.create({
     minHeight:         56,
   },
   // Wrapper that frames the shared AppHeader with consistent padding.
+  // No borderBottom — header flows directly into the tab sub-header, matching
+  // MY CITY's look. Background kept so the header area still reads as a
+  // surface strip (bg2), not against the raw screen bg.
   appHeaderWrap: {
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
     paddingBottom:     12,
     backgroundColor:   Colors.bg2,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
