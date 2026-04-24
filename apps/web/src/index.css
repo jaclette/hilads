@@ -694,10 +694,11 @@ html, body, #root {
   .tab-app-header { display: none; }
 }
 
-/* Section 1: top bar — all three zones vertically centered */
+/* Section 1: top bar — three equal columns keep the center truly centered
+   regardless of how many action buttons sit in left/right zones. */
 .header-top-bar {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
 
@@ -705,13 +706,15 @@ html, body, #root {
 .header-top-right {
   display: flex;
   align-items: center;
-  /* Fixed min-width keeps center block truly centered */
-  min-width: 36px;
+}
+
+.header-top-left {
+  justify-self: start;
 }
 
 .header-top-right {
   gap: 8px;
-  justify-content: flex-end;
+  justify-self: end;
 }
 
 /* Center block: logo + tagline side-by-side */
@@ -720,7 +723,6 @@ html, body, #root {
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  flex: 1;
   padding: 0 8px;
   justify-content: center;
 }

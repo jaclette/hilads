@@ -119,17 +119,19 @@ const styles = StyleSheet.create({
     elevation:       3,
   },
   topBar: {
-    flexDirection:  'row',
-    justifyContent: 'space-between',
-    alignItems:     'center',
-  },
-  topLeft: {
     flexDirection: 'row',
     alignItems:    'center',
-    minWidth:      36,
+  },
+  // Equal-flex side rails keep the center block geometrically centered
+  // regardless of how many action buttons sit on either side (e.g. MY CITY's
+  // extra Share button). Mirrors the web grid-template-columns: 1fr auto 1fr.
+  topLeft: {
+    flex:             1,
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'flex-start',
   },
   topCenter: {
-    flex:             1,
     flexDirection:    'row',
     alignItems:       'center',
     justifyContent:   'center',
@@ -137,9 +139,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   topRight: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           8,
+    flex:             1,
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'flex-end',
+    gap:              8,
   },
   iconBtn: {
     // Flat icon container (no bg, no border) so the header reads as simple
