@@ -3,7 +3,7 @@ import {
   View, Text, FlatList, StyleSheet,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -13,7 +13,6 @@ import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { FeedItem, HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import { CreateSheet } from '@/components/CreateSheet';
 import { AppHeader } from '@/features/shell/AppHeader';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -142,7 +141,14 @@ function EmptyState({ city }: { city?: string }) {
   );
 }
 
-function FilterEmptyState({ filter, city, userMode }: { filter: 'all' | 'events' | 'topics'; city?: string; userMode?: string | null }) {
+function FilterEmptyState({
+  filter, city, userMode, onStartPulse,
+}: {
+  filter:        'all' | 'events' | 'topics';
+  city?:         string;
+  userMode?:     string | null;
+  onStartPulse?: () => void;
+}) {
   if (filter === 'all') return <EmptyState city={city} />;
   if (filter === 'events' && userMode === 'local') {
     return (
@@ -166,6 +172,18 @@ function FilterEmptyState({ filter, city, userMode }: { filter: 'all' | 'events'
           ? `Be the first to create one${city ? ` in ${city}` : ''}`
           : 'Start a pulse and get the city talking'}
       </Text>
+
+      {/* Pulse-filter-only CTA — mirrors web's centered blue "Start a pulse ⚡"
+          button in the empty state (apps/web App.jsx ~3884). */}
+      {filter === 'topics' && onStartPulse && (
+        <TouchableOpacity
+          style={styles.emptyPulseBtn}
+          onPress={onStartPulse}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.emptyPulseBtnText}>Start a pulse ⚡</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -189,6 +207,7 @@ function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
 
 export default function NowScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { city, identity, account, booting } = useApp();
   const userMode = account?.mode ?? identity?.mode ?? null;
 
@@ -197,8 +216,29 @@ export default function NowScreen() {
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
-  const [showSheet,     setShowSheet]     = useState(false);
   const [filter,        setFilter]        = useState<'all' | 'events' | 'topics'>('all');
+
+  // ── NOW action-block handlers — web parity (apps/web/App.jsx:3950+). ────
+  // Topics (pulses) have no 1/day rule, so Start-a-pulse pushes directly.
+  // Events go through the fetchCanCreateEvent preflight landed in commit
+  // e0274e4; server still enforces the limit on POST.
+  function handleStartPulse() {
+    router.push('/topic/create');
+  }
+  async function handleHostSpot() {
+    if (!city) return;
+    try {
+      const r = await fetchCanCreateEvent(city.channelId, identity?.guestId);
+      if (!r.canCreate) { router.push('/event/limit-reached' as never); return; }
+    } catch { /* optimistic open — server safety net catches the race */ }
+    router.push('/event/create');
+  }
+  function handleSeeUpcoming() {
+    if (!city) return;
+    router.push(
+      `/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`,
+    );
+  }
 
   // Stable ref for WS participant count patches
   const itemsRef = useRef<FeedItem[]>([]);
@@ -462,7 +502,12 @@ export default function NowScreen() {
           </TouchableOpacity>
         </View>
       ) : listData.length === 0 ? (
-        <FilterEmptyState filter={filter} city={city?.name} userMode={userMode} />
+        <FilterEmptyState
+          filter={filter}
+          city={city?.name}
+          userMode={userMode}
+          onStartPulse={handleStartPulse}
+        />
       ) : (
         <FlatList
           data={listData}
@@ -504,48 +549,39 @@ export default function NowScreen() {
         />
       )}
 
-      {/* Sticky CTA */}
+      {/* Sticky bottom action block — web parity (apps/web index.css:5809 + 6056).
+          Row: [Start a pulse ⚡] [Host your spot]  then [See what's coming 🔮]
+          below it. Absolute so it pins above the bottom tab bar regardless of
+          scroll. Safe-area-aware via insets.bottom. */}
       {city && (
-        <TouchableOpacity
-          style={styles.upcomingCta}
-          activeOpacity={0.7}
-          onPress={() => router.push(`/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`)}
-        >
-          <Text style={styles.upcomingCtaEmoji}>🔮</Text>
-          <Text style={styles.upcomingCtaText}>See what's coming</Text>
-          <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
-        </TouchableOpacity>
+        <View style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}>
+          <View style={styles.bottomActionsRow}>
+            <TouchableOpacity
+              style={styles.pulseBtn}
+              activeOpacity={0.8}
+              onPress={handleStartPulse}
+            >
+              <Text style={styles.pulseBtnText}>Start a pulse ⚡</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.hostBtn}
+              activeOpacity={0.85}
+              onPress={handleHostSpot}
+            >
+              <Text style={styles.hostBtnText}>Host your spot</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            style={styles.upcomingCta}
+            activeOpacity={0.75}
+            onPress={handleSeeUpcoming}
+          >
+            <Text style={styles.upcomingCtaEmoji}>🔮</Text>
+            <Text style={styles.upcomingCtaText}>See what's coming</Text>
+            <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
+          </TouchableOpacity>
+        </View>
       )}
-
-      {/* FAB — local hosts get a labeled CTA, others get the classic "+" */}
-      {userMode === 'local' ? (
-        <TouchableOpacity style={styles.fabLocal} activeOpacity={0.85} onPress={() => setShowSheet(true)}>
-          <Text style={styles.fabLocalText}>Host your spot</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={styles.fab} activeOpacity={0.85} onPress={() => setShowSheet(true)}>
-          <Text style={styles.fabIcon}>+</Text>
-        </TouchableOpacity>
-      )}
-
-      <CreateSheet
-        visible={showSheet}
-        onClose={() => setShowSheet(false)}
-        onSelectEvent={async () => {
-          setShowSheet(false);
-          // Preflight the 1-event-per-day rule. Server still enforces on POST.
-          // Any transient failure (network, etc.) falls through to the form —
-          // the server safety net will route to the limit screen if needed.
-          try {
-            if (city) {
-              const r = await fetchCanCreateEvent(city.channelId, identity?.guestId);
-              if (!r.canCreate) { router.push('/event/limit-reached' as never); return; }
-            }
-          } catch { /* fall through — optimistic open */ }
-          router.push('/event/create');
-        }}
-        onSelectTopic={() => router.push('/topic/create')}
-      />
     </SafeAreaView>
   );
 }
@@ -626,7 +662,10 @@ const styles = StyleSheet.create({
     color:             Colors.muted,
   },
 
-  list: { paddingBottom: 90, paddingHorizontal: Spacing.md, gap: Spacing.sm },
+  // paddingBottom reserves room for the sticky bottomActions block
+  // (pulse+host row ≈52 + gap 10 + upcoming ≈48 + padding ≈24 ≈ 140).
+  // Safe-area inset is added at render time via contentContainerStyle merge.
+  list: { paddingBottom: 160, paddingHorizontal: Spacing.md, gap: Spacing.sm },
 
   // ── Shared card base ───────────────────────────────────────────────────────
   card: {
@@ -738,60 +777,96 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(184,114,40,0.04)',
   },
 
-  // ── FAB + CTA ──────────────────────────────────────────────────────────────
-  fab: {
-    position:        'absolute',
-    right:           Spacing.md,
-    bottom:          Spacing.md + 52 + Spacing.sm,
-    width:           58,
-    height:          58,
-    borderRadius:    29,
-    backgroundColor: Colors.accent,
-    alignItems:      'center',
-    justifyContent:  'center',
-    shadowColor:     Colors.accent,
-    shadowOffset:    { width: 0, height: 4 },
-    shadowOpacity:   0.45,
-    shadowRadius:    12,
-    elevation:       10,
-  },
-  fabIcon: { fontSize: 30, color: Colors.white, lineHeight: 34, marginTop: -2 },
-
-  fabLocal: {
-    position:        'absolute',
-    right:           Spacing.md,
-    bottom:          Spacing.md + 52 + Spacing.sm,
-    paddingHorizontal: 22,
-    height:          52,
-    borderRadius:    26,
-    backgroundColor: Colors.accent,
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexDirection:   'row',
-    gap:             8,
-    shadowColor:     Colors.accent,
-    shadowOffset:    { width: 0, height: 4 },
-    shadowOpacity:   0.45,
-    shadowRadius:    12,
-    elevation:       10,
-  },
-  fabLocalText: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.white, letterSpacing: -0.2 },
-
-  upcomingCta: {
+  // ── Sticky bottom action block — web parity ────────────────────────────────
+  // Absolute-positioned container pinned above the bottom tab bar. Contains
+  // the [Start a pulse ⚡] [Host your spot] row and the [See what's coming 🔮]
+  // wide button stacked below. Content scroll has matching paddingBottom so
+  // the last item isn't hidden under this block.
+  bottomActions: {
     position:          'absolute',
-    left:              Spacing.md,
-    right:             Spacing.md,
+    left:              0,
+    right:             0,
     bottom:            0,
-    backgroundColor:   Colors.bg2,
-    borderRadius:      Radius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingTop:        10,
+    backgroundColor:   'rgba(14,14,16,0.92)',
+    borderTopWidth:    1,
+    borderTopColor:    Colors.border,
+  },
+  bottomActionsRow: {
+    flexDirection: 'row',
+    gap:           10,
+  },
+
+  // Mirrors web .now-pulse-btn (rgba(96,165,250,…) blue tint on dark bg).
+  pulseBtn: {
+    flex:              1,
+    height:            52,
+    borderRadius:      18,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    paddingVertical:   Spacing.md,
+    borderColor:       'rgba(96,165,250,0.25)',
+    backgroundColor:   'rgba(96,165,250,0.10)',
+    alignItems:        'center',
+    justifyContent:    'center',
+  },
+  pulseBtnText: {
+    color:     '#60a5fa',
+    fontSize:  FontSizes.md,
+    fontWeight: '700',
+  },
+
+  // Mirrors web .now-create-btn--local (#FF7A3C + subtle orange shadow).
+  hostBtn: {
+    flex:              1,
+    height:            52,
+    borderRadius:      18,
+    backgroundColor:   Colors.accent,
+    alignItems:        'center',
+    justifyContent:    'center',
+    shadowColor:       Colors.accent,
+    shadowOffset:      { width: 0, height: 4 },
+    shadowOpacity:     0.35,
+    shadowRadius:      12,
+    elevation:         6,
+  },
+  hostBtnText: {
+    color:     Colors.white,
+    fontSize:  FontSizes.md,
+    fontWeight: '700',
+    letterSpacing: -0.2,
+  },
+
+  // Mirrors web .upcoming-cta (orange-tinted wide pill).
+  upcomingCta: {
+    marginTop:         10,
+    backgroundColor:   'rgba(255,122,60,0.07)',
+    borderRadius:      16,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.22)',
+    paddingVertical:   14,
     paddingHorizontal: Spacing.md,
     flexDirection:     'row',
     alignItems:        'center',
     gap:               10,
   },
-  upcomingCtaEmoji: { fontSize: 22, lineHeight: 28 },
-  upcomingCtaText:  { flex: 1, fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
+  upcomingCtaEmoji: { fontSize: 20, lineHeight: 24 },
+  upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.accent },
+
+  // Centered CTA rendered inside the Pulses filter's empty state (web parity).
+  emptyPulseBtn: {
+    marginTop:         Spacing.md,
+    paddingHorizontal: 22,
+    height:            48,
+    borderRadius:      16,
+    borderWidth:       1,
+    borderColor:       'rgba(96,165,250,0.25)',
+    backgroundColor:   'rgba(96,165,250,0.10)',
+    alignItems:        'center',
+    justifyContent:    'center',
+  },
+  emptyPulseBtnText: {
+    color:      '#60a5fa',
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+  },
 });
