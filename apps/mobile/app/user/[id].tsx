@@ -23,6 +23,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
+import { EventPill } from '@/features/events/EventPill';
 import { ReportModal } from '@/features/profile/ReportModal';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
 import { formatDateLabel } from '@/lib/messageTime';
@@ -95,50 +96,8 @@ const VIBE_META: Record<string, { emoji: string; label: string; caption: string 
   chill:       { emoji: '🧘', label: 'Chill',        caption: 'Easy vibes only 😌'             },
 };
 
-// ── Event helpers ─────────────────────────────────────────────────────────────
-
-const EVENT_ICONS: Record<string, string> = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
-};
-
-function formatEventTime(ts: number): string {
-  const d        = new Date(ts * 1000);
-  const today    = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  if (d.toDateString() === today.toDateString())    return `Today · ${time}`;
-  if (d.toDateString() === tomorrow.toDateString()) return `Tomorrow · ${time}`;
-  return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ` · ${time}`;
-}
-
-function EventPill({ event, onPress }: { event: HiladsEvent; onPress: () => void }) {
-  const icon   = EVENT_ICONS[event.event_type] ?? '📌';
-  const now    = Date.now() / 1000;
-  const isLive = event.starts_at <= now && event.expires_at > now;
-  return (
-    <TouchableOpacity style={styles.eventPill} onPress={onPress} activeOpacity={0.7}>
-      <Text style={styles.eventIcon}>{icon}</Text>
-      <View style={styles.eventInfo}>
-        <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-        <View style={styles.eventMeta}>
-          {isLive && (
-            <View style={styles.liveBadge}>
-              <Text style={styles.liveBadgeText}>LIVE</Text>
-            </View>
-          )}
-          <Text style={styles.eventTime}>{formatEventTime(event.starts_at)}</Text>
-          {event.location ? (
-            <Text style={styles.eventLocation} numberOfLines={1}>· {event.location}</Text>
-          ) : null}
-        </View>
-      </View>
-      <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
-    </TouchableOpacity>
-  );
-}
+// EventPill + EVENT_ICONS + formatEventTime live in
+// src/features/events/EventPill.tsx — reused by the event-limit screen too.
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
@@ -913,6 +872,8 @@ const styles = StyleSheet.create({
 
   // ── Event list ────────────────────────────────────────────────────────────
   eventList: { gap: Spacing.xs },
+  // Orphaned — left in place briefly to keep the diff small; safe to drop
+  // in a follow-up. Live inside src/features/events/EventPill.tsx now.
   eventPill: {
     flexDirection:     'row',
     alignItems:        'center',

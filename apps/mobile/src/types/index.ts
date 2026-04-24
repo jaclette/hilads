@@ -40,6 +40,7 @@ export interface HiladsEvent {
   starts_at: number;    // unix timestamp
   ends_at?: number;
   expires_at: number;
+  created_at?: number;  // unix timestamp — when the event row was inserted
   series_id?: string;
   recurrence_label?: string;
   guest_id?: string;

@@ -4,25 +4,55 @@
  * app/event/create.tsx when the POST returns `event_limit_reached` (server
  * safety net against race conditions).
  *
- * See /Users/jacques/.claude/plans/lovely-plotting-hearth.md for the full
- * rollout plan and the friendly-copy rationale.
+ * Surfaces the event that's blocking so the user can tap through to
+ * view / edit / delete it.
  */
 
+import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useApp } from '@/context/AppContext';
+import { fetchMyEvents } from '@/api/events';
+import { EventPill } from '@/features/events/EventPill';
+import type { HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function EventLimitReachedScreen() {
   const router = useRouter();
+  const { identity, city } = useApp();
+  const [blockingEvent, setBlockingEvent] = useState<HiladsEvent | null>(null);
+
+  // Fetch the user's event from "today" (user/city timezone). Same semantics
+  // as the backend rule in EventRepository::guestCreatedEventTodayCount so
+  // what's shown matches what's blocking.
+  useEffect(() => {
+    const guestId = identity?.guestId;
+    if (!guestId) return;
+    let cancelled = false;
+    fetchMyEvents(guestId)
+      .then(events => {
+        if (cancelled) return;
+        const tz = city?.timezone ?? 'UTC';
+        const todays = pickTodaysEvent(events, tz);
+        setBlockingEvent(todays);
+      })
+      .catch(() => { /* non-fatal — keep the screen useful without the pill */ });
+    return () => { cancelled = true; };
+  }, [identity?.guestId, city?.timezone]);
 
   function handleLegendInfo() {
     Alert.alert(
       '👑 Become a Legend',
-      "Legends are locals chosen to keep their city alive — they can host as many events as they want. Want to become one? Reach out at hello@hilads.live.",
+      "Legends are locals chosen to keep their city alive — they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
       [{ text: 'Got it', style: 'default' }],
     );
+  }
+
+  function handleOpenEvent() {
+    if (!blockingEvent) return;
+    router.push(`/event/${blockingEvent.id}` as never);
   }
 
   return (
@@ -49,6 +79,13 @@ export default function EventLimitReachedScreen() {
           one.
         </Text>
 
+        {/* Blocking event — tap to open, edit, or delete. */}
+        {blockingEvent && (
+          <View style={styles.eventWrap}>
+            <EventPill event={blockingEvent} onPress={handleOpenEvent} />
+          </View>
+        )}
+
         <TouchableOpacity
           style={styles.legendLink}
           onPress={handleLegendInfo}
@@ -73,6 +110,28 @@ export default function EventLimitReachedScreen() {
 
     </SafeAreaView>
   );
+}
+
+/**
+ * Matches the backend's day-boundary rule: the event must have been created
+ * on the current calendar day in the given timezone. Picks the most recent
+ * if the user somehow created several (shouldn't happen with the 1/day
+ * rule, but cheap to be defensive).
+ */
+function pickTodaysEvent(events: HiladsEvent[], tz: string): HiladsEvent | null {
+  const today = formatYmdInTz(new Date(), tz);
+  const todays = events
+    .filter(e => e.source_type !== 'ticketmaster')
+    .filter(e => formatYmdInTz(new Date((e.created_at ?? e.starts_at) * 1000), tz) === today);
+  if (todays.length === 0) return null;
+  return todays.reduce((a, b) =>
+    (a.created_at ?? a.starts_at) > (b.created_at ?? b.starts_at) ? a : b,
+  );
+}
+
+function formatYmdInTz(d: Date, tz: string): string {
+  // en-CA locale gives 'YYYY-MM-DD' which is cheap to string-compare.
+  return d.toLocaleDateString('en-CA', { timeZone: tz });
 }
 
 const styles = StyleSheet.create({
@@ -123,8 +182,14 @@ const styles = StyleSheet.create({
     textAlign:     'center',
     paddingHorizontal: 8,
   },
+  // EventPill container — stretches across the hero's available width so the
+  // pill reads like a tappable card, not a narrow chip in the middle.
+  eventWrap: {
+    alignSelf: 'stretch',
+    marginTop: 4,
+  },
   legendLink: {
-    marginTop:         10,
+    marginTop:         6,
     paddingHorizontal: 16,
     paddingVertical:   10,
   },

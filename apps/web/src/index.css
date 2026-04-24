@@ -4531,6 +4531,17 @@ img.pub-profile-avatar {
   text-align: center;
   gap: 16px;
 }
+
+/* Blocking-event card on the limit screen — stretches within the centered
+   hero so it reads as a tappable card, not a narrow chip. Text is
+   left-aligned (the hero is text-center, but the card reuses .city-row
+   which is left-aligned internally). */
+.limit-event-card {
+  align-self: stretch;
+  max-width: 360px;
+  margin: 4px auto 0;
+  text-align: left;
+}
 .limit-emoji {
   font-size: 72px;
   line-height: 1;

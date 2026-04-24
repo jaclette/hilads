@@ -4651,7 +4651,12 @@ export default function App() {
 
       {/* Event limit reached — friendly full-page over the feed/drawer. */}
       {showEventLimitReached && (
-        <EventLimitReachedScreen onClose={() => setShowEventLimitReached(false)} />
+        <EventLimitReachedScreen
+          onClose={() => setShowEventLimitReached(false)}
+          guest={guest}
+          cityTimezone={cityTimezone}
+          onSelectEvent={handleSelectEvent}
+        />
       )}
 
       {/* Creation chooser bottom sheet */}
