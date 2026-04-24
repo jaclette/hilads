@@ -931,25 +931,30 @@ class EventRepository
         ?string $guestId,
         string $tz,
     ): int {
-        // Midnight in city-local TZ, expressed as a UTC instant for the WHERE.
-        $dayStart = (new \DateTime('now', new \DateTimeZone($tz)))
-            ->setTime(0, 0, 0)
-            ->setTimezone(new \DateTimeZone('UTC'))
-            ->format('Y-m-d H:i:s');
-
+        // Day boundary is computed in Postgres using `AT TIME ZONE` to make
+        // the query independent of the session timezone. Previously we sent
+        // a tz-naive string from PHP, which Postgres reinterpreted using the
+        // session's timezone — if that wasn't UTC, the boundary drifted and
+        // events from yesterday (user-local) incorrectly counted as today's.
+        //
+        //   now() AT TIME ZONE :tz            → "wall clock now" in user's tz
+        //   date_trunc('day', …)              → midnight of that local day
+        //   (…) AT TIME ZONE :tz              → convert back to a tz-aware
+        //                                       instant (UTC under the hood)
+        // The comparison against created_at (TIMESTAMPTZ) is then correct.
         $stmt = $pdo->prepare("
             SELECT COUNT(*) FROM channel_events
              WHERE source_type = 'hilads'
-               AND created_at >= :day_start
+               AND created_at >= (date_trunc('day', now() AT TIME ZONE :tz) AT TIME ZONE :tz)
                AND (
                      (:user_id::text  IS NOT NULL AND created_by = :user_id) OR
                      (:guest_id::text IS NOT NULL AND guest_id   = :guest_id)
                    )
         ");
         $stmt->execute([
-            'day_start' => $dayStart,
-            'user_id'   => $userId,
-            'guest_id'  => $guestId,
+            'tz'       => $tz,
+            'user_id'  => $userId,
+            'guest_id' => $guestId,
         ]);
         return (int) $stmt->fetchColumn();
     }
