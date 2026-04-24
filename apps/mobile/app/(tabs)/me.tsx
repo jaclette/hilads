@@ -350,112 +350,115 @@ export default function MeScreen() {
         </View>
       </View>
 
-      {/* ══ STICKY: Identity + Mode + Filter pills (registered only) ═════════ */}
-      {!isGuest && (
-        <View style={styles.stickyIdentity}>
-
-          {/* Identity row — avatar + name + badge + description */}
-          <View style={styles.identityRow}>
-            <TouchableOpacity
-              style={styles.avatarWrap}
-              onPress={handlePickPhoto}
-              activeOpacity={0.8}
-              disabled={photoUploading}
-            >
-              {photoSrc ? (
-                <Image source={{ uri: photoSrc }} style={styles.avatarSm} resizeMode="cover" />
-              ) : (
-                <View style={[styles.avatarSmFallback, { backgroundColor: avatarBgColor }]}>
-                  <Text style={styles.avatarSmInitials}>{initials}</Text>
-                </View>
-              )}
-              {photoUploading ? (
-                <View style={styles.avatarSmOverlay}>
-                  <ActivityIndicator color="#fff" size="small" />
-                </View>
-              ) : (
-                <View style={styles.cameraBadgeSm}>
-                  <Text style={styles.cameraEmoji}>📷</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-
-            <View style={styles.identityInfo}>
-              <Text style={styles.identityName} numberOfLines={1}>
-                {account?.display_name ?? '—'}
-              </Text>
-              <View style={styles.identityMetaRow}>
-                {account?.primaryBadge && (
-                  <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
-                    <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
-                      {account.primaryBadge.label}
-                    </Text>
-                  </View>
-                )}
-                {homeCity ? (
-                  <Text style={styles.identityMetaCity} numberOfLines={1}>📍 {homeCity}</Text>
-                ) : null}
-              </View>
-              {selectedVibe && VIBES.find(v => v.key === selectedVibe) ? (
-                <Text style={styles.identityMetaVibe}>
-                  {VIBES.find(v => v.key === selectedVibe)!.emoji}{' '}
-                  {VIBES.find(v => v.key === selectedVibe)!.label}
-                </Text>
-              ) : null}
-            </View>
-          </View>
-
-          {/* Mode selector — compact 2-button toggle */}
-          <View style={styles.modeSection}>
-            <Text style={styles.modeSectionLabel}>MODE</Text>
-            <View style={styles.modeSelectorRow}>
-              {MODES.map(m => {
-                const active = selectedMode === m.key;
-                return (
-                  <TouchableOpacity
-                    key={m.key}
-                    style={[styles.modeBtn, active && styles.modeBtnActive]}
-                    onPress={() => setSelectedMode(active ? null : m.key)}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
-                    <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
-                    <Text style={styles.modeBtnDesc}>{m.desc}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-
-          {/* Filter pills — scrollable for 5 tabs */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filterBar}
-          >
-            {PROFILE_TABS.map(({ key, label }) => (
-              <TouchableOpacity
-                key={key}
-                style={[styles.filterPill, activeTab === key && styles.filterPillActive]}
-                onPress={() => setActiveTab(key)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.filterPillLabel, activeTab === key && styles.filterPillLabelActive]}>
-                  {label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      )}
-
       {/* ══ SCROLLABLE CONTENT ═══════════════════════════════════════════════ */}
+      {/* Identity block (avatar + mode + filter pills) now lives INSIDE the
+          ScrollView as its first child so it scrolls away with the rest of
+          the page. Only the top AppHeader stays pinned. */}
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ paddingBottom: 120 + insets.bottom }}
       >
+
+        {/* Identity + Mode + Filter pills (registered only) */}
+        {!isGuest && (
+          <View style={styles.stickyIdentity}>
+
+            {/* Identity row — avatar + name + badge + description */}
+            <View style={styles.identityRow}>
+              <TouchableOpacity
+                style={styles.avatarWrap}
+                onPress={handlePickPhoto}
+                activeOpacity={0.8}
+                disabled={photoUploading}
+              >
+                {photoSrc ? (
+                  <Image source={{ uri: photoSrc }} style={styles.avatarSm} resizeMode="cover" />
+                ) : (
+                  <View style={[styles.avatarSmFallback, { backgroundColor: avatarBgColor }]}>
+                    <Text style={styles.avatarSmInitials}>{initials}</Text>
+                  </View>
+                )}
+                {photoUploading ? (
+                  <View style={styles.avatarSmOverlay}>
+                    <ActivityIndicator color="#fff" size="small" />
+                  </View>
+                ) : (
+                  <View style={styles.cameraBadgeSm}>
+                    <Text style={styles.cameraEmoji}>📷</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+
+              <View style={styles.identityInfo}>
+                <Text style={styles.identityName} numberOfLines={1}>
+                  {account?.display_name ?? '—'}
+                </Text>
+                <View style={styles.identityMetaRow}>
+                  {account?.primaryBadge && (
+                    <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
+                      <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
+                        {account.primaryBadge.label}
+                      </Text>
+                    </View>
+                  )}
+                  {homeCity ? (
+                    <Text style={styles.identityMetaCity} numberOfLines={1}>📍 {homeCity}</Text>
+                  ) : null}
+                </View>
+                {selectedVibe && VIBES.find(v => v.key === selectedVibe) ? (
+                  <Text style={styles.identityMetaVibe}>
+                    {VIBES.find(v => v.key === selectedVibe)!.emoji}{' '}
+                    {VIBES.find(v => v.key === selectedVibe)!.label}
+                  </Text>
+                ) : null}
+              </View>
+            </View>
+
+            {/* Mode selector — compact 2-button toggle */}
+            <View style={styles.modeSection}>
+              <Text style={styles.modeSectionLabel}>MODE</Text>
+              <View style={styles.modeSelectorRow}>
+                {MODES.map(m => {
+                  const active = selectedMode === m.key;
+                  return (
+                    <TouchableOpacity
+                      key={m.key}
+                      style={[styles.modeBtn, active && styles.modeBtnActive]}
+                      onPress={() => setSelectedMode(active ? null : m.key)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
+                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
+                      <Text style={styles.modeBtnDesc}>{m.desc}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Filter pills — scrollable for 5 tabs */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.filterBar}
+            >
+              {PROFILE_TABS.map(({ key, label }) => (
+                <TouchableOpacity
+                  key={key}
+                  style={[styles.filterPill, activeTab === key && styles.filterPillActive]}
+                  onPress={() => setActiveTab(key)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={[styles.filterPillLabel, activeTab === key && styles.filterPillLabelActive]}>
+                    {label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
 
         {/* ── Guest: avatar + mode + upgrade CTA ── */}
         {isGuest && (

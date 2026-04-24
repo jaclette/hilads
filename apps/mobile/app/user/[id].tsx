@@ -311,7 +311,15 @@ export default function PublicProfileScreen() {
         </View>
       ) : user ? (
         <>
-          {/* ── 1. Sticky identity section ── */}
+          {/* Scrollable page body. Identity + tab bar live INSIDE so they
+              scroll away with the rest of the content; only the top header
+              and the bottom action bar stay pinned. */}
+          <ScrollView
+            style={styles.tabContent}
+            contentContainerStyle={[styles.tabContentBody, { paddingBottom: Math.max(100, insets.bottom + 80) }]}
+            showsVerticalScrollIndicator={false}
+          >
+          {/* Identity section */}
           <View style={styles.identitySection}>
 
             {/* Hero: avatar + name + badges + city */}
@@ -397,7 +405,7 @@ export default function PublicProfileScreen() {
             ) : null}
           </View>
 
-          {/* ── 2. Tab bar ── */}
+          {/* Tab bar — scrolls with content */}
           <View style={styles.tabBarWrap}>
             <ScrollView
               horizontal
@@ -418,13 +426,6 @@ export default function PublicProfileScreen() {
               ))}
             </ScrollView>
           </View>
-
-          {/* ── 3. Tab content ── */}
-          <ScrollView
-            style={styles.tabContent}
-            contentContainerStyle={[styles.tabContentBody, { paddingBottom: Math.max(100, insets.bottom + 80) }]}
-            showsVerticalScrollIndicator={false}
-          >
 
             {/* Events tab */}
             {activeTab === 'events' && (

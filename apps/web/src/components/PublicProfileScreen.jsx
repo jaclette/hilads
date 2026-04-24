@@ -253,7 +253,13 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
       {user && (
         <>
-          {/* ── Sticky identity section ── */}
+          {/* Identity + tab bar now live INSIDE the body so they scroll away
+              with the rest of the content; only the top header and the
+              bottom action bar stay pinned. Classes kept for minimal CSS
+              churn (the word 'sticky' in the class is now a misnomer). */}
+          <div className="pub-profile-body">
+
+          {/* Identity section */}
           <div className="pub-profile-sticky-identity">
 
             {/* Hero: avatar + name + badge + city */}
@@ -347,8 +353,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             </div>
           </div>
 
-          {/* ── Tab content ── */}
-          <div className="pub-profile-body">
+          {/* Tab content — continues inside pub-profile-body below */}
 
             {/* Events tab */}
             {activeTab === 'events' && (

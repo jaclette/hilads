@@ -183,86 +183,89 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         <span className="page-title">My Profile</span>
       </div>
 
-      {/* ══ STICKY: Identity + Mode + Filter pills ══════════════════════════ */}
-      <div className="profile-sticky-identity">
+      {/* ══ SCROLLABLE CONTENT ══════════════════════════════════════════════ */}
+      {/* Identity (avatar + mode + filter pills) now lives INSIDE the body
+          so it scrolls away with the rest of the page. Only the top header
+          stays pinned. Class name kept for minimal CSS churn. */}
+      <div className="page-body profile-body">
 
-        {/* Identity row — avatar + name + badge + description */}
-        <div className="profile-identity-row">
-          <button
-            className="profile-photo-btn"
-            onClick={() => fileRef.current?.click()}
-            disabled={uploading}
-            type="button"
-            aria-label="Change profile photo"
-          >
-            {photoUrl
-              ? <img className="online-avatar profile-avatar-identity" src={thumbPhotoUrl ?? photoUrl} alt={name} />
-              : <span className="online-avatar profile-avatar-identity" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                  {(name || '?')[0].toUpperCase()}
-                </span>
-            }
-            <span className="profile-photo-badge">{uploading ? '…' : '📷'}</span>
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            style={{ display: 'none' }}
-            onChange={handlePhotoChange}
-          />
-          <div className="profile-identity-info">
-            <h2 className="profile-identity-name">{name || 'Your profile'}</h2>
-            <div className="profile-identity-badges">
-              {account.primaryBadge && (
-                <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
-              )}
-              {homeCity && (
-                <span className="profile-identity-city">📍 {homeCity}</span>
+        {/* Identity + Mode + Filter pills */}
+        <div className="profile-sticky-identity">
+
+          {/* Identity row — avatar + name + badge + description */}
+          <div className="profile-identity-row">
+            <button
+              className="profile-photo-btn"
+              onClick={() => fileRef.current?.click()}
+              disabled={uploading}
+              type="button"
+              aria-label="Change profile photo"
+            >
+              {photoUrl
+                ? <img className="online-avatar profile-avatar-identity" src={thumbPhotoUrl ?? photoUrl} alt={name} />
+                : <span className="online-avatar profile-avatar-identity" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                    {(name || '?')[0].toUpperCase()}
+                  </span>
+              }
+              <span className="profile-photo-badge">{uploading ? '…' : '📷'}</span>
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              style={{ display: 'none' }}
+              onChange={handlePhotoChange}
+            />
+            <div className="profile-identity-info">
+              <h2 className="profile-identity-name">{name || 'Your profile'}</h2>
+              <div className="profile-identity-badges">
+                {account.primaryBadge && (
+                  <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
+                )}
+                {homeCity && (
+                  <span className="profile-identity-city">📍 {homeCity}</span>
+                )}
+              </div>
+              {vibe && VIBES.find(v => v.key === vibe) && (
+                <p className="profile-identity-vibe">
+                  {VIBES.find(v => v.key === vibe).emoji} {VIBES.find(v => v.key === vibe).label}
+                </p>
               )}
             </div>
-            {vibe && VIBES.find(v => v.key === vibe) && (
-              <p className="profile-identity-vibe">
-                {VIBES.find(v => v.key === vibe).emoji} {VIBES.find(v => v.key === vibe).label}
-              </p>
-            )}
           </div>
-        </div>
 
-        {/* Mode selector */}
-        <div className="profile-mode-section">
-          <span className="profile-mode-label">Mode</span>
-          <div className="profile-mode-btns">
-            {MODES.map(m => (
+          {/* Mode selector */}
+          <div className="profile-mode-section">
+            <span className="profile-mode-label">Mode</span>
+            <div className="profile-mode-btns">
+              {MODES.map(m => (
+                <button
+                  key={m.key}
+                  type="button"
+                  className={`profile-mode-btn${mode === m.key ? ' profile-mode-btn--on' : ''}`}
+                  onClick={() => setMode(mode === m.key ? null : m.key)}
+                >
+                  <span className="profile-mode-btn-emoji">{m.emoji}</span>
+                  <span className="profile-mode-btn-name">{m.label}</span>
+                  <span className="profile-mode-btn-desc">{m.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Filter pills */}
+          <div className="profile-tabs">
+            {PROFILE_TABS.map(({ key, label }) => (
               <button
-                key={m.key}
-                type="button"
-                className={`profile-mode-btn${mode === m.key ? ' profile-mode-btn--on' : ''}`}
-                onClick={() => setMode(mode === m.key ? null : m.key)}
+                key={key}
+                className={`profile-tab-pill${activeTab === key ? ' profile-tab-pill--active' : ''}`}
+                onClick={() => setActiveTab(key)}
               >
-                <span className="profile-mode-btn-emoji">{m.emoji}</span>
-                <span className="profile-mode-btn-name">{m.label}</span>
-                <span className="profile-mode-btn-desc">{m.desc}</span>
+                {label}
               </button>
             ))}
           </div>
         </div>
-
-        {/* Filter pills */}
-        <div className="profile-tabs">
-          {PROFILE_TABS.map(({ key, label }) => (
-            <button
-              key={key}
-              className={`profile-tab-pill${activeTab === key ? ' profile-tab-pill--active' : ''}`}
-              onClick={() => setActiveTab(key)}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* ══ SCROLLABLE CONTENT ══════════════════════════════════════════════ */}
-      <div className="page-body profile-body">
 
         {/* ── Tab: Interests ── */}
         {activeTab === 'interests' && (
