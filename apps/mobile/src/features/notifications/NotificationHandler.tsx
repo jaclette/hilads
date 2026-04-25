@@ -80,10 +80,15 @@ Notifications.setNotificationHandler({
       (data.type === 'dm_message'    && !!data.conversationId && data.conversationId === activeScreen.dmId) ||
       (data.type === 'event_message' && !!data.eventId        && data.eventId        === activeScreen.eventId);
 
+    // SDK 53 / expo-notifications 0.31 split shouldShowAlert into
+    // shouldShowBanner (top-of-screen toast) and shouldShowList (notif center).
+    // Both must be set to keep prior behavior of "show the notification UI
+    // unless the user is already looking at the conversation".
     return {
-      shouldShowAlert: !suppress,
-      shouldPlaySound: !suppress,
-      shouldSetBadge:  true,
+      shouldShowBanner: !suppress,
+      shouldShowList:   !suppress,
+      shouldPlaySound:  !suppress,
+      shouldSetBadge:   true,
     };
   },
 });

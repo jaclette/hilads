@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hilads",
     "slug": "hilads",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -33,13 +33,12 @@
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "softInputMode": "adjustResize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 27,
+      "versionCode": 31,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -127,8 +126,11 @@
     },
     "plugins": [
       "expo-router",
-      "@sentry/react-native/expo",
       "./plugins/withSingleTopActivity",
+      [
+        "./plugins/withNdkVersion",
+        { "ndkVersion": "28.0.13004108" }
+      ],
       "expo-secure-store",
       [
         "expo-build-properties",
@@ -169,7 +171,8 @@
         }
       ],
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true

@@ -105,10 +105,9 @@ export async function requestAndRegisterPush(): Promise<string | null> {
     // and prompts for POST_NOTIFICATIONS on Android 13+; ios options are ignored.
     const requested = await Notifications.requestPermissionsAsync({
       ios: {
-        allowAlert:         true,
-        allowBadge:         true,
-        allowSound:         true,
-        allowAnnouncements: false,
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
       },
     });
     finalStatus = requested.status;

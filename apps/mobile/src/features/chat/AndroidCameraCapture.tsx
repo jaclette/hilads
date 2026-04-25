@@ -19,8 +19,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import type { CameraViewRef } from 'expo-camera';
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants';
 
@@ -44,7 +43,7 @@ const JPEG_QUALITY = 0.78;
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
-  const cameraRef = useRef<CameraViewRef>(null);
+  const cameraRef = useRef<CameraView>(null);
   const insets    = useSafeAreaInsets();
 
   const [screen,      setScreen]      = useState<Screen>('camera');
@@ -105,12 +104,13 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
     console.log('[android-camera] use photo tapped — compressing...');
     setCompressing(true);
     try {
-      const result = await manipulateAsync(
-        capturedUri,
-        // Only resize if image exceeds MAX_WIDTH; otherwise just re-encode
-        [{ resize: { width: MAX_WIDTH } }],
-        { compress: JPEG_QUALITY, format: SaveFormat.JPEG },
-      );
+      // SDK 53 chained API. The legacy manipulateAsync() still works but is
+      // deprecated and slated for removal in a future SDK — using the new
+      // builder keeps this code compatible across upgrades.
+      const ctx = ImageManipulator.manipulate(capturedUri);
+      ctx.resize({ width: MAX_WIDTH });
+      const rendered = await ctx.renderAsync();
+      const result = await rendered.saveAsync({ compress: JPEG_QUALITY, format: SaveFormat.JPEG });
       console.log('[android-camera] compressed →', result.uri,
         `(${result.width}×${result.height})`);
       onCapture(result.uri);
