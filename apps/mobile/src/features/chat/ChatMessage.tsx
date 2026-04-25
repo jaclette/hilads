@@ -13,8 +13,9 @@
  */
 
 import { useRef, useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Animated, ActivityIndicator, Platform, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable, StyleSheet, Animated, Platform, Linking } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
+import { MessageImage } from './MessageImage';
 import { ReactionPills } from './ReactionPills';
 import { ReactionBurstOverlay } from './ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
@@ -539,30 +540,15 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           )}
           {/* Wrap image + reactions so pills stay visually attached to the bubble */}
           <View>
-            <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={!isSending && !isFailed ? () => setPreviewUri(message.imageUrl!) : undefined}
+            <MessageImage
+              uri={message.imageUrl}
+              isSending={isSending}
+              isFailed={isFailed}
+              onPress={() => setPreviewUri(message.imageUrl!)}
               onLongPress={handleLongPress}
-              delayLongPress={350}
-              disabled={isSending || isFailed}
-            >
-              <Image
-                source={{ uri: message.imageUrl }}
-                style={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
-                resizeMode="cover"
-                onError={() => console.warn('[msg] image load error:', message.imageUrl)}
-              />
-              {isSending && (
-                <View style={styles.imageOverlay}>
-                  <ActivityIndicator size="small" color="rgba(255,255,255,0.8)" />
-                </View>
-              )}
-              {isFailed && (
-                <View style={styles.imageOverlay}>
-                  <Text style={styles.imageFailedIcon}>!</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+              imageStyle={[styles.image, isMine ? styles.imageMine : styles.imageOther]}
+              surface="city"
+            />
             {message.reactions && message.reactions.length > 0 && onReact && (
               <ReactionPills reactions={message.reactions} onReact={e => onReact(message, e)} isMine={isMine} />
             )}
@@ -997,22 +983,6 @@ const styles = StyleSheet.create({
 
   // ── .msg-image ────────────────────────────────────────────────────────────
   image: { width: 280, height: 240, marginTop: 2 },
-  imageOverlay: {
-    position:       'absolute',
-    top:            0,
-    left:           0,
-    right:          0,
-    bottom:         0,
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    alignItems:     'center',
-    justifyContent: 'center',
-    borderRadius:   16,
-  },
-  imageFailedIcon: {
-    color:      '#fff',
-    fontSize:   22,
-    fontWeight: '800',
-  },
   imageOther: {
     borderTopLeftRadius:     4,
     borderTopRightRadius:    16,

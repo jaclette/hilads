@@ -162,10 +162,13 @@ export function useDMThread(conversationId: string): Result {
 
     setMessages(prev => [optimistic, ...prev]);
     setError(null);
+    console.log('[dm-image] optimistic created localId=', localId, 'localUri=', localUri);
 
     try {
       const { url: remoteUrl } = await uploadFile(localUri);
+      console.log('[dm-image] upload ok — remoteUrl=', remoteUrl);
       const msg = await sendDmImageMessage(conversationId, remoteUrl);
+      console.log('[dm-image] server msg id=', msg.id, 'image_url=', msg.image_url);
       seenIds.current.add(msg.id);
       setMessages(prev => {
         if (prev.some(m => m.id === msg.id && m.id !== localId)) {
@@ -174,7 +177,8 @@ export function useDMThread(conversationId: string): Result {
         return prev.map(m => m.id === localId ? msg : m);
       });
       track('dm_image_sent', { conversationId });
-    } catch {
+    } catch (err) {
+      console.warn('[dm-image] send failed —', err instanceof Error ? err.message : String(err));
       setMessages(prev =>
         prev.map(m => m.id === localId ? { ...m, status: 'failed' as const } : m),
       );

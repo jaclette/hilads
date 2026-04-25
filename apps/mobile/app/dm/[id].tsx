@@ -8,7 +8,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  View, Text, Image, FlatList, TextInput, TouchableOpacity, Pressable,
+  View, Text, FlatList, TextInput, TouchableOpacity, Pressable,
   ActivityIndicator, StyleSheet, Platform, KeyboardAvoidingView,
   Animated, Alert, Linking, InteractionManager, Keyboard,
 } from 'react-native';
@@ -31,6 +31,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { MessageImage } from '@/features/chat/MessageImage';
 import { ReactionPills } from '@/features/chat/ReactionPills';
 import { ReactionBurstOverlay } from '@/features/chat/ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
@@ -256,28 +257,24 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
       )}
 
       <View style={[styles.bubbleCol, isMine && styles.bubbleColMine]}>
-        {msg.type === 'image' && msg.image_url ? (
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={!isSending && !isFailed ? () => onImagePress(msg.image_url!) : undefined}
-            onLongPress={onLongPress ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(msg); } : undefined}
-            delayLongPress={350}
-            disabled={isSending || isFailed}
-          >
-            <View style={[
-              styles.imageBubble,
-              isMine  ? styles.bubbleMine  : styles.bubbleOther,
-              isMine  ? bubbleMineShape    : bubbleOtherShape,
-              isSending && styles.bubbleSending,
-              isFailed  && styles.bubbleFailed,
-            ]}>
-              <Image
-                source={{ uri: msg.image_url }}
-                style={styles.bubbleImage}
-                resizeMode="cover"
-              />
-            </View>
-          </TouchableOpacity>
+        {msg.type === 'image' ? (
+          <View style={[
+            styles.imageBubble,
+            isMine  ? styles.bubbleMine  : styles.bubbleOther,
+            isMine  ? bubbleMineShape    : bubbleOtherShape,
+            isSending && styles.bubbleSending,
+            isFailed  && styles.bubbleFailed,
+          ]}>
+            <MessageImage
+              uri={msg.image_url}
+              isSending={isSending}
+              isFailed={isFailed}
+              onPress={msg.image_url ? () => onImagePress(msg.image_url!) : undefined}
+              onLongPress={onLongPress ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(msg); } : undefined}
+              imageStyle={styles.bubbleImage}
+              surface="dm"
+            />
+          </View>
         ) : msg.content?.startsWith('📍') ? (
           <DmLocationBubble content={msg.content} isMine={isMine} />
         ) : (
