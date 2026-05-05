@@ -76,12 +76,38 @@ class CityRepository
         return null;
     }
 
-    public static function nearest(float $lat, float $lng): array
+    /**
+     * Find the closest city to a GPS point, optionally constrained to a country.
+     *
+     * When the client passes the GPS point's country (resolved via native
+     * reverse-geocode on mobile / Nominatim on web), we restrict the candidate
+     * set to cities in that country before computing distances. This prevents
+     * the nearest-city search from snapping across an international border —
+     * the bug that placed users on Phu Quoc (VN, no city in our DB) into
+     * Phnom Penh (KH, ~150 km) instead of Ho Chi Minh City (VN, ~300 km).
+     *
+     * If the country is missing, malformed, or has no cities in our DB, we
+     * fall back to the global nearest — so older clients (no country param)
+     * keep working unchanged.
+     */
+    public static function nearest(float $lat, float $lng, ?string $country = null): array
     {
+        $candidates = self::load();
+
+        if ($country !== null && $country !== '') {
+            $sameCountry = array_values(array_filter(
+                $candidates,
+                fn($c) => strcasecmp($c['country'] ?? '', $country) === 0,
+            ));
+            if (!empty($sameCountry)) {
+                $candidates = $sameCountry;
+            }
+        }
+
         $nearest     = null;
         $minDistance = PHP_FLOAT_MAX;
 
-        foreach (self::load() as $city) {
+        foreach ($candidates as $city) {
             $distance = self::haversine($lat, $lng, $city['lat'], $city['lng']);
             if ($distance < $minDistance) {
                 $minDistance = $distance;

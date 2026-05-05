@@ -94,7 +94,7 @@ android {
         applicationId 'com.hilads.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 31
+        versionCode 32
         versionName "1.2.0"
     }
     signingConfigs {

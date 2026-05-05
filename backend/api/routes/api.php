@@ -1196,7 +1196,20 @@ $router->add('POST', '/api/v1/location/resolve', function () {
         Response::json(['error' => 'lng must be between -180 and 180'], 400);
     }
 
-    $city = CityRepository::nearest($lat, $lng);
+    // Optional ISO-2 country code from the client's reverse-geocode (mobile:
+    // native, web: Nominatim). Used to constrain nearest-city to the same
+    // country and avoid cross-border snaps. Garbage / missing → ignored,
+    // falls back to global nearest (back-compat for old clients).
+    $country = $body['country'] ?? null;
+    if ($country !== null) {
+        if (!is_string($country) || !preg_match('/^[A-Za-z]{2}$/', $country)) {
+            $country = null;
+        } else {
+            $country = strtoupper($country);
+        }
+    }
+
+    $city = CityRepository::nearest($lat, $lng, $country);
 
     Response::json([
         'city'      => $city['name'],

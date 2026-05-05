@@ -251,9 +251,24 @@ export function useAppBoot(): Result {
       // ── Step 3: City resolution ──────────────────────────────────────────
       const { latitude: lat, longitude: lng, accuracy } = pos.coords;
       console.log('[geo] position:', lat, lng, '(accuracy:', accuracy, 'm)');
-      console.log('[geo] calling /location/resolve for', lat, lng, '...');
 
-      const city = await resolveLocation(lat, lng)
+      // Native reverse-geocode → ISO-2 country code. Lets the backend constrain
+      // nearest-city to the same country so a user on Phu Quoc (VN) doesn't get
+      // snapped to Phnom Penh (KH) just because PP is geographically closer
+      // than HCMC. Failure here is non-fatal — backend falls back to global
+      // nearest when no country is sent.
+      let country: string | null = null;
+      try {
+        const places = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+        country = places[0]?.isoCountryCode ?? null;
+        if (country) console.log('[geo] reverse-geocode → country:', country);
+      } catch (e) {
+        console.warn('[geo] reverseGeocodeAsync failed:', String(e));
+      }
+
+      console.log('[geo] calling /location/resolve for', lat, lng, country ? `(${country})` : '(no country)');
+
+      const city = await resolveLocation(lat, lng, country)
         .then(c => {
           console.log('[geo] resolveLocation → city:', c.name,
             'channelId:', c.channelId, 'country:', c.country);

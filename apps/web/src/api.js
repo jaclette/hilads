@@ -27,15 +27,39 @@ export async function createGuestSession(nickname) {
   return res.json()
 }
 
-export async function resolveLocation(lat, lng) {
+// Optional `country` (ISO-2) lets the backend constrain nearest-city to the
+// same country, preventing cross-border snaps. The caller is expected to
+// resolve it via Nominatim (see reverseGeocodeCountry in App.jsx). When
+// omitted/null, backend falls back to global nearest.
+export async function resolveLocation(lat, lng, country) {
+  const body = country ? { lat, lng, country } : { lat, lng }
   const res = await fetch(`${BASE}/location/resolve`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ lat, lng }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error('Failed to resolve location')
   return res.json()
+}
+
+// Lightweight country-only reverse-geocode via Nominatim (zoom=3 = country
+// level — fast, no city lookup). Returns ISO-2 uppercase or null on any
+// failure. Caller passes the result straight into resolveLocation; failure
+// is non-fatal — backend uses global nearest when country is absent.
+export async function reverseGeocodeCountry(lat, lng) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=3`,
+      { headers: { 'Accept-Language': 'en' } },
+    )
+    if (!res.ok) return null
+    const data = await res.json()
+    const cc = data?.address?.country_code
+    return cc ? cc.toUpperCase() : null
+  } catch {
+    return null
+  }
 }
 
 export async function fetchMessages(channelId, { beforeId, limit } = {}) {

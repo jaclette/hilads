@@ -6,13 +6,17 @@ import type { City, Message, Reaction, UserDTO } from '@/types';
 // Backend returns { city: string, channelId: string|number, timezone: string, country: string }.
 // The 'city' field is the name — different from the City type's 'name' field.
 // We normalise here so the rest of the app always gets a proper City object.
-export async function resolveLocation(lat: number, lng: number): Promise<City> {
+//
+// Optional `country` (ISO-2) lets the backend constrain nearest-city to the
+// same country, preventing cross-border snaps (e.g. Phu Quoc → Phnom Penh).
+// Resolved on the client via native reverse-geocode in useAppBoot.
+export async function resolveLocation(lat: number, lng: number, country?: string | null): Promise<City> {
   const data = await api.post<{
     city:      string;
     channelId: string | number;
     timezone:  string;
     country:   string | null;
-  }>('/location/resolve', { lat, lng });
+  }>('/location/resolve', country ? { lat, lng, country } : { lat, lng });
 
   return {
     channelId: String(data.channelId),

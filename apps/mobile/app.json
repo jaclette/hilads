@@ -38,7 +38,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 31,
+      "versionCode": 32,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -129,7 +129,9 @@
       "./plugins/withSingleTopActivity",
       [
         "./plugins/withNdkVersion",
-        { "ndkVersion": "28.0.13004108" }
+        {
+          "ndkVersion": "28.0.13004108"
+        }
       ],
       "expo-secure-store",
       [
