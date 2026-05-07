@@ -52,18 +52,23 @@ class NotificationRepository
     private static function typeToColumn(string $type): ?string
     {
         return match ($type) {
-            'dm_message'      => 'dm_push',
-            'event_message'   => 'event_message_push',
-            'event_join'      => 'event_join_push',
-            'new_event'       => 'new_event_push',
-            'channel_message' => 'channel_message_push',
-            'city_join'       => 'city_join_push',
-            'friend_added'    => 'friend_added_push',
-            'vibe_received'   => 'vibe_received_push',
-            'profile_view'    => 'profile_view_push',
-            'topic_message'   => 'topic_reply_push',
-            'new_topic'       => 'new_topic_push',
-            default           => null,
+            'dm_message'                                                => 'dm_push',
+            'event_message'                                             => 'event_message_push',
+            'event_join'                                                => 'event_join_push',
+            'new_event'                                                 => 'new_event_push',
+            'channel_message'                                           => 'channel_message_push',
+            'city_join'                                                 => 'city_join_push',
+            // friend_request_received + friend_request_accepted are the new
+            // request-flow types; friend_added is kept as a legacy alias so
+            // historical rows from before the refactor still display correctly.
+            'friend_request_received',
+            'friend_request_accepted',
+            'friend_added'                                              => 'friend_request_push',
+            'vibe_received'                                             => 'vibe_received_push',
+            'profile_view'                                              => 'profile_view_push',
+            'topic_message'                                             => 'topic_reply_push',
+            'new_topic'                                                 => 'new_topic_push',
+            default                                                     => null,
         };
     }
 
@@ -76,7 +81,7 @@ class NotificationRepository
             'new_event_push'       => false,
             'channel_message_push' => false,
             'city_join_push'       => false,
-            'friend_added_push'    => true,
+            'friend_request_push'  => true,
             'vibe_received_push'   => true,
             'profile_view_push'    => true,
             'topic_reply_push'     => true,
@@ -145,6 +150,10 @@ class NotificationRepository
             'event_message', 'event_join',
             'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
             'channel_message', 'city_join'    => '/',
+            'friend_request_received'         => '/friend-requests',
+            'friend_request_accepted'         => isset($data['accepterUserId']) ? "/user/{$data['accepterUserId']}" : '/me',
+            // Legacy friend_added rows (pre-refactor) keep deep-linking to the
+            // adder's profile so old notifications still work after upgrade.
             'friend_added'                    => isset($data['senderUserId']) ? "/user/{$data['senderUserId']}" : '/notifications',
             'vibe_received'                   => '/me',
             'profile_view'                    => isset($data['viewerId']) ? "/user/{$data['viewerId']}" : '/notifications',
@@ -156,18 +165,20 @@ class NotificationRepository
     private static function pushTag(string $type, array $data): string
     {
         return match ($type) {
-            'dm_message'      => 'dm-'           . ($data['conversationId'] ?? 'dm'),
+            'dm_message'              => 'dm-'           . ($data['conversationId'] ?? 'dm'),
             'event_message',
-            'event_join'      => 'event-'         . ($data['eventId'] ?? 'event'),
-            'new_event'       => 'new-event-'     . ($data['eventId'] ?? 'event'),
-            'channel_message' => 'channel-'       . ($data['channelId'] ?? 'city'),
-            'city_join'       => 'cityjoin-'      . ($data['channelId'] ?? 'city'),
-            'friend_added'    => 'friend-'        . ($data['senderUserId'] ?? 'user'),
-            'vibe_received'   => 'vibe-'          . ($data['actorId'] ?? 'user'),
-            'profile_view'    => 'profile-view-'  . ($data['viewerId'] ?? 'user'),
-            'topic_message'   => 'topic-'         . ($data['topicId'] ?? 'topic'),
-            'new_topic'       => 'new-topic-'     . ($data['topicId'] ?? 'topic'),
-            default           => 'hilads-' . $type,
+            'event_join'              => 'event-'         . ($data['eventId'] ?? 'event'),
+            'new_event'               => 'new-event-'     . ($data['eventId'] ?? 'event'),
+            'channel_message'         => 'channel-'       . ($data['channelId'] ?? 'city'),
+            'city_join'               => 'cityjoin-'      . ($data['channelId'] ?? 'city'),
+            'friend_request_received' => 'friend-req-'    . ($data['senderUserId'] ?? 'user'),
+            'friend_request_accepted' => 'friend-acc-'    . ($data['accepterUserId'] ?? 'user'),
+            'friend_added'            => 'friend-'        . ($data['senderUserId'] ?? 'user'),
+            'vibe_received'           => 'vibe-'          . ($data['actorId'] ?? 'user'),
+            'profile_view'            => 'profile-view-'  . ($data['viewerId'] ?? 'user'),
+            'topic_message'           => 'topic-'         . ($data['topicId'] ?? 'topic'),
+            'new_topic'               => 'new-topic-'     . ($data['topicId'] ?? 'topic'),
+            default                   => 'hilads-' . $type,
         };
     }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
 import { cityFlag } from '../cityMeta'
 import { badgeLabel } from '../badgeMeta'
 import BackButton from './BackButton'
@@ -65,9 +65,14 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [friends,    setFriends]    = useState([])
   const [error,      setError]      = useState(null)
   const [dmBusy,       setDmBusy]       = useState(false)
-  const [isFriend,        setIsFriend]        = useState(false)
+  // 4-state machine: none | pending_out | pending_in | friend.
+  // Driven by isFriend + pendingFriendRequest from the profile payload, plus
+  // WS events that flip the state when the other user acts.
+  const [friendState,     setFriendState]     = useState('none')
+  const [pendingReqId,    setPendingReqId]    = useState(null)
   const [friendBusy,      setFriendBusy]      = useState(false)
   const [confirmUnfriend, setConfirmUnfriend] = useState(false)
+  const [confirmCancelReq, setConfirmCancelReq] = useState(false)
   const [vibes,        setVibes]        = useState([])
   const [vibeScore,    setVibeScore]    = useState(null)
   const [vibeCount,    setVibeCount]    = useState(0)
@@ -91,8 +96,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setEvents([])
     setFriends([])
     setError(null)
-    setIsFriend(false)
+    setFriendState('none')
+    setPendingReqId(null)
     setConfirmUnfriend(false)
+    setConfirmCancelReq(false)
     setVibes([])
     setVibeScore(null)
     setVibeCount(0)
@@ -118,7 +125,18 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     fetchPublicProfile(userId)
       .then(data => {
         setUser(data.user)
-        setIsFriend(data.user?.isFriend ?? false)
+        // Derive friend state from the payload — see /apps/mobile/app/user/[id].tsx
+        // for the same logic on native.
+        if (data.user?.isFriend) {
+          setFriendState('friend')
+          setPendingReqId(null)
+        } else if (data.user?.pendingFriendRequest) {
+          setFriendState(data.user.pendingFriendRequest.direction === 'outgoing' ? 'pending_out' : 'pending_in')
+          setPendingReqId(data.user.pendingFriendRequest.id)
+        } else {
+          setFriendState('none')
+          setPendingReqId(null)
+        }
         const vc = data.user?.vibeCount ?? 0
         profileVibeCountRef.current = vc
         if (data.user?.vibeScore != null) setVibeScore(data.user.vibeScore)
@@ -164,16 +182,59 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
   async function handleFriendToggle() {
     if (!account || friendBusy) return
-    if (isFriend && !confirmUnfriend) { setConfirmUnfriend(true); return }
+
+    if (friendState === 'friend') {
+      // Two-step unfriend (existing UX)
+      if (!confirmUnfriend) { setConfirmUnfriend(true); return }
+      setFriendBusy(true)
+      try {
+        await removeFriend(userId)
+        setFriendState('none')
+        setConfirmUnfriend(false)
+      } catch { /* ignore */ }
+      finally { setFriendBusy(false) }
+      return
+    }
+
+    if (friendState === 'pending_out') {
+      // Two-step cancel for the pending outgoing request
+      if (!confirmCancelReq) { setConfirmCancelReq(true); return }
+      if (!pendingReqId) return
+      setFriendBusy(true)
+      try {
+        await cancelFriendRequest(pendingReqId)
+        setFriendState('none')
+        setPendingReqId(null)
+        setConfirmCancelReq(false)
+      } catch { /* ignore */ }
+      finally { setFriendBusy(false) }
+      return
+    }
+
+    if (friendState === 'pending_in') {
+      if (!pendingReqId) return
+      setFriendBusy(true)
+      try {
+        await acceptFriendRequest(pendingReqId)
+        setFriendState('friend')
+        setPendingReqId(null)
+      } catch { /* ignore */ }
+      finally { setFriendBusy(false) }
+      return
+    }
+
+    // friendState === 'none' — send a fresh request. Server may auto-accept
+    // on mutual add (returns friend: true), in which case we skip the
+    // "Request sent" intermediate state.
     setFriendBusy(true)
     try {
-      if (isFriend) {
-        await removeFriend(userId)
-        setIsFriend(false)
-        setConfirmUnfriend(false)
-      } else {
-        await addFriend(userId)
-        setIsFriend(true)
+      const result = await sendFriendRequest(userId)
+      if (result.friend) {
+        setFriendState('friend')
+        setPendingReqId(null)
+      } else if (result.request) {
+        setFriendState('pending_out')
+        setPendingReqId(result.request.id)
       }
     } catch { /* ignore */ }
     finally { setFriendBusy(false) }
@@ -537,13 +598,17 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               {dmBusy ? 'Opening…' : '💬 Message'}
             </button>
           )}
-          {account && !confirmUnfriend && (
+          {account && !confirmUnfriend && !confirmCancelReq && (
             <button
-              className={`pub-profile-friend-btn${isFriend ? ' pub-profile-friend-btn--active' : ''}`}
+              className={`pub-profile-friend-btn${(friendState === 'friend' || friendState === 'pending_out') ? ' pub-profile-friend-btn--active' : ''}`}
               onClick={handleFriendToggle}
               disabled={friendBusy}
             >
-              {friendBusy ? '…' : isFriend ? '✓ Friend' : '+ Friend'}
+              {friendBusy ? '…' :
+               friendState === 'friend'      ? '✓ Friend'        :
+               friendState === 'pending_out' ? '⌛ Request sent' :
+               friendState === 'pending_in'  ? '✓ Accept request':
+                                                '+ Friend'}
             </button>
           )}
           {account && confirmUnfriend && (
@@ -553,6 +618,16 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </button>
               <button className="pub-profile-unfriend-cancel" onClick={() => setConfirmUnfriend(false)} disabled={friendBusy}>
                 Cancel
+              </button>
+            </div>
+          )}
+          {account && confirmCancelReq && (
+            <div className="pub-profile-unfriend-confirm">
+              <button className="pub-profile-unfriend-btn" onClick={handleFriendToggle} disabled={friendBusy}>
+                {friendBusy ? 'Cancelling…' : 'Cancel request'}
+              </button>
+              <button className="pub-profile-unfriend-cancel" onClick={() => setConfirmCancelReq(false)} disabled={friendBusy}>
+                Keep
               </button>
             </div>
           )}

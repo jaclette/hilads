@@ -43,7 +43,7 @@ const PROFILE_TABS = [
   { key: 'vibes',     label: 'Vibes'     },
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [name,            setName]            = useState(account.display_name ?? '')
@@ -443,6 +443,21 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
 
         {/* ── Tab: Friends ── */}
         {activeTab === 'friends' && (
+          <>
+          {/* Inbox row above the friends card. Mirrors the mobile Me-tab row;
+              taps into /friend-requests with a badge for incoming pending count. */}
+          <button
+            type="button"
+            className="me-friend-req-row"
+            onClick={() => onOpenFriendRequests?.()}
+          >
+            <span className="me-friend-req-icon">👤+</span>
+            <span className="me-friend-req-label">Friend requests</span>
+            {friendRequestCount > 0 && (
+              <span className="me-friend-req-badge">{friendRequestCount > 9 ? '9+' : friendRequestCount}</span>
+            )}
+            <span className="me-friend-req-chev">›</span>
+          </button>
           <div className="profile-card">
             <p className="me-section-label">My friends</p>
             {myFriends === null || myFriends.length === 0 ? (
@@ -472,6 +487,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               })
             )}
           </div>
+          </>
         )}
 
         {/* ── Tab: Vibes ── */}

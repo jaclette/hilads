@@ -18,15 +18,17 @@ function timeAgo(isoString) {
 }
 
 const TYPE_ICONS = {
-  dm_message:     '💬',
-  event_message:  '🔥',
-  event_join:     '👥',
-  new_event:      '🔥',
-  channel_message:'💬',
-  city_join:      '👋',
-  friend_added:   '👋',
-  vibe_received:  '✨',
-  profile_view:   '👀',
+  dm_message:              '💬',
+  event_message:           '🔥',
+  event_join:              '👥',
+  new_event:               '🔥',
+  channel_message:         '💬',
+  city_join:               '👋',
+  friend_request_received: '👋',
+  friend_request_accepted: '🎉',
+  friend_added:            '👋',  // legacy
+  vibe_received:           '✨',
+  profile_view:            '👀',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────
@@ -226,11 +228,11 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
           <div className="notif-pref-row">
             <div className="notif-pref-label">
               <span className="notif-pref-name">Friend requests</span>
-              <span className="notif-pref-desc">When someone adds you as a friend</span>
+              <span className="notif-pref-desc">When someone sends you a friend request or accepts yours</span>
             </div>
             <Toggle
-              checked={prefs?.friend_added_push ?? true}
-              onChange={v => handleTogglePref('friend_added_push', v)}
+              checked={prefs?.friend_request_push ?? true}
+              onChange={v => handleTogglePref('friend_request_push', v)}
               disabled={prefsSaving || !prefs}
             />
           </div>

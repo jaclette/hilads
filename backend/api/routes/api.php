@@ -335,6 +335,17 @@ function broadcastConversationMessageToWs(string $conversationId, array $message
     }
 }
 
+// ── Per-user broadcast helper ─────────────────────────────────────────────────
+// Pushes an event to every WS socket the given userId has open. Used by
+// friend-request flows so the sender's profile flips state instantly when the
+// receiver accepts/declines, and the receiver's inbox updates when the sender
+// cancels. Fire-and-forget — failure to reach the WS server is logged but
+// never fails the HTTP request.
+function broadcastUserEventToWs(string $userId, string $event, array $payload = []): void
+{
+    postToWs('/broadcast/user-event', ['userId' => $userId, 'event' => $event, 'payload' => $payload]);
+}
+
 function enforceRateLimit(string $bucket, int $limit, int $windowSeconds, ?string $suffix = null): void
 {
     $key = $bucket . '|' . Request::ip();
@@ -612,10 +623,12 @@ $router->add('GET', '/internal/run-migrations', function () {
     // ── 5. Add notification_preferences columns added after initial schema ───────
     // All three were added post-launch and may be absent in production.
     // IF NOT EXISTS is PostgreSQL 9.6+ — safe to run repeatedly.
+    // friend_added_push was renamed to friend_request_push when the friend
+    // request flow shipped — see migrate.php for the rename.
     foreach ([
-        ['friend_added_push',  'BOOLEAN NOT NULL DEFAULT TRUE'],
-        ['vibe_received_push', 'BOOLEAN NOT NULL DEFAULT TRUE'],
-        ['profile_view_push',  'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['friend_request_push', 'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['vibe_received_push',  'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['profile_view_push',   'BOOLEAN NOT NULL DEFAULT TRUE'],
     ] as [$col, $def]) {
         try {
             $pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS $col $def");
@@ -832,6 +845,22 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         $isFriend = (bool) $chk->fetchColumn();
     }
 
+    // pendingFriendRequest: surface the open request (if any) between the
+    // viewer and this user. Direction tells the client which button to show:
+    //   "outgoing" → viewer sent the request, button = "Request sent" (cancel)
+    //   "incoming" → viewer received the request, button = "Accept request"
+    // Null when no pending row exists in either direction.
+    $pendingFriendRequest = null;
+    if (!$isFriend && $viewer !== null && $viewer['id'] !== $user['id']) {
+        $req = FriendRequestRepository::findPendingBetween($viewer['id'], $user['id']);
+        if ($req !== null) {
+            $pendingFriendRequest = [
+                'id'        => $req['id'],
+                'direction' => $req['sender_id'] === $viewer['id'] ? 'outgoing' : 'incoming',
+            ];
+        }
+    }
+
     $vibeScore = VibeRepository::scoreForUser($user['id']);
 
     // Base canonical DTO + public profile extensions
@@ -849,15 +878,16 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
     $dto = array_merge(
         UserResource::fromUser($user, [], ['isFriend' => $isFriend]),
         [
-            'age'             => isset($user['birth_year']) && $user['birth_year'] !== null
-                                  ? (int) date('Y') - (int) $user['birth_year']
-                                  : null,
-            'homeCity'        => $user['home_city'] ?? null,
-            'aboutMe'         => $user['about_me'] ?? null,
-            'interests'       => json_decode($user['interests'] ?? '[]', true),
-            'vibeScore'       => $vibeScore['score'],
-            'vibeCount'       => $vibeScore['count'],
-            'ambassadorPicks' => $ambassadorPicks,
+            'age'                  => isset($user['birth_year']) && $user['birth_year'] !== null
+                                       ? (int) date('Y') - (int) $user['birth_year']
+                                       : null,
+            'homeCity'             => $user['home_city'] ?? null,
+            'aboutMe'              => $user['about_me'] ?? null,
+            'interests'            => json_decode($user['interests'] ?? '[]', true),
+            'vibeScore'            => $vibeScore['score'],
+            'vibeCount'            => $vibeScore['count'],
+            'ambassadorPicks'      => $ambassadorPicks,
+            'pendingFriendRequest' => $pendingFriendRequest,
         ],
     );
 
@@ -963,7 +993,12 @@ $router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
 
 // ── Friends ───────────────────────────────────────────────────────────────────
 
-// POST /api/v1/users/{userId}/friends — add {userId} as my friend (auth required).
+// POST /api/v1/users/{userId}/friends — send a friend request to {userId}.
+//
+// Behaviour change (vs. the legacy auto-add): the receiver must explicitly
+// accept before user_friends gets populated. Mutual-add short-circuits: if the
+// receiver had already sent the sender a pending request, that reverse request
+// is auto-accepted and both users become friends immediately.
 $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) {
     $viewer   = AuthService::requireAuth();
     $targetId = $params['userId'] ?? '';
@@ -971,44 +1006,238 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
         Response::json(['error' => 'Invalid userId'], 400);
     }
     if ($targetId === $viewer['id']) {
-        Response::json(['error' => 'Cannot add yourself as a friend'], 400);
+        Response::json(['error' => 'Cannot friend yourself'], 400);
     }
+
+    enforceRateLimit('friend_request_send', 30, 3600, $viewer['id']);
 
     $target = UserRepository::findById($targetId);
     if ($target === null || !empty($target['deleted_at'])) {
         Response::json(['error' => 'User not found'], 404);
     }
 
-    // Check if already friends so we don't re-send a notification on duplicate adds
-    $checkStmt = Database::pdo()->prepare("SELECT 1 FROM user_friends WHERE user_id = ? AND friend_id = ?");
-    $checkStmt->execute([$viewer['id'], $targetId]);
-    $alreadyFriend = (bool) $checkStmt->fetchColumn();
+    // Already friends → nothing to do, but report it as a 200 so the client can
+    // reconcile its local state (UI may have flipped optimistically).
+    if (FriendRequestRepository::areFriends($viewer['id'], $targetId)) {
+        Response::json(['ok' => true, 'friend' => true]);
+    }
 
-    // Insert both directions so the friendship is visible to both users immediately.
-    $pdo = Database::pdo();
-    $pdo->prepare("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
-        ->execute([$viewer['id'], $targetId]);
-    $pdo->prepare("INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?) ON CONFLICT DO NOTHING")
-        ->execute([$targetId, $viewer['id']]);
+    $pending = FriendRequestRepository::findPendingBetween($viewer['id'], $targetId);
 
-    // Notify the target user — only on first add, not on duplicate requests
-    if (!$alreadyFriend) {
-        $senderName = $viewer['display_name'] ?? 'Someone';
+    // Mutual-add: receiver had already sent us a pending request → auto-accept.
+    if ($pending !== null && $pending['sender_id'] === $targetId) {
+        FriendRequestRepository::setStatus($pending['id'], 'accepted');
+        FriendRequestRepository::insertFriendship($viewer['id'], $targetId);
+
+        // Notify the original sender that their request was accepted (as if the
+        // receiver had tapped Accept manually). Plus a WS event to flip their
+        // open profile screen instantly.
+        $accepterName = $viewer['display_name'] ?? 'Someone';
         NotificationRepository::create(
             $targetId,
-            'friend_added',
-            "{$senderName} added you as a friend 👋",
+            'friend_request_accepted',
+            "{$accepterName} accepted your friend request 🎉",
             null,
             [
-                'senderUserId' => $viewer['id'],
-                'senderName'   => $senderName,
+                'accepterUserId' => $viewer['id'],
+                'accepterName'   => $accepterName,
             ]
         );
+        broadcastUserEventToWs($targetId, 'friendRequestAccepted', [
+            'requestId'      => $pending['id'],
+            'accepterUserId' => $viewer['id'],
+        ]);
+
+        AnalyticsService::capture('friend_request_accepted', $viewer['id'], [
+            'request_id' => $pending['id'],
+            'sender_id'  => $targetId,
+            'mutual'     => true,
+        ]);
+
+        Response::json(['ok' => true, 'friend' => true, 'request' => array_merge($pending, ['status' => 'accepted'])]);
     }
 
-    if (!$alreadyFriend) {
-        AnalyticsService::capture('friend_added', $viewer['id'], ['target_id' => $targetId]);
+    // Idempotent re-send of an already-pending outgoing request.
+    if ($pending !== null && $pending['sender_id'] === $viewer['id']) {
+        Response::json(['ok' => true, 'request' => $pending]);
     }
+
+    // Fresh request.
+    $request = FriendRequestRepository::create($viewer['id'], $targetId);
+
+    $senderName = $viewer['display_name'] ?? 'Someone';
+    NotificationRepository::create(
+        $targetId,
+        'friend_request_received',
+        "{$senderName} sent you a friend request",
+        null,
+        [
+            'requestId'    => $request['id'],
+            'senderUserId' => $viewer['id'],
+            'senderName'   => $senderName,
+        ]
+    );
+    broadcastUserEventToWs($targetId, 'friendRequestReceived', [
+        'request' => array_merge($request, [
+            'other_user_id'      => $viewer['id'],
+            'other_display_name' => $senderName,
+            'other_photo_url'    => $viewer['profile_photo_url'] ?? null,
+            'other_vibe'         => $viewer['vibe'] ?? null,
+        ]),
+    ]);
+
+    AnalyticsService::capture('friend_request_sent', $viewer['id'], ['target_id' => $targetId]);
+
+    Response::json(['ok' => true, 'request' => $request], 201);
+});
+
+// GET /api/v1/friend-requests/incoming — pending requests where I am the receiver.
+$router->add('GET', '/api/v1/friend-requests/incoming', function () {
+    $viewer = AuthService::requireAuth();
+
+    $limit  = max(1, min(50, (int) ($_GET['limit'] ?? 50)));
+    $page   = max(1, (int) ($_GET['page']  ?? 1));
+    $offset = ($page - 1) * $limit;
+
+    $rows  = FriendRequestRepository::listIncomingPending($viewer['id'], $limit, $offset);
+    $total = FriendRequestRepository::incomingPendingCount($viewer['id']);
+
+    Response::json([
+        'requests' => $rows,
+        'total'    => $total,
+        'page'     => $page,
+        'hasMore'  => ($offset + count($rows)) < $total,
+    ]);
+});
+
+// GET /api/v1/friend-requests/outgoing — pending requests where I am the sender.
+$router->add('GET', '/api/v1/friend-requests/outgoing', function () {
+    $viewer = AuthService::requireAuth();
+
+    $limit  = max(1, min(50, (int) ($_GET['limit'] ?? 50)));
+    $page   = max(1, (int) ($_GET['page']  ?? 1));
+    $offset = ($page - 1) * $limit;
+
+    $rows = FriendRequestRepository::listOutgoingPending($viewer['id'], $limit, $offset);
+
+    Response::json([
+        'requests' => $rows,
+        'page'     => $page,
+        'hasMore'  => count($rows) === $limit,
+    ]);
+});
+
+// GET /api/v1/friend-requests/incoming-count — drives the Me-tab badge.
+// Cheap COUNT(*) so the client can refresh on focus without paging the list.
+$router->add('GET', '/api/v1/friend-requests/incoming-count', function () {
+    $viewer = AuthService::requireAuth();
+    Response::json(['count' => FriendRequestRepository::incomingPendingCount($viewer['id'])]);
+});
+
+// POST /api/v1/friend-requests/{id}/accept — receiver accepts a pending request.
+$router->add('POST', '/api/v1/friend-requests/{id}/accept', function (array $params) {
+    $viewer = AuthService::requireAuth();
+    $id     = $params['id'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $id)) {
+        Response::json(['error' => 'Invalid request id'], 400);
+    }
+
+    $req = FriendRequestRepository::findById($id);
+    if ($req === null) {
+        Response::json(['error' => 'Request not found'], 404);
+    }
+    if ($req['receiver_id'] !== $viewer['id']) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+    if ($req['status'] !== 'pending') {
+        Response::json(['error' => 'Request is no longer pending'], 409);
+    }
+
+    FriendRequestRepository::setStatus($id, 'accepted');
+    FriendRequestRepository::insertFriendship($req['sender_id'], $req['receiver_id']);
+
+    $accepterName = $viewer['display_name'] ?? 'Someone';
+    NotificationRepository::create(
+        $req['sender_id'],
+        'friend_request_accepted',
+        "{$accepterName} accepted your friend request 🎉",
+        null,
+        [
+            'accepterUserId' => $viewer['id'],
+            'accepterName'   => $accepterName,
+        ]
+    );
+    broadcastUserEventToWs($req['sender_id'], 'friendRequestAccepted', [
+        'requestId'      => $id,
+        'accepterUserId' => $viewer['id'],
+    ]);
+
+    AnalyticsService::capture('friend_request_accepted', $viewer['id'], [
+        'request_id' => $id,
+        'sender_id'  => $req['sender_id'],
+    ]);
+
+    Response::json(['ok' => true]);
+});
+
+// POST /api/v1/friend-requests/{id}/decline — receiver declines a pending request.
+// Per spec: NO notification to sender (avoids awkwardness). WS event still
+// fires so an open profile screen on the sender's side returns to "Add friend".
+$router->add('POST', '/api/v1/friend-requests/{id}/decline', function (array $params) {
+    $viewer = AuthService::requireAuth();
+    $id     = $params['id'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $id)) {
+        Response::json(['error' => 'Invalid request id'], 400);
+    }
+
+    $req = FriendRequestRepository::findById($id);
+    if ($req === null) {
+        Response::json(['error' => 'Request not found'], 404);
+    }
+    if ($req['receiver_id'] !== $viewer['id']) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+    if ($req['status'] !== 'pending') {
+        Response::json(['error' => 'Request is no longer pending'], 409);
+    }
+
+    FriendRequestRepository::setStatus($id, 'declined');
+    broadcastUserEventToWs($req['sender_id'], 'friendRequestDeclined', ['requestId' => $id]);
+
+    AnalyticsService::capture('friend_request_declined', $viewer['id'], [
+        'request_id' => $id,
+        'sender_id'  => $req['sender_id'],
+    ]);
+
+    Response::json(['ok' => true]);
+});
+
+// DELETE /api/v1/friend-requests/{id} — sender cancels their own pending request.
+$router->add('DELETE', '/api/v1/friend-requests/{id}', function (array $params) {
+    $viewer = AuthService::requireAuth();
+    $id     = $params['id'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $id)) {
+        Response::json(['error' => 'Invalid request id'], 400);
+    }
+
+    $req = FriendRequestRepository::findById($id);
+    if ($req === null) {
+        Response::json(['error' => 'Request not found'], 404);
+    }
+    if ($req['sender_id'] !== $viewer['id']) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+    if ($req['status'] !== 'pending') {
+        Response::json(['error' => 'Request is no longer pending'], 409);
+    }
+
+    FriendRequestRepository::setStatus($id, 'cancelled');
+    broadcastUserEventToWs($req['receiver_id'], 'friendRequestCancelled', ['requestId' => $id]);
+
+    AnalyticsService::capture('friend_request_cancelled', $viewer['id'], [
+        'request_id'  => $id,
+        'receiver_id' => $req['receiver_id'],
+    ]);
 
     Response::json(['ok' => true]);
 });

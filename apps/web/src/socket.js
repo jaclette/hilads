@@ -14,6 +14,7 @@
  *                    leaveTopic(topicId, sessionId)
  *                    joinConversation(conversationId, userId)
  *                    leaveConversation(conversationId, userId)
+ *                    joinUser(userId)                       — per-user channel
  *
  * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
  *                    userJoined(cityId, user)
@@ -26,6 +27,8 @@
  *                    event_participants_update(eventId, count)
  *                    new_event(channelId, hiladsEvent)
  *                    newTopic(channelId, topic)
+ *                    friendRequestReceived | friendRequestAccepted |
+ *                      friendRequestDeclined | friendRequestCancelled  (per-user)
  *
  * Lifecycle events (synthetic — not from server):
  *                    connected   — fired after onopen + room replays
@@ -64,6 +67,7 @@ export function createSocket() {
   let pendingEventJoin        = null
   let pendingConversationJoin = null
   let pendingTopicJoin        = null
+  let pendingUserJoin         = null  // per-user channel for friend reqs etc.
 
   // ── Dispatch ────────────────────────────────────────────────────────────────
 
@@ -94,6 +98,7 @@ export function createSocket() {
       if (pendingEventJoin)        send({ event: 'joinEvent',         ...pendingEventJoin })
       if (pendingConversationJoin) send({ event: 'joinConversation',  ...pendingConversationJoin })
       if (pendingTopicJoin)        send({ event: 'joinTopic',         ...pendingTopicJoin })
+      if (pendingUserJoin)         send({ event: 'joinUser',          ...pendingUserJoin })
 
       // Notify subscribers — useful for catch-up fetches after a disconnect gap
       dispatch('connected', {})
@@ -216,6 +221,18 @@ export function createSocket() {
     leaveConversation(conversationId, userId) {
       pendingConversationJoin = null
       send({ event: 'leaveConversation', conversationId, userId })
+    },
+
+    /**
+     * Subscribe to the per-user WS channel — friend-request events, future
+     * profile-view bursts, etc. Replayed on reconnect. Safe to call before
+     * the socket is open: send() drops while closed and the pendingUserJoin
+     * payload fires on the 'connected' replay.
+     */
+    joinUser(userId) {
+      if (!userId) return
+      pendingUserJoin = { userId }
+      send({ event: 'joinUser', userId })
     },
 
     /** Keep presence alive. Call when tab regains focus. */

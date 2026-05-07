@@ -142,6 +142,16 @@ class HiladsSocket {
     this.send({ event: 'leaveConversation', conversationId });
   }
 
+  /**
+   * Subscribe this socket to the registered user's personal channel. The
+   * server pushes per-user events here (friendRequestReceived/Accepted/
+   * Declined/Cancelled, future profile-view bursts, etc). Safe to call on
+   * every reconnect — the server tracks one entry per (userId, ws).
+   */
+  joinUser(userId: string): void {
+    this.send({ event: 'joinUser', userId });
+  }
+
   // ── Internal ─────────────────────────────────────────────────────────────────
 
   private _connect(): void {

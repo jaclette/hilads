@@ -165,6 +165,13 @@ export interface PublicProfile extends UserDTO {
     tip?:        string;
     story?:      string;
   } | null;
+  // Open friend request between viewer and this user, if any. Direction tells
+  // the client which button to render: outgoing → "Request sent" (cancel),
+  // incoming → "Accept request". Null when no request is pending.
+  pendingFriendRequest?: {
+    id:        string;
+    direction: 'outgoing' | 'incoming';
+  } | null;
 }
 
 // ── Event participants ────────────────────────────────────────────────────────
@@ -299,11 +306,33 @@ export interface DmMessage {
   status?: 'sending' | 'failed';
 }
 
+// ── Friend requests ───────────────────────────────────────────────────────────
+
+export interface FriendRequest {
+  id:           string;
+  sender_id:    string;
+  receiver_id:  string;
+  status:       'pending' | 'accepted' | 'declined' | 'cancelled';
+  created_at:   string;
+  updated_at?:  string;
+  // Joined-user fields populated by listIncoming / listOutgoing endpoints + the
+  // friendRequestReceived WS event. Absent on the bare row returned from
+  // create / accept.
+  other_user_id?:      string;
+  other_display_name?: string;
+  other_photo_url?:    string | null;
+  other_vibe?:         string | null;
+}
+
 // ── Notifications ─────────────────────────────────────────────────────────────
 
 export interface Notification {
   id: number;
-  type: 'dm_message' | 'event_message' | 'event_join' | 'new_event' | 'channel_message' | 'city_join' | 'friend_added' | 'vibe_received' | 'profile_view';
+  type:
+    | 'dm_message' | 'event_message' | 'event_join' | 'new_event'
+    | 'channel_message' | 'city_join'
+    | 'friend_request_received' | 'friend_request_accepted' | 'friend_added' // friend_added kept for legacy rows
+    | 'vibe_received' | 'profile_view';
   title: string;
   body: string;
   data: {
@@ -312,6 +341,9 @@ export interface Notification {
     channelId?: string;
     senderName?: string;
     senderUserId?: string;
+    accepterUserId?: string;
+    accepterName?: string;
+    requestId?: string;
     actorId?: string;
     actorName?: string;
     vibeId?: number;

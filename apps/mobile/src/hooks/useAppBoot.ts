@@ -344,6 +344,12 @@ export function useAppBoot(): Result {
               // unreadNotifications is seeded from bootstrapChannel result — no separate fetch needed.
               console.log('[boot] account set — push registration will fire via usePushRegistration');
               console.log('[boot] authToken present:', getAuthToken() !== null ? 'yes' : 'NO');
+              // Subscribe to the per-user WS channel so friend-request events
+              // and other per-user notifications reach this device. Safe to
+              // call before the socket connects: send() drops while closed,
+              // and we re-subscribe on every 'connected' event below.
+              socket.joinUser(user.id);
+              socket.on('connected', () => socket.joinUser(user.id));
             } else if (!cancelled) {
               console.log('[boot] no authenticated user — push registration will wait for login');
             }

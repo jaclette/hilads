@@ -553,15 +553,17 @@ export async function fetchUserFriends(userId, { page = 1, limit = 20 } = {}) {
   return res.json() // { friends, total, page, hasMore }
 }
 
-export async function addFriend(userId) {
+// Send a friend request. Backend mutual-add returns { ok: true, friend: true }
+// when both users had pending requests to each other (auto-accepted).
+export async function sendFriendRequest(userId) {
   const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/friends`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
     body: JSON.stringify({}),
   })
-  if (!res.ok) throw new Error('Failed to add friend')
-  return res.json()
+  if (!res.ok) throw new Error('Failed to send friend request')
+  return res.json()  // { ok: true, friend?: true, request?: {...} }
 }
 
 export async function removeFriend(userId) {
@@ -571,6 +573,54 @@ export async function removeFriend(userId) {
   })
   if (!res.ok) throw new Error('Failed to remove friend')
   return res.json()
+}
+
+export async function acceptFriendRequest(requestId) {
+  const res = await fetch(`${BASE}/friend-requests/${encodeURIComponent(requestId)}/accept`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to accept friend request')
+  return res.json()
+}
+
+export async function declineFriendRequest(requestId) {
+  const res = await fetch(`${BASE}/friend-requests/${encodeURIComponent(requestId)}/decline`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to decline friend request')
+  return res.json()
+}
+
+export async function cancelFriendRequest(requestId) {
+  const res = await fetch(`${BASE}/friend-requests/${encodeURIComponent(requestId)}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to cancel friend request')
+  return res.json()
+}
+
+export async function fetchIncomingFriendRequests() {
+  const res = await fetch(`${BASE}/friend-requests/incoming`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch incoming friend requests')
+  const data = await res.json()
+  return data.requests ?? []
+}
+
+export async function fetchOutgoingFriendRequests() {
+  const res = await fetch(`${BASE}/friend-requests/outgoing`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch outgoing friend requests')
+  const data = await res.json()
+  return data.requests ?? []
+}
+
+export async function fetchIncomingFriendRequestCount() {
+  const res = await fetch(`${BASE}/friend-requests/incoming-count`, { credentials: 'include' })
+  if (!res.ok) return 0
+  const data = await res.json()
+  return data.count ?? 0
 }
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────

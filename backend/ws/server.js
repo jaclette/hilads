@@ -12,6 +12,7 @@
  *                    leaveTopic(topicId, sessionId)
  *                    joinConversation(conversationId, userId)
  *                    leaveConversation(conversationId, userId)
+ *                    joinUser(userId)                       — per-user channel for friend reqs etc.
  *                    reaction(type, messageId, cityId, userId?, timestamp)
  *
  * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
@@ -21,6 +22,8 @@
  *                    event_presence_update(eventId, count)
  *                    event_participants_update(eventId, count)
  *                    newConversationMessage(conversationId, message)
+ *                    friendRequestReceived | friendRequestAccepted |
+ *                      friendRequestDeclined | friendRequestCancelled  (per-user)
  *
  * PHP API → WS (same port as WS, plain HTTP POST — Render proxies both)
  *                    POST /broadcast/event-participants   { eventId, count }
@@ -28,6 +31,7 @@
  *                    POST /broadcast/conversation-message { conversationId, message }
  *                    POST /broadcast/new-event            { channelId, hiladsEvent }
  *                    POST /broadcast/new-topic            { channelId, topic }
+ *                    POST /broadcast/user-event           { userId, event, payload }
  *
  * All events are JSON objects with an `event` field.
  *
@@ -73,6 +77,12 @@ const topicRooms = new Map()
 // dmRooms: Map<conversationId, Map<userId, { userId, ws }>>
 // Keyed by userId (not sessionId) because DMs are tied to registered accounts.
 const dmRooms = new Map()
+
+// userRooms: Map<userId, Set<ws>>
+// Per-user channel for events that target a single registered user (friend
+// requests, future profile-view bursts, etc). Multi-device users have multiple
+// sockets in the set. Cleaned up when sockets close (see removeWs).
+const userRooms = new Map()
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -332,6 +342,28 @@ function broadcastConversationMessage(conversationId, message) {
   }
 }
 
+// ── Per-user channel ───────────────────────────────────────────────────────────
+
+function handleJoinUser(ws, { userId }) {
+  if (!userId) return
+  if (!userRooms.has(userId)) userRooms.set(userId, new Set())
+  userRooms.get(userId).add(ws)
+  if (!ws._joinedUserIds) ws._joinedUserIds = new Set()
+  ws._joinedUserIds.add(userId)
+  console.log(`[WS] joinUser: ${userId.slice(0, 8)} (${userRooms.get(userId).size} sockets)`)
+}
+
+// Broadcasts an arbitrary {event, ...payload} object to every socket the
+// userId currently has open. Called from the /broadcast/user-event handler.
+function broadcastToUser(userId, event, payload) {
+  const sockets = userRooms.get(userId)
+  if (!sockets || sockets.size === 0) return
+  const msg = JSON.stringify({ event, ...payload })
+  for (const ws of sockets) {
+    if (ws.readyState === 1 /* OPEN */) ws.send(msg)
+  }
+}
+
 // Remove a disconnected ws from all rooms it was part of
 function removeWs(ws) {
   for (const [cityId, room] of rooms) {
@@ -368,6 +400,17 @@ function removeWs(ws) {
         if (room.size === 0) dmRooms.delete(conversationId)
       }
     }
+  }
+  // Clean up per-user channels — tracked on the ws itself for O(1) cleanup
+  // instead of scanning the whole userRooms map.
+  if (ws._joinedUserIds) {
+    for (const uid of ws._joinedUserIds) {
+      const sockets = userRooms.get(uid)
+      if (!sockets) continue
+      sockets.delete(ws)
+      if (sockets.size === 0) userRooms.delete(uid)
+    }
+    ws._joinedUserIds.clear()
   }
 }
 
@@ -448,6 +491,13 @@ function handleBroadcastRequest(req, res) {
         broadcastDmReactionUpdate(conversationId, messageId, reactions)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/user-event') {
+        const { userId, event, payload } = JSON.parse(body)
+        const sockets = userRooms.get(userId)
+        console.log(`[internal] broadcast user-event userId=${userId ? userId.slice(0, 8) : 'null'} event=${event} sockets=${sockets ? sockets.size : 0}`)
+        if (userId && event) broadcastToUser(userId, event, payload || {})
+        res.writeHead(200); res.end('ok')
+
       } else {
         console.log(`[internal] ✗ unknown route ${req.method} ${req.url}`)
         res.writeHead(404); res.end('not found')
@@ -498,6 +548,7 @@ wss.on('connection', (ws, req) => {
       case 'leaveTopic':         return handleLeaveTopic(ws, msg)
       case 'joinConversation':   return handleJoinConversation(ws, msg)
       case 'leaveConversation':  return handleLeaveConversation(ws, msg)
+      case 'joinUser':           return handleJoinUser(ws, msg)
       case 'reaction':           return handleReactionBurst(ws, msg)
     }
   })

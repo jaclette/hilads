@@ -22,6 +22,8 @@ import ConversationsScreen from './components/ConversationsScreen'
 import UpcomingEventsScreen from './components/UpcomingEventsScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
+import FriendRequestsScreen from './components/FriendRequestsScreen'
+import { fetchIncomingFriendRequestCount } from './api'
 import BackButton from './components/BackButton'
 import EmojiPicker from './components/EmojiPicker'
 import SendButton from './components/SendButton'
@@ -52,6 +54,7 @@ function parseDeepLink() {
   if (topicMatch)          return { type: 'topic',         id: topicMatch[1] }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
+  if (path === '/friend-requests') return { type: 'friend-requests' }
   if (path === '/reset-password') return { type: 'reset-password', token: params.get('token') ?? '' }
   if (path === '/forgot-password')   return { type: 'forgot-password' }
   if (path === '/delete-account')    return { type: 'delete-account' }
@@ -651,7 +654,9 @@ export default function App() {
   const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
+  const [friendReqCount, setFriendReqCount] = useState(0)
 
   // Event limit reached — shown when a non-Legend user has already created
   // their event today (preflight check), or when the POST returns the
@@ -927,6 +932,20 @@ export default function App() {
       .catch(() => setMyFriendsLoaded(true))
   }, [showProfileDrawer]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Pending incoming friend-request count for the badge on the Me drawer's
+  // Friends tab. Bumped/decremented via per-user WS so the badge stays fresh
+  // without re-fetching on every drawer open.
+  useEffect(() => {
+    if (!account?.id) { setFriendReqCount(0); return }
+    fetchIncomingFriendRequestCount().then(setFriendReqCount).catch(() => {})
+    const sock = socketRef.current
+    if (!sock?.on) return
+    const offRecv   = sock.on('friendRequestReceived',  () => setFriendReqCount(c => c + 1))
+    const offCxled  = sock.on('friendRequestCancelled', () => setFriendReqCount(c => Math.max(0, c - 1)))
+    const offAccept = sock.on('friendRequestAccepted',  () => { /* I'm the sender; my outgoing went down, not incoming */ })
+    return () => { offRecv(); offCxled(); offAccept() }
+  }, [account?.id])
+
   // Fetch notification unread count once on account load.
   // Badge is kept current via local state transitions:
   //   - NotificationsScreen sets it to the true server count on open
@@ -971,6 +990,7 @@ export default function App() {
       const path = new URL(url, window.location.origin).pathname
       if (path === '/conversations') { setShowConversations(true); return }
       if (path === '/notifications')  { setShowNotifications(true); return }
+      if (path === '/friend-requests') { setShowFriendRequests(true); return }
       const eventMatch = path.match(/^\/event\/([a-f0-9]{16})$/)
       if (eventMatch) {
         const eid = eventMatch[1]
@@ -1010,6 +1030,11 @@ export default function App() {
         account?.id ?? null,
         account?.mode ?? 'exploring',
       )
+    }
+    // Subscribe to the per-user WS channel so friend-request events reach
+    // this tab. Replayed automatically on reconnect via the socket client.
+    if (account?.id && socketRef.current) {
+      socketRef.current.joinUser(account.id)
     }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1652,6 +1677,15 @@ export default function App() {
       // ── Socket: real-time presence ───────────────────────────────────────────
       const socket = socketRef.current ?? createSocket()
       socketRef.current = socket
+
+      // If the user is already authed by the time the socket spins up, kick
+      // off the per-user channel subscription. This covers the cold-start
+      // ordering where account state lands before handleJoin runs (the
+      // account-change effect would have skipped the call because socketRef
+      // was still null then).
+      if (accountRef.current?.id) {
+        socket.joinUser(accountRef.current.id)
+      }
 
       // The API returns channelId as a string but the WS server uses integer Map keys,
       // so the server always sends cityId as a number. Use String() coercion on both
@@ -4329,6 +4363,8 @@ export default function App() {
           account={account}
           myEvents={myEventsLoaded ? myEvents : null}
           myFriends={myFriendsLoaded ? myFriends : null}
+          friendRequestCount={friendReqCount}
+          onOpenFriendRequests={() => { setShowProfileDrawer(false); setShowFriendRequests(true) }}
           cityTimezone={cityTimezone}
           tabMode
           renderAppHeader={renderAppHeader}
@@ -4502,6 +4538,15 @@ export default function App() {
         />
       )}
 
+      {/* Friend requests inbox — full-screen page */}
+      {showFriendRequests && (
+        <FriendRequestsScreen
+          wsClient={socketRef.current}
+          onBack={() => setShowFriendRequests(false)}
+          onViewProfile={(uid) => { setShowFriendRequests(false); openProfile(uid, '') }}
+        />
+      )}
+
       {/* Notifications — full-screen page */}
       {showNotifications && (
         <NotificationsScreen
@@ -4521,7 +4566,12 @@ export default function App() {
               const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
               if (ev) handleSelectEvent(ev)
               else setShowEventDrawer(true)
+            } else if (notif.type === 'friend_request_received') {
+              setShowFriendRequests(true)
+            } else if (notif.type === 'friend_request_accepted' && d.accepterUserId) {
+              openProfile(d.accepterUserId, d.accepterName ?? '')
             } else if (notif.type === 'friend_added' && d.senderUserId) {
+              // Legacy notifications from before the request flow shipped
               openProfile(d.senderUserId, d.senderName ?? '')
             } else if (notif.type === 'vibe_received') {
               setShowProfileDrawer(true)

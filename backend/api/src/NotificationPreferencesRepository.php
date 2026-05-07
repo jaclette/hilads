@@ -13,7 +13,7 @@ class NotificationPreferencesRepository
             'new_event_push'       => false,
             'channel_message_push' => false,
             'city_join_push'       => false,
-            'friend_added_push'    => true,
+            'friend_request_push'    => true,
             'vibe_received_push'   => true,
             'profile_view_push'    => true,
             'topic_reply_push'     => true,   // replies in topics I joined
@@ -26,7 +26,7 @@ class NotificationPreferencesRepository
         try {
             $stmt = Database::pdo()->prepare("
                 SELECT dm_push, event_message_push, event_join_push, new_event_push,
-                       channel_message_push, city_join_push, friend_added_push, vibe_received_push,
+                       channel_message_push, city_join_push, friend_request_push, vibe_received_push,
                        profile_view_push, topic_reply_push, new_topic_push
                 FROM notification_preferences
                 WHERE user_id = ?
@@ -45,7 +45,7 @@ class NotificationPreferencesRepository
                 'new_event_push'       => (bool) $row['new_event_push'],
                 'channel_message_push' => (bool) $row['channel_message_push'],
                 'city_join_push'       => (bool) $row['city_join_push'],
-                'friend_added_push'    => (bool) ($row['friend_added_push'] ?? true),
+                'friend_request_push'    => (bool) ($row['friend_request_push'] ?? true),
                 'vibe_received_push'   => (bool) ($row['vibe_received_push'] ?? true),
                 'profile_view_push'    => (bool) ($row['profile_view_push'] ?? true),
                 'topic_reply_push'     => (bool) ($row['topic_reply_push'] ?? true),
@@ -69,7 +69,7 @@ class NotificationPreferencesRepository
         $newEvent      = isset($prefs['new_event_push'])       ? (bool) $prefs['new_event_push']       : $defaults['new_event_push'];
         $chanMsg       = isset($prefs['channel_message_push']) ? (bool) $prefs['channel_message_push'] : $defaults['channel_message_push'];
         $cityJoin      = isset($prefs['city_join_push'])       ? (bool) $prefs['city_join_push']       : $defaults['city_join_push'];
-        $friendAdded   = isset($prefs['friend_added_push'])    ? (bool) $prefs['friend_added_push']    : $defaults['friend_added_push'];
+        $friendReq     = isset($prefs['friend_request_push'])    ? (bool) $prefs['friend_request_push']    : $defaults['friend_request_push'];
         $vibeReceived  = isset($prefs['vibe_received_push'])   ? (bool) $prefs['vibe_received_push']   : $defaults['vibe_received_push'];
         $profileView   = isset($prefs['profile_view_push'])    ? (bool) $prefs['profile_view_push']    : $defaults['profile_view_push'];
         $topicReply    = isset($prefs['topic_reply_push'])     ? (bool) $prefs['topic_reply_push']     : $defaults['topic_reply_push'];
@@ -82,7 +82,7 @@ class NotificationPreferencesRepository
             'new_event_push'       => $newEvent,
             'channel_message_push' => $chanMsg,
             'city_join_push'       => $cityJoin,
-            'friend_added_push'    => $friendAdded,
+            'friend_request_push'    => $friendReq,
             'vibe_received_push'   => $vibeReceived,
             'profile_view_push'    => $profileView,
             'topic_reply_push'     => $topicReply,
@@ -96,7 +96,7 @@ class NotificationPreferencesRepository
         Database::pdo()->prepare("
             INSERT INTO notification_preferences
                 (user_id, dm_push, event_message_push, event_join_push, new_event_push,
-                 channel_message_push, city_join_push, friend_added_push, vibe_received_push,
+                 channel_message_push, city_join_push, friend_request_push, vibe_received_push,
                  profile_view_push, topic_reply_push, new_topic_push)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (user_id) DO UPDATE
@@ -106,7 +106,7 @@ class NotificationPreferencesRepository
                    new_event_push       = EXCLUDED.new_event_push,
                    channel_message_push = EXCLUDED.channel_message_push,
                    city_join_push       = EXCLUDED.city_join_push,
-                   friend_added_push    = EXCLUDED.friend_added_push,
+                   friend_request_push    = EXCLUDED.friend_request_push,
                    vibe_received_push   = EXCLUDED.vibe_received_push,
                    profile_view_push    = EXCLUDED.profile_view_push,
                    topic_reply_push     = EXCLUDED.topic_reply_push,
@@ -114,7 +114,7 @@ class NotificationPreferencesRepository
         ")->execute([
             $userId,
             $b($dm), $b($eventMsg), $b($eventJoin), $b($newEvent),
-            $b($chanMsg), $b($cityJoin), $b($friendAdded), $b($vibeReceived), $b($profileView),
+            $b($chanMsg), $b($cityJoin), $b($friendReq), $b($vibeReceived), $b($profileView),
             $b($topicReply), $b($newTopic),
         ]);
 

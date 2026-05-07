@@ -27,10 +27,6 @@ export async function fetchUserFriends(
   return api.get(`/users/${userId}/friends?page=${page}&limit=${limit}`);
 }
 
-export async function addFriend(userId: string): Promise<void> {
-  await api.post(`/users/${userId}/friends`, {});
-}
-
 export async function removeFriend(userId: string): Promise<void> {
   await api.delete(`/users/${userId}/friends`);
 }

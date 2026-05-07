@@ -29,6 +29,8 @@ import { updateProfile, deleteAccount } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
+import { fetchIncomingFriendRequestCount } from '@/api/friendRequests';
+import { socket } from '@/lib/socket';
 import type { UserVibe } from '@/api/users';
 import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
 import type { HiladsEvent, UserDTO } from '@/types';
@@ -164,6 +166,22 @@ export default function MeScreen() {
       .then(data => setMyFriends(data.friends))
       .catch(() => {})
       .finally(() => setFriendsLoading(false));
+  }, [account?.id]);
+
+  // Pending incoming friend-request count for the inbox badge. Cheap COUNT
+  // endpoint; bumped/decremented via WS so the badge stays fresh without a
+  // re-fetch on every focus.
+  const [friendReqCount, setFriendReqCount] = useState(0);
+  useEffect(() => {
+    if (!account?.id) { setFriendReqCount(0); return; }
+    fetchIncomingFriendRequestCount().then(setFriendReqCount).catch(() => {});
+
+    const offReceived  = socket.on('friendRequestReceived',  () => setFriendReqCount(c => c + 1));
+    const offCancelled = socket.on('friendRequestCancelled', () => setFriendReqCount(c => Math.max(0, c - 1)));
+    // Accept/decline both happen on this device → already handled by the
+    // hook on the inbox screen. Re-sync from the server when we come back to
+    // the Me tab to cover the edge case of multi-device users.
+    return () => { offReceived(); offCancelled(); };
   }, [account?.id]);
 
   useEffect(() => {
@@ -737,6 +755,26 @@ export default function MeScreen() {
 
         {/* ── Tab: Friends ── */}
         {!isGuest && activeTab === 'friends' && (
+          <>
+            {/* Friend requests inbox row — always visible on the Friends tab.
+                Badge shows pending incoming count; tapping opens the inbox. */}
+            <TouchableOpacity
+              style={styles.friendReqRow}
+              onPress={() => router.push('/friend-requests' as never)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.friendReqIcon}>
+                <Ionicons name="person-add-outline" size={18} color={Colors.accent} />
+              </View>
+              <Text style={styles.friendReqLabel}>Friend requests</Text>
+              {friendReqCount > 0 && (
+                <View style={styles.friendReqBadge}>
+                  <Text style={styles.friendReqBadgeText}>{friendReqCount > 9 ? '9+' : friendReqCount}</Text>
+                </View>
+              )}
+              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+            </TouchableOpacity>
+
           <View style={styles.eventsCard}>
             <Text style={styles.eventsLabel}>MY FRIENDS</Text>
             {friendsLoading ? (
@@ -773,6 +811,7 @@ export default function MeScreen() {
               ))
             )}
           </View>
+          </>
         )}
 
         {/* ── Tab: Vibes ── */}
@@ -1245,6 +1284,39 @@ const styles = StyleSheet.create({
   recurPillText:  { fontSize: 10, fontWeight: '700', color: Colors.violet, letterSpacing: 0.4 },
   deleteBtn:      { width: 28, height: 28, alignItems: 'center', justifyContent: 'center', marginTop: -2 },
   deleteBtnText:  { fontSize: 22, color: Colors.muted2, lineHeight: 26 },
+
+  // Friend requests inbox row (above MY FRIENDS card on the Friends tab)
+  friendReqRow: {
+    flexDirection:   'row',
+    alignItems:      'center',
+    gap:             12,
+    backgroundColor: Colors.bg2,
+    borderRadius:    Radius.lg,
+    paddingVertical:   Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
+    marginBottom:    Spacing.sm,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+  },
+  friendReqIcon: {
+    width:           32,
+    height:          32,
+    borderRadius:    16,
+    backgroundColor: 'rgba(255,122,60,0.10)',
+    alignItems:      'center',
+    justifyContent:  'center',
+  },
+  friendReqLabel: { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
+  friendReqBadge: {
+    minWidth:          22,
+    height:            22,
+    borderRadius:      11,
+    backgroundColor:   Colors.accent,
+    paddingHorizontal: 7,
+    alignItems:        'center',
+    justifyContent:    'center',
+  },
+  friendReqBadgeText: { color: Colors.white, fontWeight: '700', fontSize: 11 },
 
   // Friends
   friendRow:            { flexDirection: 'row', alignItems: 'center', gap: 10 },

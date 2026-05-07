@@ -17,7 +17,11 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, addFriend, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
+import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
+import {
+  sendFriendRequest, acceptFriendRequest, cancelFriendRequest,
+} from '@/api/friendRequests';
+import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -115,7 +119,11 @@ export default function PublicProfileScreen() {
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState<string | null>(null);
-  const [isFriend,     setIsFriend]     = useState(false);
+  // 4-state machine driven by isFriend + pendingFriendRequest from the profile
+  // payload. WS events flip state without a re-fetch.
+  type FriendState = 'none' | 'pending_out' | 'pending_in' | 'friend';
+  const [friendState,  setFriendState]  = useState<FriendState>('none');
+  const [pendingReqId, setPendingReqId] = useState<string | null>(null);
   const [friendBusy,   setFriendBusy]   = useState(false);
   const [friends,      setFriends]      = useState<UserDTO[]>([]);
   const [vibes,        setVibes]        = useState<UserVibe[]>([]);
@@ -145,7 +153,18 @@ export default function PublicProfileScreen() {
       .then(([u, evs]) => {
         setUser(u);
         setEvents(evs);
-        setIsFriend(u.isFriend ?? false);
+        // Derive friendState from server payload. isFriend wins because once
+        // accepted, the request row is no longer pending.
+        if (u.isFriend) {
+          setFriendState('friend');
+          setPendingReqId(null);
+        } else if (u.pendingFriendRequest) {
+          setFriendState(u.pendingFriendRequest.direction === 'outgoing' ? 'pending_out' : 'pending_in');
+          setPendingReqId(u.pendingFriendRequest.id);
+        } else {
+          setFriendState('none');
+          setPendingReqId(null);
+        }
         if (u.vibeScore != null) setVibeScore(u.vibeScore);
         if (u.vibeCount != null) setVibeCount(u.vibeCount);
       })
@@ -176,7 +195,8 @@ export default function PublicProfileScreen() {
 
   function handleFriendToggle() {
     if (!user || friendBusy) return;
-    if (isFriend) {
+
+    if (friendState === 'friend') {
       Alert.alert(
         'Unfriend',
         `Remove ${user.displayName} from your friends?`,
@@ -186,20 +206,109 @@ export default function PublicProfileScreen() {
             text: 'Unfriend', style: 'destructive',
             onPress: async () => {
               setFriendBusy(true);
-              try { await removeFriend(user.id); setIsFriend(false); } catch { /* ignore */ }
+              try { await removeFriend(user.id); setFriendState('none'); } catch { /* ignore */ }
               finally { setFriendBusy(false); }
             },
           },
         ],
       );
-    } else {
+      return;
+    }
+
+    if (friendState === 'pending_out') {
+      Alert.alert(
+        'Cancel request',
+        `Cancel your friend request to ${user.displayName}?`,
+        [
+          { text: 'Keep', style: 'cancel' },
+          {
+            text: 'Cancel request', style: 'destructive',
+            onPress: async () => {
+              if (!pendingReqId) return;
+              setFriendBusy(true);
+              try {
+                await cancelFriendRequest(pendingReqId);
+                setFriendState('none');
+                setPendingReqId(null);
+              } catch { /* ignore */ }
+              finally { setFriendBusy(false); }
+            },
+          },
+        ],
+      );
+      return;
+    }
+
+    if (friendState === 'pending_in') {
+      // The other user already sent us a request — accept it directly.
       (async () => {
+        if (!pendingReqId) return;
         setFriendBusy(true);
-        try { await addFriend(user.id); setIsFriend(true); } catch { /* ignore */ }
+        try {
+          await acceptFriendRequest(pendingReqId);
+          setFriendState('friend');
+          setPendingReqId(null);
+        } catch { /* ignore */ }
         finally { setFriendBusy(false); }
       })();
+      return;
     }
+
+    // friendState === 'none' — send a fresh request. Server may auto-accept
+    // if the receiver had already sent us a pending request (mutual add); in
+    // that case we flip straight to "Friend" without the in-between state.
+    (async () => {
+      setFriendBusy(true);
+      try {
+        const result = await sendFriendRequest(user.id);
+        if (result.friend) {
+          setFriendState('friend');
+          setPendingReqId(null);
+        } else if (result.request) {
+          setFriendState('pending_out');
+          setPendingReqId(result.request.id);
+        }
+      } catch { /* ignore */ }
+      finally { setFriendBusy(false); }
+    })();
   }
+
+  // Live state-flip when the OTHER user accepts/declines/cancels while this
+  // screen is open. WS events come through the per-user channel that
+  // useAppBoot subscribes to.
+  useEffect(() => {
+    if (!user) return;
+    const offAccepted = socket.on('friendRequestAccepted', (data) => {
+      // I sent a request, they accepted → flip to friend.
+      if (data.requestId === pendingReqId) {
+        setFriendState('friend');
+        setPendingReqId(null);
+      }
+    });
+    const offDeclined = socket.on('friendRequestDeclined', (data) => {
+      // I sent a request, they declined → reset to none.
+      if (data.requestId === pendingReqId) {
+        setFriendState('none');
+        setPendingReqId(null);
+      }
+    });
+    const offCancelled = socket.on('friendRequestCancelled', (data) => {
+      // They sent me a request, then cancelled → reset to none.
+      if (data.requestId === pendingReqId) {
+        setFriendState('none');
+        setPendingReqId(null);
+      }
+    });
+    const offReceived = socket.on('friendRequestReceived', (data) => {
+      // They sent me a request while I'm viewing their profile → flip to pending_in.
+      const req = data.request as { id: string; sender_id: string } | undefined;
+      if (req && req.sender_id === user.id) {
+        setFriendState('pending_in');
+        setPendingReqId(req.id);
+      }
+    });
+    return () => { offAccepted(); offDeclined(); offCancelled(); offReceived(); };
+  }, [user, pendingReqId]);
 
   async function handleSubmitVibe() {
     if (!id || vibeBusy || vibeRating === 0) return;
@@ -557,18 +666,37 @@ export default function PublicProfileScreen() {
             <Text style={styles.dmBtnText}>Message</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.friendBtn, isFriend && styles.friendBtnActive]}
+            style={[
+              styles.friendBtn,
+              (friendState === 'friend' || friendState === 'pending_out') && styles.friendBtnActive,
+            ]}
             onPress={handleFriendToggle}
             activeOpacity={0.85}
             disabled={friendBusy}
           >
             <Ionicons
-              name={isFriend ? 'person-remove-outline' : 'person-add-outline'}
+              name={
+                friendState === 'friend'      ? 'person-remove-outline' :
+                friendState === 'pending_out' ? 'time-outline'         :
+                friendState === 'pending_in'  ? 'checkmark-outline'    :
+                                                'person-add-outline'
+              }
               size={18}
-              color={isFriend ? Colors.accent : Colors.text}
+              color={
+                friendState === 'friend'      ? Colors.accent :
+                friendState === 'pending_out' ? Colors.muted2 :
+                                                Colors.text
+              }
             />
-            <Text style={[styles.friendBtnText, isFriend && styles.friendBtnTextActive]}>
-              {friendBusy ? '…' : isFriend ? 'Friend' : 'Add friend'}
+            <Text style={[
+              styles.friendBtnText,
+              (friendState === 'friend' || friendState === 'pending_out') && styles.friendBtnTextActive,
+            ]}>
+              {friendBusy             ? '…'              :
+               friendState === 'friend'      ? 'Friend'        :
+               friendState === 'pending_out' ? 'Request sent'  :
+               friendState === 'pending_in'  ? 'Accept request':
+                                               'Add friend'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

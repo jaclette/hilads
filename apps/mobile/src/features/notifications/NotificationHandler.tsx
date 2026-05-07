@@ -52,16 +52,20 @@ const activeScreen = {
 // Always update the badge so the count stays accurate.
 
 type NotifData = {
-  type?:           string;
-  conversationId?: string;
-  eventId?:        string;
-  topicId?:        string;
-  channelId?:      string;
-  senderName?:     string;
-  senderUserId?:   string; // set by backend for dm_message — used to reject own-sender pushes
-  actorId?:        string;
-  actorName?:      string;
-  vibeId?:         number;
+  type?:            string;
+  conversationId?:  string;
+  eventId?:         string;
+  topicId?:         string;
+  channelId?:       string;
+  senderName?:      string;
+  senderUserId?:    string; // set by backend for dm_message — used to reject own-sender pushes
+  accepterUserId?:  string; // friend_request_accepted — the user who tapped Accept
+  accepterName?:    string;
+  requestId?:       string; // friend_request_received — id of the FriendRequest row
+  viewerId?:        string;
+  actorId?:         string;
+  actorName?:       string;
+  vibeId?:          number;
 };
 
 Notifications.setNotificationHandler({
@@ -133,6 +137,21 @@ function resolveRoute(data: NotifData): string | null {
     case 'profile_view':
       // Navigate to the viewer's profile so the recipient can see who visited.
       if (data.viewerId) return `/user/${data.viewerId}`;
+      return null;
+
+    case 'friend_request_received':
+      // Open the inbox so the user can accept/decline.
+      return '/friend-requests';
+
+    case 'friend_request_accepted':
+      // Open the accepter's profile — the recipient just gained a friend.
+      if (data.accepterUserId) return `/user/${data.accepterUserId}`;
+      return '/(tabs)/me?tab=friends';
+
+    case 'friend_added':
+      // Legacy notification rows from before the request flow shipped.
+      // Keep deep-linking to the adder's profile so old pushes still work.
+      if (data.senderUserId) return `/user/${data.senderUserId}`;
       return null;
 
     default:

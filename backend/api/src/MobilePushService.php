@@ -66,6 +66,11 @@ class MobilePushService
             'new_event',
             'channel_message',
             'city_join'                    => $data['channelId'] ?? '',
+            // Friend-request types dedupe per pair so a sender can't burst
+            // pushes by tapping Add → cancel → Add → cancel.
+            'friend_request_received',
+            'friend_added'                 => $data['senderUserId'] ?? '',
+            'friend_request_accepted'      => $data['accepterUserId'] ?? '',
             'profile_view'                 => $data['viewerId'] ?? '',
             'topic_message',
             'new_topic'                    => $data['topicId'] ?? '',

@@ -261,6 +261,22 @@ run($pdo, "
     )
 ", 'user_friends');
 
+// Friend requests: a directed pending → accepted/declined/cancelled record.
+// `user_friends` is only populated when a request is accepted; the legacy
+// instant-add behaviour is replaced by request creation.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS friend_requests (
+        id          TEXT        PRIMARY KEY,
+        sender_id   TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        receiver_id TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        status      TEXT        NOT NULL DEFAULT 'pending'
+                                CHECK (status IN ('pending','accepted','declined','cancelled')),
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        CHECK (sender_id <> receiver_id)
+    )
+", 'friend_requests');
+
 run($pdo, "
     CREATE TABLE IF NOT EXISTS conversations (
         id         TEXT        PRIMARY KEY,
@@ -312,7 +328,7 @@ run($pdo, "
         new_event_push         BOOLEAN NOT NULL DEFAULT FALSE,
         channel_message_push   BOOLEAN NOT NULL DEFAULT FALSE,
         city_join_push         BOOLEAN NOT NULL DEFAULT FALSE,
-        friend_added_push      BOOLEAN NOT NULL DEFAULT TRUE,
+        friend_request_push    BOOLEAN NOT NULL DEFAULT TRUE,
         vibe_received_push     BOOLEAN NOT NULL DEFAULT TRUE,
         profile_view_push      BOOLEAN NOT NULL DEFAULT TRUE,
         topic_reply_push       BOOLEAN NOT NULL DEFAULT TRUE,
@@ -480,7 +496,23 @@ run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS reply_to_t
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS event_join_push BOOLEAN NOT NULL DEFAULT FALSE", 'notification_preferences.event_join_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS channel_message_push BOOLEAN NOT NULL DEFAULT FALSE", 'notification_preferences.channel_message_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS city_join_push BOOLEAN NOT NULL DEFAULT FALSE", 'notification_preferences.city_join_push');
-run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS friend_added_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.friend_added_push');
+// Rename friend_added_push → friend_request_push for the new request-based
+// flow. Idempotent: only runs when the old column exists and the new doesn't.
+run($pdo, "
+    DO \$\$
+    BEGIN
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_name = 'notification_preferences' AND column_name = 'friend_added_push'
+        ) AND NOT EXISTS (
+            SELECT 1 FROM information_schema.columns
+            WHERE table_name = 'notification_preferences' AND column_name = 'friend_request_push'
+        ) THEN
+            ALTER TABLE notification_preferences RENAME COLUMN friend_added_push TO friend_request_push;
+        END IF;
+    END \$\$
+", 'notification_preferences.friend_added_push → friend_request_push');
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS friend_request_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.friend_request_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS vibe_received_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.vibe_received_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS profile_view_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.profile_view_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS topic_reply_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.topic_reply_push');
@@ -578,6 +610,15 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_city_roles_city ON user_city_role
 // user_friends
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_friends_user   ON user_friends (user_id,   created_at DESC)", 'idx_user_friends_user');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_friends_friend ON user_friends (friend_id, created_at DESC)", 'idx_user_friends_friend');
+
+// friend_requests
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_friend_req_receiver_status ON friend_requests (receiver_id, status, created_at DESC)", 'idx_friend_req_receiver_status');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_friend_req_sender_status   ON friend_requests (sender_id,   status, created_at DESC)", 'idx_friend_req_sender_status');
+// At most one pending request per direction. Combined with the auto-accept
+// path on mutual add (Phase 2) this guarantees only one pending row exists
+// between any two users at a time. Re-sending after decline/cancel creates a
+// new row because the old row's status is no longer 'pending'.
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_friend_req_pending ON friend_requests (sender_id, receiver_id) WHERE status = 'pending'", 'uq_friend_req_pending');
 
 // conversations
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_conv_participants_user    ON conversation_participants (user_id)", 'idx_conv_participants_user');

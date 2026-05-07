@@ -75,7 +75,7 @@ export default function NotificationsScreen() {
     new_event_push:       false,
     channel_message_push: false,
     city_join_push:       false,
-    friend_added_push:    true,
+    friend_request_push:  true,
     vibe_received_push:   true,
     profile_view_push:    true,
     topic_reply_push:     true,
@@ -155,7 +155,12 @@ export default function NotificationsScreen() {
       router.push(`/event/${notif.data.eventId}` as never);
     } else if (notif.type === 'channel_message' || notif.type === 'city_join') {
       router.push('/(tabs)/chat' as never);
+    } else if (notif.type === 'friend_request_received') {
+      router.push('/friend-requests' as never);
+    } else if (notif.type === 'friend_request_accepted' && notif.data?.accepterUserId) {
+      if (canAccessProfile(account)) router.push(`/user/${notif.data.accepterUserId}` as never);
     } else if (notif.type === 'friend_added' && notif.data?.senderUserId) {
+      // Legacy notification rows (pre-refactor) still deep-link to the adder's profile.
       if (canAccessProfile(account)) router.push(`/user/${notif.data.senderUserId}` as never);
     } else if (notif.type === 'vibe_received') {
       router.push('/(tabs)/me' as never);
@@ -242,7 +247,7 @@ export default function NotificationsScreen() {
             <View style={styles.prefDivider} />
             <PrefRow label="Someone arrived in your city" subtitle="When a registered user joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Friend requests" subtitle="When someone adds you as a friend" value={prefs.friend_added_push} onChange={v => togglePref('friend_added_push', v)} />
+            <PrefRow label="Friend requests" subtitle="When someone sends you a friend request or accepts yours" value={prefs.friend_request_push} onChange={v => togglePref('friend_request_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="Vibes ✨" subtitle="When someone leaves a vibe on your profile" value={prefs.vibe_received_push} onChange={v => togglePref('vibe_received_push', v)} />
             <View style={styles.prefDivider} />
