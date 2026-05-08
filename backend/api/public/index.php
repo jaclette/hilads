@@ -144,6 +144,7 @@ require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/TopicRepository.php';
 require_once __DIR__ . '/../src/VibeRepository.php';
 require_once __DIR__ . '/../src/ConversationRepository.php';
+require_once __DIR__ . '/../src/FriendRequestRepository.php';
 require_once __DIR__ . '/../src/NotificationRepository.php';
 require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
 require_once __DIR__ . '/../src/PushService.php';
