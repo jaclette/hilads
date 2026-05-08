@@ -235,15 +235,11 @@ export default function NotificationsScreen() {
           <Text style={styles.prefSectionTitle}>NOTIFICATION PREFERENCES</Text>
 
           <View style={styles.prefCard}>
-            <PrefRow label="New direct messages" subtitle="When someone sends you a private message" value={prefs.dm_push} onChange={v => togglePref('dm_push', v)} />
-            <View style={styles.prefDivider} />
-            <PrefRow label="Event chat messages" subtitle="When someone messages in an event you joined" value={prefs.event_message_push} onChange={v => togglePref('event_message_push', v)} />
-            <View style={styles.prefDivider} />
+            {/* DM, event-chat, and city-chat toggles live on the Messages screen
+                now — they govern the envelope icon's behaviour, not the bell. */}
             <PrefRow label="Someone joined your event" subtitle="When a new person joins an event you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="New events in your city" subtitle="When someone creates an event in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
-            <View style={styles.prefDivider} />
-            <PrefRow label="City chat messages" subtitle="When someone sends a message in your city channel" value={prefs.channel_message_push} onChange={v => togglePref('channel_message_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="Someone arrived in your city" subtitle="When a registered user joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />

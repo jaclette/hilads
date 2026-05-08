@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, Image,
+  View, Text, ScrollView, TouchableOpacity, Image, Switch,
   ActivityIndicator, RefreshControl, StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,6 +21,10 @@ import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
 import { fetchMyEvents } from '@/api/events';
+import {
+  fetchNotificationPreferences, updateNotificationPreferences,
+  type NotificationPreferences,
+} from '@/api/notifications';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
@@ -242,6 +246,22 @@ export default function MessagesScreen() {
 
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
+  // ── Envelope-scoped notification preferences ─────────────────────────────
+  // Three toggles: DMs, event-chat, city-chat — mirroring the three notification
+  // types that route to the envelope icon. Other prefs live on the bell screen.
+  const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
+  useEffect(() => {
+    if (!account) return;
+    fetchNotificationPreferences().then(setPrefs).catch(() => {});
+  }, [account]);
+
+  const togglePref = useCallback((key: keyof NotificationPreferences, value: boolean) => {
+    if (!prefs) return;
+    const prev = prefs;
+    setPrefs({ ...prefs, [key]: value });
+    updateNotificationPreferences({ [key]: value }).catch(() => setPrefs(prev));
+  }, [prefs]);
+
   const reload = useCallback(() => { reloadDMs(); loadEvents(); }, [reloadDMs, loadEvents]);
 
   if (!account) {
@@ -373,9 +393,60 @@ export default function MessagesScreen() {
               </>
             ) : activeFilter === 'events' ? null : null
           )}
+
+          {/* ── Notification preferences (envelope-scoped) ────────────────── */}
+          {prefs && (
+            <View style={styles.prefSection}>
+              <Text style={styles.prefSectionTitle}>NOTIFICATION PREFERENCES</Text>
+              <View style={styles.prefCard}>
+                <PrefRow
+                  label="New direct messages"
+                  subtitle="When someone sends you a private message"
+                  value={prefs.dm_push}
+                  onChange={v => togglePref('dm_push', v)}
+                />
+                <View style={styles.prefDivider} />
+                <PrefRow
+                  label="Event chat messages"
+                  subtitle="When someone messages in an event you joined"
+                  value={prefs.event_message_push}
+                  onChange={v => togglePref('event_message_push', v)}
+                />
+                <View style={styles.prefDivider} />
+                <PrefRow
+                  label="City chat messages"
+                  subtitle="When someone sends a message in your city channel"
+                  value={prefs.channel_message_push}
+                  onChange={v => togglePref('channel_message_push', v)}
+                />
+              </View>
+            </View>
+          )}
         </ScrollView>
       )}
     </SafeAreaView>
+  );
+}
+
+// ── Preference toggle row (local — same shape as the bell screen's PrefRow) ──
+
+function PrefRow({
+  label, subtitle, value, onChange,
+}: { label: string; subtitle: string; value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <View style={styles.prefRow}>
+      <View style={styles.prefText}>
+        <Text style={styles.prefLabel}>{label}</Text>
+        <Text style={styles.prefSub}>{subtitle}</Text>
+      </View>
+      <Switch
+        value={value}
+        onValueChange={onChange}
+        trackColor={{ false: Colors.bg3, true: Colors.accent }}
+        thumbColor={Colors.white}
+        ios_backgroundColor={Colors.bg3}
+      />
+    </View>
   );
 }
 
@@ -568,4 +639,14 @@ const styles = StyleSheet.create({
   emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
   emptyTitle: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, textAlign: 'center' },
   emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+
+  // ── Preferences (envelope-scoped — DM, event-chat, city-chat) ────────────
+  prefSection:      { marginTop: Spacing.xl, paddingHorizontal: Spacing.md },
+  prefSectionTitle: { fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.8, marginBottom: Spacing.sm },
+  prefCard:         { backgroundColor: Colors.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
+  prefRow:          { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, gap: Spacing.md },
+  prefText:         { flex: 1, gap: 3 },
+  prefLabel:        { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
+  prefSub:          { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 17 },
+  prefDivider:      { height: 1, backgroundColor: Colors.border, marginHorizontal: Spacing.md },
 });

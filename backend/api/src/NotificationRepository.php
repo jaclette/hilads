@@ -182,15 +182,36 @@ class NotificationRepository
         };
     }
 
+    // ── Bell vs envelope split ────────────────────────────────────────────────
+    //
+    // The bell icon's badge / list / mark-all action is for "general" activity:
+    // friend requests, vibes, profile views, pulses, event-roster activity, etc.
+    // DM / event-chat / city-channel-chat notifications are tracked separately
+    // by the envelope icon (its unread comes from conversation_participants
+    // last_read_at + the per-event chat unread state on the client). Listing
+    // those rows in the bell would double-count them and inflate the badge.
+    //
+    // Centralised here so listForUser / unreadCount / markAllRead all stay in
+    // sync — adding a new "envelope-only" type only requires editing this list.
+    private const BELL_EXCLUDED_TYPES = ['dm_message', 'event_message', 'channel_message'];
+
+    private static function bellExclusionSql(): string
+    {
+        // Inlined — types are hardcoded constants, no injection surface.
+        $quoted = array_map(fn($t) => "'" . $t . "'", self::BELL_EXCLUDED_TYPES);
+        return 'type NOT IN (' . implode(',', $quoted) . ')';
+    }
+
     // ── Read ──────────────────────────────────────────────────────────────────
 
     public static function listForUser(string $userId, int $limit = 50, int $offset = 0): array
     {
+        $exclude = self::bellExclusionSql();
         $stmt = Database::pdo()->prepare("
             SELECT id, user_id, type, title, body, data::text, is_read,
                    to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS created_at
             FROM notifications
-            WHERE user_id = ?
+            WHERE user_id = ? AND $exclude
             ORDER BY created_at DESC
             LIMIT ?
             OFFSET ?
@@ -201,8 +222,10 @@ class NotificationRepository
 
     public static function unreadCount(string $userId): int
     {
+        $exclude = self::bellExclusionSql();
         $stmt = Database::pdo()->prepare("
-            SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = FALSE
+            SELECT COUNT(*) FROM notifications
+            WHERE user_id = ? AND is_read = FALSE AND $exclude
         ");
         $stmt->execute([$userId]);
         return (int) $stmt->fetchColumn();
@@ -223,8 +246,14 @@ class NotificationRepository
 
     public static function markAllRead(string $userId): void
     {
+        // Only marks bell-visible rows. DM/event/channel chat notifications are
+        // tracked separately by the envelope icon and their read state is
+        // governed by per-conversation / per-event last_read_at, not by this
+        // table — touching them here would silently break the envelope's badge.
+        $exclude = self::bellExclusionSql();
         Database::pdo()->prepare("
-            UPDATE notifications SET is_read = TRUE WHERE user_id = ? AND is_read = FALSE
+            UPDATE notifications SET is_read = TRUE
+            WHERE user_id = ? AND is_read = FALSE AND $exclude
         ")->execute([$userId]);
     }
 

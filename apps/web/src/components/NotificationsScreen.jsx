@@ -185,33 +185,11 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
           </button>
         )}
 
-        {/* ── Preferences ── */}
+        {/* ── Preferences ──
+            DM, event-chat, and city-chat toggles live on the Conversations
+            screen now — they govern the envelope icon's behaviour, not the bell. */}
         <div className="notif-prefs">
           <div className="notif-prefs-title">Notification preferences</div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">New direct messages</span>
-              <span className="notif-pref-desc">In-app · Push coming soon</span>
-            </div>
-            <Toggle
-              checked={prefs?.dm_push ?? true}
-              onChange={v => handleTogglePref('dm_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
-
-          <div className="notif-pref-row">
-            <div className="notif-pref-label">
-              <span className="notif-pref-name">Event chat messages</span>
-              <span className="notif-pref-desc">When someone messages in an event you joined</span>
-            </div>
-            <Toggle
-              checked={prefs?.event_message_push ?? true}
-              onChange={v => handleTogglePref('event_message_push', v)}
-              disabled={prefsSaving || !prefs}
-            />
-          </div>
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">

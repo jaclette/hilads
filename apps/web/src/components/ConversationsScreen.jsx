@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react'
-import { fetchConversations } from '../api'
+import { fetchConversations, fetchNotificationPreferences, updateNotificationPreferences } from '../api'
 import BackButton from './BackButton'
+
+// Toggle copied from NotificationsScreen so we don't introduce a shared
+// component for one usage. Kept identical so styling stays consistent.
+function Toggle({ checked, onChange, disabled }) {
+  return (
+    <button
+      role="switch"
+      aria-checked={checked}
+      className={`notif-toggle${checked ? ' on' : ''}`}
+      onClick={() => !disabled && onChange(!checked)}
+      disabled={disabled}
+    />
+  )
+}
 
 // Formats a timestamp string as a short relative label for DM rows.
 // Handles both ISO-8601 ("2024-01-15T14:30:00Z") and MySQL datetime
@@ -41,6 +55,12 @@ export default function ConversationsScreen({ account, conversations, onConversa
   const [fetchError, setFetchError] = useState(false)
   const [activeFilter, setActiveFilter] = useState('all')
 
+  // Envelope-scoped notification preferences. The DM, event-chat, and city-chat
+  // toggles live here because their notifications surface in the envelope icon,
+  // not the bell. The remaining toggles stay on the bell prefs screen.
+  const [prefs, setPrefs] = useState(null)
+  const [prefsSaving, setPrefsSaving] = useState(false)
+
   useEffect(() => {
     if (!account) return
     setFetchError(false)
@@ -53,7 +73,18 @@ export default function ConversationsScreen({ account, conversations, onConversa
         console.warn('[hilads] Messages failed to load:', err?.message ?? String(err))
         setFetchError(true)
       })
+    fetchNotificationPreferences().then(setPrefs).catch(() => {})
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleTogglePref(key, value) {
+    if (!prefs || prefsSaving) return
+    const previous = prefs
+    setPrefs({ ...prefs, [key]: value })
+    setPrefsSaving(true)
+    try { await updateNotificationPreferences({ [key]: value }) }
+    catch { setPrefs(previous) }
+    finally { setPrefsSaving(false) }
+  }
 
   const dms    = conversations?.dms    ?? []
   const events = conversations?.events ?? []
@@ -185,6 +216,49 @@ export default function ConversationsScreen({ account, conversations, onConversa
               </button>
             ))}
           </section>
+        )}
+
+        {/* ── Envelope-scoped notification preferences ────────────────────── */}
+        {prefs && (
+          <div className="notif-prefs">
+            <div className="notif-prefs-title">Notification preferences</div>
+
+            <div className="notif-pref-row">
+              <div className="notif-pref-label">
+                <span className="notif-pref-name">New direct messages</span>
+                <span className="notif-pref-desc">When someone sends you a private message</span>
+              </div>
+              <Toggle
+                checked={prefs?.dm_push ?? true}
+                onChange={v => handleTogglePref('dm_push', v)}
+                disabled={prefsSaving || !prefs}
+              />
+            </div>
+
+            <div className="notif-pref-row">
+              <div className="notif-pref-label">
+                <span className="notif-pref-name">Event chat messages</span>
+                <span className="notif-pref-desc">When someone messages in an event you joined</span>
+              </div>
+              <Toggle
+                checked={prefs?.event_message_push ?? true}
+                onChange={v => handleTogglePref('event_message_push', v)}
+                disabled={prefsSaving || !prefs}
+              />
+            </div>
+
+            <div className="notif-pref-row">
+              <div className="notif-pref-label">
+                <span className="notif-pref-name">City chat messages</span>
+                <span className="notif-pref-desc">When someone sends a message in your city channel</span>
+              </div>
+              <Toggle
+                checked={prefs?.channel_message_push ?? false}
+                onChange={v => handleTogglePref('channel_message_push', v)}
+                disabled={prefsSaving || !prefs}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>
