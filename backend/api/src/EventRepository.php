@@ -186,13 +186,13 @@ class EventRepository
             $startDate = (new DateTime('@' . $event['starts_at']))->setTimezone($tz)->format('Y-m-d');
             $endDate   = (new DateTime('@' . $event['expires_at']))->setTimezone($tz)->format('Y-m-d');
 
-            // Show events starting today OR in the future, plus currently-live events.
-            // Using >= $today (not === $today) fixes the case where city timezone is absent
-            // (defaults to UTC) and a user in a UTC-offset timezone creates a "tonight"
-            // event whose UTC date lands on "tomorrow" — $startDate === $today would fail
-            // and silently exclude a perfectly valid same-day event.
-            $isVisible = $startDate >= $today
-                || ($event['starts_at'] <= $now && $endDate >= $today);
+            // Now feed shows ONLY today's events (or live-now). Future events
+            // are hidden here and surface in the upcoming-events screen instead
+            // — that's why this is === today, not >= today. The ongoing branch
+            // catches events that started yesterday and end today (rare, but
+            // valid: an all-night gig).
+            $isVisible = $startDate === $today
+                || ($event['starts_at'] <= $now && $event['expires_at'] > $now);
 
             if (!$isVisible) {
                 continue;
@@ -266,22 +266,53 @@ class EventRepository
      * Generates missing occurrences on-demand so days 2-7 always exist.
      * No MAX_HILADS cap — this is a browse screen, not the city hotlist.
      */
-    public static function getUpcoming(int $channelId, int $days = 7): array
+    /**
+     * Upcoming events for a city.
+     * Default mode (no $fromYmd/$toYmd): the next $days days starting from now.
+     * Range mode (both supplied): events whose starts_at falls in [from, to+1)
+     * in the city's timezone — used by the calendar-strip on the upcoming
+     * screen to fetch a specific day or a small window.
+     */
+    public static function getUpcoming(int $channelId, int $days = 7, ?string $fromYmd = null, ?string $toYmd = null): array
     {
         $city     = CityRepository::findById($channelId);
         $timezone = $city['timezone'] ?? 'UTC';
-        $now      = time();
-        $cutoff   = $now + $days * 86400;
 
-        EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $days);
+        if ($fromYmd !== null && $toYmd !== null) {
+            // Range mode — translate YYYY-MM-DD bounds into tz-aware unix
+            // timestamps. `to + 1 day` because we want the to-date inclusive.
+            $tz       = new DateTimeZone($timezone);
+            $fromTs   = (new DateTime($fromYmd . ' 00:00:00', $tz))->getTimestamp();
+            $toTs     = (new DateTime($toYmd   . ' 00:00:00', $tz))->modify('+1 day')->getTimestamp();
+            // Bound how far ahead we'll materialize series occurrences.
+            $daysAhead = max(1, (int) (($toTs - time()) / 86400) + 1);
+            EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $daysAhead);
 
-        $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
-            WHERE ce.city_id    = :city_id
-              AND ce.expires_at  > now()
-              AND ce.starts_at   < to_timestamp(:cutoff)
-            ORDER BY ce.starts_at ASC
-        ");
-        $stmt->execute(['city_id' => 'city_' . $channelId, 'cutoff' => $cutoff]);
+            $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
+                WHERE ce.city_id    = :city_id
+                  AND ce.starts_at  >= to_timestamp(:from_ts)
+                  AND ce.starts_at  <  to_timestamp(:to_ts)
+                ORDER BY ce.starts_at ASC
+            ");
+            $stmt->execute([
+                'city_id' => 'city_' . $channelId,
+                'from_ts' => $fromTs,
+                'to_ts'   => $toTs,
+            ]);
+        } else {
+            // Default mode — next $days days from now (back-compat).
+            $now      = time();
+            $cutoff   = $now + $days * 86400;
+            EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $days);
+
+            $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
+                WHERE ce.city_id    = :city_id
+                  AND ce.expires_at  > now()
+                  AND ce.starts_at   < to_timestamp(:cutoff)
+                ORDER BY ce.starts_at ASC
+            ");
+            $stmt->execute(['city_id' => 'city_' . $channelId, 'cutoff' => $cutoff]);
+        }
 
         $events = array_map([self::class, 'format'], $stmt->fetchAll());
 
@@ -678,26 +709,36 @@ class EventRepository
             Response::json(['error' => 'You must wait 5 minutes before creating another event'], 429);
         }
 
-        // Daily cap: 1 event per calendar day, global across all cities.
-        // Ambassadors (Legends) are exempt. TZ resolves from the target city —
-        // "today" is the creator's city-local day. Race with the insert is fine:
-        // worst case two rapid requests both pass, and the client shows the
-        // limit screen via the structured `event_limit_reached` error.
+        // Daily cap: 1 event per HOST DAY, keyed on the date the event takes
+        // place (not the day it was inserted). A user can create their Saturday
+        // event on Tuesday and their Sunday event on Wednesday — both go
+        // through. Ambassadors (Legends) are exempt. TZ resolves from the
+        // target city — "the day" is the city's local calendar day. Race with
+        // the insert is fine: worst case two rapid requests both pass, and the
+        // client shows the limit screen via the structured
+        // `event_limit_reached` error.
         if (!$isAmbassador) {
             $city = CityRepository::findById($channelId);
             $tz   = $city['timezone'] ?? 'UTC';
-            $todayCount = self::guestCreatedEventTodayCount($pdo, $userId, $guestId, $tz);
-            if ($todayCount >= 1) {
+            $hostDay = (new DateTime('@' . $startsAt))
+                ->setTimezone(new DateTimeZone($tz))
+                ->format('Y-m-d');
+            $sameDayCount = self::eventsHostedOnDateCount($pdo, $userId, $guestId, $hostDay, $tz);
+            if ($sameDayCount >= 1) {
                 Response::json([
                     'error'   => 'event_limit_reached',
-                    'message' => "You've already created your event today.",
+                    'message' => "You've already created an event on " . $hostDay . ".",
                 ], 429);
             }
         }
 
         $now       = time();
         $id        = bin2hex(random_bytes(8));
-        $startsAt  = min($startsAt, $now + 48 * 3600);    // cap start: 48 h in the future
+        // Cap start at 6 months out (matches the create form's date picker).
+        // Lifted from the previous 48h cap so users can host events further
+        // ahead. Lower bound is "now - 1 hour" so a request crafted at 23:59:59
+        // for a midnight event isn't rejected by clock skew.
+        $startsAt  = max($now - 3600, min($startsAt, $now + 180 * 86400));
         $expiresAt = min($endsAt, $startsAt + 24 * 3600); // cap duration: 24 h
 
         $pdo->prepare("
@@ -920,32 +961,75 @@ class EventRepository
     }
 
     /**
-     * Count of events this identity has created during the current calendar
-     * day in `$tz`. Matches on `created_by` for registered users AND
-     * `guest_id` for anonymous, so moving from guest → account on the same
-     * day still counts previously-created events. Global across cities.
+     * Per-day event counts for a city in [fromYmd, toYmd] (both inclusive),
+     * keyed in the city's local timezone. Drives the dot indicators on the
+     * calendar strip in the upcoming-events screen.
+     *
+     * Returns ['2026-05-08' => 12, '2026-05-09' => 3, ...]. Days with zero
+     * events are omitted — the client treats missing keys as zero.
      */
-    public static function guestCreatedEventTodayCount(
+    public static function calendarSummary(int $channelId, string $fromYmd, string $toYmd): array
+    {
+        $city     = CityRepository::findById($channelId);
+        $timezone = $city['timezone'] ?? 'UTC';
+
+        // Materialize series occurrences for the range so recurring events
+        // contribute to the dot counts even before the daily cron runs.
+        $tz     = new DateTimeZone($timezone);
+        $fromTs = (new DateTime($fromYmd . ' 00:00:00', $tz))->getTimestamp();
+        $toTs   = (new DateTime($toYmd   . ' 00:00:00', $tz))->modify('+1 day')->getTimestamp();
+        $daysAhead = max(1, (int) (($toTs - time()) / 86400) + 1);
+        EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $daysAhead);
+
+        $stmt = Database::pdo()->prepare("
+            SELECT to_char((starts_at AT TIME ZONE :tz)::date, 'YYYY-MM-DD') AS d,
+                   COUNT(*) AS cnt
+            FROM channel_events
+            WHERE city_id = :city_id
+              AND starts_at >= to_timestamp(:from_ts)
+              AND starts_at <  to_timestamp(:to_ts)
+            GROUP BY d
+        ");
+        $stmt->execute([
+            'tz'      => $timezone,
+            'city_id' => 'city_' . $channelId,
+            'from_ts' => $fromTs,
+            'to_ts'   => $toTs,
+        ]);
+
+        $out = [];
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
+            $out[$row['d']] = (int) $row['cnt'];
+        }
+        return $out;
+    }
+
+    /**
+     * Count of events this identity has scheduled to *take place* on a given
+     * calendar day in `$tz`. The "1 event per day" rule is keyed on the day
+     * the event is HOSTED (starts_at), not the day the row was inserted —
+     * a user creating their Saturday event on Tuesday and their Sunday event
+     * on Wednesday is fine, both go through. Matches on created_by for
+     * registered users AND guest_id for anonymous, so moving from guest →
+     * account on the same day still counts previously-created events.
+     * Global across cities.
+     *
+     * @param string $dateYmd YYYY-MM-DD in $tz.
+     */
+    public static function eventsHostedOnDateCount(
         PDO $pdo,
         ?string $userId,
         ?string $guestId,
+        string $dateYmd,
         string $tz,
     ): int {
-        // Day boundary is computed in Postgres using `AT TIME ZONE` to make
-        // the query independent of the session timezone. Previously we sent
-        // a tz-naive string from PHP, which Postgres reinterpreted using the
-        // session's timezone — if that wasn't UTC, the boundary drifted and
-        // events from yesterday (user-local) incorrectly counted as today's.
-        //
-        //   now() AT TIME ZONE :tz            → "wall clock now" in user's tz
-        //   date_trunc('day', …)              → midnight of that local day
-        //   (…) AT TIME ZONE :tz              → convert back to a tz-aware
-        //                                       instant (UTC under the hood)
-        // The comparison against created_at (TIMESTAMPTZ) is then correct.
+        // (starts_at AT TIME ZONE :tz)::date casts the event's tz-aware
+        // start to its local calendar date in the city's timezone, then we
+        // compare against the YYYY-MM-DD the caller supplied.
         $stmt = $pdo->prepare("
             SELECT COUNT(*) FROM channel_events
              WHERE source_type = 'hilads'
-               AND created_at >= (date_trunc('day', now() AT TIME ZONE :tz) AT TIME ZONE :tz)
+               AND (starts_at AT TIME ZONE :tz)::date = :date_ymd::date
                AND (
                      (:user_id::text  IS NOT NULL AND created_by = :user_id) OR
                      (:guest_id::text IS NOT NULL AND guest_id   = :guest_id)
@@ -953,9 +1037,27 @@ class EventRepository
         ");
         $stmt->execute([
             'tz'       => $tz,
+            'date_ymd' => $dateYmd,
             'user_id'  => $userId,
             'guest_id' => $guestId,
         ]);
         return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Back-compat alias for the legacy name. Counts events the identity has
+     * scheduled to take place TODAY in $tz. Kept so older test fixtures keep
+     * passing without a sweeping rename.
+     *
+     * @deprecated Use eventsHostedOnDateCount with an explicit date param.
+     */
+    public static function guestCreatedEventTodayCount(
+        PDO $pdo,
+        ?string $userId,
+        ?string $guestId,
+        string $tz,
+    ): int {
+        $today = (new DateTime('today', new DateTimeZone($tz)))->format('Y-m-d');
+        return self::eventsHostedOnDateCount($pdo, $userId, $guestId, $today, $tz);
     }
 }

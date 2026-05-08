@@ -38,9 +38,16 @@ function addHoursToTime(timeStr, hours) {
   return `${String(Math.floor(total / 60) % 24).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`
 }
 
-function cityTimeToUnix(timezone, timeStr) {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone })
-  const naive = new Date(`${today}T${timeStr}:00Z`)
+/**
+ * Resolve a (date, time) pair in the city's timezone to a unix timestamp.
+ *
+ * @param timezone IANA tz, e.g. "Europe/Lisbon"
+ * @param timeStr  "HH:MM" 24h
+ * @param dateStr  optional "YYYY-MM-DD" — defaults to today in `timezone`
+ */
+function cityTimeToUnix(timezone, timeStr, dateStr = null) {
+  const day = dateStr || new Date().toLocaleDateString('en-CA', { timeZone: timezone })
+  const naive = new Date(`${day}T${timeStr}:00Z`)
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: timezone,
     year: 'numeric', month: '2-digit', day: '2-digit',
@@ -51,6 +58,13 @@ function cityTimeToUnix(timezone, timeStr) {
   const cityAsUtc = new Date(`${p.year}-${p.month}-${p.day}T${p.hour === '24' ? '00' : p.hour}:${p.minute}:${p.second}Z`)
   const offsetMs = cityAsUtc.getTime() - naive.getTime()
   return Math.floor((naive.getTime() - offsetMs) / 1000)
+}
+
+/** Today / tomorrow as YYYY-MM-DD strings in the given timezone. */
+function todayInCity(tz)    { return new Date().toLocaleDateString('en-CA', { timeZone: tz }) }
+function tomorrowInCity(tz) {
+  const t = new Date(); t.setDate(t.getDate() + 1)
+  return t.toLocaleDateString('en-CA', { timeZone: tz })
 }
 
 // ── Category icons ─────────────────────────────────────────────────────────────
@@ -185,6 +199,17 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const isEdit = !!editEvent
   const [type, setType] = useState(() => editEvent?.type || 'other')
   const [title, setTitle] = useState(() => editEvent?.title || '')
+  // selectedDate carries the day-of-event in city tz as YYYY-MM-DD. Default
+  // is "today" — chips below let the user flip to tomorrow or pick any date
+  // in the next 6 months. Edit mode pre-fills from the event's existing
+  // starts_at; create mode starts on today (the most-discoverable path).
+  const [selectedDate, setSelectedDate] = useState(() => {
+    if (editEvent) {
+      const d = new Date(editEvent.starts_at * 1000)
+      return d.toLocaleDateString('en-CA', { timeZone: tz })
+    }
+    return todayInCity(tz)
+  })
   const [startTime, setStartTime] = useState(() => editEvent ? unixToTimeStr(editEvent.starts_at, tz) : getDefaultTime(tz))
   const [endTime, setEndTime] = useState(() => editEvent ? unixToTimeStr(editEvent.ends_at || editEvent.expires_at, tz) : addHoursToTime(getDefaultTime(tz), 2))
   const [location, setLocation] = useState(() => editEvent?.location_hint || editEvent?.location || '')
@@ -200,6 +225,17 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const [selectedPreset, setSelectedPreset] = useState(null)
 
   const isLocal = account?.mode === 'local'
+
+  // Date chip helpers — "today" / "tomorrow" / "Pick a date" mirror native UX.
+  const todayStr    = todayInCity(tz)
+  const tomorrowStr = tomorrowInCity(tz)
+  const maxDateStr  = (() => {
+    const d = new Date(); d.setMonth(d.getMonth() + 6)
+    return d.toLocaleDateString('en-CA', { timeZone: tz })
+  })()
+  const isToday    = selectedDate === todayStr
+  const isTomorrow = selectedDate === tomorrowStr
+  const isCustom   = !isToday && !isTomorrow
 
   function applyPreset(preset) {
     if (selectedPreset === preset.key) { setSelectedPreset(null); return }
@@ -223,8 +259,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
     // ── Edit mode ──────────────────────────────────────────────────────────────
     if (isEdit) {
-      let startsAtUnix = cityTimeToUnix(tz, startTime)
-      let endsAtUnix   = cityTimeToUnix(tz, endTime)
+      let startsAtUnix = cityTimeToUnix(tz, startTime, selectedDate)
+      let endsAtUnix   = cityTimeToUnix(tz, endTime,   selectedDate)
       if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
       if (endsAtUnix - startsAtUnix < 15 * 60) {
         setError('End time must be at least 15 minutes after start time')
@@ -251,8 +287,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
     // ── Create mode: one-time event ────────────────────────────────────────────
     if (recurrence === 'once') {
-      let startsAtUnix = cityTimeToUnix(tz, startTime)
-      let endsAtUnix   = cityTimeToUnix(tz, endTime)
+      let startsAtUnix = cityTimeToUnix(tz, startTime, selectedDate)
+      let endsAtUnix   = cityTimeToUnix(tz, endTime,   selectedDate)
       if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
       if (endsAtUnix - startsAtUnix < 15 * 60) {
         setError('End time must be at least 15 minutes after start time')
@@ -303,6 +339,9 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
         recurrence_type: recurrence,
         weekdays: recurrence === 'weekly' ? weekdays : undefined,
         interval_days: recurrence === 'every_n_days' ? intervalDays : undefined,
+        // Anchors the recurrence series to the picked start date — backend
+        // accepts YYYY-MM-DD; defaults to today server-side if omitted.
+        starts_on: selectedDate,
       }
       const result = await createEventSeries(channelId, guest.guestId, payload)
       // Return the first upcoming occurrence so the caller can open it
@@ -423,6 +462,40 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               maxLength={100}
             />
           </div>
+
+          {/* Date — when does it happen? */}
+          {!isEdit && (
+            <div className="cef-section">
+              <p className="cef-label">Date</p>
+              <div className="cef-date-row">
+                <button
+                  type="button"
+                  className={`cef-date-chip${isToday ? ' selected' : ''}`}
+                  onClick={() => setSelectedDate(todayStr)}
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  className={`cef-date-chip${isTomorrow ? ' selected' : ''}`}
+                  onClick={() => setSelectedDate(tomorrowStr)}
+                >
+                  Tomorrow
+                </button>
+                <input
+                  type="date"
+                  className={`cef-date-input${isCustom ? ' selected' : ''}`}
+                  value={selectedDate}
+                  min={todayStr}
+                  max={maxDateStr}
+                  onChange={e => e.target.value && setSelectedDate(e.target.value)}
+                />
+              </div>
+              {isToday && (
+                <p className="cef-date-hint">Hosting today gets you the most visibility 🔥</p>
+              )}
+            </div>
+          )}
 
           {/* Start + End time */}
           <div className="cef-row">

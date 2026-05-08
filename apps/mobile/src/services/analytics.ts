@@ -23,6 +23,7 @@ export type AnalyticsEvent =
   | 'city_selected'
   | 'event_opened'
   | 'event_created'
+  | 'calendar_day_tapped'
   | 'dm_opened'
   | 'dm_sent'
   | 'notification_opened'

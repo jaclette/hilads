@@ -951,6 +951,10 @@ $router->add('GET', '/api/v1/users/me/can-create-event', function () {
     $authUser = AuthService::currentUser();         // nullable — guests too
     $guestId  = $_GET['guestId']   ?? null;
     $channel  = (int) ($_GET['channelId'] ?? 0);
+    // Optional ?date=YYYY-MM-DD lets the create form re-check after the user
+    // picks a non-today date. Defaults to today in city tz, which is what the
+    // FAB preflight on the Now tab still wants.
+    $dateParam = $_GET['date'] ?? null;
 
     if (!isValidGuestId($guestId) && $authUser === null) {
         Response::json(['error' => 'Identity required'], 401);
@@ -959,18 +963,24 @@ $router->add('GET', '/api/v1/users/me/can-create-event', function () {
     $city = $channel > 0 ? CityRepository::findById($channel) : null;
     $tz   = $city['timezone'] ?? 'UTC';
 
+    $dateYmd = (is_string($dateParam) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateParam))
+        ? $dateParam
+        : (new DateTime('today', new DateTimeZone($tz)))->format('Y-m-d');
+
     $isLegend = (bool) ($authUser['_is_ambassador'] ?? false);
-    $count    = EventRepository::guestCreatedEventTodayCount(
+    $count    = EventRepository::eventsHostedOnDateCount(
         Database::pdo(),
         $authUser['id'] ?? null,
         $guestId,
+        $dateYmd,
         $tz,
     );
 
     Response::json([
         'canCreate'  => $isLegend || $count === 0,
         'isLegend'   => $isLegend,
-        'todayCount' => $count,
+        'todayCount' => $count,  // historical key name; reflects $dateYmd's count
+        'date'       => $dateYmd,
         'limit'      => 1,
     ]);
 });
@@ -2801,10 +2811,52 @@ $router->add('GET', '/api/v1/channels/{channelId}/events/upcoming', function (ar
     if ($channelId === false) {
         Response::json(['error' => 'Invalid channelId'], 400);
     }
-    $days = filter_var($_GET['days'] ?? 7, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 30]]);
+
+    // Range mode: ?from=YYYY-MM-DD&to=YYYY-MM-DD — used by the calendar
+    // strip on the upcoming-events screen. Both must be present and within
+    // ~6 months of today. Falls back to ?days= when range is missing.
+    $from = $_GET['from'] ?? null;
+    $to   = $_GET['to']   ?? null;
+    if ($from !== null && $to !== null) {
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $from) ||
+            !preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $to)) {
+            Response::json(['error' => 'from/to must be YYYY-MM-DD'], 400);
+        }
+        if ($from > $to) {
+            Response::json(['error' => 'from must be <= to'], 422);
+        }
+        $events = EventRepository::getUpcoming($channelId, 7, $from, $to);
+        Response::json(['events' => $events]);
+    }
+
+    $days = filter_var($_GET['days'] ?? 7, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 90]]);
     if ($days === false) $days = 7;
     $events = EventRepository::getUpcoming($channelId, $days);
     Response::json(['events' => $events]);
+});
+
+// GET /api/v1/channels/{channelId}/events/calendar-summary?from=&to=
+// Returns per-day event counts for the calendar strip's dot indicators.
+$router->add('GET', '/api/v1/channels/{channelId}/events/calendar-summary', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+    $from = $_GET['from'] ?? null;
+    $to   = $_GET['to']   ?? null;
+    if (!is_string($from) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $from) ||
+        !is_string($to)   || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $to)) {
+        Response::json(['error' => 'from and to are required (YYYY-MM-DD)'], 400);
+    }
+    if ($from > $to) {
+        Response::json(['error' => 'from must be <= to'], 422);
+    }
+    // Cap range at ~6 months to bound query cost.
+    $diffDays = (strtotime($to) - strtotime($from)) / 86400;
+    if ($diffDays > 200) {
+        Response::json(['error' => 'Range too large (max ~6 months)'], 422);
+    }
+    Response::json(['summary' => EventRepository::calendarSummary($channelId, $from, $to)]);
 });
 
 $router->add('GET', '/api/v1/channels/{channelId}/events', function (array $params) {
@@ -2924,6 +2976,18 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         Response::json(['error' => 'Event must last at least 15 minutes'], 422);
     }
 
+    // Date bounds: events must start no earlier than ~now (1h clock-skew
+    // buffer) and no later than 6 months out. Matches the create form's
+    // date picker range. The 6-month cap also bounds Postgres query plans
+    // for the upcoming-events / calendar-summary endpoints.
+    $nowTs = time();
+    if ($startsAt < $nowTs - 3600) {
+        Response::json(['error' => 'Event start time cannot be in the past'], 422);
+    }
+    if ($startsAt > $nowTs + 180 * 86400) {
+        Response::json(['error' => 'Event start time cannot be more than 6 months in the future'], 422);
+    }
+
     $allowedTypes = ['drinks', 'party', 'music', 'food', 'coffee', 'sport', 'meetup', 'other'];
 
     if (empty($type) || !in_array($type, $allowedTypes, true)) {
@@ -2972,14 +3036,22 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     }
 
     $eventCityInfo = CityRepository::findById($channelId); // cached in memory
+    // date_offset_days = how many days from "today (city-local)" the event is
+    // scheduled for. 0 = today, 1 = tomorrow, etc. Lets us measure how often
+    // the new date picker is exercised once it ships.
+    $cityTz   = $eventCityInfo['timezone'] ?? 'UTC';
+    $hostDay  = (new DateTime('@' . $startsAt))->setTimezone(new DateTimeZone($cityTz))->format('Y-m-d');
+    $todayDay = (new DateTime('today',         new DateTimeZone($cityTz)))->format('Y-m-d');
+    $dateOffsetDays = (int) ((new DateTime($hostDay))->diff(new DateTime($todayDay))->format('%r%a')) * -1;
     AnalyticsService::defer('event_created', $authUser['id'], [
-        'channel_id' => $channelId,
-        'city'       => $eventCityInfo['name']    ?? null,
-        'country'    => $eventCityInfo['country'] ?? null,
-        'event_type' => $type,
-        'event_id'   => $event['id'],
-        'is_guest'   => false,
-        'user_id'    => $authUser['id'],
+        'channel_id'        => $channelId,
+        'city'              => $eventCityInfo['name']    ?? null,
+        'country'           => $eventCityInfo['country'] ?? null,
+        'event_type'        => $type,
+        'event_id'          => $event['id'],
+        'is_guest'          => false,
+        'user_id'           => $authUser['id'],
+        'date_offset_days'  => $dateOffsetDays,
     ]);
 
     Response::json($event, 201);
@@ -3201,6 +3273,21 @@ $router->add('POST', '/api/v1/channels/{channelId}/event-series', function (arra
     if ($startsOn !== null) {
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $startsOn)) {
             Response::json(['error' => 'starts_on must be YYYY-MM-DD'], 400);
+        }
+        // Same bounds as the one-off create — series can't start in the past
+        // or more than 6 months in the future.
+        $startsOnDt = DateTime::createFromFormat('!Y-m-d', $startsOn, new DateTimeZone($city['timezone']));
+        if ($startsOnDt === false) {
+            Response::json(['error' => 'starts_on is not a valid date'], 400);
+        }
+        $startsOnTs = $startsOnDt->getTimestamp();
+        $nowTs = time();
+        $todayTs = (new DateTime('today', new DateTimeZone($city['timezone'])))->getTimestamp();
+        if ($startsOnTs < $todayTs) {
+            Response::json(['error' => 'starts_on cannot be before today'], 422);
+        }
+        if ($startsOnTs > $nowTs + 180 * 86400) {
+            Response::json(['error' => 'starts_on cannot be more than 6 months in the future'], 422);
         }
     }
 

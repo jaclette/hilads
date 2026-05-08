@@ -38,16 +38,46 @@ export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEv
 
 // All Hilads + public events for the next N days — powers the Upcoming screen.
 // Generates missing series occurrences server-side so days 2-7 are always populated.
-export async function fetchUpcomingEvents(channelId: string, days = 7): Promise<HiladsEvent[]> {
+//
+// Pass { from, to } (YYYY-MM-DD, both inclusive) to fetch a specific range
+// instead of N days from now — used by the calendar-strip filter on the
+// upcoming screen. When { from, to } is supplied, days is ignored.
+export async function fetchUpcomingEvents(
+  channelId: string,
+  opts: { days?: number; from?: string; to?: string } = {},
+): Promise<HiladsEvent[]> {
+  const params: Record<string, string | number> = {};
+  if (opts.from && opts.to) {
+    params.from = opts.from;
+    params.to   = opts.to;
+  } else {
+    params.days = opts.days ?? 7;
+  }
   const data = await api.get<{ events: Record<string, unknown>[] }>(
     `/channels/${channelId}/events/upcoming`,
-    { params: { days } },
+    { params },
   );
   return (data.events ?? []).map(e => ({
     ...e,
     event_type: (e.event_type ?? e.type) as HiladsEvent['event_type'],
     source_type: (e.source_type ?? e.source ?? 'hilads') as HiladsEvent['source_type'],
   })) as HiladsEvent[];
+}
+
+/**
+ * Per-day event counts for the calendar-strip's dot indicators on the upcoming
+ * screen. Returns {} when nothing is scheduled in the range.
+ */
+export async function fetchCalendarSummary(
+  channelId: string,
+  from: string,
+  to: string,
+): Promise<Record<string, number>> {
+  const data = await api.get<{ summary: Record<string, number> }>(
+    `/channels/${channelId}/events/calendar-summary`,
+    { params: { from, to } },
+  );
+  return data.summary ?? {};
 }
 
 export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
@@ -103,6 +133,8 @@ export async function createEventSeries(
     recurrence_type: 'daily' | 'weekly' | 'every_n_days';
     weekdays?: number[];      // 0-6, required for weekly
     interval_days?: number;   // 2-365, required for every_n_days
+    /** YYYY-MM-DD — anchors the series to a future start date. Defaults to today server-side. */
+    starts_on?: string;
     location_hint?: string;
   },
 ): Promise<{ series_id: string; first_event: HiladsEvent }> {
@@ -138,19 +170,22 @@ export interface CanCreateEventResponse {
   canCreate:  boolean;
   isLegend:   boolean;
   todayCount: number;
+  date?:      string;  // YYYY-MM-DD the count was computed for
   limit:      number;
 }
 
 export async function fetchCanCreateEvent(
   channelId: number | string,
   guestId?:  string,
+  /** YYYY-MM-DD; when omitted, server defaults to today in city tz. */
+  date?:     string,
 ): Promise<CanCreateEventResponse> {
-  return api.get<CanCreateEventResponse>('/users/me/can-create-event', {
-    params: {
-      channelId: String(channelId),
-      guestId,
-    },
-  });
+  const params: Record<string, string | undefined> = {
+    channelId: String(channelId),
+    guestId,
+  };
+  if (date) params.date = date;
+  return api.get<CanCreateEventResponse>('/users/me/can-create-event', { params });
 }
 
 // ── Event participants ────────────────────────────────────────────────────────

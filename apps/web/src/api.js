@@ -348,10 +348,33 @@ export async function createTopic(channelId, guestId, title, description, catego
   return res.json()
 }
 
-export async function fetchUpcomingEvents(channelId, days = 7) {
-  const res = await fetch(`${BASE}/channels/${channelId}/events/upcoming?days=${days}`, { credentials: 'include' })
+export async function fetchUpcomingEvents(channelId, opts = {}) {
+  // Backwards-compat: callers used to pass `days` as a positional number.
+  // Accept either `fetchUpcomingEvents(id, 14)` or
+  // `fetchUpcomingEvents(id, { days, from, to })`.
+  if (typeof opts === 'number') opts = { days: opts }
+  const params = new URLSearchParams()
+  if (opts.from && opts.to) {
+    params.set('from', opts.from)
+    params.set('to',   opts.to)
+  } else {
+    params.set('days', String(opts.days ?? 7))
+  }
+  const res = await fetch(`${BASE}/channels/${channelId}/events/upcoming?${params}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch upcoming events')
   return res.json() // { events: [...] }
+}
+
+/**
+ * Per-day event counts for the calendar-strip dots on the upcoming screen.
+ * Returns { "YYYY-MM-DD": count } — days with zero events are omitted.
+ */
+export async function fetchCalendarSummary(channelId, from, to) {
+  const params = new URLSearchParams({ from, to })
+  const res = await fetch(`${BASE}/channels/${channelId}/events/calendar-summary?${params}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch calendar summary')
+  const data = await res.json()
+  return data.summary ?? {}
 }
 
 // Thrown by createEvent / createEventSeries when the backend returns the
@@ -632,11 +655,14 @@ export async function fetchMyEvents(guestId) {
 }
 
 // Preflight for the 1-event-per-day rule. Cheap COUNT; safe on every CTA tap.
-// Returns { canCreate, isLegend, todayCount, limit }.
-export async function fetchCanCreateEvent(channelId, guestId) {
+// Pass an optional `date` (YYYY-MM-DD) to check a specific host day —
+// used by the create form when the user picks a non-today date.
+// Returns { canCreate, isLegend, todayCount, date, limit }.
+export async function fetchCanCreateEvent(channelId, guestId, date) {
   const qs = new URLSearchParams()
   if (channelId) qs.set('channelId', String(channelId))
   if (guestId)   qs.set('guestId',   guestId)
+  if (date)      qs.set('date',      date)
   const res = await fetch(`${BASE}/users/me/can-create-event?${qs.toString()}`, { credentials: 'include' })
   if (!res.ok) {
     // On any non-2xx, assume the user CAN create — the POST will enforce the

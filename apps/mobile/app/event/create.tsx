@@ -86,6 +86,29 @@ function timeStr(d: Date): string {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
+function ymd(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function startOfDay(d: Date): Date { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+
+function addDays(d: Date, n: number): Date {
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+/** Replace the day-of-month/month/year on $time with the calendar date of $date. Time-of-day preserved. */
+function withDate(time: Date, date: Date): Date {
+  const out = new Date(time);
+  out.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+  return out;
+}
+
 // ── Inline time picker modal (no external deps) ───────────────────────────────
 
 const MINUTE_STEPS = [0, 15, 30, 45];
@@ -172,6 +195,111 @@ function TimePicker({
   );
 }
 
+// ── Inline date picker modal ──────────────────────────────────────────────────
+// Standalone component (not pulled in via a community lib) — month-grid view
+// with prev/next month navigation. Past days and dates beyond `maxDays` ahead
+// are visually disabled and unselectable. Matches the existing TimePicker
+// modal's visual language so the form feels cohesive.
+
+function DatePicker({
+  value, onChange, onClose, maxDays = 180,
+}: {
+  value:    Date;
+  onChange: (d: Date) => void;
+  onClose:  () => void;
+  maxDays?: number;
+}) {
+  // Month being displayed (anchor on the first of the month).
+  const [view, setView] = useState<Date>(() => new Date(value.getFullYear(), value.getMonth(), 1));
+
+  const today      = startOfDay(new Date());
+  const maxDate    = startOfDay(addDays(today, maxDays));
+  const monthLabel = view.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+  // Build the 6×7 grid for the displayed month. Cells outside the month are
+  // rendered empty so the grid stays a clean rectangle.
+  const firstOfMonth = new Date(view.getFullYear(), view.getMonth(), 1);
+  const startOffset  = firstOfMonth.getDay(); // 0=Sun
+  const daysInMonth  = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+  const cells: (Date | null)[] = [];
+  for (let i = 0; i < startOffset; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(view.getFullYear(), view.getMonth(), d));
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const prevMonth = () => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1));
+  const nextMonth = () => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1));
+
+  // Don't allow navigating before the current month or beyond the cap.
+  const prevDisabled = view.getFullYear() === today.getFullYear() && view.getMonth() === today.getMonth();
+  const nextDisabled = view.getFullYear() === maxDate.getFullYear() && view.getMonth() === maxDate.getMonth();
+
+  return (
+    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
+        <View style={styles.datePickerBox} onStartShouldSetResponder={() => true}>
+          {/* Header — month nav */}
+          <View style={styles.dpHeader}>
+            <TouchableOpacity
+              onPress={prevMonth} disabled={prevDisabled}
+              style={[styles.dpNavBtn, prevDisabled && styles.dpNavBtnDisabled]}
+            >
+              <Ionicons name="chevron-back" size={20} color={prevDisabled ? Colors.muted2 : Colors.text} />
+            </TouchableOpacity>
+            <Text style={styles.dpTitle}>{monthLabel}</Text>
+            <TouchableOpacity
+              onPress={nextMonth} disabled={nextDisabled}
+              style={[styles.dpNavBtn, nextDisabled && styles.dpNavBtnDisabled]}
+            >
+              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? Colors.muted2 : Colors.text} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Day-of-week labels */}
+          <View style={styles.dpRow}>
+            {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+              <Text key={d} style={styles.dpDow}>{d}</Text>
+            ))}
+          </View>
+
+          {/* Day grid */}
+          {Array.from({ length: cells.length / 7 }).map((_, row) => (
+            <View key={row} style={styles.dpRow}>
+              {cells.slice(row * 7, row * 7 + 7).map((cell, i) => {
+                if (!cell) return <View key={i} style={styles.dpCell} />;
+                const disabled = cell < today || cell > maxDate;
+                const selected = isSameDay(cell, value);
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={[
+                      styles.dpCell,
+                      selected && styles.dpCellSelected,
+                      disabled && styles.dpCellDisabled,
+                    ]}
+                    onPress={() => { if (!disabled) { onChange(cell); onClose(); } }}
+                    activeOpacity={disabled ? 1 : 0.7}
+                    disabled={disabled}
+                  >
+                    <Text style={[
+                      styles.dpCellText,
+                      disabled && styles.dpCellTextDisabled,
+                      selected && styles.dpCellTextSelected,
+                    ]}>{cell.getDate()}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ))}
+
+          <TouchableOpacity style={styles.pickerDone} onPress={onClose} activeOpacity={0.85}>
+            <Text style={styles.pickerDoneText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function CreateEventScreen() {
@@ -184,6 +312,12 @@ export default function CreateEventScreen() {
   // ── Form state
   const [type,            setType]            = useState<EventType>('other');
   const [title,           setTitle]           = useState('');
+  // selectedDate carries the day-of-month for the event. Time-of-day lives on
+  // startsAt / endsAt (still full Date objects so the existing TimePicker
+  // doesn't need a refactor — it just sets H/M and preserves the date). We
+  // re-sync the day on startsAt / endsAt every time selectedDate flips below.
+  const [selectedDate,    setSelectedDate]    = useState<Date>(() => startOfDay(new Date()));
+  const [showDatePicker,  setShowDatePicker]  = useState(false);
   const [startsAt,        setStartsAt]        = useState<Date>(() => nextHalfHour());
   const [endsAt,          setEndsAt]          = useState<Date>(() => addHours(nextHalfHour(), 2));
   const [repeat,          setRepeat]          = useState<RepeatMode>('once');
@@ -193,6 +327,25 @@ export default function CreateEventScreen() {
   const [submitting,      setSubmitting]      = useState(false);
   const [error,           setError]           = useState<string | null>(null);
   const [selectedPreset,  setSelectedPreset]  = useState<PresetKey | null>(null);
+
+  /**
+   * Setting the date re-anchors startsAt / endsAt to the new day while
+   * keeping their hours/minutes intact — so a user who picks "Tomorrow"
+   * after configuring the time pickers doesn't have to redo them.
+   */
+  function pickDate(d: Date) {
+    const date = startOfDay(d);
+    setSelectedDate(date);
+    setStartsAt(prev => withDate(prev, date));
+    setEndsAt(prev   => withDate(prev, date));
+  }
+
+  const today    = startOfDay(new Date());
+  const tomorrow = addDays(today, 1);
+  const isToday    = isSameDay(selectedDate, today);
+  const isTomorrow = isSameDay(selectedDate, tomorrow);
+  const isCustomDate = !isToday && !isTomorrow;
+  const customDateLabel = selectedDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 
   function applyPreset(key: PresetKey) {
     setSelectedPreset(prev => prev === key ? null : key);
@@ -254,8 +407,12 @@ export default function CreateEventScreen() {
               : repeat === 'every_n_days'
                 ? 'every_n_days'
                 : 'daily',
-            ...(repeat === 'weekly'       ? { weekdays: weekdays.length > 0 ? weekdays : [new Date().getDay()] } : {}),
+            ...(repeat === 'weekly'       ? { weekdays: weekdays.length > 0 ? weekdays : [selectedDate.getDay()] } : {}),
             ...(repeat === 'every_n_days' ? { interval_days: iDays >= 2 ? iDays : 7 } : {}),
+            // Anchors the recurrence series to the picked start date — so a
+            // weekly series starting "next Saturday" actually starts then,
+            // and an every-7-days series counts intervals from there.
+            starts_on:    ymd(selectedDate),
             location_hint: location.trim() || undefined,
           },
         );
@@ -365,6 +522,51 @@ export default function CreateEventScreen() {
           />
         </View>
 
+        {/* ── DATE ──────────────────────────────────────────────────────────── */}
+        {/* Default: Today (highlighted). One tap to flip to Tomorrow, or open
+            a calendar to pick any day in the next 6 months. The "today is most
+            visible" nudge below is intentionally subtle — keeps "today" the
+            obvious path without blocking other days. */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>DATE</Text>
+          <View style={styles.dateRow}>
+            <TouchableOpacity
+              style={[styles.dateChip, isToday && styles.dateChipActive]}
+              onPress={() => pickDate(today)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.dateChipText, isToday && styles.dateChipTextActive]}>Today</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dateChip, isTomorrow && styles.dateChipActive]}
+              onPress={() => pickDate(tomorrow)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.dateChipText, isTomorrow && styles.dateChipTextActive]}>Tomorrow</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dateChip, isCustomDate && styles.dateChipActive]}
+              onPress={() => setShowDatePicker(true)}
+              activeOpacity={0.75}
+            >
+              <Ionicons name="calendar-outline" size={14} color={isCustomDate ? Colors.accent : Colors.muted} />
+              <Text style={[styles.dateChipText, isCustomDate && styles.dateChipTextActive]}>
+                {isCustomDate ? customDateLabel : 'Pick a date'}
+              </Text>
+              {isCustomDate && (
+                <TouchableOpacity
+                  onPress={() => pickDate(today)}
+                  hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                  style={{ marginLeft: 4 }}
+                >
+                  <Ionicons name="close" size={14} color={Colors.accent} />
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
+          </View>
+          {isToday && <Text style={styles.dateHint}>Hosting today gets you the most visibility 🔥</Text>}
+        </View>
+
         {/* ── STARTS / ENDS ─────────────────────────────────────────────────── */}
         <View style={[styles.section, styles.timeRow]}>
           <TimePicker
@@ -374,6 +576,15 @@ export default function CreateEventScreen() {
           />
           <TimePicker label="ENDS" value={endsAt} onChange={setEndsAt} />
         </View>
+
+        {showDatePicker && (
+          <DatePicker
+            value={selectedDate}
+            onChange={pickDate}
+            onClose={() => setShowDatePicker(false)}
+            maxDays={180}
+          />
+        )}
 
         {/* ── REPEAT ────────────────────────────────────────────────────────── */}
         <View style={styles.section}>
@@ -611,6 +822,71 @@ const styles = StyleSheet.create({
     alignItems:        'center',
   },
   pickerDoneText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.md },
+
+  // ── Date selector chips (Today / Tomorrow / Pick a date) ─────────────────
+  dateRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  dateChip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               6,
+    paddingHorizontal: 14,
+    paddingVertical:   10,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      12,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+  },
+  dateChipActive: {
+    borderColor:     Colors.accent,
+    backgroundColor: 'rgba(255,122,60,0.08)',
+  },
+  dateChipText:        { fontSize: FontSizes.md, color: Colors.muted, fontWeight: '600' },
+  dateChipTextActive:  { color: Colors.accent, fontWeight: '700' },
+  dateHint:            { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 8 },
+
+  // ── Inline date-picker modal ─────────────────────────────────────────────
+  datePickerBox: {
+    backgroundColor: Colors.bg2,
+    borderRadius:    Radius.lg,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    padding:         Spacing.lg,
+    gap:             6,
+    width:           320,
+    maxWidth:        '90%',
+  },
+  dpHeader: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'space-between',
+    paddingBottom:  Spacing.sm,
+  },
+  dpTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  dpNavBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: Colors.bg3,
+  },
+  dpNavBtnDisabled: { opacity: 0.3 },
+  dpRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  dpDow: {
+    width:      36,
+    textAlign:  'center',
+    fontSize:   11,
+    fontWeight: '700',
+    color:      Colors.muted2,
+    letterSpacing: 0.5,
+    paddingVertical: 6,
+  },
+  dpCell: {
+    width: 36, height: 36, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  dpCellSelected: { backgroundColor: Colors.accent },
+  dpCellDisabled: { opacity: 0.25 },
+  dpCellText:         { fontSize: FontSizes.sm, color: Colors.text, fontWeight: '600' },
+  dpCellTextSelected: { color: Colors.white, fontWeight: '800' },
+  dpCellTextDisabled: { color: Colors.muted2 },
 
   // ── Quick presets ─────────────────────────────────────────────────────────
   presetRow: { flexDirection: 'row', gap: 8 },
