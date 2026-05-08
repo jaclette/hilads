@@ -9247,3 +9247,187 @@ img.dm-header-avatar {
   cursor: pointer;
   font-family: inherit;
 }
+
+/* ── Android Play Store promo banner ─────────────────────────────────────── */
+
+.app-promo-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;                /* above page-header (~1000) */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  padding-top: max(8px, env(safe-area-inset-top));
+  background: var(--surface);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  color: var(--text);
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* When the banner is mounted, push page content down so the fixed banner
+   doesn't occlude the .page-header. The hook toggles this body class. */
+body.has-app-promo-banner {
+  padding-top: 56px;
+}
+body.has-app-promo-banner .page-header {
+  /* page-header isn't fixed, so just nothing extra needed beyond the body
+     padding. Kept selector here in case future page-headers go fixed. */
+}
+
+.app-promo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  background: #fff;             /* SVG has dark glyphs — give it a tile */
+}
+
+.app-promo-text {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-promo-cta {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app-promo-dismiss {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.4rem;
+  line-height: 1;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+.app-promo-dismiss:active { background: rgba(255,255,255,0.06); }
+
+/* ── Interstitial (gated off by default) ─────────────────────────────────── */
+
+.app-promo-interstitial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(0,0,0,0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.app-promo-interstitial-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 28px 22px 18px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--text);
+}
+
+.app-promo-interstitial-skip-top {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+}
+
+.app-promo-interstitial-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  background: #fff;
+  margin-top: 4px;
+}
+
+.app-promo-interstitial-title {
+  margin: 16px 0 4px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.app-promo-interstitial-pitch {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: var(--text);
+  width: 100%;
+}
+.app-promo-interstitial-pitch li {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.app-promo-interstitial-cta {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  letter-spacing: 0.01em;
+}
+
+.app-promo-interstitial-skip {
+  margin-top: 12px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+}

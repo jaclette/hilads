@@ -30,6 +30,8 @@ import SendButton from './components/SendButton'
 import DeleteAccountPage from './components/DeleteAccountPage'
 import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
+import AppPromoBanner from './components/AppPromoBanner'
+import AppPromoInterstitial from './components/AppPromoInterstitial'
 import ShareActionSheet from './components/ShareActionSheet'
 import LocationPicker from './components/LocationPicker'
 import ReactionBurstLayer from './components/ReactionBurstLayer'
@@ -2982,6 +2984,10 @@ export default function App() {
 
   return (
     <div className="chat-layout">
+
+      {/* Android Play Store promo — renders only on Android non-installed visitors */}
+      <AppPromoBanner />
+      <AppPromoInterstitial />
 
       {/* Events sidebar — desktop only */}
       <EventsSidebar

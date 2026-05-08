@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { appPromotion } from '../lib/appPromotion'
 
 const INSTALL_DISMISS_KEY = 'hilads_install_prompt_dismissed_until'
 const INSTALL_FEED_KEY = 'hilads_install_feed_prompt_seen'
@@ -37,10 +38,11 @@ function getPlatformState() {
 
   const ua = navigator.userAgent
   const isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  const isAndroid = /Android/i.test(ua)
   const isSafari = /Safari/i.test(ua) && !/Chrome|CriOS|Edg|OPR|Firefox|FxiOS/i.test(ua)
   const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || navigator.maxTouchPoints > 1
 
-  return { isIOS, isSafari, isMobile }
+  return { isIOS, isAndroid, isSafari, isMobile }
 }
 
 export default function useBeforeInstallPrompt() {
@@ -132,7 +134,17 @@ export default function useBeforeInstallPrompt() {
   const canUseNativePrompt = !!deferredPrompt
   const isDismissed = dismissedUntil > Date.now()
   const canShowFallback = !canUseNativePrompt && !isInstalled && platform.isMobile
-  const shouldShowBanner = !isInstalled && !isDismissed && (canUseNativePrompt || canShowFallback)
+  // On Android, the Play Store promo banner takes precedence over the PWA
+  // "Add to Home Screen" prompt — the native app is a strictly better
+  // experience. Suppress the PWA banner whenever the Play Store promo would
+  // show, regardless of dismissal state on either side.
+  const androidPromoActive = appPromotion.banner
+    && appPromotion.android.enabled
+    && platform.isAndroid
+    && !!appPromotion.android.storeUrl
+  const shouldShowBanner = !isInstalled && !isDismissed
+    && (canUseNativePrompt || canShowFallback)
+    && !androidPromoActive
 
   const instructionText = canUseNativePrompt
     ? 'Add Hilads to your home screen'
