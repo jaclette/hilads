@@ -71,21 +71,21 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
         <View style={styles.handle} />
 
         {/* Title */}
-        <Text style={styles.title}>Start the vibe ⚡</Text>
+        <Text style={styles.title}>What do you want to do?</Text>
 
-        {/* Options */}
+        {/* Options — pulse first per redesign spec, host (event) second */}
         <View style={styles.options}>
           <TouchableOpacity
             style={styles.option}
             activeOpacity={0.75}
-            onPress={() => handleOption(onSelectEvent)}
+            onPress={() => handleOption(onSelectTopic)}
           >
-            <View style={styles.optionIcon}>
-              <Text style={styles.optionEmoji}>🎉</Text>
+            <View style={[styles.optionIcon, styles.optionIconTopic]}>
+              <Text style={styles.optionEmoji}>⚡</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Create an event</Text>
-              <Text style={styles.optionSub}>Something happening?</Text>
+              <Text style={styles.optionLabel}>Start a pulse</Text>
+              <Text style={styles.optionSub}>Share something happening right now</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>
@@ -95,14 +95,14 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
           <TouchableOpacity
             style={styles.option}
             activeOpacity={0.75}
-            onPress={() => handleOption(onSelectTopic)}
+            onPress={() => handleOption(onSelectEvent)}
           >
-            <View style={[styles.optionIcon, styles.optionIconTopic]}>
-              <Text style={styles.optionEmoji}>💬</Text>
+            <View style={styles.optionIcon}>
+              <Text style={styles.optionEmoji}>🔥</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Start a pulse</Text>
-              <Text style={styles.optionSub}>Ask the city</Text>
+              <Text style={styles.optionLabel}>Host your spot</Text>
+              <Text style={styles.optionSub}>Open your place to the community</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>

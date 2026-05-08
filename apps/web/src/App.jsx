@@ -3985,42 +3985,29 @@ export default function App() {
               )
             })()}
           </div>
-          {/* Bottom action bar — Start a pulse + create button, then upcoming CTA */}
+          {/* Bottom action bar — single horizontal row:
+              [ See what's coming 🔮 (flex:1) ] [+ (48×48 circle)]
+              The + always opens the create chooser regardless of user mode,
+              so both flows ("Start a pulse" / "Host your spot") sit behind
+              one consistent picker UX. */}
           <div className="now-actions-bar">
             <button
-              className="now-pulse-btn"
-              onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }}
+              className="upcoming-cta upcoming-cta--inline"
+              onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
             >
-              Start a pulse ⚡
+              See what's coming 🔮
             </button>
-            {account?.mode === 'local' ? (
-              <button
-                className="now-create-btn now-create-btn--local"
-                onClick={() => tryOpenCreateEvent({ fromDrawer: true })}
-                aria-label="Host your spot"
-              >
-                Host your spot
-              </button>
-            ) : (
-              <button
-                className="now-create-btn"
-                onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
-                aria-label="Create"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-              </button>
-            )}
+            <button
+              className="now-create-btn"
+              onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
+              aria-label="Create new"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            </button>
           </div>
-          {/* Upcoming CTA */}
-          <button
-            className="upcoming-cta"
-            onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
-          >
-            See what's coming 🔮
-          </button>
         </div>
       )}
 
@@ -4713,23 +4700,12 @@ export default function App() {
         />
       )}
 
-      {/* Creation chooser bottom sheet */}
+      {/* Creation chooser bottom sheet — pulse first per redesign, host second */}
       {showCreateChooser && (
         <div className="create-chooser-overlay" onClick={() => setShowCreateChooser(false)}>
           <div className="create-chooser-sheet" onClick={e => e.stopPropagation()}>
             <div className="create-chooser-handle" />
-            <p className="create-chooser-title">What do you want to create?</p>
-            <button
-              className="create-chooser-option"
-              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
-            >
-              <span className="create-chooser-icon">🔥</span>
-              <span className="create-chooser-label">
-                <strong>Create an event</strong>
-                <span>Meetup, party, outing…</span>
-              </span>
-              <span className="create-chooser-arrow">→</span>
-            </button>
+            <p className="create-chooser-title">What do you want to do?</p>
             <button
               className="create-chooser-option"
               onClick={() => {
@@ -4737,10 +4713,21 @@ export default function App() {
                 setShowCreateTopic(true)
               }}
             >
-              <span className="create-chooser-icon">🗣️</span>
+              <span className="create-chooser-icon">⚡</span>
               <span className="create-chooser-label">
                 <strong>Start a pulse</strong>
-                <span>Ask the city something</span>
+                <span>Share something happening right now</span>
+              </span>
+              <span className="create-chooser-arrow">→</span>
+            </button>
+            <button
+              className="create-chooser-option"
+              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
+            >
+              <span className="create-chooser-icon">🔥</span>
+              <span className="create-chooser-label">
+                <strong>Host your spot</strong>
+                <span>Open your place to the community</span>
               </span>
               <span className="create-chooser-arrow">→</span>
             </button>

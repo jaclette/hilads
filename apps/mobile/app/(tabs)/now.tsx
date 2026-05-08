@@ -14,6 +14,7 @@ import { track } from '@/services/analytics';
 import type { FeedItem, HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { AppHeader } from '@/features/shell/AppHeader';
+import { CreateSheet } from '@/components/CreateSheet';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -53,39 +54,35 @@ function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress:
   const sourceType = (event as FeedItem).source_type ?? (event as HiladsEvent).source_type ?? 'hilads';
   const isPublic   = sourceType === 'ticketmaster';
 
+  // Compact layout: Event badge + icon + title on one row; time and recurrence
+  // collapse into a single line separated by ·; location and host stay on
+  // single lines with ellipsis. Each card lands at ~72-90px (5–6 visible per
+  // viewport) while still clearing the 44px tap-target floor.
+  const endsAt = (event as HiladsEvent).ends_at;
+  const host = (event as HiladsEvent).host_nickname;
   return (
     <TouchableOpacity style={[styles.card, isRecurring && styles.cardRecurring]} activeOpacity={0.7} onPress={onPress}>
-      <View style={styles.cardKindRow}>
+      <View style={styles.cardTitleRow}>
         <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Event</Text></View>
         {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>Public</Text></View>}
-      </View>
-      <View style={styles.cardTitleRow}>
         <Text style={styles.cardIcon}>{icon}</Text>
-        <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
+        <Text style={styles.cardTitle} numberOfLines={1}>{event.title}</Text>
         {!isPublic && (event.participant_count ?? 0) > 0 ? (
-          <Text style={styles.goingCount}>🙌 {event.participant_count} going</Text>
+          <Text style={styles.goingCount}>🙌 {event.participant_count}</Text>
         ) : null}
       </View>
-      <View style={styles.timePillRow}>
-        <View style={[styles.timePill, isLive && styles.timePillLive]}>
-          <Text style={styles.timePillText}>
-            🕐 {formatTime(startsAt)}{(event as HiladsEvent).ends_at ? ` → ${formatTime((event as HiladsEvent).ends_at!)}` : ''}
-          </Text>
-        </View>
-        {event.recurrence_label && (
-          <View style={styles.recurBadge}>
-            <Text style={styles.recurBadgeText}>↻ {event.recurrence_label}</Text>
-          </View>
-        )}
-      </View>
+      <Text style={[styles.cardMetaLine, isLive && styles.cardMetaLineLive]} numberOfLines={1}>
+        🕐 {formatTime(startsAt)}{endsAt ? ` → ${formatTime(endsAt)}` : ''}
+        {event.recurrence_label ? `  ·  ↻ ${event.recurrence_label}` : ''}
+      </Text>
       {(event.location ?? event.venue) ? (
         <Text style={styles.cardLocation} numberOfLines={1}>
           📍 {event.location ?? event.venue}
         </Text>
       ) : null}
-      {(event as HiladsEvent).host_nickname ? (
+      {host ? (
         <Text style={styles.cardHost} numberOfLines={1}>
-          Hosted by {(event as HiladsEvent).host_nickname}
+          Hosted by {host}
         </Text>
       ) : null}
     </TouchableOpacity>
@@ -222,6 +219,10 @@ export default function NowScreen() {
   // Topics (pulses) have no 1/day rule, so Start-a-pulse pushes directly.
   // Events go through the fetchCanCreateEvent preflight landed in commit
   // e0274e4; server still enforces the limit on POST.
+  // Both creation flows now flow through the CreateSheet picker (one + button
+  // instead of two side-by-side CTAs). Routing + analytics are unchanged.
+  const [showCreateSheet, setShowCreateSheet] = useState(false);
+
   function handleStartPulse() {
     router.push('/topic/create');
   }
@@ -549,39 +550,41 @@ export default function NowScreen() {
         />
       )}
 
-      {/* Sticky bottom action block — web parity (apps/web index.css:5809 + 6056).
-          Row: [Start a pulse ⚡] [Host your spot]  then [See what's coming 🔮]
-          below it. Absolute so it pins above the bottom tab bar regardless of
-          scroll. Safe-area-aware via insets.bottom. */}
+      {/* Sticky bottom action — single horizontal row pinned above the tab bar.
+          [ See what's coming 🔮 ─────────────────────────── ] [+]
+          The + opens CreateSheet which picks between Start a pulse / Host your spot
+          (preserves both routes + analytics). Safe-area-aware via insets.bottom. */}
       {city && (
         <View style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}>
           <View style={styles.bottomActionsRow}>
             <TouchableOpacity
-              style={styles.pulseBtn}
-              activeOpacity={0.8}
-              onPress={handleStartPulse}
+              style={styles.upcomingCta}
+              activeOpacity={0.75}
+              onPress={handleSeeUpcoming}
             >
-              <Text style={styles.pulseBtnText}>Start a pulse ⚡</Text>
+              <Text style={styles.upcomingCtaEmoji}>🔮</Text>
+              <Text style={styles.upcomingCtaText} numberOfLines={1}>See what's coming</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.hostBtn}
+              style={styles.createFab}
               activeOpacity={0.85}
-              onPress={handleHostSpot}
+              onPress={() => setShowCreateSheet(true)}
+              accessibilityLabel="Create new"
+              accessibilityRole="button"
             >
-              <Text style={styles.hostBtnText}>Host your spot</Text>
+              <Ionicons name="add" size={28} color={Colors.white} />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.upcomingCta}
-            activeOpacity={0.75}
-            onPress={handleSeeUpcoming}
-          >
-            <Text style={styles.upcomingCtaEmoji}>🔮</Text>
-            <Text style={styles.upcomingCtaText}>See what's coming</Text>
-            <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
-          </TouchableOpacity>
         </View>
       )}
+
+      <CreateSheet
+        visible={showCreateSheet}
+        onClose={() => setShowCreateSheet(false)}
+        onSelectEvent={handleHostSpot}
+        onSelectTopic={handleStartPulse}
+      />
     </SafeAreaView>
   );
 }
@@ -662,63 +665,55 @@ const styles = StyleSheet.create({
     color:             Colors.muted,
   },
 
-  // paddingBottom reserves room for the sticky bottomActions block
-  // (pulse+host row ≈52 + gap 10 + upcoming ≈48 + padding ≈24 ≈ 140).
-  // Safe-area inset is added at render time via contentContainerStyle merge.
-  list: { paddingBottom: 160, paddingHorizontal: Spacing.md, gap: Spacing.sm },
+  // paddingBottom reserves room for the sticky single-row bottomActions block
+  // (one row of ~56px + safe-area). Smaller than before since we collapsed
+  // the two-row layout into one.
+  list: { paddingBottom: 96, paddingHorizontal: Spacing.md, gap: 6 },
 
-  // ── Shared card base ───────────────────────────────────────────────────────
+  // ── Shared card base — compacted: padding 10 (was 16), gap 4 (was 8) ──────
   card: {
     backgroundColor: Colors.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
     borderColor:     Colors.border,
-    padding:         Spacing.md,
-    gap:             8,
+    padding:         10,
+    gap:             4,
   },
 
-  // ── Kind badge row ─────────────────────────────────────────────────────────
-  cardKindRow: { flexDirection: 'row', marginBottom: -2 },
+  // ── Kind badge — Event badge is inline in EventCard's title row; TopicCard
+  // still uses cardKindRow as its own header line so the visual stays.
+  cardKindRow: { flexDirection: 'row', alignItems: 'center', marginBottom: -2 },
   kindBadgeEvent: {
     backgroundColor:   'rgba(255,122,60,0.12)',
     borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   2,
+    paddingHorizontal: 7,
+    paddingVertical:   1,
     borderWidth:       1,
     borderColor:       'rgba(255,122,60,0.22)',
   },
   kindBadgeTopic: {
     backgroundColor:   'rgba(96,165,250,0.12)',
     borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   2,
+    paddingHorizontal: 7,
+    paddingVertical:   1,
     borderWidth:       1,
     borderColor:       'rgba(96,165,250,0.22)',
   },
-  kindBadgeText:      { fontSize: 10, fontWeight: '700', color: Colors.accent,  letterSpacing: 0.5 },
-  kindBadgeTopicText: { fontSize: 10, fontWeight: '700', color: '#60a5fa',      letterSpacing: 0.5 },
+  kindBadgeText:      { fontSize: 9, fontWeight: '700', color: Colors.accent,  letterSpacing: 0.5 },
+  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: '#60a5fa',      letterSpacing: 0.5 },
 
-  // ── Event card fields ──────────────────────────────────────────────────────
-  cardTitleRow:  { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  cardIcon:      { fontSize: 22, marginTop: 1 },
-  cardTitle:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, lineHeight: 26 },
-  goingCount:    { fontSize: FontSizes.sm, color: Colors.accent, fontWeight: '600', marginTop: 3, flexShrink: 0 },
+  // ── Event card fields — denser type sizes, single-line meta + location ────
+  cardTitleRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  cardIcon:      { fontSize: 16, lineHeight: 18 },
+  cardTitle:     { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 19 },
+  goingCount:    { fontSize: FontSizes.xs, color: Colors.accent, fontWeight: '700', flexShrink: 0 },
 
-  timePillRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  timePill: {
-    backgroundColor:   'rgba(255,255,255,0.06)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
-    borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.08)',
-  },
-  timePillLive:     { backgroundColor: 'rgba(255,122,60,0.12)', borderColor: 'rgba(255,122,60,0.2)' },
-  timePillText:     { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.accent },
-  recurBadge:       { backgroundColor: 'rgba(184,114,40,0.15)', borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: 'rgba(184,114,40,0.25)' },
-  recurBadgeText:   { color: Colors.accent3, fontSize: FontSizes.sm, fontWeight: '600' },
-  cardLocation:     { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
-  cardHost:         { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
+  // Replaces timePill + recurBadge (which sat on their own row). Both pieces of
+  // info now ride one ellipsised line — saves ~30px per card.
+  cardMetaLine:     { fontSize: FontSizes.xs, color: Colors.muted, fontWeight: '600' },
+  cardMetaLineLive: { color: Colors.accent },
+  cardLocation:     { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 16 },
+  cardHost:         { fontSize: 11,           color: Colors.muted2, lineHeight: 14 },
 
   // ── Topic card fields ──────────────────────────────────────────────────────
   topicCard: {
@@ -777,11 +772,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(184,114,40,0.04)',
   },
 
-  // ── Sticky bottom action block — web parity ────────────────────────────────
-  // Absolute-positioned container pinned above the bottom tab bar. Contains
-  // the [Start a pulse ⚡] [Host your spot] row and the [See what's coming 🔮]
-  // wide button stacked below. Content scroll has matching paddingBottom so
-  // the last item isn't hidden under this block.
+  // ── Sticky bottom action block — single-row layout ─────────────────────────
+  // Absolute-positioned container pinned above the bottom tab bar. One row:
+  // [ See what's coming 🔮 ] flex-1, and [+] 48×48 circle on the right that
+  // opens the CreateSheet picker.
   bottomActions: {
     position:          'absolute',
     left:              0,
@@ -795,31 +789,33 @@ const styles = StyleSheet.create({
   },
   bottomActionsRow: {
     flexDirection: 'row',
+    alignItems:    'center',
     gap:           10,
   },
 
-  // Mirrors web .now-pulse-btn (rgba(96,165,250,…) blue tint on dark bg).
-  pulseBtn: {
+  // Wide pill on the left — orange-tinted, mirrors web .upcoming-cta.
+  upcomingCta: {
     flex:              1,
-    height:            52,
-    borderRadius:      18,
+    backgroundColor:   'rgba(255,122,60,0.07)',
+    borderRadius:      16,
     borderWidth:       1,
-    borderColor:       'rgba(96,165,250,0.25)',
-    backgroundColor:   'rgba(96,165,250,0.10)',
+    borderColor:       'rgba(255,122,60,0.22)',
+    paddingVertical:   12,
+    paddingHorizontal: Spacing.md,
+    flexDirection:     'row',
     alignItems:        'center',
-    justifyContent:    'center',
+    gap:               10,
+    minHeight:         48,  // ≥44 tap target
   },
-  pulseBtnText: {
-    color:     '#60a5fa',
-    fontSize:  FontSizes.md,
-    fontWeight: '700',
-  },
+  upcomingCtaEmoji: { fontSize: 18, lineHeight: 22 },
+  upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.accent },
 
-  // Mirrors web .now-create-btn--local (#FF7A3C + subtle orange shadow).
-  hostBtn: {
-    flex:              1,
-    height:            52,
-    borderRadius:      18,
+  // Circular + button on the right — opens CreateSheet picker. Same accent
+  // glow recipe used elsewhere on primary creation CTAs.
+  createFab: {
+    width:             48,
+    height:            48,
+    borderRadius:      24,
     backgroundColor:   Colors.accent,
     alignItems:        'center',
     justifyContent:    'center',
@@ -828,29 +824,8 @@ const styles = StyleSheet.create({
     shadowOpacity:     0.35,
     shadowRadius:      12,
     elevation:         6,
+    flexShrink:        0,
   },
-  hostBtnText: {
-    color:     Colors.white,
-    fontSize:  FontSizes.md,
-    fontWeight: '700',
-    letterSpacing: -0.2,
-  },
-
-  // Mirrors web .upcoming-cta (orange-tinted wide pill).
-  upcomingCta: {
-    marginTop:         10,
-    backgroundColor:   'rgba(255,122,60,0.07)',
-    borderRadius:      16,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.22)',
-    paddingVertical:   14,
-    paddingHorizontal: Spacing.md,
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               10,
-  },
-  upcomingCtaEmoji: { fontSize: 20, lineHeight: 24 },
-  upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.accent },
 
   // Centered CTA rendered inside the Pulses filter's empty state (web parity).
   emptyPulseBtn: {
