@@ -238,6 +238,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
               disabled={prefsSaving || !prefs}
             />
           </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
+              <span className="notif-pref-name">Announcements from Hilads</span>
+              <span className="notif-pref-desc">Occasional updates from the team</span>
+            </div>
+            <Toggle
+              checked={prefs?.admin_announcement_push ?? true}
+              onChange={v => handleTogglePref('admin_announcement_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
         </div>
       </div>
     </div>

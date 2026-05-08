@@ -80,6 +80,7 @@ export default function NotificationsScreen() {
     profile_view_push:    true,
     topic_reply_push:     true,
     new_topic_push:       false,
+    admin_announcement_push: true,
   });
 
   // ── Load latest 5 notifications + preferences ─────────────────────────────
@@ -252,6 +253,8 @@ export default function NotificationsScreen() {
             <PrefRow label="Pulse replies 💬" subtitle="When someone replies in a pulse you joined" value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="New pulses in your city" subtitle="When someone starts a new pulse in your city" value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
+            <View style={styles.prefDivider} />
+            <PrefRow label="Announcements from Hilads" subtitle="Occasional updates from the team" value={prefs.admin_announcement_push} onChange={v => togglePref('admin_announcement_push', v)} />
           </View>
         </View>
       </ScrollView>

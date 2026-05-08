@@ -332,9 +332,33 @@ run($pdo, "
         vibe_received_push     BOOLEAN NOT NULL DEFAULT TRUE,
         profile_view_push      BOOLEAN NOT NULL DEFAULT TRUE,
         topic_reply_push       BOOLEAN NOT NULL DEFAULT TRUE,
-        new_topic_push         BOOLEAN NOT NULL DEFAULT FALSE
+        new_topic_push         BOOLEAN NOT NULL DEFAULT FALSE,
+        admin_announcement_push BOOLEAN NOT NULL DEFAULT TRUE
     )
 ", 'notification_preferences');
+
+// Admin push broadcasts — one row per send action triggered from /admin/push.
+// Doubles as the audit log (admin_username + admin_ip + created_at) since
+// the back office uses single-user env-based auth, not a user table.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS push_broadcasts (
+        id              BIGSERIAL    PRIMARY KEY,
+        admin_username  TEXT         NOT NULL,
+        admin_ip        INET,
+        title           VARCHAR(80)  NOT NULL,
+        body            VARCHAR(200) NOT NULL,
+        audience_type   TEXT         NOT NULL CHECK (audience_type IN ('all','city','user','test')),
+        audience_filter JSONB        NOT NULL DEFAULT '{}'::jsonb,
+        deep_link       TEXT,
+        recipient_count INTEGER      NOT NULL DEFAULT 0,
+        delivered_count INTEGER      NOT NULL DEFAULT 0,
+        failed_count    INTEGER      NOT NULL DEFAULT 0,
+        status          TEXT         NOT NULL DEFAULT 'sending'
+                                     CHECK (status IN ('sending','sent','failed')),
+        created_at      TIMESTAMPTZ  NOT NULL DEFAULT now(),
+        sent_at         TIMESTAMPTZ
+    )
+", 'push_broadcasts');
 
 run($pdo, "
     CREATE TABLE IF NOT EXISTS push_subscriptions (
@@ -517,6 +541,7 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS vibe_re
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS profile_view_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.profile_view_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS topic_reply_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.topic_reply_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS new_topic_push BOOLEAN NOT NULL DEFAULT FALSE", 'notification_preferences.new_topic_push');
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS admin_announcement_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.admin_announcement_push');
 
 // mobile_push_tokens
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'mobile_push_tokens.last_used_at');
@@ -762,5 +787,8 @@ run($pdo, "
       )
       WHERE status <> 'dismissed'
 ", 'idx_user_reports_unique_active_pair');
+
+// push_broadcasts: history page reads recent rows DESC.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_push_broadcasts_recent ON push_broadcasts (created_at DESC)", 'idx_push_broadcasts_recent');
 
 echo "\nDone.\n";

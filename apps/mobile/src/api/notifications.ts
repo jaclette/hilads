@@ -13,6 +13,7 @@ export interface NotificationPreferences {
   profile_view_push:    boolean;
   topic_reply_push:     boolean;
   new_topic_push:       boolean;
+  admin_announcement_push: boolean;
 }
 
 export async function fetchNotifications(

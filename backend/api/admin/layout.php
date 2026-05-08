@@ -149,6 +149,7 @@ function admin_nav(string $current = ''): void
             '/admin/topics'  => 'Topics',
             '/admin/reports' => 'Reports',
             '/admin/email'   => 'Email',
+            '/admin/push'    => 'Push',
         ];
         foreach ($links as $href => $label) {
             $active = ($current === $href) ? ' class="active"' : '';

@@ -626,9 +626,10 @@ $router->add('GET', '/internal/run-migrations', function () {
     // friend_added_push was renamed to friend_request_push when the friend
     // request flow shipped — see migrate.php for the rename.
     foreach ([
-        ['friend_request_push', 'BOOLEAN NOT NULL DEFAULT TRUE'],
-        ['vibe_received_push',  'BOOLEAN NOT NULL DEFAULT TRUE'],
-        ['profile_view_push',   'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['friend_request_push',     'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['vibe_received_push',      'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['profile_view_push',       'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['admin_announcement_push', 'BOOLEAN NOT NULL DEFAULT TRUE'],
     ] as [$col, $def]) {
         try {
             $pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS $col $def");
