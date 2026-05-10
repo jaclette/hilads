@@ -23,6 +23,7 @@ import { useApp } from '@/context/AppContext';
 import { updateEvent, deleteEvent } from '@/api/events';
 import { useEventDetail } from '@/hooks/useEventDetail';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { PrimaryButton } from '@/components/PrimaryButton';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -338,18 +339,12 @@ export default function EditEventScreen() {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         {/* ── Save ──────────────────────────────────────────────────────────── */}
-        <TouchableOpacity
-          style={[styles.submitBtn, submitting && styles.submitDisabled]}
+        <PrimaryButton
+          label="Save changes"
           onPress={handleSave}
-          activeOpacity={0.85}
-          disabled={submitting || deleting}
-        >
-          {submitting ? (
-            <ActivityIndicator color={Colors.white} />
-          ) : (
-            <Text style={styles.submitText}>Save changes</Text>
-          )}
-        </TouchableOpacity>
+          loading={submitting}
+          disabled={deleting}
+        />
 
         {/* ── Delete ────────────────────────────────────────────────────────── */}
         <TouchableOpacity
@@ -525,22 +520,9 @@ const styles = StyleSheet.create({
 
   errorText: { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center' },
 
-  // ── Save button — orange, identical to create ────────────────────────────
-  submitBtn: {
-    backgroundColor: Colors.accent,
-    borderRadius:    14,
-    paddingVertical: 17,
-    alignItems:      'center',
-    justifyContent:  'center',
-    minHeight:       54,
-  },
+  // Save button uses the shared <PrimaryButton>. The Delete button below
+  // reuses `submitDisabled` for its disabled state.
   submitDisabled: { opacity: 0.55 },
-  submitText: {
-    color:         Colors.white,
-    fontSize:      FontSizes.md,
-    fontWeight:    '700',
-    letterSpacing: -0.2,
-  },
 
   // ── Delete button — red outline, matches web danger style ────────────────
   deleteBtn: {

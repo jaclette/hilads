@@ -10,14 +10,9 @@ import { fetchUpcomingEvents, fetchCalendarSummary } from '@/api/events';
 import { track } from '@/services/analytics';
 import type { HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { EventCard } from '@/components/EventCard';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-const EVENT_ICONS: Record<string, string> = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
-};
 
 // Day strip reaches 90 days ahead. 6mo modal calendar matches event-create.
 const STRIP_DAYS  = 90;
@@ -28,12 +23,6 @@ const DOW_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 function ymdInTz(d: Date, tz: string): string {
   // Locale en-CA renders as YYYY-MM-DD which is sortable + parseable.
   return d.toLocaleDateString('en-CA', { timeZone: tz });
-}
-
-function formatTime(ts: number, tz: string): string {
-  return new Date(ts * 1000).toLocaleTimeString('en-US', {
-    timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true,
-  });
 }
 
 function startOfDay(d: Date): Date {
@@ -195,46 +184,6 @@ function MonthModal({
   );
 }
 
-// ── Event card ────────────────────────────────────────────────────────────────
-
-function UpcomingCard({ event, tz, onPress }: { event: HiladsEvent; tz: string; onPress: () => void }) {
-  const now    = Date.now() / 1000;
-  const isLive = event.starts_at <= now && (event.expires_at ?? event.ends_at ?? 0) > now;
-  const icon   = EVENT_ICONS[event.event_type] ?? '📌';
-  const going  = event.participant_count ?? 0;
-  const loc    = event.location ?? event.venue ?? null;
-
-  return (
-    <TouchableOpacity style={styles.card} activeOpacity={0.7} onPress={onPress}>
-      <View style={styles.cardTitleRow}>
-        <Text style={styles.cardIcon}>{icon}</Text>
-        <Text style={styles.cardTitle} numberOfLines={2}>{event.title}</Text>
-        {event.source_type === 'ticketmaster' ? (
-          <Text style={styles.publicBadge}>Public</Text>
-        ) : going > 0 ? (
-          <Text style={styles.goingCount}>🙌 {going} going</Text>
-        ) : null}
-      </View>
-
-      <View style={styles.timePillRow}>
-        <View style={[styles.timePill, isLive && styles.timePillLive]}>
-          <Text style={[styles.timePillText, isLive && styles.timePillLiveText]}>
-            {isLive ? '🔥 Live now' : `🕐 ${formatTime(event.starts_at, tz)}`}
-            {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
-          </Text>
-        </View>
-        {event.recurrence_label ? (
-          <View style={styles.recurBadge}>
-            <Text style={styles.recurBadgeText}>↻ {event.recurrence_label}</Text>
-          </View>
-        ) : null}
-      </View>
-
-      {loc ? <Text style={styles.cardLocation} numberOfLines={1}>📍 {loc}</Text> : null}
-    </TouchableOpacity>
-  );
-}
-
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function UpcomingEventsScreen() {
@@ -374,14 +323,14 @@ export default function UpcomingEventsScreen() {
           data={events}
           keyExtractor={(e) => e.id}
           renderItem={({ item }) => (
-            <UpcomingCard
+            <EventCard
               event={item}
               tz={tz}
               onPress={() => router.push(`/event/${item.id}`)}
             />
           )}
           contentContainerStyle={styles.list}
-          ItemSeparatorComponent={() => <View style={{ height: Spacing.sm }} />}
+          ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -499,49 +448,6 @@ const styles = StyleSheet.create({
   emptySub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22 },
 
   list: { padding: Spacing.md, paddingBottom: 40 },
-
-  // ── Card — same as hot.tsx EventCard ──────────────────────────────────────
-
-  card: {
-    backgroundColor: Colors.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     Colors.border,
-    padding:         Spacing.md,
-    gap:             10,
-  },
-  cardTitleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  cardIcon:  { fontSize: 22, marginTop: 1 },
-  cardTitle: { flex: 1, fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, lineHeight: 26 },
-  goingCount: {
-    fontSize:   FontSizes.sm,
-    color:      Colors.accent,
-    fontWeight: '600',
-    marginTop:  3,
-    flexShrink: 0,
-  },
-  publicBadge: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent, marginTop: 3 },
-
-  timePillRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  timePill: {
-    backgroundColor:   'rgba(255,255,255,0.06)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 12,
-    paddingVertical:   5,
-    borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.08)',
-  },
-  timePillLive: {
-    backgroundColor: 'rgba(255,122,60,0.12)',
-    borderColor:     'rgba(255,122,60,0.2)',
-  },
-  timePillText:     { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.accent },
-  timePillLiveText: { color: '#FF7A3C' },
-
-  recurBadge:     { backgroundColor: 'rgba(184,114,40,0.15)', borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 5, borderWidth: 1, borderColor: 'rgba(184,114,40,0.25)' },
-  recurBadgeText: { color: Colors.accent3, fontSize: FontSizes.sm, fontWeight: '600' },
-
-  cardLocation: { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
 
   // ── Month modal ────────────────────────────────────────────────────────────
 

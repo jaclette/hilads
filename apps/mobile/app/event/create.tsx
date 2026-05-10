@@ -23,6 +23,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { createEvent, createEventSeries } from '@/api/events';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { PrimaryButton } from '@/components/PrimaryButton';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -642,22 +643,15 @@ export default function CreateEventScreen() {
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         {/* ── Submit ────────────────────────────────────────────────────────── */}
-        <TouchableOpacity
-          style={[styles.submitBtn, submitting && styles.submitDisabled]}
+        <PrimaryButton
+          label={
+            isLocal
+              ? (repeat !== 'once' ? 'Open your spot' : 'Start a hangout')
+              : 'Create event'
+          }
           onPress={handleSubmit}
-          activeOpacity={0.85}
-          disabled={submitting}
-        >
-          {submitting ? (
-            <ActivityIndicator color={Colors.white} />
-          ) : (
-            <Text style={styles.submitText}>
-              {isLocal
-                ? (repeat !== 'once' ? 'Open your spot' : 'Start a hangout')
-                : 'Create event'}
-            </Text>
-          )}
-        </TouchableOpacity>
+          loading={submitting}
+        />
 
         <View style={{ height: Spacing.xl }} />
       </ScrollView>
@@ -949,20 +943,4 @@ const styles = StyleSheet.create({
   // ── Error ─────────────────────────────────────────────────────────────────
   errorText: { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center' },
 
-  // ── Submit button — orange (#FF7A3C) matching web, not red ────────────────
-  submitBtn: {
-    backgroundColor: Colors.accent,   // #FF7A3C — bright orange like web
-    borderRadius:    14,
-    paddingVertical: 17,
-    alignItems:      'center',
-    justifyContent:  'center',
-    minHeight:       54,
-  },
-  submitDisabled: { opacity: 0.55 },
-  submitText: {
-    color:         Colors.white,
-    fontSize:      FontSizes.md,
-    fontWeight:    '700',
-    letterSpacing: -0.2,
-  },
 });

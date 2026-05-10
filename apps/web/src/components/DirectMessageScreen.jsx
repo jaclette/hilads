@@ -5,6 +5,7 @@ import SendButton from './SendButton'
 import EmojiPicker from './EmojiPicker'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
+import IconPlus from './IconPlus'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -404,11 +405,14 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         <button
           type="button"
           className="dm-vibe-btn"
-          title="Share something"
+          aria-label="Add attachment"
+          title="Add attachment"
           disabled={uploading || sending || spotLoading}
           onClick={() => setShowShareSheet(true)}
         >
-          {uploading || spotLoading ? <span className="upload-spinner" style={{ width: 16, height: 16 }} /> : '✨'}
+          {uploading || spotLoading
+            ? <span className="upload-spinner" style={{ width: 16, height: 16 }} />
+            : <IconPlus size={18} />}
         </button>
         <div className="emoji-picker-wrap">
           <button

@@ -379,6 +379,8 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
           onPressIn={vibePressIn}
           onPressOut={vibePressOut}
           disabled={busy}
+          accessibilityRole="button"
+          accessibilityLabel="Add attachment"
         >
           <LinearGradient
             colors={['#C24A38', '#B87228']}
@@ -389,7 +391,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
             {uploading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.vibeBtnIcon}>✨</Text>
+              <Ionicons name="add" size={26} color="#fff" />
             )}
           </LinearGradient>
         </Pressable>
@@ -539,12 +541,6 @@ const styles = StyleSheet.create({
   },
 
   btnDisabled: { opacity: 0.35 },
-
-  vibeBtnIcon: {
-    fontSize:   22,
-    lineHeight: 26,
-    color:      '#fff',
-  },
 
   emojiBtn: {
     width:           44,

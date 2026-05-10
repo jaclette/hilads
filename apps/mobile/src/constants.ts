@@ -81,3 +81,62 @@ export const Spacing = {
   xl:   36,
   xxl:  54,
 } as const;
+
+// ── Gradients — direct port of web index.css linear-gradients ────────────────
+// 135° on web ≈ start (0,0) → end (1,1) on RN's LinearGradient.
+// Web sources (single source of truth):
+//   .ob-btn / .cef-submit / .modal-submit / .send-btn:
+//     linear-gradient(135deg, var(--accent), var(--accent2))   = #C24A38 → #B87228
+//   .vibe-btn / .dm-vibe-btn:
+//     linear-gradient(135deg, #C24A38 0%, #B87228 100%)        = same stops, louder glow
+//   DeleteAccountPage .logoMark:
+//     linear-gradient(135deg, #FF7A3C, #C24A38)                = brighter start for the logo
+//   .bottom-nav-tab.active::after:
+//     linear-gradient(180deg, rgba(255,122,60,0.16), rgba(255,122,60,0.06))
+
+export const Gradients = {
+  primary: {
+    colors: ['#C24A38', '#B87228'] as [string, string],
+    start:  { x: 0, y: 0 },
+    end:    { x: 1, y: 1 },
+  },
+  // Disabled state — muted gray pair at 0.55 opacity matches web
+  // .cef-submit:disabled (opacity 0.5, no shadow).
+  primaryDisabled: {
+    colors: ['#5b524c', '#4a423d'] as [string, string],
+    start:  { x: 0, y: 0 },
+    end:    { x: 1, y: 1 },
+  },
+  logo: {
+    colors: ['#FF7A3C', '#C24A38'] as [string, string],
+    start:  { x: 0, y: 0 },
+    end:    { x: 1, y: 1 },
+  },
+  activePill: {
+    colors: ['rgba(255,122,60,0.16)', 'rgba(255,122,60,0.06)'] as [string, string],
+    start:  { x: 0, y: 0 },
+    end:    { x: 0, y: 1 },
+  },
+} as const;
+
+// ── Shadows — colored CTA glow (iOS native, faux on Android) ─────────────────
+// Web sources:
+//   .cef-submit / .ob-btn / .modal-submit:  0 4–6px 18–20px rgba(194,74,56,0.25–0.32)
+//   .vibe-btn / .dm-vibe-btn:               0 0 16px rgba(194,74,56,0.42) + 0 4px 14px rgba(0,0,0,0.35)
+
+export const Shadows = {
+  primaryCta: {
+    shadowColor:   '#C24A38',
+    shadowOpacity: 0.25,
+    shadowRadius:  20,
+    shadowOffset:  { width: 0, height: 4 },
+    elevation:     6,
+  },
+  fab: {
+    shadowColor:   '#C24A38',
+    shadowOpacity: 0.42,
+    shadowRadius:  16,
+    shadowOffset:  { width: 0, height: 4 },
+    elevation:     10,
+  },
+} as const;

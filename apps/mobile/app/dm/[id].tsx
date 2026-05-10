@@ -27,7 +27,7 @@ import { findOrCreateDM, toggleDmReaction } from '@/api/conversations';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
 import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
@@ -140,8 +140,9 @@ function openMaps(lat: number, lng: number, label: string) {
 function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
   const { line1, place, lat, lng, addr } = parseDmLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
-  const card = (
-    <View style={[dmLocStyles.card, isMine ? dmLocStyles.cardMine : dmLocStyles.cardOther]}>
+  // Outgoing bubble matches web .loc-bubble--me — 135° accent → accent2 gradient.
+  const innerContent = (
+    <>
       <Text style={dmLocStyles.icon}>📍</Text>
       <View style={dmLocStyles.body}>
         <Text style={[dmLocStyles.line1, isMine && dmLocStyles.textMine]} numberOfLines={2}>
@@ -150,6 +151,20 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
         {!!addr && <Text style={[dmLocStyles.addr, isMine && dmLocStyles.addrMine]} numberOfLines={2}>{addr}</Text>}
         {hasCoords && <Text style={[dmLocStyles.tapHint, isMine && dmLocStyles.tapHintMine]}>Tap to open in maps</Text>}
       </View>
+    </>
+  );
+  const card = isMine ? (
+    <LinearGradient
+      colors={Gradients.primary.colors}
+      start={Gradients.primary.start}
+      end={Gradients.primary.end}
+      style={[dmLocStyles.card, dmLocStyles.cardMine]}
+    >
+      {innerContent}
+    </LinearGradient>
+  ) : (
+    <View style={[dmLocStyles.card, dmLocStyles.cardOther]}>
+      {innerContent}
     </View>
   );
   if (hasCoords) {
@@ -183,7 +198,8 @@ const dmLocStyles = StyleSheet.create({
     borderBottomLeftRadius: 5,
   },
   cardMine: {
-    backgroundColor: Colors.accent,
+    // Background is the LinearGradient itself; this style only shapes the
+    // bottom-right "tail" corner.
     borderBottomRightRadius: 5,
   },
   icon:     { fontSize: 20, lineHeight: 26, flexShrink: 0 },
@@ -657,6 +673,8 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
             onPressIn={vibePressIn}
             onPressOut={vibePressOut}
             disabled={busy}
+            accessibilityRole="button"
+            accessibilityLabel="Add attachment"
           >
             <LinearGradient
               colors={['#C24A38', '#B87228']}
@@ -666,7 +684,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
             >
               {uploading
                 ? <ActivityIndicator size="small" color="#fff" />
-                : <Text style={styles.vibeBtnIcon}>✨</Text>
+                : <Ionicons name="add" size={24} color="#fff" />
               }
             </LinearGradient>
           </Pressable>
@@ -1101,11 +1119,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   imageBtnDisabled: { opacity: 0.4 },
-  vibeBtnIcon: {
-    fontSize:   20,
-    lineHeight: 24,
-    color:      '#fff',
-  },
   emojiBtn: {
     width:           36,
     height:          36,

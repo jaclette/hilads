@@ -875,9 +875,13 @@ html, body, #root {
 /* ── Event mode meta info (time, counts) ──────────────────── */
 .event-meta-label {
   font-size: 0.75rem;
+  line-height: 1.4;
   color: var(--muted2);
   font-weight: 500;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* "X going" — inline button inside event-meta-label, inherits text style */
@@ -935,10 +939,14 @@ html, body, #root {
 /* Location line — event header, Hot drawer rows, sidebar rows */
 .event-location {
   font-size: 0.75rem;
+  line-height: 1.4;
   color: #FF7A3C;
   font-weight: 500;
   text-decoration: none;
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .event-location:hover { text-decoration: underline; }
 .event-location--muted { color: var(--muted2); }
@@ -2729,6 +2737,7 @@ html, body, #root {
   cursor: pointer;
   background: linear-gradient(135deg, #C24A38 0%, #B87228 100%);
   box-shadow: 0 0 16px rgba(194, 74, 56, 0.42), 0 4px 14px rgba(0, 0, 0, 0.35);
+  color: #fff;            /* SVG currentColor resolves to white on the gradient */
   font-size: 22px;
   line-height: 1;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -5547,8 +5556,22 @@ img.pub-profile-avatar {
 .event-header {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding-top: 16px;
+  gap: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  transition: gap 0.18s ease, padding 0.18s ease;
+}
+
+/* Collapsed state — toggled by App.jsx scroll listener once messages scroll
+   past ~30px. Hides the meta + address + host lines so only the title row
+   (title + Join button) remains, freeing screen real estate for the chat. */
+.event-header--collapsed {
+  gap: 4px;
+  padding-bottom: 4px;
+}
+.event-header--collapsed .event-header-body > :not(.event-header-title-row),
+.event-header--collapsed .event-creator-badge {
+  display: none;
 }
 
 .event-header-top {
@@ -5574,19 +5597,20 @@ img.pub-profile-avatar {
   max-width: min(220px, 46vw);
 }
 
-/* Join / Going CTA */
+/* Join / Going CTA — compact pill aligned to the title row */
 .event-join-btn {
   flex-shrink: 0;
-  padding: 9px 20px;
-  border-radius: 22px;
+  padding: 6px 14px;
+  border-radius: 999px;
   border: 1.5px solid rgba(255, 122, 60, 0.55);
   background: transparent;
   color: #FF7A3C;
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  min-height: 44px;
+  min-height: 32px;
+  min-width: 74px;            /* enough for "Joined ✓" — prevents reflow on toggle */
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
@@ -5733,24 +5757,29 @@ img.pub-profile-avatar {
 .event-header-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
 .event-header-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
 }
 
 .event-header-title {
   flex: 1;
   min-width: 0;
-  font-size: 1.6rem;
+  font-size: 1.25rem;          /* was 1.6rem — ~22% smaller, fits glanceable summary */
   font-weight: 700;
   color: var(--text);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 0;
+  /* Single-line ellipsis when title is long. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Shrink city name on tight mobile headers */
@@ -7651,6 +7680,7 @@ img.dm-header-avatar {
   cursor: pointer;
   background: linear-gradient(135deg, #C24A38 0%, #B87228 100%);
   box-shadow: 0 0 12px rgba(194, 74, 56, 0.38), 0 3px 10px rgba(0, 0, 0, 0.3);
+  color: #fff;            /* SVG currentColor resolves to white on the gradient */
   font-size: 18px;
   line-height: 1;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

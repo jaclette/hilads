@@ -3,6 +3,7 @@ import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView, Share,
+  Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -113,6 +114,24 @@ export default function EventDetailScreen() {
   const flatListRef = useRef<FlatList<Message>>(null);
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
+
+  // Header collapses (hides meta + address + host) once the user scrolls into
+  // older messages. The FlatList is inverted, so scrollY > 0 = scrolled up
+  // through history. Drives an Animated.Value (0 → expanded, 1 → collapsed)
+  // that the secondary lines bind to via opacity + maxHeight.
+  const headerCollapse = useRef(new Animated.Value(0)).current;
+  const handleListScroll = useCallback((e: { nativeEvent: { contentOffset: { y: number } } }) => {
+    const y = e.nativeEvent.contentOffset.y;
+    const next = y > 30 ? 1 : 0;
+    Animated.timing(headerCollapse, {
+      toValue:         next,
+      duration:        160,
+      useNativeDriver: false,   // animating maxHeight / paddingBottom — JS-driven
+    }).start();
+  }, [headerCollapse]);
+  const secondaryHeight = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [80, 0] });
+  const secondaryOpacity = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+  const blockPaddingBottom = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [10, 4] });
 
   function scrollToMessage(id: string) {
     const idx = feed.findIndex(m => m.id === id);
@@ -297,10 +316,16 @@ export default function EventDetailScreen() {
           <Text style={styles.errorText}>{eventError ?? 'Event not found'}</Text>
         </View>
       ) : (
-        <View style={styles.eventBlock}>
-          {/* Title row + Join/Edit button */}
+        <Animated.View style={[styles.eventBlock, { paddingBottom: blockPaddingBottom }]}>
+          {/* Title row + Join/Edit button — always visible */}
           <View style={styles.titleRow}>
-            <Text style={styles.eventTitle} numberOfLines={3}>{event.title}</Text>
+            <Text
+              style={styles.eventTitle}
+              numberOfLines={1}
+              accessibilityRole="header"
+            >
+              {event.title}
+            </Text>
             {isOwner ? (
               <TouchableOpacity
                 style={[styles.joinBtn, styles.editBtn]}
@@ -310,7 +335,7 @@ export default function EventDetailScreen() {
                 accessibilityLabel="Edit event"
               >
                 <Text style={[styles.joinBtnText, styles.editBtnText]}>
-                  ✏️ Edit event
+                  ✏️ Edit
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -324,47 +349,53 @@ export default function EventDetailScreen() {
                   <ActivityIndicator size="small" color={Colors.accent} />
                 ) : (
                   <Text style={[styles.joinBtnText, event.is_participating && styles.joinBtnTextActive]}>
-                    {event.is_participating ? 'Going ✓' : 'Join'}
+                    {event.is_participating ? 'Joined ✓' : 'Join'}
                   </Text>
                 )}
               </TouchableOpacity>
             )}
           </View>
 
-          {/* Time + here + going — mirrors web: "HH:MM → HH:MM · X here · X going" */}
-          <Text style={styles.eventMeta}>
-            {'🕐 '}
-            {formatTime(event.starts_at)}
-            {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
-            {presenceCount != null ? ` · ${presenceCount} here` : ''}
-            {event.participant_count != null ? (
-              <>
-                {' · '}
-                <Text
-                  style={styles.goingLink}
-                  onPress={() => setShowGoingSheet(true)}
-                >
-                  {event.participant_count} going
-                </Text>
-              </>
+          {/* Secondary lines — collapse on scroll. maxHeight + opacity drive the
+              transition; native driver is off because we're animating layout. */}
+          <Animated.View
+            style={{ maxHeight: secondaryHeight, opacity: secondaryOpacity, overflow: 'hidden', gap: 4 }}
+          >
+            {/* Time + here + going on a single muted line */}
+            <Text style={styles.eventMeta} numberOfLines={1}>
+              {'🕐 '}
+              {formatTime(event.starts_at)}
+              {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
+              {presenceCount != null ? ` · ${presenceCount} here` : ''}
+              {event.participant_count != null ? (
+                <>
+                  {' · '}
+                  <Text
+                    style={styles.goingLink}
+                    onPress={() => setShowGoingSheet(true)}
+                  >
+                    {event.participant_count} going
+                  </Text>
+                </>
+              ) : null}
+            </Text>
+
+            {/* Location — orange accent, single-line ellipsis */}
+            {(event.location ?? event.venue) ? (
+              <Text style={styles.eventLocation} numberOfLines={1}>
+                {'📍 '}
+                {event.location ?? event.venue}
+              </Text>
             ) : null}
-          </Text>
 
-          {/* Location — orange in web */}
-          {(event.location ?? event.venue) ? (
-            <Text style={styles.eventLocation} numberOfLines={2}>
-              {'📍 '}
-              {event.location ?? event.venue}
-            </Text>
-          ) : null}
-
-          {/* Host name — suppressed for the host themselves since the Edit button already signals ownership */}
-          {event.host_nickname && !isOwner ? (
-            <Text style={styles.eventHost} numberOfLines={1}>
-              Hosted by {event.host_nickname}
-            </Text>
-          ) : null}
-        </View>
+            {/* Host name — suppressed for the host themselves */}
+            {event.host_nickname && !isOwner ? (
+              <Text style={styles.eventHost} numberOfLines={1}>
+                Hosted by {event.host_nickname}
+              </Text>
+            ) : null}
+          </Animated.View>
+        </Animated.View>
       )}
 
       {/* ── Participants activity strip ── */}
@@ -434,6 +465,8 @@ export default function EventDetailScreen() {
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
             onScrollToIndexFailed={() => {}}
+            onScroll={handleListScroll}
+            scrollEventThrottle={16}
             ListHeaderComponent={
               msgsLoading ? (
                 <View style={styles.msgsLoading}>
@@ -636,14 +669,15 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
   },
 
-  // ── Event info block — web: flat, top of screen, padded, border-bottom ───
+  // ── Event info block — compact: glanceable summary above the chat ────────
+  // paddingBottom is animated when the secondary lines collapse (see
+  // blockPaddingBottom interpolation in the screen component).
   eventBlock: {
     paddingHorizontal: Spacing.md,
-    paddingTop:        4,
-    paddingBottom:     18,
+    paddingTop:        8,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-    gap:               8,
+    gap:               6,
   },
   eventBlockLoading: {
     paddingHorizontal: Spacing.md,
@@ -653,36 +687,37 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
 
-  // Title row — title fills flex, Join button on the right
+  // Title row — title fills flex (single-line ellipsis), Join button on right
   titleRow: {
     flexDirection:  'row',
-    alignItems:     'flex-start',
+    alignItems:     'center',
     justifyContent: 'space-between',
-    gap:            12,
+    gap:            10,
   },
 
-  // Web: event title — large, bold, white (~2.6rem on web)
+  // Compact title — was 40/800/lh46, now 20/700/lh26 (~–50% height).
   eventTitle: {
     flex:          1,
-    fontSize:      40,
-    fontWeight:    '800',
+    fontSize:      FontSizes.lg,   // 20
+    fontWeight:    '700',
     color:         Colors.text,
-    letterSpacing: -0.8,
-    lineHeight:    46,
+    letterSpacing: -0.3,
+    lineHeight:    26,
+    minWidth:      0,              // ensures ellipsis kicks in inside the row
   },
 
-  // Web: Join button — orange outlined pill, fills on "going"
+  // Compact Join button — was 22×12 padding / fontSize 20, now 14×6 / 13.
   joinBtn: {
-    paddingHorizontal: 22,
-    paddingVertical:   12,
+    paddingHorizontal: 14,
+    paddingVertical:   6,
     borderRadius:      999,
-    borderWidth:       2,
+    borderWidth:       1.5,
     borderColor:       Colors.accent,
     backgroundColor:   'transparent',
-    minWidth:          80,
+    minWidth:          74,         // wide enough for "Joined ✓" so layout doesn't shift
+    minHeight:         32,         // ≥32 tap target (touchable area extends)
     alignItems:        'center',
     justifyContent:    'center',
-    marginTop:         6,
     flexShrink:        0,
   },
   joinBtnActive: {
@@ -690,9 +725,10 @@ const styles = StyleSheet.create({
     borderColor:     Colors.accent,
   },
   joinBtnText: {
-    fontSize:   FontSizes.lg,
+    fontSize:   13,
     fontWeight: '700',
     color:      Colors.accent,
+    letterSpacing: 0.1,
   },
   joinBtnTextActive: {
     color: Colors.white,
@@ -703,38 +739,38 @@ const styles = StyleSheet.create({
     borderColor:     Colors.violet,
   },
   editBtnText: {
-    color:     Colors.violet,
-    fontSize:  FontSizes.md,
+    color:    Colors.violet,
+    fontSize: 13,
   },
 
-  // Web: time + participants — single muted line
+  // Time + participants — single tight muted line
   eventMeta: {
-    fontSize:   FontSizes.sm,
+    fontSize:   13,
     color:      Colors.muted,
-    lineHeight: 20,
+    lineHeight: 18,
   },
 
   // "X going" — tappable inline span
   goingLink: {
-    color:          Colors.text,
-    fontWeight:     '600',
-    textDecorationLine: 'underline',
+    color:               Colors.text,
+    fontWeight:          '600',
+    textDecorationLine:  'underline',
     textDecorationStyle: 'dashed',
     textDecorationColor: 'rgba(255,255,255,0.3)',
   },
 
-  // Web: location — orange accent
+  // Address — orange accent, single-line ellipsis
   eventLocation: {
-    fontSize:   FontSizes.sm,
+    fontSize:   13,
     fontWeight: '600',
     color:      Colors.accent,
-    lineHeight: 20,
+    lineHeight: 18,
   },
   eventHost: {
-    fontSize:   FontSizes.sm,
+    fontSize:   12,
     fontWeight: '500',
     color:      Colors.muted,
-    marginTop:  2,
+    lineHeight: 16,
   },
 
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },

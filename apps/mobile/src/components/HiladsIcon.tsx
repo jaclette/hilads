@@ -2,13 +2,16 @@
  * HiladsIcon — faithful View recreation of Logo.jsx SVG.
  *
  * SVG viewBox 64×64, scaled to target size (scale = size/64).
- * Background: rounded rect #D15828 (burnt orange — premium dark tone).
+ * Background: rounded-rect orange gradient — direct port of the web
+ *   .logoMark linear-gradient(135deg, #FF7A3C, #C24A38) (DeleteAccountPage).
  * H letterform: two vertical bars + horizontal crossbar.
  * ¡ letterform: vertical bar + circle dot with pulse animation.
  */
 
 import { useRef, useEffect } from 'react';
 import { View, Animated } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Gradients } from '@/constants';
 
 export function HiladsIcon({ size = 46 }: { size?: number }) {
   const scale   = size / 64;
@@ -27,12 +30,17 @@ export function HiladsIcon({ size = 46 }: { size?: number }) {
 
   return (
     <View style={{
-      width:           size,
-      height:          size,
-      borderRadius:    s(15),
-      backgroundColor: '#D15828',
-      overflow:        'hidden',
+      width:        size,
+      height:       size,
+      borderRadius: s(15),
+      overflow:     'hidden',
     }}>
+      <LinearGradient
+        colors={Gradients.logo.colors}
+        start={Gradients.logo.start}
+        end={Gradients.logo.end}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
       {/* H — left vertical bar (x=9, y=13, w=8, h=38, rx=2.5) */}
       <View style={{
         position: 'absolute', left: s(9), top: s(13),

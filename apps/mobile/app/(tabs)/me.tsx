@@ -36,6 +36,7 @@ import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
 import type { HiladsEvent, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { AppHeader } from '@/features/shell/AppHeader';
+import { PrimaryButton } from '@/components/PrimaryButton';
 
 // ── Constants — must match backend allowed lists ──────────────────────────────
 
@@ -519,9 +520,7 @@ export default function MeScreen() {
             <View style={styles.upgradeCard}>
               <Text style={styles.upgradeTitle}>Make it yours</Text>
               <Text style={styles.upgradeSub}>Save your name. Stay in the loop.</Text>
-              <TouchableOpacity style={styles.upgradePrimary} onPress={() => router.push('/sign-up')} activeOpacity={0.85}>
-                <Text style={styles.upgradePrimaryText}>Create account</Text>
-              </TouchableOpacity>
+              <PrimaryButton label="Create account" onPress={() => router.push('/sign-up')} />
               <Text style={styles.upgradeSignInHint}>Already have an account?</Text>
               <TouchableOpacity style={styles.upgradeSecondary} onPress={() => router.push('/sign-in')} activeOpacity={0.8}>
                 <Text style={styles.upgradeSecondaryText}>Sign in</Text>
@@ -872,17 +871,12 @@ export default function MeScreen() {
       {!isGuest && (
         <View style={[styles.stickyCta, { paddingBottom: Math.max(12, insets.bottom) }]}>
           {saveError ? <Text style={styles.saveError}>{saveError}</Text> : null}
-          <TouchableOpacity
-            style={[styles.ctaBtn, styles.ctaBtnSave]}
+          <PrimaryButton
+            label={saved ? 'Saved ✓' : 'Save profile'}
             onPress={handleSave}
-            activeOpacity={0.85}
-            disabled={saving || photoUploading}
-          >
-            {saving
-              ? <ActivityIndicator color={Colors.white} size="small" />
-              : <Text style={styles.ctaBtnText}>{saved ? 'Saved ✓' : 'Save profile'}</Text>
-            }
-          </TouchableOpacity>
+            disabled={photoUploading}
+            loading={saving}
+          />
           <View style={styles.stickyBottomRow}>
             <TouchableOpacity style={styles.stickySignOut} onPress={handleLogout} activeOpacity={0.6}>
               <Text style={styles.stickySignOutText}>Sign out</Text>
@@ -1373,10 +1367,6 @@ const styles = StyleSheet.create({
   stickyDeleteAccount:  { paddingVertical: 8 },
   stickyDeleteAccountText: { fontSize: FontSizes.xs, fontWeight: '500', color: 'rgba(248,113,113,0.35)' },
   saveError: { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center', marginBottom: Spacing.xs },
-  ctaBtn:    { borderRadius: Radius.lg, paddingVertical: 16, alignItems: 'center', justifyContent: 'center', minHeight: 52 },
-  ctaBtnSave: { backgroundColor: Colors.accent },
-  ctaBtnText: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.white, letterSpacing: -0.2 },
-
   // ── Guest upgrade ─────────────────────────────────────────────────────────
   upgradeCard: {
     margin:          Spacing.md,
@@ -1390,8 +1380,6 @@ const styles = StyleSheet.create({
   upgradeTitle:      { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
   upgradeSub:        { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
   upgradeSignInHint: { fontSize: FontSizes.xs, color: Colors.muted, textAlign: 'center' },
-  upgradePrimary:    { backgroundColor: Colors.accent, borderRadius: Radius.lg, paddingVertical: Spacing.md, alignItems: 'center' },
-  upgradePrimaryText:  { color: Colors.white, fontWeight: '700', fontSize: FontSizes.md },
   upgradeSecondary:  { borderRadius: Radius.lg, paddingVertical: Spacing.sm, alignItems: 'center', borderWidth: 1, borderColor: Colors.border },
   upgradeSecondaryText: { color: Colors.text, fontWeight: '600', fontSize: FontSizes.sm },
 

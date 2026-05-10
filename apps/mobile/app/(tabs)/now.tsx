@@ -12,81 +12,23 @@ import { fetchCanCreateEvent } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
 import type { FeedItem, HiladsEvent } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius, Gradients, Shadows } from '@/constants';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { CreateSheet } from '@/components/CreateSheet';
+import { EventCard } from '@/components/EventCard';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-const EVENT_ICONS: Record<string, string> = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
-};
 
 const CATEGORY_ICONS: Record<string, string> = {
   general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
 };
-
-function formatTime(ts: number): string {
-  return new Date(ts * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
 
 function timeAgo(ts: number): string {
   const diff = Math.floor(Date.now() / 1000 - ts);
   if (diff < 60)   return 'just now';
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   return `${Math.floor(diff / 3600)}h ago`;
-}
-
-
-// ── Event card ────────────────────────────────────────────────────────────────
-
-function EventCard({ event, onPress }: { event: HiladsEvent | FeedItem; onPress: () => void }) {
-  const isRecurring = !!(event.series_id ?? event.recurrence_label);
-  const now    = Date.now() / 1000;
-  const startsAt  = (event as HiladsEvent).starts_at  ?? 0;
-  const expiresAt = (event as HiladsEvent).expires_at ?? 0;
-  const isLive    = startsAt <= now && expiresAt > now;
-  // FeedItem uses event_type; HiladsEvent also has event_type — canonical field
-  const eventType = (event as FeedItem).event_type ?? (event as HiladsEvent).event_type ?? 'other';
-  const icon      = EVENT_ICONS[eventType] ?? '📌';
-  const sourceType = (event as FeedItem).source_type ?? (event as HiladsEvent).source_type ?? 'hilads';
-  const isPublic   = sourceType === 'ticketmaster';
-
-  // Compact layout: Event badge + icon + title on one row; time and recurrence
-  // collapse into a single line separated by ·; location and host stay on
-  // single lines with ellipsis. Each card lands at ~72-90px (5–6 visible per
-  // viewport) while still clearing the 44px tap-target floor.
-  const endsAt = (event as HiladsEvent).ends_at;
-  const host = (event as HiladsEvent).host_nickname;
-  return (
-    <TouchableOpacity style={[styles.card, isRecurring && styles.cardRecurring]} activeOpacity={0.7} onPress={onPress}>
-      <View style={styles.cardTitleRow}>
-        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Event</Text></View>
-        {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>Public</Text></View>}
-        <Text style={styles.cardIcon}>{icon}</Text>
-        <Text style={styles.cardTitle} numberOfLines={1}>{event.title}</Text>
-        {!isPublic && (event.participant_count ?? 0) > 0 ? (
-          <Text style={styles.goingCount}>🙌 {event.participant_count}</Text>
-        ) : null}
-      </View>
-      <Text style={[styles.cardMetaLine, isLive && styles.cardMetaLineLive]} numberOfLines={1}>
-        🕐 {formatTime(startsAt)}{endsAt ? ` → ${formatTime(endsAt)}` : ''}
-        {event.recurrence_label ? `  ·  ↻ ${event.recurrence_label}` : ''}
-      </Text>
-      {(event.location ?? event.venue) ? (
-        <Text style={styles.cardLocation} numberOfLines={1}>
-          📍 {event.location ?? event.venue}
-        </Text>
-      ) : null}
-      {host ? (
-        <Text style={styles.cardHost} numberOfLines={1}>
-          Hosted by {host}
-        </Text>
-      ) : null}
-    </TouchableOpacity>
-  );
 }
 
 // ── Topic card ────────────────────────────────────────────────────────────────
@@ -573,6 +515,12 @@ export default function NowScreen() {
               accessibilityLabel="Create new"
               accessibilityRole="button"
             >
+              <LinearGradient
+                colors={Gradients.primary.colors}
+                start={Gradients.primary.start}
+                end={Gradients.primary.end}
+                style={styles.createFabGradient}
+              />
               <Ionicons name="add" size={28} color={Colors.white} />
             </TouchableOpacity>
           </View>
@@ -670,27 +618,8 @@ const styles = StyleSheet.create({
   // the two-row layout into one.
   list: { paddingBottom: 96, paddingHorizontal: Spacing.md, gap: 6 },
 
-  // ── Shared card base — compacted: padding 10 (was 16), gap 4 (was 8) ──────
-  card: {
-    backgroundColor: Colors.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     Colors.border,
-    padding:         10,
-    gap:             4,
-  },
-
-  // ── Kind badge — Event badge is inline in EventCard's title row; TopicCard
-  // still uses cardKindRow as its own header line so the visual stays.
+  // ── Topic header ──────────────────────────────────────────────────────────
   cardKindRow: { flexDirection: 'row', alignItems: 'center', marginBottom: -2 },
-  kindBadgeEvent: {
-    backgroundColor:   'rgba(255,122,60,0.12)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 7,
-    paddingVertical:   1,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.22)',
-  },
   kindBadgeTopic: {
     backgroundColor:   'rgba(96,165,250,0.12)',
     borderRadius:      Radius.full,
@@ -699,21 +628,12 @@ const styles = StyleSheet.create({
     borderWidth:       1,
     borderColor:       'rgba(96,165,250,0.22)',
   },
-  kindBadgeText:      { fontSize: 9, fontWeight: '700', color: Colors.accent,  letterSpacing: 0.5 },
-  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: '#60a5fa',      letterSpacing: 0.5 },
+  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: '#60a5fa', letterSpacing: 0.5 },
 
-  // ── Event card fields — denser type sizes, single-line meta + location ────
-  cardTitleRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cardIcon:      { fontSize: 16, lineHeight: 18 },
-  cardTitle:     { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 19 },
-  goingCount:    { fontSize: FontSizes.xs, color: Colors.accent, fontWeight: '700', flexShrink: 0 },
-
-  // Replaces timePill + recurBadge (which sat on their own row). Both pieces of
-  // info now ride one ellipsised line — saves ~30px per card.
-  cardMetaLine:     { fontSize: FontSizes.xs, color: Colors.muted, fontWeight: '600' },
-  cardMetaLineLive: { color: Colors.accent },
-  cardLocation:     { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 16 },
-  cardHost:         { fontSize: 11,           color: Colors.muted2, lineHeight: 14 },
+  // ── Topic card shared row types ────────────────────────────────────────────
+  cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  cardIcon:     { fontSize: 16, lineHeight: 18 },
+  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 19 },
 
   // ── Topic card fields ──────────────────────────────────────────────────────
   topicCard: {
@@ -740,18 +660,6 @@ const styles = StyleSheet.create({
   },
   activeNowText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
-  // ── Public badge ───────────────────────────────────────────────────────────
-  publicBadge: {
-    backgroundColor:   'rgba(255,255,255,0.07)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   2,
-    borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
-    marginLeft:        6,
-  },
-  publicBadgeText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
-
   // ── Empty state ────────────────────────────────────────────────────────────
   empty: {
     flex: 1, justifyContent: 'center', alignItems: 'center',
@@ -765,12 +673,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.accent, borderRadius: Radius.full,
   },
   emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
-
-  // ── Recurring event card anchor style ─────────────────────────────────────
-  cardRecurring: {
-    borderColor: 'rgba(184,114,40,0.35)',
-    backgroundColor: 'rgba(184,114,40,0.04)',
-  },
 
   // ── Sticky bottom action block — single-row layout ─────────────────────────
   // Absolute-positioned container pinned above the bottom tab bar. One row:
@@ -810,21 +712,24 @@ const styles = StyleSheet.create({
   upcomingCtaEmoji: { fontSize: 18, lineHeight: 22 },
   upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.accent },
 
-  // Circular + button on the right — opens CreateSheet picker. Same accent
-  // glow recipe used elsewhere on primary creation CTAs.
+  // Circular + button on the right — opens CreateSheet picker. Background is a
+  // 135° orange gradient (LinearGradient absolute child); shadow uses the
+  // shared FAB token for the colored glow.
   createFab: {
-    width:             48,
-    height:            48,
-    borderRadius:      24,
-    backgroundColor:   Colors.accent,
-    alignItems:        'center',
-    justifyContent:    'center',
-    shadowColor:       Colors.accent,
-    shadowOffset:      { width: 0, height: 4 },
-    shadowOpacity:     0.35,
-    shadowRadius:      12,
-    elevation:         6,
-    flexShrink:        0,
+    width:           48,
+    height:          48,
+    borderRadius:    24,
+    alignItems:      'center',
+    justifyContent:  'center',
+    overflow:        'hidden',
+    flexShrink:      0,
+    ...Shadows.fab,
+    shadowRadius:    12,   // smaller surface than the in-chat send FAB → tighter glow
+    shadowOpacity:   0.35,
+  },
+  createFabGradient: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 24,
   },
 
   // Centered CTA rendered inside the Pulses filter's empty state (web parity).

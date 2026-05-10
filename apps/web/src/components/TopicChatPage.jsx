@@ -3,6 +3,7 @@ import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicR
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
+import IconPlus from './IconPlus'
 
 const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 const MODE_META  = { local: { emoji: '🌍', label: 'Local' }, exploring: { emoji: '🧭', label: 'Exploring' } }
@@ -431,11 +432,12 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         <button
           type="button"
           className="vibe-btn"
-          title="Share something"
+          aria-label="Add attachment"
+          title="Add attachment"
           disabled={uploading || sending || spotLoading}
           onClick={() => setShowShareSheet(true)}
         >
-          {uploading || spotLoading ? <span className="upload-spinner" /> : '✨'}
+          {uploading || spotLoading ? <span className="upload-spinner" /> : <IconPlus />}
         </button>
         <input
           ref={inputRef}

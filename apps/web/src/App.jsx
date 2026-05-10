@@ -32,6 +32,7 @@ import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
 import AppPromoBanner from './components/AppPromoBanner'
 import AppPromoInterstitial from './components/AppPromoInterstitial'
+import IconPlus from './components/IconPlus'
 import ShareActionSheet from './components/ShareActionSheet'
 import LocationPicker from './components/LocationPicker'
 import ReactionBurstLayer from './components/ReactionBurstLayer'
@@ -1268,6 +1269,13 @@ export default function App() {
   //   This drives the sticky-bottom behavior in useLayoutEffect([feed]) above.
   // - Fires loadOlderMessages when the user scrolls within 200 px of the top.
   // Re-attaches whenever status changes so the ref is always populated.
+  // Collapse-on-scroll for the event header. The container is shared with the
+  // city channel scroll, but the .event-header--collapsed class only takes
+  // effect when the event-header is rendered (event mode), so it's safe to
+  // toggle unconditionally.
+  const [eventHeaderCollapsed, setEventHeaderCollapsed] = useState(false)
+  const eventHeaderCollapsedRef = useRef(false)
+
   useEffect(() => {
     const container = messagesContainerRef.current
     if (!container) return
@@ -1275,6 +1283,15 @@ export default function App() {
     const handleScroll = () => {
       const dist = container.scrollHeight - container.scrollTop - container.clientHeight
       isNearBottomRef.current = dist < 150
+
+      // Toggle the event-header collapsed class once the user scrolls past a
+      // small threshold. Using a ref-guarded setState avoids re-renders on
+      // every scroll tick.
+      const shouldCollapse = container.scrollTop > 30
+      if (shouldCollapse !== eventHeaderCollapsedRef.current) {
+        eventHeaderCollapsedRef.current = shouldCollapse
+        setEventHeaderCollapsed(shouldCollapse)
+      }
 
       if (container.scrollTop < 200 && !loadingOlderRef.current && hasMoreMessagesRef.current) {
         loadOlderMessages()
@@ -3008,7 +3025,7 @@ export default function App() {
         <header className="chat-header">
           {activeEvent ? (
             /* Event mode */
-            <div className="event-header">
+            <div className={`event-header${eventHeaderCollapsed ? ' event-header--collapsed' : ''}`}>
               <div className="event-header-top">
                 <BackButton onClick={handleBackToCity} label={city} className="event-back-btn" ariaLabel={`Back to ${city}`} />
                 <div className="event-header-actions">
@@ -3052,21 +3069,21 @@ export default function App() {
                   <span className="event-creator-badge">👑 Your event</span>
                 )}
                 <div className="event-header-title-row">
-                  <span className="event-header-title">{activeEvent.title}</span>
+                  <h1 className="event-header-title" title={activeEvent.title}>{activeEvent.title}</h1>
                   {isMyEvent ? (
                     <button
                       className={`event-join-btn event-join-btn--edit${showEditPulse ? ' event-join-btn--pulse' : ''}`}
                       onClick={() => setShowEditEvent(true)}
                       onAnimationEnd={() => setShowEditPulse(false)}
                     >
-                      ✏️ Edit event
+                      ✏️ Edit
                     </button>
                   ) : (
                     <button
                       className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
                       onClick={() => handleToggleParticipation(activeEvent.id)}
                     >
-                      {participatedEvents.has(activeEvent.id) ? 'Going' : 'Join'}
+                      {participatedEvents.has(activeEvent.id) ? 'Joined ✓' : 'Join'}
                     </button>
                   )}
                 </div>
@@ -3608,11 +3625,12 @@ export default function App() {
           <button
             type="button"
             className="vibe-btn"
-            title="Share something"
+            aria-label="Add attachment"
+            title="Add attachment"
             disabled={uploading || sending || spotLoading}
             onClick={() => setShowShareSheet(true)}
           >
-            {uploading || spotLoading ? <span className="upload-spinner" /> : '✨'}
+            {uploading || spotLoading ? <span className="upload-spinner" /> : <IconPlus />}
           </button>
           <div className="emoji-picker-wrap">
             <button
