@@ -1162,15 +1162,19 @@ html, body, #root {
     font-size: 0.82rem;
   }
 
-  .input-bar {
-    gap: 10px;
-    padding: 14px 16px;
-    padding-bottom: 14px;
+  /* Push the message composer above the fixed .bottom-nav on every chat
+     surface that lives directly inside .screen (city channel + event chat).
+     Replaces the old `.input-bar` margin hack that broke when the composer
+     was unified into <MessageComposer> using .dm-composer styles. */
+  .dm-composer {
     margin-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
-    border-top: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow: 0 -8px 26px rgba(0, 0, 0, 0.42);
-    background:
-      linear-gradient(180deg, rgba(30, 24, 18, 0.94), rgba(22, 18, 16, 0.98));
+  }
+
+  /* DM (and any other screen wrapped in .full-page) already gets its own
+     padding-bottom to clear the bottom-nav — opt out so the composer doesn't
+     double-pad and float halfway up the screen. */
+  .full-page .dm-composer {
+    margin-bottom: 0;
   }
 }
 
