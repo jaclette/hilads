@@ -76,6 +76,11 @@ function ActivePill() {
   // tab edges. iOS keeps the real colored shadow via styles.tabActiveShadow;
   // Android conveys the active state through the gradient pill + accent icon
   // + bold orange label.
+  //
+  // The web's `inset 0 1px 0 rgba(255,255,255,0.08)` top highlight does NOT
+  // translate to RN — a 1px white View renders as a crisp visible line on
+  // Android (no anti-aliasing), reading as an unwanted divider above the
+  // active tab. Skipped here.
   return (
     <LinearGradient
       pointerEvents="none"
@@ -83,9 +88,7 @@ function ActivePill() {
       start={Gradients.activePill.start}
       end={Gradients.activePill.end}
       style={styles.pill}
-    >
-      <View style={styles.pillHairline} pointerEvents="none" />
-    </LinearGradient>
+    />
   );
 }
 
@@ -204,17 +207,6 @@ const styles = StyleSheet.create({
     right:    4,
     bottom:   2,
     borderRadius: 18,
-  },
-  pillHairline: {
-    // Fakes the web's `inset 0 1px 0 rgba(255,255,255,0.08)`.
-    position: 'absolute',
-    top:      0,
-    left:     0,
-    right:    0,
-    height:   1,
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderTopLeftRadius:  18,
-    borderTopRightRadius: 18,
   },
   // ── Icon ───────────────────────────────────────────────────────────────────
   iconWrap: {

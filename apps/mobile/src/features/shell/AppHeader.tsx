@@ -142,14 +142,12 @@ export function AppHeader({ rightExtra }: Props) {
 // sections below this component (city row, chips) which sit on the same rhythm.
 const styles = StyleSheet.create({
   // Header surface strip. The radial orange ellipse rendered by
-  // <HeaderRadialGlow /> matches the web `.chat-header` background — it sits
-  // behind topBar via absoluteFillObject. The bg2 fallback covers any rounding
-  // gap. overflow: 'hidden' is intentional: the SVG should not bleed past the
-  // header into the screen content below.
+  // <HeaderRadialGlow /> sits behind topBar via absoluteFillObject. No
+  // overflow:hidden here — the SVG is bounded to its own Rect (100% × 100%)
+  // so it can't bleed, and clipping the wrapper would clip the bell's
+  // notification badge (positioned top:-5/right:-5 to overflow the icon).
   glowWrap: {
     backgroundColor: Colors.bg2,
-    overflow:        'hidden',
-    position:        'relative',
   },
   topBar: {
     flexDirection: 'row',
