@@ -630,8 +630,10 @@ export default function ChatTab() {
               activeOpacity={0.65}
               hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
               onPress={async () => {
-                const url = `${BASE_URL}/city/${city.slug}`;
-                await Share.share({ title: `Who's in ${city.name} right now | Hilads`, url, message: `Who's in ${city.name} right now | Hilads ${url}` });
+                const url     = `${BASE_URL}/city/${city.slug}`;
+                const title   = `What's happening in ${city.name} right now`;
+                const message = `See who's around in ${city.name} tonight on Hilads. Real-time city activity, no sign-up.\n${url}`;
+                await Share.share({ title, url, message });
               }}
               accessibilityLabel="Share city"
             >

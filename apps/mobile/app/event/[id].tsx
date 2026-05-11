@@ -98,7 +98,12 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
 
 export default function EventDetailScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: routeParam } = useLocalSearchParams<{ id: string }>();
+  // The route param can be a slug (`cong-ca-phe-2e617620a3f3b6f7`) or a bare
+  // hex ID. Backend, WS rooms, analytics all key off the canonical hex.
+  // `id` everywhere below is the hex; only the URL bar / share path uses slug.
+  const id = (routeParam || '').match(/([a-f0-9]{16})$/i)?.[1]?.toLowerCase()
+            ?? routeParam;
   const { identity, sessionId, city, account, setActiveEventId, removeEventChatPreview, setUnreadDMs, eventChatPreviews } = useApp(); // sessionId still used for WS joinEvent
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
@@ -184,9 +189,23 @@ export default function EventDetailScreen() {
 
   async function handleShare() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const url = buildEventUrl(id);
+    // Slug URL when we know the event title (better in chat threads + SEO);
+    // hex short link when the event hasn't loaded yet.
+    const url = event ? buildEventUrl(event) : buildEventUrl(id);
     const title = event?.title ?? 'Check out this event on Hilads';
-    await Share.share({ title, url, message: `${title} ${url}` });
+
+    // Compose chat-thread-friendly text — what shows up in iMessage / WhatsApp /
+    // Telegram pre-fill. Falls back to title-only when event details are absent.
+    let message = title;
+    if (event) {
+      const where = event.location ? ` at ${event.location}` : '';
+      const when  = ` — ${formatTime(event.starts_at)}${event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}`;
+      const who   = (event.participant_count ?? 0) > 0
+        ? ` ${event.participant_count} going.`
+        : '';
+      message = `${title}${where}${when}.${who} See who's there on Hilads.`;
+    }
+    await Share.share({ title, url, message: `${message}\n${url}` });
   }
 
   // Refetch participants after join/leave toggle

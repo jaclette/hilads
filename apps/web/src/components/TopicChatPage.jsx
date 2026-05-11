@@ -53,8 +53,11 @@ function formatTime(ts) {
 async function shareTopic(title, topicId) {
   const url = `${window.location.origin}/t/${topicId}`
   const shareTitle = `💬 ${title}`
+  // Chat-thread pre-fill — matches the event/city pattern: short, direct,
+  // ends with a CTA. WhatsApp / Telegram show this above the URL preview.
+  const shareText  = `New conversation: "${title}" — jump in on Hilads.`
   if (navigator.share) {
-    try { await navigator.share({ title: shareTitle, url }); return null } catch (_) { return null }
+    try { await navigator.share({ title: shareTitle, text: shareText, url }); return null } catch (_) { return null }
   }
   if (navigator.clipboard?.writeText) {
     try { await navigator.clipboard.writeText(url); return 'copied' } catch (_) {}

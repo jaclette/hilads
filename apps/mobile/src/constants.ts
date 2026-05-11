@@ -13,8 +13,17 @@ export const BASE_URL =
 
 // ── Link builders ─────────────────────────────────────────────────────────────
 
-export function buildEventUrl(eventId: string): string {
-  return `${BASE_URL}/e/${eventId}`;
+import { eventSlug } from '@/lib/eventSlug';
+
+/**
+ * Build a shareable event URL. When `event` is the full object (with `title`),
+ * emit the slug form `/event/<slug>-<hex>` — readable in chat threads, ranks
+ * better. When only an ID is available, fall back to the short link `/e/<hex>`
+ * which the prerender layer canonicalises via <link rel="canonical">.
+ */
+export function buildEventUrl(event: { id: string; title?: string } | string): string {
+  if (typeof event === 'string') return `${BASE_URL}/e/${event}`;
+  return `${BASE_URL}/event/${eventSlug(event)}`;
 }
 
 // ── Env diagnostics — unconditional, fires in both dev and production APK ─────

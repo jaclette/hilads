@@ -35,9 +35,13 @@ export default function TopicChatScreen() {
 
   async function handleShare() {
     if (!id) return;
-    const url = `https://hilads.live/t/${id}`;
+    const url   = `https://hilads.live/t/${id}`;
+    const title = topic?.title ? `💬 ${topic.title}` : 'Conversation on Hilads';
+    const message = topic?.title
+      ? `New conversation: "${topic.title}" — jump in on Hilads.\n${url}`
+      : `Jump into the conversation on Hilads.\n${url}`;
     try {
-      await Share.share({ message: topic?.title ?? url, url });
+      await Share.share({ title, url, message });
       setShared(true);
       setTimeout(() => setShared(false), 2000);
     } catch {

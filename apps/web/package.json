@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@sentry/react": "^10.47.0",
+    "@vercel/og": "^0.11.1",
     "leaflet": "^1.9.4",
     "posthog-js": "^1.364.4",
     "react": "^18.3.1",

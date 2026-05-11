@@ -88,12 +88,15 @@ export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
 }
 
 export async function fetchEventById(
-  eventId: string,
+  eventIdOrSlug: string,
   guestId?: string,
 ): Promise<{ event: HiladsEvent; cityName: string; country: string; timezone: string } | null> {
+  // Accept hex IDs or slug-with-trailing-hex (M4). Backend only knows hex.
+  const m = String(eventIdOrSlug || '').match(/([a-f0-9]{16})$/i);
+  const hex = m ? m[1].toLowerCase() : eventIdOrSlug;
   try {
     return await api.get(
-      `/events/${encodeURIComponent(eventId)}`,
+      `/events/${encodeURIComponent(hex)}`,
       guestId ? { params: { guestId } } : undefined,
     );
   } catch {

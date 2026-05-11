@@ -5,7 +5,7 @@ import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
-import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime } from './eventUtils'
+import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug } from './eventUtils'
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
@@ -46,7 +46,10 @@ function parseDeepLink() {
   const path = window.location.pathname
   const params = new URLSearchParams(window.location.search)
   const cityMatch      = path.match(/^\/city\/([^/]+)$/)
-  const eventMatch     = path.match(/^\/event\/([a-f0-9]{16})$/)
+  // /event/:slug accepts both legacy bare 16-hex IDs AND slug-with-trailing-hex
+  // formats — e.g. /event/cong-ca-phe-2e617620a3f3b6f7. The trailing 16 hex
+  // chars are always extracted as the canonical ID via extractEventHex().
+  const eventMatch     = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
@@ -103,9 +106,35 @@ function setPageMeta(title, description) {
   ogUrl.content = window.location.href
 }
 
-async function share(title, url) {
+/**
+ * Share helper. Accepts a rich payload so chat-thread previews carry
+ * surface-specific copy (event time, city activity, etc.) instead of just a
+ * generic page title.
+ *
+ * navigator.share renders { title, text, url } depending on platform:
+ *   - WhatsApp / Telegram / Slack: shows `text`, then a separate URL preview
+ *     (preview pulled from OG tags by the recipient client).
+ *   - Twitter/X: pre-fills the tweet field with `text` + url.
+ *   - Android Chrome share sheet: shows all 3, app picks what to use.
+ *   - iOS Safari: prefers `text` for compose fields, ignores `title`.
+ *
+ * Prefer a `text` ≤ 200 chars so it survives WhatsApp's preview clipping.
+ */
+/**
+ * Build the share payload for a city. Centralised so every "Share city" button
+ * (header chip, switch-city row, "Invite friends" feed prompt) renders the
+ * same chat-thread-friendly copy.
+ */
+function composeCityShare(cityName) {
+  const url   = `${window.location.origin}/city/${cityToSlug(cityName)}`
+  const title = `What's happening in ${cityName} right now`
+  const text  = `See who's around in ${cityName} tonight on Hilads. Real-time city activity, no sign-up.`
+  return { title, text, url }
+}
+
+async function share({ title, text, url }) {
   if (navigator.share) {
-    try { await navigator.share({ title, url }); return } catch (_) { /* user cancelled */ }
+    try { await navigator.share({ title, text, url }); return } catch (_) { /* user cancelled */ }
   }
   // navigator.clipboard requires HTTPS + user gesture; unavailable on http or older Safari
   if (navigator.clipboard?.writeText) {
@@ -130,11 +159,22 @@ async function share(title, url) {
 
 // ── Share vibe button ─────────────────────────────────────────────────────────
 
-function ShareVibeBtn({ eventId, title }) {
+function ShareVibeBtn({ eventId, title, city, timezone, startsAt, going }) {
   const [copied, setCopied] = useState(false)
   async function handleShare() {
-    const url = `${window.location.origin}/e/${eventId}`
-    const result = await share(title, url)
+    // Slug URL — readable in chat threads, ranks better in SERPs, 301-resolves
+    // for any legacy hex-only consumer.
+    const slug = eventSlug({ id: eventId, title })
+    const url = `${window.location.origin}/event/${slug}`
+
+    // Compose share text — what shows up in the chat field on WhatsApp /
+    // Telegram / X. Falls back to title-only when event details are absent.
+    const where = city ? ` at ${city}` : ''
+    const when  = startsAt && timezone ? ` — ${getTimeLabel(startsAt, timezone)}` : ''
+    const who   = (going ?? 0) > 0 ? ` ${going} going.` : ''
+    const text  = `${title}${where}${when}.${who} See who's there on Hilads.`
+
+    const result = await share({ title: `${title}${where}`, text, url })
     if (result === 'copied') {
       setCopied(true)
       setTimeout(() => setCopied(false), 2200)
@@ -992,9 +1032,9 @@ export default function App() {
       if (path === '/conversations') { setShowConversations(true); return }
       if (path === '/notifications')  { setShowNotifications(true); return }
       if (path === '/friend-requests') { setShowFriendRequests(true); return }
-      const eventMatch = path.match(/^\/event\/([a-f0-9]{16})$/)
+      const eventMatch = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
       if (eventMatch) {
-        const eid = eventMatch[1]
+        const eid = eventMatch[1].toLowerCase()
         const ev  = events.find(e => e.id === eid) ?? cityEvents.find(e => e.id === eid)
         if (ev) handleSelectEvent(ev)
         else    setShowEventDrawer(true)
@@ -2188,7 +2228,7 @@ export default function App() {
           {withShare && city && (
             <button
               className="header-icon-btn header-icon-btn--sm"
-              onClick={() => share(`Who's in ${city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(city)}`)}
+              onClick={() => share(composeCityShare(city))}
               aria-label="Share city"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
@@ -2445,7 +2485,7 @@ export default function App() {
       setShowEditPulse(false)
     }
     knownIdsRef.current = new Set()
-    pushUrl(`/event/${eid}`)
+    pushUrl(`/event/${eventSlug(event)}`)
     setPageMeta(`${event.title} is happening now | Hilads`, `Join ${event.title} on Hilads — see who's there and what's happening.`)
 
     // Initial fetch for event messages; subsequent messages arrive via WebSocket.
@@ -3027,7 +3067,14 @@ export default function App() {
               <div className="event-header-top">
                 <BackButton onClick={handleBackToCity} label={city} className="event-back-btn" ariaLabel={`Back to ${city}`} />
                 <div className="event-header-actions">
-                  <ShareVibeBtn eventId={activeEvent.id} title={activeEvent.title} />
+                  <ShareVibeBtn
+                    eventId={activeEvent.id}
+                    title={activeEvent.title}
+                    city={city}
+                    timezone={cityTimezone}
+                    startsAt={activeEvent.starts_at}
+                    going={eventParticipants[activeEvent.id]}
+                  />
                   {/* Edit entry point moved to title row for better visibility */}
                   {account && (
                     <button
@@ -3147,7 +3194,7 @@ export default function App() {
                       {city && (
                         <button
                           className="header-icon-btn"
-                          onClick={() => share(`Who's in ${city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(city)}`)}
+                          onClick={() => share(composeCityShare(city))}
                           title="Share city"
                           aria-label="Share city"
                         >
@@ -3300,7 +3347,7 @@ export default function App() {
                       className="feed-welcome-btn feed-welcome-btn--secondary"
                       onClick={() => {
                         setFeed(prev => prev.filter(f => f.id !== item.id))
-                        share(`Who's in ${item.city} right now | Hilads`, `${window.location.origin}/city/${cityToSlug(item.city)}`)
+                        share(composeCityShare(item.city))
                       }}
                     >Invite friends</button>
                   </div>

@@ -51,6 +51,9 @@
     { "source": "/privacy",              "destination": "/privacy.html" },
     { "source": "/child-safety",         "destination": "/child-safety.html" },
     { "source": "/.well-known/(.*)",     "destination": "/.well-known/$1" },
+    { "source": "/event/:id",            "destination": "/api/prerender?type=event&id=:id" },
+    { "source": "/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1" },
+    { "source": "/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug" },
     { "source": "/(.*)",                 "destination": "/index.html" }
   ]
 }

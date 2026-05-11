@@ -1,3 +1,44 @@
+/**
+ * Build a slug-style event URL path component from an event object.
+ *
+ *   eventSlug({ id: 'abc...', title: 'Công Cà Phê' }) → 'cong-ca-phe-abc...'
+ *
+ * The full 16-hex ID is always appended verbatim so any consumer can recover
+ * the canonical ID with `extractEventHex(slug)`. Title-only slugs would need
+ * uniqueness handling on the backend; appending the ID side-steps that
+ * entirely without losing the keyword-in-URL SEO signal.
+ *
+ * Title is truncated at 60 chars to keep URLs reasonable in chat threads.
+ */
+export function eventSlug(event) {
+  if (!event?.id) return ''
+  const titleSlug = String(event.title || '')
+    // NFD decomposes accented chars (ê → e + ◌̂) so we can strip combining
+    // marks and end up with plain Latin slugs for Vietnamese / Spanish /
+    // German titles. Without this step "Công Cà Phê" → "c-ng-c-ph" (broken).
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/g, '')
+  return titleSlug ? `${titleSlug}-${event.id}` : event.id
+}
+
+/**
+ * Extract the canonical 16-hex event ID from a slug URL path component.
+ * Accepts either a bare hex ID or a slug ending in 16 hex chars.
+ *
+ *   extractEventHex('cong-ca-phe-2e617620a3f3b6f7') → '2e617620a3f3b6f7'
+ *   extractEventHex('2e617620a3f3b6f7')             → '2e617620a3f3b6f7'
+ *   extractEventHex('garbage')                      → null
+ */
+export function extractEventHex(input) {
+  const m = String(input || '').match(/([a-f0-9]{16})$/i)
+  return m ? m[1].toLowerCase() : null
+}
+
 export function formatTime(unixTs, timezone) {
   return new Date(unixTs * 1000).toLocaleTimeString('en-US', {
     timeZone: timezone,
