@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Hilads. Feel local. Anywhere.">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="80%" fx="50%" fy="-10%">
+      <stop offset="0%"   stop-color="#C24A38" stop-opacity="0.18"/>
+      <stop offset="60%"  stop-color="#0d0b09" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="markGrad" x1="5%" y1="0%" x2="95%" y2="100%">
+      <stop offset="0%"   stop-color="#C24A38"/>
+      <stop offset="44%"  stop-color="#B85530"/>
+      <stop offset="100%" stop-color="#B87228"/>
+    </linearGradient>
+    <linearGradient id="wordmarkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#C24A38"/>
+      <stop offset="100%" stop-color="#B87228"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#0d0b09"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <g transform="translate(80, 80)">
+    <rect width="96" height="96" rx="22" fill="url(#markGrad)"/>
+    <rect x="13.5" y="19.5" width="12" height="57" rx="3.75" fill="white"/>
+    <rect x="39"   y="19.5" width="12" height="57" rx="3.75" fill="white"/>
+    <rect x="25.5" y="42"   width="13.5" height="9" rx="3"   fill="white"/>
+    <rect x="64.5" y="37.5" width="12" height="39" rx="3.75" fill="white"/>
+    <circle cx="70.5" cy="22.5" r="8.25" fill="white"/>
+  </g>
+
+  <text x="80" y="370"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif"
+        font-size="160" font-weight="800" letter-spacing="-4"
+        fill="url(#wordmarkGrad)">Hilads</text>
+
+  <text x="80" y="448"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif"
+        font-size="46" font-weight="600" letter-spacing="-0.5"
+        fill="#ede9e5">Feel local. Anywhere.</text>
+
+  <text x="80" y="510"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif"
+        font-size="32" font-weight="500"
+        fill="#968880">See who's around. Join what's happening now.</text>
+
+  <g transform="translate(80, 540)">
+    <rect width="285" height="48" rx="24"
+          fill="rgba(255,122,60,0.10)" stroke="rgba(255,122,60,0.40)" stroke-width="1.5"/>
+    <circle cx="26" cy="24" r="6" fill="#3DDC84"/>
+    <circle cx="26" cy="24" r="9" fill="none" stroke="#3DDC84" stroke-opacity="0.35" stroke-width="1.5"/>
+    <text x="48" y="32"
+          font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif"
+          font-size="20" font-weight="700" letter-spacing="0.5"
+          fill="#FF7A3C">REAL-TIME · NO SIGN-UP</text>
+  </g>
+
+  <text x="1120" y="585" text-anchor="end"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Helvetica, Arial, sans-serif"
+        font-size="22" font-weight="500"
+        fill="#635650">hilads.live</text>
+</svg>

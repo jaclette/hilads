@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Hilads: Feel Local, Anywhere</title>
-    <meta name="description" content="Meet locals and explorers in your city. Discover real-time events near you and join what's happening now. No sign-up needed." />
+    <title>Hilads · Feel local. Anywhere.</title>
+    <meta name="description" content="See who's around right now. Join what's happening in your city tonight. Real-time, no sign-up." />
     <meta name="theme-color" content="#161210" />
 
     <!-- iOS PWA -->
@@ -13,20 +13,28 @@
     <meta name="apple-mobile-web-app-title" content="Hilads" />
     <link rel="apple-touch-icon" href="/logo/icon.svg" />
 
-    <!-- Open Graph -->
-    <meta property="og:type"        content="website" />
-    <meta property="og:site_name"   content="Hilads" />
-    <meta property="og:title"       content="Hilads: Feel Local, Anywhere" />
-    <meta property="og:description" content="Meet locals and explorers in your city. Discover real-time events near you and join what's happening now. No sign-up needed." />
-    <meta property="og:image"       content="/logo/icon.svg" />
+    <!-- Open Graph — absolute URLs required by FB, LinkedIn, WhatsApp; image must be PNG/JPG (SVG silently dropped by half the crawlers). The 1200×630 PNG is the universal social-card spec. -->
+    <meta property="og:type"          content="website" />
+    <meta property="og:site_name"     content="Hilads" />
+    <meta property="og:url"           content="https://hilads.live/" />
+    <meta property="og:title"         content="Hilads · Feel local. Anywhere." />
+    <meta property="og:description"   content="See who's around right now. Join what's happening in your city tonight. Real-time, no sign-up." />
+    <meta property="og:image"         content="https://hilads.live/og/og-default.png" />
+    <meta property="og:image:secure_url" content="https://hilads.live/og/og-default.png" />
+    <meta property="og:image:type"    content="image/png" />
+    <meta property="og:image:width"   content="1200" />
+    <meta property="og:image:height"  content="630" />
+    <meta property="og:image:alt"     content="Hilads — feel local, anywhere. Real-time city activity, no sign-up." />
+    <meta property="og:locale"        content="en_US" />
 
-    <!-- Twitter / X card -->
-    <meta name="twitter:card"        content="summary" />
-    <meta name="twitter:title"       content="Hilads: Feel Local, Anywhere" />
-    <meta name="twitter:description" content="Meet locals and explorers in your city. Discover real-time events near you and join what's happening now. No sign-up needed." />
-    <meta name="twitter:image"       content="/logo/icon.svg" />
+    <!-- Twitter / X card. summary_large_image renders the full 1200×630 banner instead of a tiny avatar. -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Hilads · Feel local. Anywhere." />
+    <meta name="twitter:description" content="See who's around right now. Join what's happening in your city tonight. Real-time, no sign-up." />
+    <meta name="twitter:image"       content="https://hilads.live/og/og-default.png" />
+    <meta name="twitter:image:alt"   content="Hilads — feel local, anywhere." />
 
-    <link rel="canonical" href="https://hilads.live" />
+    <link rel="canonical" href="https://hilads.live/" />
     <link rel="icon" type="image/svg+xml" href="/logo/icon.svg">
     <link rel="manifest" href="/manifest.webmanifest">
   </head>
