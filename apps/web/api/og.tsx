@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
- * Vercel Edge function — dynamic OG image generation.
+ * Vercel serverless function — dynamic OG image generation.
  *
  *   GET /api/og?type=event&id=<16-hex>
  *   GET /api/og?type=city&slug=<kebab>
@@ -9,10 +9,11 @@
  * as the `og:image` for shared event / city URLs. WhatsApp, iMessage, Twitter,
  * Slack, etc. fetch this URL directly when rendering link previews.
  *
- * Why edge runtime?
- *   - Cold start ~50 ms (Node serverless is ~500 ms).
- *   - Built for compute-bound responses like image generation.
- *   - @vercel/og ships its own font (Geist) so no extra bundling.
+ * Runs on Node runtime (not Edge): Vercel's Edge bundler currently rejects
+ * @vercel/og imports outside Next.js projects ("unsupported modules" build
+ * error). Node serverless is well-supported and the @vercel/og Node entry
+ * just works. Cold start is ~500 ms vs Edge's ~50 ms — mitigated by the
+ * aggressive CDN cache TTL set below.
  *
  * Cache strategy
  *   - Events: s-maxage 5 min — attendee counts churn.
@@ -24,8 +25,6 @@
  */
 
 import { ImageResponse } from '@vercel/og';
-
-export const config = { runtime: 'edge' };
 
 const API_BASE  = 'https://api.hilads.live';
 const SITE_BASE = 'https://hilads.live';
@@ -330,14 +329,13 @@ function FallbackCard() {
 }
 
 // ── Handler ───────────────────────────────────────────────────────────────────
+// Node serverless signature (req, res). `req.query` is populated by Vercel's
+// runtime; `res` is a Node ServerResponse-shaped object.
 
-export default async function handler(req: Request) {
-  const url   = new URL(req.url);
-  const type  = url.searchParams.get('type');
-  const id    = url.searchParams.get('id');
-  const slug  = url.searchParams.get('slug');
+export default async function handler(req: any, res: any) {
+  const { type, id, slug } = (req.query || {}) as Record<string, string | undefined>;
 
-  let element;
+  let element: any;
   let cacheMaxAge = 60;
 
   try {
@@ -354,7 +352,7 @@ export default async function handler(req: Request) {
               cityName={data.cityName}
               country={data.country}
               timezone={data.timezone}
-              eventPath={`/event/${hex}`}   // bare hex in footer is fine for the OG card
+              eventPath={`/event/${hex}`}
             />
           );
           cacheMaxAge = 300;       // 5 min — attendee counts churn
@@ -363,7 +361,6 @@ export default async function handler(req: Request) {
     } else if (type === 'city' && slug && /^[a-z0-9-]{1,80}$/.test(slug)) {
       const cityData = await fetchJson(`${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`);
       if (cityData?.city) {
-        // Best-effort: pull event + presence counts for the stat tiles.
         let eventCount  = 0;
         let onlineCount = 0;
         if (cityData.channelId) {
@@ -395,11 +392,13 @@ export default async function handler(req: Request) {
     cacheMaxAge = 300;
   }
 
-  return new ImageResponse(element, {
-    width:  W,
-    height: H,
-    headers: {
-      'Cache-Control': `public, max-age=0, s-maxage=${cacheMaxAge}, stale-while-revalidate=86400`,
-    },
-  });
+  // ImageResponse returns a Web Response with a streaming body. For Node
+  // runtime we read the bytes once and send them via res.end(Buffer).
+  const ir  = new ImageResponse(element, { width: W, height: H });
+  const buf = Buffer.from(await ir.arrayBuffer());
+
+  res.statusCode = 200;
+  res.setHeader('Content-Type',  'image/png');
+  res.setHeader('Cache-Control', `public, max-age=0, s-maxage=${cacheMaxAge}, stale-while-revalidate=86400`);
+  res.end(buf);
 }
