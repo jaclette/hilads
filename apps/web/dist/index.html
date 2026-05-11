@@ -44,6 +44,14 @@
     <!-- Stub for Zalo in-app browser SDK — prevents ReferenceError when zaloJSV2
          is accessed by Zalo's injected script before the SDK fully initialises. -->
     <script>window.zaloJSV2 = window.zaloJSV2 || {};</script>
-    <div id="root"></div>
+    <div id="root">
+      <!-- SEO/no-JS discovery: crawlers and screen readers without JS see a
+           link into the cities index. The SPA replaces this content on mount,
+           so JS users never see it. -->
+      <noscript>
+        <p>Hilads — see live activity in cities worldwide.</p>
+        <p><a href="/cities">Browse all Hilads cities</a></p>
+      </noscript>
+    </div>
   </body>
 </html>

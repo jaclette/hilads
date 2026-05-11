@@ -25,9 +25,6 @@
  * Cities: s-maxage 1h,  SWR 24h — city metadata is more stable.
  */
 
-import { readFile } from 'node:fs/promises'
-import { join }     from 'node:path'
-
 const API_BASE  = process.env.HILADS_API_BASE || 'https://api.hilads.live'
 const SITE_BASE = process.env.HILADS_SITE_BASE || 'https://hilads.live'
 
@@ -35,21 +32,45 @@ const SITE_BASE = process.env.HILADS_SITE_BASE || 'https://hilads.live'
 // its 10s Vercel timeout. If the budget is exhausted we fall through to the
 // unmodified shell.
 const API_TIMEOUT_MS = 1500
+const SHELL_TIMEOUT_MS = 2500
 
 // ── Shell loader (cached per cold start) ──────────────────────────────────────
+// Why HTTP fetch and not fs.readFile?
+//   Vercel serverless function bundles do NOT include static build output
+//   (dist/) by default — only the function file + its node_modules. We could
+//   fix that with `functions[*].includeFiles` in vercel.json, but fetching
+//   the shell from the same origin's CDN is simpler, deployment-topology
+//   independent, and adds only one HTTP call per cold start (cached after).
 
 let shellCache = null
-async function getShell() {
+async function getShell(req) {
   if (shellCache) return shellCache
-  // Vercel deploys with the project root as the cwd; dist/index.html is the
-  // built SPA shell from `vite build`.
+
+  // Vercel populates VERCEL_URL with the current deployment's host; falls
+  // back to the inbound request's headers if running outside Vercel.
+  const host  = process.env.VERCEL_URL
+              || req.headers['x-forwarded-host']
+              || req.headers.host
+              || 'hilads.live'
+  const proto = req.headers['x-forwarded-proto']
+              || (host.startsWith('localhost') ? 'http' : 'https')
+  const url   = `${proto}://${host}/index.html`
+
+  const ctrl = new AbortController()
+  const t = setTimeout(() => ctrl.abort(), SHELL_TIMEOUT_MS)
   try {
-    const path = join(process.cwd(), 'dist', 'index.html')
-    shellCache = await readFile(path, 'utf-8')
+    const r = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'text/html' } })
+    if (!r.ok) {
+      console.error('[prerender] shell fetch failed:', r.status, url)
+      return null
+    }
+    shellCache = await r.text()
     return shellCache
   } catch (err) {
-    console.error('[prerender] could not read dist/index.html:', err.message)
+    console.error('[prerender] shell fetch error:', err.message, 'url=', url)
     return null
+  } finally {
+    clearTimeout(t)
   }
 }
 
@@ -363,7 +384,7 @@ function injectMeta(shell, meta) {
 // ── Handler ──────────────────────────────────────────────────────────────────
 
 export default async function handler(req, res) {
-  const shell = await getShell()
+  const shell = await getShell(req)
   if (!shell) {
     // No shell on disk — let Vercel serve the static index.html via its CDN.
     res.statusCode = 500

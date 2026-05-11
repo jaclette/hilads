@@ -54,6 +54,7 @@
     { "source": "/event/:id",            "destination": "/api/prerender?type=event&id=:id" },
     { "source": "/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1" },
     { "source": "/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug" },
+    { "source": "/cities",               "destination": "/api/cities-index" },
     { "source": "/(.*)",                 "destination": "/index.html" }
   ]
 }

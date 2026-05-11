@@ -77,6 +77,15 @@ async function main() {
       changefreq: 'daily',
       priority:   '1.0',
     }),
+    // /cities — the dedicated index page (S2). Crawl-graph hub linking out
+    // to every city URL. Slightly lower priority than home but higher than
+    // any individual city.
+    urlEntry({
+      loc:        `${BASE_URL}/cities`,
+      lastmod:    today,
+      changefreq: 'daily',
+      priority:   '0.9',
+    }),
   ]
 
   // De-duplicate by slug (Cities are unique by name in practice, but the API
