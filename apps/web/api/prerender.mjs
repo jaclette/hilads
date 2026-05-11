@@ -25,53 +25,90 @@
  * Cities: s-maxage 1h,  SWR 24h — city metadata is more stable.
  */
 
+import { readFile }      from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
+
 const API_BASE  = process.env.HILADS_API_BASE || 'https://api.hilads.live'
 const SITE_BASE = process.env.HILADS_SITE_BASE || 'https://hilads.live'
 
-// 1.5s ceiling on the API call so a stuck upstream can't run the function to
-// its 10s Vercel timeout. If the budget is exhausted we fall through to the
-// unmodified shell.
-const API_TIMEOUT_MS = 1500
+const API_TIMEOUT_MS   = 1500
 const SHELL_TIMEOUT_MS = 2500
 
 // ── Shell loader (cached per cold start) ──────────────────────────────────────
-// Why HTTP fetch and not fs.readFile?
-//   Vercel serverless function bundles do NOT include static build output
-//   (dist/) by default — only the function file + its node_modules. We could
-//   fix that with `functions[*].includeFiles` in vercel.json, but fetching
-//   the shell from the same origin's CDN is simpler, deployment-topology
-//   independent, and adds only one HTTP call per cold start (cached after).
+// Tries fs.readFile from several candidate paths (works when vercel.json's
+// `functions[*].includeFiles` ships dist/index.html with the function bundle),
+// then falls back to an HTTP fetch from the same origin if fs is empty-handed.
+// We record where we got the shell from in `shellSource` so the response
+// header can surface it for debugging.
 
-let shellCache = null
-async function getShell(req) {
-  if (shellCache) return shellCache
+let shellCache  = null
+let shellSource = null     // 'fs:<path>' | 'http:<url>' | null
 
-  // Vercel populates VERCEL_URL with the current deployment's host; falls
-  // back to the inbound request's headers if running outside Vercel.
+const HERE = (() => {
+  try { return dirname(fileURLToPath(import.meta.url)) }
+  catch { return null }
+})()
+
+// Candidates for fs.readFile, ordered most-likely-first on Vercel.
+function fsCandidatePaths() {
+  const out = []
+  if (HERE) {
+    // <fn>/dist/index.html (when includeFiles is colocated with the function)
+    out.push(join(HERE, 'dist', 'index.html'))
+    // <project root>/dist/index.html (when includeFiles is project-relative)
+    out.push(join(HERE, '..', 'dist', 'index.html'))
+    out.push(join(HERE, '..', '..', 'dist', 'index.html'))
+  }
+  if (process.cwd) {
+    out.push(join(process.cwd(), 'dist', 'index.html'))
+  }
+  return out
+}
+
+async function tryFs() {
+  for (const p of fsCandidatePaths()) {
+    try {
+      const html = await readFile(p, 'utf-8')
+      shellSource = `fs:${p}`
+      return html
+    } catch { /* try next */ }
+  }
+  return null
+}
+
+async function tryHttp(req) {
   const host  = process.env.VERCEL_URL
               || req.headers['x-forwarded-host']
               || req.headers.host
               || 'hilads.live'
   const proto = req.headers['x-forwarded-proto']
               || (host.startsWith('localhost') ? 'http' : 'https')
-  const url   = `${proto}://${host}/index.html`
-
+  const url = `${proto}://${host}/index.html`
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), SHELL_TIMEOUT_MS)
   try {
     const r = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'text/html' } })
     if (!r.ok) {
-      console.error('[prerender] shell fetch failed:', r.status, url)
+      console.error('[prerender] shell HTTP', r.status, url)
       return null
     }
-    shellCache = await r.text()
-    return shellCache
+    shellSource = `http:${url}`
+    return await r.text()
   } catch (err) {
-    console.error('[prerender] shell fetch error:', err.message, 'url=', url)
+    console.error('[prerender] shell HTTP error:', err.message, 'url=', url)
     return null
   } finally {
     clearTimeout(t)
   }
+}
+
+async function getShell(req) {
+  if (shellCache) return shellCache
+  shellCache = await tryFs()
+  if (shellCache) return shellCache
+  shellCache = await tryHttp(req)
+  return shellCache
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -386,10 +423,16 @@ function injectMeta(shell, meta) {
 export default async function handler(req, res) {
   const shell = await getShell(req)
   if (!shell) {
-    // No shell on disk — let Vercel serve the static index.html via its CDN.
+    // Both fs and HTTP failed. Surface enough context in the response to
+    // diagnose; Vercel function logs will also have the per-attempt errors.
+    const fsTried = fsCandidatePaths().join(' | ')
     res.statusCode = 500
     res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-    res.end('prerender: shell unavailable')
+    res.setHeader('x-prerender-error', 'shell-unavailable')
+    res.end(`prerender: shell unavailable
+fs candidates tried: ${fsTried}
+http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.headers.host || '(none)'}
+`)
     return
   }
 
@@ -484,5 +527,6 @@ export default async function handler(req, res) {
   // Surface for debugging in DevTools / curl. Helps confirm that crawlers are
   // hitting the prerender path vs the static shell.
   res.setHeader('x-prerender', meta ? `${type}-hit` : `${type ?? 'none'}-miss`)
+  if (shellSource) res.setHeader('x-prerender-shell', shellSource)
   res.end(html)
 }

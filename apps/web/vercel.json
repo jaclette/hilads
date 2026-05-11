@@ -4,6 +4,11 @@
       "main": false
     }
   },
+  "functions": {
+    "api/prerender.mjs": {
+      "includeFiles": "dist/index.html"
+    }
+  },
   "redirects": [
     {
       "source": "/(.*)",
