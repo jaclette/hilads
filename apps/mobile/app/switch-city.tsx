@@ -33,7 +33,7 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track } from '@/services/analytics';
 import type { City } from '@/types';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 // ── Flag emoji — mirrors web cityFlag() ──────────────────────────────────────
 
@@ -419,19 +419,21 @@ const styles = StyleSheet.create({
     fontSize:        FontSizes.md,
   },
 
-  // ── Ranking filter pills ─────────────────────────────────────────────────
+  // ── Ranking filter pills — match Now's chip rhythm (now.tsx filterPill) ──
+  // Tighter horizontal padding so the 3 emoji-prefixed labels fit without
+  // "Most online" being clipped on iPhone SE / 6.1" widths.
   filterRow: {
     flexDirection:     'row',
     gap:               8,
     paddingHorizontal: 14,
-    paddingVertical:   10,
+    paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
   filterPill: {
-    paddingHorizontal: 14,
-    paddingVertical:   8,
-    borderRadius:      20,
+    paddingHorizontal: 12,
+    paddingVertical:   6,
+    borderRadius:      Radius.full,
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.12)',
     backgroundColor:   'transparent',
@@ -441,12 +443,13 @@ const styles = StyleSheet.create({
     borderColor:     Colors.accent,
   },
   filterPillText: {
-    fontSize:   14,
-    fontWeight: '600',
+    fontSize:   FontSizes.sm,
+    fontWeight: '500',
     color:      Colors.muted,
   },
   filterPillTextActive: {
-    color: '#fff',
+    color:      Colors.white,
+    fontWeight: '600',
   },
 
   // ── .city-list-label ──────────────────────────────────────────────────────
@@ -507,31 +510,22 @@ const styles = StyleSheet.create({
   // ── Card wrapper — positions accent bar as a sibling to the card ─────────
   // overflow: visible so the bar can bleed past the card's rounded corners
   cardWrapper: {
-    marginHorizontal: 12,
-    marginBottom:     10,
+    marginHorizontal: Spacing.md,
+    marginBottom:     6,           // matches Now FlatList's gap: 6
     position:         'relative',
   },
 
-  // ── .city-row ─────────────────────────────────────────────────────────────
-  // Web: border-radius 18px, border rgba(255,255,255,0.05), padding 18px 18px 16px,
-  //      flex-col, gap 12px, shadow 0 10px 22px rgba(0,0,0,0.12), margin-bottom 10px
+  // City card — compacted to Now's EventCard rhythm (padding 10, gap 4,
+  // borderRadius lg). Heavy shadow dropped (Now uses none); active treatment
+  // below still provides visual hierarchy via the accent bar + warm bg.
   card: {
-    borderRadius:      18,
+    borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.07)',
-    // Solid bg required — rgba(255,255,255,0.03) is effectively transparent on Android,
-    // causing touch events to fall through to the FlatList instead of the card.
+    borderColor:       Colors.border,
     backgroundColor:   Colors.bg2,
-    paddingHorizontal: 18,
-    paddingTop:        20,
-    paddingBottom:     18,
-    gap:               12,
+    padding:           10,
+    gap:               4,
     overflow:          'hidden',
-    shadowColor:       '#000',
-    shadowOffset:      { width: 0, height: 12 },
-    shadowOpacity:     0.22,
-    shadowRadius:      16,
-    elevation:         5,
   },
   // Web: .city-row.active
   //   background: linear-gradient(180deg, rgba(194,74,56,0.12), rgba(194,74,56,0.07))
@@ -543,11 +537,6 @@ const styles = StyleSheet.create({
     // rgba(194,74,56,0.12) blended over Colors.bg2 (#161210) → warm dark red surface
     backgroundColor: '#211410',
     borderColor:     'rgba(194,74,56,0.22)',
-    shadowColor:     '#000',   // web uses dark shadow, not orange glow
-    shadowOffset:    { width: 0, height: 16 },
-    shadowOpacity:   0.18,
-    shadowRadius:    15,
-    elevation:       5,
   },
   // Web: inset 2px 0 0 var(--accent) via box-shadow — rendered as a sibling element
   // outside the card so it is never clipped by overflow: hidden on the card.
@@ -570,30 +559,28 @@ const styles = StyleSheet.create({
     elevation:       4,
   },
 
-  // ── .city-row-top ─────────────────────────────────────────────────────────
+  // ── Card top row: activity dot + flag + name + "you're here" badge ──────
   cardTop: {
     flexDirection:  'row',
-    alignItems:     'flex-start',
+    alignItems:     'center',
     justifyContent: 'space-between',
-    gap:            12,
+    gap:            8,
   },
-  // ── .city-row-left ────────────────────────────────────────────────────────
   cardLeft: {
-    flex:        1,
+    flex:          1,
     flexDirection: 'row',
-    alignItems:  'flex-start',
-    gap:         12,
+    alignItems:    'center',
+    gap:           8,
   },
 
-  // ── .activity-dot / .activity-dot.live ────────────────────────────────────
-  // Web: 9px circle, bg var(--border) inactive, var(--green) + glow active, margin-top 7px
+  // Activity dot — small circle next to the flag. 7px so it stays
+  // proportional to the smaller compact-card type rhythm.
   activityDot: {
-    width:           9,
-    height:          9,
-    borderRadius:    4.5,
+    width:           7,
+    height:          7,
+    borderRadius:    3.5,
     backgroundColor: Colors.border,
     flexShrink:      0,
-    marginTop:       7,
   },
   activityDotLive: {
     backgroundColor: Colors.green,
@@ -604,64 +591,54 @@ const styles = StyleSheet.create({
     elevation:       2,
   },
 
-  // ── .city-row-flag ────────────────────────────────────────────────────────
-  // Web: font-size 1.18rem (~18.9px) → 21px for stronger presence on mobile
+  // Flag — matches Now's `cardIcon` (16px / lh 18) so cards look uniform.
   flag: {
-    fontSize:   21,
-    lineHeight: 24,
+    fontSize:   16,
+    lineHeight: 18,
     flexShrink: 0,
-    marginTop:  2,
   },
 
-  // ── .city-row-name ────────────────────────────────────────────────────────
-  // Web: 1.08rem, font-weight 750 → 19px + weight 800 for mobile visual weight
+  // City name — matches Now's `cardTitle` (md / 700 / lh 19).
   cityName: {
-    flex:         1,
-    fontSize:     19,
-    fontWeight:   '800',
-    color:        Colors.text,
-    lineHeight:   24,
-    letterSpacing: -0.2,
+    flex:       1,
+    fontSize:   FontSizes.md,
+    fontWeight: '700',
+    color:      Colors.text,
+    lineHeight: 19,
+    letterSpacing: -0.1,
   },
   cityNameActive: {},
 
-  // ── .city-row-current — "you're here" badge ───────────────────────────────
-  // Web: 0.72rem, weight 700, color --accent, bg rgba(194,74,56,0.14),
-  //      border rgba(194,74,56,0.18), radius 999px, padding 5px 10px
-  // Web: .city-row-current — bg rgba(194,74,56,0.14), border rgba(194,74,56,0.18),
-  //      radius 999px, padding 5px 10px, font 0.72rem/700/accent
-  // Web: .city-row-current — no shadow, just subtle bg + border
+  // "you're here" badge — kept compact to fit on the title row without
+  // forcing the city name to wrap.
   hereBadge: {
     backgroundColor:   'rgba(194,74,56,0.14)',
     borderWidth:       1,
     borderColor:       'rgba(194,74,56,0.18)',
     borderRadius:      999,
-    paddingHorizontal: 11,
-    paddingVertical:   5,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
     flexShrink:        0,
-    alignSelf:         'flex-start',
+    alignSelf:         'center',
   },
   hereBadgeText: {
-    fontSize:   11,
-    fontWeight: '700',
-    color:      Colors.accent,
+    fontSize:      10,
+    fontWeight:    '700',
+    color:         Colors.accent,
     letterSpacing: 0.1,
   },
 
-  // ── .city-row-stats ───────────────────────────────────────────────────────
-  // Web: flex row, gap 16px, padding-left 33px (= 9px dot + 12px gap + 12px flag area)
+  // Stats row — runs full-width compact, matching Now's metaLine font sizing
+  // (xs / 600). Smaller gap than before since we no longer indent under the
+  // flag (paddingLeft removed).
   statsRow: {
     flexDirection: 'row',
     alignItems:    'center',
     flexWrap:      'wrap',
-    gap:           16,
-    paddingLeft:   33,
+    gap:           10,
   },
-  // Web: .city-row-users — 0.82rem (~13px), green, weight 700 → 14px mobile
-  statOnline: { fontSize: 14, fontWeight: '700', color: Colors.green },
-  // Web: .city-row-events — 0.82rem, var(--text), weight 600
-  statEvents: { fontSize: 14, fontWeight: '600', color: Colors.text },
-  statTopics: { fontSize: 14, fontWeight: '600', color: '#60a5fa' },
-  // Web: .city-row-count — 0.82rem, var(--muted), weight 600
-  statMsgs:   { fontSize: 14, fontWeight: '600', color: Colors.muted },
+  statOnline: { fontSize: FontSizes.xs, fontWeight: '700', color: Colors.green },
+  statEvents: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.text },
+  statTopics: { fontSize: FontSizes.xs, fontWeight: '600', color: '#60a5fa' },
+  statMsgs:   { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
 });

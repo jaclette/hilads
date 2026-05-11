@@ -71,19 +71,21 @@ function TabDot({ kind }: { kind: DotKind }) {
 //              faking the web's `inset 0 1px 0 rgba(255,255,255,0.08)`.
 
 function ActivePill() {
+  // Android-only "glow" View was removed: RN can't render colored blur, so
+  // the tinted rectangle showed as a hard outline + 2 px vertical bars at the
+  // tab edges. iOS keeps the real colored shadow via styles.tabActiveShadow;
+  // Android conveys the active state through the gradient pill + accent icon
+  // + bold orange label.
   return (
-    <>
-      {Platform.OS === 'android' && <View style={styles.pillGlowAndroid} pointerEvents="none" />}
-      <LinearGradient
-        pointerEvents="none"
-        colors={Gradients.activePill.colors}
-        start={Gradients.activePill.start}
-        end={Gradients.activePill.end}
-        style={styles.pill}
-      >
-        <View style={styles.pillHairline} pointerEvents="none" />
-      </LinearGradient>
-    </>
+    <LinearGradient
+      pointerEvents="none"
+      colors={Gradients.activePill.colors}
+      start={Gradients.activePill.start}
+      end={Gradients.activePill.end}
+      style={styles.pill}
+    >
+      <View style={styles.pillHairline} pointerEvents="none" />
+    </LinearGradient>
   );
 }
 
@@ -180,7 +182,9 @@ const styles = StyleSheet.create({
     position:         'relative',
   },
 
-  // Active-pill colored shadow (iOS only — Android uses pillGlowAndroid).
+  // Active-pill colored shadow — iOS only. Android can't render colored
+  // shadows in RN, so the active state relies on the pill gradient + icon
+  // glow without a faux outline.
   // Web: 0 0 20px rgba(255,122,60,0.18) — isotropic orange glow.
   tabActiveShadow: Platform.select({
     ios: {
@@ -212,19 +216,6 @@ const styles = StyleSheet.create({
     borderTopLeftRadius:  18,
     borderTopRightRadius: 18,
   },
-  pillGlowAndroid: {
-    // Oversized soft tint behind the pill to fake a colored glow since
-    // Android ignores shadowColor. Values tuned to read similar to the iOS
-    // 20px orange shadow without requiring a blur pass.
-    position: 'absolute',
-    top:      -6,
-    left:     -2,
-    right:    -2,
-    bottom:   -6,
-    backgroundColor: 'rgba(255,122,60,0.10)',
-    borderRadius:    22,
-  },
-
   // ── Icon ───────────────────────────────────────────────────────────────────
   iconWrap: {
     width:          28,

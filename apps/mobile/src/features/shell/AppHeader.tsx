@@ -15,11 +15,46 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { Colors } from '@/constants';
+
+// Direct port of the web `.chat-header` background:
+//   radial-gradient(ellipse 90% 55% at 50% -10%,
+//                   rgba(194,74,56,0.10) 0%, transparent 60%), var(--surface)
+// react-native-svg can render real radial gradients (expo-linear-gradient
+// can't), so we lay one absolute-fill SVG behind the topBar row. The bg
+// fallback color on glowWrap (#161210) covers any subpixel gap.
+function HeaderRadialGlow() {
+  return (
+    <Svg
+      style={StyleSheet.absoluteFillObject}
+      width="100%"
+      height="100%"
+      preserveAspectRatio="none"
+      pointerEvents="none"
+    >
+      <Defs>
+        <RadialGradient
+          id="appHeaderGlow"
+          cx="50%"
+          cy="-10%"
+          rx="90%"
+          ry="55%"
+          fx="50%"
+          fy="-10%"
+        >
+          <Stop offset="0%"  stopColor="#C24A38" stopOpacity={0.10} />
+          <Stop offset="60%" stopColor="#C24A38" stopOpacity={0} />
+        </RadialGradient>
+      </Defs>
+      <Rect x="0" y="0" width="100%" height="100%" fill="url(#appHeaderGlow)" />
+    </Svg>
+  );
+}
 
 interface Props {
   /** Optional nodes injected immediately to the left of the DM icon. */
@@ -37,6 +72,7 @@ export function AppHeader({ rightExtra }: Props) {
 
   return (
     <View style={styles.glowWrap}>
+    <HeaderRadialGlow />
     <View style={styles.topBar}>
 
       {/* Left: notification bell */}
@@ -105,18 +141,15 @@ export function AppHeader({ rightExtra }: Props) {
 // pixel-for-pixel. Do not change these without updating the MY CITY context
 // sections below this component (city row, chips) which sit on the same rhythm.
 const styles = StyleSheet.create({
-  // Single source of truth for the soft orange "halo" around the logo row.
-  // Previously lived on chat.tsx's styles.header, which meant only MY CITY
-  // got the glow; moving it here so every tab consuming AppHeader matches.
-  // Background matches parent surfaces (bg2) so the shadow — not the box —
-  // is what creates visual interest.
+  // Header surface strip. The radial orange ellipse rendered by
+  // <HeaderRadialGlow /> matches the web `.chat-header` background — it sits
+  // behind topBar via absoluteFillObject. The bg2 fallback covers any rounding
+  // gap. overflow: 'hidden' is intentional: the SVG should not bleed past the
+  // header into the screen content below.
   glowWrap: {
     backgroundColor: Colors.bg2,
-    shadowColor:     '#C24A38',
-    shadowOffset:    { width: 0, height: 6 },
-    shadowOpacity:   0.08,
-    shadowRadius:    20,
-    elevation:       3,
+    overflow:        'hidden',
+    position:        'relative',
   },
   topBar: {
     flexDirection: 'row',

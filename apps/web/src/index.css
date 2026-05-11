@@ -524,12 +524,28 @@ html, body, #root {
 
 /* ── Header ───────────────────────────────────────────── */
 
-.chat-header {
-  position: relative;
-  padding: 0 20px 14px;
+/* Shared treatment for every screen that hosts the bell + Hi logo + chat-icon
+   trio: city chat, event detail, and the tab-level Now / Here / Me drawers
+   (which wrap the same `renderAppHeader()` in `.tab-app-header`).
+   Internal back-button pages keep `.page-header`'s flat surface — they don't
+   render the trio, so a logo halo there would be meaningless. */
+.chat-header,
+.tab-app-header {
   background:
           radial-gradient(ellipse 90% 55% at 50% -10%, rgba(194, 74, 56, 0.10) 0%, transparent 60%),
           var(--surface);
+}
+
+.chat-header .logo svg,
+.tab-app-header .logo svg {
+  filter:
+    drop-shadow(0 0 16px rgba(255, 140, 60, 0.35))
+    drop-shadow(0 0 5px  rgba(255, 200, 120, 0.20));
+}
+
+.chat-header {
+  position: relative;
+  padding: 0 20px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -551,15 +567,10 @@ html, body, #root {
   display: none;
 }
 
-/* Logo: big, centered, glowing */
+/* Logo layout — halo is now applied via the shared rule above. */
 .chat-header .logo {
   display: flex;
   justify-content: center;
-}
-.chat-header .logo svg {
-  filter:
-    drop-shadow(0 0 16px rgba(255, 140, 60, 0.35))
-    drop-shadow(0 0 5px rgba(255, 200, 120, 0.2));
 }
 
 /* Brand block: logo icon + tagline — stacked on mobile, row on desktop */
@@ -2630,51 +2641,10 @@ html, body, #root {
 }
 .reaction-pill.self .reaction-count { color: var(--hot-dot); }
 
-/* ── Input bar ────────────────────────────────────────── */
-
-.input-bar {
-  display: flex;
-  gap: 12px;
-  padding: 16px 16px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
-  border-top: 1px solid var(--border);
-  background:
-    linear-gradient(180deg, rgba(30, 24, 18, 0.96), rgba(22, 18, 16, 0.99));
-  flex-shrink: 0;
-  align-items: center;
-  box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.28);
-}
-
-.input-bar input {
-  flex: 1;
-  min-width: 0;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 28px;
-  padding: 0 20px;
-  color: var(--text);
-  font-size: 1.04rem;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
-  min-height: 56px;
-  line-height: 1.2;
-}
-
-.input-bar input::placeholder {
-  color: var(--muted2);
-  font-size: 0.98rem;
-  transition: color 0.2s ease;
-}
-
-.input-bar input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(194, 74, 56, 0.12), 0 0 12px rgba(194, 74, 56, 0.08);
-  transform: scaleY(1.03);
-}
-
-.input-bar input:focus::placeholder {
-  color: var(--muted2);
-}
+/* `.input-bar` was the oversized City/Event composer wrapper. All composer
+   surfaces now share <MessageComposer> with the .dm-composer dimensions, so
+   these rules are intentionally removed. Same for .vibe-btn below — the only
+   remaining vibe-style class is .share-vibe-btn (event-share button). */
 
 .upload-btn {
   width: 54px;
@@ -2723,50 +2693,10 @@ html, body, #root {
   display: block;
 }
 
-/* ── Vibe button — branded share entry point ─────────────────────────────────
-   Replaces plain "+" with a warm gradient glow button. Also used as .dm-vibe-btn. */
-.vibe-btn {
-  width: 58px;
-  height: 58px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  background: linear-gradient(135deg, #C24A38 0%, #B87228 100%);
-  box-shadow: 0 0 16px rgba(194, 74, 56, 0.42), 0 4px 14px rgba(0, 0, 0, 0.35);
-  color: #fff;            /* SVG currentColor resolves to white on the gradient */
-  font-size: 22px;
-  line-height: 1;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.vibe-btn:hover:not(:disabled) {
-  transform: scale(1.06);
-  box-shadow: 0 0 26px rgba(194, 74, 56, 0.62), 0 6px 18px rgba(0, 0, 0, 0.4);
-}
-
-.vibe-btn:active:not(:disabled) {
-  transform: scale(1.1);
-  box-shadow: 0 0 36px rgba(194, 74, 56, 0.8), 0 8px 22px rgba(0, 0, 0, 0.45);
-}
-
-.vibe-btn:disabled { opacity: 0.45; cursor: default; }
-
-@keyframes vibePulse {
-  0%, 100% { box-shadow: 0 0 16px rgba(194, 74, 56, 0.42), 0 4px 14px rgba(0,0,0,0.32); }
-  50%       { box-shadow: 0 0 32px rgba(194, 74, 56, 0.72), 0 6px 18px rgba(0,0,0,0.38); }
-}
-
-.vibe-btn--pulse { animation: vibePulse 2.5s ease-in-out infinite; }
-
-/* Spinner inside vibe-btn — white to show against the orange gradient */
-.vibe-btn .upload-spinner {
-  border-color: rgba(255, 255, 255, 0.3);
-  border-top-color: #fff;
-}
+/* `.vibe-btn` (the 58 px composer attach button) was removed when every
+   composer surface adopted the compact .dm-vibe-btn (44 px) via the shared
+   <MessageComposer>. The pulse keyframes used by .vibe-btn--pulse are also
+   gone — no current consumer. */
 
 /* ── ShareActionSheet ────────────────────────────────────────────────────────
    Mobile-native style bottom sheet that slides up from the bottom.            */
@@ -4954,15 +4884,17 @@ img.pub-profile-avatar {
 }
 .city-filter-tabs::-webkit-scrollbar { display: none; }
 
+/* Aligned with .now-filter-pill (apps/web/src/index.css:6013) so Switch city
+   chips read at the same density as the Now feed's All / Events / Pulses. */
 .city-filter-tab {
   flex-shrink: 0;
-  padding: 8px 14px;
-  border-radius: 20px;
+  padding: 6px 14px;
+  border-radius: 999px;
   border: 1px solid rgba(255,255,255,0.12);
   background: transparent;
   color: var(--muted);
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.82rem;
+  font-weight: 500;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   white-space: nowrap;
@@ -4974,6 +4906,7 @@ img.pub-profile-avatar {
 .city-filter-tab.active {
   background: var(--accent);
   border-color: var(--accent);
+  font-weight: 600;
   color: #fff;
 }
 
@@ -4984,13 +4917,17 @@ img.pub-profile-avatar {
   font-size: 0.95rem;
 }
 
+/* Switch-city row — compacted to match Now's `.event-row-card` density.
+   Note: `.city-row` is also reused on the Now/Hot drawer where it pairs with
+   `.event-row-card`, which still overrides padding/gap explicitly — those
+   feed rows are unaffected. */
 .city-row {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
   width: 100%;
-  padding: 18px 18px 16px;
+  padding: 10px 12px;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   background:
@@ -4999,9 +4936,9 @@ img.pub-profile-avatar {
   cursor: pointer;
   text-align: left;
   transition: background 0.12s, box-shadow 0.12s, border-color 0.12s, transform 0.12s;
-  gap: 12px;
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
-  margin-bottom: 10px;
+  gap: 4px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.10);
+  margin-bottom: 6px;
 }
 
 .city-row:hover {
@@ -5023,15 +4960,15 @@ img.pub-profile-avatar {
 
 .city-row-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
 
 .city-row-left {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
   min-width: 0;
   flex: 1;
 }
@@ -5230,30 +5167,8 @@ img.pub-profile-avatar {
   font-weight: 600;
 }
 
-.topic-chat-input-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  background: var(--surface);
-}
-
-.topic-chat-input {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 12px 20px;
-  font-size: 15px;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.topic-chat-input:focus {
-  border-color: rgba(96, 165, 250, 0.4);
-}
+/* `.topic-chat-input-row` + `.topic-chat-input` removed: TopicChatPage now
+   uses <MessageComposer> with the unified .dm-composer rhythm. */
 
 /* Line 2: badges — single line, ellipsised, smaller font in compact mode */
 .er-badges {
@@ -5306,63 +5221,64 @@ img.pub-profile-avatar {
 }
 
 .city-row-flag {
-  font-size: 1.18rem;
-  line-height: 1;
+  font-size: 1rem;
+  line-height: 1.1;
   flex-shrink: 0;
-  margin-top: 1px;
 }
 
+/* Matches .er-title (Now's compact event-card title): 0.92rem / 700 / lh 1.2. */
 .city-row-name {
-  font-size: 1.08rem;
-  font-weight: 750;
-  line-height: 1.25;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  text-wrap: pretty;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .city-row-current {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--accent);
   font-weight: 700;
   background: rgba(194, 74, 56, 0.14);
   border: 1px solid rgba(194, 74, 56, 0.18);
   border-radius: 999px;
-  padding: 5px 10px;
+  padding: 3px 8px;
   flex-shrink: 0;
-  align-self: flex-start;
+  align-self: center;
   white-space: nowrap;
 }
 
+/* Stats run flush with the rest of the card — no 33 px indent under the flag.
+   Single muted line, gap 10. */
 .city-row-stats {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   flex-wrap: wrap;
-  padding-left: 33px;
 }
 
 .city-row-users {
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   color: var(--green);
   font-weight: 700;
 }
 
 .city-row-count {
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   color: var(--muted);
   font-weight: 600;
 }
 
 .city-row-events {
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   color: var(--text);
   font-weight: 600;
 }
 
 .city-row-topics {
-  font-size: 0.82rem;
+  font-size: 0.72rem;
   color: #60a5fa;
   font-weight: 600;
 }
@@ -5866,7 +5782,11 @@ img.pub-profile-avatar {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 10px 0;
+  /* Bottom padding gives visual breathing room between this CTA row and the
+     fixed bottom tab bar so they read as two distinct zones. The tab bar
+     handles its own env(safe-area-inset-bottom), so 14px is purely a
+     between-zone gap and never replaces the safe-area inset. */
+  padding: 10px 10px 14px;
   flex-shrink: 0;
 }
 

@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage } from '../api'
 import BackButton from './BackButton'
-import SendButton from './SendButton'
-import EmojiPicker from './EmojiPicker'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
-import IconPlus from './IconPlus'
+import MessageComposer from './MessageComposer'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -394,51 +392,24 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       )}
 
       {/* Composer */}
-      <form className="dm-composer" onSubmit={handleSend}>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleImageSelect}
-        />
-        <button
-          type="button"
-          className="dm-vibe-btn"
-          aria-label="Add attachment"
-          title="Add attachment"
-          disabled={uploading || sending || spotLoading}
-          onClick={() => setShowShareSheet(true)}
-        >
-          {uploading || spotLoading
-            ? <span className="upload-spinner" style={{ width: 16, height: 16 }} />
-            : <IconPlus size={18} />}
-        </button>
-        <div className="emoji-picker-wrap">
-          <button
-            type="button"
-            className={`emoji-trigger${showEmoji ? ' emoji-trigger--active' : ''}`}
-            title="Emoji"
-            onClick={() => setShowEmoji(p => !p)}
-          >
-            😊
-          </button>
-          {showEmoji && (
-            <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
-          )}
-        </div>
-        <input
-          ref={dmInputRef}
-          className="dm-input"
-          type="text"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder="Message…"
-          maxLength={1000}
-          autoFocus
-        />
-        <SendButton disabled={sending || uploading || !input.trim()} />
-      </form>
+      <MessageComposer
+        inputRef={dmInputRef}
+        fileInputRef={fileRef}
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onSubmit={handleSend}
+        onFileSelect={handleImageSelect}
+        onShareClick={() => setShowShareSheet(true)}
+        showEmoji={showEmoji}
+        onEmojiToggle={() => setShowEmoji(p => !p)}
+        onEmojiSelect={insertEmoji}
+        onEmojiClose={() => setShowEmoji(false)}
+        placeholder="Message…"
+        uploading={uploading}
+        sending={sending}
+        spotLoading={spotLoading}
+        autoFocus
+      />
 
       {lightboxUrl && (
         <div className="lightbox-overlay" onClick={() => setLightboxUrl(null)}>

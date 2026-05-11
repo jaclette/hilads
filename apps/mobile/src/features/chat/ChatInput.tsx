@@ -391,7 +391,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
             {uploading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Ionicons name="add" size={26} color="#fff" />
+              <Ionicons name="add" size={24} color="#fff" />
             )}
           </LinearGradient>
         </Pressable>
@@ -453,19 +453,18 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
 
 const styles = StyleSheet.create({
 
-  // ── .input-bar ─────────────────────────────────────────────────────────────
-  // Web: gap 12px; padding 16px; border-top 1px var(--border);
-  //      gradient rgba(30,24,18,0.96)→rgba(22,18,16,0.99);
-  //      box-shadow 0 -10px 28px rgba(0,0,0,0.28)
+  // ── Composer container — aligned with the DM composer's compact rhythm
+  // (apps/mobile/app/dm/[id].tsx). Single source of truth for City + Event +
+  // Topic chats; shrinking values here propagates to all three.
   container: {
     flexDirection:     'row',
     alignItems:        'center',
-    paddingHorizontal: 16,
-    paddingVertical:   18,
+    paddingHorizontal: 14,
+    paddingVertical:   12,
     borderTopWidth:    1,
     borderTopColor:    Colors.border,
     backgroundColor:   'rgba(22, 18, 16, 0.99)',
-    gap:               12,
+    gap:               10,
     shadowColor:       '#000',
     shadowOffset:      { width: 0, height: -5 },
     shadowOpacity:     0.28,
@@ -473,50 +472,43 @@ const styles = StyleSheet.create({
     elevation:         30, // must exceed tab bar (elevation: 24) to render above its upward shadow
   },
 
-  // ── Vibe button ────────────────────────────────────────────────────────────
-  // Glow wrapper — shadow lives here so it's unclipped by LinearGradient
+  // ── Vibe ("+") button — 48px to match DM ──────────────────────────────────
   vibeBtnGlow: {
     flexShrink:    0,
-    borderRadius:  30,
+    borderRadius:  24,
     shadowColor:   '#C24A38',
     shadowOffset:  { width: 0, height: 0 },
     shadowOpacity: 0.45,
     shadowRadius:  14,
     elevation:     10,
   },
-  // Gradient pill — clips the corners
   vibeBtn: {
-    width:          60,
-    height:         60,
-    borderRadius:   30,
+    width:          48,
+    height:         48,
+    borderRadius:   24,
     alignItems:     'center',
     justifyContent: 'center',
   },
 
-  // ── .input-bar input ───────────────────────────────────────────────────────
-  // Web: border-radius 28px; min-height 56px; padding 0 20px; font-size 1.04rem
+  // ── Text input — 48px min, FontSizes.sm to match DM ───────────────────────
   input: {
     flex:              1,
     flexShrink:        1,
     minWidth:          0,
-    minHeight:         62,
+    minHeight:         48,
     maxHeight:         130,
     backgroundColor:   Colors.bg,
-    borderRadius:      31,
+    borderRadius:      999,
     borderWidth:       1,
     borderColor:       Colors.border,
-    paddingHorizontal: 22,
-    paddingVertical:   14,
+    paddingHorizontal: 20,
+    paddingVertical:   13,
     color:             Colors.text,
-    fontSize:          FontSizes.md,
-    lineHeight:        24,
+    fontSize:          FontSizes.sm,
+    lineHeight:        20,
   },
 
-  // ── .send-btn ──────────────────────────────────────────────────────────────
-  // Web: 54×54px; gradient linear-gradient(135deg, #C24A38, #B87228);
-  //      border-radius 50%; box-shadow 0 6px 18px rgba(194,74,56,0.32)
-  //      disabled: opacity 0.3 (same gradient, just faded)
-  // Gradient approximated with #B87228 (accent2 — the warm amber end).
+  // ── Send button — 48px to match DM ────────────────────────────────────────
   sendBtnWrap: {
     flexShrink:    0,
     flexGrow:      0,
@@ -527,9 +519,9 @@ const styles = StyleSheet.create({
     elevation:     8,
   },
   sendBtn: {
-    width:           60,
-    height:          60,
-    borderRadius:    30,
+    width:           48,
+    height:          48,
+    borderRadius:    24,
     backgroundColor: '#B87228',   // web gradient approximation (warm amber end)
     alignItems:      'center',
     justifyContent:  'center',
@@ -543,12 +535,12 @@ const styles = StyleSheet.create({
   btnDisabled: { opacity: 0.35 },
 
   emojiBtn: {
-    width:           44,
-    height:          44,
+    width:           36,
+    height:          36,
     flexShrink:      0,
     alignItems:      'center',
     justifyContent:  'center',
-    borderRadius:    22,
+    borderRadius:    18,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth:     1,
     borderColor:     'rgba(255, 255, 255, 0.09)',
@@ -559,8 +551,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.09)',
   },
   emojiBtnIcon: {
-    fontSize:   20,
-    lineHeight: 24,
+    fontSize:   18,
+    lineHeight: 22,
   },
 });
 

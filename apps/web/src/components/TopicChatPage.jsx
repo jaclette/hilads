@@ -3,7 +3,7 @@ import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicR
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
-import IconPlus from './IconPlus'
+import MessageComposer from './MessageComposer'
 
 const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 const MODE_META  = { local: { emoji: '🌍', label: 'Local' }, exploring: { emoji: '🧭', label: 'Exploring' } }
@@ -420,42 +420,21 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       )}
 
       {/* Input */}
-      <form className="topic-chat-input-row" onSubmit={handleSend}>
-        {/* Hidden file picker */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleImageSelect}
-        />
-        <button
-          type="button"
-          className="vibe-btn"
-          aria-label="Add attachment"
-          title="Add attachment"
-          disabled={uploading || sending || spotLoading}
-          onClick={() => setShowShareSheet(true)}
-        >
-          {uploading || spotLoading ? <span className="upload-spinner" /> : <IconPlus />}
-        </button>
-        <input
-          ref={inputRef}
-          type="text"
-          className="topic-chat-input"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          placeholder={messages.length > 0 ? 'Reply to the conversation…' : 'Start the vibe ✨'}
-          maxLength={1000}
-          autoFocus
-        />
-        <button type="submit" className="send-btn" disabled={!input.trim() || sending || uploading || spotLoading}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-        </button>
-      </form>
+      <MessageComposer
+        inputRef={inputRef}
+        fileInputRef={fileInputRef}
+        value={input}
+        onChange={e => setInput(e.target.value)}
+        onSubmit={handleSend}
+        onFileSelect={handleImageSelect}
+        onShareClick={() => setShowShareSheet(true)}
+        showEmojiButton={false}
+        placeholder={messages.length > 0 ? 'Reply to the conversation…' : 'Start the vibe ✨'}
+        uploading={uploading}
+        sending={sending}
+        spotLoading={spotLoading}
+        autoFocus
+      />
     </div>
   )
 }

@@ -25,14 +25,12 @@ import NotificationsScreen from './components/NotificationsScreen'
 import FriendRequestsScreen from './components/FriendRequestsScreen'
 import { fetchIncomingFriendRequestCount } from './api'
 import BackButton from './components/BackButton'
-import EmojiPicker from './components/EmojiPicker'
-import SendButton from './components/SendButton'
 import DeleteAccountPage from './components/DeleteAccountPage'
 import InstallPromptBanner from './components/InstallPromptBanner'
 import useBeforeInstallPrompt from './hooks/useBeforeInstallPrompt'
 import AppPromoBanner from './components/AppPromoBanner'
 import AppPromoInterstitial from './components/AppPromoInterstitial'
-import IconPlus from './components/IconPlus'
+import MessageComposer from './components/MessageComposer'
 import ShareActionSheet from './components/ShareActionSheet'
 import LocationPicker from './components/LocationPicker'
 import ReactionBurstLayer from './components/ReactionBurstLayer'
@@ -3613,53 +3611,28 @@ export default function App() {
           </div>
         )}
 
-        <form className="input-bar" onSubmit={handleSend}>
-          {/* Hidden file picker — triggered via share sheet */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={handleImageSelect}
-          />
-          <button
-            type="button"
-            className="vibe-btn"
-            aria-label="Add attachment"
-            title="Add attachment"
-            disabled={uploading || sending || spotLoading}
-            onClick={() => setShowShareSheet(true)}
-          >
-            {uploading || spotLoading ? <span className="upload-spinner" /> : <IconPlus />}
-          </button>
-          <div className="emoji-picker-wrap">
-            <button
-              type="button"
-              className={`emoji-trigger${showEmoji ? ' emoji-trigger--active' : ''}`}
-              title="Emoji"
-              onClick={() => setShowEmoji(p => !p)}
-            >
-              😊
-            </button>
-            {showEmoji && (
-              <EmojiPicker onSelect={insertEmoji} onClose={() => setShowEmoji(false)} />
-            )}
-          </div>
-          <input
-            ref={chatInputRef}
-            type="text"
-            value={input}
-            onChange={handleInputChange}
-            placeholder={activeEvent
-              ? feed.some(f => f.type === 'message')
-                ? `Say something at ${activeEvent.title} ✨`
-                : `Be the first at ${activeEvent.title} ✨`
-              : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length]() : ''
-            }
-            maxLength={1000}
-          />
-          <SendButton disabled={sending || !input.trim()} />
-        </form>
+        <MessageComposer
+          inputRef={chatInputRef}
+          fileInputRef={fileInputRef}
+          value={input}
+          onChange={handleInputChange}
+          onSubmit={handleSend}
+          onFileSelect={handleImageSelect}
+          onShareClick={() => setShowShareSheet(true)}
+          showEmoji={showEmoji}
+          onEmojiToggle={() => setShowEmoji(p => !p)}
+          onEmojiSelect={insertEmoji}
+          onEmojiClose={() => setShowEmoji(false)}
+          placeholder={activeEvent
+            ? feed.some(f => f.type === 'message')
+              ? `Say something at ${activeEvent.title} ✨`
+              : `Be the first at ${activeEvent.title} ✨`
+            : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length]() : ''
+          }
+          uploading={uploading}
+          sending={sending}
+          spotLoading={spotLoading}
+        />
 
         {/* Bottom navigation — mobile only */}
         <nav className="bottom-nav" aria-label="Primary">
