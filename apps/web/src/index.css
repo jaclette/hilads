@@ -819,12 +819,18 @@ html, body, #root {
   flex-shrink: 0;
 }
 
-/* Section 3: context chips */
+/* Section 3: context chips. Single-row layout on standard mobile widths;
+   weather chip gracefully truncates when its copy is long enough to push
+   the activity chip off the row. flex-wrap: wrap only kicks in on truly
+   narrow viewports (<340 px) as a safety net. */
 .header-chips {
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .header-chip {
@@ -840,6 +846,11 @@ html, body, #root {
   line-height: 1;
   cursor: pointer;
   transition: opacity 0.15s, transform 0.12s;
+  /* Allow long copy to truncate within the chip. */
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-chip:hover  { opacity: 0.8; }
@@ -849,6 +860,10 @@ html, body, #root {
   background: #1a1a1a;
   border-color: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.5);
+  /* Weather copy can be long ("Light drizzle · 36°C, grab a jacket").
+     Let it shrink + truncate so the activity chip stays on the row. */
+  flex-shrink: 1;
+  flex-basis: auto;
 }
 
 /* WCAG AA check: #fca5a5 on rgba(239,68,68,0.12) over ~#111 = ~#1d0c0c bg
@@ -857,6 +872,14 @@ html, body, #root {
   background: rgba(239, 68, 68, 0.12);
   border-color: rgba(239, 68, 68, 0.28);
   color: #fca5a5;
+  /* Activity chip never shrinks — its content is short and always-visible. */
+  flex-shrink: 0;
+}
+
+/* Safety net: only wrap on truly narrow viewports where even truncated
+   chips together overflow. */
+@media (max-width: 340px) {
+  .header-chips { flex-wrap: wrap; }
 }
 
 /* Red pulsing live dot */

@@ -673,7 +673,9 @@ export default function ChatTab() {
               accessibilityRole="button"
             >
               <Ionicons name="cloud-outline" size={13} color="rgba(255,255,255,0.45)" />
-              <Text style={styles.chipWeatherText}>{weatherLabel}</Text>
+              <Text style={styles.chipWeatherText} numberOfLines={1} ellipsizeMode="tail">
+                {weatherLabel}
+              </Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -949,11 +951,14 @@ const styles = StyleSheet.create({
   },
 
   // ── Section 3: Context chips ───────────────────────────────────────────────
+  // Single-row layout. Weather chip shrinks + truncates when copy is long
+  // ("Light drizzle · 36°C, grab a jacket"); activity chip stays fixed-size.
   chipsRow: {
     flexDirection:  'row',
-    flexWrap:       'wrap',
     gap:            8,
     justifyContent: 'center',
+    alignItems:     'center',
+    minWidth:       0,
   },
   chip: {
     flexDirection:     'row',
@@ -963,19 +968,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 13,
     borderRadius:      999,
     borderWidth:       1,
+    minWidth:          0,
   },
   chipWeather: {
     backgroundColor: '#1a1a1a',
     borderColor:     'rgba(255,255,255,0.08)',
+    flexShrink:      1,    // weather copy can be long; let it truncate
   },
   chipWeatherText: {
     fontSize:   12,
     fontWeight: '500',
     color:      'rgba(255,255,255,0.45)',
+    flexShrink: 1,
   },
   chipOnline: {
     backgroundColor: 'rgba(239,68,68,0.12)',
     borderColor:     'rgba(239,68,68,0.28)',
+    flexShrink:      0,    // activity chip never shrinks
   },
   chipOnlineText: {
     fontSize:   12,
