@@ -53,11 +53,17 @@ function formatTime(ts) {
 async function shareTopic(title, topicId) {
   const url = `${window.location.origin}/t/${topicId}`
   const shareTitle = `💬 ${title}`
-  // Chat-thread pre-fill — matches the event/city pattern: short, direct,
-  // ends with a CTA. WhatsApp / Telegram show this above the URL preview.
-  const shareText  = `New conversation: "${title}" — jump in on Hilads.`
+
+  // Defensive pre-copy: clean URL in clipboard before any system dialog can
+  // mangle it on Copy. See App.jsx share() for the full reasoning — passing
+  // `text` to navigator.share() can result in browsers concatenating fields
+  // when the user picks Copy from the share dialog. Pass only { title, url }.
+  if (navigator.clipboard?.writeText) {
+    try { await navigator.clipboard.writeText(url) } catch (_) {}
+  }
+
   if (navigator.share) {
-    try { await navigator.share({ title: shareTitle, text: shareText, url }); return null } catch (_) { return null }
+    try { await navigator.share({ title: shareTitle, url }); return null } catch (_) { return null }
   }
   if (navigator.clipboard?.writeText) {
     try { await navigator.clipboard.writeText(url); return 'copied' } catch (_) {}

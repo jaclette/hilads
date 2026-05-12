@@ -107,43 +107,65 @@ function setPageMeta(title, description) {
 }
 
 /**
- * Share helper. Accepts a rich payload so chat-thread previews carry
- * surface-specific copy (event time, city activity, etc.) instead of just a
- * generic page title.
- *
- * navigator.share renders { title, text, url } depending on platform:
- *   - WhatsApp / Telegram / Slack: shows `text`, then a separate URL preview
- *     (preview pulled from OG tags by the recipient client).
- *   - Twitter/X: pre-fills the tweet field with `text` + url.
- *   - Android Chrome share sheet: shows all 3, app picks what to use.
- *   - iOS Safari: prefers `text` for compose fields, ignores `title`.
- *
- * Prefer a `text` ≤ 200 chars so it survives WhatsApp's preview clipping.
- */
-/**
  * Build the share payload for a city. Centralised so every "Share city" button
  * (header chip, switch-city row, "Invite friends" feed prompt) renders the
  * same chat-thread-friendly copy.
+ *
+ * `text` is no longer threaded through to navigator.share — see share()
+ * below for why. We keep it on the return shape only as a hint to any future
+ * caller that wants to add an inline UI (e.g. a custom share modal). It does
+ * NOT reach navigator.share.
  */
 function composeCityShare(cityName) {
   const url   = `${window.location.origin}/city/${cityToSlug(cityName)}`
   const title = `What's happening in ${cityName} right now`
-  const text  = `See who's around in ${cityName} tonight on Hilads. Real-time city activity, no sign-up.`
-  return { title, text, url }
+  return { title, url }
 }
 
-async function share({ title, text, url }) {
-  if (navigator.share) {
-    try { await navigator.share({ title, text, url }); return } catch (_) { /* user cancelled */ }
+/**
+ * Share helper.
+ *
+ * Why we drop `text` here even though the Web Share API spec accepts it:
+ *   When `navigator.share({ title, text, url })` is invoked on Chrome
+ *   desktop / some Chromium variants, the native share dialog's "Copy"
+ *   option flattens the three fields into one string — typically
+ *   `${url}\n${text}` or `${url} ${text}`. That landed in users' clipboards
+ *   as a broken URL with the description text appended (the bug report).
+ *   Per the Web Share API spec the fields are distinct, but in the wild
+ *   different OS/browser share sheets concatenate on Copy. The only way to
+ *   GUARANTEE a clean URL on clipboard is to give the share dialog only a
+ *   URL — no `text` to concatenate. The OG preview (M1+M2+M3) supplies
+ *   title/description/image to the recipient's chat client automatically.
+ *
+ * Defensive belt: we ALSO pre-write the URL to clipboard before invoking
+ * navigator.share. If any browser's Copy is still broken, our pre-write
+ * already populated the clipboard with the clean URL.
+ */
+async function share({ title, url }) {
+  // Defensive pre-copy: clean URL in clipboard before any system dialog can
+  // mangle it on Copy. Best-effort; ignored on non-secure or unsupported.
+  if (navigator.clipboard?.writeText) {
+    try { await navigator.clipboard.writeText(url) } catch (_) {}
   }
-  // navigator.clipboard requires HTTPS + user gesture; unavailable on http or older Safari
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, url })
+      return
+    } catch (_) {
+      // user cancelled or share threw — pre-copy already covers the user
+    }
+  }
+
+  // No native share or it failed — clipboard.writeText is our primary path.
   if (navigator.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(url)
       return 'copied'
     } catch (_) {}
   }
-  // Fallback: execCommand works on Safari and http
+
+  // Final fallback for very old / non-HTTPS contexts.
   try {
     const el = document.createElement('input')
     el.value = url
@@ -159,22 +181,16 @@ async function share({ title, text, url }) {
 
 // ── Share vibe button ─────────────────────────────────────────────────────────
 
-function ShareVibeBtn({ eventId, title, city, timezone, startsAt, going }) {
+function ShareVibeBtn({ eventId, title, city }) {
   const [copied, setCopied] = useState(false)
   async function handleShare() {
     // Slug URL — readable in chat threads, ranks better in SERPs, 301-resolves
     // for any legacy hex-only consumer.
     const slug = eventSlug({ id: eventId, title })
     const url = `${window.location.origin}/event/${slug}`
-
-    // Compose share text — what shows up in the chat field on WhatsApp /
-    // Telegram / X. Falls back to title-only when event details are absent.
-    const where = city ? ` at ${city}` : ''
-    const when  = startsAt && timezone ? ` — ${getTimeLabel(startsAt, timezone)}` : ''
-    const who   = (going ?? 0) > 0 ? ` ${going} going.` : ''
-    const text  = `${title}${where}${when}.${who} See who's there on Hilads.`
-
-    const result = await share({ title: `${title}${where}`, text, url })
+    // Title gives the share dialog a label; URL stays clean. We deliberately
+    // do not pass descriptive text — the OG preview supplies it.
+    const result = await share({ title: city ? `${title} · ${city}` : title, url })
     if (result === 'copied') {
       setCopied(true)
       setTimeout(() => setCopied(false), 2200)
@@ -3108,9 +3124,6 @@ export default function App() {
                     eventId={activeEvent.id}
                     title={activeEvent.title}
                     city={city}
-                    timezone={cityTimezone}
-                    startsAt={activeEvent.starts_at}
-                    going={eventParticipants[activeEvent.id]}
                   />
                   {/* Edit entry point moved to title row for better visibility */}
                   {account && (
