@@ -462,13 +462,31 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   return { type: 'message', staggerDelay, ...m }
 }
 
-const NB_ADJECTIVES = ['Swift', 'Cool', 'Bright', 'Bold', 'Wild', 'Calm', 'Soft', 'Sharp', 'Quick', 'Zen', 'Lucky', 'Brave']
-const NB_NOUNS = ['Panda', 'Fox', 'Otter', 'Wolf', 'Eagle', 'Tiger', 'Bear', 'Hawk', 'Lynx', 'Owl', 'Crab', 'Deer']
+// Lowercase snake-case Hilads-flavored handles. ~30 × 30 × 10000 = 9M combos
+// vs the old 144 — collisions become statistically negligible at any scale
+// the app is likely to hit, and the words read as "drift / city / time-of-day"
+// rather than generic animals. Produces e.g. `wandering_owl_4231`,
+// `dusk_traveler_8273`, `electric_neighbor_0192`.
+const NB_ADJECTIVES = [
+  'wandering', 'curious', 'golden', 'rusty', 'midnight', 'dawn',
+  'dusk', 'lively', 'drifting', 'restless', 'easy', 'sunny',
+  'foggy', 'neon', 'electric', 'breezy', 'lazy', 'quiet',
+  'bold', 'free', 'urban', 'late', 'slow', 'swift',
+  'calm', 'wild', 'hidden', 'friendly', 'casual', 'warm',
+]
+const NB_NOUNS = [
+  'traveler', 'explorer', 'wanderer', 'drifter', 'owl', 'fox',
+  'cat', 'ghost', 'spirit', 'ember', 'spark', 'breeze',
+  'echo', 'light', 'shadow', 'flame', 'voyager', 'scout',
+  'dreamer', 'pioneer', 'neighbor', 'local', 'visitor', 'observer',
+  'regular', 'stranger', 'guest', 'listener', 'friend', 'nomad',
+]
 
 function generateNickname() {
   const adj = NB_ADJECTIVES[Math.floor(Math.random() * NB_ADJECTIVES.length)]
   const noun = NB_NOUNS[Math.floor(Math.random() * NB_NOUNS.length)]
-  return `${adj}${noun}`
+  const num  = String(Math.floor(Math.random() * 10000)).padStart(4, '0')
+  return `${adj}_${noun}_${num}`
 }
 
 
@@ -861,6 +879,9 @@ export default function App() {
   const prevEventCountRef = useRef(0)      // detects new events added to the events list
   const locPromiseRef = useRef(null)
   const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
+  // Guard for the auto-bootstrap effect — prevents the deep-link auto-join
+  // from firing twice under React StrictMode in dev.
+  const guestAutoJoinedRef = useRef(false)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
   const chatInputRef = useRef(null)
   const sessionIdRef = useRef(PAGE_SESSION_ID)
@@ -1158,6 +1179,22 @@ export default function App() {
           setRehydrating(false)
           /* network error — keep flag, session may still be valid */
         })
+    } else {
+      // ── Guest auto-bootstrap on deep-link entry ────────────────────────────
+      // First-time visitors hitting a public deep link (/city/:slug, /event/*,
+      // /e/*, /t/*) should land directly on the content, not on LandingPage.
+      // Auto-create a guest session in the background. LandingPage stays the
+      // entry point only for direct hilads.live/ visits (the marketing path).
+      const link = parseDeepLink()
+      const isPublicDeepLink =
+        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic')
+      if (isPublicDeepLink && !guestAutoJoinedRef.current) {
+        guestAutoJoinedRef.current = true
+        // handleJoin awaits locPromiseRef.current (already set by the deep-link
+        // resolver effect above), creates the guest session, joins the
+        // channel, flips status to 'ready'. The user never sees LandingPage.
+        handleJoin(null)
+      }
     }
 
     // Remove this tab from presence on close — sendBeacon survives page unload
