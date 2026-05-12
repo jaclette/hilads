@@ -94,12 +94,17 @@ export async function fetchEventById(
   // Accept hex IDs or slug-with-trailing-hex (M4). Backend only knows hex.
   const m = String(eventIdOrSlug || '').match(/([a-f0-9]{16})$/i);
   const hex = m ? m[1].toLowerCase() : eventIdOrSlug;
+  if (eventIdOrSlug !== hex) {
+    console.log('[deeplink] fetchEventById extract', { input: eventIdOrSlug, hex });
+  }
   try {
-    return await api.get(
+    const res = await api.get<{ event: HiladsEvent; cityName: string; country: string; timezone: string }>(
       `/events/${encodeURIComponent(hex)}`,
       guestId ? { params: { guestId } } : undefined,
     );
-  } catch {
+    return res;
+  } catch (err) {
+    console.log('[deeplink] fetchEventById failed', { input: eventIdOrSlug, hex, err: String(err) });
     return null;
   }
 }

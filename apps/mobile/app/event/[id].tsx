@@ -105,6 +105,12 @@ export default function EventDetailScreen() {
   // `id` everywhere below is the hex; only the URL bar / share path uses slug.
   const id = (routeParam || '').match(/([a-f0-9]{16})$/i)?.[1]?.toLowerCase()
             ?? routeParam;
+  // Diagnostic: surface the route param + extracted id so deep-link arrivals
+  // are visible in Metro / `adb logcat -s ReactNativeJS` / iOS device logs.
+  // Helps catch any future Expo Router quirk that mangles the slug.
+  if (routeParam !== id) {
+    console.log('[deeplink] event/[id] extract', { routeParam, id });
+  }
   const { identity, sessionId, city, account, setActiveEventId, removeEventChatPreview, setUnreadDMs, eventChatPreviews } = useApp(); // sessionId still used for WS joinEvent
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 

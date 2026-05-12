@@ -60,9 +60,30 @@ export async function fetchChannels(sort?: string): Promise<City[]> {
 }
 
 export async function fetchCityBySlug(slug: string): Promise<City | null> {
+  // Backend returns { channelId, city, country, timezone, slug } where `city`
+  // is the display name. Native `City` type uses `name`. Without the
+  // normalisation here the screen reads `city.name` and gets undefined,
+  // rendering only the flag emoji on deep-link entry. Mirrors the same
+  // shape transform that resolveLocation() and fetchChannels() do.
   try {
-    return await api.get<City>(`/cities/by-slug/${encodeURIComponent(slug)}`);
-  } catch {
+    const data = await api.get<{
+      channelId: string | number;
+      city:      string;
+      country:   string | null;
+      timezone:  string | null;
+      slug:      string;
+    }>(`/cities/by-slug/${encodeURIComponent(slug)}`);
+    const normalized: City = {
+      channelId: String(data.channelId),
+      name:      data.city,
+      country:   data.country ?? '',
+      timezone:  data.timezone ?? 'UTC',
+      slug:      data.slug ?? slug,
+    };
+    console.log('[deeplink] fetchCityBySlug', { slug, channelId: normalized.channelId, name: normalized.name, country: normalized.country });
+    return normalized;
+  } catch (err) {
+    console.log('[deeplink] fetchCityBySlug failed', { slug, err: String(err) });
     return null;
   }
 }
