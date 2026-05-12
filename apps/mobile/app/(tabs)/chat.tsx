@@ -14,7 +14,7 @@ import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Platform,
-  TouchableOpacity, Animated, Share,
+  TouchableOpacity, Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -35,6 +35,7 @@ import { HiladsIcon } from '@/components/HiladsIcon';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
+import { shareLink } from '@/lib/shareLink';
 import type { Message, ReplyRef } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
@@ -632,8 +633,8 @@ export default function ChatTab() {
               onPress={async () => {
                 const url     = `${BASE_URL}/city/${city.slug}`;
                 const title   = `What's happening in ${city.name} right now`;
-                const message = `See who's around in ${city.name} tonight on Hilads. Real-time city activity, no sign-up.\n${url}`;
-                await Share.share({ title, url, message });
+                const message = `See who's around in ${city.name} tonight on Hilads. Real-time city activity, no sign-up.`;
+                await shareLink({ title, message, url });
               }}
               accessibilityLabel="Share city"
             >

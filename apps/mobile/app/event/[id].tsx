@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView, Share,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView,
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +19,7 @@ import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
+import { shareLink } from '@/lib/shareLink';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { BADGE_META } from '@/types';
@@ -189,13 +190,13 @@ export default function EventDetailScreen() {
 
   async function handleShare() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Slug URL when we know the event title (better in chat threads + SEO);
-    // hex short link when the event hasn't loaded yet.
     const url = event ? buildEventUrl(event) : buildEventUrl(id);
     const title = event?.title ?? 'Check out this event on Hilads';
 
-    // Compose chat-thread-friendly text — what shows up in iMessage / WhatsApp /
-    // Telegram pre-fill. Falls back to title-only when event details are absent.
+    // Descriptive text shown to iOS receivers in the share sheet preview.
+    // Crucially does NOT contain the URL — shareLink() handles platform
+    // differences (iOS uses separate fields, Android sends URL alone to
+    // avoid WhatsApp's "Copy Link" concatenation bug).
     let message = title;
     if (event) {
       const where = event.location ? ` at ${event.location}` : '';
@@ -205,7 +206,7 @@ export default function EventDetailScreen() {
         : '';
       message = `${title}${where}${when}.${who} See who's there on Hilads.`;
     }
-    await Share.share({ title, url, message: `${message}\n${url}` });
+    await shareLink({ title, message, url });
   }
 
   // Refetch participants after join/leave toggle

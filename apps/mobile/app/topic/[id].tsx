@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Share,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
+import { shareLink } from '@/lib/shareLink';
 import {
   fetchTopicById, fetchTopicMessages,
   sendTopicMessage, sendTopicImageMessage, markTopicRead,
@@ -38,10 +39,10 @@ export default function TopicChatScreen() {
     const url   = `https://hilads.live/t/${id}`;
     const title = topic?.title ? `💬 ${topic.title}` : 'Conversation on Hilads';
     const message = topic?.title
-      ? `New conversation: "${topic.title}" — jump in on Hilads.\n${url}`
-      : `Jump into the conversation on Hilads.\n${url}`;
+      ? `New conversation: "${topic.title}" — jump in on Hilads.`
+      : `Jump into the conversation on Hilads.`;
     try {
-      await Share.share({ title, url, message });
+      await shareLink({ title, message, url });
       setShared(true);
       setTimeout(() => setShared(false), 2000);
     } catch {
