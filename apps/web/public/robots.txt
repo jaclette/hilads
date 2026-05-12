@@ -4,10 +4,13 @@
 # entire surface is shareable). The PWA service worker, manifest and well-known
 # files don't need explicit listing — they're allowed by default.
 #
-# Block crawling of in-flight upload URLs and any auth callback paths if those
-# ever get added; for now the disallow list is empty.
+# Block API endpoints, auth callbacks, and URLs containing tokens to avoid
+# wasting crawl budget on non-indexable routes.
 
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /auth/
+Disallow: /*?*token=
 
 Sitemap: https://hilads.live/sitemap.xml
