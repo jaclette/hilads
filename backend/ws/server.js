@@ -101,11 +101,14 @@ function broadcast(cityId, data, exclude = null) {
   const room = rooms.get(cityId)
   if (!room) return
   const msg = JSON.stringify(data)
+  let recipients = 0
   for (const session of room.values()) {
     if (session.ws !== exclude && session.ws.readyState === 1 /* OPEN */) {
       session.ws.send(msg)
+      recipients++
     }
   }
+  console.log(`[WS][emit] event=${data.event} target=city:${cityId} recipients=${recipients}/${room.size}`)
 }
 
 function sendSnapshot(ws, cityId) {
@@ -167,6 +170,24 @@ setInterval(() => {
 // ── Event handlers ─────────────────────────────────────────────────────────────
 
 function handleJoinRoom(ws, { cityId, sessionId, nickname, userId, guestId, mode }) {
+  // Defensive: evict this socket from any OTHER city room it's already in.
+  // A buggy client that calls joinRoom(20) without a preceding leaveRoom(17)
+  // would otherwise sit in both rooms and receive cross-city events
+  // (the HCMC↔Berlin typing leak). The client-side fix prevents this in
+  // normal operation; this is the safety net.
+  for (const [otherCityId, otherRoom] of rooms) {
+    if (otherCityId === cityId) continue
+    for (const [otherSessionId, otherSession] of otherRoom) {
+      if (otherSession.ws === ws) {
+        console.log(`[WS] joinRoom: defensive auto-leave ${otherSession.nickname} (${otherSessionId.slice(0, 8)}) from city ${otherCityId} → joining ${cityId}`)
+        otherRoom.delete(otherSessionId)
+        if (clearTyping(otherCityId, otherSessionId)) broadcastTyping(otherCityId)
+        broadcast(otherCityId, { event: 'userLeft', cityId: otherCityId, user: { sessionId: otherSessionId, nickname: otherSession.nickname } })
+        broadcast(otherCityId, { event: 'onlineCountUpdated', cityId: otherCityId, count: otherRoom.size })
+      }
+    }
+  }
+
   const room = getRoom(cityId)
 
   // Evict any stale sessions for the same real user (same userId or same guestId but
@@ -269,21 +290,40 @@ function broadcastEventCount(eventId) {
   if (!room) return
   const count = room.size
   const msg = JSON.stringify({ event: 'event_presence_update', eventId, count })
+  let recipients = 0
   for (const session of room.values()) {
-    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=event_presence_update target=event:${eventId} recipients=${recipients}/${room.size}`)
 }
 
 function broadcastParticipantCount(eventId, count) {
   const room = eventRooms.get(eventId)
   if (!room) return
   const msg = JSON.stringify({ event: 'event_participants_update', eventId, count })
+  let recipients = 0
   for (const session of room.values()) {
-    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=event_participants_update target=event:${eventId} recipients=${recipients}/${room.size}`)
 }
 
 function handleJoinEvent(ws, { eventId, sessionId }) {
+  // Defensive: evict this socket from any other event room it's already in.
+  // Mirror of the city-room auto-leave above. Prevents cross-event chat /
+  // presence leaks if a client forgets to leaveEvent before joining a new one.
+  for (const [otherEventId, otherRoom] of eventRooms) {
+    if (otherEventId === eventId) continue
+    for (const [otherSessionId, otherSession] of otherRoom) {
+      if (otherSession.ws === ws) {
+        console.log(`[WS] joinEvent: defensive auto-leave ${otherSessionId.slice(0, 8)} from event ${otherEventId} → joining ${eventId}`)
+        otherRoom.delete(otherSessionId)
+        if (otherRoom.size === 0) eventRooms.delete(otherEventId)
+        else broadcastEventCount(otherEventId)
+      }
+    }
+  }
+
   const room = getEventRoom(eventId)
   room.set(sessionId, { sessionId, ws })
   console.log(`[WS] joinEvent: ${sessionId.slice(0, 8)} -> event ${eventId} (${room.size} in room)`)
@@ -337,9 +377,11 @@ function broadcastConversationMessage(conversationId, message) {
   const room = dmRooms.get(conversationId)
   if (!room) return
   const payload = JSON.stringify({ event: 'newConversationMessage', conversationId, message })
+  let recipients = 0
   for (const { ws } of room.values()) {
-    if (ws.readyState === 1 /* OPEN */) ws.send(payload)
+    if (ws.readyState === 1 /* OPEN */) { ws.send(payload); recipients++ }
   }
+  console.log(`[WS][emit] event=newConversationMessage target=dm:${conversationId.slice(0, 8)} recipients=${recipients}/${room.size}`)
 }
 
 // ── Per-user channel ───────────────────────────────────────────────────────────
@@ -359,9 +401,11 @@ function broadcastToUser(userId, event, payload) {
   const sockets = userRooms.get(userId)
   if (!sockets || sockets.size === 0) return
   const msg = JSON.stringify({ event, ...payload })
+  let recipients = 0
   for (const ws of sockets) {
-    if (ws.readyState === 1 /* OPEN */) ws.send(msg)
+    if (ws.readyState === 1 /* OPEN */) { ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=${event} target=user:${userId.slice(0, 8)} recipients=${recipients}/${sockets.size}`)
 }
 
 // Remove a disconnected ws from all rooms it was part of
@@ -575,9 +619,11 @@ function broadcastNewEvent(channelId, hiladsEvent) {
   const room = rooms.get(channelId)
   if (!room) return
   const msg = JSON.stringify({ event: 'new_event', channelId, hiladsEvent })
+  let recipients = 0
   for (const session of room.values()) {
-    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=new_event target=city:${channelId} recipients=${recipients}/${room.size}`)
 }
 
 // ── New-topic broadcast ─────────────────────────────────────────────────────────
@@ -589,9 +635,11 @@ function broadcastNewTopic(channelId, topic) {
   const room = rooms.get(channelId)
   if (!room) return
   const msg = JSON.stringify({ event: 'newTopic', channelId, topic })
+  let recipients = 0
   for (const session of room.values()) {
-    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=newTopic target=city:${channelId} recipients=${recipients}/${room.size}`)
 }
 
 // ── Message broadcast ───────────────────────────────────────────────────────────
@@ -599,18 +647,21 @@ function broadcastNewTopic(channelId, topic) {
 // channelId is an integer for city channels, a hex string for event or topic channels.
 // Pushes a newMessage event to all connected clients in that room.
 function broadcastNewMessage(channelId, message) {
-  let room
+  let room, kind
   if (typeof channelId === 'number') {
-    room = rooms.get(channelId)
+    room = rooms.get(channelId); kind = 'city'
   } else {
     // String channelId — could be an event room or a topic room; check both
-    room = eventRooms.get(channelId) ?? topicRooms.get(channelId)
+    if (eventRooms.has(channelId)) { room = eventRooms.get(channelId); kind = 'event' }
+    else                            { room = topicRooms.get(channelId); kind = 'topic' }
   }
   if (!room) return
   const msg = JSON.stringify({ event: 'newMessage', channelId, message })
+  let recipients = 0
   for (const session of room.values()) {
-    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=newMessage target=${kind}:${channelId} recipients=${recipients}/${room.size}`)
 }
 
 // ── Reaction broadcast ──────────────────────────────────────────────────────────
@@ -618,26 +669,32 @@ function broadcastNewMessage(channelId, message) {
 // PHP sends channelId as "city_N" for city channels, plain eventId for event channels.
 // Pushes a reactionUpdate event so all room members see emoji counts instantly.
 function broadcastReactionUpdate(channelId, messageId, reactions) {
-  let room
+  let room, target
   if (typeof channelId === 'string' && channelId.startsWith('city_')) {
-    room = rooms.get(parseInt(channelId.slice(5), 10))
+    room = rooms.get(parseInt(channelId.slice(5), 10)); target = `city:${channelId.slice(5)}`
+  } else if (eventRooms.has(channelId)) {
+    room = eventRooms.get(channelId); target = `event:${channelId}`
   } else {
-    room = eventRooms.get(channelId) ?? topicRooms.get(channelId)
+    room = topicRooms.get(channelId); target = `topic:${channelId}`
   }
   if (!room) return
   const msg = JSON.stringify({ event: 'reactionUpdate', channelId, messageId, reactions })
+  let recipients = 0
   for (const session of room.values()) {
-    if (session.ws.readyState === 1 /* OPEN */) session.ws.send(msg)
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=reactionUpdate target=${target} recipients=${recipients}/${room.size}`)
 }
 
 function broadcastDmReactionUpdate(conversationId, messageId, reactions) {
   const room = dmRooms.get(conversationId)
   if (!room) return
   const msg = JSON.stringify({ event: 'dmReactionUpdate', conversationId, messageId, reactions })
+  let recipients = 0
   for (const [, { ws }] of room) {
-    if (ws.readyState === 1 /* OPEN */) ws.send(msg)
+    if (ws.readyState === 1 /* OPEN */) { ws.send(msg); recipients++ }
   }
+  console.log(`[WS][emit] event=dmReactionUpdate target=dm:${conversationId.slice(0, 8)} recipients=${recipients}/${room.size}`)
 }
 
 // ── Reaction burst broadcast ────────────────────────────────────────────────────
@@ -651,11 +708,14 @@ function handleReactionBurst(ws, { type, messageId, cityId, userId, timestamp })
   const room = rooms.get(parseInt(cityId, 10))
   if (!room) return
   const payload = JSON.stringify({ event: 'reaction', type, messageId, userId: userId ?? null, timestamp: timestamp ?? Date.now() })
+  let recipients = 0
   for (const session of room.values()) {
     if (session.ws !== ws && session.ws.readyState === 1 /* OPEN */) {
       session.ws.send(payload)
+      recipients++
     }
   }
+  console.log(`[WS][emit] event=reaction target=city:${cityId} recipients=${recipients}/${room.size}`)
 }
 
 httpServer.listen(PORT, '0.0.0.0', () => {

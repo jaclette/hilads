@@ -4466,8 +4466,17 @@ export default function App() {
           onSignOut={async () => {
             track('auth_logout')
             resetAnalytics()
+            // Halt outbound work BEFORE invalidating auth so cleanup endpoints
+            // still see a valid cookie:
+            //   1. tear down the WS so the reconnect timer doesn't replay the
+            //      old user's joinRoom/joinUser against a now-invalid session
+            //      (1006 loop)
+            //   2. unsubscribe push while the cookie is still good
+            // Only THEN clear the auth flag and call authLogout().
+            socketRef.current?.disconnect()
+            socketRef.current = null
+            await unregisterPush()
             await authLogout()
-            unregisterPush().catch(() => {})
             localStorage.removeItem(AUTH_FLAG_KEY) // next boot is guest — skip authMe()
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
@@ -4488,7 +4497,12 @@ export default function App() {
             // Mirror the same client-side teardown as Sign out.
             track('account_deleted')
             resetAnalytics()
-            unregisterPush().catch(() => {})
+            // Account API has already invalidated the cookie, but the WS
+            // reconnect timer would still replay joinRoom/joinUser against
+            // a now-invalid session — tear it down before clearing state.
+            socketRef.current?.disconnect()
+            socketRef.current = null
+            await unregisterPush()
             localStorage.removeItem(AUTH_FLAG_KEY)
             setAccount(null)
             clearIdentity()

@@ -345,11 +345,10 @@ export function useAppBoot(): Result {
               console.log('[boot] account set — push registration will fire via usePushRegistration');
               console.log('[boot] authToken present:', getAuthToken() !== null ? 'yes' : 'NO');
               // Subscribe to the per-user WS channel so friend-request events
-              // and other per-user notifications reach this device. Safe to
-              // call before the socket connects: send() drops while closed,
-              // and we re-subscribe on every 'connected' event below.
+              // and other per-user notifications reach this device. The socket
+              // owns the replay on reconnect — no on('connected') subscription
+              // needed (those leaked because they were never unsubscribed).
               socket.joinUser(user.id);
-              socket.on('connected', () => socket.joinUser(user.id));
             } else if (!cancelled) {
               console.log('[boot] no authenticated user — push registration will wait for login');
             }
@@ -403,12 +402,8 @@ export function useAppBoot(): Result {
                   })
                   .catch(() => {});
                 const userId = user?.id;
-                socket.on('connected', () =>
-                  socket.joinCity(saved.channelId, sessionId, displayName, userId, identity.guestId),
-                );
-                if (socket.isConnected) {
-                  socket.joinCity(saved.channelId, sessionId, displayName, userId, identity.guestId);
-                }
+                // Socket owns replay on reconnect — call once, queues if not yet connected.
+                socket.joinCity(saved.channelId, sessionId, displayName, userId, identity.guestId);
                 setJoined(true);
 
                 // Check for a cold-start notification deep link.

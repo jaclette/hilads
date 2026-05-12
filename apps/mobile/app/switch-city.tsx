@@ -183,11 +183,10 @@ export default function SwitchCityScreen() {
     }
     if (identity && sessionId) {
       joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
-      if (socket.isConnected) {
-        socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
-      } else {
-        socket.on('connected', () => socket.joinCity(item.channelId, sessionId, nickname, account?.id));
-      }
+      // joinCity now self-leaves the previous city + queues replay if WS is
+      // not yet connected. No more on('connected', joinCity) subscription —
+      // those leaked because they were never unsubscribed.
+      socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
     }
     track('city_selected', { cityId: item.channelId, cityName: item.name });
     // replace (not push) — back from the City Channel shouldn't return here.

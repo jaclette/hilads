@@ -9,6 +9,7 @@ import type { GuestIdentity, City, Message, User, OnlineUser, EventChatPreview }
 import { authLogout } from '@/api/auth';
 import { clearToken } from '@/services/session';
 import { unregisterPushToken } from '@/services/push';
+import { socket } from '@/lib/socket';
 import { track, resetAnalytics } from '@/services/analytics';
 
 // Pre-loaded data returned by POST /channels/{id}/bootstrap.
@@ -125,6 +126,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     track('auth_logout');
     resetAnalytics();
+    // Tear down the WS first so its reconnect timer doesn't replay
+    // joinRoom/joinUser against a session the server is about to reject —
+    // that produces a 1006 reconnect loop after sign-out. resetPending()
+    // also drops any cached pendingCity / pendingUser so a future reconnect
+    // doesn't silently re-join the signed-out account's rooms.
+    socket.disconnect();
+    socket.resetPending();
     await unregisterPushToken().catch(() => {}); // remove device token before clearing auth
     await authLogout();
     await clearToken();
@@ -132,6 +140,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUnreadDMs(0);
     setUnreadNotifications(0);
     setEventChatPreviewsRaw({});
+    // Reconnect as guest so sign-in.tsx's later joinCity isn't silently
+    // dropped against a closed socket.
+    socket.connect();
   }, []);
 
   return (

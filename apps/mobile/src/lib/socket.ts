@@ -14,6 +14,17 @@ type Handler = (data: Record<string, unknown>) => void;
 const RAPID_RETRY_MAX = 15;   // 15 × 3s = 45s fast window
 const RAPID_RETRY_MS  = 3000;
 
+// Pending room state replayed automatically on every (re)connect — mirrors
+// `pendingJoin` etc. in apps/web/src/socket.js. The socket owns its own
+// replay so consumers don't have to wire up an `on('connected', joinX)`
+// callback (which leaks if not unsubscribed and accumulates joins on
+// every reconnect).
+type PendingCity  = { cityId: string; sessionId: string; nickname: string; userId?: string; guestId?: string; mode?: string | null };
+type PendingEvent = { eventId: string; sessionId: string; nickname?: string };
+type PendingTopic = { topicId: string; sessionId: string };
+type PendingDm    = { conversationId: string; userId: string };
+type PendingUser  = { userId: string };
+
 class HiladsSocket {
   private ws:             WebSocket | null = null;
   private handlers:       Map<string, Set<Handler>> = new Map();
@@ -21,6 +32,12 @@ class HiladsSocket {
   private reconnectMs:    number  = 2000;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private rapidRetries:   number  = 0;
+
+  private pendingCity:  PendingCity  | null = null;
+  private pendingEvent: PendingEvent | null = null;
+  private pendingTopic: PendingTopic | null = null;
+  private pendingDm:    PendingDm    | null = null;
+  private pendingUser:  PendingUser  | null = null;
 
   // ── Connection ──────────────────────────────────────────────────────────────
 
@@ -82,18 +99,32 @@ class HiladsSocket {
   }
 
   joinCity(cityId: string, sessionId: string, nickname: string, userId?: string, guestId?: string, mode?: string | null): void {
+    // If the socket was already tracking a different city, leave it first so
+    // we never accumulate city-room memberships on the server. (Server has its
+    // own defensive auto-leave, but this saves a round-trip and keeps logs
+    // clean.)
+    if (this.pendingCity && this.pendingCity.cityId !== cityId) {
+      this.send({ event: 'leaveRoom', cityId: this._numericCityId(this.pendingCity.cityId), sessionId: this.pendingCity.sessionId });
+    }
+    this.pendingCity = { cityId, sessionId, nickname, userId, guestId, mode: mode ?? null };
     this.send({ event: 'joinRoom', cityId: this._numericCityId(cityId), sessionId, nickname, ...(userId ? { userId } : {}), ...(guestId ? { guestId } : {}), ...(mode ? { mode } : {}) });
   }
 
   leaveCity(cityId: string, sessionId: string): void {
+    if (this.pendingCity?.cityId === cityId) this.pendingCity = null;
     this.send({ event: 'leaveRoom', cityId: this._numericCityId(cityId), sessionId });
   }
 
   joinEvent(eventId: string, sessionId: string, nickname?: string): void {
+    if (this.pendingEvent && this.pendingEvent.eventId !== eventId) {
+      this.send({ event: 'leaveEvent', eventId: this.pendingEvent.eventId, sessionId: this.pendingEvent.sessionId });
+    }
+    this.pendingEvent = { eventId, sessionId, nickname };
     this.send({ event: 'joinEvent', eventId, sessionId, ...(nickname ? { nickname } : {}) });
   }
 
   leaveEvent(eventId: string, sessionId: string): void {
+    if (this.pendingEvent?.eventId === eventId) this.pendingEvent = null;
     this.send({ event: 'leaveEvent', eventId, sessionId });
   }
 
@@ -111,10 +142,15 @@ class HiladsSocket {
 
   // Mirrors web socket.js joinConversation() — event name must match server exactly.
   joinTopic(topicId: string, sessionId: string): void {
+    if (this.pendingTopic && this.pendingTopic.topicId !== topicId) {
+      this.send({ event: 'leaveTopic', topicId: this.pendingTopic.topicId, sessionId: this.pendingTopic.sessionId });
+    }
+    this.pendingTopic = { topicId, sessionId };
     this.send({ event: 'joinTopic', topicId, sessionId });
   }
 
   leaveTopic(topicId: string, sessionId: string): void {
+    if (this.pendingTopic?.topicId === topicId) this.pendingTopic = null;
     this.send({ event: 'leaveTopic', topicId, sessionId });
   }
 
@@ -135,10 +171,15 @@ class HiladsSocket {
   }
 
   joinDm(conversationId: string, userId: string): void {
+    if (this.pendingDm && this.pendingDm.conversationId !== conversationId) {
+      this.send({ event: 'leaveConversation', conversationId: this.pendingDm.conversationId, userId: this.pendingDm.userId });
+    }
+    this.pendingDm = { conversationId, userId };
     this.send({ event: 'joinConversation', conversationId, userId });
   }
 
   leaveDm(conversationId: string): void {
+    if (this.pendingDm?.conversationId === conversationId) this.pendingDm = null;
     this.send({ event: 'leaveConversation', conversationId });
   }
 
@@ -149,7 +190,21 @@ class HiladsSocket {
    * every reconnect — the server tracks one entry per (userId, ws).
    */
   joinUser(userId: string): void {
+    if (!userId) return;
+    this.pendingUser = { userId };
     this.send({ event: 'joinUser', userId });
+  }
+
+  /**
+   * Drop all replay state — call from logout so a future reconnect doesn't
+   * silently re-join rooms tied to the previous identity.
+   */
+  resetPending(): void {
+    this.pendingCity  = null;
+    this.pendingEvent = null;
+    this.pendingTopic = null;
+    this.pendingDm    = null;
+    this.pendingUser  = null;
   }
 
   // ── Internal ─────────────────────────────────────────────────────────────────
@@ -164,6 +219,22 @@ class HiladsSocket {
         console.log('[WS] connected');
         this.reconnectMs = 2000;
         this.rapidRetries = 0;
+        // Replay room memberships so the server restores them after reconnect.
+        // Mirrors web socket.js onopen replay block. Consumers no longer need
+        // to wire `socket.on('connected', () => socket.joinX(...))` themselves
+        // — that pattern leaked because handlers were never unsubscribed and
+        // accumulated joinX calls on every reconnect.
+        if (this.pendingCity) {
+          const c = this.pendingCity;
+          this.send({ event: 'joinRoom', cityId: this._numericCityId(c.cityId), sessionId: c.sessionId, nickname: c.nickname, ...(c.userId ? { userId: c.userId } : {}), ...(c.guestId ? { guestId: c.guestId } : {}), ...(c.mode ? { mode: c.mode } : {}) });
+        }
+        if (this.pendingEvent) {
+          const e = this.pendingEvent;
+          this.send({ event: 'joinEvent', eventId: e.eventId, sessionId: e.sessionId, ...(e.nickname ? { nickname: e.nickname } : {}) });
+        }
+        if (this.pendingTopic) this.send({ event: 'joinTopic',        ...this.pendingTopic });
+        if (this.pendingDm)    this.send({ event: 'joinConversation', ...this.pendingDm });
+        if (this.pendingUser)  this.send({ event: 'joinUser',         ...this.pendingUser });
         this._dispatch('connected', {});
       };
 

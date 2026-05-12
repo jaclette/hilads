@@ -160,6 +160,11 @@ export default function ChatTab() {
 
   useEffect(() => {
     const off = socket.on('typingUsers', (data: Record<string, unknown>) => {
+      // Server echoes cityId as integer (e.g. 1); native channelId is a string ("1").
+      // Without this guard, typing in any city the socket is still in (e.g. via a
+      // stale membership before server-side cleanup) would leak into the active
+      // chat — that was the data-leak between HCMC and Berlin reported in #ws-leak.
+      if (String(data.cityId) !== channelId) return;
       const users = (data.users as TypingUser[] | undefined) ?? [];
       setTypingUsers(users);
     });

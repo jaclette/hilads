@@ -1,5 +1,11 @@
 const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
 
+// Mirrors the AUTH_FLAG_KEY constant in App.jsx. Used as a cheap "still
+// authenticated?" check between the long async steps of registerPush —
+// the user can sign out mid-flight and we'd otherwise hit /push/subscribe
+// after the cookie has already been cleared, producing a 401.
+const AUTH_FLAG_KEY = 'hilads_has_auth'
+
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 function urlBase64ToUint8Array(base64String) {
@@ -50,6 +56,11 @@ export async function registerPush() {
       userVisibleOnly:      true,
       applicationServerKey: urlBase64ToUint8Array(key),
     })
+
+    // Bail out if the user signed out while we were awaiting permission /
+    // VAPID / pushManager.subscribe — POSTing to /push/subscribe with no
+    // cookie returns 401 and surfaces in the console.
+    if (!localStorage.getItem(AUTH_FLAG_KEY)) return false
 
     // 6. Store subscription on the backend
     const subRes = await fetch(`${BASE}/push/subscribe`, {

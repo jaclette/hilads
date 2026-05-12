@@ -227,11 +227,9 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
         if (boot.unreadNotifications !== null) setUnreadNotifications(boot.unreadNotifications);
         if (boot.hasUnreadDMs !== null) setUnreadDMs(boot.hasUnreadDMs ? 1 : 0);
         setCity(city);
-        if (socket.isConnected) {
-          socket.joinCity(city.channelId, sessionId, trimmed, account?.id, identity.guestId);
-        } else {
-          socket.on('connected', () => socket.joinCity(city.channelId, sessionId, trimmed, account?.id));
-        }
+        // joinCity is safe to call before connect — it queues the replay
+        // and the socket fires it on 'connected'.
+        socket.joinCity(city.channelId, sessionId, trimmed, account?.id, identity.guestId);
       }
       await saveIdentity(updated);
       setIdentity(updated);

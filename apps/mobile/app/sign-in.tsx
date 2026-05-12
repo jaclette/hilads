@@ -52,13 +52,8 @@ export default function SignInScreen() {
           await joinChannel(detectedCity.channelId, sessionId, identity.guestId, nickname);
           setCity(detectedCity);
           const userId = user.id;
-          if (socket.isConnected) {
-            socket.joinCity(detectedCity.channelId, sessionId, nickname, userId, identity.guestId);
-          } else {
-            socket.on('connected', () =>
-              socket.joinCity(detectedCity.channelId, sessionId, nickname, userId, identity.guestId),
-            );
-          }
+          // joinCity queues replay if WS isn't connected yet — no on('connected') subscription.
+          socket.joinCity(detectedCity.channelId, sessionId, nickname, userId, identity.guestId);
           // Persist channelId so next boot treats user as returning
           const updated = { ...identity, nickname, channelId: detectedCity.channelId };
           await saveIdentity(updated);
