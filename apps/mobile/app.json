@@ -29,7 +29,8 @@
         "UIBackgroundModes": [
           "remote-notification"
         ]
-      }
+      },
+      "buildNumber": "10"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -38,7 +39,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 35,
+      "versionCode": 45,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",

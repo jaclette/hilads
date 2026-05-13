@@ -17,8 +17,5 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "private": true,
-  "dependencies": {
-    "expo-notifications": "~0.29.14"
-  }
+  "private": true
 }
