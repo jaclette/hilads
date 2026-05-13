@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Support - Hilads</title>
+  <meta name="description" content="Help, FAQ, and contact for Hilads, the real-time city social app." />
+  <meta name="theme-color" content="#0f0d0b" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f0d0b;
+      --surface:  #1a1612;
+      --surface2: #221c17;
+      --border:   rgba(255,255,255,0.08);
+      --text:     #f0ece6;
+      --muted:    #a09486;
+      --muted2:   #6e6358;
+      --accent:   #FF7A3C;
+      --accent2:  #D85A30;
+      --radius:   12px;
+      --max-w:    740px;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      padding: 0 16px 80px;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    header {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 56px 0 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      margin-bottom: 28px;
+    }
+    .logo:hover { text-decoration: none; }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .logo-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-size: 17px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* Sections */
+    main { max-width: var(--max-w); margin: 0 auto; }
+
+    section {
+      padding: 40px 0 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-of-type { border-bottom: none; }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 18px;
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 8px;
+    }
+
+    p { color: var(--muted); margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
+    ul { color: var(--muted); padding-left: 20px; margin-bottom: 14px; }
+    li { margin-bottom: 6px; }
+
+    /* Contact card */
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .contact-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+    }
+    .contact-label {
+      color: var(--muted2);
+      font-size: 13px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      font-weight: 700;
+      min-width: 110px;
+    }
+    .contact-value { color: var(--text); font-weight: 500; }
+    .contact-card a { font-weight: 600; }
+
+    /* FAQ */
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 12px;
+    }
+    .faq-item h3 { margin-bottom: 8px; color: var(--accent); }
+    .faq-item p { font-size: 15px; }
+    .faq-item ol, .faq-item ul {
+      color: var(--muted);
+      padding-left: 22px;
+      font-size: 15px;
+      margin-top: 8px;
+    }
+    .faq-item ol li, .faq-item ul li { margin-bottom: 4px; }
+
+    /* Report problem callout */
+    .callout {
+      background: linear-gradient(135deg, rgba(255,122,60,0.10), rgba(216,90,48,0.06));
+      border: 1px solid rgba(255,122,60,0.25);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .callout code {
+      background: rgba(0,0,0,0.35);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 14px;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .callout ul { color: var(--text); }
+    .callout ul li { color: var(--muted); }
+
+    /* Guidelines list */
+    .guidelines {
+      list-style: none;
+      padding-left: 0;
+    }
+    .guidelines li {
+      position: relative;
+      padding: 10px 0 10px 32px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    .guidelines li:last-child { border-bottom: none; }
+    .guidelines li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 16px;
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+    }
+    .guidelines li::after {
+      content: "\2713";
+      position: absolute;
+      left: 4px;
+      top: 14px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 18px;
+    }
+    .guidelines strong { color: var(--text); margin-right: 6px; }
+    .guidelines span { color: var(--muted); }
+
+    /* Footer links */
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      padding-top: 12px;
+    }
+    .footer-links a {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    footer {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 40px 0 0;
+      text-align: center;
+      color: var(--muted2);
+      font-size: 14px;
+    }
+
+    /* Mobile tuning */
+    @media (max-width: 480px) {
+      body { padding: 0 14px 60px; }
+      header { padding-top: 40px; padding-bottom: 24px; }
+      section { padding-top: 32px; }
+      .contact-label { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo">
+      <span class="logo-mark">H</span>
+      <span class="logo-name">Hilads</span>
+    </a>
+    <h1>Hilads Support</h1>
+    <p class="tagline">Help, answers, and a way to reach us. Real people read every message.</p>
+  </header>
+
+  <main>
+
+    <!-- Contact -->
+    <section id="contact">
+      <h2>Contact</h2>
+      <div class="contact-card">
+        <div class="contact-row">
+          <span class="contact-label">Email</span>
+          <a href="mailto:support@hilads.com" class="contact-value">support@hilads.com</a>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Response time</span>
+          <span class="contact-value">Within 48 hours</span>
+        </div>
+        <div class="contact-row">
+          <span class="contact-label">Hours</span>
+          <span class="contact-value">Monday to Friday, replies sent in the order received</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2>Frequently Asked Questions</h2>
+
+      <div class="faq-item">
+        <h3>How do I create an account or sign in?</h3>
+        <p>You can use Hilads as a guest the moment you open the app, no signup required. To create a permanent account, open the Me tab and tap Create account. Enter an email and password, choose a display name, and you are in. To sign back in on another device, open the Me tab and tap Sign in.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I switch cities?</h3>
+        <p>Tap the city name at the top of the chat screen, or open the Cities tab. From there you can search for any city or pick one of the most active cities right now. Tapping a city joins it instantly.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I join or create an event?</h3>
+        <ol>
+          <li><strong>Join:</strong> open the Now tab to see events happening today, then tap any event card and tap Going.</li>
+          <li><strong>Create:</strong> tap the plus button on the Now tab, give your event a title, choose a type (drinks, music, sport, and so on), set a time, and tap Create.</li>
+        </ol>
+        <p>Events are visible to everyone in your current city.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I report a user or inappropriate content?</h3>
+        <p>Tap any user avatar to open their profile, then tap the menu icon in the top right and choose Report. For a specific message or photo, long press the item and choose Report. Our team reviews every report, usually within 24 hours.</p>
+        <p>For urgent safety concerns, email <a href="mailto:support@hilads.com">support@hilads.com</a> with the subject line "Urgent: Safety Report".</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I block a user?</h3>
+        <p>Open the user's profile, tap the menu icon in the top right, and choose Block. Blocked users cannot message you, see your messages, or appear in your feed. You can unblock anyone later from Me &gt; Settings &gt; Blocked Users.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I delete my account?</h3>
+        <p>You can permanently delete your account and all associated data directly inside the app:</p>
+        <ol>
+          <li>Open the <strong>Me</strong> tab.</li>
+          <li>Scroll to the bottom of your profile.</li>
+          <li>Tap <strong>Delete account</strong>.</li>
+          <li>Confirm by tapping <strong>Delete my account</strong> in the dialog.</li>
+        </ol>
+        <p>Your profile, messages, photos, friends, and settings are removed within 30 days. Some anonymized aggregate data may be retained for analytics. If you cannot access the app, email <a href="mailto:support@hilads.com">support@hilads.com</a> from the address tied to your account and we will delete it for you.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Privacy and data: what do you collect and how is it used?</h3>
+        <p>We collect the minimum needed to make the app feel alive:</p>
+        <ul>
+          <li><strong>Location:</strong> approximate city only, used to place you in the right channel. Never sold or shared.</li>
+          <li><strong>Profile data:</strong> display name, optional photo, vibe and interests you choose.</li>
+          <li><strong>Messages and events:</strong> content you create, visible to other users in the same channel or event.</li>
+          <li><strong>Device data:</strong> basic crash and performance metrics so we can fix bugs.</li>
+        </ul>
+        <p>Full details in our <a href="/privacy.html">Privacy Policy</a>.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do I disable notifications?</h3>
+        <p>You can turn off notifications in two places:</p>
+        <ul>
+          <li><strong>Inside the app:</strong> Me &gt; Settings &gt; Notifications, then toggle the categories you want to silence.</li>
+          <li><strong>iOS Settings:</strong> open the iOS Settings app, scroll to Hilads, tap Notifications, and turn Allow Notifications off.</li>
+        </ul>
+      </div>
+
+      <div class="faq-item">
+        <h3>Is Hilads free?</h3>
+        <p>Yes. Hilads is free to use. We do not show ads and we do not sell your data.</p>
+      </div>
+
+    </section>
+
+    <!-- Report a Problem -->
+    <section id="report-problem">
+      <h2>Report a Problem</h2>
+      <div class="callout">
+        <p>Found a bug? Send an email to <a href="mailto:support@hilads.com">support@hilads.com</a> with the subject line:</p>
+        <p><code>[Bug] Short description of the issue</code></p>
+        <p>To help us fix it quickly, please include:</p>
+        <ul>
+          <li>Your <strong>device model</strong> (for example: iPhone 15 Pro)</li>
+          <li>Your <strong>iOS version</strong> (Settings &gt; General &gt; About &gt; Software Version)</li>
+          <li>The <strong>app version</strong> (Me tab, scroll to the bottom)</li>
+          <li><strong>Steps to reproduce</strong> the bug, in order</li>
+          <li>What you <strong>expected</strong> to happen and what <strong>actually happened</strong></li>
+          <li>A <strong>screenshot or screen recording</strong> if possible</li>
+        </ul>
+        <p>For account or login issues, send the email from the address tied to your account so we can verify identity.</p>
+      </div>
+    </section>
+
+    <!-- Community Guidelines -->
+    <section id="guidelines">
+      <h2>Community Guidelines</h2>
+      <p>Hilads is built to make cities feel alive. To keep it that way, every member agrees to these basics:</p>
+      <ul class="guidelines">
+        <li><strong>Be respectful.</strong> <span>Treat every member like a real human, because they are.</span></li>
+        <li><strong>No harassment.</strong> <span>Hate speech, threats, stalking, and bullying have no place here.</span></li>
+        <li><strong>No spam.</strong> <span>No self promotion, scams, or repetitive messaging.</span></li>
+        <li><strong>No illegal content.</strong> <span>Nothing that violates laws or platform policies, including any sexual content involving minors.</span></li>
+        <li><strong>13 and up.</strong> <span>You must be at least 13 years old to use Hilads.</span></li>
+      </ul>
+      <p>Violations can result in content removal, temporary suspension, or a permanent ban depending on severity.</p>
+    </section>
+
+    <!-- Legal Links -->
+    <section id="legal">
+      <h2>Legal</h2>
+      <div class="footer-links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <a href="/child-safety.html">Child Safety</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Hilads. Made with care.</p>
+  </footer>
+
+</body>
+</html>
