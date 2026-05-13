@@ -8,7 +8,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": false
+        "simulator": false,
+        "image": "latest"
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "http://10.0.2.2:8080",
@@ -18,6 +19,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "ios": {
+        "image": "latest"
+      },
       "android": {
         "buildType": "apk"
       },
@@ -30,6 +34,9 @@
     },
     "production": {
       "autoIncrement": true,
+      "ios": {
+        "image": "latest"
+      },
       "android": {
         "buildType": "app-bundle"
       },
