@@ -865,6 +865,22 @@ export default function MeScreen() {
           </View>
         )}
 
+        {/* ── Settings (registered only) — Apple G1.2 requires reachable Block management ── */}
+        {!isGuest && (
+          <View style={styles.settingsCard}>
+            <Text style={styles.settingsLabel}>SETTINGS</Text>
+            <TouchableOpacity
+              style={styles.settingsRow}
+              onPress={() => router.push('/blocked-users' as never)}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="ban-outline" size={18} color={Colors.muted} />
+              <Text style={styles.settingsRowLabel}>Blocked users</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+            </TouchableOpacity>
+          </View>
+        )}
+
       </ScrollView>
 
       {/* ══ STICKY: Save CTA (registered only) ══════════════════════════════ */}
@@ -1252,6 +1268,38 @@ const styles = StyleSheet.create({
   },
   eventsEmpty: { fontSize: FontSizes.sm, color: Colors.muted2, paddingVertical: Spacing.sm },
   divider:     { height: 1, backgroundColor: Colors.border, marginVertical: Spacing.sm },
+
+  // ── Settings card ─────────────────────────────────────────────────────────
+  settingsCard: {
+    marginHorizontal: Spacing.md,
+    marginTop:        Spacing.xs,
+    marginBottom:     Spacing.md,
+    backgroundColor:  Colors.bg2,
+    borderRadius:     Radius.lg,
+    borderWidth:      1,
+    borderColor:      Colors.border,
+    overflow:         'hidden',
+    padding:          Spacing.md,
+  },
+  settingsLabel: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    color:         Colors.muted,
+    letterSpacing: 0.8,
+    marginBottom:  Spacing.sm,
+  },
+  settingsRow: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    gap:            12,
+    paddingVertical: Spacing.xs,
+  },
+  settingsRowLabel: {
+    flex:       1,
+    fontSize:   FontSizes.md,
+    fontWeight: '600',
+    color:      Colors.text,
+  },
 
   eventRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   eventIcon:      { fontSize: 18, marginTop: 2 },
