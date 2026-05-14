@@ -667,7 +667,50 @@ $router->add('GET', '/internal/run-migrations', function () {
         $errors[] = "user_reports: " . $e->getMessage();
     }
 
-    // ── 7. Summary query ──────────────────────────────────────────────────────
+    // ── 7. blocks table (UGC moderation — Apple Guideline 1.2) ────────────────
+    //
+    // Mirrors the user_reports identity model: blocker and blocked can each be
+    // either a registered user or a guest. Mutual invisibility is enforced
+    // server-side by joining content queries against this table.
+
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS blocks (
+                id                BIGSERIAL   PRIMARY KEY,
+                blocker_user_id   TEXT        REFERENCES users(id) ON DELETE CASCADE,
+                blocker_guest_id  TEXT,
+                blocked_user_id   TEXT        REFERENCES users(id) ON DELETE CASCADE,
+                blocked_guest_id  TEXT,
+                target_nickname   TEXT,
+                reason            TEXT,
+                created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+                CONSTRAINT chk_blocker_identity     CHECK (blocker_user_id IS NOT NULL OR blocker_guest_id IS NOT NULL),
+                CONSTRAINT chk_blocked_identity     CHECK (blocked_user_id IS NOT NULL OR blocked_guest_id IS NOT NULL),
+                CONSTRAINT chk_no_self_block_user   CHECK (blocker_user_id  IS NULL OR blocker_user_id  != blocked_user_id),
+                CONSTRAINT chk_no_self_block_guest  CHECK (blocker_guest_id IS NULL OR blocker_guest_id != blocked_guest_id)
+            )
+        ");
+
+        // Unique partial indexes — one block row per (blocker, blocked) pair, per identity-type combination.
+        // Postgres treats NULLs as distinct in unique indexes, so we need 4 partial indexes (user/user,
+        // user/guest, guest/user, guest/guest) to enforce idempotence across all identity combos.
+        $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_blocks_uu_unique ON blocks (blocker_user_id,  blocked_user_id)  WHERE blocker_user_id  IS NOT NULL AND blocked_user_id  IS NOT NULL");
+        $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_blocks_ug_unique ON blocks (blocker_user_id,  blocked_guest_id) WHERE blocker_user_id  IS NOT NULL AND blocked_guest_id IS NOT NULL");
+        $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_blocks_gu_unique ON blocks (blocker_guest_id, blocked_user_id)  WHERE blocker_guest_id IS NOT NULL AND blocked_user_id  IS NOT NULL");
+        $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_blocks_gg_unique ON blocks (blocker_guest_id, blocked_guest_id) WHERE blocker_guest_id IS NOT NULL AND blocked_guest_id IS NOT NULL");
+
+        // Lookup indexes for content-filter queries (read-heavy: every list endpoint hits these).
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_blocks_blocker_user  ON blocks (blocker_user_id)  WHERE blocker_user_id  IS NOT NULL");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_blocks_blocker_guest ON blocks (blocker_guest_id) WHERE blocker_guest_id IS NOT NULL");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_blocks_blocked_user  ON blocks (blocked_user_id)  WHERE blocked_user_id  IS NOT NULL");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_blocks_blocked_guest ON blocks (blocked_guest_id) WHERE blocked_guest_id IS NOT NULL");
+
+        $log[] = "blocks: table and indexes ensured";
+    } catch (\Throwable $e) {
+        $errors[] = "blocks: " . $e->getMessage();
+    }
+
+    // ── 8. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
     $eventCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events")->fetchColumn();
