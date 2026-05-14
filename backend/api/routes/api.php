@@ -369,6 +369,52 @@ function isValidSessionId(mixed $sessionId): bool
         && preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i', $sessionId) === 1;
 }
 
+/**
+ * Block-filter helper: returns the bidirectional block ID set for a viewer,
+ * formatted for fast lookup. Wraps BlockRepository::getBidirectional so route
+ * handlers don't need to know about the repo.
+ *
+ * Returns ['user_ids' => [...], 'guest_ids' => [...]] — the IDs of every user
+ * or guest the viewer has blocked OR been blocked by. Apple Guideline 1.2
+ * requires mutual invisibility, so both directions are baked in.
+ */
+function viewerBlockSet(?string $viewerUserId, ?string $viewerGuestId): array
+{
+    if ($viewerUserId === null && $viewerGuestId === null) {
+        return ['user_ids' => [], 'guest_ids' => []];
+    }
+    return BlockRepository::getBidirectional($viewerUserId, $viewerGuestId);
+}
+
+/**
+ * Filter an in-memory list of items by a block set. Each item is checked
+ * against $userIdKey and $guestIdKey; matches are removed.
+ *
+ * Filtering in PHP (rather than splicing NOT IN into every SQL query) keeps
+ * the change localized and avoids parameterised-query gymnastics across
+ * positional/named-param call sites. Page sizes here are O(50-100), so the
+ * cost is invisible.
+ */
+function filterByBlocks(
+    array $items,
+    array $blocks,
+    string $userIdKey  = 'userId',
+    string $guestIdKey = 'guestId'
+): array {
+    $userBlocked  = array_flip($blocks['user_ids']  ?? []);
+    $guestBlocked = array_flip($blocks['guest_ids'] ?? []);
+    if (empty($userBlocked) && empty($guestBlocked)) {
+        return $items;
+    }
+    return array_values(array_filter($items, static function ($item) use ($userBlocked, $guestBlocked, $userIdKey, $guestIdKey) {
+        $uid = $item[$userIdKey]  ?? null;
+        $gid = $item[$guestIdKey] ?? null;
+        if ($uid !== null && isset($userBlocked[$uid]))  return false;
+        if ($gid !== null && isset($guestBlocked[$gid])) return false;
+        return true;
+    }));
+}
+
 function normalizeUnixTimestamp(mixed $value): ?int
 {
     if (!is_numeric($value)) {
@@ -881,6 +927,15 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         Response::json(['error' => 'User not found'], 404);
     }
 
+    // Mutual invisibility: if the viewer has blocked this user OR been blocked
+    // by them, the profile is unreachable from either side. Surface as 404 so
+    // a blocker isn't told they were blocked.
+    $blocks = viewerBlockSet($viewer['id'], null);
+    if (in_array($user['id'], $blocks['user_ids'], true)
+     || (!empty($user['guest_id']) && in_array($user['guest_id'], $blocks['guest_ids'], true))) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
     // isFriend: whether the current authenticated viewer has friended this user
     $isFriend = false;
     if ($viewer !== null && $viewer['id'] !== $user['id']) {
@@ -1067,6 +1122,12 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
 
     $target = UserRepository::findById($targetId);
     if ($target === null || !empty($target['deleted_at'])) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
+    // Block check (Apple G1.2): no contact across a block in either direction.
+    // Surface as 404 so neither side leaks block state.
+    if (BlockRepository::isBlockedBetween($viewer['id'], null, $targetId, null)) {
         Response::json(['error' => 'User not found'], 404);
     }
 
@@ -1380,6 +1441,12 @@ $router->add('POST', '/api/v1/users/{userId}/vibes', function (array $params) {
         return;
     }
 
+    // Block check (Apple G1.2): no contact across a block in either direction.
+    if (BlockRepository::isBlockedBetween($viewer['id'], null, $targetId, null)) {
+        Response::json(['error' => 'User not found'], 404);
+        return;
+    }
+
     $body    = Request::json() ?? [];
     $rating  = isset($body['rating']) ? (int) $body['rating'] : 0;
     $message = isset($body['message']) ? mb_substr(trim(strip_tags($body['message'])), 0, 300) : null;
@@ -1543,6 +1610,17 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
 
     $event = EventRepository::findById($eventId);
     if ($event === null) {
+        Response::json(['error' => 'Event not found or expired'], 404);
+    }
+
+    // Block check (Apple G1.2): hide the event if the viewer has blocked the
+    // host or been blocked by them. Mirror "not found" so neither side leaks
+    // block state.
+    $viewerForBlocks = AuthService::currentUser();
+    $viewerGuestForBlocks = isValidGuestId($_GET['guestId'] ?? null) ? $_GET['guestId'] : null;
+    $blocks = viewerBlockSet($viewerForBlocks['id'] ?? null, $viewerGuestForBlocks);
+    if ((!empty($event['user_id'])  && in_array($event['user_id'],  $blocks['user_ids'],  true))
+     || (!empty($event['guest_id']) && in_array($event['guest_id'], $blocks['guest_ids'], true))) {
         Response::json(['error' => 'Event not found or expired'], 404);
     }
 
@@ -2024,6 +2102,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $hasMore     = $msgResult['hasMore'];
         $tq5b        = microtime(true);
 
+        // ── Block filter (Apple G1.2) ─────────────────────────────────────────
+        // Drop messages from anyone the viewer has blocked or been blocked by.
+        // Filtered after the fetch so we don't have to splice IDs into every
+        // call site of MessageRepository::getByChannel.
+        $bootstrapBlocks = viewerBlockSet($deferAuthUserId, $guestId);
+        $messages        = filterByBlocks($messages, $bootstrapBlocks);
+
         // ── q6: badge enrichment for message authors ──────────────────────────
         // Skipped in lean mode — web fetches badges via /message-badges after first render.
         // In all-guest rooms msgUserIds is empty → batchFull skips the query anyway.
@@ -2338,6 +2423,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
         $tMsg1       = microtime(true); // after message fetch
+
+        // ── Block filter (Apple G1.2) ─────────────────────────────────────────
+        $msgViewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+        $msgViewerUserId  = AuthService::currentUser()['id'] ?? null;
+        $messages = filterByBlocks(
+            $messages,
+            viewerBlockSet($msgViewerUserId, isValidGuestId($msgViewerGuestId) ? $msgViewerGuestId : null)
+        );
 
         if ($lean) {
             // Ghost badges for all messages — client enriches deferred
@@ -2773,6 +2866,20 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $members = array_map(static function (array $u) use ($ambassadors, $cityName): array {
         return UserResource::fromUserInCity($u, $ambassadors, $cityName);
     }, $rows);
+
+    // Block filter (Apple G1.2). Guests don't appear in `users`, so only the
+    // user_ids slice applies. Total/hasMore stay best-effort; the page may
+    // shrink by 0-2 rows when blocked users are present, which is invisible
+    // to anyone who isn't blocking 50+ users.
+    $membersViewerUserId = AuthService::currentUser()['id'] ?? null;
+    if ($membersViewerUserId !== null) {
+        $members = filterByBlocks(
+            $members,
+            viewerBlockSet($membersViewerUserId, null),
+            'id',
+            'guest_id'
+        );
+    }
 
     Response::json([
         'members' => $members,
@@ -3707,6 +3814,13 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
 
         $viewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
         $viewerUserId  = AuthService::currentUser()['id'] ?? null;
+
+        // Block filter (Apple G1.2)
+        $messages = filterByBlocks(
+            $messages,
+            viewerBlockSet($viewerUserId, isValidGuestId($viewerGuestId) ? $viewerGuestId : null)
+        );
+
         MessageRepository::attachReactions($messages, $viewerGuestId ?: null, $viewerUserId);
 
         Response::json(['messages' => $messages]);
@@ -4161,6 +4275,15 @@ $router->add('GET', '/api/v1/conversations', function () {
     $dms    = ConversationRepository::listDmsForUser($user['id']);
     $events = ConversationRepository::listEventChannelsForUser($user['id']);
 
+    // Block filter (Apple G1.2): hide DM threads with blocked users from the
+    // inbox. The DM list query returns `other_user_id` per row.
+    $dms = filterByBlocks(
+        $dms,
+        viewerBlockSet($user['id'], null),
+        'other_user_id',
+        'other_guest_id' // not present in DM list shape but harmless if missing
+    );
+
     Response::json([
         'dms'    => $dms,
         'events' => $events,
@@ -4199,6 +4322,12 @@ $router->add('POST', '/api/v1/conversations/direct', function () {
         Response::json(['error' => 'User not found'], 404);
     }
 
+    // Block check (Apple G1.2): refuse opening a DM across a block in either
+    // direction. 404 so neither side leaks the block state.
+    if (BlockRepository::isBlockedBetween($user['id'], null, $targetUserId, null)) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
     $conversation = ConversationRepository::findOrCreateDirect($user['id'], $targetUserId);
 
     Response::json([
@@ -4232,6 +4361,21 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
 
     if (!ConversationRepository::isParticipant($conversationId, $user['id'])) {
         Response::json(['error' => 'Not a participant'], 403);
+    }
+
+    // Block check (Apple G1.2): refuse sends if the other participant has a
+    // block in either direction. The DM is a 2-person thread, so we look up
+    // the other side once.
+    $otherIdStmt = Database::pdo()->prepare("
+        SELECT user_id FROM conversation_participants
+        WHERE conversation_id = ? AND user_id != ?
+        LIMIT 1
+    ");
+    $otherIdStmt->execute([$conversationId, $user['id']]);
+    $otherParticipantId = $otherIdStmt->fetchColumn() ?: null;
+    if ($otherParticipantId !== null
+     && BlockRepository::isBlockedBetween($user['id'], null, $otherParticipantId, null)) {
+        Response::json(['error' => 'This conversation is no longer available'], 403);
     }
 
     $content  = trim((string) ($body['content'] ?? ''));
@@ -4401,8 +4545,26 @@ $router->add('GET', '/api/v1/notifications', function () {
     $user   = AuthService::requireAuth();
     $limit  = max(1, min(100, (int) ($_GET['limit']  ?? 50)));
     $offset = max(0, (int) ($_GET['offset'] ?? 0));
+
+    $notifications = NotificationRepository::listForUser($user['id'], $limit, $offset);
+
+    // Block filter (Apple G1.2): drop friend-request/vibe/profile-view notifs
+    // whose actor is a user the viewer has blocked or been blocked by. We
+    // inspect the well-known actor keys inside each notification's data blob.
+    $notifBlocks = viewerBlockSet($user['id'], null);
+    if (!empty($notifBlocks['user_ids'])) {
+        $blockedSet = array_flip($notifBlocks['user_ids']);
+        $notifications = array_values(array_filter($notifications, static function ($n) use ($blockedSet) {
+            $data = $n['data'] ?? [];
+            foreach (['senderUserId', 'accepterUserId', 'actorId', 'viewerUserId'] as $k) {
+                if (!empty($data[$k]) && isset($blockedSet[$data[$k]])) return false;
+            }
+            return true;
+        }));
+    }
+
     Response::json([
-        'notifications' => NotificationRepository::listForUser($user['id'], $limit, $offset),
+        'notifications' => $notifications,
         'unread_count'  => NotificationRepository::unreadCount($user['id']),
     ]);
 });
