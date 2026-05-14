@@ -23,8 +23,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useDMThread } from '@/hooks/useDMThread';
-import { findOrCreateDM, toggleDmReaction } from '@/api/conversations';
+import { findOrCreateDM, toggleDmReaction, fetchConversations } from '@/api/conversations';
+import { submitBlock } from '@/api/blocks';
 import { useApp } from '@/context/AppContext';
+import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
@@ -755,10 +757,19 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 export default function DMThreadScreen() {
   const router = useRouter();
   const { id, name, conv } = useLocalSearchParams<{ id: string; name?: string; conv?: string }>();
-  const { account } = useApp();
+  const { account, identity, addBlocked, removeBlocked } = useApp();
 
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [resolveError,   setResolveError]   = useState<string | null>(null);
+
+  // Other party's userId. In the profile-flow `id` IS the userId; in the
+  // notification-flow `id` is the conversationId so we look it up via the
+  // DM list once the screen mounts. Required for the Block button + the
+  // View profile action.
+  const [otherUserId,    setOtherUserId]    = useState<string | null>(null);
+
+  const [showActionSheet, setShowActionSheet] = useState(false);
+  const [blockBusy,       setBlockBusy]       = useState(false);
 
   const displayName = name ?? 'Message';
   const color       = avatarColor(displayName);
@@ -774,7 +785,19 @@ export default function DMThreadScreen() {
       console.log('[dm-screen] loading conversation', conv);
       setConversationId(conv);
       track('dm_opened', { conversationId: conv, source: 'notification' });
-      return;
+
+      // Look up the other party's userId so the Block / View profile actions
+      // work from notification-opened threads. The DM list is small (cap 50)
+      // so this is cheap.
+      let cancelledLookup = false;
+      fetchConversations()
+        .then(rows => {
+          if (cancelledLookup) return;
+          const match = rows.find(r => r.id === conv);
+          if (match?.other_user_id) setOtherUserId(match.other_user_id);
+        })
+        .catch(() => { /* non-fatal — Block stays disabled */ });
+      return () => { cancelledLookup = true; };
     }
 
     // DMs require a registered account — guests don't have a user_id on either side.
@@ -786,6 +809,7 @@ export default function DMThreadScreen() {
     if (!id) return;
     let cancelled = false;
     // User-profile flow: id is a userId — find or create the DM thread.
+    setOtherUserId(id);  // route param IS the userId in this flow
     console.log('[DM] opening DM → targetUserId:', id, '| name:', displayName);
     findOrCreateDM(id)
       .then(({ conversation }) => {
@@ -801,6 +825,43 @@ export default function DMThreadScreen() {
       });
     return () => { cancelled = true; };
   }, [id, conv, account]);
+
+  function handleBlockPress() {
+    if (!otherUserId || blockBusy) return;
+    Alert.alert(
+      `Block ${displayName}?`,
+      `You won't see content from ${displayName}, and they won't see yours. You can unblock anyone later from Me → Settings → Blocked users.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Block', style: 'destructive',
+          onPress: async () => {
+            setBlockBusy(true);
+            try {
+              addBlocked({ userId: otherUserId });
+              await submitBlock({
+                targetUserId:   otherUserId,
+                targetNickname: displayName,
+                guestId:        account ? undefined : identity?.guestId,
+              });
+              // Thread is now closed for both sides — return to inbox.
+              router.replace('/messages');
+            } catch {
+              removeBlocked({ userId: otherUserId });
+              Alert.alert('Could not block', 'Please try again.');
+            } finally {
+              setBlockBusy(false);
+            }
+          },
+        },
+      ],
+    );
+  }
+
+  function handleViewProfile() {
+    if (!otherUserId) return;
+    router.push({ pathname: '/user/[id]', params: { id: otherUserId, name: displayName } });
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -819,7 +880,53 @@ export default function DMThreadScreen() {
           <Text style={styles.headerName} numberOfLines={1}>{displayName}</Text>
           <Text style={styles.headerSub}>Direct message</Text>
         </View>
+
+        {/* … menu — Apple G1.2 requires Block + Report visible from chat thread */}
+        <TouchableOpacity
+          style={styles.headerMore}
+          onPress={() => setShowActionSheet(true)}
+          activeOpacity={0.7}
+          accessibilityLabel="More options"
+        >
+          <Ionicons name="ellipsis-horizontal" size={22} color={Colors.text} />
+        </TouchableOpacity>
       </View>
+
+      {/* Action sheet — View profile / Report / Block. otherUserId may briefly
+          be null in the notification flow while the conversations lookup is in
+          flight; in that case all per-user actions are disabled. */}
+      <ProfileActionSheet
+        visible={showActionSheet}
+        title={displayName}
+        actions={[
+          {
+            key:      'view_profile',
+            label:    'View profile',
+            icon:     'person-outline',
+            disabled: !otherUserId,
+            onPress:  handleViewProfile,
+          },
+          {
+            key:      'report',
+            label:    'Report user',
+            icon:     'flag-outline',
+            disabled: !otherUserId,
+            onPress:  () => {
+              if (!otherUserId) return;
+              router.push({ pathname: '/user/[id]', params: { id: otherUserId, name: displayName } });
+            },
+          },
+          {
+            key:         'block',
+            label:       blockBusy ? 'Blocking…' : 'Block user',
+            icon:        'ban-outline',
+            destructive: true,
+            disabled:    !otherUserId || blockBusy,
+            onPress:     handleBlockPress,
+          },
+        ]}
+        onClose={() => setShowActionSheet(false)}
+      />
 
       {/* ── Body ── */}
       {resolveError ? (
@@ -941,6 +1048,17 @@ const styles = StyleSheet.create({
   headerSub: {
     fontSize: FontSizes.xs,
     color:    Colors.muted2,
+  },
+  headerMore: {
+    width:           36,
+    height:          36,
+    borderRadius:    Radius.md,
+    backgroundColor: Colors.bg2,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    alignItems:      'center',
+    justifyContent:  'center',
+    flexShrink:      0,
   },
 
   // ── States ──────────────────────────────────────────────────────────────────
