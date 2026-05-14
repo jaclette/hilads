@@ -4,13 +4,19 @@
  *
  * Contains:
  *   - Left:   notification bell with unread badge (registered users only)
- *   - Center: Hilads logo + "Feel local. Anywhere." tagline
+ *   - Center: Hilads logo (the icon identifies the app — no tagline)
  *   - Right:  optional tab-specific extra(s) (e.g. Share on MY CITY),
  *             then the DM icon with unread badge (registered users only)
  *
  * Pulls unread counts + setters from AppContext to avoid prop drilling.
  * Tab-specific elements (city selector, chips, filter pills, titles) render
  * BELOW this component inside each tab's own header container.
+ *
+ * The "Feel local. Anywhere." tagline used to live next to the logo at 11pt
+ * with maxWidth:72 forcing it onto two lines. Apple Guideline 4 cited the
+ * resulting microscopic, awkwardly-wrapped text as a design issue. The
+ * tagline now lives only on LandingScreen (pre-auth marketing surface)
+ * where it has the room to breathe.
  */
 
 import React from 'react';
@@ -97,12 +103,11 @@ export function AppHeader({ rightExtra }: Props) {
         )}
       </View>
 
-      {/* Center: logo + tagline */}
+      {/* Center: logo only — tagline removed (Apple G4) */}
       <View style={styles.topCenter}>
         <View style={styles.iconGlow}>
           <HiladsIcon size={36} />
         </View>
-        <Text style={styles.headerTagline}>Feel local. Anywhere.</Text>
       </View>
 
       {/* Right: tab-specific extras + DM icon */}
@@ -211,14 +216,6 @@ const styles = StyleSheet.create({
     fontSize:   9,
     fontWeight: '700',
     lineHeight: 11,
-  },
-  headerTagline: {
-    fontSize:      11,
-    lineHeight:    14,
-    color:         'rgba(255,255,255,0.5)',
-    fontWeight:    '400',
-    letterSpacing: 0.2,
-    maxWidth:      72,
   },
   iconGlow: {
     shadowColor:   '#C24A38',

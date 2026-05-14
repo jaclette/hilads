@@ -618,13 +618,15 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color:    Colors.text,
   },
-  // ob-tagline: 0.95rem=~15px, muted2, weight 400
+  // ob-tagline — bumped from 15/muted2 (~2.4:1) to 16/muted (~5.5:1) for
+  // WCAG AA pass on the warm-near-black background. Apple G4 cited the
+  // prior contrast as too low.
   tagline: {
-    fontSize:   15,
+    fontSize:   16,
     fontWeight: '400',
-    color:      Colors.muted2,
+    color:      Colors.muted,
     textAlign:  'center',
-    lineHeight: 21,
+    lineHeight: 22,
   },
   // ob-activity-block: single container for people + events signals
   activityBlock: {
