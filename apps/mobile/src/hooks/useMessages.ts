@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { socket } from '@/lib/socket';
 import { uploadFile } from '@/api/uploads';
 import { useApp } from '@/context/AppContext';
 import { reactionEmitter } from '@/lib/reactionEmitter';
+import { filterBlocked } from '@/lib/blockFilter';
 import type { Message, Reaction, ReplyRef, ReactionType } from '@/types';
 
 interface Params {
@@ -34,7 +35,7 @@ function makeLocalId(prefix = 'local'): string {
 }
 
 export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initialData }: Params): Result {
-  const { identity, account } = useApp();
+  const { identity, account, blockedSet } = useApp();
 
   // Ref holds the bootstrap data so it can be consumed once without being a useEffect dep.
   const initialDataRef = useRef(initialData);
@@ -308,8 +309,21 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));
   }
 
+  // Block filter (Apple G1.2) — server already filters initial fetches; this
+  // covers WS pushes from blocked authors and the gap between the user
+  // tapping Block and the next refetch. Memoised on blockedSet so the
+  // FlatList only re-renders when the set actually changes.
+  const visibleMessages = useMemo(
+    () => filterBlocked(
+      messages,
+      m => ({ userId: m.userId ?? null, guestId: m.guestId ?? null }),
+      blockedSet,
+    ),
+    [messages, blockedSet],
+  );
+
   return {
-    messages, loading, loadingOlder, hasMore, sending, error,
+    messages: visibleMessages, loading, loadingOlder, hasMore, sending, error,
     clearError: () => setError(null),
     sendText, sendImage, loadOlder, reload: load, setMessageReactions,
   };

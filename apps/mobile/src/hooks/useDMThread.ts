@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { fetchDmMessages, sendDmMessage, sendDmImageMessage, markDmRead } from '@/api/conversations';
 import { uploadFile } from '@/api/uploads';
 import { socket } from '@/lib/socket';
 import { reactionEmitter } from '@/lib/reactionEmitter';
 import type { ReactionType } from '@/lib/reactionEmitter';
 import { useApp } from '@/context/AppContext';
+import { filterBlocked } from '@/lib/blockFilter';
 import { track } from '@/services/analytics';
 import type { DmMessage, Reaction, ReplyRef } from '@/types';
 
@@ -24,7 +25,7 @@ function makeLocalId(): string {
 }
 
 export function useDMThread(conversationId: string): Result {
-  const { account, setActiveDmId } = useApp();
+  const { account, setActiveDmId, blockedSet } = useApp();
   const [messages, setMessages] = useState<DmMessage[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -190,8 +191,19 @@ export function useDMThread(conversationId: string): Result {
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));
   }
 
+  // Block filter (Apple G1.2). DM messages only have a sender_id (registered
+  // users — no guests in DMs), so we map it onto the userId slot.
+  const visibleMessages = useMemo(
+    () => filterBlocked(
+      messages,
+      m => ({ userId: m.sender_id ?? null, guestId: null }),
+      blockedSet,
+    ),
+    [messages, blockedSet],
+  );
+
   return {
-    messages, loading, sending: false, error,
+    messages: visibleMessages, loading, sending: false, error,
     clearError: () => setError(null),
     sendText,
     sendImage,

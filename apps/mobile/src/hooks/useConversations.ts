@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { fetchConversations, markDmRead } from '@/api/conversations';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
+import { filterBlocked } from '@/lib/blockFilter';
 import type { Conversation } from '@/types';
 
 interface Result {
@@ -13,7 +14,7 @@ interface Result {
 }
 
 export function useConversations(): Result {
-  const { setUnreadDMs, unreadDMs } = useApp();
+  const { setUnreadDMs, unreadDMs, blockedSet } = useApp();
   const unreadRef = useRef(unreadDMs);
   unreadRef.current = unreadDMs;
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -67,5 +68,16 @@ export function useConversations(): Result {
     setUnreadDMs(0);
   }, [setUnreadDMs]);
 
-  return { conversations, loading, error, reload: load, markAllRead };
+  // Block filter (Apple G1.2) — server already filters initial fetch; this
+  // covers the optimistic gap after the user taps Block before reload runs.
+  const visibleConversations = useMemo(
+    () => filterBlocked(
+      conversations,
+      c => ({ userId: c.other_user_id ?? null, guestId: null }),
+      blockedSet,
+    ),
+    [conversations, blockedSet],
+  );
+
+  return { conversations: visibleConversations, loading, error, reload: load, markAllRead };
 }

@@ -18,6 +18,7 @@ import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchCityMembers, fetchCityAmbassadors, type CityMember, type CityAmbassador } from '@/api/channels';
+import { filterBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
@@ -172,7 +173,7 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
 
 export default function HereScreen() {
   const router = useRouter();
-  const { city, sessionId, account, onlineUsers } = useApp();
+  const { city, sessionId, account, onlineUsers, blockedSet } = useApp();
 
   const [filterBadge, setFilterBadge] = useState<string | null>(null);
   const [filterVibe,  setFilterVibe]  = useState<string | null>(null);
@@ -187,12 +188,24 @@ export default function HereScreen() {
 
   const mySessionId = sessionId ?? '';
 
+  // Block filter (Apple G1.2) — server already filters this list, but the
+  // client-side pass keeps the UI instant when the user blocks someone
+  // currently visible (no refetch round-trip).
+  const visibleCrew = useMemo(
+    () => filterBlocked(
+      crewMembers,
+      m => ({ userId: m.id, guestId: null }),
+      blockedSet,
+    ),
+    [crewMembers, blockedSet],
+  );
+
   // Build a userId → crew member lookup for badge enrichment
   const crewLookup = useMemo(() => {
     const map = new Map<string, CityMember>();
-    crewMembers.forEach(m => map.set(m.id, m));
+    visibleCrew.forEach(m => map.set(m.id, m));
     return map;
-  }, [crewMembers]);
+  }, [visibleCrew]);
 
   // Fetch city crew — reset and reload when filters or city changes
   const loadCrew = useCallback(async (page: number, reset: boolean) => {
@@ -419,11 +432,11 @@ export default function HereScreen() {
           <Text style={styles.sectionTitle}>🏙️ City crew</Text>
         </View>
 
-        {crewLoading && crewMembers.length === 0 ? (
+        {crewLoading && visibleCrew.length === 0 ? (
           <ActivityIndicator color={Colors.accent} style={{ marginTop: 12 }} />
-        ) : crewMembers.length === 0 ? (
+        ) : visibleCrew.length === 0 ? (
           <Text style={styles.sectionEmpty}>No members match these filters.</Text>
-        ) : crewMembers.map(m => (
+        ) : visibleCrew.map(m => (
           <CrewMemberRow
             key={m.id}
             member={m}

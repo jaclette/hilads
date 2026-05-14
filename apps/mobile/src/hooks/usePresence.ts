@@ -13,6 +13,7 @@
 import { useEffect, useRef } from 'react';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
+import { isBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
 
 type RawUser = { sessionId: string; nickname: string; userId?: string | null; mode?: string | null };
@@ -29,9 +30,27 @@ function toOnlineUser(u: RawUser): OnlineUser {
 }
 
 export function usePresence(): void {
-  const { city, setOnlineUsers } = useApp();
+  const { city, setOnlineUsers, blockedSet } = useApp();
   // Ref so incremental updates (join/leave) can read current list without stale closure
   const usersRef = useRef<OnlineUser[]>([]);
+  // Mirror blockedSet into a ref so the WS handlers below don't need to be
+  // re-registered every time the set changes (avoids a churn of off()/on()).
+  const blockedRef = useRef(blockedSet);
+  useEffect(() => { blockedRef.current = blockedSet; }, [blockedSet]);
+
+  // Apply the current block set to the rendered list. Runs whenever the set
+  // changes so a fresh block immediately drops the user from the Here screen.
+  useEffect(() => {
+    const filtered = usersRef.current.filter(
+      u => !isBlocked(u.userId ?? null, u.guestId ?? null, blockedSet),
+    );
+    if (filtered.length !== usersRef.current.length) {
+      setOnlineUsers(filtered);
+      // intentionally do NOT update usersRef — it's the source of truth for
+      // the live list; if the user later unblocks, a presenceSnapshot will
+      // restore them.
+    }
+  }, [blockedSet, setOnlineUsers]);
 
   useEffect(() => {
     if (!city) return;
@@ -71,7 +90,9 @@ export function usePresence(): void {
       });
 
       usersRef.current = deduped;
-      setOnlineUsers(deduped);
+      // Apply the current block filter before publishing.
+      const visible = deduped.filter(u => !isBlocked(u.userId ?? null, u.guestId ?? null, blockedRef.current));
+      setOnlineUsers(visible);
     });
 
     // userJoined — single user entered the city
@@ -84,9 +105,12 @@ export function usePresence(): void {
       }
       console.log('[presence] userJoined:', u.nickname, '| sessionId:', u.sessionId.slice(0, 8));
       if (usersRef.current.some(p => p.sessionId === u.sessionId)) return;
-      const next = [...usersRef.current, toOnlineUser(u)];
+      const mapped = toOnlineUser(u);
+      const next = [...usersRef.current, mapped];
       usersRef.current = next;
-      setOnlineUsers(next);
+      // Suppress publishing if the joining user is in the viewer's block set.
+      if (isBlocked(mapped.userId ?? null, mapped.guestId ?? null, blockedRef.current)) return;
+      setOnlineUsers(next.filter(p => !isBlocked(p.userId ?? null, p.guestId ?? null, blockedRef.current)));
     });
 
     // userLeft — single user left
@@ -98,7 +122,7 @@ export function usePresence(): void {
       console.log('[presence] userLeft:', sid);
       const next = usersRef.current.filter(p => p.sessionId !== sid);
       usersRef.current = next;
-      setOnlineUsers(next);
+      setOnlineUsers(next.filter(p => !isBlocked(p.userId ?? null, p.guestId ?? null, blockedRef.current)));
     });
 
     // Debug: log ALL WS messages to diagnose presence issues in DEV

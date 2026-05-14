@@ -147,7 +147,7 @@ function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
 export default function NowScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { city, identity, account, booting } = useApp();
+  const { city, identity, account, booting, blockedSet } = useApp();
   const userMode = account?.mode ?? identity?.mode ?? null;
 
   const [items,         setItems]         = useState<FeedItem[]>([]);
@@ -378,13 +378,27 @@ export default function NowScreen() {
     const base = filter === 'events' ? items.filter(i => i.kind === 'event')
                : filter === 'topics' ? items.filter(i => i.kind === 'topic')
                : items;
+    // Block filter (Apple G1.2) — drop events / topics whose host or creator
+    // the viewer has blocked. Public Ticketmaster events have no human host
+    // so they're filtered separately below.
+    const userBlocked  = blockedSet.userIds;
+    const guestBlocked = blockedSet.guestIds;
+    const visible = (userBlocked.size === 0 && guestBlocked.size === 0)
+      ? base
+      : base.filter(item => {
+          const uid = (item as { user_id?: string | null }).user_id  ?? null;
+          const gid = (item as { guest_id?: string | null }).guest_id ?? null;
+          if (uid && userBlocked.has(uid))  return false;
+          if (gid && guestBlocked.has(gid)) return false;
+          return true;
+        });
     // Recurring events always float to the top — they're city anchors
-    return [...base].sort((a, b) => {
+    return [...visible].sort((a, b) => {
       const aRecur = !!(a.series_id ?? a.recurrence_label) ? 1 : 0;
       const bRecur = !!(b.series_id ?? b.recurrence_label) ? 1 : 0;
       return bRecur - aRecur;
     });
-  }, [items, filter]);
+  }, [items, filter, blockedSet]);
 
   const listData = useMemo<Array<FeedItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })>>(
     () => {
