@@ -16,7 +16,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { ReportModal } from '@/features/profile/ReportModal';
+import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
+import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
 
 // ── Avatar palette — mirrors ChatMessage.tsx / [id].tsx ───────────────────────
@@ -36,14 +38,47 @@ function avatarBg(name: string): string {
 export default function GuestProfileScreen() {
   const router = useRouter();
   const { nickname, guestId } = useLocalSearchParams<{ nickname: string; guestId: string }>();
-  const { city, identity, account } = useApp();
+  const { city, identity, account, addBlocked, removeBlocked } = useApp();
 
   const name    = nickname || 'Ghost';
   const initial = name[0].toUpperCase();
   const bg      = avatarBg(name);
 
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showActionSheet, setShowActionSheet] = useState(false);
+  const [blockBusy,       setBlockBusy]       = useState(false);
   const [existingReport,  setExistingReport]  = useState<ExistingReport | null>(null);
+
+  function handleBlockPress() {
+    if (!guestId || blockBusy) return;
+    Alert.alert(
+      `Block ${name}?`,
+      `You won't see content from ${name}, and they won't see yours. You can unblock anyone later from Me → Settings → Blocked users.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Block', style: 'destructive',
+          onPress: async () => {
+            setBlockBusy(true);
+            try {
+              addBlocked({ guestId });
+              await submitBlock({
+                targetGuestId:  guestId,
+                targetNickname: name,
+                guestId:        account ? undefined : identity?.guestId,
+              });
+              router.back();
+            } catch {
+              removeBlocked({ guestId });
+              Alert.alert('Could not block', 'Please try again.');
+            } finally {
+              setBlockBusy(false);
+            }
+          },
+        },
+      ],
+    );
+  }
 
   useEffect(() => {
     if (!guestId) return;
@@ -89,22 +124,44 @@ export default function GuestProfileScreen() {
 
       <TouchableOpacity
         style={styles.reportLink}
-        onPress={() => {
-          if (existingReport) {
-            Alert.alert(
-              'Already reported',
-              `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
-            );
-            return;
-          }
-          setShowReportModal(true);
-        }}
+        onPress={() => setShowActionSheet(true)}
         activeOpacity={0.6}
+        accessibilityLabel="More options"
       >
-        <Text style={styles.reportLinkText}>
-          {existingReport ? 'Already reported' : 'Report user'}
-        </Text>
+        <Text style={styles.reportLinkText}>More options</Text>
       </TouchableOpacity>
+
+      <ProfileActionSheet
+        visible={showActionSheet}
+        title={name}
+        actions={[
+          {
+            key:      'report',
+            label:    existingReport ? 'Already reported' : 'Report user',
+            icon:     'flag-outline',
+            disabled: !!existingReport,
+            onPress:  () => {
+              if (existingReport) {
+                Alert.alert(
+                  'Already reported',
+                  `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
+                );
+                return;
+              }
+              setShowReportModal(true);
+            },
+          },
+          {
+            key:         'block',
+            label:       blockBusy ? 'Blocking…' : 'Block user',
+            icon:        'ban-outline',
+            destructive: true,
+            disabled:    blockBusy,
+            onPress:     handleBlockPress,
+          },
+        ]}
+        onClose={() => setShowActionSheet(false)}
+      />
 
       <ReportModal
         visible={showReportModal}

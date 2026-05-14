@@ -29,7 +29,9 @@ import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { EventPill } from '@/features/events/EventPill';
 import { ReportModal } from '@/features/profile/ReportModal';
+import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
+import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
 
 // ── Badge microcopy ────────────────────────────────────────────────────────────
@@ -113,7 +115,7 @@ export default function PublicProfileScreen() {
   const router  = useRouter();
   const insets  = useSafeAreaInsets();
   const { id }  = useLocalSearchParams<{ id: string }>();
-  const { account, identity, city } = useApp();
+  const { account, identity, city, addBlocked, removeBlocked } = useApp();
 
   const [user,         setUser]         = useState<PublicProfile | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
@@ -136,6 +138,8 @@ export default function PublicProfileScreen() {
   const [showVibeForm,       setShowVibeForm]       = useState(false);
   const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
   const [showReportModal,    setShowReportModal]    = useState(false);
+  const [showActionSheet,    setShowActionSheet]    = useState(false);
+  const [blockBusy,          setBlockBusy]          = useState(false);
   const [existingReport,     setExistingReport]     = useState<ExistingReport | null>(null);
   const [activeTab,    setActiveTab]    = useState<TabKey>('events');
 
@@ -333,6 +337,40 @@ export default function PublicProfileScreen() {
 
   function handleEventPress(eventId: string) {
     router.push({ pathname: '/event/[id]', params: { id: eventId } });
+  }
+
+  function handleBlockPress() {
+    if (!user || blockBusy) return;
+    Alert.alert(
+      `Block ${user.displayName}?`,
+      `You won't see content from ${user.displayName}, and they won't see yours. You can unblock anyone later from Me → Settings → Blocked users.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Block', style: 'destructive',
+          onPress: async () => {
+            setBlockBusy(true);
+            try {
+              // Optimistic: patch the local set BEFORE the API call so any
+              // currently-rendered list filters update instantly.
+              addBlocked({ userId: user.id });
+              await submitBlock({
+                targetUserId:   user.id,
+                targetNickname: user.displayName,
+                guestId:        account ? undefined : identity?.guestId,
+              });
+              router.back();
+            } catch (err) {
+              // Roll back the optimistic patch on failure.
+              if (user) removeBlocked({ userId: user.id });
+              Alert.alert('Could not block', 'Please try again.');
+            } finally {
+              setBlockBusy(false);
+            }
+          },
+        },
+      ],
+    );
   }
 
   const name   = user?.displayName ?? '?';
@@ -701,21 +739,48 @@ export default function PublicProfileScreen() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.reportBtn}
-            onPress={() => {
-              if (existingReport) {
-                Alert.alert(
-                  'Already reported',
-                  `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
-                );
-                return;
-              }
-              setShowReportModal(true);
-            }}
+            onPress={() => setShowActionSheet(true)}
             activeOpacity={0.75}
+            accessibilityLabel="More options"
           >
-            <Ionicons name="flag-outline" size={18} color="rgba(255,255,255,0.35)" />
+            <Ionicons name="ellipsis-horizontal" size={20} color="rgba(255,255,255,0.55)" />
           </TouchableOpacity>
         </View>
+      )}
+
+      {/* ── Action sheet (Report / Block) ── */}
+      {user && !isSelf && (
+        <ProfileActionSheet
+          visible={showActionSheet}
+          title={user.displayName}
+          actions={[
+            {
+              key:      'report',
+              label:    existingReport ? 'Already reported' : 'Report user',
+              icon:     'flag-outline',
+              disabled: !!existingReport,
+              onPress:  () => {
+                if (existingReport) {
+                  Alert.alert(
+                    'Already reported',
+                    `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
+                  );
+                  return;
+                }
+                setShowReportModal(true);
+              },
+            },
+            {
+              key:         'block',
+              label:       blockBusy ? 'Blocking…' : 'Block user',
+              icon:        'ban-outline',
+              destructive: true,
+              disabled:    blockBusy,
+              onPress:     handleBlockPress,
+            },
+          ]}
+          onClose={() => setShowActionSheet(false)}
+        />
       )}
 
       {/* ── Report modal ── */}
