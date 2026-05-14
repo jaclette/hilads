@@ -112,7 +112,9 @@ const ME_BADGE_BG: Record<string, object> = {
   host:    { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
 };
 const ME_BADGE_COLOR: Record<string, object> = {
-  ghost: { color: '#666' }, fresh: { color: '#4ade80' },
+  // ghost previously hardcoded '#666' (~3.4:1) — failed WCAG AA on the dark
+  // bg. Routed through the theme token so future contrast fixes propagate.
+  ghost: { color: Colors.muted2 }, fresh: { color: '#4ade80' },
   regular: { color: '#60a5fa' }, local: { color: '#34d399' }, host: { color: '#fbbf24' },
 };
 function meBadgeBg(key: string): object    { return ME_BADGE_BG[key]    ?? ME_BADGE_BG.regular; }

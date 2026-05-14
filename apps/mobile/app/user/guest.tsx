@@ -271,8 +271,10 @@ const styles = StyleSheet.create({
     alignItems:  'center',
     marginTop:   Spacing.xl,
   },
+  // "More options" link — was rgba(255,255,255,0.2) (~1.7:1, near-invisible).
+  // Routed through the theme so it inherits future contrast fixes.
   reportLinkText: {
     fontSize: FontSizes.xs,
-    color:    'rgba(255,255,255,0.2)',
+    color:    Colors.muted2,
   },
 });

@@ -982,9 +982,11 @@ const styles = StyleSheet.create({
     flexShrink:      1,    // weather copy can be long; let it truncate
   },
   chipWeatherText: {
-    fontSize:   12,
+    // Was 12pt at rgba(255,255,255,0.45) (~4.0:1) — failed WCAG AA at body
+    // size. Bumped to xs (13pt) and routed through the theme token.
+    fontSize:   FontSizes.xs,
     fontWeight: '500',
-    color:      'rgba(255,255,255,0.45)',
+    color:      Colors.muted,
     flexShrink: 1,
   },
   chipOnline: {
