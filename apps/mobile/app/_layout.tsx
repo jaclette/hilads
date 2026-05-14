@@ -1,7 +1,9 @@
 import '@/polyfills'; // must be first — polyfills WeakRef for Hermes + old arch
 import * as Sentry from '@sentry/react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
+import { acceptEula } from '@/api/auth';
+import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -40,7 +42,27 @@ console.log('[layout] ── MODULE LOADED ────────────�
 
 function RootLayoutInner() {
   console.log('[layout] RootLayoutInner rendered');
-  const { booting, bootError, joined, account, city, sessionId, identity } = useApp();
+  const { booting, bootError, joined, account, city, sessionId, identity, setAccount } = useApp();
+  const [eulaSubmitting, setEulaSubmitting] = useState(false);
+
+  // Apple G1.2 — registered users created before the moderation update have
+  // a NULL eula_accepted_at on their record. Show a blocking modal until they
+  // accept. New signups stamp the column at signup time (auth/signup gate),
+  // so they never see this modal.
+  const showEulaModal = !!account && !account.eula_accepted_at;
+
+  async function handleAcceptEula() {
+    setEulaSubmitting(true);
+    try {
+      const { user } = await acceptEula();
+      setAccount(user);
+    } catch {
+      // Network error — leave modal up so the user can retry. The button
+      // returns to its idle state via finally below.
+    } finally {
+      setEulaSubmitting(false);
+    }
+  }
 
   // ── Deep link URL logging ─────────────────────────────────────────────────
   useEffect(() => {
@@ -126,6 +148,13 @@ function RootLayoutInner() {
           {!joined && <LandingScreen onRetryGeo={retryGeo} />}
         </>
       )}
+
+      {/* EULA re-prompt — blocks the app until existing users accept (Apple G1.2). */}
+      <EulaPromptModal
+        visible={showEulaModal}
+        loading={eulaSubmitting}
+        onAccept={handleAcceptEula}
+      />
     </>
   );
 }

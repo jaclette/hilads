@@ -39,13 +39,16 @@ export async function authSignup(
   displayName: string,
   guestId: string,
   mode: string | null = null,
+  /** Required by the backend (Apple G1.2 EULA gate). Caller must collect explicit consent. */
+  eulaAccepted: boolean = false,
 ): Promise<{ user: User }> {
   const res = await api.post<{ user: User; token?: string }>('/auth/signup', {
     email,
     password,
-    display_name: displayName,
-    guest_id: guestId,
+    display_name:  displayName,
+    guest_id:      guestId,
     mode,
+    eula_accepted: eulaAccepted,
   });
   if (res.token) {
     setAuthToken(res.token);
@@ -54,6 +57,15 @@ export async function authSignup(
   console.log('[auth] signup: token persisted to SecureStore =',
     getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — no token received from server');
   return res;
+}
+
+/**
+ * Accept the EULA for the currently authenticated user. Used by the boot-time
+ * re-prompt modal for users who registered before the moderation update.
+ * Idempotent server-side — safe to call again.
+ */
+export async function acceptEula(): Promise<{ user: User }> {
+  return api.post<{ user: User }>('/users/me/eula');
 }
 
 export async function authLogout(): Promise<void> {

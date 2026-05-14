@@ -270,6 +270,13 @@ export interface User {
   guest_id?: string;
   primaryBadge?: Badge;
   isFriend?: boolean;
+  /**
+   * ISO-8601 timestamp of EULA acceptance, NULL until the user has accepted.
+   * Apple G1.2 — existing users (created before the moderation update) get
+   * the re-prompt modal once; new signups stamp this immediately via the
+   * required checkbox.
+   */
+  eula_accepted_at?: string | null;
 }
 
 /** Friends list items — canonical UserDTO shape. */

@@ -13,6 +13,7 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { EulaCheckbox, EulaCopyBlock } from '@/features/auth/EulaPromptModal';
 
 const MODES = [
   { key: 'local',     emoji: '🌍', label: 'Local',     desc: 'You know this city'    },
@@ -32,6 +33,7 @@ export default function SignUpScreen() {
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [mode,     setMode]     = useState<string | null>(null);
+  const [eula,     setEula]     = useState(false);
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
@@ -44,13 +46,14 @@ export default function SignUpScreen() {
     if (!mode)        { setError('Please choose a mode to continue'); return; }
     if (!e)           { setError('Email required'); return; }
     if (p.length < 8) { setError('Password must be at least 8 characters'); return; }
+    if (!eula)        { setError('Please accept the Terms of Service and Privacy Policy'); return; }
 
     setLoading(true);
     setError(null);
     try {
       // Pass guestId so the backend can merge existing guest events/data
       const guestId = identity?.guestId ?? '';
-      const { user } = await authSignup(e, p, n, guestId, mode);
+      const { user } = await authSignup(e, p, n, guestId, mode, true /* eulaAccepted */);
       setAccount(user);
       identifyUser(user.id, { account_type: 'registered', username: user.display_name });
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
@@ -182,11 +185,17 @@ export default function SignUpScreen() {
               />
             </View>
 
+            {/* EULA — Apple G1.2 requires explicit acceptance before account creation. */}
+            <View style={styles.eulaSection}>
+              <EulaCopyBlock />
+              <EulaCheckbox checked={eula} onToggle={() => setEula(v => !v)} disabled={loading} />
+            </View>
+
             <TouchableOpacity
-              style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
+              style={[styles.submitBtn, (loading || !eula) && styles.submitBtnDisabled]}
               onPress={handleSignUp}
               activeOpacity={0.85}
-              disabled={loading}
+              disabled={loading || !eula}
             >
               {loading
                 ? <ActivityIndicator color={Colors.white} />
@@ -244,6 +253,11 @@ const styles = StyleSheet.create({
     color:             Colors.text,
     fontSize:          FontSizes.md,
     height:            48,
+  },
+
+  eulaSection: {
+    marginTop: Spacing.sm,
+    gap:       Spacing.sm,
   },
 
   submitBtn: {
