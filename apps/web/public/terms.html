@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service - Hilads</title>
+  <meta name="description" content="Terms of Service for Hilads, the real-time city social app." />
+  <meta name="theme-color" content="#0f0d0b" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f0d0b;
+      --surface:  #1a1612;
+      --surface2: #221c17;
+      --border:   rgba(255,255,255,0.08);
+      --text:     #f0ece6;
+      --muted:    #a09486;
+      --muted2:   #6e6358;
+      --accent:   #FF7A3C;
+      --accent2:  #D85A30;
+      --radius:   12px;
+      --max-w:    740px;
+    }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      padding: 0 16px 80px;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    header {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 56px 0 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      margin-bottom: 28px;
+    }
+    .logo:hover { text-decoration: none; }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .logo-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-size: 17px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .last-updated {
+      font-size: 14px;
+      color: var(--muted2);
+      margin-top: 12px;
+    }
+
+    /* Sections */
+    main { max-width: var(--max-w); margin: 0 auto; }
+
+    section {
+      padding: 36px 0 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-of-type { border-bottom: none; }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 16px 0 8px;
+    }
+
+    p { color: var(--muted); margin-bottom: 14px; }
+    p:last-child { margin-bottom: 0; }
+
+    ul { color: var(--muted); padding-left: 22px; margin-bottom: 14px; }
+    li { margin-bottom: 6px; }
+
+    /* Zero-tolerance callout - required to be visible front and centre */
+    .zero-tolerance {
+      background: linear-gradient(135deg, rgba(255,122,60,0.14), rgba(216,90,48,0.10));
+      border: 1px solid rgba(255,122,60,0.32);
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      margin-top: 18px;
+    }
+    .zero-tolerance strong {
+      display: block;
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.2px;
+    }
+    .zero-tolerance p {
+      color: var(--text);
+      margin-bottom: 0;
+    }
+
+    /* Footer links */
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      padding-top: 12px;
+    }
+    .footer-links a {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    footer {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 40px 0 0;
+      text-align: center;
+      color: var(--muted2);
+      font-size: 14px;
+    }
+
+    /* Mobile tuning */
+    @media (max-width: 480px) {
+      body { padding: 0 14px 60px; }
+      header { padding-top: 40px; padding-bottom: 24px; }
+      section { padding-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="/" class="logo">
+      <span class="logo-mark">H</span>
+      <span class="logo-name">Hilads</span>
+    </a>
+    <h1>Terms of Service</h1>
+    <p class="tagline">The rules of the road for using Hilads. Short, plain language, no surprises.</p>
+    <p class="last-updated">Last updated: May 14, 2026</p>
+  </header>
+
+  <main>
+
+    <!-- Zero-tolerance - must be the first substantive section -->
+    <section id="zero-tolerance">
+      <h2>Zero tolerance for abuse</h2>
+      <div class="zero-tolerance">
+        <strong>Hilads has zero tolerance for objectionable content or abusive behavior.</strong>
+        <p>Violations may result in immediate account termination, without notice and without refund. We review every report we receive and act quickly.</p>
+      </div>
+    </section>
+
+    <!-- Acceptance -->
+    <section id="acceptance">
+      <h2>1. Acceptance of these Terms</h2>
+      <p>By creating an account, signing in, or otherwise using Hilads (the "Service"), you agree to be bound by these Terms of Service ("Terms") and our <a href="/privacy.html">Privacy Policy</a>. If you do not agree, you must not use the Service.</p>
+      <p>You must be at least 13 years old to use Hilads. If you are under the age of majority in your jurisdiction, your parent or legal guardian must agree to these Terms on your behalf.</p>
+    </section>
+
+    <!-- The Service -->
+    <section id="service">
+      <h2>2. The Service</h2>
+      <p>Hilads is a real-time social app that connects people in the same city. Users can browse city channels, chat with locals and travelers, create and join events, and share photos.</p>
+      <p>You may use Hilads as a guest (with a temporary identity) or by creating a registered account. Some features, including direct messages and friend requests, are only available to registered accounts.</p>
+    </section>
+
+    <!-- Your account -->
+    <section id="account">
+      <h2>3. Your account</h2>
+      <p>You are responsible for safeguarding your account credentials and for all activity that occurs under your account. Notify us immediately at <a href="mailto:support@hilads.com">support@hilads.com</a> if you suspect unauthorized use.</p>
+      <p>You may delete your account at any time from <strong>Me &gt; Delete account</strong> inside the app, or by emailing us. Account deletion is permanent and removes your profile, photos, friends list, and settings within 30 days.</p>
+    </section>
+
+    <!-- User content -->
+    <section id="user-content">
+      <h2>4. User-generated content</h2>
+      <p>Hilads is a hosting platform for content you create. You retain ownership of the messages, photos, and events you post ("User Content"). By posting, you grant Hilads a worldwide, non-exclusive, royalty-free license to host, store, display, and transmit your User Content for the purpose of operating the Service.</p>
+
+      <h3>You are responsible for what you post</h3>
+      <p>You represent that you own or have the rights to post any User Content you share, and that posting it does not violate any law, contract, or third-party right.</p>
+
+      <h3>Prohibited content and conduct</h3>
+      <p>You may not post, share, or otherwise transmit any content that:</p>
+      <ul>
+        <li>is illegal, fraudulent, deceptive, or used to facilitate illegal activity;</li>
+        <li>harasses, threatens, intimidates, or bullies any person;</li>
+        <li>contains hate speech or attacks people based on race, ethnicity, religion, gender, sexual orientation, disability, or any protected characteristic;</li>
+        <li>sexually exploits or endangers minors in any way, including any sexual content involving anyone under 18 (we report any such content to the appropriate authorities);</li>
+        <li>contains nudity or sexually explicit material in public city channels or events;</li>
+        <li>impersonates another person or misrepresents your affiliation with any individual or entity;</li>
+        <li>is spam, repetitive, off-topic, or used to artificially inflate engagement;</li>
+        <li>promotes self-harm, suicide, or eating disorders;</li>
+        <li>infringes any copyright, trademark, trade secret, or other intellectual property right;</li>
+        <li>contains malware, phishing attempts, or links to malicious sites;</li>
+        <li>violates the privacy of any person, including by sharing private information without consent.</li>
+      </ul>
+
+      <h3>Reporting and blocking</h3>
+      <p>If you encounter content or behavior that violates these Terms, you can report or block any user from their profile screen or from inside any direct message thread. Our team reviews every report, typically within 24 hours.</p>
+    </section>
+
+    <!-- Termination -->
+    <section id="termination">
+      <h2>5. Account termination</h2>
+      <p>We may suspend or permanently terminate your access to Hilads at any time, without prior notice, if we believe you have violated these Terms or applicable law, or if your behavior poses a risk to other members or to the integrity of the Service.</p>
+      <p>Termination measures range from removing specific content, to temporarily restricting your ability to post, to permanently banning your account and the device(s) associated with it. Severe violations, including any sexual content involving minors, result in immediate permanent termination and may be reported to law enforcement.</p>
+    </section>
+
+    <!-- Privacy -->
+    <section id="privacy">
+      <h2>6. Privacy</h2>
+      <p>Your use of Hilads is also governed by our <a href="/privacy.html">Privacy Policy</a>, which describes what data we collect, how we use it, and the rights you have over your data.</p>
+    </section>
+
+    <!-- Disclaimers -->
+    <section id="disclaimers">
+      <h2>7. Disclaimers</h2>
+      <p>Hilads is provided on an "as is" and "as available" basis. To the fullest extent permitted by law, we disclaim all warranties, express or implied, including warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+      <p>Hilads facilitates connections between people but does not vet the identities, motives, or behavior of other users. Use your judgment when meeting strangers in person, sharing personal information, or attending events. We are not responsible for the actions of other users.</p>
+    </section>
+
+    <!-- Limitation of liability -->
+    <section id="liability">
+      <h2>8. Limitation of liability</h2>
+      <p>To the fullest extent permitted by law, Hilads and its operators will not be liable for any indirect, incidental, special, consequential, or punitive damages, or for any loss of profits or revenues, arising out of or relating to your use of the Service. Our total aggregate liability for any claim arising out of these Terms or the Service is limited to the amount you have paid us in the 12 months preceding the claim, or $50, whichever is greater.</p>
+    </section>
+
+    <!-- Changes -->
+    <section id="changes">
+      <h2>9. Changes to these Terms</h2>
+      <p>We may update these Terms from time to time. When we make material changes, we will notify you in the app and update the "Last updated" date above. Continued use of Hilads after changes take effect constitutes your acceptance of the revised Terms. If you do not agree to a change, you must stop using the Service and may delete your account.</p>
+    </section>
+
+    <!-- Governing law -->
+    <section id="governing-law">
+      <h2>10. Governing law</h2>
+      <p>These Terms are governed by the laws of the jurisdiction where Hilads is operated, without regard to conflict-of-law principles. Any dispute arising out of or relating to these Terms or the Service must be brought in the courts of that jurisdiction, and you consent to their exclusive jurisdiction and venue.</p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <h2>11. Contact</h2>
+      <p>Questions about these Terms? Email us at <a href="mailto:support@hilads.com">support@hilads.com</a>. We aim to respond within 48 hours.</p>
+    </section>
+
+    <!-- Legal links -->
+    <section id="legal">
+      <h2>Related</h2>
+      <div class="footer-links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/support.html">Support</a>
+        <a href="/child-safety.html">Child Safety</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Hilads. Made with care.</p>
+  </footer>
+
+</body>
+</html>
