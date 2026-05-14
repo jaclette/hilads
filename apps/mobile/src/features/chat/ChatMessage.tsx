@@ -119,8 +119,10 @@ const locStyles = StyleSheet.create({
   addr:        { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
   textMine:    { color: '#fff' },
   addrMine:    { color: 'rgba(255,255,255,0.65)' },
-  tapHint:     { fontSize: 11, color: Colors.muted2, marginTop: 2, opacity: 0.6 },
-  tapHintMine: { color: 'rgba(255,255,255,0.5)' },
+  // tapHint "Tap to open in maps" — bumped 11→13 and dropped opacity 0.6
+  // (which used to compound on top of muted2 to ~1.4:1, well below WCAG).
+  tapHint:     { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
+  tapHintMine: { color: 'rgba(255,255,255,0.65)' },
 });
 
 // ── Avatar palette — mirrors web AVATAR_PALETTES ──────────────────────────────
@@ -288,7 +290,7 @@ const badgeStyles = StyleSheet.create({
     paddingVertical:   2,
   },
   text: {
-    fontSize:   11,
+    fontSize:   FontSizes.xs,  // 13 — bumped from 11 (Apple G4 floor)
     fontWeight: '600',
   },
 });
@@ -862,7 +864,7 @@ const styles = StyleSheet.create({
 
   // ── .msg-author ───────────────────────────────────────────────────────────
   author:    { fontSize: 13, fontWeight: '700', opacity: 0.9 },
-  modeLabel:          { fontSize: 11, fontWeight: '600' },
+  modeLabel:          { fontSize: FontSizes.xs, fontWeight: '600' },
   vibeLabel:          { fontSize: 13, opacity: 0.55 },
   modeLabelLocal:     { color: '#FF7A3C', opacity: 0.85 },
   modeLabelExploring: { color: '#60a5fa', opacity: 0.85 },
@@ -897,7 +899,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(248,113,113,0.5)',
   },
   failedLabel: {
-    fontSize:   11,
+    fontSize:   FontSizes.xs,
     color:      Colors.red,
     marginTop:  4,
     marginLeft: 4,
@@ -917,7 +919,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
   dateSepText: {
-    fontSize:          11,
+    fontSize:          FontSizes.xs,  // 13 — was 11 (Apple G4 floor)
     fontWeight:        '600',
     color:             Colors.muted2,
     letterSpacing:     0.5,
@@ -930,8 +932,10 @@ const styles = StyleSheet.create({
   },
 
   // ── Per-bubble timestamp ──────────────────────────────────────────────────
+  // 13pt + new muted2 (~4.7:1) — was 11pt + #635650 (~2.4:1). Apple G4
+  // cited "Yesterday · 03:29" as one of the unreadable cases.
   timestamp: {
-    fontSize:   11,
+    fontSize:   FontSizes.xs,
     marginTop:  3,
     color:      Colors.muted2,
   },
@@ -967,11 +971,11 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 4,
   },
   replyQuoteName: {
-    fontSize:     11,
+    fontSize:     FontSizes.xs,
     fontWeight:   '700',
     color:        '#FF7A3C',
     marginBottom: 2,
-    lineHeight:   15,
+    lineHeight:   17,
   },
   replyQuoteNameMine: { color: 'rgba(255,255,255,0.8)' },
   replyQuoteText: {

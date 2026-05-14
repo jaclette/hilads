@@ -65,7 +65,7 @@ const sepStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
   text: {
-    fontSize:          11,
+    fontSize:          FontSizes.xs,  // 13 — was 11 (Apple G4 floor)
     fontWeight:        '600',
     color:             Colors.muted2,
     letterSpacing:     0.5,
@@ -210,8 +210,8 @@ const dmLocStyles = StyleSheet.create({
   addr:        { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
   textMine:    { color: '#fff' },
   addrMine:    { color: 'rgba(255,255,255,0.65)' },
-  tapHint:     { fontSize: 11, color: Colors.muted2, marginTop: 2, opacity: 0.6 },
-  tapHintMine: { color: 'rgba(255,255,255,0.5)' },
+  tapHint:     { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
+  tapHintMine: { color: 'rgba(255,255,255,0.65)' },
 });
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted, onReact }: RowProps) {
@@ -975,7 +975,7 @@ const dmReplyStyles = StyleSheet.create({
     borderTopLeftRadius:  18,
     borderTopRightRadius: 18,
   },
-  name:     { fontSize: 11, fontWeight: '700', color: '#FF7A3C', marginBottom: 2, lineHeight: 15 },
+  name:     { fontSize: FontSizes.xs, fontWeight: '700', color: '#FF7A3C', marginBottom: 2, lineHeight: 17 },
   nameMine: { color: 'rgba(255,255,255,0.8)' },
   text:     { fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 16 },
   textMine: { color: 'rgba(255,255,255,0.55)' },
@@ -1170,12 +1170,13 @@ const styles = StyleSheet.create({
   // ── Meta row (timestamp / status) ────────────────────────────────────────────
   metaRow:     { marginTop: 4, paddingHorizontal: 4 },
   metaRowMine: { alignItems: 'flex-end' },
+  // DM message timestamps — was 11pt + #635650 (~2.4:1). Apple G4 floor.
   metaText: {
-    fontSize: 11,
+    fontSize: FontSizes.xs,
     color:    Colors.muted2,
   },
   metaTextFailed: {
-    fontSize: 11,
+    fontSize: FontSizes.xs,
     color:    Colors.red,
   },
 
