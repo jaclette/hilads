@@ -47,10 +47,19 @@ export const Colors = {
   bg3:      '#1e1812',   // web --surface2
   border:   '#272018',   // web --border (warm brown)
 
-  // Text
-  text:     '#ede9e5',   // web --text  (warm off-white)
+  // Text — contrast targets on bg #0d0b09 (≈ pure black at L≈0):
+  //   text     ~16.6:1   primary
+  //   muted     ~5.5:1   secondary (still WCAG AA at all sizes)
+  //   muted2    ~4.7:1   tertiary  (WCAG AA at normal sizes)
+  //   mutedDim  ~2.4:1   reserved for visually-disabled affordances ONLY,
+  //                      e.g. inactive button labels, dot pagers. NEVER on
+  //                      visible body or secondary text. Apple Guideline 4
+  //                      cited the prior #635650 (this value) as unreadable
+  //                      when used for body / timestamps / sub-labels.
+  text:     '#ede9e5',   // web --text   (warm off-white)
   muted:    '#968880',   // web --muted2 (visible secondary)
-  muted2:   '#635650',   // web --muted  (dim / disabled)
+  muted2:   '#8a7d75',   // tertiary — bumped from #635650 for WCAG AA on dark bg
+  mutedDim: '#635650',   // disabled-only — opt-in, not a default. See note above.
 
   // Brand
   accent:   '#FF7A3C',   // web --hot-dot (energy orange — active states, FAB)
@@ -65,8 +74,14 @@ export const Colors = {
   white:    '#ffffff',
 } as const;
 
+// Type scale floor: nothing rendered as visible body / secondary text may go
+// below `xs` (13pt). `tiny` (11pt) is reserved for badge content (notification
+// count pips, status dots) where the text sits inside a coloured shape and is
+// glyph-like, not informational. Apple Guideline 4 cited the prior 11/12pt
+// secondary text as too small to read on iPad and iPhone 17 Pro Max.
 export const FontSizes = {
-  xs:   12,
+  tiny: 11,  // badges + count pips ONLY (not visible body text)
+  xs:   13,
   sm:   14,
   md:   17,
   lg:   20,
