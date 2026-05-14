@@ -756,7 +756,21 @@ $router->add('GET', '/internal/run-migrations', function () {
         $errors[] = "blocks: " . $e->getMessage();
     }
 
-    // ── 8. Summary query ──────────────────────────────────────────────────────
+    // ── 8. users.eula_accepted_at (Apple G1.2 EULA acceptance tracking) ───────
+    //
+    // Tracks when the user accepted Hilads' Terms / EULA. NULL means not yet
+    // accepted — used by the mobile client to decide whether to show the
+    // mandatory EULA prompt (new signups always set this; existing users get
+    // the modal once on next launch and POST /users/me/eula to clear it).
+
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS eula_accepted_at TIMESTAMPTZ");
+        $log[] = "users.eula_accepted_at: column ensured";
+    } catch (\Throwable $e) {
+        $errors[] = "users.eula_accepted_at: " . $e->getMessage();
+    }
+
+    // ── 9. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
     $eventCount = (int) $pdo->query("SELECT COUNT(*) FROM channel_events")->fetchColumn();
@@ -785,12 +799,21 @@ $router->add('POST', '/api/v1/auth/signup', function () {
     $body = Request::json();
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
+    // Apple G1.2 — EULA must be explicitly accepted at signup.
+    // The mobile client gates its submit button on the in-app checkbox; the
+    // server enforces the same rule so direct API callers (or older clients)
+    // can't bypass it.
+    if (empty($body['eula_accepted']) || $body['eula_accepted'] !== true) {
+        Response::json(['error' => 'EULA acceptance required'], 422);
+    }
+
     $user  = AuthService::signup(
-        email:       $body['email']        ?? '',
-        password:    $body['password']     ?? '',
-        displayName: $body['display_name'] ?? '',
-        guestId:     isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null,
-        mode:        isset($body['mode'])    && is_string($body['mode'])    ? $body['mode']    : null,
+        email:        $body['email']        ?? '',
+        password:     $body['password']     ?? '',
+        displayName:  $body['display_name'] ?? '',
+        guestId:      isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null,
+        mode:         isset($body['mode'])    && is_string($body['mode'])    ? $body['mode']    : null,
+        eulaAccepted: true,
     );
 
     AnalyticsService::capture('user_registered', $user['id'], [
@@ -5518,6 +5541,21 @@ $router->add('GET', '/api/v1/users/me/blocks', function () {
     $viewer = AuthService::requireAuth();
     $rows   = BlockRepository::listOutgoing($viewer['id'], null);
     Response::json(['blocks' => $rows]);
+});
+
+// ── POST /api/v1/users/me/eula — accept the EULA (Apple G1.2) ────────────────
+//
+// Used by the mobile re-prompt modal: existing registered users (created
+// before the moderation update shipped) get a blocking modal on next launch
+// when their /auth/me response shows eula_accepted_at == null. Idempotent —
+// re-calling preserves the original acceptance moment.
+$router->add('POST', '/api/v1/users/me/eula', function () {
+    $viewer = AuthService::requireAuth();
+    $user   = UserRepository::acceptEula($viewer['id']);
+    AnalyticsService::capture('eula_accepted', $viewer['id'], [
+        'first_time' => $viewer['eula_accepted_at'] === null,
+    ]);
+    Response::json(['user' => AuthService::ownFields($user)]);
 });
 
 // ── TEMPORARY: Sentry test endpoint ──────────────────────────────────────────

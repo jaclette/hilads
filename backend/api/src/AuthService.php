@@ -23,7 +23,8 @@ class AuthService
         string $password,
         string $displayName,
         ?string $guestId = null,
-        ?string $mode = null
+        ?string $mode = null,
+        bool $eulaAccepted = false
     ): array {
         $email       = strtolower(trim($email));
         $displayName = mb_substr(trim(strip_tags($displayName)), 0, 30);
@@ -67,6 +68,12 @@ class AuthService
                 Response::json(['error' => 'An account with this email already exists'], 409);
             }
             throw $e;
+        }
+
+        // Stamp EULA acceptance time. Required at signup per Apple G1.2 — the
+        // /auth/signup route validates the boolean before reaching here.
+        if ($eulaAccepted) {
+            $user = UserRepository::acceptEula($user['id']);
         }
 
         $token = self::createDbSession($user['id']);
@@ -538,11 +545,16 @@ class AuthService
         }
 
         return array_merge(self::publicFields($user), [
-            'email'           => $user['email'],
-            'guest_id'        => $user['guest_id']  ?? null,
-            'is_verified'     => (bool) ($user['is_verified'] ?? false),
-            'isAmbassador'    => $isAmbassador,
-            'ambassadorPicks' => $isAmbassador ? (object) $picks : null,
+            'email'             => $user['email'],
+            'guest_id'          => $user['guest_id']  ?? null,
+            'is_verified'       => (bool) ($user['is_verified'] ?? false),
+            // ISO-8601 string when the user accepted the EULA, NULL otherwise.
+            // The mobile client uses this to decide whether to show the
+            // re-prompt modal on launch (Apple G1.2 — existing users must
+            // accept once after the moderation update ships).
+            'eula_accepted_at'  => $user['eula_accepted_at'] ?? null,
+            'isAmbassador'      => $isAmbassador,
+            'ambassadorPicks'   => $isAmbassador ? (object) $picks : null,
         ]);
     }
 

@@ -74,6 +74,19 @@ class UserRepository
     }
 
     /**
+     * Stamp the user's EULA acceptance time (Apple G1.2). Idempotent — only
+     * sets the timestamp if it's currently NULL, so re-acceptance preserves
+     * the original acceptance moment.
+     */
+    public static function acceptEula(string $id): array
+    {
+        Database::pdo()
+            ->prepare("UPDATE users SET eula_accepted_at = now() WHERE id = ? AND eula_accepted_at IS NULL")
+            ->execute([$id]);
+        return self::findById($id);
+    }
+
+    /**
      * Partial update — only the keys present in $fields are touched.
      * Allowed fields: display_name, birth_year, profile_photo_url, home_city, interests.
      */
