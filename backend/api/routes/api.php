@@ -5178,6 +5178,186 @@ function findExistingUserReport(
     ];
 }
 
+// ── POST /api/v1/blocks — block a user or guest ──────────────────────────────
+//
+// Body: { target_user_id?, target_guest_id?, target_nickname?, reason?, guestId? }
+// Either target_user_id or target_guest_id required. Viewer is the registered
+// user (preferred) or a guest passing guestId in the body.
+//
+// Side effects when both sides are registered users:
+//   - any pending friend_request between the pair is set to 'cancelled'
+//   - any user_friends rows between the pair are deleted
+//
+// Idempotent: re-blocking returns the existing row with 200 instead of 201.
+$router->add('POST', '/api/v1/blocks', function () {
+    $pdo  = Database::pdo();
+    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $viewer         = AuthService::currentUser();
+    $blockerUserId  = $viewer['id'] ?? null;
+    $blockerGuestId = ($blockerUserId === null)
+        ? (isValidGuestId($body['guestId'] ?? null) ? $body['guestId'] : null)
+        : null;
+
+    if ($blockerUserId === null && $blockerGuestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+
+    enforceRateLimit('user_block', 30, 3600);
+
+    $targetUserId   = $body['target_user_id']        ?: null;
+    $targetGuestId  = $body['target_guest_id']       ?: null;
+    $targetNickname = trim($body['target_nickname']  ?? '') ?: null;
+    $reason         = trim($body['reason']           ?? '') ?: null;
+
+    if (empty($targetUserId) && empty($targetGuestId)) {
+        Response::json(['error' => 'Target identity required'], 422);
+    }
+    if (!empty($targetUserId)  && $targetUserId  === $blockerUserId)  {
+        Response::json(['error' => 'Cannot block yourself'], 422);
+    }
+    if (!empty($targetGuestId) && $targetGuestId === $blockerGuestId) {
+        Response::json(['error' => 'Cannot block yourself'], 422);
+    }
+
+    // Idempotent: surface existing row instead of creating a duplicate.
+    $existing       = BlockRepository::find($blockerUserId, $blockerGuestId, $targetUserId ?: null, $targetGuestId ?: null);
+    $alreadyBlocked = $existing !== null;
+    $row = $alreadyBlocked
+        ? $existing
+        : BlockRepository::create(
+            $blockerUserId,
+            $blockerGuestId,
+            $targetUserId  ?: null,
+            $targetGuestId ?: null,
+            $targetNickname,
+            $reason
+        );
+
+    // Side-effects only on FIRST block (skip on idempotent re-block).
+    // Restricted to user×user blocks because friend_requests + user_friends
+    // are registered-user-only relations.
+    if (!$alreadyBlocked && $blockerUserId !== null && !empty($targetUserId)) {
+        $pdo->prepare("
+            UPDATE friend_requests
+               SET status = 'cancelled', updated_at = now()
+             WHERE status = 'pending'
+               AND ((sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?))
+        ")->execute([$blockerUserId, $targetUserId, $targetUserId, $blockerUserId]);
+
+        $pdo->prepare("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?")
+            ->execute([$blockerUserId, $targetUserId]);
+        $pdo->prepare("DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?")
+            ->execute([$targetUserId, $blockerUserId]);
+
+        // Tell the blocked user's other devices that the friendship is gone.
+        // We do NOT signal the block itself — Apple's mutual-invisibility model
+        // means the blocked party should just see the friendship vanish.
+        broadcastUserEventToWs($targetUserId, 'friendRemoved', ['userId' => $blockerUserId]);
+    }
+
+    if ($blockerUserId !== null) {
+        AnalyticsService::capture('user_blocked', $blockerUserId, [
+            'target_user_id'  => $targetUserId,
+            'target_guest_id' => $targetGuestId,
+            'idempotent'      => $alreadyBlocked,
+        ]);
+    }
+
+    Response::json(['block' => $row], $alreadyBlocked ? 200 : 201);
+});
+
+// ── DELETE /api/v1/blocks/{id} — unblock by row id ───────────────────────────
+$router->add('DELETE', '/api/v1/blocks/{id}', function (array $params) {
+    $body  = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $viewer         = AuthService::currentUser();
+    $blockerUserId  = $viewer['id'] ?? null;
+    $blockerGuestId = ($blockerUserId === null)
+        ? (isValidGuestId($body['guestId'] ?? $_GET['guestId'] ?? null)
+            ? ($body['guestId'] ?? $_GET['guestId'])
+            : null)
+        : null;
+
+    if ($blockerUserId === null && $blockerGuestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+
+    $id = (int) ($params['id'] ?? 0);
+    if ($id <= 0) {
+        Response::json(['error' => 'Invalid block id'], 400);
+    }
+
+    $deleted = BlockRepository::deleteById($id, $blockerUserId, $blockerGuestId);
+    if (!$deleted) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+
+    if ($blockerUserId !== null) {
+        AnalyticsService::capture('user_unblocked', $blockerUserId, ['block_id' => $id]);
+    }
+
+    Response::json(['ok' => true]);
+});
+
+// ── DELETE /api/v1/blocks — unblock by target identity ───────────────────────
+//
+// Body OR query: { target_user_id?, target_guest_id?, guestId? }
+// Used when the client has the target's identity but not the row id (e.g. the
+// "re-block from the same screen" path or the unblock confirm modal).
+$router->add('DELETE', '/api/v1/blocks', function () {
+    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+
+    $viewer         = AuthService::currentUser();
+    $blockerUserId  = $viewer['id'] ?? null;
+    $blockerGuestId = ($blockerUserId === null)
+        ? (isValidGuestId($body['guestId'] ?? $_GET['guestId'] ?? null)
+            ? ($body['guestId'] ?? $_GET['guestId'])
+            : null)
+        : null;
+
+    if ($blockerUserId === null && $blockerGuestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+
+    $targetUserId  = $body['target_user_id']  ?? $_GET['target_user_id']  ?? null;
+    $targetGuestId = $body['target_guest_id'] ?? $_GET['target_guest_id'] ?? null;
+
+    if (empty($targetUserId) && empty($targetGuestId)) {
+        Response::json(['error' => 'Target identity required'], 422);
+    }
+
+    $deleted = BlockRepository::deleteByTarget(
+        $blockerUserId,
+        $blockerGuestId,
+        $targetUserId  ?: null,
+        $targetGuestId ?: null
+    );
+    if (!$deleted) {
+        Response::json(['error' => 'Not blocked'], 404);
+    }
+
+    if ($blockerUserId !== null) {
+        AnalyticsService::capture('user_unblocked', $blockerUserId, [
+            'target_user_id'  => $targetUserId,
+            'target_guest_id' => $targetGuestId,
+        ]);
+    }
+
+    Response::json(['ok' => true]);
+});
+
+// ── GET /api/v1/users/me/blocks — list of blocks I've made ───────────────────
+//
+// Auth required (registered users only). Powers the Settings → Blocked Users
+// management screen. Returns each row joined with the blocked user's display
+// name and avatar (or target_nickname for guest blocks).
+$router->add('GET', '/api/v1/users/me/blocks', function () {
+    $viewer = AuthService::requireAuth();
+    $rows   = BlockRepository::listOutgoing($viewer['id'], null);
+    Response::json(['blocks' => $rows]);
+});
+
 // ── TEMPORARY: Sentry test endpoint ──────────────────────────────────────────
 // Remove this route once Sentry integration is confirmed.
 // Protected: only active when MIGRATION_KEY is set in env.
