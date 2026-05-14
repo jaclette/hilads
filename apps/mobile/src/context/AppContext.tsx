@@ -11,6 +11,7 @@ import { clearToken } from '@/services/session';
 import { unregisterPushToken } from '@/services/push';
 import { socket } from '@/lib/socket';
 import { track, resetAnalytics } from '@/services/analytics';
+import { EMPTY_BLOCKED_SET, type BlockedSet } from '@/lib/blockFilter';
 
 // Pre-loaded data returned by POST /channels/{id}/bootstrap.
 // Consumed once by chat (messages) tab on first render.
@@ -49,6 +50,11 @@ interface AppState {
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
   onlineUsers:          OnlineUser[];    // live presence list for the current city
   bootstrapData:        BootstrapData | null; // pre-loaded from /bootstrap, consumed once by tabs
+  // Outgoing block set (users / guests this account has blocked). Hydrated once
+  // on boot via fetchMyBlocks() and patched optimistically on each block /
+  // unblock action so the UI removes content instantly without a refetch.
+  // The reverse direction (blocked-by-others) is server-side only.
+  blockedSet:           BlockedSet;
 }
 
 interface AppActions {
@@ -71,6 +77,11 @@ interface AppActions {
   setJoined:               (joined: boolean) => void;
   setOnlineUsers:          (users: OnlineUser[]) => void;
   setBootstrapData:        (data: BootstrapData | null) => void;
+  setBlockedSet:           (set: BlockedSet) => void;
+  /** Optimistic add — call right before submitBlock() so UI updates instantly. */
+  addBlocked:              (target: { userId?: string | null; guestId?: string | null }) => void;
+  /** Optimistic remove — call right before unblock so the row disappears instantly. */
+  removeBlocked:           (target: { userId?: string | null; guestId?: string | null }) => void;
   logout:                  () => Promise<void>;
 }
 
@@ -94,6 +105,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [joined,         setJoined]         = useState(false);
   const [onlineUsers,    setOnlineUsers]    = useState<OnlineUser[]>([]);
   const [bootstrapData,  setBootstrapData]  = useState<BootstrapData | null>(null);
+  const [blockedSet,     setBlockedSetRaw]  = useState<BlockedSet>(EMPTY_BLOCKED_SET);
+
+  const setBlockedSet = useCallback((next: BlockedSet) => setBlockedSetRaw(next), []);
+
+  const addBlocked = useCallback((target: { userId?: string | null; guestId?: string | null }) => {
+    setBlockedSetRaw(prev => {
+      const userIds  = new Set(prev.userIds);
+      const guestIds = new Set(prev.guestIds);
+      if (target.userId)  userIds.add(target.userId);
+      if (target.guestId) guestIds.add(target.guestId);
+      return { userIds, guestIds };
+    });
+  }, []);
+
+  const removeBlocked = useCallback((target: { userId?: string | null; guestId?: string | null }) => {
+    setBlockedSetRaw(prev => {
+      const userIds  = new Set(prev.userIds);
+      const guestIds = new Set(prev.guestIds);
+      if (target.userId)  userIds.delete(target.userId);
+      if (target.guestId) guestIds.delete(target.guestId);
+      return { userIds, guestIds };
+    });
+  }, []);
 
   const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
 
@@ -140,6 +174,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setUnreadDMs(0);
     setUnreadNotifications(0);
     setEventChatPreviewsRaw({});
+    setBlockedSetRaw(EMPTY_BLOCKED_SET);
     // Reconnect as guest so sign-in.tsx's later joinCity isn't silently
     // dropped against a closed socket.
     socket.connect();
@@ -150,7 +185,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected,
         unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-        geoState, detectedCity, joined, onlineUsers, bootstrapData,
+        geoState, detectedCity, joined, onlineUsers, bootstrapData, blockedSet,
         setBooting, setBootError,
         setIdentity,
         setSessionId:            useCallback((id: string) => setSessionId(id), []),
@@ -169,6 +204,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setJoined:               useCallback((j: boolean) => setJoined(j), []),
         setOnlineUsers:          useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
         setBootstrapData:        useCallback((d: BootstrapData | null) => setBootstrapData(d), []),
+        setBlockedSet,
+        addBlocked,
+        removeBlocked,
         logout,
       }}
     >

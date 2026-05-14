@@ -6,6 +6,8 @@ import { loadOrCreateIdentity, generateSessionId, saveDetectedCity, loadDetected
 import { socket } from '@/lib/socket';
 import { resolveLocation, bootstrapChannel, fetchChannels } from '@/api/channels';
 import { authMe } from '@/api/auth';
+import { fetchMyBlocks } from '@/api/blocks';
+import { blockedSetFromApiRows } from '@/lib/blockFilter';
 import { loadSavedToken } from '@/services/session';
 import { getAuthToken } from '@/api/client';
 import { getColdStartNotificationRoute } from '@/features/notifications/NotificationHandler';
@@ -137,6 +139,7 @@ export function useAppBoot(): Result {
     setCity, setBooting, setBootError, setWsConnected,
     setUnreadDMs, setUnreadNotifications,
     setGeoState, setDetectedCity, setJoined, setBootstrapData,
+    setBlockedSet,
   } = useApp();
 
   const [retryCount,    setRetryCount]    = useState(0);
@@ -349,6 +352,12 @@ export function useAppBoot(): Result {
               // owns the replay on reconnect — no on('connected') subscription
               // needed (those leaked because they were never unsubscribed).
               socket.joinUser(user.id);
+              // Hydrate the outgoing block set so list filters take effect
+              // immediately. Failures are non-fatal — server-side filtering is
+              // still applied; this is just the client-instant layer.
+              fetchMyBlocks()
+                .then(rows => { if (!cancelled) setBlockedSet(blockedSetFromApiRows(rows)); })
+                .catch(err => console.warn('[boot] fetchMyBlocks failed (non-fatal):', String(err)));
             } else if (!cancelled) {
               console.log('[boot] no authenticated user — push registration will wait for login');
             }
