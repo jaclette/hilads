@@ -12,7 +12,7 @@
 
 import React from 'react';
 import {
-  Modal, View, Text, TouchableOpacity, Linking, StyleSheet, ActivityIndicator,
+  View, Text, TouchableOpacity, Linking, StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
@@ -97,38 +97,44 @@ interface ModalProps {
 }
 
 export function EulaPromptModal({ visible, loading, onAccept }: ModalProps) {
+  // Plain absolutely-positioned overlay rather than React Native's <Modal>.
+  // The native <Modal transparent> on iPad in iPhone-compat mode renders in
+  // a UIWindow that doesn't extend over the tab bar — the bottom tab bar
+  // remained tappable and intercepted touches that should have hit "I agree".
+  // An in-tree absolute overlay sits above everything (it's rendered last in
+  // _layout.tsx so it has the highest paint order) and captures touches
+  // uniformly across iPad / iPhone.
+  if (!visible) return null;
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      statusBarTranslucent
-      onRequestClose={() => { /* not dismissable — must accept */ }}
+    <View
+      style={styles.modalOverlay}
+      // pointerEvents="auto" is the default; explicit so future refactors
+      // don't accidentally let taps pass through to underlying tabs.
+      pointerEvents="auto"
+      accessibilityViewIsModal
     >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalCard}>
-          <Text style={styles.modalTitle}>Updated Terms</Text>
-          <Text style={styles.modalSub}>
-            Hilads' Terms of Service and Community Guidelines have been updated.
-            Please review and accept to continue.
-          </Text>
+      <View style={styles.modalCard}>
+        <Text style={styles.modalTitle}>Updated Terms</Text>
+        <Text style={styles.modalSub}>
+          Hilads' Terms of Service and Community Guidelines have been updated.
+          Please review and accept to continue.
+        </Text>
 
-          <EulaCopyBlock />
+        <EulaCopyBlock />
 
-          <TouchableOpacity
-            style={[styles.acceptBtn, loading && styles.acceptBtnDisabled]}
-            onPress={onAccept}
-            disabled={loading}
-            activeOpacity={0.85}
-          >
-            {loading
-              ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.acceptBtnText}>I agree</Text>
-            }
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={[styles.acceptBtn, loading && styles.acceptBtnDisabled]}
+          onPress={onAccept}
+          disabled={loading}
+          activeOpacity={0.85}
+        >
+          {loading
+            ? <ActivityIndicator color="#fff" />
+            : <Text style={styles.acceptBtnText}>I agree</Text>
+          }
+        </TouchableOpacity>
       </View>
-    </Modal>
+    </View>
   );
 }
 
@@ -185,13 +191,21 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  // Re-prompt modal
+  // Re-prompt overlay — full-screen absolute layer rendered in-tree (no
+  // native <Modal>). Lives at the top of the React tree (last sibling in
+  // _layout.tsx), so its high zIndex puts it above the bottom tab bar.
   modalOverlay: {
-    flex:              1,
-    backgroundColor:   'rgba(0,0,0,0.75)',
+    position:          'absolute',
+    top:               0,
+    left:              0,
+    right:             0,
+    bottom:            0,
+    backgroundColor:   'rgba(0,0,0,0.85)',
     paddingHorizontal: Spacing.lg,
     alignItems:        'center',
     justifyContent:    'center',
+    zIndex:            9999,
+    elevation:         9999, // Android paint order
   },
   modalCard: {
     width:           '100%',
