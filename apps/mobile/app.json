@@ -23,6 +23,9 @@
         "applinks:hilads.live"
       ],
       "infoPlist": {
+        "UISupportedInterfaceOrientations": [
+          "UIInterfaceOrientationPortrait"
+        ],
         "NSLocationWhenInUseUsageDescription": "Hilads uses your location to find your city and show you what's happening nearby.",
         "NSCameraUsageDescription": "Hilads lets you send photos in city chats and event conversations.",
         "NSPhotoLibraryUsageDescription": "Hilads lets you share photos from your library in chats.",
@@ -31,7 +34,7 @@
         ],
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "15"
+      "buildNumber": "16"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -40,7 +43,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 46,
+      "versionCode": 47,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
