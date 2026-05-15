@@ -54,6 +54,8 @@
   ],
   "rewrites": [
     { "source": "/privacy",              "destination": "/privacy.html" },
+    { "source": "/terms",                "destination": "/terms.html" },
+    { "source": "/support",              "destination": "/support.html" },
     { "source": "/child-safety",         "destination": "/child-safety.html" },
     { "source": "/.well-known/(.*)",     "destination": "/.well-known/$1" },
     { "source": "/event/:id",            "destination": "/api/prerender?type=event&id=:id" },
