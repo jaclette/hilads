@@ -114,11 +114,11 @@ function resolveRoute(data: NotifData): string | null {
     case 'event_message':
     case 'event_join':
       if (data.eventId) return `/event/${data.eventId}`;
-      return '/(tabs)/hot';
+      return '/(tabs)/now';
 
     case 'new_event':
       if (data.eventId) return `/event/${data.eventId}`;
-      return '/(tabs)/hot';
+      return '/(tabs)/now';
 
     case 'topic_message':
     case 'new_topic':
