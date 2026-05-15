@@ -49,9 +49,24 @@ async function request<T = unknown>(
     ...(extraHeaders as Record<string, string>),
   };
 
-  // Replay auth token as cookie if we have it
+  // Send auth via BOTH Cookie and Authorization: Bearer headers.
+  //
+  // iOS NSURLSession owns its own NSHTTPCookieStorage and will silently
+  // strip manually-set Cookie headers in some configurations (notably
+  // POSTs that reuse connections after the login response set a cookie).
+  // /auth/me happened to work because NSURLSession's cookie jar caught
+  // the Set-Cookie from the login response, but that jar empties under
+  // conditions we can't reliably control — leading to "Authentication
+  // required" failures on later POSTs even though the JS-side token is
+  // perfectly fine.
+  //
+  // The PHP backend's AuthService::currentUser() reads $_COOKIE first,
+  // then falls back to Authorization: Bearer (AuthService.php:158-162).
+  // Sending both headers makes auth work regardless of which one iOS
+  // decides to forward.
   if (authToken) {
-    headers['Cookie'] = `hilads_token=${authToken}`;
+    headers['Cookie']         = `hilads_token=${authToken}`;
+    headers['Authorization']  = `Bearer ${authToken}`;
   }
 
   if (__DEV__) {
