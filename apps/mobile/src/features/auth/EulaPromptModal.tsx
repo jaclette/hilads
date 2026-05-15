@@ -12,7 +12,7 @@
 
 import React from 'react';
 import {
-  View, Text, TouchableOpacity, Linking, StyleSheet, ActivityIndicator,
+  View, Text, Pressable, TouchableOpacity, Linking, StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
@@ -99,18 +99,20 @@ interface ModalProps {
 export function EulaPromptModal({ visible, loading, onAccept }: ModalProps) {
   // Plain absolutely-positioned overlay rather than React Native's <Modal>.
   // The native <Modal transparent> on iPad in iPhone-compat mode renders in
-  // a UIWindow that doesn't extend over the tab bar — the bottom tab bar
-  // remained tappable and intercepted touches that should have hit "I agree".
-  // An in-tree absolute overlay sits above everything (it's rendered last in
-  // _layout.tsx so it has the highest paint order) and captures touches
-  // uniformly across iPad / iPhone.
+  // a UIWindow that doesn't extend over the tab bar AND has flaky touch
+  // hit-testing on iOS 26. An in-tree overlay sits above everything (it's
+  // rendered last in _layout.tsx so it has the highest paint order) and
+  // captures touches uniformly across iPad / iPhone.
   if (!visible) return null;
+  console.log('[eula] modal visible — rendering overlay (loading=' + String(loading ?? false) + ')');
   return (
-    <View
+    // Pressable absorbs taps on the backdrop so they don't fall through.
+    // No onPress — the modal is non-dismissable. We just want guaranteed
+    // touch capture across iOS 26 / iPad-compat behaviours that <View> alone
+    // doesn't handle reliably.
+    <Pressable
       style={styles.modalOverlay}
-      // pointerEvents="auto" is the default; explicit so future refactors
-      // don't accidentally let taps pass through to underlying tabs.
-      pointerEvents="auto"
+      onPress={() => { /* swallow backdrop taps */ }}
       accessibilityViewIsModal
     >
       <View style={styles.modalCard}>
@@ -122,19 +124,30 @@ export function EulaPromptModal({ visible, loading, onAccept }: ModalProps) {
 
         <EulaCopyBlock />
 
-        <TouchableOpacity
-          style={[styles.acceptBtn, loading && styles.acceptBtnDisabled]}
-          onPress={onAccept}
+        {/* Pressable instead of TouchableOpacity — RN's newer primitive has
+            more reliable hit-testing inside overlays on iOS 26 / iPad. */}
+        <Pressable
+          style={({ pressed }) => [
+            styles.acceptBtn,
+            loading && styles.acceptBtnDisabled,
+            pressed && !loading && styles.acceptBtnPressed,
+          ]}
+          onPress={() => {
+            console.log('[eula] I agree tapped');
+            if (!loading) onAccept();
+          }}
           disabled={loading}
-          activeOpacity={0.85}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="I agree"
         >
           {loading
             ? <ActivityIndicator color="#fff" />
             : <Text style={styles.acceptBtnText}>I agree</Text>
           }
-        </TouchableOpacity>
+        </Pressable>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -238,6 +251,9 @@ const styles = StyleSheet.create({
   },
   acceptBtnDisabled: {
     opacity: 0.6,
+  },
+  acceptBtnPressed: {
+    opacity: 0.85,
   },
   acceptBtnText: {
     color:      '#fff',

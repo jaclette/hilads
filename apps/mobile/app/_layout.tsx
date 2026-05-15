@@ -52,11 +52,14 @@ function RootLayoutInner() {
   const showEulaModal = !!account && !account.eula_accepted_at;
 
   async function handleAcceptEula() {
+    console.log('[eula] handleAcceptEula entered');
     setEulaSubmitting(true);
     try {
       const { user } = await acceptEula();
+      console.log('[eula] api ok — user.eula_accepted_at =', user?.eula_accepted_at ?? 'null');
       setAccount(user);
-    } catch {
+    } catch (err) {
+      console.warn('[eula] api FAILED —', err instanceof Error ? err.message : String(err));
       // Network error — leave modal up so the user can retry. The button
       // returns to its idle state via finally below.
     } finally {
