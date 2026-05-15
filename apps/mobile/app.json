@@ -28,9 +28,10 @@
         "NSPhotoLibraryUsageDescription": "Hilads lets you share photos from your library in chats.",
         "UIBackgroundModes": [
           "remote-notification"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "10"
+      "buildNumber": "15"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -39,7 +40,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 45,
+      "versionCode": 46,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -48,7 +49,8 @@
         "android.permission.READ_MEDIA_IMAGES",
         "android.permission.VIBRATE",
         "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.POST_NOTIFICATIONS"
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
         {
@@ -70,7 +72,7 @@
             {
               "scheme": "https",
               "host": "hilads.live",
-              "pathPrefix": "/e"
+              "pathPrefix": "/e/"
             }
           ],
           "category": [
@@ -115,7 +117,7 @@
             {
               "scheme": "https",
               "host": "hilads.live",
-              "pathPrefix": "/t"
+              "pathPrefix": "/t/"
             }
           ],
           "category": [
