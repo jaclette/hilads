@@ -229,12 +229,31 @@ function composeVenueMeta(payload, canonicalPath, venueId) {
   }
 }
 
-function composeCityMeta(payload, canonicalPath, citySlug) {
+function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0) {
   // Backend shape: { channelId, city, country, timezone, slug }
   if (!payload?.city) return null
+  const city = payload.city
+
+  // Title + description adapt to actual event volume so we don't promise
+  // activity that doesn't exist (search-intent match + honest snippets).
+  let title, description
+  if (upcomingCount >= 20) {
+    title       = `Things to do in ${city} this week · ${upcomingCount} events`
+    description = `${upcomingCount} events, meetups, and local hangouts in ${city}. See who's going, join in one tap. Real-time, no sign-up.`
+  } else if (upcomingCount >= 5) {
+    title       = `What's happening in ${city} · Events, meetups, hangouts`
+    description = `Live list of ${upcomingCount} upcoming events in ${city}. Meet locals and travelers — join any event in one tap.`
+  } else if (upcomingCount >= 1) {
+    title       = `${city} events & meetups · Find people to hang out with`
+    description = `${upcomingCount === 1 ? '1 event' : `${upcomingCount} events`} coming up in ${city} on Hilads. Or create your own and bring the city out.`
+  } else {
+    title       = `${city} · Meet travelers and locals on Hilads`
+    description = `${city} is on Hilads. See who's around, browse venues, or create the first event in your city. Real-time, no sign-up.`
+  }
+
   return {
-    title:       `What's happening in ${payload.city} right now`,
-    description: `See who's around in ${payload.city} tonight on Hilads. Real-time city activity, no sign-up.`,
+    title,
+    description,
     url:         `${SITE_BASE}${canonicalPath}`,
     image:       `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(citySlug)}`,
   }
@@ -413,6 +432,99 @@ function composeCityJsonLd(payload, canonicalUrl, upcomingEvents) {
   return { '@context': 'https://schema.org', '@graph': graph }
 }
 
+// ── SSR body composers ───────────────────────────────────────────────────────
+// Inject crawlable HTML into <div id="root"> before React mounts. React
+// (createRoot().render) replaces the contents on hydration, so humans see
+// this content for ~200-800ms (perceived as fast LCP, then interactive),
+// while Googlebot indexes it as the canonical page body.
+
+function flagEmoji(cc) {
+  if (!cc || cc.length !== 2) return ''
+  return [...cc.toUpperCase()]
+    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
+    .join('')
+}
+
+function cityH1(city, count) {
+  if (count >= 20) return `Things to do in ${city} this week`
+  if (count >= 5)  return `What's happening in ${city}`
+  if (count >= 1)  return `${city} events & meetups`
+  return `${city} on Hilads`
+}
+
+// Minimal inline CSS so the SSR body doesn't look broken during the brief
+// window before React mounts. Scoped under `.ssr-main` so it can't bleed into
+// SPA styles. The SPA's own stylesheet renders the real interactive UI.
+const SSR_CITY_STYLES = `
+  .ssr-main { max-width: 720px; margin: 0 auto; padding: 16px; font-family: system-ui, -apple-system, sans-serif; color: #e0e0e0; background: #161210; line-height: 1.5; }
+  .ssr-main h1 { font-size: 1.6rem; margin: 0 0 0.5rem; color: #fff; }
+  .ssr-main h2 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; color: #fff; }
+  .ssr-main p  { margin: 0 0 0.75rem; }
+  .ssr-main ul { padding-left: 1.25rem; margin: 0 0 1rem; }
+  .ssr-main li { margin: 0.25rem 0; }
+  .ssr-main a  { color: #FF7A3C; text-decoration: none; }
+  .ssr-intro   { font-size: 1.05rem; }
+`.replace(/\s+/g, ' ').trim()
+
+function composeCityBody(payload, upcomingEvents, venues) {
+  const city  = payload.city || ''
+  if (!city) return null
+  const country     = payload.country || ''
+  const flag        = flagEmoji(country)
+  const events      = Array.isArray(upcomingEvents) ? upcomingEvents : []
+  const venueList   = Array.isArray(venues) ? venues : []
+  const eventCount  = events.length
+  const venueCount  = venueList.length
+
+  const introBits = []
+  if (eventCount > 0) introBits.push(`${eventCount} upcoming ${eventCount === 1 ? 'event' : 'events'}`)
+  if (venueCount > 0) introBits.push(`${venueCount} ${venueCount === 1 ? 'venue' : 'venues'}`)
+  const introSuffix = introBits.length > 0
+    ? ` — ${introBits.join(', ')} on Hilads.`
+    : ' — be the first to bring the city out.'
+  const intro = `${flag} ${htmlEscape(city)}${country ? `, ${htmlEscape(country)}` : ''}${introSuffix}`
+
+  // Events list — up to 20, each linking to /event/<slug>-<id> (slug form for
+  // SEO authority; prerender 301s bare hex anyway).
+  const eventItems = events.slice(0, 20).map(ev => {
+    const slug  = eventSlug(ev)
+    const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone) : ''
+    const where = ev.location ? ` · ${htmlEscape(ev.location)}` : ''
+    return `<li><a href="/event/${slug}">${htmlEscape(ev.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${where}</li>`
+  }).join('\n        ')
+  const eventsSection = eventCount > 0
+    ? `<section><h2>Upcoming events in ${htmlEscape(city)}</h2><ul>\n        ${eventItems}\n      </ul></section>`
+    : `<section><h2>Upcoming events in ${htmlEscape(city)}</h2><p>No events yet — open the app to create the first one.</p></section>`
+
+  // Venues showcase — up to 6
+  let venuesSection = ''
+  if (venueCount > 0) {
+    const venueItems = venueList.slice(0, 6).map(v => {
+      const slug = venueSlugFromName(v.name, v.id)
+      const cat  = v.category === 'bar' ? '🍻' : '☕'
+      return `<li>${cat} <a href="/venue/${slug}">${htmlEscape(v.name)}</a>${v.address ? ` — ${htmlEscape(v.address)}` : ''}</li>`
+    }).join('\n        ')
+    venuesSection = `<section><h2>Popular venues in ${htmlEscape(city)}</h2><ul>\n        ${venueItems}\n      </ul></section>`
+  }
+
+  // Evergreen copy — varies on city name + helps Googlebot avoid "thin" flag
+  // on low-event cities. Two paragraphs, ~80 words. Same intent across all
+  // cities; the differentiation comes from the city-name slot. Week 2-3 will
+  // add geographic/category-specific intro variants.
+  const evergreen = `<section><h2>About Hilads in ${htmlEscape(city)}</h2><p>Hilads is a live social layer over ${htmlEscape(city)}. Open the app, see who's around right now, jump into something happening, or host your own event. No friends list to build first, no sign-up to get in.</p><p>Whether you live in ${htmlEscape(city)} or you're visiting for a few days, Hilads makes it easy to meet people the way locals do — through what's actually happening, not through profiles.</p></section>`
+
+  return [
+    `<style>${SSR_CITY_STYLES}</style>`,
+    `<main class="ssr-main">`,
+    `<h1>${htmlEscape(cityH1(city, eventCount))}</h1>`,
+    `<p class="ssr-intro">${intro}</p>`,
+    eventsSection,
+    venuesSection,
+    evergreen,
+    `</main>`,
+  ].join('\n')
+}
+
 function composeBreadcrumb(items) {
   return {
     '@type': 'BreadcrumbList',
@@ -442,6 +554,15 @@ function injectJsonLd(shell, jsonLd) {
   if (!jsonLd) return shell
   const tag = `<script type="application/ld+json">${jsonLdSafe(jsonLd)}</script>\n  </head>`
   return shell.replace(/<\/head>/i, tag)
+}
+
+// Inject SSR body content inside <div id="root"> before the <noscript>
+// fallback. React's createRoot().render() overwrites #root's children on
+// mount, so humans only see this for the cold-load window (LCP win); Googlebot
+// indexes it as the canonical body content for the URL.
+function injectBody(shell, body) {
+  if (!body) return shell
+  return shell.replace(/<div id="root">/i, `<div id="root">\n      ${body}`)
 }
 
 function injectMeta(shell, meta) {
@@ -524,6 +645,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
 
   let meta          = null
   let jsonLd        = null
+  let bodyHtml      = null   // SSR'd body content injected inside #root
   let canonicalPath = '/'
   let cacheMaxAge   = 60     // tiny default; widened only when we actually inject meta
 
@@ -635,20 +757,35 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         `${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`,
         API_TIMEOUT_MS,
       )
-      meta = composeCityMeta(cityData, canonicalPath, slug)
-      if (meta) {
+      if (cityData?.city) {
         cacheMaxAge = 3600                 // 1 h — cities stable
-        // Second call: upcoming events in the city, for the ItemList signal.
-        // Best-effort — if it fails, JSON-LD still emits Place + Breadcrumb.
-        let upcoming = null
-        if (cityData?.channelId) {
-          const upcomingData = await fetchWithTimeout(
-            `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/events/upcoming?days=7`,
-            API_TIMEOUT_MS,
-          )
-          upcoming = Array.isArray(upcomingData?.events) ? upcomingData.events : null
-        }
+        // Parallel: upcoming events (for ItemList + body) + venues (for body
+        // showcase). Best-effort — either failure is non-fatal; we just emit
+        // less content. Same timeout budget as cityData itself.
+        const [upcomingData, venuesData] = cityData?.channelId
+          ? await Promise.all([
+              fetchWithTimeout(
+                `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/events/upcoming?days=7`,
+                API_TIMEOUT_MS,
+              ),
+              fetchWithTimeout(
+                `${API_BASE}/api/v1/cities/${encodeURIComponent(slug)}/venues`,
+                API_TIMEOUT_MS,
+              ),
+            ])
+          : [null, null]
+        const rawUpcoming   = Array.isArray(upcomingData?.events) ? upcomingData.events : []
+        // Filter out venue-derived "events" — those have a dedicated /venue/
+        // page; including them here would create a 301 chain (city → event →
+        // venue) and dilute link equity. They surface separately under
+        // "Popular venues". is_venue is set by EventRepository::format.
+        const upcoming      = rawUpcoming.filter(ev => !ev.is_venue)
+        const venues        = Array.isArray(venuesData?.venues) ? venuesData.venues : []
+        const upcomingCount = upcoming.length
+
+        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount)
         jsonLd = composeCityJsonLd(cityData, meta.url, upcoming)
+        bodyHtml = composeCityBody(cityData, upcoming, venues)
       }
     }
   } catch (err) {
@@ -658,8 +795,9 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
   }
 
   let html = shell
-  if (meta)   html = injectMeta(html,   meta)
-  if (jsonLd) html = injectJsonLd(html, jsonLd)
+  if (meta)     html = injectMeta(html,   meta)
+  if (jsonLd)   html = injectJsonLd(html, jsonLd)
+  if (bodyHtml) html = injectBody(html,   bodyHtml)
 
   res.statusCode = 200
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
