@@ -48,6 +48,9 @@ services:
       # Phase C: route GET /channels/{id}/members through users.current_city_id.
       # Off by default in prod; flip to "on" once Phase B has populated the field.
       MEMBERS_USE_CURRENT_CITY: "off"
+      # Phase D: fan out "new event in your city" pushes by current_city_id
+      # instead of presence. Off by default; only flip on after Phase C is on.
+      NOTIFICATIONS_USE_CURRENT_CITY: "off"
       # Leave R2 / Sentry / PostHog blank — those paths degrade gracefully in dev.
     volumes:
       # Bind-mount source for live edits.

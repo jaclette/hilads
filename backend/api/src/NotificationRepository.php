@@ -302,8 +302,18 @@ class NotificationRepository
     }
 
     /**
-     * Notify registered users currently present in a city channel, excluding one user.
-     * "Currently present" = presence heartbeat within the last 3 minutes.
+     * Notify registered users associated with a city channel, excluding one user.
+     *
+     * Recipient set depends on $type and NOTIFICATIONS_USE_CURRENT_CITY flag:
+     *
+     *   - 'new_event' AND flag on: users whose current_city_id matches, active
+     *     in the last 30 days. Decouples "new event" notifications from online
+     *     presence (Phase D bug fix: users get pushed when an event is created
+     *     in their city even if the app is closed). Rate-limited per (user, city).
+     *
+     *   - Anything else (or flag off): users with a presence heartbeat in the
+     *     last 3 minutes. Legacy behavior — appropriate for transient signals
+     *     like 'channel_message' where you only want to ping engaged users.
      */
     public static function notifyCityOnlineUsers(
         string  $cityChannelId,
@@ -313,23 +323,47 @@ class NotificationRepository
         ?string $body,
         array   $data
     ): void {
-        $stmt = Database::pdo()->prepare("
-            SELECT DISTINCT user_id FROM presence
-            WHERE channel_id = ?
-              AND user_id IS NOT NULL
-              AND last_seen_at > now() - interval '3 minutes'
-              AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
-        ");
+        $useCurrentCity = $type === 'new_event' && featureEnabled('NOTIFICATIONS_USE_CURRENT_CITY');
+
+        if ($useCurrentCity) {
+            // current_city_last_confirmed_at TTL: 30 days. Users who haven't
+            // had a positive location signal in that window are excluded so
+            // we don't push to dormant accounts whose city is just remembered
+            // from an old visit.
+            $stmt = Database::pdo()->prepare("
+                SELECT u.id FROM users u
+                WHERE u.current_city_id = ?
+                  AND u.current_city_last_confirmed_at > now() - interval '30 days'
+                  AND u.deleted_at IS NULL
+                  AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
+            ");
+        } else {
+            $stmt = Database::pdo()->prepare("
+                SELECT DISTINCT user_id FROM presence
+                WHERE channel_id = ?
+                  AND user_id IS NOT NULL
+                  AND last_seen_at > now() - interval '3 minutes'
+                  AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
+            ");
+        }
         $stmt->execute([$cityChannelId, $excludeUserId, $excludeUserId]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         if (empty($userIds)) return;
 
-        // Batch-load preferences — 1 query regardless of online user count
+        // Batch-load preferences — 1 query regardless of recipient count
         $enabled = self::batchIsEnabled($userIds, $type);
         foreach ($userIds as $uid) {
-            if ($enabled[$uid] ?? true) {
-                self::createUnchecked($uid, $type, $title, $body, $data);
+            if (!($enabled[$uid] ?? true)) continue;
+
+            // Phase D rate limit: max 1 'new_event' push per (recipient, city)
+            // per 10 minutes. Absorbs bursty event creators without coding a
+            // batch/digest path. Only active when the new fan-out is on.
+            if ($useCurrentCity) {
+                $rlKey = "notif:new_event:{$uid}:{$cityChannelId}";
+                if (!RateLimiter::allow($rlKey, 1, 600)) continue;
             }
+
+            self::createUnchecked($uid, $type, $title, $body, $data);
         }
     }
 

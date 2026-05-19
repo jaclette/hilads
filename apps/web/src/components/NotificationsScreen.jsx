@@ -194,7 +194,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
           <div className="notif-pref-row">
             <div className="notif-pref-label">
               <span className="notif-pref-name">New events in your city</span>
-              <span className="notif-pref-desc">When someone creates an event while you're online</span>
+              <span className="notif-pref-desc">When someone creates an event in your city</span>
             </div>
             <Toggle
               checked={prefs?.new_event_push ?? false}
