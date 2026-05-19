@@ -87,6 +87,24 @@ export async function fetchLeanMessages(channelId, { beforeId, limit = 50 } = {}
   return res.json() // { messages, hasMore }
 }
 
+// POST /me/city — commit a manual city switch as users.current_city_id.
+// Backend bypasses the two-signal rule and sets the city immediately. Errors
+// are swallowed: the local UI switch is the source of truth for this frame;
+// the next /location/resolve will reconcile if the backend write failed.
+export async function setCurrentCity(channelId) {
+  try {
+    const res = await fetch(`${BASE}/me/city`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ channelId }),
+    })
+    if (!res.ok) console.warn('[me/city] non-ok', res.status)
+  } catch (err) {
+    console.warn('[me/city] failed', err)
+  }
+}
+
 export async function joinChannel(channelId, sessionId, guestId, nickname, previousChannelId = null) {
   const body = { sessionId, guestId, nickname }
   if (previousChannelId) body.previousChannelId = previousChannelId

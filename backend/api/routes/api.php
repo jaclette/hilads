@@ -346,6 +346,15 @@ function broadcastUserEventToWs(string $userId, string $event, array $payload = 
     postToWs('/broadcast/user-event', ['userId' => $userId, 'event' => $event, 'payload' => $payload]);
 }
 
+// Read a boolean feature flag from the environment. Truthy values: "1",
+// "true", "on", "yes" (case-insensitive). Anything else (including unset)
+// is falsy. Used for Phase C/D rollouts of the city-membership refactor.
+function featureEnabled(string $name): bool
+{
+    $v = strtolower(trim((string) getenv($name)));
+    return $v === '1' || $v === 'true' || $v === 'on' || $v === 'yes';
+}
+
 function enforceRateLimit(string $bucket, int $limit, int $windowSeconds, ?string $suffix = null): void
 {
     $key = $bucket . '|' . Request::ip();
@@ -873,7 +882,35 @@ $router->add('POST', '/api/v1/auth/logout', function () {
 
 $router->add('GET', '/api/v1/auth/me', function () {
     $user = AuthService::requireAuth();
-    Response::json(['user' => AuthService::ownFields($user)]);
+    $fields = AuthService::ownFields($user);
+
+    // current_city: live source of truth for membership + notifications.
+    // null when the user has never had location resolved and has no home_city
+    // backfill match. channelId is returned as integer to match the rest of the
+    // city API contract (see /location/resolve).
+    $fields['current_city']        = null;
+    $fields['current_city_set_at'] = null;
+    if (!empty($user['current_city_id'])) {
+        $stmt = Database::pdo()->prepare("
+            SELECT ch.id, ch.name, ci.country, ci.timezone
+              FROM channels ch
+              JOIN cities ci ON ci.channel_id = ch.id
+             WHERE ch.id = ?
+        ");
+        $stmt->execute([$user['current_city_id']]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if ($row) {
+            $fields['current_city'] = [
+                'channelId' => (int) preg_replace('/^city_/', '', $row['id']),
+                'name'      => $row['name'],
+                'country'   => $row['country'],
+                'timezone'  => $row['timezone'],
+            ];
+            $fields['current_city_set_at'] = $user['current_city_set_at'] ?? null;
+        }
+    }
+
+    Response::json(['user' => $fields]);
 });
 
 $router->add('POST', '/api/v1/auth/forgot-password', function () {
@@ -1584,12 +1621,108 @@ $router->add('POST', '/api/v1/location/resolve', function () {
 
     $city = CityRepository::nearest($lat, $lng, $country);
 
+    // Two-signal transition rule for users.current_city_id.
+    // Only runs for authenticated users (guests don't have a row in users).
+    // State machine, atomic single-UPDATE:
+    //   current IS NULL                                 → commit (first city ever)
+    //   current = geo                                   → bump last_confirmed_at, clear pending
+    //   pending = geo AND first_seen ≥ 10 min ago       → commit (second signal)
+    //   pending = geo AND first_seen < 10 min ago       → keep pending (too soon)
+    //   else                                            → set pending = geo, first_seen = now
+    //
+    // last_confirmed_at only advances when a signal matches current_city_id,
+    // so the 30-day inactive TTL in Phase D measures actual presence.
+    $authUserForCity = AuthService::currentUser();
+    if ($authUserForCity !== null) {
+        $geoChannelId = 'city_' . $city['id'];
+        Database::pdo()->prepare("
+            UPDATE users SET
+              current_city_id = CASE
+                WHEN current_city_id IS NULL THEN :geo
+                WHEN current_city_id = :geo THEN current_city_id
+                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN :geo
+                ELSE current_city_id
+              END,
+              current_city_set_at = CASE
+                WHEN current_city_id IS NULL THEN now()
+                WHEN current_city_id = :geo THEN current_city_set_at
+                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN now()
+                ELSE current_city_set_at
+              END,
+              current_city_last_confirmed_at = CASE
+                WHEN current_city_id IS NULL THEN now()
+                WHEN current_city_id = :geo THEN now()
+                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN now()
+                ELSE current_city_last_confirmed_at
+              END,
+              pending_city_id = CASE
+                WHEN current_city_id IS NULL THEN NULL
+                WHEN current_city_id = :geo THEN NULL
+                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN NULL
+                WHEN pending_city_id = :geo THEN pending_city_id
+                ELSE :geo
+              END,
+              pending_city_first_seen_at = CASE
+                WHEN current_city_id IS NULL THEN NULL
+                WHEN current_city_id = :geo THEN NULL
+                WHEN pending_city_id = :geo AND pending_city_first_seen_at < now() - interval '10 minutes' THEN NULL
+                WHEN pending_city_id = :geo THEN pending_city_first_seen_at
+                ELSE now()
+              END
+            WHERE id = :user_id
+        ")->execute([
+            'geo'     => $geoChannelId,
+            'user_id' => $authUserForCity['id'],
+        ]);
+    }
+
     Response::json([
         'city'      => $city['name'],
         'channelId' => $city['id'],
         'timezone'  => $city['timezone'],
         'country'   => $city['country'] ?? null,
     ]);
+});
+
+// POST /api/v1/me/city
+// Explicit manual city switch from the city picker. Immediately commits the
+// chosen city as current_city_id, bypassing the two-signal rule.
+// Body: { channelId: int | string }  — accepts either 42 or "city_42".
+$router->add('POST', '/api/v1/me/city', function () {
+    $user = AuthService::requireAuth();
+    $body = Request::json();
+    if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
+
+    $raw = $body['channelId'] ?? null;
+    if ($raw === null || $raw === '') Response::json(['error' => 'channelId is required'], 400);
+
+    // Accept "city_42" or 42 (number/string). Reject anything else.
+    $channelId = is_int($raw) || ctype_digit((string) $raw)
+        ? 'city_' . $raw
+        : (is_string($raw) && preg_match('/^city_\d+$/', $raw) ? $raw : null);
+    if ($channelId === null) Response::json(['error' => 'Invalid channelId'], 400);
+
+    // Validate the channel exists and is an active city.
+    $stmt = Database::pdo()->prepare("
+        SELECT 1 FROM channels WHERE id = ? AND type = 'city' AND status = 'active' LIMIT 1
+    ");
+    $stmt->execute([$channelId]);
+    if (!$stmt->fetchColumn()) Response::json(['error' => 'Unknown city'], 404);
+
+    Database::pdo()->prepare("
+        UPDATE users SET
+          current_city_id                = :city,
+          current_city_set_at            = now(),
+          current_city_last_confirmed_at = now(),
+          pending_city_id                = NULL,
+          pending_city_first_seen_at     = NULL
+        WHERE id = :user_id
+    ")->execute([
+        'city'    => $channelId,
+        'user_id' => $user['id'],
+    ]);
+
+    Response::json(['ok' => true, 'channelId' => $channelId]);
 });
 
 // ── Deep link / share resolution ──────────────────────────────────────────────
@@ -2809,30 +2942,49 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $channelKey = 'city_' . $channelId;
     $cityName   = $city['name'];
 
-    // A user is a city crew member if any of these is true:
-    //   1. explicit row in user_city_memberships (populated on channel join for registered users)
-    //   2. home_city text matches this city's name (optional profile field)
-    //   3. has sent at least one text message in this channel (historical participation —
-    //      covers all users who were active before the memberships table existed)
+    // Phase C rollout: when MEMBERS_USE_CURRENT_CITY=on, membership is defined
+    // as `users.current_city_id = X` — the single source of truth populated by
+    // the two-signal transition rule in /location/resolve and by manual switch
+    // via /me/city. This fixes the sticky-roster bug: users only appear in
+    // exactly one city's "Here" list — the one they're currently in.
     //
-    // The msg_senders derived table is computed once against the indexed channel_id column,
-    // then joined on guest_id — far cheaper than a correlated subquery per user.
-    $baseJoin = "
-        LEFT JOIN user_city_memberships m
-               ON m.user_id = u.id AND m.channel_id = :channel_key
-        LEFT JOIN (
-            SELECT DISTINCT guest_id
-            FROM messages
-            WHERE channel_id = :chan_msg AND type = 'text' AND guest_id IS NOT NULL
-        ) msg_senders ON msg_senders.guest_id = u.guest_id AND u.guest_id IS NOT NULL";
+    // Default (flag off): legacy union — explicit memberships row OR home_city
+    // text match OR ever-sent-a-message. Sticky but backward-compatible.
+    if (featureEnabled('MEMBERS_USE_CURRENT_CITY')) {
+        $baseJoin   = '';
+        $sortExpr   = "COALESCE(EXTRACT(EPOCH FROM u.current_city_set_at)::INTEGER, u.created_at)";
+        $conditions = [
+            "u.deleted_at IS NULL",
+            "u.current_city_id = :channel_key",
+        ];
+        $binds = [':channel_key' => $channelKey];
+    } else {
+        // A user is a city crew member if any of these is true:
+        //   1. explicit row in user_city_memberships (populated on channel join for registered users)
+        //   2. home_city text matches this city's name (optional profile field)
+        //   3. has sent at least one text message in this channel (historical participation —
+        //      covers all users who were active before the memberships table existed)
+        //
+        // The msg_senders derived table is computed once against the indexed channel_id column,
+        // then joined on guest_id — far cheaper than a correlated subquery per user.
+        $baseJoin = "
+            LEFT JOIN user_city_memberships m
+                   ON m.user_id = u.id AND m.channel_id = :channel_key
+            LEFT JOIN (
+                SELECT DISTINCT guest_id
+                FROM messages
+                WHERE channel_id = :chan_msg AND type = 'text' AND guest_id IS NOT NULL
+            ) msg_senders ON msg_senders.guest_id = u.guest_id AND u.guest_id IS NOT NULL";
 
-    $conditions = [
-        "u.deleted_at IS NULL",
-        "(m.channel_id IS NOT NULL
-          OR LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name))
-          OR msg_senders.guest_id IS NOT NULL)",
-    ];
-    $binds      = [':channel_key' => $channelKey, ':city_name' => $cityName, ':chan_msg' => $channelKey];
+        $sortExpr   = "COALESCE(EXTRACT(EPOCH FROM m.last_seen_at)::INTEGER, u.created_at)";
+        $conditions = [
+            "u.deleted_at IS NULL",
+            "(m.channel_id IS NOT NULL
+              OR LOWER(TRIM(u.home_city)) = LOWER(TRIM(:city_name))
+              OR msg_senders.guest_id IS NOT NULL)",
+        ];
+        $binds = [':channel_key' => $channelKey, ':city_name' => $cityName, ':chan_msg' => $channelKey];
+    }
 
     if ($vibeFilter !== null) {
         $conditions[] = 'u.vibe = :vibe';
@@ -2863,11 +3015,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $countStmt->execute($binds);
     $total = (int) $countStmt->fetchColumn();
 
-    // Paginated fetch — order by last_seen_at so recent visitors appear first.
-    // NOTE: m.last_seen_at is TIMESTAMPTZ, u.created_at is INTEGER (Unix epoch).
-    //       COALESCE requires matching types — cast both to epoch seconds.
+    // Paginated fetch — order by the most recent positive signal for this city
+    // (membership last_seen_at in legacy mode, current_city_set_at in new mode)
+    // so recent visitors appear first. Fall back to created_at for users with
+    // no timestamp (home_city-backfilled rows when flag is on).
+    // NOTE: both timestamp sources are TIMESTAMPTZ; u.created_at is INTEGER
+    //       (Unix epoch). COALESCE requires matching types — cast to epoch.
     $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.mode, u.created_at, u.home_city,
-                   COALESCE(EXTRACT(EPOCH FROM m.last_seen_at)::INTEGER, u.created_at) AS sort_at
+                   $sortExpr AS sort_at
             FROM users u
             $baseJoin
             WHERE $where

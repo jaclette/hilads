@@ -154,6 +154,18 @@ export async function leaveChannel(channelId: string, sessionId: string): Promis
   await api.post(`/channels/${channelId}/leave`, { sessionId }).catch(() => {});
 }
 
+// POST /me/city — commit a manual city switch as users.current_city_id.
+// Backend bypasses the two-signal rule and sets the city immediately. Errors
+// are swallowed: the local UI switch is the source of truth for this frame;
+// the next /location/resolve will reconcile if the backend write failed.
+export async function setCurrentCity(channelId: string | number): Promise<void> {
+  try {
+    await api.post('/me/city', { channelId });
+  } catch (err) {
+    console.log('[me/city] failed', { channelId, err: String(err) });
+  }
+}
+
 export async function heartbeat(
   channelId: string,
   sessionId: string,

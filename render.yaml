@@ -11,6 +11,13 @@ services:
     envVars:
       - key: PORT
         value: 8080
+      # Phase C feature flag — when "on", GET /channels/{id}/members returns
+      # users whose current_city_id matches (single source of truth, set by
+      # /location/resolve and /me/city). When "off", uses the legacy sticky
+      # union. Default "off" for safe rollout. Flip in the Render dashboard
+      # once Phase B has populated current_city_id for ≥70% of active users.
+      - key: MEMBERS_USE_CURRENT_CITY
+        value: "off"
 
   # Node.js WebSocket presence server
   # Plan is intentionally not set here — control it from the Render dashboard.

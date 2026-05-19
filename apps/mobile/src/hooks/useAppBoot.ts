@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { AppState } from 'react-native';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -475,6 +476,34 @@ export function useAppBoot(): Result {
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geoRetryCount]);
+
+  // ── Foreground refresh ──────────────────────────────────────────────────────
+  // When the app comes back to foreground, re-run the geo flow so the backend's
+  // current_city_id stays accurate (two-signal transition rule fires on every
+  // /location/resolve). No background GPS — only on the foreground transition.
+  // Throttled to once per minute to absorb rapid app switching.
+
+  const lastForegroundResolveRef = useRef<number>(0);
+  const FOREGROUND_RESOLVE_THROTTLE_MS = 60_000;
+
+  useEffect(() => {
+    const appStateRef = { current: AppState.currentState };
+    const sub = AppState.addEventListener('change', (next) => {
+      const prev = appStateRef.current;
+      appStateRef.current = next;
+      if (next !== 'active' || prev === 'active') return;
+
+      const now = Date.now();
+      if (now - lastForegroundResolveRef.current < FOREGROUND_RESOLVE_THROTTLE_MS) return;
+      lastForegroundResolveRef.current = now;
+
+      console.log('[geo] foreground refresh — re-running geo flow');
+      let cancelled = false;
+      runGeoFlow(() => cancelled);
+    });
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return { retry, retryGeo };
 }

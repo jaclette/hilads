@@ -277,6 +277,20 @@ export interface User {
    * required checkbox.
    */
   eula_accepted_at?: string | null;
+  /**
+   * Live source of truth for "what city is this user in." Server-side, updated
+   * by the two-signal transition rule on /location/resolve and immediately by
+   * manual switches via POST /me/city. Null when never resolved + no
+   * home_city backfill match. Phase B: surfaced for clients to read; not yet
+   * used to drive membership or notifications (those switch in Phase C/D).
+   */
+  current_city?: {
+    channelId: number;
+    name:      string;
+    country:   string;
+    timezone:  string;
+  } | null;
+  current_city_set_at?: string | null;
 }
 
 /** Friends list items — canonical UserDTO shape. */

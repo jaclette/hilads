@@ -28,7 +28,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchChannels, joinChannel } from '@/api/channels';
+import { fetchChannels, joinChannel, setCurrentCity } from '@/api/channels';
 import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track } from '@/services/analytics';
@@ -188,6 +188,9 @@ export default function SwitchCityScreen() {
       // those leaked because they were never unsubscribed.
       socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
     }
+    // Commit the manual switch on the backend (registered users only — guests
+    // have no users row). Fire-and-forget; failures are non-blocking.
+    if (account) setCurrentCity(item.channelId);
     track('city_selected', { cityId: item.channelId, cityName: item.name });
     // replace (not push) — back from the City Channel shouldn't return here.
     router.replace('/(tabs)/chat');
