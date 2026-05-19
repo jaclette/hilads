@@ -1753,6 +1753,120 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
     Response::json(['error' => 'City not found'], 404);
 });
 
+// GET /api/v1/events/{eventId}/venue-redirect
+// Resolve a (possibly expired) event-occurrence channel_id to its venue,
+// regardless of expires_at. Used by the prerender to keep 301s working
+// during the SEO transition window after we stop materializing venue
+// occurrences — Google has /event/<hash> URLs cached that we need to
+// keep redirecting to /venue/<series_id> for weeks.
+$router->add('GET', '/api/v1/events/{eventId}/venue-redirect', function (array $params) {
+    $eventId = $params['eventId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+
+    $stmt = Database::pdo()->prepare("
+        SELECT es.id AS series_id, es.title
+          FROM channel_events ce
+          JOIN event_series es ON es.id = ce.series_id
+         WHERE ce.channel_id = ?
+           AND es.source = 'import'
+           AND (es.source_key LIKE 'places:v1:%' OR es.source_key LIKE 'static:v1:%')
+         LIMIT 1
+    ");
+    $stmt->execute([$eventId]);
+    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+    if (!$row) Response::json(['venue' => null], 404);
+
+    $slug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower((string) $row['title'])), '-');
+    Response::json(['venue' => [
+        'id'   => $row['series_id'],
+        'slug' => $slug,
+    ]]);
+});
+
+// GET /api/v1/venues/{venueId}
+// Returns a single venue (coffee shop / bar) by its event_series.id (16-hex).
+// SEO target: venues get their own LocalBusiness page, distinct from events.
+// Returns 404 for any event_series row that isn't a seeded venue.
+$router->add('GET', '/api/v1/venues/{venueId}', function (array $params) {
+    $venueId = $params['venueId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $venueId)) {
+        Response::json(['error' => 'Invalid venueId'], 400);
+    }
+
+    $venue = EventSeriesRepository::findVenue($venueId);
+    if ($venue === null) {
+        Response::json(['error' => 'Venue not found'], 404);
+    }
+
+    Response::json(['venue' => $venue]);
+});
+
+// GET /api/v1/sitemap/venues
+// Global venue list across every city. Single-call endpoint used by
+// gen-sitemap.mjs. Returns minimum fields to compose /venue/<slug>-<id> URLs.
+$router->add('GET', '/api/v1/sitemap/venues', function () {
+    $stmt = Database::pdo()->query("
+        SELECT es.id,
+               es.title,
+               c.name AS city_name,
+               EXTRACT(EPOCH FROM es.created_at)::INTEGER AS created_at
+          FROM event_series es
+          JOIN channels c ON c.id = es.city_id
+         WHERE es.source = 'import'
+           AND (es.source_key LIKE 'places:v1:%' OR es.source_key LIKE 'static:v1:%')
+           AND (es.ends_on IS NULL OR es.ends_on >= CURRENT_DATE)
+         ORDER BY es.city_id, es.title
+    ");
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    Response::json([
+        'venues' => array_map(static fn(array $r) => [
+            'id'         => $r['id'],
+            'name'       => $r['title'],
+            'city_name'  => $r['city_name'],
+            'updated_at' => (int) $r['created_at'],
+        ], $rows),
+        'total'  => count($rows),
+    ]);
+});
+
+// GET /api/v1/cities/{slug}/venues
+// Lists active venues in a city. Used by the city page + sitemap generator.
+// Resolves slug to a city channel before query.
+$router->add('GET', '/api/v1/cities/{slug}/venues', function (array $params) {
+    $slug = strtolower(trim($params['slug'] ?? ''));
+    if ($slug === '') {
+        Response::json(['error' => 'Missing slug'], 400);
+    }
+
+    $city = null;
+    foreach (CityRepository::all() as $c) {
+        $citySlug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($c['name'])), '-');
+        if ($citySlug === $slug) {
+            $city = $c;
+            break;
+        }
+    }
+    if ($city === null) {
+        Response::json(['error' => 'City not found'], 404);
+    }
+
+    $venues = EventSeriesRepository::listVenuesByCity((int) $city['id']);
+    Response::json([
+        'venues'  => array_map(static fn(array $v) => [
+            'id'         => $v['id'],
+            'name'       => $v['title'],
+            'address'    => $v['location'],
+            'category'   => $v['event_type'] === 'drinks' ? 'bar' : 'cafe',
+            'event_type' => $v['event_type'],
+            'updated_at' => (int) $v['created_at'],
+        ], $venues),
+        'total'   => count($venues),
+    ]);
+});
+
 // GET /api/v1/events/{eventId}
 // Returns a single event by hex channel ID. Used for deep-linked event URLs.
 // Optional query params: guestId (32-char hex) — when provided, adds participant_count

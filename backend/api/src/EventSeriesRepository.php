@@ -93,6 +93,112 @@ class EventSeriesRepository
         return $channelId;
     }
 
+    // ── Venue detection ───────────────────────────────────────────────────────
+    //
+    // Some "event_series" rows are actually venues (coffee shops, bars) seeded
+    // by VenueSeeder.php from Google Places, or by venues_seed.php fixtures.
+    // They have source='import' with source_key prefix 'places:v1:' or
+    // 'static:v1:'. For SEO they MUST NOT be materialized as daily channel_events
+    // rows (each one would get its own indexable URL — see /venue/ refactor).
+    //
+    // Anywhere we read from event_series for occurrence generation, we exclude
+    // these rows via the NOT_VENUE_SQL fragment. Anywhere we read a single
+    // series, we use isVenueSeries() to branch.
+
+    /** SQL fragment to exclude venue-derived series. Requires alias `es`. */
+    private const NOT_VENUE_SQL = "
+        (es.source <> 'import'
+         OR (es.source_key NOT LIKE 'places:v1:%'
+             AND es.source_key NOT LIKE 'static:v1:%'))
+    ";
+
+    public static function isVenueSeries(array $series): bool
+    {
+        if (($series['source'] ?? null) !== 'import') return false;
+        $key = (string) ($series['source_key'] ?? '');
+        return str_starts_with($key, 'places:v1:')
+            || str_starts_with($key, 'static:v1:');
+    }
+
+    /**
+     * Public venue lookup by event_series.id (16-hex). Returns null if not
+     * a venue (so the route can 404 instead of leaking event data). The DTO
+     * shape is what /venue/ pages + LocalBusiness JSON-LD need.
+     */
+    public static function findVenue(string $venueId): ?array
+    {
+        if (!preg_match('/^[a-f0-9]{16}$/', $venueId)) return null;
+
+        $stmt = Database::pdo()->prepare("
+            SELECT es.id, es.city_id, es.title, es.event_type, es.location,
+                   es.start_time, es.end_time, es.timezone, es.source_key, es.source,
+                   EXTRACT(EPOCH FROM es.created_at)::INTEGER AS created_at,
+                   c.name AS city_name, ci.country
+              FROM event_series es
+              JOIN channels c  ON c.id  = es.city_id
+              JOIN cities ci   ON ci.channel_id = c.id
+             WHERE es.id = ?
+               AND (es.ends_on IS NULL OR es.ends_on >= CURRENT_DATE)
+        ");
+        $stmt->execute([$venueId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$row || !self::isVenueSeries($row)) return null;
+        return self::formatVenue($row);
+    }
+
+    /**
+     * Active venues in a given city channel. Used by /api/v1/cities/{slug}/venues
+     * and by the sitemap generator. Minimal columns — full DTO via findVenue.
+     */
+    public static function listVenuesByCity(int $channelIdInt): array
+    {
+        $cityDbId = 'city_' . $channelIdInt;
+        $stmt = Database::pdo()->prepare("
+            SELECT es.id, es.title, es.event_type, es.location,
+                   EXTRACT(EPOCH FROM es.created_at)::INTEGER AS created_at
+              FROM event_series es
+             WHERE es.city_id = ?
+               AND (es.ends_on IS NULL OR es.ends_on >= CURRENT_DATE)
+               AND es.source = 'import'
+               AND (es.source_key LIKE 'places:v1:%' OR es.source_key LIKE 'static:v1:%')
+             ORDER BY es.title
+        ");
+        $stmt->execute([$cityDbId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    private static function formatVenue(array $row): array
+    {
+        $isBar    = $row['event_type'] === 'drinks';
+        $citySlug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($row['city_name'])), '-');
+        $cityInt  = (int) substr($row['city_id'], 5); // 'city_NN' → NN
+
+        return [
+            'id'         => $row['id'],
+            'name'       => $row['title'],
+            'address'    => $row['location'],
+            // category drives the JSON-LD @type: 'bar' → BarOrPub,
+            // anything else → CafeOrCoffeeShop. Keep it client-friendly.
+            'category'   => $isBar ? 'bar' : 'cafe',
+            'event_type' => $row['event_type'],
+            'hours'      => [
+                'opens'  => $row['start_time'],
+                'closes' => $row['end_time'],
+                // We model these as open every day in the seed; if the data
+                // evolves to per-weekday hours, this field carries that nuance.
+                'daysOfWeek' => ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+            ],
+            'timezone'   => $row['timezone'],
+            'city'       => [
+                'channelId' => $cityInt,
+                'name'      => $row['city_name'],
+                'country'   => $row['country'],
+                'slug'      => $citySlug,
+            ],
+            'updated_at' => (int) $row['created_at'],
+        ];
+    }
+
     // ── Public API ────────────────────────────────────────────────────────────
 
     /**
@@ -118,6 +224,7 @@ class EventSeriesRepository
             WHERE es.city_id  = ?
               AND es.starts_on <= ?
               AND (es.ends_on IS NULL OR es.ends_on >= ?)
+              AND " . self::NOT_VENUE_SQL . "
               AND NOT EXISTS (
                   SELECT 1 FROM channel_events ce
                   WHERE ce.series_id       = es.id
@@ -450,6 +557,7 @@ class EventSeriesRepository
             WHERE es.city_id   = ?
               AND es.starts_on <= ?
               AND (es.ends_on IS NULL OR es.ends_on >= ?)
+              AND " . self::NOT_VENUE_SQL . "
         ");
         $stmt->execute([$cityDbId, $endStr, $todayStr]);
         $allSeries = $stmt->fetchAll();
@@ -488,6 +596,10 @@ class EventSeriesRepository
 
     public static function generateOccurrences(array $series, int $lookaheadDays = 7): int
     {
+        // Venue-derived "series" (coffee shops, bars) are not events — they
+        // never get individual indexable URLs. See NOT_VENUE_SQL above.
+        if (self::isVenueSeries($series)) return 0;
+
         $pdo       = Database::pdo();
         $tz        = new DateTimeZone($series['timezone']);
         $today     = new DateTime('today', $tz);
@@ -591,8 +703,9 @@ class EventSeriesRepository
     public static function generateAll(int $lookaheadDays = 7): array
     {
         $allRows = Database::pdo()->query("
-            SELECT * FROM event_series
-            WHERE ends_on IS NULL OR ends_on >= CURRENT_DATE
+            SELECT es.* FROM event_series es
+            WHERE (es.ends_on IS NULL OR es.ends_on >= CURRENT_DATE)
+              AND " . self::NOT_VENUE_SQL . "
         ")->fetchAll();
 
         $results = [];

@@ -22,12 +22,26 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const OUT_PATH  = resolve(__dirname, '../public/sitemap.xml')
 
-const BASE_URL = (process.env.SITEMAP_BASE_URL || 'https://hilads.live').replace(/\/+$/, '')
-const API_URL  = process.env.SITEMAP_API_URL  || 'https://api.hilads.live/api/v1/channels'
+const BASE_URL    = (process.env.SITEMAP_BASE_URL || 'https://hilads.live').replace(/\/+$/, '')
+const API_URL     = process.env.SITEMAP_API_URL    || 'https://api.hilads.live/api/v1/channels'
+const VENUES_URL  = process.env.SITEMAP_VENUES_URL || 'https://api.hilads.live/api/v1/sitemap/venues'
 
 // Mirrors apps/web/src/App.jsx cityToSlug(). Keep these in sync.
 function cityToSlug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+// Mirrors prerender.mjs venueSlugFromName — venue URLs are /venue/<slug>-<id>.
+function venueSlug(name, id) {
+  const t = String(name || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/g, '')
+  return t ? `${t}-${id}` : id
 }
 
 function xmlEscape(s) {
@@ -65,8 +79,23 @@ async function fetchChannels() {
   }
 }
 
+async function fetchVenues() {
+  try {
+    const res = await fetch(VENUES_URL, { headers: { Accept: 'application/json' } })
+    if (!res.ok) {
+      console.warn(`[sitemap] venues API responded ${res.status}; skipping venue URLs`)
+      return []
+    }
+    const data = await res.json()
+    return Array.isArray(data?.venues) ? data.venues : []
+  } catch (err) {
+    console.warn(`[sitemap] could not reach ${VENUES_URL} (${err.message}); skipping venue URLs`)
+    return []
+  }
+}
+
 async function main() {
-  const channels = await fetchChannels()
+  const [channels, venues] = await Promise.all([fetchChannels(), fetchVenues()])
   const today    = new Date().toISOString().slice(0, 10)   // YYYY-MM-DD
 
   const entries = [
@@ -102,6 +131,21 @@ async function main() {
       lastmod:    today,
       changefreq: 'hourly',     // event lists turn over fast
       priority:   '0.8',
+    }))
+  }
+
+  // Venue pages — one per seeded venue (coffee shop / bar). One canonical URL
+  // per venue; we never put per-day occurrence URLs in the sitemap.
+  for (const v of venues) {
+    if (!v?.id || !v?.name) continue
+    const lastmod = v.updated_at
+      ? new Date(v.updated_at * 1000).toISOString().slice(0, 10)
+      : today
+    entries.push(urlEntry({
+      loc:        `${BASE_URL}/venue/${venueSlug(v.name, v.id)}`,
+      lastmod,
+      changefreq: 'weekly',
+      priority:   '0.6',
     }))
   }
 

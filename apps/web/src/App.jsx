@@ -17,6 +17,7 @@ import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
 import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
+import VenueScreen from './components/VenueScreen'
 import GuestProfileCard from './components/GuestProfileCard'
 import ConversationsScreen from './components/ConversationsScreen'
 import UpcomingEventsScreen from './components/UpcomingEventsScreen'
@@ -50,10 +51,12 @@ function parseDeepLink() {
   // formats — e.g. /event/cong-ca-phe-2e617620a3f3b6f7. The trailing 16 hex
   // chars are always extracted as the canonical ID via extractEventHex().
   const eventMatch     = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
+  const venueMatch     = path.match(/^\/venue\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
   if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
+  if (venueMatch)          return { type: 'venue',         id: venueMatch[1] }
   if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
   if (topicMatch)          return { type: 'topic',         id: topicMatch[1] }
   if (path === '/conversations') return { type: 'conversations' }
@@ -709,6 +712,13 @@ export default function App() {
   const [filterVibe,   setFilterVibe]   = useState(null)
   const [filterMode,   setFilterMode]   = useState(null)
   const [viewingProfile, setViewingProfile] = useState(null) // { userId, nickname } for public profile
+  const [viewingVenueId, setViewingVenueId] = useState(() => {
+    // Eager init: if the cold-load URL is /venue/<...>, capture the id now so
+    // the overlay renders on the very first paint. The deep-link effect below
+    // also handles guest bootstrap so the app shell becomes ready underneath.
+    const link = parseDeepLink()
+    return (link && link.type === 'venue') ? link.id : null
+  })
   const [guestProfile,   setGuestProfile]   = useState(null) // { guestId, nickname } for guest-only profiles
 
   // Central access rule: guest users cannot view registered profiles.
@@ -1203,7 +1213,7 @@ export default function App() {
       // entry point only for direct hilads.live/ visits (the marketing path).
       const link = parseDeepLink()
       const isPublicDeepLink =
-        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic')
+        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic' || link.type === 'venue')
       if (isPublicDeepLink && !guestAutoJoinedRef.current) {
         guestAutoJoinedRef.current = true
         // handleJoin awaits locPromiseRef.current (already set by the deep-link
@@ -4371,6 +4381,25 @@ export default function App() {
           manualHelpVisible={installPrompt.manualHelpVisible}
           onAdd={() => installPrompt.promptInstall().catch(() => {})}
           onDismiss={installPrompt.dismissBanner}
+        />
+      )}
+
+      {viewingVenueId && (
+        <VenueScreen
+          venueId={viewingVenueId}
+          onBack={() => {
+            setViewingVenueId(null)
+            // If the cold-load URL was /venue/, send user to home so the
+            // landing flow takes over rather than a blank app shell.
+            if (window.location.pathname.startsWith('/venue/')) {
+              window.location.assign('/')
+            }
+          }}
+          onOpenCity={(cityInfo) => {
+            // Navigate to the venue's city page — full page nav, lets the
+            // normal city deep-link flow handle join + render.
+            window.location.assign(`/city/${cityInfo.slug}`)
+          }}
         />
       )}
 

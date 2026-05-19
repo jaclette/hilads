@@ -60,6 +60,7 @@
     { "source": "/.well-known/(.*)",     "destination": "/.well-known/$1" },
     { "source": "/event/:id",            "destination": "/api/prerender?type=event&id=:id" },
     { "source": "/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1" },
+    { "source": "/venue/:id",            "destination": "/api/prerender?type=venue&id=:id" },
     { "source": "/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug" },
     { "source": "/cities",               "destination": "/api/cities-index" },
     { "source": "/(.*)",                 "destination": "/index.html" }

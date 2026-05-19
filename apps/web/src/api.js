@@ -2,6 +2,22 @@ const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
 
 // ── Deep link resolution ───────────────────────────────────────────────────────
 
+export async function fetchVenue(venueId) {
+  const res = await fetch(`${BASE}/venues/${encodeURIComponent(venueId)}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch venue')
+  const data = await res.json()
+  return data.venue
+}
+
+export async function fetchCityVenues(slug) {
+  const res = await fetch(`${BASE}/cities/${encodeURIComponent(slug)}/venues`)
+  if (res.status === 404) return []
+  if (!res.ok) throw new Error('Failed to fetch venues')
+  const data = await res.json()
+  return data.venues ?? []
+}
+
 export async function fetchCityBySlug(slug) {
   const res = await fetch(`${BASE}/cities/by-slug/${encodeURIComponent(slug)}`)
   if (res.status === 404) return null

@@ -33,6 +33,8 @@ class EventRepository
             es.recurrence_type,
             es.weekdays                                 AS series_weekdays,
             es.interval_days,
+            es.source                                   AS series_source,
+            es.source_key                               AS series_source_key,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
             EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
             EXTRACT(EPOCH FROM c.created_at)::INTEGER   AS created_at
@@ -66,6 +68,8 @@ class EventRepository
             es.recurrence_type,
             es.weekdays                                 AS series_weekdays,
             es.interval_days,
+            es.source                                   AS series_source,
+            es.source_key                               AS series_source_key,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
             EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
             EXTRACT(EPOCH FROM ce.created_at)::INTEGER  AS created_at
@@ -128,6 +132,13 @@ class EventRepository
             'external_url'     => $row['external_url'],
             'series_id'        => $row['series_id'],
             'recurrence_label' => $recurrenceLabel,
+            // True when this event is actually an occurrence of a seeded venue
+            // (coffee shop / bar). The prerender uses this to 301 occurrence
+            // URLs to the canonical /venue/<slug>-<series_id> page.
+            'is_venue'         => isset($row['series_source'], $row['series_source_key'])
+                && $row['series_source'] === 'import'
+                && (str_starts_with((string) $row['series_source_key'], 'places:v1:')
+                 || str_starts_with((string) $row['series_source_key'], 'static:v1:')),
             'starts_at'        => (int) $row['starts_at'],
             'ends_at'          => (int) $row['expires_at'], // user-visible end time
             'expires_at'       => (int) $row['expires_at'],
