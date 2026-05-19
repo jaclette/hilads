@@ -1803,6 +1803,205 @@ $router->add('GET', '/api/v1/venues/{venueId}', function (array $params) {
     Response::json(['venue' => $venue]);
 });
 
+// ── Category × city pages ────────────────────────────────────────────────────
+// Category × city URL pattern: /city/<slug>/<category>. Targets long-tail
+// queries like "coffee meetups paris" or "drinks london". Allowlist matches
+// EVENT_TYPES used by the SPA so the SPA can pre-apply the filter when a
+// category deep-link lands.
+
+// Allowlist of indexable categories. Anything else returns 404 so we don't
+// open arbitrary thin pages to crawlers. Order here defines the order in
+// the city page's "Browse by category" section.
+function categoryMeta(): array
+{
+    return [
+        'coffee' => ['label' => 'coffee meetups',       'venue_event_type' => 'coffee'],
+        'drinks' => ['label' => 'drinks & nightlife',   'venue_event_type' => 'drinks'],
+        'music'  => ['label' => 'music events',         'venue_event_type' => null],
+        'food'   => ['label' => 'food meetups',         'venue_event_type' => null],
+        'meetup' => ['label' => 'meetups',              'venue_event_type' => null],
+        'party'  => ['label' => 'parties',              'venue_event_type' => null],
+    ];
+}
+
+function resolveCityBySlug(string $slug): ?array
+{
+    $slug = strtolower(trim($slug));
+    if ($slug === '') return null;
+    foreach (CityRepository::all() as $c) {
+        $citySlug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($c['name'])), '-');
+        if ($citySlug === $slug) return $c;
+    }
+    return null;
+}
+
+// GET /api/v1/cities/{slug}/categories/{category}
+// Returns events + venues in the category bucket. 404 when both are empty.
+// Body is consumed by the prerender to build /city/<slug>/<category> body
+// and JSON-LD.
+$router->add('GET', '/api/v1/cities/{slug}/categories/{category}', function (array $params) {
+    $slug      = $params['slug']     ?? '';
+    $category  = strtolower($params['category'] ?? '');
+    $catMeta   = categoryMeta();
+
+    if (!isset($catMeta[$category])) {
+        Response::json(['error' => 'Unknown category'], 404);
+    }
+
+    $city = resolveCityBySlug($slug);
+    if ($city === null) {
+        Response::json(['error' => 'City not found'], 404);
+    }
+
+    $cityChannel = 'city_' . $city['id'];
+    $pdo         = Database::pdo();
+
+    // Events with this event_type, excluding venue-derived occurrences.
+    // Joins event_series so we can filter out the seeded-venue series via
+    // the same source_key pattern used elsewhere. expires_at > now() keeps
+    // it to active/upcoming rows.
+    $stmt = $pdo->prepare("
+        SELECT ce.channel_id AS id,
+               ce.title,
+               ce.event_type AS type,
+               ce.location,
+               EXTRACT(EPOCH FROM ce.starts_at)::INTEGER AS starts_at,
+               ce.series_id,
+               ce.host_nickname
+          FROM channel_events ce
+          LEFT JOIN event_series es ON es.id = ce.series_id
+         WHERE ce.city_id      = ?
+           AND ce.event_type   = ?
+           AND ce.expires_at   > now()
+           AND (es.id IS NULL
+                OR es.source <> 'import'
+                OR (es.source_key NOT LIKE 'places:v1:%'
+                    AND es.source_key NOT LIKE 'static:v1:%'))
+         ORDER BY ce.starts_at ASC
+         LIMIT 50
+    ");
+    $stmt->execute([$cityChannel, $category]);
+    $events = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    // Venues that match this category's venue_event_type (coffee → cafes,
+    // drinks → bars). Categories without a venue mapping return empty here.
+    $venues = [];
+    if ($catMeta[$category]['venue_event_type'] !== null) {
+        $vStmt = $pdo->prepare("
+            SELECT es.id, es.title, es.location, es.event_type
+              FROM event_series es
+             WHERE es.city_id   = ?
+               AND es.event_type = ?
+               AND (es.ends_on IS NULL OR es.ends_on >= CURRENT_DATE)
+               AND es.source = 'import'
+               AND (es.source_key LIKE 'places:v1:%' OR es.source_key LIKE 'static:v1:%')
+             ORDER BY es.title
+             LIMIT 50
+        ");
+        $vStmt->execute([$cityChannel, $catMeta[$category]['venue_event_type']]);
+        $venues = $vStmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    // Truly empty bucket → 404 so the prerender doesn't generate a thin page.
+    if (empty($events) && empty($venues)) {
+        Response::json(['error' => 'No content in this category'], 404);
+    }
+
+    Response::json([
+        'category' => [
+            'slug'   => $category,
+            'label'  => $catMeta[$category]['label'],
+        ],
+        'city' => [
+            'channelId' => (int) $city['id'],
+            'name'      => $city['name'],
+            'country'   => $city['country'] ?? null,
+            'timezone'  => $city['timezone'] ?? 'UTC',
+            'slug'      => $slug,
+        ],
+        'events' => array_map(static fn(array $e) => [
+            'id'             => $e['id'],
+            'title'          => $e['title'],
+            'type'           => $e['type'],
+            'location'       => $e['location'],
+            'starts_at'      => (int) $e['starts_at'],
+            'host_nickname'  => $e['host_nickname'] ?? null,
+        ], $events),
+        'venues' => array_map(static fn(array $v) => [
+            'id'         => $v['id'],
+            'name'       => $v['title'],
+            'address'    => $v['location'],
+            'category'   => $v['event_type'] === 'drinks' ? 'bar' : 'cafe',
+        ], $venues),
+        'total_events' => count($events),
+        'total_venues' => count($venues),
+    ]);
+});
+
+// GET /api/v1/sitemap/categories
+// Returns all (city slug, category) pairs that pass the threshold for
+// inclusion in the sitemap. Threshold: combined events + venues ≥ 3.
+$router->add('GET', '/api/v1/sitemap/categories', function () {
+    $cats    = categoryMeta();
+    $pdo     = Database::pdo();
+    $pairs   = [];
+
+    // Single query: counts of (city, event_type) for active non-venue events.
+    $eventStmt = $pdo->query("
+        SELECT ce.city_id,
+               ce.event_type,
+               COUNT(*) AS n
+          FROM channel_events ce
+          LEFT JOIN event_series es ON es.id = ce.series_id
+         WHERE ce.expires_at > now()
+           AND (es.id IS NULL
+                OR es.source <> 'import'
+                OR (es.source_key NOT LIKE 'places:v1:%'
+                    AND es.source_key NOT LIKE 'static:v1:%'))
+         GROUP BY ce.city_id, ce.event_type
+    ");
+    $eventCounts = [];
+    foreach ($eventStmt as $row) {
+        $eventCounts[$row['city_id']][$row['event_type']] = (int) $row['n'];
+    }
+
+    // Venue counts by (city, event_type). Only coffee + drinks.
+    $venueStmt = $pdo->query("
+        SELECT es.city_id,
+               es.event_type,
+               COUNT(*) AS n
+          FROM event_series es
+         WHERE (es.ends_on IS NULL OR es.ends_on >= CURRENT_DATE)
+           AND es.source = 'import'
+           AND (es.source_key LIKE 'places:v1:%' OR es.source_key LIKE 'static:v1:%')
+         GROUP BY es.city_id, es.event_type
+    ");
+    $venueCounts = [];
+    foreach ($venueStmt as $row) {
+        $venueCounts[$row['city_id']][$row['event_type']] = (int) $row['n'];
+    }
+
+    foreach (CityRepository::all() as $c) {
+        $cityChannel = 'city_' . $c['id'];
+        $citySlug    = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($c['name'])), '-');
+        foreach ($cats as $key => $meta) {
+            $evCount  = $eventCounts[$cityChannel][$key] ?? 0;
+            $vKey     = $meta['venue_event_type'];
+            $venCount = $vKey ? ($venueCounts[$cityChannel][$vKey] ?? 0) : 0;
+            if (($evCount + $venCount) >= 3) {
+                $pairs[] = [
+                    'city_slug' => $citySlug,
+                    'category'  => $key,
+                    'events'    => $evCount,
+                    'venues'    => $venCount,
+                ];
+            }
+        }
+    }
+
+    Response::json(['pairs' => $pairs, 'total' => count($pairs)]);
+});
+
 // GET /api/v1/sitemap/venues
 // Global venue list across every city. Single-call endpoint used by
 // gen-sitemap.mjs. Returns minimum fields to compose /venue/<slug>-<id> URLs.

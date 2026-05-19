@@ -46,7 +46,8 @@ function cityToSlug(name) {
 function parseDeepLink() {
   const path = window.location.pathname
   const params = new URLSearchParams(window.location.search)
-  const cityMatch      = path.match(/^\/city\/([^/]+)$/)
+  const cityMatch         = path.match(/^\/city\/([^/]+)$/)
+  const cityCategoryMatch = path.match(/^\/city\/([^/]+)\/([a-z]+)$/)
   // /event/:slug accepts both legacy bare 16-hex IDs AND slug-with-trailing-hex
   // formats — e.g. /event/cong-ca-phe-2e617620a3f3b6f7. The trailing 16 hex
   // chars are always extracted as the canonical ID via extractEventHex().
@@ -54,6 +55,10 @@ function parseDeepLink() {
   const venueMatch     = path.match(/^\/venue\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
+  // /city/:slug/:category — SPA treats as a regular city deep-link; the
+  // prerender handles the SEO-specific /category route. SPA hydration just
+  // shows the city page. (Future: pre-apply category filter from link[2].)
+  if (cityCategoryMatch)   return { type: 'city',          slug: cityCategoryMatch[1], category: cityCategoryMatch[2] }
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
   if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
   if (venueMatch)          return { type: 'venue',         id: venueMatch[1] }

@@ -25,6 +25,7 @@ const OUT_PATH  = resolve(__dirname, '../public/sitemap.xml')
 const BASE_URL    = (process.env.SITEMAP_BASE_URL || 'https://hilads.live').replace(/\/+$/, '')
 const API_URL     = process.env.SITEMAP_API_URL    || 'https://api.hilads.live/api/v1/channels'
 const VENUES_URL  = process.env.SITEMAP_VENUES_URL || 'https://api.hilads.live/api/v1/sitemap/venues'
+const CATS_URL    = process.env.SITEMAP_CATS_URL   || 'https://api.hilads.live/api/v1/sitemap/categories'
 
 // Mirrors apps/web/src/App.jsx cityToSlug(). Keep these in sync.
 function cityToSlug(name) {
@@ -94,8 +95,27 @@ async function fetchVenues() {
   }
 }
 
+async function fetchCategoryPairs() {
+  try {
+    const res = await fetch(CATS_URL, { headers: { Accept: 'application/json' } })
+    if (!res.ok) {
+      console.warn(`[sitemap] categories API responded ${res.status}; skipping category URLs`)
+      return []
+    }
+    const data = await res.json()
+    return Array.isArray(data?.pairs) ? data.pairs : []
+  } catch (err) {
+    console.warn(`[sitemap] could not reach ${CATS_URL} (${err.message}); skipping category URLs`)
+    return []
+  }
+}
+
 async function main() {
-  const [channels, venues] = await Promise.all([fetchChannels(), fetchVenues()])
+  const [channels, venues, categoryPairs] = await Promise.all([
+    fetchChannels(),
+    fetchVenues(),
+    fetchCategoryPairs(),
+  ])
   const today    = new Date().toISOString().slice(0, 10)   // YYYY-MM-DD
 
   const entries = [
@@ -131,6 +151,18 @@ async function main() {
       lastmod:    today,
       changefreq: 'hourly',     // event lists turn over fast
       priority:   '0.8',
+    }))
+  }
+
+  // Category × city pages — only pairs that pass the threshold (≥3 combined
+  // events + venues, enforced server-side). Long-tail traffic capture.
+  for (const p of categoryPairs) {
+    if (!p?.city_slug || !p?.category) continue
+    entries.push(urlEntry({
+      loc:        `${BASE_URL}/city/${p.city_slug}/${p.category}`,
+      lastmod:    today,
+      changefreq: 'daily',
+      priority:   '0.7',
     }))
   }
 

@@ -208,6 +208,121 @@ function composeEventMeta(payload, canonicalPath, eventId) {
   }
 }
 
+// Category × city meta — adapts to actual bucket size (events + venues).
+function composeCategoryMeta(payload, canonicalPath) {
+  if (!payload?.city?.name || !payload?.category?.label) return null
+  const city  = payload.city.name
+  const slug  = payload.category.slug
+  const label = payload.category.label
+  const evN   = payload.total_events ?? 0
+  const venN  = payload.total_venues ?? 0
+  const total = evN + venN
+
+  let title, description
+  if (total >= 10) {
+    title       = `${label[0].toUpperCase() + label.slice(1)} in ${city} · ${total} on Hilads`
+    description = `${total} ${label} in ${city} right now. See who's going and join in one tap — real-time, no sign-up.`
+  } else if (total >= 3) {
+    title       = `${label[0].toUpperCase() + label.slice(1)} in ${city}`
+    description = `${city} ${label} on Hilads. ${evN > 0 ? `${evN} upcoming` : 'Browse venues'} — meet locals and travelers in one tap.`
+  } else {
+    title       = `${label[0].toUpperCase() + label.slice(1)} in ${city}`
+    description = `Looking for ${label} in ${city}? Hilads lists what's actually on tonight. Small but real.`
+  }
+
+  return {
+    title,
+    description,
+    url:   `${SITE_BASE}${canonicalPath}`,
+    // Reuse the city OG card. Future: dedicated /api/og?type=category card.
+    image: `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(payload.city.slug ?? slug)}`,
+  }
+}
+
+function composeCategoryJsonLd(payload, canonicalUrl) {
+  if (!payload?.city?.name) return null
+  const events = Array.isArray(payload.events) ? payload.events : []
+  const venues = Array.isArray(payload.venues) ? payload.venues : []
+  const items  = []
+
+  // Events first (real activity), venues second. Cap at 20 total.
+  for (const e of events.slice(0, 20)) {
+    items.push({ type: 'event', name: e.title, url: `${SITE_BASE}/event/${eventSlug(e)}` })
+  }
+  for (const v of venues.slice(0, 20 - items.length)) {
+    items.push({ type: 'venue', name: v.name, url: `${SITE_BASE}/venue/${venueSlugFromName(v.name, v.id)}` })
+  }
+
+  const itemList = {
+    '@type':         'ItemList',
+    name:            `${payload.category.label} in ${payload.city.name}`,
+    numberOfItems:   items.length,
+    itemListElement: items.map((it, i) => ({
+      '@type':   'ListItem',
+      position:  i + 1,
+      url:       it.url,
+      name:      it.name,
+    })),
+  }
+
+  const breadcrumb = composeBreadcrumb([
+    { name: 'Home',                       url: `${SITE_BASE}/` },
+    { name: payload.city.name,            url: `${SITE_BASE}/city/${payload.city.slug}` },
+    { name: payload.category.label,       url: canonicalUrl },
+  ])
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [...siteGraphNodes(), itemList, breadcrumb],
+  }
+}
+
+function composeCategoryBody(payload) {
+  const city     = payload.city.name
+  const citySlug = payload.city.slug
+  const category = payload.category
+  const events   = Array.isArray(payload.events) ? payload.events : []
+  const venues   = Array.isArray(payload.venues) ? payload.venues : []
+
+  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(category.label)}</span></nav>`
+
+  const intro = events.length > 0 || venues.length > 0
+    ? `${events.length > 0 ? `${events.length} upcoming ${events.length === 1 ? category.label.replace(/s$/, '') : category.label}` : ''}${events.length > 0 && venues.length > 0 ? ' · ' : ''}${venues.length > 0 ? `${venues.length} ${venues.length === 1 ? 'venue' : 'venues'}` : ''} in ${city}.`
+    : `Browse ${category.label} in ${city}.`
+
+  const eventsSection = events.length > 0
+    ? `<section><h2>Upcoming ${htmlEscape(category.label)} in ${htmlEscape(city)}</h2><ul>${events.slice(0, 20).map(e => {
+        const slug = eventSlug(e)
+        const t = e.starts_at ? formatTime(e.starts_at, payload.city.timezone) : ''
+        const w = e.location ? ` · ${htmlEscape(e.location)}` : ''
+        return `<li><a href="/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}${w}</li>`
+      }).join('')}</ul></section>`
+    : ''
+
+  const venuesSection = venues.length > 0
+    ? `<section><h2>${htmlEscape(category.slug === 'coffee' ? 'Coffee shops' : category.slug === 'drinks' ? 'Bars' : 'Venues')} in ${htmlEscape(city)}</h2><ul>${venues.slice(0, 20).map(v => {
+        const slug = venueSlugFromName(v.name, v.id)
+        const icon = v.category === 'bar' ? '🍻' : '☕'
+        const a    = v.address ? ` — ${htmlEscape(v.address)}` : ''
+        return `<li>${icon} <a href="/venue/${slug}">${htmlEscape(v.name)}</a>${a}</li>`
+      }).join('')}</ul></section>`
+    : ''
+
+  const evergreen = `<section><h2>About Hilads in ${htmlEscape(city)}</h2><p>Hilads is the easy way to find people for ${htmlEscape(category.label)} in ${htmlEscape(city)}. Open the app, see who's heading out, join in one tap.</p><p>See <a href="/city/${citySlug}">everything else happening in ${htmlEscape(city)}</a> on Hilads.</p></section>`
+
+  return [
+    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
+    `<main class="ssr-main">`,
+    breadcrumb,
+    `<h1>${htmlEscape(category.label[0].toUpperCase() + category.label.slice(1))} in ${htmlEscape(city)}</h1>`,
+    `<p class="ssr-intro">${htmlEscape(intro)}</p>`,
+    eventsSection,
+    venuesSection,
+    evergreen,
+    `</main>`,
+  ].filter(Boolean).join('\n')
+}
+
 function composeVenueMeta(payload, canonicalPath, venueId) {
   // Backend shape: { venue: { id, name, address, category, hours, city, ... } }
   const v = payload?.venue
@@ -549,6 +664,46 @@ function categoryCounts(events) {
   return out
 }
 
+// City-page category cards (must match backend categoryMeta() allowlist).
+const CITY_CATEGORIES = [
+  { slug: 'coffee', label: 'Coffee meetups',     venueCat: 'cafe', icon: '☕' },
+  { slug: 'drinks', label: 'Drinks & nightlife', venueCat: 'bar',  icon: '🍻' },
+  { slug: 'music',  label: 'Music',              venueCat: null,   icon: '🎵' },
+  { slug: 'food',   label: 'Food meetups',       venueCat: null,   icon: '🍽️' },
+  { slug: 'meetup', label: 'Meetups',            venueCat: null,   icon: '👥' },
+  { slug: 'party',  label: 'Parties',            venueCat: null,   icon: '🎉' },
+]
+
+// Render a "Browse by category in <city>" block on the city page. Each link
+// goes to /city/<slug>/<category> which the prerender serves with its own
+// content. Only categories with ≥3 events+venues are shown — same threshold
+// the backend uses to gate the sitemap so we never link to a 404.
+function categoryLinksHtml(city, citySlug, events, venues) {
+  const evCounts = {}
+  for (const e of events) {
+    const t = e?.type
+    if (t) evCounts[t] = (evCounts[t] || 0) + 1
+  }
+  let cafes = 0, bars = 0
+  for (const v of venues) {
+    if (v.category === 'bar') bars++
+    else cafes++
+  }
+
+  const eligible = CITY_CATEGORIES.filter(c => {
+    const ev = evCounts[c.slug] ?? 0
+    const vn = c.venueCat === 'cafe' ? cafes : c.venueCat === 'bar' ? bars : 0
+    return (ev + vn) >= 3
+  })
+
+  if (eligible.length === 0) return ''
+  return `<section><h2>Browse by category in ${htmlEscape(city)}</h2><ul>${
+    eligible.map(c =>
+      `<li>${c.icon} <a href="/city/${citySlug}/${c.slug}">${htmlEscape(c.label)} in ${htmlEscape(city)}</a></li>`
+    ).join('')
+  }</ul></section>`
+}
+
 // Human label for an event_type. Mirrors apps/web/src/cityMeta.js EVENT_TYPES;
 // keep in sync.
 const CATEGORY_LABEL = {
@@ -686,6 +841,9 @@ function composeCityBody(payload, upcomingEvents, venues) {
   // re-used; the differentiation comes from the signals line.
   const evergreen = `<section><h2>About Hilads in ${htmlEscape(city)}</h2><p>Hilads is a live social layer over ${htmlEscape(city)}. Open the app, see who's around right now, jump into something happening, or host your own event. No friends list to build first, no sign-up to get in.</p><p>Whether you live in ${htmlEscape(city)} or you're visiting for a few days, Hilads makes it easy to meet people the way locals do — through what's actually happening, not through profiles.</p></section>`
 
+  const citySlug = cityToSlug(city)
+  const categoriesSection = categoryLinksHtml(city, citySlug, events, venueList)
+
   return [
     `<style>${SSR_CITY_STYLES}</style>`,
     `<main class="ssr-main">`,
@@ -693,6 +851,7 @@ function composeCityBody(payload, upcomingEvents, venues) {
     `<p class="ssr-intro">${intro}</p>`,
     signalsBlock,
     eventsSection,
+    categoriesSection,
     venuesSection,
     evergreen,
     `</main>`,
@@ -1058,6 +1217,21 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
             otherVenues = Array.isArray(otherData?.venues) ? otherData.venues : []
           }
           bodyHtml = composeVenueBody(data, otherVenues)
+        }
+      }
+    } else if (type === 'category' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
+      const category = (req.query || {}).category
+      if (typeof category === 'string' && /^[a-z]{1,32}$/.test(category)) {
+        canonicalPath = `/city/${slug}/${category}`
+        const data = await fetchWithTimeout(
+          `${API_BASE}/api/v1/cities/${encodeURIComponent(slug)}/categories/${encodeURIComponent(category)}`,
+          API_TIMEOUT_MS,
+        )
+        if (data?.city?.name) {
+          cacheMaxAge = 1800            // 30 min — events churn but slower than per-event
+          meta     = composeCategoryMeta(data, canonicalPath)
+          jsonLd   = composeCategoryJsonLd(data, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
+          bodyHtml = composeCategoryBody(data)
         }
       }
     } else if (type === 'city' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
