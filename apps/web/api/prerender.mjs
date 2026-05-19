@@ -504,6 +504,17 @@ function composeVenueJsonLd(payload, canonicalUrl) {
     url: canonicalUrl,
   }
 
+  // GeoCoordinates — emitted only when both coordinates exist. Unlocks the
+  // map preview in Google's rich result for LocalBusiness types. Falls back
+  // gracefully (no map preview) when nulls — never errors.
+  if (typeof v.lat === 'number' && typeof v.lng === 'number') {
+    node.geo = {
+      '@type':   'GeoCoordinates',
+      latitude:  v.lat,
+      longitude: v.lng,
+    }
+  }
+
   // openingHoursSpecification: single window applied to every day, since the
   // seed only captures one open/close pair. Per-weekday data lands later.
   if (v.hours?.opens && v.hours?.closes) {

@@ -132,6 +132,7 @@ class EventSeriesRepository
         $stmt = Database::pdo()->prepare("
             SELECT es.id, es.city_id, es.title, es.event_type, es.location,
                    es.start_time, es.end_time, es.timezone, es.source_key, es.source,
+                   es.lat, es.lng,
                    EXTRACT(EPOCH FROM es.created_at)::INTEGER AS created_at,
                    c.name AS city_name, ci.country
               FROM event_series es
@@ -189,6 +190,12 @@ class EventSeriesRepository
                 'daysOfWeek' => ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
             ],
             'timezone'   => $row['timezone'],
+            // Lat/lng populated from Google Places at seed time. Null for
+            // venues seeded before this field was captured — backfilled by
+            // scripts/backfill_venue_geo.php. Surfaced so the prerender can
+            // emit schema.org GeoCoordinates when present.
+            'lat'        => isset($row['lat']) ? (float) $row['lat'] : null,
+            'lng'        => isset($row['lng']) ? (float) $row['lng'] : null,
             'city'       => [
                 'channelId' => $cityInt,
                 'name'      => $row['city_name'],
@@ -480,11 +487,13 @@ class EventSeriesRepository
                 INSERT INTO event_series
                     (id, city_id, created_by, guest_id, title, event_type, location,
                      start_time, end_time, timezone, recurrence_type, weekdays,
-                     interval_days, starts_on, ends_on, source, source_key)
+                     interval_days, starts_on, ends_on, source, source_key,
+                     lat, lng)
                 VALUES
                     (?, ?, NULL, NULL, ?, ?, ?,
                      ?, ?, ?, ?, NULL,
-                     NULL, ?, NULL, 'import', ?)
+                     NULL, ?, NULL, 'import', ?,
+                     ?, ?)
                 ON CONFLICT (source_key) DO NOTHING
             ");
             $stmt->execute([
@@ -499,6 +508,8 @@ class EventSeriesRepository
                 $item['recurrence_type'] ?? 'daily',
                 $startsOn,
                 $sourceKey,
+                $item['lat'] ?? null,
+                $item['lng'] ?? null,
             ]);
 
             // ON CONFLICT triggered means a concurrent insert beat us — treat as skipped

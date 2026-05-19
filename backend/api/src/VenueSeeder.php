@@ -157,6 +157,11 @@ class VenueSeeder
             'start_time'     => $isBar ? self::BAR_START    : self::COFFEE_START,
             'end_time'       => $isBar ? self::BAR_END      : self::COFFEE_END,
             'recurrence_type'=> 'daily',
+            // Captured from Places API for venue JSON-LD GeoCoordinates.
+            // Nullable — older API responses (or future Places changes) may
+            // omit these; importBatch stores NULL gracefully.
+            'lat'            => $place['lat'] ?? null,
+            'lng'            => $place['lng'] ?? null,
             // Stable fingerprint: same place + city + category → same key forever
             'source_key'     => "places:v1:city_{$cityId}:{$place['place_id']}:{$category}",
         ];

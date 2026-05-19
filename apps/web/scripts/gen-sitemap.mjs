@@ -27,6 +27,13 @@ const API_URL     = process.env.SITEMAP_API_URL    || 'https://api.hilads.live/a
 const VENUES_URL  = process.env.SITEMAP_VENUES_URL || 'https://api.hilads.live/api/v1/sitemap/venues'
 const CATS_URL    = process.env.SITEMAP_CATS_URL   || 'https://api.hilads.live/api/v1/sitemap/categories'
 
+// IndexNow: pings Bing + Yandex + Naver on every sitemap regeneration.
+// The key file at /<INDEXNOW_KEY>.txt proves domain ownership.
+// Only POSTs when running on Vercel (or with INDEXNOW_SUBMIT=1) to avoid
+// hammering the protocol from local dev runs.
+const INDEXNOW_KEY    = process.env.INDEXNOW_KEY    || '1964b95cf0dd14f803702bca498c0d89'
+const INDEXNOW_SUBMIT = process.env.INDEXNOW_SUBMIT === '1' || process.env.VERCEL === '1'
+
 // Mirrors apps/web/src/App.jsx cityToSlug(). Keep these in sync.
 function cityToSlug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
@@ -191,6 +198,40 @@ async function main() {
 
   await writeFile(OUT_PATH, xml, 'utf8')
   console.log(`[sitemap] wrote ${entries.length} URL${entries.length === 1 ? '' : 's'} to ${OUT_PATH}`)
+
+  // Tell Bing/Yandex/Naver via IndexNow. Best-effort — never fail the build
+  // on this. Submission accepts up to 10000 URLs per request; we're nowhere
+  // near that cap, but the slice() is defensive.
+  if (INDEXNOW_SUBMIT) {
+    const urls = [
+      `${BASE_URL}/`,
+      `${BASE_URL}/cities`,
+      ...channels.map(ch => {
+        const slug = ch?.city ? cityToSlug(ch.city) : null
+        return slug ? `${BASE_URL}/city/${slug}` : null
+      }).filter(Boolean),
+      ...categoryPairs.map(p => `${BASE_URL}/city/${p.city_slug}/${p.category}`),
+      ...venues.map(v => v?.id && v?.name ? `${BASE_URL}/venue/${venueSlug(v.name, v.id)}` : null).filter(Boolean),
+    ].slice(0, 10000)
+
+    try {
+      const res = await fetch('https://api.indexnow.org/IndexNow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          host:        new URL(BASE_URL).host,
+          key:         INDEXNOW_KEY,
+          keyLocation: `${BASE_URL}/${INDEXNOW_KEY}.txt`,
+          urlList:     urls,
+        }),
+      })
+      console.log(`[indexnow] submitted ${urls.length} URLs → ${res.status} ${res.statusText}`)
+    } catch (err) {
+      console.warn(`[indexnow] submission failed (${err.message}); non-fatal`)
+    }
+  } else {
+    console.log('[indexnow] skipped (set INDEXNOW_SUBMIT=1 or run on Vercel)')
+  }
 }
 
 main().catch(err => {

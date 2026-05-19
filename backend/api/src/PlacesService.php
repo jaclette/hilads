@@ -16,7 +16,7 @@ class PlacesService
 
     // Only request the fields we actually use — keeps response small and avoids
     // billing for unused field classes (Basic vs Advanced vs Preferred tiers).
-    private const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount';
+    private const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.location';
 
     /**
      * Search for places matching $query near the given coordinates.
@@ -114,11 +114,20 @@ class PlacesService
                 continue;
             }
 
+            // Lat/lng — Places API (New) returns nested location object.
+            // Captured so venue JSON-LD can emit schema.org GeoCoordinates.
+            // Missing location → null (older Places responses, or rare data
+            // gaps). Callers handle null gracefully.
+            $lat = isset($place['location']['latitude'])  ? (float) $place['location']['latitude']  : null;
+            $lng = isset($place['location']['longitude']) ? (float) $place['location']['longitude'] : null;
+
             $places[] = [
                 'place_id'     => $placeId,
                 'name'         => $name,
                 'address'      => $address,
                 'rating'       => (float) $place['rating'],
+                'lat'          => $lat,
+                'lng'          => $lng,
                 // Used for sorting only — stripped before returning to callers
                 '_review_count'=> (int) ($place['userRatingCount'] ?? 0),
             ];
@@ -129,8 +138,62 @@ class PlacesService
 
         // Strip the internal sort key and take the top $limit results
         return array_map(
-            fn($p) => ['place_id' => $p['place_id'], 'name' => $p['name'], 'address' => $p['address'], 'rating' => $p['rating']],
+            fn($p) => [
+                'place_id' => $p['place_id'],
+                'name'     => $p['name'],
+                'address'  => $p['address'],
+                'rating'   => $p['rating'],
+                'lat'      => $p['lat'],
+                'lng'      => $p['lng'],
+            ],
             array_slice($places, 0, $limit)
         );
+    }
+
+    /**
+     * Fetch a single place by ID. Used by the backfill script to populate
+     * lat/lng for venues seeded before the FIELD_MASK included location.
+     * Returns [place_id, name, address, lat, lng] or null on any failure.
+     */
+    public static function detailsById(string $placeId): ?array
+    {
+        $apiKey = getenv('GOOGLE_PLACES_API_KEY') ?: '';
+        if ($apiKey === '') {
+            throw new RuntimeException('GOOGLE_PLACES_API_KEY env var is not set');
+        }
+
+        $url = 'https://places.googleapis.com/v1/places/' . rawurlencode($placeId);
+        $ch  = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'X-Goog-Api-Key: ' . $apiKey,
+                'X-Goog-FieldMask: id,displayName,formattedAddress,location',
+            ],
+            CURLOPT_TIMEOUT        => self::TIMEOUT,
+            CURLOPT_CONNECTTIMEOUT => self::TIMEOUT,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_USERAGENT      => 'hilads/1.0',
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response === false || $httpCode !== 200) return null;
+        $data = json_decode($response, true);
+        if (!is_array($data)) return null;
+
+        $lat = isset($data['location']['latitude'])  ? (float) $data['location']['latitude']  : null;
+        $lng = isset($data['location']['longitude']) ? (float) $data['location']['longitude'] : null;
+        if ($lat === null || $lng === null) return null;
+
+        return [
+            'place_id' => $data['id'] ?? $placeId,
+            'name'     => trim($data['displayName']['text'] ?? ''),
+            'address'  => trim($data['formattedAddress'] ?? ''),
+            'lat'      => $lat,
+            'lng'      => $lng,
+        ];
     }
 }
