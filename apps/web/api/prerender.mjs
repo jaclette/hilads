@@ -270,6 +270,30 @@ const ORG_NODE = {
   url:     SITE_BASE,
 }
 
+// Site-level entities emitted on every prerendered page. Organization gives
+// Google's brand panel; WebSite establishes site identity. SearchAction is
+// omitted because there's no functional /?q= search endpoint yet — adding it
+// without a backing route would trigger a structured-data warning in GSC.
+const ORG_GRAPH_NODE = {
+  '@type': 'Organization',
+  '@id':   `${SITE_BASE}/#organization`,
+  name:    'Hilads',
+  url:     SITE_BASE,
+  logo:    `${SITE_BASE}/og/og-default.png`,
+}
+
+const WEBSITE_GRAPH_NODE = {
+  '@type':   'WebSite',
+  '@id':     `${SITE_BASE}/#website`,
+  name:      'Hilads',
+  url:       SITE_BASE,
+  publisher: { '@id': `${SITE_BASE}/#organization` },
+}
+
+function siteGraphNodes() {
+  return [ORG_GRAPH_NODE, WEBSITE_GRAPH_NODE]
+}
+
 function isoOr(unixTs, fallback) {
   if (typeof unixTs !== 'number' || !Number.isFinite(unixTs)) return fallback
   return new Date(unixTs * 1000).toISOString()
@@ -340,7 +364,7 @@ function composeEventJsonLd(payload, canonicalUrl) {
 
   return {
     '@context': 'https://schema.org',
-    '@graph': [event, breadcrumb],
+    '@graph': [...siteGraphNodes(), event, breadcrumb],
   }
 }
 
@@ -388,7 +412,10 @@ function composeVenueJsonLd(payload, canonicalUrl) {
     { name: v.name, url: canonicalUrl },
   ].filter(Boolean))
 
-  return { '@context': 'https://schema.org', '@graph': [node, breadcrumb] }
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [...siteGraphNodes(), node, breadcrumb],
+  }
 }
 
 function composeCityJsonLd(payload, canonicalUrl, upcomingEvents) {
@@ -429,7 +456,10 @@ function composeCityJsonLd(payload, canonicalUrl, upcomingEvents) {
     })
   }
 
-  return { '@context': 'https://schema.org', '@graph': graph }
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [...siteGraphNodes(), ...graph],
+  }
 }
 
 // ── SSR body composers ───────────────────────────────────────────────────────
@@ -450,6 +480,134 @@ function cityH1(city, count) {
   if (count >= 5)  return `What's happening in ${city}`
   if (count >= 1)  return `${city} events & meetups`
   return `${city} on Hilads`
+}
+
+// Country-name resolver (ISO-2 → full English name) via Intl, with a small
+// regional flavour map layered on top so popular markets get more specific
+// copy than just "in France". Unmapped countries fall back to the country
+// name alone. Keep this list short and edit by hand — it's the per-city
+// differentiation hook for ~80% of traffic.
+const COUNTRY_FLAVOUR = {
+  FR: 'café culture, late dinners, after-work apéros',
+  GB: 'pub nights, weekend brunches, festival season',
+  US: 'bar-hopping, food meetups, sports nights',
+  CA: 'cosy bars, indie shows, weekend trail meetups',
+  ES: 'late dinners, terrazas, all-night neighborhoods',
+  IT: 'aperitivo hour, slow dinners, piazza nights',
+  DE: 'beer-garden afternoons, club nights, weekend markets',
+  NL: 'canal walks, café terraces, club crawls',
+  PT: 'sunset miradouros, fado nights, late-summer evenings',
+  AU: 'beach BBQs, coffee culture, sundowner sessions',
+  NZ: 'craft beer, hiking meetups, coffee-shop hangouts',
+  JP: 'izakaya runs, neighborhood crawls, after-work drinks',
+  KR: 'food crawls, late-night soju, K-indie shows',
+  TH: 'street-food tours, beach parties, sunset cocktails',
+  VN: 'cà phê early, beer late, motorbike crews',
+  ID: 'beach hangouts, warung dinners, surf meetups',
+  PH: 'karaoke nights, beach trips, food crawls',
+  MY: 'mamak runs, café culture, weekend hawker tours',
+  SG: 'hawker dinners, rooftop drinks, weekend brunches',
+  IN: 'food walks, chai meetups, evening street crawls',
+  BR: 'beach hangouts, samba nights, all-day food culture',
+  MX: 'taquería nights, mezcal crawls, weekend rooftops',
+  AR: 'late dinners, asado weekends, milonga nights',
+  CO: 'salsa nights, café culture, weekend trails',
+  CL: 'pisco nights, hiking weekends, café meetups',
+  PE: 'food crawls, pisco bars, weekend day-trips',
+  EG: 'late-night cafés, Nile sunset walks, weekend trips',
+  MA: 'rooftop sunsets, medina walks, mint-tea afternoons',
+  ZA: 'braai weekends, wine-region trips, beachfront nights',
+  TR: 'rooftop dinners, ferry rides, late-night meyhane',
+  AE: 'rooftop bars, brunch culture, desert weekends',
+  CN: 'late food crawls, KTV nights, neighborhood meetups',
+  TW: 'night markets, café crawls, mountain weekends',
+  HK: 'rooftop bars, late dim sum, weekend hikes',
+}
+
+function regionLine(country) {
+  if (!country || country.length !== 2) return ''
+  try {
+    const cn = new Intl.DisplayNames(['en'], { type: 'region' })
+    const name = cn.of(country.toUpperCase())
+    const flavour = COUNTRY_FLAVOUR[country.toUpperCase()]
+    return flavour
+      ? `In ${name} you'll find ${flavour}.`
+      : `Live in ${name} or just visiting? Hilads brings the people out.`
+  } catch {
+    return ''
+  }
+}
+
+// Count event_type distribution after filtering out venue-derived rows.
+function categoryCounts(events) {
+  const out = {}
+  for (const ev of events) {
+    const t = ev?.type
+    if (!t) continue
+    out[t] = (out[t] || 0) + 1
+  }
+  return out
+}
+
+// Human label for an event_type. Mirrors apps/web/src/cityMeta.js EVENT_TYPES;
+// keep in sync.
+const CATEGORY_LABEL = {
+  drinks: 'drinks',
+  party:  'parties',
+  music:  'music nights',
+  food:   'food meetups',
+  coffee: 'coffee meetups',
+  sport:  'sport',
+  meetup: 'meetups',
+  other:  'other',
+}
+
+function topCategoriesLine(counts) {
+  const sorted = Object.entries(counts)
+    .filter(([k]) => k !== 'other')
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+  if (sorted.length === 0) return ''
+  const parts = sorted.map(([k, n]) => `${CATEGORY_LABEL[k] || k} (${n})`)
+  if (parts.length === 1) return `Most active right now: ${parts[0]}.`
+  if (parts.length === 2) return `Most active right now: ${parts[0]} and ${parts[1]}.`
+  return `Most active right now: ${parts[0]}, ${parts[1]}, and ${parts[2]}.`
+}
+
+function venueMixLine(venues) {
+  if (!Array.isArray(venues) || venues.length === 0) return ''
+  let cafes = 0, bars = 0
+  for (const v of venues) {
+    if (v.category === 'bar') bars++
+    else cafes++
+  }
+  const bits = []
+  if (cafes) bits.push(`${cafes} ${cafes === 1 ? 'coffee spot' : 'coffee spots'}`)
+  if (bars)  bits.push(`${bars} ${bars === 1 ? 'bar' : 'bars'}`)
+  if (bits.length === 0) return ''
+  if (bits.length === 1) return `Venue scene: ${bits[0]}.`
+  return `Venue scene: ${bits[0]} and ${bits[1]}.`
+}
+
+function daysAgo(unixTs) {
+  if (!unixTs) return null
+  const ms = Date.now() - unixTs * 1000
+  if (ms < 0) return 0
+  return Math.floor(ms / (24 * 60 * 60 * 1000))
+}
+
+function freshnessLine(events) {
+  if (!Array.isArray(events) || events.length === 0) return ''
+  const latest = events
+    .map(e => e?.created_at)
+    .filter(t => typeof t === 'number')
+    .sort((a, b) => b - a)[0]
+  const d = daysAgo(latest)
+  if (d === null) return ''
+  if (d === 0) return 'Latest activity: today.'
+  if (d === 1) return 'Latest activity: yesterday.'
+  if (d <= 7)  return `Latest activity: ${d} days ago.`
+  return ''  // older than a week — don't advertise stale freshness
 }
 
 // Minimal inline CSS so the SSR body doesn't look broken during the brief
@@ -507,10 +665,25 @@ function composeCityBody(payload, upcomingEvents, venues) {
     venuesSection = `<section><h2>Popular venues in ${htmlEscape(city)}</h2><ul>\n        ${venueItems}\n      </ul></section>`
   }
 
-  // Evergreen copy — varies on city name + helps Googlebot avoid "thin" flag
-  // on low-event cities. Two paragraphs, ~80 words. Same intent across all
-  // cities; the differentiation comes from the city-name slot. Week 2-3 will
-  // add geographic/category-specific intro variants.
+  // City-specific signals so each /city/* page has meaningfully different
+  // body text. Three lines fed by real data:
+  //   - regionLine: country flavour (curated per ISO-2)
+  //   - topCategoriesLine: actual event mix (from current upcoming feed)
+  //   - venueMixLine: cafe/bar split (from venues feed)
+  //   - freshnessLine: recency signal when activity is recent
+  const signals = [
+    topCategoriesLine(categoryCounts(events)),
+    venueMixLine(venueList),
+    freshnessLine(events),
+    regionLine(country),
+  ].filter(Boolean)
+  const signalsBlock = signals.length > 0
+    ? `<p class="ssr-signals">${signals.map(htmlEscape).join(' ')}</p>`
+    : ''
+
+  // Evergreen copy — varies on city name + the signals above keep it from
+  // looking templated. Two paragraphs, ~80 words. Pure-template wording is
+  // re-used; the differentiation comes from the signals line.
   const evergreen = `<section><h2>About Hilads in ${htmlEscape(city)}</h2><p>Hilads is a live social layer over ${htmlEscape(city)}. Open the app, see who's around right now, jump into something happening, or host your own event. No friends list to build first, no sign-up to get in.</p><p>Whether you live in ${htmlEscape(city)} or you're visiting for a few days, Hilads makes it easy to meet people the way locals do — through what's actually happening, not through profiles.</p></section>`
 
   return [
@@ -518,11 +691,123 @@ function composeCityBody(payload, upcomingEvents, venues) {
     `<main class="ssr-main">`,
     `<h1>${htmlEscape(cityH1(city, eventCount))}</h1>`,
     `<p class="ssr-intro">${intro}</p>`,
+    signalsBlock,
     eventsSection,
     venuesSection,
     evergreen,
     `</main>`,
   ].join('\n')
+}
+
+// Body for /event/<id> — H1 + when/where/host + breadcrumb + related events
+// in the same city + evergreen. Filters venue-tagged events out of the
+// "Other events" list so we don't link into the redirect chain to /venue/.
+function composeEventBody(payload, otherEvents) {
+  const ev = payload?.event
+  if (!ev || !ev.title) return null
+  const city     = payload.cityName || ''
+  const country  = payload.country  || ''
+  const citySlug = city ? cityToSlug(city) : ''
+
+  const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone) : ''
+  const dateStr = ev.starts_at
+    ? new Date(ev.starts_at * 1000).toLocaleDateString('en-US', {
+        timeZone: payload.timezone || 'UTC',
+        weekday: 'long', month: 'long', day: 'numeric',
+      })
+    : ''
+  const whereLine = ev.location ? `<p class="ssr-where"><strong>Where:</strong> ${htmlEscape(ev.location)}</p>` : ''
+  const whenLine  = dateStr     ? `<p class="ssr-when"><strong>When:</strong> ${htmlEscape(dateStr)}${when ? ` · ${htmlEscape(when)}` : ''}</p>` : ''
+  const hostLine  = ev.host_nickname ? `<p class="ssr-host"><strong>Hosted by:</strong> ${htmlEscape(ev.host_nickname)}</p>` : ''
+  const recur     = ev.recurrence_label ? `<p class="ssr-recur"><strong>Recurs:</strong> ${htmlEscape(ev.recurrence_label)}</p>` : ''
+
+  const breadcrumb = city && citySlug
+    ? `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(ev.title)}</span></nav>`
+    : ''
+
+  // Related — other events in the same city, exclude self + venue rows
+  const related = (Array.isArray(otherEvents) ? otherEvents : [])
+    .filter(e => e.id !== ev.id && !e.is_venue)
+    .slice(0, 8)
+  const relatedSection = related.length > 0
+    ? `<section><h2>Other events in ${htmlEscape(city)}</h2><ul>${related.map(e => {
+        const slug = eventSlug(e)
+        const t = e.starts_at ? formatTime(e.starts_at, payload.timezone) : ''
+        return `<li><a href="/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}</li>`
+      }).join('')}</ul></section>`
+    : ''
+
+  const cityLink = city && citySlug
+    ? `<p>See <a href="/city/${citySlug}">other things happening in ${htmlEscape(city)}</a> on Hilads.</p>`
+    : ''
+
+  const evergreen = `<section><h2>About Hilads</h2><p>Hilads is a live social layer over cities worldwide. Open the app, see who's around right now, join an event in one tap, or host your own. No friends list to build first.</p>${cityLink}</section>`
+
+  return [
+    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
+    `<main class="ssr-main">`,
+    breadcrumb,
+    `<h1>${htmlEscape(ev.title)}</h1>`,
+    whenLine,
+    whereLine,
+    hostLine,
+    recur,
+    relatedSection,
+    evergreen,
+    `</main>`,
+  ].filter(Boolean).join('\n')
+}
+
+// Body for /venue/<id> — H1 + address/hours + breadcrumb + related venues
+// in the same city + evergreen with venue-type context.
+function composeVenueBody(payload, otherVenues) {
+  const v = payload?.venue
+  if (!v || !v.name) return null
+  const city = v.city?.name || ''
+  const citySlug = v.city?.slug || ''
+  const isBar = v.category === 'bar'
+
+  const breadcrumb = city && citySlug
+    ? `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(v.name)}</span></nav>`
+    : ''
+
+  const addrLine  = v.address ? `<p class="ssr-where"><strong>Address:</strong> ${htmlEscape(v.address)}</p>` : ''
+  const hoursLine = v.hours?.opens && v.hours?.closes
+    ? `<p class="ssr-when"><strong>Hours:</strong> Open every day · ${htmlEscape(v.hours.opens)} – ${htmlEscape(v.hours.closes)}</p>`
+    : ''
+  const catLine = `<p class="ssr-cat"><strong>Type:</strong> ${isBar ? 'Bar / pub' : 'Coffee shop'}</p>`
+
+  const related = (Array.isArray(otherVenues) ? otherVenues : [])
+    .filter(o => o.id !== v.id)
+    .slice(0, 6)
+  const relatedSection = related.length > 0 && city
+    ? `<section><h2>Other venues in ${htmlEscape(city)}</h2><ul>${related.map(o => {
+        const slug = venueSlugFromName(o.name, o.id)
+        const cat = o.category === 'bar' ? '🍻' : '☕'
+        return `<li>${cat} <a href="/venue/${slug}">${htmlEscape(o.name)}</a></li>`
+      }).join('')}</ul></section>`
+    : ''
+
+  const cityLink = city && citySlug
+    ? `<p>See <a href="/city/${citySlug}">what's happening in ${htmlEscape(city)}</a> tonight on Hilads.</p>`
+    : ''
+
+  const evergreen = isBar
+    ? `<section><h2>About this venue</h2><p>${htmlEscape(v.name)} is a bar in ${htmlEscape(city)}. Hilads shows you who's heading there tonight and other places nearby with the same energy.</p>${cityLink}</section>`
+    : `<section><h2>About this venue</h2><p>${htmlEscape(v.name)} is a coffee shop in ${htmlEscape(city)}. Hilads is the easy way to find people to grab a coffee with — locals and travelers, no awkward profile-swiping.</p>${cityLink}</section>`
+
+  return [
+    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
+    `<main class="ssr-main">`,
+    breadcrumb,
+    `<h1>${htmlEscape(v.name)}</h1>`,
+    catLine,
+    addrLine,
+    hoursLine,
+    relatedSection,
+    evergreen,
+    `</main>`,
+  ].filter(Boolean).join('\n')
 }
 
 function composeBreadcrumb(items) {
@@ -720,6 +1005,19 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
             citySlug:               data.cityName ? cityToSlug(data.cityName) : undefined,
           }
           jsonLd = composeEventJsonLd(augmented, meta.url)
+
+          // Body: H1 + when/where/host + related events in the same city.
+          // Fetch related upcoming in parallel; best-effort, body still
+          // renders without it.
+          let otherEvents = []
+          if (data?.event?.channel_id) {
+            const otherData = await fetchWithTimeout(
+              `${API_BASE}/api/v1/channels/${encodeURIComponent(data.event.channel_id)}/events/upcoming?days=7`,
+              API_TIMEOUT_MS,
+            )
+            otherEvents = Array.isArray(otherData?.events) ? otherData.events : []
+          }
+          bodyHtml = composeEventBody(data, otherEvents)
         }
       }
     } else if (type === 'venue' && typeof id === 'string') {
@@ -749,6 +1047,17 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         if (meta) {
           cacheMaxAge = 3600                 // 1 h — venue info changes rarely
           jsonLd = composeVenueJsonLd(data, meta.url)
+
+          // Body: address/hours + related venues in the same city
+          let otherVenues = []
+          if (data?.venue?.city?.slug) {
+            const otherData = await fetchWithTimeout(
+              `${API_BASE}/api/v1/cities/${encodeURIComponent(data.venue.city.slug)}/venues`,
+              API_TIMEOUT_MS,
+            )
+            otherVenues = Array.isArray(otherData?.venues) ? otherData.venues : []
+          }
+          bodyHtml = composeVenueBody(data, otherVenues)
         }
       }
     } else if (type === 'city' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
