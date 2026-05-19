@@ -344,33 +344,68 @@ function composeVenueMeta(payload, canonicalPath, venueId) {
   }
 }
 
-function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0) {
-  // Backend shape: { channelId, city, country, timezone, slug }
-  if (!payload?.city) return null
-  const city = payload.city
+// Pick the timeframe phrase for a city based on its local hour + day of week.
+// Weekend windows (Fri 18+, Sat <18, Sun <18) override the time-of-day rule.
+// Sun 18+ pivots to "This week" (looking ahead to Monday onward).
+// Falls back to "Today" if the timezone is malformed.
+function cityTimeframe(timezone) {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone || 'UTC',
+      hour:     'numeric',
+      hour12:   false,
+      weekday:  'short',
+    }).formatToParts(new Date())
+    const hour = parseInt(parts.find(p => p.type === 'hour').value, 10)
+    const day  = parts.find(p => p.type === 'weekday').value  // 'Mon'..'Sun'
 
-  // Title + description adapt to actual event volume so we don't promise
-  // activity that doesn't exist (search-intent match + honest snippets).
-  let title, description
-  if (upcomingCount >= 20) {
-    title       = `Things to do in ${city} this week · ${upcomingCount} events`
-    description = `${upcomingCount} events, meetups, and local hangouts in ${city}. See who's going, join in one tap. Real-time, no sign-up.`
-  } else if (upcomingCount >= 5) {
-    title       = `What's happening in ${city} · Events, meetups, hangouts`
-    description = `Live list of ${upcomingCount} upcoming events in ${city}. Meet locals and travelers — join any event in one tap.`
-  } else if (upcomingCount >= 1) {
-    title       = `${city} events & meetups · Find people to hang out with`
-    description = `${upcomingCount === 1 ? '1 event' : `${upcomingCount} events`} coming up in ${city} on Hilads. Or create your own and bring the city out.`
-  } else {
-    title       = `${city} · Meet travelers and locals on Hilads`
-    description = `${city} is on Hilads. See who's around, browse venues, or create the first event in your city. Real-time, no sign-up.`
+    if (day === 'Fri' && hour >= 18) return 'This weekend'
+    if (day === 'Sat' && hour <  18) return 'This weekend'
+    if (day === 'Sun' && hour <  18) return 'This weekend'
+    if (day === 'Sun' && hour >= 18) return 'This week'
+
+    if (hour >= 2  && hour <= 4 ) return 'Tomorrow'
+    if (hour >= 5  && hour <= 11) return 'Today'
+    if (hour >= 12 && hour <= 17) return 'This afternoon & tonight'
+    return 'Tonight'  // 18-23 or 0-1
+  } catch {
+    return 'Today'
   }
+}
+
+// City meta tags. The title and description are intent-matched to "what's
+// happening in X" queries (events + meetups), not the vague "see who's
+// around" copy we used to ship. Three description tiers based on actual
+// event volume; the ≥30 tier exposes the count as social proof. Timeframe
+// prefix in the title reflects the city's local hour + day of week so the
+// snippet feels live across time zones. Returns {noindex:true} for cities
+// with literally zero indexable content (no events AND no venues).
+function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0) {
+  if (!payload?.city) return null
+  const city      = payload.city
+  const timeframe = cityTimeframe(payload.timezone)
+  const title     = `${timeframe} in ${city} — events, meetups & locals to meet | Hilads`
+
+  let description
+  if (upcomingCount >= 30) {
+    description = `Join real events in ${city} — meetups, dinners, and rooftop hangouts with locals and travelers. Browse ${upcomingCount}+ events tonight & this week. No sign-up needed.`
+  } else if (upcomingCount >= 10) {
+    description = `Join real events in ${city} — meetups, dinners, and hangouts with locals and travelers. Discover upcoming events this week. No sign-up needed.`
+  } else {
+    description = `Discover meetups and events in ${city} — connect with locals and travelers, join hangouts, or create your own. No sign-up needed to browse.`
+  }
+
+  // noindex only when there's truly nothing of substance: zero upcoming
+  // events AND zero seeded venues. Cities with venues still have useful
+  // pages (venue showcase + internal links), so they stay indexable.
+  const noindex = upcomingCount === 0 && venueCount === 0
 
   return {
     title,
     description,
-    url:         `${SITE_BASE}${canonicalPath}`,
-    image:       `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(citySlug)}`,
+    url:     `${SITE_BASE}${canonicalPath}`,
+    image:   `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(citySlug)}`,
+    noindex,
   }
 }
 
@@ -1011,6 +1046,17 @@ function injectJsonLd(shell, jsonLd) {
   return shell.replace(/<\/head>/i, tag)
 }
 
+// Inject a robots noindex directive into <head>. Used for cities with zero
+// upcoming events AND zero venues — genuinely empty pages that shouldn't
+// dilute the site's quality signal in Google's index. The shell has no
+// pre-existing robots tag so we always insert (rather than replace).
+function injectRobotsNoindex(shell) {
+  return shell.replace(
+    /<\/head>/i,
+    '<meta name="robots" content="noindex" />\n  </head>',
+  )
+}
+
 // Inject SSR body content inside <div id="root"> before the <noscript>
 // fallback. React's createRoot().render() overwrites #root's children on
 // mount, so humans only see this for the cold-load window (LCP win); Googlebot
@@ -1277,7 +1323,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         const venues        = Array.isArray(venuesData?.venues) ? venuesData.venues : []
         const upcomingCount = upcoming.length
 
-        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount)
+        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length)
         jsonLd = composeCityJsonLd(cityData, meta.url, upcoming)
         bodyHtml = composeCityBody(cityData, upcoming, venues)
       }
@@ -1289,9 +1335,10 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
   }
 
   let html = shell
-  if (meta)     html = injectMeta(html,   meta)
-  if (jsonLd)   html = injectJsonLd(html, jsonLd)
-  if (bodyHtml) html = injectBody(html,   bodyHtml)
+  if (meta)         html = injectMeta(html, meta)
+  if (meta?.noindex) html = injectRobotsNoindex(html)
+  if (jsonLd)       html = injectJsonLd(html, jsonLd)
+  if (bodyHtml)     html = injectBody(html,   bodyHtml)
 
   res.statusCode = 200
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
