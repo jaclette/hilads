@@ -636,11 +636,12 @@ function flagEmoji(cc) {
     .join('')
 }
 
-function cityH1(city, count) {
-  if (count >= 20) return `Things to do in ${city} this week`
-  if (count >= 5)  return `What's happening in ${city}`
-  if (count >= 1)  return `${city} events & meetups`
-  return `${city} on Hilads`
+// H1 mirrors the title's leading phrase so the searcher's "events in X"
+// query keeps reading consistently from SERP → page. Timeframe-led, same
+// timezone-aware logic as composeCityMeta. Branded suffix dropped — the
+// title's "| Hilads" is enough; H1 should stay topical.
+function cityH1(city, timeframe) {
+  return `${timeframe} in ${city}`
 }
 
 // Country-name resolver (ISO-2 → full English name) via Intl, with a small
@@ -889,11 +890,12 @@ function composeCityBody(payload, upcomingEvents, venues) {
 
   const citySlug = cityToSlug(city)
   const categoriesSection = categoryLinksHtml(city, citySlug, events, venueList)
+  const timeframe = cityTimeframe(payload.timezone)
 
   return [
     `<style>${SSR_CITY_STYLES}</style>`,
     `<main class="ssr-main">`,
-    `<h1>${htmlEscape(cityH1(city, eventCount))}</h1>`,
+    `<h1>${htmlEscape(cityH1(city, timeframe))}</h1>`,
     `<p class="ssr-intro">${intro}</p>`,
     signalsBlock,
     eventsSection,
