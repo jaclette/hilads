@@ -44,6 +44,7 @@ function RootLayoutInner() {
   console.log('[layout] RootLayoutInner rendered');
   const { booting, bootError, joined, account, city, sessionId, identity, setAccount } = useApp();
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
+  const [eulaError, setEulaError] = useState<string | null>(null);
 
   // Apple G1.2 — registered users created before the moderation update have
   // a NULL eula_accepted_at on their record. Show a blocking modal until they
@@ -53,15 +54,28 @@ function RootLayoutInner() {
 
   async function handleAcceptEula() {
     console.log('[eula] handleAcceptEula entered');
+    setEulaError(null);          // clear any prior error on retry
     setEulaSubmitting(true);
     try {
       const { user } = await acceptEula();
       console.log('[eula] api ok — user.eula_accepted_at =', user?.eula_accepted_at ?? 'null');
-      setAccount(user);
+      // Guard: if the API somehow returns a user without the timestamp, the
+      // modal would silently stay up forever. Treat that as an error too.
+      if (!user?.eula_accepted_at) {
+        throw new Error('Acceptance did not register. Please try again.');
+      }
+      setAccount(user);          // eula_accepted_at now set → showEulaModal flips false → modal hides
     } catch (err) {
-      console.warn('[eula] api FAILED —', err instanceof Error ? err.message : String(err));
-      // Network error — leave modal up so the user can retry. The button
-      // returns to its idle state via finally below.
+      // Surface the failure instead of leaving the user staring at a dead
+      // button. The most common cause is a network/timeout on the POST; the
+      // user can tap "I agree" again to retry.
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn('[eula] api FAILED —', msg);
+      setEulaError(
+        msg.includes('Network') || msg.includes('timeout') || msg.includes('aborted')
+          ? "Couldn't reach Hilads. Check your connection and tap I agree again."
+          : "Something went wrong accepting the terms. Please tap I agree again.",
+      );
     } finally {
       setEulaSubmitting(false);
     }
@@ -156,6 +170,7 @@ function RootLayoutInner() {
       <EulaPromptModal
         visible={showEulaModal}
         loading={eulaSubmitting}
+        error={eulaError}
         onAccept={handleAcceptEula}
       />
     </>

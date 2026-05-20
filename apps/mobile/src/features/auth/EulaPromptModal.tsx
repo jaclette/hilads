@@ -93,10 +93,11 @@ export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
 interface ModalProps {
   visible:  boolean;
   loading?: boolean;
+  error?:   string | null;
   onAccept: () => void;
 }
 
-export function EulaPromptModal({ visible, loading, onAccept }: ModalProps) {
+export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProps) {
   // Plain absolutely-positioned overlay rather than React Native's <Modal>.
   // The native <Modal transparent> on iPad in iPhone-compat mode renders in
   // a UIWindow that doesn't extend over the tab bar AND has flaky touch
@@ -123,6 +124,10 @@ export function EulaPromptModal({ visible, loading, onAccept }: ModalProps) {
         </Text>
 
         <EulaCopyBlock />
+
+        {/* Failure feedback — without this, a failed/hung accept call leaves
+            the user staring at a button that "does nothing". */}
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         {/* Pressable instead of TouchableOpacity — RN's newer primitive has
             more reliable hit-testing inside overlays on iOS 26 / iPad. */}
@@ -240,6 +245,11 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.sm,
     color:      Colors.muted,
     lineHeight: 20,
+  },
+  errorText: {
+    fontSize:   FontSizes.sm,
+    color:      '#ff6b6b',
+    lineHeight: 18,
   },
   acceptBtn: {
     backgroundColor: Colors.accent,
