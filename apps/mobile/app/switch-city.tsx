@@ -132,7 +132,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 
 export default function SwitchCityScreen() {
   const router                                              = useRouter();
-  const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity } = useApp();
+  const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity, setJoined } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   const [cities,        setCities]        = useState<City[]>([]);  // ranked top-10 (filter mode)
   const [allCities,     setAllCities]     = useState<City[]>([]);  // all cities unranked (search mode)
@@ -228,7 +228,21 @@ export default function SwitchCityScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
-          onPress={() => router.back()}
+          onPress={() => {
+            // The landing's "Browse cities" navigates here with router.replace
+            // (+ setJoined(true)), so there's often no history to pop. Fall
+            // back gracefully instead of dead-ending:
+            //   - history exists        → normal back
+            //   - no city joined yet    → return to the landing (setJoined(false))
+            //   - already in a city     → go to the city chat
+            if (router.canGoBack()) { router.back(); return; }
+            if (!activeCity) {
+              setJoined(false);
+              router.replace('/(tabs)/now');
+            } else {
+              router.replace('/(tabs)/chat');
+            }
+          }}
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
