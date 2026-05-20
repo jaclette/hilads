@@ -445,10 +445,18 @@ export function useAppBoot(): Result {
               }
             });
         } else {
-          // New user: release UI immediately → LandingScreen shows + geo starts
-          console.log('[boot] new user → releasing UI + starting geo');
-          setBooting(false);
-          startGeo();
+          // No saved city. Wait for the auth check before releasing the UI so a
+          // logged-in user (valid token, but no city after e.g. a reinstall)
+          // doesn't flash the guest LandingScreen before _layout redirects them
+          // to /switch-city. authPromise always resolves (it has its own
+          // .catch), and for guests it settles almost instantly (no token → no
+          // authMe round-trip), so the added wait is negligible for them.
+          authPromise.then(() => {
+            if (cancelled) return;
+            console.log('[boot] no saved city → releasing UI + starting geo');
+            setBooting(false);
+            startGeo();
+          });
         }
 
         return () => { offConnected(); offDisconnected(); };
