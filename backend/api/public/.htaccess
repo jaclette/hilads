@@ -1,5 +1,14 @@
 RewriteEngine On
 
+# Pass the Authorization header through to PHP. Apache does NOT expose it in
+# $_SERVER by default (it's not a CGI-safe variable), so Bearer-token auth
+# silently fails — $_SERVER['HTTP_AUTHORIZATION'] is empty. This breaks iOS
+# clients in particular: NSURLSession drops the manually-set Cookie header
+# unpredictably (see apps/mobile/src/api/client.ts), the client falls back to
+# Authorization: Bearer, and without this rule the backend can't read it → 401.
+# Copies the incoming header into an env var PHP reads via $_SERVER.
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 # Health check — bypass the catch-all completely, serve health.php directly.
 # This fires before any RewriteCond so the response is instant.
 RewriteRule ^health$ health.php [L]

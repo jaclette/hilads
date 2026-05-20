@@ -142,6 +142,35 @@ class AuthService
         ]);
     }
 
+    /**
+     * Extract a Bearer token from the request, checking every place Apache /
+     * PHP-FPM might expose the Authorization header:
+     *   1. HTTP_AUTHORIZATION         — populated by the .htaccess rewrite
+     *   2. REDIRECT_HTTP_AUTHORIZATION — same, after an internal rewrite to index.php
+     *   3. getallheaders()            — Apache's raw header table (last resort)
+     * Returns the 64-hex token or null.
+     */
+    private static function bearerToken(): ?string
+    {
+        $auth = $_SERVER['HTTP_AUTHORIZATION']
+            ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+            ?? '';
+
+        if ($auth === '' && function_exists('getallheaders')) {
+            foreach (getallheaders() as $key => $value) {
+                if (strcasecmp($key, 'Authorization') === 0) {
+                    $auth = $value;
+                    break;
+                }
+            }
+        }
+
+        if (is_string($auth) && str_starts_with($auth, 'Bearer ')) {
+            return substr($auth, 7);
+        }
+        return null;
+    }
+
     public static function currentUser(): ?array
     {
         // Request-level cache: the token never changes within a single HTTP request,
@@ -153,12 +182,13 @@ class AuthService
 
         $token = $_COOKIE['hilads_token'] ?? null;
 
-        // Mobile clients send the token as a Bearer header when cookies are unavailable
+        // Mobile clients send the token as a Bearer header when cookies are
+        // unavailable (iOS NSURLSession drops the manually-set Cookie header
+        // unpredictably). Read it robustly: Apache exposes the Authorization
+        // header under different keys depending on config / rewrite timing, and
+        // some setups only expose it via getallheaders().
         if ($token === null) {
-            $auth = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-            if (str_starts_with($auth, 'Bearer ')) {
-                $token = substr($auth, 7);
-            }
+            $token = self::bearerToken();
         }
 
         if ($token === null || !preg_match('/^[a-f0-9]{64}$/', $token)) {
