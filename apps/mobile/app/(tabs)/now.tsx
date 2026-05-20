@@ -338,42 +338,11 @@ export default function NowScreen() {
     return off;
   }, [city]);
 
-  // Still booting or waiting for city — keep showing spinner.
-  if (!city && (booting || loading)) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Boot finished but user has no city.
-  if (!city && !booting && !loading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.appHeaderWrap}>
-          <AppHeader />
-        </View>
-        <View style={styles.header}>
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Now</Text>
-          </View>
-        </View>
-        <View style={styles.empty}>
-          <Text style={styles.emptyEmoji}>🌍</Text>
-          <Text style={styles.emptyTitle}>No city selected</Text>
-          <Text style={styles.emptySub}>Pick a city to see what's happening.</Text>
-          <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/switch-city' as never)} activeOpacity={0.85}>
-            <Text style={styles.emptyBtnText}>Browse cities</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Apply filter then build flat list data — memoized to avoid recreating arrays on every render.
+  // Filter + flat-list memos. These MUST run on every render, so they live
+  // ABOVE the early returns below — otherwise when `city` flips null→set the
+  // hook count changes and React throws "Rendered more hooks than during the
+  // previous render." (They depend only on items/filter/blockedSet/publicEvents,
+  // all defined regardless of city, so they're safe to compute even with no city.)
   const filteredItems = useMemo(() => {
     const base = filter === 'events' ? items.filter(i => i.kind === 'event')
                : filter === 'topics' ? items.filter(i => i.kind === 'topic')
@@ -415,6 +384,41 @@ export default function NowScreen() {
     },
     [filteredItems, publicEvents, filter],
   );
+
+  // Still booting or waiting for city — keep showing spinner.
+  if (!city && (booting || loading)) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.center}>
+          <ActivityIndicator color={Colors.accent} size="large" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Boot finished but user has no city.
+  if (!city && !booting && !loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.appHeaderWrap}>
+          <AppHeader />
+        </View>
+        <View style={styles.header}>
+          <View style={styles.headerCenter}>
+            <Text style={styles.headerTitle}>Now</Text>
+          </View>
+        </View>
+        <View style={styles.empty}>
+          <Text style={styles.emptyEmoji}>🌍</Text>
+          <Text style={styles.emptyTitle}>No city selected</Text>
+          <Text style={styles.emptySub}>Pick a city to see what's happening.</Text>
+          <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/switch-city' as never)} activeOpacity={0.85}>
+            <Text style={styles.emptyBtnText}>Browse cities</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
