@@ -2077,9 +2077,17 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
         Response::json(['error' => 'Invalid eventId'], 400);
     }
 
-    $event = EventRepository::findById($eventId);
+    // Use findByIdAnyState so PAST events keep returning 200 (the "Past event"
+    // view) instead of 404ing out of Google's index. The state branches:
+    //   null              → 404 (never existed)
+    //   status 'deleted'  → 410 Gone (moderated/removed — deindex permanently)
+    //   else              → 200 (past, current, or future; carries is_past)
+    $event = EventRepository::findByIdAnyState($eventId);
     if ($event === null) {
-        Response::json(['error' => 'Event not found or expired'], 404);
+        Response::json(['error' => 'Event not found'], 404);
+    }
+    if (($event['event_status'] ?? 'scheduled') === 'deleted') {
+        Response::json(['error' => 'Event removed'], 410);
     }
 
     // Block check (Apple G1.2): hide the event if the viewer has blocked the

@@ -35,6 +35,7 @@ class EventRepository
             es.interval_days,
             es.source                                   AS series_source,
             es.source_key                               AS series_source_key,
+            c.status                                    AS channel_status,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
             EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
             EXTRACT(EPOCH FROM c.created_at)::INTEGER   AS created_at
@@ -132,6 +133,16 @@ class EventRepository
             'external_url'     => $row['external_url'],
             'series_id'        => $row['series_id'],
             'recurrence_label' => $recurrenceLabel,
+            // Past = the event's end time has passed. The detail endpoint uses
+            // this to render the "Past event" view (badge, disabled RSVP). Note
+            // soft-deleted events also have expires_at in the past, but the
+            // route distinguishes them via event_status before reaching here.
+            'is_past'          => isset($row['expires_at']) && (int) $row['expires_at'] < time(),
+            // 'scheduled' | 'deleted'. SELECT_CITY has no channels join → no
+            // channel_status column → default 'scheduled' (those are listing
+            // queries that never surface deleted rows anyway).
+            'event_status'     => (($row['channel_status'] ?? 'active') === 'deleted')
+                                    ? 'deleted' : 'scheduled',
             // True when this event is actually an occurrence of a seeded venue
             // (coffee shop / bar). The prerender uses this to 301 occurrence
             // URLs to the canonical /venue/<slug>-<series_id> page.
@@ -475,6 +486,23 @@ class EventRepository
             WHERE c.id        = :id
               AND ce.expires_at > now()
         ");
+        $stmt->execute(['id' => $eventId]);
+        $row = $stmt->fetch();
+        return $row ? self::format($row) : null;
+    }
+
+    /**
+     * Look up an event in ANY state — past, current, future, or soft-deleted —
+     * so the public detail page can keep serving past events (200 OK + "Past
+     * event" view) instead of 404ing them out of Google's index.
+     *
+     * Callers MUST inspect event_status: 'deleted' rows should be served as
+     * 410 Gone, everything else as 200. Use findById (not this) for any
+     * action endpoint where past events must stay blocked (RSVP, messaging).
+     */
+    public static function findByIdAnyState(string $eventId): ?array
+    {
+        $stmt = Database::pdo()->prepare(self::SELECT . " WHERE c.id = :id");
         $stmt->execute(['id' => $eventId]);
         $row = $stmt->fetch();
         return $row ? self::format($row) : null;
