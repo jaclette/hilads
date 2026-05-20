@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import { acceptEula } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -118,6 +118,17 @@ function RootLayoutInner() {
     if (!booting) SplashScreen.hideAsync();
   }, [booting]);
 
+  // Logged-in users with no city skip the guest landing entirely and go
+  // straight to the city picker. (The landing overlay below is gated on
+  // !account so it never covers /switch-city for them.) Guests keep seeing
+  // the landing. Fires once when the state settles post-boot; deps don't
+  // change while sitting on /switch-city, so there's no redirect loop.
+  useEffect(() => {
+    if (!booting && !joined && account && !city) {
+      router.replace('/switch-city');
+    }
+  }, [booting, joined, account, city]);
+
   useEffect(() => {
     if (!booting && !bootError && joined) track('app_open');
   }, [booting, joined]);
@@ -161,8 +172,10 @@ function RootLayoutInner() {
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
           </Stack>
-          {/* LandingScreen overlays until user joins a city */}
-          {!joined && <LandingScreen onRetryGeo={retryGeo} />}
+          {/* LandingScreen overlays until user joins a city — guests only.
+              Logged-in users skip it (routed to /switch-city by the effect
+              above) so they never see the "anonymous · instant access" UI. */}
+          {!joined && !account && <LandingScreen onRetryGeo={retryGeo} />}
         </>
       )}
 
