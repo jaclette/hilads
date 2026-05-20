@@ -180,18 +180,29 @@ class AuthService
         }
         self::$resolved = true;
 
-        $token = $_COOKIE['hilads_token'] ?? null;
-
-        // Mobile clients send the token as a Bearer header when cookies are
-        // unavailable (iOS NSURLSession drops the manually-set Cookie header
-        // unpredictably). Read it robustly: Apache exposes the Authorization
-        // header under different keys depending on config / rewrite timing, and
-        // some setups only expose it via getallheaders().
-        if ($token === null) {
-            $token = self::bearerToken();
+        // Collect EVERY token the client might have sent — cookie AND bearer —
+        // and try each against the session table, returning the first that
+        // resolves to a live session.
+        //
+        // Why both, not cookie-first-else-bearer: on iOS, NSURLSession keeps
+        // its own cookie jar and sends a stale `hilads_token` from a previous
+        // (logged-out / expired) session. That cookie is a well-formed 64-hex
+        // string, so the old "cookie ?? bearer" logic latched onto it, the
+        // session lookup failed, and we never tried the valid Bearer token the
+        // app also sent → spurious 401 on every authenticated call. Trying both
+        // makes a stale cookie harmless as long as a valid Bearer is present.
+        $candidates = [];
+        $cookieTok = $_COOKIE['hilads_token'] ?? null;
+        if (is_string($cookieTok) && preg_match('/^[a-f0-9]{64}$/', $cookieTok)) {
+            $candidates[] = $cookieTok;
+        }
+        $bearerTok = self::bearerToken();
+        if (is_string($bearerTok) && preg_match('/^[a-f0-9]{64}$/', $bearerTok)
+            && !in_array($bearerTok, $candidates, true)) {
+            $candidates[] = $bearerTok;
         }
 
-        if ($token === null || !preg_match('/^[a-f0-9]{64}$/', $token)) {
+        if (empty($candidates)) {
             self::$cached = null;
             return null;
         }
@@ -209,11 +220,18 @@ class AuthService
             JOIN users u ON u.id = s.user_id
             WHERE s.id = ? AND s.expires_at > now() AND u.deleted_at IS NULL
         ");
-        $stmt->execute([$token]);
-        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        self::$cached = $row ?: null;
-        return self::$cached;
+        foreach ($candidates as $token) {
+            $stmt->execute([$token]);
+            $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($row) {
+                self::$cached = $row;
+                return self::$cached;
+            }
+        }
+
+        self::$cached = null;
+        return null;
     }
 
     /** Returns the current user or sends a 401 and exits. */
