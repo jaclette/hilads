@@ -18,7 +18,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, KeyboardAvoidingView, Platform,
+  ActivityIndicator, Platform,
   ScrollView, Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -273,14 +273,12 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
         pointerEvents="none"
       />
 
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      >
+      <View style={styles.flex}>
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          automaticallyAdjustKeyboardInsets
         >
 
           {/* ── ob-card ── */}
@@ -519,7 +517,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
           </Animated.View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
