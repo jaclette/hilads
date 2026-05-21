@@ -101,33 +101,48 @@ $selectedIds    = isset($opts['cities'])
 // ── Places fetcher ────────────────────────────────────────────────────────────
 
 /**
- * Fetch nearby places from Google Places Nearby Search API.
+ * Fetch nearby places from the Places API (New) searchNearby endpoint.
  *
- * @param  string $apiKey  Google Places API key
+ * Uses POST https://places.googleapis.com/v1/places:searchNearby with an
+ * X-Goog-FieldMask. The legacy nearbysearch endpoint is no longer enable-able
+ * on new Google Cloud projects, so we target the New API. Field mask is kept to
+ * id + displayName + formattedAddress (Nearby Search "Pro" SKU, 5k free/month)
+ * since that's all the seeder needs.
+ *
+ * @param  string $apiKey  Google Maps API key (Places API (New) enabled)
  * @param  float  $lat     City latitude
  * @param  float  $lng     City longitude
- * @param  string $type    Google place type ('bar', 'cafe')
- * @param  int    $limit   Max results to return
+ * @param  string $type    Place type ('bar', 'cafe')
+ * @param  int    $limit   Max results to return (capped at 20 by the API)
  * @return array           Array of normalized place objects
  */
 function fetchNearbyPlaces(string $apiKey, float $lat, float $lng, string $type, int $limit): array
 {
-    $params = http_build_query([
-        'location'  => "{$lat},{$lng}",
-        'radius'    => 5000,        // 5 km radius
-        'type'      => $type,
-        'rankby'    => 'prominence', // most well-known first
-        'key'       => $apiKey,
+    $url  = 'https://places.googleapis.com/v1/places:searchNearby';
+    $body = json_encode([
+        'includedTypes'       => [$type],
+        'maxResultCount'      => min(max($limit, 1), 20),
+        'rankPreference'      => 'POPULARITY', // most prominent first (legacy "prominence" equivalent)
+        'locationRestriction' => [
+            'circle' => [
+                'center' => ['latitude' => $lat, 'longitude' => $lng],
+                'radius' => 5000.0, // 5 km
+            ],
+        ],
     ]);
-
-    $url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?{$params}";
 
     $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_TIMEOUT        => 8,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => $body,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'X-Goog-Api-Key: ' . $apiKey,
+            'X-Goog-FieldMask: places.id,places.displayName,places.formattedAddress',
+        ],
+        CURLOPT_TIMEOUT        => 10,
         CURLOPT_CONNECTTIMEOUT => 5,
-        CURLOPT_FOLLOWLOCATION => false,
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_USERAGENT      => 'hilads-seed/1.0',
     ]);
@@ -142,6 +157,7 @@ function fetchNearbyPlaces(string $apiKey, float $lat, float $lng, string $type,
     }
 
     if ($httpCode !== 200) {
+        // New API returns a JSON error body with error.message — surface it.
         throw new RuntimeException("Places API returned HTTP {$httpCode}: {$response}");
     }
 
@@ -151,23 +167,19 @@ function fetchNearbyPlaces(string $apiKey, float $lat, float $lng, string $type,
         throw new RuntimeException("Places API returned invalid JSON");
     }
 
-    $status = $data['status'] ?? 'UNKNOWN';
-    if (!in_array($status, ['OK', 'ZERO_RESULTS'], true)) {
-        throw new RuntimeException("Places API error: {$status} — " . ($data['error_message'] ?? ''));
-    }
-
+    // Zero results → the API returns an empty object (no 'places' key), not an error.
     $places = [];
-    foreach (array_slice($data['results'] ?? [], 0, $limit) as $result) {
-        $placeId = $result['place_id'] ?? null;
-        $name    = $result['name']     ?? null;
+    foreach (array_slice($data['places'] ?? [], 0, $limit) as $result) {
+        $placeId = $result['id']                  ?? null;
+        $name    = $result['displayName']['text'] ?? null;
 
         if (empty($placeId) || empty($name)) continue;
 
         $places[] = [
             'place_id' => $placeId,
             'name'     => $name,
-            'address'  => $result['vicinity'] ?? null,
-            'rating'   => $result['rating']   ?? null,
+            'address'  => $result['formattedAddress'] ?? null,
+            'rating'   => null, // not requested in the field mask (keeps the SKU cheap; unused downstream)
         ];
     }
 
