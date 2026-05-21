@@ -144,18 +144,49 @@ async function main() {
     }),
   ]
 
-  // De-duplicate by slug (Cities are unique by name in practice, but the API
+  // Only index-worthy cities belong in the sitemap, using the SAME criterion
+  // the prerender uses for the robots tag: indexable iff the city has chat
+  // messages OR active events OR seeded venues. Listing a noindex city here
+  // would contradict its robots meta. messageCount / eventCount / lastActivityAt
+  // come straight from /channels; venue presence is derived from the venue list.
+  const venueCitySlugs = new Set(
+    venues
+      .map(v => (v?.city_name ? cityToSlug(v.city_name) : null))
+      .filter(Boolean),
+  )
+
+  // De-duplicate by slug (cities are unique by name in practice, but the API
   // can briefly return duplicates during DB migrations — defensive).
   const seen = new Set()
+  const indexableCities = []   // { slug, lastmod }
   for (const ch of channels) {
     const name = ch?.city
     if (!name || typeof name !== 'string') continue
     const slug = cityToSlug(name)
     if (!slug || seen.has(slug)) continue
     seen.add(slug)
+
+    const messageCount = Number(ch?.messageCount) || 0
+    const eventCount   = Number(ch?.eventCount)   || 0
+    const indexable    = messageCount > 0 || eventCount > 0 || venueCitySlugs.has(slug)
+    if (!indexable) continue   // noindex city — keep it out of the sitemap
+
+    // lastmod reflects a real change: the city's last activity (most recent
+    // message/event). For a city that just crossed 0→1 message that IS the
+    // noindex→indexable transition date; ongoing chat keeps bumping it. Fall
+    // back to the deploy date only when there's no activity timestamp (e.g.
+    // venue-only inclusion). Never hardcoded, never blindly "now".
+    const lastmod = Number.isFinite(ch?.lastActivityAt) && ch.lastActivityAt > 0
+      ? new Date(ch.lastActivityAt * 1000).toISOString().slice(0, 10)
+      : today
+
+    indexableCities.push({ slug, lastmod })
+  }
+
+  for (const c of indexableCities) {
     entries.push(urlEntry({
-      loc:        `${BASE_URL}/city/${slug}`,
-      lastmod:    today,
+      loc:        `${BASE_URL}/city/${c.slug}`,
+      lastmod:    c.lastmod,
       changefreq: 'hourly',     // event lists turn over fast
       priority:   '0.8',
     }))
@@ -206,10 +237,9 @@ async function main() {
     const urls = [
       `${BASE_URL}/`,
       `${BASE_URL}/cities`,
-      ...channels.map(ch => {
-        const slug = ch?.city ? cityToSlug(ch.city) : null
-        return slug ? `${BASE_URL}/city/${slug}` : null
-      }).filter(Boolean),
+      // Same indexable set as the sitemap — don't ping search engines about
+      // cities we're telling them not to index.
+      ...indexableCities.map(c => `${BASE_URL}/city/${c.slug}`),
       ...categoryPairs.map(p => `${BASE_URL}/city/${p.city_slug}/${p.category}`),
       ...venues.map(v => v?.id && v?.name ? `${BASE_URL}/venue/${venueSlug(v.name, v.id)}` : null).filter(Boolean),
     ].slice(0, 10000)
