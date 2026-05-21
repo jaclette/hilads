@@ -1740,12 +1740,23 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
         $citySlug = preg_replace('/[^a-z0-9]+/', '-', strtolower($city['name']));
         $citySlug = trim($citySlug, '-');
         if ($citySlug === $slug) {
+            // Chat volume drives SEO indexability (consumed by the prerender's
+            // robots logic). City chat messages are keyed by the 'city_<id>'
+            // channel; count every row (text/image + system) — a city with any
+            // activity at all is worth indexing.
+            $stmt = Database::pdo()->prepare(
+                "SELECT COUNT(*) FROM messages WHERE channel_id = ?"
+            );
+            $stmt->execute(['city_' . $city['id']]);
+            $messageCount = (int) $stmt->fetchColumn();
+
             Response::json([
-                'channelId' => $city['id'],
-                'city'      => $city['name'],
-                'country'   => $city['country'] ?? null,
-                'timezone'  => $city['timezone'],
-                'slug'      => $citySlug,
+                'channelId'    => $city['id'],
+                'city'         => $city['name'],
+                'country'      => $city['country'] ?? null,
+                'timezone'     => $city['timezone'],
+                'slug'         => $citySlug,
+                'messageCount' => $messageCount,
             ]);
         }
     }

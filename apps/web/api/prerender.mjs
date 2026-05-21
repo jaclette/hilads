@@ -417,8 +417,8 @@ function cityTimeframe(timezone) {
 // event volume; the ≥30 tier exposes the count as social proof. Timeframe
 // prefix in the title reflects the city's local hour + day of week so the
 // snippet feels live across time zones. Returns {noindex:true} for cities
-// with literally zero indexable content (no events AND no venues).
-function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0) {
+// with literally zero indexable content (no events AND no venues AND no chat).
+function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0, messageCount = 0) {
   if (!payload?.city) return null
   const city      = payload.city
   const timeframe = cityTimeframe(payload.timezone)
@@ -434,9 +434,10 @@ function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, ve
   }
 
   // noindex only when there's truly nothing of substance: zero upcoming
-  // events AND zero seeded venues. Cities with venues still have useful
-  // pages (venue showcase + internal links), so they stay indexable.
-  const noindex = upcomingCount === 0 && venueCount === 0
+  // events AND zero seeded venues AND zero chat messages. Any one of these
+  // makes the page worth indexing — events/venues add unique content, and a
+  // city with real chat activity is a live page worth surfacing.
+  const noindex = upcomingCount === 0 && venueCount === 0 && messageCount === 0
 
   return {
     title,
@@ -1102,9 +1103,10 @@ function injectJsonLd(shell, jsonLd) {
 }
 
 // Inject a robots noindex directive into <head>. Used for cities with zero
-// upcoming events AND zero venues — genuinely empty pages that shouldn't
-// dilute the site's quality signal in Google's index. The shell has no
-// pre-existing robots tag so we always insert (rather than replace).
+// upcoming events AND zero venues AND zero chat messages — genuinely empty
+// pages that shouldn't dilute the site's quality signal in Google's index.
+// The shell has no pre-existing robots tag so we always insert (rather than
+// replace).
 function injectRobotsNoindex(shell) {
   return shell.replace(
     /<\/head>/i,
@@ -1388,8 +1390,12 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         const upcoming      = rawUpcoming.filter(ev => !ev.is_venue)
         const venues        = Array.isArray(venuesData?.venues) ? venuesData.venues : []
         const upcomingCount = upcoming.length
+        // messageCount comes from the by-slug payload (same server-side fetch),
+        // so it's present at SSR time — no separate request that could time out
+        // and falsely flip a chatty city to noindex.
+        const messageCount  = Number.isFinite(cityData.messageCount) ? cityData.messageCount : 0
 
-        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length)
+        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length, messageCount)
         jsonLd = composeCityJsonLd(cityData, meta.url, upcoming)
         bodyHtml = composeCityBody(cityData, upcoming, venues)
       }
