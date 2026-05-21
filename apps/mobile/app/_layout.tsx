@@ -41,8 +41,12 @@ console.log('[layout] ── MODULE LOADED ────────────�
 // ── Inner layout (has access to AppContext) ───────────────────────────────────
 
 function RootLayoutInner() {
-  console.log('[layout] RootLayoutInner rendered');
   const { booting, bootError, joined, account, city, sessionId, identity, setAccount } = useApp();
+  // DIAG (shaking repro): logs the exact auth-gate state every render. During
+  // the bug this prints continuously — whichever value flips between lines is
+  // the loop driver. Remove once the loop is identified.
+  console.log('[layout] render | booting=%s joined=%s account=%s city=%s identity.ch=%s',
+    booting, joined, !!account, city?.channelId ?? null, identity?.channelId ?? null);
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
 
@@ -125,6 +129,7 @@ function RootLayoutInner() {
   // change while sitting on /switch-city, so there's no redirect loop.
   useEffect(() => {
     if (!booting && !joined && account && !city) {
+      console.log('[layout] DIAG redirect → /switch-city (logged-in, no city)');
       router.replace('/switch-city');
     }
   }, [booting, joined, account, city]);
