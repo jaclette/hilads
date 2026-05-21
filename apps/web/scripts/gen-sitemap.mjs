@@ -27,6 +27,14 @@ const API_URL     = process.env.SITEMAP_API_URL    || 'https://api.hilads.live/a
 const VENUES_URL  = process.env.SITEMAP_VENUES_URL || 'https://api.hilads.live/api/v1/sitemap/venues'
 const CATS_URL    = process.env.SITEMAP_CATS_URL   || 'https://api.hilads.live/api/v1/sitemap/categories'
 
+// The /venue/<slug>-<id> URL format launched 2026-05-20 (commit fa5a1dc,
+// "venues as LocalBusiness"). Venues were seeded earlier, so their created_at
+// (which the API returns as updated_at) predates the URL change — flooring
+// lastmod at the launch date tells Google the URL actually changed then.
+// Venues created after launch keep their own (newer) date. event_series has no
+// real updated_at column yet; revisit this floor if one is added.
+const VENUE_URL_LAUNCH = process.env.SITEMAP_VENUE_LAUNCH || '2026-05-20'
+
 // IndexNow: pings Bing + Yandex + Naver on every sitemap regeneration.
 // The key file at /<INDEXNOW_KEY>.txt proves domain ownership.
 // Only POSTs when running on Vercel (or with INDEXNOW_SUBMIT=1) to avoid
@@ -208,9 +216,12 @@ async function main() {
   // per venue; we never put per-day occurrence URLs in the sitemap.
   for (const v of venues) {
     if (!v?.id || !v?.name) continue
-    const lastmod = v.updated_at
+    const created = v.updated_at
       ? new Date(v.updated_at * 1000).toISOString().slice(0, 10)
       : today
+    // Floor at the URL-launch date: a March-seeded venue whose URL changed in
+    // May reports the May date; anything newer keeps its own.
+    const lastmod = created > VENUE_URL_LAUNCH ? created : VENUE_URL_LAUNCH
     entries.push(urlEntry({
       loc:        `${BASE_URL}/venue/${venueSlug(v.name, v.id)}`,
       lastmod,
