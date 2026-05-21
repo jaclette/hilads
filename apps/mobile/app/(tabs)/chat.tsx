@@ -14,10 +14,11 @@ import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Platform,
-  TouchableOpacity, Animated,
+  TouchableOpacity, Animated, AppState, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -33,6 +34,8 @@ import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { AppHeader } from '@/features/shell/AppHeader';
+import { MarqueeText } from '@/components/MarqueeText';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
@@ -533,6 +536,17 @@ export default function ChatTab() {
     return w.content.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_: string, dash: string) => dash ? '\u00B7 ' : '').trim();
   }, [messages]);
 
+  // Weather pill marquee gating: scroll only while this tab is focused AND the
+  // app is foregrounded (battery), and never under OS reduce-motion.
+  const isFocused    = useIsFocused();
+  const reduceMotion = useReducedMotion();
+  const [appActive, setAppActive] = useState(() => AppState.currentState === 'active');
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', s => setAppActive(s === 'active'));
+    return () => sub.remove();
+  }, []);
+  const weatherActive = isFocused && appActive;
+
   // Unified feed — weather excluded (shown in header only).
   //
   // Sorted newest-first for the inverted FlatList:
@@ -674,14 +688,21 @@ export default function ChatTab() {
             <TouchableOpacity
               style={[styles.chip, styles.chipWeather]}
               activeOpacity={0.75}
-              onPress={() => { /* TODO: open weather detail view */ }}
+              // Under reduce-motion the text is static + truncated, so make the
+              // pill reveal the full message on tap. (No marquee in that mode.)
+              onPress={() => { if (reduceMotion) Alert.alert('Weather', weatherLabel); }}
               accessibilityLabel={`Current weather: ${weatherLabel}`}
               accessibilityRole="button"
             >
               <Ionicons name="cloud-outline" size={13} color="rgba(255,255,255,0.45)" />
-              <Text style={styles.chipWeatherText} numberOfLines={1} ellipsizeMode="tail">
-                {weatherLabel}
-              </Text>
+              <MarqueeText
+                text={weatherLabel}
+                textStyle={styles.chipWeatherText}
+                style={styles.chipWeatherMarquee}
+                fadeColor="#1a1a1a"
+                active={weatherActive}
+                reduceMotion={reduceMotion}
+              />
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -987,6 +1008,10 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.xs,
     fontWeight: '500',
     color:      Colors.muted,
+    flexShrink: 1,
+  },
+  // Marquee clip window — shrinks to share the row, clips/scrolls long copy.
+  chipWeatherMarquee: {
     flexShrink: 1,
   },
   chipOnline: {
