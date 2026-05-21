@@ -27,24 +27,10 @@ import {
 } from '@/api/notifications';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { avatarColor } from '@/lib/avatarColors';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
 
 type FilterKey = 'all' | 'dms' | 'events';
-
-// ── Avatar palette ────────────────────────────────────────────────────────────
-
-const AVATAR_PALETTE = [
-  '#C24A38', '#B87228', '#3ddc84', '#8B5CF6',
-  '#0EA5E9', '#E879A0', '#F59E0B', '#14B8A6',
-];
-
-function avatarColor(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
-}
 
 // ── Relative timestamp ────────────────────────────────────────────────────────
 

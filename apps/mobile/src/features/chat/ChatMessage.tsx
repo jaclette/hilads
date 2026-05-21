@@ -22,6 +22,7 @@ import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
+import { avatarColor } from '@/lib/avatarColors';
 import { formatSmartTime } from '@/lib/messageTime';
 import type { Message, Badge } from '@/types';
 import { useApp } from '@/context/AppContext';
@@ -124,24 +125,6 @@ const locStyles = StyleSheet.create({
   tapHint:     { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
   tapHintMine: { color: 'rgba(255,255,255,0.65)' },
 });
-
-// ── Avatar palette — mirrors web AVATAR_PALETTES ──────────────────────────────
-
-const AVATAR_PALETTES: [string, string][] = [
-  ['#7c6aff', '#c084fc'],
-  ['#ff6a9f', '#fb7185'],
-  ['#22d3ee', '#38bdf8'],
-  ['#4ade80', '#34d399'],
-  ['#fb923c', '#fbbf24'],
-  ['#f472b6', '#e879f9'],
-  ['#818cf8', '#60a5fa'],
-  ['#2dd4bf', '#a3e635'],
-];
-
-function avatarColors(name: string): [string, string] {
-  const hash = (name ?? '').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length];
-}
 
 // ── System message text — mirrors web JOIN_TEMPLATES exactly ─────────────────
 // Web source: App.jsx JOIN_TEMPLATES — random pick per event.
@@ -506,7 +489,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   }
 
   const isMine  = Boolean(myGuestId && message.guestId === myGuestId);
-  const [c1]    = avatarColors(message.nickname ?? '?');
+  const c1      = avatarColor(message.nickname ?? '?');
   const initial = (message.nickname?.[0] ?? '?').toUpperCase();
   const isSending = message.status === 'sending';
   const isFailed  = message.status === 'failed';

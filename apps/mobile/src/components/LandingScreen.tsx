@@ -29,28 +29,11 @@ import { bootstrapChannel } from '@/api/channels';
 import { fetchCityEvents, fetchPublicCityEvents } from '@/api/events';
 import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
+import { avatarGradient } from '@/lib/avatarColors';
 import { track, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import type { HiladsEvent } from '@/types';
-
-// ── Avatar gradient palette — mirrors web AVATAR_PALETTES ────────────────────
-
-const AVATAR_PALETTES: [string, string][] = [
-  ['#7c6aff', '#c084fc'],
-  ['#ff6a9f', '#fb7185'],
-  ['#22d3ee', '#38bdf8'],
-  ['#4ade80', '#34d399'],
-  ['#fb923c', '#fbbf24'],
-  ['#f472b6', '#e879f9'],
-  ['#818cf8', '#60a5fa'],
-  ['#2dd4bf', '#a3e635'],
-];
-
-function avatarColors(name: string): [string, string] {
-  const hash = name.split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length];
-}
 
 // ── Country code → flag emoji — mirrors web cityFlag() ───────────────────────
 
@@ -205,7 +188,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   const noGeo   = geoState === 'denied' || geoState === 'error';
   const trimmed = nickname.trim();
 
-  const [avatarC1, avatarC2] = avatarColors(trimmed || 'A');
+  const [avatarC1, avatarC2] = avatarGradient(trimmed || 'A');
   const avatarLetter = (trimmed[0] || 'A').toUpperCase();
 
   // ── Actions ──────────────────────────────────────────────────────────────────
@@ -300,14 +283,6 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
               <HiladsIcon size={46} />
               <Text style={styles.logoWordmark}>hilads</Text>
             </View>
-
-            {/* ── ob-sep: fading horizontal rule ── */}
-            <LinearGradient
-              colors={['transparent', 'rgba(255,255,255,0.09)', 'transparent']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.sep}
-            />
 
             {/* ── ob-city-block ── */}
             <View style={styles.cityBlock}>
@@ -475,8 +450,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                 </>
               )}
 
-              {/* ob-hint — web: "// anonymous · instant access" */}
-              <Text style={styles.hint}>// anonymous · instant access</Text>
+              <Text style={styles.hint}>anonymous · instant access</Text>
             </View>
 
             {/* ── jc-auth: divider + Create account / Log in + hint ── */}
@@ -497,7 +471,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     onPress={() => { track('clicked_sign_up'); router.push('/sign-up'); }}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.jcSignupText}>✨ Create account</Text>
+                    <Text style={styles.jcSignupText} numberOfLines={1}>Create account</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -505,7 +479,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     onPress={() => { track('clicked_sign_in'); router.push('/sign-in'); }}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.jcSigninText}>Log in</Text>
+                    <Text style={styles.jcSigninText} numberOfLines={1}>Log in</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -547,29 +521,19 @@ const styles = StyleSheet.create({
     flexGrow:          1,
     alignItems:        'center',
     justifyContent:    'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: 0,
     paddingVertical:   Spacing.xl,
   },
 
-  // ── ob-card ─────────────────────────────────────────────────────────────────
-  // Web: gap:28, padding:36 28 32, bg:rgba(22,18,16,0.9), border:rgba(255,255,255,0.07)
+  // ── Content column ───────────────────────────────────────────────────────────
+  // Native: full-bleed, no card frame — the page background is the only layer.
+  // (Web keeps its centered max-width card; that lives in apps/web, untouched.)
   card: {
-    width:           '100%',
-    maxWidth:        360,
-    backgroundColor: 'rgba(22,18,16,0.9)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.07)',
-    borderRadius:    20,
-    paddingTop:      36,
-    paddingHorizontal: 28,
-    paddingBottom:   32,
-    gap:             28,
-    // Double shadow: outer depth + subtle ring
-    shadowColor:     '#000',
-    shadowOffset:    { width: 0, height: 24 },
-    shadowOpacity:   0.55,
-    shadowRadius:    32,
-    elevation:       24,
+    width:             '100%',
+    paddingTop:        28,
+    paddingHorizontal: 22,
+    paddingBottom:     28,
+    gap:               30,
   },
 
   // ── ob-brand ─────────────────────────────────────────────────────────────────
@@ -589,19 +553,11 @@ const styles = StyleSheet.create({
     lineHeight:    24,
   },
 
-  // ── ob-sep: fading horizontal rule ───────────────────────────────────────────
-  // Web: linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent)
-  sep: {
-    height:        1,
-    marginVertical: 0,   // gap handles spacing
-  },
-
   // ── ob-city-block ────────────────────────────────────────────────────────────
-  // Web: text-align center, gap:6, min-height:60, centered
   cityBlock: {
     alignItems:     'center',
     justifyContent: 'center',
-    gap:            6,
+    gap:            10,
     minHeight:      60,
   },
   // ob-city-name: 2.2rem=35px, weight 800, gradient text (approximated with accent2)
@@ -645,20 +601,20 @@ const styles = StyleSheet.create({
     textAlign:  'center',
   },
 
-  // ob-events-preview: flex column, gap:5, full width
+  // ob-events-preview: flex column, full width
   eventsPreview: {
     width:     '100%',
-    gap:       5,
-    marginTop: 2,
+    gap:       10,
+    marginTop: 4,
   },
-  // ob-event-row: justify-between, padding:7 10, bg:rgba(255,255,255,0.04), radius:8, font-size:0.83rem
+  // ob-event-row: justify-between, bg:rgba(255,255,255,0.04), radius:8
   eventRow: {
     flexDirection:     'row',
     justifyContent:    'space-between',
     alignItems:        'center',
     gap:               8,
-    paddingHorizontal: 10,
-    paddingVertical:   7,
+    paddingHorizontal: 12,
+    paddingVertical:   11,
     backgroundColor:   'rgba(255,255,255,0.04)',
     borderRadius:      8,
   },
@@ -804,12 +760,10 @@ const styles = StyleSheet.create({
     textDecorationColor: Colors.muted2,
   },
 
-  // ob-hint: 0.72rem=12px, monospace, var(--muted)
+  // Small muted sub-label under the form (sans-serif, matches the rest of the app).
   hint: {
-    fontSize:      12,
-    color:         Colors.muted,
-    fontFamily:    MONO,
-    letterSpacing: 0.15,
+    fontSize:      13,
+    color:         Colors.muted2,
     textAlign:     'center',
   },
 
@@ -838,44 +792,48 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
 
-  // Two-button row — web: .jc-auth-actions { display:flex, gap:8 }
+  // Two equal buttons side by side. Same shape (solid border, same width/radius);
+  // "Create account" is the emphasized path — differentiated by warm fill + accent
+  // text, NOT by a different border style.
   jcActions: {
     flexDirection: 'row',
-    gap:           8,
+    gap:           10,
   },
 
-  // Create account — web: .jc-auth-signup { flex:1, border:rgba(194,74,56,0.55), bg:rgba(194,74,56,0.08), color:--accent }
+  // Create account — emphasized (filled, accent text)
   jcSignup: {
     flex:              1,
-    paddingVertical:   10,
-    paddingHorizontal: 14,
+    minHeight:         46,
+    paddingHorizontal: 12,
     borderWidth:       1,
-    borderColor:       'rgba(194,74,56,0.55)',
-    borderRadius:      10,
-    backgroundColor:   'rgba(194,74,56,0.08)',
+    borderColor:       'rgba(194,74,56,0.6)',
+    borderRadius:      12,
+    backgroundColor:   'rgba(194,74,56,0.12)',
     alignItems:        'center',
+    justifyContent:    'center',
   },
   jcSignupText: {
-    color:      Colors.accent2,   // web --accent = #C24A38
-    fontSize:   14,               // 0.88rem
+    color:      Colors.accent2,
+    fontSize:   16,
     fontWeight: '600',
   },
 
-  // Log in — web: .jc-auth-signin { flex:1, border:rgba(255,255,255,0.08), bg:transparent, color:--muted2 }
+  // Log in — secondary (transparent, neutral text). Identical shape to Create account.
   jcSignin: {
     flex:              1,
-    paddingVertical:   10,
-    paddingHorizontal: 14,
+    minHeight:         46,
+    paddingHorizontal: 12,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.08)',
-    borderRadius:      10,
+    borderColor:       'rgba(255,255,255,0.14)',
+    borderRadius:      12,
     backgroundColor:   'transparent',
     alignItems:        'center',
+    justifyContent:    'center',
   },
   jcSigninText: {
-    color:      Colors.muted2,
-    fontSize:   14,
-    fontWeight: '500',
+    color:      Colors.muted,
+    fontSize:   16,
+    fontWeight: '600',
   },
 
   // jc-auth-hint: 0.68rem=11px, --muted, centered

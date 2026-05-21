@@ -17,16 +17,7 @@ import { fetchMyBlocks, unblockById, type BlockRow } from '@/api/blocks';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-
-const AVATAR_BG = [
-  '#7c6aff', '#ff6a9f', '#22d3ee', '#4ade80',
-  '#fb923c', '#f472b6', '#818cf8', '#2dd4bf',
-];
-
-function avatarBg(name: string): string {
-  const hash = (name ?? '?').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return AVATAR_BG[hash % AVATAR_BG.length];
-}
+import { avatarColor as avatarBg } from '@/lib/avatarColors';
 
 export default function BlockedUsersScreen() {
   const router = useRouter();

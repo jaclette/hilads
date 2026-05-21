@@ -19,6 +19,7 @@ import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
+import { avatarColor } from '@/lib/avatarColors';
 import { shareLink } from '@/lib/shareLink';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
@@ -29,16 +30,6 @@ import type { Message, EventParticipant, ReplyRef } from '@/types';
 
 function formatTime(ts: number): string {
   return new Date(ts * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-const AVATAR_PALETTES: [string, string][] = [
-  ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
-  ['#4ade80', '#34d399'], ['#fb923c', '#fbbf24'], ['#f472b6', '#e879f9'],
-  ['#818cf8', '#60a5fa'], ['#2dd4bf', '#a3e635'],
-];
-function avatarColor(name: string): string {
-  const hash = (name ?? '').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return AVATAR_PALETTES[hash % AVATAR_PALETTES.length][0];
 }
 
 // ── Ambient activity messages — mirrors web scheduleActivity ─────────────────

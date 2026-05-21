@@ -23,6 +23,7 @@ import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { avatarColor } from '@/lib/avatarColors';
 import { AppHeader } from '@/features/shell/AppHeader';
 
 const CONTEXT_BADGE_KEYS = new Set(['host']);
@@ -70,18 +71,6 @@ const pillStyles = StyleSheet.create({
   pill: { alignSelf: 'flex-start', borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1 },
   text: { fontSize: 10, fontWeight: '700' },
 });
-
-// ── Avatar ────────────────────────────────────────────────────────────────────
-
-const AVATAR_PALETTE = [
-  '#C24A38', '#B87228', '#3ddc84', '#8B5CF6',
-  '#0EA5E9', '#E879A0', '#F59E0B', '#14B8A6',
-];
-function avatarColor(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
-}
 
 // ── Filter config ─────────────────────────────────────────────────────────────
 

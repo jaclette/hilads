@@ -15,23 +15,12 @@ import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import { ReportModal } from '@/features/profile/ReportModal';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
 import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
-
-// ── Avatar palette — mirrors ChatMessage.tsx / [id].tsx ───────────────────────
-
-const AVATAR_BG = [
-  '#7c6aff', '#ff6a9f', '#22d3ee', '#4ade80',
-  '#fb923c', '#f472b6', '#818cf8', '#2dd4bf',
-];
-
-function avatarBg(name: string): string {
-  const hash = (name ?? '?').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return AVATAR_BG[hash % AVATAR_BG.length];
-}
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 

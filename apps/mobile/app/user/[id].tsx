@@ -25,6 +25,7 @@ import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { EventPill } from '@/features/events/EventPill';
@@ -71,18 +72,6 @@ const PROFILE_BADGE_COLOR: Record<string, object> = {
 };
 function profileBadgeBg(key: string): object   { return PROFILE_BADGE_BG[key]    ?? PROFILE_BADGE_BG.regular;    }
 function profileBadgeColor(key: string): object { return PROFILE_BADGE_COLOR[key] ?? PROFILE_BADGE_COLOR.regular; }
-
-// ── Avatar ────────────────────────────────────────────────────────────────────
-
-const AVATAR_BG = [
-  '#7c6aff', '#ff6a9f', '#22d3ee', '#4ade80',
-  '#fb923c', '#f472b6', '#818cf8', '#2dd4bf',
-];
-
-function avatarBg(name: string): string {
-  const hash = (name ?? '?').split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  return AVATAR_BG[hash % AVATAR_BG.length];
-}
 
 // ── Mode meta ─────────────────────────────────────────────────────────────────
 

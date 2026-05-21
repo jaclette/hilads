@@ -30,6 +30,7 @@ import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
+import { avatarColor } from '@/lib/avatarColors';
 import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
@@ -77,19 +78,6 @@ const sepStyles = StyleSheet.create({
     overflow:          'hidden',
   },
 });
-
-// ── Avatar color — hash-based, warm palette ───────────────────────────────────
-
-const AVATAR_COLORS = [
-  '#C24A38', '#B87228', '#8B5CF6', '#0EA5E9',
-  '#E879A0', '#3ddc84', '#F59E0B', '#14B8A6',
-];
-
-function avatarColor(str: string): string {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = str.charCodeAt(i) + ((h << 5) - h);
-  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
-}
 
 // ── Message row ───────────────────────────────────────────────────────────────
 // In a 1:1 DM sender names are omitted — position (left/right) makes it obvious.
