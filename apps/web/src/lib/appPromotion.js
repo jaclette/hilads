@@ -1,9 +1,9 @@
 /**
  * App-promotion config + detection helpers.
  *
- * Hilads doesn't ship an iOS app yet — only `android.enabled` is true today.
- * When iOS launches, flip `ios.enabled`, set `ios.storeUrl`, and the existing
- * banner / interstitial / hook code already supports it (see useAppPromotion).
+ * Both platforms are live — `android.enabled` and `ios.enabled` are true. The
+ * banner / interstitial / hook resolve the per-OS store URL from detectOs()
+ * (see useAppPromotion).
  *
  * App Links are configured for /e, /event, /city, /t (see
  * apps/mobile/android/app/src/main/AndroidManifest.xml + the
@@ -25,8 +25,9 @@ export const appPromotion = {
             || 'https://play.google.com/store/apps/details?id=com.hilads.app',
   },
   ios: {
-    enabled:  false,
-    storeUrl: null,
+    enabled:  true,
+    storeUrl: import.meta.env.VITE_APP_STORE_URL
+            || 'https://apps.apple.com/app/id6768905591',
   },
 }
 
