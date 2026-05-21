@@ -41,12 +41,24 @@ console.log('[layout] ── MODULE LOADED ────────────�
 // ── Inner layout (has access to AppContext) ───────────────────────────────────
 
 function RootLayoutInner() {
-  const { booting, bootError, joined, account, city, sessionId, identity, setAccount } = useApp();
-  // DIAG (shaking repro): logs the exact auth-gate state every render. During
-  // the bug this prints continuously — whichever value flips between lines is
-  // the loop driver. Remove once the loop is identified.
-  console.log('[layout] render | booting=%s joined=%s account=%s city=%s identity.ch=%s',
-    booting, joined, !!account, city?.channelId ?? null, identity?.channelId ?? null);
+  const app = useApp();
+  const { booting, bootError, joined, account, city, sessionId, identity, setAccount } = app;
+  // DIAG (shaking repro): the auth gate is confirmed stable (guest landing), so
+  // the loop driver is some OTHER context value. Log the full relevant state
+  // every render — whichever field flips between consecutive lines is the
+  // culprit. Remove once identified.
+  console.log('[layout] render |',
+    'booting=' + booting,
+    'joined=' + joined,
+    'account=' + !!account,
+    'city=' + (city?.channelId ?? null),
+    'geo=' + app.geoState,
+    'ws=' + app.wsConnected,
+    'detected=' + (app.detectedCity?.channelId ?? null),
+    'online=' + (app.onlineUsers?.length ?? 0),
+    'unreadDM=' + app.unreadDMs,
+    'unreadN=' + app.unreadNotifications,
+  );
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
 

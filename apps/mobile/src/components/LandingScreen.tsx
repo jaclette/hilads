@@ -119,6 +119,7 @@ function PulsingText({ text, style }: { text: string; style?: object }) {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
+  console.log('[landing] render');  // DIAG: if this loops but [layout] render does not, the loop is inside LandingScreen
   const router   = useRouter();
   const pathname = usePathname();
   const {
