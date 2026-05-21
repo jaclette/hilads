@@ -3,7 +3,7 @@ import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView,
-  Animated,
+  Animated, Linking, ToastAndroid,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -30,6 +30,42 @@ import type { Message, EventParticipant, ReplyRef } from '@/types';
 
 function formatTime(ts: number): string {
   return new Date(ts * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// ── Open the venue in Google Maps ─────────────────────────────────────────────
+// Prefer precise coordinates; fall back to a "venue name, address" text search.
+// The universal maps URL opens the Google Maps app via universal link (iOS) /
+// intent (Android), or the default browser if it isn't installed.
+type MapsTarget = {
+  venue_lat?: number | null;
+  venue_lng?: number | null;
+  venue?:     string | null;
+  location?:  string | null;
+};
+
+function buildEventMapsUrl(event: MapsTarget): string | null {
+  const lat = event.venue_lat;
+  const lng = event.venue_lng;
+  if (typeof lat === 'number' && typeof lng === 'number') {
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+  }
+  const address = event.location ?? event.venue ?? '';
+  if (!address) return null;
+  // Include the venue name when it's a distinct field (better match accuracy).
+  const name = event.venue && event.venue !== address ? `${event.venue}, ` : '';
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name + address)}`;
+}
+
+async function openEventMaps(event: MapsTarget): Promise<void> {
+  const url = buildEventMapsUrl(event);
+  if (!url) return;
+  try {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await Linking.openURL(url);
+  } catch (e) {
+    console.warn('[event] could not open maps:', String(e));
+    if (Platform.OS === 'android') ToastAndroid.show("Couldn't open maps", ToastAndroid.SHORT);
+  }
 }
 
 // ── Ambient activity messages — mirrors web scheduleActivity ─────────────────
@@ -397,12 +433,22 @@ export default function EventDetailScreen() {
               ) : null}
             </Text>
 
-            {/* Location — orange accent, single-line ellipsis */}
+            {/* Location — orange accent, single-line ellipsis. Tappable → Google Maps. */}
             {(event.location ?? event.venue) ? (
-              <Text style={styles.eventLocation} numberOfLines={1}>
-                {'📍 '}
-                {event.location ?? event.venue}
-              </Text>
+              <TouchableOpacity
+                onPress={() => openEventMaps(event)}
+                activeOpacity={0.6}
+                style={styles.eventLocationRow}
+                hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
+                accessibilityRole="link"
+                accessibilityLabel={`Open address in Google Maps: ${event.location ?? event.venue}`}
+                accessibilityHint="Opens Google Maps with this venue's location"
+              >
+                <Text style={styles.eventLocation} numberOfLines={1}>
+                  {'📍 '}
+                  {event.location ?? event.venue}
+                </Text>
+              </TouchableOpacity>
             ) : null}
 
             {/* Host name — suppressed for the host themselves */}
@@ -777,6 +823,9 @@ const styles = StyleSheet.create({
   },
 
   // Address — orange accent, single-line ellipsis
+  eventLocationRow: {
+    paddingVertical: 4,   // full-width row; + hitSlop on the touchable → ≥44pt tap target
+  },
   eventLocation: {
     fontSize:   13,
     fontWeight: '600',

@@ -65,15 +65,18 @@ export function getEventLocation(event) {
   return null
 }
 
-// Returns a maps URL to open the venue. Prefers precise coordinates, falls back to text search.
+// Returns a Google Maps universal URL to open the venue. Prefers precise
+// coordinates; falls back to a "venue name, address" text search. The universal
+// URL opens the Google Maps app on mobile (universal link / intent) and a new
+// tab on desktop.
 export function getEventMapsUrl(event) {
   if (event.venue_lat && event.venue_lng) {
-    return `https://maps.google.com/?q=${event.venue_lat},${event.venue_lng}`
+    return `https://www.google.com/maps/search/?api=1&query=${event.venue_lat},${event.venue_lng}`
   }
   const q = event.venue
     ? (event.location ? `${event.venue}, ${event.location}` : event.venue)
     : (event.location || event.location_hint)
-  return q ? `https://maps.google.com/?q=${encodeURIComponent(q)}` : null
+  return q ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null
 }
 
 export function getTimeLabel(unixTs, timezone) {

@@ -35,6 +35,8 @@ export interface HiladsEvent {
   title: string;
   location?: string;
   venue?: string;
+  venue_lat?: number | null;   // precise venue coords when known (else maps falls back to address text)
+  venue_lng?: number | null;
   event_type: EventType;
   source_type: 'hilads' | 'ticketmaster';
   starts_at: number;    // unix timestamp
