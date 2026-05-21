@@ -305,7 +305,18 @@ function ExploringMockup() {
 
 // ── Store badge button ─────────────────────────────────────────────────────────
 
-function StoreBadge({ icon, top, bottom, href }) {
+// Apple logo as inline SVG. The U+F8FF Apple glyph only renders on Apple
+// devices (tofu elsewhere), so we draw it — crisp on every platform, sized to
+// match the Google Play ▶ glyph and tinted via currentColor.
+function AppleIcon() {
+  return (
+    <svg viewBox="0 0 384 512" width="20" height="24" fill="currentColor" aria-hidden="true" focusable="false">
+      <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+    </svg>
+  )
+}
+
+function StoreBadge({ icon, top, bottom, href, ariaLabel }) {
   const inner = (
     <>
       <span className="lp-store-icon">{icon}</span>
@@ -317,7 +328,7 @@ function StoreBadge({ icon, top, bottom, href }) {
   )
   if (href) {
     return (
-      <a className="lp-store-btn lp-store-btn--live" href={href} target="_blank" rel="noopener noreferrer">
+      <a className="lp-store-btn lp-store-btn--live" href={href} target="_blank" rel="noopener noreferrer" aria-label={ariaLabel}>
         {inner}
       </a>
     )
@@ -408,7 +419,8 @@ export default function LandingPage({
         </div>
 
         <div className="lp-hero-stores">
-          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" />
+          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
+          <StoreBadge icon={<AppleIcon />} top="Download on the" bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
         </div>
 
         <div className="lp-scroll-hint" aria-hidden="true">↓</div>
@@ -531,7 +543,8 @@ export default function LandingPage({
         <h2 className="lp-section-title">Your city in your pocket.</h2>
         <p className="lp-download-sub">Native apps coming soon.</p>
         <div className="lp-store-badges">
-          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" />
+          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
+          <StoreBadge icon={<AppleIcon />} top="Download on the" bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
         </div>
       </section>
 
