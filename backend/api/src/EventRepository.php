@@ -775,7 +775,7 @@ class EventRepository
             if ($sameDayCount >= 1) {
                 Response::json([
                     'error'   => 'event_limit_reached',
-                    'message' => "You've already created an event on " . $hostDay . ".",
+                    'message' => "You've already created a hangout on " . $hostDay . ".",
                 ], 429);
             }
         }

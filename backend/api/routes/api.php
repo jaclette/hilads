@@ -3767,7 +3767,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
             $cityChannelId,
             $authUser['id'] ?? null,
             'new_event',
-            '🔥 New event in ' . $cityName,
+            '🔥 New hangout in ' . $cityName,
             $notifBody,
             ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName)), 'senderUserId' => $authUser['id'] ?? null]
         );
