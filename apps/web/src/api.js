@@ -521,12 +521,12 @@ export async function fetchMentionSuggestions(context, id, q) {
 
 // ── Auth & profile ────────────────────────────────────────────────────────────
 
-export async function authSignup(email, password, displayName, username, guestId, mode = null) {
+export async function authSignup(email, password, displayName, username, guestId, mode = null, eulaAccepted = false) {
   const res = await fetch(`${BASE}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ email, password, display_name: displayName, username, guest_id: guestId, mode }),
+    body: JSON.stringify({ email, password, display_name: displayName, username, guest_id: guestId, mode, eula_accepted: eulaAccepted }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || 'Signup failed')

@@ -14,6 +14,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   const [name, setName]       = useState(guestNickname || '')
   const [username, setUsername] = useState('')
   const [mode, setMode]       = useState(null)
+  const [eula, setEula]       = useState(false) // EULA — must start UNCHECKED (explicit user action)
   const [error, setError]     = useState(null)
   const [loading, setLoading] = useState(false)
 
@@ -47,11 +48,12 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
       if (username.length < 3)   { setError('Pick a username (3+ characters)'); return }
       if (uStatus === 'taken')   { setError('That username is taken'); return }
       if (uStatus === 'invalid') { setError(uReason || 'Invalid username'); return }
+      if (!eula)                 { setError('Please accept the Terms of Service and Privacy Policy'); return }
     }
     setLoading(true)
     try {
       const data = tab === 'signup'
-        ? await authSignup(email, password, name, username, guestId, mode)
+        ? await authSignup(email, password, name, username, guestId, mode, true /* eulaAccepted */)
         : await authLogin(email, password)
       onSuccess(data.user)
     } catch (err) {
@@ -164,6 +166,27 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
               required
             />
           </div>
+
+          {tab === 'signup' && (
+            <div className="auth-eula">
+              <p className="auth-eula-warning">
+                Hilads has zero tolerance for objectionable content or abusive behavior. Violations may result in immediate account termination.
+              </p>
+              <label className="auth-eula-check">
+                <input
+                  type="checkbox"
+                  checked={eula}
+                  onChange={e => setEula(e.target.checked)}
+                />
+                <span>
+                  I agree to the{' '}
+                  <a href="https://hilads.live/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+                  {' '}and{' '}
+                  <a href="https://hilads.live/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+                </span>
+              </label>
+            </div>
+          )}
 
           {error && <p className="auth-error">{error}</p>}
 

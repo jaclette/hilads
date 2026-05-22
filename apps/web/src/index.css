@@ -1940,6 +1940,37 @@ html, body, #root {
   text-align: center;
   margin: 4px 0;
 }
+
+/* EULA agreement (signup) — zero-tolerance warning + ToS/Privacy checkbox */
+.auth-eula { margin: 4px 0 2px; display: flex; flex-direction: column; gap: 10px; }
+.auth-eula-warning {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--muted);
+  background: rgba(255, 122, 60, 0.08);
+  border: 1px solid rgba(255, 122, 60, 0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0;
+}
+.auth-eula-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text);
+  cursor: pointer;
+}
+.auth-eula-check input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.auth-eula-check a { color: var(--accent); font-weight: 600; }
 .auth-hint-top {
   font-size: 0.88rem;
   color: var(--muted2);
