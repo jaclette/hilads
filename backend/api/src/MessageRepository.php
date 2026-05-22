@@ -86,6 +86,14 @@ class MessageRepository
             'createdAt' => $createdAt,
         ];
 
+        // @mentions: raw [{userId,offset,length}] here; getByChannel resolves
+        // them to current usernames before returning. Omitted when empty.
+        $rawMentions = $row['mentions'] ?? null;
+        if (!empty($rawMentions)) {
+            $decoded = json_decode((string) $rawMentions, true);
+            if (is_array($decoded) && !empty($decoded)) $msg['mentions'] = $decoded;
+        }
+
         // reply_to_id may be absent from the row if the migration has not run yet,
         // or if the parent was deleted (ON DELETE SET NULL → null).
         // Use ?? null throughout so a missing key never causes an undefined-index notice
@@ -133,12 +141,12 @@ class MessageRepository
             // Cursor-based: fetch messages strictly older than the given message's created_at.
             $stmt = Database::pdo()->prepare("
                 SELECT id, channel_id, type, event,
-                       guest_id, user_id, nickname, content, image_url, created_at,
+                       guest_id, user_id, nickname, content, image_url, created_at, mentions,
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
                 FROM (
                     SELECT
                         id, channel_id, type, event,
-                        guest_id, user_id, nickname, content, image_url,
+                        guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                         EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
                     FROM messages
@@ -153,12 +161,12 @@ class MessageRepository
         } else {
             $stmt = Database::pdo()->prepare("
                 SELECT id, channel_id, type, event,
-                       guest_id, user_id, nickname, content, image_url, created_at,
+                       guest_id, user_id, nickname, content, image_url, created_at, mentions,
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
                 FROM (
                     SELECT
                         id, channel_id, type, event,
-                        guest_id, user_id, nickname, content, image_url,
+                        guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                         EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
                     FROM messages
@@ -209,8 +217,10 @@ class MessageRepository
             unset($row);
         }
 
+        $messages = array_map([self::class, 'format'], $rows);
+        MentionService::resolveForMessages($messages); // raw mentions → current @usernames
         return [
-            'messages' => array_map([self::class, 'format'], $rows),
+            'messages' => $messages,
             'hasMore'  => $hasMore,
         ];
     }
@@ -342,17 +352,19 @@ class MessageRepository
         ?string $replyToId = null,
         ?string $replyToNickname = null,
         ?string $replyToContent = null,
-        string $replyToType = 'text'
+        string $replyToType = 'text',
+        array $mentions = []
     ): array {
         $id = bin2hex(random_bytes(8));
 
         Database::pdo()->prepare("
             INSERT INTO messages
-                (id, channel_id, type, guest_id, user_id, nickname, content,
+                (id, channel_id, type, guest_id, user_id, nickname, content, mentions,
                  reply_to_id, reply_to_nickname, reply_to_content, reply_to_type)
-            VALUES (?, ?, 'text', ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, 'text', ?, ?, ?, ?, ?::jsonb, ?, ?, ?, ?)
         ")->execute([
             $id, self::dbKey($channelId), $guestId, $userId, $nickname, $content,
+            json_encode(array_values($mentions)),
             $replyToId, $replyToNickname, $replyToContent, $replyToType,
         ]);
 
@@ -365,6 +377,11 @@ class MessageRepository
             'content'   => $content,
             'createdAt' => time(),
         ];
+
+        // Resolve mentions to current @usernames for the HTTP echo + WS broadcast.
+        if (!empty($mentions)) {
+            $result['mentions'] = MentionService::resolveOne($mentions);
+        }
 
         if ($replyToId !== null) {
             $result['replyTo'] = [

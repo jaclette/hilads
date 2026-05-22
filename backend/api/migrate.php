@@ -343,6 +343,13 @@ run($pdo, "
 // explicitly on the live column (idempotent — safe to re-run every deploy).
 run($pdo, "ALTER TABLE notification_preferences ALTER COLUMN new_event_push SET DEFAULT TRUE", 'notification_preferences.new_event_push default→true');
 
+// mention_push — @mention notifications. High-signal/personal → default TRUE
+// at the column level, and backfill existing rows so nobody is stuck at a
+// technical FALSE (mirrors the new_event_push fix).
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS mention_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.mention_push');
+$mentionBackfill = $pdo->exec("UPDATE notification_preferences SET mention_push = TRUE WHERE mention_push = FALSE");
+echo "  OK  backfilled mention_push=TRUE for " . (int) $mentionBackfill . " row(s)\n";
+
 // Admin push broadcasts — one row per send action triggered from /admin/push.
 // Doubles as the audit log (admin_username + admin_ip + created_at) since
 // the back office uses single-user env-based auth, not a user table.
@@ -472,6 +479,18 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_tip TEXT", 'use
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_story TEXT", 'users.ambassador_story');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS about_me TEXT", 'users.about_me');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_thumb_photo_url TEXT", 'users.profile_thumb_photo_url');
+
+// username — the unique @-mention handle. Case-insensitive uniqueness enforced
+// at the DB level via a partial unique index on lower(username) (partial so the
+// many legacy NULLs stay valid until the backfill at the end of this script
+// fills them). New signups always provide one, so NULLs are legacy-only.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT", 'users.username');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users (lower(username)) WHERE username IS NOT NULL", 'idx_users_username_lower');
+
+// messages.mentions — @mention metadata: [{userId, offset, length}] into content.
+// Usernames are NOT stored (resolved to the current value on read) so renames
+// reflect everywhere. Empty array for non-mention messages.
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS mentions JSONB NOT NULL DEFAULT '[]'", 'messages.mentions');
 
 // users — current city: single source of truth for membership + notifications.
 // `current_city_id` is committed via the two-signal transition rule (see
@@ -814,5 +833,21 @@ run($pdo, "
 
 // push_broadcasts: history page reads recent rows DESC.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_push_broadcasts_recent ON push_broadcasts (created_at DESC)", 'idx_push_broadcasts_recent');
+
+// ── Backfill usernames for legacy users ─────────────────────────────────────
+// Every registered user needs a unique @-handle (mentions reference it). New
+// signups always provide one; this fills rows created before usernames existed.
+// Idempotent: only touches username IS NULL, so re-running is a no-op once
+// everyone has one. Reuses the app's slug+dedupe logic via UsernameService,
+// passing this script's own $pdo (migrate.php doesn't autoload Database).
+require_once __DIR__ . '/src/UsernameService.php';
+$missingUsernames = $pdo->query("SELECT id, display_name FROM users WHERE username IS NULL AND deleted_at IS NULL")->fetchAll();
+$filledUsernames  = 0;
+foreach ($missingUsernames as $uRow) {
+    $handle = UsernameService::generateUnique((string) ($uRow['display_name'] ?? 'user'), $pdo);
+    $pdo->prepare("UPDATE users SET username = ? WHERE id = ?")->execute([$handle, $uRow['id']]);
+    $filledUsernames++;
+}
+echo "  OK  backfilled username for {$filledUsernames} legacy user(s)\n";
 
 echo "\nDone.\n";

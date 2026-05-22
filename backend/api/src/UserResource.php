@@ -45,6 +45,7 @@ final class UserResource
         return [
             'id'            => $user['id'],
             'accountType'   => 'registered',
+            'username'      => $user['username'] ?? null,
             'displayName'   => $user['display_name'],
             'avatarUrl'     => $fullUrl,
             'thumbAvatarUrl'=> $thumbUrl ?? $fullUrl,  // null only when no photo at all
@@ -89,6 +90,7 @@ final class UserResource
         return [
             'id'          => $guestId,
             'accountType' => 'guest',
+            'username'    => null,  // guests have no handle and are not mentionable
             'displayName' => $nickname,
             'avatarUrl'   => null,
             'badges'      => ['ghost'],

@@ -11,10 +11,10 @@ class UserRepository
 
         $stmt = Database::pdo()->prepare('
             INSERT INTO users
-                (id, email, password_hash, google_id, display_name, birth_year,
+                (id, email, password_hash, google_id, username, display_name, birth_year,
                  profile_photo_url, home_city, interests, guest_id, mode, is_verified, created_at, updated_at)
             VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ');
 
         try {
@@ -23,6 +23,7 @@ class UserRepository
                 $data['email']             ?? null,
                 $data['password_hash']     ?? null,
                 $data['google_id']         ?? null,
+                $data['username']          ?? null,
                 $data['display_name'],
                 $data['birth_year']        ?? null,
                 $data['profile_photo_url'] ?? null,
@@ -35,8 +36,12 @@ class UserRepository
                 $now,
             ]);
         } catch (\PDOException $e) {
-            // SQLSTATE 23xxx = integrity constraint violation (unique, not-null, fk, check)
+            // SQLSTATE 23xxx = integrity constraint violation (unique, not-null, fk, check).
+            // Distinguish username vs email collisions so the caller can show the right error.
             if (str_starts_with((string) $e->getCode(), '23')) {
+                if (stripos($e->getMessage(), 'username') !== false) {
+                    throw new \RuntimeException('username_taken');
+                }
                 throw new \RuntimeException('email_already_exists');
             }
             throw $e;
@@ -73,6 +78,14 @@ class UserRepository
         return $stmt->fetch() ?: null;
     }
 
+    /** Case-insensitive lookup by @-handle. Excludes soft-deleted users. */
+    public static function findByUsername(string $username): ?array
+    {
+        $stmt = Database::pdo()->prepare('SELECT * FROM users WHERE lower(username) = lower(?) AND deleted_at IS NULL');
+        $stmt->execute([trim($username)]);
+        return $stmt->fetch() ?: null;
+    }
+
     /**
      * Stamp the user's EULA acceptance time (Apple G1.2). Idempotent — only
      * sets the timestamp if it's currently NULL, so re-acceptance preserves
@@ -93,7 +106,7 @@ class UserRepository
     public static function update(string $id, array $fields): array
     {
         $allowed = [
-            'display_name', 'birth_year', 'profile_photo_url', 'profile_thumb_photo_url',
+            'username', 'display_name', 'birth_year', 'profile_photo_url', 'profile_thumb_photo_url',
             'home_city', 'about_me', 'interests', 'vibe', 'mode',
             'ambassador_restaurant', 'ambassador_spot', 'ambassador_tip', 'ambassador_story',
         ];
@@ -115,7 +128,15 @@ class UserRepository
             $stmt = Database::pdo()->prepare(
                 'UPDATE users SET ' . implode(', ', $sets) . ' WHERE id = ?'
             );
-            $stmt->execute($values);
+            try {
+                $stmt->execute($values);
+            } catch (\PDOException $e) {
+                // Race-safe backstop for the username unique index.
+                if (str_starts_with((string) $e->getCode(), '23') && stripos($e->getMessage(), 'username') !== false) {
+                    throw new \RuntimeException('username_taken');
+                }
+                throw $e;
+            }
         }
 
         return self::findById($id);

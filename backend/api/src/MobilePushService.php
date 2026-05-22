@@ -33,6 +33,7 @@ class MobilePushService
             'event_message'   => 'event_message_push',
             'event_join'      => 'event_join_push',
             'new_event'       => 'new_event_push',
+            'mention'         => 'mention_push',
             'channel_message' => 'channel_message_push',
             'city_join'       => 'city_join_push',
             'vibe_received'   => 'vibe_received_push',

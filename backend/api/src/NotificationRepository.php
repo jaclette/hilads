@@ -57,6 +57,7 @@ class NotificationRepository
             'event_message'                                             => 'event_message_push',
             'event_join'                                                => 'event_join_push',
             'new_event'                                                 => 'new_event_push',
+            'mention'                                                   => 'mention_push',
             'channel_message'                                           => 'channel_message_push',
             'city_join'                                                 => 'city_join_push',
             // friend_request_received + friend_request_accepted are the new
@@ -83,6 +84,7 @@ class NotificationRepository
             'event_message_push'   => true,
             'event_join_push'      => false,
             'new_event_push'       => true,
+            'mention_push'         => true,
             'channel_message_push' => false,
             'city_join_push'       => false,
             'friend_request_push'  => true,
@@ -154,6 +156,9 @@ class NotificationRepository
             'dm_message'                      => '/conversations',
             'event_message', 'event_join',
             'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
+            // Mention deep-links to the message's context: event chat, pulse, or city chat.
+            'mention'                         => isset($data['eventId']) ? "/event/{$data['eventId']}"
+                                                : (isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/'),
             'channel_message', 'city_join'    => '/',
             'friend_request_received'         => '/friend-requests',
             'friend_request_accepted'         => isset($data['accepterUserId']) ? "/user/{$data['accepterUserId']}" : '/me',
@@ -177,6 +182,7 @@ class NotificationRepository
             'event_message',
             'event_join'              => 'event-'         . ($data['eventId'] ?? 'event'),
             'new_event'               => 'new-event-'     . ($data['eventId'] ?? 'event'),
+            'mention'                 => 'mention-'       . ($data['messageId'] ?? 'm'),
             'channel_message'         => 'channel-'       . ($data['channelId'] ?? 'city'),
             'city_join'               => 'cityjoin-'      . ($data['channelId'] ?? 'city'),
             'friend_request_received' => 'friend-req-'    . ($data['senderUserId'] ?? 'user'),

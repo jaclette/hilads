@@ -22,12 +22,14 @@ class AuthService
         string $email,
         string $password,
         string $displayName,
+        string $username,
         ?string $guestId = null,
         ?string $mode = null,
         bool $eulaAccepted = false
     ): array {
         $email       = strtolower(trim($email));
         $displayName = mb_substr(trim(strip_tags($displayName)), 0, 30);
+        $username    = UsernameService::normalize($username);
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Response::json(['error' => 'Invalid email address'], 422);
@@ -45,6 +47,11 @@ class AuthService
             Response::json(['error' => 'Display name is required'], 422);
         }
 
+        $usernameError = UsernameService::validate($username);
+        if ($usernameError !== null) {
+            Response::json(['error' => $usernameError], 422);
+        }
+
         $allowedModes = ['local', 'exploring'];
         if ($mode !== null && !in_array($mode, $allowedModes, true)) {
             Response::json(['error' => 'Invalid mode'], 422);
@@ -54,18 +61,26 @@ class AuthService
             Response::json(['error' => 'An account with this email already exists'], 409);
         }
 
+        if (!UsernameService::isAvailable($username)) {
+            Response::json(['error' => 'That username is taken'], 409);
+        }
+
         try {
             $user = UserRepository::create([
                 'email'         => $email,
                 'password_hash' => password_hash($password, PASSWORD_BCRYPT),
+                'username'      => $username,
                 'display_name'  => $displayName,
                 'guest_id'      => $guestId,
                 'mode'          => $mode ?? 'exploring',
             ]);
         } catch (\RuntimeException $e) {
+            // DB-level unique index is the race-safe backstop for both fields.
             if ($e->getMessage() === 'email_already_exists') {
-                // Race condition: two signups with same email both passed findByEmail check
                 Response::json(['error' => 'An account with this email already exists'], 409);
+            }
+            if ($e->getMessage() === 'username_taken') {
+                Response::json(['error' => 'That username is taken'], 409);
             }
             throw $e;
         }
@@ -554,6 +569,7 @@ class AuthService
     {
         return [
             'id'                => $user['id'],
+            'username'          => $user['username'] ?? null,
             'display_name'      => $user['display_name'],
             'age'               => self::computeAge($user['birth_year'] ?? null),
             'profile_photo_url' => $user['profile_photo_url'],

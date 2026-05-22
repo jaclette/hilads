@@ -379,6 +379,40 @@ function isValidSessionId(mixed $sessionId): bool
 }
 
 /**
+ * Sanitize client-supplied @mentions against a context's mentionable user set.
+ * $context: 'city' | 'event' | 'topic'. $dbChannelId: the messages.channel_id key
+ * ('city_N', eventId, or topicId). Returns clean [{userId,offset,length}].
+ */
+function sanitizeMentions(mixed $raw, string $context, string $dbChannelId, string $content): array
+{
+    if (empty($raw) || !is_array($raw)) return [];
+    $allowed = MentionService::mentionableUserIds($context, $dbChannelId);
+    if (empty($allowed)) return [];
+    return MentionService::sanitize($raw, $allowed, strlen($content));
+}
+
+/**
+ * Fire a 'mention' notification to each mentioned user — deduped by userId, author
+ * excluded. NotificationRepository::create gates on the recipient's mention_push
+ * pref. $data carries the deep-link context (eventId|topicId|channelId) + messageId.
+ * Non-fatal: a notification failure never blocks the message response.
+ */
+function notifyMentions(array $mentions, ?string $senderUserId, string $title, ?string $body, array $data): void
+{
+    $seen = [];
+    foreach ($mentions as $m) {
+        $uid = $m['userId'] ?? null;
+        if (!is_string($uid) || $uid === '' || $uid === $senderUserId || isset($seen[$uid])) continue;
+        $seen[$uid] = true;
+        try {
+            NotificationRepository::create($uid, 'mention', $title, $body, array_merge($data, ['mentionedUserId' => $uid]));
+        } catch (\Throwable $e) {
+            error_log('[mention] notify failed for ' . $uid . ': ' . $e->getMessage());
+        }
+    }
+}
+
+/**
  * Block-filter helper: returns the bidirectional block ID set for a viewer,
  * formatted for fast lookup. Wraps BlockRepository::getBidirectional so route
  * handlers don't need to know about the repo.
@@ -820,6 +854,7 @@ $router->add('POST', '/api/v1/auth/signup', function () {
         email:        $body['email']        ?? '',
         password:     $body['password']     ?? '',
         displayName:  $body['display_name'] ?? '',
+        username:     isset($body['username']) && is_string($body['username']) ? $body['username'] : '',
         guestId:      isset($body['guest_id']) && is_string($body['guest_id']) ? $body['guest_id'] : null,
         mode:         isset($body['mode'])    && is_string($body['mode'])    ? $body['mode']    : null,
         eulaAccepted: true,
@@ -959,9 +994,49 @@ $router->add('PUT', '/api/v1/profile', function () {
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
     $fields = AuthService::sanitiseProfileFields($body);
-    $updated = UserRepository::update($user['id'], $fields);
+
+    // Username change — validate format + case-insensitive uniqueness (excluding
+    // the caller's own row so re-saving an unchanged username is a no-op). The DB
+    // unique index is the race-safe backstop.
+    if (array_key_exists('username', $body)) {
+        $username = is_string($body['username']) ? UsernameService::normalize($body['username']) : '';
+        $err = UsernameService::validate($username);
+        if ($err !== null) Response::json(['error' => $err], 422);
+        if (!UsernameService::isAvailable($username, $user['id'])) {
+            Response::json(['error' => 'That username is taken'], 409);
+        }
+        $fields['username'] = $username;
+    }
+
+    try {
+        $updated = UserRepository::update($user['id'], $fields);
+    } catch (\RuntimeException $e) {
+        if ($e->getMessage() === 'username_taken') Response::json(['error' => 'That username is taken'], 409);
+        throw $e;
+    }
 
     Response::json(['user' => AuthService::ownFields($updated)]);
+});
+
+// Real-time availability + format check for the @-handle picker (signup + profile).
+// Excludes the caller's own row when authenticated, so editing back to your
+// current username reads as available.
+$router->add('GET', '/api/v1/username/check', function () {
+    enforceRateLimit('username_check', 120, 60);
+    $raw = trim((string) ($_GET['username'] ?? ''));
+
+    $err = UsernameService::validate($raw);
+    if ($err !== null) {
+        Response::json(['valid' => false, 'available' => false, 'reason' => $err]);
+    }
+
+    $viewer    = AuthService::currentUser(); // null for guests/signup
+    $available = UsernameService::isAvailable($raw, $viewer['id'] ?? null);
+    Response::json([
+        'valid'     => true,
+        'available' => $available,
+        'reason'    => $available ? null : 'That username is taken',
+    ]);
 });
 
 $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
@@ -4426,12 +4501,14 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
             $senderUser   = AuthService::currentUser();
             $senderUserId = $senderUser['id'] ?? null;
             $replySnap    = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+            $mentions     = sanitizeMentions($body['mentions'] ?? null, 'event', $eventId, $content);
             $message = MessageRepository::add(
                 $eventId, $guestId, $nickname, $content, $senderUserId,
                 $replySnap['id'] ?? null,
                 $replySnap['nickname'] ?? null,
                 $replySnap['content']  ?? null,
-                $replySnap['type']     ?? 'text'
+                $replySnap['type']     ?? 'text',
+                $mentions
             );
         } catch (\Throwable $e) {
             error_log("[event-msg] DB error inserting message eventId={$eventId}: " . $e->getMessage());
@@ -4458,6 +4535,16 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
             $bodyPreview,
             ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname, 'senderUserId' => $senderUserId]
         );
+        // @mention notifications — higher-signal than the participant ping above.
+        if (!empty($mentions ?? [])) {
+            notifyMentions(
+                $mentions,
+                $senderUserId,
+                $nickname . ' mentioned you in ' . $eventTitle,
+                $bodyPreview,
+                ['eventId' => $eventId, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $senderUserId]
+            );
+        }
     } catch (\Throwable $e) {
         error_log("[event-msg] notification error eventId={$eventId}: " . get_class($e) . ': ' . $e->getMessage());
         // Do not rethrow — the message was already saved and broadcast successfully.
@@ -4709,12 +4796,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         $msgSender       = AuthService::currentUser();
         $msgSenderUserId = $msgSender['id'] ?? null;
         $replySnap       = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+        $mentions        = sanitizeMentions($body['mentions'] ?? null, 'city', "city_{$channelId}", $content);
         $message = MessageRepository::add(
             $channelId, $guestId, $nickname, $content, $msgSenderUserId,
             $replySnap['id'] ?? null,
             $replySnap['nickname'] ?? null,
             $replySnap['content']  ?? null,
-            $replySnap['type']     ?? 'text'
+            $replySnap['type']     ?? 'text',
+            $mentions
         );
     }
 
@@ -4735,6 +4824,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             $msgPreview,
             ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId]
         );
+        if (!empty($mentions ?? [])) {
+            notifyMentions(
+                $mentions,
+                $msgSenderUserId,
+                $nickname . ' mentioned you in the city chat',
+                $msgPreview,
+                ['channelId' => $msgCityChannelId, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId]
+            );
+        }
     } catch (\Throwable $e) {
         error_log("[channel-msg] notify failed (non-fatal): " . $e->getMessage());
     }
@@ -5510,12 +5608,14 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
 
         try {
             $replySnap = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+            $mentions  = sanitizeMentions($body['mentions'] ?? null, 'topic', $topicId, $content);
             $message = MessageRepository::add(
                 $topicId, $guestId, $nickname, $content, $senderUserId,
                 $replySnap['id'] ?? null,
                 $replySnap['nickname'] ?? null,
                 $replySnap['content']  ?? null,
-                $replySnap['type']     ?? 'text'
+                $replySnap['type']     ?? 'text',
+                $mentions
             );
         } catch (\Throwable $e) {
             error_log("[topic-msg] DB error inserting message topicId={$topicId}: " . $e->getMessage());
@@ -5548,11 +5648,47 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
                 'senderUserId' => $senderUserId,
             ]
         );
+        if (!empty($mentions ?? [])) {
+            notifyMentions(
+                $mentions,
+                $senderUserId,
+                $nickname . ' mentioned you in ' . $topicTitle,
+                $bodyPreview,
+                ['topicId' => $topicId, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $senderUserId]
+            );
+        }
     } catch (\Throwable $e) {
         error_log("[topic-msg] notification error topicId={$topicId}: " . get_class($e) . ': ' . $e->getMessage());
     }
 
     Response::json($message, 201);
+});
+
+// ── @mention autocomplete suggestions ───────────────────────────────────────
+// Registered, in-context users only (guests excluded), prefix-matched on
+// username, caller excluded, capped. One endpoint per context.
+$router->add('GET', '/api/v1/channels/{channelId}/mention-suggestions', function (array $params) {
+    enforceRateLimit('mention_suggest', 120, 60);
+    $channelId = $params['channelId'] ?? '';
+    if (!ctype_digit((string) $channelId)) Response::json(['error' => 'Invalid channelId'], 400);
+    $viewer = AuthService::currentUser();
+    Response::json(['suggestions' => MentionService::suggest('city', 'city_' . $channelId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
+});
+
+$router->add('GET', '/api/v1/events/{eventId}/mention-suggestions', function (array $params) {
+    enforceRateLimit('mention_suggest', 120, 60);
+    $eventId = $params['eventId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) Response::json(['error' => 'Invalid eventId'], 400);
+    $viewer = AuthService::currentUser();
+    Response::json(['suggestions' => MentionService::suggest('event', $eventId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
+});
+
+$router->add('GET', '/api/v1/topics/{topicId}/mention-suggestions', function (array $params) {
+    enforceRateLimit('mention_suggest', 120, 60);
+    $topicId = $params['topicId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) Response::json(['error' => 'Invalid topicId'], 400);
+    $viewer = AuthService::currentUser();
+    Response::json(['suggestions' => MentionService::suggest('topic', $topicId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
 });
 
 // POST /api/v1/topics/{topicId}/mark-read
