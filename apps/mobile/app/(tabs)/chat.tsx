@@ -39,7 +39,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
-import type { Message, ReplyRef } from '@/types';
+import type { Message, ReplyRef, MentionRef } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
 // Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.
@@ -383,9 +383,9 @@ export default function ChatTab() {
   );
 
   const postTextFn = useCallback(
-    (content: string, replyToId?: string | null): Promise<Message> => {
+    (content: string, replyToId?: string | null, mentions?: MentionRef[]): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId);
+      return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId, mentions);
     },
     [channelId, identity, sessionId, nickname],
   );
@@ -590,10 +590,10 @@ export default function ChatTab() {
   }, []);
 
   // Wraps useMessages sendText to inject the current replyingTo before clearing it.
-  const handleSendText = useCallback((text: string) => {
+  const handleSendText = useCallback((text: string, mentions?: MentionRef[]) => {
     const reply = replyingToRef.current;
     setReplyingTo(null);
-    sendText(text, reply);
+    sendText(text, reply, mentions);
   }, [sendText]);
 
   const handleReact = useCallback(async (msg: Message, emoji: string) => {
@@ -831,6 +831,8 @@ export default function ChatTab() {
         {/* ── Input — web: .input-bar ── */}
         <ChatInput
           sending={sending}
+          mentionContext="city"
+          mentionChannelId={channelId}
           onSendText={handleSendText}
           onSendImage={sendImage}
           placeholder={getPlaceholder(channelId)}
