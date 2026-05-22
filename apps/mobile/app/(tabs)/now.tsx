@@ -16,54 +16,8 @@ import { Colors, FontSizes, Spacing, Radius, Gradients, Shadows } from '@/consta
 import { AppHeader } from '@/features/shell/AppHeader';
 import { CreateSheet } from '@/components/CreateSheet';
 import { EventCard } from '@/components/EventCard';
+import { TopicCard } from '@/components/TopicCard';
 import { LinearGradient } from 'expo-linear-gradient';
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-const CATEGORY_ICONS: Record<string, string> = {
-  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
-};
-
-function timeAgo(ts: number): string {
-  const diff = Math.floor(Date.now() / 1000 - ts);
-  if (diff < 60)   return 'just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  return `${Math.floor(diff / 3600)}h ago`;
-}
-
-// ── Topic card ────────────────────────────────────────────────────────────────
-
-function TopicCard({ topic, onPress }: { topic: FeedItem & { kind: 'topic' }; onPress: () => void }) {
-  const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
-  const replies   = topic.message_count ?? 0;
-  const lastAct   = topic.last_activity_at;
-  const activeNow = topic.active_now === true;
-
-  return (
-    <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
-      <View style={styles.cardKindRow}>
-        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Pulse</Text></View>
-        {activeNow && (
-          <View style={styles.activeNowBadge}>
-            <Text style={styles.activeNowText}>● Active now</Text>
-          </View>
-        )}
-      </View>
-      <View style={styles.cardTitleRow}>
-        <Text style={styles.cardIcon}>{icon}</Text>
-        <Text style={[styles.cardTitle, styles.topicTitle]} numberOfLines={2}>{topic.title}</Text>
-      </View>
-      {topic.description ? (
-        <Text style={styles.topicDesc} numberOfLines={2}>{topic.description}</Text>
-      ) : null}
-      <Text style={styles.topicMeta}>
-        {replies > 0
-          ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
-          : 'No replies yet — be first'}
-      </Text>
-    </TouchableOpacity>
-  );
-}
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
@@ -180,6 +134,13 @@ export default function NowScreen() {
     if (!city) return;
     router.push(
       `/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`,
+    );
+  }
+  function handleSeePast() {
+    if (!city) return;
+    track('past_archive_opened', { channelId: city.channelId });
+    router.push(
+      `/past?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}&city=${encodeURIComponent(city.name ?? '')}`,
     );
   }
 
@@ -542,6 +503,15 @@ export default function NowScreen() {
               <Ionicons name="add" size={28} color={Colors.white} />
             </TouchableOpacity>
           </View>
+          {/* Discreet archive entry — muted text link under the upcoming pill. */}
+          <TouchableOpacity
+            style={styles.pastLink}
+            activeOpacity={0.6}
+            onPress={handleSeePast}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Text style={styles.pastLinkText}>see what happened →</Text>
+          </TouchableOpacity>
         </View>
       )}
 
@@ -636,48 +606,6 @@ const styles = StyleSheet.create({
   // the two-row layout into one.
   list: { paddingBottom: 96, paddingHorizontal: Spacing.md, gap: 6 },
 
-  // ── Topic header ──────────────────────────────────────────────────────────
-  cardKindRow: { flexDirection: 'row', alignItems: 'center', marginBottom: -2 },
-  kindBadgeTopic: {
-    backgroundColor:   'rgba(96,165,250,0.12)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 7,
-    paddingVertical:   1,
-    borderWidth:       1,
-    borderColor:       'rgba(96,165,250,0.22)',
-  },
-  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: '#60a5fa', letterSpacing: 0.5 },
-
-  // ── Topic card shared row types ────────────────────────────────────────────
-  cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cardIcon:     { fontSize: 16, lineHeight: 18 },
-  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 19 },
-
-  // ── Topic card fields ──────────────────────────────────────────────────────
-  topicCard: {
-    backgroundColor: Colors.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     'rgba(96,165,250,0.15)',
-    padding:         Spacing.md,
-    gap:             8,
-  },
-  topicTitle: { color: Colors.text },
-  topicDesc:  { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
-  topicMeta:  { flex: 1, fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
-
-  // ── Active now badge ───────────────────────────────────────────────────────
-  activeNowBadge: {
-    backgroundColor:   'rgba(34,197,94,0.10)',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 8,
-    paddingVertical:   2,
-    borderWidth:       1,
-    borderColor:       'rgba(34,197,94,0.20)',
-    marginLeft:        6,
-  },
-  activeNowText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
-
   // ── Empty state ────────────────────────────────────────────────────────────
   empty: {
     flex: 1, justifyContent: 'center', alignItems: 'center',
@@ -729,6 +657,10 @@ const styles = StyleSheet.create({
   },
   upcomingCtaEmoji: { fontSize: 18, lineHeight: 22 },
   upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.accent },
+
+  // Discreet archive entry — muted, left-aligned under the upcoming pill.
+  pastLink:     { alignSelf: 'flex-start', paddingTop: 6, paddingBottom: 2 },
+  pastLinkText: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
 
   // Circular + button on the right — opens CreateSheet picker. Background is a
   // 135° orange gradient (LinearGradient absolute child); shadow uses the

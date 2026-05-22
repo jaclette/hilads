@@ -403,6 +403,30 @@ export async function fetchUpcomingEvents(channelId, opts = {}) {
 }
 
 /**
+ * Past archive — finished one-off hangouts + expired pulses for a city.
+ * GET /channels/{id}/past → { items: FeedItem[], nextCursor: number|null }
+ * Items share the same normalized FeedItem shape as the now feed.
+ * `before` is a unix recency cursor (pass the prior page's nextCursor);
+ * `from`/`to` are city-local YYYY-MM-DD (backend clamps the span to ≤14 days).
+ */
+export async function fetchPastArchive(channelId, opts = {}) {
+  const params = new URLSearchParams()
+  if (opts.type)   params.set('type',  opts.type)
+  if (opts.limit)  params.set('limit', String(opts.limit))
+  if (opts.before) params.set('before', String(opts.before))
+  if (opts.from && opts.to) { params.set('from', opts.from); params.set('to', opts.to) }
+  const qs = params.toString()
+  try {
+    const res = await fetch(`${BASE}/channels/${channelId}/past${qs ? `?${qs}` : ''}`, { credentials: 'include' })
+    if (!res.ok) return { items: [], nextCursor: null }
+    const data = await res.json()
+    return { items: data.items ?? [], nextCursor: data.nextCursor ?? null }
+  } catch {
+    return { items: [], nextCursor: null }
+  }
+}
+
+/**
  * Per-day event counts for the calendar-strip dots on the upcoming screen.
  * Returns { "YYYY-MM-DD": count } — days with zero events are omitted.
  */

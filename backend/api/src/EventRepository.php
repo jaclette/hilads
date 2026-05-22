@@ -489,6 +489,36 @@ class EventRepository
         return ['hilads' => $events, 'ticketmaster' => $publicEvents];
     }
 
+    /**
+     * Past one-off Hilads hangouts for a city — the archive query.
+     *   - source_type = 'hilads' (excludes Ticketmaster "Public Events")
+     *   - series_id IS NULL  (excludes recurring occurrences entirely)
+     *   - expires_at <= now() (finished)
+     * Most-recent-first. `beforeTs` is a recency cursor; `fromTs`/`toTs` bound a
+     * date window (caller has already clamped it to ≤14 days).
+     */
+    public static function getPastOneOff(int $channelId, ?int $beforeTs, int $limit, ?int $fromTs = null, ?int $toTs = null): array
+    {
+        $where  = "ce.city_id = ? AND ce.source_type = 'hilads' AND ce.series_id IS NULL AND ce.expires_at <= now()";
+        $params = ['city_' . $channelId];
+        if ($fromTs !== null && $toTs !== null) {
+            $where   .= " AND ce.expires_at >= to_timestamp(?) AND ce.expires_at < to_timestamp(?)";
+            $params[] = $fromTs;
+            $params[] = $toTs;
+        }
+        // Recency cursor — combines with the window so windowed views paginate too.
+        if ($beforeTs !== null) {
+            $where   .= " AND ce.expires_at < to_timestamp(?)";
+            $params[] = $beforeTs;
+        }
+        $limit = max(1, min(50, $limit));
+        $stmt  = Database::pdo()->prepare(
+            self::SELECT_CITY . " WHERE $where ORDER BY ce.expires_at DESC LIMIT " . $limit
+        );
+        $stmt->execute($params);
+        return array_map([self::class, 'format'], $stmt->fetchAll());
+    }
+
     public static function findById(string $eventId): ?array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "

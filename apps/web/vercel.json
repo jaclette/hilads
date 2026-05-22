@@ -62,6 +62,7 @@
     { "source": "/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1" },
     { "source": "/venue/:id",            "destination": "/api/prerender?type=venue&id=:id" },
     { "source": "/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug" },
+    { "source": "/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug" },
     { "source": "/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category" },
     { "source": "/cities",               "destination": "/api/cities-index" },
     { "source": "/(.*)",                 "destination": "/index.html" }

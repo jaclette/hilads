@@ -21,6 +21,38 @@ export async function fetchNowFeed(
   }
 }
 
+// Past archive — finished one-off hangouts + expired pulses for a city.
+// GET /channels/{id}/past → { items: FeedItem[], nextCursor: number|null }
+// Items share the same normalized FeedItem shape as the now feed, so the same
+// cards render them. `before` is a unix cursor (pass nextCursor from the prior
+// page); `from`/`to` are city-local YYYY-MM-DD (backend clamps the span ≤14d).
+export async function fetchPastArchive(
+  channelId: string,
+  opts: {
+    type?:  'both' | 'hangouts' | 'pulses';
+    limit?: number;
+    before?: number;
+    from?:  string;
+    to?:    string;
+  } = {},
+): Promise<{ items: FeedItem[]; nextCursor: number | null }> {
+  const params: Record<string, string | number> = {};
+  if (opts.type)   params.type   = opts.type;
+  if (opts.limit)  params.limit  = opts.limit;
+  if (opts.before) params.before = opts.before;
+  if (opts.from && opts.to) { params.from = opts.from; params.to = opts.to; }
+  try {
+    const data = await api.get<{ items?: FeedItem[]; nextCursor?: number | null }>(
+      `/channels/${channelId}/past`,
+      { params },
+    );
+    return { items: data.items ?? [], nextCursor: data.nextCursor ?? null };
+  } catch (err) {
+    console.warn('[fetchPastArchive] failed:', err);
+    return { items: [], nextCursor: null };
+  }
+}
+
 // Active topics only — used when you need just the topic list.
 export async function fetchCityTopics(channelId: string): Promise<Topic[]> {
   try {

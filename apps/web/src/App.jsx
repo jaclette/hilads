@@ -24,6 +24,7 @@ import VenueScreen from './components/VenueScreen'
 import GuestProfileCard from './components/GuestProfileCard'
 import ConversationsScreen from './components/ConversationsScreen'
 import UpcomingEventsScreen from './components/UpcomingEventsScreen'
+import PastArchiveScreen from './components/PastArchiveScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import FriendRequestsScreen from './components/FriendRequestsScreen'
@@ -50,6 +51,7 @@ function parseDeepLink() {
   const path = window.location.pathname
   const params = new URLSearchParams(window.location.search)
   const cityMatch         = path.match(/^\/city\/([^/]+)$/)
+  const cityPastMatch     = path.match(/^\/city\/([^/]+)\/past$/)
   const cityCategoryMatch = path.match(/^\/city\/([^/]+)\/([a-z]+)$/)
   // /event/:slug accepts both legacy bare 16-hex IDs AND slug-with-trailing-hex
   // formats — e.g. /event/cong-ca-phe-2e617620a3f3b6f7. The trailing 16 hex
@@ -61,6 +63,7 @@ function parseDeepLink() {
   // /city/:slug/:category — SPA treats as a regular city deep-link; the
   // prerender handles the SEO-specific /category route. SPA hydration just
   // shows the city page. (Future: pre-apply category filter from link[2].)
+  if (cityPastMatch)       return { type: 'past',          slug: cityPastMatch[1] }
   if (cityCategoryMatch)   return { type: 'city',          slug: cityCategoryMatch[1], category: cityCategoryMatch[2] }
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
   if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
@@ -710,6 +713,7 @@ export default function App() {
   const [activeEvent, setActiveEvent] = useState(null)
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
+  const [showPastArchive, setShowPastArchive] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [legends,      setLegends]      = useState([])  // city ambassadors (Local legends section)
   const [crewMembers,  setCrewMembers]  = useState([])
@@ -1170,6 +1174,19 @@ export default function App() {
       })
     }
 
+    if (link.type === 'past') {
+      // Same city resolution as a /city/:slug link, then auto-open the archive
+      // once the join completes (handled below via openScreenOnJoinRef).
+      openScreenOnJoinRef.current = 'past'
+      locPromiseRef.current = fetchCityBySlug(link.slug).then(data => {
+        if (!data) return null
+        setCity(data.city)
+        setCityCountry(data.country)
+        setCityTimezone(data.timezone)
+        return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country }
+      })
+    }
+
     if (link.type === 'event') {
       locPromiseRef.current = fetchEventById(link.id).then(async data => {
         if (!data) return null
@@ -1240,7 +1257,7 @@ export default function App() {
       // entry point only for direct hilads.live/ visits (the marketing path).
       const link = parseDeepLink()
       const isPublicDeepLink =
-        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic' || link.type === 'venue')
+        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic' || link.type === 'venue' || link.type === 'past')
       if (isPublicDeepLink && !guestAutoJoinedRef.current) {
         guestAutoJoinedRef.current = true
         // handleJoin awaits locPromiseRef.current (already set by the deep-link
@@ -1815,6 +1832,7 @@ export default function App() {
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'past')          { setShowPastArchive(true);  openScreenOnJoinRef.current = null }
 
       activeRef.current = true
       scheduleActivity(true)
@@ -4156,6 +4174,18 @@ export default function App() {
               </svg>
             </button>
           </div>
+          {/* Discreet archive entry — muted text link under the upcoming pill. */}
+          <button
+            className="past-archive-link"
+            onClick={() => {
+              setShowEventDrawer(false)
+              if (city) pushUrl(`/city/${cityToSlug(city)}/past`)
+              if (typeof window !== 'undefined' && window.posthog) window.posthog.capture('past_archive_opened')
+              setShowPastArchive(true)
+            }}
+          >
+            see what happened →
+          </button>
         </div>
       )}
 
@@ -4165,6 +4195,17 @@ export default function App() {
           timezone={cityTimezone}
           onBack={() => setShowUpcomingEvents(false)}
           onSelectEvent={(event) => { setShowUpcomingEvents(false); handleSelectEvent(event) }}
+        />
+      )}
+
+      {showPastArchive && (
+        <PastArchiveScreen
+          channelId={channelId}
+          timezone={cityTimezone}
+          cityName={city}
+          onBack={() => { setShowPastArchive(false); if (city) pushUrl(`/city/${cityToSlug(city)}`) }}
+          onSelectEvent={(event) => { setShowPastArchive(false); handleSelectEvent(event) }}
+          onSelectTopic={(topic) => { setShowPastArchive(false); setActiveTopic(topic) }}
         />
       )}
 

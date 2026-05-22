@@ -157,6 +157,73 @@ class TopicRepository
     }
 
     /**
+     * Past (expired) pulses for a city — the archive query. A pulse is "past"
+     * once its 24h lifespan elapses (expires_at <= now()). Most-recent-first.
+     * `beforeTs` is a recency cursor; `fromTs`/`toTs` bound a date window (the
+     * caller has already clamped it to ≤14 days).
+     */
+    public static function getPastByCity(int $channelId, ?int $beforeTs, int $limit, ?int $fromTs = null, ?int $toTs = null): array
+    {
+        $pdo    = Database::pdo();
+        $where  = "ct.city_id = ? AND ct.expires_at <= now()";
+        $params = ['city_' . $channelId];
+        if ($fromTs !== null && $toTs !== null) {
+            $where   .= " AND ct.expires_at >= to_timestamp(?) AND ct.expires_at < to_timestamp(?)";
+            $params[] = $fromTs;
+            $params[] = $toTs;
+        }
+        // Recency cursor — combines with the window so windowed views paginate too.
+        if ($beforeTs !== null) {
+            $where   .= " AND ct.expires_at < to_timestamp(?)";
+            $params[] = $beforeTs;
+        }
+        $limit = max(1, min(50, $limit));
+        $stmt  = $pdo->prepare("
+            SELECT c.id, ct.city_id, ct.created_by, ct.guest_id, ct.title, ct.description, ct.category,
+                   EXTRACT(EPOCH FROM ct.expires_at)::INTEGER AS expires_at,
+                   EXTRACT(EPOCH FROM c.created_at)::INTEGER  AS created_at
+            FROM channels c
+            JOIN channel_topics ct ON ct.channel_id = c.id
+            WHERE $where
+            ORDER BY ct.expires_at DESC
+            LIMIT " . $limit . "
+        ");
+        $stmt->execute($params);
+        $topics = $stmt->fetchAll();
+        if (empty($topics)) return [];
+
+        $ids  = array_column($topics, 'id');
+        $in   = implode(',', array_fill(0, count($ids), '?'));
+        $s2   = $pdo->prepare("
+            SELECT channel_id, COUNT(*) AS message_count,
+                   EXTRACT(EPOCH FROM MAX(created_at))::INTEGER AS last_activity_at
+            FROM messages WHERE channel_id IN ($in) AND type IN ('text','image') GROUP BY channel_id
+        ");
+        $s2->execute($ids);
+        $statsMap = [];
+        foreach ($s2->fetchAll() as $r) $statsMap[$r['channel_id']] = $r;
+
+        $out = [];
+        foreach ($topics as $t) {
+            $stats = $statsMap[$t['id']] ?? null;
+            $out[] = self::format([
+                'id'               => $t['id'],
+                'city_id'          => $t['city_id'],
+                'created_by'       => $t['created_by'],
+                'guest_id'         => $t['guest_id'],
+                'title'            => $t['title'],
+                'description'      => $t['description'],
+                'category'         => $t['category'],
+                'message_count'    => $stats['message_count']    ?? 0,
+                'last_activity_at' => $stats['last_activity_at'] ?? null,
+                'expires_at'       => $t['expires_at'],
+                'created_at'       => $t['created_at'],
+            ]);
+        }
+        return $out;
+    }
+
+    /**
      * Single active topic by channel ID. Returns null if not found or expired.
      */
     public static function findById(string $topicId): ?array

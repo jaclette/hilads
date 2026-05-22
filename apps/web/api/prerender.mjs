@@ -361,6 +361,98 @@ function composeCategoryBody(payload) {
   ].filter(Boolean).join('\n')
 }
 
+// ── Past archive (per-city) ───────────────────────────────────────────────────
+// Server-rendered index of finished one-off hangouts + expired pulses for a
+// city. Indexable ONLY when there's real content — empty archives are noindex
+// so we never publish thin pages. Past hangouts link to their existing
+// /event/<slug> pages (which stay indexable); pulses have no detail page so
+// they're listed as plain text for content mass.
+
+function composePastMeta(payload, canonicalPath, citySlug, itemCount) {
+  if (!payload?.city) return null
+  const city  = payload.city
+  const title = `Past hangouts & pulses in ${city} | Hilads`
+  const description = itemCount > 0
+    ? `A look back at recent hangouts and pulses in ${city} on Hilads — see what locals and travelers got up to, then find what's on next.`
+    : `Past hangouts in ${city} on Hilads.`
+  return {
+    title,
+    description,
+    url:     `${SITE_BASE}${canonicalPath}`,
+    image:   `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(citySlug)}`,
+    noindex: itemCount === 0,   // no thin archive pages
+  }
+}
+
+function composePastJsonLd(payload, items, citySlug, canonicalUrl) {
+  if (!payload?.city) return null
+  const events    = items.filter(it => it.kind === 'event')
+  const listItems = events.slice(0, 20).map((e, i) => ({
+    '@type':  'ListItem',
+    position: i + 1,
+    url:      `${SITE_BASE}/event/${eventSlug(e)}`,
+    name:     e.title,
+  }))
+  const itemList = {
+    '@type':         'ItemList',
+    name:            `Past hangouts in ${payload.city}`,
+    numberOfItems:   listItems.length,
+    itemListElement: listItems,
+  }
+  const breadcrumb = composeBreadcrumb([
+    { name: 'Home',        url: `${SITE_BASE}/` },
+    { name: payload.city,  url: `${SITE_BASE}/city/${citySlug}` },
+    { name: 'Past',        url: canonicalUrl },
+  ])
+  return {
+    '@context': 'https://schema.org',
+    '@graph':   [...siteGraphNodes(), itemList, breadcrumb],
+  }
+}
+
+function composePastBody(payload, items, citySlug) {
+  const city   = payload.city
+  const tz     = payload.timezone
+  const events = items.filter(it => it.kind === 'event')
+  const pulses = items.filter(it => it.kind === 'topic')
+
+  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>Past</span></nav>`
+  const intro = items.length > 0
+    ? `A look back at recent hangouts and pulses in ${city}.`
+    : `Past hangouts in ${city}.`
+
+  const eventsSection = events.length > 0
+    ? `<section><h2>Past hangouts in ${htmlEscape(city)}</h2><ul>${events.slice(0, 20).map(e => {
+        const slug = eventSlug(e)
+        const when = e.starts_at ? formatPastDate(e.starts_at, tz) : ''
+        const loc  = e.location || e.venue
+        const w    = loc ? ` · ${htmlEscape(loc)}` : ''
+        return `<li><a href="/event/${slug}">${htmlEscape(e.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${w}</li>`
+      }).join('')}</ul></section>`
+    : ''
+
+  const pulsesSection = pulses.length > 0
+    ? `<section><h2>Past pulses in ${htmlEscape(city)}</h2><ul>${pulses.slice(0, 20).map(p => {
+        const replies = p.message_count ?? 0
+        return `<li>${htmlEscape(p.title)}${replies > 0 ? ` — ${replies} ${replies === 1 ? 'reply' : 'replies'}` : ''}</li>`
+      }).join('')}</ul></section>`
+    : ''
+
+  const evergreen = `<section><h2>What's next in ${htmlEscape(city)}</h2><p>This is what recently happened in ${htmlEscape(city)} on Hilads. See <a href="/city/${citySlug}">what's happening right now</a> and join in one tap.</p></section>`
+
+  return [
+    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
+    `<main class="ssr-main">`,
+    breadcrumb,
+    `<h1>Past hangouts &amp; pulses in ${htmlEscape(city)}</h1>`,
+    `<p class="ssr-intro">${htmlEscape(intro)}</p>`,
+    eventsSection,
+    pulsesSection,
+    evergreen,
+    `</main>`,
+  ].filter(Boolean).join('\n')
+}
+
 function composeVenueMeta(payload, canonicalPath, venueId) {
   // Backend shape: { venue: { id, name, address, category, hours, city, ... } }
   const v = payload?.venue
@@ -1398,6 +1490,25 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length, messageCount)
         jsonLd = composeCityJsonLd(cityData, meta.url, upcoming)
         bodyHtml = composeCityBody(cityData, upcoming, venues)
+      }
+    } else if (type === 'past' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
+      canonicalPath = `/city/${slug}/past`
+      const cityData = await fetchWithTimeout(
+        `${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`,
+        API_TIMEOUT_MS,
+      )
+      if (cityData?.city && cityData?.channelId) {
+        // Pull the most recent finished hangouts + expired pulses (one batched
+        // request). Best-effort — an empty/failed fetch yields a noindex page.
+        const archive = await fetchWithTimeout(
+          `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/past?type=both&limit=20`,
+          API_TIMEOUT_MS,
+        )
+        const items = Array.isArray(archive?.items) ? archive.items : []
+        cacheMaxAge = 1800            // 30 min — past content is stable but newly-expired items trickle in
+        meta     = composePastMeta(cityData, canonicalPath, slug, items.length)
+        jsonLd   = composePastJsonLd(cityData, items, slug, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
+        bodyHtml = composePastBody(cityData, items, slug)
       }
     }
   } catch (err) {

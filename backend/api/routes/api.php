@@ -3546,6 +3546,72 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
     Response::json(['events' => $events]);
 });
 
+// Past archive — finished one-off hangouts + expired pulses for a city.
+// ?type=both|hangouts|pulses, ?limit (≤20), ?before=<unix> cursor, and an
+// optional ?from=YYYY-MM-DD&to=YYYY-MM-DD window clamped to ≤14 days. Default
+// (no range, no cursor) = the 10 most recent past items. Public, no auth.
+$router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) Response::json(['error' => 'Invalid channelId'], 400);
+
+    $type   = in_array($_GET['type'] ?? 'both', ['both', 'hangouts', 'pulses'], true) ? $_GET['type'] : 'both';
+    $limit  = max(1, min(20, (int) ($_GET['limit'] ?? 10)));
+    $before = isset($_GET['before']) && ctype_digit((string) $_GET['before']) ? (int) $_GET['before'] : null;
+
+    // Date window (city-local YYYY-MM-DD). Clamp to ≤14 days — backend backstop
+    // for the UI limit; can't be bypassed.
+    $city   = CityRepository::findById($channelId);
+    $tz     = new DateTimeZone(is_array($city) ? ($city['timezone'] ?? 'UTC') : 'UTC');
+    $fromTs = $toTs = null;
+    $from   = $_GET['from'] ?? null;
+    $to     = $_GET['to']   ?? null;
+    if (is_string($from) && is_string($to)
+        && preg_match('/^\d{4}-\d{2}-\d{2}$/', $from) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $to)) {
+        try {
+            $fromTs = (new DateTime($from . ' 00:00:00', $tz))->getTimestamp();
+            $toTs   = (new DateTime($to   . ' 00:00:00', $tz))->modify('+1 day')->getTimestamp(); // to-date inclusive
+            if ($toTs <= $fromTs) {
+                $fromTs = $toTs = null;
+            } elseif ($toTs - $fromTs > 14 * 86400) {
+                $fromTs = $toTs - 14 * 86400; // clamp window to 14 days
+            }
+        } catch (\Throwable) { $fromTs = $toTs = null; }
+    }
+
+    $now      = time();
+    $hangouts = $type !== 'pulses'   ? EventRepository::getPastOneOff($channelId, $before, $limit, $fromTs, $toTs) : [];
+    $pulses   = $type !== 'hangouts' ? TopicRepository::getPastByCity($channelId, $before, $limit, $fromTs, $toTs) : [];
+
+    // Attach participant_count + avatar preview to hangouts (mirror the now feed).
+    if (!empty($hangouts)) {
+        $ids = array_column($hangouts, 'id');
+        $ph  = implode(',', array_fill(0, count($ids), '?'));
+        $cs  = Database::pdo()->prepare("SELECT channel_id, COUNT(*) AS cnt FROM event_participants WHERE channel_id IN ($ph) GROUP BY channel_id");
+        $cs->execute($ids);
+        $counts   = array_column($cs->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');
+        $previews = ParticipantRepository::getPreviewBatch($ids);
+        foreach ($hangouts as &$h) {
+            $h['participant_count']    = (int) ($counts[$h['id']] ?? 0);
+            $h['participants_preview'] = $previews[$h['id']] ?? [];
+        }
+        unset($h);
+    }
+
+    // Normalize to the shared FeedItem shape (kind = event|topic) the cards use,
+    // tag a recency sort key, merge, sort newest-first, slice to the page size.
+    $items = [];
+    foreach ($hangouts as $h) { $fi = normalizeFeedEvent($h, $now); $fi['_sort'] = (int) ($h['ends_at'] ?? 0); $items[] = $fi; }
+    foreach ($pulses   as $p) { $fi = normalizeFeedTopic($p, $now); $fi['_sort'] = (int) ($p['expires_at'] ?? 0); $items[] = $fi; }
+    usort($items, static fn($a, $b) => $b['_sort'] <=> $a['_sort']);
+    $items = array_slice($items, 0, $limit);
+
+    $nextCursor = (count($items) === $limit) ? (int) end($items)['_sort'] : null;
+    foreach ($items as &$it) unset($it['_sort']);
+    unset($it);
+
+    Response::json(['items' => $items, 'nextCursor' => $nextCursor]);
+});
+
 $router->add('GET', '/api/v1/channels/{channelId}/events/upcoming', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     if ($channelId === false) {

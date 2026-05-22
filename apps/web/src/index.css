@@ -6791,12 +6791,26 @@ img.pub-profile-avatar {
 .mention-option-handle { font-weight: 700; font-size: 0.9rem; }
 .mention-option-name   { color: var(--muted); font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* @mention pill — dark fill + light border + white text. Readable on the dark
+   received bubble AND the orange/red sent bubble (--mine-bg #8C3427); white-on-
+   fill contrast is ≥6.5:1 everywhere (vs the old red-on-red ~1.7:1). nowrap +
+   word-break:normal keep "@handle" together as one unit (overriding the
+   bubble's break-word), and box-decoration-break keeps the chip intact if it
+   ever wraps. Tight padding keeps mention lines the same height as plain ones. */
 .msg-mention {
-  color: var(--accent);
-  font-weight: 700;
+  color: #fff;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 5px;
+  padding: 0.05em 0.4em;
+  white-space: nowrap;
+  word-break: normal;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   cursor: pointer;
 }
-.msg-mention:hover { text-decoration: underline; }
+.msg-mention:hover { background: rgba(0, 0, 0, 0.42); }
 
 .modal-textarea {
   resize: none;
@@ -9370,6 +9384,98 @@ img.dm-header-avatar {
   cursor: pointer;
   font-family: inherit;
 }
+.upc-modal-close:disabled { opacity: 0.4; cursor: default; }
+/* Range-picker: in-between days get a soft tint; the edges keep .selected. */
+.upc-modal-cell.in-range:not(.selected) {
+  background: rgba(255,122,60,0.16);
+  color: #fff;
+}
+
+/* ── Past archive ────────────────────────────────────────────────────────── */
+
+/* Discreet entry link below the "See what's coming" pill on the Now panel. */
+.past-archive-link {
+  align-self: flex-start;
+  margin: 6px 0 2px;
+  padding: 2px 2px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+.past-archive-link:hover { color: var(--text); }
+
+.archive-filter-bar {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px 0;
+}
+.archive-pill {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.archive-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.archive-range-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.archive-range-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+.archive-range-chip.active {
+  background: rgba(255,122,60,0.16);
+  border-color: rgba(255,122,60,0.4);
+  color: #fff;
+}
+.archive-range-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin: 0 0 8px;
+}
+
+.archive-pulse-row { border-color: rgba(96,165,250,0.18) !important; }
+.archive-pulse-tag {
+  background: rgba(96,165,250,0.12) !important;
+  color: #60a5fa !important;
+}
+.archive-pulse-meta { color: #60a5fa !important; }
+
+.archive-load-more {
+  margin: 6px auto 2px;
+  padding: 10px 22px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.archive-load-more:disabled { opacity: 0.5; cursor: default; }
 
 /* ── Android Play Store promo banner ─────────────────────────────────────── */
 

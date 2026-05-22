@@ -621,7 +621,19 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                   {splitContentByMentions(message.content ?? '', message.mentions).map((seg, i) => (
                     seg.type === 'text'
                       ? seg.text
-                      : <Text key={i} style={styles.mentionText} onPress={() => openMentionedProfile(seg.userId)}>@{seg.username}</Text>
+                      // Pill mention: inline View so we get a rounded border (RN
+                      // nested <Text> can't render border/radius). Dark fill +
+                      // light border + white text reads on the dark bg AND the
+                      // orange/red sent bubble. As a single token it never splits
+                      // mid-handle, and its height matches the line so mention
+                      // lines aren't taller than plain ones.
+                      : (
+                        <View key={i} style={styles.mentionPill}>
+                          <Text style={styles.mentionPillText} onPress={() => openMentionedProfile(seg.userId)}>
+                            @{seg.username}
+                          </Text>
+                        </View>
+                      )
                   ))}
                 </Text>
               </View>
@@ -886,7 +898,17 @@ const styles = StyleSheet.create({
   },
   bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
-  mentionText:    { color: Colors.accent, fontWeight: '700' },
+  // @mention pill — dark fill + light border + white text. Works on the dark
+  // received bubble AND the orange/red sent bubble (#B87228). White-on-fill
+  // contrast is ≥6.5:1 on every surface (vs the old orange-on-orange ~1.5:1).
+  mentionPill: {
+    backgroundColor:   'rgba(0,0,0,0.28)',
+    borderColor:       'rgba(255,255,255,0.38)',
+    borderWidth:       1,
+    borderRadius:      5,
+    paddingHorizontal: 5,
+  },
+  mentionPillText: { color: '#fff', fontWeight: '600', fontSize: 14, lineHeight: 16 },
 
   // Failed state
   bubbleFailed: {

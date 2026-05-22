@@ -25,6 +25,8 @@ export type AnalyticsEvent =
   | 'event_created'
   | 'topic_opened'
   | 'calendar_day_tapped'
+  | 'past_archive_opened'
+  | 'past_archive_range'
   | 'dm_opened'
   | 'dm_sent'
   | 'dm_image_sent'
