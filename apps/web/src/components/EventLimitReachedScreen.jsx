@@ -59,9 +59,9 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
 
         <div className="limit-hero">
           <div className="limit-emoji" aria-hidden="true">🎉</div>
-          <h1 className="limit-title">You've already created your event today!</h1>
+          <h1 className="limit-title">You've already created your hangout today!</h1>
           <p className="limit-body">
-            At Hilads, we keep things fresh — one event per day so every plan
+            At Hilads, we keep things fresh — one hangout per day so every plan
             gets the attention it deserves. Come back tomorrow to create
             another one.
           </p>
@@ -78,7 +78,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
                 <span className="er-title">
                   {EVENT_ICONS[blockingEvent.event_type ?? blockingEvent.type] ?? '📌'} {blockingEvent.title}
                 </span>
-                <span className="er-going er-going--event">Your event</span>
+                <span className="er-going er-going--event">Your hangout</span>
               </div>
               <div className="er-badges">
                 <span className="city-row-current">
@@ -96,7 +96,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             className="limit-legend-link"
             onClick={() => setShowLegendInfo(true)}
           >
-            👑 Become a Legend to create unlimited events
+            👑 Become a Legend to create unlimited hangouts
           </button>
         </div>
 
@@ -118,7 +118,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             <h2 className="limit-legend-modal-title">Become a Legend</h2>
             <p className="limit-legend-modal-body">
               Legends are locals chosen to keep their city alive — they can
-              host as many events as they want. Want to become one? Reach out
+              host as many hangouts as they want. Want to become one? Reach out
               at <a href="mailto:contact@hilads.live">contact@hilads.live</a>.
             </p>
             <button

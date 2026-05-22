@@ -88,10 +88,10 @@ function pushUrl(path) {
 
 const GUEST_GATE_COPY = {
   create_event: {
-    pageTitle: 'Create event',
+    pageTitle: 'Create hangout',
     emoji:     '🎉',
     title:     "Ghosts can browse, but can't host.",
-    sub:       'Create an account to throw your own event and put your city on the map.',
+    sub:       'Create an account to throw your own hangout and put your city on the map.',
   },
   view_profile: {
     pageTitle: 'Profile',
@@ -212,7 +212,7 @@ function ShareVibeBtn({ eventId, title, city }) {
       className={`share-vibe-btn${copied ? ' share-vibe-btn--copied' : ''}`}
       onClick={handleShare}
       title="Share this vibe"
-      aria-label="Share event"
+      aria-label="Share hangout"
     >
       {copied ? 'Link copied ✨' : 'Bring people ✨'}
     </button>
@@ -331,7 +331,7 @@ function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
           {isLive ? 'Live' : (event.recurrence_label ? '↻ Recurring' : 'Upcoming')}
         </span>
       </button>
-      <button className="my-event-delete" onClick={onDelete} aria-label="Delete event">✕</button>
+      <button className="my-event-delete" onClick={onDelete} aria-label="Delete hangout">✕</button>
     </div>
   )
 }
@@ -1609,7 +1609,7 @@ export default function App() {
       setFeed(prev => {
         if (prev.filter(m => m.type === 'message').length >= 3) return prev
         promptsShownRef.current.add('create-event')
-        return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: '🎉 Got a plan tonight?', cta: 'Create event' }]
+        return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: '🎉 Got a plan tonight?', cta: 'Create hangout' }]
       })
     }, 60000)
 
@@ -2736,7 +2736,7 @@ export default function App() {
     setEvents(prev => prev.filter(e => e.id !== eventId))
     setMyEvents(prev => prev.filter(e => e.id !== eventId))
     if (activeEvent?.id === eventId) handleBackToCity()
-    setSuccessToast({ msg: 'Event deleted' })
+    setSuccessToast({ msg: 'Hangout deleted' })
     setTimeout(() => setSuccessToast(null), 3000)
   }
 
@@ -2827,7 +2827,7 @@ export default function App() {
         const id = `event-msg-${event.id}`
         setFeed(prev => {
           if (prev.some(f => f.id === id)) return prev
-          return [...prev, { type: 'event', id, eventId: event.id, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
+          return [...prev, { type: 'event', id, eventId: event.id, text: `🔥 New hangout: ${event.title}`, cta: 'Join' }]
         })
       })
     }
@@ -3207,7 +3207,7 @@ export default function App() {
               </div>
               <div className="event-header-body">
                 {isMyEvent && (
-                  <span className="event-creator-badge">👑 Your event</span>
+                  <span className="event-creator-badge">👑 Your hangout</span>
                 )}
                 <div className="event-header-title-row">
                   <h1 className="event-header-title" title={activeEvent.title}>{activeEvent.title}</h1>
@@ -3462,7 +3462,7 @@ export default function App() {
                     className="feed-owner-prompt-btn"
                     onClick={() => setShowEditEvent(true)}
                   >
-                    ✏️ Edit event
+                    ✏️ Edit hangout
                   </button>
                 </div>
               )
@@ -3846,7 +3846,7 @@ export default function App() {
             <div className="city-filter-tabs">
               {[
                 { id: 'active', label: '🔥 Most active' },
-                { id: 'events', label: '🎉 Most events' },
+                { id: 'events', label: '🎉 Most hangouts' },
                 { id: 'online', label: '🟢 Most online' },
               ].map(f => (
                 <button
@@ -3937,7 +3937,7 @@ export default function App() {
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Pulses'}
+                {f === 'all' ? 'All' : f === 'events' ? '🔥 Hangouts' : '🗣️ Pulses'}
               </button>
             ))}
           </div>
@@ -3994,7 +3994,7 @@ export default function App() {
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">Public</span>
-                        : <span className="er-going er-going--event">Event</span>}
+                        : <span className="er-going er-going--event">Hangout</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
@@ -4051,7 +4051,7 @@ export default function App() {
                   <div className="events-empty-state">
                     <p className="events-empty-title">Couldn&apos;t load events</p>
                     <p className="events-empty-sub">Pull to retry later or create something new in {city}.</p>
-                    <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                    <button className="events-empty-cta" onClick={openCreate}>Create hangout</button>
                   </div>
                 )
               }
@@ -4067,7 +4067,7 @@ export default function App() {
                         : `Be the first to make something happen in ${city}`}
                     </p>
                     <button className="events-empty-cta" onClick={openCreate}>
-                      {isLocalUser ? 'Open your place' : 'Create event'}
+                      {isLocalUser ? 'Open your place' : 'Create hangout'}
                     </button>
                     <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a pulse ⚡</button>
                   </div>
@@ -4102,7 +4102,7 @@ export default function App() {
                 return (
                   <div className="events-empty-state">
                     <p className="events-empty-title">
-                      {nowFilter === 'events' ? 'No events right now' : 'No pulses yet'}
+                      {nowFilter === 'events' ? 'No hangouts right now' : 'No pulses yet'}
                     </p>
                     <p className="events-empty-sub">
                       {nowFilter === 'events'
@@ -4110,7 +4110,7 @@ export default function App() {
                         : `Start a pulse and get the city talking`}
                     </p>
                     {nowFilter === 'events'
-                      ? <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                      ? <button className="events-empty-cta" onClick={openCreate}>Create hangout</button>
                       : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a pulse ⚡</button>
                     }
                   </div>
@@ -4655,7 +4655,7 @@ export default function App() {
               </div>
               {myEventsLoaded && myEvents.length > 0 && (
                 <div className="me-card">
-                  <p className="me-section-label">My events</p>
+                  <p className="me-section-label">My hangouts</p>
                   {myEvents.map(ev => (
                     <MyEventRow
                       key={ev.id}
@@ -4896,7 +4896,18 @@ export default function App() {
         <div className="create-chooser-overlay" onClick={() => setShowCreateChooser(false)}>
           <div className="create-chooser-sheet" onClick={e => e.stopPropagation()}>
             <div className="create-chooser-handle" />
-            <p className="create-chooser-title">What do you want to do?</p>
+            <p className="create-chooser-title">What's the move?</p>
+            <button
+              className="create-chooser-option"
+              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
+            >
+              <span className="create-chooser-icon">🎉</span>
+              <span className="create-chooser-label">
+                <strong>Start a hangout</strong>
+                <span>Plan something others can join</span>
+              </span>
+              <span className="create-chooser-arrow">→</span>
+            </button>
             <button
               className="create-chooser-option"
               onClick={() => {
@@ -4906,19 +4917,8 @@ export default function App() {
             >
               <span className="create-chooser-icon">⚡</span>
               <span className="create-chooser-label">
-                <strong>Start a pulse</strong>
-                <span>Share something happening right now</span>
-              </span>
-              <span className="create-chooser-arrow">→</span>
-            </button>
-            <button
-              className="create-chooser-option"
-              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
-            >
-              <span className="create-chooser-icon">🔥</span>
-              <span className="create-chooser-label">
-                <strong>Host your spot</strong>
-                <span>Open your place to the community</span>
+                <strong>Share a moment</strong>
+                <span>Post what's happening around you right now</span>
               </span>
               <span className="create-chooser-arrow">→</span>
             </button>

@@ -504,7 +504,7 @@ export default function LandingPage({
           </div>
           <div className="lp-stat">
             <span className="lp-stat-value">500+</span>
-            <span className="lp-stat-label">events created</span>
+            <span className="lp-stat-label">hangouts created</span>
           </div>
           <div className="lp-stat">
             <span className="lp-stat-value">0</span>

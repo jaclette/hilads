@@ -38,7 +38,7 @@ const INTERESTS = [
 
 const PROFILE_TABS = [
   { key: 'interests', label: 'Interests' },
-  { key: 'events',    label: 'Events'    },
+  { key: 'events',    label: 'Hangouts'  },
   { key: 'friends',   label: 'Friends'   },
   { key: 'vibes',     label: 'Vibes'     },
 ]
@@ -459,7 +459,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                   </span>
                 </button>
                 {canDelete && (
-                  <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label="Delete event">✕</button>
+                  <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label="Delete hangout">✕</button>
                 )}
               </div>
             )

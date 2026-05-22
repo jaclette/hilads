@@ -48,7 +48,7 @@ function avatarColors(name) {
 const FILTERS = [
   { key: 'all',    label: 'All' },
   { key: 'dms',    label: 'Direct Messages' },
-  { key: 'events', label: 'Event Chats' },
+  { key: 'events', label: 'Hangout Chats' },
 ]
 
 export default function ConversationsScreen({ account, conversations, onConversationsLoaded, onBack, onOpenDm, onOpenEvent }) {
@@ -142,11 +142,11 @@ export default function ConversationsScreen({ account, conversations, onConversa
           <div className="conv-empty">
             <p className="conv-empty-icon">{activeFilter === 'events' ? '🔥' : '💬'}</p>
             <p className="conv-empty-title">
-              {activeFilter === 'events' ? 'No event chats yet' : 'No messages yet'}
+              {activeFilter === 'events' ? 'No hangout chats yet' : 'No messages yet'}
             </p>
             <p className="conv-empty-sub">
               {activeFilter === 'events'
-                ? 'Create or join an event to chat with people going.'
+                ? 'Create or join a hangout to chat with people going.'
                 : 'Connect with people you meet in the city.'}
             </p>
           </div>
@@ -194,7 +194,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
         {/* Event Chats section */}
         {!loading && !fetchError && showEvents && events.length > 0 && (
           <section className="conv-section">
-            {activeFilter === 'all' && <p className="conv-section-label">Event chats</p>}
+            {activeFilter === 'all' && <p className="conv-section-label">Hangout chats</p>}
             {events.map(ev => (
               <button
                 key={ev.channel_id}
@@ -237,8 +237,8 @@ export default function ConversationsScreen({ account, conversations, onConversa
 
             <div className="notif-pref-row">
               <div className="notif-pref-label">
-                <span className="notif-pref-name">Event chat messages</span>
-                <span className="notif-pref-desc">When someone messages in an event you joined</span>
+                <span className="notif-pref-name">Hangout chat messages</span>
+                <span className="notif-pref-desc">When someone messages in a hangout you joined</span>
               </div>
               <Toggle
                 checked={prefs?.event_message_push ?? true}

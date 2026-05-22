@@ -369,7 +369,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     } catch (err) {
       setDeleting(false)
       setShowConfirm(false)
-      setError(err.message || 'Could not delete event. Try again.')
+      setError(err.message || 'Could not delete hangout. Try again.')
     }
   }
 
@@ -377,7 +377,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{isEdit ? 'Edit event' : isLocal ? 'Host your spot' : 'Create event'}</span>
+        <span className="page-title">{isEdit ? 'Edit hangout' : isLocal ? 'Host your spot' : 'Create hangout'}</span>
       </div>
 
       {showConfirm && (
@@ -601,7 +601,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
                 ? 'Save changes'
                 : isLocal
                   ? (recurrence !== 'once' ? 'Open your spot' : 'Start a hangout')
-                  : 'Create event'
+                  : 'Create hangout'
             }
           </button>
 
@@ -612,7 +612,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               onClick={() => setShowConfirm(true)}
               disabled={submitting}
             >
-              🗑 Delete event
+              🗑 Delete hangout
             </button>
           )}
 
