@@ -15,15 +15,17 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator, Modal, Platform,
+  StyleSheet, ActivityIndicator, Modal, Platform, Alert, Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
 import { createEvent, createEventSeries } from '@/api/events';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { LocationPicker } from '@/features/chat/LocationPicker';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -324,7 +326,11 @@ export default function CreateEventScreen() {
   const [repeat,          setRepeat]          = useState<RepeatMode>('once');
   const [weekdays,        setWeekdays]        = useState<number[]>(() => [new Date().getDay()]);
   const [intervalDays,    setIntervalDays]    = useState('7');
-  const [location,        setLocation]        = useState('');
+  const [location,        setLocation]        = useState('');                 // address label (display + location_hint)
+  const [locationCoords,  setLocationCoords]  = useState<{ lat: number; lng: number } | null>(null);
+  const [showLocPicker,   setShowLocPicker]   = useState(false);
+  const [locPickerCenter, setLocPickerCenter] = useState<{ lat: number; lng: number } | null>(null);
+  const [locPickerAuto,   setLocPickerAuto]   = useState(true);                // false when re-editing a chosen spot
   const [submitting,      setSubmitting]      = useState(false);
   const [error,           setError]           = useState<string | null>(null);
   const [selectedPreset,  setSelectedPreset]  = useState<PresetKey | null>(null);
@@ -367,6 +373,61 @@ export default function CreateEventScreen() {
 
   const isLocal = account?.mode === 'local';
 
+  // Open the shared map picker. Re-edit: center on the prior spot and DON'T
+  // auto-locate (so it stays there). New: request permission, seed with
+  // last-known position, and let the picker refine to precise GPS.
+  async function handleOpenLocation() {
+    if (locationCoords) {
+      setLocPickerCenter(locationCoords);
+      setLocPickerAuto(false);
+      setShowLocPicker(true);
+      return;
+    }
+    const existing = await Location.getForegroundPermissionsAsync();
+    let granted = existing.status === 'granted';
+    if (!granted) {
+      if (!existing.canAskAgain) {
+        Alert.alert(
+          'Location access required',
+          'Please enable location in Settings → Hilads → Location.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ],
+        );
+        return;
+      }
+      const result = await Location.requestForegroundPermissionsAsync();
+      granted = result.status === 'granted';
+      if (!granted) {
+        Alert.alert('Location needed', 'Allow location access to set a spot on the map.');
+        return;
+      }
+    }
+    let lat = 0, lng = 0;
+    try {
+      const last = await Location.getLastKnownPositionAsync();
+      if (last) { lat = last.coords.latitude; lng = last.coords.longitude; }
+    } catch {}
+    setLocPickerCenter({ lat, lng });
+    setLocPickerAuto(true);
+    setShowLocPicker(true);
+  }
+
+  function handleLocationConfirm({ place, address, lat, lng }: { place: string; address: string; lat: number; lng: number }) {
+    setShowLocPicker(false);
+    // Prefer the human address; fall back to the place name. Both feed the
+    // location_hint text; coords are stored separately for precise maps links.
+    const label = address ? (place && !address.startsWith(place) ? `${place} — ${address}` : address) : place;
+    setLocation(label);
+    setLocationCoords({ lat, lng });
+  }
+
+  function clearLocation() {
+    setLocation('');
+    setLocationCoords(null);
+  }
+
   async function handleSubmit() {
     if (!city)        { setError('No city selected'); return; }
     if (!title.trim()) { setError('Title is required'); return; }
@@ -391,6 +452,7 @@ export default function CreateEventScreen() {
           city.channelId, guestId, nickname,
           title.trim(), location.trim() || undefined,
           startUnix, endUnix, type,
+          locationCoords?.lat, locationCoords?.lng,
         );
         router.replace(`/event/${event.id}`);
       } else {
@@ -448,7 +510,7 @@ export default function CreateEventScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{isLocal ? 'Host your spot' : 'Create hangout'}</Text>
+          <Text style={styles.headerTitle}>{isLocal ? 'Host a hangout' : 'Create hangout'}</Text>
         </View>
       </View>
 
@@ -625,18 +687,26 @@ export default function CreateEventScreen() {
 
         </View>
 
-        {/* ── LOCATION ──────────────────────────────────────────────────────── */}
+        {/* ── LOCATION (tappable → map picker; optional) ────────────────────── */}
         <View style={styles.section}>
           <Text style={styles.fieldLabel}>LOCATION</Text>
-          <TextInput
-            style={styles.input}
-            value={location}
-            onChangeText={setLocation}
-            placeholder="Optional"
-            placeholderTextColor={Colors.muted2}
-            maxLength={100}
-            autoCorrect={false}
-          />
+          <TouchableOpacity
+            style={styles.locField}
+            activeOpacity={0.7}
+            onPress={handleOpenLocation}
+          >
+            <Ionicons name="location-outline" size={18} color={location ? Colors.accent : Colors.muted2} />
+            <Text style={[styles.locFieldText, !location && styles.locFieldPlaceholder]} numberOfLines={2}>
+              {location || 'Optional · tap to set on map'}
+            </Text>
+            {location ? (
+              <TouchableOpacity onPress={clearLocation} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <Ionicons name="close-circle" size={18} color={Colors.muted2} />
+              </TouchableOpacity>
+            ) : (
+              <Ionicons name="chevron-forward" size={16} color={Colors.muted2} />
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* ── Error ─────────────────────────────────────────────────────────── */}
@@ -655,6 +725,18 @@ export default function CreateEventScreen() {
 
         <View style={{ height: Spacing.xl }} />
       </ScrollView>
+
+      {/* ── Map location picker (shared with drop-my-spot) ── */}
+      {showLocPicker && locPickerCenter && (
+        <LocationPicker
+          visible={showLocPicker}
+          initialLat={locPickerCenter.lat}
+          initialLng={locPickerCenter.lng}
+          autoLocate={locPickerAuto}
+          onConfirm={handleLocationConfirm}
+          onClose={() => setShowLocPicker(false)}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -753,6 +835,22 @@ const styles = StyleSheet.create({
     color:             Colors.text,
     fontSize:          FontSizes.md,
   },
+
+  // Tappable location field — opens the map picker (mirrors `input` styling).
+  locField: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               10,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      12,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    paddingHorizontal: 16,
+    paddingVertical:   Platform.OS === 'ios' ? 14 : 12,
+    minHeight:         52,
+  },
+  locFieldText:        { flex: 1, color: Colors.text, fontSize: FontSizes.md, lineHeight: 20 },
+  locFieldPlaceholder: { color: Colors.muted2 },
 
   // ── Time pickers ──────────────────────────────────────────────────────────
   timeRow:   { flexDirection: 'row', gap: 14 },

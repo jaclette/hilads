@@ -105,11 +105,18 @@ interface Props {
   visible:    boolean;
   initialLat: number;
   initialLng: number;
+  /**
+   * Refine to precise GPS on open and pan there. Default true (drop-my-spot:
+   * we want the user's live position). Pass false when reopening on an
+   * already-chosen spot (e.g. editing a hangout's location) so the map stays
+   * centered on that spot instead of snapping to current GPS.
+   */
+  autoLocate?: boolean;
   onConfirm:  (result: { place: string; address: string; lat: number; lng: number }) => void;
   onClose:    () => void;
 }
 
-export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onClose }: Props) {
+export function LocationPicker({ visible, initialLat, initialLng, autoLocate = true, onConfirm, onClose }: Props) {
   const insets = useSafeAreaInsets();
 
   const [place,     setPlace]     = useState('');
@@ -136,7 +143,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
   // The caller already provided last-known position as initialLat/Lng so the map
   // renders immediately. Here we silently upgrade to precise GPS and pan the map.
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || !autoLocate) return;
     let cancelled = false;
     (async () => {
       try {
@@ -156,7 +163,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
       } catch { /* stay at last-known position */ }
     })();
     return () => { cancelled = true; };
-  }, [visible]);
+  }, [visible, autoLocate]);
 
   const geocode = useCallback(async (lat: number, lng: number) => {
     setGeocoding(true);

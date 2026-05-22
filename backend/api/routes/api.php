@@ -3764,6 +3764,20 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         }
     }
 
+    // Optional precise coordinates from the map picker. Stored on the event so
+    // the detail screen can open the exact spot in Google Maps. Both must be
+    // present and within valid ranges, else we drop them (text location stands).
+    $venueLat = null;
+    $venueLng = null;
+    if (isset($body['lat'], $body['lng']) && is_numeric($body['lat']) && is_numeric($body['lng'])) {
+        $latF = (float) $body['lat'];
+        $lngF = (float) $body['lng'];
+        if ($latF >= -90 && $latF <= 90 && $lngF >= -180 && $lngF <= 180 && !($latF === 0.0 && $lngF === 0.0)) {
+            $venueLat = $latF;
+            $venueLng = $lngF;
+        }
+    }
+
     $startsAt = normalizeUnixTimestamp($startsAt);
     if ($startsAt === null) {
         Response::json(['error' => 'starts_at is required and must be a unix timestamp'], 400);
@@ -3809,7 +3823,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
     error_log("[event-create] channelId={$channelId} guestId={$guestId} userId={$userId} ambassador=" . ($isAmbassador ? 'yes' : 'no') . " title=" . json_encode($title));
 
     try {
-        $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $userId, $isAmbassador);
+        $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $userId, $isAmbassador, $venueLat, $venueLng);
     } catch (\Throwable $e) {
         error_log("[event-create] FAILED: " . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
         throw $e; // re-throw so global handler returns 500 — but now it's in the logs

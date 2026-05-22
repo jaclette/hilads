@@ -767,7 +767,9 @@ class EventRepository
         int $endsAt,
         string $type = 'other',
         ?string $userId = null,
-        bool $isAmbassador = false
+        bool $isAmbassador = false,
+        ?float $venueLat = null,
+        ?float $venueLng = null
     ): array {
         $pdo      = Database::pdo();
         $parentId = 'city_' . $channelId;
@@ -831,10 +833,10 @@ class EventRepository
         $pdo->prepare("
             INSERT INTO channel_events
                 (channel_id, source_type, guest_id, created_by, host_nickname, title, event_type, location,
-                 starts_at, expires_at, city_id)
+                 venue_lat, venue_lng, starts_at, expires_at, city_id)
             VALUES
                 (:channel_id, 'hilads', :guest_id, :created_by, :host_nickname, :title, :event_type, :location,
-                 to_timestamp(:starts_at), to_timestamp(:expires_at), :city_id)
+                 :venue_lat, :venue_lng, to_timestamp(:starts_at), to_timestamp(:expires_at), :city_id)
         ")->execute([
             'channel_id'    => $id,
             'guest_id'      => $guestId,
@@ -843,6 +845,8 @@ class EventRepository
             'title'         => $title,
             'event_type'    => $type,
             'location'      => $locationHint,
+            'venue_lat'     => $venueLat,
+            'venue_lng'     => $venueLng,
             'starts_at'     => $startsAt,
             'expires_at'    => $expiresAt,
             'city_id'       => $parentId,
@@ -873,8 +877,8 @@ class EventRepository
             'location_hint'=> $locationHint,
             'venue'        => null,
             'location'     => $locationHint,
-            'venue_lat'    => null,
-            'venue_lng'    => null,
+            'venue_lat'    => $venueLat,
+            'venue_lng'    => $venueLng,
             'image_url'    => null,
             'external_url' => null,
             'starts_at'    => $startsAt,

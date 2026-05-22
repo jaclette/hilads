@@ -448,9 +448,11 @@ export class EventLimitReachedError extends Error {
   }
 }
 
-export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, endsAt, type) {
+export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, endsAt, type, lat, lng) {
   const body = { guestId, nickname, title, starts_at: startsAt, ends_at: endsAt, type }
   if (locationHint) body.location_hint = locationHint
+  // Precise coords from the map picker (optional) — power exact Maps links.
+  if (typeof lat === 'number' && typeof lng === 'number') { body.lat = lat; body.lng = lng }
   const res = await fetch(`${BASE}/channels/${channelId}/events`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

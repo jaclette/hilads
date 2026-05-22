@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { createEvent, createEventSeries, updateEvent, deleteEvent, EventLimitReachedError } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 import BackButton from './BackButton'
+import LocationPicker from './LocationPicker'
 
 // ── Time helpers ───────────────────────────────────────────────────────────────
 
@@ -213,6 +214,15 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const [startTime, setStartTime] = useState(() => editEvent ? unixToTimeStr(editEvent.starts_at, tz) : getDefaultTime(tz))
   const [endTime, setEndTime] = useState(() => editEvent ? unixToTimeStr(editEvent.ends_at || editEvent.expires_at, tz) : addHoursToTime(getDefaultTime(tz), 2))
   const [location, setLocation] = useState(() => editEvent?.location_hint || editEvent?.location || '')
+  // Precise coords from the map picker (optional). Pre-fill from the event being
+  // edited so re-opening the picker centers on its existing spot.
+  const [locationCoords, setLocationCoords] = useState(() =>
+    (typeof editEvent?.venue_lat === 'number' && typeof editEvent?.venue_lng === 'number')
+      ? { lat: editEvent.venue_lat, lng: editEvent.venue_lng }
+      : null,
+  )
+  const [pickerCenter, setPickerCenter] = useState(null)  // {lat,lng} → picker open
+  const [locating,     setLocating]     = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -250,6 +260,40 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     setWeekdays(prev =>
       prev.includes(dow) ? prev.filter(d => d !== dow) : [...prev, dow]
     )
+  }
+
+  // Open the shared map picker. Re-edit: center on the chosen spot. New: use
+  // the browser's current position (the web picker has no GPS auto-refine).
+  async function handleOpenLocation() {
+    if (locationCoords) { setPickerCenter(locationCoords); return }
+    if (!navigator.geolocation) {
+      setError('Location is not available in this browser. You can still create the hangout without it.')
+      return
+    }
+    setLocating(true)
+    setError(null)
+    try {
+      const pos = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }),
+      )
+      setPickerCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
+    } catch {
+      setError("Couldn't get your location. Enable location access, or skip the map.")
+    } finally {
+      setLocating(false)
+    }
+  }
+
+  function handleLocationConfirm({ place, address, lat, lng }) {
+    setPickerCenter(null)
+    const label = address ? (place && !address.startsWith(place) ? `${place} — ${address}` : address) : place
+    setLocation(label)
+    setLocationCoords({ lat, lng })
+  }
+
+  function clearLocation() {
+    setLocation('')
+    setLocationCoords(null)
   }
 
   async function handleSubmit(e) {
@@ -307,6 +351,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
           startsAtUnix,
           endsAtUnix,
           type,
+          locationCoords?.lat,
+          locationCoords?.lng,
         )
         onCreated(newEvent)
       } catch (err) {
@@ -377,7 +423,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{isEdit ? 'Edit hangout' : isLocal ? 'Host your spot' : 'Create hangout'}</span>
+        <span className="page-title">{isEdit ? 'Edit hangout' : isLocal ? 'Host a hangout' : 'Create hangout'}</span>
       </div>
 
       {showConfirm && (
@@ -575,17 +621,31 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             </div>
           )}
 
-          {/* Location */}
+          {/* Location — tappable, opens the map picker (optional) */}
           <div className="cef-section">
             <label className="cef-label">Location</label>
-            <input
-              className="cef-input"
-              type="text"
-              value={location}
-              onChange={e => setLocation(e.target.value)}
-              placeholder="Optional"
-              maxLength={100}
-            />
+            <button
+              type="button"
+              className="cef-loc-field"
+              onClick={handleOpenLocation}
+              disabled={locating}
+            >
+              <span className="cef-loc-icon" aria-hidden="true">📍</span>
+              <span className={`cef-loc-text${location ? '' : ' cef-loc-placeholder'}`}>
+                {locating ? 'Getting your location…' : (location || 'Optional · tap to set on map')}
+              </span>
+              {location ? (
+                <span
+                  className="cef-loc-clear"
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Clear location"
+                  onClick={e => { e.stopPropagation(); clearLocation() }}
+                >✕</span>
+              ) : (
+                <span className="cef-loc-chevron" aria-hidden="true">›</span>
+              )}
+            </button>
           </div>
 
           {error && <p className="cef-error">{error}</p>}
@@ -618,6 +678,17 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
         </form>
       </div>
+
+      {/* Map location picker (shared with drop-my-spot; full-screen overlay) */}
+      {pickerCenter && (
+        <LocationPicker
+          initialLat={pickerCenter.lat}
+          initialLng={pickerCenter.lng}
+          nickname={nickname}
+          onConfirm={handleLocationConfirm}
+          onClose={() => setPickerCenter(null)}
+        />
+      )}
     </div>
   )
 }

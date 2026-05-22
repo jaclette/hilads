@@ -118,6 +118,8 @@ export async function createEvent(
   startsAt: number,
   endsAt: number,
   type: string,
+  lat?: number,
+  lng?: number,
 ): Promise<HiladsEvent> {
   return api.post<HiladsEvent>(`/channels/${channelId}/events`, {
     guestId,
@@ -127,6 +129,8 @@ export async function createEvent(
     ends_at: endsAt,
     type,
     location_hint: locationHint,
+    // Precise coords from the map picker (optional) — power exact Maps links.
+    ...(typeof lat === 'number' && typeof lng === 'number' ? { lat, lng } : {}),
   });
 }
 
