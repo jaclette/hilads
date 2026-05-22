@@ -82,7 +82,7 @@ class NotificationRepository
             'dm_push'              => true,
             'event_message_push'   => true,
             'event_join_push'      => false,
-            'new_event_push'       => false,
+            'new_event_push'       => true,
             'channel_message_push' => false,
             'city_join_push'       => false,
             'friend_request_push'  => true,
@@ -304,16 +304,16 @@ class NotificationRepository
     /**
      * Notify registered users associated with a city channel, excluding one user.
      *
-     * Recipient set depends on $type and NOTIFICATIONS_USE_CURRENT_CITY flag:
+     * Recipient set depends on $type:
      *
-     *   - 'new_event' AND flag on: users whose current_city_id matches, active
-     *     in the last 30 days. Decouples "new event" notifications from online
-     *     presence (Phase D bug fix: users get pushed when an event is created
-     *     in their city even if the app is closed). Rate-limited per (user, city).
+     *   - 'new_event': users whose current_city_id matches, active in the last
+     *     30 days. current_city_id is the canonical membership signal, so this
+     *     reaches city members even when their app is closed — which is the
+     *     whole point of a push. Rate-limited to 1 per (user, city) per 10 min.
      *
-     *   - Anything else (or flag off): users with a presence heartbeat in the
-     *     last 3 minutes. Legacy behavior — appropriate for transient signals
-     *     like 'channel_message' where you only want to ping engaged users.
+     *   - Anything else: users with a presence heartbeat in the last 3 minutes.
+     *     Appropriate for transient signals like 'channel_message' where you
+     *     only want to ping users actively engaged in the channel right now.
      */
     public static function notifyCityOnlineUsers(
         string  $cityChannelId,
@@ -323,7 +323,7 @@ class NotificationRepository
         ?string $body,
         array   $data
     ): void {
-        $useCurrentCity = $type === 'new_event' && featureEnabled('NOTIFICATIONS_USE_CURRENT_CITY');
+        $useCurrentCity = $type === 'new_event';
 
         if ($useCurrentCity) {
             // current_city_last_confirmed_at TTL: 30 days. Users who haven't

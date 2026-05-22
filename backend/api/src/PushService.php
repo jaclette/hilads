@@ -58,7 +58,7 @@ class PushService
             $prefStmt->execute([$userId]);
             $prefRow = $prefStmt->fetch(\PDO::FETCH_ASSOC);
 
-            $defaults = ['dm_push' => true, 'event_message_push' => true, 'new_event_push' => false, 'vibe_received_push' => true, 'profile_view_push' => true];
+            $defaults = ['dm_push' => true, 'event_message_push' => true, 'new_event_push' => true, 'vibe_received_push' => true, 'profile_view_push' => true];
             $enabled  = $prefRow ? (bool) ($prefRow[$prefColumn] ?? $defaults[$prefColumn] ?? true) : ($defaults[$prefColumn] ?? false);
 
             if (!$enabled) return;

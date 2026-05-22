@@ -10,7 +10,7 @@ class NotificationPreferencesRepository
             'dm_push'              => true,
             'event_message_push'   => true,
             'event_join_push'      => false,
-            'new_event_push'       => false,
+            'new_event_push'       => true,
             'channel_message_push' => false,
             'city_join_push'       => false,
             'friend_request_push'    => true,

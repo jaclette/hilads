@@ -266,7 +266,7 @@ function broadcastNewTopicToWs(int $channelId, array $topic): void
 //   type             string        kept for backward-compat web rendering
 //   source           string        kept for backward-compat web rendering
 //   starts_at, ends_at, expires_at, location, venue, participant_count,
-//   is_participating, recurrence_label, guest_id, created_by, series_id
+//   participants_preview, is_participating, recurrence_label, guest_id, created_by, series_id
 //
 // Additional topic-only fields:
 //   category, message_count, expires_at, city_id
@@ -2115,17 +2115,22 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
     // Embed participation state when caller passes their persistent guestId.
     // This eliminates a round-trip and avoids the race condition where the CTA
     // briefly shows "Join" before the secondary /participants fetch completes.
+    // $viewerForBlocks is the logged-in user (or null) — already resolved above.
+    // Pass their user_id so a registered user reads as participating even when
+    // their current guestId/sessionId differs from the one stored at join time.
+    $viewerUserId = $viewerForBlocks['id'] ?? null;
     $guestId   = trim($_GET['guestId']   ?? '');
     $sessionId = trim($_GET['sessionId'] ?? '');
+    $event['participant_count'] = ParticipantRepository::getCount($eventId);
     if (isValidGuestId($guestId)) {
-        $event['participant_count']  = ParticipantRepository::getCount($eventId);
-        $event['is_participating']   = ParticipantRepository::isIn($eventId, $guestId);
+        $event['is_participating'] = ParticipantRepository::isIn($eventId, $guestId, $viewerUserId);
     } elseif (isValidSessionId($sessionId)) {
-        $event['participant_count']  = ParticipantRepository::getCount($eventId);
-        $event['is_participating']   = ParticipantRepository::isIn($eventId, $sessionId);
+        $event['is_participating'] = ParticipantRepository::isIn($eventId, $sessionId, $viewerUserId);
+    } elseif ($viewerUserId !== null) {
+        // No valid session key, but a logged-in user may have joined elsewhere.
+        $event['is_participating'] = ParticipantRepository::isIn($eventId, '', $viewerUserId);
     } else {
-        $event['participant_count']  = ParticipantRepository::getCount($eventId);
-        $event['is_participating']   = false;
+        $event['is_participating'] = false;
     }
 
     // Also resolve the city name so the frontend can hydrate city context
@@ -4518,6 +4523,11 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
 
     $participantKey = $guestId !== '' ? $guestId : ($sessionId !== '' ? $sessionId : '');
 
+    // Logged-in user's id — lets isIn match their row by user_id even when the
+    // session/guest key differs (web's sessionId is per-page; native guestId is
+    // per-device), keeping the Join/Going button in sync with count + list.
+    $viewerUserId = AuthService::currentUser()['id'] ?? null;
+
     // ?lite=1 — skip the full participant list (user JOIN + mapping).
     // Use this when only count + isIn are needed (event card / status check).
     $lite = ($_GET['lite'] ?? '') === '1';
@@ -4525,7 +4535,9 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
     Response::json([
         'participants' => $lite ? [] : ParticipantRepository::getParticipants($eventId),
         'count'        => ParticipantRepository::getCount($eventId),
-        'isIn'         => $participantKey !== '' ? ParticipantRepository::isIn($eventId, $participantKey) : false,
+        'isIn'         => ($participantKey !== '' || $viewerUserId !== null)
+            ? ParticipantRepository::isIn($eventId, $participantKey, $viewerUserId)
+            : false,
     ]);
 });
 

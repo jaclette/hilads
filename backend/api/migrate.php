@@ -325,7 +325,7 @@ run($pdo, "
         dm_push                BOOLEAN NOT NULL DEFAULT TRUE,
         event_message_push     BOOLEAN NOT NULL DEFAULT TRUE,
         event_join_push        BOOLEAN NOT NULL DEFAULT FALSE,
-        new_event_push         BOOLEAN NOT NULL DEFAULT FALSE,
+        new_event_push         BOOLEAN NOT NULL DEFAULT TRUE,
         channel_message_push   BOOLEAN NOT NULL DEFAULT FALSE,
         city_join_push         BOOLEAN NOT NULL DEFAULT FALSE,
         friend_request_push    BOOLEAN NOT NULL DEFAULT TRUE,
@@ -336,6 +336,12 @@ run($pdo, "
         admin_announcement_push BOOLEAN NOT NULL DEFAULT TRUE
     )
 ", 'notification_preferences');
+
+// new_event_push was originally DEFAULT FALSE while the "new event in your city"
+// trigger was broken. Now that it's fixed, city members should get it by default.
+// CREATE TABLE IF NOT EXISTS won't touch the existing column, so set the default
+// explicitly on the live column (idempotent — safe to re-run every deploy).
+run($pdo, "ALTER TABLE notification_preferences ALTER COLUMN new_event_push SET DEFAULT TRUE", 'notification_preferences.new_event_push default→true');
 
 // Admin push broadcasts — one row per send action triggered from /admin/push.
 // Doubles as the audit log (admin_username + admin_ip + created_at) since

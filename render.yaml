@@ -18,15 +18,9 @@ services:
       # once Phase B has populated current_city_id for ≥70% of active users.
       - key: MEMBERS_USE_CURRENT_CITY
         value: "off"
-      # Phase D feature flag — when "on", "new event in your city" push
-      # notifications fan out to users with current_city_id = X (regardless
-      # of presence/online), filtered by 30-day recency + opt-in pref, with
-      # a 1-per-(user,city)-per-10-min rate limit. When "off", the existing
-      # presence-based query runs (only notifies users online in the last
-      # 3 minutes). Only flip on after MEMBERS_USE_CURRENT_CITY has been on
-      # for 24h without issues.
-      - key: NOTIFICATIONS_USE_CURRENT_CITY
-        value: "off"
+      # NOTIFICATIONS_USE_CURRENT_CITY removed: "new event in your city" now
+      # ALWAYS targets users by current_city_id (the flag gate was removed in
+      # NotificationRepository::notifyCityOnlineUsers), so the env var is unused.
 
   # Node.js WebSocket presence server
   # Plan is intentionally not set here — control it from the Render dashboard.

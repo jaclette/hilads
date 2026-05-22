@@ -261,6 +261,8 @@ class EventRepository
             $countStmt->execute($ids);
             $counts = array_column($countStmt->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');
 
+            $previews = ParticipantRepository::getPreviewBatch($ids);
+
             $isIn = [];
             if ($participantKey !== null) {
                 $isInStmt = Database::pdo()->prepare("
@@ -272,8 +274,9 @@ class EventRepository
             }
 
             foreach ($events as &$event) {
-                $event['participant_count']  = (int) ($counts[$event['id']] ?? 0);
-                $event['is_participating']   = $participantKey !== null
+                $event['participant_count']   = (int) ($counts[$event['id']] ?? 0);
+                $event['participants_preview'] = $previews[$event['id']] ?? [];
+                $event['is_participating']    = $participantKey !== null
                     ? isset($isIn[$event['id']])
                     : null;
             }
@@ -349,8 +352,11 @@ class EventRepository
             $countStmt->execute($ids);
             $counts = array_column($countStmt->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');
 
+            $previews = ParticipantRepository::getPreviewBatch($ids);
+
             foreach ($events as &$event) {
-                $event['participant_count'] = (int) ($counts[$event['id']] ?? 0);
+                $event['participant_count']    = (int) ($counts[$event['id']] ?? 0);
+                $event['participants_preview'] = $previews[$event['id']] ?? [];
             }
             unset($event);
         }
@@ -461,6 +467,8 @@ class EventRepository
             $cntStmt->execute($ids);
             $counts = array_column($cntStmt->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');
 
+            $previews = ParticipantRepository::getPreviewBatch($ids);
+
             $isIn = [];
             if ($participantKey !== null) {
                 $inStmt = Database::pdo()->prepare(
@@ -471,8 +479,9 @@ class EventRepository
             }
 
             foreach ($events as &$event) {
-                $event['participant_count'] = (int) ($counts[$event['id']] ?? 0);
-                $event['is_participating']  = $participantKey !== null ? isset($isIn[$event['id']]) : null;
+                $event['participant_count']    = (int) ($counts[$event['id']] ?? 0);
+                $event['participants_preview'] = $previews[$event['id']] ?? [];
+                $event['is_participating']     = $participantKey !== null ? isset($isIn[$event['id']]) : null;
             }
             unset($event);
         }

@@ -94,6 +94,58 @@ class ParticipantRepository
         }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
+    /**
+     * Batch-fetch a small attendee avatar preview for many events in ONE query.
+     *
+     * Returns [channelId => [ {id, displayName, thumbAvatarUrl}, ... up to $limit ]],
+     * most-recent-joiner first. Powers the avatar row on event cards without an
+     * N+1 per-card request — mirrors the batched count query in EventRepository.
+     *
+     * Guests / deleted users have no photo → thumbAvatarUrl is null and the
+     * client renders an initial fallback, so no private photo or profile is
+     * exposed (ghost mode respected by construction).
+     */
+    public static function getPreviewBatch(array $eventIds, int $limit = 5): array
+    {
+        if (empty($eventIds)) return [];
+
+        $placeholders = implode(',', array_fill(0, count($eventIds), '?'));
+        // $limit is a trusted int (constant/caller) — interpolated like the other
+        // LIMIT clauses here, which sidesteps a Postgres bigint <= text param mismatch.
+        $limit = max(1, (int) $limit);
+        $stmt = Database::pdo()->prepare("
+            SELECT channel_id, id, display_name, nickname, thumb_url, full_url FROM (
+                SELECT ep.channel_id,
+                       COALESCE(ep.user_id, ep.guest_id) AS id,
+                       ep.nickname,
+                       CASE WHEN u.deleted_at IS NULL THEN u.display_name            ELSE NULL END AS display_name,
+                       CASE WHEN u.deleted_at IS NULL THEN u.profile_thumb_photo_url ELSE NULL END AS thumb_url,
+                       CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url        ELSE NULL END AS full_url,
+                       row_number() OVER (PARTITION BY ep.channel_id ORDER BY ep.joined_at DESC) AS rn
+                FROM event_participants ep
+                LEFT JOIN users u ON u.id = ep.user_id
+                WHERE ep.channel_id IN ($placeholders)
+            ) t
+            WHERE t.rn <= $limit
+            ORDER BY t.channel_id, t.rn
+        ");
+        $stmt->execute(array_values($eventIds));
+
+        $out = [];
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            $name = $r['display_name'] ?? '';
+            if ($name === '' || $name === null) {
+                $name = ($r['nickname'] ?? '') !== '' ? $r['nickname'] : 'Guest';
+            }
+            $out[$r['channel_id']][] = [
+                'id'             => $r['id'],
+                'displayName'    => $name,
+                'thumbAvatarUrl' => $r['thumb_url'] ?? $r['full_url'],
+            ];
+        }
+        return $out;
+    }
+
     public static function getCount(string $eventId): int
     {
         $stmt = Database::pdo()->prepare("
@@ -103,13 +155,34 @@ class ParticipantRepository
         return (int) $stmt->fetchColumn();
     }
 
-    public static function isIn(string $eventId, string $sessionId): bool
+    /**
+     * Is this caller participating in the event?
+     *
+     * Matches the participant row by the session/guest key OR — for logged-in
+     * users — their user_id. The user_id match is what keeps the Join/Going
+     * button in sync with the "X going" count and attendee list: those include
+     * the user's row regardless of which session created it, so the button must
+     * recognise the row the same way. Without it, a registered user whose current
+     * key differs from the one stored at join time (web: ephemeral per-page
+     * sessionId; native: a different device's guestId) reads as "not joined"
+     * while still appearing in the count/attendee list — contradicting itself.
+     */
+    public static function isIn(string $eventId, string $sessionId, ?string $userId = null): bool
     {
-        $stmt = Database::pdo()->prepare("
-            SELECT 1 FROM event_participants
-            WHERE channel_id = ? AND guest_id = ?
-        ");
-        $stmt->execute([$eventId, $sessionId]);
+        if ($userId !== null && $userId !== '') {
+            $stmt = Database::pdo()->prepare("
+                SELECT 1 FROM event_participants
+                WHERE channel_id = ? AND (guest_id = ? OR user_id = ?)
+                LIMIT 1
+            ");
+            $stmt->execute([$eventId, $sessionId, $userId]);
+        } else {
+            $stmt = Database::pdo()->prepare("
+                SELECT 1 FROM event_participants
+                WHERE channel_id = ? AND guest_id = ?
+            ");
+            $stmt->execute([$eventId, $sessionId]);
+        }
         return (bool) $stmt->fetchColumn();
     }
 
