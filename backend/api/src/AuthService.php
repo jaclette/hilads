@@ -47,9 +47,21 @@ class AuthService
             Response::json(['error' => 'Display name is required'], 422);
         }
 
-        $usernameError = UsernameService::validate($username);
-        if ($usernameError !== null) {
-            Response::json(['error' => $usernameError], 422);
+        // Username: clients that include the field (current builds) must send a
+        // valid, available handle. Clients that DON'T (older/in-flight builds —
+        // incl. the live App Store build) send none; auto-generate from the
+        // display name so signup is never blocked by client/build skew. Matches
+        // the auto-generate migration strategy used for existing users.
+        if ($username === '') {
+            $username = UsernameService::generateUnique($displayName);
+        } else {
+            $usernameError = UsernameService::validate($username);
+            if ($usernameError !== null) {
+                Response::json(['error' => $usernameError], 422);
+            }
+            if (!UsernameService::isAvailable($username)) {
+                Response::json(['error' => 'That username is taken'], 409);
+            }
         }
 
         $allowedModes = ['local', 'exploring'];
@@ -59,10 +71,6 @@ class AuthService
 
         if (UserRepository::findByEmail($email) !== null) {
             Response::json(['error' => 'An account with this email already exists'], 409);
-        }
-
-        if (!UsernameService::isAvailable($username)) {
-            Response::json(['error' => 'That username is taken'], 409);
         }
 
         try {
