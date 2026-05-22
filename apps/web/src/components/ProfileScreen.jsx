@@ -46,7 +46,6 @@ const PROFILE_TABS = [
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
-  const [name,            setName]            = useState(account.display_name ?? '')
   const [username,        setUsername]        = useState(account.username ?? '')
   const [uStatus,         setUStatus]         = useState('idle') // idle|checking|available|taken|invalid
   const [uReason,         setUReason]         = useState(null)
@@ -139,12 +138,11 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   }
 
   async function handleSave() {
-    const trimmedName = name.trim()
-    if (!trimmedName) return
+    // Username is the single identity field — it doubles as the display name.
     const handle        = username.trim().toLowerCase()
     const handleChanged = handle !== (account.username ?? '')
+    if (handle.length < 3)     { setError('Username must be at least 3 characters'); return }
     if (handleChanged) {
-      if (handle.length < 3)     { setError('Username must be at least 3 characters'); return }
       if (uStatus === 'taken')   { setError('That username is taken'); return }
       if (uStatus === 'invalid') { setError(uReason || 'Invalid username'); return }
     }
@@ -152,8 +150,9 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     setError(null)
     try {
       const fields = {
-        ...(handleChanged ? { username: handle } : {}),
-        display_name:      trimmedName,
+        // display_name == username (single identity field).
+        username:          handle,
+        display_name:      handle,
         about_me:          aboutMe.trim() || null,
         home_city:         homeCity.trim() || null,
         interests:         [...interests],
@@ -199,7 +198,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     }
   }
 
-  const [c1, c2] = avatarColors(name || account.display_name)
+  const [c1, c2] = avatarColors(username || account.username || account.display_name)
 
   return (
     <div className={`full-page${tabMode ? ' full-page--tab' : ''}`}>
@@ -232,9 +231,9 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               aria-label="Change profile photo"
             >
               {photoUrl
-                ? <img className="online-avatar profile-avatar-identity" src={thumbPhotoUrl ?? photoUrl} alt={name} />
+                ? <img className="online-avatar profile-avatar-identity" src={thumbPhotoUrl ?? photoUrl} alt={username} />
                 : <span className="online-avatar profile-avatar-identity" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                    {(name || '?')[0].toUpperCase()}
+                    {(username || account.username || account.display_name || '?')[0].toUpperCase()}
                   </span>
               }
               <span className="profile-photo-badge">{uploading ? '…' : '📷'}</span>
@@ -247,10 +246,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               onChange={handlePhotoChange}
             />
             <div className="profile-identity-info">
-              <h2 className="profile-identity-name">{name || 'Your profile'}</h2>
-              {(username || account.username) && (
-                <span className="profile-identity-handle">@{username || account.username}</span>
-              )}
+              <h2 className="profile-identity-name">{username ? `@${username}` : 'Your profile'}</h2>
               <div className="profile-identity-badges">
                 {account.primaryBadge && (
                   <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
@@ -304,18 +300,6 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         {activeTab === 'interests' && (
           <>
             <div className="profile-card profile-fields">
-              <div className="modal-field">
-                <label className="modal-label">Display name</label>
-                <input
-                  className="modal-input"
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  maxLength={30}
-                  placeholder="How you'll appear"
-                />
-              </div>
-
               <div className="modal-field">
                 <label className="modal-label">Username</label>
                 <div className="username-input-row">
@@ -603,7 +587,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         <button
           className="modal-submit profile-sticky-save"
           onClick={handleSave}
-          disabled={saving || uploading || !name.trim()}
+          disabled={saving || uploading || !username.trim()}
         >
           {uploading ? 'Uploading…' : saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save profile'}
         </button>

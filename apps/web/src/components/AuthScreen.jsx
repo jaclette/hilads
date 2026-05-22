@@ -11,7 +11,6 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   const [tab, setTab]         = useState(initialTab) // 'signup' | 'login'
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
-  const [name, setName]       = useState(guestNickname || '')
   const [username, setUsername] = useState('')
   const [mode, setMode]       = useState(null)
   const [eula, setEula]       = useState(false) // EULA — must start UNCHECKED (explicit user action)
@@ -53,7 +52,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
     setLoading(true)
     try {
       const data = tab === 'signup'
-        ? await authSignup(email, password, name, username, guestId, mode, true /* eulaAccepted */)
+        ? await authSignup(email, password, username, username, guestId, mode, true /* eulaAccepted */)
         : await authLogin(email, password)
       onSuccess(data.user)
     } catch (err) {
@@ -85,19 +84,6 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
         <form className="auth-form" onSubmit={handleSubmit}>
           {tab === 'signup' && (
             <>
-              <div className="modal-field">
-                <label className="modal-label">Display name</label>
-                <input
-                  className="modal-input"
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="How you'll appear in the app"
-                  maxLength={30}
-                  required
-                  autoFocus
-                />
-              </div>
 
               <div className="modal-field">
                 <label className="modal-label">Username</label>
