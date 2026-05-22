@@ -9,7 +9,7 @@ declare(strict_types=1);
  * username (resolved to the CURRENT username on read, so renames reflect
  * everywhere). Only registered users are mentionable; guests (no users row) are
  * never suggested or accepted. The mentionable set is context-scoped:
- *   city  → users.current_city_id = 'city_N'
+ *   city  → users.current_city_id = 'city_N' OR a recent message author in the city channel
  *   event → event_participants.user_id
  *   topic → topic_subscriptions.user_id
  *
@@ -130,8 +130,26 @@ final class MentionService
             $stmt = $pdo->prepare("SELECT user_id FROM topic_subscriptions WHERE topic_id = ?");
             $stmt->execute([$channelId]);
         } else { // city
-            $stmt = $pdo->prepare("SELECT id FROM users WHERE current_city_id = ? AND deleted_at IS NULL");
-            $stmt->execute([$channelId]);
+            // Mentionable in a city = registered users who are part of THIS city's
+            // conversation: either it's their home city (current_city_id) OR they've
+            // posted here recently. current_city_id alone is too narrow — it's a
+            // user's single sticky home city, so travellers chatting in another city
+            // (the common case for Hilads) couldn't be mentioned there. Repeats
+            // $channelId positionally (PDO can't reuse a named placeholder).
+            $stmt = $pdo->prepare("
+                SELECT u.id
+                FROM users u
+                WHERE u.deleted_at IS NULL
+                  AND (
+                        u.current_city_id = ?
+                     OR EXISTS (
+                          SELECT 1 FROM messages m
+                          WHERE m.channel_id = ? AND m.user_id = u.id
+                            AND m.created_at > now() - interval '30 days'
+                        )
+                  )
+            ");
+            $stmt->execute([$channelId, $channelId]);
         }
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
@@ -173,18 +191,29 @@ final class MentionService
                 ORDER BY u.username ASC
                 LIMIT $cap";
             $params = [$channelId, $like, $excludeUserId, $excludeUserId];
-        } else { // city — active (recent presence) first, then other members
+        } else { // city — home-city members OR registered users active in this city's chat
+            // Mirror mentionableUserIds(): current_city_id (sticky home) is too
+            // narrow on its own, so also include anyone who's posted in this city
+            // channel recently — the people you'd actually @ in the conversation.
+            // (The old presence-based "active first" ordering was dead: presence
+            // rows never store user_id, so last_seen was always NULL.)
             $sql = "
-                SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url,
-                       (SELECT max(p.last_seen_at) FROM presence p WHERE p.user_id = u.id AND p.channel_id = ?) AS last_seen
+                SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
                 FROM users u
-                WHERE u.current_city_id = ?
-                  AND u.username IS NOT NULL AND u.deleted_at IS NULL
+                WHERE u.username IS NOT NULL AND u.deleted_at IS NULL
                   AND lower(u.username) LIKE ?
                   AND (CAST(? AS text) IS NULL OR u.id != ?)
-                ORDER BY last_seen DESC NULLS LAST, u.username ASC
+                  AND (
+                        u.current_city_id = ?
+                     OR EXISTS (
+                          SELECT 1 FROM messages m
+                          WHERE m.channel_id = ? AND m.user_id = u.id
+                            AND m.created_at > now() - interval '30 days'
+                        )
+                  )
+                ORDER BY u.username ASC
                 LIMIT $cap";
-            $params = [$channelId, $channelId, $like, $excludeUserId, $excludeUserId];
+            $params = [$like, $excludeUserId, $excludeUserId, $channelId, $channelId];
         }
 
         $stmt = $pdo->prepare($sql);
