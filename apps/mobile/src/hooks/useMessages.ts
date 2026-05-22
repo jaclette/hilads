@@ -4,12 +4,12 @@ import { uploadFile } from '@/api/uploads';
 import { useApp } from '@/context/AppContext';
 import { reactionEmitter } from '@/lib/reactionEmitter';
 import { filterBlocked } from '@/lib/blockFilter';
-import type { Message, Reaction, ReplyRef, ReactionType } from '@/types';
+import type { Message, Reaction, ReplyRef, ReactionType, MentionRef } from '@/types';
 
 interface Params {
   channelId:    string;
   loadFn:       (opts?: { beforeId?: string }) => Promise<{ messages: Message[]; hasMore: boolean }>;
-  postTextFn:   (content: string, replyToId?: string | null) => Promise<Message>;
+  postTextFn:   (content: string, replyToId?: string | null, mentions?: MentionRef[]) => Promise<Message>;
   postImageFn:  (imageUrl: string) => Promise<Message>;
   /** Pre-loaded messages from the bootstrap endpoint — skips the initial loadFn call. */
   initialData?: { messages: Message[]; hasMore: boolean };
@@ -23,7 +23,7 @@ interface Result {
   sending:      boolean;     // true only during image upload
   error:        string | null;
   clearError:   () => void;
-  sendText:          (content: string, replyTo?: ReplyRef | null) => Promise<void>;
+  sendText:          (content: string, replyTo?: ReplyRef | null, mentions?: MentionRef[]) => Promise<void>;
   sendImage:         (localUri: string) => Promise<void>;
   loadOlder:         () => Promise<void>;
   setMessageReactions: (messageId: string, reactions: Reaction[]) => void;
@@ -239,7 +239,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
 
   // ── Send text (optimistic) ─────────────────────────────────────────────────
 
-  const sendText = useCallback(async (content: string, replyTo?: ReplyRef | null) => {
+  const sendText = useCallback(async (content: string, replyTo?: ReplyRef | null, mentions?: MentionRef[]) => {
     const trimmed = content.trim();
     if (!trimmed) return;
 
@@ -255,6 +255,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       localId,
       status:    'sending',
       replyTo:   replyTo ?? undefined,
+      mentions:  mentions && mentions.length ? mentions : undefined,
     };
 
     // Show message instantly
@@ -262,7 +263,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     setError(null);
 
     try {
-      const msg = await postTextFn(trimmed, replyTo?.id ?? null);
+      const msg = await postTextFn(trimmed, replyTo?.id ?? null, mentions);
       reconcile(localId, msg);
       // sent_message is tracked server-side — no frontend duplicate
     } catch {

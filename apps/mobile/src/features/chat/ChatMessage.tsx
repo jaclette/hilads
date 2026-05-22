@@ -27,6 +27,7 @@ import { formatSmartTime } from '@/lib/messageTime';
 import type { Message, Badge } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
+import { splitContentByMentions } from '@/lib/mentions';
 
 // ── Location message helpers ──────────────────────────────────────────────────
 // Messages starting with '📍' are location shares sent by the LocationPicker.
@@ -366,6 +367,12 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   const router = useRouter();
   const { account } = useApp();
 
+  // Tapping a @mention opens the mentioned user's profile (ghost viewers gated).
+  function openMentionedProfile(uid: string) {
+    if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+    router.push({ pathname: '/user/[id]', params: { id: uid } });
+  }
+
   // Hook called unconditionally — React rules require this before any early return
   const { opacity, translateY } = useEntryAnimation(200);
   const animStyle = { opacity, transform: [{ translateY }] } as const;
@@ -611,7 +618,11 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                   </TouchableOpacity>
                 )}
                 <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-                  {message.content}
+                  {splitContentByMentions(message.content ?? '', message.mentions).map((seg, i) => (
+                    seg.type === 'text'
+                      ? seg.text
+                      : <Text key={i} style={styles.mentionText} onPress={() => openMentionedProfile(seg.userId)}>@{seg.username}</Text>
+                  ))}
                 </Text>
               </View>
             )}
@@ -875,6 +886,7 @@ const styles = StyleSheet.create({
   },
   bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
+  mentionText:    { color: Colors.accent, fontWeight: '700' },
 
   // Failed state
   bubbleFailed: {

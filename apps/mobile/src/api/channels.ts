@@ -235,9 +235,11 @@ export async function sendMessage(
   nickname: string,
   content: string,
   replyToMessageId?: string | null,
+  mentions?: import('./mentions').MentionInput[],
 ): Promise<Message> {
   const body: Record<string, unknown> = { sessionId, guestId, nickname, content };
   if (replyToMessageId) body.replyToMessageId = replyToMessageId;
+  if (mentions && mentions.length) body.mentions = mentions;
   return api.post<Message>(`/channels/${channelId}/messages`, body);
 }
 

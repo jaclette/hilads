@@ -25,7 +25,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useMyEvents } from '@/hooks/useMyEvents';
 import { saveIdentity } from '@/lib/identity';
-import { updateProfile, deleteAccount } from '@/api/auth';
+import { updateProfile, deleteAccount, checkUsernameAvailability } from '@/api/auth';
 import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
@@ -125,6 +125,7 @@ export default function MeScreen() {
   const initialTab = (validTabs.includes(tabParam as ProfileTab) ? tabParam : 'interests') as ProfileTab;
   const [activeTab,          setActiveTab]          = useState<ProfileTab>(initialTab);
   const [displayName,        setDisplayName]        = useState(account?.display_name ?? '');
+  const [username,           setUsername]           = useState(account?.username ?? '');
   const [aboutMe,            setAboutMe]            = useState(account?.about_me ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
@@ -280,8 +281,39 @@ export default function MeScreen() {
     ]);
   }
 
+  // Username availability — debounced check (backend excludes the caller's own row).
+  type UStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
+  const [uStatus, setUStatus] = useState<UStatus>('idle');
+  const [uReason, setUReason] = useState<string | null>(null);
+  const uTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleUsernameChange(val: string) {
+    const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    setUsername(cleaned);
+    setUReason(null);
+    if (uTimer.current) clearTimeout(uTimer.current);
+    if (cleaned === (account?.username ?? '')) { setUStatus('idle'); return; } // unchanged
+    if (cleaned.length < 3) { setUStatus(cleaned.length === 0 ? 'idle' : 'invalid'); return; }
+    setUStatus('checking');
+    uTimer.current = setTimeout(async () => {
+      try {
+        const r = await checkUsernameAvailability(cleaned);
+        if (!r.valid)         { setUStatus('invalid');   setUReason(r.reason); }
+        else if (r.available) { setUStatus('available'); }
+        else                  { setUStatus('taken');     setUReason(r.reason); }
+      } catch { setUStatus('idle'); }
+    }, 450);
+  }
+
   async function handleSave() {
     if (!displayName.trim()) { setSaveError('Display name is required'); return; }
+    const handle        = username.trim().toLowerCase();
+    const handleChanged = handle !== (account?.username ?? '');
+    if (handleChanged) {
+      if (handle.length < 3)     { setSaveError('Username must be at least 3 characters'); return; }
+      if (uStatus === 'taken')   { setSaveError('That username is taken'); return; }
+      if (uStatus === 'invalid') { setSaveError(uReason ?? 'Invalid username'); return; }
+    }
     setSaving(true);
     setSaveError(null);
     try {
@@ -292,6 +324,7 @@ export default function MeScreen() {
           ? new Date().getFullYear() - ageNum
           : undefined;
       const fields = {
+        ...(handleChanged ? { username: handle } : {}),
         display_name:      displayName.trim(),
         about_me:          aboutMe.trim() || null,
         home_city:         homeCity.trim() || null,
@@ -408,6 +441,9 @@ export default function MeScreen() {
                 <Text style={styles.identityName} numberOfLines={1}>
                   {account?.display_name ?? '—'}
                 </Text>
+                {account?.username ? (
+                  <Text style={styles.identityHandle} numberOfLines={1}>@{account.username}</Text>
+                ) : null}
                 <View style={styles.identityMetaRow}>
                   {account?.primaryBadge && (
                     <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
@@ -539,6 +575,31 @@ export default function MeScreen() {
                   maxLength={30}
                   autoCorrect={false}
                 />
+              </View>
+
+              {/* USERNAME */}
+              <View style={styles.fieldGroup}>
+                <Text style={styles.fieldLabel}>USERNAME</Text>
+                <View style={styles.usernameRow}>
+                  <Text style={styles.usernameAt}>@</Text>
+                  <TextInput
+                    style={styles.usernameInput}
+                    value={username}
+                    onChangeText={handleUsernameChange}
+                    placeholder="username"
+                    placeholderTextColor={Colors.muted2}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    maxLength={20}
+                  />
+                  {uStatus === 'checking' && <ActivityIndicator size="small" color={Colors.muted} />}
+                  {uStatus === 'available' && <Text style={styles.uOk}>✓</Text>}
+                  {(uStatus === 'taken' || uStatus === 'invalid') && <Text style={styles.uBad}>✗</Text>}
+                </View>
+                {uStatus === 'available' && <Text style={styles.uOkHint}>@{username} is available</Text>}
+                {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
+                  <Text style={styles.uBadHint}>{uReason}</Text>
+                )}
               </View>
 
               {/* ABOUT ME */}
@@ -1004,6 +1065,11 @@ const styles = StyleSheet.create({
     color:         Colors.text,
     letterSpacing: -0.3,
   },
+  identityHandle: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    fontWeight: '500',
+  },
   identityMetaRow: {
     flexDirection: 'row',
     alignItems:    'center',
@@ -1204,6 +1270,22 @@ const styles = StyleSheet.create({
     color:           Colors.muted,
     backgroundColor: Colors.bg,
   },
+  usernameRow: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               6,
+    backgroundColor:   Colors.bg3,
+    borderRadius:      Radius.md,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    paddingHorizontal: 14,
+  },
+  usernameAt:    { fontSize: FontSizes.md, color: Colors.muted2, fontWeight: '600' },
+  usernameInput: { flex: 1, color: Colors.text, fontSize: FontSizes.md, paddingVertical: Platform.OS === 'ios' ? 13 : 10 },
+  uOk:           { color: '#4ade80', fontSize: FontSizes.md, fontWeight: '700' },
+  uBad:          { color: Colors.red, fontSize: FontSizes.md, fontWeight: '700' },
+  uOkHint:       { fontSize: FontSizes.xs, color: '#4ade80', marginTop: 4 },
+  uBadHint:      { fontSize: FontSizes.xs, color: Colors.red, marginTop: 4 },
   fieldInputMultiline: {
     minHeight:        56,
     textAlignVertical: 'top',

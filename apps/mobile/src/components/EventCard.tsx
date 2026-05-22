@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { FeedItem, HiladsEvent } from '@/types';
 import { Colors, FontSizes, Radius } from '@/constants';
+import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 
 // Shared compact event card — used by the Now feed (tabs/now.tsx) and the
 // See-what's-coming screen (upcoming-events.tsx). Keep the two screens visually
@@ -76,6 +77,13 @@ export function EventCard({ event, tz, onPress }: Props) {
         <Text style={styles.cardHost} numberOfLines={1}>
           Hosted by {host}
         </Text>
+      ) : null}
+
+      {!isPublic ? (
+        <AttendeeAvatars
+          preview={(event as HiladsEvent).participants_preview ?? []}
+          total={event.participant_count ?? 0}
+        />
       ) : null}
     </TouchableOpacity>
   );

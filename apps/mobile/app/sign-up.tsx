@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   ActivityIndicator, StyleSheet, KeyboardAvoidingView,
@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { authSignup } from '@/api/auth';
+import { authSignup, checkUsernameAvailability } from '@/api/auth';
 import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
@@ -30,6 +30,7 @@ export default function SignUpScreen() {
   } = useApp();
 
   const [name,     setName]     = useState('');
+  const [username, setUsername] = useState('');
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [mode,     setMode]     = useState<string | null>(null);
@@ -37,25 +38,52 @@ export default function SignUpScreen() {
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
+  // Username availability — debounced check against the backend.
+  type UStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
+  const [uStatus, setUStatus] = useState<UStatus>('idle');
+  const [uReason, setUReason] = useState<string | null>(null);
+  const uTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleUsernameChange(val: string) {
+    // Handles are lowercase a-z0-9_ — strip disallowed chars as the user types.
+    const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    setUsername(cleaned);
+    setUReason(null);
+    if (uTimer.current) clearTimeout(uTimer.current);
+    if (cleaned.length < 3) { setUStatus(cleaned.length === 0 ? 'idle' : 'invalid'); return; }
+    setUStatus('checking');
+    uTimer.current = setTimeout(async () => {
+      try {
+        const r = await checkUsernameAvailability(cleaned);
+        if (!r.valid)        { setUStatus('invalid');   setUReason(r.reason); }
+        else if (r.available){ setUStatus('available'); }
+        else                 { setUStatus('taken');     setUReason(r.reason); }
+      } catch { setUStatus('idle'); }
+    }, 450);
+  }
+
   async function handleSignUp() {
     const n = name.trim();
     const e = email.trim().toLowerCase();
     const p = password;
 
-    if (!n)           { setError('Display name required'); return; }
-    if (!mode)        { setError('Please choose a mode to continue'); return; }
-    if (!e)           { setError('Email required'); return; }
-    if (p.length < 8) { setError('Password must be at least 8 characters'); return; }
-    if (!eula)        { setError('Please accept the Terms of Service and Privacy Policy'); return; }
+    if (!n)                    { setError('Display name required'); return; }
+    if (username.length < 3)   { setError('Pick a username (3+ characters)'); return; }
+    if (uStatus === 'taken')   { setError('That username is taken'); return; }
+    if (uStatus === 'invalid') { setError(uReason ?? 'Invalid username'); return; }
+    if (!mode)                 { setError('Please choose a mode to continue'); return; }
+    if (!e)                    { setError('Email required'); return; }
+    if (p.length < 8)          { setError('Password must be at least 8 characters'); return; }
+    if (!eula)                 { setError('Please accept the Terms of Service and Privacy Policy'); return; }
 
     setLoading(true);
     setError(null);
     try {
       // Pass guestId so the backend can merge existing guest events/data
       const guestId = identity?.guestId ?? '';
-      const { user } = await authSignup(e, p, n, guestId, mode, true /* eulaAccepted */);
+      const { user } = await authSignup(e, p, n, username, guestId, mode, true /* eulaAccepted */);
       setAccount(user);
-      identifyUser(user.id, { account_type: 'registered', username: user.display_name });
+      identifyUser(user.id, { account_type: 'registered', username: user.username ?? user.display_name });
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
       track('user_authenticated');
       track('auth_signup');
@@ -128,6 +156,31 @@ export default function SignUpScreen() {
                 autoCorrect={false}
                 editable={!loading}
               />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Username</Text>
+              <View style={styles.usernameRow}>
+                <Text style={styles.usernameAt}>@</Text>
+                <TextInput
+                  style={styles.usernameInput}
+                  value={username}
+                  onChangeText={handleUsernameChange}
+                  placeholder="username"
+                  placeholderTextColor={Colors.muted2}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  maxLength={20}
+                  editable={!loading}
+                />
+                {uStatus === 'checking' && <ActivityIndicator size="small" color={Colors.muted} />}
+                {uStatus === 'available' && <Text style={styles.uOk}>✓</Text>}
+                {(uStatus === 'taken' || uStatus === 'invalid') && <Text style={styles.uBad}>✗</Text>}
+              </View>
+              {uStatus === 'available' && <Text style={styles.uOkHint}>@{username} is available</Text>}
+              {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
+                <Text style={styles.uBadHint}>{uReason}</Text>
+              )}
             </View>
 
             {/* Mode selector */}
@@ -254,6 +307,24 @@ const styles = StyleSheet.create({
     fontSize:          FontSizes.md,
     height:            48,
   },
+
+  usernameRow: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               6,
+    backgroundColor:   Colors.bg2,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    borderRadius:      Radius.md,
+    paddingHorizontal: Spacing.md,
+    height:            48,
+  },
+  usernameAt:    { fontSize: FontSizes.md, color: Colors.muted2, fontWeight: '600' },
+  usernameInput: { flex: 1, color: Colors.text, fontSize: FontSizes.md, height: 48 },
+  uOk:           { color: '#4ade80', fontSize: FontSizes.md, fontWeight: '700' },
+  uBad:          { color: Colors.red, fontSize: FontSizes.md, fontWeight: '700' },
+  uOkHint:       { fontSize: FontSizes.xs, color: '#4ade80' },
+  uBadHint:      { fontSize: FontSizes.xs, color: Colors.red },
 
   eulaSection: {
     marginTop: Spacing.sm,

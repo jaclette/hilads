@@ -72,7 +72,8 @@ export default function NotificationsScreen() {
     dm_push:              true,
     event_message_push:   true,
     event_join_push:      false,
-    new_event_push:       false,
+    new_event_push:       true,
+    mention_push:         true,
     channel_message_push: false,
     city_join_push:       false,
     friend_request_push:  true,
@@ -238,6 +239,8 @@ export default function NotificationsScreen() {
           <View style={styles.prefCard}>
             {/* DM, event-chat, and city-chat toggles live on the Messages screen
                 now — they govern the envelope icon's behaviour, not the bell. */}
+            <PrefRow label="Mentions @" subtitle="When someone @mentions you in a message or pulse" value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
+            <View style={styles.prefDivider} />
             <PrefRow label="Someone joined your event" subtitle="When a new person joins an event you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="New events in your city" subtitle="When someone creates an event in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />

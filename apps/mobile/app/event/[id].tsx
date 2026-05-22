@@ -16,6 +16,7 @@ import { fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEvent
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
@@ -92,26 +93,14 @@ function toMs(ts: number | string | undefined): number {
 
 function ParticipantsStrip({ participants, onPress }: { participants: EventParticipant[]; onPress: () => void }) {
   if (participants.length === 0) return null;
-  const visible = participants.slice(0, 5);
-  const extra   = participants.length - visible.length;
 
   return (
     <TouchableOpacity style={stripStyles.row} onPress={onPress} activeOpacity={0.75}>
-      <View style={stripStyles.avatars}>
-        {visible.map((p, i) => (
-          <View
-            key={p.id}
-            style={[stripStyles.avatar, { backgroundColor: avatarColor(p.id), marginLeft: i > 0 ? -10 : 0 }]}
-          >
-            <Text style={stripStyles.avatarLetter}>{(p.displayName[0] ?? '?').toUpperCase()}</Text>
-          </View>
-        ))}
-        {extra > 0 && (
-          <View style={[stripStyles.avatar, stripStyles.avatarExtra, { marginLeft: -10 }]}>
-            <Text style={stripStyles.avatarExtraText}>+{extra}</Text>
-          </View>
-        )}
-      </View>
+      <AttendeeAvatars
+        preview={participants.map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl }))}
+        total={participants.length}
+        borderColor={Colors.bg}
+      />
       <Text style={stripStyles.label}>
         {participants.length === 1
           ? `${participants[0].displayName} is going`
@@ -272,9 +261,9 @@ export default function EventDetailScreen() {
   );
 
   const postTextFn = useCallback(
-    (content: string, replyToId?: string | null): Promise<Message> => {
+    (content: string, replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
       if (!identity) return Promise.reject(new Error('Not ready'));
-      return sendEventMessage(id, identity.guestId, nickname, content, replyToId);
+      return sendEventMessage(id, identity.guestId, nickname, content, replyToId, mentions);
     },
     [id, identity, nickname],
   );
@@ -548,10 +537,12 @@ export default function EventDetailScreen() {
 
           <ChatInput
             sending={sending}
-            onSendText={(text) => {
+            mentionContext="event"
+            mentionChannelId={id}
+            onSendText={(text, mentions) => {
               const reply = replyingToRef.current;
               setReplyingTo(null);
-              sendText(text, reply);
+              sendText(text, reply, mentions);
             }}
             onSendImage={sendImage}
             placeholder={
@@ -860,32 +851,6 @@ const stripStyles = StyleSheet.create({
     paddingVertical:   14,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-  },
-  avatars: {
-    flexDirection: 'row',
-    alignItems:    'center',
-  },
-  avatar: {
-    width:          32,
-    height:         32,
-    borderRadius:   16,
-    alignItems:     'center',
-    justifyContent: 'center',
-    borderWidth:    2,
-    borderColor:    Colors.bg,
-  },
-  avatarLetter: {
-    color:      '#fff',
-    fontSize:   12,
-    fontWeight: '700',
-  },
-  avatarExtra: {
-    backgroundColor: 'rgba(255,255,255,0.12)',
-  },
-  avatarExtraText: {
-    color:      Colors.muted,
-    fontSize:   11,
-    fontWeight: '700',
   },
   label: {
     fontSize:   FontSizes.sm,

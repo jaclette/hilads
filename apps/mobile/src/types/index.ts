@@ -30,6 +30,13 @@ export type EventType =
   | 'culture' | 'art' | 'food' | 'coffee' | 'sport'
   | 'meetup' | 'other';
 
+/** Lightweight attendee shape embedded in event lists for the card avatar row. */
+export interface ParticipantPreview {
+  id: string;
+  displayName: string;
+  thumbAvatarUrl: string | null;
+}
+
 export interface HiladsEvent {
   id: string;
   title: string;
@@ -49,6 +56,7 @@ export interface HiladsEvent {
   created_by?: string;
   host_nickname?: string | null;
   participant_count?: number;
+  participants_preview?: ParticipantPreview[];
   is_participating?: boolean;
   city_name?: string;
   city_channel_id?: string;
@@ -101,6 +109,7 @@ export interface FeedItem {
   location?:          string | null;
   venue?:             string | null;
   participant_count?: number;
+  participants_preview?: ParticipantPreview[];
   is_participating?:  boolean;
   recurrence_label?:  string | null;
   series_id?:         string | null;
@@ -140,6 +149,8 @@ export const BADGE_META: Record<BadgeKey, { label: string; color: string; bg: st
 export interface UserDTO {
   id:             string;
   accountType:    'guest' | 'registered';
+  /** Unique @-handle. Null for guests (not mentionable) and un-backfilled legacy users. */
+  username:       string | null;
   displayName:    string;
   avatarUrl:      string | null;
   /** Thumbnail URL (≤400 px). Falls back to avatarUrl server-side — never null when avatarUrl is set. */
@@ -210,6 +221,14 @@ export interface Reaction {
 
 export type { ReactionType } from '@/lib/reactionEmitter';
 
+/** A resolved @mention on a message: span into content + the current username. */
+export interface MentionRef {
+  userId:   string;
+  username: string;
+  offset:   number;
+  length:   number;
+}
+
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
@@ -230,6 +249,7 @@ export interface Message {
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
   mode?: string;                  // user's current mode (local/exploring)
   replyTo?: ReplyRef;             // snapshot of the message this is a reply to
+  mentions?: MentionRef[];        // @mentions resolved to current usernames by the backend
   reactions?: Reaction[];         // emoji reactions (empty array = none)
   // Optimistic send state — absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
@@ -259,6 +279,8 @@ export type ModeKey = 'local' | 'exploring';
 export interface User {
   id: string;
   email?: string;
+  /** Unique @-handle. Null only for legacy users not yet backfilled. */
+  username?: string | null;
   display_name: string;
   profile_photo_url?: string;
   /** Thumbnail URL (≤400 px). Falls back to profile_photo_url server-side. */

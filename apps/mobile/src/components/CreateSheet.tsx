@@ -73,19 +73,21 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
         {/* Title */}
         <Text style={styles.title}>What do you want to do?</Text>
 
-        {/* Options — pulse first per redesign spec, host (event) second */}
+        {/* Options — event first (highest-value action), share-a-moment second.
+            Internal handlers keep their names: onSelectEvent → event create,
+            onSelectTopic → pulse create. Only the user-facing copy/order changed. */}
         <View style={styles.options}>
           <TouchableOpacity
             style={styles.option}
             activeOpacity={0.75}
-            onPress={() => handleOption(onSelectTopic)}
+            onPress={() => handleOption(onSelectEvent)}
           >
-            <View style={[styles.optionIcon, styles.optionIconTopic]}>
-              <Text style={styles.optionEmoji}>⚡</Text>
+            <View style={styles.optionIcon}>
+              <Text style={styles.optionEmoji}>📅</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Start a pulse</Text>
-              <Text style={styles.optionSub}>Share something happening right now</Text>
+              <Text style={styles.optionLabel}>Create an event</Text>
+              <Text style={styles.optionSub}>Plan a meetup others can join</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>
@@ -95,14 +97,14 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
           <TouchableOpacity
             style={styles.option}
             activeOpacity={0.75}
-            onPress={() => handleOption(onSelectEvent)}
+            onPress={() => handleOption(onSelectTopic)}
           >
-            <View style={styles.optionIcon}>
-              <Text style={styles.optionEmoji}>🔥</Text>
+            <View style={[styles.optionIcon, styles.optionIconTopic]}>
+              <Text style={styles.optionEmoji}>⚡</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Host your spot</Text>
-              <Text style={styles.optionSub}>Open your place to the community</Text>
+              <Text style={styles.optionLabel}>Share a moment</Text>
+              <Text style={styles.optionSub}>Post what's happening around you right now</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>

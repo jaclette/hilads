@@ -41,9 +41,9 @@ export default function CityChatScreen() {
   );
 
   const postTextFn = useCallback(
-    (content: string, replyToId?: string | null): Promise<Message> => {
+    (content: string, replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId);
+      return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId, mentions);
     },
     [channelId, identity, sessionId, nickname],
   );
@@ -133,10 +133,12 @@ export default function CityChatScreen() {
         {/* Composer */}
         <ChatInput
           sending={sending}
-          onSendText={(text) => {
+          mentionContext="city"
+          mentionChannelId={channelId}
+          onSendText={(text, mentions) => {
             const reply = replyingToRef.current;
             setReplyingTo(null);
-            sendText(text, reply);
+            sendText(text, reply, mentions);
           }}
           onSendImage={sendImage}
           replyingTo={replyingTo}

@@ -46,8 +46,11 @@ export async function sendTopicMessage(
   guestId: string,
   nickname: string,
   content: string,
+  mentions?: import('./mentions').MentionInput[],
 ): Promise<Message> {
-  return api.post<Message>(`/topics/${topicId}/messages`, { guestId, nickname, content });
+  const body: Record<string, unknown> = { guestId, nickname, content };
+  if (mentions && mentions.length) body.mentions = mentions;
+  return api.post<Message>(`/topics/${topicId}/messages`, body);
 }
 
 export async function sendTopicImageMessage(

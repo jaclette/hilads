@@ -512,7 +512,7 @@ export default function NowScreen() {
 
       {/* Sticky bottom action — single horizontal row pinned above the tab bar.
           [ See what's coming 🔮 ─────────────────────────── ] [+]
-          The + opens CreateSheet which picks between Start a pulse / Host your spot
+          The + opens CreateSheet which picks between Create an event / Share a moment
           (preserves both routes + analytics). Safe-area-aware via insets.bottom. */}
       {city && (
         <View style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}>

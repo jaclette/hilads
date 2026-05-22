@@ -26,6 +26,9 @@ import { AndroidCameraCapture } from './AndroidCameraCapture';
 import { EmojiPanel } from './EmojiPanel';
 import { ShareSheet } from './ShareSheet';
 import { LocationPicker } from './LocationPicker';
+import { MentionSuggestions } from './MentionSuggestions';
+import { fetchMentionSuggestions, type MentionContext, type MentionSuggestion } from '@/api/mentions';
+import { buildMentionsFromText, detectActiveMention, type SelectedMention, type MentionRef } from '@/lib/mentions';
 
 
 // ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
@@ -50,9 +53,12 @@ export function getPlaceholder(channelId: string): string {
 
 interface Props {
   sending:          boolean;
-  onSendText:       (text: string) => void;
+  onSendText:       (text: string, mentions?: MentionRef[]) => void;
   onSendImage:      (uri: string) => void;
   placeholder?:     string;
+  /** Enables @mention autocomplete. Both must be set. channelId: city numeric id, or event/topic hex id. */
+  mentionContext?:   MentionContext;
+  mentionChannelId?: string;
   /** Activates a subtle pulse glow to signal live activity in the channel. */
   pulse?:           boolean;
   /** Parent can call pickImageRef.current?.() to trigger the image picker externally (e.g. from a feed prompt CTA). */
@@ -65,9 +71,16 @@ interface Props {
   onCancelReply?:   () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, mentionContext, mentionChannelId }: Props) {
   const { account, identity } = useApp();
   const [text,          setText]        = useState('');
+  const textRef         = useRef('');
+  // @mention autocomplete state
+  const [mentionQuery,  setMentionQuery]  = useState<string | null>(null);
+  const [suggestions,   setSuggestions]   = useState<MentionSuggestion[]>([]);
+  const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>([]);
+  const mentionAnchor   = useRef(0);  // index of the active '@'
+  const mentionsEnabled = !!(mentionContext && mentionChannelId);
   const [uploading,     setUploading]   = useState(false);
   const [androidCamera, setAndroidCamera] = useState(false);
   const [showEmoji,     setShowEmoji]   = useState(false);
@@ -111,6 +124,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
 
   function handleChangeText(val: string) {
     setText(val);
+    textRef.current = val;
     if (val.length > 0) {
       // Only emit typingStart once per typing session (matches web isTypingRef pattern)
       if (!isTypingRef.current) {
@@ -133,6 +147,35 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     }
   }
 
+  // ── @mention autocomplete ────────────────────────────────────────────────
+  function detectMention(cursor: number) {
+    if (!mentionsEnabled) return;
+    const found = detectActiveMention(textRef.current.slice(0, cursor));
+    if (found) { mentionAnchor.current = found.at; setMentionQuery(found.query); }
+    else       { setMentionQuery(null); }
+  }
+
+  useEffect(() => {
+    if (!mentionsEnabled || mentionQuery === null) { setSuggestions([]); return; }
+    const t = setTimeout(async () => {
+      const res = await fetchMentionSuggestions(mentionContext!, String(mentionChannelId), mentionQuery);
+      setSuggestions(res);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [mentionQuery, mentionsEnabled, mentionContext, mentionChannelId]);
+
+  function onSelectMention(s: MentionSuggestion) {
+    const cursor = lastSel.current.end;
+    const before = textRef.current.slice(0, mentionAnchor.current);
+    const after  = textRef.current.slice(cursor);
+    const next   = before + '@' + s.username + ' ' + after;
+    setText(next);
+    textRef.current = next;
+    setSelectedMentions(prev => prev.some(m => m.userId === s.userId) ? prev : [...prev, { userId: s.userId, username: s.username }]);
+    setMentionQuery(null);
+    setSuggestions([]);
+  }
+
   function handleSend() {
     const trimmed = text.trim();
     if (!trimmed || sending) return;
@@ -142,8 +185,15 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       isTypingRef.current = false;
       onTypingStop?.();
     }
-    onSendText(trimmed);
+    // Re-derive mention offsets against the final text — tokens the user deleted
+    // are dropped, so only intact, explicitly-selected @mentions are sent.
+    const built = mentionsEnabled ? buildMentionsFromText(trimmed, selectedMentions) : [];
+    onSendText(trimmed, built.length ? built : undefined);
     setText('');
+    textRef.current = '';
+    setSelectedMentions([]);
+    setMentionQuery(null);
+    setSuggestions([]);
   }
 
   function insertEmoji(emoji: string) {
@@ -345,6 +395,9 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       spotLoading={false}
     />
 
+    {/* ── @mention suggestions — appear above composer while typing "@" ── */}
+    {mentionQuery !== null && <MentionSuggestions suggestions={suggestions} onSelect={onSelectMention} />}
+
     {/* ── Emoji panel — appears above composer when emoji mode is active ── */}
     {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
 
@@ -412,7 +465,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         style={styles.input}
         value={text}
         onChangeText={handleChangeText}
-        onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; }}
+        onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; detectMention(selection.end); }}
         placeholder={placeholder}
         placeholderTextColor={Colors.muted2}
         multiline

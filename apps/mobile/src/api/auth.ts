@@ -33,10 +33,18 @@ export async function authLogin(
   return res;
 }
 
+/** Real-time username availability + format check for the @-handle picker. */
+export async function checkUsernameAvailability(
+  username: string,
+): Promise<{ valid: boolean; available: boolean; reason: string | null }> {
+  return api.get('/username/check', { params: { username } });
+}
+
 export async function authSignup(
   email: string,
   password: string,
   displayName: string,
+  username: string,
   guestId: string,
   mode: string | null = null,
   /** Required by the backend (Apple G1.2 EULA gate). Caller must collect explicit consent. */
@@ -46,6 +54,7 @@ export async function authSignup(
     email,
     password,
     display_name:  displayName,
+    username,
     guest_id:      guestId,
     mode,
     eula_accepted: eulaAccepted,

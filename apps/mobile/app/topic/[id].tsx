@@ -67,9 +67,9 @@ export default function TopicChatScreen() {
   const loadFn = useCallback((_opts?: { beforeId?: string }) => fetchTopicMessages(id), [id]);
 
   const postTextFn = useCallback(
-    (content: string): Promise<Message> => {
+    (content: string, _replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
       if (!identity) return Promise.reject(new Error('Not ready'));
-      return sendTopicMessage(id, identity.guestId, nickname, content);
+      return sendTopicMessage(id, identity.guestId, nickname, content, mentions);
     },
     [id, identity, nickname],
   );
@@ -235,7 +235,9 @@ export default function TopicChatScreen() {
 
         <ChatInput
           sending={sending}
-          onSendText={sendText}
+          mentionContext="topic"
+          mentionChannelId={id}
+          onSendText={(text, mentions) => sendText(text, null, mentions)}
           onSendImage={sendImage}
           placeholder={
             messages.some(m => m.type !== 'system')

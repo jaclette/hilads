@@ -120,6 +120,12 @@ function resolveRoute(data: NotifData): string | null {
       if (data.eventId) return `/event/${data.eventId}`;
       return '/(tabs)/now';
 
+    case 'mention':
+      // Route to the message's context: event chat, pulse, or city chat.
+      if (data.eventId) return `/event/${data.eventId}`;
+      if (data.topicId) return `/topic/${data.topicId}`;
+      return '/(tabs)/chat';
+
     case 'topic_message':
     case 'new_topic':
       if (data.topicId) return `/topic/${data.topicId}`;

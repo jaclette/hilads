@@ -6,6 +6,7 @@ export interface NotificationPreferences {
   event_message_push:   boolean;
   event_join_push:      boolean;
   new_event_push:       boolean;
+  mention_push:         boolean;
   channel_message_push: boolean;
   city_join_push:       boolean;
   friend_request_push:  boolean;

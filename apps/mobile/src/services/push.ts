@@ -206,8 +206,13 @@ async function registerTokenWithBackend(token: string): Promise<void> {
     'Content-Type': 'application/json',
     'Accept':       'application/json',
   };
+  // Send auth via BOTH Cookie and Authorization: Bearer. iOS NSURLSession owns
+  // its own cookie jar and silently strips manually-set Cookie headers, so a
+  // Cookie-only request authenticates on Android but 401s on iOS — which is why
+  // iOS devices never registered a token. Mirrors the api client (client.ts).
   if (authToken) {
-    headers['Cookie'] = `hilads_token=${authToken}`;
+    headers['Cookie']        = `hilads_token=${authToken}`;
+    headers['Authorization'] = `Bearer ${authToken}`;
   }
 
   console.log('[push-mobile] ── registerTokenWithBackend ──────────────────');
