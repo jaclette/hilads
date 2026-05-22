@@ -621,18 +621,18 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                   {splitContentByMentions(message.content ?? '', message.mentions).map((seg, i) => (
                     seg.type === 'text'
                       ? seg.text
-                      // Pill mention: inline View so we get a rounded border (RN
-                      // nested <Text> can't render border/radius). Dark fill +
-                      // light border + white text reads on the dark bg AND the
-                      // orange/red sent bubble. As a single token it never splits
-                      // mid-handle, and its height matches the line so mention
-                      // lines aren't taller than plain ones.
+                      // Mention = a nested <Text> with a dark highlight + white
+                      // text. Stays a plain inline Text (NOT a nested <View>):
+                      // inline Views inside Text can render zero-size/invisible on
+                      // RN, which made mentions vanish. The dark highlight + white
+                      // text is readable on the orange/red sent bubble AND the dark
+                      // received bubble (white-on-fill ≥6.5:1). Narrow no-break
+                      // spaces ( ) pad the chip slightly without letting the
+                      // "@handle" split across a line.
                       : (
-                        <View key={i} style={styles.mentionPill}>
-                          <Text style={styles.mentionPillText} onPress={() => openMentionedProfile(seg.userId)}>
-                            @{seg.username}
-                          </Text>
-                        </View>
+                        <Text key={i} style={styles.mentionText} onPress={() => openMentionedProfile(seg.userId)}>
+                          {` @${seg.username} `}
+                        </Text>
                       )
                   ))}
                 </Text>
@@ -898,17 +898,17 @@ const styles = StyleSheet.create({
   },
   bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
-  // @mention pill — dark fill + light border + white text. Works on the dark
-  // received bubble AND the orange/red sent bubble (#B87228). White-on-fill
-  // contrast is ≥6.5:1 on every surface (vs the old orange-on-orange ~1.5:1).
-  mentionPill: {
-    backgroundColor:   'rgba(0,0,0,0.28)',
-    borderColor:       'rgba(255,255,255,0.38)',
-    borderWidth:       1,
-    borderRadius:      5,
-    paddingHorizontal: 5,
+  // @mention — inline highlight on a nested <Text> (no nested <View>, which can
+  // render invisible on RN). Dark fill + white bold text reads on the dark
+  // received bubble AND the orange/red sent bubble (#B87228): white-on-fill
+  // contrast is ≥6.5:1 (vs the old orange-on-orange ~1.5:1). borderRadius isn't
+  // honored on inline text backgrounds, so this is a tight highlight, not a
+  // rounded pill — but it's robust and readable everywhere.
+  mentionText: {
+    color:           '#fff',
+    fontWeight:      '700',
+    backgroundColor: 'rgba(0,0,0,0.28)',
   },
-  mentionPillText: { color: '#fff', fontWeight: '600', fontSize: 14, lineHeight: 16 },
 
   // Failed state
   bubbleFailed: {
