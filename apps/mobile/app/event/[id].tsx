@@ -213,7 +213,7 @@ export default function EventDetailScreen() {
   async function handleShare() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const url = event ? buildEventUrl(event) : buildEventUrl(id);
-    const title = event?.title ?? 'Check out this event on Hilads';
+    const title = event?.title ?? 'Check out this hangout on Hilads';
 
     // Descriptive text shown to iOS receivers in the share sheet preview.
     // Crucially does NOT contain the URL — shareLink() handles platform
@@ -355,7 +355,7 @@ export default function EventDetailScreen() {
         </View>
       ) : eventError || !event ? (
         <View style={styles.eventBlockLoading}>
-          <Text style={styles.errorText}>{eventError ?? 'Event not found'}</Text>
+          <Text style={styles.errorText}>{eventError ?? 'Hangout not found'}</Text>
         </View>
       ) : (
         <Animated.View style={[styles.eventBlock, { paddingBottom: blockPaddingBottom }]}>
@@ -374,7 +374,7 @@ export default function EventDetailScreen() {
                 onPress={() => router.push(`/event/${event.id}/edit` as never)}
                 activeOpacity={0.8}
                 accessibilityRole="button"
-                accessibilityLabel="Edit event"
+                accessibilityLabel="Edit hangout"
               >
                 <Text style={[styles.joinBtnText, styles.editBtnText]}>
                   ✏️ Edit

@@ -74,7 +74,7 @@ function EmptyState({ city }: { city?: string }) {
       <Text style={styles.emptyTitle}>Nothing happening yet</Text>
       <Text style={styles.emptySub}>
         {city ? `Be the first in ${city}` : 'Start something now'}
-        {'\n'}Create an event or start a pulse.
+        {'\n'}Create a hangout or start a pulse.
       </Text>
     </View>
   );
@@ -104,7 +104,7 @@ function FilterEmptyState({
     <View style={styles.empty}>
       <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '🗣️'}</Text>
       <Text style={styles.emptyTitle}>
-        {filter === 'events' ? 'No events right now' : 'No pulses yet'}
+        {filter === 'events' ? 'No hangouts right now' : 'No pulses yet'}
       </Text>
       <Text style={styles.emptySub}>
         {filter === 'events'
@@ -445,7 +445,7 @@ export default function NowScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Pulses'}
+              {f === 'all' ? 'All' : f === 'events' ? '🔥 Hangouts' : '🗣️ Pulses'}
             </Text>
           </TouchableOpacity>
         ))}

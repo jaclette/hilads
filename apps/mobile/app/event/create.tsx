@@ -378,7 +378,7 @@ export default function CreateEventScreen() {
     const endUnix = toUnix(endDate);
 
     if (endUnix - startUnix < 15 * 60) {
-      setError('Event must be at least 15 minutes long');
+      setError('Hangout must be at least 15 minutes long');
       return;
     }
 
@@ -428,7 +428,7 @@ export default function CreateEventScreen() {
         router.replace('/event/limit-reached' as never);
         return;
       }
-      setError(e instanceof Error ? e.message : 'Failed to create event');
+      setError(e instanceof Error ? e.message : 'Failed to create hangout');
     } finally {
       setSubmitting(false);
     }
@@ -448,7 +448,7 @@ export default function CreateEventScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{isLocal ? 'Host your spot' : 'Create event'}</Text>
+          <Text style={styles.headerTitle}>{isLocal ? 'Host your spot' : 'Create hangout'}</Text>
         </View>
       </View>
 
@@ -647,7 +647,7 @@ export default function CreateEventScreen() {
           label={
             isLocal
               ? (repeat !== 'once' ? 'Open your spot' : 'Start a hangout')
-              : 'Create event'
+              : 'Create hangout'
           }
           onPress={handleSubmit}
           loading={submitting}

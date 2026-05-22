@@ -71,9 +71,9 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
         <View style={styles.handle} />
 
         {/* Title */}
-        <Text style={styles.title}>What do you want to do?</Text>
+        <Text style={styles.title}>What's the move?</Text>
 
-        {/* Options — event first (highest-value action), share-a-moment second.
+        {/* Options — hangout first (highest-value action), share-a-moment second.
             Internal handlers keep their names: onSelectEvent → event create,
             onSelectTopic → pulse create. Only the user-facing copy/order changed. */}
         <View style={styles.options}>
@@ -83,11 +83,11 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
             onPress={() => handleOption(onSelectEvent)}
           >
             <View style={styles.optionIcon}>
-              <Text style={styles.optionEmoji}>📅</Text>
+              <Text style={styles.optionEmoji}>🎉</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Create an event</Text>
-              <Text style={styles.optionSub}>Plan a meetup others can join</Text>
+              <Text style={styles.optionLabel}>Start a hangout</Text>
+              <Text style={styles.optionSub}>Plan something others can join</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>

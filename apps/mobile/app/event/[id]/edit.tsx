@@ -181,7 +181,7 @@ export default function EditEventScreen() {
   }, [loading, event, isOwner, id, router]);
 
   async function handleSave() {
-    if (!event)        { setError('Event not loaded'); return; }
+    if (!event)        { setError('Hangout not loaded'); return; }
     if (!title.trim()) { setError('Title is required'); return; }
 
     const startUnix = toUnix(startsAt);
@@ -190,7 +190,7 @@ export default function EditEventScreen() {
     const endUnix = toUnix(endDate);
 
     if (endUnix - startUnix < 15 * 60) {
-      setError('Event must be at least 15 minutes long');
+      setError('Hangout must be at least 15 minutes long');
       return;
     }
 
@@ -229,7 +229,7 @@ export default function EditEventScreen() {
               // so back-gesture doesn't return to a 404.
               router.replace('/(tabs)/chat' as never);
             } catch (e: unknown) {
-              setError(e instanceof Error ? e.message : 'Failed to delete event');
+              setError(e instanceof Error ? e.message : 'Failed to delete hangout');
               setDeleting(false);
             }
           },
@@ -247,7 +247,7 @@ export default function EditEventScreen() {
             <Ionicons name="chevron-back" size={20} color={Colors.text} />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Edit event</Text>
+            <Text style={styles.headerTitle}>Edit hangout</Text>
           </View>
         </View>
         <View style={styles.loadingBlock}>
@@ -265,7 +265,7 @@ export default function EditEventScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Edit event</Text>
+          <Text style={styles.headerTitle}>Edit hangout</Text>
         </View>
       </View>
 
@@ -353,12 +353,12 @@ export default function EditEventScreen() {
           activeOpacity={0.85}
           disabled={submitting || deleting}
           accessibilityRole="button"
-          accessibilityLabel="Delete event"
+          accessibilityLabel="Delete hangout"
         >
           {deleting ? (
             <ActivityIndicator color={Colors.red} />
           ) : (
-            <Text style={styles.deleteText}>🗑 Delete event</Text>
+            <Text style={styles.deleteText}>🗑 Delete hangout</Text>
           )}
         </TouchableOpacity>
 

@@ -481,7 +481,7 @@ export default function ChatTab() {
       promptsShownRef.current.add('create-event');
       setPromptItems(prev => [...prev, {
         id: `prompt-create-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'create-event', content: '🎉 Got a plan tonight?', cta: 'Create event',
+        subtype: 'create-event', content: '🎉 Got a plan tonight?', cta: 'Create hangout',
         nickname: '', createdAt: Date.now() / 1000,
       }]);
     }, 60_000);

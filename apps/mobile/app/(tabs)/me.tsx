@@ -72,7 +72,7 @@ type ProfileTab = 'interests' | 'events' | 'friends' | 'vibes';
 
 const PROFILE_TABS: { key: ProfileTab; label: string }[] = [
   { key: 'interests', label: 'Interests' },
-  { key: 'events',    label: 'Events'    },
+  { key: 'events',    label: 'Hangouts'  },
   { key: 'friends',   label: 'Friends'   },
   { key: 'vibes',     label: 'Vibes'     },
 ];
@@ -263,7 +263,7 @@ export default function MeScreen() {
   }
 
   function handleDeleteEvent(event: HiladsEvent) {
-    Alert.alert('Delete event', `Delete "${event.title}"?`, [
+    Alert.alert('Delete hangout', `Delete "${event.title}"?`, [
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Delete', style: 'destructive',

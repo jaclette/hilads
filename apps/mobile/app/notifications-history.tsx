@@ -126,7 +126,7 @@ export default function NotificationsHistoryScreen() {
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyIcon}>🔔</Text>
           <Text style={styles.emptyTitle}>No notifications yet</Text>
-          <Text style={styles.emptySub}>You'll see messages and event updates here.</Text>
+          <Text style={styles.emptySub}>You'll see messages and hangout updates here.</Text>
         </View>
       ) : (
         <FlatList

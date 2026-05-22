@@ -45,7 +45,7 @@ export default function EventLimitReachedScreen() {
   function handleLegendInfo() {
     Alert.alert(
       '👑 Become a Legend',
-      "Legends are locals chosen to keep their city alive — they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
+      "Legends are locals chosen to keep their city alive — they can host as many hangouts as they want. Want to become one? Reach out at contact@hilads.live.",
       [{ text: 'Got it', style: 'default' }],
     );
   }
@@ -72,7 +72,7 @@ export default function EventLimitReachedScreen() {
       {/* Centered hero */}
       <View style={styles.hero}>
         <Text style={styles.emoji}>🎉</Text>
-        <Text style={styles.title}>You've already created your event today!</Text>
+        <Text style={styles.title}>You've already created your hangout today!</Text>
         <Text style={styles.body}>
           At Hilads, we keep things fresh — one event per day so every plan
           gets the attention it deserves. Come back tomorrow to create another
@@ -93,7 +93,7 @@ export default function EventLimitReachedScreen() {
           accessibilityRole="button"
           accessibilityLabel="Learn about becoming a Legend"
         >
-          <Text style={styles.legendLinkText}>👑 Become a Legend to create unlimited events</Text>
+          <Text style={styles.legendLinkText}>👑 Become a Legend to create unlimited hangouts</Text>
         </TouchableOpacity>
       </View>
 

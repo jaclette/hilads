@@ -53,7 +53,7 @@ export function EventCard({ event, tz, onPress }: Props) {
       onPress={onPress}
     >
       <View style={styles.cardTitleRow}>
-        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Event</Text></View>
+        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Hangout</Text></View>
         {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>Public</Text></View>}
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={1}>{event.title}</Text>

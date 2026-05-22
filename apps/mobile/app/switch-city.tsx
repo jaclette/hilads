@@ -281,7 +281,7 @@ export default function SwitchCityScreen() {
         <View style={styles.filterRow}>
           {([
             { id: 'active', label: '🔥 Most active' },
-            { id: 'events', label: '🎉 Most events' },
+            { id: 'events', label: '🎉 Most hangouts' },
             { id: 'online', label: '🟢 Most online' },
           ] as const).map(f => (
             <TouchableOpacity

@@ -207,7 +207,7 @@ export default function NotificationsScreen() {
           <View style={styles.emptyWrap}>
             <Text style={styles.emptyIcon}>🔔</Text>
             <Text style={styles.emptyTitle}>No notifications yet</Text>
-            <Text style={styles.emptySub}>You'll see messages and event updates here.</Text>
+            <Text style={styles.emptySub}>You'll see messages and hangout updates here.</Text>
           </View>
         ) : (
           <View style={styles.notifList}>
@@ -241,9 +241,9 @@ export default function NotificationsScreen() {
                 now — they govern the envelope icon's behaviour, not the bell. */}
             <PrefRow label="Mentions @" subtitle="When someone @mentions you in a message or pulse" value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Someone joined your event" subtitle="When a new person joins an event you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
+            <PrefRow label="Someone joined your hangout" subtitle="When a new person joins a hangout you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="New events in your city" subtitle="When someone creates an event in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
+            <PrefRow label="New hangouts in your city" subtitle="When someone creates a hangout in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="Someone arrived in your city" subtitle="When a registered user joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />
