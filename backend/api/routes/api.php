@@ -4460,8 +4460,16 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
     }
 
     try {
-        if (EventRepository::findById($eventId) === null) {
-            Response::json(['error' => 'Event not found or expired'], 404);
+        // Read view: serve past events too (any-state) so the archive can show a
+        // finished hangout's chat history. Writes (POST below) still use findById
+        // so posting to an expired event stays blocked. Deleted → 410.
+        $event = EventRepository::findByIdAnyState($eventId);
+        if ($event === null) {
+            Response::json(['error' => 'Event not found'], 404);
+            return;
+        }
+        if (($event['event_status'] ?? 'scheduled') === 'deleted') {
+            Response::json(['error' => 'Event removed'], 410);
             return;
         }
 
@@ -4658,8 +4666,15 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
         Response::json(['error' => 'Invalid eventId'], 400);
     }
 
-    if (EventRepository::findById($eventId) === null) {
-        Response::json(['error' => 'Event not found or expired'], 404);
+    // Read view: serve past events too (any-state) so the archive can show who
+    // went to a finished hangout. RSVP toggle (POST below) still uses findById
+    // so joining an expired event stays blocked. Deleted → 410.
+    $event = EventRepository::findByIdAnyState($eventId);
+    if ($event === null) {
+        Response::json(['error' => 'Event not found'], 404);
+    }
+    if (($event['event_status'] ?? 'scheduled') === 'deleted') {
+        Response::json(['error' => 'Event removed'], 410);
     }
 
     // Prefer guestId (persistent across sessions) over sessionId (ephemeral).
