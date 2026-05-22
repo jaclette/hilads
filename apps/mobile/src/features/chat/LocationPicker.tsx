@@ -12,9 +12,10 @@
  *   5. "Share this spot" → onConfirm({ place, address })
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Modal,
+  TextInput, ScrollView, Keyboard,
 } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import * as Location from 'expo-location';
@@ -81,6 +82,23 @@ async function nominatimReverse(lat: number, lng: number): Promise<{ place: stri
   return { place: place || 'Your location', address };
 }
 
+// ── Forward geocode (address search) via Nominatim ───────────────────────────
+// Same provider as the reverse lookup above. Returns up to 5 ranked matches.
+
+interface SearchHit { label: string; lat: number; lng: number }
+
+async function nominatimSearch(query: string): Promise<SearchHit[]> {
+  const resp = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=en`,
+    { headers: { 'User-Agent': 'Hilads/1.0' } },
+  );
+  if (!resp.ok) throw new Error('Nominatim search error');
+  const data = await resp.json();
+  return (Array.isArray(data) ? data : [])
+    .map((d: any) => ({ label: String(d.display_name ?? ''), lat: parseFloat(d.lat), lng: parseFloat(d.lon) }))
+    .filter((h: SearchHit) => h.label && Number.isFinite(h.lat) && Number.isFinite(h.lng));
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -104,16 +122,15 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
   const webViewReady = useRef(false);
   const pendingPan   = useRef<{ lat: number; lng: number } | null>(null);
 
-  // html is stable for the lifetime of this open — rebuild only when initial coords change
-  const html = useRef(buildMapHtml(initialLat, initialLng));
-  useEffect(() => {
-    if (visible) {
-      html.current = buildMapHtml(initialLat, initialLng);
-      webViewReady.current = false;
-      pendingPan.current   = null;
-      setGeocoding(true);
-    }
-  }, [visible, initialLat, initialLng]);
+  // Build the map HTML + WebView `source` ONCE and keep them referentially
+  // stable. The flicker bug was a re-render loop: passing a fresh `{ html }`
+  // object on every render made react-native-webview reload the map, which
+  // re-fired `ready` → geocode → setState → re-render → reload again (~1/sec).
+  // Memoizing the source breaks that cycle — the component remounts on each
+  // open (parent gates it with `locationCoords && …`), so initial coords are
+  // already fixed for the session.
+  const html   = useMemo(() => buildMapHtml(initialLat, initialLng), [initialLat, initialLng]);
+  const source = useMemo(() => ({ html }), [html]);
 
   // After picker opens: refine to accurate GPS without blocking the UI.
   // The caller already provided last-known position as initialLat/Lng so the map
@@ -155,6 +172,52 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
       setGeocoding(false);
     }
   }, []);
+
+  // ── Address search (forward geocode) ──────────────────────────────────────
+  const [query,       setQuery]       = useState('');
+  const [hits,        setHits]        = useState<SearchHit[]>([]);
+  const [searching,   setSearching]   = useState(false);
+  const [searched,    setSearched]    = useState(false);   // a query has run → enables "No places found"
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchSeq   = useRef(0);                            // guards out-of-order responses
+
+  const runSearch = useCallback(async (q: string) => {
+    const seq = ++searchSeq.current;
+    setSearching(true);
+    try {
+      const results = await nominatimSearch(q);
+      if (seq !== searchSeq.current) return;                // a newer query superseded this one
+      setHits(results);
+    } catch {
+      if (seq === searchSeq.current) setHits([]);
+    } finally {
+      if (seq === searchSeq.current) { setSearching(false); setSearched(true); }
+    }
+  }, []);
+
+  const onSearchChange = useCallback((text: string) => {
+    setQuery(text);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    const q = text.trim();
+    if (q.length < 3) { setHits([]); setSearched(false); setSearching(false); return; }
+    // Debounce so we don't hit Nominatim on every keystroke.
+    searchTimer.current = setTimeout(() => runSearch(q), 450);
+  }, [runSearch]);
+
+  // Pan the map to a searched place; the WebView's moveend → geocode updates the
+  // address label, and the user can still drag afterwards to fine-tune.
+  const selectHit = useCallback((hit: SearchHit) => {
+    Keyboard.dismiss();
+    setQuery(hit.label.split(',')[0]);
+    setHits([]);
+    setSearched(false);
+    currentCoords.current = { lat: hit.lat, lng: hit.lng };
+    const js = `map.setView([${hit.lat},${hit.lng}],16);true;`;
+    if (webViewReady.current) webViewRef.current?.injectJavaScript(js);
+    else pendingPan.current = { lat: hit.lat, lng: hit.lng };
+  }, []);
+
+  useEffect(() => () => { if (searchTimer.current) clearTimeout(searchTimer.current); }, []);
 
   function handleWebViewMessage(event: WebViewMessageEvent) {
     try {
@@ -200,7 +263,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
           <WebView
             ref={webViewRef}
             style={styles.webview}
-            source={{ html: html.current }}
+            source={source}
             onMessage={handleWebViewMessage}
             scrollEnabled={false}
             bounces={false}
@@ -216,6 +279,55 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
           <View style={styles.hintWrap} pointerEvents="none">
             <Text style={styles.hint}>Move the map to adjust</Text>
+          </View>
+
+          {/* ── Address search overlay (top of map) ── */}
+          <View style={styles.searchWrap}>
+            <View style={styles.searchBox}>
+              <Ionicons name="search" size={16} color={Colors.muted2} />
+              <TextInput
+                style={styles.searchInput}
+                value={query}
+                onChangeText={onSearchChange}
+                placeholder="Search an address or place"
+                placeholderTextColor={Colors.muted2}
+                returnKeyType="search"
+                autoCorrect={false}
+                autoCapitalize="none"
+              />
+              {searching ? (
+                <ActivityIndicator size="small" color={Colors.muted2} />
+              ) : query.length > 0 ? (
+                <TouchableOpacity
+                  onPress={() => { setQuery(''); setHits([]); setSearched(false); Keyboard.dismiss(); }}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="close-circle" size={16} color={Colors.muted2} />
+                </TouchableOpacity>
+              ) : null}
+            </View>
+
+            {(hits.length > 0 || (searched && !searching)) && (
+              <View style={styles.suggestions}>
+                {hits.length > 0 ? (
+                  <ScrollView keyboardShouldPersistTaps="handled" style={styles.suggestionsScroll}>
+                    {hits.map((hit, i) => (
+                      <TouchableOpacity
+                        key={`${hit.lat},${hit.lng},${i}`}
+                        style={[styles.suggestionRow, i > 0 && styles.suggestionRowBorder]}
+                        activeOpacity={0.7}
+                        onPress={() => selectHit(hit)}
+                      >
+                        <Ionicons name="location-outline" size={15} color={Colors.muted2} style={{ marginTop: 1 }} />
+                        <Text style={styles.suggestionText} numberOfLines={2}>{hit.label}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                ) : (
+                  <Text style={styles.noResults}>No places found</Text>
+                )}
+              </View>
+            )}
           </View>
         </View>
 
@@ -280,6 +392,50 @@ const styles = StyleSheet.create({
   },
   mapWrap: { flex: 1, position: 'relative' },
   webview: { flex: 1, backgroundColor: '#1a1512' },
+
+  // ── Address search overlay ──
+  searchWrap: { position: 'absolute', top: 12, left: 12, right: 12 },
+  searchBox: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               8,
+    backgroundColor:   Colors.bg2,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    borderRadius:      12,
+    paddingHorizontal: 12,
+    height:            44,
+    shadowColor:       '#000',
+    shadowOffset:      { width: 0, height: 2 },
+    shadowOpacity:     0.3,
+    shadowRadius:      6,
+    elevation:         4,
+  },
+  searchInput: { flex: 1, color: Colors.text, fontSize: FontSizes.sm, padding: 0 },
+  suggestions: {
+    marginTop:       6,
+    backgroundColor: Colors.bg2,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    borderRadius:    12,
+    overflow:        'hidden',
+    shadowColor:     '#000',
+    shadowOffset:    { width: 0, height: 2 },
+    shadowOpacity:   0.3,
+    shadowRadius:    6,
+    elevation:       4,
+  },
+  suggestionsScroll: { maxHeight: 240 },
+  suggestionRow: {
+    flexDirection:     'row',
+    alignItems:        'flex-start',
+    gap:               8,
+    paddingHorizontal: 12,
+    paddingVertical:   11,
+  },
+  suggestionRowBorder: { borderTopWidth: 1, borderTopColor: Colors.border },
+  suggestionText: { flex: 1, color: Colors.text, fontSize: FontSizes.xs, lineHeight: 17 },
+  noResults: { color: Colors.muted2, fontSize: FontSizes.xs, paddingHorizontal: 12, paddingVertical: 12 },
   pinWrap: {
     position:       'absolute',
     top: 0, left: 0, right: 0, bottom: 0,

@@ -65,6 +65,20 @@ async function reverseGeocode(lat, lng) {
   return { place, address }
 }
 
+// ── Forward geocode (address search) via Nominatim — same provider ────────────
+
+async function searchPlaces(query) {
+  const resp = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&accept-language=en`,
+    { headers: { 'User-Agent': 'Hilads/1.0' } },
+  )
+  if (!resp.ok) throw new Error('Nominatim search failed')
+  const data = await resp.json()
+  return (Array.isArray(data) ? data : [])
+    .map(d => ({ label: String(d.display_name ?? ''), lat: parseFloat(d.lat), lng: parseFloat(d.lon) }))
+    .filter(h => h.label && Number.isFinite(h.lat) && Number.isFinite(h.lng))
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function LocationPicker({ initialLat, initialLng, nickname, onConfirm, onClose }) {
@@ -74,6 +88,49 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
   const debounceRef = useRef(null)
   // Track current center for the confirm callback
   const centerRef = useRef({ lat: initialLat, lng: initialLng })
+  const mapRef    = useRef(null)   // Leaflet map instance (react-leaflet v4 ref)
+
+  // ── Address search (forward geocode) ──
+  const [query,     setQuery]     = useState('')
+  const [hits,      setHits]      = useState([])
+  const [searching, setSearching] = useState(false)
+  const [searched,  setSearched]  = useState(false)
+  const searchTimer = useRef(null)
+  const searchSeq   = useRef(0)
+
+  const runSearch = useCallback(async (q) => {
+    const seq = ++searchSeq.current
+    setSearching(true)
+    try {
+      const results = await searchPlaces(q)
+      if (seq !== searchSeq.current) return
+      setHits(results)
+    } catch {
+      if (seq === searchSeq.current) setHits([])
+    } finally {
+      if (seq === searchSeq.current) { setSearching(false); setSearched(true) }
+    }
+  }, [])
+
+  const onSearchChange = useCallback((text) => {
+    setQuery(text)
+    clearTimeout(searchTimer.current)
+    const q = text.trim()
+    if (q.length < 3) { setHits([]); setSearched(false); setSearching(false); return }
+    searchTimer.current = setTimeout(() => runSearch(q), 450)
+  }, [runSearch])
+
+  // Pan the map to a searched place; moveend → geocodeCenter updates the label,
+  // and the user can still drag afterwards to fine-tune.
+  const selectHit = useCallback((hit) => {
+    setQuery(hit.label.split(',')[0])
+    setHits([])
+    setSearched(false)
+    centerRef.current = { lat: hit.lat, lng: hit.lng }
+    mapRef.current?.setView([hit.lat, hit.lng], 16)
+  }, [])
+
+  useEffect(() => () => clearTimeout(searchTimer.current), [])
 
   const geocodeCenter = useCallback(async (lat, lng) => {
     centerRef.current = { lat, lng }
@@ -117,6 +174,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
         {/* ── Map ── */}
         <div className="loc-picker-map-wrap">
           <MapContainer
+            ref={mapRef}
             center={[initialLat, initialLng]}
             zoom={16}
             style={{ width: '100%', height: '100%' }}
@@ -129,6 +187,43 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
             />
             <MapCenterTracker onMoveEnd={handleMoveEnd} />
           </MapContainer>
+
+          {/* ── Address search overlay ── */}
+          <div className="loc-picker-search">
+            <div className="loc-picker-search-box">
+              <span className="loc-picker-search-icon" aria-hidden="true">🔍</span>
+              <input
+                className="loc-picker-search-input"
+                value={query}
+                onChange={e => onSearchChange(e.target.value)}
+                placeholder="Search an address or place"
+                autoComplete="off"
+                spellCheck="false"
+              />
+              {query.length > 0 && (
+                <button
+                  className="loc-picker-search-clear"
+                  onClick={() => { setQuery(''); setHits([]); setSearched(false) }}
+                  aria-label="Clear search"
+                >✕</button>
+              )}
+            </div>
+            {(hits.length > 0 || (searched && !searching)) && (
+              <div className="loc-picker-suggestions">
+                {hits.length > 0 ? hits.map((hit, i) => (
+                  <button
+                    key={`${hit.lat},${hit.lng},${i}`}
+                    className="loc-picker-suggestion"
+                    onClick={() => selectHit(hit)}
+                  >
+                    📍 <span>{hit.label}</span>
+                  </button>
+                )) : (
+                  <div className="loc-picker-no-results">No places found</div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Fixed pin — stays centered, map moves underneath */}
           <div className="loc-picker-pin" aria-hidden="true">📍</div>
