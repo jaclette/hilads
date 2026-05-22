@@ -124,7 +124,6 @@ export default function MeScreen() {
   const validTabs = PROFILE_TABS.map(t => t.key);
   const initialTab = (validTabs.includes(tabParam as ProfileTab) ? tabParam : 'interests') as ProfileTab;
   const [activeTab,          setActiveTab]          = useState<ProfileTab>(initialTab);
-  const [displayName,        setDisplayName]        = useState(account?.display_name ?? '');
   const [username,           setUsername]           = useState(account?.username ?? '');
   const [aboutMe,            setAboutMe]            = useState(account?.about_me ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
@@ -193,14 +192,14 @@ export default function MeScreen() {
   }, [account?.id]);
 
   useEffect(() => {
-    setDisplayName(account?.display_name ?? '');
+    setUsername(account?.username ?? '');
     setAboutMe(account?.about_me ?? '');
     setHomeCity(account?.home_city ?? '');
     setAgeStr(account?.age != null ? String(account.age) : '');
     setSelectedVibe(account?.vibe ?? 'chill');
     setSelectedMode(account?.mode ?? identity?.mode ?? null);
     setSelectedInterests(account?.interests ?? []);
-  }, [account?.display_name, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
+  }, [account?.username, account?.about_me, account?.home_city, account?.age, account?.vibe, account?.mode, account?.interests]);
 
   // Version tap easter egg
   const tapCount = useRef(0);
@@ -306,11 +305,11 @@ export default function MeScreen() {
   }
 
   async function handleSave() {
-    if (!displayName.trim()) { setSaveError('Display name is required'); return; }
+    // Username is the single identity field — it doubles as the display name.
     const handle        = username.trim().toLowerCase();
     const handleChanged = handle !== (account?.username ?? '');
+    if (handle.length < 3)     { setSaveError('Username must be at least 3 characters'); return; }
     if (handleChanged) {
-      if (handle.length < 3)     { setSaveError('Username must be at least 3 characters'); return; }
       if (uStatus === 'taken')   { setSaveError('That username is taken'); return; }
       if (uStatus === 'invalid') { setSaveError(uReason ?? 'Invalid username'); return; }
     }
@@ -324,8 +323,9 @@ export default function MeScreen() {
           ? new Date().getFullYear() - ageNum
           : undefined;
       const fields = {
-        ...(handleChanged ? { username: handle } : {}),
-        display_name:      displayName.trim(),
+        // display_name == username (single identity field).
+        username:          handle,
+        display_name:      handle,
         about_me:          aboutMe.trim() || null,
         home_city:         homeCity.trim() || null,
         interests:         selectedInterests,
@@ -439,11 +439,8 @@ export default function MeScreen() {
 
               <View style={styles.identityInfo}>
                 <Text style={styles.identityName} numberOfLines={1}>
-                  {account?.display_name ?? '—'}
+                  {account?.username ? `@${account.username}` : (account?.display_name ?? '—')}
                 </Text>
-                {account?.username ? (
-                  <Text style={styles.identityHandle} numberOfLines={1}>@{account.username}</Text>
-                ) : null}
                 <View style={styles.identityMetaRow}>
                   {account?.primaryBadge && (
                     <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
@@ -563,20 +560,6 @@ export default function MeScreen() {
         {!isGuest && activeTab === 'interests' && (
           <>
             <View style={styles.fieldsCard}>
-              {/* DISPLAY NAME */}
-              <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>DISPLAY NAME</Text>
-                <TextInput
-                  style={styles.fieldInput}
-                  value={displayName}
-                  onChangeText={setDisplayName}
-                  placeholder="Your display name"
-                  placeholderTextColor={Colors.muted2}
-                  maxLength={30}
-                  autoCorrect={false}
-                />
-              </View>
-
               {/* USERNAME */}
               <View style={styles.fieldGroup}>
                 <Text style={styles.fieldLabel}>USERNAME</Text>

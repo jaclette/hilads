@@ -29,7 +29,6 @@ export default function SignUpScreen() {
     detectedCity,  // geo-resolved city waiting to be joined
   } = useApp();
 
-  const [name,     setName]     = useState('');
   const [username, setUsername] = useState('');
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
@@ -63,11 +62,10 @@ export default function SignUpScreen() {
   }
 
   async function handleSignUp() {
-    const n = name.trim();
     const e = email.trim().toLowerCase();
     const p = password;
 
-    if (!n)                    { setError('Display name required'); return; }
+    // Username is the single identity field — it doubles as the display name.
     if (username.length < 3)   { setError('Pick a username (3+ characters)'); return; }
     if (uStatus === 'taken')   { setError('That username is taken'); return; }
     if (uStatus === 'invalid') { setError(uReason ?? 'Invalid username'); return; }
@@ -79,9 +77,10 @@ export default function SignUpScreen() {
     setLoading(true);
     setError(null);
     try {
-      // Pass guestId so the backend can merge existing guest events/data
+      // Pass guestId so the backend can merge existing guest events/data.
+      // display_name == username (single identity field).
       const guestId = identity?.guestId ?? '';
-      const { user } = await authSignup(e, p, n, username, guestId, mode, true /* eulaAccepted */);
+      const { user } = await authSignup(e, p, username, username, guestId, mode, true /* eulaAccepted */);
       setAccount(user);
       identifyUser(user.id, { account_type: 'registered', username: user.username ?? user.display_name });
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
@@ -143,20 +142,6 @@ export default function SignUpScreen() {
             <Text style={styles.subtitle}>Your guest activity will be carried over.</Text>
 
             {error && <Text style={styles.error}>{error}</Text>}
-
-            <View style={styles.field}>
-              <Text style={styles.label}>Your name</Text>
-              <TextInput
-                style={styles.input}
-                value={name}
-                onChangeText={setName}
-                placeholder="How should we call you?"
-                placeholderTextColor={Colors.muted2}
-                autoCapitalize="words"
-                autoCorrect={false}
-                editable={!loading}
-              />
-            </View>
 
             <View style={styles.field}>
               <Text style={styles.label}>Username</Text>
