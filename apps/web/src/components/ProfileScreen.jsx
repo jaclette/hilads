@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { updateProfile, uploadImage, fetchUserVibes, deleteAccount } from '../api'
+import { updateProfile, uploadImage, fetchUserVibes, deleteAccount, checkUsernameAvailability } from '../api'
 import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
@@ -47,6 +47,10 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [name,            setName]            = useState(account.display_name ?? '')
+  const [username,        setUsername]        = useState(account.username ?? '')
+  const [uStatus,         setUStatus]         = useState('idle') // idle|checking|available|taken|invalid
+  const [uReason,         setUReason]         = useState(null)
+  const uTimer = useRef(null)
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
   const [age,             setAge]             = useState(account.age != null ? String(account.age) : '')
@@ -116,13 +120,39 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     }
   }
 
+  async function handleUsernameChange(val) {
+    const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '')
+    setUsername(cleaned)
+    setUReason(null)
+    clearTimeout(uTimer.current)
+    if (cleaned === (account.username ?? '')) { setUStatus('idle'); return } // unchanged
+    if (cleaned.length < 3) { setUStatus(cleaned.length === 0 ? 'idle' : 'invalid'); return }
+    setUStatus('checking')
+    uTimer.current = setTimeout(async () => {
+      try {
+        const r = await checkUsernameAvailability(cleaned)
+        if (!r.valid)         { setUStatus('invalid');   setUReason(r.reason) }
+        else if (r.available) { setUStatus('available') }
+        else                  { setUStatus('taken');     setUReason(r.reason) }
+      } catch { setUStatus('idle') }
+    }, 450)
+  }
+
   async function handleSave() {
     const trimmedName = name.trim()
     if (!trimmedName) return
+    const handle        = username.trim().toLowerCase()
+    const handleChanged = handle !== (account.username ?? '')
+    if (handleChanged) {
+      if (handle.length < 3)     { setError('Username must be at least 3 characters'); return }
+      if (uStatus === 'taken')   { setError('That username is taken'); return }
+      if (uStatus === 'invalid') { setError(uReason || 'Invalid username'); return }
+    }
     setSaving(true)
     setError(null)
     try {
       const fields = {
+        ...(handleChanged ? { username: handle } : {}),
         display_name:      trimmedName,
         about_me:          aboutMe.trim() || null,
         home_city:         homeCity.trim() || null,
@@ -218,6 +248,9 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             />
             <div className="profile-identity-info">
               <h2 className="profile-identity-name">{name || 'Your profile'}</h2>
+              {(username || account.username) && (
+                <span className="profile-identity-handle">@{username || account.username}</span>
+              )}
               <div className="profile-identity-badges">
                 {account.primaryBadge && (
                   <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
@@ -281,6 +314,28 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                   maxLength={30}
                   placeholder="How you'll appear"
                 />
+              </div>
+
+              <div className="modal-field">
+                <label className="modal-label">Username</label>
+                <div className="username-input-row">
+                  <span className="username-at">@</span>
+                  <input
+                    className="modal-input username-input"
+                    type="text"
+                    value={username}
+                    onChange={e => handleUsernameChange(e.target.value)}
+                    maxLength={20}
+                    placeholder="username"
+                    autoComplete="off"
+                    autoCapitalize="none"
+                  />
+                </div>
+                {uStatus === 'checking'  && <span className="username-hint username-hint--muted">Checking…</span>}
+                {uStatus === 'available' && <span className="username-hint username-hint--ok">@{username} is available</span>}
+                {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
+                  <span className="username-hint username-hint--bad">{uReason}</span>
+                )}
               </div>
 
               <div className="modal-field">

@@ -33,12 +33,33 @@ export default function MessageComposer({
   spotLoading = false,
   autoFocus = false,
   maxLength = 1000,
+  mentionSuggestions = [],
+  onMentionSelect,
 }) {
   const attachDisabled = uploading || sending || spotLoading
   const sendDisabled   = sending || uploading || spotLoading || !value.trim()
 
   return (
     <form className="dm-composer" onSubmit={onSubmit}>
+      {/* @mention autocomplete — floats above the composer while typing "@" */}
+      {mentionSuggestions.length > 0 && (
+        <div className="mention-dropdown">
+          {mentionSuggestions.map(s => (
+            <button
+              key={s.userId}
+              type="button"
+              className="mention-option"
+              onMouseDown={e => { e.preventDefault(); onMentionSelect?.(s) }}
+            >
+              {s.avatarUrl
+                ? <img className="mention-option-avatar" src={s.avatarUrl} alt="" />
+                : <span className="mention-option-avatar mention-option-avatar--initial">{(s.displayName ?? '?')[0].toUpperCase()}</span>}
+              <span className="mention-option-handle">@{s.username}</span>
+              <span className="mention-option-name">{s.displayName}</span>
+            </button>
+          ))}
+        </div>
+      )}
       {/* Hidden file picker — triggered by share sheet */}
       {fileInputRef && (
         <input

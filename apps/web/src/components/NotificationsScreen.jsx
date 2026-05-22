@@ -22,6 +22,7 @@ const TYPE_ICONS = {
   event_message:           '🔥',
   event_join:              '👥',
   new_event:               '🔥',
+  mention:                 '💬',
   channel_message:         '💬',
   city_join:               '👋',
   friend_request_received: '👋',
@@ -190,6 +191,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
             screen now — they govern the envelope icon's behaviour, not the bell. */}
         <div className="notif-prefs">
           <div className="notif-prefs-title">Notification preferences</div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
+              <span className="notif-pref-name">Mentions @</span>
+              <span className="notif-pref-desc">When someone @mentions you in a message or pulse</span>
+            </div>
+            <Toggle
+              checked={prefs?.mention_push ?? true}
+              onChange={v => handleTogglePref('mention_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">

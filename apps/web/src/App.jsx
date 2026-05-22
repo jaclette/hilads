@@ -9,6 +9,9 @@ import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug 
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
+import AttendeeAvatars from './components/AttendeeAvatars'
+import useMentions from './hooks/useMentions'
+import { splitContentByMentions } from './lib/mentions'
 import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
@@ -733,6 +736,16 @@ export default function App() {
     setViewingProfile({ userId, nickname })
     track('viewed_profile', { profile_id: userId })
   }
+
+  // Render message text with @mentions as styled, clickable spans (→ profile).
+  // Mentions carry the CURRENT username resolved by the backend.
+  function renderMessageContent(item) {
+    return splitContentByMentions(item.content ?? '', item.mentions).map((seg, i) =>
+      seg.type === 'text'
+        ? <span key={i}>{seg.text}</span>
+        : <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); openProfile(seg.userId, seg.username) }}>@{seg.username}</span>
+    )
+  }
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
   const [conversations, setConversations] = useState(null) // { dms, events } — loaded by ConversationsScreen on open
@@ -915,6 +928,15 @@ export default function App() {
   const guestAutoJoinedRef = useRef(false)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
   const chatInputRef = useRef(null)
+  // @mention autocomplete for the shared city/event composer. Context follows the
+  // active event (event chat) or falls back to the city channel.
+  const mentions = useMentions({
+    context:   activeEvent ? 'event' : 'city',
+    channelId: activeEvent ? activeEvent.id : channelId,
+    value:     input,
+    setValue:  setInput,
+    inputRef:  chatInputRef,
+  })
   const sessionIdRef = useRef(PAGE_SESSION_ID)
   const guestIdRef   = useRef(null)   // always-current guestId for own-message WS echo detection
   const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
@@ -2045,7 +2067,7 @@ export default function App() {
   }
 
   function handleInputChange(e) {
-    setInput(e.target.value)
+    mentions.onValueChange(e.target.value)
     if (!socketRef.current || !activeChannelRef.current) return
     if (!isTypingRef.current) {
       isTypingRef.current = true
@@ -2118,6 +2140,9 @@ export default function App() {
     const currentReply = replyingTo
     setReplyingTo(null)
 
+    // Build @mention offsets from the final text, then reset the picker state.
+    const builtMentions = mentions.buildAndReset(content.trim())
+
     // Optimistic insert — message appears instantly without waiting for HTTP.
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
     const optimistic = {
@@ -2129,16 +2154,18 @@ export default function App() {
       content:   content.trim(),
       createdAt: Date.now() / 1000,
       replyTo:   currentReply ?? undefined,
+      mentions:  builtMentions.length ? builtMentions : undefined,
     }
     setFeed(prev => [...prev, optimistic])
 
     setSending(true)
     try {
       let msg
+      const mArg = builtMentions.length ? builtMentions : null
       if (activeEventIdRef.current) {
-        msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null)
+        msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null, mArg)
       } else {
-        msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null)
+        msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null, mArg)
       }
 
       knownIdsRef.current.add(msg.id)
@@ -3578,7 +3605,7 @@ export default function App() {
                             </span>
                           </div>
                         )}
-                        <span className="msg-text">{item.content}</span>
+                        <span className="msg-text">{renderMessageContent(item)}</span>
                       </div>
                     )}
                   </div>
@@ -3748,6 +3775,8 @@ export default function App() {
           uploading={uploading}
           sending={sending}
           spotLoading={spotLoading}
+          mentionSuggestions={mentions.suggestions}
+          onMentionSelect={mentions.selectMention}
         />
 
         {/* Bottom navigation — mobile only */}
@@ -3982,6 +4011,12 @@ export default function App() {
                     )}
                     {event.host_nickname && (
                       <span className="er-host">Hosted by {event.host_nickname}</span>
+                    )}
+                    {group !== 'public' && (
+                      <AttendeeAvatars
+                        preview={event.participants_preview ?? []}
+                        total={going || (event.participant_count ?? 0)}
+                      />
                     )}
                   </button>
                 )
@@ -4699,6 +4734,16 @@ export default function App() {
               const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
               if (ev) handleSelectEvent(ev)
               else setShowEventDrawer(true)
+            } else if (notif.type === 'mention') {
+              // Route to the message's context: event chat, pulse, or city chat.
+              if (d.eventId) {
+                const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
+                if (ev) handleSelectEvent(ev); else setShowEventDrawer(true)
+              } else if (d.topicId) {
+                const t = (topics || []).find(tp => tp.id === d.topicId)
+                if (t) setActiveTopic(t)
+              }
+              // city-channel mentions: closing the panel returns to the city chat.
             } else if (notif.type === 'friend_request_received') {
               setShowFriendRequests(true)
             } else if (notif.type === 'friend_request_accepted' && d.accepterUserId) {
@@ -4890,6 +4935,7 @@ export default function App() {
           onBack={() => setActiveTopic(null)}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
+          onViewProfile={openProfile}
         />
       )}
 

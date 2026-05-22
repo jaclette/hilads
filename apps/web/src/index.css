@@ -3458,6 +3458,49 @@ html, body, #root {
   }
 }
 
+/* ── Event card attendee avatars ─────────────────────── */
+
+.attendee-avatars {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.attendee-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.66rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid var(--bg, #0d0b09);
+  position: relative;
+}
+
+.attendee-avatar:not(:first-child) {
+  margin-left: -8px;
+}
+
+.attendee-avatar-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.attendee-overflow {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.6rem;
+}
+
 /* ── Online users — shared avatar ────────────────────── */
 
 .online-avatar {
@@ -6653,6 +6696,77 @@ img.pub-profile-avatar {
   border-color: var(--accent);
 }
 
+/* Username (@-handle) picker — @ prefix + inline availability status */
+.username-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  transition: border-color 0.15s;
+}
+.username-input-row:focus-within { border-color: var(--accent); }
+.username-at { color: var(--muted); font-weight: 600; font-size: 0.95rem; }
+.username-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 11px 0;
+}
+.username-input:focus { border: none; }
+.username-hint { display: block; margin-top: 5px; font-size: 0.78rem; }
+.username-hint--muted { color: var(--muted); }
+.username-hint--ok    { color: #4ade80; }
+.username-hint--bad   { color: #fb7185; }
+.profile-identity-handle { display: block; color: var(--muted); font-size: 0.85rem; font-weight: 500; }
+
+/* ── @mention autocomplete dropdown + rendered mention spans ─────────────── */
+.mention-dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 12px;
+  right: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--surface, #16120f);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 6px;
+  z-index: 200;
+  box-shadow: 0 8px 36px rgba(0, 0, 0, 0.55);
+}
+.mention-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+}
+.mention-option:hover { background: rgba(255, 255, 255, 0.06); }
+.mention-option-avatar {
+  width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.1); color: #fff; font-size: 0.72rem; font-weight: 700;
+}
+.mention-option-handle { font-weight: 700; font-size: 0.9rem; }
+.mention-option-name   { color: var(--muted); font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.msg-mention {
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+.msg-mention:hover { text-decoration: underline; }
+
 .modal-textarea {
   resize: none;
   line-height: 1.45;
@@ -7587,6 +7701,7 @@ img.dm-header-avatar {
   padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid rgba(255,255,255,0.06);
   background: var(--bg);
+  position: relative; /* anchors the @mention dropdown */
 }
 
 .dm-upload-btn {

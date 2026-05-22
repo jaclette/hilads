@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import BackButton from './BackButton'
+import AttendeeAvatars from './AttendeeAvatars'
 import { fetchUpcomingEvents, fetchCalendarSummary } from '../api'
 import { formatTime, getEventLocation } from '../eventUtils'
 
@@ -258,6 +259,12 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
                     )}
                   </div>
                   {location && <span className="er-location">📍 {location}</span>}
+                  {!isPublic && (
+                    <AttendeeAvatars
+                      preview={event.participants_preview ?? []}
+                      total={going}
+                    />
+                  )}
                 </button>
               )
             })}

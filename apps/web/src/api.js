@@ -210,9 +210,10 @@ export async function fetchChannels(sort = null) {
   return res.json()
 }
 
-export async function sendMessage(channelId, sessionId, guestId, nickname, content, replyToMessageId = null) {
+export async function sendMessage(channelId, sessionId, guestId, nickname, content, replyToMessageId = null, mentions = null) {
   const body = { sessionId, guestId, nickname, content }
   if (replyToMessageId) body.replyToMessageId = replyToMessageId
+  if (mentions && mentions.length) body.mentions = mentions
   const res = await fetch(`${BASE}/channels/${channelId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -331,12 +332,14 @@ export async function fetchTopicMessages(topicId) {
   return res.json() // { messages }
 }
 
-export async function sendTopicMessage(topicId, guestId, nickname, content) {
+export async function sendTopicMessage(topicId, guestId, nickname, content, mentions = null) {
+  const body = { guestId, nickname, content }
+  if (mentions && mentions.length) body.mentions = mentions
   const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, nickname, content }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
@@ -482,9 +485,10 @@ export async function toggleEventParticipation(eventId, sessionId) {
   return res.json() // { count, isIn }
 }
 
-export async function sendEventMessage(eventId, guestId, nickname, content, replyToMessageId = null) {
+export async function sendEventMessage(eventId, guestId, nickname, content, replyToMessageId = null, mentions = null) {
   const body = { guestId, nickname, content }
   if (replyToMessageId) body.replyToMessageId = replyToMessageId
+  if (mentions && mentions.length) body.mentions = mentions
   const res = await fetch(`${BASE}/events/${eventId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -498,18 +502,46 @@ export async function sendEventMessage(eventId, guestId, nickname, content, repl
   return res.json()
 }
 
+// ── @mention autocomplete ──────────────────────────────────────────────────────
+// context: 'city' | 'event' | 'topic'. id: city numeric id, or event/topic hex id.
+// Registered, in-context users only (backend excludes guests + the caller).
+export async function fetchMentionSuggestions(context, id, q) {
+  const path = context === 'city'  ? `/channels/${id}/mention-suggestions`
+             : context === 'event' ? `/events/${id}/mention-suggestions`
+             :                       `/topics/${id}/mention-suggestions`
+  try {
+    const res = await fetch(`${BASE}${path}?q=${encodeURIComponent(q)}`, { credentials: 'include' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.suggestions ?? []
+  } catch {
+    return []
+  }
+}
+
 // ── Auth & profile ────────────────────────────────────────────────────────────
 
-export async function authSignup(email, password, displayName, guestId, mode = null) {
+export async function authSignup(email, password, displayName, username, guestId, mode = null) {
   const res = await fetch(`${BASE}/auth/signup`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ email, password, display_name: displayName, guest_id: guestId, mode }),
+    body: JSON.stringify({ email, password, display_name: displayName, username, guest_id: guestId, mode }),
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error || 'Signup failed')
   return data // { user }
+}
+
+// Real-time username availability + format check for the @-handle picker.
+// Returns { valid, available, reason }. Sends credentials so the backend
+// excludes the caller's own row when editing in profile.
+export async function checkUsernameAvailability(username) {
+  const res = await fetch(`${BASE}/username/check?username=${encodeURIComponent(username)}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return { valid: false, available: false, reason: 'Check failed' }
+  return res.json()
 }
 
 export async function authLogin(email, password) {

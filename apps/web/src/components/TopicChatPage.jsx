@@ -4,6 +4,8 @@ import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
+import useMentions from '../hooks/useMentions'
+import { splitContentByMentions } from '../lib/mentions'
 
 const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 const MODE_META  = { local: { emoji: '🌍', label: 'Local' }, exploring: { emoji: '🧭', label: 'Exploring' } }
@@ -83,7 +85,7 @@ async function shareTopic(title, topicId) {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function TopicChatPage({ topic, guest, nickname, onBack, socket, sessionId }) {
+export default function TopicChatPage({ topic, guest, nickname, onBack, socket, sessionId, onViewProfile }) {
   const [messages,   setMessages]   = useState([])
   const [input,      setInput]      = useState('')
   const [sending,    setSending]    = useState(false)
@@ -103,6 +105,16 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
 
   const icon = CATEGORY_ICONS[topic.category] ?? '💬'
+
+  const mentions = useMentions({ context: 'topic', channelId: topic.id, value: input, setValue: setInput, inputRef })
+
+  function renderMessageContent(item) {
+    return splitContentByMentions(item.content ?? '', item.mentions).map((seg, i) =>
+      seg.type === 'text'
+        ? <span key={i}>{seg.text}</span>
+        : <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); onViewProfile?.(seg.userId, seg.username) }}>@{seg.username}</span>
+    )
+  }
 
   // Load + poll messages
   const loadMessages = useCallback(async () => {
@@ -160,6 +172,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
     const text = input.trim()
     if (!text || !guest || sending) return
 
+    const built = mentions.buildAndReset(text)
     const localId = `local-${Date.now()}`
     const optimistic = {
       id:        localId,
@@ -168,6 +181,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       nickname:  nickname,
       content:   text,
       createdAt: Date.now() / 1000,
+      mentions:  built.length ? built : undefined,
       _local:    true,
     }
 
@@ -177,7 +191,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
     setError(null)
 
     try {
-      const data = await sendTopicMessage(topic.id, guest.guestId, nickname, text)
+      const data = await sendTopicMessage(topic.id, guest.guestId, nickname, text, built.length ? built : null)
       const msg = data.message ?? data
       knownIdsRef.current.add(msg.id)
       setMessages(prev => prev.map(m => m.id === localId ? msg : m))
@@ -386,7 +400,7 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
                   )}
                   {item.type === 'image' && item.imageUrl
                     ? <img src={item.imageUrl} alt="" className="msg-image" style={{ maxWidth: '100%', borderRadius: 10, display: 'block' }} />
-                    : <span className="msg-text">{item.content}</span>
+                    : <span className="msg-text">{renderMessageContent(item)}</span>
                   }
                 </div>
               </div>
@@ -433,12 +447,14 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         inputRef={inputRef}
         fileInputRef={fileInputRef}
         value={input}
-        onChange={e => setInput(e.target.value)}
+        onChange={e => mentions.onValueChange(e.target.value)}
         onSubmit={handleSend}
         onFileSelect={handleImageSelect}
         onShareClick={() => setShowShareSheet(true)}
         showEmojiButton={false}
         placeholder={messages.length > 0 ? 'Reply to the conversation…' : 'Start the vibe ✨'}
+        mentionSuggestions={mentions.suggestions}
+        onMentionSelect={mentions.selectMention}
         uploading={uploading}
         sending={sending}
         spotLoading={spotLoading}

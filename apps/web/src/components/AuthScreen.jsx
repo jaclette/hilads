@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { authSignup, authLogin } from '../api'
+import { useState, useRef } from 'react'
+import { authSignup, authLogin, checkUsernameAvailability } from '../api'
 import BackButton from './BackButton'
 
 const MODES = [
@@ -12,21 +12,46 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
   const [name, setName]       = useState(guestNickname || '')
+  const [username, setUsername] = useState('')
   const [mode, setMode]       = useState(null)
   const [error, setError]     = useState(null)
   const [loading, setLoading] = useState(false)
 
+  // Username availability — debounced check against the backend.
+  const [uStatus, setUStatus] = useState('idle') // idle|checking|available|taken|invalid
+  const [uReason, setUReason] = useState(null)
+  const uTimer = useRef(null)
+
+  function handleUsernameChange(val) {
+    const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '')
+    setUsername(cleaned)
+    setUReason(null)
+    clearTimeout(uTimer.current)
+    if (cleaned.length < 3) { setUStatus(cleaned.length === 0 ? 'idle' : 'invalid'); return }
+    setUStatus('checking')
+    uTimer.current = setTimeout(async () => {
+      try {
+        const r = await checkUsernameAvailability(cleaned)
+        if (!r.valid)         { setUStatus('invalid');   setUReason(r.reason) }
+        else if (r.available) { setUStatus('available') }
+        else                  { setUStatus('taken');     setUReason(r.reason) }
+      } catch { setUStatus('idle') }
+    }, 450)
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
     setError(null)
-    if (tab === 'signup' && !mode) {
-      setError('Please choose a mode to continue')
-      return
+    if (tab === 'signup') {
+      if (!mode)                 { setError('Please choose a mode to continue'); return }
+      if (username.length < 3)   { setError('Pick a username (3+ characters)'); return }
+      if (uStatus === 'taken')   { setError('That username is taken'); return }
+      if (uStatus === 'invalid') { setError(uReason || 'Invalid username'); return }
     }
     setLoading(true)
     try {
       const data = tab === 'signup'
-        ? await authSignup(email, password, name, guestId, mode)
+        ? await authSignup(email, password, name, username, guestId, mode)
         : await authLogin(email, password)
       onSuccess(data.user)
     } catch (err) {
@@ -70,6 +95,29 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
                   required
                   autoFocus
                 />
+              </div>
+
+              <div className="modal-field">
+                <label className="modal-label">Username</label>
+                <div className="username-input-row">
+                  <span className="username-at">@</span>
+                  <input
+                    className="modal-input username-input"
+                    type="text"
+                    value={username}
+                    onChange={e => handleUsernameChange(e.target.value)}
+                    placeholder="username"
+                    maxLength={20}
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    required
+                  />
+                </div>
+                {uStatus === 'checking'  && <span className="username-hint username-hint--muted">Checking…</span>}
+                {uStatus === 'available' && <span className="username-hint username-hint--ok">@{username} is available</span>}
+                {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
+                  <span className="username-hint username-hint--bad">{uReason}</span>
+                )}
               </div>
 
               <div className="profile-mode-section">
