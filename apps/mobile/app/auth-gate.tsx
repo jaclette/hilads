@@ -14,13 +14,18 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-type GateReason = 'view_profile' | 'create_event' | 'send_dm';
+type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout';
 
 const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: string }> = {
   view_profile: {
     emoji:    '👻',
     title:    "Ghosts can browse, but profiles are for members.",
     subtitle: "Create an account to unlock profiles, connect with people, and build your city crew.",
+  },
+  join_hangout: {
+    emoji:    '⚡',
+    title:    "Ghosts can browse, but can't join hangouts.",
+    subtitle: "Sign up to join hangouts, save your name, and get notified when people want to meet.",
   },
   create_event: {
     emoji:    '🎉',

@@ -446,6 +446,12 @@ export default function NowScreen() {
                 <TopicCard
                   topic={item as FeedItem & { kind: 'topic' }}
                   onPress={() => {
+                    // Hangouts are members-only — send guests to signup with
+                    // the join value-prop instead of opening the channel.
+                    if (!account) {
+                      router.push('/auth-gate?reason=join_hangout' as never);
+                      return;
+                    }
                     track('topic_opened', { topicId: item.id });
                     router.push(`/topic/${item.id}`);
                   }}

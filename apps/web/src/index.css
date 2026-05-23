@@ -6913,6 +6913,38 @@ img.pub-profile-avatar {
 }
 .msg-mention:hover { background: rgba(0, 0, 0, 0.42); }
 
+/* ── Hangout request-to-join ── */
+.join-req-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-self: center;
+  max-width: 88%;
+  margin: 6px auto;
+  padding: 12px 14px;
+  background: rgba(96, 165, 250, 0.08);
+  border: 1px solid rgba(96, 165, 250, 0.2);
+  border-radius: 16px;
+  text-align: center;
+}
+.join-req-text { font-size: 0.85rem; color: var(--text); }
+.join-req-btns { display: flex; gap: 10px; }
+.join-req-accept {
+  flex: 1; padding: 8px; border: none; border-radius: 12px;
+  background: var(--accent); color: #fff; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.join-req-reject {
+  flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05); color: var(--muted); font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.join-req-resolved { font-size: 0.78rem; color: #4ade80; font-weight: 600; }
+.join-req-resolved.muted { color: var(--muted2); }
+.topic-join-btn {
+  align-self: center; margin: 8px auto; padding: 8px 18px; border: none; border-radius: 999px;
+  background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit;
+}
+.topic-join-btn.done { background: rgba(255, 255, 255, 0.08); color: var(--muted); }
+
 .modal-textarea {
   resize: none;
   line-height: 1.45;

@@ -334,6 +334,25 @@ export async function fetchTopicMessages(topicId, { beforeId, limit } = {}) {
   return res.json() // { messages, hasMore }
 }
 
+// ── Hangout request-to-join (internally "topic") ──────────────────────────────
+
+export async function requestToJoinHangout(topicId) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/join-requests`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: '{}',
+  })
+  const data = await res.json().catch(() => ({}))
+  return { status: data.status ?? (res.ok ? 'pending' : 'error'), requestId: data.requestId }
+}
+
+export async function resolveHangoutJoinRequest(topicId, requestId, action) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/join-requests/${encodeURIComponent(requestId)}/resolve`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include',
+    body: JSON.stringify({ action }),
+  })
+  const data = await res.json().catch(() => ({}))
+  return { status: data.status ?? (res.ok ? action : 'error'), resolvedByName: data.resolvedByName }
+}
+
 export async function sendTopicMessage(topicId, guestId, nickname, content, mentions = null) {
   const body = { guestId, nickname, content }
   if (mentions && mentions.length) body.mentions = mentions

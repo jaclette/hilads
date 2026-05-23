@@ -80,6 +80,40 @@ export async function fetchTopicMessages(
   return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
 }
 
+// ── Hangout request-to-join (internally "topic") ──────────────────────────────
+
+export type JoinRequestStatus = 'pending' | 'accepted' | 'rejected' | 'duplicate' | 'cooldown' | 'already_participant' | 'already_resolved';
+
+/** Member asks to join a hangout. Returns the resulting status. */
+export async function requestToJoinHangout(topicId: string): Promise<{ status: JoinRequestStatus; requestId?: string }> {
+  try {
+    return await api.post<{ status: JoinRequestStatus; requestId?: string }>(`/topics/${topicId}/join-requests`, {});
+  } catch (e) {
+    // 409 conflicts (duplicate/cooldown/already_resolved) carry a body status —
+    // surface it rather than throwing so the UI can show a friendly message.
+    const body = (e as { body?: { status?: JoinRequestStatus } } | null)?.body;
+    if (body?.status) return { status: body.status };
+    throw e;
+  }
+}
+
+/** Any participant accepts/rejects a pending request. 409 = already resolved. */
+export async function resolveHangoutJoinRequest(
+  topicId: string,
+  requestId: string,
+  action: 'accept' | 'reject',
+): Promise<{ status: JoinRequestStatus; resolvedByName?: string }> {
+  try {
+    return await api.post<{ status: JoinRequestStatus; resolvedByName?: string }>(
+      `/topics/${topicId}/join-requests/${requestId}/resolve`, { action },
+    );
+  } catch (e) {
+    const body = (e as { body?: { status?: JoinRequestStatus } } | null)?.body;
+    if (body?.status) return { status: body.status }; // already_resolved → reconcile silently
+    throw e;
+  }
+}
+
 export async function sendTopicMessage(
   topicId: string,
   guestId: string,

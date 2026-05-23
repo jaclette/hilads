@@ -182,6 +182,57 @@ interface Props {
   onReplyQuotePress?: (replyToId: string) => void;  // tap on quoted preview → scroll to parent
   isHighlighted?: boolean;                          // true = briefly flash orange highlight
   onReact?: (msg: Message, emoji: string) => void;  // called when a reaction pill is tapped
+  onResolveJoinRequest?: (requestId: string, action: 'accept' | 'reject') => void; // hangout join req
+}
+
+// ── Join-request feed card (hangout request-to-join) ──────────────────────────
+// Renders a `type: 'join_request'` message. content is JSON:
+//   { requestId, requesterName, status, resolvedByName }
+// Pending → Accept/Reject (any participant); resolved → who accepted, or a
+// discreet "declined" (no shaming). The backend enforces first-write-wins, so
+// the buttons just optimistically fire and reconcile on the next feed update.
+function JoinRequestCard({ message, onResolve }: {
+  message: Message;
+  onResolve?: (requestId: string, action: 'accept' | 'reject') => void;
+}) {
+  let data: { requestId?: string; requesterName?: string; status?: string; resolvedByName?: string } = {};
+  try { data = JSON.parse(message.content ?? '{}'); } catch { /* malformed → render nothing */ }
+  const name   = data.requesterName ?? 'Someone';
+  const status = data.status ?? 'pending';
+  const reqId  = data.requestId;
+
+  return (
+    <View style={styles.joinReqRow}>
+      <View style={styles.joinReqCard}>
+        <Text style={styles.joinReqText}>
+          <Text style={styles.joinReqName}>{name}</Text>
+          {status === 'pending' ? ' wants to join' : status === 'accepted' ? ' joined the hangout' : ' asked to join'}
+        </Text>
+        {status === 'pending' ? (
+          <View style={styles.joinReqBtns}>
+            <TouchableOpacity
+              style={[styles.joinReqBtn, styles.joinReqReject]}
+              activeOpacity={0.8}
+              onPress={() => reqId && onResolve?.(reqId, 'reject')}
+            >
+              <Text style={styles.joinReqRejectText}>Decline</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.joinReqBtn, styles.joinReqAccept]}
+              activeOpacity={0.85}
+              onPress={() => reqId && onResolve?.(reqId, 'accept')}
+            >
+              <Text style={styles.joinReqAcceptText}>Accept</Text>
+            </TouchableOpacity>
+          </View>
+        ) : status === 'accepted' ? (
+          <Text style={styles.joinReqResolved}>Accepted{data.resolvedByName ? ` by ${data.resolvedByName}` : ''}</Text>
+        ) : (
+          <Text style={styles.joinReqResolvedMuted}>Request declined</Text>
+        )}
+      </View>
+    </View>
+  );
 }
 
 // ── Animated event pill — fade + slide-up on mount, staggered by index ───────
@@ -363,7 +414,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest }: Props) {
   const router = useRouter();
   const { account } = useApp();
 
@@ -453,6 +504,18 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           <Text style={styles.promptBtnText}>{message.cta}</Text>
         </TouchableOpacity>
       </Animated.View>
+    );
+  }
+
+  // ── Join-request feed item (hangout request-to-join) ──────────────────────
+  if (message.type === 'join_request') {
+    return (
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <Animated.View style={animStyle}>
+          <JoinRequestCard message={message} onResolve={onResolveJoinRequest} />
+        </Animated.View>
+      </>
     );
   }
 
@@ -909,6 +972,30 @@ const styles = StyleSheet.create({
     fontWeight:      '700',
     backgroundColor: 'rgba(0,0,0,0.28)',
   },
+
+  // ── Join-request feed card ─────────────────────────────────────────────────
+  joinReqRow:  { alignItems: 'center', marginVertical: 6, paddingHorizontal: 18 },
+  joinReqCard: {
+    width:           '100%',
+    maxWidth:        '88%',
+    backgroundColor: 'rgba(96,165,250,0.08)',
+    borderWidth:     1,
+    borderColor:     'rgba(96,165,250,0.20)',
+    borderRadius:    16,
+    paddingHorizontal: 14,
+    paddingVertical:   12,
+    gap:             10,
+  },
+  joinReqText: { fontSize: FontSizes.sm, color: Colors.text, textAlign: 'center' },
+  joinReqName: { fontWeight: '700' },
+  joinReqBtns: { flexDirection: 'row', gap: 10 },
+  joinReqBtn:  { flex: 1, paddingVertical: 9, borderRadius: 12, alignItems: 'center' },
+  joinReqAccept:     { backgroundColor: Colors.accent },
+  joinReqAcceptText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
+  joinReqReject:     { backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: Colors.border },
+  joinReqRejectText: { color: Colors.muted, fontWeight: '600', fontSize: FontSizes.sm },
+  joinReqResolved:      { fontSize: FontSizes.xs, color: '#4ade80', fontWeight: '600', textAlign: 'center' },
+  joinReqResolvedMuted: { fontSize: FontSizes.xs, color: Colors.muted2, textAlign: 'center' },
 
   // Failed state
   bubbleFailed: {

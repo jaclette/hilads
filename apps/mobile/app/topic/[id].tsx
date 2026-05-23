@@ -12,6 +12,7 @@ import { shareLink } from '@/lib/shareLink';
 import {
   fetchTopicById, fetchTopicMessages,
   sendTopicMessage, sendTopicImageMessage, markTopicRead,
+  resolveHangoutJoinRequest, requestToJoinHangout,
 } from '@/api/topics';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -33,6 +34,13 @@ export default function TopicChatScreen() {
   const [topic, setTopic]   = useState<Topic | null>(null);
   const [topicLoading, setTopicLoading] = useState(true);
   const [shared, setShared] = useState(false);
+  const [joinState, setJoinState] = useState<'idle' | 'requested' | 'in'>('idle');
+
+  const handleRequestToJoin = useCallback(async () => {
+    const res = await requestToJoinHangout(id).catch(() => null);
+    if (!res) return;
+    setJoinState(res.status === 'already_participant' ? 'in' : 'requested');
+  }, [id]);
 
   async function handleShare() {
     if (!id) return;
@@ -65,6 +73,14 @@ export default function TopicChatScreen() {
   }, [id, identity?.guestId]);
 
   const loadFn = useCallback((opts?: { beforeId?: string }) => fetchTopicMessages(id, opts), [id]);
+
+  // Accept/Reject a join request. The backend is first-write-wins and
+  // re-broadcasts the resolved feed item over WS, so every participant's card
+  // (including this one) updates via useMessages' join_request upsert. An
+  // already-resolved race returns gracefully — nothing to show the user.
+  const handleResolveJoinRequest = useCallback((requestId: string, action: 'accept' | 'reject') => {
+    resolveHangoutJoinRequest(id, requestId, action).catch(() => { /* WS/refetch reconciles */ });
+  }, [id]);
 
   const postTextFn = useCallback(
     (content: string, _replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
@@ -166,6 +182,20 @@ export default function TopicChatScreen() {
               <Text style={styles.infoDesc}>{topic.description}</Text>
             ) : null}
             <Text style={styles.infoExpiry}>⏱ Active for 24 h</Text>
+            {/* Request-to-join — shown to members who didn't create this hangout.
+                The backend dedups (one pending) + handles already-a-participant. */}
+            {account && topic.created_by && account.id !== topic.created_by && (
+              <TouchableOpacity
+                style={[styles.joinBtn, joinState !== 'idle' && styles.joinBtnDone]}
+                activeOpacity={0.85}
+                disabled={joinState !== 'idle'}
+                onPress={handleRequestToJoin}
+              >
+                <Text style={styles.joinBtnText}>
+                  {joinState === 'requested' ? 'Requested ✓' : joinState === 'in' ? "You're in ✓" : 'Request to join'}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         ) : null
       ) : (
@@ -211,6 +241,7 @@ export default function TopicChatScreen() {
                 isGrouped={isGrouped}
                 showTime={showTime}
                 dateLabel={dateLabel}
+                onResolveJoinRequest={handleResolveJoinRequest}
               />
             );
           }}
@@ -342,6 +373,16 @@ const styles = StyleSheet.create({
   },
   infoDesc:   { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
   infoExpiry: { fontSize: FontSizes.xs, color: '#60a5fa', fontWeight: '600' },
+  joinBtn: {
+    marginTop:       10,
+    alignSelf:       'flex-start',
+    backgroundColor: Colors.accent,
+    borderRadius:    Radius.full,
+    paddingHorizontal: 16,
+    paddingVertical:   8,
+  },
+  joinBtnDone: { backgroundColor: 'rgba(255,255,255,0.08)' },
+  joinBtnText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
 
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },

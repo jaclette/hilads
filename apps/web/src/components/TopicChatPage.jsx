@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage } from '../api'
+import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout } from '../api'
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
@@ -114,6 +114,19 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
 
   const icon = CATEGORY_ICONS[topic.category] ?? '💬'
 
+  // ── Hangout request-to-join ──
+  const [joinState, setJoinState] = useState('idle') // idle | requested | in
+  const onResolveJoinRequest = useCallback((requestId, action) => {
+    // First-write-wins server-side; the resolved item re-broadcasts over WS so
+    // every participant's card updates. already_resolved races are swallowed.
+    resolveHangoutJoinRequest(topic.id, requestId, action).catch(() => {})
+  }, [topic.id])
+  const handleRequestToJoin = useCallback(async () => {
+    const res = await requestToJoinHangout(topic.id).catch(() => null)
+    if (!res) return
+    setJoinState(res.status === 'already_participant' ? 'in' : 'requested')
+  }, [topic.id])
+
   const mentions = useMentions({ context: 'topic', channelId: topic.id, value: input, setValue: setInput, inputRef })
 
   function renderMessageContent(item) {
@@ -161,6 +174,12 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       const msg = data.message
       if (!msg) return
       const key = msg.id ?? `${msg.guestId}:${msg.createdAt}`
+      // join_request items are mutable (pending → resolved): the resolve
+      // re-broadcasts the same id — upsert it in place so the CTAs resolve live.
+      if (msg.type === 'join_request' && knownIdsRef.current.has(key)) {
+        setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, content: msg.content } : m))
+        return
+      }
       if (knownIdsRef.current.has(key)) return
       knownIdsRef.current.add(key)
       setMessages(prev => [...prev, msg].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
@@ -380,6 +399,16 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         <div className="topic-chat-desc">{topic.description}</div>
       )}
 
+      {/* Request-to-join — backend dedups (one pending) + treats the creator/
+          existing participants as already-in, so this self-corrects. */}
+      <button
+        className={`topic-join-btn${joinState !== 'idle' ? ' done' : ''}`}
+        disabled={joinState !== 'idle'}
+        onClick={handleRequestToJoin}
+      >
+        {joinState === 'requested' ? 'Requested ✓' : joinState === 'in' ? "You're in ✓" : 'Request to join'}
+      </button>
+
       {/* Messages area */}
       <div className="topic-chat-feed" ref={feedRef} onScroll={handleFeedScroll}>
         {loadingOlder && (
@@ -413,6 +442,31 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
             return (
               <div key={item.id ?? idx} className="activity-msg" style={{ textAlign: 'center', color: 'var(--muted2)', fontSize: 13, padding: '4px 0' }}>
                 {item.content}
+              </div>
+            )
+          }
+
+          // Hangout join-request feed item — Accept/Reject (pending) or resolved.
+          if (item.type === 'join_request') {
+            let jr = {}
+            try { jr = JSON.parse(item.content ?? '{}') } catch { /* malformed */ }
+            const name = jr.requesterName ?? 'Someone'
+            return (
+              <div key={item.id ?? idx} className="join-req-card">
+                <span className="join-req-text">
+                  <strong>{name}</strong>
+                  {jr.status === 'pending' ? ' wants to join' : jr.status === 'accepted' ? ' joined the hangout' : ' asked to join'}
+                </span>
+                {jr.status === 'pending' ? (
+                  <div className="join-req-btns">
+                    <button className="join-req-reject" onClick={() => onResolveJoinRequest?.(jr.requestId, 'reject')}>Decline</button>
+                    <button className="join-req-accept" onClick={() => onResolveJoinRequest?.(jr.requestId, 'accept')}>Accept</button>
+                  </div>
+                ) : jr.status === 'accepted' ? (
+                  <span className="join-req-resolved">Accepted{jr.resolvedByName ? ` by ${jr.resolvedByName}` : ''}</span>
+                ) : (
+                  <span className="join-req-resolved muted">Request declined</span>
+                )}
               </div>
             )
           }

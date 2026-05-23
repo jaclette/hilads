@@ -102,6 +102,12 @@ const GUEST_GATE_COPY = {
     title:     "Ghosts can browse, but profiles are for members.",
     sub:       'Create an account to unlock profiles, connect with people, and build your city crew.',
   },
+  join_hangout: {
+    pageTitle: 'Join a hangout',
+    emoji:     '⚡',
+    title:     "Ghosts can browse, but can't join hangouts.",
+    sub:       'Sign up to join hangouts, save your name, and get notified when people want to meet.',
+  },
 }
 
 function setPageMeta(title, description) {
@@ -823,6 +829,12 @@ export default function App() {
   const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'events' | 'topics'
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
+
+  // Hangouts are members-only — gate guests to signup, otherwise open the channel.
+  const openHangout = (topic) => {
+    if (!account) { setGuestGate({ reason: 'join_hangout' }); return }
+    setActiveTopic(topic)
+  }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)
@@ -3205,7 +3217,7 @@ export default function App() {
         eventPresence={eventPresence}
         eventParticipants={eventParticipants}
         onSelectEvent={handleSelectEvent}
-        onSelectTopic={topic => setActiveTopic(topic)}
+        onSelectTopic={topic => openHangout(topic)}
         activeTopicId={activeTopic?.id}
         onCreateClick={() => setShowCreateChooser(true)}
       />
@@ -3543,7 +3555,7 @@ export default function App() {
                   <span className="feed-prompt-text">🗣️ {topic.title}{repliesText}</span>
                   <button
                     className="feed-prompt-btn feed-prompt-btn--topic"
-                    onClick={() => setActiveTopic(topic)}
+                    onClick={() => openHangout(topic)}
                   >Join</button>
                 </div>
               )
@@ -4017,7 +4029,7 @@ export default function App() {
                     })()
                   : null
                 return (
-                  <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); setActiveTopic(topic) }}>
+                  <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); openHangout(topic) }}>
                     <div className="er-header">
                       <span className="er-title">{icon} {topic.title}</span>
                       <span className="er-going er-going--topic">Hangout</span>

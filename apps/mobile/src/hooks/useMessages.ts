@@ -70,8 +70,21 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     return m.id ?? `${m.guestId ?? ''}:${m.createdAt}`;
   }
 
+    // join_request feed items are mutable (pending → accepted/rejected): the
+    // resolve re-broadcasts the SAME id with updated content. Upsert those in
+    // place instead of deduping them out, so the CTAs resolve live for everyone.
+  const upsertJoinRequests = useCallback((incoming: Message[]) => {
+    const jr = incoming.filter(m => m.type === 'join_request' && m.id && seenIds.current.has(msgKey(m)));
+    if (jr.length === 0) return;
+    setMessages(prev => prev.map(m => {
+      const match = jr.find(x => x.id === m.id);
+      return match ? { ...m, content: match.content } : m;
+    }));
+  }, []);
+
   // Add new messages (newest first order for inverted FlatList).
   const addNew = useCallback((incoming: Message[]) => {
+    upsertJoinRequests(incoming); // patch already-seen join_request items
     const fresh = incoming.filter(m => {
       const key = msgKey(m);
       if (seenIds.current.has(key)) return false;
