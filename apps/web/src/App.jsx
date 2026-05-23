@@ -4009,7 +4009,7 @@ export default function App() {
             <span className="page-title">Now</span>
           </div>
           <div className="now-filter-bar">
-            {['all', 'events', 'topics'].map(f => (
+            {['all', 'topics', 'events'].map(f => (
               <button
                 key={f}
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
@@ -4157,6 +4157,10 @@ export default function App() {
               const taggedEvents = hiladsEvents.map(e => ({ ...e, _kind: 'event' }))
               const taggedTopics = topics.map(t => ({ ...t, _kind: 'topic' }))
               const unified = [...taggedEvents, ...taggedTopics].sort((a, b) => {
+                // Hangouts take priority over events
+                const aTopic = a._kind === 'topic' ? 1 : 0
+                const bTopic = b._kind === 'topic' ? 1 : 0
+                if (aTopic !== bTopic) return bTopic - aTopic
                 // Recurring events are city anchors — always float to top
                 const aRecur = a._kind === 'event' && !!(a.series_id ?? a.recurrence_label) ? 1 : 0
                 const bRecur = b._kind === 'event' && !!(b.series_id ?? b.recurrence_label) ? 1 : 0

@@ -323,8 +323,13 @@ export default function NowScreen() {
           if (gid && guestBlocked.has(gid)) return false;
           return true;
         });
-    // Recurring events always float to the top — they're city anchors
+    // Hangouts (topics) take priority over events; within events, recurring
+    // ones float to the top — they're city anchors. Stable sort preserves the
+    // feed's underlying activity order within each group.
     return [...visible].sort((a, b) => {
+      const aTopic = a.kind === 'topic' ? 1 : 0;
+      const bTopic = b.kind === 'topic' ? 1 : 0;
+      if (aTopic !== bTopic) return bTopic - aTopic;
       const aRecur = !!(a.series_id ?? a.recurrence_label) ? 1 : 0;
       const bRecur = !!(b.series_id ?? b.recurrence_label) ? 1 : 0;
       return bRecur - aRecur;
@@ -399,7 +404,7 @@ export default function NowScreen() {
 
       {/* Filter pills */}
       <View style={styles.filterBar}>
-        {(['all', 'events', 'topics'] as const).map(f => (
+        {(['all', 'topics', 'events'] as const).map(f => (
           <TouchableOpacity
             key={f}
             style={[styles.filterPill, filter === f && styles.filterPillActive]}
