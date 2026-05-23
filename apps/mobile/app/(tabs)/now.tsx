@@ -120,10 +120,15 @@ export default function NowScreen() {
 
   const readUserLocation = useCallback(async () => {
     try {
+      // getForegroundPermissionsAsync just reads status (no prompt). If location
+      // is disabled/denied, clear coords so cards fall back to the address.
+      const { granted } = await Location.getForegroundPermissionsAsync();
+      if (!granted) { setUserLocation(null); return; }
       const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
+      // Keep the prior fix if granted-but-no-cache (avoids a distance→address flicker).
       if (last) setUserLocation({ lat: last.coords.latitude, lng: last.coords.longitude });
     } catch {
-      // permission denied / unavailable → leave userLocation as-is (fallback)
+      setUserLocation(null);
     }
   }, []);
 

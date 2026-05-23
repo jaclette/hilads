@@ -578,13 +578,9 @@ function clearIdentity() {
 // "Back to my location" survives page refreshes and city switches.
 const GEO_CITY_KEY = 'hilads_geo_city'
 
-function saveGeoCity({ channelId, city, country, timezone, lat, lng }) {
+function saveGeoCity({ channelId, city, country, timezone }) {
   if (!channelId) return
-  localStorage.setItem(GEO_CITY_KEY, JSON.stringify({
-    channelId, city: city ?? null, country: country ?? null, timezone: timezone ?? null,
-    lat: typeof lat === 'number' ? lat : null,
-    lng: typeof lng === 'number' ? lng : null,
-  }))
+  localStorage.setItem(GEO_CITY_KEY, JSON.stringify({ channelId, city: city ?? null, country: country ?? null, timezone: timezone ?? null }))
 }
 
 function loadGeoCity() {
@@ -726,13 +722,11 @@ export default function App() {
   const [geoCity,         setGeoCity]             = useState(() => loadGeoCity()?.city      ?? null)
   const [geoCountry,      setGeoCountry]          = useState(() => loadGeoCity()?.country   ?? null)
   const [geoTimezone,     setGeoTimezone]         = useState(() => loadGeoCity()?.timezone  ?? null)
-  // Viewer coords for NOW distance display — captured during the boot geolocation
-  // and persisted alongside the geo city so it survives refresh. null → no usable
-  // location → cards show the address and the default ordering (no nag on NOW).
-  const [userLocation,    setUserLocation]         = useState(() => {
-    const g = loadGeoCity()
-    return (typeof g?.lat === 'number' && typeof g?.lng === 'number') ? { lat: g.lat, lng: g.lng } : null
-  })
+  // Viewer coords for NOW distance display — set only by the boot geolocation
+  // (which runs on every load). NOT restored from storage: if the user has
+  // disabled geolocation, this stays null so cards show the address (or nothing
+  // when there's no address) and use the default ordering — never a stale fix.
+  const [userLocation,    setUserLocation]         = useState(null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
   // Distance (meters) from the viewer per located event — computed once per
@@ -1542,11 +1536,14 @@ export default function App() {
       setGeoCity(location.city ?? null)
       setGeoCountry(location.country ?? null)
       setGeoTimezone(location.timezone ?? null)
-      // Persist so "Back to my location" + NOW distances survive page refreshes
-      saveGeoCity({ channelId: location.channelId, city: location.city, country: location.country, timezone: location.timezone, lat: userLat, lng: userLng })
+      // Persist so "Back to my location" survives page refreshes
+      saveGeoCity({ channelId: location.channelId, city: location.city, country: location.country, timezone: location.timezone })
       setGeoState('resolved')
       return location
     } catch (err) {
+      // Geolocation unavailable/denied → clear any coords so NOW falls back to
+      // showing addresses instead of a stale distance.
+      setUserLocation(null)
       // GeolocationPositionError.PERMISSION_DENIED = code 1
       // POSITION_UNAVAILABLE = 2, TIMEOUT = 3 — permission was granted but no fix
       if (err && err.code === 1) {
