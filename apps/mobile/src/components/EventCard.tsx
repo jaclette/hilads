@@ -29,9 +29,13 @@ type Props = {
   event:    HiladsEvent | FeedItem;
   tz?:      string;
   onPress:  () => void;
+  // NOW feed only — when set, replaces the address line with the formatted
+  // distance from the viewer (e.g. "300 m", "1.2 km"). Other surfaces (detail,
+  // upcoming, past) omit it and keep showing the full address.
+  distanceLabel?: string | null;
 };
 
-export function EventCard({ event, tz, onPress }: Props) {
+export function EventCard({ event, tz, onPress, distanceLabel }: Props) {
   const isRecurring = !!(event.series_id ?? event.recurrence_label);
   const now         = Date.now() / 1000;
   const startsAt    = (event as HiladsEvent).starts_at  ?? 0;
@@ -67,7 +71,11 @@ export function EventCard({ event, tz, onPress }: Props) {
         {event.recurrence_label ? `  ·  ↻ ${event.recurrence_label}` : ''}
       </Text>
 
-      {(event.location ?? event.venue) ? (
+      {distanceLabel ? (
+        <Text style={styles.cardLocation} numberOfLines={1}>
+          📍 {distanceLabel}
+        </Text>
+      ) : (event.location ?? event.venue) ? (
         <Text style={styles.cardLocation} numberOfLines={1}>
           📍 {event.location ?? event.venue}
         </Text>

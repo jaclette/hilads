@@ -6,6 +6,7 @@ import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug } from './eventUtils'
+import { haversineMeters, formatDistance } from './distance'
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
@@ -577,9 +578,13 @@ function clearIdentity() {
 // "Back to my location" survives page refreshes and city switches.
 const GEO_CITY_KEY = 'hilads_geo_city'
 
-function saveGeoCity({ channelId, city, country, timezone }) {
+function saveGeoCity({ channelId, city, country, timezone, lat, lng }) {
   if (!channelId) return
-  localStorage.setItem(GEO_CITY_KEY, JSON.stringify({ channelId, city: city ?? null, country: country ?? null, timezone: timezone ?? null }))
+  localStorage.setItem(GEO_CITY_KEY, JSON.stringify({
+    channelId, city: city ?? null, country: country ?? null, timezone: timezone ?? null,
+    lat: typeof lat === 'number' ? lat : null,
+    lng: typeof lng === 'number' ? lng : null,
+  }))
 }
 
 function loadGeoCity() {
@@ -721,8 +726,27 @@ export default function App() {
   const [geoCity,         setGeoCity]             = useState(() => loadGeoCity()?.city      ?? null)
   const [geoCountry,      setGeoCountry]          = useState(() => loadGeoCity()?.country   ?? null)
   const [geoTimezone,     setGeoTimezone]         = useState(() => loadGeoCity()?.timezone  ?? null)
+  // Viewer coords for NOW distance display — captured during the boot geolocation
+  // and persisted alongside the geo city so it survives refresh. null → no usable
+  // location → cards show the address and the default ordering (no nag on NOW).
+  const [userLocation,    setUserLocation]         = useState(() => {
+    const g = loadGeoCity()
+    return (typeof g?.lat === 'number' && typeof g?.lng === 'number') ? { lat: g.lat, lng: g.lng } : null
+  })
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
+  // Distance (meters) from the viewer per located event — computed once per
+  // [events, userLocation] change (not per render). Topics have no coords.
+  const distanceByEventId = useMemo(() => {
+    const map = new Map()
+    if (!userLocation) return map
+    for (const e of [...events, ...cityEvents]) {
+      if (typeof e.venue_lat === 'number' && typeof e.venue_lng === 'number') {
+        map.set(e.id, haversineMeters(userLocation.lat, userLocation.lng, e.venue_lat, e.venue_lng))
+      }
+    }
+    return map
+  }, [events, cityEvents, userLocation])
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
   const [showPastArchive, setShowPastArchive] = useState(false)
@@ -1501,11 +1525,15 @@ export default function App() {
     try {
       const position = await getPosition()
       setGeoState('resolving')
+      const userLat = position.coords.latitude
+      const userLng = position.coords.longitude
+      // Capture the viewer's coords for NOW distance display (single read; no watcher).
+      setUserLocation({ lat: userLat, lng: userLng })
       // Reverse-geocode to country (Nominatim) so backend can constrain
       // nearest-city to the same country. Non-fatal if it fails — backend
       // falls back to global nearest when no country is sent.
-      const country = await reverseGeocodeCountry(position.coords.latitude, position.coords.longitude)
-      const location = await resolveLocation(position.coords.latitude, position.coords.longitude, country)
+      const country = await reverseGeocodeCountry(userLat, userLng)
+      const location = await resolveLocation(userLat, userLng, country)
       setCity(location.city)
       setCityCountry(location.country ?? null)
       setPreviewTimezone(location.timezone ?? 'UTC')
@@ -1514,8 +1542,8 @@ export default function App() {
       setGeoCity(location.city ?? null)
       setGeoCountry(location.country ?? null)
       setGeoTimezone(location.timezone ?? null)
-      // Persist so "Back to my location" survives page refreshes
-      saveGeoCity({ channelId: location.channelId, city: location.city, country: location.country, timezone: location.timezone })
+      // Persist so "Back to my location" + NOW distances survive page refreshes
+      saveGeoCity({ channelId: location.channelId, city: location.city, country: location.country, timezone: location.timezone, lat: userLat, lng: userLng })
       setGeoState('resolved')
       return location
     } catch (err) {
@@ -4024,7 +4052,17 @@ export default function App() {
               const openCreate = () => { tryOpenCreateEvent({ fromDrawer: true }) }
               const tz = cityTimezone || 'UTC'
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
-              const publicEvents = [...cityEvents].sort((a, b) => a.starts_at - b.starts_at)
+              // Distance-sort public events (nearest → farthest; no-coord last)
+              // when the viewer's location is known; otherwise by start time.
+              const publicEvents = [...cityEvents].sort((a, b) => {
+                const aDist = distanceByEventId.get(a.id)
+                const bDist = distanceByEventId.get(b.id)
+                const aHas = aDist !== undefined
+                const bHas = bDist !== undefined
+                if (aHas !== bHas) return aHas ? -1 : 1
+                if (aHas && bHas && aDist !== bDist) return aDist - bDist
+                return a.starts_at - b.starts_at
+              })
               const totalVisibleEvents = hiladsEvents.length + publicEvents.length
               const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
               const renderTopicRow = (topic) => {
@@ -4084,9 +4122,13 @@ export default function App() {
                       )}
                       {going > 0 && <span className="city-row-current">🙌 {going} going</span>}
                     </div>
-                    {getEventLocation(event) && (
-                      <span className="er-location">📍 {getEventLocation(event)}</span>
-                    )}
+                    {(() => {
+                      // NOW feed: show distance when we have it; otherwise the address.
+                      const meters = distanceByEventId.get(event.id)
+                      if (meters !== undefined) return <span className="er-location">📍 {formatDistance(meters)}</span>
+                      const loc = getEventLocation(event)
+                      return loc ? <span className="er-location">📍 {loc}</span> : null
+                    })()}
                     {event.host_nickname && (
                       <span className="er-host">Hosted by {event.host_nickname}</span>
                     )}
@@ -4161,6 +4203,14 @@ export default function App() {
                 const aTopic = a._kind === 'topic' ? 1 : 0
                 const bTopic = b._kind === 'topic' ? 1 : 0
                 if (aTopic !== bTopic) return bTopic - aTopic
+                // Within a group, when the viewer's location is known, sort
+                // nearest → farthest; items without coords sort after located ones.
+                const aDist = distanceByEventId.get(a.id)
+                const bDist = distanceByEventId.get(b.id)
+                const aHas = aDist !== undefined
+                const bHas = bDist !== undefined
+                if (aHas !== bHas) return aHas ? -1 : 1
+                if (aHas && bHas && aDist !== bDist) return aDist - bDist
                 // Recurring events are city anchors — always float to top
                 const aRecur = a._kind === 'event' && !!(a.series_id ?? a.recurrence_label) ? 1 : 0
                 const bRecur = b._kind === 'event' && !!(b.series_id ?? b.recurrence_label) ? 1 : 0

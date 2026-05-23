@@ -6,8 +6,10 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
 import { fetchNowFeed } from '@/api/topics';
+import { haversineMeters, formatDistance } from '@/lib/distance';
 import { fetchCanCreateEvent } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
@@ -110,6 +112,20 @@ export default function NowScreen() {
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
   const [filter,        setFilter]        = useState<'all' | 'events' | 'topics'>('all');
+  // Viewer coords for NOW distance display. Read ONCE from the OS cache on load /
+  // pull-to-refresh (getLastKnownPositionAsync — no watcher, no permission prompt;
+  // permission was already requested at boot). null → no usable location → cards
+  // fall back to showing the address and the default ordering.
+  const [userLocation,  setUserLocation]  = useState<{ lat: number; lng: number } | null>(null);
+
+  const readUserLocation = useCallback(async () => {
+    try {
+      const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
+      if (last) setUserLocation({ lat: last.coords.latitude, lng: last.coords.longitude });
+    } catch {
+      // permission denied / unavailable → leave userLocation as-is (fallback)
+    }
+  }, []);
 
   // ── NOW action-block handlers — web parity (apps/web/App.jsx:3950+). ────
   // Topics (pulses) have no 1/day rule, so Start-a-pulse pushes directly.
@@ -204,8 +220,9 @@ export default function NowScreen() {
   // Primary trigger: runs when screen gains focus or city changes.
   useFocusEffect(useCallback(() => {
     console.log('[NowScreen] focus —', city?.name ?? 'no city');
+    readUserLocation();
     load();
-  }, [city?.channelId]));
+  }, [city?.channelId, readUserLocation]));
 
   // Safety trigger: if city loads after the screen is already focused,
   // useFocusEffect may not re-fire. This effect catches that case.
@@ -305,6 +322,22 @@ export default function NowScreen() {
   // hook count changes and React throws "Rendered more hooks than during the
   // previous render." (They depend only on items/filter/blockedSet/publicEvents,
   // all defined regardless of city, so they're safe to compute even with no city.)
+  // Distance (meters) per item from the viewer — computed ONCE per [items,
+  // userLocation] change, not per render. Only items with coords + a known
+  // viewer location get an entry; everything else is "no distance".
+  const distanceById = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!userLocation) return map;
+    for (const it of [...items, ...publicEvents]) {
+      const lat = (it as FeedItem).venue_lat;
+      const lng = (it as FeedItem).venue_lng;
+      if (typeof lat === 'number' && typeof lng === 'number') {
+        map.set(it.id, haversineMeters(userLocation.lat, userLocation.lng, lat, lng));
+      }
+    }
+    return map;
+  }, [items, publicEvents, userLocation]);
+
   const filteredItems = useMemo(() => {
     const base = filter === 'events' ? items.filter(i => i.kind === 'event')
                : filter === 'topics' ? items.filter(i => i.kind === 'topic')
@@ -323,33 +356,52 @@ export default function NowScreen() {
           if (gid && guestBlocked.has(gid)) return false;
           return true;
         });
-    // Hangouts (topics) take priority over events; within events, recurring
-    // ones float to the top — they're city anchors. Stable sort preserves the
-    // feed's underlying activity order within each group.
+    // Hangouts (topics) take priority over events. Within each group, when the
+    // viewer's location is known, sort nearest → farthest; items without coords
+    // sort after the located ones. With no location (or as a tiebreaker),
+    // recurring events float to the top — they're city anchors. Stable sort
+    // preserves the feed's underlying activity order otherwise.
     return [...visible].sort((a, b) => {
       const aTopic = a.kind === 'topic' ? 1 : 0;
       const bTopic = b.kind === 'topic' ? 1 : 0;
       if (aTopic !== bTopic) return bTopic - aTopic;
+      const aDist = distanceById.get(a.id);
+      const bDist = distanceById.get(b.id);
+      const aHas  = aDist !== undefined;
+      const bHas  = bDist !== undefined;
+      if (aHas !== bHas) return aHas ? -1 : 1;
+      if (aHas && bHas && aDist !== bDist) return aDist! - bDist!;
       const aRecur = !!(a.series_id ?? a.recurrence_label) ? 1 : 0;
       const bRecur = !!(b.series_id ?? b.recurrence_label) ? 1 : 0;
       return bRecur - aRecur;
     });
-  }, [items, filter, blockedSet]);
+  }, [items, filter, blockedSet, distanceById]);
 
   const listData = useMemo<Array<FeedItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })>>(
     () => {
       const showPublic = filter !== 'topics' && publicEvents.length > 0;
+      // Public events are distance-sorted within their section too (nearest →
+      // farthest; no-coord last), consistent with the main feed.
+      const sortedPublic = [...publicEvents].sort((a, b) => {
+        const aDist = distanceById.get(a.id);
+        const bDist = distanceById.get(b.id);
+        const aHas = aDist !== undefined;
+        const bHas = bDist !== undefined;
+        if (aHas !== bHas) return aHas ? -1 : 1;
+        if (aHas && bHas && aDist !== bDist) return aDist! - bDist!;
+        return 0;
+      });
       return [
         ...filteredItems,
         ...(showPublic
           ? [
               { kind: 'section' as const, label: '🎫 Public Events' },
-              ...publicEvents.map(e => ({ ...e, kind: 'public_event' as const })),
+              ...sortedPublic.map(e => ({ ...e, kind: 'public_event' as const })),
             ]
           : []),
       ];
     },
-    [filteredItems, publicEvents, filter],
+    [filteredItems, publicEvents, filter, distanceById],
   );
 
   // Still booting or waiting for city — keep showing spinner.
@@ -466,9 +518,11 @@ export default function NowScreen() {
             }
             // event or public_event — map FeedItem to HiladsEvent shape for EventCard
             const event = item as HiladsEvent;
+            const meters = distanceById.get(event.id);
             return (
               <EventCard
                 event={event}
+                distanceLabel={meters !== undefined ? formatDistance(meters) : undefined}
                 onPress={() => {
                   track('event_opened', { eventId: event.id });
                   router.push(`/event/${event.id}`);
@@ -478,7 +532,7 @@ export default function NowScreen() {
           }}
           contentContainerStyle={styles.list}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={Colors.accent} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={Colors.accent} />
           }
         />
       )}

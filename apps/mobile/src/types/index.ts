@@ -108,6 +108,8 @@ export interface FeedItem {
   expires_at?:        number;
   location?:          string | null;
   venue?:             string | null;
+  venue_lat?:         number | null;   // precise venue coords (for NOW distance calc)
+  venue_lng?:         number | null;
   participant_count?: number;
   participants_preview?: ParticipantPreview[];
   is_participating?:  boolean;
