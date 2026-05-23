@@ -2055,6 +2055,12 @@ html, body, #root {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.messages-beginning {
+  text-align: center;
+  padding: 14px 0 6px;
+  font-size: 0.78rem;
+  color: var(--muted2);
+}
 
 .empty {
   display: flex;

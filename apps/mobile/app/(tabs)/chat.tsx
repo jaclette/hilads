@@ -799,6 +799,10 @@ export default function ChatTab() {
                 <View style={styles.loadingOlderWrap}>
                   <ActivityIndicator size="small" color={Colors.muted} />
                 </View>
+              ) : (!hasMore && !loading && messages.length > 0) ? (
+                <View style={styles.loadingOlderWrap}>
+                  <Text style={styles.beginningText}>Beginning of conversation</Text>
+                </View>
               ) : null
             }
             ListEmptyComponent={
@@ -1097,6 +1101,7 @@ const styles = StyleSheet.create({
 
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
+  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
 
   // ── EventBannerStrip ──────────────────────────────────────────────────────
   bannerStrip: {

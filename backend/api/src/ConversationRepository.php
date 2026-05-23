@@ -314,6 +314,56 @@ class ConversationRepository
         return self::findMessageById($id);
     }
 
+    /**
+     * Cursor-paginated messages, oldest-first (ASC) like getByChannel.
+     * No $beforeId → the latest $limit. With $beforeId → the $limit messages
+     * immediately OLDER than that message. Over-fetches one row to compute
+     * hasMore. Returns ['messages' => array, 'hasMore' => bool].
+     */
+    public static function listMessagesPaged(string $conversationId, ?string $beforeId, int $limit = 50): array
+    {
+        $limit = max(1, min(100, $limit));
+        $fetch = $limit + 1;
+        $cols  = "cm.id, cm.conversation_id, cm.sender_id, cm.content, cm.type, cm.image_url,
+                  cm.created_at, cm.reply_to_id, cm.reply_to_nickname, cm.reply_to_content, cm.reply_to_type,
+                  COALESCE(u.display_name, 'Deleted user') AS sender_name,
+                  u.profile_photo_url                       AS sender_photo";
+
+        if ($beforeId !== null) {
+            $stmt = Database::pdo()->prepare("
+                SELECT * FROM (
+                    SELECT $cols
+                    FROM conversation_messages cm
+                    LEFT JOIN users u ON u.id = cm.sender_id AND u.deleted_at IS NULL
+                    WHERE cm.conversation_id = ?
+                      AND cm.created_at < (SELECT created_at FROM conversation_messages WHERE id = ?)
+                    ORDER BY cm.created_at DESC
+                    LIMIT $fetch
+                ) sub ORDER BY created_at ASC
+            ");
+            $stmt->execute([$conversationId, $beforeId]);
+        } else {
+            $stmt = Database::pdo()->prepare("
+                SELECT * FROM (
+                    SELECT $cols
+                    FROM conversation_messages cm
+                    LEFT JOIN users u ON u.id = cm.sender_id AND u.deleted_at IS NULL
+                    WHERE cm.conversation_id = ?
+                    ORDER BY cm.created_at DESC
+                    LIMIT $fetch
+                ) sub ORDER BY created_at ASC
+            ");
+            $stmt->execute([$conversationId]);
+        }
+
+        $rows    = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $hasMore = count($rows) > $limit;
+        if ($hasMore) {
+            array_shift($rows); // drop the oldest probe row (index 0 after ASC sort)
+        }
+        return ['messages' => $rows, 'hasMore' => $hasMore];
+    }
+
     public static function listMessages(string $conversationId, int $limit = 100): array
     {
         $stmt = Database::pdo()->prepare("

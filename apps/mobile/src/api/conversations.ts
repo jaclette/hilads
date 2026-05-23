@@ -12,11 +12,16 @@ export async function findOrCreateDM(
   return api.post('/conversations/direct', { targetUserId });
 }
 
-export async function fetchDmMessages(conversationId: string): Promise<DmMessage[]> {
-  const data = await api.get<{ messages: DmMessage[] }>(
-    `/conversations/${conversationId}/messages`,
+export async function fetchDmMessages(
+  conversationId: string,
+  opts: { beforeId?: string; limit?: number } = {},
+): Promise<{ messages: DmMessage[]; hasMore: boolean }> {
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+  if (opts.beforeId) q.set('before_id', opts.beforeId);
+  const data = await api.get<{ messages: DmMessage[]; hasMore?: boolean }>(
+    `/conversations/${conversationId}/messages?${q}`,
   );
-  return data.messages ?? [];
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
 }
 
 export async function sendDmMessage(

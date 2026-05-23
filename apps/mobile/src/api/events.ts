@@ -238,9 +238,16 @@ export async function toggleEventParticipation(
 
 // ── Event chat ────────────────────────────────────────────────────────────────
 
-export async function fetchEventMessages(eventId: string): Promise<{ messages: Message[]; hasMore: boolean }> {
-  const data = await api.get<{ messages: Message[] }>(`/events/${eventId}/messages`);
-  return { messages: data.messages ?? [], hasMore: false };
+export async function fetchEventMessages(
+  eventId: string,
+  opts: { beforeId?: string; limit?: number } = {},
+): Promise<{ messages: Message[]; hasMore: boolean }> {
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+  if (opts.beforeId) q.set('before_id', opts.beforeId);
+  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
+    `/events/${eventId}/messages?${q}`,
+  );
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
 }
 
 export async function sendEventMessage(

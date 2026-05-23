@@ -326,10 +326,12 @@ export async function fetchTopicById(topicId) {
   return res.json() // { topic, channelId, cityName, country, timezone }
 }
 
-export async function fetchTopicMessages(topicId) {
-  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages`, { credentials: 'include' })
+export async function fetchTopicMessages(topicId, { beforeId, limit } = {}) {
+  const params = new URLSearchParams({ limit: String(limit ?? 50) })
+  if (beforeId) params.set('before_id', beforeId)
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages?${params}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch topic messages')
-  return res.json() // { messages }
+  return res.json() // { messages, hasMore }
 }
 
 export async function sendTopicMessage(topicId, guestId, nickname, content, mentions = null) {
@@ -482,10 +484,12 @@ export async function createEventSeries(channelId, guestId, payload) {
   return res.json() // { series_id, first_event }
 }
 
-export async function fetchEventMessages(eventId) {
-  const res = await fetch(`${BASE}/events/${eventId}/messages`, { credentials: 'include' })
+export async function fetchEventMessages(eventId, { beforeId, limit } = {}) {
+  const params = new URLSearchParams({ limit: String(limit ?? 50) })
+  if (beforeId) params.set('before_id', beforeId)
+  const res = await fetch(`${BASE}/events/${eventId}/messages?${params}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch hangout messages')
-  return res.json()
+  return res.json() // { messages, hasMore }
 }
 
 export async function fetchEventParticipants(eventId, sessionId) {
@@ -815,12 +819,14 @@ export async function createOrGetDirectConversation(targetUserId) {
   return data // { conversation, otherUser }
 }
 
-export async function fetchConversationMessages(conversationId) {
-  const res = await fetch(`${BASE}/conversations/${conversationId}/messages`, {
+export async function fetchConversationMessages(conversationId, { beforeId, limit } = {}) {
+  const params = new URLSearchParams({ limit: String(limit ?? 50) })
+  if (beforeId) params.set('before_id', beforeId)
+  const res = await fetch(`${BASE}/conversations/${conversationId}/messages?${params}`, {
     credentials: 'include',
   })
   if (!res.ok) throw new Error('Failed to fetch messages')
-  return res.json() // { messages }
+  return res.json() // { messages, hasMore }
 }
 
 export async function markConversationRead(conversationId) {

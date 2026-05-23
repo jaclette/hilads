@@ -12,11 +12,14 @@ import type { DmMessage, Reaction, ReplyRef } from '@/types';
 interface Result {
   messages:            DmMessage[];  // newest first (inverted FlatList)
   loading:             boolean;
+  loadingOlder:        boolean;      // true while fetching an older page
+  hasMore:             boolean;      // true when older messages exist to load
   sending:             boolean;      // kept for interface compat — always false (optimistic)
   error:               string | null;
   clearError:          () => void;
   sendText:            (content: string, replyTo?: ReplyRef | null) => Promise<void>;
   sendImage:           (localUri: string) => Promise<void>;
+  loadOlder:           () => Promise<void>;
   setMessageReactions: (messageId: string, reactions: Reaction[]) => void;
 }
 
@@ -28,8 +31,12 @@ export function useDMThread(conversationId: string): Result {
   const { account, setActiveDmId, blockedSet } = useApp();
   const [messages, setMessages] = useState<DmMessage[]>([]);
   const [loading,  setLoading]  = useState(true);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [hasMore,  setHasMore]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
   const seenIds = useRef(new Set<string>());
+  const oldestIdRef     = useRef<string | null>(null);  // cursor for loadOlder
+  const loadingOlderRef = useRef(false);                 // guards concurrent loadOlder
 
   const addNew = useCallback((incoming: DmMessage[]) => {
     const fresh = incoming.filter(m => !seenIds.current.has(m.id));
@@ -59,10 +66,12 @@ export function useDMThread(conversationId: string): Result {
       setLoading(true);
       setError(null);
       try {
-        const msgs = await fetchDmMessages(conversationId);
+        const { messages: msgs, hasMore: more } = await fetchDmMessages(conversationId);
         if (cancelled) return;
         seenIds.current = new Set(msgs.map(m => m.id));
+        oldestIdRef.current = msgs.length > 0 ? msgs[0]?.id ?? null : null; // msgs ASC → [0] oldest
         setMessages([...msgs].reverse());
+        setHasMore(more);
         markDmRead(conversationId);
       } catch {
         if (!cancelled) setError('Failed to load messages');
@@ -187,6 +196,36 @@ export function useDMThread(conversationId: string): Result {
     }
   }, [conversationId, account]);
 
+  // ── Load older messages (pagination) ──────────────────────────────────────
+  // Fetch the page before the oldest loaded message and prepend. In an inverted
+  // FlatList this extends the visual top (array end) → no scroll jump.
+  const loadOlder = useCallback(async () => {
+    if (loadingOlderRef.current || !hasMore || !oldestIdRef.current) return;
+    loadingOlderRef.current = true;
+    setLoadingOlder(true);
+    try {
+      const { messages: older, hasMore: moreLeft } = await fetchDmMessages(conversationId, { beforeId: oldestIdRef.current });
+      const fresh = older.filter(m => {
+        if (seenIds.current.has(m.id)) return false;
+        seenIds.current.add(m.id);
+        return true;
+      });
+      if (fresh.length > 0) {
+        oldestIdRef.current = older[0]?.id ?? null; // older ASC → [0] oldest of batch
+        const sorted = [...fresh].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        );
+        setMessages(prev => [...prev, ...sorted]); // append = visual top (inverted)
+      }
+      setHasMore(moreLeft);
+    } catch {
+      // silent — user can scroll up again to retry
+    } finally {
+      loadingOlderRef.current = false;
+      setLoadingOlder(false);
+    }
+  }, [conversationId, hasMore]);
+
   function setMessageReactions(messageId: string, reactions: Reaction[]) {
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));
   }
@@ -203,10 +242,11 @@ export function useDMThread(conversationId: string): Result {
   );
 
   return {
-    messages: visibleMessages, loading, sending: false, error,
+    messages: visibleMessages, loading, loadingOlder, hasMore, sending: false, error,
     clearError: () => setError(null),
     sendText,
     sendImage,
+    loadOlder,
     setMessageReactions,
   };
 }

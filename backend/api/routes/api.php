@@ -4487,8 +4487,13 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
             return;
         }
 
-        $res      = MessageRepository::getByChannel($eventId);
+        // Cursor pagination (events are channels → reuse getByChannel). No
+        // before_id = latest page; before_id = the 50 immediately older.
+        $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
+        $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
+        $res      = MessageRepository::getByChannel($eventId, $beforeId ?: null, $limit);
         $messages = $res['messages'];
+        $hasMore  = $res['hasMore'];
 
         $viewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
         $viewerUserId  = AuthService::currentUser()['id'] ?? null;
@@ -4501,7 +4506,7 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
 
         MessageRepository::attachReactions($messages, $viewerGuestId ?: null, $viewerUserId);
 
-        Response::json(['messages' => $messages]);
+        Response::json(['messages' => $messages, 'hasMore' => $hasMore]);
     } catch (\Throwable $e) {
         error_log('[event-messages] GET failed for event ' . $eventId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to load messages'], 500);
@@ -5060,10 +5065,14 @@ $router->add('GET', '/api/v1/conversations/{conversationId}/messages', function 
         Response::json(['error' => 'Not a participant'], 403);
     }
 
-    $messages = ConversationRepository::listMessages($conversationId);
+    // Cursor pagination: no before_id = latest page; before_id = the 50 older.
+    $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
+    $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
+    $res      = ConversationRepository::listMessagesPaged($conversationId, $beforeId ?: null, $limit);
+    $messages = $res['messages'];
     MessageRepository::attachReactions($messages, null, $user['id'], 'conversation_message_reactions');
 
-    Response::json(['messages' => $messages]);
+    Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']]);
 });
 
 // POST /api/v1/conversations/{conversationId}/messages
@@ -5617,8 +5626,11 @@ $router->add('GET', '/api/v1/topics/{topicId}/messages', function (array $params
             Response::json(['error' => 'Topic not found or expired'], 404);
         }
 
-        $res = MessageRepository::getByChannel($topicId);
-        Response::json(['messages' => $res['messages']]);
+        // Cursor pagination (topics are channels → reuse getByChannel).
+        $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
+        $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
+        $res = MessageRepository::getByChannel($topicId, $beforeId ?: null, $limit);
+        Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
     } catch (\Throwable $e) {
         error_log('[topic-messages] GET failed for topic ' . $topicId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to load messages'], 500);

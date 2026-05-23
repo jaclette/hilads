@@ -965,6 +965,7 @@ export default function App() {
   // Avoids an extra GET /messages round-trip every time the user leaves an event.
   const cityFeedCacheRef    = useRef([])           // feed snapshot before event entry
   const cityKnownIdsCacheRef = useRef(new Set())   // knownIds snapshot before event entry
+  const cityCursorCacheRef  = useRef({ oldestId: null, hasMore: false }) // reverse-scroll cursor snapshot before event entry
   // City messages received via WS while the user is in event mode (normally filtered out).
   // Buffered here so they can be replayed on return — eliminates the delta fetchMessages call.
   const cityMsgBufferRef    = useRef([])           // { message } objects buffered during event mode
@@ -1345,8 +1346,11 @@ export default function App() {
   // Uses refs throughout to avoid stale closures — the scroll handler is attached once.
 
   async function loadOlderMessages() {
+    // Same machinery for city and event chat — they share the feed + scroll
+    // container. When an event is open we page its messages; otherwise the city.
+    const eventId   = activeEventIdRef.current
     const channelId = activeChannelRef.current
-    if (!channelId || loadingOlderRef.current || !hasMoreMessagesRef.current || !oldestMessageIdRef.current) return
+    if ((!eventId && !channelId) || loadingOlderRef.current || !hasMoreMessagesRef.current || !oldestMessageIdRef.current) return
 
     const container        = messagesContainerRef.current
     const scrollHeightBefore = container?.scrollHeight ?? 0
@@ -1356,8 +1360,11 @@ export default function App() {
     setLoadingOlder(true)
 
     try {
-      const data = await fetchMessages(channelId, { beforeId: oldestMessageIdRef.current, limit: 50 })
-      if (activeChannelRef.current !== channelId) return // channel switched while loading
+      const data = eventId
+        ? await fetchEventMessages(eventId, { beforeId: oldestMessageIdRef.current, limit: 50 })
+        : await fetchMessages(channelId, { beforeId: oldestMessageIdRef.current, limit: 50 })
+      // bail if the user switched context (city/event) while loading
+      if (eventId ? activeEventIdRef.current !== eventId : activeChannelRef.current !== channelId) return
 
       const msgs  = data.messages ?? []
       const fresh = msgs.filter(m => !knownIdsRef.current.has(messageKey(m)))
@@ -2580,6 +2587,10 @@ export default function App() {
       // Only cache when coming from city (not switching between events)
       cityFeedCacheRef.current     = feed
       cityKnownIdsCacheRef.current = new Set(knownIdsRef.current)
+      // Snapshot the city reverse-scroll cursor too — the event reuses these
+      // shared refs, so we restore them in handleBackToCity to keep city
+      // pagination intact after returning.
+      cityCursorCacheRef.current   = { oldestId: oldestMessageIdRef.current, hasMore: hasMoreMessagesRef.current }
       cityMsgBufferRef.current     = [] // clear buffer for this event session
     }
 
@@ -2602,19 +2613,31 @@ export default function App() {
       setShowEditPulse(false)
     }
     knownIdsRef.current = new Set()
+    // Reset reverse-scroll cursors for this event; set on the first load below.
+    oldestMessageIdRef.current = null
+    hasMoreMessagesRef.current = false
+    setHasMoreMessages(false)
     pushUrl(`/event/${eventSlug(event)}`)
     setPageMeta(`${event.title} is happening now | Hilads`, `Join ${event.title} on Hilads — see who's there and what's happening.`)
 
     // Initial fetch for event messages; subsequent messages arrive via WebSocket.
+    // doRefresh doubles as the poll fn — only the FIRST load (cursor still null)
+    // seeds the pagination cursor + hasMore; later polls just append new ones.
     const doRefresh = async () => {
       if (!activeRef.current) return
-      const latest = await fetchEventMessages(eid).catch(() => null)
+      const isInitial = oldestMessageIdRef.current === null
+      const latest = await fetchEventMessages(eid, { limit: 50 }).catch(() => null)
       if (!latest || activeEventIdRef.current !== eid) return
       const newMsgs = latest.messages.filter(m => !knownIdsRef.current.has(m.id))
       if (newMsgs.length > 0) {
         newMsgs.forEach(m => knownIdsRef.current.add(m.id))
         const items = newMsgs.map(m => toFeedItem(m)).filter(Boolean)
         setFeed(prev => [...prev, ...items])
+      }
+      if (isInitial && latest.messages.length > 0) {
+        oldestMessageIdRef.current = latest.messages[0]?.id ?? null
+        hasMoreMessagesRef.current = latest.hasMore ?? false
+        setHasMoreMessages(latest.hasMore ?? false)
       }
     }
 
@@ -2701,10 +2724,18 @@ export default function App() {
         ? [...cachedFeed, ...bufferedNew.map(m => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)]
         : cachedFeed
       setFeed(restoredFeed)
+      // Restore the city reverse-scroll cursor snapshotted on event entry
+      // (the event overwrote these shared refs).
+      oldestMessageIdRef.current = cityCursorCacheRef.current.oldestId
+      hasMoreMessagesRef.current = cityCursorCacheRef.current.hasMore
+      setHasMoreMessages(cityCursorCacheRef.current.hasMore)
     } else {
       // No cache (e.g. user entered event before city feed loaded) — fetch fresh.
       knownIdsRef.current = new Set()
       setFeed([])
+      oldestMessageIdRef.current = null
+      hasMoreMessagesRef.current = false
+      setHasMoreMessages(false)
       fetchMessages(cid, { limit: 50 }).then(data => {
         if (activeEventIdRef.current !== null || activeChannelRef.current !== cid) return
         knownIdsRef.current = new Set(data.messages.map(messageKey))
@@ -2714,6 +2745,9 @@ export default function App() {
           const delay = staggerIndex > 0 ? `${staggerIndex * 45}ms` : undefined
           return toFeedItem(m, delay)
         })))
+        oldestMessageIdRef.current = data.messages[0]?.id ?? null
+        hasMoreMessagesRef.current = data.hasMore ?? false
+        setHasMoreMessages(data.hasMore ?? false)
       }).catch(() => {})
     }
 
@@ -3398,6 +3432,9 @@ export default function App() {
             <div className="messages-load-older">
               <span className="messages-load-older-spinner" />
             </div>
+          )}
+          {!hasMoreMessages && !loadingOlder && feed.length > 0 && (
+            <div className="messages-beginning">Beginning of conversation</div>
           )}
           {feed.length === 0 && (
             <div className="empty">

@@ -256,7 +256,7 @@ export default function EventDetailScreen() {
   const channelId = event?.id ?? id;
 
   const loadFn = useCallback(
-    (_opts?: { beforeId?: string }) => fetchEventMessages(id),
+    (opts?: { beforeId?: string }) => fetchEventMessages(id, opts),
     [id],
   );
 
@@ -276,7 +276,7 @@ export default function EventDetailScreen() {
     [id, identity, nickname],
   );
 
-  const { messages, loading: msgsLoading, sending, error: msgError, clearError, sendText, sendImage, setMessageReactions } = useMessages({
+  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, setMessageReactions } = useMessages({
     channelId,
     loadFn,
     postTextFn,
@@ -519,6 +519,19 @@ export default function EventDetailScreen() {
             onScrollToIndexFailed={() => {}}
             onScroll={handleListScroll}
             scrollEventThrottle={16}
+            onEndReached={hasMore ? loadOlder : undefined}
+            onEndReachedThreshold={0.2}
+            ListFooterComponent={
+              loadingOlder ? (
+                <View style={styles.loadingOlderWrap}>
+                  <ActivityIndicator size="small" color={Colors.muted} />
+                </View>
+              ) : (!hasMore && !msgsLoading && messages.length > 0) ? (
+                <View style={styles.loadingOlderWrap}>
+                  <Text style={styles.beginningText}>Beginning of conversation</Text>
+                </View>
+              ) : null
+            }
             ListHeaderComponent={
               msgsLoading ? (
                 <View style={styles.msgsLoading}>
@@ -836,6 +849,8 @@ const styles = StyleSheet.create({
 
   listContent: { paddingVertical: Spacing.sm },
   msgsLoading: { paddingVertical: Spacing.md, alignItems: 'center' },
+  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
+  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
   emptyWrap:   { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
   emptyText:   { color: Colors.muted, fontSize: FontSizes.sm, textAlign: 'center' },
 });

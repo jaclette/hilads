@@ -354,7 +354,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { account } = useApp();
-  const { messages, loading, sending, error, clearError, sendText, sendImage, setMessageReactions } = useDMThread(conversationId);
+  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions } = useDMThread(conversationId);
   const [text,          setText]          = useState('');
   const [uploading,     setUploading]     = useState(false);
   const [focused,       setFocused]       = useState(false);
@@ -605,6 +605,19 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           onScrollToIndexFailed={() => {}}
+          onEndReached={hasMore ? loadOlder : undefined}
+          onEndReachedThreshold={0.2}
+          ListFooterComponent={
+            loadingOlder ? (
+              <View style={styles.loadingOlderWrap}>
+                <ActivityIndicator size="small" color={Colors.muted} />
+              </View>
+            ) : (!hasMore && !loading && messages.length > 0) ? (
+              <View style={styles.loadingOlderWrap}>
+                <Text style={styles.beginningText}>Beginning of conversation</Text>
+              </View>
+            ) : null
+          }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <Text style={styles.emptyEmoji}>💬</Text>
@@ -1080,6 +1093,8 @@ const styles = StyleSheet.create({
     paddingBottom:     8,
     paddingHorizontal: 16,
   },
+  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
+  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
 
   // ── Row wrapper ─────────────────────────────────────────────────────────────
   rowWrapper: {

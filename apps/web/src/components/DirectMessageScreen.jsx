@@ -89,6 +89,14 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const fileRef                       = useRef(null)
   const dmInputRef                    = useRef(null)
   const msgRefsMap                    = useRef(new Map())
+
+  // ── Reverse-infinite-scroll (older history) ──
+  const [hasMore,      setHasMore]      = useState(false)
+  const [loadingOlder, setLoadingOlder] = useState(false)
+  const feedRef           = useRef(null)
+  const oldestIdRef       = useRef(null)
+  const loadingOlderRef   = useRef(false)
+  const skipAutoScrollRef = useRef(false)
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
 
   const otherName = otherUser?.display_name ?? '?'
@@ -108,6 +116,8 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       .then(data => {
         knownIds.current = new Set(data.messages.map(m => m.id))
         setMessages(data.messages)
+        oldestIdRef.current = data.messages[0]?.id ?? null // ASC → [0] oldest
+        setHasMore(data.hasMore ?? false)
       })
       .catch(() => setError('Could not load messages.'))
   }, [conversation.id])
@@ -142,10 +152,45 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
     }
   }, [conversation.id, account?.id, socket])
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom on new messages — but not when older messages were just prepended
   useEffect(() => {
+    if (skipAutoScrollRef.current) { skipAutoScrollRef.current = false; return }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Load the previous page when scrolled near the top; prepend + preserve anchor.
+  async function loadOlder() {
+    if (loadingOlderRef.current || !hasMore || !oldestIdRef.current) return
+    const container = feedRef.current
+    const heightBefore = container?.scrollHeight ?? 0
+    const topBefore    = container?.scrollTop    ?? 0
+    loadingOlderRef.current = true
+    setLoadingOlder(true)
+    try {
+      const data = await fetchConversationMessages(conversation.id, { beforeId: oldestIdRef.current })
+      const older = (data.messages ?? []).filter(m => !knownIds.current.has(m.id))
+      if (older.length > 0) {
+        older.forEach(m => knownIds.current.add(m.id))
+        oldestIdRef.current = data.messages[0]?.id ?? oldestIdRef.current
+        skipAutoScrollRef.current = true
+        setMessages(prev => [...older, ...prev]) // backend ASC + all older → order preserved
+      }
+      setHasMore(data.hasMore ?? false)
+      requestAnimationFrame(() => {
+        if (container) container.scrollTop = topBefore + (container.scrollHeight - heightBefore)
+      })
+    } catch {
+      // silent — user can scroll up again to retry
+    } finally {
+      loadingOlderRef.current = false
+      setLoadingOlder(false)
+    }
+  }
+
+  function handleFeedScroll() {
+    const container = feedRef.current
+    if (container && container.scrollTop < 200 && !loadingOlderRef.current && hasMore) loadOlder()
+  }
 
   function scrollToMessage(id) {
     const el = msgRefsMap.current.get(id)
@@ -287,8 +332,15 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       </div>
 
       {/* Messages */}
-      <div className="dm-messages">
+      <div className="dm-messages" ref={feedRef} onScroll={handleFeedScroll}>
         {error && <p className="profile-error" style={{ margin: '12px 16px' }}>{error}</p>}
+
+        {loadingOlder && (
+          <div className="messages-load-older"><span className="messages-load-older-spinner" /></div>
+        )}
+        {!hasMore && !loadingOlder && messages.length > 0 && (
+          <div className="messages-beginning">Beginning of conversation</div>
+        )}
 
         {messages.map((msg, i) => {
           const isMe    = msg.sender_id === account?.id

@@ -64,7 +64,7 @@ export default function TopicChatScreen() {
     if (id && identity?.guestId) markTopicRead(id, identity.guestId);
   }, [id, identity?.guestId]);
 
-  const loadFn = useCallback((_opts?: { beforeId?: string }) => fetchTopicMessages(id), [id]);
+  const loadFn = useCallback((opts?: { beforeId?: string }) => fetchTopicMessages(id, opts), [id]);
 
   const postTextFn = useCallback(
     (content: string, _replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
@@ -82,7 +82,7 @@ export default function TopicChatScreen() {
     [id, identity, nickname],
   );
 
-  const { messages, loading: msgsLoading, sending, error: msgError, clearError, sendText, sendImage, reload } = useMessages({
+  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, reload } = useMessages({
     channelId: id,
     loadFn,
     postTextFn,
@@ -217,6 +217,19 @@ export default function TopicChatScreen() {
           inverted
           contentContainerStyle={styles.listContent}
           keyboardShouldPersistTaps="handled"
+          onEndReached={hasMore ? loadOlder : undefined}
+          onEndReachedThreshold={0.2}
+          ListFooterComponent={
+            loadingOlder ? (
+              <View style={styles.loadingOlderWrap}>
+                <ActivityIndicator size="small" color={Colors.muted} />
+              </View>
+            ) : (!hasMore && !msgsLoading && messages.length > 0) ? (
+              <View style={styles.loadingOlderWrap}>
+                <Text style={styles.beginningText}>Beginning of conversation</Text>
+              </View>
+            ) : null
+          }
           ListHeaderComponent={
             msgsLoading ? (
               <View style={styles.msgsLoading}>
@@ -336,6 +349,8 @@ const styles = StyleSheet.create({
 
   listContent: { paddingVertical: Spacing.sm },
   msgsLoading: { paddingVertical: Spacing.md, alignItems: 'center' },
+  loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
+  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
   emptyWrap:   { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
   emptyText:   { color: Colors.muted, fontSize: FontSizes.sm, textAlign: 'center' },
 });

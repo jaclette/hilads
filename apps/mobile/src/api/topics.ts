@@ -68,9 +68,16 @@ export async function fetchTopicById(topicId: string): Promise<Topic> {
   return data.topic;
 }
 
-export async function fetchTopicMessages(topicId: string): Promise<{ messages: Message[]; hasMore: boolean }> {
-  const data = await api.get<{ messages: Message[] }>(`/topics/${topicId}/messages`);
-  return { messages: data.messages ?? [], hasMore: false };
+export async function fetchTopicMessages(
+  topicId: string,
+  opts: { beforeId?: string; limit?: number } = {},
+): Promise<{ messages: Message[]; hasMore: boolean }> {
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+  if (opts.beforeId) q.set('before_id', opts.beforeId);
+  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
+    `/topics/${topicId}/messages?${q}`,
+  );
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
 }
 
 export async function sendTopicMessage(

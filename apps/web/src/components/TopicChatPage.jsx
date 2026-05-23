@@ -104,6 +104,14 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   const msgRefsMap   = useRef(new Map())
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
 
+  // ── Reverse-infinite-scroll (older history) ──
+  const [hasMore,      setHasMore]      = useState(false)
+  const [loadingOlder, setLoadingOlder] = useState(false)
+  const feedRef          = useRef(null)   // scroll container
+  const oldestIdRef      = useRef(null)   // cursor for loadOlder
+  const loadingOlderRef  = useRef(false)  // concurrency guard
+  const skipAutoScrollRef = useRef(false) // suppress scroll-to-bottom when prepending older
+
   const icon = CATEGORY_ICONS[topic.category] ?? '💬'
 
   const mentions = useMentions({ context: 'topic', channelId: topic.id, value: input, setValue: setInput, inputRef })
@@ -119,12 +127,18 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   // Load + poll messages
   const loadMessages = useCallback(async () => {
     try {
+      const isInitial = oldestIdRef.current === null
       const data = await fetchTopicMessages(topic.id)
       const msgs = data.messages ?? []
       const fresh = msgs.filter(m => !knownIdsRef.current.has(m.id ?? `${m.guestId}:${m.createdAt}`))
       if (fresh.length > 0) {
         fresh.forEach(m => knownIdsRef.current.add(m.id ?? `${m.guestId}:${m.createdAt}`))
         setMessages(prev => [...prev, ...fresh].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
+      }
+      // First load seeds the reverse-scroll cursor + hasMore; polls leave them.
+      if (isInitial && msgs.length > 0) {
+        oldestIdRef.current = msgs[0]?.id ?? null
+        setHasMore(data.hasMore ?? false)
       }
     } catch {
       // silent
@@ -164,8 +178,44 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   }, [loadMessages])
 
   useEffect(() => {
+    // Skip the jump-to-bottom when older messages were just prepended.
+    if (skipAutoScrollRef.current) { skipAutoScrollRef.current = false; return }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages.length])
+
+  // Load the previous page when scrolled near the top; prepend + preserve anchor.
+  const loadOlder = useCallback(async () => {
+    if (loadingOlderRef.current || !hasMore || !oldestIdRef.current) return
+    const container = feedRef.current
+    const heightBefore = container?.scrollHeight ?? 0
+    const topBefore    = container?.scrollTop    ?? 0
+    loadingOlderRef.current = true
+    setLoadingOlder(true)
+    try {
+      const data = await fetchTopicMessages(topic.id, { beforeId: oldestIdRef.current })
+      const older = (data.messages ?? []).filter(m => !knownIdsRef.current.has(m.id ?? `${m.guestId}:${m.createdAt}`))
+      if (older.length > 0) {
+        older.forEach(m => knownIdsRef.current.add(m.id ?? `${m.guestId}:${m.createdAt}`))
+        oldestIdRef.current = data.messages[0]?.id ?? oldestIdRef.current
+        skipAutoScrollRef.current = true
+        setMessages(prev => [...older, ...prev].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
+      }
+      setHasMore(data.hasMore ?? false)
+      requestAnimationFrame(() => {
+        if (container) container.scrollTop = topBefore + (container.scrollHeight - heightBefore)
+      })
+    } catch {
+      // silent — user can scroll up again to retry
+    } finally {
+      loadingOlderRef.current = false
+      setLoadingOlder(false)
+    }
+  }, [hasMore, topic.id])
+
+  function handleFeedScroll() {
+    const container = feedRef.current
+    if (container && container.scrollTop < 200 && !loadingOlderRef.current && hasMore) loadOlder()
+  }
 
   async function handleSend(e) {
     e.preventDefault()
@@ -331,7 +381,13 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       )}
 
       {/* Messages area */}
-      <div className="topic-chat-feed">
+      <div className="topic-chat-feed" ref={feedRef} onScroll={handleFeedScroll}>
+        {loadingOlder && (
+          <div className="messages-load-older"><span className="messages-load-older-spinner" /></div>
+        )}
+        {!hasMore && !loadingOlder && messages.length > 0 && (
+          <div className="messages-beginning">Beginning of conversation</div>
+        )}
         {loading && messages.length === 0 && (
           <div className="topic-chat-empty">
             <span className="topic-chat-empty-icon">💬</span>
