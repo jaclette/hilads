@@ -108,6 +108,12 @@ const GUEST_GATE_COPY = {
     title:     "Ghosts can browse, but can't join hangouts.",
     sub:       'Sign up to join hangouts, save your name, and get notified when people want to meet.',
   },
+  create_hangout: {
+    pageTitle: 'Start a hangout',
+    emoji:     '⚡',
+    title:     "Ghosts can browse, but can't host.",
+    sub:       'Sign up to start a hangout, save your name, and get people to join you.',
+  },
 }
 
 function setPageMeta(title, description) {
@@ -834,6 +840,11 @@ export default function App() {
   const openHangout = (topic) => {
     if (!account) { setGuestGate({ reason: 'join_hangout' }); return }
     setActiveTopic(topic)
+  }
+  // Hosting a hangout is members-only too — gate guests to signup.
+  const openCreateHangout = () => {
+    if (!account) { setGuestGate({ reason: 'create_hangout' }); return }
+    setShowCreateTopic(true)
   }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
@@ -4136,7 +4147,7 @@ export default function App() {
                     <button className="events-empty-cta" onClick={openCreate}>
                       {isLocalUser ? 'Open your place' : 'Create event'}
                     </button>
-                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
+                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
                   </div>
                 )
               }
@@ -4178,7 +4189,7 @@ export default function App() {
                     </p>
                     {nowFilter === 'events'
                       ? <button className="events-empty-cta" onClick={openCreate}>Create event</button>
-                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
+                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
                     }
                   </div>
                 )
@@ -4993,7 +5004,7 @@ export default function App() {
               className="create-chooser-option"
               onClick={() => {
                 setShowCreateChooser(false)
-                setShowCreateTopic(true)
+                openCreateHangout()
               }}
             >
               <span className="create-chooser-icon">⚡</span>

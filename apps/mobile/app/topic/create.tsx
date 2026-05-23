@@ -23,7 +23,7 @@ const CATEGORIES: { value: TopicCategory; label: string; icon: string }[] = [
 
 export default function CreateTopicScreen() {
   const router   = useRouter();
-  const { city, identity } = useApp();
+  const { city, identity, account } = useApp();
 
   const [category,    setCategory]    = useState<TopicCategory>('general');
   const [title,       setTitle]       = useState('');
@@ -44,6 +44,12 @@ export default function CreateTopicScreen() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  // ── Guest gate — hosting a hangout requires a registered account ─────────────
+  if (!account) {
+    router.replace('/auth-gate?reason=create_hangout');
+    return null;
   }
 
   return (

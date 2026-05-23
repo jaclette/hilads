@@ -120,6 +120,7 @@ export default function NowScreen() {
   const [showCreateSheet, setShowCreateSheet] = useState(false);
 
   function handleStartPulse() {
+    if (!account) { router.push('/auth-gate?reason=create_hangout'); return; }
     router.push('/topic/create');
   }
   async function handleHostSpot() {

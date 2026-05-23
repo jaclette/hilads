@@ -14,7 +14,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout';
+type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout';
 
 const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: string }> = {
   view_profile: {
@@ -26,6 +26,11 @@ const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: st
     emoji:    '⚡',
     title:    "Ghosts can browse, but can't join hangouts.",
     subtitle: "Sign up to join hangouts, save your name, and get notified when people want to meet.",
+  },
+  create_hangout: {
+    emoji:    '⚡',
+    title:    "Ghosts can browse, but can't host.",
+    subtitle: "Sign up to start a hangout, save your name, and get people to join you.",
   },
   create_event: {
     emoji:    '🎉',
