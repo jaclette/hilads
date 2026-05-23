@@ -2053,7 +2053,7 @@ export default function App() {
           category:         topic.category ?? 'general',
           message_count:    0,
         }
-        setTopics(prev => prev.some(p => p.id === t.id) ? prev : [...prev, t])
+        setTopics(prev => prev.some(p => String(p.id) === String(t.id)) ? prev : [...prev, t])
       })
 
       // Reaction updates — PHP sends "city_N" for city channels, plain eventId for events.
@@ -2881,7 +2881,13 @@ export default function App() {
 
   function handleTopicCreated(topic) {
     setShowCreateTopic(false)
-    if (topic?.id) setTopics(prev => [{ ...topic, message_count: 0, last_activity_at: null, kind: 'topic' }, ...prev])
+    if (!topic?.id) return
+    // Idempotent: the WS `newTopic` echo of our own creation can land before or
+    // after this, so drop any existing copy by id before prepending the fresh one.
+    setTopics(prev => [
+      { ...topic, message_count: 0, last_activity_at: null, kind: 'topic' },
+      ...prev.filter(p => String(p.id) !== String(topic.id)),
+    ])
   }
 
   // Refresh events list after creation
