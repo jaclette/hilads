@@ -53,6 +53,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/UserRepository.php';
     require_once __DIR__ . '/../src/EventRepository.php';
     require_once __DIR__ . '/../src/EventSeriesRepository.php';
+    require_once __DIR__ . '/../src/Geocoder.php';
     require_once __DIR__ . '/../src/TopicRepository.php';
     require_once __DIR__ . '/../src/R2Uploader.php';
     // Push broadcast page needs these — both for the page itself and for the
@@ -150,6 +151,7 @@ require_once __DIR__ . '/../src/MessageRepository.php';
 require_once __DIR__ . '/../src/MentionService.php';
 require_once __DIR__ . '/../src/EventRepository.php';
 require_once __DIR__ . '/../src/EventSeriesRepository.php';
+require_once __DIR__ . '/../src/Geocoder.php';
 require_once __DIR__ . '/../src/PlacesService.php';
 require_once __DIR__ . '/../src/VenueSeeder.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';

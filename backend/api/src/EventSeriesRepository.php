@@ -36,6 +36,22 @@ class EventSeriesRepository
         }
     }
 
+    /**
+     * Best-effort geocode of a series' text location → [lat, lng] (or [null, null]).
+     * Non-fatal: a miss just means occurrences carry no coords (no distance shown).
+     *
+     * @return array{0: ?float, 1: ?float}
+     */
+    private static function geocodeLocation(int $channelId, ?string $location): array
+    {
+        if ($location === null || trim($location) === '') {
+            return [null, null];
+        }
+        $city   = CityRepository::findById($channelId);
+        $coords = Geocoder::forward($location, $city['name'] ?? null, $city['country'] ?? null);
+        return $coords ? [$coords['lat'], $coords['lng']] : [null, null];
+    }
+
     private static function createOccurrence(array $series, string $date): string
     {
         // Deterministic channel ID: same series + same date always produce the same 16-char hex ID.
@@ -62,10 +78,10 @@ class EventSeriesRepository
         $pdo->prepare("
             INSERT INTO channel_events
                 (channel_id, source_type, created_by, guest_id, title, event_type,
-                 location, starts_at, expires_at, series_id, occurrence_date, city_id)
+                 location, venue_lat, venue_lng, starts_at, expires_at, series_id, occurrence_date, city_id)
             VALUES
                 (?, 'hilads', ?, ?, ?, ?,
-                 ?, to_timestamp(?), to_timestamp(?), ?, ?, ?)
+                 ?, ?, ?, to_timestamp(?), to_timestamp(?), ?, ?, ?)
             ON CONFLICT (channel_id) DO NOTHING
         ")->execute([
             $channelId,
@@ -74,6 +90,10 @@ class EventSeriesRepository
             $series['title'],
             $series['event_type'],
             $series['location'] ?? null,
+            // Carry the series' coords onto each occurrence so the NOW feed can
+            // show distance. Null when the series has no coords.
+            isset($series['lat']) ? $series['lat'] : null,
+            isset($series['lng']) ? $series['lng'] : null,
             $startsAt,
             $endsAt,
             $series['id'],
@@ -275,20 +295,22 @@ class EventSeriesRepository
             $startsOn = (new DateTime('today', new DateTimeZone($timezone)))->format('Y-m-d');
         }
 
+        [$lat, $lng] = self::geocodeLocation($channelId, $location);
+
         $pdo->prepare("
             INSERT INTO event_series
                 (id, city_id, created_by, guest_id, title, event_type, location,
                  start_time, end_time, timezone, recurrence_type, weekdays,
-                 interval_days, starts_on, ends_on, source)
+                 interval_days, starts_on, ends_on, lat, lng, source)
             VALUES
                 (?, ?, ?, ?, ?, ?, ?,
                  ?, ?, ?, ?, ?,
-                 ?, ?, ?, 'user')
+                 ?, ?, ?, ?, ?, 'user')
         ")->execute([
             $id, $cityId, $userId, $guestId, $title, $eventType, $location,
             $startTime, $endTime, $timezone, $recurrenceType,
             $weekdays !== null ? json_encode($weekdays) : null,
-            $intervalDays, $startsOn, $endsOn,
+            $intervalDays, $startsOn, $endsOn, $lat, $lng,
         ]);
 
         $series = [
@@ -307,6 +329,8 @@ class EventSeriesRepository
             'interval_days'  => $intervalDays,
             'starts_on'      => $startsOn,
             'ends_on'        => $endsOn,
+            'lat'            => $lat,
+            'lng'            => $lng,
         ];
 
         self::generateOccurrences($series, 7);
@@ -345,20 +369,22 @@ class EventSeriesRepository
             $startsOn = (new DateTime('today', new DateTimeZone($timezone)))->format('Y-m-d');
         }
 
+        [$lat, $lng] = self::geocodeLocation($channelId, $location);
+
         $pdo->prepare("
             INSERT INTO event_series
                 (id, city_id, created_by, guest_id, title, event_type, location,
                  start_time, end_time, timezone, recurrence_type, weekdays,
-                 interval_days, starts_on, ends_on, source)
+                 interval_days, starts_on, ends_on, lat, lng, source)
             VALUES
                 (?, ?, ?, ?, ?, ?, ?,
                  ?, ?, ?, ?, ?,
-                 ?, ?, ?, 'admin')
+                 ?, ?, ?, ?, ?, 'admin')
         ")->execute([
             $id, $cityId, $createdBy, $guestId, $title, $eventType, $location,
             $startTime, $endTime, $timezone, $recurrenceType,
             $weekdays !== null ? json_encode($weekdays) : null,
-            $intervalDays, $startsOn, $endsOn,
+            $intervalDays, $startsOn, $endsOn, $lat, $lng,
         ]);
 
         $series = [
@@ -377,6 +403,8 @@ class EventSeriesRepository
             'interval_days'   => $intervalDays,
             'starts_on'       => $startsOn,
             'ends_on'         => $endsOn,
+            'lat'             => $lat,
+            'lng'             => $lng,
         ];
 
         self::generateOccurrences($series, 30);

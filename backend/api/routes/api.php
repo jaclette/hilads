@@ -3778,6 +3778,18 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         }
     }
 
+    // No precise pin from the map picker but a text location → best-effort
+    // geocode (Nominatim) so the NOW feed can show distance. Non-fatal: on a
+    // miss the text location stands and the card shows the address.
+    if (($venueLat === null || $venueLng === null) && $locationHint !== null && $locationHint !== '') {
+        $cityRow = CityRepository::findById($channelId);
+        $coords  = Geocoder::forward($locationHint, $cityRow['name'] ?? null, $cityRow['country'] ?? null);
+        if ($coords !== null) {
+            $venueLat = $coords['lat'];
+            $venueLng = $coords['lng'];
+        }
+    }
+
     $startsAt = normalizeUnixTimestamp($startsAt);
     if ($startsAt === null) {
         Response::json(['error' => 'starts_at is required and must be a unix timestamp'], 400);
@@ -4190,6 +4202,136 @@ $router->add('POST', '/internal/city-events/resync', function () {
         'channelId' => $channelId,
         'city' => $city['name'],
         'public_events' => count($events),
+    ]);
+});
+
+// ── Internal: geocode-backfill — fill missing coords so NOW shows distance ───
+// Protected by MIGRATION_KEY. Idempotent + resumable: only touches rows that
+// still lack coordinates, so it's safe to re-run. Throttled to ~1 req/s for
+// Nominatim, with a per-call `limit` budget to stay under the HTTP timeout —
+// call repeatedly until `remaining` is 0.
+// Call: POST /internal/geocode-backfill?key=YOUR_KEY
+// Body (all optional): { "channelId": 20, "limit": 20, "dryRun": true }
+$router->add('POST', '/internal/geocode-backfill', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    $providedKey = $_SERVER['HTTP_X_API_KEY'] ?? ($_GET['key'] ?? '');
+    if (!is_string($providedKey) || !hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $body      = Request::json() ?? [];
+    $channelId = filter_var($body['channelId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $limit     = filter_var($body['limit'] ?? 10, FILTER_VALIDATE_INT, ['options' => ['default' => 10, 'min_range' => 1, 'max_range' => 40]]);
+    $dryRun    = !empty($body['dryRun']);
+    $cityKey   = $channelId ? ('city_' . $channelId) : null;
+
+    $pdo = Database::pdo();
+
+    @set_time_limit(0);
+
+    $cityWhere = $cityKey ? " AND es.city_id = " . $pdo->quote($cityKey) : "";
+    $seriesRows = $pdo->query("
+        SELECT es.id, es.location, ch.name AS city_name, ci.country
+          FROM event_series es
+          JOIN channels ch ON ch.id = es.city_id
+          LEFT JOIN cities ci ON ci.channel_id = ch.id
+         WHERE es.location IS NOT NULL AND btrim(es.location) <> ''
+           AND (es.lat IS NULL OR es.lng IS NULL)
+           $cityWhere
+         ORDER BY es.id
+         LIMIT $limit
+    ")->fetchAll(\PDO::FETCH_ASSOC);
+
+    $seriesUpd  = $pdo->prepare("UPDATE event_series SET lat = ?, lng = ? WHERE id = ?");
+    $seriesHit  = 0; $seriesMiss = 0; $budget = $limit;
+    foreach ($seriesRows as $r) {
+        if ($budget <= 0) break;
+        $coords = Geocoder::forward($r['location'], $r['city_name'] ?? null, $r['country'] ?? null);
+        $budget--;
+        if ($coords !== null) {
+            if (!$dryRun) $seriesUpd->execute([$coords['lat'], $coords['lng'], $r['id']]);
+            $seriesHit++;
+        } else {
+            $seriesMiss++;
+        }
+        // Geocoder self-throttles to ~1 req/s — no extra sleep needed here.
+    }
+
+    // Propagate freshly-stored series coords onto their materialized occurrences.
+    $propagated = 0;
+    if (!$dryRun) {
+        $propagated = (int) $pdo->exec("
+            UPDATE channel_events ce
+               SET venue_lat = es.lat, venue_lng = es.lng
+              FROM event_series es
+             WHERE ce.series_id = es.id
+               AND es.lat IS NOT NULL AND es.lng IS NOT NULL
+               AND (ce.venue_lat IS NULL OR ce.venue_lng IS NULL)
+        ");
+    }
+
+    // One-off events (no series) — only active ones, to avoid spending the
+    // budget on past events that will never show in the feed again.
+    $ceCityWhere = $cityKey ? " AND ce.city_id = " . $pdo->quote($cityKey) : "";
+    $oneoffHit = 0; $oneoffMiss = 0;
+    if ($budget > 0) {
+        $oneoffRows = $pdo->query("
+            SELECT ce.channel_id, ce.location, ch.name AS city_name, ci.country
+              FROM channel_events ce
+              JOIN channels ch ON ch.id = ce.city_id
+              LEFT JOIN cities ci ON ci.channel_id = ch.id
+             WHERE ce.series_id IS NULL
+               AND ce.source_type = 'hilads'
+               AND ce.location IS NOT NULL AND btrim(ce.location) <> ''
+               AND (ce.venue_lat IS NULL OR ce.venue_lng IS NULL)
+               AND ce.expires_at > now()
+               $ceCityWhere
+             ORDER BY ce.starts_at
+             LIMIT $budget
+        ")->fetchAll(\PDO::FETCH_ASSOC);
+
+        $oneoffUpd = $pdo->prepare("UPDATE channel_events SET venue_lat = ?, venue_lng = ? WHERE channel_id = ?");
+        foreach ($oneoffRows as $r) {
+            if ($budget <= 0) break;
+            $coords = Geocoder::forward($r['location'], $r['city_name'] ?? null, $r['country'] ?? null);
+            $budget--;
+            if ($coords !== null) {
+                if (!$dryRun) $oneoffUpd->execute([$coords['lat'], $coords['lng'], $r['channel_id']]);
+                $oneoffHit++;
+            } else {
+                $oneoffMiss++;
+            }
+        }
+    }
+
+    // How many rows still lack coords after this run (so the caller knows
+    // whether to call again).
+    $remSeries = (int) $pdo->query("
+        SELECT COUNT(*) FROM event_series es
+         WHERE es.location IS NOT NULL AND btrim(es.location) <> ''
+           AND (es.lat IS NULL OR es.lng IS NULL)$cityWhere
+    ")->fetchColumn();
+    $remOneoff = (int) $pdo->query("
+        SELECT COUNT(*) FROM channel_events ce
+         WHERE ce.series_id IS NULL AND ce.source_type = 'hilads'
+           AND ce.location IS NOT NULL AND btrim(ce.location) <> ''
+           AND (ce.venue_lat IS NULL OR ce.venue_lng IS NULL)
+           AND ce.expires_at > now()$ceCityWhere
+    ")->fetchColumn();
+
+    Response::json([
+        'ok'                     => true,
+        'dryRun'                 => $dryRun,
+        'channelId'              => $channelId ?: null,
+        'series_geocoded'        => $seriesHit,
+        'series_missed'          => $seriesMiss,
+        'occurrences_propagated' => $propagated,
+        'oneoff_geocoded'        => $oneoffHit,
+        'oneoff_missed'          => $oneoffMiss,
+        'remaining'              => $remSeries + $remOneoff,
     ]);
 });
 
