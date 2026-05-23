@@ -35,7 +35,7 @@ export function TopicCard({
   return (
     <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
       <View style={styles.cardKindRow}>
-        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Pulse</Text></View>
+        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Hangout</Text></View>
         {activeNow && (
           <View style={styles.activeNowBadge}>
             <Text style={styles.activeNowText}>● Active now</Text>

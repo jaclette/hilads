@@ -25,7 +25,7 @@ const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: st
   create_event: {
     emoji:    '🎉',
     title:    "Ghosts can browse, but can't host.",
-    subtitle: "Create an account to throw your own hangout and put your city on the map.",
+    subtitle: "Create an account to throw your own event and put your city on the map.",
   },
   send_dm: {
     emoji:    '💬',
@@ -36,7 +36,7 @@ const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: st
 
 const BENEFITS = [
   { emoji: '👤', text: 'View profiles' },
-  { emoji: '🎉', text: 'Create your own hangouts' },
+  { emoji: '🎉', text: 'Create your own events' },
   { emoji: '🤝', text: 'Build your friends list' },
   { emoji: '💬', text: 'Connect with people' },
   { emoji: '✨', text: 'Keep your identity' },

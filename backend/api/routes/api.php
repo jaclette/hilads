@@ -3847,7 +3847,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
             $cityChannelId,
             $authUser['id'] ?? null,
             'new_event',
-            '🔥 New hangout in ' . $cityName,
+            '🔥 New event in ' . $cityName,
             $notifBody,
             ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName)), 'senderUserId' => $authUser['id'] ?? null]
         );
@@ -5769,6 +5769,121 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
     }
 
     Response::json($message, 201);
+});
+
+// ── Hangout join-requests (request-to-join) ──────────────────────────────────
+// Members only (guests are routed to signup client-side). A request notifies
+// every participant + drops an Accept/Reject feed item; ANY participant can
+// resolve it, and the FIRST write wins (resolveJoinRequest only matches a
+// pending row, so concurrent taps can't double-resolve).
+$router->add('POST', '/api/v1/topics/{topicId}/join-requests', function (array $params) {
+    $topicId = $params['topicId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) Response::json(['error' => 'Invalid topicId'], 400);
+
+    $user = AuthService::requireAuth();   // members only
+    $uid  = $user['id'];
+    $name = $user['display_name'] ?? 'Someone';
+
+    $topic = TopicRepository::findById($topicId);
+    if ($topic === null) Response::json(['error' => 'Hangout not found or expired'], 404);
+
+    enforceRateLimit('join_request', 10, 3600, $uid);
+
+    $res = TopicRepository::createJoinRequest($topicId, $uid, $name);
+    if (isset($res['error'])) {
+        // Graceful no-ops, not failures: already in, duplicate pending, or cooldown.
+        Response::json(['status' => $res['error']], $res['error'] === 'already_participant' ? 200 : 409);
+    }
+    $requestId = $res['id'];
+
+    // Feed item — a persisted join_request message; content carries the payload
+    // the clients render with Accept/Reject. Its id == the request id so the
+    // resolve handler can update it in place.
+    $payload = json_encode([
+        'kind' => 'join_request', 'requestId' => $requestId,
+        'requesterId' => $uid, 'requesterName' => $name,
+        'status' => 'pending', 'resolvedByName' => null,
+    ]);
+    Database::pdo()->prepare("
+        INSERT INTO messages (id, channel_id, type, user_id, nickname, content)
+        VALUES (?, ?, 'join_request', ?, ?, ?)
+    ")->execute([$requestId, $topicId, $uid, $name, $payload]);
+
+    $message = ['id' => $requestId, 'type' => 'join_request', 'guestId' => null,
+                'userId' => $uid, 'nickname' => $name, 'content' => $payload, 'createdAt' => time()];
+    broadcastMessageToWs($topicId, $message);
+
+    // Push every participant except the requester.
+    try {
+        $title = $topic['title'] ?? 'your hangout';
+        foreach (TopicRepository::participantUserIds($topicId) as $pid) {
+            if ($pid === $uid) continue;
+            NotificationRepository::create(
+                $pid, 'join_request', $name . ' wants to join',
+                $name . ' asked to join ' . $title,
+                ['topicId' => $topicId, 'requestId' => $requestId, 'requesterName' => $name],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[join-request] participant notify failed: ' . $e->getMessage());
+    }
+
+    Response::json(['status' => 'pending', 'requestId' => $requestId, 'message' => $message], 201);
+});
+
+$router->add('POST', '/api/v1/topics/{topicId}/join-requests/{requestId}/resolve', function (array $params) {
+    $topicId   = $params['topicId']   ?? '';
+    $requestId = $params['requestId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId) || !preg_match('/^[a-f0-9]{16}$/', $requestId)) {
+        Response::json(['error' => 'Invalid id'], 400);
+    }
+
+    $user = AuthService::requireAuth();
+    $uid  = $user['id'];
+    $name = $user['display_name'] ?? 'Someone';
+
+    if (!TopicRepository::isParticipant($topicId, $uid)) {
+        Response::json(['error' => 'Only participants can decide'], 403);
+    }
+
+    $body   = Request::json() ?? [];
+    $action = in_array($body['action'] ?? '', ['accept', 'reject'], true) ? $body['action'] : null;
+    if ($action === null) Response::json(['error' => 'action must be accept or reject'], 400);
+
+    $resolved = TopicRepository::resolveJoinRequest($requestId, $topicId, $action, $uid, $name);
+    if ($resolved === null) {
+        // Someone already resolved it — first-write-wins. 409 the client swallows.
+        Response::json(['status' => 'already_resolved'], 409);
+    }
+
+    // Update + re-broadcast the feed item so the CTAs resolve for everyone.
+    $payload = json_encode([
+        'kind' => 'join_request', 'requestId' => $requestId,
+        'requesterId' => $resolved['requester_id'], 'requesterName' => $resolved['requester_name'],
+        'status' => $resolved['status'], 'resolvedByName' => $name,
+    ]);
+    Database::pdo()->prepare("UPDATE messages SET content = ? WHERE id = ?")->execute([$payload, $requestId]);
+    broadcastMessageToWs($topicId, [
+        'id' => $requestId, 'type' => 'join_request', 'guestId' => null,
+        'userId' => $resolved['requester_id'], 'nickname' => $resolved['requester_name'],
+        'content' => $payload, 'createdAt' => time(), 'updated' => true,
+    ]);
+
+    // Accept → tell the requester (push). Reject → silent (no shaming).
+    if ($resolved['status'] === 'accepted') {
+        try {
+            $title = TopicRepository::findById($topicId)['title'] ?? 'the hangout';
+            NotificationRepository::create(
+                $resolved['requester_id'], 'join_request_accepted',
+                "You're in! 🎉", $name . ' added you to ' . $title,
+                ['topicId' => $topicId],
+            );
+        } catch (\Throwable $e) {
+            error_log('[join-request] accept notify failed: ' . $e->getMessage());
+        }
+    }
+
+    Response::json(['status' => $resolved['status'], 'requestId' => $requestId, 'resolvedByName' => $name]);
 });
 
 // ── @mention autocomplete suggestions ───────────────────────────────────────

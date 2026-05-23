@@ -224,7 +224,7 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
         {status === 'ok' && events.length === 0 && (
           <div className="events-empty-state" style={{ marginTop: 40 }}>
             <p className="events-empty-title">Nothing scheduled</p>
-            <p className="events-empty-sub">No hangouts on this day yet.</p>
+            <p className="events-empty-sub">No events on this day yet.</p>
           </div>
         )}
 

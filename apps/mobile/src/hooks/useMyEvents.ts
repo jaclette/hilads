@@ -52,7 +52,7 @@ export function useMyEvents(): Result {
       const raw = await fetchMyEvents(guestId);
       setEvents(deduplicateSeries(raw));
     } catch {
-      setError('Failed to load your hangouts');
+      setError('Failed to load your events');
     } finally {
       setLoading(false);
     }

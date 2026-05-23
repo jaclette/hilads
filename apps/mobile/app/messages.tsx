@@ -100,7 +100,7 @@ function EventRow({
   const preview   = unread?.preview
     ?? (event.city_name
       ? `${event.city_name}${event.participant_count != null ? ` · ${event.participant_count} going` : ''}`
-      : 'Hangout chat');
+      : 'Event chat');
   const time = unread?.previewAt ? relativeTime(unread.previewAt) : '';
 
   return (
@@ -139,7 +139,7 @@ function SectionHeader({ title }: { title: string }) {
 const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'all',    label: 'All' },
   { key: 'dms',    label: 'Direct Messages' },
-  { key: 'events', label: 'Hangout Chats' },
+  { key: 'events', label: 'Event Chats' },
 ];
 
 function FilterBar({
@@ -320,11 +320,11 @@ export default function MessagesScreen() {
             {activeFilter === 'events' ? '🔥' : '💬'}
           </Text>
           <Text style={styles.emptyTitle}>
-            {activeFilter === 'events' ? 'No hangout chats yet' : 'No messages yet'}
+            {activeFilter === 'events' ? 'No event chats yet' : 'No messages yet'}
           </Text>
           <Text style={styles.emptySub}>
             {activeFilter === 'events'
-              ? 'Create or join a hangout to chat with people going.'
+              ? 'Create or join an event to chat with people going.'
               : 'Connect with people you meet in the city.'}
           </Text>
         </View>
@@ -364,7 +364,7 @@ export default function MessagesScreen() {
               </View>
             ) : events.length > 0 ? (
               <>
-                {activeFilter === 'all' && <SectionHeader title="HANGOUT CHATS" />}
+                {activeFilter === 'all' && <SectionHeader title="EVENT CHATS" />}
                 {events.map(event => (
                   <EventRow
                     key={event.id}
@@ -393,8 +393,8 @@ export default function MessagesScreen() {
                 />
                 <View style={styles.prefDivider} />
                 <PrefRow
-                  label="Hangout chat messages"
-                  subtitle="When someone messages in a hangout you joined"
+                  label="Event chat messages"
+                  subtitle="When someone messages in an event you joined"
                   value={prefs.event_message_push}
                   onChange={v => togglePref('event_message_push', v)}
                 />

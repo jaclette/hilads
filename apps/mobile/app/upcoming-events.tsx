@@ -223,7 +223,7 @@ export default function UpcomingEventsScreen() {
       const list = await fetchUpcomingEvents(channelId, { from: ymd, to: ymd });
       setEvents(list);
     } catch {
-      setError('Could not load hangouts for this day');
+      setError('Could not load events for this day');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -316,7 +316,7 @@ export default function UpcomingEventsScreen() {
         <View style={styles.center}>
           <Text style={styles.emptyEmoji}>📅</Text>
           <Text style={styles.emptyTitle}>Nothing scheduled</Text>
-          <Text style={styles.emptySub}>No hangouts on this day yet.</Text>
+          <Text style={styles.emptySub}>No events on this day yet.</Text>
         </View>
       ) : (
         <FlatList

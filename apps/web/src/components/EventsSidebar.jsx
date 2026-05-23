@@ -90,13 +90,13 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
       <div className="events-list">
         {topicList.length > 0 && (
           <>
-            <p className="events-group-label">Pulses</p>
+            <p className="events-group-label">Hangouts</p>
             {topicList.map(renderTopicRow)}
           </>
         )}
         <p className="events-group-label">Hilads Events</p>
         {hiladsEvents.length === 0
-          ? <p className="events-empty">No hangouts today</p>
+          ? <p className="events-empty">No events today</p>
           : hiladsEvents.map(renderRow)
         }
         {publicEvents.length > 0 && (

@@ -70,6 +70,10 @@ class NotificationRepository
             'profile_view'                                              => 'profile_view_push',
             'topic_message'                                             => 'topic_reply_push',
             'new_topic'                                                 => 'new_topic_push',
+            // Hangout join-request flow: notify participants of a request, and
+            // notify the requester when accepted. Both gated by one pref.
+            'join_request',
+            'join_request_accepted'                                     => 'join_request_push',
             // Admin-triggered broadcasts (from /admin/push). Default-on so
             // users get product announcements unless they opt out.
             'admin_announcement'                                        => 'admin_announcement_push',
@@ -92,6 +96,7 @@ class NotificationRepository
             'profile_view_push'    => true,
             'topic_reply_push'     => true,
             'new_topic_push'       => false,
+            'join_request_push'    => true,
             'admin_announcement_push' => true,
         ];
     }
@@ -167,7 +172,8 @@ class NotificationRepository
             'friend_added'                    => isset($data['senderUserId']) ? "/user/{$data['senderUserId']}" : '/notifications',
             'vibe_received'                   => '/me',
             'profile_view'                    => isset($data['viewerId']) ? "/user/{$data['viewerId']}" : '/notifications',
-            'topic_message', 'new_topic'      => isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/',
+            'topic_message', 'new_topic',
+            'join_request', 'join_request_accepted' => isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/',
             // Admin broadcasts can include a custom deepLink; falls back to
             // the notifications screen so the row is at least viewable.
             'admin_announcement'              => $data['deepLink'] ?? '/notifications',
@@ -192,6 +198,8 @@ class NotificationRepository
             'profile_view'            => 'profile-view-'  . ($data['viewerId'] ?? 'user'),
             'topic_message'           => 'topic-'         . ($data['topicId'] ?? 'topic'),
             'new_topic'               => 'new-topic-'     . ($data['topicId'] ?? 'topic'),
+            'join_request'            => 'joinreq-'       . ($data['requestId'] ?? 'r'),
+            'join_request_accepted'   => 'joinacc-'       . ($data['topicId'] ?? 'topic'),
             'admin_announcement'      => 'admin-'         . ($data['broadcastId'] ?? 'b'),
             default                   => 'hilads-' . $type,
         };

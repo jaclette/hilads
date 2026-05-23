@@ -91,10 +91,10 @@ function pushUrl(path) {
 
 const GUEST_GATE_COPY = {
   create_event: {
-    pageTitle: 'Create hangout',
+    pageTitle: 'Create event',
     emoji:     '🎉',
     title:     "Ghosts can browse, but can't host.",
-    sub:       'Create an account to throw your own hangout and put your city on the map.',
+    sub:       'Create an account to throw your own event and put your city on the map.',
   },
   view_profile: {
     pageTitle: 'Profile',
@@ -215,7 +215,7 @@ function ShareVibeBtn({ eventId, title, city }) {
       className={`share-vibe-btn${copied ? ' share-vibe-btn--copied' : ''}`}
       onClick={handleShare}
       title="Share this vibe"
-      aria-label="Share hangout"
+      aria-label="Share event"
     >
       {copied ? 'Link copied ✨' : 'Bring people ✨'}
     </button>
@@ -334,7 +334,7 @@ function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
           {isLive ? 'Live' : (event.recurrence_label ? '↻ Recurring' : 'Upcoming')}
         </span>
       </button>
-      <button className="my-event-delete" onClick={onDelete} aria-label="Delete hangout">✕</button>
+      <button className="my-event-delete" onClick={onDelete} aria-label="Delete event">✕</button>
     </div>
   )
 }
@@ -1633,7 +1633,7 @@ export default function App() {
       setFeed(prev => {
         if (prev.filter(m => m.type === 'message').length >= 3) return prev
         promptsShownRef.current.add('create-event')
-        return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: '🎉 Got a plan tonight?', cta: 'Create hangout' }]
+        return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: '🎉 Got a plan tonight?', cta: 'Create event' }]
       })
     }, 60000)
 
@@ -2788,7 +2788,7 @@ export default function App() {
     setEvents(prev => prev.filter(e => e.id !== eventId))
     setMyEvents(prev => prev.filter(e => e.id !== eventId))
     if (activeEvent?.id === eventId) handleBackToCity()
-    setSuccessToast({ msg: 'Hangout deleted' })
+    setSuccessToast({ msg: 'Event deleted' })
     setTimeout(() => setSuccessToast(null), 3000)
   }
 
@@ -2879,7 +2879,7 @@ export default function App() {
         const id = `event-msg-${event.id}`
         setFeed(prev => {
           if (prev.some(f => f.id === id)) return prev
-          return [...prev, { type: 'event', id, eventId: event.id, text: `🔥 New hangout: ${event.title}`, cta: 'Join' }]
+          return [...prev, { type: 'event', id, eventId: event.id, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
         })
       })
     }
@@ -2927,7 +2927,7 @@ export default function App() {
         <div className="city-row-stats">
           {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
           {eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
-          {topicCount > 0 && <span className="city-row-topics">{topicCount} {topicCount === 1 ? 'pulse' : 'pulses'}</span>}
+          {topicCount > 0 && <span className="city-row-topics">{topicCount} {topicCount === 1 ? 'hangout' : 'hangouts'}</span>}
           {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
         </div>
       </button>
@@ -3259,7 +3259,7 @@ export default function App() {
               </div>
               <div className="event-header-body">
                 {isMyEvent && (
-                  <span className="event-creator-badge">👑 Your hangout</span>
+                  <span className="event-creator-badge">👑 Your event</span>
                 )}
                 <div className="event-header-title-row">
                   <h1 className="event-header-title" title={activeEvent.title}>{activeEvent.title}</h1>
@@ -3517,7 +3517,7 @@ export default function App() {
                     className="feed-owner-prompt-btn"
                     onClick={() => setShowEditEvent(true)}
                   >
-                    ✏️ Edit hangout
+                    ✏️ Edit event
                   </button>
                 </div>
               )
@@ -3901,7 +3901,7 @@ export default function App() {
             <div className="city-filter-tabs">
               {[
                 { id: 'active', label: '🔥 Most active' },
-                { id: 'events', label: '🎉 Most hangouts' },
+                { id: 'events', label: '🎉 Most events' },
                 { id: 'online', label: '🟢 Most online' },
               ].map(f => (
                 <button
@@ -3992,7 +3992,7 @@ export default function App() {
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all' ? 'All' : f === 'events' ? '🔥 Hangouts' : '🗣️ Pulses'}
+                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
               </button>
             ))}
           </div>
@@ -4020,7 +4020,7 @@ export default function App() {
                   <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); setActiveTopic(topic) }}>
                     <div className="er-header">
                       <span className="er-title">{icon} {topic.title}</span>
-                      <span className="er-going er-going--topic">Pulse</span>
+                      <span className="er-going er-going--topic">Hangout</span>
                     </div>
                     <div className="er-badges">
                       {activeNow && <span className="now-active-badge">● Active now</span>}
@@ -4049,7 +4049,7 @@ export default function App() {
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">Public</span>
-                        : <span className="er-going er-going--event">Hangout</span>}
+                        : <span className="er-going er-going--event">Event</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
@@ -4106,7 +4106,7 @@ export default function App() {
                   <div className="events-empty-state">
                     <p className="events-empty-title">Couldn&apos;t load events</p>
                     <p className="events-empty-sub">Pull to retry later or create something new in {city}.</p>
-                    <button className="events-empty-cta" onClick={openCreate}>Create hangout</button>
+                    <button className="events-empty-cta" onClick={openCreate}>Create event</button>
                   </div>
                 )
               }
@@ -4118,13 +4118,13 @@ export default function App() {
                     <p className="events-empty-title">{isLocalUser ? 'Host your spot' : 'Nothing happening yet'}</p>
                     <p className="events-empty-sub">
                       {isLocalUser
-                        ? `Make ${city} feel alive. Start a recurring hangout at your favorite place.`
+                        ? `Make ${city} feel alive. Start a recurring event at your favorite place.`
                         : `Be the first to make something happen in ${city}`}
                     </p>
                     <button className="events-empty-cta" onClick={openCreate}>
-                      {isLocalUser ? 'Open your place' : 'Create hangout'}
+                      {isLocalUser ? 'Open your place' : 'Create event'}
                     </button>
-                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a pulse ⚡</button>
+                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
                   </div>
                 )
               }
@@ -4157,16 +4157,16 @@ export default function App() {
                 return (
                   <div className="events-empty-state">
                     <p className="events-empty-title">
-                      {nowFilter === 'events' ? 'No hangouts right now' : 'No pulses yet'}
+                      {nowFilter === 'events' ? 'No events right now' : 'No hangouts yet'}
                     </p>
                     <p className="events-empty-sub">
                       {nowFilter === 'events'
                         ? `Be the first to create one in ${city}`
-                        : `Start a pulse and get the city talking`}
+                        : `Start a hangout and get the city talking`}
                     </p>
                     {nowFilter === 'events'
-                      ? <button className="events-empty-cta" onClick={openCreate}>Create hangout</button>
-                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a pulse ⚡</button>
+                      ? <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); setShowCreateTopic(true) }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
                     }
                   </div>
                 )
@@ -4733,7 +4733,7 @@ export default function App() {
               </div>
               {myEventsLoaded && myEvents.length > 0 && (
                 <div className="me-card">
-                  <p className="me-section-label">My hangouts</p>
+                  <p className="me-section-label">My events</p>
                   {myEvents.map(ev => (
                     <MyEventRow
                       key={ev.id}
@@ -4969,23 +4969,14 @@ export default function App() {
         />
       )}
 
-      {/* Creation chooser bottom sheet — pulse first per redesign, host second */}
+      {/* Creation chooser bottom sheet — hangout (instant join-me-now) on top,
+          event (planned) below. Handlers unchanged: setShowCreateTopic → hangout
+          (formerly pulse), openCreateEvent → event. */}
       {showCreateChooser && (
         <div className="create-chooser-overlay" onClick={() => setShowCreateChooser(false)}>
           <div className="create-chooser-sheet" onClick={e => e.stopPropagation()}>
             <div className="create-chooser-handle" />
             <p className="create-chooser-title">What's the move?</p>
-            <button
-              className="create-chooser-option"
-              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
-            >
-              <span className="create-chooser-icon">🎉</span>
-              <span className="create-chooser-label">
-                <strong>Start a hangout</strong>
-                <span>Plan something others can join</span>
-              </span>
-              <span className="create-chooser-arrow">→</span>
-            </button>
             <button
               className="create-chooser-option"
               onClick={() => {
@@ -4995,8 +4986,19 @@ export default function App() {
             >
               <span className="create-chooser-icon">⚡</span>
               <span className="create-chooser-label">
-                <strong>Share a moment</strong>
-                <span>Post what's happening around you right now</span>
+                <strong>Start a hangout</strong>
+                <span>Instant — let people join you right now</span>
+              </span>
+              <span className="create-chooser-arrow">→</span>
+            </button>
+            <button
+              className="create-chooser-option"
+              onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
+            >
+              <span className="create-chooser-icon">🎉</span>
+              <span className="create-chooser-label">
+                <strong>Create an event</strong>
+                <span>Plan something others can join</span>
               </span>
               <span className="create-chooser-arrow">→</span>
             </button>

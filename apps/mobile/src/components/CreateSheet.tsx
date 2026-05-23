@@ -73,27 +73,11 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
         {/* Title */}
         <Text style={styles.title}>What's the move?</Text>
 
-        {/* Options — hangout first (highest-value action), share-a-moment second.
-            Internal handlers keep their names: onSelectEvent → event create,
-            onSelectTopic → pulse create. Only the user-facing copy/order changed. */}
+        {/* Options — hangout (instant "join me now") on top, event (planned)
+            below. Internal handlers are unchanged: onSelectTopic → hangout
+            (formerly pulse) create, onSelectEvent → event create. Only the
+            user-facing copy + order changed. */}
         <View style={styles.options}>
-          <TouchableOpacity
-            style={styles.option}
-            activeOpacity={0.75}
-            onPress={() => handleOption(onSelectEvent)}
-          >
-            <View style={styles.optionIcon}>
-              <Text style={styles.optionEmoji}>🎉</Text>
-            </View>
-            <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Start a hangout</Text>
-              <Text style={styles.optionSub}>Plan something others can join</Text>
-            </View>
-            <Text style={styles.optionArrow}>›</Text>
-          </TouchableOpacity>
-
-          <View style={styles.divider} />
-
           <TouchableOpacity
             style={styles.option}
             activeOpacity={0.75}
@@ -103,8 +87,25 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
               <Text style={styles.optionEmoji}>⚡</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Share a moment</Text>
-              <Text style={styles.optionSub}>Post what's happening around you right now</Text>
+              <Text style={styles.optionLabel}>Start a hangout</Text>
+              <Text style={styles.optionSub}>Instant — let people join you right now</Text>
+            </View>
+            <Text style={styles.optionArrow}>›</Text>
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
+          <TouchableOpacity
+            style={styles.option}
+            activeOpacity={0.75}
+            onPress={() => handleOption(onSelectEvent)}
+          >
+            <View style={styles.optionIcon}>
+              <Text style={styles.optionEmoji}>🎉</Text>
+            </View>
+            <View style={styles.optionBody}>
+              <Text style={styles.optionLabel}>Create an event</Text>
+              <Text style={styles.optionSub}>Plan something others can join</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>

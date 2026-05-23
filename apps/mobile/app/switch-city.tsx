@@ -116,7 +116,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
         )}
         {(city.topicCount ?? 0) > 0 && (
           <Text style={styles.statTopics}>
-            {city.topicCount} {city.topicCount === 1 ? 'pulse' : 'pulses'}
+            {city.topicCount} {city.topicCount === 1 ? 'hangout' : 'hangouts'}
           </Text>
         )}
         {(city.messageCount ?? 0) > 0 && (
@@ -281,7 +281,7 @@ export default function SwitchCityScreen() {
         <View style={styles.filterRow}>
           {([
             { id: 'active', label: '🔥 Most active' },
-            { id: 'events', label: '🎉 Most hangouts' },
+            { id: 'events', label: '🎉 Most events' },
             { id: 'online', label: '🟢 Most online' },
           ] as const).map(f => (
             <TouchableOpacity

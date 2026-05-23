@@ -190,7 +190,7 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
         onClick={() => onSelectTopic(topic)}>
         <div className="er-header">
           <span className="er-title">{icon} {topic.title}</span>
-          <span className="er-going archive-pulse-tag">Pulse</span>
+          <span className="er-going archive-pulse-tag">Hangout</span>
         </div>
         {topic.description && <span className="er-location">{topic.description}</span>}
         <span className="city-row-current archive-pulse-meta">
@@ -216,7 +216,7 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
 
       {/* Type filter */}
       <div className="archive-filter-bar">
-        {[['both', 'All'], ['hangouts', '🔥 Hangouts'], ['pulses', '🗣️ Pulses']].map(([k, label]) => (
+        {[['both', 'All'], ['hangouts', '🔥 Events'], ['pulses', '🗣️ Hangouts']].map(([k, label]) => (
           <button key={k} type="button"
             className={`archive-pill${type === k ? ' active' : ''}`}
             onClick={() => setType(k)}>{label}</button>
@@ -258,8 +258,8 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
             <p className="events-empty-title">Nothing here yet</p>
             <p className="events-empty-sub">
               {range.key === 'recent'
-                ? 'Past hangouts and pulses will show up here once the city has some history.'
-                : 'No hangouts or pulses in this window. Try a wider range.'}
+                ? 'Past events and hangouts will show up here once the city has some history.'
+                : 'No events or hangouts in this window. Try a wider range.'}
             </p>
           </div>
         )}

@@ -462,6 +462,57 @@ run($pdo, "
     )
 ", 'topic_subscriptions');
 
+// Hangout (internally "topic") participants — registered members in a hangout.
+// Hangouts are members-only, so keyed by user_id (no guests). Creator is added
+// on create; accepted join-requesters are added on accept.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS topic_participants (
+        topic_id  TEXT NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        user_id   TEXT NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        joined_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (topic_id, user_id)
+    )
+", 'topic_participants');
+
+// Hangout join requests. Resolution is collaborative + first-write-wins: any
+// participant can accept/reject; the partial unique index guarantees at most
+// one PENDING request per (hangout, requester).
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS topic_join_requests (
+        id               TEXT PRIMARY KEY,
+        topic_id         TEXT NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        requester_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        requester_name   TEXT NOT NULL DEFAULT '',
+        status           TEXT NOT NULL DEFAULT 'pending',
+        resolved_by      TEXT REFERENCES users(id) ON DELETE SET NULL,
+        resolved_by_name TEXT,
+        created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+        resolved_at      TIMESTAMPTZ
+    )
+", 'topic_join_requests');
+run($pdo, "
+    CREATE UNIQUE INDEX IF NOT EXISTS topic_join_requests_one_pending
+    ON topic_join_requests (topic_id, requester_id) WHERE status = 'pending'
+", 'topic_join_requests_one_pending');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_topic_join_requests_topic ON topic_join_requests (topic_id)", 'idx_topic_join_requests_topic');
+
+// Backfill: every existing hangout's creator becomes a participant so existing
+// pulses are valid hangouts with a non-empty attendee list.
+$tpBackfill = $pdo->exec("
+    INSERT INTO topic_participants (topic_id, user_id)
+    SELECT channel_id, created_by FROM channel_topics
+    WHERE created_by IS NOT NULL
+    ON CONFLICT (topic_id, user_id) DO NOTHING
+");
+echo "  OK  backfilled topic_participants for " . (int) $tpBackfill . " hangout creator(s)\n";
+
+// join_request_push — notify a hangout's participants when someone asks to join.
+// High-signal/social → default TRUE; backfill existing rows to TRUE (mirrors the
+// new_event_push / mention_push default fix).
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS join_request_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.join_request_push');
+$jrBackfill = $pdo->exec("UPDATE notification_preferences SET join_request_push = TRUE WHERE join_request_push = FALSE");
+echo "  OK  backfilled join_request_push=TRUE for " . (int) $jrBackfill . " row(s)\n";
+
 // ══════════════════════════════════════════════════════════════════════════════
 // ADDITIVE COLUMNS — safe no-ops when columns already exist
 // ══════════════════════════════════════════════════════════════════════════════

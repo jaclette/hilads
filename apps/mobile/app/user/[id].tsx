@@ -374,7 +374,7 @@ export default function PublicProfileScreen() {
   );
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: 'events',  label: events.length  > 0 ? `Hangouts · ${events.length}` : 'Hangouts' },
+    { key: 'events',  label: events.length  > 0 ? `Events · ${events.length}` : 'Events' },
     { key: 'friends', label: friends.length > 0 ? `Friends · ${friends.length}` : 'Friends' },
     { key: 'vibes',   label: vibeCount      > 0 ? `Vibes · ${vibeCount}`        : 'Vibes'   },
     ...(hasPicks ? [{ key: 'picks' as TabKey, label: 'City Picks 👑' }] : []),
@@ -525,7 +525,7 @@ export default function PublicProfileScreen() {
             {/* Events tab */}
             {activeTab === 'events' && (
               events.length === 0 ? (
-                <Text style={styles.tabEmpty}>No hangouts yet</Text>
+                <Text style={styles.tabEmpty}>No events yet</Text>
               ) : (
                 <View style={styles.eventList}>
                   {events.map(event => (

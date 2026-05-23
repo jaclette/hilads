@@ -360,8 +360,8 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         <button
           className="topic-share-btn"
           onClick={handleShare}
-          aria-label="Share pulse"
-          title="Share this pulse"
+          aria-label="Share hangout"
+          title="Share this hangout"
         >
           {copied
             ? <span className="topic-share-copied">✓</span>

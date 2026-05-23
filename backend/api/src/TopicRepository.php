@@ -288,6 +288,8 @@ class TopicRepository
         // Auto-subscribe the registered creator so they get notified on replies.
         if ($userId !== null) {
             self::subscribe($id, $userId);
+            // …and add them as the first participant (members-only hangouts).
+            self::addParticipant($id, $userId);
         }
 
         return self::findById($id) ?? [
@@ -302,6 +304,128 @@ class TopicRepository
             'last_activity_at' => null,
             'expires_at'       => $expiresAt,
             'created_at'       => time(),
+        ];
+    }
+
+    // ── Hangout participants (members-only) ───────────────────────────────────
+
+    public static function addParticipant(string $topicId, string $userId): void
+    {
+        Database::pdo()->prepare("
+            INSERT INTO topic_participants (topic_id, user_id) VALUES (?, ?)
+            ON CONFLICT (topic_id, user_id) DO NOTHING
+        ")->execute([$topicId, $userId]);
+    }
+
+    public static function isParticipant(string $topicId, string $userId): bool
+    {
+        $stmt = Database::pdo()->prepare("SELECT 1 FROM topic_participants WHERE topic_id = ? AND user_id = ? LIMIT 1");
+        $stmt->execute([$topicId, $userId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /** Registered user_ids of a hangout's participants (for push fan-out). */
+    public static function participantUserIds(string $topicId): array
+    {
+        $stmt = Database::pdo()->prepare("SELECT user_id FROM topic_participants WHERE topic_id = ?");
+        $stmt->execute([$topicId]);
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /** Up to $limit participant avatar previews (most-recent-joined first). */
+    public static function participantPreview(string $topicId, int $limit = 5): array
+    {
+        $limit = max(1, min(20, $limit));
+        $stmt  = Database::pdo()->prepare("
+            SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
+            FROM topic_participants tp
+            JOIN users u ON u.id = tp.user_id AND u.deleted_at IS NULL
+            WHERE tp.topic_id = ?
+            ORDER BY tp.joined_at DESC
+            LIMIT " . $limit);
+        $stmt->execute([$topicId]);
+        return array_map(static fn(array $r): array => [
+            'id'             => $r['id'],
+            'displayName'    => $r['display_name'] ?? 'Member',
+            'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,
+        ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
+    }
+
+    public static function participantCount(string $topicId): int
+    {
+        $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM topic_participants WHERE topic_id = ?");
+        $stmt->execute([$topicId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    // ── Hangout join requests ─────────────────────────────────────────────────
+
+    public const REQUEST_COOLDOWN = 300; // 5 min before a rejected user may re-request
+
+    /**
+     * Create a pending join request. Returns ['id'=>…] on success, or
+     * ['error'=>'duplicate'|'cooldown'|'already_participant'] on a no-op.
+     * The partial unique index enforces one PENDING request per (topic,user).
+     */
+    public static function createJoinRequest(string $topicId, string $userId, string $requesterName): array
+    {
+        $pdo = Database::pdo();
+
+        if (self::isParticipant($topicId, $userId)) {
+            return ['error' => 'already_participant'];
+        }
+
+        // Re-request cooldown after a recent rejection (anti-spam).
+        $cd = $pdo->prepare("
+            SELECT 1 FROM topic_join_requests
+            WHERE topic_id = ? AND requester_id = ? AND status = 'rejected'
+              AND resolved_at > now() - (? || ' seconds')::interval
+            LIMIT 1
+        ");
+        $cd->execute([$topicId, $userId, self::REQUEST_COOLDOWN]);
+        if ($cd->fetchColumn()) return ['error' => 'cooldown'];
+
+        $id   = bin2hex(random_bytes(8));
+        $stmt = $pdo->prepare("
+            INSERT INTO topic_join_requests (id, topic_id, requester_id, requester_name)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT (topic_id, requester_id) WHERE status = 'pending' DO NOTHING
+        ");
+        $stmt->execute([$id, $topicId, $userId, $requesterName]);
+        if ($stmt->rowCount() === 0) return ['error' => 'duplicate'];
+
+        return ['id' => $id, 'requester_id' => $userId, 'requester_name' => $requesterName, 'status' => 'pending'];
+    }
+
+    /**
+     * Resolve a pending request. First-write-wins: the UPDATE only matches a
+     * PENDING row, so a second concurrent caller gets null (already resolved).
+     * On accept the requester is added as a participant. $action ∈ {accept,reject}.
+     */
+    public static function resolveJoinRequest(string $requestId, string $topicId, string $action, string $resolverId, string $resolverName): ?array
+    {
+        $status = $action === 'accept' ? 'accepted' : 'rejected';
+        $pdo    = Database::pdo();
+        $stmt   = $pdo->prepare("
+            UPDATE topic_join_requests
+            SET status = ?, resolved_by = ?, resolved_by_name = ?, resolved_at = now()
+            WHERE id = ? AND topic_id = ? AND status = 'pending'
+            RETURNING requester_id, requester_name
+        ");
+        $stmt->execute([$status, $resolverId, $resolverName, $requestId, $topicId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$row) return null; // already resolved or not found → first-write-wins
+
+        if ($status === 'accepted') {
+            self::addParticipant($topicId, $row['requester_id']);
+        }
+        return [
+            'request_id'       => $requestId,
+            'requester_id'     => $row['requester_id'],
+            'requester_name'   => $row['requester_name'],
+            'status'           => $status,
+            'resolved_by'      => $resolverId,
+            'resolved_by_name' => $resolverName,
         ];
     }
 

@@ -28,7 +28,7 @@ export async function fetchCityBySlug(slug) {
 export async function fetchEventById(eventId) {
   const res = await fetch(`${BASE}/events/${encodeURIComponent(eventId)}`)
   if (res.status === 404) return null
-  if (!res.ok) throw new Error('Failed to fetch hangout')
+  if (!res.ok) throw new Error('Failed to fetch event')
   return res.json() // { event, cityName, country, timezone }
 }
 
@@ -259,7 +259,7 @@ export async function fetchEvents(channelId, sessionId = null) {
     ? `${BASE}/channels/${channelId}/events?sessionId=${sessionId}`
     : `${BASE}/channels/${channelId}/events`
   const res = await fetch(url, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch hangouts')
+  if (!res.ok) throw new Error('Failed to fetch events')
   return res.json()
 }
 
@@ -285,7 +285,7 @@ export async function fetchCityMembers(channelId, { page = 1, limit = 10, badge 
 
 export async function fetchCityEvents(channelId) {
   const res = await fetch(`${BASE}/channels/${channelId}/city-events`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch city hangouts')
+  if (!res.ok) throw new Error('Failed to fetch city events')
   return res.json()
 }
 
@@ -400,7 +400,7 @@ export async function fetchUpcomingEvents(channelId, opts = {}) {
     params.set('days', String(opts.days ?? 7))
   }
   const res = await fetch(`${BASE}/channels/${channelId}/events/upcoming?${params}`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch upcoming hangouts')
+  if (!res.ok) throw new Error('Failed to fetch upcoming events')
   return res.json() // { events: [...] }
 }
 
@@ -464,7 +464,7 @@ export async function createEvent(channelId, guestId, nickname, title, locationH
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
     if (data.error === 'event_limit_reached') throw new EventLimitReachedError()
-    throw new Error(data.error || 'Failed to create hangout')
+    throw new Error(data.error || 'Failed to create event')
   }
   return res.json()
 }
@@ -479,7 +479,7 @@ export async function createEventSeries(channelId, guestId, payload) {
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
     if (data.error === 'event_limit_reached') throw new EventLimitReachedError()
-    throw new Error(data.error || 'Failed to create hangout series')
+    throw new Error(data.error || 'Failed to create event series')
   }
   return res.json() // { series_id, first_event }
 }
@@ -488,7 +488,7 @@ export async function fetchEventMessages(eventId, { beforeId, limit } = {}) {
   const params = new URLSearchParams({ limit: String(limit ?? 50) })
   if (beforeId) params.set('before_id', beforeId)
   const res = await fetch(`${BASE}/events/${eventId}/messages?${params}`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch hangout messages')
+  if (!res.ok) throw new Error('Failed to fetch event messages')
   return res.json() // { messages, hasMore }
 }
 
@@ -658,7 +658,7 @@ export async function fetchPublicProfile(userId) {
 
 export async function fetchUserEvents(userId) {
   const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/events`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch user hangouts')
+  if (!res.ok) throw new Error('Failed to fetch user events')
   return res.json() // { events }
 }
 
@@ -746,7 +746,7 @@ export async function fetchIncomingFriendRequestCount() {
 
 export async function fetchMyEvents(guestId) {
   const res = await fetch(`${BASE}/users/me/events?guestId=${encodeURIComponent(guestId)}`, { credentials: 'include' })
-  if (!res.ok) throw new Error('Failed to fetch my hangouts')
+  if (!res.ok) throw new Error('Failed to fetch my events')
   return res.json() // { events }
 }
 
@@ -776,7 +776,7 @@ export async function updateEvent(eventId, guestId, fields) {
     body: JSON.stringify({ guestId, ...fields }),
   })
   const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Failed to update hangout')
+  if (!res.ok) throw new Error(data.error || 'Failed to update event')
   return data // updated event
 }
 
@@ -789,7 +789,7 @@ export async function deleteEvent(eventId, guestId) {
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to delete hangout')
+    throw new Error(data.error || 'Failed to delete event')
   }
   return res.json()
 }

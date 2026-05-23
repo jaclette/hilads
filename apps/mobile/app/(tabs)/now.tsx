@@ -28,7 +28,7 @@ function EmptyState({ city }: { city?: string }) {
       <Text style={styles.emptyTitle}>Nothing happening yet</Text>
       <Text style={styles.emptySub}>
         {city ? `Be the first in ${city}` : 'Start something now'}
-        {'\n'}Create a hangout or start a pulse.
+        {'\n'}Create an event or start a hangout.
       </Text>
     </View>
   );
@@ -49,7 +49,7 @@ function FilterEmptyState({
         <Text style={styles.emptyEmoji}>🌍</Text>
         <Text style={styles.emptyTitle}>Host your spot</Text>
         <Text style={styles.emptySub}>
-          {city ? `Make ${city} feel alive.` : 'Make your city feel alive.'}{'\n'}Start a recurring hangout at your favorite place.
+          {city ? `Make ${city} feel alive.` : 'Make your city feel alive.'}{'\n'}Start a recurring event at your favorite place.
         </Text>
       </View>
     );
@@ -58,12 +58,12 @@ function FilterEmptyState({
     <View style={styles.empty}>
       <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '🗣️'}</Text>
       <Text style={styles.emptyTitle}>
-        {filter === 'events' ? 'No hangouts right now' : 'No pulses yet'}
+        {filter === 'events' ? 'No events right now' : 'No hangouts yet'}
       </Text>
       <Text style={styles.emptySub}>
         {filter === 'events'
           ? `Be the first to create one${city ? ` in ${city}` : ''}`
-          : 'Start a pulse and get the city talking'}
+          : 'Start a hangout and get the city talking'}
       </Text>
 
       {/* Pulse-filter-only CTA — mirrors web's centered blue "Start a pulse ⚡"
@@ -74,7 +74,7 @@ function FilterEmptyState({
           onPress={onStartPulse}
           activeOpacity={0.8}
         >
-          <Text style={styles.emptyPulseBtnText}>Start a pulse ⚡</Text>
+          <Text style={styles.emptyPulseBtnText}>Start a hangout ⚡</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -406,7 +406,7 @@ export default function NowScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all' ? 'All' : f === 'events' ? '🔥 Hangouts' : '🗣️ Pulses'}
+              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
             </Text>
           </TouchableOpacity>
         ))}

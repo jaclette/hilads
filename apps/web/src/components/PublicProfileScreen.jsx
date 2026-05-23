@@ -293,7 +293,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const hasPicks = !!(user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0)
 
   const tabs = [
-    { key: 'events',  label: 'Hangouts'     },
+    { key: 'events',  label: 'Events'       },
     { key: 'friends', label: 'Friends'      },
     { key: 'vibes',   label: 'Vibes'        },
     ...(hasPicks ? [{ key: 'picks', label: 'City Picks 👑' }] : []),
@@ -420,7 +420,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             {activeTab === 'events' && (
               <div className="pub-profile-events">
                 {events.length === 0
-                  ? <p className="pub-profile-tab-empty">No hangouts yet</p>
+                  ? <p className="pub-profile-tab-empty">No events yet</p>
                   : events.map(ev => {
                       const isLive = ev.starts_at <= now && ev.expires_at > now
                       return (

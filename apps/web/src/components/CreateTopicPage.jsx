@@ -38,7 +38,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onBack })
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">Start a pulse</span>
+        <span className="page-title">Start a hangout</span>
       </div>
 
       <div className="page-body">
@@ -102,7 +102,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onBack })
             className="cef-submit"
             disabled={submitting || !title.trim()}
           >
-            {submitting ? 'Starting…' : 'Start a pulse ⚡'}
+            {submitting ? 'Starting…' : 'Start a hangout ⚡'}
           </button>
 
         </form>

@@ -40,7 +40,7 @@ const HOW_IT_WORKS = [
     icon: '✨',
     num: '03',
     title: 'Jump in',
-    desc: 'Join a hangout or open your own spot. Real life starts here.',
+    desc: 'Join an event or open your own spot. Real life starts here.',
   },
 ]
 
@@ -73,7 +73,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
               )}
               {previewTopicCount > 0 && (
                 <span className="ob-activity-line">
-                  🗣️ {previewTopicCount} pulse{previewTopicCount === 1 ? '' : 's'} active
+                  🗣️ {previewTopicCount} hangout{previewTopicCount === 1 ? '' : 's'} active
                 </span>
               )}
             </div>
@@ -436,7 +436,7 @@ export default function LandingPage({
             <h2 className="lp-split-title">Make things happen</h2>
             <p className="lp-split-tagline">You know the best spots. Now share them.</p>
             <ul className="lp-split-bullets">
-              <li>Host recurring hangouts at your favorite local spots</li>
+              <li>Host recurring events at your favorite local spots</li>
               <li>Bring people to places you love</li>
               <li>Become the reason people show up</li>
             </ul>
@@ -504,7 +504,7 @@ export default function LandingPage({
           </div>
           <div className="lp-stat">
             <span className="lp-stat-value">500+</span>
-            <span className="lp-stat-label">hangouts created</span>
+            <span className="lp-stat-label">events created</span>
           </div>
           <div className="lp-stat">
             <span className="lp-stat-value">0</span>

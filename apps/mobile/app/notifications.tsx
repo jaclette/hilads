@@ -207,7 +207,7 @@ export default function NotificationsScreen() {
           <View style={styles.emptyWrap}>
             <Text style={styles.emptyIcon}>🔔</Text>
             <Text style={styles.emptyTitle}>No notifications yet</Text>
-            <Text style={styles.emptySub}>You'll see messages and hangout updates here.</Text>
+            <Text style={styles.emptySub}>You'll see messages and event updates here.</Text>
           </View>
         ) : (
           <View style={styles.notifList}>
@@ -239,11 +239,11 @@ export default function NotificationsScreen() {
           <View style={styles.prefCard}>
             {/* DM, event-chat, and city-chat toggles live on the Messages screen
                 now — they govern the envelope icon's behaviour, not the bell. */}
-            <PrefRow label="Mentions @" subtitle="When someone @mentions you in a message or pulse" value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
+            <PrefRow label="Mentions @" subtitle="When someone @mentions you in a message or hangout" value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Someone joined your hangout" subtitle="When a new person joins a hangout you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
+            <PrefRow label="Someone joined your event" subtitle="When a new person joins an event you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="New hangouts in your city" subtitle="When someone creates a hangout in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
+            <PrefRow label="New events in your city" subtitle="When someone creates an event in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="Someone arrived in your city" subtitle="When a registered user joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />
@@ -253,9 +253,9 @@ export default function NotificationsScreen() {
             <View style={styles.prefDivider} />
             <PrefRow label="Profile views 👀" subtitle="When someone checks your profile" value={prefs.profile_view_push} onChange={v => togglePref('profile_view_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Pulse replies 💬" subtitle="When someone replies in a pulse you joined" value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
+            <PrefRow label="Hangout replies 💬" subtitle="When someone replies in a hangout you joined" value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="New pulses in your city" subtitle="When someone starts a new pulse in your city" value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
+            <PrefRow label="New hangouts in your city" subtitle="When someone starts a new hangout in your city" value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="Announcements from Hilads" subtitle="Occasional updates from the team" value={prefs.admin_announcement_push} onChange={v => togglePref('admin_announcement_push', v)} />
           </View>

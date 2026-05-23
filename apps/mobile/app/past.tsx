@@ -269,7 +269,7 @@ export default function PastArchiveScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, type === f && styles.filterPillTextActive]}>
-              {f === 'both' ? 'All' : f === 'hangouts' ? '🔥 Hangouts' : '🗣️ Pulses'}
+              {f === 'both' ? 'All' : f === 'hangouts' ? '🔥 Events' : '🗣️ Hangouts'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -321,8 +321,8 @@ export default function PastArchiveScreen() {
           <Text style={styles.emptyTitle}>Nothing here yet</Text>
           <Text style={styles.emptySub}>
             {range.key === 'recent'
-              ? 'Past hangouts and pulses will show up here once the city has some history.'
-              : 'No hangouts or pulses in this window. Try a wider range.'}
+              ? 'Past events and hangouts will show up here once the city has some history.'
+              : 'No events or hangouts in this window. Try a wider range.'}
           </Text>
         </View>
       ) : (

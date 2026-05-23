@@ -170,7 +170,7 @@ export default function TopicChatScreen() {
         ) : null
       ) : (
         <View style={styles.infoBlockLoading}>
-          <Text style={styles.errorText}>Pulse not found or expired</Text>
+          <Text style={styles.errorText}>Hangout not found or expired</Text>
         </View>
       )}
 

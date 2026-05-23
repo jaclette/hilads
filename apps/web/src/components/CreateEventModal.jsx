@@ -267,7 +267,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   async function handleOpenLocation() {
     if (locationCoords) { setPickerCenter(locationCoords); return }
     if (!navigator.geolocation) {
-      setError('Location is not available in this browser. You can still create the hangout without it.')
+      setError('Location is not available in this browser. You can still create the event without it.')
       return
     }
     setLocating(true)
@@ -415,7 +415,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     } catch (err) {
       setDeleting(false)
       setShowConfirm(false)
-      setError(err.message || 'Could not delete hangout. Try again.')
+      setError(err.message || 'Could not delete event. Try again.')
     }
   }
 
@@ -423,7 +423,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{isEdit ? 'Edit hangout' : isLocal ? 'Host a hangout' : 'Create hangout'}</span>
+        <span className="page-title">{isEdit ? 'Edit event' : isLocal ? 'Host an event' : 'Create event'}</span>
       </div>
 
       {showConfirm && (
@@ -660,8 +660,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               : isEdit
                 ? 'Save changes'
                 : isLocal
-                  ? (recurrence !== 'once' ? 'Open your spot' : 'Start a hangout')
-                  : 'Create hangout'
+                  ? (recurrence !== 'once' ? 'Open your spot' : 'Start an event')
+                  : 'Create event'
             }
           </button>
 
@@ -672,7 +672,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               onClick={() => setShowConfirm(true)}
               disabled={submitting}
             >
-              🗑 Delete hangout
+              🗑 Delete event
             </button>
           )}
 
