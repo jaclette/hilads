@@ -968,6 +968,12 @@ const styles = StyleSheet.create({
     gap:            6,
   },
   cityHeroName: {
+    // flexShrink:1 is required: as a <Text> child of the row, iOS otherwise
+    // measures it with a too-narrow width and wraps/clips the name per word
+    // ("New York"→"New", "Bangkok"→empty). Letting it shrink gives it the real
+    // available width so the full name renders (wrapping to 2 lines only when
+    // genuinely long). Android tolerated the missing flexShrink; iOS did not.
+    flexShrink:    1,
     fontSize:      24,
     fontWeight:    '500',
     color:         Colors.text,
