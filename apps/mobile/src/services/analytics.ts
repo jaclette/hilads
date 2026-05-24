@@ -31,6 +31,7 @@ export type AnalyticsEvent =
   | 'dm_sent'
   | 'dm_image_sent'
   | 'notification_opened'
+  | 'notification_action'
   | 'notification_clicked'
   | 'notifications_opened'
   | 'auth_gate_viewed'

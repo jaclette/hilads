@@ -18,6 +18,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
+import { formatExpiresIn } from '@/lib/expiry';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Message, Topic } from '@/types';
 
@@ -237,7 +238,7 @@ export default function TopicChatScreen() {
             {topic.description ? (
               <Text style={styles.infoDesc}>{topic.description}</Text>
             ) : null}
-            <Text style={styles.infoExpiry}>⏱ Active for 24 h</Text>
+            <Text style={styles.infoExpiry}>⏱ {formatExpiresIn(topic.expires_at) ?? 'Active for 24 h'}</Text>
             {isOwner && (
               <View style={styles.ownerRow}>
                 <TouchableOpacity style={styles.ownerBtn} onPress={handleEdit} activeOpacity={0.8}>

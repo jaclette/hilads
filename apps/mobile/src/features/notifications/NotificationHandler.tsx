@@ -14,7 +14,9 @@ import { useEffect, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { setupNotificationChannel } from '@/services/push';
+import { setupNotificationChannel, setupNotificationCategories } from '@/services/push';
+import { acceptFriendRequest, declineFriendRequest } from '@/api/friendRequests';
+import { resolveHangoutJoinRequest } from '@/api/topics';
 import { track } from '@/services/analytics';
 
 // ── Cold-start notification — resolved at module load ─────────────────────────
@@ -98,6 +100,20 @@ Notifications.setNotificationHandler({
 });
 
 // ── Route resolver ────────────────────────────────────────────────────────────
+
+// Handle an Accept/Decline action button tapped on a push notification — calls
+// the API directly so the user never has to open the app. Best-effort.
+function handleNotificationAction(data: NotifData, action: 'accept' | 'decline'): void {
+  console.log('[push-action]', action, '| type:', data.type ?? '(none)');
+  track('notification_action', { type: data.type ?? 'unknown', action });
+  if (data.type === 'friend_request_received' && data.requestId) {
+    const p = action === 'accept' ? acceptFriendRequest(data.requestId) : declineFriendRequest(data.requestId);
+    p.catch(err => console.warn('[push-action] friend request failed:', String(err)));
+  } else if (data.type === 'join_request' && data.topicId && data.requestId) {
+    resolveHangoutJoinRequest(data.topicId, data.requestId, action === 'accept' ? 'accept' : 'reject')
+      .catch(err => console.warn('[push-action] join request failed:', String(err)));
+  }
+}
 
 function resolveRoute(data: NotifData): string | null {
   switch (data.type) {
@@ -188,6 +204,7 @@ export function NotificationHandler() {
   //  this covers new-user / geo-flow paths where boot doesn't redirect)
   useEffect(() => {
     setupNotificationChannel();
+    setupNotificationCategories();
 
     _coldStartPromise.then(response => {
       if (!response) return;
@@ -219,6 +236,14 @@ export function NotificationHandler() {
     // background→foreground taps correctly see booting=false and navigate directly.
     const sub = Notifications.addNotificationResponseReceivedListener(response => {
       const data  = response.notification.request.content.data as NotifData;
+
+      // Accept / Decline action button tapped → act directly, no navigation.
+      const actionId = response.actionIdentifier;
+      if (actionId === 'accept' || actionId === 'decline') {
+        handleNotificationAction(data, actionId);
+        return;
+      }
+
       console.log('[push-nav] notification tapped | type:', data.type ?? '(none)',
         '| conversationId:', data.conversationId ?? '-',
         '| eventId:', data.eventId ?? '-');

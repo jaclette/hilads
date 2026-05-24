@@ -1,38 +1,79 @@
-// Hilads service worker — web push + notification click handling
+// Hilads service worker — web push + notification click/action handling
 // Scope: root (/) — handles all push notifications for the app
+
+// Production API base. Web push only runs over HTTPS in production, where the
+// app lives at hilads.live and the API at api.hilads.live.
+const API_BASE = 'https://api.hilads.live/api/v1'
 
 self.addEventListener('push', (e) => {
   const d = e.data?.json() ?? {}
 
-  e.waitUntil(
-    self.registration.showNotification(d.title || 'Hilads', {
-      body:    d.body  || '',
-      icon:    '/logo/hilads-icon-128.png',
-      badge:   '/logo/hilads-icon-32.png',
-      tag:     d.tag   || 'hilads',
-      renotify: false,    // replace instead of stacking same-tag notifications
-      data:   { url: d.url || '/' },
-    })
-  )
+  const options = {
+    body:     d.body  || '',
+    icon:     '/logo/hilads-icon-128.png',
+    badge:    '/logo/hilads-icon-32.png',
+    tag:      d.tag   || 'hilads',
+    renotify: false,    // replace instead of stacking same-tag notifications
+    // Carry the IDs the action handler needs to call the API on Accept/Decline.
+    data: { url: d.url || '/', type: d.type, requestId: d.requestId, topicId: d.topicId },
+  }
+  // Accept/Decline buttons for actionable requests (browser support permitting).
+  if (Array.isArray(d.actions) && d.actions.length) options.actions = d.actions
+
+  e.waitUntil(self.registration.showNotification(d.title || 'Hilads', options))
 })
 
 self.addEventListener('notificationclick', (e) => {
   e.notification.close()
 
-  const targetUrl = e.notification.data?.url || '/'
-  const origin    = self.location.origin
+  const data   = e.notification.data || {}
+  const action = e.action
 
+  // Accept / Decline directly from the notification — no need to open the app.
+  if (action === 'accept' || action === 'decline') {
+    e.waitUntil(handleAction(data, action))
+    return
+  }
+
+  // Plain tap → focus the open tab (or open one) at the target URL.
+  const targetUrl = data.url || '/'
+  const origin    = self.location.origin
   e.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((cs) => {
-      // If the app is already open in a tab, focus it and send a navigate message
       const existing = cs.find((c) => c.url.startsWith(origin))
       if (existing) {
         existing.focus()
         existing.postMessage({ type: 'navigate', url: targetUrl })
         return
       }
-      // App not open — open the target URL directly
       return clients.openWindow(targetUrl)
     })
   )
 })
+
+// Call the accept/decline endpoint for a friend or hangout request. Cookie auth
+// is sent via credentials:'include' (same as the app's API calls). Best-effort:
+// failures are swallowed; any open tab is told to refresh its request lists.
+async function handleAction(data, action) {
+  try {
+    if (data.type === 'friend_request_received' && data.requestId) {
+      const path = action === 'accept' ? 'accept' : 'decline'
+      await fetch(`${API_BASE}/friend-requests/${data.requestId}/${path}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
+      })
+    } else if (data.type === 'join_request' && data.topicId && data.requestId) {
+      await fetch(`${API_BASE}/topics/${data.topicId}/join-requests/${data.requestId}/resolve`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: action === 'accept' ? 'accept' : 'reject' }),
+      })
+    }
+  } catch (_) { /* best-effort */ }
+
+  const cs = await clients.matchAll({ type: 'window', includeUncontrolled: true })
+  cs.forEach((c) => c.postMessage({ type: 'notification-action', action, data }))
+}

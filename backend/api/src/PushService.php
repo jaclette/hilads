@@ -106,11 +106,25 @@ class PushService
                 5 // 5-second timeout per push request
             );
 
+            // Interactive Accept/Decline buttons for actionable requests. The SW
+            // reads `type` + `requestId`/`topicId` to call the API on action click.
+            $actions = match ($type) {
+                'friend_request_received', 'join_request' => [
+                    ['action' => 'accept',  'title' => 'Accept'],
+                    ['action' => 'decline', 'title' => 'Decline'],
+                ],
+                default => [],
+            };
+
             $payload = json_encode([
-                'title' => $title,
-                'body'  => $body ?? '',
-                'url'   => $url,
-                'tag'   => $tag,
+                'title'     => $title,
+                'body'      => $body ?? '',
+                'url'       => $url,
+                'tag'       => $tag,
+                'type'      => $type,
+                'actions'   => $actions,
+                'requestId' => $data['requestId'] ?? null,
+                'topicId'   => $data['topicId']   ?? null,
             ]);
 
             // Index subscriptions by endpoint for cleanup

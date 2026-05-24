@@ -6,6 +6,7 @@ import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
 import useMentions from '../hooks/useMentions'
 import { splitContentByMentions } from '../lib/mentions'
+import { formatExpiresIn } from '../expiry'
 
 const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 const MODE_META  = { local: { emoji: '🌍', label: 'Local' }, exploring: { emoji: '🧭', label: 'Exploring' } }
@@ -424,6 +425,11 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       {/* Description band */}
       {topic.description && (
         <div className="topic-chat-desc">{topic.description}</div>
+      )}
+
+      {/* Expiry — hangouts auto-expire 24h after creation. */}
+      {formatExpiresIn(topic.expires_at) && (
+        <div className="topic-chat-expiry">⏱ {formatExpiresIn(topic.expires_at)}</div>
       )}
 
       {/* Owner controls — edit / delete this hangout. */}

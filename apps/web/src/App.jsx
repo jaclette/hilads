@@ -7,6 +7,7 @@ import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug } from './eventUtils'
 import { haversineMeters, formatDistance } from './distance'
+import { formatExpiresIn } from './expiry'
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
@@ -4118,6 +4119,9 @@ export default function App() {
                     </div>
                     <div className="er-badges">
                       {activeNow && <span className="now-active-badge">● Active now</span>}
+                      {formatExpiresIn(topic.expires_at) && (
+                        <span className="city-row-current">⏱ {formatExpiresIn(topic.expires_at)}</span>
+                      )}
                       {replies > 0
                         ? <span className="city-row-current">💬 {replies} {replies === 1 ? 'reply' : 'replies'}{timeAgo ? ` · ${timeAgo}` : ''}</span>
                         : <span className="city-row-current">No replies yet — be first</span>

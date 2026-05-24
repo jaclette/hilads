@@ -152,15 +152,25 @@ class MobilePushService
                 return;
             }
 
+            // Interactive notification category (Accept/Decline action buttons).
+            // The matching category is registered client-side in push.ts. Only
+            // actionable types carry one; everything else opens on tap.
+            $category = match ($type) {
+                'friend_request_received' => 'friend_request',
+                'join_request'            => 'join_request',
+                default                   => null,
+            };
+
             // 4. Build Expo push payload (one message per device)
-            $payload = array_map(fn($token) => [
-                'to'        => $token,
-                'title'     => $title,
-                'body'      => $body ?? '',
-                'data'      => array_merge($data, ['type' => $type]),
-                'sound'     => 'default',
-                'channelId' => 'default', // Android channel defined in push.ts
-            ], $tokens);
+            $payload = array_map(fn($token) => array_filter([
+                'to'         => $token,
+                'title'      => $title,
+                'body'       => $body ?? '',
+                'data'       => array_merge($data, ['type' => $type]),
+                'sound'      => 'default',
+                'channelId'  => 'default', // Android channel defined in push.ts
+                'categoryId' => $category, // null → dropped by array_filter
+            ], fn($v) => $v !== null), $tokens);
 
             error_log("[push-send] sending $type to user=$userId (" . count($tokens) . " device(s)) payload=" . json_encode($payload));
 

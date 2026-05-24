@@ -6967,6 +6967,9 @@ img.pub-profile-avatar {
 /* Tappable attendee-avatar row (opens the members list). */
 .attendee-avatars--tappable { cursor: pointer; }
 
+/* Hangout expiry countdown in the chat. */
+.topic-chat-expiry { padding: 0 16px 6px; font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+
 .modal-textarea {
   resize: none;
   line-height: 1.45;

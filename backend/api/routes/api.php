@@ -5706,8 +5706,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
     // One active hangout per user: you must have zero running hangouts to start
     // a new one (they auto-expire in 24h). Returns the existing one so the client
     // can route there. Guests can't create hangouts (gated client-side) so this
-    // only applies to registered users.
-    if ($userId !== null) {
+    // only applies to registered users. Legends (city ambassadors, "👑 Legend")
+    // are exempt — they can run multiple hangouts at once.
+    $isLegend = (bool) ($currentUser['_is_ambassador'] ?? false);
+    if ($userId !== null && !$isLegend) {
         $existing = TopicRepository::findActiveByUser($userId);
         if ($existing !== null) {
             Response::json([

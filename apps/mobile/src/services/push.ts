@@ -56,6 +56,24 @@ export async function setupNotificationChannel(): Promise<void> {
   console.log('[push-mobile] Android channel "default" configured');
 }
 
+// ── Interactive notification categories (Accept / Decline action buttons) ──────
+// Registered once at startup. The backend sends `categoryId` on friend-request
+// and hangout-join-request pushes; the action response is handled in
+// NotificationHandler.tsx (acts directly without opening the app).
+export async function setupNotificationCategories(): Promise<void> {
+  try {
+    const actions = [
+      { identifier: 'accept',  buttonTitle: 'Accept',  options: { opensAppToForeground: false } },
+      { identifier: 'decline', buttonTitle: 'Decline', options: { opensAppToForeground: false, isDestructive: true } },
+    ];
+    await Notifications.setNotificationCategoryAsync('friend_request', actions);
+    await Notifications.setNotificationCategoryAsync('join_request', actions);
+    console.log('[push-mobile] notification categories registered');
+  } catch (e) {
+    console.warn('[push-mobile] setNotificationCategoryAsync failed:', String(e));
+  }
+}
+
 // ── Permission helpers ────────────────────────────────────────────────────────
 
 export async function hasPushPermission(): Promise<boolean> {

@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { FeedItem } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
+import { formatExpiresIn } from '@/lib/expiry';
 
 // ── Shared pulse (topic) card ───────────────────────────────────────────────
 // Used by the Now feed and the Past archive so a pulse looks identical in both
@@ -36,6 +37,7 @@ export function TopicCard({
   const replies   = topic.message_count ?? 0;
   const lastAct   = topic.last_activity_at;
   const activeNow = !pastMode && topic.active_now === true;
+  const expiresIn = pastMode ? null : formatExpiresIn(topic.expires_at);
 
   return (
     <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
@@ -44,6 +46,11 @@ export function TopicCard({
         {activeNow && (
           <View style={styles.activeNowBadge}>
             <Text style={styles.activeNowText}>● Active now</Text>
+          </View>
+        )}
+        {expiresIn && (
+          <View style={styles.expiryBadge}>
+            <Text style={styles.expiryText}>⏱ {expiresIn}</Text>
           </View>
         )}
       </View>
@@ -112,4 +119,15 @@ const styles = StyleSheet.create({
     marginLeft:        6,
   },
   activeNowText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
+
+  expiryBadge: {
+    backgroundColor:   'rgba(255,255,255,0.06)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.10)',
+    marginLeft:        6,
+  },
+  expiryText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
 });
