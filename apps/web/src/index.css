@@ -6740,7 +6740,9 @@ img.pub-profile-avatar {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.65);
-  z-index: 100;
+  /* Above full-page screens (200) and the mobile tab bar (300) so a modal
+     opened from a screen (e.g. the members list from a NOW card) is visible. */
+  z-index: 400;
   display: flex;
   align-items: flex-end;
   justify-content: center;
