@@ -19,7 +19,6 @@ import {
   TextInput, ScrollView, Keyboard,
 } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
-import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
@@ -138,17 +137,17 @@ interface Props {
   initialLat: number;
   initialLng: number;
   /**
-   * Refine to precise GPS on open and pan there. Default true (drop-my-spot:
-   * we want the user's live position). Pass false when reopening on an
-   * already-chosen spot (e.g. editing a hangout's location) so the map stays
-   * centered on that spot instead of snapping to current GPS.
+   * Deprecated / no-op. The picker no longer refines to live GPS on open — it
+   * always opens at initialLat/Lng (the caller's last-known position) and stays
+   * put while the user drags to fine-tune. Kept in the prop list so existing
+   * call sites compile unchanged; the value is ignored.
    */
   autoLocate?: boolean;
   onConfirm:  (result: { place: string; address: string; lat: number; lng: number }) => void;
   onClose:    () => void;
 }
 
-export function LocationPicker({ visible, initialLat, initialLng, autoLocate = true, onConfirm, onClose }: Props) {
+export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onClose }: Props) {
   const insets = useSafeAreaInsets();
 
   const [place,     setPlace]     = useState('');
@@ -166,33 +165,13 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
   // parent re-render — only when the html itself changes.
   const html = useMemo(() => buildMapHtml(initialLat, initialLng), [initialLat, initialLng]);
 
-  // After picker opens: refine to accurate GPS without blocking the UI.
-  // The caller already provided last-known position as initialLat/Lng so the map
-  // renders immediately. Here we silently upgrade to precise GPS and pan the map.
-  const didLocate = useRef(false);
-  useEffect(() => {
-    if (!visible || !autoLocate || didLocate.current) return;
-    didLocate.current = true; // one-shot: never re-fetch GPS for this picker session
-    let cancelled = false;
-    (async () => {
-      try {
-        const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-        if (cancelled) return;
-        const { latitude: lat, longitude: lng } = pos.coords;
-        // Only pan if the accurate fix differs meaningfully from the initial center
-        const d = Math.abs(lat - currentCoords.current.lat) + Math.abs(lng - currentCoords.current.lng);
-        if (d < 0.0001) return; // already close enough
-        currentCoords.current = { lat, lng };
-        const js = `map.setView([${lat},${lng}],16);true;`;
-        if (webViewReady.current) {
-          webViewRef.current?.injectJavaScript(js);
-        } else {
-          pendingPan.current = { lat, lng };
-        }
-      } catch { /* stay at last-known position */ }
-    })();
-    return () => { cancelled = true; };
-  }, [visible, autoLocate]);
+  // NOTE: we intentionally do NOT call getCurrentPositionAsync here. The caller
+  // already passes the last-known position as initialLat/Lng, so the map opens
+  // immediately and STAYS put — the user drags to fine-tune ("Move the map to
+  // adjust"). The old "refine to precise GPS" step activated the iOS location
+  // indicator and re-panned the map, which read as the map constantly
+  // "getting location" / shaking. A static map at last-known + drag is the
+  // standard, calm picker UX.
 
   const geocode = useCallback(async (lat: number, lng: number) => {
     setGeocoding(true);
@@ -264,7 +243,7 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
       const msg = JSON.parse(event.nativeEvent.data);
       if (msg.type === 'ready') {
         webViewReady.current = true;
-        // Apply any pending pan from accurate GPS that arrived before WebView was ready
+        // Apply any pending pan from an address search that ran before the WebView was ready
         if (pendingPan.current) {
           const { lat, lng } = pendingPan.current;
           pendingPan.current = null;
