@@ -51,7 +51,7 @@ class MobilePushService
             'event_join'      => 300,   // 5 min — avoid bursts when many people join
             'new_event'       => 3600,  // 1 hour — city events should not spam
             'channel_message' => 300,   // 5 min — one push per city channel per 5 min per recipient
-            'city_join'       => 600,   // 10 min — one "X arrived" per city per 10 min per recipient
+            'city_join'       => 10,    // 10s — near-real-time "X arrived" per city per recipient
             'topic_message'   => 120,   // 2 min — prevents burst spam on active topics
             default           => 0,
         };

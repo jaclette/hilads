@@ -388,14 +388,14 @@ class NotificationRepository
         foreach ($userIds as $uid) {
             if (!($enabled[$uid] ?? true)) continue;
 
-            // Rate limit: max 1 push per (recipient, city) per 10 minutes for the
-            // high-frequency city-wide types (new_event, city_join — both go through
-            // the current-city branch). Absorbs bursty event creators / frequent
-            // arrivals without a batch/digest path, and bounds web push too (mobile
-            // also has its own per-type cooldown).
+            // Rate limit per (recipient, city, type). city_join arrivals fire at
+            // near-real-time (1 per 10s) so "someone arrived" feels live; the
+            // heavier new_event stays at 10 min so event creators can't spam.
+            // MobilePushService applies the same per-type window to native push.
             if ($useCurrentCity) {
-                $rlKey = "notif:{$type}:{$uid}:{$cityChannelId}";
-                if (!RateLimiter::allow($rlKey, 1, 600)) continue;
+                $window = $type === 'city_join' ? 10 : 600;
+                $rlKey  = "notif:{$type}:{$uid}:{$cityChannelId}";
+                if (!RateLimiter::allow($rlKey, 1, $window)) continue;
             }
 
             self::createUnchecked($uid, $type, $title, $body, $data);
