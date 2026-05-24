@@ -1,5 +1,5 @@
 import { api, ApiError } from './client';
-import type { FeedItem, Topic, Message } from '@/types';
+import type { FeedItem, Topic, Message, UserDTO } from '@/types';
 
 // ── Now feed ──────────────────────────────────────────────────────────────────
 // GET /channels/{id}/now → { items: FeedItem[], publicEvents: FeedItem[] }
@@ -151,6 +151,32 @@ export async function sendTopicImageMessage(
 
 export async function markTopicRead(topicId: string, guestId: string): Promise<void> {
   await api.post(`/topics/${topicId}/mark-read`, { guestId }).catch(() => {});
+}
+
+/** Full member list for a hangout (avatar-row modal). */
+export async function fetchHangoutParticipants(topicId: string): Promise<{ participants: UserDTO[]; count: number }> {
+  try {
+    const data = await api.get<{ participants?: UserDTO[]; count?: number }>(`/topics/${topicId}/participants`);
+    return { participants: data.participants ?? [], count: data.count ?? (data.participants?.length ?? 0) };
+  } catch {
+    return { participants: [], count: 0 };
+  }
+}
+
+/** Owner-only edit of a hangout's title/description/category. */
+export async function updateTopic(
+  topicId: string,
+  guestId: string,
+  title: string,
+  description: string | null,
+  category: string,
+): Promise<Topic> {
+  return api.put<Topic>(`/topics/${topicId}`, { guestId, title, description, category });
+}
+
+/** Owner-only delete (soft) of a hangout. */
+export async function deleteTopic(topicId: string, guestId: string): Promise<void> {
+  await api.delete(`/topics/${topicId}`, { guestId });
 }
 
 export async function createTopic(

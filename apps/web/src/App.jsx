@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, setCurrentCity } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
@@ -865,6 +865,8 @@ export default function App() {
   const [showGoingModal,    setShowGoingModal]    = useState(false)
   const [goingList,         setGoingList]         = useState([])
   const [goingListLoading,  setGoingListLoading]  = useState(false)
+  const [membersNoun,       setMembersNoun]       = useState('going') // 'going' (events) | 'in this hangout'
+  const [editTopic,         setEditTopic]         = useState(null)    // hangout being edited (owner)
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
   const [topics,          setTopics]          = useState([])
@@ -2722,9 +2724,35 @@ export default function App() {
     }
   }
 
+  // Members list opened by tapping the avatar row on a NOW card (event or hangout).
+  async function openMembersList(item, kind) {
+    setShowGoingModal(true)
+    setGoingListLoading(true)
+    setGoingList([])
+    setMembersNoun(kind === 'topic' ? 'in this hangout' : 'going')
+    try {
+      const data = kind === 'topic'
+        ? await fetchHangoutParticipants(item.id)
+        : await fetchEventGoingList(item.id)
+      setGoingList(data.participants ?? [])
+    } catch { /* silent */ }
+    finally { setGoingListLoading(false) }
+  }
+
+  // Open a hangout by id (used when the create-limit panel links to the existing one).
+  async function goToHangoutById(topicId) {
+    setShowCreateTopic(false)
+    try {
+      const data = await fetchTopicById(topicId)
+      const topic = data.topic ?? data
+      if (topic) setActiveTopic(topic)
+    } catch { /* silent */ }
+  }
+
   async function handleOpenGoingModal() {
     if (!activeEvent) return
     setShowGoingModal(true)
+    setMembersNoun('going')
     setGoingListLoading(true)
     setGoingList([])
     try {
@@ -4104,6 +4132,7 @@ export default function App() {
                     <AttendeeAvatars
                       preview={topic.participants_preview ?? []}
                       total={topic.participant_count ?? 0}
+                      onClick={() => openMembersList(topic, 'topic')}
                     />
                   </button>
                 )
@@ -4148,6 +4177,7 @@ export default function App() {
                       <AttendeeAvatars
                         preview={event.participants_preview ?? []}
                         total={going || (event.participant_count ?? 0)}
+                        onClick={() => openMembersList(event, 'event')}
                       />
                     )}
                   </button>
@@ -4948,7 +4978,7 @@ export default function App() {
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <span className="modal-title">
-                👥 {goingList.length || (activeEvent && (eventParticipants[activeEvent.id] ?? 0))} going
+                👥 {goingList.length || (activeEvent && (eventParticipants[activeEvent.id] ?? 0))} {membersNoun}
               </span>
               <button className="going-modal-close" onClick={() => setShowGoingModal(false)}>✕</button>
             </div>
@@ -5039,13 +5069,16 @@ export default function App() {
       )}
 
       {/* Create topic — full-screen page */}
-      {showCreateTopic && (
+      {(showCreateTopic || editTopic) && (
         <CreateTopicPage
           channelId={channelId}
           guest={guest}
           userLocation={userLocation}
+          editTopic={editTopic}
           onCreated={handleTopicCreated}
-          onBack={() => setShowCreateTopic(false)}
+          onUpdated={(t) => { setEditTopic(null); if (t) setActiveTopic(t) }}
+          onGoToHangout={goToHangoutById}
+          onBack={() => { setShowCreateTopic(false); setEditTopic(null) }}
         />
       )}
 
@@ -5102,7 +5135,10 @@ export default function App() {
           topic={activeTopic}
           guest={guest}
           nickname={activeNickname}
+          account={account}
           onBack={() => setActiveTopic(null)}
+          onEdit={(t) => { setActiveTopic(null); setEditTopic(t) }}
+          onDeleted={() => setActiveTopic(null)}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
           onViewProfile={openProfile}

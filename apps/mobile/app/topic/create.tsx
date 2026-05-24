@@ -4,11 +4,12 @@ import {
   StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
-import { createTopic } from '@/api/topics';
+import { createTopic, updateTopic } from '@/api/topics';
+import { ApiError } from '@/api/client';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
@@ -25,18 +26,38 @@ const CATEGORIES: { value: TopicCategory; label: string; icon: string }[] = [
 export default function CreateTopicScreen() {
   const router   = useRouter();
   const { city, identity, account } = useApp();
+  // Edit mode when `editId` is passed (owner editing their hangout).
+  const params  = useLocalSearchParams<{ editId?: string; title?: string; description?: string; category?: string }>();
+  const editId  = typeof params.editId === 'string' ? params.editId : null;
 
-  const [category,    setCategory]    = useState<TopicCategory>('general');
-  const [title,       setTitle]       = useState('');
-  const [description, setDescription] = useState('');
+  const [category,    setCategory]    = useState<TopicCategory>(
+    (CATEGORIES.some(c => c.value === params.category) ? params.category : 'general') as TopicCategory);
+  const [title,       setTitle]       = useState(typeof params.title === 'string' ? params.title : '');
+  const [description, setDescription] = useState(typeof params.description === 'string' ? params.description : '');
   const [submitting,  setSubmitting]  = useState(false);
   const [error,       setError]       = useState<string | null>(null);
+  // Set when the server rejects a new hangout because the user already owns one.
+  const [limitTopic,  setLimitTopic]  = useState<{ id: string; title: string } | null>(null);
 
   async function handleSubmit() {
     const t = title.trim();
     if (!t || !city || !identity) return;
     setSubmitting(true);
     setError(null);
+
+    // Edit: PUT the existing hangout (no coords change), then go back.
+    if (editId) {
+      try {
+        await updateTopic(editId, identity.guestId, t, description.trim() || null, category);
+        router.back();
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to save changes');
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
     // Hangout's location = creator's location at creation. Reuse the OS-cached
     // fix (no prompt, no watcher); missing/denied → no coords, no distance shown.
     let coords: { lat: number; lng: number } | null = null;
@@ -51,7 +72,12 @@ export default function CreateTopicScreen() {
       await createTopic(city.channelId, identity.guestId, t, description.trim() || null, category, coords);
       router.back();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start hangout');
+      // One-hangout-per-user: surface the existing hangout instead of an error.
+      if (err instanceof ApiError && err.status === 409 && err.body?.error === 'hangout_limit') {
+        setLimitTopic({ id: err.body.existingTopicId, title: err.body.existingTitle ?? 'your hangout' });
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to start hangout');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -63,6 +89,30 @@ export default function CreateTopicScreen() {
     return null;
   }
 
+  // ── One-hangout-per-user — you already have an active hangout. ───────────────
+  if (limitTopic) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
+            <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          </TouchableOpacity>
+          <View style={styles.headerCenter}><Text style={styles.headerTitle}>One at a time</Text></View>
+        </View>
+        <View style={styles.limitWrap}>
+          <Text style={styles.limitEmoji}>⚡</Text>
+          <Text style={styles.limitTitle}>You already have a hangout</Text>
+          <Text style={styles.limitSub}>
+            You can run one hangout at a time. Head to “{limitTopic.title}”, or delete it to start a new one.
+          </Text>
+          <TouchableOpacity style={styles.submitBtn} activeOpacity={0.85} onPress={() => router.replace(`/topic/${limitTopic.id}`)}>
+            <Text style={styles.submitBtnText}>Go to my hangout →</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -71,7 +121,7 @@ export default function CreateTopicScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Start a hangout</Text>
+          <Text style={styles.headerTitle}>{editId ? 'Edit hangout' : 'Start a hangout'}</Text>
         </View>
       </View>
 
@@ -127,7 +177,7 @@ export default function CreateTopicScreen() {
         />
 
         {/* Expiry note */}
-        <Text style={styles.expiryNote}>⏱ Auto-expires in 24 h</Text>
+        {!editId ? <Text style={styles.expiryNote}>⏱ Auto-expires in 24 h</Text> : null}
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -140,7 +190,7 @@ export default function CreateTopicScreen() {
         >
           {submitting
             ? <ActivityIndicator color={Colors.white} size="small" />
-            : <Text style={styles.submitBtnText}>Start a hangout ⚡</Text>
+            : <Text style={styles.submitBtnText}>{editId ? 'Save changes' : 'Start a hangout ⚡'}</Text>
           }
         </TouchableOpacity>
 
@@ -151,6 +201,11 @@ export default function CreateTopicScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
+
+  limitWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.xl, gap: 10 },
+  limitEmoji: { fontSize: 44 },
+  limitTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, textAlign: 'center' },
+  limitSub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22, marginBottom: 8 },
 
   header: {
     flexDirection:     'row',

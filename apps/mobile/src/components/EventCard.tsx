@@ -33,9 +33,12 @@ type Props = {
   // distance from the viewer (e.g. "300 m", "1.2 km"). Other surfaces (detail,
   // upcoming, past) omit it and keep showing the full address.
   distanceLabel?: string | null;
+  // NOW feed only — tapping the attendee row opens the members list instead of
+  // the card. Omitted elsewhere (avatars are not tappable).
+  onAvatarsPress?: () => void;
 };
 
-export function EventCard({ event, tz, onPress, distanceLabel }: Props) {
+export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress }: Props) {
   const isRecurring = !!(event.series_id ?? event.recurrence_label);
   const now         = Date.now() / 1000;
   const startsAt    = (event as HiladsEvent).starts_at  ?? 0;
@@ -91,6 +94,7 @@ export function EventCard({ event, tz, onPress, distanceLabel }: Props) {
         <AttendeeAvatars
           preview={(event as HiladsEvent).participants_preview ?? []}
           total={event.participant_count ?? 0}
+          onPress={onAvatarsPress}
         />
       ) : null}
     </TouchableOpacity>

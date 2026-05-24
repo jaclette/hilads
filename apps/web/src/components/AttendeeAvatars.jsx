@@ -6,14 +6,23 @@ const MAX_SHOWN = 5
 // Lazy-loaded photo when available, else a deterministic initial on a gradient.
 // Renders nothing when nobody has joined. Sits inside the clickable card, so it
 // has no own click handler — tapping the card opens the going list.
-export default function AttendeeAvatars({ preview = [], total = 0 }) {
+export default function AttendeeAvatars({ preview = [], total = 0, onClick }) {
   const shown = preview.slice(0, MAX_SHOWN)
   if (total <= 0 || shown.length === 0) return null
 
   const overflow = total - shown.length
 
+  // When onClick is set, the row opens the members list and stops the tap from
+  // bubbling to the parent card.
+  const handleClick = onClick ? (e) => { e.stopPropagation(); onClick() } : undefined
+
   return (
-    <div className="attendee-avatars" aria-hidden="true">
+    <div
+      className={`attendee-avatars${onClick ? ' attendee-avatars--tappable' : ''}`}
+      aria-hidden={onClick ? undefined : 'true'}
+      role={onClick ? 'button' : undefined}
+      onClick={handleClick}
+    >
       {shown.map(p => {
         const [c1, c2] = avatarColors(p.id)
         return (

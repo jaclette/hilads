@@ -22,13 +22,15 @@ function timeAgo(ts: number): string {
 }
 
 export function TopicCard({
-  topic, onPress, pastMode = false, distanceLabel,
+  topic, onPress, pastMode = false, distanceLabel, onAvatarsPress,
 }: {
   topic: FeedItem & { kind: 'topic' };
   onPress: () => void;
   pastMode?: boolean;
   // NOW feed only — formatted distance from the viewer (creator's coords).
   distanceLabel?: string | null;
+  // NOW feed only — tapping the member row opens the members list.
+  onAvatarsPress?: () => void;
 }) {
   const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
   const replies   = topic.message_count ?? 0;
@@ -64,6 +66,7 @@ export function TopicCard({
         <AttendeeAvatars
           preview={topic.participants_preview ?? []}
           total={topic.participant_count ?? 0}
+          onPress={onAvatarsPress}
         />
       ) : null}
     </TouchableOpacity>

@@ -408,11 +408,56 @@ export async function createTopic(channelId, guestId, title, description, catego
     credentials: 'include',
     body: JSON.stringify(body),
   })
+  const data = await res.json().catch(() => ({}))
   if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
+    if (data.error === 'hangout_limit') throw new HangoutLimitError(data.existingTopicId, data.existingTitle)
     throw new Error(data.error || 'Failed to create topic')
   }
+  return data
+}
+
+// Thrown by createTopic when the user already has an active hangout (one at a time).
+export class HangoutLimitError extends Error {
+  constructor(existingTopicId, existingTitle) {
+    super('hangout_limit')
+    this.name = 'HangoutLimitError'
+    this.existingTopicId = existingTopicId
+    this.existingTitle = existingTitle
+  }
+}
+
+// Full member list for a hangout (avatar-row modal). Returns { participants, count }.
+export async function fetchHangoutParticipants(topicId) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/participants`, { credentials: 'include' })
+  if (!res.ok) return { participants: [], count: 0 }
   return res.json()
+}
+
+// Owner-only edit of a hangout's title/description/category.
+export async function updateTopic(topicId, guestId, title, description, category) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, title, description: description || null, category }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data.error || 'Failed to update hangout')
+  return data
+}
+
+// Owner-only delete (soft) of a hangout.
+export async function deleteTopic(topicId, guestId) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to delete hangout')
+  }
 }
 
 export async function fetchUpcomingEvents(channelId, opts = {}) {

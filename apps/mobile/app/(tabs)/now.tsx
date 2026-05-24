@@ -8,12 +8,13 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
-import { fetchNowFeed } from '@/api/topics';
+import { fetchNowFeed, fetchHangoutParticipants } from '@/api/topics';
 import { haversineMeters, formatDistance } from '@/lib/distance';
-import { fetchCanCreateEvent } from '@/api/events';
+import { MembersSheet } from '@/components/MembersSheet';
+import { fetchCanCreateEvent, fetchEventParticipants } from '@/api/events';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
-import type { FeedItem, HiladsEvent } from '@/types';
+import type { FeedItem, HiladsEvent, UserDTO } from '@/types';
 import { Colors, FontSizes, Spacing, Radius, Gradients, Shadows } from '@/constants';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { CreateSheet } from '@/components/CreateSheet';
@@ -117,6 +118,32 @@ export default function NowScreen() {
   // permission was already requested at boot). null → no usable location → cards
   // fall back to showing the address and the default ordering.
   const [userLocation,  setUserLocation]  = useState<{ lat: number; lng: number } | null>(null);
+
+  // Members list opened by tapping the attendee-avatar row on a NOW card.
+  const [membersOpen,    setMembersOpen]    = useState(false);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const [membersList,    setMembersList]    = useState<UserDTO[]>([]);
+  const [membersCount,   setMembersCount]   = useState(0);
+  const [membersNoun,    setMembersNoun]    = useState('going');
+
+  const openMembers = useCallback(async (kind: 'event' | 'topic', itemId: string, total: number) => {
+    setMembersOpen(true);
+    setMembersLoading(true);
+    setMembersList([]);
+    setMembersCount(total);
+    setMembersNoun(kind === 'topic' ? 'in this hangout' : 'going');
+    try {
+      const data = kind === 'topic'
+        ? await fetchHangoutParticipants(itemId)
+        : await fetchEventParticipants(itemId);
+      setMembersList(data.participants ?? []);
+      setMembersCount(data.count ?? (data.participants?.length ?? total));
+    } catch {
+      // leave empty
+    } finally {
+      setMembersLoading(false);
+    }
+  }, []);
 
   const readUserLocation = useCallback(async () => {
     try {
@@ -510,6 +537,7 @@ export default function NowScreen() {
                 <TopicCard
                   topic={item as FeedItem & { kind: 'topic' }}
                   distanceLabel={topicMeters !== undefined ? formatDistance(topicMeters) : undefined}
+                  onAvatarsPress={() => openMembers('topic', item.id, (item as FeedItem).participant_count ?? 0)}
                   onPress={() => {
                     // Hangouts are members-only — send guests to signup with
                     // the join value-prop instead of opening the channel.
@@ -530,6 +558,7 @@ export default function NowScreen() {
               <EventCard
                 event={event}
                 distanceLabel={meters !== undefined ? formatDistance(meters) : undefined}
+                onAvatarsPress={item.kind === 'public_event' ? undefined : () => openMembers('event', event.id, event.participant_count ?? 0)}
                 onPress={() => {
                   track('event_opened', { eventId: event.id });
                   router.push(`/event/${event.id}`);
@@ -593,6 +622,16 @@ export default function NowScreen() {
         onClose={() => setShowCreateSheet(false)}
         onSelectEvent={handleHostSpot}
         onSelectTopic={handleStartPulse}
+      />
+
+      <MembersSheet
+        visible={membersOpen}
+        loading={membersLoading}
+        participants={membersList}
+        count={membersCount}
+        noun={membersNoun}
+        onClose={() => setMembersOpen(false)}
+        onSelect={(uid) => { setMembersOpen(false); router.push({ pathname: '/user/[id]', params: { id: uid } }); }}
       />
     </SafeAreaView>
   );

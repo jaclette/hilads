@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import type { ParticipantPreview } from '@/types';
 import { Colors } from '@/constants';
@@ -19,17 +19,23 @@ type Props = {
   size?:        number;
   /** Cutout border color — set to the surface behind the row (card = bg2, screen = bg). */
   borderColor?: string;
+  /** When set, the row becomes tappable (opens the members list) and stops the
+   *  tap from bubbling to the parent card. */
+  onPress?:     () => void;
 };
 
-export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderColor = Colors.bg2 }: Props) {
+export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderColor = Colors.bg2, onPress }: Props) {
   const shown = preview.slice(0, MAX_SHOWN);
   if (total <= 0 || shown.length === 0) return null;
 
   const overflow = total - shown.length;
   const dim      = { width: size, height: size, borderRadius: size / 2 };
 
+  const Container: any = onPress ? TouchableOpacity : View;
+  const containerProps = onPress ? { onPress, activeOpacity: 0.7 } : {};
+
   return (
-    <View style={styles.row}>
+    <Container style={styles.row} {...containerProps}>
       {shown.map((p, i) => (
         <View
           key={p.id}
@@ -55,7 +61,7 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
           <Text style={[styles.extraText, { fontSize: Math.round(size * 0.34) }]}>+{overflow}</Text>
         </View>
       )}
-    </View>
+    </Container>
   );
 }
 

@@ -422,6 +422,43 @@ class TopicRepository
         return $map;
     }
 
+    /**
+     * Full participant list for the members modal — canonical UserDTOs
+     * (id, displayName, username, avatarUrl, accountType, badges, vibe…),
+     * joined-order. Participants are always registered users (user_id).
+     */
+    public static function getParticipants(string $topicId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT tp.user_id,
+                   EXTRACT(EPOCH FROM tp.joined_at)::int AS joined_at,
+                   CASE WHEN u.deleted_at IS NULL THEN u.display_name      ELSE NULL END AS display_name,
+                   CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url ELSE NULL END AS profile_photo_url,
+                   CASE WHEN u.deleted_at IS NULL THEN u.vibe              ELSE NULL END AS vibe,
+                   CASE WHEN u.deleted_at IS NULL THEN u.created_at        ELSE NULL END AS created_at
+            FROM topic_participants tp
+            LEFT JOIN users u ON u.id = tp.user_id
+            WHERE tp.topic_id = ?
+            ORDER BY tp.joined_at ASC
+        ");
+        $stmt->execute([$topicId]);
+        return array_map(static function (array $r): array {
+            $joinedAt = (int) $r['joined_at'];
+            if ($r['display_name'] !== null) {
+                return array_merge(UserResource::fromUser([
+                    'id'                => $r['user_id'],
+                    'display_name'      => $r['display_name'],
+                    'profile_photo_url' => $r['profile_photo_url'],
+                    'vibe'              => $r['vibe'],
+                    'created_at'        => $r['created_at'],
+                    'home_city'         => null,
+                ]), ['joinedAt' => $joinedAt]);
+            }
+            // Deleted account — show discreetly, not tappable to a dead profile.
+            return array_merge(UserResource::fromGuest($r['user_id'], 'Former member'), ['joinedAt' => $joinedAt]);
+        }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+    }
+
     /** Batched participant counts. Returns [topicId => count]. */
     public static function participantCountBatch(array $topicIds): array
     {
@@ -535,6 +572,65 @@ class TopicRepository
         $pdo->prepare("UPDATE channel_topics SET expires_at = now()                     WHERE channel_id = :id")->execute(['id' => $topicId]);
 
         return true;
+    }
+
+    /**
+     * Owner-gated edit of a hangout's title / description / category.
+     * Returns the updated topic, or null if not found / not the owner.
+     */
+    public static function update(
+        string $topicId,
+        string $guestId,
+        ?string $userId,
+        string $title,
+        ?string $description,
+        string $category
+    ): ?array {
+        $pdo = Database::pdo();
+
+        if ($userId !== null) {
+            $check = $pdo->prepare("
+                SELECT 1 FROM channel_topics
+                WHERE channel_id = :id AND expires_at > now()
+                  AND (guest_id = :guest_id OR created_by = :user_id)
+            ");
+            $check->execute(['id' => $topicId, 'guest_id' => $guestId, 'user_id' => $userId]);
+        } else {
+            $check = $pdo->prepare("
+                SELECT 1 FROM channel_topics WHERE channel_id = :id AND guest_id = :guest_id AND expires_at > now()
+            ");
+            $check->execute(['id' => $topicId, 'guest_id' => $guestId]);
+        }
+        if (!$check->fetch()) return null;
+
+        $cat = in_array($category, self::ALLOWED_CATEGORIES, true) ? $category : 'general';
+        $pdo->prepare("
+            UPDATE channel_topics SET title = :t, description = :d, category = :c WHERE channel_id = :id
+        ")->execute(['t' => $title, 'd' => $description, 'c' => $cat, 'id' => $topicId]);
+        // Keep the channel name in sync (used as the hangout's display name).
+        $pdo->prepare("UPDATE channels SET name = :n, updated_at = now() WHERE id = :id")
+            ->execute(['n' => $title, 'id' => $topicId]);
+
+        return self::findById($topicId);
+    }
+
+    /**
+     * The user's current ACTIVE (non-expired) hangout, if any — used to enforce
+     * one-hangout-per-user at creation. Returns ['id','title'] or null.
+     */
+    public static function findActiveByUser(string $userId): ?array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT ct.channel_id AS id, ct.title
+            FROM channel_topics ct
+            JOIN channels c ON c.id = ct.channel_id
+            WHERE ct.created_by = ? AND c.status = 'active' AND ct.expires_at > now()
+            ORDER BY ct.created_at DESC
+            LIMIT 1
+        ");
+        $stmt->execute([$userId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ?: null;
     }
 
     // ── Subscriptions ─────────────────────────────────────────────────────────

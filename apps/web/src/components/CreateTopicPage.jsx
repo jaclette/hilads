@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createTopic } from '../api'
+import { createTopic, updateTopic, HangoutLimitError } from '../api'
 import BackButton from './BackButton'
 
 const CATEGORIES = [
@@ -11,12 +11,15 @@ const CATEGORIES = [
   { value: 'meetup',  label: 'Meet up',  icon: '👋' },
 ]
 
-export default function CreateTopicPage({ channelId, guest, onCreated, onBack, userLocation }) {
-  const [category,    setCategory]    = useState('general')
-  const [title,       setTitle]       = useState('')
-  const [description, setDescription] = useState('')
+export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated, onBack, userLocation, editTopic, onGoToHangout }) {
+  const isEdit = !!editTopic
+  const [category,    setCategory]    = useState(editTopic?.category ?? 'general')
+  const [title,       setTitle]       = useState(editTopic?.title ?? '')
+  const [description, setDescription] = useState(editTopic?.description ?? '')
   const [submitting,  setSubmitting]  = useState(false)
   const [error,       setError]       = useState(null)
+  // Set when the server rejects a new hangout because the user already has one.
+  const [limitTopic,  setLimitTopic]  = useState(null)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -25,22 +28,51 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onBack, u
     setSubmitting(true)
     setError(null)
     try {
+      if (isEdit) {
+        const topic = await updateTopic(editTopic.id, guest.guestId, t, description.trim() || null, category)
+        onUpdated?.(topic)
+        return
+      }
       // Hangout's location = creator's location (the coords captured at boot
       // geolocation). Null when geolocation is off → no distance, no block.
       const topic = await createTopic(channelId, guest.guestId, t, description.trim() || null, category, userLocation ?? null)
       onCreated(topic)
     } catch (err) {
-      setError(err.message)
+      // One-hangout-per-user: surface the existing hangout instead of an error.
+      if (err instanceof HangoutLimitError) {
+        setLimitTopic({ id: err.existingTopicId, title: err.existingTitle || 'your hangout' })
+      } else {
+        setError(err.message)
+      }
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (limitTopic) {
+    return (
+      <div className="full-page">
+        <div className="page-header">
+          <BackButton onClick={onBack} />
+          <span className="page-title">One at a time</span>
+        </div>
+        <div className="topic-gated">
+          <span className="topic-gated-emoji">⚡</span>
+          <strong className="topic-gated-title">You already have a hangout</strong>
+          <span className="topic-gated-sub">
+            You can run one hangout at a time. Head to “{limitTopic.title}”, or delete it to start a new one.
+          </span>
+          <button className="topic-join-btn" onClick={() => onGoToHangout?.(limitTopic.id)}>Go to my hangout →</button>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">Start a hangout</span>
+        <span className="page-title">{isEdit ? 'Edit hangout' : 'Start a hangout'}</span>
       </div>
 
       <div className="page-body">
@@ -93,9 +125,11 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onBack, u
           </div>
 
           {/* Expiry note */}
-          <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center' }}>
-            ⏱ Auto-expires in 24 h
-          </p>
+          {!isEdit && (
+            <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center' }}>
+              ⏱ Auto-expires in 24 h
+            </p>
+          )}
 
           {error && <p className="cef-error">{error}</p>}
 
@@ -104,7 +138,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onBack, u
             className="cef-submit"
             disabled={submitting || !title.trim()}
           >
-            {submitting ? 'Starting…' : 'Start a hangout ⚡'}
+            {submitting ? (isEdit ? 'Saving…' : 'Starting…') : (isEdit ? 'Save changes' : 'Start a hangout ⚡')}
           </button>
 
         </form>

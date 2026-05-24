@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout } from '../api'
+import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic } from '../api'
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
@@ -85,7 +85,19 @@ async function shareTopic(title, topicId) {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function TopicChatPage({ topic, guest, nickname, onBack, socket, sessionId, onViewProfile }) {
+export default function TopicChatPage({ topic, guest, nickname, account, onBack, onEdit, onDeleted, socket, sessionId, onViewProfile }) {
+  const isOwner = !!(account?.id && topic.created_by && account.id === topic.created_by)
+
+  async function handleDeleteTopic() {
+    if (!window.confirm('Delete this hangout? This ends it for everyone and cannot be undone.')) return
+    try {
+      await deleteTopic(topic.id, guest.guestId)
+      onDeleted?.()
+    } catch {
+      window.alert('Could not delete. Please try again.')
+    }
+  }
+
   const [messages,   setMessages]   = useState([])
   const [input,      setInput]      = useState('')
   const [sending,    setSending]    = useState(false)
@@ -412,6 +424,14 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       {/* Description band */}
       {topic.description && (
         <div className="topic-chat-desc">{topic.description}</div>
+      )}
+
+      {/* Owner controls — edit / delete this hangout. */}
+      {isOwner && (
+        <div className="topic-owner-row">
+          <button className="topic-owner-btn" onClick={() => onEdit?.(topic)}>✏️ Edit</button>
+          <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDeleteTopic}>🗑 Delete</button>
+        </div>
       )}
 
       {gated ? (

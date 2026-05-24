@@ -5703,6 +5703,22 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
     $currentUser = AuthService::currentUser();
     $userId      = $currentUser['id'] ?? null;
 
+    // One active hangout per user: you must have zero running hangouts to start
+    // a new one (they auto-expire in 24h). Returns the existing one so the client
+    // can route there. Guests can't create hangouts (gated client-side) so this
+    // only applies to registered users.
+    if ($userId !== null) {
+        $existing = TopicRepository::findActiveByUser($userId);
+        if ($existing !== null) {
+            Response::json([
+                'error'           => 'hangout_limit',
+                'message'         => 'You already have an active hangout.',
+                'existingTopicId' => $existing['id'],
+                'existingTitle'   => $existing['title'],
+            ], 409);
+        }
+    }
+
     // Hangouts have no address — capture the creator's coordinates (sent by the
     // client from the same location source that powers NOW distance) so the
     // hangout can show a distance. Optional: invalid/absent → no coords, no crash.
@@ -6112,6 +6128,52 @@ $router->add('POST', '/api/v1/topics/{topicId}/mark-read', function (array $para
 
 // DELETE /api/v1/topics/{topicId}
 // Soft-deletes a topic. Only the creator can delete their own topic.
+// GET /api/v1/topics/{topicId}/participants — members list for the avatar-row
+// modal. Public (same names/avatars already shown in the card preview).
+$router->add('GET', '/api/v1/topics/{topicId}/participants', function (array $params) {
+    $topicId = $params['topicId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+    Response::json([
+        'participants' => TopicRepository::getParticipants($topicId),
+        'count'        => TopicRepository::participantCount($topicId),
+    ]);
+});
+
+// PUT /api/v1/topics/{topicId} — owner edits the hangout title/details.
+$router->add('PUT', '/api/v1/topics/{topicId}', function (array $params) {
+    $topicId = $params['topicId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+
+    $body    = Request::json() ?? [];
+    $guestId = $body['guestId'] ?? null;
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $title = isset($body['title']) ? mb_substr(trim(strip_tags((string) $body['title'])), 0, 80) : '';
+    if ($title === '') {
+        Response::json(['error' => 'title is required'], 400);
+    }
+    $description = null;
+    if (isset($body['description']) && $body['description'] !== null) {
+        $description = mb_substr(trim(strip_tags((string) $body['description'])), 0, 200) ?: null;
+    }
+    $category = is_string($body['category'] ?? null) ? $body['category'] : 'general';
+
+    $currentUser = AuthService::currentUser();
+    $userId      = $currentUser['id'] ?? null;
+
+    $updated = TopicRepository::update($topicId, $guestId, $userId, $title, $description, $category);
+    if ($updated === null) {
+        Response::json(['error' => 'Topic not found or not owned by you'], 404);
+    }
+    Response::json($updated);
+});
+
 $router->add('DELETE', '/api/v1/topics/{topicId}', function (array $params) {
     $topicId = $params['topicId'] ?? '';
 

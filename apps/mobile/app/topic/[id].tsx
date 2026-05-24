@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
@@ -12,7 +12,7 @@ import { shareLink } from '@/lib/shareLink';
 import {
   fetchTopicById, fetchTopicMessages,
   sendTopicMessage, sendTopicImageMessage, markTopicRead,
-  resolveHangoutJoinRequest, requestToJoinHangout,
+  resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic,
 } from '@/api/topics';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -45,6 +45,35 @@ export default function TopicChatScreen() {
     if (!res) return;
     setJoinState(res.status === 'already_participant' ? 'in' : 'requested');
   }, [id]);
+
+  // Owner-only edit/delete (CTA lives in the hangout chat).
+  const isOwner = !!(account?.id && topic?.created_by && account.id === topic.created_by);
+
+  const handleEdit = useCallback(() => {
+    if (!topic) return;
+    router.push({
+      pathname: '/topic/create',
+      params: { editId: id, title: topic.title, description: topic.description ?? '', category: topic.category },
+    });
+  }, [id, topic, router]);
+
+  const handleDelete = useCallback(() => {
+    Alert.alert('Delete hangout?', 'This ends the hangout for everyone. This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete', style: 'destructive',
+        onPress: async () => {
+          if (!identity) return;
+          try {
+            await deleteTopic(id, identity.guestId);
+            router.back();
+          } catch {
+            Alert.alert('Could not delete', 'Please try again.');
+          }
+        },
+      },
+    ]);
+  }, [id, identity, router]);
 
   async function handleShare() {
     if (!id) return;
@@ -120,6 +149,10 @@ export default function TopicChatScreen() {
   const reloadRef = useRef(reload);
   reloadRef.current = reload;
   useFocusEffect(useCallback(() => {
+    // Refresh topic metadata on focus so an owner's edit shows immediately
+    // after returning from the edit screen.
+    if (id) fetchTopicById(id).then(setTopic).catch(() => {});
+
     let timer: ReturnType<typeof setInterval> | null = null;
 
     function startFallbackPoll() {
@@ -205,6 +238,18 @@ export default function TopicChatScreen() {
               <Text style={styles.infoDesc}>{topic.description}</Text>
             ) : null}
             <Text style={styles.infoExpiry}>⏱ Active for 24 h</Text>
+            {isOwner && (
+              <View style={styles.ownerRow}>
+                <TouchableOpacity style={styles.ownerBtn} onPress={handleEdit} activeOpacity={0.8}>
+                  <Ionicons name="create-outline" size={15} color={Colors.text} />
+                  <Text style={styles.ownerBtnText}>Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.ownerBtn, styles.ownerBtnDanger]} onPress={handleDelete} activeOpacity={0.8}>
+                  <Ionicons name="trash-outline" size={15} color={Colors.red} />
+                  <Text style={[styles.ownerBtnText, { color: Colors.red }]}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         ) : null
       ) : (
@@ -400,6 +445,14 @@ const styles = StyleSheet.create({
   },
   infoDesc:   { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
   infoExpiry: { fontSize: FontSizes.xs, color: '#60a5fa', fontWeight: '600' },
+  ownerRow:   { flexDirection: 'row', gap: 8, marginTop: 8 },
+  ownerBtn: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    paddingHorizontal: 12, paddingVertical: 7, borderRadius: Radius.full,
+    backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+  },
+  ownerBtnDanger:  { borderColor: 'rgba(248,113,113,0.3)', backgroundColor: 'rgba(248,113,113,0.08)' },
+  ownerBtnText:    { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
   joinBtn: {
     marginTop:       10,
     alignSelf:       'flex-start',
