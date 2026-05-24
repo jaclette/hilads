@@ -689,10 +689,12 @@ export default function App() {
     // Find the most recent weather item (last in chronological feed)
     const w = [...feed].reverse().find(item => item.type === 'activity' && item.subtype === 'weather')
     if (!w?.text) return null
-    // Strip " in CityName — " so we don't repeat the city name already shown in the header
-    // e.g. "☀️ 22°C in Paris — it's gorgeous" → "☀️ 22°C · it's gorgeous"
-    return w.text.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_, dash) => dash ? '\u00B7 ' : '').trim()
-  }, [feed])
+    // Keep the trailing tip: strip " in CityName" by the known city name (the old
+    // regex over-matched and dropped tips with no em-dash), then em-dash \u2192 middot.
+    let text = w.text
+    if (city) text = text.replace(` in ${city}`, '')
+    return text.replace(/\s*\u2014\s*/, ' \u00B7 ').replace(/\s{2,}/g, ' ').trim()
+  }, [feed, city])
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
   const [allChannels, setAllChannels] = useState([])    // all channels unranked (used in search mode)

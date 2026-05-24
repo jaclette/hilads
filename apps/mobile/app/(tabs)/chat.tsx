@@ -531,10 +531,13 @@ export default function ChatTab() {
   const weatherLabel = useMemo<string | null>(() => {
     const w = messages.find(m => m.type === 'system' && m.event === 'weather');
     if (!w?.content) return null;
-    // Strip " in CityName — " to avoid repeating the city name already shown in the header
-    // e.g. "☀️ 22°C in Paris — it's gorgeous" → "☀️ 22°C · it's gorgeous"
-    return w.content.replace(/ in [A-Z][^\u2014\n]*(\u2014\s*)?/, (_: string, dash: string) => dash ? '\u00B7 ' : '').trim();
-  }, [messages]);
+    // Keep the trailing tip: strip the redundant " in CityName" by the known city
+    // name (the old regex over-matched and dropped tips that had no em-dash, e.g.
+    // "\uD83C\uDF24\uFE0F 28\u00B0C in HCMC right now"), then turn an em-dash separator into a middot.
+    let text = w.content;
+    if (city?.name) text = text.replace(` in ${city.name}`, '');
+    return text.replace(/\s*\u2014\s*/, ' \u00B7 ').replace(/\s{2,}/g, ' ').trim();
+  }, [messages, city?.name]);
 
   // Weather pill marquee gating: scroll only while this tab is focused AND the
   // app is foregrounded (battery), and never under OS reduce-motion.
