@@ -96,6 +96,9 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
   const [locationPickerCoords, setLocationPickerCoords] = useState(null)
   const [loading,    setLoading]    = useState(true)
   const [copied,     setCopied]     = useState(false)
+  // Members-only gate: true once the server returns 403 on the message load
+  // (non-member / pending requester). Drops to false the moment a member accepts.
+  const [gated,      setGated]      = useState(false)
 
   const knownIdsRef  = useRef(new Set())
   const bottomRef    = useRef(null)
@@ -142,6 +145,9 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
     try {
       const isInitial = oldestIdRef.current === null
       const data = await fetchTopicMessages(topic.id)
+      // Members-only: non-member (incl. pending requester) → gated state.
+      if (data.forbidden) { setGated(true); setLoading(false); return }
+      setGated(false)
       const msgs = data.messages ?? []
       const fresh = msgs.filter(m => !knownIdsRef.current.has(m.id ?? `${m.guestId}:${m.createdAt}`))
       if (fresh.length > 0) {
@@ -165,9 +171,11 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
     if (guest?.guestId) markTopicRead(topic.id, guest.guestId)
   }, [topic.id, guest?.guestId, loadMessages])
 
-  // WS — join topic room for live message delivery, leave on unmount
+  // WS — join topic room for live message delivery, leave on unmount.
+  // Gated (pending) users do NOT join: the WS server can't verify membership,
+  // so joining would leak live message broadcasts despite the HTTP 403.
   useEffect(() => {
-    if (!socket || !sessionId) return
+    if (!socket || !sessionId || gated) return
     socket.joinTopic(topic.id, sessionId)
     const off = socket.on('newMessage', (data) => {
       if (data.channelId !== topic.id) return
@@ -188,13 +196,14 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       off()
       socket.leaveTopic(topic.id, sessionId)
     }
-  }, [topic.id, socket, sessionId])
+  }, [topic.id, socket, sessionId, gated])
 
-  // Fallback poll — catches messages if WS is temporarily down
+  // Fallback poll — catches messages if WS is down; also re-checks membership
+  // while gated (faster) so the conversation unlocks right after acceptance.
   useEffect(() => {
-    const id = setInterval(loadMessages, 30_000)
+    const id = setInterval(loadMessages, gated ? 15_000 : 30_000)
     return () => clearInterval(id)
-  }, [loadMessages])
+  }, [loadMessages, gated])
 
   useEffect(() => {
     // Skip the jump-to-bottom when older messages were just prepended.
@@ -399,16 +408,22 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         <div className="topic-chat-desc">{topic.description}</div>
       )}
 
-      {/* Request-to-join — backend dedups (one pending) + treats the creator/
-          existing participants as already-in, so this self-corrects. */}
-      <button
-        className={`topic-join-btn${joinState !== 'idle' ? ' done' : ''}`}
-        disabled={joinState !== 'idle'}
-        onClick={handleRequestToJoin}
-      >
-        {joinState === 'requested' ? 'Requested ✓' : joinState === 'in' ? "You're in ✓" : 'Request to join'}
-      </button>
-
+      {gated ? (
+        /* Members-only gate — pending requesters cannot read or post. */
+        <div className="topic-gated">
+          <span className="topic-gated-emoji">🔒</span>
+          <strong className="topic-gated-title">Members-only hangout</strong>
+          <span className="topic-gated-sub">
+            {joinState === 'requested'
+              ? "Request pending — you'll be able to join the conversation once a member accepts."
+              : 'Request to join to see the conversation and chat.'}
+          </span>
+          {joinState !== 'requested' && (
+            <button className="topic-join-btn" onClick={handleRequestToJoin}>Request to join</button>
+          )}
+        </div>
+      ) : (
+      <>
       {/* Messages area */}
       <div className="topic-chat-feed" ref={feedRef} onScroll={handleFeedScroll}>
         {loadingOlder && (
@@ -570,6 +585,8 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
         spotLoading={spotLoading}
         autoFocus
       />
+      </>
+      )}
     </div>
   )
 }

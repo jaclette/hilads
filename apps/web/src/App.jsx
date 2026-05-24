@@ -729,18 +729,6 @@ export default function App() {
   const [userLocation,    setUserLocation]         = useState(null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
-  // Distance (meters) from the viewer per located event — computed once per
-  // [events, userLocation] change (not per render). Topics have no coords.
-  const distanceByEventId = useMemo(() => {
-    const map = new Map()
-    if (!userLocation) return map
-    for (const e of [...events, ...cityEvents]) {
-      if (typeof e.venue_lat === 'number' && typeof e.venue_lng === 'number') {
-        map.set(e.id, haversineMeters(userLocation.lat, userLocation.lng, e.venue_lat, e.venue_lng))
-      }
-    }
-    return map
-  }, [events, cityEvents, userLocation])
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
   const [showPastArchive, setShowPastArchive] = useState(false)
@@ -880,6 +868,19 @@ export default function App() {
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
   const [topics,          setTopics]          = useState([])
+  // Distance (meters) from the viewer per located item — computed once per
+  // [events, cityEvents, topics, userLocation] change (not per render). Topics
+  // (hangouts) use the creator's coords captured at creation.
+  const distanceByEventId = useMemo(() => {
+    const map = new Map()
+    if (!userLocation) return map
+    for (const e of [...events, ...cityEvents, ...topics]) {
+      if (typeof e.venue_lat === 'number' && typeof e.venue_lng === 'number') {
+        map.set(e.id, haversineMeters(userLocation.lat, userLocation.lng, e.venue_lat, e.venue_lng))
+      }
+    }
+    return map
+  }, [events, cityEvents, topics, userLocation])
   const [hotEventsStatus, setHotEventsStatus] = useState('loading') // 'loading' | 'ready' | 'error'
   const [cityCountry, setCityCountry] = useState(null)
   // 'pending' | 'resolving' | 'denied' | 'error'
@@ -4080,6 +4081,7 @@ export default function App() {
                       return `${Math.floor(diff / 3600)}h ago`
                     })()
                   : null
+                const meters = distanceByEventId.get(topic.id)
                 return (
                   <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); openHangout(topic) }}>
                     <div className="er-header">
@@ -4096,6 +4098,13 @@ export default function App() {
                     {topic.description && (
                       <span className="er-location">{topic.description}</span>
                     )}
+                    {meters !== undefined && (
+                      <span className="er-location">📍 {formatDistance(meters)}</span>
+                    )}
+                    <AttendeeAvatars
+                      preview={topic.participants_preview ?? []}
+                      total={topic.participant_count ?? 0}
+                    />
                   </button>
                 )
               }
@@ -5034,6 +5043,7 @@ export default function App() {
         <CreateTopicPage
           channelId={channelId}
           guest={guest}
+          userLocation={userLocation}
           onCreated={handleTopicCreated}
           onBack={() => setShowCreateTopic(false)}
         />

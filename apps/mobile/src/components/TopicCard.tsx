@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { FeedItem } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 
 // ── Shared pulse (topic) card ───────────────────────────────────────────────
 // Used by the Now feed and the Past archive so a pulse looks identical in both
@@ -21,11 +22,13 @@ function timeAgo(ts: number): string {
 }
 
 export function TopicCard({
-  topic, onPress, pastMode = false,
+  topic, onPress, pastMode = false, distanceLabel,
 }: {
   topic: FeedItem & { kind: 'topic' };
   onPress: () => void;
   pastMode?: boolean;
+  // NOW feed only — formatted distance from the viewer (creator's coords).
+  distanceLabel?: string | null;
 }) {
   const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
   const replies   = topic.message_count ?? 0;
@@ -49,11 +52,20 @@ export function TopicCard({
       {topic.description ? (
         <Text style={styles.topicDesc} numberOfLines={2}>{topic.description}</Text>
       ) : null}
+      {distanceLabel ? (
+        <Text style={styles.topicLocation} numberOfLines={1}>📍 {distanceLabel}</Text>
+      ) : null}
       <Text style={styles.topicMeta}>
         {replies > 0
           ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
           : pastMode ? 'No replies' : 'No replies yet — be first'}
       </Text>
+      {!pastMode ? (
+        <AttendeeAvatars
+          preview={topic.participants_preview ?? []}
+          total={topic.participant_count ?? 0}
+        />
+      ) : null}
     </TouchableOpacity>
   );
 }
@@ -82,9 +94,10 @@ const styles = StyleSheet.create({
     padding:         Spacing.md,
     gap:             8,
   },
-  topicTitle: { color: Colors.text },
-  topicDesc:  { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
-  topicMeta:  { flex: 1, fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
+  topicTitle:    { color: Colors.text },
+  topicDesc:     { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
+  topicLocation: { fontSize: FontSizes.sm, color: Colors.muted },
+  topicMeta:     { flex: 1, fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
 
   activeNowBadge: {
     backgroundColor:   'rgba(34,197,94,0.10)',

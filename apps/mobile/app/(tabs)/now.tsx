@@ -505,9 +505,11 @@ export default function NowScreen() {
               return <Text style={styles.sectionLabel}>{item.label}</Text>;
             }
             if (item.kind === 'topic') {
+              const topicMeters = distanceById.get(item.id);
               return (
                 <TopicCard
                   topic={item as FeedItem & { kind: 'topic' }}
+                  distanceLabel={topicMeters !== undefined ? formatDistance(topicMeters) : undefined}
                   onPress={() => {
                     // Hangouts are members-only — send guests to signup with
                     // the join value-prop instead of opening the channel.

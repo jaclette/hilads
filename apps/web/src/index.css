@@ -6945,6 +6945,15 @@ img.pub-profile-avatar {
 }
 .topic-join-btn.done { background: rgba(255, 255, 255, 0.08); color: var(--muted); }
 
+/* Members-only gate panel — shown to non-members (pending requesters). */
+.topic-gated {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 32px 24px; text-align: center;
+}
+.topic-gated-emoji { font-size: 40px; }
+.topic-gated-title { font-size: 1.05rem; color: var(--text); }
+.topic-gated-sub   { font-size: 0.9rem; color: var(--muted); line-height: 1.4; max-width: 320px; }
+
 .modal-textarea {
   resize: none;
   line-height: 1.45;

@@ -765,6 +765,10 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_vibes_author ON user_vibes (autho
 // channel_topics
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_topics_city   ON channel_topics (city_id, expires_at DESC)", 'idx_channel_topics_city');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_topics_expiry ON channel_topics (expires_at)", 'idx_channel_topics_expiry');
+// Hangouts have no address — their coordinates are the creator's location at
+// creation time, so the NOW feed can show distance like events.
+run($pdo, "ALTER TABLE channel_topics ADD COLUMN IF NOT EXISTS venue_lat DOUBLE PRECISION", 'channel_topics.venue_lat');
+run($pdo, "ALTER TABLE channel_topics ADD COLUMN IF NOT EXISTS venue_lng DOUBLE PRECISION", 'channel_topics.venue_lng');
 
 // ── Reactions ─────────────────────────────────────────────────────────────────
 

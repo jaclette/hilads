@@ -5703,6 +5703,20 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
     $currentUser = AuthService::currentUser();
     $userId      = $currentUser['id'] ?? null;
 
+    // Hangouts have no address — capture the creator's coordinates (sent by the
+    // client from the same location source that powers NOW distance) so the
+    // hangout can show a distance. Optional: invalid/absent → no coords, no crash.
+    $lat = null;
+    $lng = null;
+    if (isset($body['lat'], $body['lng']) && is_numeric($body['lat']) && is_numeric($body['lng'])) {
+        $latF = (float) $body['lat'];
+        $lngF = (float) $body['lng'];
+        if ($latF >= -90 && $latF <= 90 && $lngF >= -180 && $lngF <= 180 && !($latF === 0.0 && $lngF === 0.0)) {
+            $lat = $latF;
+            $lng = $lngF;
+        }
+    }
+
     try {
         $topic = TopicRepository::create(
             'city_' . $channelId,
@@ -5711,6 +5725,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
             $description,
             $category,
             $userId,
+            24,        // default TTL hours
+            $lat,
+            $lng,
         );
 
         // Broadcast new topic to city room so clients append it instantly (no poll needed).
@@ -5768,6 +5785,15 @@ $router->add('GET', '/api/v1/topics/{topicId}/messages', function (array $params
             Response::json(['error' => 'Topic not found or expired'], 404);
         }
 
+        // Members-only: hangouts are private. Only accepted participants (and the
+        // creator, who is auto-joined) may read. A pending requester is NOT a
+        // member → 403. Guests are never members. Do not leak message content.
+        $viewer   = AuthService::currentUser();
+        $viewerId = $viewer['id'] ?? null;
+        if ($viewerId === null || !TopicRepository::isParticipant($topicId, $viewerId)) {
+            Response::json(['error' => 'not_a_member'], 403);
+        }
+
         // Cursor pagination (topics are channels → reuse getByChannel).
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
         $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
@@ -5790,6 +5816,15 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
 
     if (TopicRepository::findById($topicId) === null) {
         Response::json(['error' => 'Topic not found or expired'], 404);
+    }
+
+    // Members-only write gate: only accepted participants (and the auto-joined
+    // creator) may post. A pending requester or non-member gets 403 — requesting
+    // access does NOT grant it. Guests are never members.
+    $senderUser   = AuthService::currentUser();
+    $senderUserId = $senderUser['id'] ?? null;
+    if ($senderUserId === null || !TopicRepository::isParticipant($topicId, $senderUserId)) {
+        Response::json(['error' => 'not_a_member'], 403);
     }
 
     $body = Request::json();
@@ -5822,8 +5857,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
         Response::json(['error' => 'type must be text or image'], 400);
     }
 
-    $senderUser   = AuthService::currentUser();
-    $senderUserId = $senderUser['id'] ?? null;
+    // $senderUser / $senderUserId already resolved above (membership gate).
 
     if ($type === 'image') {
         if (empty($imageUrl) || !is_string($imageUrl)) {

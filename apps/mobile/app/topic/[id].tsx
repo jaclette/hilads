@@ -35,6 +35,10 @@ export default function TopicChatScreen() {
   const [topicLoading, setTopicLoading] = useState(true);
   const [shared, setShared] = useState(false);
   const [joinState, setJoinState] = useState<'idle' | 'requested' | 'in'>('idle');
+  // Members-only gate: true once the server returns 403 on the message load
+  // (non-member / pending requester). Flips back to false the moment a member
+  // accepts and the next load succeeds.
+  const [gated, setGated] = useState(false);
 
   const handleRequestToJoin = useCallback(async () => {
     const res = await requestToJoinHangout(id).catch(() => null);
@@ -72,7 +76,11 @@ export default function TopicChatScreen() {
     if (id && identity?.guestId) markTopicRead(id, identity.guestId);
   }, [id, identity?.guestId]);
 
-  const loadFn = useCallback((opts?: { beforeId?: string }) => fetchTopicMessages(id, opts), [id]);
+  const loadFn = useCallback(async (opts?: { beforeId?: string }) => {
+    const res = await fetchTopicMessages(id, opts);
+    setGated(!!res.forbidden);
+    return res;
+  }, [id]);
 
   // Accept/Reject a join request. The backend is first-write-wins and
   // re-broadcasts the resolved feed item over WS, so every participant's card
@@ -112,8 +120,6 @@ export default function TopicChatScreen() {
   const reloadRef = useRef(reload);
   reloadRef.current = reload;
   useFocusEffect(useCallback(() => {
-    if (id && sessionId) socket.joinTopic(id, sessionId);
-
     let timer: ReturnType<typeof setInterval> | null = null;
 
     function startFallbackPoll() {
@@ -138,9 +144,26 @@ export default function TopicChatScreen() {
       stopFallbackPoll();
       offDisconnected();
       offConnected();
-      if (id && sessionId) socket.leaveTopic(id, sessionId);
     };
   }, [id, sessionId]));
+
+  // Join the WS topic room ONLY as a confirmed member. The WS server can't
+  // verify membership (no DB), so a gated/pending user must not join — otherwise
+  // they'd receive live message broadcasts despite the HTTP 403. Leaves on gate.
+  useEffect(() => {
+    if (gated || !id || !sessionId) return;
+    socket.joinTopic(id, sessionId);
+    return () => socket.leaveTopic(id, sessionId);
+  }, [id, sessionId, gated]);
+
+  // While gated (request pending), re-check membership periodically so the
+  // conversation unlocks the moment a member accepts — no manual refresh needed.
+  // (A tapped acceptance push re-opens the screen and re-loads too.)
+  useEffect(() => {
+    if (!gated || !account) return;
+    const t = setInterval(() => { reloadRef.current(); }, 15_000);
+    return () => clearInterval(t);
+  }, [gated, account]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -182,20 +205,6 @@ export default function TopicChatScreen() {
               <Text style={styles.infoDesc}>{topic.description}</Text>
             ) : null}
             <Text style={styles.infoExpiry}>⏱ Active for 24 h</Text>
-            {/* Request-to-join — shown to members who didn't create this hangout.
-                The backend dedups (one pending) + handles already-a-participant. */}
-            {account && topic.created_by && account.id !== topic.created_by && (
-              <TouchableOpacity
-                style={[styles.joinBtn, joinState !== 'idle' && styles.joinBtnDone]}
-                activeOpacity={0.85}
-                disabled={joinState !== 'idle'}
-                onPress={handleRequestToJoin}
-              >
-                <Text style={styles.joinBtnText}>
-                  {joinState === 'requested' ? 'Requested ✓' : joinState === 'in' ? "You're in ✓" : 'Request to join'}
-                </Text>
-              </TouchableOpacity>
-            )}
           </View>
         ) : null
       ) : (
@@ -211,7 +220,24 @@ export default function TopicChatScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Messages + Input */}
+      {/* Members-only gate — pending requesters cannot read or post. */}
+      {gated ? (
+        <View style={styles.gatedWrap}>
+          <Text style={styles.gatedEmoji}>🔒</Text>
+          <Text style={styles.gatedTitle}>Members-only hangout</Text>
+          <Text style={styles.gatedSub}>
+            {joinState === 'requested'
+              ? "Request pending — you'll be able to join the conversation once a member accepts."
+              : 'Request to join to see the conversation and chat.'}
+          </Text>
+          {joinState !== 'requested' && (
+            <TouchableOpacity style={styles.gatedBtn} activeOpacity={0.85} onPress={handleRequestToJoin}>
+              <Text style={styles.joinBtnText}>Request to join</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      ) : (
+      /* Messages + Input */
       <KeyboardAvoidingView style={styles.flex} behavior="padding">
         <FlatList
           data={messages}
@@ -290,6 +316,7 @@ export default function TopicChatScreen() {
           }
         />
       </KeyboardAvoidingView>
+      )}
 
     </SafeAreaView>
   );
@@ -383,6 +410,24 @@ const styles = StyleSheet.create({
   },
   joinBtnDone: { backgroundColor: 'rgba(255,255,255,0.08)' },
   joinBtnText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
+
+  gatedWrap: {
+    flex:              1,
+    alignItems:        'center',
+    justifyContent:    'center',
+    paddingHorizontal: Spacing.xl,
+    gap:               10,
+  },
+  gatedEmoji: { fontSize: 44 },
+  gatedTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center' },
+  gatedSub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+  gatedBtn: {
+    marginTop:         8,
+    backgroundColor:   Colors.accent,
+    borderRadius:      Radius.full,
+    paddingHorizontal: 20,
+    paddingVertical:   11,
+  },
 
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },

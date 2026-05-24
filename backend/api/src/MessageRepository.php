@@ -86,6 +86,13 @@ class MessageRepository
             'createdAt' => $createdAt,
         ];
 
+        // Preserve non-text types (e.g. 'join_request') so clients render the
+        // styled card instead of dumping the JSON content as a text bubble.
+        // Plain text stays type-less (clients treat absent type as 'text').
+        if (($row['type'] ?? 'text') !== 'text') {
+            $msg['type'] = $row['type'];
+        }
+
         // @mentions: raw [{userId,offset,length}] here; getByChannel resolves
         // them to current usernames before returning. Omitted when empty.
         $rawMentions = $row['mentions'] ?? null;

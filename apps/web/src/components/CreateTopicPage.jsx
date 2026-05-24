@@ -11,7 +11,7 @@ const CATEGORIES = [
   { value: 'meetup',  label: 'Meet up',  icon: '👋' },
 ]
 
-export default function CreateTopicPage({ channelId, guest, onCreated, onBack }) {
+export default function CreateTopicPage({ channelId, guest, onCreated, onBack, userLocation }) {
   const [category,    setCategory]    = useState('general')
   const [title,       setTitle]       = useState('')
   const [description, setDescription] = useState('')
@@ -25,7 +25,9 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onBack })
     setSubmitting(true)
     setError(null)
     try {
-      const topic = await createTopic(channelId, guest.guestId, t, description.trim() || null, category)
+      // Hangout's location = creator's location (the coords captured at boot
+      // geolocation). Null when geolocation is off → no distance, no block.
+      const topic = await createTopic(channelId, guest.guestId, t, description.trim() || null, category, userLocation ?? null)
       onCreated(topic)
     } catch (err) {
       setError(err.message)

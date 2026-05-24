@@ -1,4 +1,4 @@
-import { api } from './client';
+import { api, ApiError } from './client';
 import type { FeedItem, Topic, Message } from '@/types';
 
 // ── Now feed ──────────────────────────────────────────────────────────────────
@@ -71,13 +71,22 @@ export async function fetchTopicById(topicId: string): Promise<Topic> {
 export async function fetchTopicMessages(
   topicId: string,
   opts: { beforeId?: string; limit?: number } = {},
-): Promise<{ messages: Message[]; hasMore: boolean }> {
+): Promise<{ messages: Message[]; hasMore: boolean; forbidden?: boolean }> {
   const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
   if (opts.beforeId) q.set('before_id', opts.beforeId);
-  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
-    `/topics/${topicId}/messages?${q}`,
-  );
-  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
+  try {
+    const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
+      `/topics/${topicId}/messages?${q}`,
+    );
+    return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
+  } catch (e) {
+    // Members-only: a non-member (incl. pending requester) gets 403. Surface it
+    // so the screen shows the gated "request pending" state instead of erroring.
+    if (e instanceof ApiError && e.status === 403) {
+      return { messages: [], hasMore: false, forbidden: true };
+    }
+    throw e;
+  }
 }
 
 // ── Hangout request-to-join (internally "topic") ──────────────────────────────
@@ -150,11 +159,13 @@ export async function createTopic(
   title: string,
   description: string | null,
   category: string,
+  coords?: { lat: number; lng: number } | null,
 ): Promise<Topic> {
-  return api.post<Topic>(`/channels/${channelId}/topics`, {
-    guestId,
-    title,
-    description,
-    category,
-  });
+  const body: Record<string, unknown> = { guestId, title, description, category };
+  // Hangouts have no address — send the creator's coords so NOW can show distance.
+  if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
+    body.lat = coords.lat;
+    body.lng = coords.lng;
+  }
+  return api.post<Topic>(`/channels/${channelId}/topics`, body);
 }

@@ -330,6 +330,9 @@ export async function fetchTopicMessages(topicId, { beforeId, limit } = {}) {
   const params = new URLSearchParams({ limit: String(limit ?? 50) })
   if (beforeId) params.set('before_id', beforeId)
   const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages?${params}`, { credentials: 'include' })
+  // Members-only: a non-member (incl. pending requester) gets 403 — surface it
+  // so the page shows the gated "request pending" state instead of erroring.
+  if (res.status === 403) return { messages: [], hasMore: false, forbidden: true }
   if (!res.ok) throw new Error('Failed to fetch topic messages')
   return res.json() // { messages, hasMore }
 }
@@ -392,12 +395,18 @@ export async function markTopicRead(topicId, guestId) {
   }).catch(() => {})
 }
 
-export async function createTopic(channelId, guestId, title, description, category) {
+export async function createTopic(channelId, guestId, title, description, category, coords = null) {
+  const body = { guestId, title, description: description || null, category }
+  // Hangouts have no address — send the creator's coords so NOW can show distance.
+  if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
+    body.lat = coords.lat
+    body.lng = coords.lng
+  }
   const res = await fetch(`${BASE}/channels/${channelId}/topics`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, title, description: description || null, category }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

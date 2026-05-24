@@ -18,6 +18,8 @@ class TopicRepository
             ct.title,
             ct.description,
             ct.category,
+            ct.venue_lat,
+            ct.venue_lng,
             COUNT(m.id)                                        AS message_count,
             EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER     AS last_activity_at,
             EXTRACT(EPOCH FROM ct.expires_at)::INTEGER         AS expires_at,
@@ -37,10 +39,15 @@ class TopicRepository
             'title'            => $row['title'],
             'description'      => $row['description'],
             'category'         => $row['category'],
+            'venue_lat'        => isset($row['venue_lat']) ? (float) $row['venue_lat'] : null,
+            'venue_lng'        => isset($row['venue_lng']) ? (float) $row['venue_lng'] : null,
             'message_count'    => (int) ($row['message_count'] ?? 0),
             'last_activity_at' => isset($row['last_activity_at']) ? (int) $row['last_activity_at'] : null,
             'expires_at'       => (int) $row['expires_at'],
             'created_at'       => (int) $row['created_at'],
+            // Populated by getByCity (batched); default so the field is always present.
+            'participants_preview' => [],
+            'participant_count'    => 0,
         ];
     }
 
@@ -94,6 +101,8 @@ class TopicRepository
                 ct.title,
                 ct.description,
                 ct.category,
+                ct.venue_lat,
+                ct.venue_lng,
                 EXTRACT(EPOCH FROM ct.expires_at)::INTEGER AS expires_at,
                 EXTRACT(EPOCH FROM c.created_at)::INTEGER  AS created_at
             FROM channels c
@@ -140,6 +149,8 @@ class TopicRepository
                 'title'            => $topic['title'],
                 'description'      => $topic['description'],
                 'category'         => $topic['category'],
+                'venue_lat'        => $topic['venue_lat'] ?? null,
+                'venue_lng'        => $topic['venue_lng'] ?? null,
                 'message_count'    => $stats !== null ? $stats['message_count']    : 0,
                 'last_activity_at' => $stats !== null ? $stats['last_activity_at'] : null,
                 'expires_at'       => $topic['expires_at'],
@@ -153,7 +164,20 @@ class TopicRepository
             return $bAct <=> $aAct;
         });
 
-        return array_slice($result, 0, 20);
+        $result = array_slice($result, 0, 20);
+
+        // Attach member avatars + count (batched) so hangout NOW cards show
+        // participants like events. The creator is always a participant.
+        $topicIds = array_column($result, 'id');
+        $preview  = self::participantPreviewBatch($topicIds);
+        $counts   = self::participantCountBatch($topicIds);
+        foreach ($result as &$t) {
+            $t['participants_preview'] = $preview[$t['id']] ?? [];
+            $t['participant_count']    = $counts[$t['id']]  ?? 0;
+        }
+        unset($t);
+
+        return $result;
     }
 
     /**
@@ -233,7 +257,7 @@ class TopicRepository
               AND c.status    = 'active'
               AND ct.expires_at > now()
             GROUP BY c.id, ct.city_id, ct.created_by, ct.guest_id,
-                     ct.title, ct.description, ct.category, ct.expires_at
+                     ct.title, ct.description, ct.category, ct.venue_lat, ct.venue_lng, ct.expires_at
         ");
         $stmt->execute(['id' => $topicId]);
         $row = $stmt->fetch();
@@ -253,7 +277,9 @@ class TopicRepository
         ?string $description,
         string $category = 'general',
         ?string $userId = null,
-        int $ttlHours = self::DEFAULT_TTL_HOURS
+        int $ttlHours = self::DEFAULT_TTL_HOURS,
+        ?float $lat = null,
+        ?float $lng = null
     ): array {
         $pdo       = Database::pdo();
         $id        = bin2hex(random_bytes(8));
@@ -270,10 +296,10 @@ class TopicRepository
 
         $pdo->prepare("
             INSERT INTO channel_topics
-                (channel_id, city_id, created_by, guest_id, title, description, category, expires_at)
+                (channel_id, city_id, created_by, guest_id, title, description, category, venue_lat, venue_lng, expires_at)
             VALUES
                 (:channel_id, :city_id, :created_by, :guest_id, :title, :description, :category,
-                 to_timestamp(:expires_at))
+                 :venue_lat, :venue_lng, to_timestamp(:expires_at))
         ")->execute([
             'channel_id'  => $id,
             'city_id'     => $cityId,
@@ -282,6 +308,8 @@ class TopicRepository
             'title'       => $title,
             'description' => $description,
             'category'    => $category,
+            'venue_lat'   => $lat,
+            'venue_lng'   => $lng,
             'expires_at'  => $expiresAt,
         ]);
 
@@ -300,10 +328,14 @@ class TopicRepository
             'title'            => $title,
             'description'      => $description,
             'category'         => $category,
+            'venue_lat'        => $lat,
+            'venue_lng'        => $lng,
             'message_count'    => 0,
             'last_activity_at' => null,
             'expires_at'       => $expiresAt,
             'created_at'       => time(),
+            'participants_preview' => [],
+            'participant_count'    => $userId !== null ? 1 : 0,
         ];
     }
 
@@ -356,6 +388,54 @@ class TopicRepository
         $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM topic_participants WHERE topic_id = ?");
         $stmt->execute([$topicId]);
         return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Batched participant previews for the NOW feed — one windowed query.
+     * Returns [topicId => [ {id, displayName, thumbAvatarUrl}, … ] ] (≤$limit each,
+     * most-recent-joined first).
+     */
+    public static function participantPreviewBatch(array $topicIds, int $limit = 5): array
+    {
+        if (empty($topicIds)) return [];
+        $limit = max(1, min(20, $limit));
+        $in    = implode(',', array_fill(0, count($topicIds), '?'));
+        $stmt  = Database::pdo()->prepare("
+            SELECT topic_id, id, display_name, thumb_url, full_url FROM (
+                SELECT tp.topic_id, u.id, u.display_name,
+                       u.profile_thumb_photo_url AS thumb_url,
+                       u.profile_photo_url       AS full_url,
+                       row_number() OVER (PARTITION BY tp.topic_id ORDER BY tp.joined_at DESC) AS rn
+                FROM topic_participants tp
+                JOIN users u ON u.id = tp.user_id AND u.deleted_at IS NULL
+                WHERE tp.topic_id IN ($in)
+            ) t WHERE rn <= " . $limit);
+        $stmt->execute(array_values($topicIds));
+        $map = [];
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            $map[$r['topic_id']][] = [
+                'id'             => $r['id'],
+                'displayName'    => $r['display_name'] ?? 'Member',
+                'thumbAvatarUrl' => $r['thumb_url'] ?? $r['full_url'] ?? null,
+            ];
+        }
+        return $map;
+    }
+
+    /** Batched participant counts. Returns [topicId => count]. */
+    public static function participantCountBatch(array $topicIds): array
+    {
+        if (empty($topicIds)) return [];
+        $in   = implode(',', array_fill(0, count($topicIds), '?'));
+        $stmt = Database::pdo()->prepare("
+            SELECT topic_id, COUNT(*) AS c FROM topic_participants
+            WHERE topic_id IN ($in) GROUP BY topic_id");
+        $stmt->execute(array_values($topicIds));
+        $map = [];
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            $map[$r['topic_id']] = (int) $r['c'];
+        }
+        return $map;
     }
 
     // ── Hangout join requests ─────────────────────────────────────────────────

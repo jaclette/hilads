@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
 import { createTopic } from '@/api/topics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -36,8 +37,18 @@ export default function CreateTopicScreen() {
     if (!t || !city || !identity) return;
     setSubmitting(true);
     setError(null);
+    // Hangout's location = creator's location at creation. Reuse the OS-cached
+    // fix (no prompt, no watcher); missing/denied → no coords, no distance shown.
+    let coords: { lat: number; lng: number } | null = null;
     try {
-      await createTopic(city.channelId, identity.guestId, t, description.trim() || null, category);
+      const { granted } = await Location.getForegroundPermissionsAsync();
+      if (granted) {
+        const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
+        if (last) coords = { lat: last.coords.latitude, lng: last.coords.longitude };
+      }
+    } catch { /* no coords — non-fatal */ }
+    try {
+      await createTopic(city.channelId, identity.guestId, t, description.trim() || null, category, coords);
       router.back();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start hangout');
