@@ -2487,6 +2487,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         } catch (\Throwable $e) {
             error_log('[channel_join] membership upsert failed: ' . $e->getMessage());
         }
+        // Stamp user_id onto the live presence row so city-wide pushes
+        // (city_join / channel_message) can find this member online.
+        try { PresenceRepository::stampUser($channelId, $sessionId, $joinUserId); }
+        catch (\Throwable $e) { error_log('[channel_join] presence stamp failed: ' . $e->getMessage()); }
     }
 
     // ── Post-response: join message INSERT ────────────────────────────────────
@@ -2636,7 +2640,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         // Defer persistent city membership upsert.
         $deferGuestId = $guestId;
         $deferChannel = 'city_' . $channelId;
-        register_shutdown_function(static function () use ($deferAuthUserId, $deferGuestId, $deferChannel): void {
+        register_shutdown_function(static function () use ($deferAuthUserId, $deferGuestId, $deferChannel, $channelId, $sessionId): void {
             if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
             try {
                 $pdo = Database::pdo();
@@ -2652,6 +2656,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                         VALUES (?, ?, now(), now())
                         ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
                     ")->execute([$uid, $deferChannel]);
+                    // Stamp user_id onto the live presence row so city-wide pushes
+                    // (city_join / channel_message) can find this member online.
+                    try { PresenceRepository::stampUser($channelId, $sessionId, $uid); }
+                    catch (\Throwable $e) { error_log('[bootstrap] presence stamp failed: ' . $e->getMessage()); }
                 }
             } catch (\Throwable $e) {
                 error_log('[bootstrap] membership upsert failed: ' . $e->getMessage());

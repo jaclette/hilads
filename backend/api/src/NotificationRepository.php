@@ -352,16 +352,22 @@ class NotificationRepository
                   AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
             ");
         } else {
-            // presence.user_id is never populated by the write path (every INSERT
-            // in PresenceRepository sets only session/channel/guest/nickname), so
-            // resolve the registered user by joining users on guest_id — the same
-            // way getOnline() does. Selecting presence.user_id directly returned
-            // zero recipients, which silently disabled city_join / channel_message
-            // pushes entirely.
+            // Resolve the registered user behind each live presence row. Two links,
+            // because neither alone is reliable:
+            //   • p.user_id   — stamped on the row at join/bootstrap (see
+            //                   PresenceRepository::stampUser). The dependable link
+            //                   for multi-device accounts.
+            //   • p.guest_id  — fallback for rows not yet stamped. NOT reliable on
+            //                   its own: users.guest_id holds a single (often stale)
+            //                   value while a user's presence guest_id drifts across
+            //                   devices, so a guest_id-only match misses them.
+            // Matching presence.user_id directly used to return zero recipients
+            // (the column was never written), silently disabling city_join /
+            // channel_message pushes entirely.
             $stmt = Database::pdo()->prepare("
                 SELECT DISTINCT u.id
                 FROM presence p
-                JOIN users u ON u.guest_id = p.guest_id
+                JOIN users u ON (u.id = p.user_id OR u.guest_id = p.guest_id)
                 WHERE p.channel_id = ?
                   AND p.last_seen_at > now() - interval '3 minutes'
                   AND u.deleted_at IS NULL

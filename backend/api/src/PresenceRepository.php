@@ -179,6 +179,30 @@ class PresenceRepository
         ];
     }
 
+    /**
+     * Stamp the authenticated user onto their live presence row.
+     *
+     * The presence write paths (join / bootstrap / heartbeat) key rows by
+     * session+channel and only ever set guest_id — never user_id. But
+     * users.guest_id holds a single value that drifts from a user's actual
+     * per-device presence guest_id, so the presence row can't be reliably
+     * linked back to the account by guest_id alone. Callers that have resolved
+     * the authenticated user (bootstrap's $deferAuthUserId, join's $joinUserId)
+     * call this post-response to record user_id directly, which is what
+     * NotificationRepository::notifyCityOnlineUsers matches on to find the
+     * registered members currently online in a city.
+     *
+     * Idempotent and cheap; safe to call on every join/bootstrap.
+     */
+    public static function stampUser(int $channelId, string $sessionId, string $userId): void
+    {
+        Database::pdo()->prepare("
+            UPDATE presence
+            SET user_id = ?
+            WHERE session_id = ? AND channel_id = ? AND user_id IS DISTINCT FROM ?
+        ")->execute([$userId, $sessionId, self::dbKey($channelId), $userId]);
+    }
+
     public static function leave(int $channelId, string $sessionId): void
     {
         Database::pdo()->prepare("
