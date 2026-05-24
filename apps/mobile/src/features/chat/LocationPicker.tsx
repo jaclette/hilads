@@ -226,7 +226,11 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
 
   useEffect(() => () => { if (searchTimer.current) clearTimeout(searchTimer.current); }, []);
 
-  function handleWebViewMessage(event: WebViewMessageEvent) {
+  // MUST be a stable reference: an inline-HTML <WebView> reloads its content on
+  // every render where a prop reference changes. The parent (city chat) re-renders
+  // constantly (WS messages/presence), so an unstable onMessage made the map
+  // reload ~1/sec → constant "loading" + shaking. Memoized → render-stable.
+  const handleWebViewMessage = useCallback((event: WebViewMessageEvent) => {
     try {
       const msg = JSON.parse(event.nativeEvent.data);
       if (msg.type === 'ready') {
@@ -244,7 +248,23 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
         geocode(msg.lat, msg.lng);
       }
     } catch { /* ignore */ }
-  }
+  }, [geocode]);
+
+  // Create the WebView element ONCE — render-stable so the inline-HTML map never
+  // reloads on a parent re-render (source + onMessage are both memoized).
+  const mapWebView = useMemo(() => (
+    <WebView
+      ref={webViewRef}
+      style={styles.webview}
+      source={source}
+      onMessage={handleWebViewMessage}
+      scrollEnabled={false}
+      bounces={false}
+      overScrollMode="never"
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+    />
+  ), [source, handleWebViewMessage]);
 
   return (
     <Modal
@@ -267,17 +287,7 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
 
         {/* ── Map ── */}
         <View style={styles.mapWrap}>
-          <WebView
-            ref={webViewRef}
-            style={styles.webview}
-            source={source}
-            onMessage={handleWebViewMessage}
-            scrollEnabled={false}
-            bounces={false}
-            overScrollMode="never"
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-          />
+          {mapWebView}
 
           {/* Fixed pin — sits in center, pointer events disabled so map stays draggable */}
           <View style={styles.pinWrap} pointerEvents="none">
