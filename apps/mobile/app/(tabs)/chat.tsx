@@ -39,6 +39,7 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
+import { hasSeenOnboarding } from '@/lib/onboarding';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
@@ -136,8 +137,27 @@ export default function ChatTab() {
     unreadNotifications,
     clearEventChatCounts,
     bootstrapData,
+    joined, setShowOnboarding,
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
+
+  // First-time onboarding carousel — guests only, once, after the city channel
+  // is ready (joined). Runs after paint so it overlays a loaded screen instead
+  // of blocking/flashing first render. Registered users never trigger it; the
+  // AsyncStorage flag keeps it from re-appearing. The carousel is mounted in
+  // (tabs)/_layout.tsx and reads `showOnboarding` from AppContext.
+  const onboardingCheckedRef = useRef(false);
+  useEffect(() => {
+    if (onboardingCheckedRef.current) return;
+    if (!joined || account) return;
+    onboardingCheckedRef.current = true;
+    let cancelled = false;
+    (async () => {
+      if (await hasSeenOnboarding()) return;
+      if (!cancelled) setTimeout(() => setShowOnboarding(true), 400);
+    })();
+    return () => { cancelled = true; };
+  }, [joined, account, setShowOnboarding]);
 
   // Online count — populated by WS presenceSnapshot, fallback "live now"
   const [onlineCount, setOnlineCount] = useState<number | null>(null);

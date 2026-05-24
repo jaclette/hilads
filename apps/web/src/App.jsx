@@ -17,6 +17,7 @@ import { splitContentByMentions } from './lib/mentions'
 import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
+import OnboardingCarousel from './components/OnboardingCarousel'
 import AuthScreen from './components/AuthScreen'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
@@ -645,6 +646,22 @@ function markWelcomed(channelId) {
   } catch {}
 }
 
+// First-time onboarding carousel — "seen once" flag (guests only).
+// localStorage (not a cookie — not sent on every request). On a read error we
+// deliberately default to SHOWING it (better one extra view than a crash); an
+// in-memory fallback prevents a re-show in the same session if writes also fail.
+const ONBOARDING_KEY = 'hilads_onboarding_seen'
+let onboardingSeenMem = false
+function hasSeenOnboarding() {
+  if (onboardingSeenMem) return true
+  try { return localStorage.getItem(ONBOARDING_KEY) === '1' }
+  catch { return false } // unreadable storage → show once
+}
+function markOnboardingSeen() {
+  onboardingSeenMem = true
+  try { localStorage.setItem(ONBOARDING_KEY, '1') } catch {}
+}
+
 // Build the onlineUsers array for the sidebar/strip, marking the current user.
 // Users come from presenceSnapshot (keyed by sessionId).
 function buildOnlineUsers(users, mySessionId) {
@@ -781,6 +798,7 @@ export default function App() {
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
+  const [showOnboarding, setShowOnboarding] = useState(false) // first-time guest carousel
   const [showNotifications, setShowNotifications] = useState(false)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
@@ -790,6 +808,16 @@ export default function App() {
   // their event today (preflight check), or when the POST returns the
   // `event_limit_reached` error code (race safety).
   const [showEventLimitReached, setShowEventLimitReached] = useState(false)
+
+  // First-time onboarding carousel — guests only, once. Fires AFTER the city
+  // channel is ready (so it overlays a loaded screen instead of blocking/
+  // flashing first paint). Registered users never trigger it (account guard);
+  // hasSeenOnboarding() keeps it from re-appearing on later visits.
+  useEffect(() => {
+    if (status !== 'ready' || account || hasSeenOnboarding()) return
+    const t = setTimeout(() => setShowOnboarding(true), 350)
+    return () => clearTimeout(t)
+  }, [status, account])
 
   // ── Tab scroll preservation ─────────────────────────────────────────────────
   // Each of the 3 inline tab drawers (NOW / HERE / ME-guest) has its own scroll
@@ -2384,7 +2412,7 @@ export default function App() {
     return (
       <div className="header-top-bar">
         <div className="header-top-left">
-          {account && (
+          {account ? (
             <button
               className={`header-icon-btn header-icon-btn--sm${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
               onClick={() => setShowNotifications(true)}
@@ -2399,6 +2427,19 @@ export default function App() {
                   {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
                 </span>
               )}
+            </button>
+          ) : (
+            // Guests get a subtle "?" to re-open the intro carousel on demand.
+            <button
+              className="header-icon-btn header-icon-btn--sm"
+              onClick={() => setShowOnboarding(true)}
+              aria-label="How Hilads works"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
             </button>
           )}
         </div>
@@ -5201,6 +5242,24 @@ export default function App() {
         bursts={reactionBursts}
         onDone={id => setReactionBursts(prev => prev.filter(b => b.id !== id))}
       />
+
+      {/* First-time guest onboarding carousel (also re-openable via header "?"). */}
+      {showOnboarding && (
+        <OnboardingCarousel
+          city={city}
+          onSignup={() => {
+            markOnboardingSeen()
+            setShowOnboarding(false)
+            setShowAuthScreenTab('signup')
+            setShowProfileDrawer(true)
+            setShowAuthScreen(true)
+          }}
+          onClose={() => {
+            markOnboardingSeen()
+            setShowOnboarding(false)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -8,6 +8,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
 import { Gradients } from '@/constants';
+import { OnboardingCarousel } from '@/features/onboarding/OnboardingCarousel';
+import { markOnboardingSeen } from '@/lib/onboarding';
 
 // ── Web parity constants ──────────────────────────────────────────────────────
 // Sourced from apps/web/src/index.css .bottom-nav / .bottom-nav-tab.
@@ -265,7 +267,7 @@ const styles = StyleSheet.create({
 // ── Layout ────────────────────────────────────────────────────────────────────
 
 export default function TabsLayout() {
-  const { joined } = useApp();
+  const { joined, city, showOnboarding, setShowOnboarding } = useApp();
 
   // ── Android hardware back — double-press to exit ───────────────────────────
   // useFocusEffect scopes this handler to when the tab group is focused.
@@ -293,16 +295,25 @@ export default function TabsLayout() {
   // is already true when this navigator first mounts — so it opens on 'chat'
   // directly without ever rendering the 'hot' tab first.
   return (
-    <Tabs
-      initialRouteName={joined ? 'chat' : 'now'}
-      tabBar={props => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false }}
-    >
-      {/* ── 4 primary tabs ─────────────────────────────────────────────── */}
-      <Tabs.Screen name="now"  options={{ title: 'Now' }} />
-      <Tabs.Screen name="chat" options={{ title: 'My city' }} />
-      <Tabs.Screen name="here" options={{ title: 'Here' }} />
-      <Tabs.Screen name="me"   options={{ title: 'Me' }} />
-    </Tabs>
+    <>
+      <Tabs
+        initialRouteName={joined ? 'chat' : 'now'}
+        tabBar={props => <CustomTabBar {...props} />}
+        screenOptions={{ headerShown: false }}
+      >
+        {/* ── 4 primary tabs ─────────────────────────────────────────────── */}
+        <Tabs.Screen name="now"  options={{ title: 'Now' }} />
+        <Tabs.Screen name="chat" options={{ title: 'My city' }} />
+        <Tabs.Screen name="here" options={{ title: 'Here' }} />
+        <Tabs.Screen name="me"   options={{ title: 'Me' }} />
+      </Tabs>
+
+      {/* First-time guest onboarding (auto-shown from chat.tsx; "?" reopens it). */}
+      <OnboardingCarousel
+        visible={showOnboarding}
+        city={city?.name}
+        onClose={() => { markOnboardingSeen(); setShowOnboarding(false); }}
+      />
+    </>
   );
 }

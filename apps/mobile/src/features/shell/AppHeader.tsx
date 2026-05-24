@@ -74,6 +74,7 @@ export function AppHeader({ rightExtra }: Props) {
     unreadDMs, setUnreadDMs,
     unreadNotifications,
     clearEventChatCounts,
+    setShowOnboarding,
   } = useApp();
 
   return (
@@ -81,9 +82,10 @@ export function AppHeader({ rightExtra }: Props) {
     <HeaderRadialGlow />
     <View style={styles.topBar}>
 
-      {/* Left: notification bell */}
+      {/* Left: notification bell (members) — or a subtle "?" for guests that
+          re-opens the intro carousel on demand. */}
       <View style={styles.topLeft}>
-        {account && (
+        {account ? (
           <TouchableOpacity
             style={[styles.iconBtn, unreadNotifications > 0 && styles.iconBtnUnread]}
             activeOpacity={0.65}
@@ -99,6 +101,16 @@ export function AppHeader({ rightExtra }: Props) {
                 </Text>
               </View>
             )}
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.iconBtn}
+            activeOpacity={0.65}
+            hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+            onPress={() => setShowOnboarding(true)}
+            accessibilityLabel="How Hilads works"
+          >
+            <Ionicons name="help-circle-outline" size={23} color={Colors.muted} />
           </TouchableOpacity>
         )}
       </View>
