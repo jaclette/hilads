@@ -320,10 +320,12 @@ class NotificationRepository
      *
      * Recipient set depends on $type:
      *
-     *   - 'new_event': users whose current_city_id matches, active in the last
-     *     30 days. current_city_id is the canonical membership signal, so this
-     *     reaches city members even when their app is closed — which is the
-     *     whole point of a push. Rate-limited to 1 per (user, city) per 10 min.
+     *   - 'new_event' / 'city_join': users whose current_city_id matches, active
+     *     in the last 30 days. current_city_id is the canonical membership signal
+     *     (the user's current/last city), so this reaches city members even when
+     *     their app is closed — the whole point of a push. Mirrors how an event
+     *     owner is notified of a join regardless of being online. Rate-limited to
+     *     1 per (user, city) per 10 min.
      *
      *   - Anything else: users with a presence heartbeat in the last 3 minutes.
      *     Appropriate for transient signals like 'channel_message' where you
@@ -337,7 +339,10 @@ class NotificationRepository
         ?string $body,
         array   $data
     ): void {
-        $useCurrentCity = $type === 'new_event';
+        // city_join targets city *members* (current_city_id), not just whoever is
+        // online this minute — a user wants "someone arrived in my city" for the
+        // city they belong to whether or not the app is open right now.
+        $useCurrentCity = $type === 'new_event' || $type === 'city_join';
 
         if ($useCurrentCity) {
             // current_city_last_confirmed_at TTL: 30 days. Users who haven't
@@ -384,10 +389,11 @@ class NotificationRepository
             if (!($enabled[$uid] ?? true)) continue;
 
             // Rate limit: max 1 push per (recipient, city) per 10 minutes for the
-            // high-frequency city-wide types (new_event, city_join). Absorbs bursty
-            // event creators / frequent arrivals without a batch/digest path, and
-            // bounds web push too (mobile also has its own per-type cooldown).
-            if ($useCurrentCity || $type === 'city_join') {
+            // high-frequency city-wide types (new_event, city_join — both go through
+            // the current-city branch). Absorbs bursty event creators / frequent
+            // arrivals without a batch/digest path, and bounds web push too (mobile
+            // also has its own per-type cooldown).
+            if ($useCurrentCity) {
                 $rlKey = "notif:{$type}:{$uid}:{$cityChannelId}";
                 if (!RateLimiter::allow($rlKey, 1, 600)) continue;
             }
