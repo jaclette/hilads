@@ -71,7 +71,7 @@ export async function fetchTopicById(topicId: string): Promise<Topic> {
 export async function fetchTopicMessages(
   topicId: string,
   opts: { beforeId?: string; limit?: number } = {},
-): Promise<{ messages: Message[]; hasMore: boolean; forbidden?: boolean }> {
+): Promise<{ messages: Message[]; hasMore: boolean; forbidden?: boolean; hasPendingRequest?: boolean }> {
   const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
   if (opts.beforeId) q.set('before_id', opts.beforeId);
   try {
@@ -82,8 +82,9 @@ export async function fetchTopicMessages(
   } catch (e) {
     // Members-only: a non-member (incl. pending requester) gets 403. Surface it
     // so the screen shows the gated "request pending" state instead of erroring.
+    // has_pending_request lets the gate render "Requested" on a return visit.
     if (e instanceof ApiError && e.status === 403) {
-      return { messages: [], hasMore: false, forbidden: true };
+      return { messages: [], hasMore: false, forbidden: true, hasPendingRequest: !!e.body?.has_pending_request };
     }
     throw e;
   }

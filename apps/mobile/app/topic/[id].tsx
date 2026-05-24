@@ -119,6 +119,9 @@ export default function TopicChatScreen() {
   const loadFn = useCallback(async (opts?: { beforeId?: string }) => {
     const res = await fetchTopicMessages(id, opts);
     setGated(!!res.forbidden);
+    // Restore the "Requested" CTA if the server says a request is still pending,
+    // so navigating away and back doesn't reset it to "Request to join".
+    if (res.forbidden && res.hasPendingRequest) setJoinState('requested');
     return res;
   }, [id]);
 

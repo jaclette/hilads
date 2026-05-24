@@ -515,6 +515,22 @@ class TopicRepository
     }
 
     /**
+     * Whether $userId already has a PENDING join request for this topic.
+     * Lets clients show "Requested" instead of "Request to join" after the
+     * user navigates away and back (the button state is otherwise lost).
+     */
+    public static function hasPendingRequest(string $topicId, string $userId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM topic_join_requests
+            WHERE topic_id = ? AND requester_id = ? AND status = 'pending'
+            LIMIT 1
+        ");
+        $stmt->execute([$topicId, $userId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /**
      * Resolve a pending request. First-write-wins: the UPDATE only matches a
      * PENDING row, so a second concurrent caller gets null (already resolved).
      * On accept the requester is added as a participant. $action ∈ {accept,reject}.

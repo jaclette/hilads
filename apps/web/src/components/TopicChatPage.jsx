@@ -168,7 +168,14 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       const isInitial = oldestIdRef.current === null
       const data = await fetchTopicMessages(topic.id)
       // Members-only: non-member (incl. pending requester) → gated state.
-      if (data.forbidden) { setGated(true); setLoading(false); return }
+      // Restore the "Requested" CTA if the server says a request is still pending
+      // (otherwise navigating away and back would reset it to "Request to join").
+      if (data.forbidden) {
+        setGated(true)
+        if (data.hasPendingRequest) setJoinState('requested')
+        setLoading(false)
+        return
+      }
       setGated(false)
       const msgs = data.messages ?? []
       const fresh = msgs.filter(m => !knownIdsRef.current.has(m.id ?? `${m.guestId}:${m.createdAt}`))

@@ -5867,7 +5867,13 @@ $router->add('GET', '/api/v1/topics/{topicId}/messages', function (array $params
         $viewer   = AuthService::currentUser();
         $viewerId = $viewer['id'] ?? null;
         if ($viewerId === null || !TopicRepository::isParticipant($topicId, $viewerId)) {
-            Response::json(['error' => 'not_a_member'], 403);
+            // Tell the client whether this user already has a pending request, so
+            // the gated screen shows "Requested" instead of "Request to join"
+            // after they navigate away and back.
+            Response::json([
+                'error'               => 'not_a_member',
+                'has_pending_request' => $viewerId !== null && TopicRepository::hasPendingRequest($topicId, $viewerId),
+            ], 403);
         }
 
         // Cursor pagination (topics are channels → reuse getByChannel).

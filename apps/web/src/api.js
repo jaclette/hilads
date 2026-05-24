@@ -332,7 +332,11 @@ export async function fetchTopicMessages(topicId, { beforeId, limit } = {}) {
   const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages?${params}`, { credentials: 'include' })
   // Members-only: a non-member (incl. pending requester) gets 403 — surface it
   // so the page shows the gated "request pending" state instead of erroring.
-  if (res.status === 403) return { messages: [], hasMore: false, forbidden: true }
+  // has_pending_request lets the gate render "Requested" on a return visit.
+  if (res.status === 403) {
+    const body = await res.json().catch(() => ({}))
+    return { messages: [], hasMore: false, forbidden: true, hasPendingRequest: !!body.has_pending_request }
+  }
   if (!res.ok) throw new Error('Failed to fetch topic messages')
   return res.json() // { messages, hasMore }
 }
