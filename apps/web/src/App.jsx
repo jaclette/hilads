@@ -1748,6 +1748,14 @@ export default function App() {
       const sessionPromise = savedGuestId
         ? Promise.resolve({ guestId: savedGuestId, nickname: name })
         : createGuestSession(name)
+      // The session POST runs eagerly (parallel with geo) but is only awaited
+      // far below — after `await locPromiseRef.current`, which takes 700ms-3.4s.
+      // If the POST rejects during that window (e.g. a network blip →
+      // "TypeError: Failed to fetch"), no handler is attached yet, so the browser
+      // fires `unhandledrejection` and Sentry reports phantom noise. Attaching a
+      // passive catch marks it handled; the real `await sessionPromise` below
+      // still observes the rejection and routes it to the catch at the bottom.
+      sessionPromise.catch(() => {})
 
       // ── Location: fast path for returning users ───────────────────────────────
       // Problem: `await locPromiseRef.current` (GPS fix + resolve API) blocks for
