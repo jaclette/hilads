@@ -170,10 +170,11 @@ if ($method === 'POST') {
                                 count($userIds),
                             );
                             $result = PushBroadcastService::dispatch($broadcastId, $userIds, $title, $body, $deepLink);
-                            $flash = "Test push sent ({$result['delivered']} delivered, {$result['failed']} failed).";
-                            // Reset the form on a successful send so we don't accidentally
-                            // re-broadcast on refresh.
-                            $savedTitle = $savedBody = '';
+                            $flash = "Test push sent ({$result['delivered']} delivered, {$result['failed']} failed). Form kept — edit if needed, then send to your audience.";
+                            // Intentionally KEEP the form populated after a test: the
+                            // whole point of a test is to verify the content, then send
+                            // the SAME content to the real audience without re-typing.
+                            // (Only a real "send" clears the form — see below.)
                         }
                     }
                 } else {

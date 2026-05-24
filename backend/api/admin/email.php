@@ -41,6 +41,56 @@ function prepare_html(string $body): string
     return nl2br(htmlspecialchars($body, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
 }
 
+// Resend allows at most 50 recipients (to + cc + bcc) per request. We reserve
+// one slot for the visible `to` (the sender itself) and fill the rest with BCC.
+const RESEND_MAX_BCC = 49;
+
+/** Single Resend API call. Returns ['code'=>int, 'decoded'=>?array, 'raw'=>string]. */
+function resend_send(string $apiKey, array $payload): array
+{
+    $ch = curl_init('https://api.resend.com/emails');
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json',
+        ],
+        CURLOPT_TIMEOUT        => 15,
+    ]);
+    $raw  = curl_exec($ch);
+    $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    error_log('[admin/email] resend HTTP ' . $code . ': ' . $raw);
+    return ['code' => $code, 'decoded' => json_decode((string) $raw, true), 'raw' => (string) $raw];
+}
+
+/** All registered users with a valid email (excludes guests + deleted accounts). */
+function all_registered_emails(): array
+{
+    $rows = Database::pdo()
+        ->query("SELECT email FROM users WHERE email IS NOT NULL AND email <> '' AND deleted_at IS NULL")
+        ->fetchAll(\PDO::FETCH_COLUMN);
+    $valid = [];
+    foreach ($rows as $e) {
+        $e = trim((string) $e);
+        if ($e !== '' && filter_var($e, FILTER_VALIDATE_EMAIL)) $valid[] = $e;
+    }
+    return array_values(array_unique($valid));
+}
+
+/** Pull the bare email out of a "Name <email>" From header (or a bare email). */
+function extract_email(string $from): ?string
+{
+    if (preg_match('/<([^>]+)>/', $from, $m)) {
+        $e = trim($m[1]);
+        return filter_var($e, FILTER_VALIDATE_EMAIL) ? $e : null;
+    }
+    $e = trim($from);
+    return filter_var($e, FILTER_VALIDATE_EMAIL) ? $e : null;
+}
+
 $error   = null;
 $success = null;
 $debug   = null; // array shown in the debug panel after send
@@ -54,24 +104,88 @@ if ($method === 'POST') {
     $subject = trim($_POST['subject'] ?? '');
     $body    = trim($_POST['body']    ?? '');
     $isTest  = isset($_POST['send_test']);
+    // "Send to all registered users" — only applies to a real send, never a test
+    // (a test always goes to the To field so the admin can preview it first).
+    $sendAll = isset($_POST['send_all_users']) && !$isTest;
 
-    if ($from === '' || $toRaw === '' || $subject === '' || $body === '') {
-        $error = 'From, To, Subject, and Message are required.';
+    // To is required unless we're broadcasting to every registered user.
+    if ($from === '' || $subject === '' || $body === '' || ($toRaw === '' && !$sendAll)) {
+        $error = 'From, ' . ($sendAll ? '' : 'To, ') . 'Subject, and Message are required.';
     } else {
-        $toParsed  = parse_emails($toRaw);
-        $bccParsed = $bccRaw !== '' ? parse_emails($bccRaw) : ['emails' => [], 'invalid' => []];
+        $apiKey = getenv('RESEND_API_KEY');
+        if (!$apiKey) {
+            $error = 'RESEND_API_KEY is not configured.';
+        } elseif ($sendAll) {
+            // ── Broadcast to all registered users ─────────────────────────────
+            // Privacy: recipients go in BCC (hidden from each other), with the
+            // sender itself as the single visible `to`. Batched to respect
+            // Resend's 50-recipients-per-request limit.
+            $html       = prepare_html($body);
+            $recipients = all_registered_emails();
+            $senderAddr = extract_email($from);
 
-        // Hard block only when zero valid To addresses — invalid ones are skipped with a warning
-        if (empty($toParsed['emails'])) {
-            $error = 'No valid "To" email addresses found.'
-                . (!empty($toParsed['invalid']) ? ' Invalid: ' . implode(', ', $toParsed['invalid']) : '');
-        } else {
-            $apiKey = getenv('RESEND_API_KEY');
-            if (!$apiKey) {
-                $error = 'RESEND_API_KEY is not configured.';
+            if ($senderAddr === null) {
+                $error = 'Could not read a sender address from "From" to use as the visible To.';
+            } elseif (empty($recipients)) {
+                $error = 'No registered users with an email address were found.';
             } else {
-                $html = prepare_html($body);
+                $batches  = array_chunk($recipients, RESEND_MAX_BCC);
+                $sent = 0; $failed = 0; $lastCode = null; $lastDecoded = null; $firstId = null;
+                error_log('[admin/email] broadcast to ' . count($recipients) . ' registered users in ' . count($batches) . ' batch(es)');
 
+                foreach ($batches as $batch) {
+                    $r = resend_send($apiKey, [
+                        'from'    => $from,
+                        'to'      => [$senderAddr],
+                        'bcc'     => $batch,
+                        'subject' => $subject,
+                        'html'    => $html,
+                    ]);
+                    $lastCode = $r['code']; $lastDecoded = $r['decoded'];
+                    if ($r['code'] >= 200 && $r['code'] < 300) {
+                        $sent += count($batch);
+                        $firstId = $firstId ?? ($r['decoded']['id'] ?? null);
+                    } else {
+                        $failed += count($batch);
+                    }
+                }
+
+                $debug = [
+                    'to'           => [$senderAddr],
+                    'bcc'          => ['(' . count($recipients) . ' registered users — BCC, batched by ' . RESEND_MAX_BCC . ')'],
+                    'to_invalid'   => [],
+                    'bcc_invalid'  => [],
+                    'payload_keys' => ['from', 'to', 'bcc', 'subject', 'html'],
+                    'bcc_in_payload' => ['(' . count($recipients) . ' BCC recipients across ' . count($batches) . ' batch' . (count($batches) !== 1 ? 'es' : '') . ')'],
+                    'http_code'    => $lastCode,
+                    'resend_id'    => $firstId,
+                    'resend_raw'   => $lastDecoded,
+                ];
+
+                if ($failed === 0) {
+                    $success = 'Broadcast sent to ' . $sent . ' registered user' . ($sent !== 1 ? 's' : '')
+                        . ' (BCC, ' . count($batches) . ' batch' . (count($batches) !== 1 ? 'es' : '') . ').';
+                    // Clear after a successful full broadcast so a refresh can't re-blast everyone.
+                    $savedTo = $savedSubject = $savedBody = '';
+                } elseif ($sent > 0) {
+                    $error = 'Partial broadcast: ' . $sent . ' delivered, ' . $failed
+                        . ' failed (last HTTP ' . (int) $lastCode . '). Check logs before retrying — some users already received it.';
+                } else {
+                    $msg   = $lastDecoded['message'] ?? $lastDecoded['name'] ?? 'Unknown error';
+                    $error = 'Broadcast failed (HTTP ' . (int) $lastCode . '): ' . $msg;
+                }
+            }
+        } else {
+            // ── Single send (test, or explicit To/Bcc) ────────────────────────
+            $toParsed  = parse_emails($toRaw);
+            $bccParsed = $bccRaw !== '' ? parse_emails($bccRaw) : ['emails' => [], 'invalid' => []];
+
+            // Hard block only when zero valid To addresses — invalid ones are skipped with a warning
+            if (empty($toParsed['emails'])) {
+                $error = 'No valid "To" email addresses found.'
+                    . (!empty($toParsed['invalid']) ? ' Invalid: ' . implode(', ', $toParsed['invalid']) : '');
+            } else {
+                $html     = prepare_html($body);
                 $toCount  = count($toParsed['emails']);
                 $bccCount = count($bccParsed['emails']);
 
@@ -85,35 +199,14 @@ if ($method === 'POST') {
                     $payload['bcc'] = $bccParsed['emails'];
                 }
 
-                // Build debug snapshot (no API key)
-                $debugPayload = $payload;
-                $debugPayload['html'] = '[' . strlen($html) . ' bytes]';
-
-                $jsonPayload = json_encode($payload, JSON_UNESCAPED_UNICODE);
                 error_log('[admin/email] sending — to:' . $toCount . ' bcc:' . $bccCount
                     . ' subject:"' . $subject . '"'
                     . ' to_list:[' . implode(', ', $toParsed['emails']) . ']'
                     . ' bcc_list:[' . implode(', ', $bccParsed['emails']) . ']');
-                error_log('[admin/email] payload: ' . json_encode($debugPayload, JSON_UNESCAPED_UNICODE));
 
-                $ch = curl_init('https://api.resend.com/emails');
-                curl_setopt_array($ch, [
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POST           => true,
-                    CURLOPT_POSTFIELDS     => $jsonPayload,
-                    CURLOPT_HTTPHEADER     => [
-                        'Authorization: Bearer ' . $apiKey,
-                        'Content-Type: application/json',
-                    ],
-                    CURLOPT_TIMEOUT        => 10,
-                ]);
-                $respBody = curl_exec($ch);
-                $code     = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-
-                error_log('[admin/email] resend HTTP ' . $code . ': ' . $respBody);
-
-                $decoded = json_decode($respBody, true);
+                $r       = resend_send($apiKey, $payload);
+                $code    = $r['code'];
+                $decoded = $r['decoded'];
 
                 $debug = [
                     'to'           => $toParsed['emails'],
@@ -156,6 +249,7 @@ if ($method === 'POST') {
         $savedBcc     = $bccRaw;
         $savedSubject = $subject;
         $savedBody    = $body;
+        $savedSendAll = $sendAll;
     }
 }
 
@@ -164,6 +258,7 @@ $savedTo      = $savedTo      ?? '';
 $savedBcc     = $savedBcc     ?? '';
 $savedSubject = $savedSubject ?? '';
 $savedBody    = $savedBody    ?? '';
+$savedSendAll = $savedSendAll ?? false;
 
 admin_head('Send Email');
 admin_nav('/admin/email');
@@ -246,9 +341,19 @@ echo '<label>From</label>';
 echo '<input type="text" name="from" value="' . htmlspecialchars($savedFrom, ENT_QUOTES) . '" required>';
 echo '</div>';
 
+// "All registered users" toggle — when checked, To is ignored and the message
+// goes to every registered user via BCC (batched). Server-validated, so the To
+// `required` attribute is intentionally omitted (it would block submit here).
 echo '<div class="form-group">';
+echo '<label style="display:flex;align-items:center;gap:8px;font-weight:normal;text-transform:none;letter-spacing:0;cursor:pointer">';
+echo '<input type="checkbox" name="send_all_users" id="send-all-users" value="1"' . ($savedSendAll ? ' checked' : '') . '>';
+echo 'Send to all registered users <span style="color:#888;font-size:12px">(BCC — “Send” goes to everyone; “Send test” still uses the To field)</span>';
+echo '</label>';
+echo '</div>';
+
+echo '<div class="form-group" id="to-group">';
 echo '<label>To</label>';
-echo '<textarea name="to" rows="3" placeholder="one@example.com, two@example.com" required>' . htmlspecialchars($savedTo, ENT_QUOTES) . '</textarea>';
+echo '<textarea name="to" id="email-to" rows="3" placeholder="one@example.com, two@example.com">' . htmlspecialchars($savedTo, ENT_QUOTES) . '</textarea>';
 echo '<div class="hint">Comma or newline separated. Multiple recipients allowed.</div>';
 echo '</div>';
 
@@ -270,12 +375,39 @@ echo '<div class="hint">Plain text: line breaks → &lt;br&gt; automatically. HT
 echo '</div>';
 
 echo '<div class="form-actions">';
-echo '<button type="submit" name="send_test" class="btn btn-secondary">Send test</button>';
-echo '<button type="submit" class="btn btn-primary">Send</button>';
+echo '<button type="submit" name="send_test" id="email-send-test" class="btn btn-secondary">Send test</button>';
+echo '<button type="submit" id="email-send" class="btn btn-primary">Send</button>';
 echo '</div>';
 
 echo '</div>';
 echo '</form>';
 echo '</div>';
+
+// Confirm before a real broadcast (high blast radius — every registered user).
+// The To field stays enabled so "Send test" always works, even with the box on.
+?>
+<script>
+(function () {
+  var checkbox = document.getElementById('send-all-users');
+  var sendBtn  = document.getElementById('email-send');
+  var toGroup  = document.getElementById('to-group');
+  if (!checkbox) return;
+
+  function syncHint() {
+    if (toGroup) toGroup.style.opacity = checkbox.checked ? '0.6' : '1';
+  }
+  checkbox.addEventListener('change', syncHint);
+  syncHint();
+
+  if (sendBtn) {
+    sendBtn.addEventListener('click', function (e) {
+      if (checkbox.checked && !confirm('This will email ALL registered users. Send to everyone?')) {
+        e.preventDefault();
+      }
+    });
+  }
+})();
+</script>
+<?php
 
 admin_foot();
