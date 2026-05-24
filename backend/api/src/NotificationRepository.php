@@ -352,12 +352,20 @@ class NotificationRepository
                   AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
             ");
         } else {
+            // presence.user_id is never populated by the write path (every INSERT
+            // in PresenceRepository sets only session/channel/guest/nickname), so
+            // resolve the registered user by joining users on guest_id — the same
+            // way getOnline() does. Selecting presence.user_id directly returned
+            // zero recipients, which silently disabled city_join / channel_message
+            // pushes entirely.
             $stmt = Database::pdo()->prepare("
-                SELECT DISTINCT user_id FROM presence
-                WHERE channel_id = ?
-                  AND user_id IS NOT NULL
-                  AND last_seen_at > now() - interval '3 minutes'
-                  AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
+                SELECT DISTINCT u.id
+                FROM presence p
+                JOIN users u ON u.guest_id = p.guest_id
+                WHERE p.channel_id = ?
+                  AND p.last_seen_at > now() - interval '3 minutes'
+                  AND u.deleted_at IS NULL
+                  AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
             ");
         }
         $stmt->execute([$cityChannelId, $excludeUserId, $excludeUserId]);
