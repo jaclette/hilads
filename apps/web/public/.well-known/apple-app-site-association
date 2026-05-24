@@ -3,8 +3,8 @@
     "apps": [],
     "details": [
       {
-        "appID": "XXXXXXXXXX.com.hilads.app",
-        "paths": ["/e/*", "/event/*", "/city/*"]
+        "appID": "3387URLHK7.com.hilads.app",
+        "paths": ["/e/*", "/event/*", "/city/*", "/t/*"]
       }
     ]
   }
