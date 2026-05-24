@@ -6972,6 +6972,15 @@ img.pub-profile-avatar {
 /* Hangout expiry countdown in the chat. */
 .topic-chat-expiry { padding: 0 16px 6px; font-size: 0.8rem; color: var(--muted); font-weight: 600; }
 
+/* Members strip in the hangout chat (mirrors an event's "going" strip). */
+.topic-members-strip {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 8px 16px; background: none; border: none; cursor: pointer; font-family: inherit;
+  border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;
+}
+.topic-members-label { flex: 1; font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+.topic-members-see   { font-size: 0.85rem; color: var(--accent); font-weight: 700; }
+
 /* "Host" tag on hangouts the profile user owns (profile Hangouts tab). */
 .profile-host-tag {
   margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 700;

@@ -12,15 +12,17 @@ import { shareLink } from '@/lib/shareLink';
 import {
   fetchTopicById, fetchTopicMessages,
   sendTopicMessage, sendTopicImageMessage, markTopicRead,
-  resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic,
+  resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants,
 } from '@/api/topics';
+import { AttendeeAvatars } from '@/components/AttendeeAvatars';
+import { MembersSheet } from '@/components/MembersSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { formatExpiresIn } from '@/lib/expiry';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import type { Message, Topic } from '@/types';
+import type { Message, Topic, UserDTO } from '@/types';
 
 const CATEGORY_ICONS: Record<string, string> = {
   general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
@@ -34,6 +36,13 @@ export default function TopicChatScreen() {
 
   const [topic, setTopic]   = useState<Topic | null>(null);
   const [topicLoading, setTopicLoading] = useState(true);
+  const [participants, setParticipants] = useState<UserDTO[]>([]);
+  const [membersOpen,  setMembersOpen]  = useState(false);
+
+  const loadParticipants = useCallback(() => {
+    if (!id) return;
+    fetchHangoutParticipants(id).then(d => setParticipants(d.participants)).catch(() => {});
+  }, [id]);
   const [shared, setShared] = useState(false);
   const [joinState, setJoinState] = useState<'idle' | 'requested' | 'in'>('idle');
   // Members-only gate: true once the server returns 403 on the message load
@@ -99,7 +108,8 @@ export default function TopicChatScreen() {
       .then(setTopic)
       .catch(() => setTopic(null))
       .finally(() => setTopicLoading(false));
-  }, [id]);
+    loadParticipants();
+  }, [id, loadParticipants]);
 
   // Mark read on open (fire-and-forget)
   useEffect(() => {
@@ -117,8 +127,10 @@ export default function TopicChatScreen() {
   // (including this one) updates via useMessages' join_request upsert. An
   // already-resolved race returns gracefully — nothing to show the user.
   const handleResolveJoinRequest = useCallback((requestId: string, action: 'accept' | 'reject') => {
-    resolveHangoutJoinRequest(id, requestId, action).catch(() => { /* WS/refetch reconciles */ });
-  }, [id]);
+    resolveHangoutJoinRequest(id, requestId, action)
+      .then(() => { if (action === 'accept') loadParticipants(); }) // new member joined
+      .catch(() => { /* WS/refetch reconciles */ });
+  }, [id, loadParticipants]);
 
   const postTextFn = useCallback(
     (content: string, _replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
@@ -259,6 +271,21 @@ export default function TopicChatScreen() {
         </View>
       )}
 
+      {/* Members strip — same as an event's "going" strip. Members only. */}
+      {!gated && participants.length > 0 && (
+        <TouchableOpacity style={styles.membersStrip} activeOpacity={0.75} onPress={() => setMembersOpen(true)}>
+          <AttendeeAvatars
+            preview={participants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
+            total={participants.length}
+            borderColor={Colors.bg}
+          />
+          <Text style={styles.membersLabel}>
+            {participants.length === 1 ? `${participants[0].displayName} is in` : `${participants.length} in this hangout`}
+          </Text>
+          <Text style={styles.membersSeeAll}>See all →</Text>
+        </TouchableOpacity>
+      )}
+
       {/* Error banner */}
       {msgError && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
@@ -364,6 +391,16 @@ export default function TopicChatScreen() {
       </KeyboardAvoidingView>
       )}
 
+      <MembersSheet
+        visible={membersOpen}
+        loading={false}
+        participants={participants}
+        count={participants.length}
+        noun="in this hangout"
+        onClose={() => setMembersOpen(false)}
+        onSelect={(uid) => { setMembersOpen(false); router.push({ pathname: '/user/[id]', params: { id: uid } }); }}
+      />
+
     </SafeAreaView>
   );
 }
@@ -454,6 +491,14 @@ const styles = StyleSheet.create({
   },
   ownerBtnDanger:  { borderColor: 'rgba(248,113,113,0.3)', backgroundColor: 'rgba(248,113,113,0.08)' },
   ownerBtnText:    { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
+
+  membersStrip: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    paddingHorizontal: Spacing.md, paddingVertical: 10,
+    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)',
+  },
+  membersLabel:  { flex: 1, fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
+  membersSeeAll: { fontSize: FontSizes.sm, color: Colors.accent, fontWeight: '700' },
   joinBtn: {
     marginTop:       10,
     alignSelf:       'flex-start',

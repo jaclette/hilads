@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic } from '../api'
+import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants } from '../api'
+import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
@@ -112,6 +113,12 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   // Members-only gate: true once the server returns 403 on the message load
   // (non-member / pending requester). Drops to false the moment a member accepts.
   const [gated,      setGated]      = useState(false)
+  // Participant list (shown like an event's "going" strip).
+  const [participants, setParticipants] = useState([])
+  const [showMembers,  setShowMembers]  = useState(false)
+  const loadParticipants = useCallback(() => {
+    fetchHangoutParticipants(topic.id).then(d => setParticipants(d.participants ?? [])).catch(() => {})
+  }, [topic.id])
 
   const knownIdsRef  = useRef(new Set())
   const bottomRef    = useRef(null)
@@ -135,8 +142,10 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   const onResolveJoinRequest = useCallback((requestId, action) => {
     // First-write-wins server-side; the resolved item re-broadcasts over WS so
     // every participant's card updates. already_resolved races are swallowed.
-    resolveHangoutJoinRequest(topic.id, requestId, action).catch(() => {})
-  }, [topic.id])
+    resolveHangoutJoinRequest(topic.id, requestId, action)
+      .then(() => { if (action === 'accept') loadParticipants() }) // new member joined
+      .catch(() => {})
+  }, [topic.id, loadParticipants])
   const handleRequestToJoin = useCallback(async () => {
     const res = await requestToJoinHangout(topic.id).catch(() => null)
     if (!res) return
@@ -183,6 +192,11 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
     loadMessages()
     if (guest?.guestId) markTopicRead(topic.id, guest.guestId)
   }, [topic.id, guest?.guestId, loadMessages])
+
+  // Load the members list once we know the viewer is a member (not gated).
+  useEffect(() => {
+    if (!gated) loadParticipants()
+  }, [gated, loadParticipants])
 
   // WS — join topic room for live message delivery, leave on unmount.
   // Gated (pending) users do NOT join: the WS server can't verify membership,
@@ -432,6 +446,20 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         <div className="topic-chat-expiry">⏱ {formatExpiresIn(topic.expires_at)}</div>
       )}
 
+      {/* Members strip — same idea as an event's "going" strip. Members only. */}
+      {!gated && participants.length > 0 && (
+        <button className="topic-members-strip" onClick={() => setShowMembers(true)}>
+          <AttendeeAvatars
+            preview={participants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
+            total={participants.length}
+          />
+          <span className="topic-members-label">
+            {participants.length === 1 ? `${participants[0].displayName} is in` : `${participants.length} in this hangout`}
+          </span>
+          <span className="topic-members-see">See all →</span>
+        </button>
+      )}
+
       {/* Owner controls — edit / delete this hangout. */}
       {isOwner && (
         <div className="topic-owner-row">
@@ -618,6 +646,38 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         autoFocus
       />
       </>
+      )}
+
+      {/* Members list modal (avatar strip → full list → profile). */}
+      {showMembers && (
+        <div className="modal-overlay" onClick={() => setShowMembers(false)}>
+          <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">👥 {participants.length} in this hangout</span>
+              <button className="going-modal-close" onClick={() => setShowMembers(false)}>✕</button>
+            </div>
+            <div className="going-modal-body">
+              {participants.map(p => {
+                const isRegistered = p.accountType === 'registered'
+                const [c1, c2] = avatarColors(p.id)
+                return (
+                  <div
+                    key={p.id}
+                    className={`people-drawer-row${isRegistered ? ' people-drawer-row--tappable' : ''}`}
+                    onClick={isRegistered ? () => { setShowMembers(false); onViewProfile?.(p.id, p.displayName) } : undefined}
+                  >
+                    {p.avatarUrl
+                      ? <img src={p.avatarUrl} className="online-avatar" alt="" />
+                      : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>{(p.displayName ?? '?')[0].toUpperCase()}</span>}
+                    <div className="people-drawer-content">
+                      <span className="people-drawer-name">{p.displayName}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
