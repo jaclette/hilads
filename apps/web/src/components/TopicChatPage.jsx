@@ -272,7 +272,11 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       const data = await sendTopicMessage(topic.id, guest.guestId, nickname, text, built.length ? built : null)
       const msg = data.message ?? data
       knownIdsRef.current.add(msg.id)
-      setMessages(prev => prev.map(m => m.id === localId ? msg : m))
+      // Dedup the WS echo race: if our own broadcast already arrived (real id
+      // present), drop the optimistic copy instead of creating a duplicate.
+      setMessages(prev => prev.some(m => m.id === msg.id)
+        ? prev.filter(m => m.id !== localId)
+        : prev.map(m => m.id === localId ? msg : m))
     } catch (err) {
       setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
       setError(err.message)
@@ -333,7 +337,9 @@ export default function TopicChatPage({ topic, guest, nickname, onBack, socket, 
       const data = await sendTopicMessage(topic.id, guest.guestId, nickname, text)
       const msg = data.message ?? data
       knownIdsRef.current.add(msg.id)
-      setMessages(prev => prev.map(m => m.id === localId ? msg : m))
+      setMessages(prev => prev.some(m => m.id === msg.id)
+        ? prev.filter(m => m.id !== localId)
+        : prev.map(m => m.id === localId ? msg : m))
     } catch (err) {
       setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
       setError(err.message)
