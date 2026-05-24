@@ -12,7 +12,8 @@
  *   5. "Share this spot" → onConfirm({ place, address })
  */
 
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo, memo } from 'react';
+import type { RefObject } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Modal,
   TextInput, ScrollView, Keyboard,
@@ -99,6 +100,37 @@ async function nominatimSearch(query: string): Promise<SearchHit[]> {
     .filter((h: SearchHit) => h.label && Number.isFinite(h.lat) && Number.isFinite(h.lng));
 }
 
+// ── Map WebView (isolated) ────────────────────────────────────────────────────
+// An inline-HTML <WebView> reloads its content on EVERY re-render where a prop
+// changes. The parent screen (city chat) re-renders constantly (WS messages,
+// presence), which made the map reload ~1/sec → "getting location" spinner +
+// shaking. Wrapping it in React.memo with an html-only comparator guarantees the
+// WebView only ever reloads when the HTML actually changes (i.e. never, after
+// mount — coords are fixed for the session). onMessage/ref changes are ignored;
+// onMessage is a stable useCallback and the ref is stable, so this is safe.
+const MapWebView = memo(
+  function MapWebView({ html, onMessage, innerRef }: {
+    html: string;
+    onMessage: (e: WebViewMessageEvent) => void;
+    innerRef: RefObject<WebView | null>;
+  }) {
+    return (
+      <WebView
+        ref={innerRef}
+        style={styles.webview}
+        source={{ html }}
+        onMessage={onMessage}
+        scrollEnabled={false}
+        bounces={false}
+        overScrollMode="never"
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      />
+    );
+  },
+  (prev, next) => prev.html === next.html,   // reload only when the HTML changes
+);
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -129,21 +161,18 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
   const webViewReady = useRef(false);
   const pendingPan   = useRef<{ lat: number; lng: number } | null>(null);
 
-  // Build the map HTML + WebView `source` ONCE and keep them referentially
-  // stable. The flicker bug was a re-render loop: passing a fresh `{ html }`
-  // object on every render made react-native-webview reload the map, which
-  // re-fired `ready` → geocode → setState → re-render → reload again (~1/sec).
-  // Memoizing the source breaks that cycle — the component remounts on each
-  // open (parent gates it with `locationCoords && …`), so initial coords are
-  // already fixed for the session.
-  const html   = useMemo(() => buildMapHtml(initialLat, initialLng), [initialLat, initialLng]);
-  const source = useMemo(() => ({ html }), [html]);
+  // Map HTML built once from the (fixed-for-the-session) initial coords. The
+  // <MapWebView> below is React.memo'd on this html, so it never reloads on a
+  // parent re-render — only when the html itself changes.
+  const html = useMemo(() => buildMapHtml(initialLat, initialLng), [initialLat, initialLng]);
 
   // After picker opens: refine to accurate GPS without blocking the UI.
   // The caller already provided last-known position as initialLat/Lng so the map
   // renders immediately. Here we silently upgrade to precise GPS and pan the map.
+  const didLocate = useRef(false);
   useEffect(() => {
-    if (!visible || !autoLocate) return;
+    if (!visible || !autoLocate || didLocate.current) return;
+    didLocate.current = true; // one-shot: never re-fetch GPS for this picker session
     let cancelled = false;
     (async () => {
       try {
@@ -250,21 +279,6 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
     } catch { /* ignore */ }
   }, [geocode]);
 
-  // Create the WebView element ONCE — render-stable so the inline-HTML map never
-  // reloads on a parent re-render (source + onMessage are both memoized).
-  const mapWebView = useMemo(() => (
-    <WebView
-      ref={webViewRef}
-      style={styles.webview}
-      source={source}
-      onMessage={handleWebViewMessage}
-      scrollEnabled={false}
-      bounces={false}
-      overScrollMode="never"
-      showsHorizontalScrollIndicator={false}
-      showsVerticalScrollIndicator={false}
-    />
-  ), [source, handleWebViewMessage]);
 
   return (
     <Modal
@@ -287,7 +301,7 @@ export function LocationPicker({ visible, initialLat, initialLng, autoLocate = t
 
         {/* ── Map ── */}
         <View style={styles.mapWrap}>
-          {mapWebView}
+          <MapWebView html={html} onMessage={handleWebViewMessage} innerRef={webViewRef} />
 
           {/* Fixed pin — sits in center, pointer events disabled so map stays draggable */}
           <View style={styles.pinWrap} pointerEvents="none">
