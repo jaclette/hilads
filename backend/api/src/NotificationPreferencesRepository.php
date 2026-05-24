@@ -66,68 +66,40 @@ class NotificationPreferencesRepository
     public static function upsert(string $userId, array $prefs): array
     {
         $defaults = self::defaults();
-
-        $dm            = isset($prefs['dm_push'])              ? (bool) $prefs['dm_push']              : $defaults['dm_push'];
-        $eventMsg      = isset($prefs['event_message_push'])   ? (bool) $prefs['event_message_push']   : $defaults['event_message_push'];
-        $eventJoin     = isset($prefs['event_join_push'])      ? (bool) $prefs['event_join_push']      : $defaults['event_join_push'];
-        $newEvent      = isset($prefs['new_event_push'])       ? (bool) $prefs['new_event_push']       : $defaults['new_event_push'];
-        $mention       = isset($prefs['mention_push'])         ? (bool) $prefs['mention_push']         : $defaults['mention_push'];
-        $chanMsg       = isset($prefs['channel_message_push']) ? (bool) $prefs['channel_message_push'] : $defaults['channel_message_push'];
-        $cityJoin      = isset($prefs['city_join_push'])       ? (bool) $prefs['city_join_push']       : $defaults['city_join_push'];
-        $friendReq     = isset($prefs['friend_request_push'])    ? (bool) $prefs['friend_request_push']    : $defaults['friend_request_push'];
-        $vibeReceived  = isset($prefs['vibe_received_push'])   ? (bool) $prefs['vibe_received_push']   : $defaults['vibe_received_push'];
-        $profileView   = isset($prefs['profile_view_push'])    ? (bool) $prefs['profile_view_push']    : $defaults['profile_view_push'];
-        $topicReply    = isset($prefs['topic_reply_push'])     ? (bool) $prefs['topic_reply_push']     : $defaults['topic_reply_push'];
-        $newTopic      = isset($prefs['new_topic_push'])       ? (bool) $prefs['new_topic_push']       : $defaults['new_topic_push'];
-        $adminAnnounce = isset($prefs['admin_announcement_push']) ? (bool) $prefs['admin_announcement_push'] : $defaults['admin_announcement_push'];
-
-        $resolved = [
-            'dm_push'              => $dm,
-            'event_message_push'   => $eventMsg,
-            'event_join_push'      => $eventJoin,
-            'new_event_push'       => $newEvent,
-            'mention_push'         => $mention,
-            'channel_message_push' => $chanMsg,
-            'city_join_push'       => $cityJoin,
-            'friend_request_push'    => $friendReq,
-            'vibe_received_push'   => $vibeReceived,
-            'profile_view_push'    => $profileView,
-            'topic_reply_push'     => $topicReply,
-            'new_topic_push'       => $newTopic,
-            'admin_announcement_push' => $adminAnnounce,
-        ];
-
-        // PDO serialises PHP bool false as "" (empty string) which PostgreSQL rejects for BOOLEAN columns.
-        // Cast every boolean to int (1/0) so PostgreSQL receives a valid boolean literal.
+        // PDO serialises PHP bool false as "" which PostgreSQL rejects for BOOLEAN.
+        // Cast to int (1/0) so PostgreSQL receives a valid boolean literal.
         $b = static fn(bool $v): int => $v ? 1 : 0;
 
-        Database::pdo()->prepare("
-            INSERT INTO notification_preferences
-                (user_id, dm_push, event_message_push, event_join_push, new_event_push, mention_push,
-                 channel_message_push, city_join_push, friend_request_push, vibe_received_push,
-                 profile_view_push, topic_reply_push, new_topic_push, admin_announcement_push)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT (user_id) DO UPDATE
-               SET dm_push              = EXCLUDED.dm_push,
-                   event_message_push   = EXCLUDED.event_message_push,
-                   event_join_push      = EXCLUDED.event_join_push,
-                   new_event_push       = EXCLUDED.new_event_push,
-                   mention_push         = EXCLUDED.mention_push,
-                   channel_message_push = EXCLUDED.channel_message_push,
-                   city_join_push       = EXCLUDED.city_join_push,
-                   friend_request_push    = EXCLUDED.friend_request_push,
-                   vibe_received_push   = EXCLUDED.vibe_received_push,
-                   profile_view_push    = EXCLUDED.profile_view_push,
-                   topic_reply_push     = EXCLUDED.topic_reply_push,
-                   new_topic_push       = EXCLUDED.new_topic_push,
-                   admin_announcement_push = EXCLUDED.admin_announcement_push
-        ")->execute([
-            $userId,
-            $b($dm), $b($eventMsg), $b($eventJoin), $b($newEvent), $b($mention),
-            $b($chanMsg), $b($cityJoin), $b($friendReq), $b($vibeReceived), $b($profileView),
-            $b($topicReply), $b($newTopic), $b($adminAnnounce),
-        ]);
+        // PARTIAL update: only the keys the client actually sent are changed.
+        // Absent keys keep their existing DB value — toggling one preference must
+        // NOT reset the others (the old full-row upsert reset every absent key to
+        // its default, so the two false-default toggles could never both stay on).
+        // Column names come from defaults() (hardcoded), so interpolation is safe.
+        $present = array_intersect_key($prefs, $defaults);
 
-        return $resolved;
+        // New rows need a complete row → defaults overlaid with any present values.
+        $full = $defaults;
+        foreach ($present as $k => $v) $full[$k] = (bool) $v;
+
+        $cols   = array_keys($defaults);
+        $params = [$userId];
+        foreach ($cols as $c) $params[] = $b($full[$c]);
+
+        $insertCols   = 'user_id, ' . implode(', ', $cols);
+        $placeholders = implode(', ', array_fill(0, count($cols) + 1, '?'));
+
+        if (!empty($present)) {
+            $updateSet = implode(', ', array_map(static fn($k) => "$k = EXCLUDED.$k", array_keys($present)));
+            $conflict  = "ON CONFLICT (user_id) DO UPDATE SET $updateSet";
+        } else {
+            $conflict  = "ON CONFLICT (user_id) DO NOTHING";
+        }
+
+        Database::pdo()
+            ->prepare("INSERT INTO notification_preferences ($insertCols) VALUES ($placeholders) $conflict")
+            ->execute($params);
+
+        // Return the actual stored state (not the request echo).
+        return self::get($userId);
     }
 }
