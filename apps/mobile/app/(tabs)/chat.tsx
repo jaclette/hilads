@@ -972,12 +972,16 @@ const styles = StyleSheet.create({
     gap:            6,
   },
   cityHeroName: {
-    // flexShrink:1 is required: as a <Text> child of the row, iOS otherwise
-    // measures it with a too-narrow width and wraps/clips the name per word
-    // ("New York"→"New", "Bangkok"→empty). Letting it shrink gives it the real
-    // available width so the full name renders (wrapping to 2 lines only when
-    // genuinely long). Android tolerated the missing flexShrink; iOS did not.
-    flexShrink:    1,
+    // Cross-platform gotcha: iOS and Android measure a <Text> child of a
+    // centered row OPPOSITELY.
+    //   iOS     — without flexShrink it gets a too-narrow width and clips the
+    //             name per word ("New York"→"New", "Bangkok"→empty), so it
+    //             NEEDS flexShrink:1 to receive the real available width.
+    //   Android — flexShrink:1 makes it OVER-shrink and clip the same way
+    //             ("Ho Chi Minh City"→"Ho Chi Minh", "Bangkok"→empty); its
+    //             default (flexShrink:0) measures the full width correctly.
+    // So branch per platform — each value is the one that renders the full name.
+    flexShrink:    Platform.OS === 'ios' ? 1 : 0,
     fontSize:      24,
     fontWeight:    '500',
     color:         Colors.text,
