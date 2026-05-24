@@ -29,6 +29,7 @@ import { updateProfile, deleteAccount, checkUsernameAvailability } from '@/api/a
 import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
+import { fetchUserHangouts, type ProfileHangout } from '@/api/topics';
 import { fetchIncomingFriendRequestCount } from '@/api/friendRequests';
 import { socket } from '@/lib/socket';
 import type { UserVibe } from '@/api/users';
@@ -68,14 +69,19 @@ const EVENT_ICONS: Record<string, string> = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 };
 
-type ProfileTab = 'interests' | 'events' | 'friends' | 'vibes';
+type ProfileTab = 'interests' | 'hangouts' | 'events' | 'friends' | 'vibes';
 
 const PROFILE_TABS: { key: ProfileTab; label: string }[] = [
   { key: 'interests', label: 'Interests' },
+  { key: 'hangouts',  label: 'Hangouts'  },
   { key: 'events',    label: 'Events'    },
   { key: 'friends',   label: 'Friends'   },
   { key: 'vibes',     label: 'Vibes'     },
 ];
+
+const HANGOUT_ICONS: Record<string, string> = {
+  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -138,6 +144,7 @@ export default function MeScreen() {
   const [saved,              setSaved]              = useState(false);
   const [saveError,          setSaveError]          = useState<string | null>(null);
   const [myFriends,          setMyFriends]          = useState<UserDTO[]>([]);
+  const [myHangouts,         setMyHangouts]         = useState<ProfileHangout[]>([]);
   const [friendsLoading,     setFriendsLoading]     = useState(false);
   const [myReceivedVibes,    setMyReceivedVibes]    = useState<UserVibe[]>([]);
   const [myVibeScore,        setMyVibeScore]        = useState<number | null>(null);
@@ -161,6 +168,11 @@ export default function MeScreen() {
       .then(data => setMyFriends(data.friends))
       .catch(() => {})
       .finally(() => setFriendsLoading(false));
+  }, [account?.id]);
+
+  useEffect(() => {
+    if (!account?.id) { setMyHangouts([]); return; }
+    fetchUserHangouts(account.id).then(setMyHangouts).catch(() => {});
   }, [account?.id]);
 
   // Pending incoming friend-request count for the inbox badge. Cheap COUNT
@@ -696,6 +708,30 @@ export default function MeScreen() {
               <Text style={styles.version}>v{APP_VERSION}</Text>
             </TouchableOpacity>
           </>
+        )}
+
+        {/* ── Tab: Hangouts (joined + owned; owner tagged "Host") ── */}
+        {!isGuest && activeTab === 'hangouts' && (
+          <View style={styles.eventsCard}>
+            {myHangouts.length === 0 ? (
+              <Text style={styles.eventsEmpty}>No hangouts yet — start one ⚡</Text>
+            ) : myHangouts.map((h, idx) => (
+              <View key={h.id}>
+                {idx > 0 && <View style={styles.divider} />}
+                <TouchableOpacity
+                  style={styles.eventRow}
+                  onPress={() => router.push(`/topic/${h.id}`)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.eventIcon}>{HANGOUT_ICONS[h.category ?? 'general'] ?? '💬'}</Text>
+                  <View style={styles.eventInfo}>
+                    <Text style={styles.eventTitle} numberOfLines={1}>{h.title}</Text>
+                  </View>
+                  {h.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>Host</Text></View>}
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
         )}
 
         {/* ── Tab: Events (Going + Hosting) ── */}
@@ -1305,6 +1341,12 @@ const styles = StyleSheet.create({
   vibeChipActive:     { backgroundColor: 'rgba(255,122,60,0.18)', borderColor: Colors.accent },
   vibeChipText:       { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
   vibeChipTextActive: { color: Colors.text, fontWeight: '700' },
+
+  hostTag: {
+    backgroundColor: 'rgba(96,165,250,0.14)', borderRadius: Radius.full,
+    paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: 'rgba(96,165,250,0.25)',
+  },
+  hostTagText: { fontSize: 10, fontWeight: '700', color: '#60a5fa' },
 
   // ── Events / generic card ─────────────────────────────────────────────────
   eventsCard: {

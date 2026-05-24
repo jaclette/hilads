@@ -1235,6 +1235,21 @@ $router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
     Response::json(['events' => $events]);
 });
 
+// GET /api/v1/users/{userId}/hangouts — active hangouts the user created or
+// joined, for the profile "Hangouts" tab. Each item has `is_owner`.
+$router->add('GET', '/api/v1/users/{userId}/hangouts', function (array $params) {
+    $userId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+    $user = UserRepository::findById($userId) ?? UserRepository::findByGuestId($userId);
+    if ($user === null) {
+        Response::json(['hangouts' => []]);
+        return;
+    }
+    Response::json(['hangouts' => TopicRepository::getByUser($user['id'])]);
+});
+
 // ── Friends ───────────────────────────────────────────────────────────────────
 
 // POST /api/v1/users/{userId}/friends — send a friend request to {userId}.

@@ -29,6 +29,7 @@ import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { EventPill } from '@/features/events/EventPill';
+import { fetchUserHangouts, type ProfileHangout } from '@/api/topics';
 import { ReportModal } from '@/features/profile/ReportModal';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
@@ -96,7 +97,11 @@ const VIBE_META: Record<string, { emoji: string; label: string; caption: string 
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
-type TabKey = 'events' | 'friends' | 'vibes' | 'picks';
+type TabKey = 'hangouts' | 'events' | 'friends' | 'vibes' | 'picks';
+
+const HANGOUT_ICONS: Record<string, string> = {
+  general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+};
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -108,6 +113,7 @@ export default function PublicProfileScreen() {
 
   const [user,         setUser]         = useState<PublicProfile | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
+  const [hangouts,     setHangouts]     = useState<ProfileHangout[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState<string | null>(null);
   // 4-state machine driven by isFriend + pendingFriendRequest from the profile
@@ -130,7 +136,7 @@ export default function PublicProfileScreen() {
   const [showActionSheet,    setShowActionSheet]    = useState(false);
   const [blockBusy,          setBlockBusy]          = useState(false);
   const [existingReport,     setExistingReport]     = useState<ExistingReport | null>(null);
-  const [activeTab,    setActiveTab]    = useState<TabKey>('events');
+  const [activeTab,    setActiveTab]    = useState<TabKey>('hangouts');
 
   useEffect(() => {
     if (!canAccessProfile(account)) {
@@ -142,10 +148,11 @@ export default function PublicProfileScreen() {
     if (!id) return;
     setLoading(true);
 
-    Promise.all([fetchPublicProfile(id), fetchUserEvents(id)])
-      .then(([u, evs]) => {
+    Promise.all([fetchPublicProfile(id), fetchUserEvents(id), fetchUserHangouts(id)])
+      .then(([u, evs, hgs]) => {
         setUser(u);
         setEvents(evs);
+        setHangouts(hgs);
         // Derive friendState from server payload. isFriend wins because once
         // accepted, the request row is no longer pending.
         if (u.isFriend) {
@@ -374,6 +381,7 @@ export default function PublicProfileScreen() {
   );
 
   const tabs: { key: TabKey; label: string }[] = [
+    { key: 'hangouts', label: hangouts.length > 0 ? `Hangouts · ${hangouts.length}` : 'Hangouts' },
     { key: 'events',  label: events.length  > 0 ? `Events · ${events.length}` : 'Events' },
     { key: 'friends', label: friends.length > 0 ? `Friends · ${friends.length}` : 'Friends' },
     { key: 'vibes',   label: vibeCount      > 0 ? `Vibes · ${vibeCount}`        : 'Vibes'   },
@@ -521,6 +529,28 @@ export default function PublicProfileScreen() {
               ))}
             </ScrollView>
           </View>
+
+            {/* Hangouts tab */}
+            {activeTab === 'hangouts' && (
+              hangouts.length === 0 ? (
+                <Text style={styles.tabEmpty}>No hangouts yet</Text>
+              ) : (
+                <View style={styles.eventList}>
+                  {hangouts.map(h => (
+                    <TouchableOpacity
+                      key={h.id}
+                      style={styles.hangoutRow}
+                      activeOpacity={0.75}
+                      onPress={() => router.push({ pathname: '/topic/[id]', params: { id: h.id } })}
+                    >
+                      <Text style={styles.hangoutIcon}>{HANGOUT_ICONS[h.category ?? 'general'] ?? '💬'}</Text>
+                      <Text style={styles.hangoutTitle} numberOfLines={1}>{h.title}</Text>
+                      {h.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>Host</Text></View>}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )
+            )}
 
             {/* Events tab */}
             {activeTab === 'events' && (
@@ -1054,6 +1084,19 @@ const styles = StyleSheet.create({
 
   // ── Event list ────────────────────────────────────────────────────────────
   eventList: { gap: Spacing.xs },
+  hangoutRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    paddingVertical: 12, paddingHorizontal: 14,
+    backgroundColor: 'rgba(96,165,250,0.06)', borderRadius: Radius.lg,
+    borderWidth: 1, borderColor: 'rgba(96,165,250,0.15)',
+  },
+  hangoutIcon:  { fontSize: 16 },
+  hangoutTitle: { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
+  hostTag: {
+    backgroundColor: 'rgba(96,165,250,0.14)', borderRadius: Radius.full,
+    paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: 'rgba(96,165,250,0.25)',
+  },
+  hostTagText: { fontSize: 10, fontWeight: '700', color: '#60a5fa' },
   // Orphaned — left in place briefly to keep the diff small; safe to drop
   // in a follow-up. Live inside src/features/events/EventPill.tsx now.
   eventPill: {

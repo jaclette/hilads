@@ -615,6 +615,67 @@ class TopicRepository
     }
 
     /**
+     * Active hangouts a user created OR joined — for the profile "Hangouts" tab.
+     * Each item carries `is_owner` (true when the user created it). Most-recent
+     * first. Includes message stats so the row can show reply counts.
+     */
+    public static function getByUser(string $userId): array
+    {
+        $pdo  = Database::pdo();
+        $stmt = $pdo->prepare("
+            SELECT c.id, ct.city_id, ct.created_by, ct.guest_id, ct.title, ct.description, ct.category,
+                   ct.venue_lat, ct.venue_lng,
+                   EXTRACT(EPOCH FROM ct.expires_at)::INTEGER AS expires_at,
+                   EXTRACT(EPOCH FROM c.created_at)::INTEGER  AS created_at
+            FROM channels c
+            JOIN channel_topics ct ON ct.channel_id = c.id
+            WHERE c.status = 'active' AND ct.expires_at > now()
+              AND (ct.created_by = :owner_id
+                   OR EXISTS (SELECT 1 FROM topic_participants tp WHERE tp.topic_id = c.id AND tp.user_id = :part_id))
+            ORDER BY c.created_at DESC
+            LIMIT 30
+        ");
+        $stmt->execute(['owner_id' => $userId, 'part_id' => $userId]);
+        $topics = $stmt->fetchAll();
+        if (empty($topics)) return [];
+
+        // Batch message stats for the listed topics.
+        $ids = array_column($topics, 'id');
+        $in  = implode(',', array_fill(0, count($ids), '?'));
+        $s2  = $pdo->prepare("
+            SELECT channel_id, COUNT(*) AS message_count,
+                   EXTRACT(EPOCH FROM MAX(created_at))::INTEGER AS last_activity_at
+            FROM messages WHERE channel_id IN ($in) AND type IN ('text','image') GROUP BY channel_id
+        ");
+        $s2->execute($ids);
+        $statsMap = [];
+        foreach ($s2->fetchAll() as $r) $statsMap[$r['channel_id']] = $r;
+
+        $out = [];
+        foreach ($topics as $t) {
+            $stats   = $statsMap[$t['id']] ?? null;
+            $item    = self::format([
+                'id'               => $t['id'],
+                'city_id'          => $t['city_id'],
+                'created_by'       => $t['created_by'],
+                'guest_id'         => $t['guest_id'],
+                'title'            => $t['title'],
+                'description'      => $t['description'],
+                'category'         => $t['category'],
+                'venue_lat'        => $t['venue_lat'] ?? null,
+                'venue_lng'        => $t['venue_lng'] ?? null,
+                'message_count'    => $stats['message_count']    ?? 0,
+                'last_activity_at' => $stats['last_activity_at'] ?? null,
+                'expires_at'       => $t['expires_at'],
+                'created_at'       => $t['created_at'],
+            ]);
+            $item['is_owner'] = ($t['created_by'] === $userId);
+            $out[] = $item;
+        }
+        return $out;
+    }
+
+    /**
      * The user's current ACTIVE (non-expired) hangout, if any — used to enforce
      * one-hangout-per-user at creation. Returns ['id','title'] or null.
      */

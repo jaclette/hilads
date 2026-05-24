@@ -817,6 +817,13 @@ export async function fetchIncomingFriendRequestCount() {
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
 
+// Active hangouts a user created or joined — for the profile "Hangouts" tab.
+export async function fetchUserHangouts(userId) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/hangouts`, { credentials: 'include' })
+  if (!res.ok) return { hangouts: [] }
+  return res.json() // { hangouts }
+}
+
 export async function fetchMyEvents(guestId) {
   const res = await fetch(`${BASE}/users/me/events?guestId=${encodeURIComponent(guestId)}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch my events')

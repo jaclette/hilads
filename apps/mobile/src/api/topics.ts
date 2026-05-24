@@ -163,6 +163,20 @@ export async function fetchHangoutParticipants(topicId: string): Promise<{ parti
   }
 }
 
+// A hangout as listed on a profile — Topic DTO plus whether the profile user
+// owns it (created it) vs merely joined.
+export type ProfileHangout = Topic & { is_owner?: boolean };
+
+/** Active hangouts a user created or joined — for the profile "Hangouts" tab. */
+export async function fetchUserHangouts(userId: string): Promise<ProfileHangout[]> {
+  try {
+    const data = await api.get<{ hangouts?: ProfileHangout[] }>(`/users/${userId}/hangouts`);
+    return data.hangouts ?? [];
+  } catch {
+    return [];
+  }
+}
+
 /** Owner-only edit of a hangout's title/description/category. */
 export async function updateTopic(
   topicId: string,

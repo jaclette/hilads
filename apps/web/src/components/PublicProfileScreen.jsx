@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
+
+const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 import { cityFlag } from '../cityMeta'
 import { badgeLabel } from '../badgeMeta'
 import BackButton from './BackButton'
@@ -59,9 +61,10 @@ function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox }) {
+export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout }) {
   const [user,       setUser]       = useState(null)
   const [events,     setEvents]     = useState([])
+  const [hangouts,   setHangouts]   = useState([])
   const [friends,    setFriends]    = useState([])
   const [error,      setError]      = useState(null)
   const [dmBusy,       setDmBusy]       = useState(false)
@@ -87,7 +90,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [reportSent,      setReportSent]      = useState(false)
   const [reportError,     setReportError]     = useState(null)
   const [existingReport,  setExistingReport]  = useState(null) // { id, created_at, status } | null
-  const [activeTab, setActiveTab] = useState('events')
+  const [activeTab, setActiveTab] = useState('hangouts')
 
   const profileVibeCountRef = useRef(0)
 
@@ -107,7 +110,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setVibeRating(0)
     setVibeMessage('')
     setShowVibeForm(false)
-    setActiveTab('events')
+    setActiveTab('hangouts')
     setExistingReport(null)
     setShowReportForm(false)
     profileVibeCountRef.current = 0
@@ -146,6 +149,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
     fetchUserEvents(userId)
       .then(data => setEvents(data.events ?? []))
+      .catch(() => {})
+
+    fetchUserHangouts(userId)
+      .then(data => setHangouts(data.hangouts ?? []))
       .catch(() => {})
   }, [userId])
 
@@ -293,6 +300,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const hasPicks = !!(user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0)
 
   const tabs = [
+    { key: 'hangouts', label: 'Hangouts'    },
     { key: 'events',  label: 'Events'       },
     { key: 'friends', label: 'Friends'      },
     { key: 'vibes',   label: 'Vibes'        },
@@ -417,6 +425,28 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
           {/* Tab content — continues inside pub-profile-body below */}
 
             {/* Events tab */}
+            {activeTab === 'hangouts' && (
+              <div className="pub-profile-events">
+                {hangouts.length === 0
+                  ? <p className="pub-profile-tab-empty">No hangouts yet</p>
+                  : hangouts.map(h => (
+                      <div
+                        key={h.id}
+                        className="pub-profile-event-row"
+                        onClick={() => onOpenHangout ? onOpenHangout(h) : undefined}
+                        style={{ cursor: onOpenHangout ? 'pointer' : 'default' }}
+                      >
+                        <span className="pub-profile-event-icon">{HANGOUT_ICONS[h.category] ?? '💬'}</span>
+                        <div className="pub-profile-event-info">
+                          <span className="pub-profile-event-title">{h.title}</span>
+                          {h.is_owner && <span className="profile-host-tag">Host</span>}
+                        </div>
+                      </div>
+                    ))
+                }
+              </div>
+            )}
+
             {activeTab === 'events' && (
               <div className="pub-profile-events">
                 {events.length === 0

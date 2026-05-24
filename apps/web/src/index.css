@@ -6972,6 +6972,12 @@ img.pub-profile-avatar {
 /* Hangout expiry countdown in the chat. */
 .topic-chat-expiry { padding: 0 16px 6px; font-size: 0.8rem; color: var(--muted); font-weight: 600; }
 
+/* "Host" tag on hangouts the profile user owns (profile Hangouts tab). */
+.profile-host-tag {
+  margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 700;
+  color: #60a5fa; background: rgba(96,165,250,0.14); border: 1px solid rgba(96,165,250,0.25);
+}
+
 .modal-textarea {
   resize: none;
   line-height: 1.45;

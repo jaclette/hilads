@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { updateProfile, uploadImage, fetchUserVibes, deleteAccount, checkUsernameAvailability } from '../api'
+import { updateProfile, uploadImage, fetchUserVibes, fetchUserHangouts, deleteAccount, checkUsernameAvailability } from '../api'
+
+const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
@@ -38,12 +40,13 @@ const INTERESTS = [
 
 const PROFILE_TABS = [
   { key: 'interests', label: 'Interests' },
+  { key: 'hangouts',  label: 'Hangouts'  },
   { key: 'events',    label: 'Events'    },
   { key: 'friends',   label: 'Friends'   },
   { key: 'vibes',     label: 'Vibes'     },
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [username,        setUsername]        = useState(account.username ?? '')
@@ -75,6 +78,12 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError,       setDeleteError]       = useState(null)
   const [deleteLoading,     setDeleteLoading]     = useState(false)
+  const [myHangouts,        setMyHangouts]        = useState([])
+
+  useEffect(() => {
+    if (!account?.id) { setMyHangouts([]); return }
+    fetchUserHangouts(account.id).then(data => setMyHangouts(data.hangouts ?? [])).catch(() => {})
+  }, [account?.id])
 
   useEffect(() => {
     if (!account?.id) { setVibesLoading(false); return }
@@ -437,6 +446,22 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         )}
 
         {/* ── Tab: Events (Going + Hosting) ── */}
+        {activeTab === 'hangouts' && (
+          <div className="profile-card">
+            {myHangouts.length === 0
+              ? <p className="profile-tab-empty">No hangouts yet — start one ⚡</p>
+              : myHangouts.map(h => (
+                  <div key={h.id} className="my-event-row">
+                    <button className="my-event-row-body" onClick={() => onOpenHangout?.(h)}>
+                      <span className="my-event-title">{HANGOUT_ICONS[h.category] ?? '💬'} {h.title}</span>
+                      {h.is_owner && <span className="profile-host-tag">Host</span>}
+                    </button>
+                  </div>
+                ))
+            }
+          </div>
+        )}
+
         {activeTab === 'events' && (() => {
           const gid        = account.guest_id
           const goingEvts  = (myEvents ?? []).filter(ev => ev.guest_id !== gid)

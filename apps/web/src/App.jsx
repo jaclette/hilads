@@ -4655,6 +4655,7 @@ export default function App() {
           guest={guest}
           onBack={() => setViewingProfile(null)}
           onViewProfile={(uid, nickname) => openProfile(uid, nickname)}
+          onOpenHangout={(h) => { setViewingProfile(null); openHangout(h) }}
           onOpenLightbox={setLightboxUrl}
           onSendDm={account ? async (targetUserId) => {
             try {
@@ -4731,6 +4732,7 @@ export default function App() {
             openProfile(uid, nickname)
           }}
           onSelectEvent={(ev) => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
+          onOpenHangout={(h) => { setShowProfileDrawer(false); openHangout(h) }}
           onDeleteEvent={async (ev) => {
             try {
               await deleteEvent(ev.id, guest?.guestId ?? '')
