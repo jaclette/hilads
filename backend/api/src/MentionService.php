@@ -11,7 +11,7 @@ declare(strict_types=1);
  * never suggested or accepted. The mentionable set is context-scoped:
  *   city  → users.current_city_id = 'city_N' OR a recent message author in the city channel
  *   event → event_participants.user_id
- *   topic → topic_subscriptions.user_id
+ *   topic → topic_participants.user_id (the hangout's members)
  *
  * Offsets are owned by the client (JS UTF-16 indices into content) and the
  * renderer uses the same indices; the backend only stores them and bounds-checks
@@ -127,7 +127,9 @@ final class MentionService
             $stmt = $pdo->prepare("SELECT DISTINCT user_id FROM event_participants WHERE channel_id = ? AND user_id IS NOT NULL");
             $stmt->execute([$channelId]);
         } elseif ($context === 'topic') {
-            $stmt = $pdo->prepare("SELECT user_id FROM topic_subscriptions WHERE topic_id = ?");
+            // Members of the hangout (topic_participants), not just posters — so a
+            // member who joined but hasn't messaged yet is still mentionable.
+            $stmt = $pdo->prepare("SELECT user_id FROM topic_participants WHERE topic_id = ?");
             $stmt->execute([$channelId]);
         } else { // city
             // Mentionable in a city = registered users who are part of THIS city's
@@ -180,11 +182,13 @@ final class MentionService
                 LIMIT $cap";
             $params = [$channelId, $like, $excludeUserId, $excludeUserId];
         } elseif ($context === 'topic') {
+            // Suggest the hangout's members (topic_participants) — same as an event
+            // suggests its participants — so you can tag anyone who's in it.
             $sql = "
                 SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
-                FROM topic_subscriptions ts
-                JOIN users u ON u.id = ts.user_id
-                WHERE ts.topic_id = ?
+                FROM topic_participants tp
+                JOIN users u ON u.id = tp.user_id
+                WHERE tp.topic_id = ?
                   AND u.username IS NOT NULL AND u.deleted_at IS NULL
                   AND lower(u.username) LIKE ?
                   AND (CAST(? AS text) IS NULL OR u.id != ?)
