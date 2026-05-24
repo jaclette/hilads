@@ -245,7 +245,7 @@ export default function NotificationsScreen() {
             <View style={styles.prefDivider} />
             <PrefRow label="New events in your city" subtitle="When someone creates an event in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Someone arrived in your city" subtitle="When a registered user joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
+            <PrefRow label="Someone arrived in your city" subtitle="When anyone joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label="Friend requests" subtitle="When someone sends you a friend request or accepts yours" value={prefs.friend_request_push} onChange={v => togglePref('friend_request_push', v)} />
             <View style={styles.prefDivider} />

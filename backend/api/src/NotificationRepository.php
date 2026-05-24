@@ -369,11 +369,12 @@ class NotificationRepository
         foreach ($userIds as $uid) {
             if (!($enabled[$uid] ?? true)) continue;
 
-            // Phase D rate limit: max 1 'new_event' push per (recipient, city)
-            // per 10 minutes. Absorbs bursty event creators without coding a
-            // batch/digest path. Only active when the new fan-out is on.
-            if ($useCurrentCity) {
-                $rlKey = "notif:new_event:{$uid}:{$cityChannelId}";
+            // Rate limit: max 1 push per (recipient, city) per 10 minutes for the
+            // high-frequency city-wide types (new_event, city_join). Absorbs bursty
+            // event creators / frequent arrivals without a batch/digest path, and
+            // bounds web push too (mobile also has its own per-type cooldown).
+            if ($useCurrentCity || $type === 'city_join') {
+                $rlKey = "notif:{$type}:{$uid}:{$cityChannelId}";
                 if (!RateLimiter::allow($rlKey, 1, 600)) continue;
             }
 
