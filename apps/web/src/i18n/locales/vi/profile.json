@@ -1,0 +1,129 @@
+{
+  "pageTitle": "Hồ sơ của tôi",
+  "changePhoto": "Đổi ảnh đại diện",
+  "yourProfile": "Hồ sơ của bạn",
+  "mode": "Chế độ",
+  "modes": {
+    "local": "Người địa phương",
+    "localDesc": "Bạn rành thành phố này",
+    "exploring": "Đang khám phá",
+    "exploringDesc": "Bạn đang khám phá nó"
+  },
+  "tabs": {
+    "interests": "Sở thích",
+    "hangouts": "Hangouts",
+    "events": "Sự kiện",
+    "friends": "Bạn bè",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Tiệc tùng",
+    "board_games": "Board game",
+    "coffee": "Cà phê",
+    "music": "Âm nhạc",
+    "food": "Ẩm thực",
+    "chill": "Thư giãn"
+  },
+  "interests": {
+    "drinks": "đồ uống",
+    "party": "tiệc tùng",
+    "nightlife": "về đêm",
+    "music": "âm nhạc",
+    "live music": "nhạc sống",
+    "culture": "văn hóa",
+    "art": "nghệ thuật",
+    "food": "ẩm thực",
+    "coffee": "cà phê",
+    "sport": "thể thao",
+    "fitness": "thể hình",
+    "hiking": "leo núi",
+    "beach": "biển",
+    "wellness": "sức khỏe",
+    "travel": "du lịch",
+    "hangout": "đi chơi",
+    "socializing": "giao lưu",
+    "gaming": "chơi game",
+    "tech": "công nghệ",
+    "dating": "hẹn hò"
+  },
+  "fields": {
+    "username": "Tên người dùng",
+    "usernamePlaceholder": "tên người dùng",
+    "checking": "Đang kiểm tra…",
+    "available": "@{{username}} còn trống",
+    "aboutMe": "Giới thiệu",
+    "charsLeft": "— còn {{count}}",
+    "aboutPlaceholder": "Thích ẩm thực đường phố và những cuộc trò chuyện ngẫu hứng",
+    "email": "Email",
+    "readOnly": "— chỉ đọc",
+    "homeCity": "Thành phố quê hương",
+    "homeCityPlaceholder": "Nơi bạn sống",
+    "age": "Tuổi",
+    "agePlaceholder": "Tuổi của bạn",
+    "myVibe": "Vibe của tôi",
+    "interests": "Sở thích",
+    "interestsHint": "— chọn tối đa 5"
+  },
+  "ambassador": {
+    "title": "Gợi ý của thành phố 👑",
+    "subtitle": "Hiển thị trên hồ sơ của bạn với tư cách huyền thoại địa phương.",
+    "restaurant": "Nhà hàng yêu thích",
+    "restaurantPlaceholder": "Nơi bạn luôn dẫn mọi người đến",
+    "spot": "Địa điểm ẩn / chỗ hay",
+    "spotPlaceholder": "Nơi mà hầu hết du khách bỏ lỡ",
+    "tip": "Mẹo địa phương",
+    "tipPlaceholder": "Lời khuyên hay nhất cho người mới",
+    "story": "Câu chuyện thành phố",
+    "storyPlaceholder": "Điều bạn yêu thích ở thành phố này"
+  },
+  "hangouts": {
+    "empty": "Chưa có hangout nào — tạo một cái ⚡",
+    "host": "Chủ"
+  },
+  "events": {
+    "going": "Tham gia",
+    "goingEmpty": "Chưa có kế hoạch nào — tìm gì đó đi 🔥",
+    "hosting": "Tổ chức",
+    "hostingEmpty": "Chưa tổ chức gì — bắt đầu đi ✨",
+    "live": "Trực tiếp",
+    "recurring": "↻ Lặp lại",
+    "upcoming": "Sắp tới",
+    "deleteEvent": "Xóa sự kiện"
+  },
+  "friends": {
+    "requests": "Lời mời kết bạn",
+    "empty": "Chưa có bạn bè. Thêm bạn từ các hồ sơ.",
+    "mine": "Bạn bè của tôi"
+  },
+  "vibesTab": {
+    "received": "Vibes đã nhận",
+    "score": "điểm vibe {{score}}",
+    "basedOn_other": "dựa trên {{count}} vibe",
+    "empty": "Chưa có vibe nào",
+    "emptyHint": "Điểm của bạn sẽ xuất hiện ở đây khi mọi người để lại lời nhắn ✨"
+  },
+  "save": {
+    "uploading": "Đang tải lên…",
+    "saving": "Đang lưu…",
+    "saved": "Đã lưu ✓",
+    "save": "Lưu hồ sơ"
+  },
+  "signOut": "Đăng xuất",
+  "deleteAccount": "Xóa tài khoản",
+  "delete": {
+    "title": "Xóa tài khoản?",
+    "body": "Hồ sơ, bạn bè và cài đặt của bạn sẽ bị xóa vĩnh viễn. Tin nhắn và sự kiện của bạn sẽ vẫn còn trong các cuộc trò chuyện thành phố một cách ẩn danh.",
+    "irreversible": "Không thể hoàn tác.",
+    "deleting": "Đang xóa…",
+    "confirm": "Có, xóa tài khoản của tôi",
+    "cancel": "Hủy"
+  },
+  "errors": {
+    "photoUpload": "Tải ảnh lên thất bại. Thử lại.",
+    "usernameTooShort": "Tên người dùng phải có ít nhất 3 ký tự",
+    "usernameTaken": "Tên người dùng này đã được sử dụng",
+    "usernameInvalid": "Tên người dùng không hợp lệ",
+    "saveFailed": "Lưu thất bại. Thử lại.",
+    "generic": "Đã xảy ra lỗi. Thử lại."
+  }
+}

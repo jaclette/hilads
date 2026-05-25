@@ -1,0 +1,130 @@
+{
+  "pageTitle": "Mon profil",
+  "changePhoto": "Changer la photo de profil",
+  "yourProfile": "Votre profil",
+  "mode": "Mode",
+  "modes": {
+    "local": "Local",
+    "localDesc": "Tu connais cette ville",
+    "exploring": "Exploration",
+    "exploringDesc": "Tu la découvres"
+  },
+  "tabs": {
+    "interests": "Intérêts",
+    "hangouts": "Hangouts",
+    "events": "Événements",
+    "friends": "Amis",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Fête",
+    "board_games": "Jeux de société",
+    "coffee": "Café",
+    "music": "Musique",
+    "food": "Cuisine",
+    "chill": "Détente"
+  },
+  "interests": {
+    "drinks": "verres",
+    "party": "fête",
+    "nightlife": "vie nocturne",
+    "music": "musique",
+    "live music": "concerts",
+    "culture": "culture",
+    "art": "art",
+    "food": "cuisine",
+    "coffee": "café",
+    "sport": "sport",
+    "fitness": "fitness",
+    "hiking": "randonnée",
+    "beach": "plage",
+    "wellness": "bien-être",
+    "travel": "voyage",
+    "hangout": "sorties",
+    "socializing": "rencontres",
+    "gaming": "jeux vidéo",
+    "tech": "tech",
+    "dating": "rencontres amoureuses"
+  },
+  "fields": {
+    "username": "Nom d'utilisateur",
+    "usernamePlaceholder": "nom d'utilisateur",
+    "checking": "Vérification…",
+    "available": "@{{username}} est disponible",
+    "aboutMe": "À propos de moi",
+    "charsLeft": "— {{count}} restants",
+    "aboutPlaceholder": "J'adore la street food et les conversations spontanées",
+    "email": "E-mail",
+    "readOnly": "— lecture seule",
+    "homeCity": "Ville d'origine",
+    "homeCityPlaceholder": "Où tu habites",
+    "age": "Âge",
+    "agePlaceholder": "Ton âge",
+    "myVibe": "Mon vibe",
+    "interests": "Intérêts",
+    "interestsHint": "— choisis-en jusqu'à 5"
+  },
+  "ambassador": {
+    "title": "Coups de cœur de la ville 👑",
+    "subtitle": "Affichés sur ton profil en tant que légende locale.",
+    "restaurant": "Restaurant préféré",
+    "restaurantPlaceholder": "Un endroit où tu emmènes toujours les gens",
+    "spot": "Pépite cachée / spot",
+    "spotPlaceholder": "Un endroit que la plupart des touristes ratent",
+    "tip": "Conseil local",
+    "tipPlaceholder": "Ton meilleur conseil pour les nouveaux venus",
+    "story": "Histoire de la ville",
+    "storyPlaceholder": "Quelque chose que tu adores dans cette ville"
+  },
+  "hangouts": {
+    "empty": "Pas encore de hangout — lance-en un ⚡",
+    "host": "Hôte"
+  },
+  "events": {
+    "going": "Je participe",
+    "goingEmpty": "Aucun plan pour l'instant — trouve quelque chose 🔥",
+    "hosting": "J'organise",
+    "hostingEmpty": "Rien d'organisé pour l'instant — lance quelque chose ✨",
+    "live": "En direct",
+    "recurring": "↻ Récurrent",
+    "upcoming": "À venir",
+    "deleteEvent": "Supprimer l'événement"
+  },
+  "friends": {
+    "requests": "Demandes d'amis",
+    "empty": "Pas encore d'amis. Ajoutes-en depuis les profils.",
+    "mine": "Mes amis"
+  },
+  "vibesTab": {
+    "received": "Vibes reçus",
+    "score": "score vibe de {{score}}",
+    "basedOn_one": "basé sur {{count}} vibe",
+    "basedOn_other": "basé sur {{count}} vibes",
+    "empty": "Pas encore de vibes",
+    "emptyHint": "Ton score apparaîtra ici une fois que les gens t'auront laissé un mot ✨"
+  },
+  "save": {
+    "uploading": "Téléversement…",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré ✓",
+    "save": "Enregistrer le profil"
+  },
+  "signOut": "Se déconnecter",
+  "deleteAccount": "Supprimer le compte",
+  "delete": {
+    "title": "Supprimer le compte ?",
+    "body": "Ton profil, tes amis et tes paramètres seront définitivement supprimés. Tes messages et événements resteront dans les chats de la ville de manière anonyme.",
+    "irreversible": "Cette action est irréversible.",
+    "deleting": "Suppression…",
+    "confirm": "Oui, supprimer mon compte",
+    "cancel": "Annuler"
+  },
+  "errors": {
+    "photoUpload": "Échec du téléversement de la photo. Réessaie.",
+    "usernameTooShort": "Le nom d'utilisateur doit comporter au moins 3 caractères",
+    "usernameTaken": "Ce nom d'utilisateur est déjà pris",
+    "usernameInvalid": "Nom d'utilisateur invalide",
+    "saveFailed": "Échec de l'enregistrement. Réessaie.",
+    "generic": "Une erreur s'est produite. Réessaie."
+  }
+}

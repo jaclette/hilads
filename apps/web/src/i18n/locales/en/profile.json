@@ -1,0 +1,130 @@
+{
+  "pageTitle": "My Profile",
+  "changePhoto": "Change profile photo",
+  "yourProfile": "Your profile",
+  "mode": "Mode",
+  "modes": {
+    "local": "Local",
+    "localDesc": "You know this city",
+    "exploring": "Exploring",
+    "exploringDesc": "You're discovering it"
+  },
+  "tabs": {
+    "interests": "Interests",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Friends",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Coffee",
+    "music": "Music",
+    "food": "Food",
+    "chill": "Chill"
+  },
+  "interests": {
+    "drinks": "drinks",
+    "party": "party",
+    "nightlife": "nightlife",
+    "music": "music",
+    "live music": "live music",
+    "culture": "culture",
+    "art": "art",
+    "food": "food",
+    "coffee": "coffee",
+    "sport": "sport",
+    "fitness": "fitness",
+    "hiking": "hiking",
+    "beach": "beach",
+    "wellness": "wellness",
+    "travel": "travel",
+    "hangout": "hangout",
+    "socializing": "socializing",
+    "gaming": "gaming",
+    "tech": "tech",
+    "dating": "dating"
+  },
+  "fields": {
+    "username": "Username",
+    "usernamePlaceholder": "username",
+    "checking": "Checking…",
+    "available": "@{{username}} is available",
+    "aboutMe": "About me",
+    "charsLeft": "— {{count}} left",
+    "aboutPlaceholder": "Love street food and random convos",
+    "email": "Email",
+    "readOnly": "— read only",
+    "homeCity": "Home city",
+    "homeCityPlaceholder": "Where you live",
+    "age": "Age",
+    "agePlaceholder": "Your age",
+    "myVibe": "My vibe",
+    "interests": "Interests",
+    "interestsHint": "— pick up to 5"
+  },
+  "ambassador": {
+    "title": "City picks 👑",
+    "subtitle": "Shown on your profile as a local legend.",
+    "restaurant": "Favorite restaurant",
+    "restaurantPlaceholder": "A place you always bring people to",
+    "spot": "Hidden gem / spot",
+    "spotPlaceholder": "Somewhere most tourists miss",
+    "tip": "Local tip",
+    "tipPlaceholder": "Best piece of advice for newcomers",
+    "story": "City story",
+    "storyPlaceholder": "Something you love about this city"
+  },
+  "hangouts": {
+    "empty": "No hangouts yet — start one ⚡",
+    "host": "Host"
+  },
+  "events": {
+    "going": "Going",
+    "goingEmpty": "No plans yet — find something 🔥",
+    "hosting": "Hosting",
+    "hostingEmpty": "Nothing hosted yet — start something ✨",
+    "live": "Live",
+    "recurring": "↻ Recurring",
+    "upcoming": "Upcoming",
+    "deleteEvent": "Delete event"
+  },
+  "friends": {
+    "requests": "Friend requests",
+    "empty": "No friends yet. Add some from profiles.",
+    "mine": "My friends"
+  },
+  "vibesTab": {
+    "received": "Vibes received",
+    "score": "{{score}} vibe score",
+    "basedOn_one": "based on {{count}} vibe",
+    "basedOn_other": "based on {{count}} vibes",
+    "empty": "No vibes yet",
+    "emptyHint": "Your score will appear here once people leave you a note ✨"
+  },
+  "save": {
+    "uploading": "Uploading…",
+    "saving": "Saving…",
+    "saved": "Saved ✓",
+    "save": "Save profile"
+  },
+  "signOut": "Sign out",
+  "deleteAccount": "Delete account",
+  "delete": {
+    "title": "Delete account?",
+    "body": "Your profile, friends, and settings will be permanently removed. Your messages and events will remain in city chats anonymously.",
+    "irreversible": "This cannot be undone.",
+    "deleting": "Deleting…",
+    "confirm": "Yes, delete my account",
+    "cancel": "Cancel"
+  },
+  "errors": {
+    "photoUpload": "Photo upload failed. Try again.",
+    "usernameTooShort": "Username must be at least 3 characters",
+    "usernameTaken": "That username is taken",
+    "usernameInvalid": "Invalid username",
+    "saveFailed": "Save failed. Try again.",
+    "generic": "Something went wrong. Try again."
+  }
+}

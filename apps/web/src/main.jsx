@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import * as Sentry from '@sentry/react'
 import './index.css'
 import App from './App'
+import i18n, { resolveInitialLocale, loadLocale } from './i18n'
 
 import posthog from 'posthog-js'
 
@@ -27,6 +28,22 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     })
 }
 
-createRoot(document.getElementById('root')).render(
-    <App />,
-)
+// Resolve + preload the locale BEFORE first render so the UI paints in the
+// right language with no flash. English is bundled (no await); fr/vi await one
+// dynamic-import chunk. The global edge middleware (rollout) will additionally
+// stamp <html lang> / redirect by Accept-Language — this client step keeps the
+// SPA correct on every route in the meantime.
+async function bootstrap() {
+    const locale = resolveInitialLocale()
+    if (locale !== 'en') {
+        try { await loadLocale(locale) } catch { /* fall back to bundled EN */ }
+    }
+    if (i18n.language !== locale) await i18n.changeLanguage(locale)
+    document.documentElement.lang = locale
+
+    createRoot(document.getElementById('root')).render(
+        <App />,
+    )
+}
+
+bootstrap()
