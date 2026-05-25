@@ -12,7 +12,7 @@
   "tabs": {
     "interests": "Intérêts",
     "hangouts": "Hangouts",
-    "events": "Événements",
+    "events": "Events",
     "friends": "Amis",
     "vibes": "Vibes"
   },
@@ -88,7 +88,7 @@
     "live": "En direct",
     "recurring": "↻ Récurrent",
     "upcoming": "À venir",
-    "deleteEvent": "Supprimer l'événement"
+    "deleteEvent": "Supprimer l'event"
   },
   "friends": {
     "requests": "Demandes d'amis",

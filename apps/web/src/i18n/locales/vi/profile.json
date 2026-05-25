@@ -12,7 +12,7 @@
   "tabs": {
     "interests": "Sở thích",
     "hangouts": "Hangouts",
-    "events": "Sự kiện",
+    "events": "Events",
     "friends": "Bạn bè",
     "vibes": "Vibes"
   },
@@ -88,7 +88,7 @@
     "live": "Trực tiếp",
     "recurring": "↻ Lặp lại",
     "upcoming": "Sắp tới",
-    "deleteEvent": "Xóa sự kiện"
+    "deleteEvent": "Xóa event"
   },
   "friends": {
     "requests": "Lời mời kết bạn",
