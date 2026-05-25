@@ -5,6 +5,7 @@
 
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import i18n from '@/i18n';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Notification } from '@/types';
 
@@ -19,10 +20,10 @@ export function relativeTime(raw?: string | null): string {
   }
   if (isNaN(ms)) return '';
   const diffSec = Math.floor((Date.now() - ms) / 1000);
-  if (diffSec < 60)    return 'now';
-  if (diffSec < 3600)  return `${Math.floor(diffSec / 60)}m ago`;
-  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
-  return `${Math.floor(diffSec / 86400)}d ago`;
+  if (diffSec < 60)    return i18n.t('time.nowShort', { ns: 'common' });
+  if (diffSec < 3600)  return i18n.t('time.mAgo', { ns: 'common', count: Math.floor(diffSec / 60) });
+  if (diffSec < 86400) return i18n.t('time.hAgo', { ns: 'common', count: Math.floor(diffSec / 3600) });
+  return i18n.t('time.dAgo', { ns: 'common', count: Math.floor(diffSec / 86400) });
 }
 
 // ── Notification icon ─────────────────────────────────────────────────────────

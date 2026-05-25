@@ -73,6 +73,7 @@
   "shareAt": "à {{location}}",
   "shareGoing": "{{count}} y vont.",
   "shareTagline": "Vois qui y est sur Hilads.",
+  "public": "Public",
   "locationOptional": "Optionnel",
   "saveChanges": "Enregistrer",
   "deleteTitle": "Supprimer cet événement ?",

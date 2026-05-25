@@ -1,4 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import type { FeedItem, HiladsEvent } from '@/types';
 import { Colors, FontSizes, Radius } from '@/constants';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
@@ -18,7 +20,7 @@ const EVENT_ICONS: Record<string, string> = {
 // format in the city's tz so times don't shift.
 function formatTime(ts: number, tz?: string): string {
   return new Date(ts * 1000).toLocaleTimeString(
-    [],
+    i18n.language,
     tz
       ? { timeZone: tz, hour: '2-digit', minute: '2-digit' }
       : { hour: '2-digit', minute: '2-digit' },
@@ -39,6 +41,7 @@ type Props = {
 };
 
 export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress }: Props) {
+  const { t } = useTranslation('event');
   const isRecurring = !!(event.series_id ?? event.recurrence_label);
   const now         = Date.now() / 1000;
   const startsAt    = (event as HiladsEvent).starts_at  ?? 0;
@@ -61,7 +64,7 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress }:
     >
       <View style={styles.cardTitleRow}>
         <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Event</Text></View>
-        {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>Public</Text></View>}
+        {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>{t('public')}</Text></View>}
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={1}>{event.title}</Text>
         {!isPublic && (event.participant_count ?? 0) > 0 ? (
@@ -86,7 +89,7 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress }:
 
       {host ? (
         <Text style={styles.cardHost} numberOfLines={1}>
-          Hosted by {host}
+          {t('hostedBy', { name: host })}
         </Text>
       ) : null}
 

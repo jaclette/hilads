@@ -14,6 +14,8 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import type { HiladsEvent } from '@/types';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
@@ -30,10 +32,10 @@ export function formatEventTime(ts: number): string {
   const today    = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
-  const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  if (d.toDateString() === today.toDateString())    return `Today · ${time}`;
-  if (d.toDateString() === tomorrow.toDateString()) return `Tomorrow · ${time}`;
-  return d.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ` · ${time}`;
+  const time = d.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+  if (d.toDateString() === today.toDateString())    return `${i18n.t('time.today', { ns: 'common' })} · ${time}`;
+  if (d.toDateString() === tomorrow.toDateString()) return `${i18n.t('time.tomorrow', { ns: 'common' })} · ${time}`;
+  return d.toLocaleDateString(i18n.language, { weekday: 'short', month: 'short', day: 'numeric' }) + ` · ${time}`;
 }
 
 interface Props {
@@ -42,6 +44,7 @@ interface Props {
 }
 
 export function EventPill({ event, onPress }: Props) {
+  const { t } = useTranslation('common');
   const icon   = EVENT_ICONS[event.event_type] ?? '📌';
   const now    = Date.now() / 1000;
   const isLive = event.starts_at <= now && event.expires_at > now;
@@ -53,7 +56,7 @@ export function EventPill({ event, onPress }: Props) {
         <View style={styles.eventMeta}>
           {isLive && (
             <View style={styles.liveBadge}>
-              <Text style={styles.liveBadgeText}>LIVE</Text>
+              <Text style={styles.liveBadgeText}>{t('live')}</Text>
             </View>
           )}
           <Text style={styles.eventTime}>{formatEventTime(event.starts_at)}</Text>

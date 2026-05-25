@@ -18,6 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
@@ -44,10 +45,10 @@ function relativeTime(raw?: string | null): string {
   }
   if (isNaN(ms)) return '';
   const diffSec = Math.floor((Date.now() - ms) / 1000);
-  if (diffSec < 60)    return 'now';
-  if (diffSec < 3600)  return `${Math.floor(diffSec / 60)}m`;
-  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h`;
-  return `${Math.floor(diffSec / 86400)}d`;
+  if (diffSec < 60)    return i18n.t('time.nowShort', { ns: 'common' });
+  if (diffSec < 3600)  return i18n.t('time.mShort', { ns: 'common', count: Math.floor(diffSec / 60) });
+  if (diffSec < 86400) return i18n.t('time.hShort', { ns: 'common', count: Math.floor(diffSec / 3600) });
+  return i18n.t('time.dShort', { ns: 'common', count: Math.floor(diffSec / 86400) });
 }
 
 // ── DM row ────────────────────────────────────────────────────────────────────

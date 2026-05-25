@@ -57,5 +57,29 @@
     "music": "Musique",
     "food": "Cuisine",
     "chill": "Détente"
+  },
+  "live": "EN DIRECT",
+  "activeNow": "● Actif maintenant",
+  "replies_one": "💬 {{count}} réponse",
+  "replies_other": "💬 {{count}} réponses",
+  "noReplies": "Pas de réponses",
+  "noRepliesFirst": "Pas encore de réponses — sois le premier",
+  "time": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "tomorrow": "Demain",
+    "nowShort": "maint.",
+    "justNow": "à l'instant",
+    "mAgo": "il y a {{count}} min",
+    "hAgo": "il y a {{count}} h",
+    "dAgo": "il y a {{count}} j",
+    "mShort": "{{count}} min",
+    "hShort": "{{count}} h",
+    "dShort": "{{count}} j",
+    "expired": "Expiré",
+    "expiresSoon": "Expire bientôt",
+    "expiresInMin": "Expire dans {{count}} min",
+    "expiresInHourMin": "Expire dans {{hours}} h {{mins}} min",
+    "expiresInHour": "Expire dans {{count}} h"
   }
 }

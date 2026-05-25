@@ -12,6 +12,8 @@
  *     We normalise it to ISO 8601 before parsing.
  */
 
+import i18n from '@/i18n';
+
 function normalizePostgresTimestamp(ts: string): string {
   // 1. Replace PostgreSQL's space separator with ISO "T"
   let s = ts.replace(' ', 'T');
@@ -37,7 +39,7 @@ export function toMs(ts: number | string | undefined): number {
 export function formatTime(ts: number | string | undefined): string {
   const ms = toMs(ts);
   if (!ms) return '';
-  return new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  return new Date(ms).toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
 }
 
 /**
@@ -53,15 +55,15 @@ export function formatSmartTime(ts: number | string | undefined): string {
   const d   = new Date(ms);
   const now = new Date();
 
-  const time      = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  const time      = d.toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' });
   const today     = startOfDay(now);
   const yesterday = new Date(today.getTime() - 86_400_000);
   const msgDay    = startOfDay(d);
 
   if (msgDay.getTime() === today.getTime())     return time;
-  if (msgDay.getTime() === yesterday.getTime()) return `Yesterday · ${time}`;
+  if (msgDay.getTime() === yesterday.getTime()) return `${i18n.t('time.yesterday', { ns: 'common' })} · ${time}`;
 
-  const datePart = d.toLocaleDateString([], {
+  const datePart = d.toLocaleDateString(i18n.language, {
     month: 'short',
     day:   'numeric',
     ...(d.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}),
@@ -83,12 +85,12 @@ export function formatDateLabel(ts: number | string | undefined): string {
   const yesterday = new Date(today.getTime() - 86_400_000);
   const msgDay    = startOfDay(d);
 
-  if (msgDay.getTime() === today.getTime())     return 'Today';
-  if (msgDay.getTime() === yesterday.getTime()) return 'Yesterday';
+  if (msgDay.getTime() === today.getTime())     return i18n.t('time.today', { ns: 'common' });
+  if (msgDay.getTime() === yesterday.getTime()) return i18n.t('time.yesterday', { ns: 'common' });
 
   const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
   if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
-  return d.toLocaleDateString([], opts);
+  return d.toLocaleDateString(i18n.language, opts);
 }
 
 /** True if two timestamps fall on the same calendar day (or either is absent). */

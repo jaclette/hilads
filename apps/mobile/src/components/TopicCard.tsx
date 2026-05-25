@@ -1,4 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import type { FeedItem } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
@@ -16,10 +18,10 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 function timeAgo(ts: number): string {
   const diff = Math.floor(Date.now() / 1000 - ts);
-  if (diff < 60)    return 'just now';
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 60)    return i18n.t('time.justNow', { ns: 'common' });
+  if (diff < 3600)  return i18n.t('time.mAgo', { ns: 'common', count: Math.floor(diff / 60) });
+  if (diff < 86400) return i18n.t('time.hAgo', { ns: 'common', count: Math.floor(diff / 3600) });
+  return i18n.t('time.dAgo', { ns: 'common', count: Math.floor(diff / 86400) });
 }
 
 export function TopicCard({
@@ -33,6 +35,7 @@ export function TopicCard({
   // NOW feed only — tapping the member row opens the members list.
   onAvatarsPress?: () => void;
 }) {
+  const { t } = useTranslation('common');
   const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
   const replies   = topic.message_count ?? 0;
   const lastAct   = topic.last_activity_at;
@@ -45,7 +48,7 @@ export function TopicCard({
         <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Hangout</Text></View>
         {activeNow && (
           <View style={styles.activeNowBadge}>
-            <Text style={styles.activeNowText}>● Active now</Text>
+            <Text style={styles.activeNowText}>{t('activeNow')}</Text>
           </View>
         )}
         {expiresIn && (
@@ -66,8 +69,8 @@ export function TopicCard({
       ) : null}
       <Text style={styles.topicMeta}>
         {replies > 0
-          ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
-          : pastMode ? 'No replies' : 'No replies yet — be first'}
+          ? `${t('replies', { count: replies })}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
+          : pastMode ? t('noReplies') : t('noRepliesFirst')}
       </Text>
       {!pastMode ? (
         <AttendeeAvatars

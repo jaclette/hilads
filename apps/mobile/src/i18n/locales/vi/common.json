@@ -57,5 +57,28 @@
     "music": "Âm nhạc",
     "food": "Đồ ăn",
     "chill": "Thư giãn"
+  },
+  "live": "TRỰC TIẾP",
+  "activeNow": "● Đang hoạt động",
+  "replies_other": "💬 {{count}} trả lời",
+  "noReplies": "Chưa có trả lời",
+  "noRepliesFirst": "Chưa có trả lời — hãy là người đầu tiên",
+  "time": {
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "tomorrow": "Ngày mai",
+    "nowShort": "bây giờ",
+    "justNow": "vừa xong",
+    "mAgo": "{{count}} phút trước",
+    "hAgo": "{{count}} giờ trước",
+    "dAgo": "{{count}} ngày trước",
+    "mShort": "{{count}}p",
+    "hShort": "{{count}}g",
+    "dShort": "{{count}}ng",
+    "expired": "Đã hết hạn",
+    "expiresSoon": "Sắp hết hạn",
+    "expiresInMin": "Hết hạn sau {{count}} phút",
+    "expiresInHourMin": "Hết hạn sau {{hours}} giờ {{mins}} phút",
+    "expiresInHour": "Hết hạn sau {{count}} giờ"
   }
 }
