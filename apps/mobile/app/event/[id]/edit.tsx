@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { updateEvent, deleteEvent } from '@/api/events';
@@ -33,17 +34,16 @@ type EventType = 'drinks' | 'party' | 'music' | 'food' | 'coffee' | 'sport' | 'm
 
 const CATEGORIES: {
   type:  EventType;
-  label: string;
   icon:  React.ComponentProps<typeof Ionicons>['name'];
 }[] = [
-  { type: 'drinks',  label: 'DRINKS',  icon: 'wine-outline'          },
-  { type: 'party',   label: 'PARTY',   icon: 'sunny-outline'         },
-  { type: 'music',   label: 'MUSIC',   icon: 'musical-note-outline'  },
-  { type: 'food',    label: 'FOOD',    icon: 'restaurant-outline'    },
-  { type: 'coffee',  label: 'COFFEE',  icon: 'cafe-outline'          },
-  { type: 'sport',   label: 'SPORT',   icon: 'flash-outline'         },
-  { type: 'meetup',  label: 'MEETUP',  icon: 'chatbubble-outline'    },
-  { type: 'other',   label: 'OTHER',   icon: 'grid-outline'          },
+  { type: 'drinks',  icon: 'wine-outline'          },
+  { type: 'party',   icon: 'sunny-outline'         },
+  { type: 'music',   icon: 'musical-note-outline'  },
+  { type: 'food',    icon: 'restaurant-outline'    },
+  { type: 'coffee',  icon: 'cafe-outline'          },
+  { type: 'sport',   icon: 'flash-outline'         },
+  { type: 'meetup',  icon: 'chatbubble-outline'    },
+  { type: 'other',   icon: 'grid-outline'          },
 ];
 
 // ── Time helpers ──────────────────────────────────────────────────────────────
@@ -62,6 +62,7 @@ const MINUTE_STEPS = [0, 15, 30, 45];
 function TimePicker({
   label, value, onChange,
 }: { label: string; value: Date; onChange: (d: Date) => void }) {
+  const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [h, setH] = useState(value.getHours());
   const [m, setM] = useState(
@@ -132,7 +133,7 @@ function TimePicker({
             </View>
 
             <TouchableOpacity style={styles.pickerDone} onPress={confirm} activeOpacity={0.85}>
-              <Text style={styles.pickerDoneText}>Done</Text>
+              <Text style={styles.pickerDoneText}>{t('done')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -145,6 +146,7 @@ function TimePicker({
 
 export default function EditEventScreen() {
   const router          = useRouter();
+  const { t }           = useTranslation('event');
   const { id }          = useLocalSearchParams<{ id: string }>();
   const { identity, account } = useApp();
   const guestId         = account?.guest_id ?? identity?.guestId ?? '';
@@ -181,8 +183,8 @@ export default function EditEventScreen() {
   }, [loading, event, isOwner, id, router]);
 
   async function handleSave() {
-    if (!event)        { setError('Event not loaded'); return; }
-    if (!title.trim()) { setError('Title is required'); return; }
+    if (!event)        { setError(t('errNotLoaded')); return; }
+    if (!title.trim()) { setError(t('errTitle')); return; }
 
     const startUnix = toUnix(startsAt);
     const endDate   = new Date(endsAt);
@@ -190,7 +192,7 @@ export default function EditEventScreen() {
     const endUnix = toUnix(endDate);
 
     if (endUnix - startUnix < 15 * 60) {
-      setError('Event must be at least 15 minutes long');
+      setError(t('errDuration'));
       return;
     }
 
@@ -206,7 +208,7 @@ export default function EditEventScreen() {
       });
       router.back();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to update event');
+      setError(e instanceof Error ? e.message : t('errUpdate'));
     } finally {
       setSubmitting(false);
     }
@@ -215,12 +217,12 @@ export default function EditEventScreen() {
   function handleDelete() {
     if (!event || deleting) return;
     Alert.alert(
-      'Delete this event?',
-      "This will remove the event and all messages. This can't be undone.",
+      t('deleteTitle'),
+      t('deleteBody'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
         {
-          text: 'Delete', style: 'destructive',
+          text: t('deleteConfirm'), style: 'destructive',
           onPress: async () => {
             setDeleting(true);
             try {
@@ -229,7 +231,7 @@ export default function EditEventScreen() {
               // so back-gesture doesn't return to a 404.
               router.replace('/(tabs)/chat' as never);
             } catch (e: unknown) {
-              setError(e instanceof Error ? e.message : 'Failed to delete event');
+              setError(e instanceof Error ? e.message : t('errDelete'));
               setDeleting(false);
             }
           },
@@ -247,7 +249,7 @@ export default function EditEventScreen() {
             <Ionicons name="chevron-back" size={20} color={Colors.text} />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Edit event</Text>
+            <Text style={styles.headerTitle}>{t('editEvent')}</Text>
           </View>
         </View>
         <View style={styles.loadingBlock}>
@@ -277,7 +279,7 @@ export default function EditEventScreen() {
       >
         {/* ── CATEGORY ──────────────────────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>CATEGORY</Text>
+          <Text style={styles.fieldLabel}>{t('category')}</Text>
           <View style={styles.catGrid}>
             {CATEGORIES.map(cat => {
               const sel = cat.type === type;
@@ -294,7 +296,7 @@ export default function EditEventScreen() {
                     color={sel ? Colors.accent : Colors.muted}
                   />
                   <Text style={[styles.catLabel, sel && styles.catLabelSel]}>
-                    {cat.label}
+                    {t(`cat.${cat.type}`)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -304,12 +306,12 @@ export default function EditEventScreen() {
 
         {/* ── TITLE ─────────────────────────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>TITLE</Text>
+          <Text style={styles.fieldLabel}>{t('title')}</Text>
           <TextInput
             style={styles.input}
             value={title}
             onChangeText={setTitle}
-            placeholder="e.g. Jazz night at Rooftop Bar"
+            placeholder={t('titlePlaceholder')}
             placeholderTextColor={Colors.muted2}
             maxLength={100}
             autoCorrect={false}
@@ -318,18 +320,18 @@ export default function EditEventScreen() {
 
         {/* ── STARTS / ENDS ─────────────────────────────────────────────────── */}
         <View style={[styles.section, styles.timeRow]}>
-          <TimePicker label="STARTS" value={startsAt} onChange={setStartsAt} />
-          <TimePicker label="ENDS"   value={endsAt}   onChange={setEndsAt} />
+          <TimePicker label={t('starts')} value={startsAt} onChange={setStartsAt} />
+          <TimePicker label={t('ends')}   value={endsAt}   onChange={setEndsAt} />
         </View>
 
         {/* ── LOCATION ──────────────────────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>LOCATION</Text>
+          <Text style={styles.fieldLabel}>{t('location')}</Text>
           <TextInput
             style={styles.input}
             value={location}
             onChangeText={setLocation}
-            placeholder="Optional"
+            placeholder={t('locationOptional')}
             placeholderTextColor={Colors.muted2}
             maxLength={100}
             autoCorrect={false}
@@ -340,7 +342,7 @@ export default function EditEventScreen() {
 
         {/* ── Save ──────────────────────────────────────────────────────────── */}
         <PrimaryButton
-          label="Save changes"
+          label={t('saveChanges')}
           onPress={handleSave}
           loading={submitting}
           disabled={deleting}
@@ -353,12 +355,12 @@ export default function EditEventScreen() {
           activeOpacity={0.85}
           disabled={submitting || deleting}
           accessibilityRole="button"
-          accessibilityLabel="Delete event"
+          accessibilityLabel={t('deleteEvent')}
         >
           {deleting ? (
             <ActivityIndicator color={Colors.red} />
           ) : (
-            <Text style={styles.deleteText}>🗑 Delete event</Text>
+            <Text style={styles.deleteText}>{t('deleteBtn')}</Text>
           )}
         </TouchableOpacity>
 

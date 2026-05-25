@@ -72,5 +72,25 @@
   "shareTitleFallback": "Découvre cet événement sur Hilads",
   "shareAt": "à {{location}}",
   "shareGoing": "{{count}} y vont.",
-  "shareTagline": "Vois qui y est sur Hilads."
+  "shareTagline": "Vois qui y est sur Hilads.",
+  "locationOptional": "Optionnel",
+  "saveChanges": "Enregistrer",
+  "deleteTitle": "Supprimer cet événement ?",
+  "deleteBody": "Cela supprimera l'événement et tous les messages. C'est irréversible.",
+  "deleteConfirm": "Supprimer",
+  "deleteEvent": "Supprimer l'événement",
+  "deleteBtn": "🗑 Supprimer l'événement",
+  "errNotLoaded": "Événement non chargé",
+  "errUpdate": "Échec de la mise à jour de l'événement",
+  "errDelete": "Échec de la suppression de l'événement",
+  "limit": {
+    "title": "Tu as déjà créé ton événement aujourd'hui !",
+    "body": "Chez Hilads, on garde les choses fraîches — un événement par jour pour que chaque plan ait l'attention qu'il mérite. Reviens demain pour en créer un autre.",
+    "legendLink": "👑 Deviens une Légende pour créer des événements illimités",
+    "legendA11y": "En savoir plus sur comment devenir une Légende",
+    "legendAlertTitle": "👑 Deviens une Légende",
+    "legendAlertBody": "Les Légendes sont des locaux choisis pour faire vivre leur ville — ils peuvent organiser autant d'événements qu'ils veulent. Tu veux en devenir une ? Écris à contact@hilads.live.",
+    "gotIt": "Compris",
+    "backToNow": "Retour à Now"
+  }
 }

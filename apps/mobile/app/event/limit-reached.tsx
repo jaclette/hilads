@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchMyEvents } from '@/api/events';
@@ -21,6 +22,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function EventLimitReachedScreen() {
   const router = useRouter();
+  const { t } = useTranslation('event');
   const { identity, city } = useApp();
   const [blockingEvent, setBlockingEvent] = useState<HiladsEvent | null>(null);
 
@@ -44,9 +46,9 @@ export default function EventLimitReachedScreen() {
 
   function handleLegendInfo() {
     Alert.alert(
-      '👑 Become a Legend',
-      "Legends are locals chosen to keep their city alive — they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
-      [{ text: 'Got it', style: 'default' }],
+      t('limit.legendAlertTitle'),
+      t('limit.legendAlertBody'),
+      [{ text: t('limit.gotIt'), style: 'default' }],
     );
   }
 
@@ -72,12 +74,8 @@ export default function EventLimitReachedScreen() {
       {/* Centered hero */}
       <View style={styles.hero}>
         <Text style={styles.emoji}>🎉</Text>
-        <Text style={styles.title}>You've already created your event today!</Text>
-        <Text style={styles.body}>
-          At Hilads, we keep things fresh — one event per day so every plan
-          gets the attention it deserves. Come back tomorrow to create another
-          one.
-        </Text>
+        <Text style={styles.title}>{t('limit.title')}</Text>
+        <Text style={styles.body}>{t('limit.body')}</Text>
 
         {/* Blocking event — tap to open, edit, or delete. */}
         {blockingEvent && (
@@ -91,9 +89,9 @@ export default function EventLimitReachedScreen() {
           onPress={handleLegendInfo}
           activeOpacity={0.7}
           accessibilityRole="button"
-          accessibilityLabel="Learn about becoming a Legend"
+          accessibilityLabel={t('limit.legendA11y')}
         >
-          <Text style={styles.legendLinkText}>👑 Become a Legend to create unlimited events</Text>
+          <Text style={styles.legendLinkText}>{t('limit.legendLink')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -104,7 +102,7 @@ export default function EventLimitReachedScreen() {
           onPress={() => router.replace('/(tabs)/now')}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryBtnText}>Back to Now</Text>
+          <Text style={styles.primaryBtnText}>{t('limit.backToNow')}</Text>
         </TouchableOpacity>
       </View>
 

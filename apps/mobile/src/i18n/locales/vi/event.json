@@ -72,5 +72,25 @@
   "shareTitleFallback": "Xem sự kiện này trên Hilads",
   "shareAt": "tại {{location}}",
   "shareGoing": "{{count}} tham gia.",
-  "shareTagline": "Xem ai đang ở đó trên Hilads."
+  "shareTagline": "Xem ai đang ở đó trên Hilads.",
+  "locationOptional": "Tùy chọn",
+  "saveChanges": "Lưu thay đổi",
+  "deleteTitle": "Xóa sự kiện này?",
+  "deleteBody": "Thao tác này sẽ xóa sự kiện và tất cả tin nhắn. Không thể hoàn tác.",
+  "deleteConfirm": "Xóa",
+  "deleteEvent": "Xóa sự kiện",
+  "deleteBtn": "🗑 Xóa sự kiện",
+  "errNotLoaded": "Chưa tải được sự kiện",
+  "errUpdate": "Cập nhật sự kiện thất bại",
+  "errDelete": "Xóa sự kiện thất bại",
+  "limit": {
+    "title": "Bạn đã tạo sự kiện hôm nay rồi!",
+    "body": "Tại Hilads, chúng tôi giữ mọi thứ tươi mới — mỗi ngày một sự kiện để mỗi kế hoạch nhận được sự chú ý xứng đáng. Quay lại ngày mai để tạo cái khác.",
+    "legendLink": "👑 Trở thành Huyền thoại để tạo sự kiện không giới hạn",
+    "legendA11y": "Tìm hiểu cách trở thành Huyền thoại",
+    "legendAlertTitle": "👑 Trở thành Huyền thoại",
+    "legendAlertBody": "Huyền thoại là những người địa phương được chọn để giữ thành phố sôi động — họ có thể tổ chức bao nhiêu sự kiện tùy thích. Muốn trở thành một người? Liên hệ contact@hilads.live.",
+    "gotIt": "Đã hiểu",
+    "backToNow": "Quay lại Now"
+  }
 }

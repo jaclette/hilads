@@ -72,5 +72,25 @@
   "shareTitleFallback": "Check out this event on Hilads",
   "shareAt": "at {{location}}",
   "shareGoing": "{{count}} going.",
-  "shareTagline": "See who's there on Hilads."
+  "shareTagline": "See who's there on Hilads.",
+  "locationOptional": "Optional",
+  "saveChanges": "Save changes",
+  "deleteTitle": "Delete this event?",
+  "deleteBody": "This will remove the event and all messages. This can't be undone.",
+  "deleteConfirm": "Delete",
+  "deleteEvent": "Delete event",
+  "deleteBtn": "🗑 Delete event",
+  "errNotLoaded": "Event not loaded",
+  "errUpdate": "Failed to update event",
+  "errDelete": "Failed to delete event",
+  "limit": {
+    "title": "You've already created your event today!",
+    "body": "At Hilads, we keep things fresh — one event per day so every plan gets the attention it deserves. Come back tomorrow to create another one.",
+    "legendLink": "👑 Become a Legend to create unlimited events",
+    "legendA11y": "Learn about becoming a Legend",
+    "legendAlertTitle": "👑 Become a Legend",
+    "legendAlertBody": "Legends are locals chosen to keep their city alive — they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
+    "gotIt": "Got it",
+    "backToNow": "Back to Now"
+  }
 }
