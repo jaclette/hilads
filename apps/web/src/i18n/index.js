@@ -9,11 +9,12 @@ import en_common  from './locales/en/common.json'
 import en_profile from './locales/en/profile.json'
 import en_brand   from './locales/en/brand.json'
 import en_landing from './locales/en/landing.json'
+import en_auth    from './locales/en/auth.json'
 
 export const SUPPORTED      = ['en', 'fr', 'vi']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
-const NAMESPACES = ['common', 'profile', 'brand', 'landing']
+const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth']
 
 // Lazy loaders — one code-split chunk per (locale, namespace). Vite turns each
 // dynamic import() into its own chunk, fetched only when that locale is needed.
@@ -23,18 +24,20 @@ const LOADERS = {
     profile: () => import('./locales/fr/profile.json'),
     brand:   () => import('./locales/fr/brand.json'),
     landing: () => import('./locales/fr/landing.json'),
+    auth:    () => import('./locales/fr/auth.json'),
   },
   vi: {
     common:  () => import('./locales/vi/common.json'),
     profile: () => import('./locales/vi/profile.json'),
     brand:   () => import('./locales/vi/brand.json'),
     landing: () => import('./locales/vi/landing.json'),
+    auth:    () => import('./locales/vi/auth.json'),
   },
 }
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing },
+    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing, auth: en_auth },
   },
   lng:          DEFAULT_LOCALE,
   fallbackLng:  DEFAULT_LOCALE,   // missing key in fr/vi → English

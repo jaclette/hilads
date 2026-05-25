@@ -1,13 +1,15 @@
 import { useState, useRef } from 'react'
+import { useTranslation, Trans } from 'react-i18next'
 import { authSignup, authLogin, checkUsernameAvailability } from '../api'
 import BackButton from './BackButton'
 
 const MODES = [
-  { key: 'local',     emoji: '🌍', label: 'Local',     desc: 'You know this city'    },
-  { key: 'exploring', emoji: '🧭', label: 'Exploring', desc: "You're discovering it" },
+  { key: 'local',     emoji: '🌍' },
+  { key: 'exploring', emoji: '🧭' },
 ]
 
 export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, onForgotPassword, initialTab = 'signup' }) {
+  const { t } = useTranslation('auth')
   const [tab, setTab]         = useState(initialTab) // 'signup' | 'login'
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
@@ -43,11 +45,11 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
     e.preventDefault()
     setError(null)
     if (tab === 'signup') {
-      if (!mode)                 { setError('Please choose a mode to continue'); return }
-      if (username.length < 3)   { setError('Pick a username (3+ characters)'); return }
-      if (uStatus === 'taken')   { setError('That username is taken'); return }
-      if (uStatus === 'invalid') { setError(uReason || 'Invalid username'); return }
-      if (!eula)                 { setError('Please accept the Terms of Service and Privacy Policy'); return }
+      if (!mode)                 { setError(t('errors.chooseMode')); return }
+      if (username.length < 3)   { setError(t('errors.pickUsername')); return }
+      if (uStatus === 'taken')   { setError(t('errors.usernameTaken')); return }
+      if (uStatus === 'invalid') { setError(uReason || t('errors.usernameInvalid')); return }
+      if (!eula)                 { setError(t('errors.acceptTerms')); return }
     }
     setLoading(true)
     try {
@@ -66,7 +68,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{tab === 'signup' ? 'Create account' : 'Log in'}</span>
+        <span className="page-title">{tab === 'signup' ? t('title.signup') : t('title.login')}</span>
       </div>
 
       <div className="page-body page-body--centered">
@@ -74,11 +76,11 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
           <button
             className={`auth-tab${tab === 'signup' ? ' auth-tab--active' : ''}`}
             onClick={() => { setTab('signup'); setError(null) }}
-          >Sign up</button>
+          >{t('tabs.signup')}</button>
           <button
             className={`auth-tab${tab === 'login' ? ' auth-tab--active' : ''}`}
             onClick={() => { setTab('login'); setError(null) }}
-          >Log in</button>
+          >{t('tabs.login')}</button>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
@@ -86,7 +88,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
             <>
 
               <div className="modal-field">
-                <label className="modal-label">Username</label>
+                <label className="modal-label">{t('fields.username')}</label>
                 <div className="username-input-row">
                   <span className="username-at">@</span>
                   <input
@@ -94,22 +96,22 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
                     type="text"
                     value={username}
                     onChange={e => handleUsernameChange(e.target.value)}
-                    placeholder="username"
+                    placeholder={t('fields.usernamePlaceholder')}
                     maxLength={20}
                     autoComplete="off"
                     autoCapitalize="none"
                     required
                   />
                 </div>
-                {uStatus === 'checking'  && <span className="username-hint username-hint--muted">Checking…</span>}
-                {uStatus === 'available' && <span className="username-hint username-hint--ok">@{username} is available</span>}
+                {uStatus === 'checking'  && <span className="username-hint username-hint--muted">{t('fields.checking')}</span>}
+                {uStatus === 'available' && <span className="username-hint username-hint--ok">{t('fields.available', { username })}</span>}
                 {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
                   <span className="username-hint username-hint--bad">{uReason}</span>
                 )}
               </div>
 
               <div className="profile-mode-section">
-                <span className="profile-mode-label">Mode</span>
+                <span className="profile-mode-label">{t('mode')}</span>
                 <div className="profile-mode-btns">
                   {MODES.map(m => (
                     <button
@@ -119,8 +121,8 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
                       onClick={() => setMode(m.key)}
                     >
                       <span className="profile-mode-btn-emoji">{m.emoji}</span>
-                      <span className="profile-mode-btn-name">{m.label}</span>
-                      <span className="profile-mode-btn-desc">{m.desc}</span>
+                      <span className="profile-mode-btn-name">{t(`modes.${m.key}`)}</span>
+                      <span className="profile-mode-btn-desc">{t(`modes.${m.key}Desc`)}</span>
                     </button>
                   ))}
                 </div>
@@ -129,26 +131,26 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
           )}
 
           <div className="modal-field">
-            <label className="modal-label">Email</label>
+            <label className="modal-label">{t('fields.email')}</label>
             <input
               className="modal-input"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder={t('fields.emailPlaceholder')}
               required
               autoFocus={tab === 'login'}
             />
           </div>
 
           <div className="modal-field">
-            <label className="modal-label">Password</label>
+            <label className="modal-label">{t('fields.password')}</label>
             <input
               className="modal-input"
               type="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              placeholder={tab === 'signup' ? 'At least 8 characters' : ''}
+              placeholder={tab === 'signup' ? t('fields.passwordPlaceholder') : ''}
               required
             />
           </div>
@@ -156,7 +158,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
           {tab === 'signup' && (
             <div className="auth-eula">
               <p className="auth-eula-warning">
-                Hilads has zero tolerance for objectionable content or abusive behavior. Violations may result in immediate account termination.
+                {t('eula.warning')}
               </p>
               <label className="auth-eula-check">
                 <input
@@ -165,10 +167,14 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
                   onChange={e => setEula(e.target.checked)}
                 />
                 <span>
-                  I agree to the{' '}
-                  <a href="https://hilads.live/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
-                  {' '}and{' '}
-                  <a href="https://hilads.live/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+                  <Trans
+                    ns="auth"
+                    i18nKey="eula.agree"
+                    components={{
+                      terms:   <a href="https://hilads.live/terms" target="_blank" rel="noopener noreferrer" />,
+                      privacy: <a href="https://hilads.live/privacy" target="_blank" rel="noopener noreferrer" />,
+                    }}
+                  />
                 </span>
               </label>
             </div>
@@ -177,17 +183,17 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
           {error && <p className="auth-error">{error}</p>}
 
           <button className="modal-submit" type="submit" disabled={loading}>
-            {loading ? '...' : tab === 'signup' ? 'Create account' : 'Log in'}
+            {loading ? '...' : tab === 'signup' ? t('title.signup') : t('title.login')}
           </button>
 
           {tab === 'login' && onForgotPassword && (
             <button type="button" className="auth-forgot-btn" onClick={onForgotPassword}>
-              Forgot password?
+              {t('forgot')}
             </button>
           )}
         </form>
 
-        <p className="profile-hint">// your guest messages are kept</p>
+        <p className="profile-hint">{t('guestHint')}</p>
       </div>
     </div>
   )
