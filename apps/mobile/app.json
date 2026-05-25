@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hilads",
     "slug": "hilads",
-    "version": "1.2.0",
+    "version": "1.2.4",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -34,7 +34,7 @@
         ],
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "16"
+      "buildNumber": "25"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -43,7 +43,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 47,
+      "versionCode": 71,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -180,7 +180,8 @@
       ],
       "expo-font",
       "expo-asset",
-      "@sentry/react-native"
+      "@sentry/react-native",
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
