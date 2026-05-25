@@ -1,0 +1,45 @@
+{
+  "deleteConfirm": "Xóa hangout này? Việc này kết thúc nó cho mọi người và không thể hoàn tác.",
+  "deleteFailedAlert": "Không thể xóa. Vui lòng thử lại.",
+  "shareAria": "Chia sẻ hangout",
+  "shareTitle": "Chia sẻ hangout này",
+  "members": {
+    "oneIn": "{{name}} đã tham gia",
+    "countIn": "{{count}} người trong hangout này",
+    "seeAll": "Xem tất cả →"
+  },
+  "owner": { "edit": "✏️ Sửa", "delete": "🗑 Xóa" },
+  "gated": {
+    "title": "Hangout chỉ dành cho thành viên",
+    "pending": "Yêu cầu đang chờ — bạn sẽ tham gia được cuộc trò chuyện khi một thành viên chấp nhận.",
+    "prompt": "Yêu cầu tham gia để xem cuộc trò chuyện và trò chuyện.",
+    "requestBtn": "Yêu cầu tham gia"
+  },
+  "feed": {
+    "beginning": "Đầu cuộc trò chuyện",
+    "loading": "Đang tải…",
+    "emptyTitle": "Chưa có phản hồi",
+    "emptySub": "Hãy là người đầu tiên tham gia"
+  },
+  "joinReq": {
+    "someone": "Ai đó",
+    "wantsToJoin": " muốn tham gia",
+    "joined": " đã tham gia hangout",
+    "askedToJoin": " đã yêu cầu tham gia",
+    "decline": "Từ chối",
+    "accept": "Chấp nhận",
+    "accepted": "Đã chấp nhận",
+    "acceptedBy": "Được chấp nhận bởi {{name}}",
+    "declined": "Yêu cầu bị từ chối"
+  },
+  "modes": { "local": "Người địa phương", "exploring": "Đang khám phá" },
+  "reply": { "photo": "📷 Ảnh", "unavailable": "Tin nhắn gốc không khả dụng" },
+  "composer": { "reply": "Trả lời cuộc trò chuyện…", "start": "Khuấy động không khí ✨" },
+  "errors": {
+    "locFailed": "Không lấy được vị trí của bạn. Bật quyền vị trí rồi thử lại.",
+    "imageType": "Vui lòng chọn ảnh JPEG, PNG hoặc WebP.",
+    "imageTooLarge": "Ảnh quá lớn. Tối đa 10 MB.",
+    "imageSend": "Không gửi được ảnh. Vui lòng thử lại.",
+    "dismiss": "{{error}} · chạm để đóng"
+  }
+}

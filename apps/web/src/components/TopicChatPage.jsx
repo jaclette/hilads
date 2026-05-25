@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -88,15 +89,16 @@ async function shareTopic(title, topicId) {
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export default function TopicChatPage({ topic, guest, nickname, account, onBack, onEdit, onDeleted, socket, sessionId, onViewProfile }) {
+  const { t } = useTranslation('hangout')
   const isOwner = !!(account?.id && topic.created_by && account.id === topic.created_by)
 
   async function handleDeleteTopic() {
-    if (!window.confirm('Delete this hangout? This ends it for everyone and cannot be undone.')) return
+    if (!window.confirm(t('deleteConfirm'))) return
     try {
       await deleteTopic(topic.id, guest.guestId)
       onDeleted?.()
     } catch {
-      window.alert('Could not delete. Please try again.')
+      window.alert(t('deleteFailedAlert'))
     }
   }
 
@@ -346,7 +348,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       setLocationPickerCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude })
     } catch (err) {
       console.error('[spot/pulse]', err)
-      setError("Couldn't get your location. Please enable location access and try again.")
+      setError(t('errors.locFailed'))
     } finally {
       setSpotLoading(false)
     }
@@ -389,11 +391,11 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
 
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     if (!allowed.includes(file.type)) {
-      setError('Please select a JPEG, PNG, or WebP image.')
+      setError(t('errors.imageType'))
       return
     }
     if (file.size > 10 * 1024 * 1024) {
-      setError('Image too large. Max 10 MB.')
+      setError(t('errors.imageTooLarge'))
       return
     }
 
@@ -410,7 +412,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       })
     } catch (err) {
       console.error('[topic-send-image] failed:', err)
-      setError("Couldn't send image. Please try again.")
+      setError(t('errors.imageSend'))
     } finally {
       setUploading(false)
     }
@@ -428,8 +430,8 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         <button
           className="topic-share-btn"
           onClick={handleShare}
-          aria-label="Share hangout"
-          title="Share this hangout"
+          aria-label={t('shareAria')}
+          title={t('shareTitle')}
         >
           {copied
             ? <span className="topic-share-copied">✓</span>
@@ -461,17 +463,19 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
             total={participants.length}
           />
           <span className="topic-members-label">
-            {participants.length === 1 ? `${participants[0].displayName} is in` : `${participants.length} in this hangout`}
+            {participants.length === 1
+              ? t('members.oneIn', { name: participants[0].displayName })
+              : t('members.countIn', { count: participants.length })}
           </span>
-          <span className="topic-members-see">See all →</span>
+          <span className="topic-members-see">{t('members.seeAll')}</span>
         </button>
       )}
 
       {/* Owner controls — edit / delete this hangout. */}
       {isOwner && (
         <div className="topic-owner-row">
-          <button className="topic-owner-btn" onClick={() => onEdit?.(topic)}>✏️ Edit</button>
-          <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDeleteTopic}>🗑 Delete</button>
+          <button className="topic-owner-btn" onClick={() => onEdit?.(topic)}>{t('owner.edit')}</button>
+          <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDeleteTopic}>{t('owner.delete')}</button>
         </div>
       )}
 
@@ -479,14 +483,12 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         /* Members-only gate — pending requesters cannot read or post. */
         <div className="topic-gated">
           <span className="topic-gated-emoji">🔒</span>
-          <strong className="topic-gated-title">Members-only hangout</strong>
+          <strong className="topic-gated-title">{t('gated.title')}</strong>
           <span className="topic-gated-sub">
-            {joinState === 'requested'
-              ? "Request pending — you'll be able to join the conversation once a member accepts."
-              : 'Request to join to see the conversation and chat.'}
+            {joinState === 'requested' ? t('gated.pending') : t('gated.prompt')}
           </span>
           {joinState !== 'requested' && (
-            <button className="topic-join-btn" onClick={handleRequestToJoin}>Request to join</button>
+            <button className="topic-join-btn" onClick={handleRequestToJoin}>{t('gated.requestBtn')}</button>
           )}
         </div>
       ) : (
@@ -497,19 +499,19 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
           <div className="messages-load-older"><span className="messages-load-older-spinner" /></div>
         )}
         {!hasMore && !loadingOlder && messages.length > 0 && (
-          <div className="messages-beginning">Beginning of conversation</div>
+          <div className="messages-beginning">{t('feed.beginning')}</div>
         )}
         {loading && messages.length === 0 && (
           <div className="topic-chat-empty">
             <span className="topic-chat-empty-icon">💬</span>
-            <span>Loading…</span>
+            <span>{t('feed.loading')}</span>
           </div>
         )}
         {!loading && messages.length === 0 && (
           <div className="topic-chat-empty">
             <span className="topic-chat-empty-icon">✨</span>
-            <strong>No replies yet</strong>
-            <span>Be the first to jump in</span>
+            <strong>{t('feed.emptyTitle')}</strong>
+            <span>{t('feed.emptySub')}</span>
           </div>
         )}
         {messages.map((item, idx) => {
@@ -532,22 +534,22 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
           if (item.type === 'join_request') {
             let jr = {}
             try { jr = JSON.parse(item.content ?? '{}') } catch { /* malformed */ }
-            const name = jr.requesterName ?? 'Someone'
+            const name = jr.requesterName ?? t('joinReq.someone')
             return (
               <div key={item.id ?? idx} className="join-req-card">
                 <span className="join-req-text">
                   <strong>{name}</strong>
-                  {jr.status === 'pending' ? ' wants to join' : jr.status === 'accepted' ? ' joined the hangout' : ' asked to join'}
+                  {jr.status === 'pending' ? t('joinReq.wantsToJoin') : jr.status === 'accepted' ? t('joinReq.joined') : t('joinReq.askedToJoin')}
                 </span>
                 {jr.status === 'pending' ? (
                   <div className="join-req-btns">
-                    <button className="join-req-reject" onClick={() => onResolveJoinRequest?.(jr.requestId, 'reject')}>Decline</button>
-                    <button className="join-req-accept" onClick={() => onResolveJoinRequest?.(jr.requestId, 'accept')}>Accept</button>
+                    <button className="join-req-reject" onClick={() => onResolveJoinRequest?.(jr.requestId, 'reject')}>{t('joinReq.decline')}</button>
+                    <button className="join-req-accept" onClick={() => onResolveJoinRequest?.(jr.requestId, 'accept')}>{t('joinReq.accept')}</button>
                   </div>
                 ) : jr.status === 'accepted' ? (
-                  <span className="join-req-resolved">Accepted{jr.resolvedByName ? ` by ${jr.resolvedByName}` : ''}</span>
+                  <span className="join-req-resolved">{jr.resolvedByName ? t('joinReq.acceptedBy', { name: jr.resolvedByName }) : t('joinReq.accepted')}</span>
                 ) : (
-                  <span className="join-req-resolved muted">Request declined</span>
+                  <span className="join-req-resolved muted">{t('joinReq.declined')}</span>
                 )}
               </div>
             )
@@ -565,7 +567,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                     {(item.nickname ?? '?')[0].toUpperCase()}
                   </span>
                   <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
-                  {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {MODE_META[m].label}</span> : null; })()}
+                  {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`modes.${m}`)}</span> : null; })()}
                   {item.vibe && VIBE_META[item.vibe] && (
                     <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                   )}
@@ -586,7 +588,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                     >
                       <span className="msg-reply-quote-name">{item.replyTo.nickname}</span>
                       <span className="msg-reply-quote-text">
-                        {item.replyTo.type === 'image' ? '📷 Photo' : (item.replyTo.content || 'Original message unavailable')}
+                        {item.replyTo.type === 'image' ? t('reply.photo') : (item.replyTo.content || t('reply.unavailable'))}
                       </span>
                     </div>
                   )}
@@ -609,7 +611,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       {error && (
         <div style={{ background: 'rgba(248,113,113,0.12)', color: '#f87171', fontSize: 13, padding: '6px 16px', textAlign: 'center', cursor: 'pointer' }}
           onClick={() => setError(null)}>
-          {error} · tap to dismiss
+          {t('errors.dismiss', { error })}
         </div>
       )}
 
@@ -644,7 +646,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         onFileSelect={handleImageSelect}
         onShareClick={() => setShowShareSheet(true)}
         showEmojiButton={false}
-        placeholder={messages.length > 0 ? 'Reply to the conversation…' : 'Start the vibe ✨'}
+        placeholder={messages.length > 0 ? t('composer.reply') : t('composer.start')}
         mentionSuggestions={mentions.suggestions}
         onMentionSelect={mentions.selectMention}
         uploading={uploading}
@@ -660,7 +662,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         <div className="modal-overlay" onClick={() => setShowMembers(false)}>
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <span className="modal-title">👥 {participants.length} in this hangout</span>
+              <span className="modal-title">👥 {t('members.countIn', { count: participants.length })}</span>
               <button className="going-modal-close" onClick={() => setShowMembers(false)}>✕</button>
             </div>
             <div className="going-modal-body">

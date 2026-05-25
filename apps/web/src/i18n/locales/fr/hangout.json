@@ -1,0 +1,45 @@
+{
+  "deleteConfirm": "Supprimer ce hangout ? Cela y met fin pour tout le monde et c'est irréversible.",
+  "deleteFailedAlert": "Impossible de supprimer. Réessaie.",
+  "shareAria": "Partager le hangout",
+  "shareTitle": "Partager ce hangout",
+  "members": {
+    "oneIn": "{{name}} est dans le coup",
+    "countIn": "{{count}} dans ce hangout",
+    "seeAll": "Voir tout →"
+  },
+  "owner": { "edit": "✏️ Modifier", "delete": "🗑 Supprimer" },
+  "gated": {
+    "title": "Hangout réservé aux membres",
+    "pending": "Demande en attente — tu pourras rejoindre la conversation dès qu'un membre accepte.",
+    "prompt": "Demande à rejoindre pour voir la conversation et discuter.",
+    "requestBtn": "Demander à rejoindre"
+  },
+  "feed": {
+    "beginning": "Début de la conversation",
+    "loading": "Chargement…",
+    "emptyTitle": "Pas encore de réponses",
+    "emptySub": "Sois le premier à te lancer"
+  },
+  "joinReq": {
+    "someone": "Quelqu'un",
+    "wantsToJoin": " veut rejoindre",
+    "joined": " a rejoint le hangout",
+    "askedToJoin": " a demandé à rejoindre",
+    "decline": "Refuser",
+    "accept": "Accepter",
+    "accepted": "Accepté",
+    "acceptedBy": "Accepté par {{name}}",
+    "declined": "Demande refusée"
+  },
+  "modes": { "local": "Local", "exploring": "Exploration" },
+  "reply": { "photo": "📷 Photo", "unavailable": "Message d'origine indisponible" },
+  "composer": { "reply": "Réponds à la conversation…", "start": "Lance l'ambiance ✨" },
+  "errors": {
+    "locFailed": "Impossible d'obtenir ta position. Active la localisation et réessaie.",
+    "imageType": "Choisis une image JPEG, PNG ou WebP.",
+    "imageTooLarge": "Image trop lourde. Max 10 Mo.",
+    "imageSend": "Impossible d'envoyer l'image. Réessaie.",
+    "dismiss": "{{error}} · appuie pour fermer"
+  }
+}

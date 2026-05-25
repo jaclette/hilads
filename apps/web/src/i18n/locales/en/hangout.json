@@ -1,0 +1,45 @@
+{
+  "deleteConfirm": "Delete this hangout? This ends it for everyone and cannot be undone.",
+  "deleteFailedAlert": "Could not delete. Please try again.",
+  "shareAria": "Share hangout",
+  "shareTitle": "Share this hangout",
+  "members": {
+    "oneIn": "{{name}} is in",
+    "countIn": "{{count}} in this hangout",
+    "seeAll": "See all →"
+  },
+  "owner": { "edit": "✏️ Edit", "delete": "🗑 Delete" },
+  "gated": {
+    "title": "Members-only hangout",
+    "pending": "Request pending — you'll be able to join the conversation once a member accepts.",
+    "prompt": "Request to join to see the conversation and chat.",
+    "requestBtn": "Request to join"
+  },
+  "feed": {
+    "beginning": "Beginning of conversation",
+    "loading": "Loading…",
+    "emptyTitle": "No replies yet",
+    "emptySub": "Be the first to jump in"
+  },
+  "joinReq": {
+    "someone": "Someone",
+    "wantsToJoin": " wants to join",
+    "joined": " joined the hangout",
+    "askedToJoin": " asked to join",
+    "decline": "Decline",
+    "accept": "Accept",
+    "accepted": "Accepted",
+    "acceptedBy": "Accepted by {{name}}",
+    "declined": "Request declined"
+  },
+  "modes": { "local": "Local", "exploring": "Exploring" },
+  "reply": { "photo": "📷 Photo", "unavailable": "Original message unavailable" },
+  "composer": { "reply": "Reply to the conversation…", "start": "Start the vibe ✨" },
+  "errors": {
+    "locFailed": "Couldn't get your location. Please enable location access and try again.",
+    "imageType": "Please select a JPEG, PNG, or WebP image.",
+    "imageTooLarge": "Image too large. Max 10 MB.",
+    "imageSend": "Couldn't send image. Please try again.",
+    "dismiss": "{{error}} · tap to dismiss"
+  }
+}
