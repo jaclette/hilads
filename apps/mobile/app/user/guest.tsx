@@ -12,6 +12,7 @@ import { View, Text, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -26,10 +27,11 @@ import { formatDateLabel } from '@/lib/messageTime';
 
 export default function GuestProfileScreen() {
   const router = useRouter();
+  const { t } = useTranslation('publicProfile');
   const { nickname, guestId } = useLocalSearchParams<{ nickname: string; guestId: string }>();
   const { city, identity, account, addBlocked, removeBlocked } = useApp();
 
-  const name    = nickname || 'Ghost';
+  const name    = nickname || t('ghostName');
   const initial = name[0].toUpperCase();
   const bg      = avatarBg(name);
 
@@ -41,12 +43,12 @@ export default function GuestProfileScreen() {
   function handleBlockPress() {
     if (!guestId || blockBusy) return;
     Alert.alert(
-      `Block ${name}?`,
-      `You won't see content from ${name}, and they won't see yours. You can unblock anyone later from Me → Settings → Blocked users.`,
+      t('blockTitle', { ns: 'dm', name }),
+      t('blockBody', { ns: 'dm', name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
         {
-          text: 'Block', style: 'destructive',
+          text: t('blockConfirm', { ns: 'dm' }), style: 'destructive',
           onPress: async () => {
             setBlockBusy(true);
             try {
@@ -59,7 +61,7 @@ export default function GuestProfileScreen() {
               router.back();
             } catch {
               removeBlocked({ guestId });
-              Alert.alert('Could not block', 'Please try again.');
+              Alert.alert(t('blockFailTitle', { ns: 'dm' }), t('blockFailBody', { ns: 'dm' }));
             } finally {
               setBlockBusy(false);
             }
@@ -88,7 +90,7 @@ export default function GuestProfileScreen() {
           <Ionicons name="chevron-back" size={22} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={styles.headerTitle}>{t('title')}</Text>
         </View>
       </View>
 
@@ -101,23 +103,23 @@ export default function GuestProfileScreen() {
         <Text style={styles.displayName}>{name}</Text>
 
         <View style={styles.guestBadge}>
-          <Text style={styles.guestBadgeText}>👻 Ghost</Text>
+          <Text style={styles.guestBadgeText}>{t('badge.ghost', { ns: 'common' })}</Text>
         </View>
 
         {city ? (
-          <Text style={styles.cityLabel}>Visiting {city.name}</Text>
+          <Text style={styles.cityLabel}>{t('visiting', { city: city.name })}</Text>
         ) : null}
       </View>
 
-      <Text style={styles.note}>Floating around as a ghost 👻</Text>
+      <Text style={styles.note}>{t('ghostNote')}</Text>
 
       <TouchableOpacity
         style={styles.reportLink}
         onPress={() => setShowActionSheet(true)}
         activeOpacity={0.6}
-        accessibilityLabel="More options"
+        accessibilityLabel={t('moreOptions')}
       >
-        <Text style={styles.reportLinkText}>More options</Text>
+        <Text style={styles.reportLinkText}>{t('moreOptions')}</Text>
       </TouchableOpacity>
 
       <ProfileActionSheet
@@ -126,14 +128,14 @@ export default function GuestProfileScreen() {
         actions={[
           {
             key:      'report',
-            label:    existingReport ? 'Already reported' : 'Report user',
+            label:    existingReport ? t('alreadyReported') : t('reportUser'),
             icon:     'flag-outline',
             disabled: !!existingReport,
             onPress:  () => {
               if (existingReport) {
                 Alert.alert(
-                  'Already reported',
-                  `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
+                  t('alreadyReported'),
+                  t('alreadyReportedBody', { date: formatDateLabel(existingReport.created_at) }),
                 );
                 return;
               }
@@ -142,7 +144,7 @@ export default function GuestProfileScreen() {
           },
           {
             key:         'block',
-            label:       blockBusy ? 'Blocking…' : 'Block user',
+            label:       blockBusy ? t('blocking') : t('blockUser'),
             icon:        'ban-outline',
             destructive: true,
             disabled:    blockBusy,

@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { fetchPublicProfile, fetchUserEvents, fetchUserFriends, removeFriend, fetchUserVibes, postVibe, type UserVibe } from '@/api/users';
 import {
@@ -107,6 +108,7 @@ const HANGOUT_ICONS: Record<string, string> = {
 
 export default function PublicProfileScreen() {
   const router  = useRouter();
+  const { t }   = useTranslation('publicProfile');
   const insets  = useSafeAreaInsets();
   const { id }  = useLocalSearchParams<{ id: string }>();
   const { account, identity, city, addBlocked, removeBlocked } = useApp();
@@ -168,7 +170,7 @@ export default function PublicProfileScreen() {
         if (u.vibeScore != null) setVibeScore(u.vibeScore);
         if (u.vibeCount != null) setVibeCount(u.vibeCount);
       })
-      .catch(() => setError('Could not load profile.'))
+      .catch(() => setError(t('loadError')))
       .finally(() => setLoading(false));
 
     fetchUserFriends(id).then(fr => setFriends(fr.friends)).catch(() => {});
@@ -198,12 +200,12 @@ export default function PublicProfileScreen() {
 
     if (friendState === 'friend') {
       Alert.alert(
-        'Unfriend',
-        `Remove ${user.displayName} from your friends?`,
+        t('unfriendTitle'),
+        t('unfriendBody', { name: user.displayName }),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('cancel', { ns: 'common' }), style: 'cancel' },
           {
-            text: 'Unfriend', style: 'destructive',
+            text: t('unfriendConfirm'), style: 'destructive',
             onPress: async () => {
               setFriendBusy(true);
               try { await removeFriend(user.id); setFriendState('none'); } catch { /* ignore */ }
@@ -217,12 +219,12 @@ export default function PublicProfileScreen() {
 
     if (friendState === 'pending_out') {
       Alert.alert(
-        'Cancel request',
-        `Cancel your friend request to ${user.displayName}?`,
+        t('cancelReqTitle'),
+        t('cancelReqBody', { name: user.displayName }),
         [
-          { text: 'Keep', style: 'cancel' },
+          { text: t('keep'), style: 'cancel' },
           {
-            text: 'Cancel request', style: 'destructive',
+            text: t('cancelReqConfirm'), style: 'destructive',
             onPress: async () => {
               if (!pendingReqId) return;
               setFriendBusy(true);
@@ -338,12 +340,12 @@ export default function PublicProfileScreen() {
   function handleBlockPress() {
     if (!user || blockBusy) return;
     Alert.alert(
-      `Block ${user.displayName}?`,
-      `You won't see content from ${user.displayName}, and they won't see yours. You can unblock anyone later from Me → Settings → Blocked users.`,
+      t('blockTitle', { ns: 'dm', name: user.displayName }),
+      t('blockBody', { ns: 'dm', name: user.displayName }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
         {
-          text: 'Block', style: 'destructive',
+          text: t('blockConfirm', { ns: 'dm' }), style: 'destructive',
           onPress: async () => {
             setBlockBusy(true);
             try {
@@ -359,7 +361,7 @@ export default function PublicProfileScreen() {
             } catch (err) {
               // Roll back the optimistic patch on failure.
               if (user) removeBlocked({ userId: user.id });
-              Alert.alert('Could not block', 'Please try again.');
+              Alert.alert(t('blockFailTitle', { ns: 'dm' }), t('blockFailBody', { ns: 'dm' }));
             } finally {
               setBlockBusy(false);
             }
@@ -383,9 +385,9 @@ export default function PublicProfileScreen() {
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'hangouts', label: hangouts.length > 0 ? `Hangouts · ${hangouts.length}` : 'Hangouts' },
     { key: 'events',  label: events.length  > 0 ? `Events · ${events.length}` : 'Events' },
-    { key: 'friends', label: friends.length > 0 ? `Friends · ${friends.length}` : 'Friends' },
+    { key: 'friends', label: friends.length > 0 ? `${t('tabFriends')} · ${friends.length}` : t('tabFriends') },
     { key: 'vibes',   label: vibeCount      > 0 ? `Vibes · ${vibeCount}`        : 'Vibes'   },
-    ...(hasPicks ? [{ key: 'picks' as TabKey, label: 'City Picks 👑' }] : []),
+    ...(hasPicks ? [{ key: 'picks' as TabKey, label: t('tabPicks') }] : []),
   ];
 
   return (
@@ -397,7 +399,7 @@ export default function PublicProfileScreen() {
           <Ionicons name="chevron-back" size={22} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Profile</Text>
+          <Text style={styles.headerTitle}>{t('title')}</Text>
         </View>
       </View>
 
@@ -409,7 +411,7 @@ export default function PublicProfileScreen() {
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => router.back()} activeOpacity={0.8}>
-            <Text style={styles.retryBtnText}>Go back</Text>
+            <Text style={styles.retryBtnText}>{t('goBack')}</Text>
           </TouchableOpacity>
         </View>
       ) : user ? (
@@ -443,10 +445,10 @@ export default function PublicProfileScreen() {
                 return (
                   <View key={badgeKey} style={styles.badgeBlock}>
                     <View style={[styles.memberBadge, profileBadgeBg(badgeKey)]}>
-                      <Text style={[styles.memberBadgeText, profileBadgeColor(badgeKey)]}>{meta.label}</Text>
+                      <Text style={[styles.memberBadgeText, profileBadgeColor(badgeKey)]}>{t(`badge.${badgeKey}`, { ns: 'common', defaultValue: meta.label })}</Text>
                     </View>
                     {BADGE_MICROCOPY[badgeKey] ? (
-                      <Text style={styles.badgeMicrocopy}>{BADGE_MICROCOPY[badgeKey]}</Text>
+                      <Text style={styles.badgeMicrocopy}>{t(`microcopy.${badgeKey}`, { defaultValue: BADGE_MICROCOPY[badgeKey] })}</Text>
                     ) : null}
                   </View>
                 );
@@ -471,18 +473,18 @@ export default function PublicProfileScreen() {
                 {user.vibe && VIBE_META[user.vibe] ? (
                   <View style={styles.identityCard}>
                     <Text style={styles.identityCardEmoji}>{VIBE_META[user.vibe].emoji}</Text>
-                    <Text style={styles.identityCardTitle}>{VIBE_META[user.vibe].label}</Text>
-                    <Text style={styles.identityCardSub}>{VIBE_META[user.vibe].caption}</Text>
+                    <Text style={styles.identityCardTitle}>{t(`vibe.${user.vibe}`, { ns: 'common', defaultValue: VIBE_META[user.vibe].label })}</Text>
+                    <Text style={styles.identityCardSub}>{t(`vibeCaption.${user.vibe}`, { defaultValue: VIBE_META[user.vibe].caption })}</Text>
                   </View>
                 ) : null}
                 {user.mode && MODE_META[user.mode] ? (
                   <View style={styles.identityCard}>
                     <Text style={styles.identityCardEmoji}>{MODE_META[user.mode].emoji}</Text>
-                    <Text style={styles.identityCardTitle}>{MODE_META[user.mode].label}</Text>
+                    <Text style={styles.identityCardTitle}>{t(`mode.${user.mode}.label`, { ns: 'common' })}</Text>
                     <Text style={styles.identityCardSub}>
                       {user.mode === 'local'
-                        ? `Local in ${user.homeCity ?? city?.name ?? 'this city'}`
-                        : `Exploring ${city?.name ?? 'this city'}`}
+                        ? t('localIn', { city: user.homeCity ?? city?.name ?? t('thisCity') })
+                        : t('exploringIn', { city: city?.name ?? t('thisCity') })}
                     </Text>
                   </View>
                 ) : null}
@@ -494,13 +496,13 @@ export default function PublicProfileScreen() {
               <View style={styles.detailsCard}>
                 {user.homeCity ? (
                   <View style={[styles.detailRow, styles.detailRowFirst]}>
-                    <Text style={styles.detailLabel}>From</Text>
+                    <Text style={styles.detailLabel}>{t('from')}</Text>
                     <Text style={styles.detailValue}>{user.homeCity}</Text>
                   </View>
                 ) : null}
                 {user.age != null ? (
                   <View style={[styles.detailRow, !user.homeCity && styles.detailRowFirst]}>
-                    <Text style={styles.detailLabel}>Age</Text>
+                    <Text style={styles.detailLabel}>{t('age')}</Text>
                     <Text style={styles.detailValue}>{user.age}</Text>
                   </View>
                 ) : null}
@@ -533,7 +535,7 @@ export default function PublicProfileScreen() {
             {/* Hangouts tab */}
             {activeTab === 'hangouts' && (
               hangouts.length === 0 ? (
-                <Text style={styles.tabEmpty}>No hangouts yet</Text>
+                <Text style={styles.tabEmpty}>{t('noHangouts')}</Text>
               ) : (
                 <View style={styles.eventList}>
                   {hangouts.map(h => (
@@ -545,7 +547,7 @@ export default function PublicProfileScreen() {
                     >
                       <Text style={styles.hangoutIcon}>{HANGOUT_ICONS[h.category ?? 'general'] ?? '💬'}</Text>
                       <Text style={styles.hangoutTitle} numberOfLines={1}>{h.title}</Text>
-                      {h.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>Host</Text></View>}
+                      {h.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>}
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -555,7 +557,7 @@ export default function PublicProfileScreen() {
             {/* Events tab */}
             {activeTab === 'events' && (
               events.length === 0 ? (
-                <Text style={styles.tabEmpty}>No events yet</Text>
+                <Text style={styles.tabEmpty}>{t('noEvents')}</Text>
               ) : (
                 <View style={styles.eventList}>
                   {events.map(event => (
@@ -572,7 +574,7 @@ export default function PublicProfileScreen() {
             {/* Friends tab */}
             {activeTab === 'friends' && (
               friends.length === 0 ? (
-                <Text style={styles.tabEmpty}>No friends yet</Text>
+                <Text style={styles.tabEmpty}>{t('noFriends')}</Text>
               ) : (
                 <View style={styles.friendList}>
                   {friends.map(f => (
@@ -592,7 +594,7 @@ export default function PublicProfileScreen() {
                       <View style={styles.friendInfo}>
                         <Text style={styles.friendName} numberOfLines={1}>{f.displayName}</Text>
                         {f.badges[0] && (
-                          <Text style={styles.friendBadge}>{BADGE_META[f.badges[0] as keyof typeof BADGE_META]?.label ?? f.badges[0]}</Text>
+                          <Text style={styles.friendBadge}>{t(`badge.${f.badges[0]}`, { ns: 'common', defaultValue: BADGE_META[f.badges[0] as keyof typeof BADGE_META]?.label ?? f.badges[0] })}</Text>
                         )}
                       </View>
                       <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
@@ -612,8 +614,8 @@ export default function PublicProfileScreen() {
                         <Text key={s} style={[styles.vibeStarStatic, s <= Math.round(vibeScore ?? 0) && styles.vibeStarStaticOn]}>★</Text>
                       ))}
                     </View>
-                    <Text style={styles.vibeScoreAvg}>{vibeScore?.toFixed(1)} vibe score</Text>
-                    <Text style={styles.vibeScoreCount}>based on {vibeCount} vibe{vibeCount !== 1 ? 's' : ''}</Text>
+                    <Text style={styles.vibeScoreAvg}>{t('vibeScore', { score: vibeScore?.toFixed(1) })}</Text>
+                    <Text style={styles.vibeScoreCount}>{t('vibeBasis', { count: vibeCount })}</Text>
                   </View>
                 )}
 
@@ -621,7 +623,7 @@ export default function PublicProfileScreen() {
                   !showVibeForm ? (
                     <TouchableOpacity style={styles.vibeCtaBtn} onPress={() => setShowVibeForm(true)} activeOpacity={0.8}>
                       <Text style={styles.vibeCtaBtnText}>
-                        {myVibe ? `✏️ Update your note (${myVibe.rating}★)` : '⭐ Leave a note'}
+                        {myVibe ? t('updateNote', { rating: myVibe.rating }) : t('leaveNote')}
                       </Text>
                     </TouchableOpacity>
                   ) : (
@@ -635,7 +637,7 @@ export default function PublicProfileScreen() {
                       </View>
                       <TextInput
                         style={styles.vibeInput}
-                        placeholder="Say something nice… (optional)"
+                        placeholder={t('vibePlaceholder')}
                         placeholderTextColor={Colors.muted2}
                         value={vibeMessage}
                         onChangeText={setVibeMessage}
@@ -649,7 +651,7 @@ export default function PublicProfileScreen() {
                           onPress={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? ''); }}
                           activeOpacity={0.7}
                         >
-                          <Text style={styles.vibeCancelBtnText}>Cancel</Text>
+                          <Text style={styles.vibeCancelBtnText}>{t('cancel', { ns: 'common' })}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                           style={[styles.vibeSubmitBtn, (vibeBusy || vibeRating === 0) && styles.vibeSubmitBtnDisabled]}
@@ -657,7 +659,7 @@ export default function PublicProfileScreen() {
                           activeOpacity={0.8}
                           disabled={vibeBusy || vibeRating === 0}
                         >
-                          <Text style={styles.vibeSubmitBtnText}>{vibeBusy ? 'Sending…' : 'Send note ✨'}</Text>
+                          <Text style={styles.vibeSubmitBtnText}>{vibeBusy ? t('sending') : t('sendNote')}</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -687,8 +689,8 @@ export default function PublicProfileScreen() {
                   </View>
                 ) : (
                   <View style={styles.vibeEmpty}>
-                    <Text style={styles.vibeEmptyTitle}>No notes yet</Text>
-                    <Text style={styles.vibeEmptySubtitle}>Be the first to leave a note ✨</Text>
+                    <Text style={styles.vibeEmptyTitle}>{t('noNotesTitle')}</Text>
+                    <Text style={styles.vibeEmptySubtitle}>{t('noNotesSub')}</Text>
                   </View>
                 )}
               </>
@@ -698,10 +700,10 @@ export default function PublicProfileScreen() {
             {activeTab === 'picks' && hasPicks && (
               <View style={styles.picksGrid}>
                 {[
-                  { key: 'restaurant', label: 'FAVORITE RESTAURANT', val: user.ambassadorPicks?.restaurant },
-                  { key: 'spot',       label: 'HIDDEN GEM',          val: user.ambassadorPicks?.spot       },
-                  { key: 'tip',        label: 'LOCAL TIP',            val: user.ambassadorPicks?.tip        },
-                  { key: 'story',      label: 'STORY',                val: user.ambassadorPicks?.story      },
+                  { key: 'restaurant', label: t('picks.restaurant'), val: user.ambassadorPicks?.restaurant },
+                  { key: 'spot',       label: t('picks.spot'),       val: user.ambassadorPicks?.spot       },
+                  { key: 'tip',        label: t('picks.tip'),        val: user.ambassadorPicks?.tip        },
+                  { key: 'story',      label: t('picks.story'),      val: user.ambassadorPicks?.story      },
                 ].filter(p => p.val).map(p => (
                   <View key={p.key} style={styles.pickCard}>
                     <Text style={styles.pickCardTitle}>{p.label}</Text>
@@ -720,7 +722,7 @@ export default function PublicProfileScreen() {
         <View style={[styles.stickyBar, { paddingBottom: Math.max(12, insets.bottom) }]}>
           <TouchableOpacity style={styles.dmBtn} onPress={handleDm} activeOpacity={0.85}>
             <Feather name="message-square" size={18} color={Colors.white} />
-            <Text style={styles.dmBtnText}>Message</Text>
+            <Text style={styles.dmBtnText}>{t('message')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
@@ -750,17 +752,17 @@ export default function PublicProfileScreen() {
               (friendState === 'friend' || friendState === 'pending_out') && styles.friendBtnTextActive,
             ]}>
               {friendBusy             ? '…'              :
-               friendState === 'friend'      ? 'Friend'        :
-               friendState === 'pending_out' ? 'Request sent'  :
-               friendState === 'pending_in'  ? 'Accept request':
-                                               'Add friend'}
+               friendState === 'friend'      ? t('friend')        :
+               friendState === 'pending_out' ? t('requestSent')  :
+               friendState === 'pending_in'  ? t('acceptRequest'):
+                                               t('addFriend')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.reportBtn}
             onPress={() => setShowActionSheet(true)}
             activeOpacity={0.75}
-            accessibilityLabel="More options"
+            accessibilityLabel={t('moreOptions')}
           >
             <Ionicons name="ellipsis-horizontal" size={20} color="rgba(255,255,255,0.55)" />
           </TouchableOpacity>
@@ -775,14 +777,14 @@ export default function PublicProfileScreen() {
           actions={[
             {
               key:      'report',
-              label:    existingReport ? 'Already reported' : 'Report user',
+              label:    existingReport ? t('alreadyReported') : t('reportUser'),
               icon:     'flag-outline',
               disabled: !!existingReport,
               onPress:  () => {
                 if (existingReport) {
                   Alert.alert(
-                    'Already reported',
-                    `You reported this user on ${formatDateLabel(existingReport.created_at)}. Your report is being reviewed.`,
+                    t('alreadyReported'),
+                    t('alreadyReportedBody', { date: formatDateLabel(existingReport.created_at) }),
                   );
                   return;
                 }
@@ -791,7 +793,7 @@ export default function PublicProfileScreen() {
             },
             {
               key:         'block',
-              label:       blockBusy ? 'Blocking…' : 'Block user',
+              label:       blockBusy ? t('blocking') : t('blockUser'),
               icon:        'ban-outline',
               destructive: true,
               disabled:    blockBusy,
