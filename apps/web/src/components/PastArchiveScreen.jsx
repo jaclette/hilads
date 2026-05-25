@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import BackButton from './BackButton'
 import AttendeeAvatars from './AttendeeAvatars'
 import { fetchPastArchive } from '../api'
@@ -33,6 +34,7 @@ function pastWhen(ts, tz) {
 
 // ── Custom range picker — tap start then end, clamped to 14 days ─────────────
 function RangeModal({ tz, initial, onApply, onClose }) {
+  const { t } = useTranslation('archive')
   const today = parseYmd(cityTodayYmd(tz))
   const [view, setView]   = useState(() => new Date(today.getFullYear(), today.getMonth(), 1))
   const [start, setStart] = useState(initial.from ? parseYmd(initial.from) : null)
@@ -72,8 +74,8 @@ function RangeModal({ tz, initial, onApply, onClose }) {
         </div>
         <p className="archive-range-hint">
           {start && end ? prettyRange(ymd(start), ymd(end))
-            : start ? 'Now pick the end day'
-            : `Pick a start day (up to ${MAX_SPAN_DAYS} days)`}
+            : start ? t('picker.pickEnd')
+            : t('picker.pickStart', { max: MAX_SPAN_DAYS })}
         </p>
         <div className="upc-modal-row">
           {DOW_TINY.map(d => <span key={d} className="upc-modal-dow">{d}</span>)}
@@ -97,7 +99,7 @@ function RangeModal({ tz, initial, onApply, onClose }) {
         ))}
         <button type="button" className="upc-modal-close" disabled={!start}
           onClick={() => { if (start) onApply(ymd(start), ymd(end ?? start)) }}>
-          Apply
+          {t('picker.apply')}
         </button>
       </div>
     </div>
@@ -107,6 +109,7 @@ function RangeModal({ tz, initial, onApply, onClose }) {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function PastArchiveScreen({ channelId, timezone, cityName, onBack, onSelectEvent, onSelectTopic }) {
+  const { t } = useTranslation('archive')
   const tz = timezone || 'UTC'
 
   const [type, setType]   = useState('both')          // both | hangouts | pulses
@@ -170,8 +173,8 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
       <button key={`event-${event.id}`} className="city-row event-row-card" onClick={() => onSelectEvent(event)}>
         <div className="er-header">
           <span className="er-title">{icon} {event.title}</span>
-          {isPublic ? <span className="er-going er-going--public">Public</span>
-            : going > 0 && <span className="er-going">🙌 {going} went</span>}
+          {isPublic ? <span className="er-going er-going--public">{t('public')}</span>
+            : going > 0 && <span className="er-going">{t('went', { count: going })}</span>}
         </div>
         <div className="er-badges">
           <span className="city-row-current">🕐 {pastWhen(whenTs, tz)}</span>
@@ -190,36 +193,36 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
         onClick={() => onSelectTopic(topic)}>
         <div className="er-header">
           <span className="er-title">{icon} {topic.title}</span>
-          <span className="er-going archive-pulse-tag">Hangout</span>
+          <span className="er-going archive-pulse-tag">{t('hangoutTag')}</span>
         </div>
         {topic.description && <span className="er-location">{topic.description}</span>}
         <span className="city-row-current archive-pulse-meta">
-          {replies > 0 ? `💬 ${replies} ${replies === 1 ? 'reply' : 'replies'}` : 'No replies'}
+          {replies > 0 ? t('replies', { count: replies }) : t('noReplies')}
         </span>
       </button>
     )
   }
 
   const chips = [
-    { key: 'recent', label: 'Recent' },
-    { key: '7',      label: 'Last 7 days' },
-    { key: '14',     label: 'Last 14 days' },
+    { key: 'recent', tk: 'recent' },
+    { key: '7',      tk: 'last7' },
+    { key: '14',     tk: 'last14' },
   ]
 
   return (
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">What happened{cityName ? '' : ''}</span>
+        <span className="page-title">{t('title')}</span>
         <span style={{ width: 40 }} />
       </div>
 
       {/* Type filter */}
       <div className="archive-filter-bar">
-        {[['both', 'All'], ['hangouts', '🔥 Events'], ['pulses', '🗣️ Hangouts']].map(([k, label]) => (
+        {[['both', 'all'], ['hangouts', 'events'], ['pulses', 'pulses']].map(([k, lk]) => (
           <button key={k} type="button"
             className={`archive-pill${type === k ? ' active' : ''}`}
-            onClick={() => setType(k)}>{label}</button>
+            onClick={() => setType(k)}>{t(`filters.${lk}`)}</button>
         ))}
       </div>
 
@@ -229,13 +232,13 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
           <button key={c.key} type="button"
             className={`archive-range-chip${range.key === c.key ? ' active' : ''}`}
             onClick={() => (c.key === 'recent' ? setRange({ key: 'recent' }) : applyPreset(c.key))}>
-            {c.label}
+            {t(`range.${c.tk}`)}
           </button>
         ))}
         <button type="button"
           className={`archive-range-chip${range.key === 'custom' ? ' active' : ''}`}
           onClick={() => setShowPicker(true)}>
-          📅 {range.key === 'custom' && range.from && range.to ? prettyRange(range.from, range.to) : 'Custom'}
+          📅 {range.key === 'custom' && range.from && range.to ? prettyRange(range.from, range.to) : t('range.custom')}
         </button>
       </div>
 
@@ -248,18 +251,16 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
 
         {status === 'error' && (
           <div className="events-empty-state" style={{ marginTop: 40 }}>
-            <p className="events-empty-title">Couldn&apos;t load the archive</p>
-            <button className="events-empty-cta" onClick={load}>Retry</button>
+            <p className="events-empty-title">{t('error')}</p>
+            <button className="events-empty-cta" onClick={load}>{t('retry')}</button>
           </div>
         )}
 
         {status === 'ok' && items.length === 0 && (
           <div className="events-empty-state" style={{ marginTop: 40 }}>
-            <p className="events-empty-title">Nothing here yet</p>
+            <p className="events-empty-title">{t('emptyTitle')}</p>
             <p className="events-empty-sub">
-              {range.key === 'recent'
-                ? 'Past events and hangouts will show up here once the city has some history.'
-                : 'No events or hangouts in this window. Try a wider range.'}
+              {range.key === 'recent' ? t('emptyRecentSub') : t('emptyWindowSub')}
             </p>
           </div>
         )}
@@ -269,7 +270,7 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
             {items.map(item => (item.kind === 'topic' ? renderTopicRow(item) : renderEventRow(item)))}
             {cursor != null && (
               <button type="button" className="archive-load-more" onClick={loadMore} disabled={loadingMore}>
-                {loadingMore ? 'Loading…' : 'Load more'}
+                {loadingMore ? t('loading') : t('loadMore')}
               </button>
             )}
           </div>

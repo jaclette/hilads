@@ -1,0 +1,24 @@
+{
+  "title": "What happened",
+  "filters": { "all": "All", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "range": { "recent": "Recent", "last7": "Last 7 days", "last14": "Last 14 days", "custom": "Custom" },
+  "picker": {
+    "pickEnd": "Now pick the end day",
+    "pickStart": "Pick a start day (up to {{max}} days)",
+    "apply": "Apply"
+  },
+  "public": "Public",
+  "went_one": "🙌 {{count}} went",
+  "went_other": "🙌 {{count}} went",
+  "hangoutTag": "Hangout",
+  "replies_one": "💬 {{count}} reply",
+  "replies_other": "💬 {{count}} replies",
+  "noReplies": "No replies",
+  "error": "Couldn't load the archive",
+  "retry": "Retry",
+  "emptyTitle": "Nothing here yet",
+  "emptyRecentSub": "Past events and hangouts will show up here once the city has some history.",
+  "emptyWindowSub": "No events or hangouts in this window. Try a wider range.",
+  "loadMore": "Load more",
+  "loading": "Loading…"
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Đã diễn ra",
+  "filters": { "all": "Tất cả", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "range": { "recent": "Gần đây", "last7": "7 ngày qua", "last14": "14 ngày qua", "custom": "Tùy chỉnh" },
+  "picker": {
+    "pickEnd": "Giờ chọn ngày kết thúc",
+    "pickStart": "Chọn ngày bắt đầu (tối đa {{max}} ngày)",
+    "apply": "Áp dụng"
+  },
+  "public": "Công khai",
+  "went_other": "🙌 {{count}} đã tham gia",
+  "hangoutTag": "Hangout",
+  "replies_other": "💬 {{count}} trả lời",
+  "noReplies": "Chưa có trả lời",
+  "error": "Không thể tải kho lưu trữ",
+  "retry": "Thử lại",
+  "emptyTitle": "Chưa có gì ở đây",
+  "emptyRecentSub": "Sự kiện và hangout đã qua sẽ hiển thị ở đây khi thành phố có một chút lịch sử.",
+  "emptyWindowSub": "Không có sự kiện hay hangout nào trong khoảng này. Thử khoảng rộng hơn.",
+  "loadMore": "Tải thêm",
+  "loading": "Đang tải…"
+}

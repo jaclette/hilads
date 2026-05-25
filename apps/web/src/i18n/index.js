@@ -15,11 +15,12 @@ import en_hangout from './locales/en/hangout.json'
 import en_dm      from './locales/en/dm.json'
 import en_notifications from './locales/en/notifications.json'
 import en_upcoming      from './locales/en/upcoming.json'
+import en_archive       from './locales/en/archive.json'
 
 export const SUPPORTED      = ['en', 'fr', 'vi']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
-const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming']
+const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive']
 
 // Lazy loaders — one code-split chunk per (locale, namespace). Vite turns each
 // dynamic import() into its own chunk, fetched only when that locale is needed.
@@ -35,6 +36,7 @@ const LOADERS = {
     dm:      () => import('./locales/fr/dm.json'),
     notifications: () => import('./locales/fr/notifications.json'),
     upcoming:      () => import('./locales/fr/upcoming.json'),
+    archive:       () => import('./locales/fr/archive.json'),
   },
   vi: {
     common:  () => import('./locales/vi/common.json'),
@@ -47,12 +49,13 @@ const LOADERS = {
     dm:      () => import('./locales/vi/dm.json'),
     notifications: () => import('./locales/vi/notifications.json'),
     upcoming:      () => import('./locales/vi/upcoming.json'),
+    archive:       () => import('./locales/vi/archive.json'),
   },
 }
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing, auth: en_auth, event: en_event, hangout: en_hangout, dm: en_dm, notifications: en_notifications, upcoming: en_upcoming },
+    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing, auth: en_auth, event: en_event, hangout: en_hangout, dm: en_dm, notifications: en_notifications, upcoming: en_upcoming, archive: en_archive },
   },
   lng:          DEFAULT_LOCALE,
   fallbackLng:  DEFAULT_LOCALE,   // missing key in fr/vi → English
