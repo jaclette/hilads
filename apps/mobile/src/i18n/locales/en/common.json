@@ -4,5 +4,10 @@
   "loading": "Loading…",
   "retry": "Try again",
   "save": "Save",
-  "done": "Done"
+  "done": "Done",
+  "modeHeading": "MODE",
+  "mode": {
+    "local": { "label": "Local", "desc": "You know this city" },
+    "exploring": { "label": "Exploring", "desc": "You're discovering it" }
+  }
 }

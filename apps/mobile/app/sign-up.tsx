@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { authSignup, checkUsernameAvailability } from '@/api/auth';
 import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
@@ -16,12 +17,13 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { EulaCheckbox, EulaCopyBlock } from '@/features/auth/EulaPromptModal';
 
 const MODES = [
-  { key: 'local',     emoji: '🌍', label: 'Local',     desc: 'You know this city'    },
-  { key: 'exploring', emoji: '🧭', label: 'Exploring', desc: "You're discovering it" },
+  { key: 'local',     emoji: '🌍' },
+  { key: 'exploring', emoji: '🧭' },
 ] as const;
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const { t } = useTranslation('auth');
   const {
     setAccount, setJoined, setCity, setIdentity,
     identity, sessionId,
@@ -66,13 +68,13 @@ export default function SignUpScreen() {
     const p = password;
 
     // Username is the single identity field — it doubles as the display name.
-    if (username.length < 3)   { setError('Pick a username (3+ characters)'); return; }
-    if (uStatus === 'taken')   { setError('That username is taken'); return; }
-    if (uStatus === 'invalid') { setError(uReason ?? 'Invalid username'); return; }
-    if (!mode)                 { setError('Please choose a mode to continue'); return; }
-    if (!e)                    { setError('Email required'); return; }
-    if (p.length < 8)          { setError('Password must be at least 8 characters'); return; }
-    if (!eula)                 { setError('Please accept the Terms of Service and Privacy Policy'); return; }
+    if (username.length < 3)   { setError(t('signUp.errUsername')); return; }
+    if (uStatus === 'taken')   { setError(t('signUp.errTaken')); return; }
+    if (uStatus === 'invalid') { setError(uReason ?? t('signUp.errInvalidUsername')); return; }
+    if (!mode)                 { setError(t('signUp.errMode')); return; }
+    if (!e)                    { setError(t('signUp.errEmail')); return; }
+    if (p.length < 8)          { setError(t('signUp.errPassword')); return; }
+    if (!eula)                 { setError(t('signUp.errEula')); return; }
 
     setLoading(true);
     setError(null);
@@ -116,8 +118,8 @@ export default function SignUpScreen() {
         router.back();
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Sign up failed';
-      setError(msg.includes('409') || msg.includes('already') ? 'Email already registered' : msg);
+      const msg = err instanceof Error ? err.message : t('signUp.errFailed');
+      setError(msg.includes('409') || msg.includes('already') ? t('signUp.errEmailTaken') : msg);
     } finally {
       setLoading(false);
     }
@@ -138,20 +140,20 @@ export default function SignUpScreen() {
           </View>
 
           <View style={styles.body}>
-            <Text style={styles.title}>Join Hilads</Text>
-            <Text style={styles.subtitle}>Your guest activity will be carried over.</Text>
+            <Text style={styles.title}>{t('signUp.title')}</Text>
+            <Text style={styles.subtitle}>{t('signUp.subtitle')}</Text>
 
             {error && <Text style={styles.error}>{error}</Text>}
 
             <View style={styles.field}>
-              <Text style={styles.label}>Username</Text>
+              <Text style={styles.label}>{t('signUp.username')}</Text>
               <View style={styles.usernameRow}>
                 <Text style={styles.usernameAt}>@</Text>
                 <TextInput
                   style={styles.usernameInput}
                   value={username}
                   onChangeText={handleUsernameChange}
-                  placeholder="username"
+                  placeholder={t('signUp.usernamePlaceholder')}
                   placeholderTextColor={Colors.muted2}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -162,7 +164,7 @@ export default function SignUpScreen() {
                 {uStatus === 'available' && <Text style={styles.uOk}>✓</Text>}
                 {(uStatus === 'taken' || uStatus === 'invalid') && <Text style={styles.uBad}>✗</Text>}
               </View>
-              {uStatus === 'available' && <Text style={styles.uOkHint}>@{username} is available</Text>}
+              {uStatus === 'available' && <Text style={styles.uOkHint}>{t('signUp.available', { username })}</Text>}
               {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
                 <Text style={styles.uBadHint}>{uReason}</Text>
               )}
@@ -170,7 +172,7 @@ export default function SignUpScreen() {
 
             {/* Mode selector */}
             <View style={styles.modeSection}>
-              <Text style={styles.modeLabel}>MODE</Text>
+              <Text style={styles.modeLabel}>{t('modeHeading', { ns: 'common' })}</Text>
               <View style={styles.modeRow}>
                 {MODES.map(m => {
                   const active = mode === m.key;
@@ -183,8 +185,8 @@ export default function SignUpScreen() {
                       disabled={loading}
                     >
                       <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
-                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
-                      <Text style={styles.modeBtnDesc}>{m.desc}</Text>
+                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{t(`mode.${m.key}.label`, { ns: 'common' })}</Text>
+                      <Text style={styles.modeBtnDesc}>{t(`mode.${m.key}.desc`, { ns: 'common' })}</Text>
                     </TouchableOpacity>
                   );
                 })}
@@ -192,12 +194,12 @@ export default function SignUpScreen() {
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('signUp.email')}</Text>
               <TextInput
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
-                placeholder="you@example.com"
+                placeholder={t('signUp.emailPlaceholder')}
                 placeholderTextColor={Colors.muted2}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -208,12 +210,12 @@ export default function SignUpScreen() {
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.label}>Password</Text>
+              <Text style={styles.label}>{t('signUp.password')}</Text>
               <TextInput
                 style={styles.input}
                 value={password}
                 onChangeText={setPassword}
-                placeholder="8+ characters"
+                placeholder={t('signUp.passwordPlaceholder')}
                 placeholderTextColor={Colors.muted2}
                 secureTextEntry
                 autoComplete="new-password"
@@ -237,13 +239,13 @@ export default function SignUpScreen() {
             >
               {loading
                 ? <ActivityIndicator color={Colors.white} />
-                : <Text style={styles.submitText}>Create account</Text>
+                : <Text style={styles.submitText}>{t('signUp.submit')}</Text>
               }
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.replace('/sign-in')} activeOpacity={0.7}>
               <Text style={styles.switchText}>
-                Already have an account? <Text style={styles.switchLink}>Sign in →</Text>
+                {t('signUp.haveAccount')} <Text style={styles.switchLink}>{t('signUp.signInLink')}</Text>
               </Text>
             </TouchableOpacity>
           </View>

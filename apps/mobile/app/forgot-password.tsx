@@ -6,11 +6,13 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { authForgotPassword } from '@/api/auth';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
+  const { t } = useTranslation('auth');
 
   const [email,   setEmail]   = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,33 +50,28 @@ export default function ForgotPasswordScreen() {
             {sent ? (
               <View style={styles.successBlock}>
                 <Text style={styles.successIcon}>✉️</Text>
-                <Text style={styles.successTitle}>Check your inbox</Text>
-                <Text style={styles.successBody}>
-                  If an account exists for this email, we've sent a reset link.
-                  Check your spam folder if you don't see it.
-                </Text>
+                <Text style={styles.successTitle}>{t('forgotPassword.sentTitle')}</Text>
+                <Text style={styles.successBody}>{t('forgotPassword.sentBody')}</Text>
                 <TouchableOpacity
                   style={styles.submitBtn}
                   onPress={() => router.back()}
                   activeOpacity={0.85}
                 >
-                  <Text style={styles.submitText}>Back to sign in</Text>
+                  <Text style={styles.submitText}>{t('forgotPassword.backToSignIn')}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <>
-                <Text style={styles.title}>Forgot password?</Text>
-                <Text style={styles.subtitle}>
-                  Enter your email and we'll send you a reset link.
-                </Text>
+                <Text style={styles.title}>{t('forgotPassword.title')}</Text>
+                <Text style={styles.subtitle}>{t('forgotPassword.subtitle')}</Text>
 
                 <View style={styles.field}>
-                  <Text style={styles.label}>Email</Text>
+                  <Text style={styles.label}>{t('forgotPassword.email')}</Text>
                   <TextInput
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="you@example.com"
+                    placeholder={t('forgotPassword.emailPlaceholder')}
                     placeholderTextColor={Colors.muted2}
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -95,7 +92,7 @@ export default function ForgotPasswordScreen() {
                 >
                   {loading
                     ? <ActivityIndicator color={Colors.white} />
-                    : <Text style={styles.submitText}>Send reset link</Text>
+                    : <Text style={styles.submitText}>{t('forgotPassword.submit')}</Text>
                   }
                 </TouchableOpacity>
               </>

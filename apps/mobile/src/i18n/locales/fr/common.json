@@ -4,5 +4,10 @@
   "loading": "Chargement…",
   "retry": "Réessayer",
   "save": "Enregistrer",
-  "done": "Terminé"
+  "done": "Terminé",
+  "modeHeading": "MODE",
+  "mode": {
+    "local": { "label": "Local", "desc": "Tu connais cette ville" },
+    "exploring": { "label": "Explorateur", "desc": "Tu la découvres" }
+  }
 }

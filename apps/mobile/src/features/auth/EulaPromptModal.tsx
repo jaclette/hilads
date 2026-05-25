@@ -15,36 +15,29 @@ import {
   View, Text, Pressable, TouchableOpacity, Linking, StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Trans, useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 
 const TERMS_URL   = 'https://hilads.live/terms';
 const PRIVACY_URL = 'https://hilads.live/privacy';
 
-/**
- * Hilads' zero-tolerance line — literal copy required to be visible on the
- * EULA gate. Apple G1.2 calls this out as mandatory verbiage.
- */
-export const ZERO_TOLERANCE_COPY =
-  'Hilads has zero tolerance for objectionable content or abusive behavior. ' +
-  'Violations may result in immediate account termination.';
-
 // ── Reusable block: zero-tolerance text + ToS / Privacy links ─────────────────
 
 export function EulaCopyBlock() {
+  const { t } = useTranslation('auth');
   return (
     <View style={styles.copyBlock}>
-      <Text style={styles.zeroTolerance}>{ZERO_TOLERANCE_COPY}</Text>
-      <Text style={styles.linksRow}>
-        Read our{' '}
-        <Text style={styles.link} onPress={() => Linking.openURL(TERMS_URL)}>
-          Terms of Service
-        </Text>
-        {' '}and{' '}
-        <Text style={styles.link} onPress={() => Linking.openURL(PRIVACY_URL)}>
-          Privacy Policy
-        </Text>
-        .
-      </Text>
+      <Text style={styles.zeroTolerance}>{t('eula.zeroTolerance')}</Text>
+      <Trans
+        i18nKey="eula.links"
+        ns="auth"
+        parent={Text}
+        style={styles.linksRow}
+        components={{
+          terms:   <Text style={styles.link} onPress={() => Linking.openURL(TERMS_URL)} />,
+          privacy: <Text style={styles.link} onPress={() => Linking.openURL(PRIVACY_URL)} />,
+        }}
+      />
     </View>
   );
 }
@@ -58,6 +51,7 @@ interface CheckboxProps {
 }
 
 export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
+  const { t } = useTranslation('auth');
   return (
     <TouchableOpacity
       style={styles.checkboxRow}
@@ -73,17 +67,16 @@ export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
           : null
         }
       </View>
-      <Text style={styles.checkboxLabel}>
-        I agree to the{' '}
-        <Text style={styles.link} onPress={() => Linking.openURL(TERMS_URL)}>
-          Terms of Service
-        </Text>
-        {' '}and{' '}
-        <Text style={styles.link} onPress={() => Linking.openURL(PRIVACY_URL)}>
-          Privacy Policy
-        </Text>
-        .
-      </Text>
+      <Trans
+        i18nKey="eula.agree"
+        ns="auth"
+        parent={Text}
+        style={styles.checkboxLabel}
+        components={{
+          terms:   <Text style={styles.link} onPress={() => Linking.openURL(TERMS_URL)} />,
+          privacy: <Text style={styles.link} onPress={() => Linking.openURL(PRIVACY_URL)} />,
+        }}
+      />
     </TouchableOpacity>
   );
 }
@@ -98,6 +91,7 @@ interface ModalProps {
 }
 
 export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProps) {
+  const { t } = useTranslation('auth');
   // Plain absolutely-positioned overlay rather than React Native's <Modal>.
   // The native <Modal transparent> on iPad in iPhone-compat mode renders in
   // a UIWindow that doesn't extend over the tab bar AND has flaky touch
@@ -117,11 +111,8 @@ export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProp
       accessibilityViewIsModal
     >
       <View style={styles.modalCard}>
-        <Text style={styles.modalTitle}>Updated Terms</Text>
-        <Text style={styles.modalSub}>
-          Hilads' Terms of Service and Community Guidelines have been updated.
-          Please review and accept to continue.
-        </Text>
+        <Text style={styles.modalTitle}>{t('eula.modalTitle')}</Text>
+        <Text style={styles.modalSub}>{t('eula.modalSub')}</Text>
 
         <EulaCopyBlock />
 
@@ -144,11 +135,11 @@ export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProp
           disabled={loading}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel="I agree"
+          accessibilityLabel={t('eula.accept')}
         >
           {loading
             ? <ActivityIndicator color="#fff" />
-            : <Text style={styles.acceptBtnText}>I agree</Text>
+            : <Text style={styles.acceptBtnText}>{t('eula.accept')}</Text>
           }
         </Pressable>
       </View>

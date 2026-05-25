@@ -4,5 +4,10 @@
   "loading": "Đang tải…",
   "retry": "Thử lại",
   "save": "Lưu",
-  "done": "Xong"
+  "done": "Xong",
+  "modeHeading": "CHẾ ĐỘ",
+  "mode": {
+    "local": { "label": "Địa phương", "desc": "Bạn rành thành phố này" },
+    "exploring": { "label": "Khám phá", "desc": "Bạn đang khám phá nó" }
+  }
 }
