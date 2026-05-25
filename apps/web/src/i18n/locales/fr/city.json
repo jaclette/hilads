@@ -31,5 +31,15 @@
     "invite": "Inviter des amis"
   },
   "imageType": "Choisis une image JPEG, PNG ou WebP.",
-  "imageTooLarge": "Image trop lourde. Taille max : 10 Mo."
+  "imageTooLarge": "Image trop lourde. Taille max : 10 Mo.",
+  "picker": {
+    "title": "Choisis une ville",
+    "search": "Rechercher une ville…",
+    "noResults": "Aucune ville trouvée pour « {{query}} »",
+    "topCities": "Villes les plus actives",
+    "cities": "Villes"
+  },
+  "joining": "Connexion à {{city}}…",
+  "joiningDefault": "Connexion au chat…",
+  "tryAgain": "Réessayer"
 }

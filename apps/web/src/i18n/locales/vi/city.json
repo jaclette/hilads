@@ -31,5 +31,15 @@
     "invite": "Mời bạn bè"
   },
   "imageType": "Vui lòng chọn ảnh JPEG, PNG hoặc WebP.",
-  "imageTooLarge": "Ảnh quá lớn. Tối đa: 10 MB."
+  "imageTooLarge": "Ảnh quá lớn. Tối đa: 10 MB.",
+  "picker": {
+    "title": "Chọn một thành phố",
+    "search": "Tìm thành phố…",
+    "noResults": "Không tìm thấy thành phố cho \"{{query}}\"",
+    "topCities": "Thành phố sôi động nhất",
+    "cities": "Thành phố"
+  },
+  "joining": "Đang vào {{city}}…",
+  "joiningDefault": "Đang vào chat…",
+  "tryAgain": "Thử lại"
 }

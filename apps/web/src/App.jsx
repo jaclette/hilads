@@ -3173,13 +3173,13 @@ export default function App() {
           <div className="full-page">
             <div className="page-header">
               <BackButton onClick={() => setObPickingCity(false)} />
-              <span className="page-title">Pick a city</span>
+              <span className="page-title">{t('picker.title')}</span>
             </div>
             <div className="city-search-wrap">
               <input
                 className="city-search-input"
                 type="search"
-                placeholder="Search a city…"
+                placeholder={t('picker.search')}
                 value={citySearchQuery}
                 onChange={e => setCitySearchQuery(e.target.value)}
                 autoFocus
@@ -3204,7 +3204,7 @@ export default function App() {
                 const sorted = [...obChannels]
                   .filter(ch => !q || ch.city.toLowerCase().includes(q))
                   .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
-                if (sorted.length === 0) return <div className="city-no-results">No city found for "{citySearchQuery}"</div>
+                if (sorted.length === 0) return <div className="city-no-results">{t('picker.noResults', { query: citySearchQuery })}</div>
                 if (q) {
                   return sorted.map(ch => renderCityRow(
                     ch,
@@ -3220,7 +3220,7 @@ export default function App() {
                   .filter(ch => !fillerIds.has(ch.channelId))
                   .sort((a, b) => a.channelId - b.channelId)
                 const top10 = [...active, ...filler].slice(0, 10)
-                const label = active.length > 0 ? 'Top cities right now' : 'Cities'
+                const label = active.length > 0 ? t('picker.topCities') : t('picker.cities')
                 return (
                   <>
                     <div className="city-list-label">{label}</div>
@@ -3245,7 +3245,7 @@ export default function App() {
     return (
       <div className="screen center">
         <div className="loading-spinner" />
-        <p className="loading-text">Joining {city || 'the chat'}...</p>
+        <p className="loading-text">{city ? t('joining', { city }) : t('joiningDefault')}</p>
       </div>
     )
   }
@@ -3265,7 +3265,7 @@ export default function App() {
             setError(null)
           }}
         >
-          Try again
+          {t('tryAgain')}
         </button>
       </div>
     )

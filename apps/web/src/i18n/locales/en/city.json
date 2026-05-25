@@ -31,5 +31,15 @@
     "invite": "Invite friends"
   },
   "imageType": "Please select a JPEG, PNG, or WebP image.",
-  "imageTooLarge": "Image too large. Max size: 10 MB."
+  "imageTooLarge": "Image too large. Max size: 10 MB.",
+  "picker": {
+    "title": "Pick a city",
+    "search": "Search a city…",
+    "noResults": "No city found for \"{{query}}\"",
+    "topCities": "Top cities right now",
+    "cities": "Cities"
+  },
+  "joining": "Joining {{city}}…",
+  "joiningDefault": "Joining the chat…",
+  "tryAgain": "Try again"
 }
