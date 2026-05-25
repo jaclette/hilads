@@ -21,6 +21,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useDMThread } from '@/hooks/useDMThread';
 import { findOrCreateDM, toggleDmReaction, fetchConversations } from '@/api/conversations';
@@ -128,6 +129,7 @@ function openMaps(lat: number, lng: number, label: string) {
 }
 
 function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
+  const { t } = useTranslation('chat');
   const { line1, place, lat, lng, addr } = parseDmLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
   // Outgoing bubble matches web .loc-bubble--me — 135° accent → accent2 gradient.
@@ -139,7 +141,7 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
           {line1.replace('📍 ', '')}
         </Text>
         {!!addr && <Text style={[dmLocStyles.addr, isMine && dmLocStyles.addrMine]} numberOfLines={2}>{addr}</Text>}
-        {hasCoords && <Text style={[dmLocStyles.tapHint, isMine && dmLocStyles.tapHintMine]}>Tap to open in maps</Text>}
+        {hasCoords && <Text style={[dmLocStyles.tapHint, isMine && dmLocStyles.tapHintMine]}>{t('tapMaps')}</Text>}
       </View>
     </>
   );
@@ -204,6 +206,7 @@ const dmLocStyles = StyleSheet.create({
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted, onReact }: RowProps) {
   const router = useRouter();
+  const { t } = useTranslation('dm');
   const { account } = useApp();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(6)).current;
@@ -305,7 +308,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
                   <View style={[dmReplyStyles.quote, isMine ? dmReplyStyles.quoteMine : dmReplyStyles.quoteOther]}>
                     <Text style={[dmReplyStyles.name, isMine && dmReplyStyles.nameMine]}>{msg.replyTo.nickname}</Text>
                     <Text style={[dmReplyStyles.text, isMine && dmReplyStyles.textMine]} numberOfLines={2}>
-                      {msg.replyTo.type === 'image' ? '📷 Photo' : (msg.replyTo.content || 'Original message unavailable')}
+                      {msg.replyTo.type === 'image' ? t('photoLabel', { ns: 'common' }) : (msg.replyTo.content || t('originalUnavailable', { ns: 'chat' }))}
                     </Text>
                   </View>
                 </TouchableOpacity>
@@ -334,10 +337,10 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
         {isLast && (
           <View style={[styles.metaRow, isMine && styles.metaRowMine]}>
             {isSending && (
-              <Text style={styles.metaText}>Sending…</Text>
+              <Text style={styles.metaText}>{t('sending')}</Text>
             )}
             {isFailed && (
-              <Text style={styles.metaTextFailed}>Failed · tap to retry</Text>
+              <Text style={styles.metaTextFailed}>{t('failedRetry')}</Text>
             )}
             {!isSending && !isFailed && (
               <Text style={styles.metaText}>{formatSmartTime(msg.created_at)}</Text>
@@ -353,6 +356,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 // ── Thread — rendered once conversationId is known ────────────────────────────
 
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
+  const { t } = useTranslation('dm');
   const { account } = useApp();
   const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions } = useDMThread(conversationId);
   const [text,          setText]          = useState('');
@@ -391,12 +395,12 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const busy    = sending || uploading;
 
   function handleSend() {
-    const t = text.trim();
-    if (!t || busy) return;
+    const trimmed = text.trim();
+    if (!trimmed || busy) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const reply = replyingToRef.current;
     setReplyingTo(null);
-    sendText(t, reply);
+    sendText(trimmed, reply);
     setText('');
   }
 
@@ -412,7 +416,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   async function openLibrary() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo access to share images.');
+      Alert.alert(t('composer.photoPermTitle', { ns: 'common' }), t('composer.photoPermBody', { ns: 'common' }));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
@@ -427,7 +431,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         console.log('[camera/dm] iOS permission status:', status);
         if (status !== 'granted') {
-          Alert.alert('Permission needed', 'Allow camera access in Settings → Hilads → Camera.');
+          Alert.alert(t('composer.photoPermTitle', { ns: 'common' }), t('composer.cameraPermSettings', { ns: 'common' }));
           return;
         }
       }
@@ -463,16 +467,16 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
       }
     } catch (err) {
       console.error('[camera/dm] launch failed:', String(err));
-      Alert.alert('Camera unavailable', String(err));
+      Alert.alert(t('composer.cameraUnavailTitle', { ns: 'common' }), String(err));
     }
   }
 
   function handlePickImage() {
     if (busy) return;
-    Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: () => InteractionManager.runAfterInteractions(() => openCamera()) },
-      { text: 'Choose from Library', onPress: () => InteractionManager.runAfterInteractions(() => openLibrary()) },
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('composer.sendPhotoTitle', { ns: 'common' }), undefined, [
+      { text: t('composer.takePhoto', { ns: 'common' }),     onPress: () => InteractionManager.runAfterInteractions(() => openCamera()) },
+      { text: t('composer.chooseLibrary', { ns: 'common' }), onPress: () => InteractionManager.runAfterInteractions(() => openLibrary()) },
+      { text: t('cancel', { ns: 'common' }), style: 'cancel' },
     ]);
   }
 
@@ -485,11 +489,11 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     if (!granted) {
       if (!existing.canAskAgain) {
         Alert.alert(
-          'Location access required',
-          'Please enable location in Settings → Hilads → Location.',
+          t('composer.locPermTitle', { ns: 'common' }),
+          t('composer.locPermSettings', { ns: 'common' }),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+            { text: t('openSettings', { ns: 'common' }), onPress: () => Linking.openSettings() },
           ],
         );
         return;
@@ -497,7 +501,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
       const result = await Location.requestForegroundPermissionsAsync();
       granted = result.status === 'granted';
       if (!granted) {
-        Alert.alert('Location needed', 'Allow location access to share your spot.');
+        Alert.alert(t('composer.locNeededTitle', { ns: 'common' }), t('composer.locNeededBody', { ns: 'common' }));
         return;
       }
     }
@@ -586,7 +590,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
     >
       {error && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorBannerText}>{error} · tap to dismiss</Text>
+          <Text style={styles.errorBannerText}>{t('dismissHint', { ns: 'chat', error })}</Text>
         </TouchableOpacity>
       )}
 
@@ -614,15 +618,15 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
               </View>
             ) : (!hasMore && !loading && messages.length > 0) ? (
               <View style={styles.loadingOlderWrap}>
-                <Text style={styles.beginningText}>Beginning of conversation</Text>
+                <Text style={styles.beginningText}>{t('beginning', { ns: 'chat' })}</Text>
               </View>
             ) : null
           }
           ListEmptyComponent={
             <View style={styles.emptyWrap}>
               <Text style={styles.emptyEmoji}>💬</Text>
-              <Text style={styles.emptyTitle}>Start a conversation</Text>
-              <Text style={styles.emptySub}>Say hi to {displayName}</Text>
+              <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
+              <Text style={styles.emptySub}>{t('emptySub', { name: displayName })}</Text>
             </View>
           }
         />
@@ -659,7 +663,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           <View style={dmComposerReplyStyles.body}>
             <Text style={dmComposerReplyStyles.name}>{replyingTo.nickname}</Text>
             <Text style={dmComposerReplyStyles.preview} numberOfLines={1}>
-              {replyingTo.type === 'image' ? '📷 Photo' : replyingTo.content}
+              {replyingTo.type === 'image' ? t('photoLabel', { ns: 'common' }) : replyingTo.content}
             </Text>
           </View>
           <TouchableOpacity onPress={() => setReplyingTo(null)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -677,7 +681,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
             onPressOut={vibePressOut}
             disabled={busy}
             accessibilityRole="button"
-            accessibilityLabel="Add attachment"
+            accessibilityLabel={t('composer.attach', { ns: 'common' })}
           >
             <LinearGradient
               colors={['#C24A38', '#B87228']}
@@ -706,7 +710,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; }}
           onFocus={() => { setFocused(true); setShowEmoji(false); }}
           onBlur={() => setFocused(false)}
-          placeholder={`Message ${displayName}…`}
+          placeholder={t('messagePlaceholder', { name: displayName })}
           placeholderTextColor={Colors.muted2}
           multiline
           maxLength={1000}
@@ -757,6 +761,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
 export default function DMThreadScreen() {
   const router = useRouter();
+  const { t } = useTranslation('dm');
   const { id, name, conv } = useLocalSearchParams<{ id: string; name?: string; conv?: string }>();
   const { account, identity, addBlocked, removeBlocked } = useApp();
 
@@ -772,7 +777,7 @@ export default function DMThreadScreen() {
   const [showActionSheet, setShowActionSheet] = useState(false);
   const [blockBusy,       setBlockBusy]       = useState(false);
 
-  const displayName = name ?? 'Message';
+  const displayName = name ?? t('fallbackName');
   const color       = avatarColor(displayName);
   const initial     = displayName.slice(0, 1).toUpperCase();
 
@@ -822,7 +827,7 @@ export default function DMThreadScreen() {
       })
       .catch((err) => {
         console.error('[DM] findOrCreateDM failed:', err);
-        if (!cancelled) setResolveError('Could not open this conversation.');
+        if (!cancelled) setResolveError(t('resolveError'));
       });
     return () => { cancelled = true; };
   }, [id, conv, account]);
@@ -830,12 +835,12 @@ export default function DMThreadScreen() {
   function handleBlockPress() {
     if (!otherUserId || blockBusy) return;
     Alert.alert(
-      `Block ${displayName}?`,
-      `You won't see content from ${displayName}, and they won't see yours. You can unblock anyone later from Me → Settings → Blocked users.`,
+      t('blockTitle', { name: displayName }),
+      t('blockBody', { name: displayName }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
         {
-          text: 'Block', style: 'destructive',
+          text: t('blockConfirm'), style: 'destructive',
           onPress: async () => {
             setBlockBusy(true);
             try {
@@ -849,7 +854,7 @@ export default function DMThreadScreen() {
               router.replace('/messages');
             } catch {
               removeBlocked({ userId: otherUserId });
-              Alert.alert('Could not block', 'Please try again.');
+              Alert.alert(t('blockFailTitle'), t('blockFailBody'));
             } finally {
               setBlockBusy(false);
             }
@@ -879,7 +884,7 @@ export default function DMThreadScreen() {
 
         <View style={styles.headerInfo}>
           <Text style={styles.headerName} numberOfLines={1}>{displayName}</Text>
-          <Text style={styles.headerSub}>Direct message</Text>
+          <Text style={styles.headerSub}>{t('directMessage')}</Text>
         </View>
 
         {/* … menu — Apple G1.2 requires Block + Report visible from chat thread */}
@@ -887,7 +892,7 @@ export default function DMThreadScreen() {
           style={styles.headerMore}
           onPress={() => setShowActionSheet(true)}
           activeOpacity={0.7}
-          accessibilityLabel="More options"
+          accessibilityLabel={t('moreOptions')}
         >
           <Ionicons name="ellipsis-horizontal" size={22} color={Colors.text} />
         </TouchableOpacity>
@@ -902,14 +907,14 @@ export default function DMThreadScreen() {
         actions={[
           {
             key:      'view_profile',
-            label:    'View profile',
+            label:    t('viewProfile'),
             icon:     'person-outline',
             disabled: !otherUserId,
             onPress:  handleViewProfile,
           },
           {
             key:      'report',
-            label:    'Report user',
+            label:    t('reportUser'),
             icon:     'flag-outline',
             disabled: !otherUserId,
             onPress:  () => {
@@ -919,7 +924,7 @@ export default function DMThreadScreen() {
           },
           {
             key:         'block',
-            label:       blockBusy ? 'Blocking…' : 'Block user',
+            label:       blockBusy ? t('blocking') : t('blockUser'),
             icon:        'ban-outline',
             destructive: true,
             disabled:    !otherUserId || blockBusy,
@@ -934,7 +939,7 @@ export default function DMThreadScreen() {
         <View style={styles.center}>
           <Text style={styles.resolveErrorText}>{resolveError}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => router.back()} activeOpacity={0.8}>
-            <Text style={styles.retryBtnText}>Go back</Text>
+            <Text style={styles.retryBtnText}>{t('goBack')}</Text>
           </TouchableOpacity>
         </View>
       ) : !conversationId ? (

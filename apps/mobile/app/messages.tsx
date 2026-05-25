@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useConversations } from '@/hooks/useConversations';
@@ -96,11 +97,12 @@ function EventRow({
   unread?: EventChatPreview;
   onPress: () => void;
 }) {
+  const { t } = useTranslation('dm');
   const hasUnread = (unread?.count ?? 0) > 0;
   const preview   = unread?.preview
     ?? (event.city_name
-      ? `${event.city_name}${event.participant_count != null ? ` · ${event.participant_count} going` : ''}`
-      : 'Event chat');
+      ? `${event.city_name}${event.participant_count != null ? ` · ${t('goingCount', { count: event.participant_count })}` : ''}`
+      : t('eventChatFallback'));
   const time = unread?.previewAt ? relativeTime(unread.previewAt) : '';
 
   return (
@@ -136,10 +138,10 @@ function SectionHeader({ title }: { title: string }) {
 
 // ── Filter pills ──────────────────────────────────────────────────────────────
 
-const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: 'all',    label: 'All' },
-  { key: 'dms',    label: 'Direct Messages' },
-  { key: 'events', label: 'Event Chats' },
+const FILTERS: { key: FilterKey; labelKey: string }[] = [
+  { key: 'all',    labelKey: 'filterAll' },
+  { key: 'dms',    labelKey: 'filterDms' },
+  { key: 'events', labelKey: 'filterEvents' },
 ];
 
 function FilterBar({
@@ -150,9 +152,10 @@ function FilterBar({
   eventsUnread: boolean;
   onSelect:     (f: FilterKey) => void;
 }) {
+  const { t } = useTranslation('dm');
   return (
     <View style={styles.filterBar}>
-      {FILTERS.map(({ key, label }) => {
+      {FILTERS.map(({ key, labelKey }) => {
         const isActive  = active === key;
         const hasUnread = key === 'dms' ? dmUnread : key === 'events' ? eventsUnread : (dmUnread || eventsUnread);
         return (
@@ -162,7 +165,7 @@ function FilterBar({
             onPress={() => onSelect(key)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.pillLabel, isActive && styles.pillLabelActive]}>{label}</Text>
+            <Text style={[styles.pillLabel, isActive && styles.pillLabelActive]}>{t(labelKey)}</Text>
             {hasUnread && <View style={[styles.pillDot, isActive && styles.pillDotActive]} />}
           </TouchableOpacity>
         );
@@ -190,6 +193,7 @@ function BackButton() {
 
 export default function MessagesScreen() {
   const router = useRouter();
+  const { t } = useTranslation('dm');
   const { account, identity, eventChatPreviews, clearEventChatCounts, setUnreadDMs } = useApp();
   const { conversations, loading: loadingDMs, error, reload: reloadDMs, markAllRead: markDMsRead } = useConversations();
 
@@ -255,12 +259,12 @@ export default function MessagesScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <BackButton />
-          <Text style={styles.headerTitle}>Messages</Text>
+          <Text style={styles.headerTitle}>{t('messages', { ns: 'common' })}</Text>
           <View style={styles.markReadBtn} />
         </View>
         <UpgradePrompt
-          title="Messages are for members"
-          subtitle="Create a free account to send direct messages and stay connected."
+          title={t('upgradeTitle')}
+          subtitle={t('upgradeSub')}
         />
       </SafeAreaView>
     );
@@ -284,10 +288,10 @@ export default function MessagesScreen() {
       {/* Header */}
       <View style={styles.header}>
         <BackButton />
-        <Text style={styles.headerTitle}>Messages</Text>
+        <Text style={styles.headerTitle}>{t('messages', { ns: 'common' })}</Text>
         {hasUnread ? (
           <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.markReadBtn}>
-            <Text style={styles.markReadText}>Mark all read</Text>
+            <Text style={styles.markReadText}>{t('markAllRead')}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.markReadBtn} />
@@ -311,7 +315,7 @@ export default function MessagesScreen() {
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={reload} activeOpacity={0.8}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('retry', { ns: 'common' })}</Text>
           </TouchableOpacity>
         </View>
       ) : filteredEmpty ? (
@@ -320,12 +324,12 @@ export default function MessagesScreen() {
             {activeFilter === 'events' ? '🔥' : '💬'}
           </Text>
           <Text style={styles.emptyTitle}>
-            {activeFilter === 'events' ? 'No event chats yet' : 'No messages yet'}
+            {activeFilter === 'events' ? t('emptyEventsTitle') : t('emptyDmsTitle')}
           </Text>
           <Text style={styles.emptySub}>
             {activeFilter === 'events'
-              ? 'Create or join an event to chat with people going.'
-              : 'Connect with people you meet in the city.'}
+              ? t('emptyEventsSub')
+              : t('emptyDmsSub')}
           </Text>
         </View>
       ) : (
@@ -342,7 +346,7 @@ export default function MessagesScreen() {
           {/* Direct Messages section */}
           {showDMs && conversations.length > 0 && (
             <>
-              {activeFilter === 'all' && <SectionHeader title="DIRECT MESSAGES" />}
+              {activeFilter === 'all' && <SectionHeader title={t('sectionDms')} />}
               {conversations.map(convo => (
                 <DMRow
                   key={convo.id}
@@ -364,7 +368,7 @@ export default function MessagesScreen() {
               </View>
             ) : events.length > 0 ? (
               <>
-                {activeFilter === 'all' && <SectionHeader title="EVENT CHATS" />}
+                {activeFilter === 'all' && <SectionHeader title={t('sectionEvents')} />}
                 {events.map(event => (
                   <EventRow
                     key={event.id}
@@ -383,25 +387,25 @@ export default function MessagesScreen() {
           {/* ── Notification preferences (envelope-scoped) ────────────────── */}
           {prefs && (
             <View style={styles.prefSection}>
-              <Text style={styles.prefSectionTitle}>NOTIFICATION PREFERENCES</Text>
+              <Text style={styles.prefSectionTitle}>{t('prefTitle')}</Text>
               <View style={styles.prefCard}>
                 <PrefRow
-                  label="New direct messages"
-                  subtitle="When someone sends you a private message"
+                  label={t('pref.dmLabel')}
+                  subtitle={t('pref.dmSub')}
                   value={prefs.dm_push}
                   onChange={v => togglePref('dm_push', v)}
                 />
                 <View style={styles.prefDivider} />
                 <PrefRow
-                  label="Event chat messages"
-                  subtitle="When someone messages in an event you joined"
+                  label={t('pref.eventLabel')}
+                  subtitle={t('pref.eventSub')}
                   value={prefs.event_message_push}
                   onChange={v => togglePref('event_message_push', v)}
                 />
                 <View style={styles.prefDivider} />
                 <PrefRow
-                  label="City chat messages"
-                  subtitle="When someone sends a message in your city channel"
+                  label={t('pref.cityLabel')}
+                  subtitle={t('pref.citySub')}
                   value={prefs.channel_message_push}
                   onChange={v => togglePref('channel_message_push', v)}
                 />

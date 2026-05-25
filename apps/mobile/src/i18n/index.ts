@@ -15,6 +15,7 @@ import en_now     from './locales/en/now.json';
 import en_chat    from './locales/en/chat.json';
 import en_event   from './locales/en/event.json';
 import en_hangout from './locales/en/hangout.json';
+import en_dm      from './locales/en/dm.json';
 import fr_common  from './locales/fr/common.json';
 import fr_auth    from './locales/fr/auth.json';
 import fr_landing from './locales/fr/landing.json';
@@ -23,6 +24,7 @@ import fr_now     from './locales/fr/now.json';
 import fr_chat    from './locales/fr/chat.json';
 import fr_event   from './locales/fr/event.json';
 import fr_hangout from './locales/fr/hangout.json';
+import fr_dm      from './locales/fr/dm.json';
 import vi_common  from './locales/vi/common.json';
 import vi_auth    from './locales/vi/auth.json';
 import vi_landing from './locales/vi/landing.json';
@@ -31,18 +33,19 @@ import vi_now     from './locales/vi/now.json';
 import vi_chat    from './locales/vi/chat.json';
 import vi_event   from './locales/vi/event.json';
 import vi_hangout from './locales/vi/hangout.json';
+import vi_dm      from './locales/vi/dm.json';
 
 export const SUPPORTED = ['en', 'fr', 'vi'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
 
-const NS = ['common', 'auth', 'landing', 'here', 'now', 'chat', 'event', 'hangout'] as const;
+const NS = ['common', 'auth', 'landing', 'here', 'now', 'chat', 'event', 'hangout', 'dm'] as const;
 
 const resources = {
-  en: { common: en_common, auth: en_auth, landing: en_landing, here: en_here, now: en_now, chat: en_chat, event: en_event, hangout: en_hangout },
-  fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here, now: fr_now, chat: fr_chat, event: fr_event, hangout: fr_hangout },
-  vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now, chat: vi_chat, event: vi_event, hangout: vi_hangout },
+  en: { common: en_common, auth: en_auth, landing: en_landing, here: en_here, now: en_now, chat: en_chat, event: en_event, hangout: en_hangout, dm: en_dm },
+  fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here, now: fr_now, chat: fr_chat, event: fr_event, hangout: fr_hangout, dm: fr_dm },
+  vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now, chat: vi_chat, event: vi_event, hangout: vi_hangout, dm: vi_dm },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {
