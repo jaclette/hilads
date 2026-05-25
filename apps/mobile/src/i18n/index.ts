@@ -12,28 +12,31 @@ import en_auth    from './locales/en/auth.json';
 import en_landing from './locales/en/landing.json';
 import en_here    from './locales/en/here.json';
 import en_now     from './locales/en/now.json';
+import en_chat    from './locales/en/chat.json';
 import fr_common  from './locales/fr/common.json';
 import fr_auth    from './locales/fr/auth.json';
 import fr_landing from './locales/fr/landing.json';
 import fr_here    from './locales/fr/here.json';
 import fr_now     from './locales/fr/now.json';
+import fr_chat    from './locales/fr/chat.json';
 import vi_common  from './locales/vi/common.json';
 import vi_auth    from './locales/vi/auth.json';
 import vi_landing from './locales/vi/landing.json';
 import vi_here    from './locales/vi/here.json';
 import vi_now     from './locales/vi/now.json';
+import vi_chat    from './locales/vi/chat.json';
 
 export const SUPPORTED = ['en', 'fr', 'vi'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
 
-const NS = ['common', 'auth', 'landing', 'here', 'now'] as const;
+const NS = ['common', 'auth', 'landing', 'here', 'now', 'chat'] as const;
 
 const resources = {
-  en: { common: en_common, auth: en_auth, landing: en_landing, here: en_here, now: en_now },
-  fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here, now: fr_now },
-  vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now },
+  en: { common: en_common, auth: en_auth, landing: en_landing, here: en_here, now: en_now, chat: en_chat },
+  fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here, now: fr_now, chat: fr_chat },
+  vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now, chat: vi_chat },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {

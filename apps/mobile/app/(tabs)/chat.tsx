@@ -18,6 +18,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -54,6 +56,7 @@ interface BannerProps {
 
 function EventBannerStrip({ title, eventId, onDismiss }: BannerProps) {
   const router  = useRouter();
+  const { t }   = useTranslation('chat');
   const opacity = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -68,10 +71,10 @@ function EventBannerStrip({ title, eventId, onDismiss }: BannerProps) {
   return (
     <Animated.View style={[styles.bannerStrip, { opacity }]}>
       <Text style={styles.bannerText} numberOfLines={1}>
-        🔥 New event: {title}
+        {t('bannerNewEvent', { title })}
       </Text>
       <TouchableOpacity style={styles.bannerBtn} onPress={handleJoin} activeOpacity={0.8}>
-        <Text style={styles.bannerBtnText}>Join</Text>
+        <Text style={styles.bannerBtnText}>{t('join')}</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.bannerDismiss} onPress={onDismiss} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
         <Text style={styles.bannerDismissText}>✕</Text>
@@ -109,19 +112,6 @@ function ChipLiveDot() {
   );
 }
 
-// ── Ambient activity messages — mirrors web AMBIENT_MESSAGES ─────────────────
-
-const AMBIENT_MESSAGES = [
-  '🔥 People are arriving',
-  "🍻 Who's out tonight?",
-  '💬 The city is waking up',
-  '🌙 Night owls are online',
-  '👀 Someone just arrived',
-  '🔥 New face in the city',
-  '🎉 People are here right now',
-  '🌆 Locals checking in',
-];
-
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 // ── Screen ────────────────────────────────────────────────────────────────────
@@ -131,6 +121,7 @@ const AMBIENT_MESSAGES = [
 
 export default function ChatTab() {
   const router = useRouter();
+  const { t } = useTranslation('chat');
   const {
     city, identity, sessionId, account,
     unreadDMs, setUnreadDMs,
@@ -198,10 +189,10 @@ export default function ChatTab() {
   const typingLabel = useMemo<string | null>(() => {
     const others = typingUsers.filter(u => u.sessionId !== sessionId);
     if (others.length === 0) return null;
-    if (others.length === 1) return `${others[0].nickname} is typing…`;
-    if (others.length === 2) return `${others[0].nickname} and ${others[1].nickname} are typing…`;
-    return `${others[0].nickname} and ${others.length - 1} others are typing…`;
-  }, [typingUsers, sessionId]);
+    if (others.length === 1) return t('typingOne', { name: others[0].nickname });
+    if (others.length === 2) return t('typingTwo', { a: others[0].nickname, b: others[1].nickname });
+    return t('typingMany', { name: others[0].nickname, count: others.length - 1 });
+  }, [typingUsers, sessionId, t]);
 
   const handleTypingStart = useCallback(() => {
     if (!city?.channelId || !sessionId) return;
@@ -458,7 +449,8 @@ export default function ChatTab() {
     activityTimerRef.current = setTimeout(() => {
       if (!isActiveRef.current) return;
       if (realMessageCount() < 3) {
-        const text = AMBIENT_MESSAGES[Math.floor(Math.random() * AMBIENT_MESSAGES.length)];
+        const ambient = i18n.t('ambient', { ns: 'chat', returnObjects: true }) as string[];
+        const text = ambient[Math.floor(Math.random() * ambient.length)];
         setPromptItems(prev => [...prev, {
           id:        `act-${Date.now()}`,
           type:      'activity' as const,
@@ -479,7 +471,7 @@ export default function ChatTab() {
       promptsShownRef.current.add('explore');
       setPromptItems(prev => [...prev, {
         id: `prompt-explore-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'explore', content: "🔥 See what's happening now", cta: 'Explore',
+        subtype: 'explore', content: i18n.t('promptExplore', { ns: 'chat' }), cta: i18n.t('promptExploreCta', { ns: 'chat' }),
         nickname: '', createdAt: Date.now() / 1000,
       }]);
     }, 15_000);
@@ -490,7 +482,7 @@ export default function ChatTab() {
       promptsShownRef.current.add('photo');
       setPromptItems(prev => [...prev, {
         id: `prompt-photo-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'photo', content: "📸 Share what's happening", cta: 'Shoot',
+        subtype: 'photo', content: i18n.t('promptPhoto', { ns: 'chat' }), cta: i18n.t('promptPhotoCta', { ns: 'chat' }),
         nickname: '', createdAt: Date.now() / 1000,
       }]);
     }, 30_000);
@@ -501,7 +493,7 @@ export default function ChatTab() {
       promptsShownRef.current.add('create-event');
       setPromptItems(prev => [...prev, {
         id: `prompt-create-${Date.now()}`, type: 'prompt' as const,
-        subtype: 'create-event', content: '🎉 Got a plan tonight?', cta: 'Create event',
+        subtype: 'create-event', content: i18n.t('promptCreate', { ns: 'chat' }), cta: i18n.t('promptCreateCta', { ns: 'chat' }),
         nickname: '', createdAt: Date.now() / 1000,
       }]);
     }, 60_000);
@@ -640,16 +632,14 @@ export default function ChatTab() {
     return (
       <SafeAreaView style={[styles.container, { paddingBottom: 0 }]}>
         <View style={styles.noCityWrap}>
-          <Text style={styles.noCityTitle}>No city selected</Text>
-          <Text style={styles.noCitySubtitle}>
-            We couldn't detect your location.{'\n'}Go to Cities to pick one.
-          </Text>
+          <Text style={styles.noCityTitle}>{t('noCityTitle')}</Text>
+          <Text style={styles.noCitySubtitle}>{t('noCitySub')}</Text>
           <TouchableOpacity
             style={styles.citiesBtn}
             onPress={() => router.push('/switch-city' as never)}
             activeOpacity={0.8}
           >
-            <Text style={styles.citiesBtnText}>Browse cities →</Text>
+            <Text style={styles.citiesBtnText}>{t('browseCities')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -674,11 +664,11 @@ export default function ChatTab() {
               hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
               onPress={async () => {
                 const url     = `${BASE_URL}/city/${city.slug}`;
-                const title   = `What's happening in ${city.name} right now`;
-                const message = `See who's around in ${city.name} tonight on Hilads. Real-time city activity, no sign-up.`;
+                const title   = t('shareTitle', { city: city.name });
+                const message = t('shareMessage', { city: city.name });
                 await shareLink({ title, message, url });
               }}
-              accessibilityLabel="Share city"
+              accessibilityLabel={t('shareCity')}
             >
               <Feather name="share" size={20} color={Colors.text} />
             </TouchableOpacity>
@@ -692,7 +682,7 @@ export default function ChatTab() {
           activeOpacity={0.7}
           hitSlop={{ top: 8, bottom: 8, left: 12, right: 12 }}
           accessibilityRole="button"
-          accessibilityLabel="Change city"
+          accessibilityLabel={t('changeCity')}
         >
           {/* Left spacer balances the right chevron so the name stays centered. */}
           <View style={styles.cityHeroSpacer} />
@@ -715,8 +705,8 @@ export default function ChatTab() {
               activeOpacity={0.75}
               // Under reduce-motion the text is static + truncated, so make the
               // pill reveal the full message on tap. (No marquee in that mode.)
-              onPress={() => { if (reduceMotion) Alert.alert('Weather', weatherLabel); }}
-              accessibilityLabel={`Current weather: ${weatherLabel}`}
+              onPress={() => { if (reduceMotion) Alert.alert(t('weatherAlert'), weatherLabel); }}
+              accessibilityLabel={t('currentWeather', { label: weatherLabel })}
               accessibilityRole="button"
             >
               <Ionicons name="cloud-outline" size={13} color="rgba(255,255,255,0.45)" />
@@ -734,12 +724,12 @@ export default function ChatTab() {
             style={[styles.chip, styles.chipOnline]}
             activeOpacity={0.75}
             onPress={() => router.push('/(tabs)/here' as never)}
-            accessibilityLabel={`${onlineCount ?? 0} people hanging out, tap to see who`}
+            accessibilityLabel={t('onlineAria', { count: onlineCount ?? 0 })}
             accessibilityRole="button"
           >
             <ChipLiveDot />
             <Text style={styles.chipOnlineText}>
-              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+              {onlineCount != null ? t('online', { count: onlineCount }) : t('liveNow')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -749,7 +739,7 @@ export default function ChatTab() {
       {/* Error banner */}
       {error && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorBannerText}>{error} · tap to dismiss</Text>
+          <Text style={styles.errorBannerText}>{t('dismissHint', { error })}</Text>
         </TouchableOpacity>
       )}
 
@@ -826,15 +816,15 @@ export default function ChatTab() {
                 </View>
               ) : (!hasMore && !loading && messages.length > 0) ? (
                 <View style={styles.loadingOlderWrap}>
-                  <Text style={styles.beginningText}>Beginning of conversation</Text>
+                  <Text style={styles.beginningText}>{t('beginning')}</Text>
                 </View>
               ) : null
             }
             ListEmptyComponent={
               <View style={styles.emptyWrap}>
                 <Text style={styles.emptyIcon}>🔥</Text>
-                <Text style={styles.emptyTitle}>People are arriving</Text>
-                <Text style={styles.emptySub}>Be the first to say hi 👇</Text>
+                <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
+                <Text style={styles.emptySub}>{t('emptySub')}</Text>
               </View>
             }
           />
