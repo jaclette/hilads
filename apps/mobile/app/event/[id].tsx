@@ -7,6 +7,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import * as Haptics from 'expo-haptics';
@@ -30,7 +32,7 @@ import type { Message, EventParticipant, ReplyRef } from '@/types';
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatTime(ts: number): string {
-  return new Date(ts * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return new Date(ts * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 }
 
 // ── Open the venue in Google Maps ─────────────────────────────────────────────
@@ -65,23 +67,11 @@ async function openEventMaps(event: MapsTarget): Promise<void> {
     await Linking.openURL(url);
   } catch (e) {
     console.warn('[event] could not open maps:', String(e));
-    if (Platform.OS === 'android') ToastAndroid.show("Couldn't open maps", ToastAndroid.SHORT);
+    if (Platform.OS === 'android') ToastAndroid.show(i18n.t('mapsError', { ns: 'event' }), ToastAndroid.SHORT);
   }
 }
 
-// ── Ambient activity messages — mirrors web scheduleActivity ─────────────────
-// Web: city-channel ambient timer bleeds into event subchannel as a side-effect.
-// Native: we replicate the same behaviour explicitly for event screens.
-
-const AMBIENT = [
-  '🔥 People are arriving',
-  '🎉 People are here right now',
-  '💬 The city is waking up',
-  '👀 Someone just arrived',
-  '🔥 New face in the city',
-  '🌆 Locals checking in',
-  '🍻 Who\'s out tonight?',
-];
+// ── Ambient activity messages — reuse the shared chat ambient list ───────────
 
 function toMs(ts: number | string | undefined): number {
   if (!ts) return 0;
@@ -92,6 +82,7 @@ function toMs(ts: number | string | undefined): number {
 // ── Participants strip ────────────────────────────────────────────────────────
 
 function ParticipantsStrip({ participants, onPress }: { participants: EventParticipant[]; onPress: () => void }) {
+  const { t } = useTranslation('event');
   if (participants.length === 0) return null;
 
   return (
@@ -103,10 +94,10 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
       />
       <Text style={stripStyles.label}>
         {participants.length === 1
-          ? `${participants[0].displayName} is going`
-          : `${participants[0].displayName} + ${participants.length - 1} going`}
+          ? t('oneGoing', { name: participants[0].displayName })
+          : t('manyGoing', { name: participants[0].displayName, count: participants.length - 1 })}
       </Text>
-      <Text style={stripStyles.seeAll}>See all →</Text>
+      <Text style={stripStyles.seeAll}>{t('seeAll')}</Text>
     </TouchableOpacity>
   );
 }
@@ -115,6 +106,7 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
 
 export default function EventDetailScreen() {
   const router = useRouter();
+  const { t } = useTranslation('event');
   const { id: routeParam } = useLocalSearchParams<{ id: string }>();
   // The route param can be a slug (`cong-ca-phe-2e617620a3f3b6f7`) or a bare
   // hex ID. Backend, WS rooms, analytics all key off the canonical hex.
@@ -213,7 +205,7 @@ export default function EventDetailScreen() {
   async function handleShare() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const url = event ? buildEventUrl(event) : buildEventUrl(id);
-    const title = event?.title ?? 'Check out this event on Hilads';
+    const title = event?.title ?? t('shareTitleFallback');
 
     // Descriptive text shown to iOS receivers in the share sheet preview.
     // Crucially does NOT contain the URL — shareLink() handles platform
@@ -221,12 +213,12 @@ export default function EventDetailScreen() {
     // avoid WhatsApp's "Copy Link" concatenation bug).
     let message = title;
     if (event) {
-      const where = event.location ? ` at ${event.location}` : '';
+      const where = event.location ? ` ${t('shareAt', { location: event.location })}` : '';
       const when  = ` — ${formatTime(event.starts_at)}${event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}`;
       const who   = (event.participant_count ?? 0) > 0
-        ? ` ${event.participant_count} going.`
+        ? ` ${t('shareGoing', { count: event.participant_count })}`
         : '';
-      message = `${title}${where}${when}.${who} See who's there on Hilads.`;
+      message = `${title}${where}${when}.${who} ${t('shareTagline')}`;
     }
     await shareLink({ title, message, url });
   }
@@ -299,7 +291,8 @@ export default function EventDetailScreen() {
       tid = setTimeout(() => {
         const realCount = messagesRef.current.filter(m => m.type !== 'system').length;
         if (realCount < 3) {
-          const text = AMBIENT[Math.floor(Math.random() * AMBIENT.length)];
+          const ambient = i18n.t('ambient', { ns: 'chat', returnObjects: true }) as string[];
+          const text = ambient[Math.floor(Math.random() * ambient.length)];
           const item: Message = {
             id:        `ambient-${Date.now()}`,
             type:      'system',
@@ -326,7 +319,7 @@ export default function EventDetailScreen() {
   }, [messages, ambientFeed]);
 
   // City name for back button — prefer API response (works for deeplinks), fall back to context city
-  const cityName = eventCityName ?? city?.name ?? 'Back';
+  const cityName = eventCityName ?? city?.name ?? t('back', { ns: 'common' });
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -344,7 +337,7 @@ export default function EventDetailScreen() {
 
         <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.75}>
           <Ionicons name="share-outline" size={16} color={Colors.accent} />
-          <Text style={styles.shareBtnText}>Bring people ✨</Text>
+          <Text style={styles.shareBtnText}>{t('bringPeople')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -355,7 +348,7 @@ export default function EventDetailScreen() {
         </View>
       ) : eventError || !event ? (
         <View style={styles.eventBlockLoading}>
-          <Text style={styles.errorText}>{eventError ?? 'Event not found'}</Text>
+          <Text style={styles.errorText}>{eventError ?? t('detailNotFound')}</Text>
         </View>
       ) : (
         <Animated.View style={[styles.eventBlock, { paddingBottom: blockPaddingBottom }]}>
@@ -374,10 +367,10 @@ export default function EventDetailScreen() {
                 onPress={() => router.push(`/event/${event.id}/edit` as never)}
                 activeOpacity={0.8}
                 accessibilityRole="button"
-                accessibilityLabel="Edit event"
+                accessibilityLabel={t('editEvent')}
               >
                 <Text style={[styles.joinBtnText, styles.editBtnText]}>
-                  ✏️ Edit
+                  {t('edit')}
                 </Text>
               </TouchableOpacity>
             ) : (
@@ -391,7 +384,7 @@ export default function EventDetailScreen() {
                   <ActivityIndicator size="small" color={Colors.accent} />
                 ) : (
                   <Text style={[styles.joinBtnText, event.is_participating && styles.joinBtnTextActive]}>
-                    {event.is_participating ? 'Joined ✓' : 'Join'}
+                    {event.is_participating ? t('joined') : t('join')}
                   </Text>
                 )}
               </TouchableOpacity>
@@ -408,7 +401,7 @@ export default function EventDetailScreen() {
               {'🕐 '}
               {formatTime(event.starts_at)}
               {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
-              {presenceCount != null ? ` · ${presenceCount} here` : ''}
+              {presenceCount != null ? ` · ${t('here', { count: presenceCount })}` : ''}
               {event.participant_count != null ? (
                 <>
                   {' · '}
@@ -416,7 +409,7 @@ export default function EventDetailScreen() {
                     style={styles.goingLink}
                     onPress={() => setShowGoingSheet(true)}
                   >
-                    {event.participant_count} going
+                    {t('going', { count: event.participant_count })}
                   </Text>
                 </>
               ) : null}
@@ -430,8 +423,8 @@ export default function EventDetailScreen() {
                 style={styles.eventLocationRow}
                 hitSlop={{ top: 12, bottom: 12, left: 8, right: 8 }}
                 accessibilityRole="link"
-                accessibilityLabel={`Open address in Google Maps: ${event.location ?? event.venue}`}
-                accessibilityHint="Opens Google Maps with this venue's location"
+                accessibilityLabel={t('mapsA11y', { address: event.location ?? event.venue })}
+                accessibilityHint={t('mapsHint')}
               >
                 <Text style={styles.eventLocation} numberOfLines={1}>
                   {'📍 '}
@@ -443,7 +436,7 @@ export default function EventDetailScreen() {
             {/* Host name — suppressed for the host themselves */}
             {event.host_nickname && !isOwner ? (
               <Text style={styles.eventHost} numberOfLines={1}>
-                Hosted by {event.host_nickname}
+                {t('hostedBy', { name: event.host_nickname })}
               </Text>
             ) : null}
           </Animated.View>
@@ -456,7 +449,7 @@ export default function EventDetailScreen() {
       {/* Error banner */}
       {msgError && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorBannerText}>{msgError} · tap to dismiss</Text>
+          <Text style={styles.errorBannerText}>{t('dismissHint', { ns: 'chat', error: msgError })}</Text>
         </TouchableOpacity>
       )}
 
@@ -528,7 +521,7 @@ export default function EventDetailScreen() {
                 </View>
               ) : (!hasMore && !msgsLoading && messages.length > 0) ? (
                 <View style={styles.loadingOlderWrap}>
-                  <Text style={styles.beginningText}>Beginning of conversation</Text>
+                  <Text style={styles.beginningText}>{t('beginning', { ns: 'chat' })}</Text>
                 </View>
               ) : null
             }
@@ -542,7 +535,7 @@ export default function EventDetailScreen() {
             ListEmptyComponent={
               msgsLoading ? null : (
                 <View style={styles.emptyWrap}>
-                  <Text style={styles.emptyText}>No messages yet. Say something! 👋</Text>
+                  <Text style={styles.emptyText}>{t('noMessages')}</Text>
                 </View>
               )
             }
@@ -560,8 +553,8 @@ export default function EventDetailScreen() {
             onSendImage={sendImage}
             placeholder={
               messages.some(m => m.type !== 'system')
-                ? `Say something at ${event.title} ✨`
-                : `Be the first at ${event.title} ✨`
+                ? t('composerSay', { title: event.title })
+                : t('composerFirst', { title: event.title })
             }
             replyingTo={replyingTo}
             onCancelReply={() => setReplyingTo(null)}
@@ -607,8 +600,8 @@ export default function EventDetailScreen() {
           <View style={sheetStyles.header}>
             <Text style={sheetStyles.title}>
               {participants.length > 0
-                ? `${participants.length} going`
-                : event ? `${event.participant_count ?? 0} going` : 'Going'}
+                ? t('going', { count: participants.length })
+                : event ? t('going', { count: event.participant_count ?? 0 }) : t('goingTitle')}
             </Text>
             <TouchableOpacity onPress={() => setShowGoingSheet(false)} hitSlop={12}>
               <Text style={sheetStyles.closeBtn}>✕</Text>
@@ -622,7 +615,7 @@ export default function EventDetailScreen() {
             showsVerticalScrollIndicator={false}
           >
             {participants.length === 0 ? (
-              <Text style={sheetStyles.emptyText}>No one yet — be the first to join! 🙌</Text>
+              <Text style={sheetStyles.emptyText}>{t('goingEmpty')}</Text>
             ) : (
               participants.map(p => {
                 const isRegistered = p.accountType === 'registered';
@@ -657,7 +650,7 @@ export default function EventDetailScreen() {
                       <Text style={sheetStyles.name}>{p.displayName}</Text>
                       {badgeMeta && (
                         <View style={[sheetStyles.badge, { backgroundColor: badgeMeta.bg, borderColor: badgeMeta.border }]}>
-                          <Text style={[sheetStyles.badgeText, { color: badgeMeta.color }]}>{badgeMeta.label}</Text>
+                          <Text style={[sheetStyles.badgeText, { color: badgeMeta.color }]}>{t(`badge.${badgeKey}`, { ns: 'common', defaultValue: badgeMeta.label })}</Text>
                         </View>
                       )}
                     </View>
