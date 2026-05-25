@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { track } from '../lib/analytics'
 import Logo from './Logo'
 import { cityFlag, EVENT_ICONS } from '../cityMeta'
@@ -21,32 +22,24 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-// ── Static content ────────────────────────────────────────────────────────────
+// Render a translated string that contains "\n" as <br/>-separated lines.
+function nl2br(text) {
+  return String(text).split('\n').map((line, i) => (
+    <span key={i}>{i > 0 && <br />}{line}</span>
+  ))
+}
 
-const HOW_IT_WORKS = [
-  {
-    icon: '📍',
-    num: '01',
-    title: 'Open the app',
-    desc: 'See who\'s around you and what\'s happening near you right now.',
-  },
-  {
-    icon: '🎯',
-    num: '02',
-    title: 'Pick your mode',
-    desc: 'Local. You know the city.\nExploring. You want to feel it.',
-  },
-  {
-    icon: '✨',
-    num: '03',
-    title: 'Jump in',
-    desc: 'Join an event or open your own spot. Real life starts here.',
-  },
+// Icon + number for the "How it works" steps — text (title/desc) comes from i18n.
+const HOW_META = [
+  { icon: '📍', num: '01' },
+  { icon: '🎯', num: '02' },
+  { icon: '✨', num: '03' },
 ]
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
 
 function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
+  const { t } = useTranslation('landing')
   const noGeo = geoState === 'denied' || geoState === 'error'
   const [c1, c2] = avatarColors(nickname || 'A')
 
@@ -64,16 +57,16 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
             </span>
             <div className="ob-activity-block">
               <span className="ob-activity-line">
-                🔥 {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} hanging out right now
+                {t('join.peopleLive', { count: previewLiveCount })}
               </span>
               {previewEventCount > 0 && (
                 <span className="ob-activity-line">
-                  🔥 {previewEventCount} event{previewEventCount === 1 ? '' : 's'} happening
+                  {t('join.events', { count: previewEventCount })}
                 </span>
               )}
               {previewTopicCount > 0 && (
                 <span className="ob-activity-line">
-                  🗣️ {previewTopicCount} hangout{previewTopicCount === 1 ? '' : 's'} active
+                  {t('join.hangouts', { count: previewTopicCount })}
                 </span>
               )}
             </div>
@@ -93,11 +86,11 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
             )}
             {previewTopics.length > 0 && (
               <div className="ob-events-preview ob-topics-preview">
-                {previewTopics.map(t => (
-                  <div key={t.id} className="ob-event-row ob-topic-row">
-                    <span className="ob-event-title">🗣️ {t.title}</span>
-                    {(t.message_count ?? 0) > 0 && (
-                      <span className="ob-event-time">{t.message_count} {t.message_count === 1 ? 'reply' : 'replies'}</span>
+                {previewTopics.map(topic => (
+                  <div key={topic.id} className="ob-event-row ob-topic-row">
+                    <span className="ob-event-title">🗣️ {topic.title}</span>
+                    {(topic.message_count ?? 0) > 0 && (
+                      <span className="ob-event-time">{t('join.replies', { count: topic.message_count })}</span>
                     )}
                   </div>
                 ))}
@@ -105,9 +98,9 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
             )}
           </>
         ) : noGeo ? (
-          <p className="ob-geo-headline">Pick a city<br />and jump in</p>
+          <p className="ob-geo-headline">{nl2br(t('join.pickCity'))}</p>
         ) : (
-          <span className="ob-locating">› locating your city...</span>
+          <span className="ob-locating">{t('join.locating')}</span>
         )}
       </div>
 
@@ -120,8 +113,8 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
       >
         {noGeo ? (
           <>
-            <button type="submit" className="ob-btn">Browse cities →</button>
-            <label className="ob-label" style={{ marginTop: 4 }}>Your name</label>
+            <button type="submit" className="ob-btn">{t('join.browseCities')}</button>
+            <label className="ob-label" style={{ marginTop: 4 }}>{t('join.yourName')}</label>
             <div className="ob-input-row">
               <span
                 className="ob-avatar-preview"
@@ -135,18 +128,18 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 value={nickname}
                 onChange={e => setNickname(e.target.value)}
                 maxLength={20}
-                placeholder="Say hi as..."
+                placeholder={t('join.namePlaceholder')}
               />
             </div>
             {typeof navigator !== 'undefined' && navigator.geolocation && (
               <button type="button" className="ob-geo-retry" onClick={retryGeo}>
-                {geoState === 'error' ? 'Try again' : 'Use my location instead'}
+                {geoState === 'error' ? t('join.tryAgain') : t('join.useLocation')}
               </button>
             )}
           </>
         ) : (
           <>
-            <label className="ob-label">Your name</label>
+            <label className="ob-label">{t('join.yourName')}</label>
             <div className="ob-input-row">
               <span
                 className="ob-avatar-preview"
@@ -161,31 +154,31 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 onChange={e => setNickname(e.target.value)}
                 maxLength={20}
                 autoFocus={autoFocus}
-                placeholder="Say hi as..."
+                placeholder={t('join.namePlaceholder')}
               />
             </div>
             <button type="submit" className="ob-btn">
-              {city ? `Join ${city}` : 'Join Chat'} →
+              {city ? t('join.joinCity', { city }) : t('join.joinChat')}
             </button>
           </>
         )}
-        <p className="ob-hint">// anonymous · instant access</p>
+        <p className="ob-hint">{t('join.hint')}</p>
       </form>
 
       {/* Auth section */}
       <div className="jc-auth">
         <div className="jc-auth-divider">
-          <span className="jc-auth-divider-text">or keep your identity</span>
+          <span className="jc-auth-divider-text">{t('join.keepIdentity')}</span>
         </div>
         <div className="jc-auth-actions">
           <button className="jc-auth-signup" onClick={onSignUp}>
-            ✨ Create account
+            {t('join.createAccount')}
           </button>
           <button className="jc-auth-signin" onClick={onSignIn}>
-            Log in
+            {t('join.logIn')}
           </button>
         </div>
-        <p className="jc-auth-hint">Save your name · unlock profiles · add friends</p>
+        <p className="jc-auth-hint">{t('join.authHint')}</p>
       </div>
     </div>
   )
@@ -205,6 +198,8 @@ function PhoneFrame({ children }) {
 }
 
 // ── Local mockup: "Host your spot" event creation ─────────────────────────────
+// NOTE: mockup content is decorative app-preview imagery — left in English on
+// purpose (it mimics user-generated data, which is never translated).
 
 function LocalMockup() {
   return (
@@ -251,6 +246,7 @@ function LocalMockup() {
 }
 
 // ── Exploring mockup: Hot / Events feed ───────────────────────────────────────
+// Decorative app-preview — left in English (mimics user data). See note above.
 
 function ExploringMockup() {
   return (
@@ -354,6 +350,7 @@ export default function LandingPage({
   previewTimezone = 'UTC',
   onSignUp, onSignIn, onOpenCityPicker, retryGeo,
 }) {
+  const { t } = useTranslation('landing')
   const heroJoinRef = useRef(null)
 
   useEffect(() => {
@@ -379,6 +376,11 @@ export default function LandingPage({
     onSignIn()
   }
 
+  const localBullets     = t('local.bullets',     { returnObjects: true })
+  const exploringBullets = t('exploring.bullets', { returnObjects: true })
+  const howSteps         = t('how.steps',          { returnObjects: true })
+  const conceptRules     = t('concept.rules',      { returnObjects: true })
+
   return (
     <div className="lp">
 
@@ -388,12 +390,13 @@ export default function LandingPage({
           <Logo variant="wordmark" size="lg" />
         </div>
 
+        {/* Brand tagline — fixed English, never translated. */}
         <h1 className="lp-hero-h1">
           Feel local.<br />Anywhere.
         </h1>
 
         <p className="lp-hero-sub">
-          The city is alive around you.<br />Find people, join what's on, or open your own spot.
+          {nl2br(t('hero.sub'))}
         </p>
 
         <div ref={heroJoinRef} className="lp-hero-join">
@@ -432,16 +435,14 @@ export default function LandingPage({
         {/* Local — text left, phone right */}
         <div className="lp-split-row lp-split-row--local">
           <div className="lp-split-text">
-            <div className="lp-split-badge">🌍 Local</div>
-            <h2 className="lp-split-title">Make things happen</h2>
-            <p className="lp-split-tagline">You know the best spots. Now share them.</p>
+            <div className="lp-split-badge">{t('local.badge')}</div>
+            <h2 className="lp-split-title">{t('local.title')}</h2>
+            <p className="lp-split-tagline">{t('local.tagline')}</p>
             <ul className="lp-split-bullets">
-              <li>Host recurring events at your favorite local spots</li>
-              <li>Bring people to places you love</li>
-              <li>Become the reason people show up</li>
+              {localBullets.map((b, i) => <li key={i}>{b}</li>)}
             </ul>
             <button className="lp-split-cta lp-split-cta--local" onClick={scrollToJoin}>
-              Host your spot
+              {t('local.cta')}
             </button>
           </div>
           <div className="lp-split-visual">
@@ -455,16 +456,14 @@ export default function LandingPage({
             <ExploringMockup />
           </div>
           <div className="lp-split-text">
-            <div className="lp-split-badge lp-split-badge--exploring">🧭 Exploring</div>
-            <h2 className="lp-split-title">Find real moments in any city</h2>
-            <p className="lp-split-tagline">Wherever you land, find your people.</p>
+            <div className="lp-split-badge lp-split-badge--exploring">{t('exploring.badge')}</div>
+            <h2 className="lp-split-title">{t('exploring.title')}</h2>
+            <p className="lp-split-tagline">{t('exploring.tagline')}</p>
             <ul className="lp-split-bullets lp-split-bullets--exploring">
-              <li>Find real-time events near you</li>
-              <li>Meet locals and other explorers instantly</li>
-              <li>Skip tourist traps. Discover the real city.</li>
+              {exploringBullets.map((b, i) => <li key={i}>{b}</li>)}
             </ul>
             <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
-              See what's happening
+              {t('exploring.cta')}
             </button>
           </div>
         </div>
@@ -473,16 +472,16 @@ export default function LandingPage({
 
       {/* ── 3. HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section className="lp-section lp-how">
-        <p className="lp-section-eyebrow">How it works</p>
-        <h2 className="lp-section-title">Three steps to meet people near you.</h2>
+        <p className="lp-section-eyebrow">{t('how.eyebrow')}</p>
+        <h2 className="lp-section-title">{t('how.title')}</h2>
 
         <div className="lp-steps">
-          {HOW_IT_WORKS.map(s => (
-            <div key={s.num} className="lp-step">
-              <span className="lp-step-icon">{s.icon}</span>
-              <span className="lp-step-num">{s.num}</span>
-              <h3 className="lp-step-title">{s.title}</h3>
-              <p className="lp-step-desc">{s.desc}</p>
+          {HOW_META.map((m, i) => (
+            <div key={m.num} className="lp-step">
+              <span className="lp-step-icon">{m.icon}</span>
+              <span className="lp-step-num">{m.num}</span>
+              <h3 className="lp-step-title">{howSteps[i]?.title}</h3>
+              <p className="lp-step-desc">{nl2br(howSteps[i]?.desc ?? '')}</p>
             </div>
           ))}
         </div>
@@ -496,19 +495,19 @@ export default function LandingPage({
               <span className="lp-stat-pulse" />
               {previewLiveCount}+
             </span>
-            <span className="lp-stat-label">people live now</span>
+            <span className="lp-stat-label">{t('stats.peopleLive')}</span>
           </div>
           <div className="lp-stat">
             <span className="lp-stat-value">20+</span>
-            <span className="lp-stat-label">cities</span>
+            <span className="lp-stat-label">{t('stats.cities')}</span>
           </div>
           <div className="lp-stat">
             <span className="lp-stat-value">500+</span>
-            <span className="lp-stat-label">events created</span>
+            <span className="lp-stat-label">{t('stats.eventsCreated')}</span>
           </div>
           <div className="lp-stat">
             <span className="lp-stat-value">0</span>
-            <span className="lp-stat-label">sign-ups needed</span>
+            <span className="lp-stat-label">{t('stats.signupsNeeded')}</span>
           </div>
         </div>
       </section>
@@ -517,12 +516,10 @@ export default function LandingPage({
       <section className="lp-section lp-concept">
         <div className="lp-concept-inner">
           <h2 className="lp-concept-h2">
-            Not another social network.<br />Your city, live.
+            {nl2br(t('concept.title'))}
           </h2>
           <div className="lp-concept-rules">
-            <p>No followers. No feeds. No algorithms.</p>
-            <p>See who's around. Join what's happening near you.</p>
-            <p>Real people. Real places. Right now.</p>
+            {conceptRules.map((r, i) => <p key={i}>{r}</p>)}
           </div>
         </div>
       </section>
@@ -530,18 +527,15 @@ export default function LandingPage({
       {/* ── 6. SEO ──────────────────────────────────────────────────────────── */}
       <section className="lp-section lp-seo" aria-label="About Hilads">
         <p className="lp-seo-body">
-          Hilads is a real-time social app that helps you meet people nearby and discover things to do in your city.
-          Find events near you, meet locals, and connect with travelers wherever you are.
-          Looking for things to do in Paris? Want to meet locals in Barcelona? Exploring Lisbon and want to find what's happening tonight?
-          Hilads shows you the city, live. No account needed. Just show up.
+          {t('seo')}
         </p>
       </section>
 
       {/* ── 7. DOWNLOAD ─────────────────────────────────────────────────────── */}
       <section className="lp-section lp-download">
-        <p className="lp-section-eyebrow">Mobile apps</p>
-        <h2 className="lp-section-title">Your city in your pocket.</h2>
-        <p className="lp-download-sub">Native apps coming soon.</p>
+        <p className="lp-section-eyebrow">{t('download.eyebrow')}</p>
+        <h2 className="lp-section-title">{t('download.title')}</h2>
+        <p className="lp-download-sub">{t('download.sub')}</p>
         <div className="lp-store-badges">
           <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
           <StoreBadge icon={<AppleIcon />} top="Download on the" bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
@@ -550,9 +544,9 @@ export default function LandingPage({
 
       {/* ── 7. REPEAT CTA ───────────────────────────────────────────────────── */}
       <section className="lp-section lp-cta">
-        <p className="lp-section-eyebrow">Jump in</p>
+        <p className="lp-section-eyebrow">{t('repeat.eyebrow')}</p>
         <h2 className="lp-section-title">
-          {city ? `${city} is live right now.` : 'Your city is live right now.'}
+          {city ? t('repeat.titleCity', { city }) : t('repeat.titleGeneric')}
         </h2>
         <JoinCard
           city={city}
@@ -577,6 +571,7 @@ export default function LandingPage({
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
       <footer className="lp-footer">
         <Logo variant="icon" size="sm" />
+        {/* Brand tagline — fixed English. */}
         <span className="lp-footer-tagline">Feel local. Anywhere.</span>
       </footer>
 
