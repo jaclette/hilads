@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
@@ -14,17 +15,18 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
 
-const CATEGORIES: { value: TopicCategory; label: string; icon: string }[] = [
-  { value: 'general', label: 'General',  icon: '🗣️' },
-  { value: 'tips',    label: 'Tips',     icon: '💡' },
-  { value: 'food',    label: 'Food',     icon: '🍴' },
-  { value: 'drinks',  label: 'Drinks',   icon: '🍺' },
-  { value: 'help',    label: 'Help',     icon: '🙋' },
-  { value: 'meetup',  label: 'Meet up',  icon: '👋' },
+const CATEGORIES: { value: TopicCategory; icon: string }[] = [
+  { value: 'general', icon: '🗣️' },
+  { value: 'tips',    icon: '💡' },
+  { value: 'food',    icon: '🍴' },
+  { value: 'drinks',  icon: '🍺' },
+  { value: 'help',    icon: '🙋' },
+  { value: 'meetup',  icon: '👋' },
 ];
 
 export default function CreateTopicScreen() {
   const router   = useRouter();
+  const { t } = useTranslation('hangout');
   const { city, identity, account } = useApp();
   // Edit mode when `editId` is passed (owner editing their hangout).
   const params  = useLocalSearchParams<{ editId?: string; title?: string; description?: string; category?: string }>();
@@ -40,18 +42,18 @@ export default function CreateTopicScreen() {
   const [limitTopic,  setLimitTopic]  = useState<{ id: string; title: string } | null>(null);
 
   async function handleSubmit() {
-    const t = title.trim();
-    if (!t || !city || !identity) return;
+    const trimmedTitle = title.trim();
+    if (!trimmedTitle || !city || !identity) return;
     setSubmitting(true);
     setError(null);
 
     // Edit: PUT the existing hangout (no coords change), then go back.
     if (editId) {
       try {
-        await updateTopic(editId, identity.guestId, t, description.trim() || null, category);
+        await updateTopic(editId, identity.guestId, title.trim(), description.trim() || null, category);
         router.back();
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to save changes');
+        setError(err instanceof Error ? err.message : t('errSave'));
       } finally {
         setSubmitting(false);
       }
@@ -69,14 +71,14 @@ export default function CreateTopicScreen() {
       }
     } catch { /* no coords — non-fatal */ }
     try {
-      await createTopic(city.channelId, identity.guestId, t, description.trim() || null, category, coords);
+      await createTopic(city.channelId, identity.guestId, trimmedTitle, description.trim() || null, category, coords);
       router.back();
     } catch (err) {
       // One-hangout-per-user: surface the existing hangout instead of an error.
       if (err instanceof ApiError && err.status === 409 && err.body?.error === 'hangout_limit') {
-        setLimitTopic({ id: err.body.existingTopicId, title: err.body.existingTitle ?? 'your hangout' });
+        setLimitTopic({ id: err.body.existingTopicId, title: err.body.existingTitle ?? t('yourHangout') });
       } else {
-        setError(err instanceof Error ? err.message : 'Failed to start hangout');
+        setError(err instanceof Error ? err.message : t('errStart'));
       }
     } finally {
       setSubmitting(false);
@@ -97,16 +99,16 @@ export default function CreateTopicScreen() {
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
             <Ionicons name="chevron-back" size={20} color={Colors.text} />
           </TouchableOpacity>
-          <View style={styles.headerCenter}><Text style={styles.headerTitle}>One at a time</Text></View>
+          <View style={styles.headerCenter}><Text style={styles.headerTitle}>{t('limitHeader')}</Text></View>
         </View>
         <View style={styles.limitWrap}>
           <Text style={styles.limitEmoji}>⚡</Text>
-          <Text style={styles.limitTitle}>You already have a hangout</Text>
+          <Text style={styles.limitTitle}>{t('limitTitle')}</Text>
           <Text style={styles.limitSub}>
-            You can run one hangout at a time. Head to “{limitTopic.title}”, or delete it to start a new one.
+            {t('limitSub', { title: limitTopic.title })}
           </Text>
           <TouchableOpacity style={styles.submitBtn} activeOpacity={0.85} onPress={() => router.replace(`/topic/${limitTopic.id}`)}>
-            <Text style={styles.submitBtnText}>Go to my hangout →</Text>
+            <Text style={styles.submitBtnText}>{t('limitGo')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -121,14 +123,14 @@ export default function CreateTopicScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{editId ? 'Edit hangout' : 'Start a hangout'}</Text>
+          <Text style={styles.headerTitle}>{editId ? t('editTitle') : t('startTitle')}</Text>
         </View>
       </View>
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
 
         {/* Category chips */}
-        <Text style={styles.sectionLabel}>Category</Text>
+        <Text style={styles.sectionLabel}>{t('category')}</Text>
         <View style={styles.categoryGrid}>
           {CATEGORIES.map(cat => {
             const selected = category === cat.value;
@@ -140,19 +142,19 @@ export default function CreateTopicScreen() {
                 onPress={() => setCategory(cat.value)}
               >
                 <Text style={styles.catIcon}>{cat.icon}</Text>
-                <Text style={[styles.catLabel, selected && styles.catLabelSelected]}>{cat.label}</Text>
+                <Text style={[styles.catLabel, selected && styles.catLabelSelected]}>{t(`cat.${cat.value}`)}</Text>
               </TouchableOpacity>
             );
           })}
         </View>
 
         {/* Title */}
-        <Text style={styles.sectionLabel}>What's on your mind?</Text>
+        <Text style={styles.sectionLabel}>{t('titleLabel')}</Text>
         <TextInput
           style={styles.input}
           value={title}
           onChangeText={setTitle}
-          placeholder="e.g. Best coffee spot in the area?"
+          placeholder={t('titlePlaceholder')}
           placeholderTextColor={Colors.muted2}
           maxLength={100}
           autoFocus
@@ -161,14 +163,14 @@ export default function CreateTopicScreen() {
 
         {/* Description */}
         <Text style={styles.sectionLabel}>
-          Add details{'  '}
-          <Text style={styles.optional}>(optional)</Text>
+          {t('detailsLabel')}{'  '}
+          <Text style={styles.optional}>{t('optional')}</Text>
         </Text>
         <TextInput
           style={[styles.input, styles.textArea]}
           value={description}
           onChangeText={setDescription}
-          placeholder="Give it some context…"
+          placeholder={t('detailsPlaceholder')}
           placeholderTextColor={Colors.muted2}
           maxLength={300}
           multiline
@@ -177,7 +179,7 @@ export default function CreateTopicScreen() {
         />
 
         {/* Expiry note */}
-        {!editId ? <Text style={styles.expiryNote}>⏱ Auto-expires in 24 h</Text> : null}
+        {!editId ? <Text style={styles.expiryNote}>{t('expiry')}</Text> : null}
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -190,7 +192,7 @@ export default function CreateTopicScreen() {
         >
           {submitting
             ? <ActivityIndicator color={Colors.white} size="small" />
-            : <Text style={styles.submitBtnText}>{editId ? 'Save changes' : 'Start a hangout ⚡'}</Text>
+            : <Text style={styles.submitBtnText}>{editId ? t('saveChanges') : t('startCta')}</Text>
           }
         </TouchableOpacity>
 

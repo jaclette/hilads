@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
@@ -30,6 +31,7 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 export default function TopicChatScreen() {
   const router = useRouter();
+  const { t } = useTranslation('hangout');
   const { id } = useLocalSearchParams<{ id: string }>();
   const { identity, account, sessionId } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
@@ -68,30 +70,30 @@ export default function TopicChatScreen() {
   }, [id, topic, router]);
 
   const handleDelete = useCallback(() => {
-    Alert.alert('Delete hangout?', 'This ends the hangout for everyone. This cannot be undone.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('deleteTitle'), t('deleteBody'), [
+      { text: t('cancel', { ns: 'common' }), style: 'cancel' },
       {
-        text: 'Delete', style: 'destructive',
+        text: t('deleteConfirm'), style: 'destructive',
         onPress: async () => {
           if (!identity) return;
           try {
             await deleteTopic(id, identity.guestId);
             router.back();
           } catch {
-            Alert.alert('Could not delete', 'Please try again.');
+            Alert.alert(t('deleteFailTitle'), t('deleteFailBody'));
           }
         },
       },
     ]);
-  }, [id, identity, router]);
+  }, [id, identity, router, t]);
 
   async function handleShare() {
     if (!id) return;
     const url   = `https://hilads.live/t/${id}`;
-    const title = topic?.title ? `💬 ${topic.title}` : 'Conversation on Hilads';
+    const title = topic?.title ? t('shareTitle', { title: topic.title }) : t('shareTitleFallback');
     const message = topic?.title
-      ? `New conversation: "${topic.title}" — jump in on Hilads.`
-      : `Jump into the conversation on Hilads.`;
+      ? t('shareMessage', { title: topic.title })
+      : t('shareMessageFallback');
     try {
       await shareLink({ title, message, url });
       setShared(true);
@@ -221,7 +223,7 @@ export default function TopicChatScreen() {
       <View style={styles.nav}>
         <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
           <Ionicons name="chevron-back" size={18} color={Colors.text} />
-          <Text style={styles.backPillText} numberOfLines={1}>Back</Text>
+          <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
         </TouchableOpacity>
 
         <View style={styles.navCenter}>
@@ -253,16 +255,16 @@ export default function TopicChatScreen() {
             {topic.description ? (
               <Text style={styles.infoDesc}>{topic.description}</Text>
             ) : null}
-            <Text style={styles.infoExpiry}>⏱ {formatExpiresIn(topic.expires_at) ?? 'Active for 24 h'}</Text>
+            <Text style={styles.infoExpiry}>⏱ {formatExpiresIn(topic.expires_at) ?? t('activeFor')}</Text>
             {isOwner && (
               <View style={styles.ownerRow}>
                 <TouchableOpacity style={styles.ownerBtn} onPress={handleEdit} activeOpacity={0.8}>
                   <Ionicons name="create-outline" size={15} color={Colors.text} />
-                  <Text style={styles.ownerBtnText}>Edit</Text>
+                  <Text style={styles.ownerBtnText}>{t('edit')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.ownerBtn, styles.ownerBtnDanger]} onPress={handleDelete} activeOpacity={0.8}>
                   <Ionicons name="trash-outline" size={15} color={Colors.red} />
-                  <Text style={[styles.ownerBtnText, { color: Colors.red }]}>Delete</Text>
+                  <Text style={[styles.ownerBtnText, { color: Colors.red }]}>{t('delete')}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -270,7 +272,7 @@ export default function TopicChatScreen() {
         ) : null
       ) : (
         <View style={styles.infoBlockLoading}>
-          <Text style={styles.errorText}>Hangout not found or expired</Text>
+          <Text style={styles.errorText}>{t('notFound')}</Text>
         </View>
       )}
 
@@ -283,16 +285,16 @@ export default function TopicChatScreen() {
             borderColor={Colors.bg}
           />
           <Text style={styles.membersLabel}>
-            {participants.length === 1 ? `${participants[0].displayName} is in` : `${participants.length} in this hangout`}
+            {participants.length === 1 ? t('oneIn', { name: participants[0].displayName }) : t('manyIn', { count: participants.length })}
           </Text>
-          <Text style={styles.membersSeeAll}>See all →</Text>
+          <Text style={styles.membersSeeAll}>{t('seeAll')}</Text>
         </TouchableOpacity>
       )}
 
       {/* Error banner */}
       {msgError && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorBannerText}>{msgError} · tap to dismiss</Text>
+          <Text style={styles.errorBannerText}>{t('dismissHint', { ns: 'chat', error: msgError })}</Text>
         </TouchableOpacity>
       )}
 
@@ -300,15 +302,13 @@ export default function TopicChatScreen() {
       {gated ? (
         <View style={styles.gatedWrap}>
           <Text style={styles.gatedEmoji}>🔒</Text>
-          <Text style={styles.gatedTitle}>Members-only hangout</Text>
+          <Text style={styles.gatedTitle}>{t('gatedTitle')}</Text>
           <Text style={styles.gatedSub}>
-            {joinState === 'requested'
-              ? "Request pending — you'll be able to join the conversation once a member accepts."
-              : 'Request to join to see the conversation and chat.'}
+            {joinState === 'requested' ? t('gatedPending') : t('gatedRequest')}
           </Text>
           {joinState !== 'requested' && (
             <TouchableOpacity style={styles.gatedBtn} activeOpacity={0.85} onPress={handleRequestToJoin}>
-              <Text style={styles.joinBtnText}>Request to join</Text>
+              <Text style={styles.joinBtnText}>{t('requestToJoin')}</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -359,7 +359,7 @@ export default function TopicChatScreen() {
               </View>
             ) : (!hasMore && !msgsLoading && messages.length > 0) ? (
               <View style={styles.loadingOlderWrap}>
-                <Text style={styles.beginningText}>Beginning of conversation</Text>
+                <Text style={styles.beginningText}>{t('beginning', { ns: 'chat' })}</Text>
               </View>
             ) : null
           }
@@ -373,7 +373,7 @@ export default function TopicChatScreen() {
           ListEmptyComponent={
             msgsLoading ? null : (
               <View style={styles.emptyWrap}>
-                <Text style={styles.emptyText}>No replies yet. Say something! 💬</Text>
+                <Text style={styles.emptyText}>{t('emptyReplies')}</Text>
               </View>
             )
           }
@@ -387,8 +387,8 @@ export default function TopicChatScreen() {
           onSendImage={sendImage}
           placeholder={
             messages.some(m => m.type !== 'system')
-              ? `Reply to the conversation ✨`
-              : `Be the first to reply ✨`
+              ? t('composerReply')
+              : t('composerFirst')
           }
         />
       </KeyboardAvoidingView>
@@ -399,7 +399,7 @@ export default function TopicChatScreen() {
         loading={false}
         participants={participants}
         count={participants.length}
-        noun="in this hangout"
+        noun={t('inThisHangout')}
         onClose={() => setMembersOpen(false)}
         onSelect={(uid) => { setMembersOpen(false); router.push({ pathname: '/user/[id]', params: { id: uid } }); }}
       />
