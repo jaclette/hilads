@@ -13,7 +13,7 @@
 import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  StyleSheet, KeyboardAvoidingView, Platform,
+  StyleSheet, KeyboardAvoidingView,
   TouchableOpacity, Animated, AppState, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -694,6 +694,8 @@ export default function ChatTab() {
           accessibilityRole="button"
           accessibilityLabel="Change city"
         >
+          {/* Left spacer balances the right chevron so the name stays centered. */}
+          <View style={styles.cityHeroSpacer} />
           <Text style={styles.cityHeroName} numberOfLines={2}>
             {flag ? `${flag} ` : ''}{city.name}
           </Text>
@@ -989,22 +991,20 @@ const styles = StyleSheet.create({
 
   // ── Section 2: City hero name ─────────────────────────────────────────────
   cityHeroRow: {
-    flexDirection:  'row',
-    alignItems:     'center',
-    justifyContent: 'center',
-    gap:            6,
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 12,
   },
+  // The name takes a DEFINITE width (flex:1) rather than letting RN infer it
+  // from the text's intrinsic size inside a centered row. That inference was
+  // unreliable per-platform — a too-narrow width forced the name to wrap and
+  // the clipped 2nd line read as a dropped last word ("New York"→"New",
+  // "Ho Chi Minh City"→"Ho Chi Minh", "Bangkok"→empty). With flex:1 the Text
+  // gets the real available width on both iOS and Android, so it renders on one
+  // line. The left spacer (cityHeroSpacer) mirrors the chevron's width so the
+  // centered text stays visually centered in the header.
   cityHeroName: {
-    // Cross-platform gotcha: iOS and Android measure a <Text> child of a
-    // centered row OPPOSITELY.
-    //   iOS     — without flexShrink it gets a too-narrow width and clips the
-    //             name per word ("New York"→"New", "Bangkok"→empty), so it
-    //             NEEDS flexShrink:1 to receive the real available width.
-    //   Android — flexShrink:1 makes it OVER-shrink and clip the same way
-    //             ("Ho Chi Minh City"→"Ho Chi Minh", "Bangkok"→empty); its
-    //             default (flexShrink:0) measures the full width correctly.
-    // So branch per platform — each value is the one that renders the full name.
-    flexShrink:    Platform.OS === 'ios' ? 1 : 0,
+    flex:          1,
     fontSize:      24,
     fontWeight:    '500',
     color:         Colors.text,
@@ -1012,8 +1012,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.3,
     textAlign:     'center',
   },
+  cityHeroSpacer: {
+    width: 24,   // = chevron (18) + its marginLeft (6); keeps the name centered
+  },
   cityHeroChevron: {
-    marginTop: 2,   // visually align with the text x-height, not its box
+    marginTop:  2,   // visually align with the text x-height, not its box
+    marginLeft: 6,
   },
 
   // ── Section 3: Context chips ───────────────────────────────────────────────
