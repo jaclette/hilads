@@ -1,0 +1,41 @@
+{
+  "title": "Messages",
+  "filters": { "all": "All", "dms": "Direct Messages", "events": "Event Chats" },
+  "loading": "Loading…",
+  "error": {
+    "loadTitle": "Couldn't load messages",
+    "loadSub": "Check your connection and try again."
+  },
+  "empty": {
+    "eventsTitle": "No event chats yet",
+    "eventsSub": "Create or join an event to chat with people going.",
+    "title": "No messages yet",
+    "sub": "Connect with people you meet in the city."
+  },
+  "sectionDms": "Direct messages",
+  "sectionEvents": "Event chats",
+  "youPrefix": "You: {{message}}",
+  "startConversation": "Start the conversation",
+  "eventCreated": "You created this",
+  "eventJoined": "You joined this",
+  "prefs": {
+    "title": "Notification preferences",
+    "dmName": "New direct messages",
+    "dmDesc": "When someone sends you a private message",
+    "eventName": "Event chat messages",
+    "eventDesc": "When someone messages in an event you joined",
+    "cityName": "City chat messages",
+    "cityDesc": "When someone sends a message in your city channel"
+  },
+  "thread": {
+    "loadError": "Could not load messages.",
+    "beginning": "Beginning of conversation",
+    "photo": "📷 Photo",
+    "unavailable": "Original message unavailable",
+    "tapMaps": "Tap to open in maps",
+    "composer": "Message…",
+    "imageType": "Please select a JPEG, PNG, or WebP image.",
+    "imageTooLarge": "Image too large. Max size: 10 MB.",
+    "imageSend": "Couldn't send image. Please try again."
+  }
+}

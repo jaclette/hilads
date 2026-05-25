@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage } from '../api'
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
@@ -74,6 +75,7 @@ function formatDateLabel(ts) {
 }
 
 export default function DirectMessageScreen({ conversation, otherUser, account, socket, onBack }) {
+  const { t } = useTranslation('dm')
   const [messages, setMessages]       = useState([])
   const [input, setInput]             = useState('')
   const [sending, setSending]         = useState(false)
@@ -119,7 +121,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         oldestIdRef.current = data.messages[0]?.id ?? null // ASC → [0] oldest
         setHasMore(data.hasMore ?? false)
       })
-      .catch(() => setError('Could not load messages.'))
+      .catch(() => setError(t('thread.loadError')))
   }, [conversation.id])
 
   // Join WS DM room and listen for new messages
@@ -206,11 +208,11 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
     if (!file) return
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     if (!allowed.includes(file.type)) {
-      setError('Please select a JPEG, PNG, or WebP image.')
+      setError(t('thread.imageType'))
       return
     }
     if (file.size > 10 * 1024 * 1024) {
-      setError('Image too large. Max size: 10 MB.')
+      setError(t('thread.imageTooLarge'))
       return
     }
     setUploading(true)
@@ -222,7 +224,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       // Dedup: WS may have delivered the message while the upload was in-flight
       setMessages(prev => prev.some(m => m.id === message.id) ? prev : [...prev, message])
     } catch (err) {
-      setError(err.message || "Couldn't send image. Please try again.")
+      setError(err.message || t('thread.imageSend'))
     } finally {
       setUploading(false)
     }
@@ -339,7 +341,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
           <div className="messages-load-older"><span className="messages-load-older-spinner" /></div>
         )}
         {!hasMore && !loadingOlder && messages.length > 0 && (
-          <div className="messages-beginning">Beginning of conversation</div>
+          <div className="messages-beginning">{t('thread.beginning')}</div>
         )}
 
         {messages.map((msg, i) => {
@@ -392,7 +394,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                             <div className="loc-bubble-body">
                               <span className="loc-bubble-place">{line1.replace('📍 ', '')}</span>
                               {addr && <span className="loc-bubble-addr">{addr}</span>}
-                              {hasCoords && <span className="loc-bubble-tap">Tap to open in maps</span>}
+                              {hasCoords && <span className="loc-bubble-tap">{t('thread.tapMaps')}</span>}
                             </div>
                           </div>
                         )
@@ -405,7 +407,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                           >
                             <span className="dm-reply-quote-name">{msg.replyTo.nickname}</span>
                             <span className="dm-reply-quote-text">
-                              {msg.replyTo.type === 'image' ? '📷 Photo' : (msg.replyTo.content || 'Original message unavailable')}
+                              {msg.replyTo.type === 'image' ? t('thread.photo') : (msg.replyTo.content || t('thread.unavailable'))}
                             </span>
                           </div>
                         )}
@@ -456,7 +458,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         onEmojiToggle={() => setShowEmoji(p => !p)}
         onEmojiSelect={insertEmoji}
         onEmojiClose={() => setShowEmoji(false)}
-        placeholder="Message…"
+        placeholder={t('thread.composer')}
         uploading={uploading}
         sending={sending}
         spotLoading={spotLoading}

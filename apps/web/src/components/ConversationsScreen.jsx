@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { fetchConversations, fetchNotificationPreferences, updateNotificationPreferences } from '../api'
 import BackButton from './BackButton'
 
@@ -45,13 +46,10 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-const FILTERS = [
-  { key: 'all',    label: 'All' },
-  { key: 'dms',    label: 'Direct Messages' },
-  { key: 'events', label: 'Event Chats' },
-]
+const FILTERS = ['all', 'dms', 'events']
 
 export default function ConversationsScreen({ account, conversations, onConversationsLoaded, onBack, onOpenDm, onOpenEvent }) {
+  const { t } = useTranslation('dm')
   const [fetchError, setFetchError] = useState(false)
   const [activeFilter, setActiveFilter] = useState('all')
 
@@ -106,12 +104,12 @@ export default function ConversationsScreen({ account, conversations, onConversa
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">Messages</span>
+        <span className="page-title">{t('title')}</span>
       </div>
 
       {/* Filter pills */}
       <div className="conv-filters">
-        {FILTERS.map(({ key, label }) => {
+        {FILTERS.map(key => {
           const isActive  = activeFilter === key
           const hasUnread = key === 'dms' ? dmUnread : key === 'events' ? eventsUnread : (dmUnread || eventsUnread)
           return (
@@ -120,7 +118,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
               className={`conv-filter-pill${isActive ? ' conv-filter-pill--active' : ''}`}
               onClick={() => setActiveFilter(key)}
             >
-              {label}
+              {t(`filters.${key}`)}
               {hasUnread && <span className="conv-filter-dot" />}
             </button>
           )
@@ -128,13 +126,13 @@ export default function ConversationsScreen({ account, conversations, onConversa
       </div>
 
       <div className="page-body conv-body">
-        {loading && <p className="conv-loading">Loading…</p>}
+        {loading && <p className="conv-loading">{t('loading')}</p>}
 
         {fetchError && (
           <div className="conv-empty">
             <p className="conv-empty-icon">⚠️</p>
-            <p className="conv-empty-title">Couldn't load messages</p>
-            <p className="conv-empty-sub">Check your connection and try again.</p>
+            <p className="conv-empty-title">{t('error.loadTitle')}</p>
+            <p className="conv-empty-sub">{t('error.loadSub')}</p>
           </div>
         )}
 
@@ -142,12 +140,10 @@ export default function ConversationsScreen({ account, conversations, onConversa
           <div className="conv-empty">
             <p className="conv-empty-icon">{activeFilter === 'events' ? '🔥' : '💬'}</p>
             <p className="conv-empty-title">
-              {activeFilter === 'events' ? 'No event chats yet' : 'No messages yet'}
+              {activeFilter === 'events' ? t('empty.eventsTitle') : t('empty.title')}
             </p>
             <p className="conv-empty-sub">
-              {activeFilter === 'events'
-                ? 'Create or join an event to chat with people going.'
-                : 'Connect with people you meet in the city.'}
+              {activeFilter === 'events' ? t('empty.eventsSub') : t('empty.sub')}
             </p>
           </div>
         )}
@@ -155,7 +151,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
         {/* Direct Messages section */}
         {!loading && !fetchError && showDMs && dms.length > 0 && (
           <section className="conv-section">
-            {activeFilter === 'all' && <p className="conv-section-label">Direct messages</p>}
+            {activeFilter === 'all' && <p className="conv-section-label">{t('sectionDms')}</p>}
             {dms.map(dm => {
               const name = dm.other_display_name ?? '?'
               const [c1, c2] = avatarColors(name)
@@ -176,8 +172,8 @@ export default function ConversationsScreen({ account, conversations, onConversa
                     <span className="conv-row-name">{name}</span>
                     <span className="conv-row-preview">
                       {dm.last_message
-                        ? (dm.last_sender_id === account?.id ? `You: ${dm.last_message}` : dm.last_message)
-                        : 'Start the conversation'
+                        ? (dm.last_sender_id === account?.id ? t('youPrefix', { message: dm.last_message }) : dm.last_message)
+                        : t('startConversation')
                       }
                     </span>
                   </div>
@@ -194,7 +190,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
         {/* Event Chats section */}
         {!loading && !fetchError && showEvents && events.length > 0 && (
           <section className="conv-section">
-            {activeFilter === 'all' && <p className="conv-section-label">Event chats</p>}
+            {activeFilter === 'all' && <p className="conv-section-label">{t('sectionEvents')}</p>}
             {events.map(ev => (
               <button
                 key={ev.channel_id}
@@ -205,7 +201,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
                 <div className="conv-row-body">
                   <span className="conv-row-name">{ev.title}</span>
                   <span className="conv-row-preview">
-                    {ev.is_creator ? 'You created this' : 'You joined this'}
+                    {ev.is_creator ? t('eventCreated') : t('eventJoined')}
                   </span>
                 </div>
                 {ev.has_unread && (
@@ -221,12 +217,12 @@ export default function ConversationsScreen({ account, conversations, onConversa
         {/* ── Envelope-scoped notification preferences ────────────────────── */}
         {prefs && (
           <div className="notif-prefs">
-            <div className="notif-prefs-title">Notification preferences</div>
+            <div className="notif-prefs-title">{t('prefs.title')}</div>
 
             <div className="notif-pref-row">
               <div className="notif-pref-label">
-                <span className="notif-pref-name">New direct messages</span>
-                <span className="notif-pref-desc">When someone sends you a private message</span>
+                <span className="notif-pref-name">{t('prefs.dmName')}</span>
+                <span className="notif-pref-desc">{t('prefs.dmDesc')}</span>
               </div>
               <Toggle
                 checked={prefs?.dm_push ?? true}
@@ -237,8 +233,8 @@ export default function ConversationsScreen({ account, conversations, onConversa
 
             <div className="notif-pref-row">
               <div className="notif-pref-label">
-                <span className="notif-pref-name">Event chat messages</span>
-                <span className="notif-pref-desc">When someone messages in an event you joined</span>
+                <span className="notif-pref-name">{t('prefs.eventName')}</span>
+                <span className="notif-pref-desc">{t('prefs.eventDesc')}</span>
               </div>
               <Toggle
                 checked={prefs?.event_message_push ?? true}
@@ -249,8 +245,8 @@ export default function ConversationsScreen({ account, conversations, onConversa
 
             <div className="notif-pref-row">
               <div className="notif-pref-label">
-                <span className="notif-pref-name">City chat messages</span>
-                <span className="notif-pref-desc">When someone sends a message in your city channel</span>
+                <span className="notif-pref-name">{t('prefs.cityName')}</span>
+                <span className="notif-pref-desc">{t('prefs.cityDesc')}</span>
               </div>
               <Toggle
                 checked={prefs?.channel_message_push ?? false}

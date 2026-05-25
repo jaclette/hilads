@@ -1,0 +1,41 @@
+{
+  "title": "Tin nhắn",
+  "filters": { "all": "Tất cả", "dms": "Tin nhắn trực tiếp", "events": "Chat sự kiện" },
+  "loading": "Đang tải…",
+  "error": {
+    "loadTitle": "Không thể tải tin nhắn",
+    "loadSub": "Kiểm tra kết nối và thử lại."
+  },
+  "empty": {
+    "eventsTitle": "Chưa có chat sự kiện",
+    "eventsSub": "Tạo hoặc tham gia một sự kiện để trò chuyện với những người tham gia.",
+    "title": "Chưa có tin nhắn",
+    "sub": "Kết nối với những người bạn gặp trong thành phố."
+  },
+  "sectionDms": "Tin nhắn trực tiếp",
+  "sectionEvents": "Chat sự kiện",
+  "youPrefix": "Bạn: {{message}}",
+  "startConversation": "Bắt đầu cuộc trò chuyện",
+  "eventCreated": "Bạn đã tạo cái này",
+  "eventJoined": "Bạn đã tham gia cái này",
+  "prefs": {
+    "title": "Tùy chọn thông báo",
+    "dmName": "Tin nhắn trực tiếp mới",
+    "dmDesc": "Khi ai đó gửi cho bạn tin nhắn riêng",
+    "eventName": "Tin nhắn chat sự kiện",
+    "eventDesc": "Khi ai đó nhắn trong sự kiện bạn đã tham gia",
+    "cityName": "Tin nhắn chat thành phố",
+    "cityDesc": "Khi ai đó nhắn trong kênh thành phố của bạn"
+  },
+  "thread": {
+    "loadError": "Không thể tải tin nhắn.",
+    "beginning": "Đầu cuộc trò chuyện",
+    "photo": "📷 Ảnh",
+    "unavailable": "Tin nhắn gốc không khả dụng",
+    "tapMaps": "Chạm để mở trong Maps",
+    "composer": "Tin nhắn…",
+    "imageType": "Vui lòng chọn ảnh JPEG, PNG hoặc WebP.",
+    "imageTooLarge": "Ảnh quá lớn. Tối đa: 10 MB.",
+    "imageSend": "Không gửi được ảnh. Vui lòng thử lại."
+  }
+}
