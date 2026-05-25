@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import { fetchConversations, fetchNotificationPreferences, updateNotificationPreferences } from '../api'
 import BackButton from './BackButton'
 
@@ -28,11 +29,11 @@ function formatConvTime(isoStr) {
   const d = new Date(normalised)
   if (isNaN(d.getTime())) return null
   const diff = Date.now() - d.getTime()
-  if (diff < 60_000)           return 'now'
+  if (diff < 60_000)           return i18n.t('time.nowShort', { ns: 'common' })
   if (diff < 3_600_000)        return `${Math.floor(diff / 60_000)}m`
   if (diff < 86_400_000)       return `${Math.floor(diff / 3_600_000)}h`
-  if (diff < 7 * 86_400_000)   return d.toLocaleDateString('en-US', { weekday: 'short' })
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  if (diff < 7 * 86_400_000)   return d.toLocaleDateString(i18n.language, { weekday: 'short' })
+  return d.toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })
 }
 
 const AVATAR_PALETTES = [

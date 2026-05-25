@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
 
 const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
@@ -669,7 +670,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
         <div className="pub-profile-report-form-wrap">
           {existingReport ? (
             <p className="pub-profile-report-sent">
-              {t('report.existing', { date: new Date(existingReport.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) })}
+              {t('report.existing', { date: new Date(existingReport.created_at).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric', year: 'numeric' }) })}
             </p>
           ) : reportSent ? (
             <p className="pub-profile-report-sent">{t('report.sent')}</p>

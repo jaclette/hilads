@@ -189,5 +189,11 @@
     "one": "{{name}} écrit…",
     "two": "{{a}} et {{b}} écrivent…",
     "many": "Plusieurs personnes écrivent…"
+  },
+  "myEvent": {
+    "live": "En direct",
+    "recurring": "↻ Récurrent",
+    "upcoming": "À venir",
+    "delete": "Supprimer l'événement"
   }
 }

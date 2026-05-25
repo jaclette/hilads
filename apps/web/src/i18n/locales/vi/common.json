@@ -5,5 +5,16 @@
   "composer": {
     "attach": "Thêm tệp đính kèm",
     "emoji": "Emoji"
+  },
+  "time": {
+    "happeningNow": "🔥 đang diễn ra",
+    "inMin": "🔥 sau {{count}} phút",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "justNow": "vừa xong",
+    "nowShort": "bây giờ",
+    "mAgo": "{{count}} phút trước",
+    "hAgo": "{{count}} giờ trước",
+    "dAgo": "{{count}} ngày trước"
   }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import BackButton from './BackButton'
 import AttendeeAvatars from './AttendeeAvatars'
 import { fetchUpcomingEvents, fetchCalendarSummary } from '../api'
@@ -39,7 +40,7 @@ function MonthModal({ visibleMonth, summary, selected, onPick, onClose }) {
   const [view, setView] = useState(() => new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1))
   const today    = startOfDay(new Date())
   const maxDate  = startOfDay(addDays(today, MAX_MODAL))
-  const monthLbl = view.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  const monthLbl = view.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })
 
   const firstDow    = new Date(view.getFullYear(), view.getMonth(), 1).getDay()
   const daysInMonth = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate()

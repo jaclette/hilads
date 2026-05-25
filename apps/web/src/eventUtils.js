@@ -1,3 +1,5 @@
+import i18n from './i18n'
+
 /**
  * Build a slug-style event URL path component from an event object.
  *
@@ -40,11 +42,10 @@ export function extractEventHex(input) {
 }
 
 export function formatTime(unixTs, timezone) {
-  return new Date(unixTs * 1000).toLocaleTimeString('en-US', {
+  return new Date(unixTs * 1000).toLocaleTimeString(i18n.language || 'en', {
     timeZone: timezone,
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true,
   })
 }
 
@@ -81,11 +82,11 @@ export function getEventMapsUrl(event) {
 
 export function getTimeLabel(unixTs, timezone) {
   const status = getEventStatus(unixTs)
-  if (status === 'now') return '🔥 happening now'
+  if (status === 'now') return i18n.t('time.happeningNow', { ns: 'common' })
   if (status === 'soon') {
     const diffMin = (unixTs * 1000 - Date.now()) / 60000
     const rounded = Math.max(5, Math.round(diffMin / 5) * 5)
-    return `🔥 in ${rounded} min`
+    return i18n.t('time.inMin', { ns: 'common', count: rounded })
   }
   return `🕐 ${formatTime(unixTs, timezone)}`
 }

@@ -185,5 +185,11 @@
     "one": "{{name}} đang nhập…",
     "two": "{{a}} và {{b}} đang nhập…",
     "many": "Nhiều người đang nhập…"
+  },
+  "myEvent": {
+    "live": "Trực tiếp",
+    "recurring": "↻ Định kỳ",
+    "upcoming": "Sắp tới",
+    "delete": "Xóa sự kiện"
   }
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from './i18n'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
@@ -338,6 +339,7 @@ function avatarColors(name) {
 // ── My event row (used in both guest and registered Me screens) ──────────────
 
 function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
+  const { t } = useTranslation('city')
   const now = Date.now() / 1000
   const isLive = event.starts_at <= now && event.expires_at > now
   return (
@@ -350,10 +352,10 @@ function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
             : getTimeLabel(event.starts_at, cityTimezone || 'UTC') + (event.ends_at ? ` → ${formatTime(event.ends_at, cityTimezone || 'UTC')}` : '')}
         </span>
         <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (event.recurrence_label ? ' my-event-badge--recurring' : '')}`}>
-          {isLive ? 'Live' : (event.recurrence_label ? '↻ Recurring' : 'Upcoming')}
+          {isLive ? t('myEvent.live') : (event.recurrence_label ? t('myEvent.recurring') : t('myEvent.upcoming'))}
         </span>
       </button>
-      <button className="my-event-delete" onClick={onDelete} aria-label="Delete event">✕</button>
+      <button className="my-event-delete" onClick={onDelete} aria-label={t('myEvent.delete')}>✕</button>
     </div>
   )
 }
@@ -444,15 +446,15 @@ function formatMsgTime(ts) {
   if (!ms) return ''
   const d   = new Date(ms)
   const now = new Date()
-  const time      = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  const time      = d.toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' })
   const today     = startOfDay(now)
   const yesterday = new Date(today.getTime() - 86_400_000)
   const msgDay    = startOfDay(d)
   if (msgDay.getTime() === today.getTime())     return time
-  if (msgDay.getTime() === yesterday.getTime()) return `Yesterday · ${time}`
+  if (msgDay.getTime() === yesterday.getTime()) return `${i18n.t('time.yesterday', { ns: 'common' })} · ${time}`
   const opts = { month: 'short', day: 'numeric' }
   if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
-  return `${d.toLocaleDateString([], opts)} · ${time}`
+  return `${d.toLocaleDateString(i18n.language, opts)} · ${time}`
 }
 
 function formatMsgDateLabel(ts) {
@@ -463,11 +465,11 @@ function formatMsgDateLabel(ts) {
   const today     = startOfDay(now)
   const yesterday = new Date(today.getTime() - 86_400_000)
   const msgDay    = startOfDay(d)
-  if (msgDay.getTime() === today.getTime())     return 'Today'
-  if (msgDay.getTime() === yesterday.getTime()) return 'Yesterday'
+  if (msgDay.getTime() === today.getTime())     return i18n.t('time.today', { ns: 'common' })
+  if (msgDay.getTime() === yesterday.getTime()) return i18n.t('time.yesterday', { ns: 'common' })
   const opts = { month: 'short', day: 'numeric' }
   if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
-  return d.toLocaleDateString([], opts)
+  return d.toLocaleDateString(i18n.language, opts)
 }
 
 const JOIN_TEMPLATES = [
@@ -4177,9 +4179,9 @@ export default function App() {
                 const timeAgo = topic.last_activity_at
                   ? (() => {
                       const diff = Math.floor((Date.now() / 1000) - topic.last_activity_at)
-                      if (diff < 60) return 'just now'
-                      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
-                      return `${Math.floor(diff / 3600)}h ago`
+                      if (diff < 60) return t('time.justNow', { ns: 'common' })
+                      if (diff < 3600) return t('time.mAgo', { ns: 'common', count: Math.floor(diff / 60) })
+                      return t('time.hAgo', { ns: 'common', count: Math.floor(diff / 3600) })
                     })()
                   : null
                 const meters = distanceByEventId.get(topic.id)

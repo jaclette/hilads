@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -44,15 +45,15 @@ function formatTime(ts) {
   if (!ms) return ''
   const d   = new Date(ms)
   const now = new Date()
-  const time      = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+  const time      = d.toLocaleTimeString(i18n.language, { hour: 'numeric', minute: '2-digit' })
   const today     = startOfDay(now)
   const yesterday = new Date(today.getTime() - 86_400_000)
   const msgDay    = startOfDay(d)
   if (msgDay.getTime() === today.getTime())     return time
-  if (msgDay.getTime() === yesterday.getTime()) return `Yesterday · ${time}`
+  if (msgDay.getTime() === yesterday.getTime()) return `${i18n.t('time.yesterday', { ns: 'common' })} · ${time}`
   const opts = { month: 'short', day: 'numeric' }
   if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric'
-  return `${d.toLocaleDateString([], opts)} · ${time}`
+  return `${d.toLocaleDateString(i18n.language, opts)} · ${time}`
 }
 
 async function shareTopic(title, topicId) {

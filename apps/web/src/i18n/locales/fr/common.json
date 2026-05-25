@@ -5,5 +5,16 @@
   "composer": {
     "attach": "Ajouter une pièce jointe",
     "emoji": "Emoji"
+  },
+  "time": {
+    "happeningNow": "🔥 en ce moment",
+    "inMin": "🔥 dans {{count}} min",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "justNow": "à l'instant",
+    "nowShort": "maint.",
+    "mAgo": "il y a {{count}} min",
+    "hAgo": "il y a {{count}} h",
+    "dAgo": "il y a {{count}} j"
   }
 }

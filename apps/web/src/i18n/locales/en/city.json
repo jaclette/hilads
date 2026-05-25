@@ -189,5 +189,11 @@
     "one": "{{name}} is typing…",
     "two": "{{a}} and {{b}} are typing…",
     "many": "Several people are typing…"
+  },
+  "myEvent": {
+    "live": "Live",
+    "recurring": "↻ Recurring",
+    "upcoming": "Upcoming",
+    "delete": "Delete event"
   }
 }

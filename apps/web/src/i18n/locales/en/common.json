@@ -5,5 +5,16 @@
   "composer": {
     "attach": "Add attachment",
     "emoji": "Emoji"
+  },
+  "time": {
+    "happeningNow": "🔥 happening now",
+    "inMin": "🔥 in {{count}} min",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "justNow": "just now",
+    "nowShort": "now",
+    "mAgo": "{{count}}m ago",
+    "hAgo": "{{count}}h ago",
+    "dAgo": "{{count}}d ago"
   }
 }

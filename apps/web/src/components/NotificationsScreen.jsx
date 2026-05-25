@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import {
   fetchNotifications,
   markNotificationsRead,
@@ -12,10 +13,10 @@ import BackButton from './BackButton'
 
 function timeAgo(isoString) {
   const diff = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000)
-  if (diff < 60)  return 'just now'
-  if (diff < 3600) return Math.floor(diff / 60) + 'm ago'
-  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago'
-  return Math.floor(diff / 86400) + 'd ago'
+  if (diff < 60)  return i18n.t('time.justNow', { ns: 'common' })
+  if (diff < 3600) return i18n.t('time.mAgo', { ns: 'common', count: Math.floor(diff / 60) })
+  if (diff < 86400) return i18n.t('time.hAgo', { ns: 'common', count: Math.floor(diff / 3600) })
+  return i18n.t('time.dAgo', { ns: 'common', count: Math.floor(diff / 86400) })
 }
 
 const TYPE_ICONS = {

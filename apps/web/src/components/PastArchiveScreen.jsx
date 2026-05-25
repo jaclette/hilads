@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n from '../i18n'
 import BackButton from './BackButton'
 import AttendeeAvatars from './AttendeeAvatars'
 import { fetchPastArchive } from '../api'
@@ -26,10 +27,10 @@ function isSameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMo
 function cityTodayYmd(tz) { return new Date().toLocaleDateString('en-CA', { timeZone: tz }) }
 function prettyRange(from, to) {
   const opt = { month: 'short', day: 'numeric' }
-  return `${parseYmd(from).toLocaleDateString(undefined, opt)} – ${parseYmd(to).toLocaleDateString(undefined, opt)}`
+  return `${parseYmd(from).toLocaleDateString(i18n.language, opt)} – ${parseYmd(to).toLocaleDateString(i18n.language, opt)}`
 }
 function pastWhen(ts, tz) {
-  return new Date(ts * 1000).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', timeZone: tz })
+  return new Date(ts * 1000).toLocaleDateString(i18n.language, { weekday: 'short', month: 'short', day: 'numeric', timeZone: tz })
 }
 
 // ── Custom range picker — tap start then end, clamped to 14 days ─────────────
@@ -41,7 +42,7 @@ function RangeModal({ tz, initial, onApply, onClose }) {
   const [end, setEnd]     = useState(initial.to ? parseYmd(initial.to) : null)
 
   const minDate  = addDays(today, -(MONTHS_BACK * 31))
-  const monthLbl = view.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+  const monthLbl = view.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' })
 
   const firstDow    = new Date(view.getFullYear(), view.getMonth(), 1).getDay()
   const daysInMonth = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate()
