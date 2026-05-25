@@ -5,6 +5,7 @@
   "retry": "Try again",
   "save": "Save",
   "done": "Done",
+  "connectionHint": "Check your connection and try again.",
   "modeHeading": "MODE",
   "mode": {
     "local": { "label": "Local", "desc": "You know this city" },

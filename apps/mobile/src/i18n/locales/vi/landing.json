@@ -1,0 +1,23 @@
+{
+  "peopleHere_other": "🔥 {{count}} người đang ở đây ngay bây giờ",
+  "vibesToday_other": "🔥 {{count}} vibes đang diễn ra hôm nay",
+  "geoOff": "📍 Đã tắt định vị",
+  "geoUnreachable": "📍 Không thể xác định vị trí của bạn",
+  "pickCity": "Chọn một thành phố\nvà tham gia",
+  "locating": "› đang định vị...",
+  "requesting": "› đang yêu cầu vị trí...",
+  "chooseManually": "Chọn thành phố thủ công →",
+  "browseCities": "Xem các thành phố →",
+  "yourName": "TÊN CỦA BẠN",
+  "namePlaceholder": "Chào với tên...",
+  "tryAgain": "Thử lại",
+  "useLocation": "Dùng vị trí của tôi",
+  "joinCity": "Tham gia {{city}} →",
+  "joinChat": "Tham gia chat →",
+  "instantAccess": "ẩn danh · truy cập tức thì",
+  "keepIdentity": "hoặc giữ danh tính của bạn",
+  "createAccount": "Tạo tài khoản",
+  "logIn": "Đăng nhập",
+  "authHint": "Giữ tên · mở khóa hồ sơ · thêm bạn bè",
+  "joinError": "Không thể kết nối. Kiểm tra kết nối và thử lại."
+}

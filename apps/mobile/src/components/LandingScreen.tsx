@@ -24,6 +24,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { useApp } from '@/context/AppContext';
 import { bootstrapChannel } from '@/api/channels';
 import { fetchCityEvents, fetchPublicCityEvents } from '@/api/events';
@@ -79,7 +81,7 @@ function filterPreviewEvents(todayEvents: HiladsEvent[]): HiladsEvent[] {
 }
 
 function formatEventTime(ts: number, timezone: string): string {
-  return new Date(ts * 1000).toLocaleTimeString([], {
+  return new Date(ts * 1000).toLocaleTimeString(i18n.language, {
     hour: '2-digit', minute: '2-digit', timeZone: timezone,
   });
 }
@@ -105,6 +107,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   console.log('[landing] render');  // DIAG: if this loops but [layout] render does not, the loop is inside LandingScreen
   const router   = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation('landing');
   const {
     identity, sessionId, account,
     geoState, detectedCity,
@@ -229,7 +232,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
       if (city) router.replace('/(tabs)/chat');
       setJoined(true);
     } catch {
-      setError('Could not connect. Check your connection and try again.');
+      setError(t('joinError'));
       setJoining(false);
     }
   }
@@ -300,11 +303,11 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   {/* ob-activity-block: people + events together */}
                   <View style={styles.activityBlock}>
                     <Text style={styles.activityLine}>
-                      🔥 {previewLiveCount} {previewLiveCount === 1 ? 'person' : 'people'} here right now
+                      {t('peopleHere', { count: previewLiveCount })}
                     </Text>
                     {previewEventCount > 0 && (
                       <Text style={styles.activityLine}>
-                        🔥 {previewEventCount} {previewEventCount === 1 ? 'vibe' : 'vibes'} happening today
+                        {t('vibesToday', { count: previewEventCount })}
                       </Text>
                     )}
                   </View>
@@ -335,26 +338,26 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       styles.geoStatusText,
                       geoState === 'error' && styles.geoStatusTextWarn,
                     ]}>
-                      {geoState === 'denied' ? '📍 Location off' : '📍 Couldn\'t reach your location'}
+                      {geoState === 'denied' ? t('geoOff') : t('geoUnreachable')}
                     </Text>
                   </View>
-                  <Text style={styles.geoHeadline}>Pick a city{'\n'}and jump in</Text>
+                  <Text style={styles.geoHeadline}>{t('pickCity')}</Text>
                 </>
               ) : geoState === 'resolving' ? (
                 <>
-                  <PulsingText text="› locating..." style={styles.locating} />
+                  <PulsingText text={t('locating')} style={styles.locating} />
                   {showGeoEscape && (
                     <TouchableOpacity onPress={handleBrowseCities} activeOpacity={0.7} style={styles.geoEscapeBtn}>
-                      <Text style={styles.geoEscapeText}>Choose city manually →</Text>
+                      <Text style={styles.geoEscapeText}>{t('chooseManually')}</Text>
                     </TouchableOpacity>
                   )}
                 </>
               ) : (
                 <>
-                  <PulsingText text="› requesting location..." style={styles.locating} />
+                  <PulsingText text={t('requesting')} style={styles.locating} />
                   {showGeoEscape && (
                     <TouchableOpacity onPress={handleBrowseCities} activeOpacity={0.7} style={styles.geoEscapeBtn}>
-                      <Text style={styles.geoEscapeText}>Choose city manually →</Text>
+                      <Text style={styles.geoEscapeText}>{t('chooseManually')}</Text>
                     </TouchableOpacity>
                   )}
                 </>
@@ -373,11 +376,11 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       end={{ x: 1, y: 1 }}
                       style={styles.btn}
                     >
-                      <Text style={styles.btnText}>Browse cities →</Text>
+                      <Text style={styles.btnText}>{t('browseCities')}</Text>
                     </LinearGradient>
                   </TouchableOpacity>
 
-                  <Text style={styles.label}>YOUR NAME</Text>
+                  <Text style={styles.label}>{t('yourName')}</Text>
 
                   <View style={styles.inputRow}>
                     <LinearGradient colors={[avatarC1, avatarC2]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.avatarCircle}>
@@ -387,7 +390,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       style={styles.input}
                       value={nickname}
                       onChangeText={setNickname}
-                      placeholder="Say hi as..."
+                      placeholder={t('namePlaceholder')}
                       placeholderTextColor={Colors.muted2}
                       maxLength={20}
                       autoCapitalize="words"
@@ -398,13 +401,13 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
                   <TouchableOpacity style={styles.geoRetryBtn} activeOpacity={0.7} onPress={onRetryGeo}>
                     <Text style={styles.geoRetryText}>
-                      {geoState === 'error' ? 'Try again' : 'Use my location instead'}
+                      {geoState === 'error' ? t('tryAgain') : t('useLocation')}
                     </Text>
                   </TouchableOpacity>
                 </>
               ) : (
                 <>
-                  <Text style={styles.label}>YOUR NAME</Text>
+                  <Text style={styles.label}>{t('yourName')}</Text>
 
                   <View style={styles.inputRow}>
                     <LinearGradient colors={[avatarC1, avatarC2]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.avatarCircle}>
@@ -414,7 +417,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       style={styles.input}
                       value={nickname}
                       onChangeText={setNickname}
-                      placeholder="Say hi as..."
+                      placeholder={t('namePlaceholder')}
                       placeholderTextColor={Colors.muted2}
                       maxLength={20}
                       autoCapitalize="words"
@@ -442,7 +445,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                         <ActivityIndicator color={Colors.white} size="small" />
                       ) : (
                         <Text style={styles.btnText}>
-                          {city ? `Join ${city.name} →` : 'Join Chat →'}
+                          {city ? t('joinCity', { city: city.name }) : t('joinChat')}
                         </Text>
                       )}
                     </LinearGradient>
@@ -450,7 +453,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                 </>
               )}
 
-              <Text style={styles.hint}>anonymous · instant access</Text>
+              <Text style={styles.hint}>{t('instantAccess')}</Text>
             </View>
 
             {/* ── jc-auth: divider + Create account / Log in + hint ── */}
@@ -460,7 +463,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                 {/* Divider with lines + "or keep your identity" */}
                 <View style={styles.jcDivider}>
                   <View style={styles.jcDividerLine} />
-                  <Text style={styles.jcDividerText}>or keep your identity</Text>
+                  <Text style={styles.jcDividerText}>{t('keepIdentity')}</Text>
                   <View style={styles.jcDividerLine} />
                 </View>
 
@@ -471,7 +474,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     onPress={() => { track('clicked_sign_up'); router.push('/sign-up'); }}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.jcSignupText} numberOfLines={1}>Create account</Text>
+                    <Text style={styles.jcSignupText} numberOfLines={1}>{t('createAccount')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -479,12 +482,12 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     onPress={() => { track('clicked_sign_in'); router.push('/sign-in'); }}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.jcSigninText} numberOfLines={1}>Log in</Text>
+                    <Text style={styles.jcSigninText} numberOfLines={1}>{t('logIn')}</Text>
                   </TouchableOpacity>
                 </View>
 
                 {/* jc-auth-hint */}
-                <Text style={styles.jcHint}>Save your name · unlock profiles · add friends</Text>
+                <Text style={styles.jcHint}>{t('authHint')}</Text>
 
               </View>
             )}

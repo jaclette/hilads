@@ -5,6 +5,7 @@
   "retry": "Thử lại",
   "save": "Lưu",
   "done": "Xong",
+  "connectionHint": "Kiểm tra kết nối và thử lại.",
   "modeHeading": "CHẾ ĐỘ",
   "mode": {
     "local": { "label": "Địa phương", "desc": "Bạn rành thành phố này" },

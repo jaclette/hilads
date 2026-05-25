@@ -1,4 +1,5 @@
 import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 interface Props {
@@ -7,16 +8,17 @@ interface Props {
 }
 
 export function BootScreen({ error, onRetry }: Props) {
+  const { t } = useTranslation('common');
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Hilads</Text>
       {error ? (
         <>
           <Text style={styles.errorText}>{error}</Text>
-          <Text style={styles.errorHint}>Check your connection and try again.</Text>
+          <Text style={styles.errorHint}>{t('connectionHint')}</Text>
           {onRetry && (
             <TouchableOpacity style={styles.retryBtn} onPress={onRetry} activeOpacity={0.8}>
-              <Text style={styles.retryText}>Try again</Text>
+              <Text style={styles.retryText}>{t('retry')}</Text>
             </TouchableOpacity>
           )}
         </>
