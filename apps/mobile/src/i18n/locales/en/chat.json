@@ -17,6 +17,28 @@
   "emptySub": "Be the first to say hi 👇",
   "bannerNewEvent": "🔥 New event: {{title}}",
   "join": "Join",
+  "joinArrow": "Join →",
+  "tapMaps": "Tap to open in maps",
+  "originalUnavailable": "Original message unavailable",
+  "failedRetry": "Failed to send · tap to retry",
+  "feedJoin": {
+    "0": "👋 {{name}} just landed",
+    "1": "🔥 {{name}} joined them",
+    "2": "🍻 {{name}} is here",
+    "3": "👀 {{name}} just showed up",
+    "4": "✨ {{name}} arrived"
+  },
+  "left": "{{name}} left",
+  "joinReq": {
+    "wantsToJoin": " wants to join",
+    "joinedHangout": " joined the hangout",
+    "askedToJoin": " asked to join",
+    "decline": "Decline",
+    "accept": "Accept",
+    "accepted": "Accepted",
+    "acceptedBy": "Accepted by {{name}}",
+    "declined": "Request declined"
+  },
   "noCityTitle": "No city selected",
   "noCitySub": "We couldn't detect your location.\nGo to Cities to pick one.",
   "browseCities": "Browse cities →",

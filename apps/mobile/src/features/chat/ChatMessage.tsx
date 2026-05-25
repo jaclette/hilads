@@ -20,6 +20,8 @@ import { ReactionPills } from './ReactionPills';
 import { ReactionBurstOverlay } from './ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
 import { avatarColor } from '@/lib/avatarColors';
@@ -127,26 +129,20 @@ const locStyles = StyleSheet.create({
   tapHintMine: { color: 'rgba(255,255,255,0.65)' },
 });
 
-// ── System message text — mirrors web JOIN_TEMPLATES exactly ─────────────────
-// Web source: App.jsx JOIN_TEMPLATES — random pick per event.
-// Native: hash(nickname + createdAt) for stable display across re-renders.
+// ── System message text — mirrors web feedJoin variants ──────────────────────
+// Join/leave lines are generated per viewer (not stored), so they render in the
+// viewer's own locale. A hash(nickname + createdAt) picks a stable variant.
 
-const JOIN_TEMPLATES: ((n: string) => string)[] = [
-  (n) => `👋 ${n} just landed`,
-  (n) => `🔥 ${n} joined them`,
-  (n) => `🍻 ${n} is here`,
-  (n) => `👀 ${n} just showed up`,
-  (n) => `✨ ${n} arrived`,
-];
+const FEED_JOIN_VARIANTS = 5;
 
 function systemText(message: Message): string {
-  const nick = message.nickname ?? 'Someone';
+  const nick = message.nickname ?? i18n.t('someone', { ns: 'common' });
   if (message.event === 'join') {
     const seed = `${nick}${message.createdAt ?? ''}`
       .split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-    return JOIN_TEMPLATES[seed % JOIN_TEMPLATES.length](nick);
+    return i18n.t(`feedJoin.${seed % FEED_JOIN_VARIANTS}`, { ns: 'chat', name: nick });
   }
-  if (message.event === 'leave') return `${nick} left`;
+  if (message.event === 'leave') return i18n.t('left', { ns: 'chat', name: nick });
   return message.content ?? `${nick} (${message.event ?? 'activity'})`;
 }
 
@@ -195,9 +191,10 @@ function JoinRequestCard({ message, onResolve }: {
   message: Message;
   onResolve?: (requestId: string, action: 'accept' | 'reject') => void;
 }) {
+  const { t } = useTranslation('chat');
   let data: { requestId?: string; requesterName?: string; status?: string; resolvedByName?: string } = {};
   try { data = JSON.parse(message.content ?? '{}'); } catch { /* malformed → render nothing */ }
-  const name   = data.requesterName ?? 'Someone';
+  const name   = data.requesterName ?? i18n.t('someone', { ns: 'common' });
   const status = data.status ?? 'pending';
   const reqId  = data.requestId;
 
@@ -206,7 +203,7 @@ function JoinRequestCard({ message, onResolve }: {
       <View style={styles.joinReqCard}>
         <Text style={styles.joinReqText}>
           <Text style={styles.joinReqName}>{name}</Text>
-          {status === 'pending' ? ' wants to join' : status === 'accepted' ? ' joined the hangout' : ' asked to join'}
+          {status === 'pending' ? t('joinReq.wantsToJoin') : status === 'accepted' ? t('joinReq.joinedHangout') : t('joinReq.askedToJoin')}
         </Text>
         {status === 'pending' ? (
           <View style={styles.joinReqBtns}>
@@ -215,20 +212,20 @@ function JoinRequestCard({ message, onResolve }: {
               activeOpacity={0.8}
               onPress={() => reqId && onResolve?.(reqId, 'reject')}
             >
-              <Text style={styles.joinReqRejectText}>Decline</Text>
+              <Text style={styles.joinReqRejectText}>{t('joinReq.decline')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.joinReqBtn, styles.joinReqAccept]}
               activeOpacity={0.85}
               onPress={() => reqId && onResolve?.(reqId, 'accept')}
             >
-              <Text style={styles.joinReqAcceptText}>Accept</Text>
+              <Text style={styles.joinReqAcceptText}>{t('joinReq.accept')}</Text>
             </TouchableOpacity>
           </View>
         ) : status === 'accepted' ? (
-          <Text style={styles.joinReqResolved}>Accepted{data.resolvedByName ? ` by ${data.resolvedByName}` : ''}</Text>
+          <Text style={styles.joinReqResolved}>{data.resolvedByName ? t('joinReq.acceptedBy', { name: data.resolvedByName }) : t('joinReq.accepted')}</Text>
         ) : (
-          <Text style={styles.joinReqResolvedMuted}>Request declined</Text>
+          <Text style={styles.joinReqResolvedMuted}>{t('joinReq.declined')}</Text>
         )}
       </View>
     </View>
@@ -239,6 +236,7 @@ function JoinRequestCard({ message, onResolve }: {
 
 function AnimatedEventPill({ message, index }: { message: Message; index: number }) {
   const router  = useRouter();
+  const { t }   = useTranslation('chat');
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(10)).current;
 
@@ -263,14 +261,14 @@ function AnimatedEventPill({ message, index }: { message: Message; index: number
     <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
       <View style={styles.eventPill}>
         <Text style={styles.eventText}>
-          🔥 New event: {message.content}
+          {t('bannerNewEvent', { title: message.content })}
         </Text>
         <TouchableOpacity
           style={styles.eventJoinBtn}
           activeOpacity={0.8}
           onPress={() => message.eventId && router.push(`/event/${message.eventId}`)}
         >
-          <Text style={styles.eventJoinText}>Join</Text>
+          <Text style={styles.eventJoinText}>{t('join')}</Text>
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -310,10 +308,11 @@ const BADGE_CONFIG: Record<string, { bg: string; color: string }> = {
 };
 
 function BadgePill({ badge }: { badge: { key: string; label: string } }) {
+  const { t } = useTranslation('common');
   const cfg = BADGE_CONFIG[badge.key] ?? BADGE_CONFIG.regular;
   return (
     <View style={[badgeStyles.pill, { backgroundColor: cfg.bg }]}>
-      <Text style={[badgeStyles.text, { color: cfg.color }]}>{badge.label}</Text>
+      <Text style={[badgeStyles.text, { color: cfg.color }]}>{t(`badge.${badge.key}`, { defaultValue: badge.label })}</Text>
     </View>
   );
 }
@@ -339,9 +338,6 @@ const VIBE_EMOJI: Record<string, string> = {
 const MODE_EMOJI: Record<string, string> = {
   local: '🌍', exploring: '🧭',
 };
-const MODE_LABEL: Record<string, string> = {
-  local: 'Local', exploring: 'Exploring',
-};
 
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
@@ -357,6 +353,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   mode?:         string;
 }) {
   const router  = useRouter();
+  const { t }   = useTranslation('common');
   const { account } = useApp();
 
   // Navigate to a registered profile only when viewer is registered.
@@ -387,7 +384,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       <Text style={[styles.author, { color }]}>{nickname}</Text>
       {(() => { const m = mode || 'exploring'; return MODE_EMOJI[m] ? (
         <Text style={[styles.modeLabel, m === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
-          {MODE_EMOJI[m]} {MODE_LABEL[m]}
+          {MODE_EMOJI[m]} {t(`mode.${m}.label`)}
         </Text>
       ) : null; })()}
       {vibe && VIBE_EMOJI[vibe] && (
@@ -416,6 +413,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest }: Props) {
   const router = useRouter();
+  const { t } = useTranslation('chat');
   const { account } = useApp();
 
   // Tapping a @mention opens the mentioned user's profile (ghost viewers gated).
@@ -474,7 +472,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               activeOpacity={0.8}
               onPress={() => message.topicId && router.push(`/topic/${message.topicId}`)}
             >
-              <Text style={styles.topicJoinText}>Join →</Text>
+              <Text style={styles.topicJoinText}>{t('joinArrow')}</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -675,7 +673,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                         {message.replyTo.nickname}
                       </Text>
                       <Text style={[styles.replyQuoteText, isMine && styles.replyQuoteTextMine]} numberOfLines={2}>
-                        {message.replyTo.type === 'image' ? '📷 Photo' : (message.replyTo.content || 'Original message unavailable')}
+                        {message.replyTo.type === 'image' ? t('photoLabel', { ns: 'common' }) : (message.replyTo.content || t('originalUnavailable'))}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -702,7 +700,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               </View>
             )}
             {isFailed && (
-              <Text style={styles.failedLabel}>Failed to send · tap to retry</Text>
+              <Text style={styles.failedLabel}>{t('failedRetry')}</Text>
             )}
           </Pressable>
           {message.reactions && message.reactions.length > 0 && onReact && (

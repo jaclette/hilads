@@ -16,6 +16,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -32,21 +34,15 @@ import { buildMentionsFromText, detectActiveMention, type SelectedMention, type 
 
 
 // ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
-// Web: PLACEHOLDERS[channelId % PLACEHOLDERS.length]()
-
-const PLACEHOLDERS = [
-  'Say hi 👋',
-  "Who's out tonight?",
-  'Any plans? 👀',
-  "What's happening here?",
-  'Anyone up for something? 🍻',
-  'Drop a message…',
-];
+// Web: PLACEHOLDERS[channelId % PLACEHOLDERS.length](). The list is localized
+// (common.composer.placeholders), picked deterministically by channel id.
 
 export function getPlaceholder(channelId: string): string {
+  const list = i18n.t('composer.placeholders', { ns: 'common', returnObjects: true }) as string[];
+  if (!Array.isArray(list) || list.length === 0) return '';
   const n = parseInt(channelId, 10);
-  const idx = isNaN(n) ? 0 : n % PLACEHOLDERS.length;
-  return PLACEHOLDERS[idx];
+  const idx = isNaN(n) ? 0 : n % list.length;
+  return list[idx] ?? list[0];
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -71,7 +67,8 @@ interface Props {
   onCancelReply?:   () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Drop a message…', pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, mentionContext, mentionChannelId }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, mentionContext, mentionChannelId }: Props) {
+  const { t } = useTranslation('common');
   const { account, identity } = useApp();
   const [text,          setText]        = useState('');
   const textRef         = useRef('');
@@ -223,7 +220,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   async function openLibrary() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo access to share images in chat.');
+      Alert.alert(t('composer.photoPermTitle'), t('composer.photoPermBody'));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
@@ -256,16 +253,16 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
           if (requested.canAskAgain === false) {
             console.log('[camera] permission blocked, open settings');
             Alert.alert(
-              'Camera permission required',
-              'Please allow camera access in Settings → Hilads → Camera.',
+              t('composer.cameraPermTitle'),
+              t('composer.cameraPermSettings'),
               [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Open Settings', onPress: () => Linking.openSettings() },
+                { text: t('cancel'), style: 'cancel' },
+                { text: t('openSettings'), onPress: () => Linking.openSettings() },
               ],
             );
           } else {
             console.log('[camera] permission denied');
-            Alert.alert('Camera permission required', 'Camera access is needed to take photos.');
+            Alert.alert(t('composer.cameraPermTitle'), t('composer.cameraPermBody'));
           }
           return;
         }
@@ -277,7 +274,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       if (!res.canceled && res.assets?.[0]?.uri) await launchWithUri(res.assets[0].uri);
     } catch (e) {
       console.error('[camera] iOS error:', e);
-      Alert.alert('Camera unavailable', 'Could not open the camera. Please try again.');
+      Alert.alert(t('composer.cameraUnavailTitle'), t('composer.cameraUnavailBody'));
     }
   }
 
@@ -291,10 +288,10 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
   }
 
   function handlePickImage() {
-    Alert.alert('Send a photo', undefined, [
-      { text: 'Take Photo',          onPress: () => setTimeout(openCamera, 0) },
-      { text: 'Choose from Library', onPress: () => setTimeout(openLibrary, 0) },
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('composer.sendPhotoTitle'), undefined, [
+      { text: t('composer.takePhoto'),     onPress: () => setTimeout(openCamera, 0) },
+      { text: t('composer.chooseLibrary'), onPress: () => setTimeout(openLibrary, 0) },
+      { text: t('cancel'), style: 'cancel' },
     ]);
   }
 
@@ -307,11 +304,11 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     if (!granted) {
       if (!existing.canAskAgain) {
         Alert.alert(
-          'Location access required',
-          'Please enable location in Settings → Hilads → Location.',
+          t('composer.locPermTitle'),
+          t('composer.locPermSettings'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            { text: t('cancel'), style: 'cancel' },
+            { text: t('openSettings'), onPress: () => Linking.openSettings() },
           ],
         );
         return;
@@ -319,7 +316,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
       const result = await Location.requestForegroundPermissionsAsync();
       granted = result.status === 'granted';
       if (!granted) {
-        Alert.alert('Location needed', 'Allow location access to share your spot.');
+        Alert.alert(t('composer.locNeededTitle'), t('composer.locNeededBody'));
         return;
       }
     }
@@ -340,6 +337,8 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
     const nickname = account?.display_name ?? identity?.nickname ?? 'Someone';
     const label = place || 'somewhere';
     const coordLine = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+    // Posted message content (broadcast to all viewers) — kept in English so
+    // every recipient sees the same text regardless of the sender's UI locale.
     const text = address
       ? `📍 ${nickname} is at ${label}\n${coordLine}\n${address}`
       : `📍 ${nickname} is at ${label}\n${coordLine}`;
@@ -407,7 +406,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         <View style={replyStyles.body}>
           <Text style={replyStyles.name}>{replyingTo.nickname}</Text>
           <Text style={replyStyles.preview} numberOfLines={1}>
-            {replyingTo.type === 'image' ? '📷 Photo' : replyingTo.content}
+            {replyingTo.type === 'image' ? t('photoLabel') : replyingTo.content}
           </Text>
         </View>
         <TouchableOpacity onPress={onCancelReply} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
@@ -433,7 +432,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
           onPressOut={vibePressOut}
           disabled={busy}
           accessibilityRole="button"
-          accessibilityLabel="Add attachment"
+          accessibilityLabel={t('composer.attach')}
         >
           <LinearGradient
             colors={['#C24A38', '#B87228']}
@@ -466,7 +465,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder = 'Dro
         value={text}
         onChangeText={handleChangeText}
         onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; detectMention(selection.end); }}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t('composer.placeholderDefault')}
         placeholderTextColor={Colors.muted2}
         multiline
         maxLength={1000}
