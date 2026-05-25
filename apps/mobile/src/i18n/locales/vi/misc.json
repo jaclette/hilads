@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "Lời mời kết bạn",
+    "incoming": "Đến",
+    "sent": "Đã gửi",
+    "wantsToBeFriend": "muốn kết bạn với bạn",
+    "requestSent": "đã gửi lời mời",
+    "decline": "Từ chối",
+    "accept": "Chấp nhận",
+    "cancel": "Hủy",
+    "emptyIncomingTitle": "Chưa có lời mời kết bạn",
+    "emptySentTitle": "Bạn chưa gửi lời mời nào",
+    "emptyIncomingSub": "Khi có người muốn kết bạn, bạn sẽ thấy ở đây.",
+    "emptySentSub": "Các lời mời kết bạn đang chờ bạn đã gửi sẽ hiển thị ở đây."
+  },
+  "blocked": {
+    "title": "Người dùng bị chặn",
+    "thisUser": "người dùng này",
+    "ghostName": "Vãng lai",
+    "guest": "Khách",
+    "unblock": "Bỏ chặn",
+    "unblockTitle": "Bỏ chặn {{name}}?",
+    "unblockBody": "{{name}} sẽ có thể xem nội dung của bạn và liên hệ lại với bạn.",
+    "unblockFailTitle": "Không thể bỏ chặn",
+    "unblockFailBody": "Vui lòng thử lại.",
+    "emptyTitle": "Bạn chưa chặn ai",
+    "emptySub": "Người bị chặn sẽ không thấy nội dung của bạn, và bạn cũng không thấy của họ."
+  }
+}

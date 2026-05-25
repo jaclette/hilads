@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchMyBlocks, unblockById, type BlockRow } from '@/api/blocks';
 import { useApp } from '@/context/AppContext';
@@ -21,6 +22,7 @@ import { avatarColor as avatarBg } from '@/lib/avatarColors';
 
 export default function BlockedUsersScreen() {
   const router = useRouter();
+  const { t } = useTranslation('misc');
   const { account, removeBlocked } = useApp();
 
   const [rows,        setRows]        = useState<BlockRow[]>([]);
@@ -50,14 +52,14 @@ export default function BlockedUsersScreen() {
   useEffect(() => { load(); }, [load]);
 
   function handleUnblock(row: BlockRow) {
-    const name = row.display_name ?? row.target_nickname ?? 'this user';
+    const name = row.display_name ?? row.target_nickname ?? t('blocked.thisUser');
     Alert.alert(
-      `Unblock ${name}?`,
-      `${name} will be able to see your content and contact you again.`,
+      t('blocked.unblockTitle', { name }),
+      t('blocked.unblockBody', { name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
         {
-          text: 'Unblock',
+          text: t('blocked.unblock'),
           onPress: async () => {
             // Optimistic: drop the row + patch context immediately.
             setBusyIds(prev => { const next = new Set(prev); next.add(row.id); return next; });
@@ -72,7 +74,7 @@ export default function BlockedUsersScreen() {
             } catch {
               // Roll back on failure.
               setRows(before);
-              Alert.alert('Could not unblock', 'Please try again.');
+              Alert.alert(t('blocked.unblockFailTitle'), t('blocked.unblockFailBody'));
             } finally {
               setBusyIds(prev => { const next = new Set(prev); next.delete(row.id); return next; });
             }
@@ -83,7 +85,7 @@ export default function BlockedUsersScreen() {
   }
 
   function renderRow({ item }: { item: BlockRow }) {
-    const name    = item.display_name ?? item.target_nickname ?? 'Ghost';
+    const name    = item.display_name ?? item.target_nickname ?? t('blocked.ghostName');
     const initial = name[0]?.toUpperCase() ?? '?';
     const photo   = item.profile_thumb_photo_url ?? item.profile_photo_url ?? null;
     const busy    = busyIds.has(item.id);
@@ -101,7 +103,7 @@ export default function BlockedUsersScreen() {
         <View style={styles.info}>
           <Text style={styles.name} numberOfLines={1}>{name}</Text>
           {!item.blocked_user_id && item.blocked_guest_id ? (
-            <Text style={styles.subtitle}>Guest</Text>
+            <Text style={styles.subtitle}>{t('blocked.guest')}</Text>
           ) : null}
         </View>
 
@@ -113,7 +115,7 @@ export default function BlockedUsersScreen() {
         >
           {busy
             ? <ActivityIndicator size="small" color={Colors.text} />
-            : <Text style={styles.unblockBtnText}>Unblock</Text>
+            : <Text style={styles.unblockBtnText}>{t('blocked.unblock')}</Text>
           }
         </TouchableOpacity>
       </View>
@@ -128,7 +130,7 @@ export default function BlockedUsersScreen() {
           <Ionicons name="chevron-back" size={22} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Blocked users</Text>
+          <Text style={styles.headerTitle}>{t('blocked.title')}</Text>
         </View>
       </View>
 
@@ -139,10 +141,8 @@ export default function BlockedUsersScreen() {
       ) : rows.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.emptyEmoji}>🤝</Text>
-          <Text style={styles.emptyTitle}>You haven't blocked anyone</Text>
-          <Text style={styles.emptySub}>
-            Blocked users won't see your content, and you won't see theirs.
-          </Text>
+          <Text style={styles.emptyTitle}>{t('blocked.emptyTitle')}</Text>
+          <Text style={styles.emptySub}>{t('blocked.emptySub')}</Text>
         </View>
       ) : (
         <FlatList

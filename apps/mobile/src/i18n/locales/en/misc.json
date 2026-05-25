@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "Friend requests",
+    "incoming": "Incoming",
+    "sent": "Sent",
+    "wantsToBeFriend": "wants to be your friend",
+    "requestSent": "request sent",
+    "decline": "Decline",
+    "accept": "Accept",
+    "cancel": "Cancel",
+    "emptyIncomingTitle": "No friend requests yet",
+    "emptySentTitle": "You haven't sent any",
+    "emptyIncomingSub": "When someone asks to be your friend, you'll see it here.",
+    "emptySentSub": "Pending friend requests you sent will show up here."
+  },
+  "blocked": {
+    "title": "Blocked users",
+    "thisUser": "this user",
+    "ghostName": "Ghost",
+    "guest": "Guest",
+    "unblock": "Unblock",
+    "unblockTitle": "Unblock {{name}}?",
+    "unblockBody": "{{name}} will be able to see your content and contact you again.",
+    "unblockFailTitle": "Could not unblock",
+    "unblockFailBody": "Please try again.",
+    "emptyTitle": "You haven't blocked anyone",
+    "emptySub": "Blocked users won't see your content, and you won't see theirs."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "Demandes d'ami",
+    "incoming": "Reçues",
+    "sent": "Envoyées",
+    "wantsToBeFriend": "veut devenir ton ami",
+    "requestSent": "demande envoyée",
+    "decline": "Refuser",
+    "accept": "Accepter",
+    "cancel": "Annuler",
+    "emptyIncomingTitle": "Pas encore de demandes d'ami",
+    "emptySentTitle": "Tu n'en as envoyé aucune",
+    "emptyIncomingSub": "Quand quelqu'un te demande en ami, tu le verras ici.",
+    "emptySentSub": "Les demandes d'ami en attente que tu as envoyées apparaîtront ici."
+  },
+  "blocked": {
+    "title": "Utilisateurs bloqués",
+    "thisUser": "cet utilisateur",
+    "ghostName": "Fantôme",
+    "guest": "Invité",
+    "unblock": "Débloquer",
+    "unblockTitle": "Débloquer {{name}} ?",
+    "unblockBody": "{{name}} pourra de nouveau voir ton contenu et te contacter.",
+    "unblockFailTitle": "Déblocage impossible",
+    "unblockFailBody": "Réessaie.",
+    "emptyTitle": "Tu n'as bloqué personne",
+    "emptySub": "Les utilisateurs bloqués ne verront pas ton contenu, et tu ne verras pas le leur."
+  }
+}

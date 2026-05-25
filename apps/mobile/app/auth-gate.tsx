@@ -11,51 +11,33 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout';
 
-const GATE_COPY: Record<GateReason, { emoji: string; title: string; subtitle: string }> = {
-  view_profile: {
-    emoji:    '👻',
-    title:    "Ghosts can browse, but profiles are for members.",
-    subtitle: "Create an account to unlock profiles, connect with people, and build your city crew.",
-  },
-  join_hangout: {
-    emoji:    '⚡',
-    title:    "Ghosts can browse, but can't join hangouts.",
-    subtitle: "Sign up to join hangouts, save your name, and get notified when people want to meet.",
-  },
-  create_hangout: {
-    emoji:    '⚡',
-    title:    "Ghosts can browse, but can't host.",
-    subtitle: "Sign up to start a hangout, save your name, and get people to join you.",
-  },
-  create_event: {
-    emoji:    '🎉',
-    title:    "Ghosts can browse, but can't host.",
-    subtitle: "Create an account to throw your own event and put your city on the map.",
-  },
-  send_dm: {
-    emoji:    '💬',
-    title:    "Ghosts can browse, but can't DM.",
-    subtitle: "Create an account to message people directly and build your city crew.",
-  },
+const GATE_EMOJI: Record<GateReason, string> = {
+  view_profile:   '👻',
+  join_hangout:   '⚡',
+  create_hangout: '⚡',
+  create_event:   '🎉',
+  send_dm:        '💬',
 };
 
 const BENEFITS = [
-  { emoji: '👤', text: 'View profiles' },
-  { emoji: '🎉', text: 'Create your own events' },
-  { emoji: '🤝', text: 'Build your friends list' },
-  { emoji: '💬', text: 'Connect with people' },
-  { emoji: '✨', text: 'Keep your identity' },
-];
+  { emoji: '👤', key: 'benefitProfiles' },
+  { emoji: '🎉', key: 'benefitEvents' },
+  { emoji: '🤝', key: 'benefitFriends' },
+  { emoji: '💬', key: 'benefitConnect' },
+  { emoji: '✨', key: 'benefitIdentity' },
+] as const;
 
 export default function AuthGateScreen() {
   const router = useRouter();
+  const { t } = useTranslation('auth');
   const { reason } = useLocalSearchParams<{ reason?: string }>();
-  const copy = GATE_COPY[(reason as GateReason) ?? 'view_profile'] ?? GATE_COPY.view_profile;
+  const gateReason: GateReason = (reason as GateReason) in GATE_EMOJI ? (reason as GateReason) : 'view_profile';
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -68,16 +50,16 @@ export default function AuthGateScreen() {
       <View style={styles.body}>
 
         {/* Hero */}
-        <Text style={styles.ghost}>{copy.emoji}</Text>
-        <Text style={styles.title}>{copy.title}</Text>
-        <Text style={styles.subtitle}>{copy.subtitle}</Text>
+        <Text style={styles.ghost}>{GATE_EMOJI[gateReason]}</Text>
+        <Text style={styles.title}>{t(`gate.${gateReason}.title`)}</Text>
+        <Text style={styles.subtitle}>{t(`gate.${gateReason}.subtitle`)}</Text>
 
         {/* Benefits */}
         <View style={styles.benefits}>
           {BENEFITS.map(b => (
-            <View key={b.text} style={styles.benefitRow}>
+            <View key={b.key} style={styles.benefitRow}>
               <Text style={styles.benefitEmoji}>{b.emoji}</Text>
-              <Text style={styles.benefitText}>{b.text}</Text>
+              <Text style={styles.benefitText}>{t(`gate.${b.key}`)}</Text>
             </View>
           ))}
         </View>
@@ -88,7 +70,7 @@ export default function AuthGateScreen() {
           onPress={() => router.push('/sign-up')}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryText}>Create account</Text>
+          <Text style={styles.primaryText}>{t('signUp.submit')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -96,7 +78,7 @@ export default function AuthGateScreen() {
           onPress={() => router.push('/sign-in')}
           activeOpacity={0.8}
         >
-          <Text style={styles.secondaryText}>Sign in</Text>
+          <Text style={styles.secondaryText}>{t('signIn.submit')}</Text>
         </TouchableOpacity>
 
       </View>

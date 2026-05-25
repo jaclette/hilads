@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
@@ -25,6 +26,7 @@ type Tab = 'incoming' | 'sent';
 
 export default function FriendRequestsScreen() {
   const router = useRouter();
+  const { t } = useTranslation('misc');
   const { account } = useApp();
   const [tab, setTab] = useState<Tab>('incoming');
   const { incoming, outgoing, loading, accept, decline, cancel } = useFriendRequests();
@@ -54,22 +56,22 @@ export default function FriendRequestsScreen() {
         <View style={styles.body}>
           <Text style={styles.name} numberOfLines={1}>{name}</Text>
           <Text style={styles.sub} numberOfLines={1}>
-            {tab === 'incoming' ? 'wants to be your friend' : 'request sent'}
+            {tab === 'incoming' ? t('friendReq.wantsToBeFriend') : t('friendReq.requestSent')}
           </Text>
         </View>
 
         {tab === 'incoming' ? (
           <View style={styles.actions}>
             <TouchableOpacity style={styles.btnDecline} onPress={() => decline(item.id)} activeOpacity={0.8}>
-              <Text style={styles.btnDeclineText}>Decline</Text>
+              <Text style={styles.btnDeclineText}>{t('friendReq.decline')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btnAccept} onPress={() => accept(item.id)} activeOpacity={0.85}>
-              <Text style={styles.btnAcceptText}>Accept</Text>
+              <Text style={styles.btnAcceptText}>{t('friendReq.accept')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <TouchableOpacity style={styles.btnCancel} onPress={() => cancel(item.id)} activeOpacity={0.8}>
-            <Text style={styles.btnCancelText}>Cancel</Text>
+            <Text style={styles.btnCancelText}>{t('friendReq.cancel')}</Text>
           </TouchableOpacity>
         )}
       </TouchableOpacity>
@@ -82,7 +84,7 @@ export default function FriendRequestsScreen() {
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
           <Feather name="chevron-left" size={22} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Friend requests</Text>
+        <Text style={styles.headerTitle}>{t('friendReq.title')}</Text>
         <View style={styles.backBtn} />
       </View>
 
@@ -93,7 +95,7 @@ export default function FriendRequestsScreen() {
           activeOpacity={0.85}
         >
           <Text style={[styles.tabText, tab === 'incoming' && styles.tabTextActive]}>
-            Incoming{incoming.length > 0 ? ` · ${incoming.length}` : ''}
+            {t('friendReq.incoming')}{incoming.length > 0 ? ` · ${incoming.length}` : ''}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -102,7 +104,7 @@ export default function FriendRequestsScreen() {
           activeOpacity={0.85}
         >
           <Text style={[styles.tabText, tab === 'sent' && styles.tabTextActive]}>
-            Sent{outgoing.length > 0 ? ` · ${outgoing.length}` : ''}
+            {t('friendReq.sent')}{outgoing.length > 0 ? ` · ${outgoing.length}` : ''}
           </Text>
         </TouchableOpacity>
       </View>
@@ -119,12 +121,12 @@ export default function FriendRequestsScreen() {
             color={Colors.muted2}
           />
           <Text style={styles.emptyTitle}>
-            {tab === 'incoming' ? 'No friend requests yet' : "You haven't sent any"}
+            {tab === 'incoming' ? t('friendReq.emptyIncomingTitle') : t('friendReq.emptySentTitle')}
           </Text>
           <Text style={styles.emptySub}>
             {tab === 'incoming'
-              ? "When someone asks to be your friend, you'll see it here."
-              : 'Pending friend requests you sent will show up here.'}
+              ? t('friendReq.emptyIncomingSub')
+              : t('friendReq.emptySentSub')}
           </Text>
         </View>
       ) : (
