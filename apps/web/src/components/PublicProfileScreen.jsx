@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
 
 const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
@@ -42,15 +43,6 @@ const VIBE_META = {
   chill:       { emoji: '🧘', label: 'Chill'        },
 }
 
-const VIBE_TAGLINES = {
-  party:       'Here for the night life',
-  board_games: 'Bring snacks and dice',
-  coffee:      'Coffee first, everything else later',
-  music:       'Always chasing a good beat',
-  food:        'Eats first, questions later',
-  chill:       'Low key, high vibes',
-}
-
 const EVENT_ICONS = {
   drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
   'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
@@ -62,6 +54,7 @@ function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout }) {
+  const { t } = useTranslation('publicProfile')
   const [user,       setUser]       = useState(null)
   const [events,     setEvents]     = useState([])
   const [hangouts,   setHangouts]   = useState([])
@@ -145,7 +138,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
         if (data.user?.vibeScore != null) setVibeScore(data.user.vibeScore)
         if (vc != null) setVibeCount(vc)
       })
-      .catch(() => setError('Could not load profile.'))
+      .catch(() => setError(t('loadError')))
 
     fetchUserEvents(userId)
       .then(data => setEvents(data.events ?? []))
@@ -283,7 +276,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
         setExistingReport(err.existing)
         setReportReason('')
       } else {
-        setReportError(err?.message ?? 'Could not send report. Try again.')
+        setReportError(err?.message ?? t('report.error'))
       }
     } finally {
       setReportBusy(false)
@@ -300,11 +293,11 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const hasPicks = !!(user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0)
 
   const tabs = [
-    { key: 'hangouts', label: 'Hangouts'    },
-    { key: 'events',  label: 'Events'       },
-    { key: 'friends', label: 'Friends'      },
-    { key: 'vibes',   label: 'Vibes'        },
-    ...(hasPicks ? [{ key: 'picks', label: 'City Picks 👑' }] : []),
+    { key: 'hangouts' },
+    { key: 'events'   },
+    { key: 'friends'  },
+    { key: 'vibes'    },
+    ...(hasPicks ? [{ key: 'picks' }] : []),
   ]
 
   return (
@@ -313,11 +306,11 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
       {/* ── Header ── */}
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">Profile</span>
+        <span className="page-title">{t('title')}</span>
       </div>
 
       {/* ── Loading / Error ── */}
-      {!user && !error && <p className="pub-profile-loading">Loading…</p>}
+      {!user && !error && <p className="pub-profile-loading">{t('loading')}</p>}
       {error && <p className="pub-profile-error-inline">{error}</p>}
 
       {user && (
@@ -351,7 +344,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               {(user.badges ?? []).map(k => (
                 <div key={k} className="pub-profile-badge-block">
                   <span className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
-                  {BADGE_MICROCOPY[k] && <span className="pub-profile-badge-micro">{BADGE_MICROCOPY[k]}</span>}
+                  {BADGE_MICROCOPY[k] && <span className="pub-profile-badge-micro">{t(`badgeMicro.${k}`)}</span>}
                 </div>
               ))}
               {cityName && (
@@ -372,18 +365,18 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 {vibe && (
                   <div className="pub-profile-identity-card">
                     <span className="pub-profile-identity-card-icon">{VIBE_META[vibe].emoji}</span>
-                    <span className="pub-profile-identity-card-title">{VIBE_META[vibe].label}</span>
-                    <span className="pub-profile-identity-card-sub">{VIBE_TAGLINES[vibe]}</span>
+                    <span className="pub-profile-identity-card-title">{t(`vibes.${vibe}`)}</span>
+                    <span className="pub-profile-identity-card-sub">{t(`vibeTaglines.${vibe}`)}</span>
                   </div>
                 )}
                 {mode && (
                   <div className="pub-profile-identity-card">
                     <span className="pub-profile-identity-card-icon">{MODE_META[mode].emoji}</span>
-                    <span className="pub-profile-identity-card-title">{MODE_META[mode].label}</span>
+                    <span className="pub-profile-identity-card-title">{t(`modes.${mode}`)}</span>
                     <span className="pub-profile-identity-card-sub">
                       {mode === 'local'
-                        ? `Local${user.homeCity ? ` in ${user.homeCity}` : cityName ? ` in ${cityName}` : ''}`
-                        : `Exploring${cityName ? ` ${cityName}` : ''}`}
+                        ? ((user.homeCity || cityName) ? t('modeSub.localIn', { city: user.homeCity || cityName }) : t('modeSub.local'))
+                        : (cityName ? t('modeSub.exploringIn', { city: cityName }) : t('modeSub.exploring'))}
                     </span>
                   </div>
                 )}
@@ -395,13 +388,13 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               <div className="pub-profile-info-rows">
                 {user.homeCity && (
                   <div className="pub-profile-info-row">
-                    <span className="pub-profile-info-label">From</span>
+                    <span className="pub-profile-info-label">{t('from')}</span>
                     <span className="pub-profile-info-value">{user.homeCity}</span>
                   </div>
                 )}
                 {user.age != null && (
                   <div className="pub-profile-info-row">
-                    <span className="pub-profile-info-label">Age</span>
+                    <span className="pub-profile-info-label">{t('age')}</span>
                     <span className="pub-profile-info-value">{user.age}</span>
                   </div>
                 )}
@@ -410,13 +403,13 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
             {/* Tab bar */}
             <div className="profile-tabs pub-profile-tabs-bar">
-              {tabs.map(t => (
+              {tabs.map(tab => (
                 <button
-                  key={t.key}
-                  className={`profile-tab-pill${activeTab === t.key ? ' profile-tab-pill--active' : ''}`}
-                  onClick={() => setActiveTab(t.key)}
+                  key={tab.key}
+                  className={`profile-tab-pill${activeTab === tab.key ? ' profile-tab-pill--active' : ''}`}
+                  onClick={() => setActiveTab(tab.key)}
                 >
-                  {t.label}
+                  {t(`tabs.${tab.key}`)}
                 </button>
               ))}
             </div>
@@ -428,7 +421,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             {activeTab === 'hangouts' && (
               <div className="pub-profile-events">
                 {hangouts.length === 0
-                  ? <p className="pub-profile-tab-empty">No hangouts yet</p>
+                  ? <p className="pub-profile-tab-empty">{t('empty.hangouts')}</p>
                   : hangouts.map(h => (
                       <div
                         key={h.id}
@@ -439,7 +432,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                         <span className="pub-profile-event-icon">{HANGOUT_ICONS[h.category] ?? '💬'}</span>
                         <div className="pub-profile-event-info">
                           <span className="pub-profile-event-title">{h.title}</span>
-                          {h.is_owner && <span className="profile-host-tag">Host</span>}
+                          {h.is_owner && <span className="profile-host-tag">{t('host')}</span>}
                         </div>
                       </div>
                     ))
@@ -450,7 +443,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             {activeTab === 'events' && (
               <div className="pub-profile-events">
                 {events.length === 0
-                  ? <p className="pub-profile-tab-empty">No events yet</p>
+                  ? <p className="pub-profile-tab-empty">{t('empty.events')}</p>
                   : events.map(ev => {
                       const isLive = ev.starts_at <= now && ev.expires_at > now
                       return (
@@ -458,7 +451,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                           <span className="pub-profile-event-icon">{eventIcon(ev.event_type)}</span>
                           <div className="pub-profile-event-info">
                             <span className="pub-profile-event-title">{ev.title}</span>
-                            {isLive && <span className="pub-profile-event-live">LIVE</span>}
+                            {isLive && <span className="pub-profile-event-live">{t('live')}</span>}
                           </div>
                         </div>
                       )
@@ -471,7 +464,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             {activeTab === 'friends' && (
               <div className="pub-profile-friends">
                 {friends.length === 0
-                  ? <p className="pub-profile-tab-empty">No friends yet</p>
+                  ? <p className="pub-profile-tab-empty">{t('empty.friends')}</p>
                   : friends.map(f => {
                       const [fc1, fc2] = avatarColors(f.displayName || '?')
                       return (
@@ -511,8 +504,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                         <span key={s} className={s <= Math.round(vibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}>★</span>
                       ))}
                     </div>
-                    <span className="pub-profile-vibe-avg">{vibeScore?.toFixed(1)} vibe score</span>
-                    <span className="pub-profile-vibe-count">based on {vibeCount} vibe{vibeCount !== 1 ? 's' : ''}</span>
+                    <span className="pub-profile-vibe-avg">{t('vibesTab.score', { score: vibeScore?.toFixed(1) })}</span>
+                    <span className="pub-profile-vibe-count">{t('vibesTab.basedOn', { count: vibeCount })}</span>
                   </div>
                 )}
 
@@ -520,7 +513,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                   <div className="pub-profile-vibe-cta">
                     {!showVibeForm ? (
                       <button className="pub-profile-vibe-btn" onClick={() => setShowVibeForm(true)}>
-                        {myVibe ? `✏️ Update your note (${myVibe.rating}★)` : '⭐ Leave a note'}
+                        {myVibe ? t('vibesTab.updateNote', { rating: myVibe.rating }) : t('vibesTab.leaveNote')}
                       </button>
                     ) : (
                       <div className="pub-profile-vibe-form">
@@ -531,16 +524,16 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                         </div>
                         <textarea
                           className="pub-profile-vibe-input"
-                          placeholder="Say something nice… (optional)"
+                          placeholder={t('vibesTab.placeholder')}
                           value={vibeMessage}
                           onChange={e => setVibeMessage(e.target.value)}
                           maxLength={300}
                           rows={2}
                         />
                         <div className="pub-profile-vibe-form-actions">
-                          <button className="pub-profile-vibe-cancel" onClick={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? '') }}>Cancel</button>
+                          <button className="pub-profile-vibe-cancel" onClick={() => { setShowVibeForm(false); setVibeRating(myVibe?.rating ?? 0); setVibeMessage(myVibe?.message ?? '') }}>{t('vibesTab.cancel')}</button>
                           <button className="pub-profile-vibe-submit" onClick={handleSubmitVibe} disabled={vibeBusy || vibeRating === 0}>
-                            {vibeBusy ? 'Sending…' : 'Send note ✨'}
+                            {vibeBusy ? t('vibesTab.sending') : t('vibesTab.sendNote')}
                           </button>
                         </div>
                       </div>
@@ -551,7 +544,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 <div className="pub-profile-vibes">
                   {vibes.length > 0 ? (
                     <>
-                      <p className="pub-profile-section-label">Notes · {vibeCount}</p>
+                      <p className="pub-profile-section-label">{t('vibesTab.notesLabel', { count: vibeCount })}</p>
                       {vibes.map(v => {
                         const [vc1, vc2] = avatarColors(v.authorName || '?')
                         return (
@@ -578,8 +571,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                     </>
                   ) : (
                     <div className="pub-profile-vibes-empty">
-                      <p>No notes yet</p>
-                      <p>Be the first to leave a note ✨</p>
+                      <p>{t('vibesTab.emptyTitle')}</p>
+                      <p>{t('vibesTab.emptySub')}</p>
                     </div>
                   )}
                 </div>
@@ -591,25 +584,25 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               <div className="pub-profile-picks">
                 {user.ambassadorPicks.restaurant && (
                   <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">FAVORITE RESTAURANT</span>
+                    <span className="pub-profile-pick-card-title">{t('picks.restaurant')}</span>
                     <span className="pub-profile-pick-card-content">{user.ambassadorPicks.restaurant}</span>
                   </div>
                 )}
                 {user.ambassadorPicks.spot && (
                   <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">HIDDEN GEM</span>
+                    <span className="pub-profile-pick-card-title">{t('picks.spot')}</span>
                     <span className="pub-profile-pick-card-content">{user.ambassadorPicks.spot}</span>
                   </div>
                 )}
                 {user.ambassadorPicks.tip && (
                   <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">LOCAL TIP</span>
+                    <span className="pub-profile-pick-card-title">{t('picks.tip')}</span>
                     <span className="pub-profile-pick-card-content">{user.ambassadorPicks.tip}</span>
                   </div>
                 )}
                 {user.ambassadorPicks.story && (
                   <div className="pub-profile-pick-card">
-                    <span className="pub-profile-pick-card-title">STORY</span>
+                    <span className="pub-profile-pick-card-title">{t('picks.story')}</span>
                     <span className="pub-profile-pick-card-content">{user.ambassadorPicks.story}</span>
                   </div>
                 )}
@@ -625,7 +618,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
         <div className="pub-profile-sticky-bar">
           {onSendDm && (
             <button className="pub-profile-dm-btn" onClick={handleSendDm} disabled={dmBusy}>
-              {dmBusy ? 'Opening…' : '💬 Message'}
+              {dmBusy ? t('actions.opening') : t('actions.message')}
             </button>
           )}
           {account && !confirmUnfriend && !confirmCancelReq && (
@@ -635,36 +628,36 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               disabled={friendBusy}
             >
               {friendBusy ? '…' :
-               friendState === 'friend'      ? '✓ Friend'        :
-               friendState === 'pending_out' ? '⌛ Request sent' :
-               friendState === 'pending_in'  ? '✓ Accept request':
-                                                '+ Friend'}
+               friendState === 'friend'      ? t('actions.friend')        :
+               friendState === 'pending_out' ? t('actions.requestSent')   :
+               friendState === 'pending_in'  ? t('actions.acceptRequest') :
+                                                t('actions.addFriend')}
             </button>
           )}
           {account && confirmUnfriend && (
             <div className="pub-profile-unfriend-confirm">
               <button className="pub-profile-unfriend-btn" onClick={handleFriendToggle} disabled={friendBusy}>
-                {friendBusy ? 'Removing…' : 'Unfriend'}
+                {friendBusy ? t('actions.removing') : t('actions.unfriend')}
               </button>
               <button className="pub-profile-unfriend-cancel" onClick={() => setConfirmUnfriend(false)} disabled={friendBusy}>
-                Cancel
+                {t('actions.cancel')}
               </button>
             </div>
           )}
           {account && confirmCancelReq && (
             <div className="pub-profile-unfriend-confirm">
               <button className="pub-profile-unfriend-btn" onClick={handleFriendToggle} disabled={friendBusy}>
-                {friendBusy ? 'Cancelling…' : 'Cancel request'}
+                {friendBusy ? t('actions.cancelling') : t('actions.cancelRequest')}
               </button>
               <button className="pub-profile-unfriend-cancel" onClick={() => setConfirmCancelReq(false)} disabled={friendBusy}>
-                Keep
+                {t('actions.keep')}
               </button>
             </div>
           )}
           <button
             className="pub-profile-report-btn"
             onClick={() => { setShowReportForm(f => !f); setReportSent(false); setReportError(null) }}
-            title="Report user"
+            title={t('actions.reportTitle')}
           >
             🚩
           </button>
@@ -676,15 +669,15 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
         <div className="pub-profile-report-form-wrap">
           {existingReport ? (
             <p className="pub-profile-report-sent">
-              You reported this user on {new Date(existingReport.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}. Your report is being reviewed.
+              {t('report.existing', { date: new Date(existingReport.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) })}
             </p>
           ) : reportSent ? (
-            <p className="pub-profile-report-sent">Report sent. Thanks for letting us know.</p>
+            <p className="pub-profile-report-sent">{t('report.sent')}</p>
           ) : (
             <form className="pub-profile-report-form" onSubmit={handleSubmitReport}>
               <textarea
                 className="pub-profile-report-textarea"
-                placeholder="Describe the issue (min 10 characters)…"
+                placeholder={t('report.placeholder')}
                 value={reportReason}
                 onChange={e => setReportReason(e.target.value)}
                 maxLength={500}
@@ -694,10 +687,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               {reportError && <p className="pub-profile-report-error">{reportError}</p>}
               <div className="pub-profile-report-actions">
                 <button type="submit" className="pub-profile-report-submit" disabled={reportReason.trim().length < 10 || reportBusy}>
-                  {reportBusy ? 'Sending…' : 'Send report'}
+                  {reportBusy ? t('report.sending') : t('report.submit')}
                 </button>
                 <button type="button" className="pub-profile-report-cancel" onClick={() => setShowReportForm(false)} disabled={reportBusy}>
-                  Cancel
+                  {t('report.cancel')}
                 </button>
               </div>
             </form>

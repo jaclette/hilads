@@ -1,0 +1,83 @@
+{
+  "title": "Profile",
+  "loading": "Loading…",
+  "loadError": "Could not load profile.",
+  "badgeMicro": {
+    "ghost": "Just browsing 👀",
+    "fresh": "Just landed 👶",
+    "regular": "Shows up often",
+    "host": "Makes it happen 🔥"
+  },
+  "modes": { "local": "Local", "exploring": "Exploring" },
+  "vibes": {
+    "party": "Party", "board_games": "Board Games", "coffee": "Coffee",
+    "music": "Music", "food": "Food", "chill": "Chill"
+  },
+  "vibeTaglines": {
+    "party": "Here for the night life",
+    "board_games": "Bring snacks and dice",
+    "coffee": "Coffee first, everything else later",
+    "music": "Always chasing a good beat",
+    "food": "Eats first, questions later",
+    "chill": "Low key, high vibes"
+  },
+  "modeSub": {
+    "localIn": "Local in {{city}}",
+    "local": "Local",
+    "exploringIn": "Exploring {{city}}",
+    "exploring": "Exploring"
+  },
+  "from": "From",
+  "age": "Age",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Friends",
+    "vibes": "Vibes", "picks": "City Picks 👑"
+  },
+  "host": "Host",
+  "live": "LIVE",
+  "empty": { "hangouts": "No hangouts yet", "events": "No events yet", "friends": "No friends yet" },
+  "vibesTab": {
+    "score": "{{score}} vibe score",
+    "basedOn_one": "based on {{count}} vibe",
+    "basedOn_other": "based on {{count}} vibes",
+    "updateNote": "✏️ Update your note ({{rating}}★)",
+    "leaveNote": "⭐ Leave a note",
+    "placeholder": "Say something nice… (optional)",
+    "cancel": "Cancel",
+    "sending": "Sending…",
+    "sendNote": "Send note ✨",
+    "notesLabel": "Notes · {{count}}",
+    "emptyTitle": "No notes yet",
+    "emptySub": "Be the first to leave a note ✨"
+  },
+  "picks": {
+    "restaurant": "FAVORITE RESTAURANT",
+    "spot": "HIDDEN GEM",
+    "tip": "LOCAL TIP",
+    "story": "STORY"
+  },
+  "actions": {
+    "opening": "Opening…",
+    "message": "💬 Message",
+    "friend": "✓ Friend",
+    "requestSent": "⌛ Request sent",
+    "acceptRequest": "✓ Accept request",
+    "addFriend": "+ Friend",
+    "removing": "Removing…",
+    "unfriend": "Unfriend",
+    "cancel": "Cancel",
+    "cancelling": "Cancelling…",
+    "cancelRequest": "Cancel request",
+    "keep": "Keep",
+    "reportTitle": "Report user"
+  },
+  "report": {
+    "existing": "You reported this user on {{date}}. Your report is being reviewed.",
+    "sent": "Report sent. Thanks for letting us know.",
+    "placeholder": "Describe the issue (min 10 characters)…",
+    "error": "Could not send report. Try again.",
+    "sending": "Sending…",
+    "submit": "Send report",
+    "cancel": "Cancel"
+  }
+}

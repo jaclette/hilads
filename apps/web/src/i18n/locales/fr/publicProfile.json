@@ -1,0 +1,83 @@
+{
+  "title": "Profil",
+  "loading": "Chargement…",
+  "loadError": "Impossible de charger le profil.",
+  "badgeMicro": {
+    "ghost": "Juste de passage 👀",
+    "fresh": "Vient d'arriver 👶",
+    "regular": "Souvent dans le coin",
+    "host": "Fait bouger les choses 🔥"
+  },
+  "modes": { "local": "Local", "exploring": "Exploration" },
+  "vibes": {
+    "party": "Fête", "board_games": "Jeux de société", "coffee": "Café",
+    "music": "Musique", "food": "Cuisine", "chill": "Détente"
+  },
+  "vibeTaglines": {
+    "party": "Là pour la vie nocturne",
+    "board_games": "Apporte snacks et dés",
+    "coffee": "Café d'abord, le reste après",
+    "music": "Toujours en quête d'un bon son",
+    "food": "On mange d'abord, on parle après",
+    "chill": "Tranquille, bonne ambiance"
+  },
+  "modeSub": {
+    "localIn": "Local à {{city}}",
+    "local": "Local",
+    "exploringIn": "En exploration à {{city}}",
+    "exploring": "En exploration"
+  },
+  "from": "De",
+  "age": "Âge",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Amis",
+    "vibes": "Vibes", "picks": "Coups de cœur 👑"
+  },
+  "host": "Hôte",
+  "live": "EN DIRECT",
+  "empty": { "hangouts": "Pas encore de hangout", "events": "Pas encore d'événement", "friends": "Pas encore d'amis" },
+  "vibesTab": {
+    "score": "score vibe de {{score}}",
+    "basedOn_one": "basé sur {{count}} vibe",
+    "basedOn_other": "basé sur {{count}} vibes",
+    "updateNote": "✏️ Modifier ta note ({{rating}}★)",
+    "leaveNote": "⭐ Laisser une note",
+    "placeholder": "Dis quelque chose de gentil… (facultatif)",
+    "cancel": "Annuler",
+    "sending": "Envoi…",
+    "sendNote": "Envoyer la note ✨",
+    "notesLabel": "Notes · {{count}}",
+    "emptyTitle": "Pas encore de notes",
+    "emptySub": "Sois le premier à laisser une note ✨"
+  },
+  "picks": {
+    "restaurant": "RESTAURANT PRÉFÉRÉ",
+    "spot": "PÉPITE CACHÉE",
+    "tip": "CONSEIL LOCAL",
+    "story": "HISTOIRE"
+  },
+  "actions": {
+    "opening": "Ouverture…",
+    "message": "💬 Message",
+    "friend": "✓ Ami",
+    "requestSent": "⌛ Demande envoyée",
+    "acceptRequest": "✓ Accepter la demande",
+    "addFriend": "+ Ami",
+    "removing": "Suppression…",
+    "unfriend": "Retirer",
+    "cancel": "Annuler",
+    "cancelling": "Annulation…",
+    "cancelRequest": "Annuler la demande",
+    "keep": "Garder",
+    "reportTitle": "Signaler l'utilisateur"
+  },
+  "report": {
+    "existing": "Tu as signalé cet utilisateur le {{date}}. Ton signalement est en cours d'examen.",
+    "sent": "Signalement envoyé. Merci de nous avoir prévenus.",
+    "placeholder": "Décris le problème (10 caractères min.)…",
+    "error": "Impossible d'envoyer le signalement. Réessaie.",
+    "sending": "Envoi…",
+    "submit": "Envoyer le signalement",
+    "cancel": "Annuler"
+  }
+}

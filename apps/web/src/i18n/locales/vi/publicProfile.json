@@ -1,0 +1,82 @@
+{
+  "title": "Hồ sơ",
+  "loading": "Đang tải…",
+  "loadError": "Không thể tải hồ sơ.",
+  "badgeMicro": {
+    "ghost": "Chỉ ghé xem 👀",
+    "fresh": "Vừa mới đến 👶",
+    "regular": "Thường xuyên xuất hiện",
+    "host": "Người tạo nên mọi thứ 🔥"
+  },
+  "modes": { "local": "Người địa phương", "exploring": "Đang khám phá" },
+  "vibes": {
+    "party": "Tiệc tùng", "board_games": "Board game", "coffee": "Cà phê",
+    "music": "Âm nhạc", "food": "Ẩm thực", "chill": "Thư giãn"
+  },
+  "vibeTaglines": {
+    "party": "Ở đây vì cuộc sống về đêm",
+    "board_games": "Mang snack và xúc xắc đến",
+    "coffee": "Cà phê trước, mọi thứ tính sau",
+    "music": "Luôn tìm kiếm một giai điệu hay",
+    "food": "Ăn trước, hỏi sau",
+    "chill": "Nhẹ nhàng, vibe tốt"
+  },
+  "modeSub": {
+    "localIn": "Người địa phương ở {{city}}",
+    "local": "Người địa phương",
+    "exploringIn": "Đang khám phá {{city}}",
+    "exploring": "Đang khám phá"
+  },
+  "from": "Đến từ",
+  "age": "Tuổi",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Bạn bè",
+    "vibes": "Vibes", "picks": "Gợi ý 👑"
+  },
+  "host": "Chủ",
+  "live": "TRỰC TIẾP",
+  "empty": { "hangouts": "Chưa có hangout", "events": "Chưa có sự kiện", "friends": "Chưa có bạn bè" },
+  "vibesTab": {
+    "score": "điểm vibe {{score}}",
+    "basedOn_other": "dựa trên {{count}} vibe",
+    "updateNote": "✏️ Cập nhật ghi chú của bạn ({{rating}}★)",
+    "leaveNote": "⭐ Để lại ghi chú",
+    "placeholder": "Nói điều gì đó tử tế… (tùy chọn)",
+    "cancel": "Hủy",
+    "sending": "Đang gửi…",
+    "sendNote": "Gửi ghi chú ✨",
+    "notesLabel": "Ghi chú · {{count}}",
+    "emptyTitle": "Chưa có ghi chú",
+    "emptySub": "Hãy là người đầu tiên để lại ghi chú ✨"
+  },
+  "picks": {
+    "restaurant": "NHÀ HÀNG YÊU THÍCH",
+    "spot": "ĐỊA ĐIỂM ẨN",
+    "tip": "MẸO ĐỊA PHƯƠNG",
+    "story": "CÂU CHUYỆN"
+  },
+  "actions": {
+    "opening": "Đang mở…",
+    "message": "💬 Nhắn tin",
+    "friend": "✓ Bạn bè",
+    "requestSent": "⌛ Đã gửi lời mời",
+    "acceptRequest": "✓ Chấp nhận lời mời",
+    "addFriend": "+ Kết bạn",
+    "removing": "Đang xóa…",
+    "unfriend": "Hủy kết bạn",
+    "cancel": "Hủy",
+    "cancelling": "Đang hủy…",
+    "cancelRequest": "Hủy lời mời",
+    "keep": "Giữ",
+    "reportTitle": "Báo cáo người dùng"
+  },
+  "report": {
+    "existing": "Bạn đã báo cáo người dùng này vào {{date}}. Báo cáo của bạn đang được xem xét.",
+    "sent": "Đã gửi báo cáo. Cảm ơn bạn đã cho chúng tôi biết.",
+    "placeholder": "Mô tả vấn đề (tối thiểu 10 ký tự)…",
+    "error": "Không thể gửi báo cáo. Thử lại.",
+    "sending": "Đang gửi…",
+    "submit": "Gửi báo cáo",
+    "cancel": "Hủy"
+  }
+}
