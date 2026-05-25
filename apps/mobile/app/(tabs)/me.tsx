@@ -39,6 +39,7 @@ import type { HiladsEvent, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { LanguageRow } from '@/features/settings/LanguageRow';
 
 // ── Constants — must match backend allowed lists ──────────────────────────────
 
@@ -565,6 +566,8 @@ export default function MeScreen() {
                 <Text style={styles.upgradeSecondaryText}>Sign in</Text>
               </TouchableOpacity>
             </View>
+
+            <LanguageRow card />
           </>
         )}
 
@@ -952,6 +955,7 @@ export default function MeScreen() {
               <Text style={styles.settingsRowLabel}>Blocked users</Text>
               <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
             </TouchableOpacity>
+            <LanguageRow />
           </View>
         )}
 

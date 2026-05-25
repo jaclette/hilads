@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { authLogin } from '@/api/auth';
 import { joinChannel } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
@@ -16,6 +17,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { t } = useTranslation('auth');
   const {
     setAccount, setJoined, setCity, setIdentity,
     identity, sessionId,
@@ -31,7 +33,7 @@ export default function SignInScreen() {
   async function handleSignIn() {
     const e = email.trim().toLowerCase();
     const p = password;
-    if (!e || !p) { setError('Email and password required'); return; }
+    if (!e || !p) { setError(t('signIn.errRequired')); return; }
     setLoading(true);
     setError(null);
     try {
@@ -71,8 +73,8 @@ export default function SignInScreen() {
         router.back();
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Sign in failed';
-      setError(msg === 'HTTP 401' || msg.includes('401') ? 'Invalid email or password' : msg);
+      const msg = err instanceof Error ? err.message : t('signIn.errFailed');
+      setError(msg === 'HTTP 401' || msg.includes('401') ? t('signIn.errInvalid') : msg);
     } finally {
       setLoading(false);
     }
@@ -93,18 +95,18 @@ export default function SignInScreen() {
           </View>
 
           <View style={styles.body}>
-            <Text style={styles.title}>Welcome back</Text>
-            <Text style={styles.subtitle}>Sign in to your Hilads account</Text>
+            <Text style={styles.title}>{t('signIn.title')}</Text>
+            <Text style={styles.subtitle}>{t('signIn.subtitle')}</Text>
 
             {error && <Text style={styles.error}>{error}</Text>}
 
             <View style={styles.field}>
-              <Text style={styles.label}>Email</Text>
+              <Text style={styles.label}>{t('signIn.email')}</Text>
               <TextInput
                 style={styles.input}
                 value={email}
                 onChangeText={setEmail}
-                placeholder="you@example.com"
+                placeholder={t('signIn.emailPlaceholder')}
                 placeholderTextColor={Colors.muted2}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -115,7 +117,7 @@ export default function SignInScreen() {
             </View>
 
             <View style={styles.field}>
-              <Text style={styles.label}>Password</Text>
+              <Text style={styles.label}>{t('signIn.password')}</Text>
               <TextInput
                 style={styles.input}
                 value={password}
@@ -138,17 +140,17 @@ export default function SignInScreen() {
             >
               {loading
                 ? <ActivityIndicator color={Colors.white} />
-                : <Text style={styles.submitText}>Sign in</Text>
+                : <Text style={styles.submitText}>{t('signIn.submit')}</Text>
               }
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.push('/forgot-password')} activeOpacity={0.7}>
-              <Text style={styles.forgotText}>Forgot password?</Text>
+              <Text style={styles.forgotText}>{t('signIn.forgot')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={() => router.replace('/sign-up')} activeOpacity={0.7}>
               <Text style={styles.switchText}>
-                No account? <Text style={styles.switchLink}>Create one →</Text>
+                {t('signIn.noAccount')} <Text style={styles.switchLink}>{t('signIn.createOne')}</Text>
               </Text>
             </TouchableOpacity>
           </View>

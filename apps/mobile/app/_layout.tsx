@@ -1,4 +1,5 @@
 import '@/polyfills'; // must be first — polyfills WeakRef for Hermes + old arch
+import '@/i18n';       // init i18next (sync, device-locale default) before any render
 import * as Sentry from '@sentry/react-native';
 import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';

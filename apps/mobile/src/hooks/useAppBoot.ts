@@ -11,6 +11,7 @@ import { fetchMyBlocks } from '@/api/blocks';
 import { blockedSetFromApiRows } from '@/lib/blockFilter';
 import { loadSavedToken } from '@/services/session';
 import { getAuthToken } from '@/api/client';
+import { applyStoredLocale } from '@/i18n';
 import { getColdStartNotificationRoute } from '@/features/notifications/NotificationHandler';
 
 // ── Timeouts ──────────────────────────────────────────────────────────────────
@@ -311,6 +312,9 @@ export function useAppBoot(): Result {
         const [identity, cachedDetectedCity] = await Promise.all([
           loadOrCreateIdentity(),
           loadDetectedCity(),
+          // Apply a manually-saved UI language (overrides device default) before
+          // the Stack mounts, so the first translated screen renders correctly.
+          applyStoredLocale(),
         ]);
         const sessionId = generateSessionId();
         if (cancelled) return;
