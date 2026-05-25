@@ -20,6 +20,7 @@ import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import OnboardingCarousel from './components/OnboardingCarousel'
+import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
@@ -3558,7 +3559,7 @@ export default function App() {
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
                       </svg>
-                      {weatherLabel}
+                      <Marquee text={weatherLabel} className="header-weather-marquee" fadeColor="#1a1a1a" />
                     </button>
                   )}
                   <button

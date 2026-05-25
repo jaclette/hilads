@@ -901,6 +901,67 @@ html, body, #root {
   .chip-live-dot { animation: none; }
 }
 
+/* ── Marquee (overflowing single-line text) ─────────────────────────────────
+   Web port of native MarqueeText: scrolls a seamless one-way loop only when
+   the text overflows its clip window; static + ellipsis otherwise. */
+.marquee {
+  position: relative;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+}
+.header-weather-marquee { flex: 1 1 auto; min-width: 0; }
+
+.marquee-measure {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+.marquee-static {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+}
+.marquee-track--animate {
+  animation: marquee-scroll var(--marquee-duration) linear var(--marquee-delay) infinite;
+  will-change: transform;
+}
+.marquee-text { white-space: nowrap; flex-shrink: 0; }
+.marquee-gap  { flex-shrink: 0; }
+
+.marquee-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--marquee-fade-w, 14px);
+  pointer-events: none;
+  z-index: 1;
+}
+.marquee-fade--left  { left: 0;  background: linear-gradient(to right, var(--marquee-fade, #1a1a1a), transparent); }
+.marquee-fade--right { right: 0; background: linear-gradient(to left,  var(--marquee-fade, #1a1a1a), transparent); }
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-1 * var(--marquee-distance))); }
+}
+
+/* Belt-and-suspenders: the component already renders static under reduced
+   motion, but kill the animation at the CSS layer too. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track--animate { animation: none; }
+}
+
 /* Hide new mobile header on desktop */
 @media (min-width: 768px) {
   .header-new { display: none; }
