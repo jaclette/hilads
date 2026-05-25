@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
@@ -25,13 +26,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 // ── Empty state ───────────────────────────────────────────────────────────────
 
 function EmptyState({ city }: { city?: string }) {
+  const { t } = useTranslation('now');
   return (
     <View style={styles.empty}>
       <Text style={styles.emptyEmoji}>✨</Text>
-      <Text style={styles.emptyTitle}>Nothing happening yet</Text>
+      <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
       <Text style={styles.emptySub}>
-        {city ? `Be the first in ${city}` : 'Start something now'}
-        {'\n'}Create an event or start a hangout.
+        {city ? t('emptyBeFirst', { city }) : t('emptyStartNow')}
+        {'\n'}{t('emptyCreateLine')}
       </Text>
     </View>
   );
@@ -45,14 +47,15 @@ function FilterEmptyState({
   userMode?:     string | null;
   onStartPulse?: () => void;
 }) {
+  const { t } = useTranslation('now');
   if (filter === 'all') return <EmptyState city={city} />;
   if (filter === 'events' && userMode === 'local') {
     return (
       <View style={styles.empty}>
         <Text style={styles.emptyEmoji}>🌍</Text>
-        <Text style={styles.emptyTitle}>Host your spot</Text>
+        <Text style={styles.emptyTitle}>{t('hostSpotTitle')}</Text>
         <Text style={styles.emptySub}>
-          {city ? `Make ${city} feel alive.` : 'Make your city feel alive.'}{'\n'}Start a recurring event at your favorite place.
+          {city ? t('hostSpotCity', { city }) : t('hostSpotNoCity')}{'\n'}{t('hostSpotLine')}
         </Text>
       </View>
     );
@@ -61,12 +64,12 @@ function FilterEmptyState({
     <View style={styles.empty}>
       <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '🗣️'}</Text>
       <Text style={styles.emptyTitle}>
-        {filter === 'events' ? 'No events right now' : 'No hangouts yet'}
+        {filter === 'events' ? t('noEvents') : t('noHangouts')}
       </Text>
       <Text style={styles.emptySub}>
         {filter === 'events'
-          ? `Be the first to create one${city ? ` in ${city}` : ''}`
-          : 'Start a hangout and get the city talking'}
+          ? (city ? t('beFirstEventCity', { city }) : t('beFirstEvent'))
+          : t('hangoutTalk')}
       </Text>
 
       {/* Pulse-filter-only CTA — mirrors web's centered blue "Start a pulse ⚡"
@@ -77,7 +80,7 @@ function FilterEmptyState({
           onPress={onStartPulse}
           activeOpacity={0.8}
         >
-          <Text style={styles.emptyPulseBtnText}>Start a hangout ⚡</Text>
+          <Text style={styles.emptyPulseBtnText}>{t('startHangout')}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -104,6 +107,7 @@ function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
 export default function NowScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation('now');
   const { city, identity, account, booting, blockedSet } = useApp();
   const userMode = account?.mode ?? identity?.mode ?? null;
 
@@ -131,7 +135,7 @@ export default function NowScreen() {
     setMembersLoading(true);
     setMembersList([]);
     setMembersCount(total);
-    setMembersNoun(kind === 'topic' ? 'in this hangout' : 'going');
+    setMembersNoun(kind === 'topic' ? t('inThisHangout') : t('going'));
     try {
       const data = kind === 'topic'
         ? await fetchHangoutParticipants(itemId)
@@ -143,7 +147,7 @@ export default function NowScreen() {
     } finally {
       setMembersLoading(false);
     }
-  }, []);
+  }, [t]);
 
   const readUserLocation = useCallback(async () => {
     try {
@@ -241,7 +245,7 @@ export default function NowScreen() {
       setPublicEvents(pubData);
     } catch (err) {
       console.warn('[NowScreen] fetch error:', err);
-      setError('Could not load feed');
+      setError(t('loadError'));
     } finally {
       loadingRef.current = false;
       setLoading(false);
@@ -461,10 +465,10 @@ export default function NowScreen() {
         </View>
         <View style={styles.empty}>
           <Text style={styles.emptyEmoji}>🌍</Text>
-          <Text style={styles.emptyTitle}>No city selected</Text>
-          <Text style={styles.emptySub}>Pick a city to see what's happening.</Text>
+          <Text style={styles.emptyTitle}>{t('noCityTitle')}</Text>
+          <Text style={styles.emptySub}>{t('noCitySub')}</Text>
           <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/switch-city' as never)} activeOpacity={0.85}>
-            <Text style={styles.emptyBtnText}>Browse cities</Text>
+            <Text style={styles.emptyBtnText}>{t('browseCities')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -496,7 +500,7 @@ export default function NowScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
+              {f === 'all' ? t('filterAll') : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -510,7 +514,7 @@ export default function NowScreen() {
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => load()} activeOpacity={0.8}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('retry', { ns: 'common' })}</Text>
           </TouchableOpacity>
         </View>
       ) : listData.length === 0 ? (
@@ -586,14 +590,14 @@ export default function NowScreen() {
               onPress={handleSeeUpcoming}
             >
               <Text style={styles.upcomingCtaEmoji}>🔮</Text>
-              <Text style={styles.upcomingCtaText} numberOfLines={1}>See what's coming</Text>
+              <Text style={styles.upcomingCtaText} numberOfLines={1}>{t('seeComing')}</Text>
               <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.createFab}
               activeOpacity={0.85}
               onPress={() => setShowCreateSheet(true)}
-              accessibilityLabel="Create new"
+              accessibilityLabel={t('createNew')}
               accessibilityRole="button"
             >
               <LinearGradient
@@ -612,7 +616,7 @@ export default function NowScreen() {
             onPress={handleSeePast}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Text style={styles.pastLinkText}>see what happened →</Text>
+            <Text style={styles.pastLinkText}>{t('seeHappened')}</Text>
           </TouchableOpacity>
         </View>
       )}
