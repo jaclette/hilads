@@ -1,0 +1,51 @@
+{
+  "title": { "edit": "Edit event", "host": "Host an event", "create": "Create event" },
+  "delete": {
+    "confirmTitle": "Delete this event?",
+    "confirmBody": "This will remove the event and all messages. This can't be undone.",
+    "cancel": "Cancel",
+    "deleting": "Deleting…",
+    "confirm": "Delete",
+    "button": "🗑 Delete event"
+  },
+  "quickStart": "Quick start",
+  "presets": {
+    "dailySpot": "Daily spot", "dailySpotDesc": "Every day",
+    "everyEvening": "Every evening", "everyEveningDesc": "Daily · 8pm",
+    "weekends": "Weekends", "weekendsDesc": "Sat & Sun"
+  },
+  "category": "Category",
+  "categories": {
+    "drinks": "Drinks", "party": "Party", "music": "Music", "food": "Food",
+    "coffee": "Coffee", "sport": "Sport", "meetup": "Meetup", "other": "Other"
+  },
+  "titleLabel": "Title",
+  "titlePlaceholder": "e.g. Jazz night at Rooftop Bar",
+  "date": "Date",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "todayHint": "Hosting today gets you the most visibility 🔥",
+  "starts": "Starts",
+  "ends": "Ends",
+  "repeat": "Repeat",
+  "recurrence": { "once": "Once", "daily": "Daily", "weekly": "Weekly", "everyNDays": "Every N days" },
+  "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "intervalEvery": "Every",
+  "intervalDays": "days",
+  "location": "Location",
+  "locating": "Getting your location…",
+  "locationPlaceholder": "Optional · tap to set on map",
+  "clearLocation": "Clear location",
+  "errors": {
+    "endAfterStart": "End time must be at least 15 minutes after start time",
+    "pickDay": "Pick at least one day of the week",
+    "deleteFailed": "Could not delete event. Try again.",
+    "locUnavailable": "Location is not available in this browser. You can still create the event without it.",
+    "locFailed": "Couldn't get your location. Enable location access, or skip the map."
+  },
+  "submit": {
+    "saving": "Saving…", "creating": "Creating…",
+    "saveChanges": "Save changes", "openSpot": "Open your spot",
+    "startEvent": "Start an event", "create": "Create event"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "title": { "edit": "Sửa sự kiện", "host": "Tổ chức sự kiện", "create": "Tạo sự kiện" },
+  "delete": {
+    "confirmTitle": "Xóa sự kiện này?",
+    "confirmBody": "Thao tác này sẽ xóa sự kiện và tất cả tin nhắn. Không thể hoàn tác.",
+    "cancel": "Hủy",
+    "deleting": "Đang xóa…",
+    "confirm": "Xóa",
+    "button": "🗑 Xóa sự kiện"
+  },
+  "quickStart": "Bắt đầu nhanh",
+  "presets": {
+    "dailySpot": "Spot hằng ngày", "dailySpotDesc": "Mỗi ngày",
+    "everyEvening": "Mỗi tối", "everyEveningDesc": "Hằng ngày · 20h",
+    "weekends": "Cuối tuần", "weekendsDesc": "Thứ 7 & CN"
+  },
+  "category": "Danh mục",
+  "categories": {
+    "drinks": "Đồ uống", "party": "Tiệc tùng", "music": "Âm nhạc", "food": "Ẩm thực",
+    "coffee": "Cà phê", "sport": "Thể thao", "meetup": "Gặp gỡ", "other": "Khác"
+  },
+  "titleLabel": "Tiêu đề",
+  "titlePlaceholder": "vd. Đêm jazz tại Rooftop Bar",
+  "date": "Ngày",
+  "today": "Hôm nay",
+  "tomorrow": "Ngày mai",
+  "todayHint": "Tổ chức hôm nay giúp bạn được chú ý nhất 🔥",
+  "starts": "Bắt đầu",
+  "ends": "Kết thúc",
+  "repeat": "Lặp lại",
+  "recurrence": { "once": "Một lần", "daily": "Hằng ngày", "weekly": "Hằng tuần", "everyNDays": "Mỗi N ngày" },
+  "weekdays": ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+  "intervalEvery": "Mỗi",
+  "intervalDays": "ngày",
+  "location": "Địa điểm",
+  "locating": "Đang lấy vị trí của bạn…",
+  "locationPlaceholder": "Tùy chọn · chạm để đặt trên bản đồ",
+  "clearLocation": "Xóa địa điểm",
+  "errors": {
+    "endAfterStart": "Giờ kết thúc phải sau giờ bắt đầu ít nhất 15 phút",
+    "pickDay": "Chọn ít nhất một ngày trong tuần",
+    "deleteFailed": "Không thể xóa sự kiện. Thử lại.",
+    "locUnavailable": "Trình duyệt này không hỗ trợ định vị. Bạn vẫn có thể tạo sự kiện mà không cần nó.",
+    "locFailed": "Không lấy được vị trí của bạn. Bật quyền vị trí, hoặc bỏ qua bản đồ."
+  },
+  "submit": {
+    "saving": "Đang lưu…", "creating": "Đang tạo…",
+    "saveChanges": "Lưu thay đổi", "openSpot": "Mở spot của bạn",
+    "startEvent": "Bắt đầu sự kiện", "create": "Tạo sự kiện"
+  }
+}

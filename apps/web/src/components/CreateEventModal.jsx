@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createEvent, createEventSeries, updateEvent, deleteEvent, EventLimitReachedError } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 import BackButton from './BackButton'
@@ -187,15 +188,24 @@ const CATEGORY_ICONS = {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-
+// Labels resolved via i18n at render; `tk` is the translation key in the
+// `event` namespace (presets.<tk> + presets.<tk>Desc).
 const QUICK_PRESETS = [
-  { key: 'daily_spot',    emoji: '☀️', label: 'Daily spot',    desc: 'Every day',    recurrence: 'daily',  startTime: '18:00', endTime: '21:00', weekdays: null },
-  { key: 'every_evening', emoji: '🌙', label: 'Every evening', desc: 'Daily · 8pm',  recurrence: 'daily',  startTime: '20:00', endTime: '23:00', weekdays: null },
-  { key: 'weekends',      emoji: '🎉', label: 'Weekends',      desc: 'Sat & Sun',    recurrence: 'weekly', startTime: null,    endTime: null,    weekdays: [0, 6] },
+  { key: 'daily_spot',    tk: 'dailySpot',    emoji: '☀️', recurrence: 'daily',  startTime: '18:00', endTime: '21:00', weekdays: null },
+  { key: 'every_evening', tk: 'everyEvening', emoji: '🌙', recurrence: 'daily',  startTime: '20:00', endTime: '23:00', weekdays: null },
+  { key: 'weekends',      tk: 'weekends',     emoji: '🎉', recurrence: 'weekly', startTime: null,    endTime: null,    weekdays: [0, 6] },
+]
+
+// Recurrence options — value drives logic, tk is the i18n key.
+const RECURRENCE_OPTS = [
+  { value: 'once',         tk: 'once' },
+  { value: 'daily',        tk: 'daily' },
+  { value: 'weekly',       tk: 'weekly' },
+  { value: 'every_n_days', tk: 'everyNDays' },
 ]
 
 export default function CreateEventPage({ channelId, guest, nickname, cityTimezone, account, onCreated, onBack, onDeleted, onLimitReached, editEvent }) {
+  const { t } = useTranslation('event')
   const tz = cityTimezone || 'UTC'
   const isEdit = !!editEvent
   const [type, setType] = useState(() => editEvent?.type || 'other')
@@ -267,7 +277,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   async function handleOpenLocation() {
     if (locationCoords) { setPickerCenter(locationCoords); return }
     if (!navigator.geolocation) {
-      setError('Location is not available in this browser. You can still create the event without it.')
+      setError(t('errors.locUnavailable'))
       return
     }
     setLocating(true)
@@ -278,7 +288,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
       )
       setPickerCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
     } catch {
-      setError("Couldn't get your location. Enable location access, or skip the map.")
+      setError(t('errors.locFailed'))
     } finally {
       setLocating(false)
     }
@@ -307,7 +317,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
       let endsAtUnix   = cityTimeToUnix(tz, endTime,   selectedDate)
       if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
       if (endsAtUnix - startsAtUnix < 15 * 60) {
-        setError('End time must be at least 15 minutes after start time')
+        setError(t('errors.endAfterStart'))
         return
       }
       setSubmitting(true)
@@ -335,7 +345,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
       let endsAtUnix   = cityTimeToUnix(tz, endTime,   selectedDate)
       if (endsAtUnix <= startsAtUnix) endsAtUnix += 86400
       if (endsAtUnix - startsAtUnix < 15 * 60) {
-        setError('End time must be at least 15 minutes after start time')
+        setError(t('errors.endAfterStart'))
         return
       }
 
@@ -369,7 +379,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
     // Recurring event
     if (recurrence === 'weekly' && weekdays.length === 0) {
-      setError('Pick at least one day of the week')
+      setError(t('errors.pickDay'))
       return
     }
 
@@ -415,7 +425,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     } catch (err) {
       setDeleting(false)
       setShowConfirm(false)
-      setError(err.message || 'Could not delete event. Try again.')
+      setError(err.message || t('errors.deleteFailed'))
     }
   }
 
@@ -423,28 +433,28 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{isEdit ? 'Edit event' : isLocal ? 'Host an event' : 'Create event'}</span>
+        <span className="page-title">{isEdit ? t('title.edit') : isLocal ? t('title.host') : t('title.create')}</span>
       </div>
 
       {showConfirm && (
         <div className="delete-confirm-overlay">
           <div className="delete-confirm-dialog">
-            <p className="delete-confirm-title">Delete this event?</p>
-            <p className="delete-confirm-body">This will remove the event and all messages. This can't be undone.</p>
+            <p className="delete-confirm-title">{t('delete.confirmTitle')}</p>
+            <p className="delete-confirm-body">{t('delete.confirmBody')}</p>
             <div className="delete-confirm-actions">
               <button
                 className="delete-confirm-cancel"
                 onClick={() => setShowConfirm(false)}
                 disabled={deleting}
               >
-                Cancel
+                {t('delete.cancel')}
               </button>
               <button
                 className="delete-confirm-ok"
                 onClick={handleDelete}
                 disabled={deleting}
               >
-                {deleting ? 'Deleting…' : 'Delete'}
+                {deleting ? t('delete.deleting') : t('delete.confirm')}
               </button>
             </div>
           </div>
@@ -457,7 +467,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
           {/* Quick presets — local hosts only, not in edit mode */}
           {isLocal && !isEdit && (
             <div className="cef-section">
-              <p className="cef-label">Quick start</p>
+              <p className="cef-label">{t('quickStart')}</p>
               <div className="cef-preset-row">
                 {QUICK_PRESETS.map(p => (
                   <button
@@ -467,8 +477,8 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
                     onClick={() => applyPreset(p)}
                   >
                     <span className="cef-preset-emoji">{p.emoji}</span>
-                    <span className="cef-preset-label">{p.label}</span>
-                    <span className="cef-preset-desc">{p.desc}</span>
+                    <span className="cef-preset-label">{t(`presets.${p.tk}`)}</span>
+                    <span className="cef-preset-desc">{t(`presets.${p.tk}Desc`)}</span>
                   </button>
                 ))}
               </div>
@@ -477,7 +487,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
           {/* Category */}
           <div className="cef-section">
-            <p className="cef-label">Category</p>
+            <p className="cef-label">{t('category')}</p>
             <div className="cef-category-grid">
               {EVENT_TYPES.map(et => {
                 const Icon = CATEGORY_ICONS[et.value]
@@ -489,7 +499,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
                     onClick={() => setType(et.value)}
                   >
                     {Icon && <Icon />}
-                    <span className="cef-cat-label">{et.label}</span>
+                    <span className="cef-cat-label">{t(`categories.${et.value}`, et.label)}</span>
                   </button>
                 )
               })}
@@ -498,13 +508,13 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
           {/* Title */}
           <div className="cef-section">
-            <label className="cef-label">Title</label>
+            <label className="cef-label">{t('titleLabel')}</label>
             <input
               className="cef-input"
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="e.g. Jazz night at Rooftop Bar"
+              placeholder={t('titlePlaceholder')}
               maxLength={100}
             />
           </div>
@@ -512,21 +522,21 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
           {/* Date — when does it happen? */}
           {!isEdit && (
             <div className="cef-section">
-              <p className="cef-label">Date</p>
+              <p className="cef-label">{t('date')}</p>
               <div className="cef-date-row">
                 <button
                   type="button"
                   className={`cef-date-chip${isToday ? ' selected' : ''}`}
                   onClick={() => setSelectedDate(todayStr)}
                 >
-                  Today
+                  {t('today')}
                 </button>
                 <button
                   type="button"
                   className={`cef-date-chip${isTomorrow ? ' selected' : ''}`}
                   onClick={() => setSelectedDate(tomorrowStr)}
                 >
-                  Tomorrow
+                  {t('tomorrow')}
                 </button>
                 <input
                   type="date"
@@ -538,7 +548,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
                 />
               </div>
               {isToday && (
-                <p className="cef-date-hint">Hosting today gets you the most visibility 🔥</p>
+                <p className="cef-date-hint">{t('todayHint')}</p>
               )}
             </div>
           )}
@@ -546,7 +556,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
           {/* Start + End time */}
           <div className="cef-row">
             <div className="cef-section">
-              <label className="cef-label">Starts</label>
+              <label className="cef-label">{t('starts')}</label>
               <input
                 className="cef-input"
                 type="time"
@@ -556,7 +566,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               />
             </div>
             <div className="cef-section">
-              <label className="cef-label">Ends</label>
+              <label className="cef-label">{t('ends')}</label>
               <input
                 className="cef-input"
                 type="time"
@@ -570,28 +580,23 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
           {/* Recurrence — registered users only, not available in edit mode */}
           {account && !isEdit && (
             <div className="cef-section">
-              <p className="cef-label">Repeat</p>
+              <p className="cef-label">{t('repeat')}</p>
               <div className="cef-recurrence-row">
-                {[
-                  { value: 'once',        label: 'Once' },
-                  { value: 'daily',       label: 'Daily' },
-                  { value: 'weekly',      label: 'Weekly' },
-                  { value: 'every_n_days',label: 'Every N days' },
-                ].map(opt => (
+                {RECURRENCE_OPTS.map(opt => (
                   <button
                     key={opt.value}
                     type="button"
                     className={`cef-recur-btn${recurrence === opt.value ? ' selected' : ''}`}
                     onClick={() => setRecurrence(opt.value)}
                   >
-                    {opt.label}
+                    {t(`recurrence.${opt.tk}`)}
                   </button>
                 ))}
               </div>
 
               {recurrence === 'weekly' && (
                 <div className="cef-weekday-row">
-                  {WEEKDAY_LABELS.map((label, dow) => (
+                  {t('weekdays', { returnObjects: true }).map((label, dow) => (
                     <button
                       key={dow}
                       type="button"
@@ -606,7 +611,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
               {recurrence === 'every_n_days' && (
                 <div className="cef-interval-row">
-                  <span className="cef-interval-label">Every</span>
+                  <span className="cef-interval-label">{t('intervalEvery')}</span>
                   <input
                     className="cef-interval-input"
                     type="number"
@@ -615,7 +620,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
                     value={intervalDays}
                     onChange={e => setIntervalDays(Math.max(2, Math.min(365, parseInt(e.target.value) || 2)))}
                   />
-                  <span className="cef-interval-label">days</span>
+                  <span className="cef-interval-label">{t('intervalDays')}</span>
                 </div>
               )}
             </div>
@@ -623,7 +628,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
           {/* Location — tappable, opens the map picker (optional) */}
           <div className="cef-section">
-            <label className="cef-label">Location</label>
+            <label className="cef-label">{t('location')}</label>
             <button
               type="button"
               className="cef-loc-field"
@@ -632,14 +637,14 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             >
               <span className="cef-loc-icon" aria-hidden="true">📍</span>
               <span className={`cef-loc-text${location ? '' : ' cef-loc-placeholder'}`}>
-                {locating ? 'Getting your location…' : (location || 'Optional · tap to set on map')}
+                {locating ? t('locating') : (location || t('locationPlaceholder'))}
               </span>
               {location ? (
                 <span
                   className="cef-loc-clear"
                   role="button"
                   tabIndex={0}
-                  aria-label="Clear location"
+                  aria-label={t('clearLocation')}
                   onClick={e => { e.stopPropagation(); clearLocation() }}
                 >✕</span>
               ) : (
@@ -656,12 +661,12 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             disabled={submitting || !title.trim()}
           >
             {submitting
-              ? (isEdit ? 'Saving…' : 'Creating…')
+              ? (isEdit ? t('submit.saving') : t('submit.creating'))
               : isEdit
-                ? 'Save changes'
+                ? t('submit.saveChanges')
                 : isLocal
-                  ? (recurrence !== 'once' ? 'Open your spot' : 'Start an event')
-                  : 'Create event'
+                  ? (recurrence !== 'once' ? t('submit.openSpot') : t('submit.startEvent'))
+                  : t('submit.create')
             }
           </button>
 
@@ -672,7 +677,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
               onClick={() => setShowConfirm(true)}
               disabled={submitting}
             >
-              🗑 Delete event
+              {t('delete.button')}
             </button>
           )}
 
