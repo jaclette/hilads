@@ -23,6 +23,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { HiladsIcon } from '@/components/HiladsIcon';
@@ -69,6 +70,7 @@ interface Props {
 
 export function AppHeader({ rightExtra }: Props) {
   const router = useRouter();
+  const { t } = useTranslation('common');
   const {
     account,
     unreadDMs, setUnreadDMs,
@@ -91,7 +93,7 @@ export function AppHeader({ rightExtra }: Props) {
             activeOpacity={0.65}
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             onPress={() => router.push('/notifications' as never)}
-            accessibilityLabel="Notifications"
+            accessibilityLabel={t('notifications')}
           >
             <Ionicons name="notifications-outline" size={22} color={Colors.text} />
             {unreadNotifications > 0 && (
@@ -108,7 +110,7 @@ export function AppHeader({ rightExtra }: Props) {
             activeOpacity={0.65}
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             onPress={() => setShowOnboarding(true)}
-            accessibilityLabel="How Hilads works"
+            accessibilityLabel={t('howItWorks')}
           >
             <Ionicons name="help-circle-outline" size={23} color={Colors.muted} />
           </TouchableOpacity>
@@ -135,7 +137,7 @@ export function AppHeader({ rightExtra }: Props) {
               clearEventChatCounts();
               router.push('/messages');
             }}
-            accessibilityLabel="Messages"
+            accessibilityLabel={t('messages')}
           >
             <Feather name="message-square" size={20} color={Colors.text} />
             {unreadDMs > 0 && (

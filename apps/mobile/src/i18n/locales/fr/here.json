@@ -1,0 +1,16 @@
+{
+  "title": "Les gens ici",
+  "noCityTitle": "Aucune ville sélectionnée",
+  "noCitySub": "Choisis une ville pour voir qui est dans le coin.",
+  "browseCities": "Parcourir les villes",
+  "filterBadge": "Badge",
+  "filterVibe": "Vibe",
+  "filterMode": "Mode",
+  "you": "(toi)",
+  "hereNow": "Ici maintenant",
+  "noMatchLive": "Personne ne correspond à ces filtres pour le moment.",
+  "legendsSub": "Ils font vivre la ville",
+  "cityCrew": "L'équipe de la ville",
+  "noMatchCrew": "Aucun membre ne correspond à ces filtres.",
+  "loadMore": "Voir plus"
+}

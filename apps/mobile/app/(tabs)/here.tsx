@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -32,10 +33,11 @@ const CONTEXT_BADGE_KEYS = new Set(['host']);
 // Accepts a badge key string; derives label and colors from shared BADGE_META.
 
 function BadgePill({ badgeKey }: { badgeKey: string }) {
+  const { t } = useTranslation('common');
   const meta = BADGE_META[badgeKey as keyof typeof BADGE_META] ?? BADGE_META.regular;
   return (
     <View style={[pillStyles.pill, { backgroundColor: meta.bg, borderColor: meta.border }]}>
-      <Text style={[pillStyles.text, { color: meta.color }]}>{meta.label}</Text>
+      <Text style={[pillStyles.text, { color: meta.color }]}>{t(`badge.${badgeKey}`, { defaultValue: meta.label })}</Text>
     </View>
   );
 }
@@ -57,12 +59,13 @@ const VIBE_META: Record<string, { emoji: string; label: string; color: string; b
 };
 
 function VibePill({ vibe }: { vibe?: string | null }) {
+  const { t } = useTranslation('common');
   if (!vibe) return null;
   const meta = VIBE_META[vibe];
   if (!meta) return null;
   return (
     <View style={[pillStyles.pill, { backgroundColor: meta.bg, borderColor: meta.border }]}>
-      <Text style={[pillStyles.text, { color: meta.color, opacity: 0.85 }]}>{meta.emoji} {meta.label}</Text>
+      <Text style={[pillStyles.text, { color: meta.color, opacity: 0.85 }]}>{meta.emoji} {t(`vibe.${vibe}`, { defaultValue: meta.label })}</Text>
     </View>
   );
 }
@@ -74,19 +77,16 @@ const pillStyles = StyleSheet.create({
 
 // ── Filter config ─────────────────────────────────────────────────────────────
 
-const MODE_FILTERS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }));
-const BADGE_FILTERS = [
-  { key: 'fresh',   label: '✨ Fresh'  },
-  { key: 'regular', label: '😎 Crew'   },
-  { key: 'host',    label: '👑 Legend' },
-];
-const VIBE_FILTERS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }));
+const MODE_FILTERS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, emoji: v.emoji }));
+const BADGE_FILTERS = [{ key: 'fresh' }, { key: 'regular' }, { key: 'host' }];
+const VIBE_FILTERS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, emoji: v.emoji }));
 
 // ── Online user row ───────────────────────────────────────────────────────────
 
 function OnlineUserRow({ user, isMe, onPress, onDm }: {
   user: OnlineUser; isMe: boolean; onPress?: () => void; onDm: () => void;
 }) {
+  const { t } = useTranslation('here');
   const initials = (user.nickname ?? '?').slice(0, 2).toUpperCase();
   const color    = avatarColor(user.nickname ?? '');
   return (
@@ -103,7 +103,7 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
       </View>
       <View style={styles.rowInfo}>
         <Text style={styles.nickname}>
-          {user.nickname}{isMe ? <Text style={styles.youLabel}> (you)</Text> : ''}
+          {user.nickname}{isMe ? <Text style={styles.youLabel}> {t('you')}</Text> : ''}
         </Text>
         <View style={styles.badgeRow}>
           {user.mode && MODE_META[user.mode] && (
@@ -162,6 +162,7 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
 
 export default function HereScreen() {
   const router = useRouter();
+  const { t } = useTranslation('here');
   const { city, sessionId, account, onlineUsers, blockedSet } = useApp();
 
   const [filterBadge, setFilterBadge] = useState<string | null>(null);
@@ -269,14 +270,14 @@ export default function HereScreen() {
           <AppHeader />
         </View>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>People here</Text>
+          <Text style={styles.headerTitle}>{t('title')}</Text>
         </View>
         <View style={styles.empty}>
           <Text style={styles.emptyEmoji}>📍</Text>
-          <Text style={styles.emptyTitle}>No city selected</Text>
-          <Text style={styles.emptySub}>Pick a city to see who's around.</Text>
+          <Text style={styles.emptyTitle}>{t('noCityTitle')}</Text>
+          <Text style={styles.emptySub}>{t('noCitySub')}</Text>
           <TouchableOpacity style={styles.emptyBtn} onPress={() => router.push('/switch-city' as never)} activeOpacity={0.85}>
-            <Text style={styles.emptyBtnText}>Browse cities</Text>
+            <Text style={styles.emptyBtnText}>{t('browseCities')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -294,7 +295,7 @@ export default function HereScreen() {
       {/* Tab-specific sub-header */}
       <View style={styles.header}>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>People here</Text>
+          <Text style={styles.headerTitle}>{t('title')}</Text>
           <Text style={styles.headerSub}>{city.name}</Text>
         </View>
       </View>
@@ -302,7 +303,7 @@ export default function HereScreen() {
       {/* Filters */}
       <View style={styles.filtersWrap}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-          <Text style={styles.filterGroupLabel}>Badge</Text>
+          <Text style={styles.filterGroupLabel}>{t('filterBadge')}</Text>
           {BADGE_FILTERS.map(f => (
             <TouchableOpacity
               key={f.key}
@@ -310,11 +311,11 @@ export default function HereScreen() {
               onPress={() => setFilterBadge(v => v === f.key ? null : f.key)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.chipText, filterBadge === f.key && styles.chipTextOn]}>{f.label}</Text>
+              <Text style={[styles.chipText, filterBadge === f.key && styles.chipTextOn]}>{t(`badge.${f.key}`, { ns: 'common' })}</Text>
             </TouchableOpacity>
           ))}
           <View style={styles.filterDivider} />
-          <Text style={styles.filterGroupLabel}>Vibe</Text>
+          <Text style={styles.filterGroupLabel}>{t('filterVibe')}</Text>
           {VIBE_FILTERS.map(f => (
             <TouchableOpacity
               key={f.key}
@@ -322,11 +323,11 @@ export default function HereScreen() {
               onPress={() => setFilterVibe(v => v === f.key ? null : f.key)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.chipText, filterVibe === f.key && styles.chipTextOn]}>{f.label}</Text>
+              <Text style={[styles.chipText, filterVibe === f.key && styles.chipTextOn]}>{f.emoji} {t(`vibe.${f.key}`, { ns: 'common' })}</Text>
             </TouchableOpacity>
           ))}
           <View style={styles.filterDivider} />
-          <Text style={styles.filterGroupLabel}>Mode</Text>
+          <Text style={styles.filterGroupLabel}>{t('filterMode')}</Text>
           {MODE_FILTERS.map(f => (
             <TouchableOpacity
               key={f.key}
@@ -334,7 +335,7 @@ export default function HereScreen() {
               onPress={() => setFilterMode(v => v === f.key ? null : f.key)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.chipText, filterMode === f.key && (f.key === 'local' ? styles.chipTextOnLocal : styles.chipTextOnExploring)]}>{f.label}</Text>
+              <Text style={[styles.chipText, filterMode === f.key && (f.key === 'local' ? styles.chipTextOnLocal : styles.chipTextOnExploring)]}>{f.emoji} {t(`mode.${f.key}.label`, { ns: 'common' })}</Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -346,11 +347,11 @@ export default function HereScreen() {
         {/* ── Section 1: Here now ── */}
         <View style={styles.sectionHeader}>
           <View style={styles.liveDotSection} />
-          <Text style={styles.sectionTitle}>Here now · {liveList.length}</Text>
+          <Text style={styles.sectionTitle}>{t('hereNow')} · {liveList.length}</Text>
         </View>
 
         {liveList.length === 0 ? (
-          <Text style={styles.sectionEmpty}>Nobody matches these filters right now.</Text>
+          <Text style={styles.sectionEmpty}>{t('noMatchLive')}</Text>
         ) : liveList.map((item) => {
           const isMe = item.sessionId === mySessionId;
           return (
@@ -377,7 +378,7 @@ export default function HereScreen() {
               <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: Colors.text }]}>
                 👑 Hilads Legends
               </Text>
-              <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>They make the city happen</Text>
+              <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>{t('legendsSub')}</Text>
             </View>
             {legends.map(m => {
               const initials = (m.displayName ?? '?').slice(0, 2).toUpperCase();
@@ -418,13 +419,13 @@ export default function HereScreen() {
 
         {/* ── Section 3: City crew ── */}
         <View style={[styles.sectionHeader, { marginTop: Spacing.xl }]}>
-          <Text style={styles.sectionTitle}>🏙️ City crew</Text>
+          <Text style={styles.sectionTitle}>🏙️ {t('cityCrew')}</Text>
         </View>
 
         {crewLoading && visibleCrew.length === 0 ? (
           <ActivityIndicator color={Colors.accent} style={{ marginTop: 12 }} />
         ) : visibleCrew.length === 0 ? (
-          <Text style={styles.sectionEmpty}>No members match these filters.</Text>
+          <Text style={styles.sectionEmpty}>{t('noMatchCrew')}</Text>
         ) : visibleCrew.map(m => (
           <CrewMemberRow
             key={m.id}
@@ -445,7 +446,7 @@ export default function HereScreen() {
           >
             {crewLoading
               ? <ActivityIndicator color={Colors.muted} size="small" />
-              : <Text style={styles.loadMoreText}>Load more</Text>
+              : <Text style={styles.loadMoreText}>{t('loadMore')}</Text>
             }
           </TouchableOpacity>
         )}

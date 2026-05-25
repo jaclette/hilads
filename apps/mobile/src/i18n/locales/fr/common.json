@@ -6,9 +6,26 @@
   "save": "Enregistrer",
   "done": "Terminé",
   "connectionHint": "Vérifie ta connexion et réessaie.",
+  "notifications": "Notifications",
+  "messages": "Messages",
+  "howItWorks": "Comment marche Hilads",
   "modeHeading": "MODE",
   "mode": {
     "local": { "label": "Local", "desc": "Tu connais cette ville" },
     "exploring": { "label": "Explorateur", "desc": "Tu la découvres" }
+  },
+  "badge": {
+    "ghost": "👻 Fantôme",
+    "fresh": "✨ Nouveau",
+    "regular": "😎 Habitué",
+    "host": "👑 Légende"
+  },
+  "vibe": {
+    "party": "Fête",
+    "board_games": "Jeux de société",
+    "coffee": "Café",
+    "music": "Musique",
+    "food": "Cuisine",
+    "chill": "Détente"
   }
 }

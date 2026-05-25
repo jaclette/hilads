@@ -6,9 +6,26 @@
   "save": "Save",
   "done": "Done",
   "connectionHint": "Check your connection and try again.",
+  "notifications": "Notifications",
+  "messages": "Messages",
+  "howItWorks": "How Hilads works",
   "modeHeading": "MODE",
   "mode": {
     "local": { "label": "Local", "desc": "You know this city" },
     "exploring": { "label": "Exploring", "desc": "You're discovering it" }
+  },
+  "badge": {
+    "ghost": "👻 Ghost",
+    "fresh": "✨ Fresh",
+    "regular": "😎 Crew",
+    "host": "👑 Legend"
+  },
+  "vibe": {
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Coffee",
+    "music": "Music",
+    "food": "Food",
+    "chill": "Chill"
   }
 }

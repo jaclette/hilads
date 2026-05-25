@@ -6,9 +6,26 @@
   "save": "Lưu",
   "done": "Xong",
   "connectionHint": "Kiểm tra kết nối và thử lại.",
+  "notifications": "Thông báo",
+  "messages": "Tin nhắn",
+  "howItWorks": "Hilads hoạt động thế nào",
   "modeHeading": "CHẾ ĐỘ",
   "mode": {
     "local": { "label": "Địa phương", "desc": "Bạn rành thành phố này" },
     "exploring": { "label": "Khám phá", "desc": "Bạn đang khám phá nó" }
+  },
+  "badge": {
+    "ghost": "👻 Vãng lai",
+    "fresh": "✨ Mới",
+    "regular": "😎 Quen thuộc",
+    "host": "👑 Huyền thoại"
+  },
+  "vibe": {
+    "party": "Tiệc",
+    "board_games": "Trò chơi",
+    "coffee": "Cà phê",
+    "music": "Âm nhạc",
+    "food": "Đồ ăn",
+    "chill": "Thư giãn"
   }
 }

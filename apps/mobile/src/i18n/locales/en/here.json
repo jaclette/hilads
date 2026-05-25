@@ -1,0 +1,16 @@
+{
+  "title": "People here",
+  "noCityTitle": "No city selected",
+  "noCitySub": "Pick a city to see who's around.",
+  "browseCities": "Browse cities",
+  "filterBadge": "Badge",
+  "filterVibe": "Vibe",
+  "filterMode": "Mode",
+  "you": "(you)",
+  "hereNow": "Here now",
+  "noMatchLive": "Nobody matches these filters right now.",
+  "legendsSub": "They make the city happen",
+  "cityCrew": "City crew",
+  "noMatchCrew": "No members match these filters.",
+  "loadMore": "Load more"
+}

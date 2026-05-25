@@ -10,24 +10,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import en_common  from './locales/en/common.json';
 import en_auth    from './locales/en/auth.json';
 import en_landing from './locales/en/landing.json';
+import en_here    from './locales/en/here.json';
 import fr_common  from './locales/fr/common.json';
 import fr_auth    from './locales/fr/auth.json';
 import fr_landing from './locales/fr/landing.json';
+import fr_here    from './locales/fr/here.json';
 import vi_common  from './locales/vi/common.json';
 import vi_auth    from './locales/vi/auth.json';
 import vi_landing from './locales/vi/landing.json';
+import vi_here    from './locales/vi/here.json';
 
 export const SUPPORTED = ['en', 'fr', 'vi'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
 
-const NS = ['common', 'auth', 'landing'] as const;
+const NS = ['common', 'auth', 'landing', 'here'] as const;
 
 const resources = {
-  en: { common: en_common, auth: en_auth, landing: en_landing },
-  fr: { common: fr_common, auth: fr_auth, landing: fr_landing },
-  vi: { common: vi_common, auth: vi_auth, landing: vi_landing },
+  en: { common: en_common, auth: en_auth, landing: en_landing, here: en_here },
+  fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here },
+  vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {
