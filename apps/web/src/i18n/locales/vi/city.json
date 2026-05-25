@@ -1,0 +1,35 @@
+{
+  "guestGate": {
+    "createAccount": "Tạo tài khoản",
+    "signIn": "Đăng nhập",
+    "create_event": {
+      "pageTitle": "Tạo sự kiện",
+      "title": "Khách vãng lai có thể xem, nhưng không thể tổ chức.",
+      "sub": "Tạo tài khoản để tổ chức sự kiện của riêng bạn và đưa thành phố của bạn lên bản đồ."
+    },
+    "view_profile": {
+      "pageTitle": "Hồ sơ",
+      "title": "Khách vãng lai có thể xem, nhưng hồ sơ dành cho thành viên.",
+      "sub": "Tạo tài khoản để mở khóa hồ sơ, kết nối với mọi người và xây dựng hội của bạn trong thành phố."
+    },
+    "join_hangout": {
+      "pageTitle": "Tham gia hangout",
+      "title": "Khách vãng lai có thể xem, nhưng không thể tham gia hangout.",
+      "sub": "Đăng ký để tham gia hangout, giữ tên của bạn và được thông báo khi có người muốn gặp."
+    },
+    "create_hangout": {
+      "pageTitle": "Tạo hangout",
+      "title": "Khách vãng lai có thể xem, nhưng không thể tổ chức.",
+      "sub": "Đăng ký để tạo hangout, giữ tên của bạn và thu hút mọi người tham gia."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} đang trực tiếp ✨",
+    "dismiss": "Đóng",
+    "body": "Người thật, ngay bây giờ. Chào hỏi, xem ai đang ở quanh đây, hoặc rủ một người bạn.",
+    "sayHi": "Chào 👋",
+    "invite": "Mời bạn bè"
+  },
+  "imageType": "Vui lòng chọn ảnh JPEG, PNG hoặc WebP.",
+  "imageTooLarge": "Ảnh quá lớn. Tối đa: 10 MB."
+}

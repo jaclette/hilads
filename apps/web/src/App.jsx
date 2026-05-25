@@ -1,4 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
@@ -682,6 +683,7 @@ function buildOnlineUsers(users, mySessionId) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function App() {
+  const { t } = useTranslation('city')
   const installPrompt = useBeforeInstallPrompt()
   const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
   const [rehydrating, setRehydrating] = useState(() => !!localStorage.getItem(AUTH_FLAG_KEY))
@@ -2204,11 +2206,11 @@ export default function App() {
     // Client-side pre-flight — real validation happens on the server too
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     if (!allowed.includes(file.type)) {
-      alert('Please select a JPEG, PNG, or WebP image.')
+      alert(t('imageType'))
       return
     }
     if (file.size > 10 * 1024 * 1024) {
-      alert('Image too large. Max size: 10 MB.')
+      alert(t('imageTooLarge'))
       return
     }
 
@@ -3616,14 +3618,14 @@ export default function App() {
               return (
                 <div key={item.id} className="feed-welcome">
                   <div className="feed-welcome-header">
-                    <span className="feed-welcome-city">{item.city} is live ✨</span>
+                    <span className="feed-welcome-city">{t('welcome.live', { city: item.city })}</span>
                     <button
                       className="feed-welcome-dismiss"
                       onClick={() => setFeed(prev => prev.filter(f => f.id !== item.id))}
-                      aria-label="Dismiss"
+                      aria-label={t('welcome.dismiss')}
                     >×</button>
                   </div>
-                  <p className="feed-welcome-body">Real people, right now. Say hi, see who's around, or bring a friend in.</p>
+                  <p className="feed-welcome-body">{t('welcome.body')}</p>
                   <div className="feed-welcome-actions">
                     <button
                       className="feed-welcome-btn feed-welcome-btn--primary"
@@ -3631,14 +3633,14 @@ export default function App() {
                         setFeed(prev => prev.filter(f => f.id !== item.id))
                         chatInputRef.current?.focus()
                       }}
-                    >Say hi 👋</button>
+                    >{t('welcome.sayHi')}</button>
                     <button
                       className="feed-welcome-btn feed-welcome-btn--secondary"
                       onClick={() => {
                         setFeed(prev => prev.filter(f => f.id !== item.id))
                         share(composeCityShare(item.city))
                       }}
-                    >Invite friends</button>
+                    >{t('welcome.invite')}</button>
                   </div>
                 </div>
               )
@@ -5087,20 +5089,21 @@ export default function App() {
 
       {/* Guest gate — shown when a ghost user tries a member-only action */}
       {guestGate && (() => {
-        const g = GUEST_GATE_COPY[guestGate.reason] ?? GUEST_GATE_COPY.view_profile
+        const reason   = GUEST_GATE_COPY[guestGate.reason] ? guestGate.reason : 'view_profile'
+        const emoji    = GUEST_GATE_COPY[reason].emoji
         const openAuth = () => { setGuestGate(null); setShowProfileDrawer(true); setShowAuthScreen(true) }
         return (
           <div className="full-page">
             <div className="page-header">
               <BackButton onClick={() => setGuestGate(null)} />
-              <span className="page-title">{g.pageTitle}</span>
+              <span className="page-title">{t(`guestGate.${reason}.pageTitle`)}</span>
             </div>
             <div className="guest-gate">
-              <span className="guest-gate-emoji">{g.emoji}</span>
-              <h2 className="guest-gate-title">{g.title}</h2>
-              <p className="guest-gate-sub">{g.sub}</p>
-              <button className="modal-submit" onClick={openAuth}>Create account</button>
-              <button className="modal-submit modal-submit--secondary" onClick={openAuth}>Sign in</button>
+              <span className="guest-gate-emoji">{emoji}</span>
+              <h2 className="guest-gate-title">{t(`guestGate.${reason}.title`)}</h2>
+              <p className="guest-gate-sub">{t(`guestGate.${reason}.sub`)}</p>
+              <button className="modal-submit" onClick={openAuth}>{t('guestGate.createAccount')}</button>
+              <button className="modal-submit modal-submit--secondary" onClick={openAuth}>{t('guestGate.signIn')}</button>
             </div>
           </div>
         )

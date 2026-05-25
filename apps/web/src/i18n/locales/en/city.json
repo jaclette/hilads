@@ -1,0 +1,35 @@
+{
+  "guestGate": {
+    "createAccount": "Create account",
+    "signIn": "Sign in",
+    "create_event": {
+      "pageTitle": "Create event",
+      "title": "Ghosts can browse, but can't host.",
+      "sub": "Create an account to throw your own event and put your city on the map."
+    },
+    "view_profile": {
+      "pageTitle": "Profile",
+      "title": "Ghosts can browse, but profiles are for members.",
+      "sub": "Create an account to unlock profiles, connect with people, and build your city crew."
+    },
+    "join_hangout": {
+      "pageTitle": "Join a hangout",
+      "title": "Ghosts can browse, but can't join hangouts.",
+      "sub": "Sign up to join hangouts, save your name, and get notified when people want to meet."
+    },
+    "create_hangout": {
+      "pageTitle": "Start a hangout",
+      "title": "Ghosts can browse, but can't host.",
+      "sub": "Sign up to start a hangout, save your name, and get people to join you."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} is live ✨",
+    "dismiss": "Dismiss",
+    "body": "Real people, right now. Say hi, see who's around, or bring a friend in.",
+    "sayHi": "Say hi 👋",
+    "invite": "Invite friends"
+  },
+  "imageType": "Please select a JPEG, PNG, or WebP image.",
+  "imageTooLarge": "Image too large. Max size: 10 MB."
+}

@@ -1,0 +1,35 @@
+{
+  "guestGate": {
+    "createAccount": "Créer un compte",
+    "signIn": "Se connecter",
+    "create_event": {
+      "pageTitle": "Créer un événement",
+      "title": "Les fantômes peuvent regarder, mais pas organiser.",
+      "sub": "Crée un compte pour organiser ton propre événement et mettre ta ville sur la carte."
+    },
+    "view_profile": {
+      "pageTitle": "Profil",
+      "title": "Les fantômes peuvent regarder, mais les profils sont réservés aux membres.",
+      "sub": "Crée un compte pour débloquer les profils, te connecter et te faire une bande dans ta ville."
+    },
+    "join_hangout": {
+      "pageTitle": "Rejoindre un hangout",
+      "title": "Les fantômes peuvent regarder, mais pas rejoindre de hangouts.",
+      "sub": "Inscris-toi pour rejoindre des hangouts, garder ton nom et être notifié quand des gens veulent se voir."
+    },
+    "create_hangout": {
+      "pageTitle": "Lancer un hangout",
+      "title": "Les fantômes peuvent regarder, mais pas organiser.",
+      "sub": "Inscris-toi pour lancer un hangout, garder ton nom et faire venir des gens."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} est en direct ✨",
+    "dismiss": "Fermer",
+    "body": "De vraies personnes, maintenant. Dis bonjour, vois qui est là, ou amène un ami.",
+    "sayHi": "Dis bonjour 👋",
+    "invite": "Inviter des amis"
+  },
+  "imageType": "Choisis une image JPEG, PNG ou WebP.",
+  "imageTooLarge": "Image trop lourde. Taille max : 10 Mo."
+}
