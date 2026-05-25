@@ -1,0 +1,22 @@
+{
+  "title": "Notifications",
+  "markAllRead": "Mark all read",
+  "empty": { "title": "All caught up", "sub": "Notifications will appear here" },
+  "loading": "Loading…",
+  "seeAll": "See all notifications →",
+  "prefs": {
+    "title": "Notification preferences",
+    "mentionName": "Mentions @",
+    "mentionDesc": "When someone @mentions you in a message or hangout",
+    "newEventName": "New events in your city",
+    "newEventDesc": "When someone creates an event in your city",
+    "friendName": "Friend requests",
+    "friendDesc": "When someone sends you a friend request or accepts yours",
+    "notesName": "Notes ✨",
+    "notesDesc": "When someone leaves a note on your profile",
+    "profileViewName": "Profile views 👀",
+    "profileViewDesc": "When someone checks your profile",
+    "announcementName": "Announcements from Hilads",
+    "announcementDesc": "Occasional updates from the team"
+  }
+}

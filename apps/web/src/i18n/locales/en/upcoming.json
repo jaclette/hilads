@@ -1,0 +1,14 @@
+{
+  "title": "What's coming",
+  "openCalendar": "Open calendar",
+  "today": "Today",
+  "close": "Close",
+  "error": "Couldn't load events for this day",
+  "retry": "Retry",
+  "emptyTitle": "Nothing scheduled",
+  "emptySub": "No events on this day yet.",
+  "public": "Public",
+  "going_one": "🙌 {{count}} going",
+  "going_other": "🙌 {{count}} going",
+  "liveNow": "🔥 Live now"
+}

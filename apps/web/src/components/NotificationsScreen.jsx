@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   fetchNotifications,
   markNotificationsRead,
@@ -51,6 +52,7 @@ function Toggle({ checked, onChange, disabled }) {
 const PREVIEW_LIMIT = 5
 
 export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange, account }) {
+  const { t } = useTranslation('notifications')
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading]             = useState(true)
   const [loadingAll, setLoadingAll]       = useState(false)
@@ -127,10 +129,10 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
     <div className="full-page notif-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">Notifications</span>
+        <span className="page-title">{t('title')}</span>
         {unreadCount > 0 && (
           <button className="notif-mark-all" onClick={handleMarkAllRead}>
-            Mark all read
+            {t('markAllRead')}
           </button>
         )}
       </div>
@@ -152,8 +154,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
         ) : notifications.length === 0 ? (
           <div className="notif-empty">
             <p className="notif-empty-icon">✨</p>
-            <p className="notif-empty-title">All caught up</p>
-            <p className="notif-empty-sub">Notifications will appear here</p>
+            <p className="notif-empty-title">{t('empty.title')}</p>
+            <p className="notif-empty-sub">{t('empty.sub')}</p>
           </div>
         ) : (
           <div className="notif-list">
@@ -182,7 +184,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
             onClick={handleSeeAll}
             disabled={loadingAll}
           >
-            {loadingAll ? 'Loading…' : 'See all notifications →'}
+            {loadingAll ? t('loading') : t('seeAll')}
           </button>
         )}
 
@@ -190,12 +192,12 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
             DM, event-chat, and city-chat toggles live on the Conversations
             screen now — they govern the envelope icon's behaviour, not the bell. */}
         <div className="notif-prefs">
-          <div className="notif-prefs-title">Notification preferences</div>
+          <div className="notif-prefs-title">{t('prefs.title')}</div>
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
-              <span className="notif-pref-name">Mentions @</span>
-              <span className="notif-pref-desc">When someone @mentions you in a message or hangout</span>
+              <span className="notif-pref-name">{t('prefs.mentionName')}</span>
+              <span className="notif-pref-desc">{t('prefs.mentionDesc')}</span>
             </div>
             <Toggle
               checked={prefs?.mention_push ?? true}
@@ -206,8 +208,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
-              <span className="notif-pref-name">New events in your city</span>
-              <span className="notif-pref-desc">When someone creates an event in your city</span>
+              <span className="notif-pref-name">{t('prefs.newEventName')}</span>
+              <span className="notif-pref-desc">{t('prefs.newEventDesc')}</span>
             </div>
             <Toggle
               checked={prefs?.new_event_push ?? false}
@@ -218,8 +220,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
-              <span className="notif-pref-name">Friend requests</span>
-              <span className="notif-pref-desc">When someone sends you a friend request or accepts yours</span>
+              <span className="notif-pref-name">{t('prefs.friendName')}</span>
+              <span className="notif-pref-desc">{t('prefs.friendDesc')}</span>
             </div>
             <Toggle
               checked={prefs?.friend_request_push ?? true}
@@ -230,8 +232,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
-              <span className="notif-pref-name">Notes ✨</span>
-              <span className="notif-pref-desc">When someone leaves a note on your profile</span>
+              <span className="notif-pref-name">{t('prefs.notesName')}</span>
+              <span className="notif-pref-desc">{t('prefs.notesDesc')}</span>
             </div>
             <Toggle
               checked={prefs?.vibe_received_push ?? true}
@@ -242,8 +244,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
-              <span className="notif-pref-name">Profile views 👀</span>
-              <span className="notif-pref-desc">When someone checks your profile</span>
+              <span className="notif-pref-name">{t('prefs.profileViewName')}</span>
+              <span className="notif-pref-desc">{t('prefs.profileViewDesc')}</span>
             </div>
             <Toggle
               checked={prefs?.profile_view_push ?? true}
@@ -254,8 +256,8 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
-              <span className="notif-pref-name">Announcements from Hilads</span>
-              <span className="notif-pref-desc">Occasional updates from the team</span>
+              <span className="notif-pref-name">{t('prefs.announcementName')}</span>
+              <span className="notif-pref-desc">{t('prefs.announcementDesc')}</span>
             </div>
             <Toggle
               checked={prefs?.admin_announcement_push ?? true}

@@ -1,0 +1,22 @@
+{
+  "title": "Notifications",
+  "markAllRead": "Tout marquer comme lu",
+  "empty": { "title": "Tout est à jour", "sub": "Les notifications apparaîtront ici" },
+  "loading": "Chargement…",
+  "seeAll": "Voir toutes les notifications →",
+  "prefs": {
+    "title": "Préférences de notification",
+    "mentionName": "Mentions @",
+    "mentionDesc": "Quand quelqu'un te @mentionne dans un message ou un hangout",
+    "newEventName": "Nouveaux événements dans ta ville",
+    "newEventDesc": "Quand quelqu'un crée un événement dans ta ville",
+    "friendName": "Demandes d'amis",
+    "friendDesc": "Quand quelqu'un t'envoie une demande d'ami ou accepte la tienne",
+    "notesName": "Notes ✨",
+    "notesDesc": "Quand quelqu'un laisse une note sur ton profil",
+    "profileViewName": "Vues de profil 👀",
+    "profileViewDesc": "Quand quelqu'un consulte ton profil",
+    "announcementName": "Annonces de Hilads",
+    "announcementDesc": "Quelques nouvelles de l'équipe de temps en temps"
+  }
+}

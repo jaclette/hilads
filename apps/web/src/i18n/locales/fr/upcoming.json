@@ -1,0 +1,14 @@
+{
+  "title": "À venir",
+  "openCalendar": "Ouvrir le calendrier",
+  "today": "Auj.",
+  "close": "Fermer",
+  "error": "Impossible de charger les événements de ce jour",
+  "retry": "Réessayer",
+  "emptyTitle": "Rien de prévu",
+  "emptySub": "Pas encore d'événements ce jour-là.",
+  "public": "Public",
+  "going_one": "🙌 {{count}} participant",
+  "going_other": "🙌 {{count}} participants",
+  "liveNow": "🔥 En direct"
+}

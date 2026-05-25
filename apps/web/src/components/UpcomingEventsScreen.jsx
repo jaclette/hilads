@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import BackButton from './BackButton'
 import AttendeeAvatars from './AttendeeAvatars'
 import { fetchUpcomingEvents, fetchCalendarSummary } from '../api'
@@ -34,6 +35,7 @@ function localYmd(d) {
 // ── Month modal — full-month grid w/ event dots ───────────────────────────────
 
 function MonthModal({ visibleMonth, summary, selected, onPick, onClose }) {
+  const { t } = useTranslation('upcoming')
   const [view, setView] = useState(() => new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1))
   const today    = startOfDay(new Date())
   const maxDate  = startOfDay(addDays(today, MAX_MODAL))
@@ -92,7 +94,7 @@ function MonthModal({ visibleMonth, summary, selected, onPick, onClose }) {
             })}
           </div>
         ))}
-        <button type="button" className="upc-modal-close" onClick={onClose}>Close</button>
+        <button type="button" className="upc-modal-close" onClick={onClose}>{t('close')}</button>
       </div>
     </div>
   )
@@ -101,6 +103,7 @@ function MonthModal({ visibleMonth, summary, selected, onPick, onClose }) {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSelectEvent }) {
+  const { t } = useTranslation('upcoming')
   const tz = timezone || 'UTC'
 
   const [selected, setSelected] = useState(() => startOfDay(new Date()))
@@ -175,11 +178,11 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">What's coming</span>
+        <span className="page-title">{t('title')}</span>
         <button
           type="button"
           className="upc-cal-btn"
-          aria-label="Open calendar"
+          aria-label={t('openCalendar')}
           onClick={() => setShowMonth(true)}
         >📅</button>
       </div>
@@ -197,7 +200,7 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
               className={`upc-day${isSel ? ' selected' : ''}`}
               onClick={() => pickDate(d)}
             >
-              <span className="upc-day-dow">{isToday ? 'Today' : DOW_SHORT[d.getDay()]}</span>
+              <span className="upc-day-dow">{isToday ? t('today') : DOW_SHORT[d.getDay()]}</span>
               <span className="upc-day-num">{d.getDate()}</span>
               <span className="upc-day-dot-slot">
                 {dot && <span className={`upc-day-dot${isSel ? ' selected' : ''}`} />}
@@ -216,15 +219,15 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
 
         {status === 'error' && (
           <div className="events-empty-state" style={{ marginTop: 40 }}>
-            <p className="events-empty-title">Couldn&apos;t load events for this day</p>
-            <button className="events-empty-cta" onClick={() => loadDay(selected)}>Retry</button>
+            <p className="events-empty-title">{t('error')}</p>
+            <button className="events-empty-cta" onClick={() => loadDay(selected)}>{t('retry')}</button>
           </div>
         )}
 
         {status === 'ok' && events.length === 0 && (
           <div className="events-empty-state" style={{ marginTop: 40 }}>
-            <p className="events-empty-title">Nothing scheduled</p>
-            <p className="events-empty-sub">No events on this day yet.</p>
+            <p className="events-empty-title">{t('emptyTitle')}</p>
+            <p className="events-empty-sub">{t('emptySub')}</p>
           </div>
         )}
 
@@ -246,12 +249,12 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
                   <div className="er-header">
                     <span className="er-title">{icon} {event.title}</span>
                     {isPublic
-                      ? <span className="er-going er-going--public">Public</span>
-                      : going > 0 && <span className="er-going">🙌 {going} going</span>}
+                      ? <span className="er-going er-going--public">{t('public')}</span>
+                      : going > 0 && <span className="er-going">{t('going', { count: going })}</span>}
                   </div>
                   <div className="er-badges">
                     <span className="city-row-current">
-                      {isLive ? '🔥 Live now' : `🕐 ${formatTime(event.starts_at, tz)}`}
+                      {isLive ? t('liveNow') : `🕐 ${formatTime(event.starts_at, tz)}`}
                       {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
                     </span>
                     {event.recurrence_label && (

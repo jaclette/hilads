@@ -1,0 +1,13 @@
+{
+  "title": "Sắp tới",
+  "openCalendar": "Mở lịch",
+  "today": "Hôm nay",
+  "close": "Đóng",
+  "error": "Không thể tải sự kiện cho ngày này",
+  "retry": "Thử lại",
+  "emptyTitle": "Chưa có gì",
+  "emptySub": "Chưa có sự kiện nào trong ngày này.",
+  "public": "Công khai",
+  "going_other": "🙌 {{count}} tham gia",
+  "liveNow": "🔥 Trực tiếp"
+}
