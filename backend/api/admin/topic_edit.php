@@ -27,7 +27,7 @@ $stmt->execute([':id' => $topicId]);
 $topic = $stmt->fetch();
 
 if (!$topic) {
-    flash_set('error', 'Topic not found.');
+    flash_set('error', 'Hangout not found.');
     admin_redirect('/admin/topics');
 }
 
@@ -84,7 +84,7 @@ if ($method === 'POST') {
     if (empty($errors)) {
         TopicRepository::adminUpdate($topicId, $title, $description, $category, $newExpiresAt);
         error_log('[admin] topic updated: ' . $topicId . ' → "' . $title . '"');
-        flash_set('success', 'Topic updated successfully.');
+        flash_set('success', 'Hangout updated successfully.');
         admin_redirect('/admin/topics');
     }
 }
@@ -98,20 +98,20 @@ $CATEGORY_LABELS = [
     'meetup'  => '👋 Meetup',
 ];
 
-admin_head('Edit Topic');
+admin_head('Edit Hangout');
 admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
     <div style="margin-bottom:16px">
-        <a href="/admin/topics" class="btn btn-secondary btn-sm">← Topics</a>
+        <a href="/admin/topics" class="btn btn-secondary btn-sm">← Hangouts</a>
     </div>
 
-    <h1 class="page-title">Edit Topic</h1>
+    <h1 class="page-title">Edit Hangout</h1>
 
     <?php if ($topic['status'] === 'deleted'): ?>
-        <div class="warning-box">This topic is deleted. Editing will not restore it in the app feed.</div>
+        <div class="warning-box">This hangout is deleted. Editing will not restore it in the app feed.</div>
     <?php elseif ($topic['expires_at_ts'] > 0 && $topic['expires_at_ts'] <= time()): ?>
-        <div class="warning-box">This topic is expired. Update the expiry date to make it active again in the feed.</div>
+        <div class="warning-box">This hangout is expired. Update the expiry date to make it active again in the feed.</div>
     <?php endif; ?>
 
     <?= flash_html() ?>
@@ -126,7 +126,7 @@ admin_nav('/admin/topics');
 
     <div class="form-card" style="margin-bottom:20px">
         <div class="info-section">
-            <h3>Topic info</h3>
+            <h3>Hangout info</h3>
             <div class="info-grid">
                 <span class="info-label">ID</span>
                 <span class="info-value"><?= htmlspecialchars($topic['channel_id'], ENT_QUOTES) ?></span>
@@ -153,8 +153,8 @@ admin_nav('/admin/topics');
             <label for="title">Title <span style="color:#ef4444">*</span></label>
             <input type="text" id="title" name="title" maxlength="100" required
                    value="<?= htmlspecialchars($post['title'] ?? '', ENT_QUOTES) ?>"
-                   placeholder="Topic title">
-            <div class="hint">Max 100 characters. Updates everywhere the topic title is displayed.</div>
+                   placeholder="Hangout title">
+            <div class="hint">Max 100 characters. Updates everywhere the hangout title is displayed.</div>
         </div>
 
         <!-- Category -->
