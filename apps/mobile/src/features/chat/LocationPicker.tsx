@@ -28,9 +28,20 @@ import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 // • Zoom/attribution controls hidden for clean look
 // • map.moveend → debounce 600ms → postMessage {type:'move', lat, lng}
 // • ready event fires immediately with initial coords
-
-function buildMapHtml(lat: number, lng: number): string {
-  return `<!DOCTYPE html>
+//
+// CRITICAL: this HTML is a *module-level constant* with NO interpolated coords.
+// The initial center is injected at mount via injectedJavaScriptBeforeContentLoaded
+// (window.__lat/__lng). Because the `source={{ html: MAP_HTML }}` string is
+// byte-identical for every render and every picker instance, react-native-webview
+// can never see a "changed source" and therefore never reloads the page after
+// mount — the #1 cause of the map "reloading / shaking" on Android.
+//
+// The moveend handler also guards against no-op moves: a WebView viewport resize
+// (Android fires these on layout / inset / keyboard changes) makes Leaflet emit a
+// `moveend` whose center hasn't actually changed. Geocoding those caused an
+// endless "Getting location…" flicker. We only postMessage when the center moved
+// more than ~5 m since the last report.
+const MAP_HTML = `<!DOCTYPE html>
 <html>
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -45,19 +56,27 @@ function buildMapHtml(lat: number, lng: number): string {
   <div id="map"></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    var map = L.map('map',{center:[${lat},${lng}],zoom:16,zoomControl:false,attributionControl:false});
+    var startLat = (typeof window.__lat === 'number') ? window.__lat : 0;
+    var startLng = (typeof window.__lng === 'number') ? window.__lng : 0;
+    var map = L.map('map',{center:[startLat,startLng],zoom:16,zoomControl:false,attributionControl:false});
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     var t = null;
+    var lastLat = startLat, lastLng = startLng;
     function send(type,lat,lng){ window.ReactNativeWebView.postMessage(JSON.stringify({type:type,lat:lat,lng:lng})); }
     map.on('moveend',function(){
       clearTimeout(t);
-      t = setTimeout(function(){ var c=map.getCenter(); send('move',c.lat,c.lng); },600);
+      t = setTimeout(function(){
+        var c = map.getCenter();
+        // Skip moveend events that didn't actually move the center (resize/relayout).
+        if (Math.abs(c.lat-lastLat) < 0.00005 && Math.abs(c.lng-lastLng) < 0.00005) return;
+        lastLat = c.lat; lastLng = c.lng;
+        send('move', c.lat, c.lng);
+      },600);
     });
-    send('ready',${lat},${lng});
+    send('ready', startLat, startLng);
   </script>
 </body>
 </html>`;
-}
 
 // ── Reverse geocode via Nominatim ─────────────────────────────────────────────
 
@@ -100,16 +119,17 @@ async function nominatimSearch(query: string): Promise<SearchHit[]> {
 }
 
 // ── Map WebView (isolated) ────────────────────────────────────────────────────
-// An inline-HTML <WebView> reloads its content on EVERY re-render where a prop
-// changes. The parent screen (city chat) re-renders constantly (WS messages,
-// presence), which made the map reload ~1/sec → "getting location" spinner +
-// shaking. Wrapping it in React.memo with an html-only comparator guarantees the
-// WebView only ever reloads when the HTML actually changes (i.e. never, after
-// mount — coords are fixed for the session). onMessage/ref changes are ignored;
-// onMessage is a stable useCallback and the ref is stable, so this is safe.
+// The parent screen (city chat) re-renders constantly (WS messages, presence),
+// which would re-render this and reload the inline-HTML WebView ~1/sec →
+// "getting location" spinner + shaking. We render the WebView from a CONSTANT
+// MAP_HTML (initial center injected via injectedJavaScriptBeforeContentLoaded)
+// and memo with an always-equal comparator: MapWebView mounts exactly once and
+// is never re-rendered, so the native WebView can never reload after mount.
+// Search-pans go through the ref (injectJavaScript), not props, so freezing
+// props is safe.
 const MapWebView = memo(
-  function MapWebView({ html, onMessage, innerRef }: {
-    html: string;
+  function MapWebView({ injectBefore, onMessage, innerRef }: {
+    injectBefore: string;
     onMessage: (e: WebViewMessageEvent) => void;
     innerRef: RefObject<WebView | null>;
   }) {
@@ -117,7 +137,8 @@ const MapWebView = memo(
       <WebView
         ref={innerRef}
         style={styles.webview}
-        source={{ html }}
+        source={{ html: MAP_HTML }}
+        injectedJavaScriptBeforeContentLoaded={injectBefore}
         onMessage={onMessage}
         scrollEnabled={false}
         bounces={false}
@@ -127,7 +148,7 @@ const MapWebView = memo(
       />
     );
   },
-  (prev, next) => prev.html === next.html,   // reload only when the HTML changes
+  () => true,   // never re-render after mount → WebView never reloads
 );
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -160,10 +181,15 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
   const webViewReady = useRef(false);
   const pendingPan   = useRef<{ lat: number; lng: number } | null>(null);
 
-  // Map HTML built once from the (fixed-for-the-session) initial coords. The
-  // <MapWebView> below is React.memo'd on this html, so it never reloads on a
-  // parent re-render — only when the html itself changes.
-  const html = useMemo(() => buildMapHtml(initialLat, initialLng), [initialLat, initialLng]);
+  // Captured ONCE at mount: the initial center is injected into the constant
+  // MAP_HTML before its scripts run. MapWebView never re-renders (see its
+  // always-equal memo), so this value is locked for the picker's lifetime — the
+  // WebView mounts at this center and never reloads.
+  const injectBefore = useMemo(
+    () => `window.__lat=${Number(initialLat)};window.__lng=${Number(initialLng)};true;`,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   // NOTE: we intentionally do NOT call getCurrentPositionAsync here. The caller
   // already passes the last-known position as initialLat/Lng, so the map opens
@@ -280,7 +306,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
         {/* ── Map ── */}
         <View style={styles.mapWrap}>
-          <MapWebView html={html} onMessage={handleWebViewMessage} innerRef={webViewRef} />
+          <MapWebView injectBefore={injectBefore} onMessage={handleWebViewMessage} innerRef={webViewRef} />
 
           {/* Fixed pin — sits in center, pointer events disabled so map stays draggable */}
           <View style={styles.pinWrap} pointerEvents="none">
