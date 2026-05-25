@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import IconPlus from './IconPlus'
 import EmojiPicker from './EmojiPicker'
 import SendButton from './SendButton'
@@ -36,6 +37,7 @@ export default function MessageComposer({
   mentionSuggestions = [],
   onMentionSelect,
 }) {
+  const { t } = useTranslation('common')
   const attachDisabled = uploading || sending || spotLoading
   const sendDisabled   = sending || uploading || spotLoading || !value.trim()
 
@@ -74,8 +76,8 @@ export default function MessageComposer({
       <button
         type="button"
         className="dm-vibe-btn"
-        aria-label="Add attachment"
-        title="Add attachment"
+        aria-label={t('composer.attach')}
+        title={t('composer.attach')}
         disabled={attachDisabled}
         onClick={onShareClick}
       >
@@ -89,7 +91,7 @@ export default function MessageComposer({
           <button
             type="button"
             className={`emoji-trigger${showEmoji ? ' emoji-trigger--active' : ''}`}
-            title="Emoji"
+            title={t('composer.emoji')}
             onClick={onEmojiToggle}
           >
             😊

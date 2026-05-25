@@ -1,5 +1,9 @@
 {
   "language": "Ngôn ngữ",
   "cancel": "Hủy",
-  "loading": "Đang tải…"
+  "loading": "Đang tải…",
+  "composer": {
+    "attach": "Thêm tệp đính kèm",
+    "emoji": "Emoji"
+  }
 }

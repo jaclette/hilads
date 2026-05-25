@@ -1,5 +1,9 @@
 {
   "language": "Langue",
   "cancel": "Annuler",
-  "loading": "Chargement…"
+  "loading": "Chargement…",
+  "composer": {
+    "attach": "Ajouter une pièce jointe",
+    "emoji": "Emoji"
+  }
 }

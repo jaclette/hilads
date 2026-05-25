@@ -1,5 +1,9 @@
 {
   "language": "Language",
   "cancel": "Cancel",
-  "loading": "Loading…"
+  "loading": "Loading…",
+  "composer": {
+    "attach": "Add attachment",
+    "emoji": "Emoji"
+  }
 }

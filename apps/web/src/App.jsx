@@ -379,16 +379,16 @@ const AMBIENT_MESSAGES = [
 ]
 
 function randomActivity() {
-  const fn = AMBIENT_MESSAGES[Math.floor(Math.random() * AMBIENT_MESSAGES.length)]
-  return { subtype: 'crowd', text: fn() }
+  const variant = Math.floor(Math.random() * AMBIENT_MESSAGES.length)
+  return { subtype: 'crowd', variant, text: AMBIENT_MESSAGES[variant]() }
 }
 
-function typingText(users, mySessionId) {
+function typingText(users, mySessionId, t) {
   const others = users.filter(u => u.sessionId !== mySessionId)
   if (others.length === 0) return null
-  if (others.length === 1) return `${others[0].nickname} is typing…`
-  if (others.length === 2) return `${others[0].nickname} and ${others[1].nickname} are typing…`
-  return 'Several people are typing…'
+  if (others.length === 1) return t('typing.one', { name: others[0].nickname })
+  if (others.length === 2) return t('typing.two', { a: others[0].nickname, b: others[1].nickname })
+  return t('typing.many')
 }
 
 // ── Vibe display ──────────────────────────────────────────────────────────────
@@ -496,8 +496,8 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
       if (now - lastJoinAtRef.current < 8000) return null // throttle rapid joins
       lastJoinAtRef.current = now
     }
-    const tpl = JOIN_TEMPLATES[Math.floor(Math.random() * JOIN_TEMPLATES.length)]
-    return { type: 'activity', subtype: 'join', id: messageKey(m), text: tpl(m.nickname), createdAt: m.createdAt, nickname: m.nickname, userId: m.userId ?? null, guestId: m.guestId ?? null }
+    const joinVariant = Math.floor(Math.random() * JOIN_TEMPLATES.length)
+    return { type: 'activity', subtype: 'join', id: messageKey(m), joinVariant, text: JOIN_TEMPLATES[joinVariant](m.nickname), createdAt: m.createdAt, nickname: m.nickname, userId: m.userId ?? null, guestId: m.guestId ?? null }
   }
   // Weather system messages have no nickname/id — render as a subtle activity line.
   if (m.type === 'system' && m.event === 'weather') {
@@ -1681,7 +1681,7 @@ export default function App() {
         // Suppress if there are 3+ real messages — city is active enough
         const realMsgs = prev.filter(m => m.type === 'message').length
         if (realMsgs >= 3) return prev
-        return [...prev, { type: 'activity', id: `act-${Date.now()}`, subtype: activity.subtype, text: activity.text }]
+        return [...prev, { type: 'activity', id: `act-${Date.now()}`, subtype: activity.subtype, variant: activity.variant, text: activity.text }]
       })
       scheduleActivity()
     }, delay)
@@ -3004,7 +3004,13 @@ export default function App() {
     }).catch(() => {})
   }
 
-  const typingLabel = typingText(typingUsers, sessionIdRef.current)
+  const typingLabel = typingText(typingUsers, sessionIdRef.current, t)
+
+  // City composer placeholder — translated list, picked deterministically by channel.
+  const cityPlaceholderList = t('placeholders', { returnObjects: true })
+  const cityComposerPlaceholder = Array.isArray(cityPlaceholderList) && cityPlaceholderList.length > 0
+    ? cityPlaceholderList[channelId % cityPlaceholderList.length]
+    : ''
 
   // Inject a new-event message when events array grows (real-time event added).
   // Only in city chat. Stays in feed permanently like a normal message.
@@ -3019,7 +3025,7 @@ export default function App() {
         const id = `event-msg-${event.id}`
         setFeed(prev => {
           if (prev.some(f => f.id === id)) return prev
-          return [...prev, { type: 'event', id, eventId: event.id, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
+          return [...prev, { type: 'event', id, eventId: event.id, title: event.title, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
         })
       })
     }
@@ -3608,7 +3614,11 @@ export default function App() {
                     }
                   } : undefined}
                 >
-                  {item.text}
+                  {item.subtype === 'join' && item.joinVariant != null
+                    ? t(`feedJoin.${item.joinVariant}`, { name: item.nickname })
+                    : item.subtype === 'crowd' && item.variant != null
+                      ? t(`ambient.${item.variant}`)
+                      : item.text}
                   {item.createdAt && <span className="feed-join-time">{formatMsgTime(item.createdAt)}</span>}
                 </div>
               )
@@ -3650,14 +3660,14 @@ export default function App() {
               return (
                 <div key={item.id} className="feed-owner-prompt">
                   <div className="feed-owner-prompt-body">
-                    <span className="feed-owner-prompt-text">🔥 You started this event!</span>
-                    <span className="feed-owner-prompt-sub">Make it even better — add a description, update the time, or share it.</span>
+                    <span className="feed-owner-prompt-text">{t('ownerPrompt.text')}</span>
+                    <span className="feed-owner-prompt-sub">{t('ownerPrompt.sub')}</span>
                   </div>
                   <button
                     className="feed-owner-prompt-btn"
                     onClick={() => setShowEditEvent(true)}
                   >
-                    ✏️ Edit event
+                    {t('ownerPrompt.edit')}
                   </button>
                 </div>
               )
@@ -3667,24 +3677,24 @@ export default function App() {
               const ev = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
               return (
                 <div key={item.id} className="feed-prompt">
-                  <span className="feed-prompt-text">{item.text}</span>
-                  <button className="feed-prompt-btn" onClick={() => ev && handleSelectEvent(ev)}>{item.cta}</button>
+                  <span className="feed-prompt-text">{item.title ? t('feedNew.event', { title: item.title }) : item.text}</span>
+                  <button className="feed-prompt-btn" onClick={() => ev && handleSelectEvent(ev)}>{t('feedNew.join')}</button>
                 </div>
               )
             }
 
             if (item.type === 'topic') {
-              const topic = topics.find(t => t.id === item.topicId)
+              const topic = topics.find(tp => tp.id === item.topicId)
               if (!topic) return null
               const mc = topic.message_count ?? 0
-              const repliesText = mc > 0 ? ` · ${mc} ${mc === 1 ? 'reply' : 'replies'}` : ''
+              const repliesText = mc > 0 ? ` · ${t('feedNew.replies', { count: mc })}` : ''
               return (
                 <div key={item.id} className="feed-prompt feed-prompt--topic">
                   <span className="feed-prompt-text">🗣️ {topic.title}{repliesText}</span>
                   <button
                     className="feed-prompt-btn feed-prompt-btn--topic"
                     onClick={() => openHangout(topic)}
-                  >Join</button>
+                  >{t('feedNew.join')}</button>
                 </div>
               )
             }
@@ -3948,7 +3958,7 @@ export default function App() {
             <div className="reply-preview-body">
               <span className="reply-preview-name">{replyingTo.nickname}</span>
               <span className="reply-preview-text">
-                {replyingTo.type === 'image' ? '📷 Photo' : replyingTo.content}
+                {replyingTo.type === 'image' ? t('replyPreview.photo') : replyingTo.content}
               </span>
             </div>
             <button className="reply-preview-close" type="button" onClick={() => setReplyingTo(null)}>✕</button>
@@ -3969,9 +3979,9 @@ export default function App() {
           onEmojiClose={() => setShowEmoji(false)}
           placeholder={activeEvent
             ? feed.some(f => f.type === 'message')
-              ? `Say something at ${activeEvent.title} ✨`
-              : `Be the first at ${activeEvent.title} ✨`
-            : city ? PLACEHOLDERS[channelId % PLACEHOLDERS.length]() : ''
+              ? t('placeholder.event', { title: activeEvent.title })
+              : t('placeholder.eventFirst', { title: activeEvent.title })
+            : city ? cityComposerPlaceholder : ''
           }
           uploading={uploading}
           sending={sending}

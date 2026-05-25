@@ -141,5 +141,53 @@
     "keepClose": "Keep Hilads close",
     "manualHelp": "Open your browser menu and choose Add to Home Screen.",
     "dismiss": "Dismiss install prompt"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} just landed",
+    "1": "🔥 {{name}} joined them",
+    "2": "🍻 {{name}} is here",
+    "3": "👀 {{name}} just showed up",
+    "4": "✨ {{name}} arrived"
+  },
+  "ambient": {
+    "0": "🔥 People are arriving",
+    "1": "🍻 Who's out tonight?",
+    "2": "💬 The city is waking up",
+    "3": "🌙 Night owls are online",
+    "4": "👀 Someone just arrived",
+    "5": "🔥 New face in the city",
+    "6": "🎉 People are here right now",
+    "7": "🌆 Locals checking in"
+  },
+  "ownerPrompt": {
+    "text": "🔥 You started this event!",
+    "sub": "Make it even better — add a description, update the time, or share it.",
+    "edit": "✏️ Edit event"
+  },
+  "feedNew": {
+    "event": "🔥 New event: {{title}}",
+    "join": "Join",
+    "replies_one": "{{count}} reply",
+    "replies_other": "{{count}} replies"
+  },
+  "replyPreview": {
+    "photo": "📷 Photo"
+  },
+  "placeholder": {
+    "event": "Say something at {{title}} ✨",
+    "eventFirst": "Be the first at {{title}} ✨"
+  },
+  "placeholders": [
+    "Say hi 👋",
+    "Who's out tonight?",
+    "Any plans? 👀",
+    "What's happening here?",
+    "Anyone up for something? 🍻",
+    "Drop a message…"
+  ],
+  "typing": {
+    "one": "{{name}} is typing…",
+    "two": "{{a}} and {{b}} are typing…",
+    "many": "Several people are typing…"
   }
 }

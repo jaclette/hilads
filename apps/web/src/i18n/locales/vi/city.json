@@ -138,5 +138,52 @@
     "keepClose": "Giữ Hilads bên cạnh",
     "manualHelp": "Mở menu trình duyệt và chọn Thêm vào Màn hình chính.",
     "dismiss": "Đóng lời nhắc cài đặt"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} vừa đến",
+    "1": "🔥 {{name}} đã tham gia cùng họ",
+    "2": "🍻 {{name}} đang ở đây",
+    "3": "👀 {{name}} vừa xuất hiện",
+    "4": "✨ {{name}} đã đến"
+  },
+  "ambient": {
+    "0": "🔥 Mọi người đang đến",
+    "1": "🍻 Tối nay ai đi chơi?",
+    "2": "💬 Thành phố đang thức dậy",
+    "3": "🌙 Hội cú đêm đang trực tuyến",
+    "4": "👀 Có người vừa đến",
+    "5": "🔥 Một gương mặt mới trong thành phố",
+    "6": "🎉 Mọi người đang ở đây ngay bây giờ",
+    "7": "🌆 Dân địa phương đang điểm danh"
+  },
+  "ownerPrompt": {
+    "text": "🔥 Bạn đã tạo sự kiện này!",
+    "sub": "Làm cho nó tốt hơn — thêm mô tả, cập nhật thời gian hoặc chia sẻ.",
+    "edit": "✏️ Sửa sự kiện"
+  },
+  "feedNew": {
+    "event": "🔥 Sự kiện mới: {{title}}",
+    "join": "Tham gia",
+    "replies_other": "{{count}} trả lời"
+  },
+  "replyPreview": {
+    "photo": "📷 Ảnh"
+  },
+  "placeholder": {
+    "event": "Nói gì đó tại {{title}} ✨",
+    "eventFirst": "Hãy là người đầu tiên tại {{title}} ✨"
+  },
+  "placeholders": [
+    "Chào 👋",
+    "Tối nay ai đi chơi?",
+    "Có kế hoạch gì không? 👀",
+    "Ở đây đang có gì?",
+    "Ai muốn làm gì đó không? 🍻",
+    "Gửi một tin nhắn…"
+  ],
+  "typing": {
+    "one": "{{name}} đang nhập…",
+    "two": "{{a}} và {{b}} đang nhập…",
+    "many": "Nhiều người đang nhập…"
   }
 }

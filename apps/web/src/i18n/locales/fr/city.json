@@ -141,5 +141,53 @@
     "keepClose": "Garde Hilads à portée",
     "manualHelp": "Ouvre le menu de ton navigateur et choisis « Sur l'écran d'accueil ».",
     "dismiss": "Fermer l'invite d'installation"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} vient d'arriver",
+    "1": "🔥 {{name}} les a rejoints",
+    "2": "🍻 {{name}} est là",
+    "3": "👀 {{name}} vient de débarquer",
+    "4": "✨ {{name}} est arrivé"
+  },
+  "ambient": {
+    "0": "🔥 Les gens arrivent",
+    "1": "🍻 Qui sort ce soir ?",
+    "2": "💬 La ville se réveille",
+    "3": "🌙 Les oiseaux de nuit sont en ligne",
+    "4": "👀 Quelqu'un vient d'arriver",
+    "5": "🔥 Un nouveau visage dans la ville",
+    "6": "🎉 Des gens sont là maintenant",
+    "7": "🌆 Des locaux pointent le bout du nez"
+  },
+  "ownerPrompt": {
+    "text": "🔥 Tu as lancé cet événement !",
+    "sub": "Rends-le encore meilleur — ajoute une description, change l'heure ou partage-le.",
+    "edit": "✏️ Modifier l'événement"
+  },
+  "feedNew": {
+    "event": "🔥 Nouvel événement : {{title}}",
+    "join": "Rejoindre",
+    "replies_one": "{{count}} réponse",
+    "replies_other": "{{count}} réponses"
+  },
+  "replyPreview": {
+    "photo": "📷 Photo"
+  },
+  "placeholder": {
+    "event": "Dis quelque chose à {{title}} ✨",
+    "eventFirst": "Sois le premier à {{title}} ✨"
+  },
+  "placeholders": [
+    "Dis bonjour 👋",
+    "Qui sort ce soir ?",
+    "Des plans ? 👀",
+    "Qu'est-ce qui se passe ici ?",
+    "Quelqu'un partant pour un truc ? 🍻",
+    "Écris un message…"
+  ],
+  "typing": {
+    "one": "{{name}} écrit…",
+    "two": "{{a}} et {{b}} écrivent…",
+    "many": "Plusieurs personnes écrivent…"
   }
 }
