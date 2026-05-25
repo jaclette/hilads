@@ -68,19 +68,37 @@
     "noEvents": "Aucun événement pour l'instant",
     "noHangouts": "Pas encore de hangout",
     "noEventsSub": "Sois le premier à en créer un à {{city}}",
-    "noHangoutsSub": "Lance un hangout et fais parler la ville"
+    "noHangoutsSub": "Lance un hangout et fais parler la ville",
+    "filterAll": "Tout",
+    "seeComing": "À venir 🔮",
+    "seeHappened": "Événements passés",
+    "createNew": "Créer"
   },
   "header": {
-    "online": "{{count}} dans le coin",
+    "online": "{{count}} près de toi",
     "liveNow": "en direct",
     "seeWhosHere": "Vois qui est là",
-    "onlineAria": "{{count}} personnes dans le coin, touche pour voir qui",
+    "onlineAria": "{{count}} personnes près de toi, touche pour voir qui",
     "notifications": "Notifications",
     "messages": "Messages",
     "shareCity": "Partager la ville",
     "switchCity": "Changer de ville",
     "changeCity": "Changer de ville",
     "currentWeather": "Météo actuelle : {{label}}"
+  },
+  "here": {
+    "title": "Les gens ici",
+    "filterBadge": "Badge",
+    "filterVibe": "Vibe",
+    "filterMode": "Mode",
+    "you": "(toi)",
+    "hereNow": "Here now",
+    "noMatchLive": "Personne ne correspond à ces filtres pour le moment.",
+    "legendsSub": "Ils font bouger la ville",
+    "cityCrew": "L'équipe de la ville",
+    "noMatchCrew": "Aucun membre ne correspond à ces filtres.",
+    "loadMore": "Voir plus",
+    "messageAria": "Envoyer un message à {{name}}"
   },
   "eventHeader": {
     "yourEvent": "Ton événement",

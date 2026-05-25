@@ -46,18 +46,18 @@
     "exploring": { "label": "Explorateur", "desc": "Tu la découvres" }
   },
   "badge": {
-    "ghost": "👻 Fantôme",
-    "fresh": "✨ Nouveau",
-    "regular": "😎 Habitué",
-    "host": "👑 Légende"
+    "ghost": "👻 Ghost",
+    "fresh": "✨ Fresh",
+    "regular": "😎 Crew",
+    "host": "👑 Legend"
   },
   "vibe": {
-    "party": "Fête",
-    "board_games": "Jeux de société",
-    "coffee": "Café",
-    "music": "Musique",
-    "food": "Cuisine",
-    "chill": "Détente"
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Coffee",
+    "music": "Music",
+    "food": "Food",
+    "chill": "Chill"
   },
   "live": "EN DIRECT",
   "activeNow": "● Actif maintenant",

@@ -46,18 +46,18 @@
     "exploring": { "label": "Khám phá", "desc": "Bạn đang khám phá nó" }
   },
   "badge": {
-    "ghost": "👻 Vãng lai",
-    "fresh": "✨ Mới",
-    "regular": "😎 Quen thuộc",
-    "host": "👑 Huyền thoại"
+    "ghost": "👻 Ghost",
+    "fresh": "✨ Fresh",
+    "regular": "😎 Crew",
+    "host": "👑 Legend"
   },
   "vibe": {
-    "party": "Tiệc",
-    "board_games": "Trò chơi",
-    "coffee": "Cà phê",
-    "music": "Âm nhạc",
-    "food": "Đồ ăn",
-    "chill": "Thư giãn"
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Coffee",
+    "music": "Music",
+    "food": "Food",
+    "chill": "Chill"
   },
   "live": "TRỰC TIẾP",
   "activeNow": "● Đang hoạt động",

@@ -66,19 +66,37 @@
     "noEvents": "Chưa có sự kiện nào",
     "noHangouts": "Chưa có hangout",
     "noEventsSub": "Hãy là người đầu tiên tạo một cái ở {{city}}",
-    "noHangoutsSub": "Tạo hangout và khiến cả thành phố trò chuyện"
+    "noHangoutsSub": "Tạo hangout và khiến cả thành phố trò chuyện",
+    "filterAll": "Tất cả",
+    "seeComing": "Sắp tới 🔮",
+    "seeHappened": "Sự kiện đã qua",
+    "createNew": "Tạo mới"
   },
   "header": {
-    "online": "{{count}} đang ở quanh đây",
+    "online": "{{count}} ở gần",
     "liveNow": "đang trực tiếp",
     "seeWhosHere": "Xem ai đang ở đây",
-    "onlineAria": "{{count}} người đang ở quanh đây, chạm để xem",
+    "onlineAria": "{{count}} người ở gần, chạm để xem",
     "notifications": "Thông báo",
     "messages": "Tin nhắn",
     "shareCity": "Chia sẻ thành phố",
     "switchCity": "Đổi thành phố",
     "changeCity": "Đổi thành phố",
     "currentWeather": "Thời tiết hiện tại: {{label}}"
+  },
+  "here": {
+    "title": "Mọi người ở đây",
+    "filterBadge": "Huy hiệu",
+    "filterVibe": "Vibe",
+    "filterMode": "Chế độ",
+    "you": "(bạn)",
+    "hereNow": "Here now",
+    "noMatchLive": "Hiện không có ai khớp với các bộ lọc này.",
+    "legendsSub": "Họ làm cho thành phố sôi động",
+    "cityCrew": "Nhóm thành phố",
+    "noMatchCrew": "Không có thành viên nào khớp với các bộ lọc này.",
+    "loadMore": "Xem thêm",
+    "messageAria": "Nhắn tin cho {{name}}"
   },
   "eventHeader": {
     "yourEvent": "Sự kiện của bạn",

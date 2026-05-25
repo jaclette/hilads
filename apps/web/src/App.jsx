@@ -395,13 +395,14 @@ function typingText(users, mySessionId, t) {
 
 // ── Vibe display ──────────────────────────────────────────────────────────────
 
+// Vibe labels live in brand.json (reserved vocabulary — English in every locale).
 const VIBE_META = {
-  party:       { emoji: '🔥', label: 'Party' },
-  board_games: { emoji: '🎲', label: 'Board Games' },
-  coffee:      { emoji: '☕', label: 'Coffee' },
-  music:       { emoji: '🎧', label: 'Music' },
-  food:        { emoji: '🍜', label: 'Food' },
-  chill:       { emoji: '🧘', label: 'Chill' },
+  party:       { emoji: '🔥', label: i18n.t('vibe.party',       { ns: 'brand', defaultValue: 'Party' }) },
+  board_games: { emoji: '🎲', label: i18n.t('vibe.board_games', { ns: 'brand', defaultValue: 'Board Games' }) },
+  coffee:      { emoji: '☕', label: i18n.t('vibe.coffee',      { ns: 'brand', defaultValue: 'Coffee' }) },
+  music:       { emoji: '🎧', label: i18n.t('vibe.music',       { ns: 'brand', defaultValue: 'Music' }) },
+  food:        { emoji: '🍜', label: i18n.t('vibe.food',        { ns: 'brand', defaultValue: 'Food' }) },
+  chill:       { emoji: '🧘', label: i18n.t('vibe.chill',       { ns: 'brand', defaultValue: 'Chill' }) },
 }
 
 const MODE_META = {
@@ -3751,7 +3752,7 @@ export default function App() {
                         {(item.nickname ?? '?')[0].toUpperCase()}
                       </span>
                       <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
-                      {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {MODE_META[m].label}</span> : null; })()}
+                      {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`mode.${m}.label`, { ns: 'common' })}</span> : null; })()}
                       {item.vibe && VIBE_META[item.vibe] && (
                         <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                       )}
@@ -4150,7 +4151,7 @@ export default function App() {
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all' ? 'All' : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
+                {f === 'all' ? t('feed.filterAll') : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
               </button>
             ))}
           </div>
@@ -4391,12 +4392,12 @@ export default function App() {
               className="upcoming-cta upcoming-cta--inline"
               onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
             >
-              See what's coming 🔮
+              {t('feed.seeComing')}
             </button>
             <button
               className="now-create-btn"
               onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
-              aria-label="Create new"
+              aria-label={t('feed.createNew')}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -4414,7 +4415,7 @@ export default function App() {
               setShowPastArchive(true)
             }}
           >
-            see what happened →
+            {t('feed.seeHappened')} →
           </button>
         </div>
       )}
@@ -4442,12 +4443,12 @@ export default function App() {
       {showPeopleDrawer && !viewingProfile && (() => {
         // ── helpers scoped to this render ──────────────────────────────────────
         const BADGE_FILTER_OPTIONS = [
-          { key: 'fresh',   label: '✨ Fresh'  },
-          { key: 'regular', label: '😎 Crew'   },
-          { key: 'host',    label: '👑 Legend' },
+          { key: 'fresh',   label: badgeLabel('fresh')   },
+          { key: 'regular', label: badgeLabel('regular') },
+          { key: 'host',    label: badgeLabel('host')    },
         ]
         const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
-        const MODE_FILTER_OPTIONS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
+        const MODE_FILTER_OPTIONS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${t(`mode.${k}.label`, { ns: 'common' })}` }))
 
         // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
         // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from it.
@@ -4502,7 +4503,7 @@ export default function App() {
               }
               <div className="people-drawer-content">
                 <span className="people-drawer-name">
-                  {user.nickname}{user.isMe && <span className="people-drawer-you"> (you)</span>}
+                  {user.nickname}{user.isMe && <span className="people-drawer-you"> {t('here.you')}</span>}
                 </span>
                 <div className="people-drawer-meta">
                   {user.mode && MODE_META[user.mode] && (
@@ -4511,8 +4512,8 @@ export default function App() {
                   {user.primaryBadge
                     ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
                     : user.isRegistered
-                      ? <span className="badge-pill badge-pill--regular">Regular</span>
-                      : <span className="badge-pill badge-pill--ghost">👻 Ghost</span>
+                      ? <span className="badge-pill badge-pill--regular">{badgeLabel('regular')}</span>
+                      : <span className="badge-pill badge-pill--ghost">{badgeLabel('ghost')}</span>
                   }
                   {user.contextBadge && (
                     <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{user.contextBadge.label}</span>
@@ -4523,7 +4524,7 @@ export default function App() {
                 </div>
               </div>
               {!user.isMe && user.isRegistered && (
-                <button className="people-dm-btn" aria-label={`Message ${user.nickname}`}
+                <button className="people-dm-btn" aria-label={t('here.messageAria', { name: user.nickname })}
                   onClick={async (e) => {
                     e.stopPropagation()
                     if (!account) { setShowPeopleDrawer(false); setShowProfileDrawer(true); setShowAuthScreen(true); return }
@@ -4574,13 +4575,13 @@ export default function App() {
               {renderAppHeader()}
             </div>
             <div className="page-header">
-              <span className="page-title">People here</span>
+              <span className="page-title">{t('here.title')}</span>
             </div>
 
             {/* ── Filters ── */}
             <div className="here-filters">
               <div className="here-filter-row">
-                <span className="here-filter-label">Badge</span>
+                <span className="here-filter-label">{t('here.filterBadge')}</span>
                 <div className="here-filter-chips">
                   {BADGE_FILTER_OPTIONS.map(opt => (
                     <button key={opt.key}
@@ -4591,7 +4592,7 @@ export default function App() {
                 </div>
               </div>
               <div className="here-filter-row">
-                <span className="here-filter-label">Vibe</span>
+                <span className="here-filter-label">{t('here.filterVibe')}</span>
                 <div className="here-filter-chips">
                   {VIBE_FILTER_OPTIONS.map(opt => (
                     <button key={opt.key}
@@ -4602,7 +4603,7 @@ export default function App() {
                 </div>
               </div>
               <div className="here-filter-row">
-                <span className="here-filter-label">Mode</span>
+                <span className="here-filter-label">{t('here.filterMode')}</span>
                 <div className="here-filter-chips">
                   {MODE_FILTER_OPTIONS.map(opt => (
                     <button key={opt.key}
@@ -4619,10 +4620,10 @@ export default function App() {
               {/* ── Section 1: Here now ── */}
               <div className="here-section-header">
                 <span className="here-section-dot here-section-dot--live" />
-                Here now · {filteredOnline.length}
+                {t('here.hereNow')} · {filteredOnline.length}
               </div>
               {filteredOnline.length === 0
-                ? <p className="here-section-empty">Nobody matches these filters right now.</p>
+                ? <p className="here-section-empty">{t('here.noMatchLive')}</p>
                 : filteredOnline.map(renderOnlineUser)
               }
 
@@ -4631,7 +4632,7 @@ export default function App() {
                 <>
                   <div className="here-section-header here-section-header--legends" style={{ marginTop: 20 }}>
                     👑 Hilads Legends
-                    <span className="here-legends-hook">They make the city happen</span>
+                    <span className="here-legends-hook">{t('here.legendsSub')}</span>
                   </div>
                   {legends.map(m => {
                     const [c1, c2] = avatarColors(m.displayName)
@@ -4666,17 +4667,17 @@ export default function App() {
 
               {/* ── Section 3: City crew ── */}
               <div className="here-section-header" style={{ marginTop: 20 }}>
-                🏙️ City crew
+                🏙️ {t('here.cityCrew')}
               </div>
               {crewLoading && crewMembers.length === 0
-                ? <p className="here-section-empty">Loading…</p>
+                ? <p className="here-section-empty">{t('loading', { ns: 'common' })}</p>
                 : crewMembers.length === 0
-                  ? <p className="here-section-empty">No members match these filters.</p>
+                  ? <p className="here-section-empty">{t('here.noMatchCrew')}</p>
                   : crewMembers.map(renderCrewMember)
               }
               {crewHasMore && (
                 <button className="here-load-more" onClick={loadMoreCrew} disabled={crewLoading}>
-                  {crewLoading ? 'Loading…' : 'Load more'}
+                  {crewLoading ? t('loading', { ns: 'common' }) : t('here.loadMore')}
                 </button>
               )}
 

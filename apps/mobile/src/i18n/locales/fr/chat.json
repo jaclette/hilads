@@ -5,9 +5,9 @@
   "shareMessage": "Vois qui est dans le coin à {{city}} ce soir sur Hilads. Activité de la ville en temps réel, sans inscription.",
   "currentWeather": "Météo actuelle : {{label}}",
   "weatherAlert": "Météo",
-  "online": "{{count}} dans le coin",
+  "online": "{{count}} près de toi",
   "liveNow": "en direct",
-  "onlineAria": "{{count}} personnes dans le coin, touche pour voir qui",
+  "onlineAria": "{{count}} personnes près de toi, touche pour voir qui",
   "typingOne": "{{name}} écrit…",
   "typingTwo": "{{a}} et {{b}} écrivent…",
   "typingMany": "{{name}} et {{count}} autres écrivent…",
@@ -23,7 +23,7 @@
   "failedRetry": "Échec de l'envoi · touche pour réessayer",
   "feedJoin": {
     "0": "👋 {{name}} vient d'arriver",
-    "1": "🔥 {{name}} les a rejoints",
+    "1": "🔥 {{name}} nous a rejoint",
     "2": "🍻 {{name}} est là",
     "3": "👀 {{name}} vient de débarquer",
     "4": "✨ {{name}} est arrivé"

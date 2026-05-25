@@ -2,6 +2,10 @@
   "language": "Language",
   "cancel": "Cancel",
   "loading": "Loading…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "Exploring" }
+  },
   "composer": {
     "attach": "Add attachment",
     "emoji": "Emoji"

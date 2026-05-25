@@ -2,6 +2,10 @@
   "language": "Ngôn ngữ",
   "cancel": "Hủy",
   "loading": "Đang tải…",
+  "mode": {
+    "local": { "label": "Địa phương" },
+    "exploring": { "label": "Khám phá" }
+  },
   "composer": {
     "attach": "Thêm tệp đính kèm",
     "emoji": "Emoji"

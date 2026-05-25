@@ -68,19 +68,37 @@
     "noEvents": "No events right now",
     "noHangouts": "No hangouts yet",
     "noEventsSub": "Be the first to create one in {{city}}",
-    "noHangoutsSub": "Start a hangout and get the city talking"
+    "noHangoutsSub": "Start a hangout and get the city talking",
+    "filterAll": "All",
+    "seeComing": "See what's coming 🔮",
+    "seeHappened": "see what happened",
+    "createNew": "Create new"
   },
   "header": {
-    "online": "{{count}} hanging out",
+    "online": "{{count}} nearby",
     "liveNow": "live now",
     "seeWhosHere": "See who's here",
-    "onlineAria": "{{count}} people hanging out, tap to see who",
+    "onlineAria": "{{count}} people nearby, tap to see who",
     "notifications": "Notifications",
     "messages": "Messages",
     "shareCity": "Share city",
     "switchCity": "Switch city",
     "changeCity": "Change city",
     "currentWeather": "Current weather: {{label}}"
+  },
+  "here": {
+    "title": "People here",
+    "filterBadge": "Badge",
+    "filterVibe": "Vibe",
+    "filterMode": "Mode",
+    "you": "(you)",
+    "hereNow": "Here now",
+    "noMatchLive": "Nobody matches these filters right now.",
+    "legendsSub": "They make the city happen",
+    "cityCrew": "City crew",
+    "noMatchCrew": "No members match these filters.",
+    "loadMore": "Load more",
+    "messageAria": "Message {{name}}"
   },
   "eventHeader": {
     "yourEvent": "Your event",

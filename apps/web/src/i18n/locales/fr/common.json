@@ -2,6 +2,10 @@
   "language": "Langue",
   "cancel": "Annuler",
   "loading": "Chargement…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "Explorateur" }
+  },
   "composer": {
     "attach": "Ajouter une pièce jointe",
     "emoji": "Emoji"
