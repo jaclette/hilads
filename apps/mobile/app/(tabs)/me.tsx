@@ -20,6 +20,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -44,17 +45,17 @@ import { LanguageRow } from '@/features/settings/LanguageRow';
 // ── Constants — must match backend allowed lists ──────────────────────────────
 
 const MODES = [
-  { key: 'local',     emoji: '🌍', label: 'Local',     desc: 'You know this city'    },
-  { key: 'exploring', emoji: '🧭', label: 'Exploring', desc: "You're discovering it" },
+  { key: 'local',     emoji: '🌍' },
+  { key: 'exploring', emoji: '🧭' },
 ] as const;
 
 const VIBES = [
-  { key: 'party',       emoji: '🔥', label: 'Party'       },
-  { key: 'board_games', emoji: '🎲', label: 'Board Games' },
-  { key: 'coffee',      emoji: '☕', label: 'Coffee'       },
-  { key: 'music',       emoji: '🎧', label: 'Music'        },
-  { key: 'food',        emoji: '🍜', label: 'Food'         },
-  { key: 'chill',       emoji: '🧘', label: 'Chill'        },
+  { key: 'party',       emoji: '🔥' },
+  { key: 'board_games', emoji: '🎲' },
+  { key: 'coffee',      emoji: '☕' },
+  { key: 'music',       emoji: '🎧' },
+  { key: 'food',        emoji: '🍜' },
+  { key: 'chill',       emoji: '🧘' },
 ] as const;
 
 const INTERESTS = [
@@ -72,13 +73,7 @@ const EVENT_ICONS: Record<string, string> = {
 
 type ProfileTab = 'interests' | 'hangouts' | 'events' | 'friends' | 'vibes';
 
-const PROFILE_TABS: { key: ProfileTab; label: string }[] = [
-  { key: 'interests', label: 'Interests' },
-  { key: 'hangouts',  label: 'Hangouts'  },
-  { key: 'events',    label: 'Events'    },
-  { key: 'friends',   label: 'Friends'   },
-  { key: 'vibes',     label: 'Vibes'     },
-];
+const PROFILE_TABS: ProfileTab[] = ['interests', 'hangouts', 'events', 'friends', 'vibes'];
 
 const HANGOUT_ICONS: Record<string, string> = {
   general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
@@ -92,14 +87,6 @@ function cityFlag(countryCode?: string): string {
     .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
     .join('');
 }
-
-const BADGE_MICROCOPY: Record<string, string> = {
-  ghost: 'Just browsing 👀',
-  fresh: 'Just landed 👶',
-  regular: 'Shows up often',
-  local: 'Knows the city',
-  host:  'Makes it happen 🔥',
-};
 
 // ── Badge helpers ─────────────────────────────────────────────────────────────
 
@@ -123,12 +110,21 @@ function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BA
 
 export default function MeScreen() {
   const router  = useRouter();
+  const { t }   = useTranslation('me');
   const insets  = useSafeAreaInsets();
   const { tab: tabParam } = useLocalSearchParams<{ tab?: string }>();
   const { identity, account, setAccount, setIdentity, logout, city } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
-  const validTabs = PROFILE_TABS.map(t => t.key);
+  // Feature labels (Hangouts / Events / Vibes) stay English; Interests & Friends translate.
+  const tabLabel = (key: ProfileTab): string =>
+    key === 'interests' ? t('tabInterests')
+    : key === 'friends' ? t('tabFriends')
+    : key === 'hangouts' ? 'Hangouts'
+    : key === 'events'   ? 'Events'
+    : 'Vibes';
+
+  const validTabs = PROFILE_TABS;
   const initialTab = (validTabs.includes(tabParam as ProfileTab) ? tabParam : 'interests') as ProfileTab;
   const [activeTab,          setActiveTab]          = useState<ProfileTab>(initialTab);
   const [username,           setUsername]           = useState(account?.username ?? '');
@@ -238,7 +234,7 @@ export default function MeScreen() {
   async function handlePickPhoto() {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission needed', 'Allow photo access to upload a profile picture.');
+      Alert.alert(t('photoPermTitle'), t('photoPermBody'));
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -261,7 +257,7 @@ export default function MeScreen() {
       setPendingPhotoUri(null);
     } catch {
       setPendingPhotoUri(null);
-      Alert.alert('Upload failed', 'Could not upload photo. Please try again.');
+      Alert.alert(t('uploadFailTitle'), t('uploadFailBody'));
     } finally {
       setPhotoUploading(false);
     }
@@ -276,10 +272,10 @@ export default function MeScreen() {
   }
 
   function handleDeleteEvent(event: HiladsEvent) {
-    Alert.alert('Delete event', `Delete "${event.title}"?`, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('deleteEventTitle'), t('deleteEventBody', { title: event.title }), [
+      { text: t('cancel', { ns: 'common' }), style: 'cancel' },
       {
-        text: 'Delete', style: 'destructive',
+        text: t('delete'), style: 'destructive',
         onPress: async () => {
           const before = localEvents;
           setLocalEvents(prev => prev.filter(e => e.id !== event.id));
@@ -321,10 +317,10 @@ export default function MeScreen() {
     // Username is the single identity field — it doubles as the display name.
     const handle        = username.trim().toLowerCase();
     const handleChanged = handle !== (account?.username ?? '');
-    if (handle.length < 3)     { setSaveError('Username must be at least 3 characters'); return; }
+    if (handle.length < 3)     { setSaveError(t('errUsernameShort')); return; }
     if (handleChanged) {
-      if (uStatus === 'taken')   { setSaveError('That username is taken'); return; }
-      if (uStatus === 'invalid') { setSaveError(uReason ?? 'Invalid username'); return; }
+      if (uStatus === 'taken')   { setSaveError(t('errUsernameTaken')); return; }
+      if (uStatus === 'invalid') { setSaveError(uReason ?? t('errUsernameInvalid')); return; }
     }
     setSaving(true);
     setSaveError(null);
@@ -352,7 +348,7 @@ export default function MeScreen() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch {
-      setSaveError('Failed to save — try again');
+      setSaveError(t('errSave'));
     } finally {
       setSaving(false);
     }
@@ -369,23 +365,23 @@ export default function MeScreen() {
   }
 
   function handleLogout() {
-    Alert.alert('Sign out', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign out', style: 'destructive', onPress: () => logout() },
+    Alert.alert(t('signOutTitle'), t('signOutBody'), [
+      { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+      { text: t('signOut'), style: 'destructive', onPress: () => logout() },
     ]);
   }
 
   function handleDeleteAccount() {
     Alert.alert(
-      'Delete account?',
-      'Your profile, friends, and settings will be permanently removed.\n\nThis cannot be undone.',
+      t('deleteAccountTitle'),
+      t('deleteAccountBody'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
         {
-          text: 'Delete my account', style: 'destructive',
+          text: t('deleteAccountConfirm'), style: 'destructive',
           onPress: async () => {
             try { await deleteAccount(); await logout(); }
-            catch { Alert.alert('Error', 'Could not delete account. Try again.'); }
+            catch { Alert.alert(t('errorTitle'), t('deleteAccountFail')); }
           },
         },
       ],
@@ -405,7 +401,7 @@ export default function MeScreen() {
       {/* ══ STICKY: Page header ══════════════════════════════════════════════ */}
       <View style={styles.header}>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>My Profile</Text>
+          <Text style={styles.headerTitle}>{t('title')}</Text>
         </View>
       </View>
 
@@ -458,7 +454,7 @@ export default function MeScreen() {
                   {account?.primaryBadge && (
                     <View style={[styles.memberBadge, meBadgeBg(account.primaryBadge.key)]}>
                       <Text style={[styles.memberBadgeText, meBadgeColor(account.primaryBadge.key)]}>
-                        {account.primaryBadge.label}
+                        {t(`badge.${account.primaryBadge.key}`, { ns: 'common', defaultValue: account.primaryBadge.label })}
                       </Text>
                     </View>
                   )}
@@ -469,7 +465,7 @@ export default function MeScreen() {
                 {selectedVibe && VIBES.find(v => v.key === selectedVibe) ? (
                   <Text style={styles.identityMetaVibe}>
                     {VIBES.find(v => v.key === selectedVibe)!.emoji}{' '}
-                    {VIBES.find(v => v.key === selectedVibe)!.label}
+                    {t(`vibe.${selectedVibe}`, { ns: 'common' })}
                   </Text>
                 ) : null}
               </View>
@@ -477,7 +473,7 @@ export default function MeScreen() {
 
             {/* Mode selector — compact 2-button toggle */}
             <View style={styles.modeSection}>
-              <Text style={styles.modeSectionLabel}>MODE</Text>
+              <Text style={styles.modeSectionLabel}>{t('modeHeading', { ns: 'common' })}</Text>
               <View style={styles.modeSelectorRow}>
                 {MODES.map(m => {
                   const active = selectedMode === m.key;
@@ -489,8 +485,8 @@ export default function MeScreen() {
                       activeOpacity={0.75}
                     >
                       <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
-                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
-                      <Text style={styles.modeBtnDesc}>{m.desc}</Text>
+                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{t(`mode.${m.key}.label`, { ns: 'common' })}</Text>
+                      <Text style={styles.modeBtnDesc}>{t(`mode.${m.key}.desc`, { ns: 'common' })}</Text>
                     </TouchableOpacity>
                   );
                 })}
@@ -503,7 +499,7 @@ export default function MeScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.filterBar}
             >
-              {PROFILE_TABS.map(({ key, label }) => (
+              {PROFILE_TABS.map(key => (
                 <TouchableOpacity
                   key={key}
                   style={[styles.filterPill, activeTab === key && styles.filterPillActive]}
@@ -511,7 +507,7 @@ export default function MeScreen() {
                   activeOpacity={0.7}
                 >
                   <Text style={[styles.filterPillLabel, activeTab === key && styles.filterPillLabelActive]}>
-                    {label}
+                    {tabLabel(key)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -529,15 +525,15 @@ export default function MeScreen() {
               <Text style={styles.avatarName}>{identity?.nickname ?? '—'}</Text>
               <View style={styles.badgeBlock}>
                 <View style={[styles.memberBadge, meBadgeBg('ghost')]}>
-                  <Text style={[styles.memberBadgeText, meBadgeColor('ghost')]}>👻 Ghost</Text>
+                  <Text style={[styles.memberBadgeText, meBadgeColor('ghost')]}>{t('badge.ghost', { ns: 'common' })}</Text>
                 </View>
-                <Text style={styles.badgeMicrocopy}>{BADGE_MICROCOPY.ghost}</Text>
+                <Text style={styles.badgeMicrocopy}>{t('ghostBrowsing')}</Text>
               </View>
-              <Text style={styles.accountType}>Guest session</Text>
+              <Text style={styles.accountType}>{t('guestSession')}</Text>
             </View>
 
             <View style={styles.guestModeCard}>
-              <Text style={styles.guestModeLabel}>MODE</Text>
+              <Text style={styles.guestModeLabel}>{t('modeHeading', { ns: 'common' })}</Text>
               <View style={styles.modeSelectorRow}>
                 {MODES.map(m => {
                   const active = selectedMode === m.key;
@@ -549,8 +545,8 @@ export default function MeScreen() {
                       activeOpacity={0.75}
                     >
                       <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
-                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{m.label}</Text>
-                      <Text style={styles.modeBtnDesc}>{m.desc}</Text>
+                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{t(`mode.${m.key}.label`, { ns: 'common' })}</Text>
+                      <Text style={styles.modeBtnDesc}>{t(`mode.${m.key}.desc`, { ns: 'common' })}</Text>
                     </TouchableOpacity>
                   );
                 })}
@@ -558,12 +554,12 @@ export default function MeScreen() {
             </View>
 
             <View style={styles.upgradeCard}>
-              <Text style={styles.upgradeTitle}>Make it yours</Text>
-              <Text style={styles.upgradeSub}>Save your name. Stay in the loop.</Text>
-              <PrimaryButton label="Create account" onPress={() => router.push('/sign-up')} />
-              <Text style={styles.upgradeSignInHint}>Already have an account?</Text>
+              <Text style={styles.upgradeTitle}>{t('makeItYours')}</Text>
+              <Text style={styles.upgradeSub}>{t('upgradeSub')}</Text>
+              <PrimaryButton label={t('createAccount')} onPress={() => router.push('/sign-up')} />
+              <Text style={styles.upgradeSignInHint}>{t('haveAccount')}</Text>
               <TouchableOpacity style={styles.upgradeSecondary} onPress={() => router.push('/sign-in')} activeOpacity={0.8}>
-                <Text style={styles.upgradeSecondaryText}>Sign in</Text>
+                <Text style={styles.upgradeSecondaryText}>{t('signIn')}</Text>
               </TouchableOpacity>
             </View>
 
@@ -577,14 +573,14 @@ export default function MeScreen() {
             <View style={styles.fieldsCard}>
               {/* USERNAME */}
               <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>USERNAME</Text>
+                <Text style={styles.fieldLabel}>{t('fieldUsername')}</Text>
                 <View style={styles.usernameRow}>
                   <Text style={styles.usernameAt}>@</Text>
                   <TextInput
                     style={styles.usernameInput}
                     value={username}
                     onChangeText={handleUsernameChange}
-                    placeholder="username"
+                    placeholder={t('usernamePlaceholder')}
                     placeholderTextColor={Colors.muted2}
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -594,7 +590,7 @@ export default function MeScreen() {
                   {uStatus === 'available' && <Text style={styles.uOk}>✓</Text>}
                   {(uStatus === 'taken' || uStatus === 'invalid') && <Text style={styles.uBad}>✗</Text>}
                 </View>
-                {uStatus === 'available' && <Text style={styles.uOkHint}>@{username} is available</Text>}
+                {uStatus === 'available' && <Text style={styles.uOkHint}>{t('available', { username })}</Text>}
                 {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
                   <Text style={styles.uBadHint}>{uReason}</Text>
                 )}
@@ -602,12 +598,12 @@ export default function MeScreen() {
 
               {/* ABOUT ME */}
               <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>ABOUT ME <Text style={styles.fieldLabelMeta}>{150 - aboutMe.length} left</Text></Text>
+                <Text style={styles.fieldLabel}>{t('fieldAbout')} <Text style={styles.fieldLabelMeta}>{t('aboutLeft', { count: 150 - aboutMe.length })}</Text></Text>
                 <TextInput
                   style={[styles.fieldInput, styles.fieldInputMultiline]}
                   value={aboutMe}
                   onChangeText={setAboutMe}
-                  placeholder="Love street food and random convos"
+                  placeholder={t('aboutPlaceholder')}
                   placeholderTextColor={Colors.muted2}
                   maxLength={150}
                   multiline
@@ -619,7 +615,7 @@ export default function MeScreen() {
               {/* EMAIL — read only */}
               {account?.email ? (
                 <View style={styles.fieldGroup}>
-                  <Text style={styles.fieldLabel}>EMAIL</Text>
+                  <Text style={styles.fieldLabel}>{t('fieldEmail')}</Text>
                   <TextInput
                     style={[styles.fieldInput, styles.fieldInputReadOnly]}
                     value={account.email}
@@ -631,12 +627,12 @@ export default function MeScreen() {
 
               {/* HOME CITY */}
               <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>HOME CITY</Text>
+                <Text style={styles.fieldLabel}>{t('fieldHomeCity')}</Text>
                 <TextInput
                   style={styles.fieldInput}
                   value={homeCity}
                   onChangeText={setHomeCity}
-                  placeholder="e.g. saigon"
+                  placeholder={t('homeCityPlaceholder')}
                   placeholderTextColor={Colors.muted2}
                   maxLength={60}
                   autoCorrect={false}
@@ -646,12 +642,12 @@ export default function MeScreen() {
 
               {/* AGE */}
               <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>AGE</Text>
+                <Text style={styles.fieldLabel}>{t('fieldAge')}</Text>
                 <TextInput
                   style={styles.fieldInput}
                   value={ageStr}
                   onChangeText={text => setAgeStr(text.replace(/[^0-9]/g, ''))}
-                  placeholder="e.g. 25"
+                  placeholder={t('agePlaceholder')}
                   placeholderTextColor={Colors.muted2}
                   keyboardType="number-pad"
                   maxLength={3}
@@ -660,7 +656,7 @@ export default function MeScreen() {
 
               {/* MY VIBE */}
               <View style={styles.fieldGroup}>
-                <Text style={styles.fieldLabel}>MY VIBE</Text>
+                <Text style={styles.fieldLabel}>{t('fieldMyVibe')}</Text>
                 <View style={styles.chipsWrap}>
                   {VIBES.map(v => {
                     const active = selectedVibe === v.key;
@@ -672,7 +668,7 @@ export default function MeScreen() {
                         activeOpacity={0.7}
                       >
                         <Text style={[styles.vibeChipText, active && styles.vibeChipTextActive]}>
-                          {v.emoji} {v.label}
+                          {v.emoji} {t(`vibe.${v.key}`, { ns: 'common' })}
                         </Text>
                       </TouchableOpacity>
                     );
@@ -683,8 +679,8 @@ export default function MeScreen() {
               {/* INTERESTS */}
               <View style={[styles.fieldGroup, styles.fieldGroupLast]}>
                 <Text style={styles.fieldLabel}>
-                  INTERESTS{' '}
-                  <Text style={styles.fieldLabelHint}>— pick up to 5</Text>
+                  {t('fieldInterests')}{' '}
+                  <Text style={styles.fieldLabelHint}>{t('interestsHint')}</Text>
                 </Text>
                 <View style={styles.chipsWrap}>
                   {INTERESTS.map(interest => {
@@ -697,7 +693,7 @@ export default function MeScreen() {
                         activeOpacity={0.7}
                       >
                         <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
-                          {interest}
+                          {t(`interest.${interest}`, { defaultValue: interest })}
                         </Text>
                       </TouchableOpacity>
                     );
@@ -717,7 +713,7 @@ export default function MeScreen() {
         {!isGuest && activeTab === 'hangouts' && (
           <View style={styles.eventsCard}>
             {myHangouts.length === 0 ? (
-              <Text style={styles.eventsEmpty}>No hangouts yet — start one ⚡</Text>
+              <Text style={styles.eventsEmpty}>{t('noHangouts')}</Text>
             ) : myHangouts.map((h, idx) => (
               <View key={h.id}>
                 {idx > 0 && <View style={styles.divider} />}
@@ -730,7 +726,7 @@ export default function MeScreen() {
                   <View style={styles.eventInfo}>
                     <Text style={styles.eventTitle} numberOfLines={1}>{h.title}</Text>
                   </View>
-                  {h.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>Host</Text></View>}
+                  {h.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>}
                 </TouchableOpacity>
               </View>
             ))}
@@ -744,9 +740,9 @@ export default function MeScreen() {
               <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
             ) : (
               <>
-                <Text style={styles.eventsLabel}>GOING</Text>
+                <Text style={styles.eventsLabel}>{t('going')}</Text>
                 {goingEvents.length === 0 ? (
-                  <Text style={styles.eventsEmpty}>No plans yet — find something 🔥</Text>
+                  <Text style={styles.eventsEmpty}>{t('noPlans')}</Text>
                 ) : goingEvents.map((event, idx) => {
                   const now    = Date.now() / 1000;
                   const isLive = event.starts_at <= now && event.expires_at > now;
@@ -768,7 +764,7 @@ export default function MeScreen() {
                           <View style={styles.eventBadgeRow}>
                             {isLive && (
                               <View style={styles.livePill}>
-                                <Text style={styles.livePillText}>LIVE</Text>
+                                <Text style={styles.livePillText}>{t('live')}</Text>
                               </View>
                             )}
                           </View>
@@ -778,9 +774,9 @@ export default function MeScreen() {
                   );
                 })}
 
-                <Text style={[styles.eventsLabel, { marginTop: 20 }]}>HOSTING</Text>
+                <Text style={[styles.eventsLabel, { marginTop: 20 }]}>{t('hosting')}</Text>
                 {hostingEvents.length === 0 ? (
-                  <Text style={styles.eventsEmpty}>Nothing hosted yet — start something ✨</Text>
+                  <Text style={styles.eventsEmpty}>{t('nothingHosted')}</Text>
                 ) : hostingEvents.map((event, idx) => {
                   const now    = Date.now() / 1000;
                   const isLive = event.starts_at <= now && event.expires_at > now;
@@ -802,13 +798,13 @@ export default function MeScreen() {
                           <View style={styles.eventBadgeRow}>
                             {isLive && (
                               <View style={styles.livePill}>
-                                <Text style={styles.livePillText}>LIVE</Text>
+                                <Text style={styles.livePillText}>{t('live')}</Text>
                               </View>
                             )}
                             {event.recurrence_label && (
                               <View style={styles.recurPill}>
                                 <Ionicons name="refresh" size={10} color={Colors.violet} />
-                                <Text style={styles.recurPillText}>RECURRING</Text>
+                                <Text style={styles.recurPillText}>{t('recurring')}</Text>
                               </View>
                             )}
                           </View>
@@ -842,7 +838,7 @@ export default function MeScreen() {
               <View style={styles.friendReqIcon}>
                 <Ionicons name="person-add-outline" size={18} color={Colors.accent} />
               </View>
-              <Text style={styles.friendReqLabel}>Friend requests</Text>
+              <Text style={styles.friendReqLabel}>{t('friendRequests')}</Text>
               {friendReqCount > 0 && (
                 <View style={styles.friendReqBadge}>
                   <Text style={styles.friendReqBadgeText}>{friendReqCount > 9 ? '9+' : friendReqCount}</Text>
@@ -852,11 +848,11 @@ export default function MeScreen() {
             </TouchableOpacity>
 
           <View style={styles.eventsCard}>
-            <Text style={styles.eventsLabel}>MY FRIENDS</Text>
+            <Text style={styles.eventsLabel}>{t('myFriends')}</Text>
             {friendsLoading ? (
               <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
             ) : myFriends.length === 0 ? (
-              <Text style={styles.eventsEmpty}>No friends yet. Add some from profiles.</Text>
+              <Text style={styles.eventsEmpty}>{t('noFriends')}</Text>
             ) : (
               myFriends.map((f, idx) => (
                 <View key={f.id}>
@@ -877,7 +873,7 @@ export default function MeScreen() {
                       <Text style={styles.friendName} numberOfLines={1}>{f.displayName}</Text>
                       {f.badges[0] && (
                         <Text style={styles.friendBadgeText}>
-                          {BADGE_META[f.badges[0] as keyof typeof BADGE_META]?.label ?? f.badges[0]}
+                          {t(`badge.${f.badges[0]}`, { ns: 'common', defaultValue: BADGE_META[f.badges[0] as keyof typeof BADGE_META]?.label ?? f.badges[0] })}
                         </Text>
                       )}
                     </View>
@@ -893,7 +889,7 @@ export default function MeScreen() {
         {/* ── Tab: Vibes ── */}
         {!isGuest && activeTab === 'vibes' && (
           <View style={styles.eventsCard}>
-            <Text style={styles.eventsLabel}>VIBES RECEIVED</Text>
+            <Text style={styles.eventsLabel}>{t('vibesReceived')}</Text>
             {vibesLoading ? (
               <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
             ) : (
@@ -905,8 +901,8 @@ export default function MeScreen() {
                         <Text key={s} style={s <= Math.round(myVibeScore ?? 0) ? styles.vibeStarOn : styles.vibeStarOff}>★</Text>
                       ))}
                     </View>
-                    <Text style={styles.vibeScoreAvg}>{myVibeScore?.toFixed(1)} vibe score</Text>
-                    <Text style={styles.vibeScoreCount}>based on {myVibeCount} vibe{myVibeCount !== 1 ? 's' : ''}</Text>
+                    <Text style={styles.vibeScoreAvg}>{t('vibeScore', { score: myVibeScore?.toFixed(1) })}</Text>
+                    <Text style={styles.vibeScoreCount}>{t('vibeBasis', { count: myVibeCount })}</Text>
                   </View>
                 )}
                 {myReceivedVibes.length > 0 ? (
@@ -933,8 +929,8 @@ export default function MeScreen() {
                   ))
                 ) : (
                   <>
-                    <Text style={styles.eventsEmpty}>No vibes yet.</Text>
-                    <Text style={styles.eventsEmpty}>Your score will appear once people leave you a note ✨</Text>
+                    <Text style={styles.eventsEmpty}>{t('noVibes')}</Text>
+                    <Text style={styles.eventsEmpty}>{t('noVibesSub')}</Text>
                   </>
                 )}
               </>
@@ -945,14 +941,14 @@ export default function MeScreen() {
         {/* ── Settings (registered only) — Apple G1.2 requires reachable Block management ── */}
         {!isGuest && (
           <View style={styles.settingsCard}>
-            <Text style={styles.settingsLabel}>SETTINGS</Text>
+            <Text style={styles.settingsLabel}>{t('settings')}</Text>
             <TouchableOpacity
               style={styles.settingsRow}
               onPress={() => router.push('/blocked-users' as never)}
               activeOpacity={0.7}
             >
               <Ionicons name="ban-outline" size={18} color={Colors.muted} />
-              <Text style={styles.settingsRowLabel}>Blocked users</Text>
+              <Text style={styles.settingsRowLabel}>{t('blockedUsers')}</Text>
               <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
             </TouchableOpacity>
             <LanguageRow />
@@ -966,17 +962,17 @@ export default function MeScreen() {
         <View style={[styles.stickyCta, { paddingBottom: Math.max(12, insets.bottom) }]}>
           {saveError ? <Text style={styles.saveError}>{saveError}</Text> : null}
           <PrimaryButton
-            label={saved ? 'Saved ✓' : 'Save profile'}
+            label={saved ? t('saved') : t('saveProfile')}
             onPress={handleSave}
             disabled={photoUploading}
             loading={saving}
           />
           <View style={styles.stickyBottomRow}>
             <TouchableOpacity style={styles.stickySignOut} onPress={handleLogout} activeOpacity={0.6}>
-              <Text style={styles.stickySignOutText}>Sign out</Text>
+              <Text style={styles.stickySignOutText}>{t('signOut')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.stickyDeleteAccount} onPress={handleDeleteAccount} activeOpacity={0.6}>
-              <Text style={styles.stickyDeleteAccountText}>Delete account</Text>
+              <Text style={styles.stickyDeleteAccountText}>{t('deleteAccount')}</Text>
             </TouchableOpacity>
           </View>
         </View>
