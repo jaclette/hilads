@@ -1,0 +1,6 @@
+{
+  "title": "Ce qui arrive",
+  "loadError": "Impossible de charger les événements de ce jour",
+  "emptyTitle": "Rien de prévu",
+  "emptySub": "Aucun événement ce jour-là pour l'instant."
+}

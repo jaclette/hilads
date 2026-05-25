@@ -1,0 +1,15 @@
+{
+  "title": "What happened",
+  "loadError": "Could not load the archive",
+  "filterAll": "All",
+  "rangeRecent": "Recent",
+  "range7": "Last 7 days",
+  "range14": "Last 14 days",
+  "custom": "Custom",
+  "pickEnd": "Now pick the end day",
+  "pickStart": "Pick a start day (up to {{max}} days)",
+  "apply": "Apply",
+  "emptyTitle": "Nothing here yet",
+  "emptyRecentSub": "Past events and hangouts will show up here once the city has some history.",
+  "emptyWindowSub": "No events or hangouts in this window. Try a wider range."
+}

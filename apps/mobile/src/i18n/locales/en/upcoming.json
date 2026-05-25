@@ -1,0 +1,6 @@
+{
+  "title": "What's coming",
+  "loadError": "Could not load events for this day",
+  "emptyTitle": "Nothing scheduled",
+  "emptySub": "No events on this day yet."
+}

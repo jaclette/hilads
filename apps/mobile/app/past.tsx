@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchPastArchive } from '@/api/topics';
 import { track } from '@/services/analytics';
@@ -31,7 +33,7 @@ function cityTodayYmd(tz: string): string { return new Date().toLocaleDateString
 function prettyRange(from: string, to: string): string {
   const f = parseYmd(from), t = parseYmd(to);
   const opt: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-  return `${f.toLocaleDateString(undefined, opt)} – ${t.toLocaleDateString(undefined, opt)}`;
+  return `${f.toLocaleDateString(i18n.language, opt)} – ${t.toLocaleDateString(i18n.language, opt)}`;
 }
 
 type RangeKey  = 'recent' | '7' | '14' | 'custom';
@@ -56,7 +58,7 @@ function RangeMonthModal({
   const [end,   setEnd]   = useState<Date | null>(initial.to ? parseYmd(initial.to) : null);
 
   const minDate  = addDays(today, -(MONTHS_BACK * 31));
-  const monthLbl = view.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const monthLbl = view.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
 
   const firstDow    = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
   const daysInMonth = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
@@ -111,8 +113,8 @@ function RangeMonthModal({
             {start && end
               ? prettyRange(ymd(start), ymd(end))
               : start
-                ? 'Now pick the end day'
-                : `Pick a start day (up to ${MAX_SPAN_DAYS} days)`}
+                ? i18n.t('pickEnd', { ns: 'archive' })
+                : i18n.t('pickStart', { ns: 'archive', max: MAX_SPAN_DAYS })}
           </Text>
 
           <View style={styles.dpRow}>
@@ -151,7 +153,7 @@ function RangeMonthModal({
             onPress={() => { if (start) onApply(ymd(start), ymd(end ?? start)); }}
             activeOpacity={0.85}
           >
-            <Text style={styles.applyBtnText}>Apply</Text>
+            <Text style={styles.applyBtnText}>{i18n.t('apply', { ns: 'archive' })}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -163,6 +165,7 @@ function RangeMonthModal({
 
 export default function PastArchiveScreen() {
   const router = useRouter();
+  const { t } = useTranslation('archive');
   const { channelId, timezone, city } = useLocalSearchParams<{ channelId: string; timezone: string; city: string }>();
   const tz       = decodeURIComponent(timezone ?? 'UTC');
   const cityName = decodeURIComponent(city ?? '');
@@ -196,7 +199,7 @@ export default function PastArchiveScreen() {
       setItems(list);
       setCursor(nextCursor);
     } catch {
-      if (reqId === reqIdRef.current) setError('Could not load the archive');
+      if (reqId === reqIdRef.current) setError(t('loadError'));
     } finally {
       if (reqId === reqIdRef.current) { setLoading(false); setRefreshing(false); }
     }
@@ -240,9 +243,9 @@ export default function PastArchiveScreen() {
   }
 
   const chips: { key: RangeKey; label: string }[] = [
-    { key: 'recent', label: 'Recent' },
-    { key: '7',      label: 'Last 7 days' },
-    { key: '14',     label: 'Last 14 days' },
+    { key: 'recent', label: t('rangeRecent') },
+    { key: '7',      label: t('range7') },
+    { key: '14',     label: t('range14') },
   ];
 
   return (
@@ -253,7 +256,7 @@ export default function PastArchiveScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>What happened</Text>
+          <Text style={styles.headerTitle}>{t('title')}</Text>
           {!!cityName && <Text style={styles.headerSub}>{cityName}</Text>}
         </View>
         <View style={styles.headerSpacer} />
@@ -269,7 +272,7 @@ export default function PastArchiveScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, type === f && styles.filterPillTextActive]}>
-              {f === 'both' ? 'All' : f === 'hangouts' ? '🔥 Events' : '🗣️ Hangouts'}
+              {f === 'both' ? t('filterAll') : f === 'hangouts' ? '🔥 Events' : '🗣️ Hangouts'}
             </Text>
           </TouchableOpacity>
         ))}
@@ -299,7 +302,7 @@ export default function PastArchiveScreen() {
             style={{ marginRight: 4 }}
           />
           <Text style={[styles.rangeChipText, range.key === 'custom' && styles.rangeChipTextActive]}>
-            {range.key === 'custom' && range.from && range.to ? prettyRange(range.from, range.to) : 'Custom'}
+            {range.key === 'custom' && range.from && range.to ? prettyRange(range.from, range.to) : t('custom')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -312,17 +315,17 @@ export default function PastArchiveScreen() {
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => load()} activeOpacity={0.8}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('retry', { ns: 'common' })}</Text>
           </TouchableOpacity>
         </View>
       ) : items.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.emptyEmoji}>🕰️</Text>
-          <Text style={styles.emptyTitle}>Nothing here yet</Text>
+          <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
           <Text style={styles.emptySub}>
             {range.key === 'recent'
-              ? 'Past events and hangouts will show up here once the city has some history.'
-              : 'No events or hangouts in this window. Try a wider range.'}
+              ? t('emptyRecentSub')
+              : t('emptyWindowSub')}
           </Text>
         </View>
       ) : (

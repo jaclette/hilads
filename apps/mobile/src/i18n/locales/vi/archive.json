@@ -1,0 +1,15 @@
+{
+  "title": "Điều đã diễn ra",
+  "loadError": "Không thể tải kho lưu trữ",
+  "filterAll": "Tất cả",
+  "rangeRecent": "Gần đây",
+  "range7": "7 ngày qua",
+  "range14": "14 ngày qua",
+  "custom": "Tùy chỉnh",
+  "pickEnd": "Bây giờ chọn ngày kết thúc",
+  "pickStart": "Chọn ngày bắt đầu (tối đa {{max}} ngày)",
+  "apply": "Áp dụng",
+  "emptyTitle": "Chưa có gì ở đây",
+  "emptyRecentSub": "Các sự kiện và hangout đã qua sẽ hiển thị ở đây khi thành phố có lịch sử.",
+  "emptyWindowSub": "Không có sự kiện hoặc hangout trong khoảng này. Thử khoảng rộng hơn."
+}

@@ -5,6 +5,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchUpcomingEvents, fetchCalendarSummary } from '@/api/events';
 import { track } from '@/services/analytics';
@@ -17,8 +19,6 @@ import { EventCard } from '@/components/EventCard';
 // Day strip reaches 90 days ahead. 6mo modal calendar matches event-create.
 const STRIP_DAYS  = 90;
 const MAX_MODAL   = 180;
-
-const DOW_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 function ymdInTz(d: Date, tz: string): string {
   // Locale en-CA renders as YYYY-MM-DD which is sortable + parseable.
@@ -60,7 +60,7 @@ function DayCell({
 }) {
   const today    = startOfDay(new Date());
   const isToday  = isSameDay(date, today);
-  const dowLabel = DOW_SHORT[date.getDay()];
+  const dowLabel = date.toLocaleDateString(i18n.language, { weekday: 'short' });
 
   return (
     <TouchableOpacity
@@ -69,7 +69,7 @@ function DayCell({
       onPress={onPress}
     >
       <Text style={[styles.dayCellDow, isSelected && styles.dayCellDowSelected]}>
-        {isToday ? 'Today' : dowLabel}
+        {isToday ? i18n.t('time.today', { ns: 'common' }) : dowLabel}
       </Text>
       <Text style={[styles.dayCellNum, isSelected && styles.dayCellNumSelected]}>
         {date.getDate()}
@@ -100,7 +100,7 @@ function MonthModal({
 
   const today    = startOfDay(new Date());
   const maxDate  = startOfDay(addDays(today, MAX_MODAL));
-  const monthLbl = view.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const monthLbl = view.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
 
   const firstDow      = new Date(view.getFullYear(), view.getMonth(), 1).getDay();
   const daysInMonth   = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
@@ -176,7 +176,7 @@ function MonthModal({
           ))}
 
           <TouchableOpacity style={styles.pickerDone} onPress={onClose} activeOpacity={0.85}>
-            <Text style={styles.pickerDoneText}>Close</Text>
+            <Text style={styles.pickerDoneText}>{i18n.t('close', { ns: 'common' })}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -188,6 +188,7 @@ function MonthModal({
 
 export default function UpcomingEventsScreen() {
   const router = useRouter();
+  const { t } = useTranslation('upcoming');
   const { channelId, timezone } = useLocalSearchParams<{ channelId: string; timezone: string }>();
   const tz = decodeURIComponent(timezone ?? 'UTC');
 
@@ -223,7 +224,7 @@ export default function UpcomingEventsScreen() {
       const list = await fetchUpcomingEvents(channelId, { from: ymd, to: ymd });
       setEvents(list);
     } catch {
-      setError('Could not load events for this day');
+      setError(t('loadError'));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -269,7 +270,7 @@ export default function UpcomingEventsScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>What's coming</Text>
+          <Text style={styles.headerTitle}>{t('title')}</Text>
         </View>
         <TouchableOpacity
           style={styles.calendarBtn}
@@ -309,14 +310,14 @@ export default function UpcomingEventsScreen() {
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => loadDay(selected)} activeOpacity={0.8}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('retry', { ns: 'common' })}</Text>
           </TouchableOpacity>
         </View>
       ) : events.length === 0 ? (
         <View style={styles.center}>
           <Text style={styles.emptyEmoji}>📅</Text>
-          <Text style={styles.emptyTitle}>Nothing scheduled</Text>
-          <Text style={styles.emptySub}>No events on this day yet.</Text>
+          <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
+          <Text style={styles.emptySub}>{t('emptySub')}</Text>
         </View>
       ) : (
         <FlatList
