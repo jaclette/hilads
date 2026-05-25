@@ -69,10 +69,25 @@ function xmlEscape(s) {
     .replace(/'/g, '&apos;')
 }
 
+// Option A i18n: the sitemap lists the un-prefixed (English) canonical, and
+// each entry advertises its /fr and /vi alternates + x-default via xhtml:link
+// so Google clusters the language versions. loc is always BASE_URL + path.
+const SITEMAP_LOCALES = ['en', 'fr', 'vi']
+function hreflangLinks(loc) {
+  const path = loc.startsWith(BASE_URL) ? loc.slice(BASE_URL.length) : null
+  if (path === null) return []
+  const alt = (l) => `${BASE_URL}${l === 'en' ? '' : '/' + l}${path}`
+  return [
+    ...SITEMAP_LOCALES.map(l => `    <xhtml:link rel="alternate" hreflang="${l}" href="${xmlEscape(alt(l))}"/>`),
+    `    <xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(alt('en'))}"/>`,
+  ]
+}
+
 function urlEntry({ loc, lastmod, changefreq, priority }) {
   return [
     '  <url>',
     `    <loc>${xmlEscape(loc)}</loc>`,
+    ...hreflangLinks(loc),
     lastmod    ? `    <lastmod>${lastmod}</lastmod>` : null,
     changefreq ? `    <changefreq>${changefreq}</changefreq>` : null,
     priority   ? `    <priority>${priority}</priority>` : null,
@@ -232,7 +247,7 @@ async function main() {
 
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     ...entries,
     '</urlset>',
     '',

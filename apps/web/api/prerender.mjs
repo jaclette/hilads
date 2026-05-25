@@ -1272,6 +1272,26 @@ function injectMeta(shell, meta) {
   return out
 }
 
+// ── Locale (Option A: un-prefixed = English canonical; /fr, /vi additive) ─────
+const I18N_LOCALES = ['en', 'fr', 'vi']
+
+function setHtmlLang(shell, locale) {
+  return shell.replace(/<html\s+lang="[^"]*"/i, `<html lang="${locale}"`)
+}
+
+// Every prerendered page advertises all locales + x-default so Google clusters
+// the un-prefixed (EN) and /fr, /vi variants as one set. basePath is the
+// UN-prefixed canonical path (e.g. /city/paris); each alternate prepends its
+// locale segment (EN stays bare).
+function injectHreflang(shell, basePath) {
+  const alt = (loc) => `${SITE_BASE}${loc === 'en' ? '' : '/' + loc}${basePath}`
+  const links = [
+    ...I18N_LOCALES.map((loc) => `<link rel="alternate" hreflang="${loc}" href="${alt(loc)}" />`),
+    `<link rel="alternate" hreflang="x-default" href="${alt('en')}" />`,
+  ].join('\n  ')
+  return shell.replace(/<\/head>/i, `${links}\n  </head>`)
+}
+
 // ── Handler ──────────────────────────────────────────────────────────────────
 
 export default async function handler(req, res) {
@@ -1292,6 +1312,14 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
 
   const { type, id, slug, shortlink } = req.query || {}
   const isShortLink = shortlink === '1'
+
+  // Locale from the rewrite (?locale=fr|vi); default English. localePrefix is
+  // prepended to canonical/og:url AND to every 301 Location below, so a
+  // localized request like /fr/event/<bare-hex> consolidates to
+  // /fr/event/<slug> rather than dropping back to the EN URL.
+  const rawLocale = (req.query || {}).locale
+  const locale = I18N_LOCALES.includes(rawLocale) ? rawLocale : 'en'
+  const localePrefix = locale === 'en' ? '' : `/${locale}`
 
   let meta          = null
   let jsonLd        = null
@@ -1329,7 +1357,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         if (data?.event?.is_venue && data.event.series_id) {
           const venueSlugId = venueSlugFromName(data.event.title, data.event.series_id)
           res.statusCode = 301
-          res.setHeader('Location', `${SITE_BASE}/venue/${venueSlugId}`)
+          res.setHeader('Location', `${SITE_BASE}${localePrefix}/venue/${venueSlugId}`)
           res.setHeader('Cache-Control', 'public, max-age=3600')
           res.end()
           return
@@ -1349,7 +1377,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
               ? `${redirect.venue.slug}-${redirect.venue.id}`
               : redirect.venue.id
             res.statusCode = 301
-            res.setHeader('Location', `${SITE_BASE}/venue/${venueSlugId}`)
+            res.setHeader('Location', `${SITE_BASE}${localePrefix}/venue/${venueSlugId}`)
             res.setHeader('Cache-Control', 'public, max-age=3600')
             res.end()
             return
@@ -1363,7 +1391,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         if (data?.event && inputIsHexOnly && !isShortLink) {
           const slugId = eventSlug(data.event)
           res.statusCode = 301
-          res.setHeader('Location', `${SITE_BASE}/event/${slugId}`)
+          res.setHeader('Location', `${SITE_BASE}${localePrefix}/event/${slugId}`)
           res.setHeader('Cache-Control', 'public, max-age=3600')
           res.end()
           return
@@ -1410,7 +1438,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         if (data?.venue && inputIsHexOnly) {
           const slugId = venueSlugFromName(data.venue.name, data.venue.id)
           res.statusCode = 301
-          res.setHeader('Location', `${SITE_BASE}/venue/${slugId}`)
+          res.setHeader('Location', `${SITE_BASE}${localePrefix}/venue/${slugId}`)
           res.setHeader('Cache-Control', 'public, max-age=3600')
           res.end()
           return
@@ -1517,11 +1545,17 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
     jsonLd = null
   }
 
-  let html = shell
-  if (meta)         html = injectMeta(html, meta)
+  // Self-referential canonical per locale (Option A). EN keeps the bare URL.
+  if (meta && localePrefix) {
+    meta = { ...meta, url: `${SITE_BASE}${localePrefix}${canonicalPath}` }
+  }
+
+  let html = setHtmlLang(shell, locale)
+  if (meta)          html = injectMeta(html, meta)
+  if (meta)          html = injectHreflang(html, canonicalPath)
   if (meta?.noindex) html = injectRobotsNoindex(html)
-  if (jsonLd)       html = injectJsonLd(html, jsonLd)
-  if (bodyHtml)     html = injectBody(html,   bodyHtml)
+  if (jsonLd)        html = injectJsonLd(html, jsonLd)
+  if (bodyHtml)      html = injectBody(html,   bodyHtml)
 
   res.statusCode = 200
   res.setHeader('Content-Type', 'text/html; charset=utf-8')

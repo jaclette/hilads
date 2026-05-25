@@ -51,7 +51,10 @@ function cityToSlug(name) {
 }
 
 function parseDeepLink() {
-  const path = window.location.pathname
+  // Strip an optional leading locale segment (/fr, /vi) — Option A localized
+  // routes resolve to the same views as their un-prefixed English canonical.
+  // The locale itself is read separately by src/i18n (resolveInitialLocale).
+  const path = window.location.pathname.replace(/^\/(fr|vi)(?=\/|$)/, '') || '/'
   const params = new URLSearchParams(window.location.search)
   const cityMatch         = path.match(/^\/city\/([^/]+)$/)
   const cityPastMatch     = path.match(/^\/city\/([^/]+)\/past$/)
