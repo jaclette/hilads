@@ -3305,10 +3305,10 @@ export default function App() {
               type="button"
               className="header-city-online"
               onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-              aria-label="See who's here"
+              aria-label={t('header.seeWhosHere')}
             >
               <span className="online-pulse" />
-              {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+              {onlineCount != null ? t('header.online', { count: onlineCount }) : t('header.liveNow')}
             </button>
           </div>
           {weatherLabel && (
@@ -3368,8 +3368,8 @@ export default function App() {
                     <button
                       className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
                       onClick={() => setShowNotifications(true)}
-                      title="Notifications"
-                      aria-label="Notifications"
+                      title={t('header.notifications')}
+                      aria-label={t('header.notifications')}
                     >
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -3386,8 +3386,8 @@ export default function App() {
                     <button
                       className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
                       onClick={() => setShowConversations(true)}
-                      title="Messages"
-                      aria-label="Messages"
+                      title={t('header.messages')}
+                      aria-label={t('header.messages')}
                     >
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -3399,7 +3399,7 @@ export default function App() {
               </div>
               <div className="event-header-body">
                 {isMyEvent && (
-                  <span className="event-creator-badge">👑 Your event</span>
+                  <span className="event-creator-badge">👑 {t('eventHeader.yourEvent')}</span>
                 )}
                 <div className="event-header-title-row">
                   <h1 className="event-header-title" title={activeEvent.title}>{activeEvent.title}</h1>
@@ -3409,23 +3409,23 @@ export default function App() {
                       onClick={() => setShowEditEvent(true)}
                       onAnimationEnd={() => setShowEditPulse(false)}
                     >
-                      ✏️ Edit
+                      ✏️ {t('eventHeader.edit')}
                     </button>
                   ) : (
                     <button
                       className={`event-join-btn${participatedEvents.has(activeEvent.id) ? ' event-join-btn--active' : ''}`}
                       onClick={() => handleToggleParticipation(activeEvent.id)}
                     >
-                      {participatedEvents.has(activeEvent.id) ? 'Joined ✓' : 'Join'}
+                      {participatedEvents.has(activeEvent.id) ? t('eventHeader.joined') : t('eventHeader.join')}
                     </button>
                   )}
                 </div>
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
                   {activeEvent.ends_at ? ` → ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
-                  {` · ${eventPresence[activeEvent.id] ?? 0} here · `}
+                  {` · ${t('eventHeader.here', { count: eventPresence[activeEvent.id] ?? 0 })} · `}
                   <button className="going-count-btn" onClick={handleOpenGoingModal}>
-                    {eventParticipants[activeEvent.id] ?? 0} going
+                    {t('eventHeader.going', { count: eventParticipants[activeEvent.id] ?? 0 })}
                   </button>
                 </span>
                 {(() => {
@@ -3436,10 +3436,10 @@ export default function App() {
                       📍 {loc}
                     </a>
                   )
-                  return <span className="event-location event-location--muted">📍 {loc ?? 'Location not available yet'}</span>
+                  return <span className="event-location event-location--muted">📍 {loc ?? t('eventHeader.locationPending')}</span>
                 })()}
                 {activeEvent.host_nickname && !isMyEvent && (
-                  <span className="event-host">Hosted by {activeEvent.host_nickname}</span>
+                  <span className="event-host">{t('eventHeader.hostedBy', { name: activeEvent.host_nickname })}</span>
                 )}
               </div>
             </div>
@@ -3450,7 +3450,7 @@ export default function App() {
               <div className="header-desktop-layout">
                 <div className="header-desktop-zone header-desktop-zone--left">
                   <div className="header-desktop-left">
-                    <button className="change-city-btn" onClick={openCityPicker} title="Switch city">
+                    <button className="change-city-btn" onClick={openCityPicker} title={t('header.switchCity')}>
                       🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
                     </button>
                   </div>
@@ -3465,8 +3465,8 @@ export default function App() {
                         <button
                           className={`header-icon-btn${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
                           onClick={() => setShowNotifications(true)}
-                          title="Notifications"
-                          aria-label="Notifications"
+                          title={t('header.notifications')}
+                          aria-label={t('header.notifications')}
                         >
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -3483,8 +3483,8 @@ export default function App() {
                         <button
                           className="header-icon-btn"
                           onClick={() => share(composeCityShare(city))}
-                          title="Share city"
-                          aria-label="Share city"
+                          title={t('header.shareCity')}
+                          aria-label={t('header.shareCity')}
                         >
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
@@ -3496,8 +3496,8 @@ export default function App() {
                         <button
                           className={`header-icon-btn${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
                           onClick={() => setShowConversations(true)}
-                          title="Messages"
-                          aria-label="Messages"
+                          title={t('header.messages')}
+                          aria-label={t('header.messages')}
                         >
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -3523,7 +3523,7 @@ export default function App() {
                     type="button"
                     className="header-city-row header-city-row-button"
                     onClick={openCityPicker}
-                    aria-label="Change city"
+                    aria-label={t('header.changeCity')}
                   >
                     <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{city}
                     <svg
@@ -3544,7 +3544,7 @@ export default function App() {
                     <button
                       className="header-chip header-chip--weather"
                       onClick={() => { /* TODO: open weather detail view */ }}
-                      aria-label={`Current weather: ${weatherLabel}`}
+                      aria-label={t('header.currentWeather', { label: weatherLabel })}
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
@@ -3555,10 +3555,10 @@ export default function App() {
                   <button
                     className="header-chip header-chip--online"
                     onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null); }}
-                    aria-label={`${onlineCount ?? 0} people hanging out, tap to see who`}
+                    aria-label={t('header.onlineAria', { count: onlineCount ?? 0 })}
                   >
                     <span className="chip-live-dot" aria-hidden="true" />
-                    {onlineCount != null ? `${onlineCount} hanging out` : 'live now'}
+                    {onlineCount != null ? t('header.online', { count: onlineCount }) : t('header.liveNow')}
                   </button>
                 </div>
 
@@ -3574,18 +3574,18 @@ export default function App() {
             </div>
           )}
           {!hasMoreMessages && !loadingOlder && feed.length > 0 && (
-            <div className="messages-beginning">Beginning of conversation</div>
+            <div className="messages-beginning">{t('chatEmpty.beginning')}</div>
           )}
           {feed.length === 0 && (
             <div className="empty">
               <p className="empty-icon">{activeEvent ? '💬' : '🔥'}</p>
               <p className="empty-title">
-                {activeEvent ? `${activeEvent.title}` : 'People are arriving'}
+                {activeEvent ? `${activeEvent.title}` : t('chatEmpty.arriving')}
               </p>
               <p className="empty-sub">
                 {activeEvent
-                  ? 'Be the first to chat here 👇'
-                  : 'Be the first to say hi 👇'
+                  ? t('chatEmpty.firstChat')
+                  : t('chatEmpty.firstHi')
                 }
               </p>
             </div>

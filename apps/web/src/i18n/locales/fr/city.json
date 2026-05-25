@@ -69,5 +69,34 @@
     "noHangouts": "Pas encore de hangout",
     "noEventsSub": "Sois le premier à en créer un à {{city}}",
     "noHangoutsSub": "Lance un hangout et fais parler la ville"
+  },
+  "header": {
+    "online": "{{count}} dans le coin",
+    "liveNow": "en direct",
+    "seeWhosHere": "Vois qui est là",
+    "onlineAria": "{{count}} personnes dans le coin, touche pour voir qui",
+    "notifications": "Notifications",
+    "messages": "Messages",
+    "shareCity": "Partager la ville",
+    "switchCity": "Changer de ville",
+    "changeCity": "Changer de ville",
+    "currentWeather": "Météo actuelle : {{label}}"
+  },
+  "eventHeader": {
+    "yourEvent": "Ton événement",
+    "edit": "Modifier",
+    "join": "Rejoindre",
+    "joined": "Rejoint ✓",
+    "here": "{{count}} ici",
+    "going_one": "{{count}} participant",
+    "going_other": "{{count}} participants",
+    "locationPending": "Lieu pas encore disponible",
+    "hostedBy": "Organisé par {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "Début de la conversation",
+    "arriving": "Les gens arrivent",
+    "firstChat": "Sois le premier à écrire ici 👇",
+    "firstHi": "Sois le premier à dire bonjour 👇"
   }
 }

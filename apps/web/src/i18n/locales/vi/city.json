@@ -67,5 +67,33 @@
     "noHangouts": "Chưa có hangout",
     "noEventsSub": "Hãy là người đầu tiên tạo một cái ở {{city}}",
     "noHangoutsSub": "Tạo hangout và khiến cả thành phố trò chuyện"
+  },
+  "header": {
+    "online": "{{count}} đang ở quanh đây",
+    "liveNow": "đang trực tiếp",
+    "seeWhosHere": "Xem ai đang ở đây",
+    "onlineAria": "{{count}} người đang ở quanh đây, chạm để xem",
+    "notifications": "Thông báo",
+    "messages": "Tin nhắn",
+    "shareCity": "Chia sẻ thành phố",
+    "switchCity": "Đổi thành phố",
+    "changeCity": "Đổi thành phố",
+    "currentWeather": "Thời tiết hiện tại: {{label}}"
+  },
+  "eventHeader": {
+    "yourEvent": "Sự kiện của bạn",
+    "edit": "Sửa",
+    "join": "Tham gia",
+    "joined": "Đã tham gia ✓",
+    "here": "{{count}} ở đây",
+    "going_other": "{{count}} tham gia",
+    "locationPending": "Chưa có địa điểm",
+    "hostedBy": "Tổ chức bởi {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "Đầu cuộc trò chuyện",
+    "arriving": "Mọi người đang đến",
+    "firstChat": "Hãy là người đầu tiên nhắn ở đây 👇",
+    "firstHi": "Hãy là người đầu tiên chào hỏi 👇"
   }
 }
