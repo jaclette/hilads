@@ -19,6 +19,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
@@ -37,36 +39,30 @@ type RepeatMode = 'once' | 'daily' | 'weekly' | 'every_n_days';
 
 const CATEGORIES: {
   type:  EventType;
-  label: string;
   icon:  React.ComponentProps<typeof Ionicons>['name'];
 }[] = [
-  { type: 'drinks',  label: 'DRINKS',  icon: 'wine-outline'          },
-  { type: 'party',   label: 'PARTY',   icon: 'sunny-outline'         },
-  { type: 'music',   label: 'MUSIC',   icon: 'musical-note-outline'  },
-  { type: 'food',    label: 'FOOD',    icon: 'restaurant-outline'    },
-  { type: 'coffee',  label: 'COFFEE',  icon: 'cafe-outline'          },
-  { type: 'sport',   label: 'SPORT',   icon: 'flash-outline'         },
-  { type: 'meetup',  label: 'MEETUP',  icon: 'chatbubble-outline'    },
-  { type: 'other',   label: 'OTHER',   icon: 'grid-outline'          },
+  { type: 'drinks',  icon: 'wine-outline'          },
+  { type: 'party',   icon: 'sunny-outline'         },
+  { type: 'music',   icon: 'musical-note-outline'  },
+  { type: 'food',    icon: 'restaurant-outline'    },
+  { type: 'coffee',  icon: 'cafe-outline'          },
+  { type: 'sport',   icon: 'flash-outline'         },
+  { type: 'meetup',  icon: 'chatbubble-outline'    },
+  { type: 'other',   icon: 'grid-outline'          },
 ];
 
 // ── Repeat options — matches web (Once/Daily/Weekly/Every N days) ─────────────
 
-const REPEAT_OPTIONS: { mode: RepeatMode; label: string }[] = [
-  { mode: 'once',        label: 'Once'       },
-  { mode: 'daily',       label: 'Daily'      },
-  { mode: 'weekly',      label: 'Weekly'     },
-  { mode: 'every_n_days', label: 'Every N days' },
-];
+const REPEAT_OPTIONS: RepeatMode[] = ['once', 'daily', 'weekly', 'every_n_days'];
 
 // ── Quick presets — one-tap recurring event shortcuts ─────────────────────────
 
 type PresetKey = 'daily_spot' | 'every_evening' | 'weekends';
 
-const PRESETS: { key: PresetKey; emoji: string; label: string; desc: string }[] = [
-  { key: 'daily_spot',    emoji: '☀️', label: 'Daily spot',    desc: 'Every day' },
-  { key: 'every_evening', emoji: '🌙', label: 'Every evening', desc: 'Daily · 8pm' },
-  { key: 'weekends',      emoji: '🎉', label: 'Weekends',      desc: 'Sat & Sun' },
+const PRESETS: { key: PresetKey; emoji: string }[] = [
+  { key: 'daily_spot',    emoji: '☀️' },
+  { key: 'every_evening', emoji: '🌙' },
+  { key: 'weekends',      emoji: '🎉' },
 ];
 
 // ── Time helpers ──────────────────────────────────────────────────────────────
@@ -119,6 +115,7 @@ const MINUTE_STEPS = [0, 15, 30, 45];
 function TimePicker({
   label, value, onChange,
 }: { label: string; value: Date; onChange: (d: Date) => void }) {
+  const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [h, setH] = useState(value.getHours());
   const [m, setM] = useState(
@@ -189,7 +186,7 @@ function TimePicker({
             </View>
 
             <TouchableOpacity style={styles.pickerDone} onPress={confirm} activeOpacity={0.85}>
-              <Text style={styles.pickerDoneText}>Done</Text>
+              <Text style={styles.pickerDoneText}>{t('done')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -212,12 +209,13 @@ function DatePicker({
   onClose:  () => void;
   maxDays?: number;
 }) {
+  const { t } = useTranslation('common');
   // Month being displayed (anchor on the first of the month).
   const [view, setView] = useState<Date>(() => new Date(value.getFullYear(), value.getMonth(), 1));
 
   const today      = startOfDay(new Date());
   const maxDate    = startOfDay(addDays(today, maxDays));
-  const monthLabel = view.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const monthLabel = view.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
 
   // Build the 6×7 grid for the displayed month. Cells outside the month are
   // rendered empty so the grid stays a clean rectangle.
@@ -295,7 +293,7 @@ function DatePicker({
           ))}
 
           <TouchableOpacity style={styles.pickerDone} onPress={onClose} activeOpacity={0.85}>
-            <Text style={styles.pickerDoneText}>Cancel</Text>
+            <Text style={styles.pickerDoneText}>{t('cancel')}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -307,6 +305,7 @@ function DatePicker({
 
 export default function CreateEventScreen() {
   const router = useRouter();
+  const { t } = useTranslation('event');
   const { city, identity, account } = useApp();
 
   const nickname = account?.display_name ?? identity?.nickname ?? '';
@@ -352,7 +351,7 @@ export default function CreateEventScreen() {
   const isToday    = isSameDay(selectedDate, today);
   const isTomorrow = isSameDay(selectedDate, tomorrow);
   const isCustomDate = !isToday && !isTomorrow;
-  const customDateLabel = selectedDate.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  const customDateLabel = selectedDate.toLocaleDateString(i18n.language, { weekday: 'short', month: 'short', day: 'numeric' });
 
   function applyPreset(key: PresetKey) {
     setSelectedPreset(prev => prev === key ? null : key);
@@ -388,11 +387,11 @@ export default function CreateEventScreen() {
     if (!granted) {
       if (!existing.canAskAgain) {
         Alert.alert(
-          'Location access required',
-          'Please enable location in Settings → Hilads → Location.',
+          t('locPermTitle'),
+          t('locPermSettings'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+            { text: t('openSettings', { ns: 'common' }), onPress: () => Linking.openSettings() },
           ],
         );
         return;
@@ -400,7 +399,7 @@ export default function CreateEventScreen() {
       const result = await Location.requestForegroundPermissionsAsync();
       granted = result.status === 'granted';
       if (!granted) {
-        Alert.alert('Location needed', 'Allow location access to set a spot on the map.');
+        Alert.alert(t('locNeededTitle'), t('locMapBody'));
         return;
       }
     }
@@ -429,8 +428,8 @@ export default function CreateEventScreen() {
   }
 
   async function handleSubmit() {
-    if (!city)        { setError('No city selected'); return; }
-    if (!title.trim()) { setError('Title is required'); return; }
+    if (!city)        { setError(t('errNoCity')); return; }
+    if (!title.trim()) { setError(t('errTitle')); return; }
 
     // Build end unix; advance to next day if end ≤ start (crosses midnight)
     const startUnix = toUnix(startsAt);
@@ -439,7 +438,7 @@ export default function CreateEventScreen() {
     const endUnix = toUnix(endDate);
 
     if (endUnix - startUnix < 15 * 60) {
-      setError('Event must be at least 15 minutes long');
+      setError(t('errDuration'));
       return;
     }
 
@@ -490,7 +489,7 @@ export default function CreateEventScreen() {
         router.replace('/event/limit-reached' as never);
         return;
       }
-      setError(e instanceof Error ? e.message : 'Failed to create event');
+      setError(e instanceof Error ? e.message : t('errFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -510,7 +509,7 @@ export default function CreateEventScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{isLocal ? 'Host an event' : 'Create event'}</Text>
+          <Text style={styles.headerTitle}>{isLocal ? t('hostTitle') : t('createTitle')}</Text>
         </View>
       </View>
 
@@ -523,7 +522,7 @@ export default function CreateEventScreen() {
         {/* ── QUICK PRESETS (locals only) ───────────────────────────────────── */}
         {isLocal && (
           <View style={styles.section}>
-            <Text style={styles.fieldLabel}>QUICK START</Text>
+            <Text style={styles.fieldLabel}>{t('quickStart')}</Text>
             <View style={styles.presetRow}>
               {PRESETS.map(p => {
                 const active = selectedPreset === p.key;
@@ -535,8 +534,8 @@ export default function CreateEventScreen() {
                     activeOpacity={0.75}
                   >
                     <Text style={styles.presetEmoji}>{p.emoji}</Text>
-                    <Text style={[styles.presetLabel, active && styles.presetLabelActive]}>{p.label}</Text>
-                    <Text style={styles.presetDesc}>{p.desc}</Text>
+                    <Text style={[styles.presetLabel, active && styles.presetLabelActive]}>{t(`preset.${p.key}.label`)}</Text>
+                    <Text style={styles.presetDesc}>{t(`preset.${p.key}.desc`)}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -546,7 +545,7 @@ export default function CreateEventScreen() {
 
         {/* ── CATEGORY ──────────────────────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>CATEGORY</Text>
+          <Text style={styles.fieldLabel}>{t('category')}</Text>
           <View style={styles.catGrid}>
             {CATEGORIES.map(cat => {
               const sel = cat.type === type;
@@ -563,7 +562,7 @@ export default function CreateEventScreen() {
                     color={sel ? Colors.accent : Colors.muted}
                   />
                   <Text style={[styles.catLabel, sel && styles.catLabelSel]}>
-                    {cat.label}
+                    {t(`cat.${cat.type}`)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -573,12 +572,12 @@ export default function CreateEventScreen() {
 
         {/* ── TITLE ─────────────────────────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>TITLE</Text>
+          <Text style={styles.fieldLabel}>{t('title')}</Text>
           <TextInput
             style={styles.input}
             value={title}
             onChangeText={setTitle}
-            placeholder="e.g. Jazz night at Rooftop Bar"
+            placeholder={t('titlePlaceholder')}
             placeholderTextColor={Colors.muted2}
             maxLength={100}
             autoCorrect={false}
@@ -591,21 +590,21 @@ export default function CreateEventScreen() {
             visible" nudge below is intentionally subtle — keeps "today" the
             obvious path without blocking other days. */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>DATE</Text>
+          <Text style={styles.fieldLabel}>{t('date')}</Text>
           <View style={styles.dateRow}>
             <TouchableOpacity
               style={[styles.dateChip, isToday && styles.dateChipActive]}
               onPress={() => pickDate(today)}
               activeOpacity={0.75}
             >
-              <Text style={[styles.dateChipText, isToday && styles.dateChipTextActive]}>Today</Text>
+              <Text style={[styles.dateChipText, isToday && styles.dateChipTextActive]}>{t('today')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.dateChip, isTomorrow && styles.dateChipActive]}
               onPress={() => pickDate(tomorrow)}
               activeOpacity={0.75}
             >
-              <Text style={[styles.dateChipText, isTomorrow && styles.dateChipTextActive]}>Tomorrow</Text>
+              <Text style={[styles.dateChipText, isTomorrow && styles.dateChipTextActive]}>{t('tomorrow')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.dateChip, isCustomDate && styles.dateChipActive]}
@@ -614,7 +613,7 @@ export default function CreateEventScreen() {
             >
               <Ionicons name="calendar-outline" size={14} color={isCustomDate ? Colors.accent : Colors.muted} />
               <Text style={[styles.dateChipText, isCustomDate && styles.dateChipTextActive]}>
-                {isCustomDate ? customDateLabel : 'Pick a date'}
+                {isCustomDate ? customDateLabel : t('pickDate')}
               </Text>
               {isCustomDate && (
                 <TouchableOpacity
@@ -627,17 +626,17 @@ export default function CreateEventScreen() {
               )}
             </TouchableOpacity>
           </View>
-          {isToday && <Text style={styles.dateHint}>Hosting today gets you the most visibility 🔥</Text>}
+          {isToday && <Text style={styles.dateHint}>{t('todayHint')}</Text>}
         </View>
 
         {/* ── STARTS / ENDS ─────────────────────────────────────────────────── */}
         <View style={[styles.section, styles.timeRow]}>
           <TimePicker
-            label="STARTS"
+            label={t('starts')}
             value={startsAt}
             onChange={d => { setStartsAt(d); setEndsAt(addHours(d, 2)); }}
           />
-          <TimePicker label="ENDS" value={endsAt} onChange={setEndsAt} />
+          <TimePicker label={t('ends')} value={endsAt} onChange={setEndsAt} />
         </View>
 
         {showDatePicker && (
@@ -651,19 +650,19 @@ export default function CreateEventScreen() {
 
         {/* ── REPEAT ────────────────────────────────────────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>REPEAT</Text>
+          <Text style={styles.fieldLabel}>{t('repeat')}</Text>
           <View style={styles.repeatRow}>
-            {REPEAT_OPTIONS.map(opt => {
-              const active = opt.mode === repeat;
+            {REPEAT_OPTIONS.map(mode => {
+              const active = mode === repeat;
               return (
                 <TouchableOpacity
-                  key={opt.mode}
+                  key={mode}
                   style={[styles.repeatChip, active && styles.repeatChipActive]}
-                  onPress={() => setRepeat(opt.mode)}
+                  onPress={() => setRepeat(mode)}
                   activeOpacity={0.75}
                 >
                   <Text style={[styles.repeatLabel, active && styles.repeatLabelActive]}>
-                    {opt.label}
+                    {t(`repeatMode.${mode}`)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -673,7 +672,7 @@ export default function CreateEventScreen() {
           {/* "Every N days" interval input */}
           {repeat === 'every_n_days' && (
             <View style={styles.intervalRow}>
-              <Text style={styles.intervalLabel}>Every</Text>
+              <Text style={styles.intervalLabel}>{t('every')}</Text>
               <TextInput
                 style={styles.intervalInput}
                 value={intervalDays}
@@ -681,7 +680,7 @@ export default function CreateEventScreen() {
                 keyboardType="number-pad"
                 maxLength={3}
               />
-              <Text style={styles.intervalLabel}>days</Text>
+              <Text style={styles.intervalLabel}>{t('days')}</Text>
             </View>
           )}
 
@@ -689,7 +688,7 @@ export default function CreateEventScreen() {
 
         {/* ── LOCATION (tappable → map picker; optional) ────────────────────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>LOCATION</Text>
+          <Text style={styles.fieldLabel}>{t('location')}</Text>
           <TouchableOpacity
             style={styles.locField}
             activeOpacity={0.7}
@@ -697,7 +696,7 @@ export default function CreateEventScreen() {
           >
             <Ionicons name="location-outline" size={18} color={location ? Colors.accent : Colors.muted2} />
             <Text style={[styles.locFieldText, !location && styles.locFieldPlaceholder]} numberOfLines={2}>
-              {location || 'Optional · tap to set on map'}
+              {location || t('locationPlaceholder')}
             </Text>
             {location ? (
               <TouchableOpacity onPress={clearLocation} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
@@ -716,8 +715,8 @@ export default function CreateEventScreen() {
         <PrimaryButton
           label={
             isLocal
-              ? (repeat !== 'once' ? 'Open your spot' : 'Start an event')
-              : 'Create event'
+              ? (repeat !== 'once' ? t('submitOpenSpot') : t('submitStart'))
+              : t('submitCreate')
           }
           onPress={handleSubmit}
           loading={submitting}

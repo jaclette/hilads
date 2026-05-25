@@ -1,0 +1,52 @@
+{
+  "createTitle": "Tạo sự kiện",
+  "hostTitle": "Tổ chức sự kiện",
+  "quickStart": "BẮT ĐẦU NHANH",
+  "category": "DANH MỤC",
+  "cat": {
+    "drinks": "ĐỒ UỐNG",
+    "party": "TIỆC",
+    "music": "ÂM NHẠC",
+    "food": "ĐỒ ĂN",
+    "coffee": "CÀ PHÊ",
+    "sport": "THỂ THAO",
+    "meetup": "GẶP GỠ",
+    "other": "KHÁC"
+  },
+  "title": "TIÊU ĐỀ",
+  "titlePlaceholder": "vd. Đêm nhạc jazz ở Rooftop Bar",
+  "date": "NGÀY",
+  "today": "Hôm nay",
+  "tomorrow": "Ngày mai",
+  "pickDate": "Chọn ngày",
+  "todayHint": "Tổ chức hôm nay giúp bạn được chú ý nhất 🔥",
+  "starts": "BẮT ĐẦU",
+  "ends": "KẾT THÚC",
+  "repeat": "LẶP LẠI",
+  "repeatMode": {
+    "once": "Một lần",
+    "daily": "Hằng ngày",
+    "weekly": "Hằng tuần",
+    "every_n_days": "Mỗi N ngày"
+  },
+  "every": "Mỗi",
+  "days": "ngày",
+  "location": "ĐỊA ĐIỂM",
+  "locationPlaceholder": "Tùy chọn · chạm để đặt trên bản đồ",
+  "preset": {
+    "daily_spot": { "label": "Spot hằng ngày", "desc": "Mỗi ngày" },
+    "every_evening": { "label": "Mỗi tối", "desc": "Hằng ngày · 20h" },
+    "weekends": { "label": "Cuối tuần", "desc": "Thứ 7 & CN" }
+  },
+  "submitCreate": "Tạo sự kiện",
+  "submitStart": "Bắt đầu sự kiện",
+  "submitOpenSpot": "Mở spot của bạn",
+  "errNoCity": "Chưa chọn thành phố",
+  "errTitle": "Cần có tiêu đề",
+  "errDuration": "Sự kiện phải kéo dài ít nhất 15 phút",
+  "errFailed": "Tạo sự kiện thất bại",
+  "locPermTitle": "Cần quyền vị trí",
+  "locPermSettings": "Vui lòng bật vị trí trong Cài đặt → Hilads → Vị trí.",
+  "locNeededTitle": "Cần vị trí",
+  "locMapBody": "Cho phép truy cập vị trí để đặt spot trên bản đồ."
+}

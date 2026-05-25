@@ -1,0 +1,52 @@
+{
+  "createTitle": "Create event",
+  "hostTitle": "Host an event",
+  "quickStart": "QUICK START",
+  "category": "CATEGORY",
+  "cat": {
+    "drinks": "DRINKS",
+    "party": "PARTY",
+    "music": "MUSIC",
+    "food": "FOOD",
+    "coffee": "COFFEE",
+    "sport": "SPORT",
+    "meetup": "MEETUP",
+    "other": "OTHER"
+  },
+  "title": "TITLE",
+  "titlePlaceholder": "e.g. Jazz night at Rooftop Bar",
+  "date": "DATE",
+  "today": "Today",
+  "tomorrow": "Tomorrow",
+  "pickDate": "Pick a date",
+  "todayHint": "Hosting today gets you the most visibility 🔥",
+  "starts": "STARTS",
+  "ends": "ENDS",
+  "repeat": "REPEAT",
+  "repeatMode": {
+    "once": "Once",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "every_n_days": "Every N days"
+  },
+  "every": "Every",
+  "days": "days",
+  "location": "LOCATION",
+  "locationPlaceholder": "Optional · tap to set on map",
+  "preset": {
+    "daily_spot": { "label": "Daily spot", "desc": "Every day" },
+    "every_evening": { "label": "Every evening", "desc": "Daily · 8pm" },
+    "weekends": { "label": "Weekends", "desc": "Sat & Sun" }
+  },
+  "submitCreate": "Create event",
+  "submitStart": "Start an event",
+  "submitOpenSpot": "Open your spot",
+  "errNoCity": "No city selected",
+  "errTitle": "Title is required",
+  "errDuration": "Event must be at least 15 minutes long",
+  "errFailed": "Failed to create event",
+  "locPermTitle": "Location access required",
+  "locPermSettings": "Please enable location in Settings → Hilads → Location.",
+  "locNeededTitle": "Location needed",
+  "locMapBody": "Allow location access to set a spot on the map."
+}

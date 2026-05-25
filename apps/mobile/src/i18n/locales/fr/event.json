@@ -1,0 +1,52 @@
+{
+  "createTitle": "Créer un événement",
+  "hostTitle": "Organiser un événement",
+  "quickStart": "DÉMARRAGE RAPIDE",
+  "category": "CATÉGORIE",
+  "cat": {
+    "drinks": "BOISSONS",
+    "party": "FÊTE",
+    "music": "MUSIQUE",
+    "food": "CUISINE",
+    "coffee": "CAFÉ",
+    "sport": "SPORT",
+    "meetup": "RENCONTRE",
+    "other": "AUTRE"
+  },
+  "title": "TITRE",
+  "titlePlaceholder": "ex. Soirée jazz au Rooftop Bar",
+  "date": "DATE",
+  "today": "Aujourd'hui",
+  "tomorrow": "Demain",
+  "pickDate": "Choisir une date",
+  "todayHint": "Organiser aujourd'hui te donne le plus de visibilité 🔥",
+  "starts": "DÉBUT",
+  "ends": "FIN",
+  "repeat": "RÉPÉTER",
+  "repeatMode": {
+    "once": "Une fois",
+    "daily": "Quotidien",
+    "weekly": "Hebdo",
+    "every_n_days": "Tous les N jours"
+  },
+  "every": "Tous les",
+  "days": "jours",
+  "location": "LIEU",
+  "locationPlaceholder": "Optionnel · touche pour placer sur la carte",
+  "preset": {
+    "daily_spot": { "label": "Spot quotidien", "desc": "Chaque jour" },
+    "every_evening": { "label": "Chaque soir", "desc": "Quotidien · 20h" },
+    "weekends": { "label": "Week-ends", "desc": "Sam & Dim" }
+  },
+  "submitCreate": "Créer un événement",
+  "submitStart": "Lancer un événement",
+  "submitOpenSpot": "Ouvre ton spot",
+  "errNoCity": "Aucune ville sélectionnée",
+  "errTitle": "Le titre est requis",
+  "errDuration": "L'événement doit durer au moins 15 minutes",
+  "errFailed": "Échec de la création de l'événement",
+  "locPermTitle": "Accès à la position requis",
+  "locPermSettings": "Active la localisation dans Réglages → Hilads → Position.",
+  "locNeededTitle": "Position nécessaire",
+  "locMapBody": "Autorise l'accès à ta position pour placer un spot sur la carte."
+}
