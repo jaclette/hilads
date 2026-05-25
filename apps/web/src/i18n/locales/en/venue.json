@@ -1,0 +1,17 @@
+{
+  "loading": "Loading…",
+  "notFound": "This venue isn't on Hilads.",
+  "loadError": "Couldn't load this venue. Please try again.",
+  "breadcrumb": "Breadcrumb",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Coffee shop"
+  },
+  "typeInCity": "{{category}} in {{city}}",
+  "address": "Address",
+  "hours": "Hours",
+  "openEveryDay": "Open every day · {{opens}} – {{closes}}",
+  "ctaText": "See who's around in {{city}} right now.",
+  "openCity": "Open {{city}}",
+  "lastUpdated": "Last updated {{date}}"
+}

@@ -1,0 +1,17 @@
+{
+  "loading": "Chargement…",
+  "notFound": "Ce lieu n'est pas sur Hilads.",
+  "loadError": "Impossible de charger ce lieu. Réessaie.",
+  "breadcrumb": "Fil d'Ariane",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Café"
+  },
+  "typeInCity": "{{category}} à {{city}}",
+  "address": "Adresse",
+  "hours": "Horaires",
+  "openEveryDay": "Ouvert tous les jours · {{opens}} – {{closes}}",
+  "ctaText": "Vois qui est dans le coin à {{city}} en ce moment.",
+  "openCity": "Ouvrir {{city}}",
+  "lastUpdated": "Mis à jour le {{date}}"
+}
