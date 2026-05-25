@@ -1,0 +1,30 @@
+{
+  "allTitle": "Toutes les notifications",
+  "markAllRead": "Tout marquer comme lu",
+  "emptyTitle": "Pas encore de notifications",
+  "emptySub": "Tu verras ici les messages et les mises à jour d'événements.",
+  "seeAll": "Voir toutes les notifications",
+  "prefTitle": "PRÉFÉRENCES DE NOTIFICATION",
+  "pref": {
+    "mentionLabel": "Mentions @",
+    "mentionSub": "Quand quelqu'un te @mentionne dans un message ou un hangout",
+    "eventJoinLabel": "Quelqu'un rejoint ton événement",
+    "eventJoinSub": "Quand une nouvelle personne rejoint un événement où tu vas",
+    "newEventLabel": "Nouveaux événements dans ta ville",
+    "newEventSub": "Quand quelqu'un crée un événement dans ta ville",
+    "cityJoinLabel": "Quelqu'un arrive dans ta ville",
+    "cityJoinSub": "Quand quelqu'un rejoint le canal de ta ville",
+    "friendLabel": "Demandes d'ami",
+    "friendSub": "Quand quelqu'un t'envoie une demande d'ami ou accepte la tienne",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "Quand quelqu'un laisse une vibe sur ton profil",
+    "profileViewLabel": "Vues de profil 👀",
+    "profileViewSub": "Quand quelqu'un regarde ton profil",
+    "topicReplyLabel": "Réponses de hangout 💬",
+    "topicReplySub": "Quand quelqu'un répond dans un hangout que tu as rejoint",
+    "newTopicLabel": "Nouveaux hangouts dans ta ville",
+    "newTopicSub": "Quand quelqu'un lance un nouveau hangout dans ta ville",
+    "announceLabel": "Annonces de Hilads",
+    "announceSub": "Des nouvelles occasionnelles de l'équipe"
+  }
+}

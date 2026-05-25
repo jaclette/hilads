@@ -1,0 +1,30 @@
+{
+  "allTitle": "Tất cả thông báo",
+  "markAllRead": "Đánh dấu tất cả đã đọc",
+  "emptyTitle": "Chưa có thông báo",
+  "emptySub": "Bạn sẽ thấy tin nhắn và cập nhật sự kiện ở đây.",
+  "seeAll": "Xem tất cả thông báo",
+  "prefTitle": "TÙY CHỌN THÔNG BÁO",
+  "pref": {
+    "mentionLabel": "Nhắc đến @",
+    "mentionSub": "Khi ai đó @nhắc bạn trong tin nhắn hoặc hangout",
+    "eventJoinLabel": "Có người tham gia sự kiện của bạn",
+    "eventJoinSub": "Khi có người mới tham gia sự kiện bạn sẽ đến",
+    "newEventLabel": "Sự kiện mới trong thành phố của bạn",
+    "newEventSub": "Khi ai đó tạo sự kiện trong thành phố của bạn",
+    "cityJoinLabel": "Có người đến thành phố của bạn",
+    "cityJoinSub": "Khi có ai đó tham gia kênh thành phố bạn đang ở",
+    "friendLabel": "Lời mời kết bạn",
+    "friendSub": "Khi ai đó gửi lời mời kết bạn hoặc chấp nhận lời mời của bạn",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "Khi ai đó để lại một vibe trên hồ sơ của bạn",
+    "profileViewLabel": "Lượt xem hồ sơ 👀",
+    "profileViewSub": "Khi ai đó xem hồ sơ của bạn",
+    "topicReplyLabel": "Trả lời hangout 💬",
+    "topicReplySub": "Khi ai đó trả lời trong hangout bạn đã tham gia",
+    "newTopicLabel": "Hangout mới trong thành phố của bạn",
+    "newTopicSub": "Khi ai đó tạo hangout mới trong thành phố của bạn",
+    "announceLabel": "Thông báo từ Hilads",
+    "announceSub": "Cập nhật thỉnh thoảng từ đội ngũ"
+  }
+}

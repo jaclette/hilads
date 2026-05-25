@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
@@ -24,6 +25,7 @@ const PAGE_SIZE = 50;
 
 export default function NotificationsHistoryScreen() {
   const router = useRouter();
+  const { t } = useTranslation('notifications');
   const { account, setUnreadNotifications } = useApp();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -107,11 +109,11 @@ export default function NotificationsHistoryScreen() {
           <Feather name="chevron-left" size={22} color={Colors.text} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>All Notifications</Text>
+        <Text style={styles.headerTitle}>{t('allTitle')}</Text>
 
         {hasUnread ? (
           <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.markReadBtn}>
-            <Text style={styles.markReadText}>Mark all read</Text>
+            <Text style={styles.markReadText}>{t('markAllRead')}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.markReadBtn} />
@@ -125,8 +127,8 @@ export default function NotificationsHistoryScreen() {
       ) : notifications.length === 0 ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyIcon}>🔔</Text>
-          <Text style={styles.emptyTitle}>No notifications yet</Text>
-          <Text style={styles.emptySub}>You'll see messages and event updates here.</Text>
+          <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
+          <Text style={styles.emptySub}>{t('emptySub')}</Text>
         </View>
       ) : (
         <FlatList

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
@@ -61,6 +62,7 @@ function PrefRow({
 
 export default function NotificationsScreen() {
   const router = useRouter();
+  const { t } = useTranslation('notifications');
   const { account, setUnreadNotifications } = useApp();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -182,11 +184,11 @@ export default function NotificationsScreen() {
           <Feather name="chevron-left" size={22} color={Colors.text} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Notifications</Text>
+        <Text style={styles.headerTitle}>{t('notifications', { ns: 'common' })}</Text>
 
         {hasUnread ? (
           <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.markReadBtn}>
-            <Text style={styles.markReadText}>Mark all read</Text>
+            <Text style={styles.markReadText}>{t('markAllRead')}</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.markReadBtn} />
@@ -206,8 +208,8 @@ export default function NotificationsScreen() {
         ) : notifications.length === 0 ? (
           <View style={styles.emptyWrap}>
             <Text style={styles.emptyIcon}>🔔</Text>
-            <Text style={styles.emptyTitle}>No notifications yet</Text>
-            <Text style={styles.emptySub}>You'll see messages and event updates here.</Text>
+            <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
+            <Text style={styles.emptySub}>{t('emptySub')}</Text>
           </View>
         ) : (
           <View style={styles.notifList}>
@@ -227,37 +229,37 @@ export default function NotificationsScreen() {
             onPress={() => router.push('/notifications-history' as never)}
             activeOpacity={0.75}
           >
-            <Text style={styles.seeAllText}>See all notifications</Text>
+            <Text style={styles.seeAllText}>{t('seeAll')}</Text>
             <Feather name="chevron-right" size={16} color={Colors.accent} />
           </TouchableOpacity>
         )}
 
         {/* ── Notification Preferences ─────────────────────────────────── */}
         <View style={styles.prefSection}>
-          <Text style={styles.prefSectionTitle}>NOTIFICATION PREFERENCES</Text>
+          <Text style={styles.prefSectionTitle}>{t('prefTitle')}</Text>
 
           <View style={styles.prefCard}>
             {/* DM, event-chat, and city-chat toggles live on the Messages screen
                 now — they govern the envelope icon's behaviour, not the bell. */}
-            <PrefRow label="Mentions @" subtitle="When someone @mentions you in a message or hangout" value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
+            <PrefRow label={t('pref.mentionLabel')} subtitle={t('pref.mentionSub')} value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Someone joined your event" subtitle="When a new person joins an event you're going to" value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
+            <PrefRow label={t('pref.eventJoinLabel')} subtitle={t('pref.eventJoinSub')} value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="New events in your city" subtitle="When someone creates an event in your city" value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
+            <PrefRow label={t('pref.newEventLabel')} subtitle={t('pref.newEventSub')} value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Someone arrived in your city" subtitle="When anyone joins the city channel you're in" value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
+            <PrefRow label={t('pref.cityJoinLabel')} subtitle={t('pref.cityJoinSub')} value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Friend requests" subtitle="When someone sends you a friend request or accepts yours" value={prefs.friend_request_push} onChange={v => togglePref('friend_request_push', v)} />
+            <PrefRow label={t('pref.friendLabel')} subtitle={t('pref.friendSub')} value={prefs.friend_request_push} onChange={v => togglePref('friend_request_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Vibes ✨" subtitle="When someone leaves a vibe on your profile" value={prefs.vibe_received_push} onChange={v => togglePref('vibe_received_push', v)} />
+            <PrefRow label={t('pref.vibeLabel')} subtitle={t('pref.vibeSub')} value={prefs.vibe_received_push} onChange={v => togglePref('vibe_received_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Profile views 👀" subtitle="When someone checks your profile" value={prefs.profile_view_push} onChange={v => togglePref('profile_view_push', v)} />
+            <PrefRow label={t('pref.profileViewLabel')} subtitle={t('pref.profileViewSub')} value={prefs.profile_view_push} onChange={v => togglePref('profile_view_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Hangout replies 💬" subtitle="When someone replies in a hangout you joined" value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
+            <PrefRow label={t('pref.topicReplyLabel')} subtitle={t('pref.topicReplySub')} value={prefs.topic_reply_push} onChange={v => togglePref('topic_reply_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="New hangouts in your city" subtitle="When someone starts a new hangout in your city" value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
+            <PrefRow label={t('pref.newTopicLabel')} subtitle={t('pref.newTopicSub')} value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
             <View style={styles.prefDivider} />
-            <PrefRow label="Announcements from Hilads" subtitle="Occasional updates from the team" value={prefs.admin_announcement_push} onChange={v => togglePref('admin_announcement_push', v)} />
+            <PrefRow label={t('pref.announceLabel')} subtitle={t('pref.announceSub')} value={prefs.admin_announcement_push} onChange={v => togglePref('admin_announcement_push', v)} />
           </View>
         </View>
       </ScrollView>
