@@ -1,0 +1,18 @@
+{
+  "title": "Đổi thành phố",
+  "searchPlaceholder": "Tìm thành phố…",
+  "topCities": "Thành phố sôi động nhất",
+  "cities": "Thành phố",
+  "filterActive": "🔥 Sôi động nhất",
+  "filterEvents": "🎉 Nhiều sự kiện nhất",
+  "filterOnline": "🟢 Trực tuyến nhiều nhất",
+  "backToLocation": "Về vị trí của tôi",
+  "youreHere": "bạn đang ở đây",
+  "online": "{{count}} trực tuyến",
+  "events_other": "{{count}} sự kiện",
+  "hangout_other": "{{count}} hangout",
+  "msgs": "{{count}} tin",
+  "loadError": "Không thể tải thành phố",
+  "noResults": "Không tìm thấy thành phố cho \"{{query}}\"",
+  "noCities": "Không tìm thấy thành phố"
+}

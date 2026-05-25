@@ -1,0 +1,20 @@
+{
+  "title": "Changer de ville",
+  "searchPlaceholder": "Rechercher une ville…",
+  "topCities": "Villes les plus actives",
+  "cities": "Villes",
+  "filterActive": "🔥 Les plus actives",
+  "filterEvents": "🎉 Le plus d'événements",
+  "filterOnline": "🟢 Le plus en ligne",
+  "backToLocation": "Retour à ma position",
+  "youreHere": "tu es ici",
+  "online": "{{count}} en ligne",
+  "events_one": "{{count}} événement",
+  "events_other": "{{count}} événements",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} msgs",
+  "loadError": "Impossible de charger les villes",
+  "noResults": "Aucune ville trouvée pour « {{query}} »",
+  "noCities": "Aucune ville trouvée"
+}

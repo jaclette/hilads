@@ -26,6 +26,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchChannels, joinChannel, setCurrentCity } from '@/api/channels';
@@ -73,6 +74,7 @@ function ActivityDot({ live }: { live: boolean }) {
 // ── City card — mirrors web renderCityRow() ───────────────────────────────────
 
 function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; onPress: () => void }) {
+  const { t } = useTranslation('cities');
   const flag = cityFlag(city.country);
   // Active city always counts as live — user is there, at least 1 person online
   const live = isActive || (city.onlineCount ?? 0) > 0;
@@ -99,7 +101,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
         </View>
         {isActive && (
           <View style={styles.hereBadge}>
-            <Text style={styles.hereBadgeText}>you're here</Text>
+            <Text style={styles.hereBadgeText}>{t('youreHere')}</Text>
           </View>
         )}
       </View>
@@ -107,20 +109,20 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
       {/* ── Stats row: online · events · conversations · msgs ── */}
       <View style={styles.statsRow}>
         {(city.onlineCount ?? 0) > 0 && (
-          <Text style={styles.statOnline}>{city.onlineCount} online</Text>
+          <Text style={styles.statOnline}>{t('online', { count: city.onlineCount })}</Text>
         )}
         {(city.eventCount ?? 0) > 0 && (
           <Text style={styles.statEvents}>
-            {city.eventCount} {city.eventCount === 1 ? 'event' : 'events'}
+            {t('events', { count: city.eventCount })}
           </Text>
         )}
         {(city.topicCount ?? 0) > 0 && (
           <Text style={styles.statTopics}>
-            {city.topicCount} {city.topicCount === 1 ? 'hangout' : 'hangouts'}
+            {t('hangout', { count: city.topicCount })}
           </Text>
         )}
         {(city.messageCount ?? 0) > 0 && (
-          <Text style={styles.statMsgs}>{city.messageCount} msgs</Text>
+          <Text style={styles.statMsgs}>{t('msgs', { count: city.messageCount })}</Text>
         )}
       </View>
       </TouchableOpacity>
@@ -132,6 +134,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 
 export default function SwitchCityScreen() {
   const router                                              = useRouter();
+  const { t } = useTranslation('cities');
   const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity, setJoined } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   const [cities,        setCities]        = useState<City[]>([]);  // ranked top-10 (filter mode)
@@ -198,7 +201,7 @@ export default function SwitchCityScreen() {
 
   // Section label — "Top cities right now" when any city has activity, else "Cities"
   const hasActivity  = cities.some(c => (c.onlineCount ?? 0) > 0);
-  const sectionLabel = query.trim() ? null : (hasActivity ? 'Top cities right now' : 'Cities');
+  const sectionLabel = query.trim() ? null : (hasActivity ? t('topCities') : t('cities'));
 
   // Search mode: filter all cities by query, pin active city first
   // Default mode: use backend-ranked top-10, pin active city first
@@ -248,7 +251,7 @@ export default function SwitchCityScreen() {
         >
           <Ionicons name="chevron-back" size={22} color={Colors.text} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Switch city</Text>
+        <Text style={styles.headerTitle}>{t('title')}</Text>
       </View>
 
       {/* ── Search — web: .city-search-wrap + .city-search-input ── */}
@@ -263,7 +266,7 @@ export default function SwitchCityScreen() {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search a city…"
+            placeholder={t('searchPlaceholder')}
             placeholderTextColor={Colors.muted2}
             value={query}
             onChangeText={setQuery}
@@ -280,9 +283,9 @@ export default function SwitchCityScreen() {
       {!query.trim() && (
         <View style={styles.filterRow}>
           {([
-            { id: 'active', label: '🔥 Most active' },
-            { id: 'events', label: '🎉 Most events' },
-            { id: 'online', label: '🟢 Most online' },
+            { id: 'active', labelKey: 'filterActive' },
+            { id: 'events', labelKey: 'filterEvents' },
+            { id: 'online', labelKey: 'filterOnline' },
           ] as const).map(f => (
             <TouchableOpacity
               key={f.id}
@@ -291,7 +294,7 @@ export default function SwitchCityScreen() {
               activeOpacity={0.7}
             >
               <Text style={[styles.filterPillText, filter === f.id && styles.filterPillTextActive]}>
-                {f.label}
+                {t(f.labelKey)}
               </Text>
             </TouchableOpacity>
           ))}
@@ -307,7 +310,7 @@ export default function SwitchCityScreen() {
         >
           <Ionicons name="locate" size={18} color={Colors.accent} style={styles.backToLocationIcon} />
           <View style={styles.backToLocationText}>
-            <Text style={styles.backToLocationLabel}>Back to my location</Text>
+            <Text style={styles.backToLocationLabel}>{t('backToLocation')}</Text>
             <Text style={styles.backToLocationSub}>{detectedCity.name}</Text>
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
@@ -321,9 +324,9 @@ export default function SwitchCityScreen() {
         </View>
       ) : error ? (
         <View style={styles.center}>
-          <Text style={styles.emptyText}>Couldn't load cities</Text>
+          <Text style={styles.emptyText}>{t('loadError')}</Text>
           <TouchableOpacity style={styles.retryBtn} onPress={() => load(filter)} activeOpacity={0.7}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('retry', { ns: 'common' })}</Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -352,7 +355,7 @@ export default function SwitchCityScreen() {
           ListEmptyComponent={
             <View style={styles.center}>
               <Text style={styles.emptyText}>
-                {query.trim() ? `No city found for "${query}"` : 'No cities found'}
+                {query.trim() ? t('noResults', { query }) : t('noCities')}
               </Text>
             </View>
           }

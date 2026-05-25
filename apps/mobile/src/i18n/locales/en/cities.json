@@ -1,0 +1,20 @@
+{
+  "title": "Switch city",
+  "searchPlaceholder": "Search a city…",
+  "topCities": "Top cities right now",
+  "cities": "Cities",
+  "filterActive": "🔥 Most active",
+  "filterEvents": "🎉 Most events",
+  "filterOnline": "🟢 Most online",
+  "backToLocation": "Back to my location",
+  "youreHere": "you're here",
+  "online": "{{count}} online",
+  "events_one": "{{count}} event",
+  "events_other": "{{count}} events",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} msgs",
+  "loadError": "Couldn't load cities",
+  "noResults": "No city found for \"{{query}}\"",
+  "noCities": "No cities found"
+}

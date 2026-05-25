@@ -20,6 +20,7 @@ import en_notifications from './locales/en/notifications.json';
 import en_publicProfile from './locales/en/publicProfile.json';
 import en_me      from './locales/en/me.json';
 import en_misc    from './locales/en/misc.json';
+import en_cities  from './locales/en/cities.json';
 import fr_common  from './locales/fr/common.json';
 import fr_auth    from './locales/fr/auth.json';
 import fr_landing from './locales/fr/landing.json';
@@ -33,6 +34,7 @@ import fr_notifications from './locales/fr/notifications.json';
 import fr_publicProfile from './locales/fr/publicProfile.json';
 import fr_me      from './locales/fr/me.json';
 import fr_misc    from './locales/fr/misc.json';
+import fr_cities  from './locales/fr/cities.json';
 import vi_common  from './locales/vi/common.json';
 import vi_auth    from './locales/vi/auth.json';
 import vi_landing from './locales/vi/landing.json';
@@ -46,18 +48,19 @@ import vi_notifications from './locales/vi/notifications.json';
 import vi_publicProfile from './locales/vi/publicProfile.json';
 import vi_me      from './locales/vi/me.json';
 import vi_misc    from './locales/vi/misc.json';
+import vi_cities  from './locales/vi/cities.json';
 
 export const SUPPORTED = ['en', 'fr', 'vi'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
 
-const NS = ['common', 'auth', 'landing', 'here', 'now', 'chat', 'event', 'hangout', 'dm', 'notifications', 'publicProfile', 'me', 'misc'] as const;
+const NS = ['common', 'auth', 'landing', 'here', 'now', 'chat', 'event', 'hangout', 'dm', 'notifications', 'publicProfile', 'me', 'misc', 'cities'] as const;
 
 const resources = {
-  en: { common: en_common, auth: en_auth, landing: en_landing, here: en_here, now: en_now, chat: en_chat, event: en_event, hangout: en_hangout, dm: en_dm, notifications: en_notifications, publicProfile: en_publicProfile, me: en_me, misc: en_misc },
-  fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here, now: fr_now, chat: fr_chat, event: fr_event, hangout: fr_hangout, dm: fr_dm, notifications: fr_notifications, publicProfile: fr_publicProfile, me: fr_me, misc: fr_misc },
-  vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now, chat: vi_chat, event: vi_event, hangout: vi_hangout, dm: vi_dm, notifications: vi_notifications, publicProfile: vi_publicProfile, me: vi_me, misc: vi_misc },
+  en: { common: en_common, auth: en_auth, landing: en_landing, here: en_here, now: en_now, chat: en_chat, event: en_event, hangout: en_hangout, dm: en_dm, notifications: en_notifications, publicProfile: en_publicProfile, me: en_me, misc: en_misc, cities: en_cities },
+  fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here, now: fr_now, chat: fr_chat, event: fr_event, hangout: fr_hangout, dm: fr_dm, notifications: fr_notifications, publicProfile: fr_publicProfile, me: fr_me, misc: fr_misc, cities: fr_cities },
+  vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now, chat: vi_chat, event: vi_event, hangout: vi_hangout, dm: vi_dm, notifications: vi_notifications, publicProfile: vi_publicProfile, me: vi_me, misc: vi_misc, cities: vi_cities },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {
