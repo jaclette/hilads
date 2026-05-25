@@ -4171,16 +4171,16 @@ export default function App() {
                   <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); openHangout(topic) }}>
                     <div className="er-header">
                       <span className="er-title">{icon} {topic.title}</span>
-                      <span className="er-going er-going--topic">Hangout</span>
+                      <span className="er-going er-going--topic">{t('feed.hangoutTag')}</span>
                     </div>
                     <div className="er-badges">
-                      {activeNow && <span className="now-active-badge">● Active now</span>}
+                      {activeNow && <span className="now-active-badge">{t('feed.activeNow')}</span>}
                       {formatExpiresIn(topic.expires_at) && (
                         <span className="city-row-current">⏱ {formatExpiresIn(topic.expires_at)}</span>
                       )}
                       {replies > 0
-                        ? <span className="city-row-current">💬 {replies} {replies === 1 ? 'reply' : 'replies'}{timeAgo ? ` · ${timeAgo}` : ''}</span>
-                        : <span className="city-row-current">No replies yet — be first</span>
+                        ? <span className="city-row-current">{t('feed.replies', { count: replies })}{timeAgo ? ` · ${timeAgo}` : ''}</span>
+                        : <span className="city-row-current">{t('feed.repliesNew')}</span>
                       }
                     </div>
                     {topic.description && (
@@ -4210,8 +4210,8 @@ export default function App() {
                         {EVENT_ICONS[event.event_type ?? event.type] ?? '📌'} {event.title}
                       </span>
                       {group === 'public'
-                        ? <span className="er-going er-going--public">Public</span>
-                        : <span className="er-going er-going--event">Event</span>}
+                        ? <span className="er-going er-going--public">{t('feed.public')}</span>
+                        : <span className="er-going er-going--event">{t('feed.eventTag')}</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
@@ -4221,7 +4221,7 @@ export default function App() {
                       {event.recurrence_label && (
                         <span className="recur-badge">↻ {event.recurrence_label}</span>
                       )}
-                      {going > 0 && <span className="city-row-current">🙌 {going} going</span>}
+                      {going > 0 && <span className="city-row-current">{t('feed.going', { count: going })}</span>}
                     </div>
                     {(() => {
                       // NOW feed: show distance when we have it; otherwise the address.
@@ -4231,7 +4231,7 @@ export default function App() {
                       return loc ? <span className="er-location">📍 {loc}</span> : null
                     })()}
                     {event.host_nickname && (
-                      <span className="er-host">Hosted by {event.host_nickname}</span>
+                      <span className="er-host">{t('feed.hostedBy', { name: event.host_nickname })}</span>
                     )}
                     {group !== 'public' && (
                       <AttendeeAvatars
@@ -4260,9 +4260,9 @@ export default function App() {
               if (hotEventsStatus === 'loading') {
                 return (
                   <>
-                    <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>Hilads Events</p>
+                    <p className="events-group-label" style={{ padding: '10px 12px 2px' }}>{t('feed.groupHilads')}</p>
                     {[...Array(3)].map(renderSkeletonRow)}
-                    <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>Public Events</p>
+                    <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>{t('feed.groupPublic')}</p>
                     {[...Array(2)].map((_, idx) => renderSkeletonRow(_, idx + 3))}
                   </>
                 )
@@ -4271,9 +4271,9 @@ export default function App() {
               if (hotEventsStatus === 'error') {
                 return (
                   <div className="events-empty-state">
-                    <p className="events-empty-title">Couldn&apos;t load events</p>
-                    <p className="events-empty-sub">Pull to retry later or create something new in {city}.</p>
-                    <button className="events-empty-cta" onClick={openCreate}>Create event</button>
+                    <p className="events-empty-title">{t('feed.loadError')}</p>
+                    <p className="events-empty-sub">{t('feed.loadErrorSub', { city })}</p>
+                    <button className="events-empty-cta" onClick={openCreate}>{t('feed.createEvent')}</button>
                   </div>
                 )
               }
@@ -4282,16 +4282,14 @@ export default function App() {
                 const isLocalUser = account?.mode === 'local'
                 return (
                   <div className="events-empty-state">
-                    <p className="events-empty-title">{isLocalUser ? 'Host your spot' : 'Nothing happening yet'}</p>
+                    <p className="events-empty-title">{isLocalUser ? t('feed.emptyLocalTitle') : t('feed.emptyTitle')}</p>
                     <p className="events-empty-sub">
-                      {isLocalUser
-                        ? `Make ${city} feel alive. Start a recurring event at your favorite place.`
-                        : `Be the first to make something happen in ${city}`}
+                      {isLocalUser ? t('feed.emptyLocalSub', { city }) : t('feed.emptySub', { city })}
                     </p>
                     <button className="events-empty-cta" onClick={openCreate}>
-                      {isLocalUser ? 'Open your place' : 'Create event'}
+                      {isLocalUser ? t('feed.openPlace') : t('feed.createEvent')}
                     </button>
-                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
+                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>{t('feed.startHangout')}</button>
                   </div>
                 )
               }
@@ -4336,16 +4334,14 @@ export default function App() {
                 return (
                   <div className="events-empty-state">
                     <p className="events-empty-title">
-                      {nowFilter === 'events' ? 'No events right now' : 'No hangouts yet'}
+                      {nowFilter === 'events' ? t('feed.noEvents') : t('feed.noHangouts')}
                     </p>
                     <p className="events-empty-sub">
-                      {nowFilter === 'events'
-                        ? `Be the first to create one in ${city}`
-                        : `Start a hangout and get the city talking`}
+                      {nowFilter === 'events' ? t('feed.noEventsSub', { city }) : t('feed.noHangoutsSub')}
                     </p>
                     {nowFilter === 'events'
-                      ? <button className="events-empty-cta" onClick={openCreate}>Create event</button>
-                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>Start a hangout ⚡</button>
+                      ? <button className="events-empty-cta" onClick={openCreate}>{t('feed.createEvent')}</button>
+                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>{t('feed.startHangout')}</button>
                     }
                   </div>
                 )
@@ -4359,7 +4355,7 @@ export default function App() {
                   )}
                   {nowFilter !== 'topics' && publicEvents.length > 0 && (
                     <>
-                      <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>🎫 Public Events</p>
+                      <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>{t('feed.groupPublicTicket')}</p>
                       {publicEvents.map(event => renderEventRow(event, 'public'))}
                     </>
                   )}

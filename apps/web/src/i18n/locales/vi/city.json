@@ -41,5 +41,31 @@
   },
   "joining": "Đang vào {{city}}…",
   "joiningDefault": "Đang vào chat…",
-  "tryAgain": "Thử lại"
+  "tryAgain": "Thử lại",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "Công khai",
+    "activeNow": "● Đang hoạt động",
+    "repliesNew": "Chưa có trả lời — hãy là người đầu tiên",
+    "replies_other": "💬 {{count}} trả lời",
+    "going_other": "🙌 {{count}} tham gia",
+    "hostedBy": "Tổ chức bởi {{name}}",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "Tạo sự kiện",
+    "startHangout": "Tạo hangout ⚡",
+    "openPlace": "Mở spot của bạn",
+    "loadError": "Không thể tải sự kiện",
+    "loadErrorSub": "Thử lại sau hoặc tạo gì đó mới ở {{city}}.",
+    "emptyLocalTitle": "Mở spot của bạn",
+    "emptyTitle": "Chưa có gì diễn ra",
+    "emptyLocalSub": "Làm cho {{city}} sống động. Tạo sự kiện định kỳ tại nơi yêu thích.",
+    "emptySub": "Hãy là người đầu tiên tạo điều gì đó ở {{city}}",
+    "noEvents": "Chưa có sự kiện nào",
+    "noHangouts": "Chưa có hangout",
+    "noEventsSub": "Hãy là người đầu tiên tạo một cái ở {{city}}",
+    "noHangoutsSub": "Tạo hangout và khiến cả thành phố trò chuyện"
+  }
 }
