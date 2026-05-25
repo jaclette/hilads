@@ -98,5 +98,48 @@
     "arriving": "Les gens arrivent",
     "firstChat": "Sois le premier à écrire ici 👇",
     "firstHi": "Sois le premier à dire bonjour 👇"
+  },
+  "create": {
+    "title": "On fait quoi ?",
+    "hangoutTitle": "Lancer un hangout",
+    "hangoutSub": "Instantané — laisse les gens te rejoindre maintenant",
+    "eventTitle": "Créer un événement",
+    "eventSub": "Organise quelque chose à rejoindre"
+  },
+  "goingModal": {
+    "going": "y vont",
+    "inThisHangout": "dans ce hangout",
+    "loading": "Chargement…",
+    "empty": "Personne pour l'instant — sois le premier ! 🙌"
+  },
+  "nickname": {
+    "label": "Pseudo",
+    "placeholder": "Ton nom...",
+    "save": "Enregistrer le pseudo",
+    "upgradeHint": "Garde ton nom. Reste local.",
+    "haveAccount": "Tu as déjà un compte ?",
+    "myEvents": "Mes événements",
+    "anonymous": "// anonyme · aucune inscription requise"
+  },
+  "prompt": {
+    "exploreText": "🔥 Vois ce qui se passe maintenant",
+    "exploreCta": "Voir ce qui se passe",
+    "photoText": "📸 Partage ce qui se passe",
+    "shoot": "Photo",
+    "createEventText": "🎉 Un plan ce soir ?",
+    "createEventCta": "Créer un événement",
+    "installText": "✨ Ajoute Hilads à ton écran d'accueil\nNe rate jamais ce qui se passe dans ta ville",
+    "installAdd": "Ajouter",
+    "installHow": "Comment"
+  },
+  "toast": {
+    "eventDeleted": "Événement supprimé"
+  },
+  "pwa": {
+    "addToHome": "Ajoute Hilads à l'écran d'accueil",
+    "add": "Ajouter",
+    "keepClose": "Garde Hilads à portée",
+    "manualHelp": "Ouvre le menu de ton navigateur et choisis « Sur l'écran d'accueil ».",
+    "dismiss": "Fermer l'invite d'installation"
   }
 }

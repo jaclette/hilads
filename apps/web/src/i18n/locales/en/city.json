@@ -98,5 +98,48 @@
     "arriving": "People are arriving",
     "firstChat": "Be the first to chat here 👇",
     "firstHi": "Be the first to say hi 👇"
+  },
+  "create": {
+    "title": "What's the move?",
+    "hangoutTitle": "Start a hangout",
+    "hangoutSub": "Instant — let people join you right now",
+    "eventTitle": "Create an event",
+    "eventSub": "Plan something others can join"
+  },
+  "goingModal": {
+    "going": "going",
+    "inThisHangout": "in this hangout",
+    "loading": "Loading…",
+    "empty": "No one yet — be the first to join! 🙌"
+  },
+  "nickname": {
+    "label": "Nickname",
+    "placeholder": "Your name...",
+    "save": "Save nickname",
+    "upgradeHint": "Save your name. Stay local.",
+    "haveAccount": "Already have an account?",
+    "myEvents": "My events",
+    "anonymous": "// anonymous · no sign-up required"
+  },
+  "prompt": {
+    "exploreText": "🔥 See what's happening now",
+    "exploreCta": "See what's happening",
+    "photoText": "📸 Share what's happening",
+    "shoot": "Shoot",
+    "createEventText": "🎉 Got a plan tonight?",
+    "createEventCta": "Create event",
+    "installText": "✨ Add Hilads to your home screen\nNever miss what's happening in your city",
+    "installAdd": "Add",
+    "installHow": "How"
+  },
+  "toast": {
+    "eventDeleted": "Event deleted"
+  },
+  "pwa": {
+    "addToHome": "Add Hilads to home screen",
+    "add": "Add",
+    "keepClose": "Keep Hilads close",
+    "manualHelp": "Open your browser menu and choose Add to Home Screen.",
+    "dismiss": "Dismiss install prompt"
   }
 }

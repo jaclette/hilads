@@ -95,5 +95,48 @@
     "arriving": "Mọi người đang đến",
     "firstChat": "Hãy là người đầu tiên nhắn ở đây 👇",
     "firstHi": "Hãy là người đầu tiên chào hỏi 👇"
+  },
+  "create": {
+    "title": "Làm gì đây?",
+    "hangoutTitle": "Tạo hangout",
+    "hangoutSub": "Tức thì — để mọi người tham gia ngay bây giờ",
+    "eventTitle": "Tạo sự kiện",
+    "eventSub": "Lên kế hoạch cho điều người khác có thể tham gia"
+  },
+  "goingModal": {
+    "going": "tham gia",
+    "inThisHangout": "trong hangout này",
+    "loading": "Đang tải…",
+    "empty": "Chưa có ai — hãy là người đầu tiên! 🙌"
+  },
+  "nickname": {
+    "label": "Biệt danh",
+    "placeholder": "Tên của bạn...",
+    "save": "Lưu biệt danh",
+    "upgradeHint": "Giữ tên của bạn. Là người địa phương.",
+    "haveAccount": "Đã có tài khoản?",
+    "myEvents": "Sự kiện của tôi",
+    "anonymous": "// ẩn danh · không cần đăng ký"
+  },
+  "prompt": {
+    "exploreText": "🔥 Xem có gì đang diễn ra",
+    "exploreCta": "Xem có gì đang diễn ra",
+    "photoText": "📸 Chia sẻ điều đang diễn ra",
+    "shoot": "Chụp",
+    "createEventText": "🎉 Có kế hoạch tối nay?",
+    "createEventCta": "Tạo sự kiện",
+    "installText": "✨ Thêm Hilads vào màn hình chính\nĐừng bỏ lỡ điều đang diễn ra trong thành phố của bạn",
+    "installAdd": "Thêm",
+    "installHow": "Cách"
+  },
+  "toast": {
+    "eventDeleted": "Đã xóa sự kiện"
+  },
+  "pwa": {
+    "addToHome": "Thêm Hilads vào màn hình chính",
+    "add": "Thêm",
+    "keepClose": "Giữ Hilads bên cạnh",
+    "manualHelp": "Mở menu trình duyệt và chọn Thêm vào Màn hình chính.",
+    "dismiss": "Đóng lời nhắc cài đặt"
   }
 }

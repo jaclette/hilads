@@ -1060,7 +1060,7 @@ export default function App() {
   )
   const showInstallBanner = showInstallOnMainSurface && installPrompt.shouldShowBanner && !hasInstallFeedPrompt
   const compactInstallText = installPrompt.canUseNativePrompt
-    ? 'Add Hilads to home screen'
+    ? t('pwa.addToHome')
     : installPrompt.instructionText
 
   function injectFeedInstallMessage() {
@@ -2922,7 +2922,7 @@ export default function App() {
     setEvents(prev => prev.filter(e => e.id !== eventId))
     setMyEvents(prev => prev.filter(e => e.id !== eventId))
     if (activeEvent?.id === eventId) handleBackToCity()
-    setSuccessToast({ msg: 'Event deleted' })
+    setSuccessToast({ msg: t('toast.eventDeleted') })
     setTimeout(() => setSuccessToast(null), 3000)
   }
 
@@ -3690,10 +3690,16 @@ export default function App() {
             }
 
             if (item.type === 'prompt') {
+              const promptTk = {
+                explore:        { text: t('prompt.exploreText'),    cta: t('prompt.exploreCta') },
+                photo:          { text: t('prompt.photoText'),      cta: t('prompt.shoot') },
+                'create-event': { text: t('prompt.createEventText'), cta: t('prompt.createEventCta') },
+                install:        { text: t('prompt.installText'),    cta: installPrompt.canUseNativePrompt ? t('prompt.installAdd') : t('prompt.installHow') },
+              }[item.subtype]
               return (
                 <div key={item.id} className="feed-prompt">
-                  <span className="feed-prompt-text">{item.text}</span>
-                  <button className="feed-prompt-btn" onClick={() => handlePromptCta(item)}>{item.cta}</button>
+                  <span className="feed-prompt-text">{promptTk ? promptTk.text : item.text}</span>
+                  <button className="feed-prompt-btn" onClick={() => handlePromptCta(item)}>{promptTk ? promptTk.cta : item.cta}</button>
                 </div>
               )
             }
@@ -4872,14 +4878,14 @@ export default function App() {
               })()}
               <div className="me-card">
                 <div className="modal-field">
-                  <label className="modal-label">Nickname</label>
+                  <label className="modal-label">{t('nickname.label')}</label>
                   <input
                     className="modal-input"
                     type="text"
                     value={profileNickInput}
                     onChange={(e) => setProfileNickInput(e.target.value)}
                     maxLength={20}
-                    placeholder="Your name..."
+                    placeholder={t('nickname.placeholder')}
                   />
                 </div>
                 <button
@@ -4894,23 +4900,23 @@ export default function App() {
                     setShowProfileDrawer(false)
                   }}
                   disabled={!profileNickInput.trim()}
-                >Save nickname</button>
+                >{t('nickname.save')}</button>
               </div>
               <div className="me-card">
                 <div className="me-upgrade">
-                  <p className="me-upgrade-hint">Save your name. Stay local.</p>
+                  <p className="me-upgrade-hint">{t('nickname.upgradeHint')}</p>
                   <button className="me-upgrade-btn" onClick={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>
-                    Create account
+                    {t('guestGate.createAccount')}
                   </button>
-                  <p className="me-upgrade-signin-hint">Already have an account?</p>
+                  <p className="me-upgrade-signin-hint">{t('nickname.haveAccount')}</p>
                   <button className="me-upgrade-btn me-upgrade-btn--secondary" onClick={() => { setShowAuthScreenTab('login'); setShowAuthScreen(true) }}>
-                    Sign in
+                    {t('guestGate.signIn')}
                   </button>
                 </div>
               </div>
               {myEventsLoaded && myEvents.length > 0 && (
                 <div className="me-card">
-                  <p className="me-section-label">My events</p>
+                  <p className="me-section-label">{t('nickname.myEvents')}</p>
                   {myEvents.map(ev => (
                     <MyEventRow
                       key={ev.id}
@@ -4929,7 +4935,7 @@ export default function App() {
                   ))}
                 </div>
               )}
-                <p className="profile-hint">// anonymous · no sign-up required</p>
+                <p className="profile-hint">{t('nickname.anonymous')}</p>
             </>
           </div>
         </div>
@@ -5036,15 +5042,15 @@ export default function App() {
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <span className="modal-title">
-                👥 {goingList.length || (activeEvent && (eventParticipants[activeEvent.id] ?? 0))} {membersNoun}
+                👥 {goingList.length || (activeEvent && (eventParticipants[activeEvent.id] ?? 0))} {membersNoun === 'in this hangout' ? t('goingModal.inThisHangout') : t('goingModal.going')}
               </span>
               <button className="going-modal-close" onClick={() => setShowGoingModal(false)}>✕</button>
             </div>
             <div className="going-modal-body">
               {goingListLoading ? (
-                <p className="going-modal-empty">Loading…</p>
+                <p className="going-modal-empty">{t('goingModal.loading')}</p>
               ) : goingList.length === 0 ? (
-                <p className="going-modal-empty">No one yet — be the first to join! 🙌</p>
+                <p className="going-modal-empty">{t('goingModal.empty')}</p>
               ) : (
                 goingList.map(p => {
                   const isRegistered = p.accountType === 'registered'
@@ -5158,7 +5164,7 @@ export default function App() {
         <div className="create-chooser-overlay" onClick={() => setShowCreateChooser(false)}>
           <div className="create-chooser-sheet" onClick={e => e.stopPropagation()}>
             <div className="create-chooser-handle" />
-            <p className="create-chooser-title">What's the move?</p>
+            <p className="create-chooser-title">{t('create.title')}</p>
             <button
               className="create-chooser-option"
               onClick={() => {
@@ -5168,8 +5174,8 @@ export default function App() {
             >
               <span className="create-chooser-icon">⚡</span>
               <span className="create-chooser-label">
-                <strong>Start a hangout</strong>
-                <span>Instant — let people join you right now</span>
+                <strong>{t('create.hangoutTitle')}</strong>
+                <span>{t('create.hangoutSub')}</span>
               </span>
               <span className="create-chooser-arrow">→</span>
             </button>
@@ -5179,8 +5185,8 @@ export default function App() {
             >
               <span className="create-chooser-icon">🎉</span>
               <span className="create-chooser-label">
-                <strong>Create an event</strong>
-                <span>Plan something others can join</span>
+                <strong>{t('create.eventTitle')}</strong>
+                <span>{t('create.eventSub')}</span>
               </span>
               <span className="create-chooser-arrow">→</span>
             </button>
