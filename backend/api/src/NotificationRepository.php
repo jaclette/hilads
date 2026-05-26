@@ -388,6 +388,13 @@ class NotificationRepository
     // inside the window and are suppressed. Tune here (seconds).
     private const ARRIVAL_COOLDOWN_SECONDS = 600; // 10 minutes
 
+    // Cap the city-wide push fan-out (city_join / new_event) to the N most
+    // recently-active city members. Bounds the per-arrival work — which runs
+    // IN-REQUEST on non-FPM (see deploy notes) — so a large/active city can't
+    // pin a worker with an unbounded synchronous push loop. Members past the cap
+    // (the most dormant tail) don't get this push. Tune here.
+    private const CITY_PUSH_FANOUT_CAP = 200;
+
     /**
      * Emit a genuine city arrival across BOTH surfaces — the feed "X just landed"
      * system message AND the "Someone arrived" push — behind a SINGLE atomic
@@ -482,12 +489,15 @@ class NotificationRepository
             // had a positive location signal in that window are excluded so
             // we don't push to dormant accounts whose city is just remembered
             // from an old visit.
+            $cap = self::CITY_PUSH_FANOUT_CAP;
             $stmt = Database::pdo()->prepare("
                 SELECT u.id FROM users u
                 WHERE u.current_city_id = ?
                   AND u.current_city_last_confirmed_at > now() - interval '30 days'
                   AND u.deleted_at IS NULL
                   AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
+                ORDER BY u.current_city_last_confirmed_at DESC NULLS LAST
+                LIMIT {$cap}
             ");
         } else {
             // Resolve the registered user behind each live presence row. Two links,
