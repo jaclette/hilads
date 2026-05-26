@@ -5051,7 +5051,7 @@ export default function App() {
                       </span>
                       <div className="me-hero-copy">
                         <h2 className="me-hero-name">{profileNickInput || nickname || 'Guest'}</h2>
-                        <p className="me-hero-sub">Anonymous for now. You can still shape how you appear.</p>
+                        <p className="me-hero-sub">{t('nickname.heroSub')}</p>
                       </div>
                     </div>
                   </div>

@@ -130,6 +130,7 @@
   "nickname": {
     "label": "Biệt danh",
     "placeholder": "Tên của bạn...",
+    "heroSub": "Tạm thời ẩn danh. Bạn vẫn có thể tùy chỉnh cách mình xuất hiện.",
     "save": "Lưu biệt danh",
     "upgradeHint": "Giữ tên của bạn. Là người địa phương.",
     "haveAccount": "Đã có tài khoản?",

@@ -133,6 +133,7 @@
   "nickname": {
     "label": "Nickname",
     "placeholder": "Your name...",
+    "heroSub": "Anonymous for now. You can still shape how you appear.",
     "save": "Save nickname",
     "upgradeHint": "Save your name. Stay local.",
     "haveAccount": "Already have an account?",

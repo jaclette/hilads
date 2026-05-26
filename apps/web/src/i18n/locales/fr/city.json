@@ -133,6 +133,7 @@
   "nickname": {
     "label": "Pseudo",
     "placeholder": "Ton nom...",
+    "heroSub": "Anonyme pour l'instant. Tu peux quand même soigner ton apparence.",
     "save": "Enregistrer le pseudo",
     "upgradeHint": "Garde ton nom. Reste local.",
     "haveAccount": "Tu as déjà un compte ?",
