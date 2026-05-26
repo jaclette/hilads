@@ -3926,7 +3926,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
             'new_event',
             '🔥 New event in ' . $cityName,
             $notifBody,
-            ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName)), 'senderUserId' => $authUser['id'] ?? null]
+            ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'cityName' => $cityName, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName)), 'senderUserId' => $authUser['id'] ?? null]
         );
     } catch (\Throwable $e) {
         error_log("[event-create] notify failed (non-fatal): " . $e->getMessage());
@@ -4842,7 +4842,7 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
                 $senderUserId,
                 $nickname . ' mentioned you in ' . $eventTitle,
                 $bodyPreview,
-                ['eventId' => $eventId, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $senderUserId]
+                ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $senderUserId]
             );
         }
     } catch (\Throwable $e) {
@@ -4986,7 +4986,7 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
                 'event_join',
                 "👋 {$joinerName} joined {$eventTitle}",
                 null,
-                ['eventId' => $eventId, 'senderUserId' => $currentUser['id'], 'senderName' => $joinerName]
+                ['eventId' => $eventId, 'senderUserId' => $currentUser['id'], 'senderName' => $joinerName, 'eventTitle' => $eventTitle]
             );
         }
     }
@@ -5594,6 +5594,17 @@ $router->add('POST', '/api/v1/push/subscribe', function () {
         Response::json(['error' => 'endpoint, keys.p256dh and keys.auth are required'], 400);
     }
 
+    // Remember the browser language so notifications (push + bell) are localized.
+    $locale = strtolower(substr(trim((string) ($body['locale'] ?? '')), 0, 2));
+    if (in_array($locale, ['en', 'fr', 'vi'], true)) {
+        try {
+            Database::pdo()->prepare("UPDATE users SET locale = ? WHERE id = ?")
+                ->execute([$locale, $user['id']]);
+        } catch (\Throwable $e) {
+            error_log("[push-subscribe-web] locale update failed: " . $e->getMessage());
+        }
+    }
+
     Database::pdo()->prepare("
         INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth_key)
         VALUES (?, ?, ?, ?)
@@ -5642,8 +5653,19 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
 
     $token    = trim((string) ($body['token']    ?? ''));
     $platform = trim((string) ($body['platform'] ?? 'unknown'));
+    $locale   = strtolower(substr(trim((string) ($body['locale'] ?? '')), 0, 2));
 
-    error_log("[push-subscribe] user={$user['id']} platform=$platform token=$token");
+    error_log("[push-subscribe] user={$user['id']} platform=$platform token=$token locale=$locale");
+
+    // Remember the device language so notifications (push + bell) are localized.
+    if (in_array($locale, ['en', 'fr', 'vi'], true)) {
+        try {
+            Database::pdo()->prepare("UPDATE users SET locale = ? WHERE id = ?")
+                ->execute([$locale, $user['id']]);
+        } catch (\Throwable $e) {
+            error_log("[push-subscribe] locale update failed: " . $e->getMessage());
+        }
+    }
 
     if (!$token || !str_starts_with($token, 'ExponentPushToken[')) {
         error_log("[push-subscribe] REJECTED — invalid token format: '$token'");
@@ -6026,7 +6048,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
                 $senderUserId,
                 $nickname . ' mentioned you in ' . $topicTitle,
                 $bodyPreview,
-                ['topicId' => $topicId, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $senderUserId]
+                ['topicId' => $topicId, 'topicTitle' => $topicTitle, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $senderUserId]
             );
         }
     } catch (\Throwable $e) {
@@ -6086,7 +6108,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/join-requests', function (array $
             NotificationRepository::create(
                 $pid, 'join_request', $name . ' wants to join',
                 $name . ' asked to join ' . $title,
-                ['topicId' => $topicId, 'requestId' => $requestId, 'requesterName' => $name],
+                ['topicId' => $topicId, 'topicTitle' => $title, 'requestId' => $requestId, 'requesterName' => $name],
             );
         }
     } catch (\Throwable $e) {
@@ -6141,7 +6163,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/join-requests/{requestId}/resolve
             NotificationRepository::create(
                 $resolved['requester_id'], 'join_request_accepted',
                 "You're in! 🎉", $name . ' added you to ' . $title,
-                ['topicId' => $topicId],
+                ['topicId' => $topicId, 'topicTitle' => $title, 'name' => $name],
             );
         } catch (\Throwable $e) {
             error_log('[join-request] accept notify failed: ' . $e->getMessage());

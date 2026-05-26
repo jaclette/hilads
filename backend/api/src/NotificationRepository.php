@@ -30,8 +30,21 @@ class NotificationRepository
         string  $type,
         string  $title,
         ?string $body,
-        array   $data = []
+        array   $data = [],
+        ?string $locale = null
     ): array {
+        // Localize per recipient — covers the stored bell row AND both push
+        // channels below, since they all read $title/$body from here. English /
+        // unknown locales and untranslated fields fall back to the caller's text.
+        if (NotificationI18n::isTranslatable($type)) {
+            $loc = $locale ?? self::userLocale($userId);
+            if ($loc !== 'en') {
+                [$lt, $lb] = NotificationI18n::render($type, $loc, $data);
+                if ($lt !== null) $title = $lt;
+                if ($lb !== null) $body  = $lb;
+            }
+        }
+
         $stmt = Database::pdo()->prepare("
             INSERT INTO notifications (user_id, type, title, body, data)
             VALUES (?, ?, ?, ?, ?::jsonb)
@@ -153,6 +166,43 @@ class NotificationRepository
             $result[$uid] = isset($rows[$uid]) ? (bool) $rows[$uid] : $default;
         }
         return $result;
+    }
+
+    // Per-request cache so a user who gets several notifications in one request
+    // (e.g. channel_message + mention) is only looked up once.
+    private static array $localeCache = [];
+
+    /** Recipient's UI language (en/fr/vi). Defaults to 'en' on miss/error. */
+    private static function userLocale(string $userId): string
+    {
+        if (isset(self::$localeCache[$userId])) return self::$localeCache[$userId];
+        try {
+            $stmt = Database::pdo()->prepare("SELECT locale FROM users WHERE id = ?");
+            $stmt->execute([$userId]);
+            $loc = $stmt->fetchColumn();
+        } catch (\Throwable) {
+            $loc = false;
+        }
+        return self::$localeCache[$userId] = ($loc ?: 'en');
+    }
+
+    /** Batch-load locales for a fan-out — 1 query instead of N. Returns [uid => locale]. */
+    private static function batchLocale(array $userIds): array
+    {
+        if (empty($userIds)) return [];
+        try {
+            $ph   = implode(',', array_fill(0, count($userIds), '?'));
+            $stmt = Database::pdo()->prepare("SELECT id, locale FROM users WHERE id IN ({$ph})");
+            $stmt->execute($userIds);
+            $rows = array_column($stmt->fetchAll(\PDO::FETCH_ASSOC), 'locale', 'id');
+        } catch (\Throwable) {
+            $rows = [];
+        }
+        $out = [];
+        foreach ($userIds as $uid) {
+            $out[$uid] = self::$localeCache[$uid] = ($rows[$uid] ?? 'en');
+        }
+        return $out;
     }
 
     private static function pushUrl(string $type, array $data): string
@@ -306,11 +356,12 @@ class NotificationRepository
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         if (empty($userIds)) return;
 
-        // Batch-load preferences — 1 query regardless of participant count
+        // Batch-load preferences + locales — 1 query each regardless of count
         $enabled = self::batchIsEnabled($userIds, $type);
+        $locales = self::batchLocale($userIds);
         foreach ($userIds as $uid) {
             if ($enabled[$uid] ?? true) {
-                self::createUnchecked($uid, $type, $title, $body, $data);
+                self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
             }
         }
     }
@@ -390,7 +441,7 @@ class NotificationRepository
             'city_join',
             '👀 Someone arrived in ' . ($cityName ?? 'your city'),
             $arriverNickname . ' just landed',
-            ['channelId' => $cityChannelId, 'arriverName' => $arriverNickname],
+            ['channelId' => $cityChannelId, 'arriverName' => $arriverNickname, 'cityName' => $cityName ?? 'your city'],
         );
     }
 
@@ -465,8 +516,9 @@ class NotificationRepository
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         if (empty($userIds)) return;
 
-        // Batch-load preferences — 1 query regardless of recipient count
+        // Batch-load preferences + locales — 1 query each regardless of recipient count
         $enabled = self::batchIsEnabled($userIds, $type);
+        $locales = self::batchLocale($userIds);
         foreach ($userIds as $uid) {
             if (!($enabled[$uid] ?? true)) continue;
 
@@ -480,7 +532,7 @@ class NotificationRepository
                 if (!RateLimiter::allow($rlKey, 1, $window)) continue;
             }
 
-            self::createUnchecked($uid, $type, $title, $body, $data);
+            self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
         }
     }
 
@@ -505,11 +557,12 @@ class NotificationRepository
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         if (empty($userIds)) return;
 
-        // Batch-load preferences — 1 query regardless of subscriber count
+        // Batch-load preferences + locales — 1 query each regardless of subscriber count
         $enabled = self::batchIsEnabled($userIds, $type);
+        $locales = self::batchLocale($userIds);
         foreach ($userIds as $uid) {
             if ($enabled[$uid] ?? true) {
-                self::createUnchecked($uid, $type, $title, $body, $data);
+                self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
             }
         }
     }

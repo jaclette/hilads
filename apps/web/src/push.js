@@ -1,3 +1,5 @@
+import i18n from './i18n'
+
 const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
 
 // Mirrors the AUTH_FLAG_KEY constant in App.jsx. Used as a cheap "still
@@ -69,6 +71,7 @@ export async function registerPush() {
       credentials: 'include',
       body: JSON.stringify({
         endpoint: sub.endpoint,
+        locale: i18n.language,
         keys: {
           p256dh: arrayBufferToBase64(sub.getKey('p256dh')),
           auth:   arrayBufferToBase64(sub.getKey('auth')),

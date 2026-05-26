@@ -16,6 +16,7 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api, getAuthToken } from '@/api/client';
 import { API_URL } from '@/constants';
+import i18n from '@/i18n';
 
 const PUSH_TOKEN_KEY = 'hilads_push_token';
 const PUSH_ASKED_KEY = 'hilads_push_asked';
@@ -218,7 +219,7 @@ export async function unregisterPushToken(): Promise<void> {
 async function registerTokenWithBackend(token: string): Promise<void> {
   const authToken = getAuthToken();
   const fullUrl   = `${API_URL}/push/mobile-token`;
-  const payload   = JSON.stringify({ token, platform: Platform.OS });
+  const payload   = JSON.stringify({ token, platform: Platform.OS, locale: i18n.language });
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

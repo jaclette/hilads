@@ -106,6 +106,11 @@ run($pdo, "
     )
 ", 'users');
 
+// Per-user UI language, set from the client's device locale on push-token /
+// web-push registration. Drives localized notification text (push + bell).
+// Idempotent — CREATE TABLE IF NOT EXISTS above won't touch an existing table.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS locale TEXT NOT NULL DEFAULT 'en'", 'users.locale');
+
 run($pdo, "
     CREATE TABLE IF NOT EXISTS channels (
         id          TEXT        PRIMARY KEY,
