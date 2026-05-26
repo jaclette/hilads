@@ -1156,22 +1156,30 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
             if (function_exists('fastcgi_finish_request')) {
                 fastcgi_finish_request();
             }
-            $dedup = Database::pdo()->prepare("
-                SELECT 1 FROM notifications
-                WHERE user_id = ? AND type = 'profile_view'
-                  AND data->>'viewerId' = ?
-                  AND created_at > NOW() - INTERVAL '60 minutes'
-                LIMIT 1
-            ");
-            $dedup->execute([$targetId, $viewerId]);
-            if (!$dedup->fetch()) {
-                NotificationRepository::create(
-                    $targetId,
-                    'profile_view',
-                    "👀 {$viewerName} checked your profile",
-                    null,
-                    ['viewerId' => $viewerId, 'viewerName' => $viewerName, 'senderUserId' => $viewerId]
-                );
+            // A notification side effect must never surface as a 500 on the
+            // profile fetch — especially without FPM, where this shutdown runs
+            // before the response is flushed (an uncaught error here becomes the
+            // HTTP status). Catch everything and log.
+            try {
+                $dedup = Database::pdo()->prepare("
+                    SELECT 1 FROM notifications
+                    WHERE user_id = ? AND type = 'profile_view'
+                      AND data->>'viewerId' = ?
+                      AND created_at > NOW() - INTERVAL '60 minutes'
+                    LIMIT 1
+                ");
+                $dedup->execute([$targetId, $viewerId]);
+                if (!$dedup->fetch()) {
+                    NotificationRepository::create(
+                        $targetId,
+                        'profile_view',
+                        "👀 {$viewerName} checked your profile",
+                        null,
+                        ['viewerId' => $viewerId, 'viewerName' => $viewerName, 'senderUserId' => $viewerId]
+                    );
+                }
+            } catch (\Throwable $e) {
+                error_log('[profile_view] notify failed: ' . $e->getMessage());
             }
         });
     }
