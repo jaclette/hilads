@@ -519,39 +519,37 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             />
           </div>
 
-          {/* Date — when does it happen? */}
-          {!isEdit && (
-            <div className="cef-section">
-              <p className="cef-label">{t('date')}</p>
-              <div className="cef-date-row">
-                <button
-                  type="button"
-                  className={`cef-date-chip${isToday ? ' selected' : ''}`}
-                  onClick={() => setSelectedDate(todayStr)}
-                >
-                  {t('today')}
-                </button>
-                <button
-                  type="button"
-                  className={`cef-date-chip${isTomorrow ? ' selected' : ''}`}
-                  onClick={() => setSelectedDate(tomorrowStr)}
-                >
-                  {t('tomorrow')}
-                </button>
-                <input
-                  type="date"
-                  className={`cef-date-input${isCustom ? ' selected' : ''}`}
-                  value={selectedDate}
-                  min={todayStr}
-                  max={maxDateStr}
-                  onChange={e => e.target.value && setSelectedDate(e.target.value)}
-                />
-              </div>
-              {isToday && (
-                <p className="cef-date-hint">{t('todayHint')}</p>
-              )}
+          {/* Date — when does it happen? Editable in both create and edit. */}
+          <div className="cef-section">
+            <p className="cef-label">{t('date')}</p>
+            <div className="cef-date-row">
+              <button
+                type="button"
+                className={`cef-date-chip${isToday ? ' selected' : ''}`}
+                onClick={() => setSelectedDate(todayStr)}
+              >
+                {t('today')}
+              </button>
+              <button
+                type="button"
+                className={`cef-date-chip${isTomorrow ? ' selected' : ''}`}
+                onClick={() => setSelectedDate(tomorrowStr)}
+              >
+                {t('tomorrow')}
+              </button>
+              <input
+                type="date"
+                className={`cef-date-input${isCustom ? ' selected' : ''}`}
+                value={selectedDate}
+                min={todayStr}
+                max={maxDateStr}
+                onChange={e => e.target.value && setSelectedDate(e.target.value)}
+              />
             </div>
-          )}
+            {isToday && !isEdit && (
+              <p className="cef-date-hint">{t('todayHint')}</p>
+            )}
+          </div>
 
           {/* Start + End time */}
           <div className="cef-row">

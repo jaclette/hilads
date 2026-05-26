@@ -19,6 +19,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { updateEvent, deleteEvent } from '@/api/events';
@@ -53,6 +54,18 @@ function toUnix(d: Date): number     { return Math.floor(d.getTime() / 1000); }
 
 function timeStr(d: Date): string {
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+function startOfDay(d: Date): Date { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
+function addDays(d: Date, n: number): Date { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+/** Replace the day-of-month/month/year on $time with the calendar date of $date. Time-of-day preserved. */
+function withDate(time: Date, date: Date): Date {
+  const out = new Date(time);
+  out.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+  return out;
 }
 
 // ── Inline time picker — lifted verbatim from create.tsx to keep UX identical ─
@@ -142,6 +155,103 @@ function TimePicker({
   );
 }
 
+// ── Inline date picker modal — lifted from create.tsx so create/edit match ───
+// Month-grid view with prev/next nav. Past days and dates beyond `maxDays`
+// ahead are disabled. Lets the host move the event to a different day.
+
+function DatePicker({
+  value, onChange, onClose, maxDays = 180,
+}: {
+  value:    Date;
+  onChange: (d: Date) => void;
+  onClose:  () => void;
+  maxDays?: number;
+}) {
+  const { t } = useTranslation('common');
+  const [view, setView] = useState<Date>(() => new Date(value.getFullYear(), value.getMonth(), 1));
+
+  const today      = startOfDay(new Date());
+  const maxDate    = startOfDay(addDays(today, maxDays));
+  const monthLabel = view.toLocaleDateString(i18n.language, { month: 'long', year: 'numeric' });
+
+  const firstOfMonth = new Date(view.getFullYear(), view.getMonth(), 1);
+  const startOffset  = firstOfMonth.getDay(); // 0=Sun
+  const daysInMonth  = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+  const cells: (Date | null)[] = [];
+  for (let i = 0; i < startOffset; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(view.getFullYear(), view.getMonth(), d));
+  while (cells.length % 7 !== 0) cells.push(null);
+
+  const prevMonth = () => setView(new Date(view.getFullYear(), view.getMonth() - 1, 1));
+  const nextMonth = () => setView(new Date(view.getFullYear(), view.getMonth() + 1, 1));
+
+  const prevDisabled = view.getFullYear() === today.getFullYear() && view.getMonth() === today.getMonth();
+  const nextDisabled = view.getFullYear() === maxDate.getFullYear() && view.getMonth() === maxDate.getMonth();
+
+  return (
+    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
+      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
+        <View style={styles.datePickerBox} onStartShouldSetResponder={() => true}>
+          <View style={styles.dpHeader}>
+            <TouchableOpacity
+              onPress={prevMonth} disabled={prevDisabled}
+              style={[styles.dpNavBtn, prevDisabled && styles.dpNavBtnDisabled]}
+            >
+              <Ionicons name="chevron-back" size={20} color={prevDisabled ? Colors.muted2 : Colors.text} />
+            </TouchableOpacity>
+            <Text style={styles.dpTitle}>{monthLabel}</Text>
+            <TouchableOpacity
+              onPress={nextMonth} disabled={nextDisabled}
+              style={[styles.dpNavBtn, nextDisabled && styles.dpNavBtnDisabled]}
+            >
+              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? Colors.muted2 : Colors.text} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.dpRow}>
+            {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
+              <Text key={d} style={styles.dpDow}>{d}</Text>
+            ))}
+          </View>
+
+          {Array.from({ length: cells.length / 7 }).map((_, row) => (
+            <View key={row} style={styles.dpRow}>
+              {cells.slice(row * 7, row * 7 + 7).map((cell, i) => {
+                if (!cell) return <View key={i} style={styles.dpCell} />;
+                const disabled = cell < today || cell > maxDate;
+                const selected = isSameDay(cell, value);
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    style={[
+                      styles.dpCell,
+                      selected && styles.dpCellSelected,
+                      disabled && styles.dpCellDisabled,
+                    ]}
+                    onPress={() => { if (!disabled) { onChange(cell); onClose(); } }}
+                    activeOpacity={disabled ? 1 : 0.7}
+                    disabled={disabled}
+                  >
+                    <Text style={[
+                      styles.dpCellText,
+                      disabled && styles.dpCellTextDisabled,
+                      selected && styles.dpCellTextSelected,
+                    ]}>{cell.getDate()}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ))}
+
+          <TouchableOpacity style={styles.pickerDone} onPress={onClose} activeOpacity={0.85}>
+            <Text style={styles.pickerDoneText}>{t('cancel')}</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
+}
+
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function EditEventScreen() {
@@ -156,6 +266,8 @@ export default function EditEventScreen() {
   // ── Form state — seeded from the event once it loads.
   const [type,        setType]        = useState<EventType>('other');
   const [title,       setTitle]       = useState('');
+  const [selectedDate,   setSelectedDate]   = useState<Date>(() => startOfDay(new Date()));
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [startsAt,    setStartsAt]    = useState<Date>(() => new Date());
   const [endsAt,      setEndsAt]      = useState<Date>(() => new Date());
   const [location,    setLocation]    = useState('');
@@ -169,6 +281,7 @@ export default function EditEventScreen() {
     if (seeded || !event) return;
     setType((event.event_type as EventType) ?? 'other');
     setTitle(event.title ?? '');
+    setSelectedDate(startOfDay(fromUnix(event.starts_at)));
     setStartsAt(fromUnix(event.starts_at));
     setEndsAt(event.ends_at ? fromUnix(event.ends_at) : fromUnix(event.starts_at + 3600));
     setLocation(event.location ?? '');
@@ -239,6 +352,21 @@ export default function EditEventScreen() {
       ],
     );
   }
+
+  // Re-anchor start/end to the chosen day while preserving hours/minutes.
+  function pickDate(d: Date) {
+    const date = startOfDay(d);
+    setSelectedDate(date);
+    setStartsAt(prev => withDate(prev, date));
+    setEndsAt(prev   => withDate(prev, date));
+  }
+
+  const today        = startOfDay(new Date());
+  const tomorrow     = addDays(today, 1);
+  const isToday      = isSameDay(selectedDate, today);
+  const isTomorrow   = isSameDay(selectedDate, tomorrow);
+  const isCustomDate = !isToday && !isTomorrow;
+  const customDateLabel = selectedDate.toLocaleDateString(i18n.language, { weekday: 'short', month: 'short', day: 'numeric' });
 
   // ── Loading / not-found guards ──────────────────────────────────────────────
   if (loading || !seeded) {
@@ -317,6 +445,46 @@ export default function EditEventScreen() {
             autoCorrect={false}
           />
         </View>
+
+        {/* ── DATE ──────────────────────────────────────────────────────────── */}
+        <View style={styles.section}>
+          <Text style={styles.fieldLabel}>{t('date')}</Text>
+          <View style={styles.dateRow}>
+            <TouchableOpacity
+              style={[styles.dateChip, isToday && styles.dateChipActive]}
+              onPress={() => pickDate(today)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.dateChipText, isToday && styles.dateChipTextActive]}>{t('today')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dateChip, isTomorrow && styles.dateChipActive]}
+              onPress={() => pickDate(tomorrow)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.dateChipText, isTomorrow && styles.dateChipTextActive]}>{t('tomorrow')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.dateChip, isCustomDate && styles.dateChipActive]}
+              onPress={() => setShowDatePicker(true)}
+              activeOpacity={0.75}
+            >
+              <Ionicons name="calendar-outline" size={14} color={isCustomDate ? Colors.accent : Colors.muted} />
+              <Text style={[styles.dateChipText, isCustomDate && styles.dateChipTextActive]}>
+                {isCustomDate ? customDateLabel : t('pickDate')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {showDatePicker && (
+          <DatePicker
+            value={selectedDate}
+            onChange={pickDate}
+            onClose={() => setShowDatePicker(false)}
+            maxDays={180}
+          />
+        )}
 
         {/* ── STARTS / ENDS ─────────────────────────────────────────────────── */}
         <View style={[styles.section, styles.timeRow]}>
@@ -519,6 +687,70 @@ const styles = StyleSheet.create({
     alignItems:        'center',
   },
   pickerDoneText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.md },
+
+  // ── Date selector chips (Today / Tomorrow / Pick a date) ─────────────────
+  dateRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  dateChip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               6,
+    paddingHorizontal: 14,
+    paddingVertical:   10,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      12,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+  },
+  dateChipActive: {
+    borderColor:     Colors.accent,
+    backgroundColor: 'rgba(255,122,60,0.08)',
+  },
+  dateChipText:       { fontSize: FontSizes.md, color: Colors.muted, fontWeight: '600' },
+  dateChipTextActive: { color: Colors.accent, fontWeight: '700' },
+
+  // ── Inline date-picker modal ─────────────────────────────────────────────
+  datePickerBox: {
+    backgroundColor: Colors.bg2,
+    borderRadius:    Radius.lg,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    padding:         Spacing.lg,
+    gap:             6,
+    width:           320,
+    maxWidth:        '90%',
+  },
+  dpHeader: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'space-between',
+    paddingBottom:  Spacing.sm,
+  },
+  dpTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  dpNavBtn: {
+    width: 36, height: 36, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: Colors.bg3,
+  },
+  dpNavBtnDisabled: { opacity: 0.3 },
+  dpRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  dpDow: {
+    width:      36,
+    textAlign:  'center',
+    fontSize:   11,
+    fontWeight: '700',
+    color:      Colors.muted2,
+    letterSpacing: 0.5,
+    paddingVertical: 6,
+  },
+  dpCell: {
+    width: 36, height: 36, borderRadius: 18,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  dpCellSelected: { backgroundColor: Colors.accent },
+  dpCellDisabled: { opacity: 0.25 },
+  dpCellText:         { fontSize: FontSizes.sm, color: Colors.text, fontWeight: '600' },
+  dpCellTextSelected: { color: Colors.white, fontWeight: '800' },
+  dpCellTextDisabled: { color: Colors.muted2 },
 
   errorText: { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center' },
 
