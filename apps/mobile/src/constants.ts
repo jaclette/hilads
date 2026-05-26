@@ -14,16 +14,27 @@ export const BASE_URL =
 // ── Link builders ─────────────────────────────────────────────────────────────
 
 import { eventSlug } from '@/lib/eventSlug';
+import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
+
+// Active-locale prefix for shared links: '' for English (default), '/fr' | '/vi'
+// otherwise — so a recipient lands on the localized (translated) page. The SSR
+// layer renders /fr and /vi event pages in-language.
+function sharePrefix(): string {
+  const lang = i18n.language;
+  return lang && lang !== DEFAULT_LOCALE && (SUPPORTED as readonly string[]).includes(lang) ? `/${lang}` : '';
+}
 
 /**
  * Build a shareable event URL. When `event` is the full object (with `title`),
  * emit the slug form `/event/<slug>-<hex>` — readable in chat threads, ranks
  * better. When only an ID is available, fall back to the short link `/e/<hex>`
  * which the prerender layer canonicalises via <link rel="canonical">.
+ * Carries the active locale prefix so the recipient lands on the localized page.
  */
 export function buildEventUrl(event: { id: string; title?: string } | string): string {
-  if (typeof event === 'string') return `${BASE_URL}/e/${event}`;
-  return `${BASE_URL}/event/${eventSlug(event)}`;
+  const lp = sharePrefix();
+  if (typeof event === 'string') return `${BASE_URL}${lp}/e/${event}`;
+  return `${BASE_URL}${lp}/event/${eventSlug(event)}`;
 }
 
 // ── Env diagnostics — unconditional, fires in both dev and production APK ─────

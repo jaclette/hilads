@@ -231,12 +231,14 @@ async function share({ title, url }) {
 // ── Share vibe button ─────────────────────────────────────────────────────────
 
 function ShareVibeBtn({ eventId, title, city }) {
+  const { t } = useTranslation('event')
   const [copied, setCopied] = useState(false)
   async function handleShare() {
     // Slug URL — readable in chat threads, ranks better in SERPs, 301-resolves
-    // for any legacy hex-only consumer.
+    // for any legacy hex-only consumer. Locale-aware: from /fr|/vi the shared
+    // link carries the prefix so the recipient lands on the localized page.
     const slug = eventSlug({ id: eventId, title })
-    const url = `${window.location.origin}/event/${slug}`
+    const url = `${window.location.origin}${localizePath(`/event/${slug}`)}`
     // Title gives the share dialog a label; URL stays clean. We deliberately
     // do not pass descriptive text — the OG preview supplies it.
     const result = await share({ title: city ? `${title} · ${city}` : title, url })
@@ -249,10 +251,10 @@ function ShareVibeBtn({ eventId, title, city }) {
     <button
       className={`share-vibe-btn${copied ? ' share-vibe-btn--copied' : ''}`}
       onClick={handleShare}
-      title="Share this vibe"
-      aria-label="Share event"
+      title={t('share.vibeTitle')}
+      aria-label={t('share.eventAria')}
     >
-      {copied ? 'Link copied ✨' : 'Bring people ✨'}
+      {copied ? t('share.linkCopied') : t('share.bringPeople')}
     </button>
   )
 }

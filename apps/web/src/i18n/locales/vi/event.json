@@ -1,4 +1,10 @@
 {
+  "share": {
+    "bringPeople": "Rủ thêm người ✨",
+    "linkCopied": "Đã sao chép liên kết ✨",
+    "vibeTitle": "Chia sẻ vibe này",
+    "eventAria": "Chia sẻ sự kiện"
+  },
   "title": { "edit": "Sửa sự kiện", "host": "Tổ chức sự kiện", "create": "Tạo sự kiện" },
   "delete": {
     "confirmTitle": "Xóa sự kiện này?",

@@ -1,4 +1,10 @@
 {
+  "share": {
+    "bringPeople": "Inviter du monde ✨",
+    "linkCopied": "Lien copié ✨",
+    "vibeTitle": "Partager ce vibe",
+    "eventAria": "Partager l'événement"
+  },
   "title": { "edit": "Modifier l'événement", "host": "Organise un événement", "create": "Créer un événement" },
   "delete": {
     "confirmTitle": "Supprimer cet événement ?",
