@@ -1,6 +1,7 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useEffect } from 'react';
 import { Tabs, useFocusEffect } from 'expo-router';
-import { View, Text, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform } from 'react-native';
+import { View, Text, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform, Animated } from 'react-native';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -98,6 +99,25 @@ function ActivePill() {
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { nowPulse } = useApp();
+  const reduceMotion = useReducedMotion();
+
+  // One-shot scale pulse on the NOW icon when a chat reminder dismisses. Driven
+  // by the throttled `nowPulse` counter; a ref guards against firing on mount or
+  // looping. Reduce-motion → no pulse (the NOW tab's permanent dot is the cue).
+  const nowScale     = useRef(new Animated.Value(1)).current;
+  const lastPulseRef = useRef(0);
+  useEffect(() => {
+    if (nowPulse === lastPulseRef.current) return;
+    lastPulseRef.current = nowPulse;
+    if (nowPulse === 0 || reduceMotion) return;
+    Animated.sequence([
+      Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
+      Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
+      Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
+      Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
+    ]).start();
+  }, [nowPulse, reduceMotion, nowScale]);
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(10, insets.bottom) }]}>
@@ -129,15 +149,22 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           >
             {focused && <ActivePill />}
 
-            {/* Icon — web: .bottom-nav-icon (26×26 with optional glow) */}
-            <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
+            {/* Icon — web: .bottom-nav-icon (26×26 with optional glow). The NOW
+                tab's wrapper carries the dismissal pulse scale. */}
+            <Animated.View
+              style={[
+                styles.iconWrap,
+                focused && styles.iconWrapActive,
+                tab.name === 'now' && { transform: [{ scale: nowScale }] },
+              ]}
+            >
               <Ionicons
                 name={focused ? tab.icon : tab.outline}
                 size={26}
                 color={color}
               />
               <TabDot kind={tab.dot} />
-            </View>
+            </Animated.View>
 
             {/* Label — web: .bottom-nav-label */}
             <Text style={[styles.label, { color }]} numberOfLines={1}>

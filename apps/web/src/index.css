@@ -1329,6 +1329,33 @@ html, body, #root {
   filter: drop-shadow(0 0 9px rgba(255, 122, 60, 0.42));
 }
 
+/* NOW tab attention pulse — fires once (2 beats) when a chat reminder dismisses,
+   then stops (class removed on animationend). Disabled under reduced motion. */
+.bottom-nav-icon--now-pulse {
+  animation: now-tab-pulse 0.6s ease-in-out 2;
+}
+@keyframes now-tab-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.14); }
+}
+
+/* Reduce-motion static indicator: a small orange dot on the NOW icon, shown
+   briefly after a reminder is removed (no animation). */
+.bottom-nav-now-dot {
+  position: absolute;
+  top: -2px;
+  right: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--hot-dot, #FF7A3C);
+  box-shadow: 0 0 0 2px var(--bg, #0d0b09);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav-icon--now-pulse { animation: none; }
+}
+
 .bottom-nav-label {
   font-size: 0.76rem;
   font-weight: 600;
@@ -3289,6 +3316,18 @@ html, body, #root {
     opacity: 0;
     transform: translateY(-4px) scale(0.96);
   }
+}
+
+/* Reminder cards (event / hangout / prompt / ambient) fade out before removal —
+   reuses the join exit motion. Under reduce-motion the JS removes them instantly
+   without adding this class; the media query is a belt-and-suspenders guard. */
+.feed-prompt--exit,
+.feed-activity--exit {
+  animation: joinExit 0.5s ease-in forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .feed-prompt--exit,
+  .feed-activity--exit { animation: none; }
 }
 
 /* ── Feed prompts (contextual CTA injected in city feed) ─ */

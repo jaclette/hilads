@@ -3,6 +3,7 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useRef,
   type ReactNode,
 } from 'react';
 import type { GuestIdentity, City, Message, User, OnlineUser, EventChatPreview } from '@/types';
@@ -51,6 +52,9 @@ interface AppState {
   onlineUsers:          OnlineUser[];    // live presence list for the current city
   bootstrapData:        BootstrapData | null; // pre-loaded from /bootstrap, consumed once by tabs
   showOnboarding:       boolean;         // first-time guest carousel visibility (auto-show + "?" reopen)
+  // Monotonic counter bumped when a chat reminder card auto-dismisses; the tab
+  // bar watches it to pulse the NOW icon once. Throttled so a burst = one pulse.
+  nowPulse:             number;
   // Outgoing block set (users / guests this account has blocked). Hydrated once
   // on boot via fetchMyBlocks() and patched optimistically on each block /
   // unblock action so the UI removes content instantly without a refetch.
@@ -79,6 +83,8 @@ interface AppActions {
   setOnlineUsers:          (users: OnlineUser[]) => void;
   setBootstrapData:        (data: BootstrapData | null) => void;
   setShowOnboarding:       (show: boolean) => void;
+  /** Signal the NOW tab to pulse once (e.g. a chat reminder faded). Throttled. */
+  pulseNow:                () => void;
   setBlockedSet:           (set: BlockedSet) => void;
   /** Optimistic add — call right before submitBlock() so UI updates instantly. */
   addBlocked:              (target: { userId?: string | null; guestId?: string | null }) => void;
@@ -108,7 +114,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [onlineUsers,    setOnlineUsers]    = useState<OnlineUser[]>([]);
   const [bootstrapData,  setBootstrapData]  = useState<BootstrapData | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [nowPulse,       setNowPulse]       = useState(0);
+  const lastPulseAtRef   = useRef(0);
   const [blockedSet,     setBlockedSetRaw]  = useState<BlockedSet>(EMPTY_BLOCKED_SET);
+
+  // Bump nowPulse, but at most once per 1.5s so a burst of card dismissals
+  // (e.g. several event pills fading together) triggers a single tab pulse.
+  const pulseNow = useCallback(() => {
+    const now = Date.now();
+    if (now - lastPulseAtRef.current < 1500) return;
+    lastPulseAtRef.current = now;
+    setNowPulse(n => n + 1);
+  }, []);
 
   const setBlockedSet = useCallback((next: BlockedSet) => setBlockedSetRaw(next), []);
 
@@ -188,7 +205,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected,
         unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-        geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, blockedSet,
+        geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, nowPulse, blockedSet,
         setBooting, setBootError,
         setIdentity,
         setSessionId:            useCallback((id: string) => setSessionId(id), []),
@@ -208,6 +225,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setOnlineUsers:          useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
         setBootstrapData:        useCallback((d: BootstrapData | null) => setBootstrapData(d), []),
         setShowOnboarding:       useCallback((s: boolean) => setShowOnboarding(s), []),
+        pulseNow,
         setBlockedSet,
         addBlocked,
         removeBlocked,

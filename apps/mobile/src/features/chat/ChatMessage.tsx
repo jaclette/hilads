@@ -12,7 +12,7 @@
  *   text   → bubble with avatar + author (grouped = avatar hidden)
  */
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Pressable, StyleSheet, Animated, Platform, Linking } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { MessageImage } from './MessageImage';
@@ -164,6 +164,54 @@ function useEntryAnimation(duration = 200) {
   return { opacity, translateY };
 }
 
+// ── Auto-dismiss fade ─────────────────────────────────────────────────────────
+// Reminder cards (event/topic/prompt/ambient) fade out after a delay, then ask
+// the parent to remove them from the feed. ONE timer per card, keyed on a stable
+// id, cleared on unmount; opacity fade runs on the native driver. Reduce-motion
+// skips the fade and removes instantly. Returns cancel() — call it when the user
+// taps the card's CTA so the dismiss can't fire mid-interaction.
+const AUTO_DISMISS_MS = 6000;
+const FADE_OUT_MS = 280;
+
+function useAutoDismissFade(
+  opacity: Animated.Value,
+  opts: { enabled: boolean; id: string; reduceMotion: boolean; onDismiss?: (id: string) => void },
+) {
+  const { enabled, id, reduceMotion, onDismiss } = opts;
+  const cancelledRef = useRef(false);
+  const timerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const animRef      = useRef<Animated.CompositeAnimation | null>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+    cancelledRef.current = false;
+    timerRef.current = setTimeout(() => {
+      if (cancelledRef.current) return;
+      if (reduceMotion) { onDismiss?.(id); return; }
+      animRef.current = Animated.timing(opacity, {
+        toValue: 0, duration: FADE_OUT_MS, useNativeDriver: true,
+      });
+      animRef.current.start(({ finished }) => {
+        if (finished && !cancelledRef.current) onDismiss?.(id);
+      });
+    }, AUTO_DISMISS_MS);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      animRef.current?.stop();
+    };
+    // onDismiss is a stable useCallback from the parent; opacity is a stable ref.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, id, reduceMotion]);
+
+  return useCallback(() => {
+    cancelledRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    animRef.current?.stop();
+    opacity.setValue(1);
+  }, [opacity]);
+}
+
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -179,6 +227,12 @@ interface Props {
   isHighlighted?: boolean;                          // true = briefly flash orange highlight
   onReact?: (msg: Message, emoji: string) => void;  // called when a reaction pill is tapped
   onResolveJoinRequest?: (requestId: string, action: 'accept' | 'reject') => void; // hangout join req
+  // Reminder cards only — when true, the card auto-fades after a delay and calls
+  // onAutoDismiss(id) so the parent removes it from the feed. reduceMotion skips
+  // the fade (instant removal).
+  autoDismiss?:   boolean;
+  onAutoDismiss?: (id: string) => void;
+  reduceMotion?:  boolean;
 }
 
 // ── Join-request feed card (hangout request-to-join) ──────────────────────────
@@ -234,7 +288,12 @@ function JoinRequestCard({ message, onResolve }: {
 
 // ── Animated event pill — fade + slide-up on mount, staggered by index ───────
 
-function AnimatedEventPill({ message, index }: { message: Message; index: number }) {
+function AnimatedEventPill({
+  message, index, autoDismiss = false, onAutoDismiss, reduceMotion = false,
+}: {
+  message: Message; index: number;
+  autoDismiss?: boolean; onAutoDismiss?: (id: string) => void; reduceMotion?: boolean;
+}) {
   const router  = useRouter();
   const { t }   = useTranslation('chat');
   const opacity = useRef(new Animated.Value(0)).current;
@@ -257,6 +316,10 @@ function AnimatedEventPill({ message, index }: { message: Message; index: number
     ]).start();
   }, []);
 
+  const cancelDismiss = useAutoDismissFade(opacity, {
+    enabled: autoDismiss, id: message.id ?? '', reduceMotion, onDismiss: onAutoDismiss,
+  });
+
   return (
     <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
       <View style={styles.eventPill}>
@@ -266,7 +329,7 @@ function AnimatedEventPill({ message, index }: { message: Message; index: number
         <TouchableOpacity
           style={styles.eventJoinBtn}
           activeOpacity={0.8}
-          onPress={() => message.eventId && router.push(`/event/${message.eventId}`)}
+          onPress={() => { cancelDismiss(); if (message.eventId) router.push(`/event/${message.eventId}`); }}
         >
           <Text style={styles.eventJoinText}>{t('join')}</Text>
         </TouchableOpacity>
@@ -411,7 +474,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false }: Props) {
   const router = useRouter();
   const { t } = useTranslation('chat');
   const { account } = useApp();
@@ -425,6 +488,16 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // Hook called unconditionally — React rules require this before any early return
   const { opacity, translateY } = useEntryAnimation(200);
   const animStyle = { opacity, transform: [{ translateY }] } as const;
+
+  // Auto-dismiss fade for topic/prompt/activity cards (event is handled inside
+  // AnimatedEventPill which owns its own opacity). Hook runs unconditionally;
+  // `enabled` gates it. cancelDismiss() is wired into the CTAs below.
+  const cancelDismiss = useAutoDismissFade(opacity, {
+    enabled: autoDismiss && (message.type === 'topic' || message.type === 'prompt' || message.type === 'activity'),
+    id: message.id ?? '',
+    reduceMotion,
+    onDismiss: onAutoDismiss,
+  });
 
   // Highlight flash when scroll-to-parent lands on this message
   const highlightAnim = useRef(new Animated.Value(0)).current;
@@ -452,7 +525,13 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}
-        <AnimatedEventPill message={message} index={index} />
+        <AnimatedEventPill
+          message={message}
+          index={index}
+          autoDismiss={autoDismiss}
+          onAutoDismiss={onAutoDismiss}
+          reduceMotion={reduceMotion}
+        />
       </>
     );
   }
@@ -470,7 +549,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             <TouchableOpacity
               style={styles.topicJoinBtn}
               activeOpacity={0.8}
-              onPress={() => message.topicId && router.push(`/topic/${message.topicId}`)}
+              onPress={() => { cancelDismiss(); if (message.topicId) router.push(`/topic/${message.topicId}`); }}
             >
               <Text style={styles.topicJoinText}>{t('joinArrow')}</Text>
             </TouchableOpacity>
@@ -497,7 +576,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         <TouchableOpacity
           style={styles.promptBtn}
           activeOpacity={0.8}
-          onPress={() => onPromptCta?.(message.subtype ?? '')}
+          onPress={() => { cancelDismiss(); onPromptCta?.(message.subtype ?? ''); }}
         >
           <Text style={styles.promptBtnText}>{message.cta}</Text>
         </TouchableOpacity>

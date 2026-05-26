@@ -15,6 +15,7 @@ import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView,
   TouchableOpacity, Animated, AppState, Alert,
+  LayoutAnimation, Platform, UIManager,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -119,6 +120,13 @@ function ChipLiveDot() {
 // exactly at the tab bar top. No paddingBottom needed on the SafeAreaView.
 // ChatInput uses elevation: 30 to render above the tab bar's upward shadow.
 
+// LayoutAnimation needs an opt-in on old-architecture Android so the feed can
+// smoothly close the gap when a faded reminder card is removed. No-op on iOS /
+// new arch (method may be absent — guarded).
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
 export default function ChatTab() {
   const router = useRouter();
   const { t } = useTranslation('chat');
@@ -129,6 +137,7 @@ export default function ChatTab() {
     clearEventChatCounts,
     bootstrapData,
     joined, setShowOnboarding,
+    pulseNow,
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
@@ -501,6 +510,17 @@ export default function ChatTab() {
     promptTimersRef.current.push(t1, t2, t3);
   }
 
+  // A reminder card finished fading → drop it from the feed (smooth gap-close
+  // via a one-shot LayoutAnimation) and pulse the NOW tab once. The id lives in
+  // exactly one of the three arrays; filtering all three is harmless + simple.
+  function handleAutoDismiss(id: string) {
+    if (!reduceMotion) LayoutAnimation.easeInEaseOut();
+    setPromptItems(prev   => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
+    setEventFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
+    setTopicFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
+    pulseNow();
+  }
+
   async function handlePromptCta(subtype: string) {
     setPromptItems(prev => prev.filter(p => p.subtype !== subtype));
     if (subtype === 'photo') {
@@ -801,6 +821,9 @@ export default function ChatTab() {
                   onReplyQuotePress={scrollToMessage}
                   isHighlighted={highlightedMsgId === item.id}
                   onReact={handleReact}
+                  autoDismiss={item.type === 'event' || item.type === 'topic' || item.type === 'prompt' || item.type === 'activity'}
+                  onAutoDismiss={handleAutoDismiss}
+                  reduceMotion={reduceMotion}
                 />
               );
             }}

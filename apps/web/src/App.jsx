@@ -10,6 +10,7 @@ import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug } from './eventUtils'
 import { haversineMeters, formatDistance } from './distance'
 import { formatExpiresIn } from './expiry'
+import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
 import EventsSidebar from './components/EventsSidebar'
@@ -726,6 +727,17 @@ export default function App() {
   const [allChannels, setAllChannels] = useState([])    // all channels unranked (used in search mode)
   const [channelsLoading, setChannelsLoading] = useState(false)
   const [fadingIds, setFadingIds] = useState(new Set())
+  // Reminder auto-dismiss: cards fade then leave the feed; the NOW tab pulses
+  // (or, under reduce-motion, shows a transient static dot). reduceMotionRef
+  // lets the deferred timer read the current setting without re-scheduling.
+  const reduceMotion = usePrefersReducedMotion()
+  const reduceMotionRef = useRef(reduceMotion)
+  reduceMotionRef.current = reduceMotion
+  const [nowTabPulsing, setNowTabPulsing] = useState(false)
+  const [nowTabDot,     setNowTabDot]     = useState(false)
+  const reminderScheduledRef = useRef(new Set())
+  const reminderTimersRef    = useRef([])
+  const nowDotTimerRef       = useRef(null)
   const [onlineUsers, setOnlineUsers] = useState([])
   const [typingUsers, setTypingUsers] = useState([])
   const [uploading, setUploading] = useState(false)
@@ -1760,6 +1772,69 @@ export default function App() {
       }, 600)
     }, 5000)
   }
+
+  // Reminder cards (new event / new hangout / explore-photo-create prompts /
+  // ambient crowd) — transient nudges, not conversation. Fade them out after a
+  // delay and pulse the NOW tab to point at where that content lives. Real
+  // messages, "X joined", weather, install prompt and the welcome card stay.
+  function isReminderCard(item) {
+    return item.type === 'event'
+      || item.type === 'topic'
+      || (item.type === 'prompt' && item.subtype !== 'install')
+      || (item.type === 'activity' && item.subtype === 'crowd')
+  }
+
+  // Pulse the NOW tab once (coalesced while already pulsing). Under reduce-motion,
+  // show a static dot for a few seconds instead of animating.
+  function pulseNowTab() {
+    if (reduceMotionRef.current) {
+      setNowTabDot(true)
+      if (nowDotTimerRef.current) clearTimeout(nowDotTimerRef.current)
+      nowDotTimerRef.current = setTimeout(() => setNowTabDot(false), 3000)
+      return
+    }
+    setNowTabPulsing(true)
+  }
+
+  // One timer per reminder id (tracked so we never double-schedule). Fade via the
+  // exit CSS class, then drop from the feed + pulse NOW. Reduce-motion: remove
+  // instantly, no fade class.
+  function scheduleReminderDismiss(id) {
+    const t1 = setTimeout(() => {
+      if (reduceMotionRef.current) {
+        setFeed((prev) => prev.filter((f) => f.id !== id))
+        pulseNowTab()
+        return
+      }
+      setFadingIds((prev) => new Set([...prev, id]))
+      const t2 = setTimeout(() => {
+        setFeed((prev) => prev.filter((f) => f.id !== id))
+        setFadingIds((prev) => { const next = new Set(prev); next.delete(id); return next })
+        pulseNowTab()
+      }, 520)
+      reminderTimersRef.current.push(t2)
+    }, 6000)
+    reminderTimersRef.current.push(t1)
+  }
+
+  // Schedule a dismiss for each newly-seen reminder card (once per id).
+  useEffect(() => {
+    for (const item of feed) {
+      if (!item.id || reminderScheduledRef.current.has(item.id)) continue
+      if (isReminderCard(item)) {
+        reminderScheduledRef.current.add(item.id)
+        scheduleReminderDismiss(item.id)
+      }
+    }
+    // isReminderCard/scheduleReminderDismiss are stable within this component.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [feed])
+
+  // Clear all pending reminder timers on unmount.
+  useEffect(() => () => {
+    reminderTimersRef.current.forEach(clearTimeout)
+    if (nowDotTimerRef.current) clearTimeout(nowDotTimerRef.current)
+  }, [])
 
   async function handleJoin(e, rejoinData = null) {
     if (e) e.preventDefault()
@@ -3609,7 +3684,7 @@ export default function App() {
                   key={item.id}
                   className={item.subtype === 'join'
                     ? `feed-join${fadingIds.has(item.id) ? ' feed-join--exit' : ''}${isClickable ? ' feed-join--clickable' : ''}`
-                    : 'feed-activity'}
+                    : `feed-activity${fadingIds.has(item.id) ? ' feed-activity--exit' : ''}`}
                   onClick={isClickable ? () => {
                     if (item.userId) {
                       openProfile(item.userId, item.nickname ?? '')
@@ -3680,7 +3755,7 @@ export default function App() {
             if (item.type === 'event') {
               const ev = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
               return (
-                <div key={item.id} className="feed-prompt">
+                <div key={item.id} className={`feed-prompt${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
                   <span className="feed-prompt-text">{item.title ? t('feedNew.event', { title: item.title }) : item.text}</span>
                   <button className="feed-prompt-btn" onClick={() => ev && handleSelectEvent(ev)}>{t('feedNew.join')}</button>
                 </div>
@@ -3693,7 +3768,7 @@ export default function App() {
               const mc = topic.message_count ?? 0
               const repliesText = mc > 0 ? ` · ${t('feedNew.replies', { count: mc })}` : ''
               return (
-                <div key={item.id} className="feed-prompt feed-prompt--topic">
+                <div key={item.id} className={`feed-prompt feed-prompt--topic${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
                   <span className="feed-prompt-text">🗣️ {topic.title}{repliesText}</span>
                   <button
                     className="feed-prompt-btn feed-prompt-btn--topic"
@@ -3711,7 +3786,7 @@ export default function App() {
                 install:        { text: t('prompt.installText'),    cta: installPrompt.canUseNativePrompt ? t('prompt.installAdd') : t('prompt.installHow') },
               }[item.subtype]
               return (
-                <div key={item.id} className="feed-prompt">
+                <div key={item.id} className={`feed-prompt${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
                   <span className="feed-prompt-text">{promptTk ? promptTk.text : item.text}</span>
                   <button className="feed-prompt-btn" onClick={() => handlePromptCta(item)}>{promptTk ? promptTk.cta : item.cta}</button>
                 </div>
@@ -4002,7 +4077,13 @@ export default function App() {
             onClick={goToNowTab}
             aria-label="Now"
           >
-            <span className="bottom-nav-icon"><NavIconEvents /></span>
+            <span
+              className={`bottom-nav-icon${nowTabPulsing ? ' bottom-nav-icon--now-pulse' : ''}`}
+              onAnimationEnd={() => setNowTabPulsing(false)}
+            >
+              <NavIconEvents />
+              {nowTabDot && <span className="bottom-nav-now-dot" aria-hidden="true" />}
+            </span>
             <span className="bottom-nav-label">Now</span>
           </button>
           <button
