@@ -4,7 +4,10 @@
     "details": [
       {
         "appID": "3387URLHK7.com.hilads.app",
-        "paths": ["/e/*", "/event/*", "/city/*", "/t/*"]
+        "paths": [
+          "/e/*", "/event/*", "/city/*", "/t/*",
+          "/??/e/*", "/??/event/*", "/??/city/*", "/??/t/*"
+        ]
       }
     ]
   }

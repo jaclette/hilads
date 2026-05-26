@@ -43,7 +43,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 71,
+      "versionCode": 74,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -72,11 +72,10 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "https",
-              "host": "hilads.live",
-              "pathPrefix": "/e/"
-            }
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/e/" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fr/e/" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/vi/e/" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/es/e/" }
           ],
           "category": [
             "BROWSABLE",
@@ -87,11 +86,10 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "https",
-              "host": "hilads.live",
-              "pathPrefix": "/event"
-            }
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/event" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fr/event" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/vi/event" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/es/event" }
           ],
           "category": [
             "BROWSABLE",
@@ -102,11 +100,10 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "https",
-              "host": "hilads.live",
-              "pathPrefix": "/city"
-            }
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/city" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fr/city" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/vi/city" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/es/city" }
           ],
           "category": [
             "BROWSABLE",
@@ -117,11 +114,10 @@
           "action": "VIEW",
           "autoVerify": true,
           "data": [
-            {
-              "scheme": "https",
-              "host": "hilads.live",
-              "pathPrefix": "/t/"
-            }
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/t/" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fr/t/" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/vi/t/" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/es/t/" }
           ],
           "category": [
             "BROWSABLE",
