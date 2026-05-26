@@ -164,66 +164,51 @@ function useEntryAnimation(duration = 200) {
   return { opacity, translateY };
 }
 
-// ── Auto-dismiss fade ─────────────────────────────────────────────────────────
-// Reminder cards (event/topic/prompt/ambient) fade out after a delay, then the
-// parent drops them from the feed and the list reflows naturally on removal.
+// ── Auto-dismiss ──────────────────────────────────────────────────────────────
+// Reminder cards (event/topic/prompt/ambient) auto-remove after a delay; the
+// parent then drops them from the feed and the list reflows on the data change.
 //
-// Deliberately OPACITY-ONLY — no animated height collapse. A JS-driven height
-// animation on a cell that is then removed from a virtualized, inverted FlatList
-// crashed on device; a tiny non-animated reflow is far safer than any crash.
+// NO dismissal animation. Every fade we tried left a black gap or crashed on the
+// inverted, virtualized FlatList: an animated height collapse crashed, and a
+// native-driver opacity fade left an orphaned 0-opacity native view occupying the
+// cell's space when it was removed. Per our hard preference for robustness over
+// polish, the card is simply removed — a clean data-driven reflow, nothing to
+// orphan. (Cards still fade IN on mount via the entry animation; that's safe
+// because the view is being created, not torn down.)
 //
-// Crash-safety on both platforms:
-//   • mountedRef  — the completion callback never fires onDismiss after unmount
-//   • cancelledRef — a CTA tap cancels the pending dismissal mid-flight
-//   • cleanup clears the timer + stops the animation on unmount (stop() reports
-//     finished=false, so the callback can't act on a torn-down node)
-// reduce-motion removes instantly. onDismiss only mutates PARENT state, so it is
-// safe even though this card unmounts as a result.
+// Safety: mountedRef means the timer never calls onDismiss after unmount;
+// cancelledRef (CTA tap) stops a pending removal; the timer is cleared on unmount.
+// onDismiss only mutates PARENT state, safe even as this card unmounts.
 const AUTO_DISMISS_MS = 6000;
-const FADE_OUT_MS = 240;
 
 function useAutoDismissFade(
-  opacity: Animated.Value,
-  opts: { enabled: boolean; id: string; reduceMotion: boolean; onDismiss?: (id: string) => void },
+  opts: { enabled: boolean; id: string; onDismiss?: (id: string) => void },
 ) {
-  const { enabled, id, reduceMotion, onDismiss } = opts;
+  const { enabled, id, onDismiss } = opts;
   const mountedRef   = useRef(true);
   const cancelledRef = useRef(false);
   const timerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const animRef      = useRef<Animated.CompositeAnimation | null>(null);
 
   useEffect(() => {
     mountedRef.current = true;
     if (!enabled) return;
     cancelledRef.current = false;
     timerRef.current = setTimeout(() => {
-      if (cancelledRef.current || !mountedRef.current) return;
-      if (reduceMotion) { onDismiss?.(id); return; }
-      animRef.current = Animated.timing(opacity, {
-        toValue: 0, duration: FADE_OUT_MS, useNativeDriver: true,
-      });
-      animRef.current.start(({ finished }) => {
-        // Guard FIRST, remove second: only drop the item if the fade truly
-        // finished AND the card is still mounted / not cancelled.
-        if (finished && mountedRef.current && !cancelledRef.current) onDismiss?.(id);
-      });
+      if (!cancelledRef.current && mountedRef.current) onDismiss?.(id);
     }, AUTO_DISMISS_MS);
 
     return () => {
       mountedRef.current = false;
       if (timerRef.current) clearTimeout(timerRef.current);
-      animRef.current?.stop();
     };
-    // onDismiss is a stable useCallback from the parent; opacity is a stable ref.
+    // onDismiss is a stable useCallback from the parent.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, id, reduceMotion]);
+  }, [enabled, id]);
 
   return useCallback(() => {
     cancelledRef.current = true;
     if (timerRef.current) clearTimeout(timerRef.current);
-    animRef.current?.stop();
-    opacity.setValue(1);
-  }, [opacity]);
+  }, []);
 }
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -330,8 +315,8 @@ function AnimatedEventPill({
     ]).start();
   }, []);
 
-  const cancelDismiss = useAutoDismissFade(opacity, {
-    enabled: autoDismiss, id: message.id ?? '', reduceMotion, onDismiss: onAutoDismiss,
+  const cancelDismiss = useAutoDismissFade({
+    enabled: autoDismiss, id: message.id ?? '', onDismiss: onAutoDismiss,
   });
 
   return (
@@ -506,10 +491,9 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // Auto-dismiss fade for topic/prompt/activity cards (event is handled inside
   // AnimatedEventPill which owns its own opacity). Hook runs unconditionally;
   // `enabled` gates it. cancelDismiss() is wired into the CTAs below.
-  const cancelDismiss = useAutoDismissFade(opacity, {
+  const cancelDismiss = useAutoDismissFade({
     enabled: autoDismiss && (message.type === 'topic' || message.type === 'prompt' || message.type === 'activity'),
     id: message.id ?? '',
-    reduceMotion,
     onDismiss: onAutoDismiss,
   });
 
