@@ -133,6 +133,11 @@ class EventRepository
             'external_url'     => $row['external_url'],
             'series_id'        => $row['series_id'],
             'recurrence_label' => $recurrenceLabel,
+            // Structured recurrence so clients can render a LOCALIZED label
+            // (recurrence_label above is English-only, kept for back-compat).
+            'recurrence_type'     => $row['recurrence_type'] ?? null,
+            'recurrence_weekdays' => !empty($row['series_weekdays']) ? (json_decode($row['series_weekdays'], true) ?: []) : [],
+            'recurrence_interval' => isset($row['interval_days']) ? (int) $row['interval_days'] : null,
             // Past = the event's end time has passed. The detail endpoint uses
             // this to render the "Past event" view (badge, disabled RSVP). Note
             // soft-deleted events also have expires_at in the past, but the

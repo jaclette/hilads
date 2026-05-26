@@ -93,5 +93,7 @@
     "legendAlertBody": "Legends are locals chosen to keep their city alive — they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
     "gotIt": "Got it",
     "backToNow": "Back to Now"
-  }
+  },
+  "recur": {"everyday":"Every day","weekly":"Weekly","everyNDays_one":"Every {{count}} day","everyNDays_other":"Every {{count}} days"},
+  "weekdays": ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
 }

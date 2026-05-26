@@ -93,5 +93,7 @@
     "legendAlertBody": "Huyền thoại là những người địa phương được chọn để giữ thành phố sôi động — họ có thể tổ chức bao nhiêu sự kiện tùy thích. Muốn trở thành một người? Liên hệ contact@hilads.live.",
     "gotIt": "Đã hiểu",
     "backToNow": "Quay lại Now"
-  }
+  },
+  "recur": {"everyday":"Mỗi ngày","weekly":"Hàng tuần","everyNDays_one":"Mỗi {{count}} ngày","everyNDays_other":"Mỗi {{count}} ngày"},
+  "weekdays": ["CN","T2","T3","T4","T5","T6","T7"]
 }

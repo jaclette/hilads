@@ -41,6 +41,7 @@ import { BADGE_META } from '@/types';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { LanguageRow } from '@/features/settings/LanguageRow';
+import { formatRecurrence } from '@/lib/recurrence';
 
 // ── Constants — must match backend allowed lists ──────────────────────────────
 
@@ -747,6 +748,7 @@ export default function MeScreen() {
                   const now    = Date.now() / 1000;
                   const isLive = event.starts_at <= now && event.expires_at > now;
                   const icon   = EVENT_ICONS[event.event_type] ?? '📌';
+                  const recur  = formatRecurrence(event);
                   return (
                     <View key={event.id}>
                       {idx > 0 && <View style={styles.divider} />}
@@ -758,8 +760,8 @@ export default function MeScreen() {
                         <Text style={styles.eventIcon}>{icon}</Text>
                         <View style={styles.eventInfo}>
                           <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-                          {event.recurrence_label && (
-                            <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
+                          {recur && (
+                            <Text style={styles.eventRecurrence}>{recur}</Text>
                           )}
                           <View style={styles.eventBadgeRow}>
                             {isLive && (
@@ -781,6 +783,7 @@ export default function MeScreen() {
                   const now    = Date.now() / 1000;
                   const isLive = event.starts_at <= now && event.expires_at > now;
                   const icon   = EVENT_ICONS[event.event_type] ?? '📌';
+                  const recur  = formatRecurrence(event);
                   return (
                     <View key={event.id}>
                       {idx > 0 && <View style={styles.divider} />}
@@ -792,8 +795,8 @@ export default function MeScreen() {
                         <Text style={styles.eventIcon}>{icon}</Text>
                         <View style={styles.eventInfo}>
                           <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
-                          {event.recurrence_label && (
-                            <Text style={styles.eventRecurrence}>{event.recurrence_label}</Text>
+                          {recur && (
+                            <Text style={styles.eventRecurrence}>{recur}</Text>
                           )}
                           <View style={styles.eventBadgeRow}>
                             {isLive && (
@@ -801,7 +804,7 @@ export default function MeScreen() {
                                 <Text style={styles.livePillText}>{t('live')}</Text>
                               </View>
                             )}
-                            {event.recurrence_label && (
+                            {recur && (
                               <View style={styles.recurPill}>
                                 <Ionicons name="refresh" size={10} color={Colors.violet} />
                                 <Text style={styles.recurPillText}>{t('recurring')}</Text>

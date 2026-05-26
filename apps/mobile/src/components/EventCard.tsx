@@ -4,6 +4,7 @@ import i18n from '@/i18n';
 import type { FeedItem, HiladsEvent } from '@/types';
 import { Colors, FontSizes, Radius } from '@/constants';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
+import { formatRecurrence } from '@/lib/recurrence';
 
 // Shared compact event card — used by the Now feed (tabs/now.tsx) and the
 // See-what's-coming screen (upcoming-events.tsx). Keep the two screens visually
@@ -64,7 +65,8 @@ type Props = {
 
 export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, showDay = false }: Props) {
   const { t } = useTranslation('event');
-  const isRecurring = !!(event.series_id ?? event.recurrence_label);
+  const recurLabel  = formatRecurrence(event);
+  const isRecurring = !!(event.series_id ?? recurLabel);
   const now         = Date.now() / 1000;
   const startsAt    = (event as HiladsEvent).starts_at  ?? 0;
   const expiresAt   = (event as HiladsEvent).expires_at ?? 0;
@@ -96,7 +98,7 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, s
 
       <Text style={[styles.cardMetaLine, isLive && styles.cardMetaLineLive]} numberOfLines={1}>
         🕐 {showDay ? dayPrefix(startsAt, tz) : ''}{formatTime(startsAt, tz)}{endsAt ? ` → ${formatTime(endsAt, tz)}` : ''}
-        {event.recurrence_label ? `  ·  ↻ ${event.recurrence_label}` : ''}
+        {recurLabel ? `  ·  ↻ ${recurLabel}` : ''}
       </Text>
 
       {distanceLabel ? (

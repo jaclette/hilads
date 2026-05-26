@@ -93,6 +93,26 @@ function parseDeepLink() {
 // localized cluster (Option A): from /fr/, an event link → /fr/event/…. The
 // default locale (en) stays bare (x-default). parseDeepLink() strips the prefix
 // on read, so this only affects what we write to the URL bar.
+// Localized recurrence label from the event's structured fields. The backend's
+// recurrence_label is English-only; build the display string here (event ns).
+// Falls back to the server string for older payloads. Weekday names come from
+// i18n (event.weekdays).
+function formatRecurrence(ev) {
+  const type = ev?.recurrence_type
+  if (!type) return ev?.recurrence_label ?? null
+  const T = (k, opts) => i18n.t(k, { ns: 'event', ...opts })
+  if (type === 'daily') return T('recur.everyday')
+  if (type === 'every_n_days') return T('recur.everyNDays', { count: ev.recurrence_interval ?? 1 })
+  if (type === 'weekly') {
+    const days = [...(ev.recurrence_weekdays ?? [])].sort((a, b) => a - b)
+    if (days.length === 0) return T('recur.weekly')
+    if (days.length === 7) return T('recur.everyday')
+    const names = i18n.t('weekdays', { ns: 'event', returnObjects: true })
+    return days.map((d) => (Array.isArray(names) ? names[d] : null) ?? '?').join(' · ')
+  }
+  return ev?.recurrence_label ?? null
+}
+
 function localizePath(path) {
   const lang = i18n.language
   if (!lang || lang === DEFAULT_LOCALE || !SUPPORTED.includes(lang)) return path
@@ -359,17 +379,18 @@ function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
   const { t } = useTranslation('city')
   const now = Date.now() / 1000
   const isLive = event.starts_at <= now && event.expires_at > now
+  const recur = formatRecurrence(event)
   return (
     <div className="my-event-row">
       <button className="my-event-row-body" onClick={onSelect}>
         <span className="my-event-title">{EVENT_ICONS[event.type] ?? '📌'} {event.title}</span>
         <span className="my-event-meta">
-          {event.recurrence_label
-            ? event.recurrence_label
+          {recur
+            ? recur
             : getTimeLabel(event.starts_at, cityTimezone || 'UTC') + (event.ends_at ? ` → ${formatTime(event.ends_at, cityTimezone || 'UTC')}` : '')}
         </span>
-        <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (event.recurrence_label ? ' my-event-badge--recurring' : '')}`}>
-          {isLive ? t('myEvent.live') : (event.recurrence_label ? t('myEvent.recurring') : t('myEvent.upcoming'))}
+        <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (recur ? ' my-event-badge--recurring' : '')}`}>
+          {isLive ? t('myEvent.live') : (recur ? t('myEvent.recurring') : t('myEvent.upcoming'))}
         </span>
       </button>
       <button className="my-event-delete" onClick={onDelete} aria-label={t('myEvent.delete')}>✕</button>

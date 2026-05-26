@@ -53,5 +53,6 @@
     "saving": "Guardando…", "creating": "Creando…",
     "saveChanges": "Guardar", "openSpot": "Abre tu spot",
     "startEvent": "Lanzar un evento", "create": "Crear un evento"
-  }
+  },
+  "recur": {"everyday":"Cada día","weekly":"Cada semana","everyNDays_one":"Cada {{count}} día","everyNDays_other":"Cada {{count}} días"}
 }

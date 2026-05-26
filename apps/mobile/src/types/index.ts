@@ -52,6 +52,9 @@ export interface HiladsEvent {
   created_at?: number;  // unix timestamp — when the event row was inserted
   series_id?: string;
   recurrence_label?: string;
+  recurrence_type?: 'daily' | 'weekly' | 'every_n_days' | null;
+  recurrence_weekdays?: number[];
+  recurrence_interval?: number | null;
   guest_id?: string;
   created_by?: string;
   host_nickname?: string | null;
@@ -114,6 +117,9 @@ export interface FeedItem {
   participants_preview?: ParticipantPreview[];
   is_participating?:  boolean;
   recurrence_label?:  string | null;
+  recurrence_type?:   'daily' | 'weekly' | 'every_n_days' | null;
+  recurrence_weekdays?: number[];
+  recurrence_interval?: number | null;
   series_id?:         string | null;
   guest_id?:          string | null;
   created_by?:        string | null;

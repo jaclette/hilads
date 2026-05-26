@@ -93,5 +93,7 @@
     "legendAlertBody": "Les Légendes sont des locaux choisis pour faire vivre leur ville — ils peuvent organiser autant d'événements qu'ils veulent. Tu veux en devenir une ? Écris à contact@hilads.live.",
     "gotIt": "Compris",
     "backToNow": "Retour à Now"
-  }
+  },
+  "recur": {"everyday":"Tous les jours","weekly":"Hebdomadaire","everyNDays_one":"Tous les {{count}} jour","everyNDays_other":"Tous les {{count}} jours"},
+  "weekdays": ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"]
 }
