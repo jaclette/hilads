@@ -3431,7 +3431,7 @@ export default function App() {
                   )}
                 </div>
                 <span className="event-meta-label">
-                  {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC')}
+                  {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC', { withDate: !(activeEvent.recurrence_label || activeEvent.series_id) })}
                   {activeEvent.ends_at ? ` → ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
                   {` · ${t('eventHeader.here', { count: eventPresence[activeEvent.id] ?? 0 })} · `}
                   <button className="going-count-btn" onClick={handleOpenGoingModal}>

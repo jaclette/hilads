@@ -80,29 +80,34 @@ export function getEventMapsUrl(event) {
   return q ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null
 }
 
-// Day prefix for events outside today — "" for today, "Tomorrow · " for
-// tomorrow, "{weekday} · " further out. Keeps today's cards clean while making
-// a multi-day feed (now feed spans today + 2 days) unambiguous. Computed in the
-// city's timezone so the day boundary matches the backend window.
-function eventDayPrefix(unixTs, timezone) {
+// Day prefix for events outside today. Computed in the city's timezone so the
+// day boundary matches the backend window.
+//   compact (now feed): "" today / "Tomorrow · " / "{weekday} · "
+//   full   (detail):    "Today · " / "Tomorrow · " / "{weekday}, {month} {day} · "
+// Compact keeps today's feed cards clean; full spells out the date on the event
+// detail so a one-shot's day is unambiguous however far out it is.
+function eventDayPrefix(unixTs, timezone, full = false) {
   const opts = timezone ? { timeZone: timezone } : undefined
   const keyOf = (d) => d.toLocaleDateString('en-CA', opts)
   const todayKey = keyOf(new Date())
   const tomorrowKey = new Date(Date.parse(todayKey + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10)
   const startKey = keyOf(new Date(unixTs * 1000))
-  if (startKey === todayKey) return ''
+  if (startKey === todayKey)    return full ? `${i18n.t('time.today', { ns: 'common' })} · ` : ''
   if (startKey === tomorrowKey) return `${i18n.t('time.tomorrow', { ns: 'common' })} · `
-  const weekday = new Date(unixTs * 1000).toLocaleDateString(i18n.language || 'en', {
-    weekday: 'short',
+  const fmt = full
+    ? { weekday: 'short', month: 'short', day: 'numeric' }
+    : { weekday: 'short' }
+  const label = new Date(unixTs * 1000).toLocaleDateString(i18n.language || 'en', {
+    ...fmt,
     ...(timezone ? { timeZone: timezone } : {}),
   })
-  return `${weekday} · `
+  return `${label} · `
 }
 
-// `withDay` (now feed only): the feed spans today + 2 days, so prefix scheduled
-// events with the day. Other surfaces (event detail, profile, archive, upcoming)
-// pass it off — they're single-event or already day-scoped.
-export function getTimeLabel(unixTs, timezone, { withDay = false } = {}) {
+// `withDay` (now feed): compact day prefix on scheduled events.
+// `withDate` (event detail, one-shot only): full date prefix so the day is clear.
+// Other surfaces pass neither — they're single-event or already day-scoped.
+export function getTimeLabel(unixTs, timezone, { withDay = false, withDate = false } = {}) {
   const status = getEventStatus(unixTs)
   if (status === 'now') return i18n.t('time.happeningNow', { ns: 'common' })
   if (status === 'soon') {
@@ -110,6 +115,8 @@ export function getTimeLabel(unixTs, timezone, { withDay = false } = {}) {
     const rounded = Math.max(5, Math.round(diffMin / 5) * 5)
     return i18n.t('time.inMin', { ns: 'common', count: rounded })
   }
-  const dayPrefix = withDay ? eventDayPrefix(unixTs, timezone) : ''
-  return `🕐 ${dayPrefix}${formatTime(unixTs, timezone)}`
+  const prefix = withDate ? eventDayPrefix(unixTs, timezone, true)
+    : withDay ? eventDayPrefix(unixTs, timezone, false)
+    : ''
+  return `🕐 ${prefix}${formatTime(unixTs, timezone)}`
 }

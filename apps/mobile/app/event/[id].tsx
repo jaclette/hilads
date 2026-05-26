@@ -35,6 +35,19 @@ function formatTime(ts: number): string {
   return new Date(ts * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 }
 
+// Full date label for a one-shot event's detail header — "Today" / "Tomorrow" /
+// "Sat, May 30". Recurring events skip this (they repeat; no single date).
+function formatEventDate(ts: number): string {
+  const d        = new Date(ts * 1000);
+  const today    = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const key = (x: Date) => x.toLocaleDateString('en-CA');
+  if (key(d) === key(today))    return i18n.t('time.today', { ns: 'common' });
+  if (key(d) === key(tomorrow)) return i18n.t('time.tomorrow', { ns: 'common' });
+  return d.toLocaleDateString(i18n.language, { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
 // ── Open the venue in Google Maps ─────────────────────────────────────────────
 // Prefer precise coordinates; fall back to a "venue name, address" text search.
 // The universal maps URL opens the Google Maps app via universal link (iOS) /
@@ -214,7 +227,8 @@ export default function EventDetailScreen() {
     let message = title;
     if (event) {
       const where = event.location ? ` ${t('shareAt', { location: event.location })}` : '';
-      const when  = ` — ${formatTime(event.starts_at)}${event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}`;
+      const datePart = !(event.recurrence_label || event.series_id) ? `${formatEventDate(event.starts_at)} · ` : '';
+      const when  = ` — ${datePart}${formatTime(event.starts_at)}${event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}`;
       const who   = (event.participant_count ?? 0) > 0
         ? ` ${t('shareGoing', { count: event.participant_count })}`
         : '';
@@ -399,6 +413,7 @@ export default function EventDetailScreen() {
             {/* Time + here + going on a single muted line */}
             <Text style={styles.eventMeta} numberOfLines={1}>
               {'🕐 '}
+              {!(event.recurrence_label || event.series_id) ? `${formatEventDate(event.starts_at)} · ` : ''}
               {formatTime(event.starts_at)}
               {event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}
               {presenceCount != null ? ` · ${t('here', { count: presenceCount })}` : ''}
