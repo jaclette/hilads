@@ -1,0 +1,24 @@
+{
+  "title": "Actividad pasada",
+  "filters": { "all": "Todo", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "range": { "recent": "Reciente", "last7": "Últimos 7 días", "last14": "Últimos 14 días", "custom": "Personalizado" },
+  "picker": {
+    "pickEnd": "Ahora elige el día de fin",
+    "pickStart": "Elige un día de inicio (hasta {{max}} días)",
+    "apply": "Aplicar"
+  },
+  "public": "Público",
+  "went_one": "🙌 {{count}} asistió",
+  "went_other": "🙌 {{count}} asistieron",
+  "hangoutTag": "Hangout",
+  "replies_one": "💬 {{count}} respuesta",
+  "replies_other": "💬 {{count}} respuestas",
+  "noReplies": "Sin respuestas",
+  "error": "No se pudieron cargar los archivos",
+  "retry": "Reintentar",
+  "emptyTitle": "Aún no hay nada aquí",
+  "emptyRecentSub": "Los eventos y hangouts pasados aparecerán aquí cuando la ciudad tenga algo de historial.",
+  "emptyWindowSub": "Ningún evento ni hangout en este periodo. Prueba con un rango más amplio.",
+  "loadMore": "Cargar más",
+  "loading": "Cargando…"
+}

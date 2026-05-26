@@ -35,10 +35,11 @@ import { dirname, join } from 'node:path'
 import en_ssr from '../src/i18n/locales/en/ssr.json' with { type: 'json' }
 import fr_ssr from '../src/i18n/locales/fr/ssr.json' with { type: 'json' }
 import vi_ssr from '../src/i18n/locales/vi/ssr.json' with { type: 'json' }
+import es_ssr from '../src/i18n/locales/es/ssr.json' with { type: 'json' }
 
-const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr }
-const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN' }
-const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN' }
+const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr, es: es_ssr }
+const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN', es: 'es-ES' }
+const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN', es: 'es_ES' }
 
 // '' for the default (English) locale; '/fr' | '/vi' otherwise. Used to keep SSR
 // internal links inside the localized cluster (mirrors the redirect/canonical prefixing).
@@ -1362,7 +1363,7 @@ function injectMeta(shell, meta, locale = 'en') {
 }
 
 // ── Locale (Option A: un-prefixed = English canonical; /fr, /vi additive) ─────
-const I18N_LOCALES = ['en', 'fr', 'vi']
+const I18N_LOCALES = ['en', 'fr', 'vi', 'es']
 
 function setHtmlLang(shell, locale) {
   return shell.replace(/<html\s+lang="[^"]*"/i, `<html lang="${locale}"`)

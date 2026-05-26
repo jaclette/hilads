@@ -58,7 +58,7 @@ function parseDeepLink() {
   // Strip an optional leading locale segment (/fr, /vi) — Option A localized
   // routes resolve to the same views as their un-prefixed English canonical.
   // The locale itself is read separately by src/i18n (resolveInitialLocale).
-  const path = window.location.pathname.replace(/^\/(fr|vi)(?=\/|$)/, '') || '/'
+  const path = window.location.pathname.replace(/^\/(fr|vi|es)(?=\/|$)/, '') || '/'
   const params = new URLSearchParams(window.location.search)
   const cityMatch         = path.match(/^\/city\/([^/]+)$/)
   const cityPastMatch     = path.match(/^\/city\/([^/]+)\/past$/)
@@ -2070,7 +2070,7 @@ export default function App() {
       // English index.html instead of the city's localized SSR meta. Deep-link
       // entries (/city, /event, …) already carry the right URL; pushUrl no-ops
       // when the localized target matches the current path.
-      if (/^\/(fr|vi)?$/.test(window.location.pathname) && location.city) {
+      if (/^\/(fr|vi|es)?$/.test(window.location.pathname) && location.city) {
         pushUrl(`/city/${cityToSlug(location.city)}`)
       }
 

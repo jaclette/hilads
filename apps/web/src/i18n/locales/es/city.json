@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "Crear una cuenta",
+    "signIn": "Iniciar sesión",
+    "create_event": {
+      "pageTitle": "Crear un evento",
+      "title": "Los fantasmas pueden mirar, pero no organizar.",
+      "sub": "Crea una cuenta para organizar tu propio evento y poner tu ciudad en el mapa."
+    },
+    "view_profile": {
+      "pageTitle": "Perfil",
+      "title": "Los fantasmas pueden mirar, pero los perfiles son para miembros.",
+      "sub": "Crea una cuenta para desbloquear los perfiles, conectar y formar tu grupo en la ciudad."
+    },
+    "join_hangout": {
+      "pageTitle": "Unirse a un hangout",
+      "title": "Los fantasmas pueden mirar, pero no unirse a hangouts.",
+      "sub": "Regístrate para unirte a hangouts, conservar tu nombre y recibir aviso cuando alguien quiera quedar."
+    },
+    "create_hangout": {
+      "pageTitle": "Lanzar un hangout",
+      "title": "Los fantasmas pueden mirar, pero no organizar.",
+      "sub": "Regístrate para lanzar un hangout, conservar tu nombre y atraer gente."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} está en directo ✨",
+    "dismiss": "Cerrar",
+    "body": "Gente real, ahora mismo. Saluda, mira quién está aquí o trae a un amigo.",
+    "sayHi": "Saluda 👋",
+    "invite": "Invitar amigos"
+  },
+  "imageType": "Elige una imagen JPEG, PNG o WebP.",
+  "imageTooLarge": "Imagen demasiado grande. Tamaño máx.: 10 MB.",
+  "picker": {
+    "title": "Elige una ciudad",
+    "search": "Buscar una ciudad…",
+    "noResults": "No se encontró ninguna ciudad para «{{query}}»",
+    "topCities": "Ciudades más activas",
+    "cities": "Ciudades"
+  },
+  "joining": "Conectando con {{city}}…",
+  "joiningDefault": "Conectando con el chat…",
+  "tryAgain": "Reintentar",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "Público",
+    "activeNow": "● Activo ahora",
+    "repliesNew": "Aún no hay respuestas — sé el primero",
+    "replies_one": "💬 {{count}} respuesta",
+    "replies_other": "💬 {{count}} respuestas",
+    "going_one": "🙌 {{count}} participante",
+    "going_other": "🙌 {{count}} participantes",
+    "hostedBy": "Organizado por {{name}}",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "Crear un evento",
+    "startHangout": "Lanzar un hangout ⚡",
+    "openPlace": "Abre tu spot",
+    "loadError": "No se pudieron cargar los eventos",
+    "loadErrorSub": "Inténtalo más tarde o crea algo nuevo en {{city}}.",
+    "emptyLocalTitle": "Abre tu spot",
+    "emptyTitle": "Aún no pasa nada",
+    "emptyLocalSub": "Haz vivir {{city}}. Lanza un evento recurrente en tu sitio favorito.",
+    "emptySub": "Sé el primero en mover {{city}}",
+    "noEvents": "Aún no hay eventos",
+    "noHangouts": "Aún no hay hangouts",
+    "noEventsSub": "Sé el primero en crear uno en {{city}}",
+    "noHangoutsSub": "Lanza un hangout y haz que la ciudad hable",
+    "filterAll": "Todo",
+    "seeComing": "Próximamente 🔮",
+    "seeHappened": "Eventos pasados",
+    "createNew": "Crear"
+  },
+  "header": {
+    "online": "{{count}} cerca de ti",
+    "liveNow": "en directo",
+    "seeWhosHere": "Mira quién está aquí",
+    "onlineAria": "{{count}} personas cerca de ti, toca para ver quién",
+    "notifications": "Notificaciones",
+    "messages": "Mensajes",
+    "shareCity": "Compartir la ciudad",
+    "switchCity": "Cambiar de ciudad",
+    "changeCity": "Cambiar de ciudad",
+    "currentWeather": "Tiempo actual: {{label}}"
+  },
+  "here": {
+    "title": "A tu alrededor",
+    "filterBadge": "Insignia",
+    "filterVibe": "Vibe",
+    "filterMode": "Modo",
+    "you": "(tú)",
+    "hereNow": "Here now",
+    "noMatchLive": "Nadie coincide con estos filtros por ahora.",
+    "legendsSub": "Hacen que la ciudad se mueva",
+    "cityCrew": "Los miembros de la ciudad",
+    "noMatchCrew": "Ningún miembro coincide con estos filtros.",
+    "loadMore": "Ver más",
+    "messageAria": "Enviar un mensaje a {{name}}"
+  },
+  "eventHeader": {
+    "yourEvent": "Tu evento",
+    "edit": "Editar",
+    "join": "Unirse",
+    "joined": "Unido ✓",
+    "here": "{{count}} aquí",
+    "going_one": "{{count}} participante",
+    "going_other": "{{count}} participantes",
+    "locationPending": "Ubicación aún no disponible",
+    "hostedBy": "Organizado por {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "Inicio de la conversación",
+    "arriving": "La gente está llegando",
+    "firstChat": "Sé el primero en escribir aquí 👇",
+    "firstHi": "Sé el primero en saludar 👇"
+  },
+  "create": {
+    "title": "¿Qué hacemos?",
+    "hangoutTitle": "Lanzar un hangout",
+    "hangoutSub": "Al instante — deja que la gente se una ahora",
+    "eventTitle": "Crear un evento",
+    "eventSub": "Organiza algo a lo que unirse"
+  },
+  "goingModal": {
+    "going": "van",
+    "inThisHangout": "en este hangout",
+    "loading": "Cargando…",
+    "empty": "Nadie por ahora — ¡sé el primero! 🙌"
+  },
+  "nickname": {
+    "label": "Apodo",
+    "placeholder": "Tu nombre...",
+    "heroSub": "Anónimo por ahora. Aun así puedes cuidar cómo apareces.",
+    "save": "Guardar el apodo",
+    "upgradeHint": "Conserva tu nombre. Sigue siendo local.",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "myEvents": "Mis eventos",
+    "anonymous": "// anónimo · no hace falta registrarse"
+  },
+  "prompt": {
+    "exploreText": "🔥 Mira qué está pasando ahora",
+    "exploreCta": "Ver qué está pasando",
+    "photoText": "📸 Comparte lo que está pasando",
+    "shoot": "Foto",
+    "createEventText": "🎉 ¿Algún plan esta noche?",
+    "createEventCta": "Crear un evento",
+    "installText": "✨ Añade Hilads a tu pantalla de inicio\nNo te pierdas nunca lo que pasa en tu ciudad",
+    "installAdd": "Añadir",
+    "installHow": "Cómo"
+  },
+  "toast": {
+    "eventDeleted": "Evento eliminado"
+  },
+  "pwa": {
+    "addToHome": "Añade Hilads a la pantalla de inicio",
+    "add": "Añadir",
+    "keepClose": "Ten Hilads a mano",
+    "manualHelp": "Abre el menú de tu navegador y elige «Añadir a pantalla de inicio».",
+    "dismiss": "Cerrar el aviso de instalación"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} acaba de llegar",
+    "1": "🔥 {{name}} se ha unido",
+    "2": "🍻 {{name}} está aquí",
+    "3": "👀 {{name}} acaba de aparecer",
+    "4": "✨ {{name}} ha llegado"
+  },
+  "ambient": {
+    "0": "🔥 La gente está llegando",
+    "1": "🍻 ¿Quién sale esta noche?",
+    "2": "💬 La ciudad se despierta",
+    "3": "🌙 Los noctámbulos están en línea",
+    "4": "👀 Alguien acaba de llegar",
+    "5": "🔥 Una cara nueva en la ciudad",
+    "6": "🎉 Hay gente aquí ahora mismo",
+    "7": "🌆 Los locales asoman la cabeza"
+  },
+  "ownerPrompt": {
+    "text": "🔥 ¡Has lanzado este evento!",
+    "sub": "Hazlo aún mejor — añade una descripción, cambia la hora o compártelo.",
+    "edit": "✏️ Editar el evento"
+  },
+  "feedNew": {
+    "event": "🔥 Nuevo evento: {{title}}",
+    "join": "Unirse",
+    "replies_one": "{{count}} respuesta",
+    "replies_other": "{{count}} respuestas"
+  },
+  "replyPreview": {
+    "photo": "📷 Foto"
+  },
+  "placeholder": {
+    "event": "Di algo en {{title}} ✨",
+    "eventFirst": "Sé el primero en {{title}} ✨"
+  },
+  "placeholders": [
+    "Saluda 👋",
+    "¿Quién sale esta noche?",
+    "¿Algún plan? 👀",
+    "¿Qué está pasando aquí?",
+    "¿Alguien se apunta a algo? 🍻",
+    "Escribe un mensaje…"
+  ],
+  "typing": {
+    "one": "{{name}} está escribiendo…",
+    "two": "{{a}} y {{b}} están escribiendo…",
+    "many": "Varias personas están escribiendo…"
+  },
+  "myEvent": {
+    "live": "En directo",
+    "recurring": "↻ Recurrente",
+    "upcoming": "Próximamente",
+    "delete": "Eliminar el evento"
+  }
+}

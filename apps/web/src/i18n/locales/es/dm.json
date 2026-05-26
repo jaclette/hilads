@@ -1,0 +1,41 @@
+{
+  "title": "Mensajes",
+  "filters": { "all": "Todo", "dms": "Mensajes directos", "events": "Chats de eventos" },
+  "loading": "Cargando…",
+  "error": {
+    "loadTitle": "No se pudieron cargar los mensajes",
+    "loadSub": "Comprueba tu conexión y vuelve a intentarlo."
+  },
+  "empty": {
+    "eventsTitle": "Aún no hay chats de eventos",
+    "eventsSub": "Crea un evento o únete a uno para hablar con los participantes.",
+    "title": "Aún no hay mensajes",
+    "sub": "Conecta con la gente que conoces en la ciudad."
+  },
+  "sectionDms": "Mensajes directos",
+  "sectionEvents": "Chats de eventos",
+  "youPrefix": "Tú: {{message}}",
+  "startConversation": "Empieza la conversación",
+  "eventCreated": "Tú creaste esto",
+  "eventJoined": "Te uniste a esto",
+  "prefs": {
+    "title": "Preferencias de notificación",
+    "dmName": "Nuevos mensajes directos",
+    "dmDesc": "Cuando alguien te envía un mensaje privado",
+    "eventName": "Mensajes de chat de eventos",
+    "eventDesc": "Cuando alguien escribe en un evento al que te has unido",
+    "cityName": "Mensajes del chat de la ciudad",
+    "cityDesc": "Cuando alguien escribe en el canal de tu ciudad"
+  },
+  "thread": {
+    "loadError": "No se pudieron cargar los mensajes.",
+    "beginning": "Inicio de la conversación",
+    "photo": "📷 Foto",
+    "unavailable": "Mensaje original no disponible",
+    "tapMaps": "Toca para abrir en Maps",
+    "composer": "Mensaje…",
+    "imageType": "Elige una imagen JPEG, PNG o WebP.",
+    "imageTooLarge": "Imagen demasiado grande. Tamaño máx.: 10 MB.",
+    "imageSend": "No se pudo enviar la imagen. Inténtalo de nuevo."
+  }
+}

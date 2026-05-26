@@ -70,9 +70,9 @@ function xmlEscape(s) {
 }
 
 // Option A i18n: the sitemap lists the un-prefixed (English) canonical, and
-// each entry advertises its /fr and /vi alternates + x-default via xhtml:link
+// each entry advertises its /fr, /vi and /es alternates + x-default via xhtml:link
 // so Google clusters the language versions. loc is always BASE_URL + path.
-const SITEMAP_LOCALES = ['en', 'fr', 'vi']
+const SITEMAP_LOCALES = ['en', 'fr', 'vi', 'es']
 function hreflangLinks(loc) {
   const path = loc.startsWith(BASE_URL) ? loc.slice(BASE_URL.length) : null
   if (path === null) return []

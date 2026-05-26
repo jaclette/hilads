@@ -1,0 +1,14 @@
+{
+  "title": "Próximamente",
+  "openCalendar": "Abrir el calendario",
+  "today": "Hoy",
+  "close": "Cerrar",
+  "error": "No se pudieron cargar los eventos de ese día",
+  "retry": "Reintentar",
+  "emptyTitle": "Nada previsto",
+  "emptySub": "Todavía no hay eventos ese día.",
+  "public": "Público",
+  "going_one": "🙌 {{count}} participante",
+  "going_other": "🙌 {{count}} participantes",
+  "liveNow": "🔥 En directo"
+}

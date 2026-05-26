@@ -66,13 +66,13 @@
     { "source": "/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category" },
     { "source": "/cities",               "destination": "/api/cities-index" },
 
-    { "source": "/:locale(fr|vi)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
-    { "source": "/:locale(fr|vi)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
-    { "source": "/:locale(fr|vi)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
-    { "source": "/:locale(fr|vi)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi)/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category&locale=:locale" },
-    { "source": "/(fr|vi)/(.*)",         "destination": "/index.html" },
+    { "source": "/:locale(fr|vi|es)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
+    { "source": "/:locale(fr|vi|es)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
+    { "source": "/:locale(fr|vi|es)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
+    { "source": "/:locale(fr|vi|es)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
+    { "source": "/:locale(fr|vi|es)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
+    { "source": "/:locale(fr|vi|es)/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category&locale=:locale" },
+    { "source": "/(fr|vi|es)/(.*)",         "destination": "/index.html" },
 
     { "source": "/(.*)",                 "destination": "/index.html" }
   ]

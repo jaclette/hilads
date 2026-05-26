@@ -1,0 +1,16 @@
+{
+  "title": "A tu alrededor",
+  "noCityTitle": "Ninguna ciudad seleccionada",
+  "noCitySub": "Elige una ciudad para ver quién está por aquí.",
+  "browseCities": "Explorar ciudades",
+  "filterBadge": "Insignia",
+  "filterVibe": "Vibe",
+  "filterMode": "Modo",
+  "you": "(tú)",
+  "hereNow": "Here now",
+  "noMatchLive": "Nadie coincide con estos filtros por ahora.",
+  "legendsSub": "Hacen que la ciudad se mueva",
+  "cityCrew": "Los miembros de la ciudad",
+  "noMatchCrew": "Ningún miembro coincide con estos filtros.",
+  "loadMore": "Ver más"
+}

@@ -1,0 +1,25 @@
+{
+  "language": "Idioma",
+  "cancel": "Cancelar",
+  "loading": "Cargando…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "Explorando" }
+  },
+  "composer": {
+    "attach": "Añadir un adjunto",
+    "emoji": "Emoji"
+  },
+  "time": {
+    "happeningNow": "🔥 ahora mismo",
+    "inMin": "🔥 en {{count}} min",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "yesterday": "Ayer",
+    "justNow": "hace un instante",
+    "nowShort": "ahora",
+    "mAgo": "hace {{count}} min",
+    "hAgo": "hace {{count}} h",
+    "dAgo": "hace {{count}} d"
+  }
+}

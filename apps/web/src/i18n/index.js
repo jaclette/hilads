@@ -20,7 +20,7 @@ import en_publicProfile from './locales/en/publicProfile.json'
 import en_city          from './locales/en/city.json'
 import en_venue         from './locales/en/venue.json'
 
-export const SUPPORTED      = ['en', 'fr', 'vi']
+export const SUPPORTED      = ['en', 'fr', 'vi', 'es']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
 const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'venue']
@@ -60,6 +60,22 @@ const LOADERS = {
     city:          () => import('./locales/vi/city.json'),
     venue:         () => import('./locales/vi/venue.json'),
   },
+  es: {
+    common:  () => import('./locales/es/common.json'),
+    profile: () => import('./locales/es/profile.json'),
+    brand:   () => import('./locales/es/brand.json'),
+    landing: () => import('./locales/es/landing.json'),
+    auth:    () => import('./locales/es/auth.json'),
+    event:   () => import('./locales/es/event.json'),
+    hangout: () => import('./locales/es/hangout.json'),
+    dm:      () => import('./locales/es/dm.json'),
+    notifications: () => import('./locales/es/notifications.json'),
+    upcoming:      () => import('./locales/es/upcoming.json'),
+    archive:       () => import('./locales/es/archive.json'),
+    publicProfile: () => import('./locales/es/publicProfile.json'),
+    city:          () => import('./locales/es/city.json'),
+    venue:         () => import('./locales/es/venue.json'),
+  },
 }
 
 i18n.use(initReactI18next).init({
@@ -76,7 +92,7 @@ i18n.use(initReactI18next).init({
   react: { useSuspense: false },          // we preload before render ourselves
 })
 
-const loaded = { en: true, fr: false, vi: false }
+const loaded = { en: true, fr: false, vi: false, es: false }
 
 /** Lazy-load + register every namespace for a locale. Idempotent. */
 export async function loadLocale(locale) {

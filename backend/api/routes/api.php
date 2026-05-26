@@ -5604,7 +5604,7 @@ $router->add('POST', '/api/v1/push/subscribe', function () {
 
     // Remember the browser language so notifications (push + bell) are localized.
     $locale = strtolower(substr(trim((string) ($body['locale'] ?? '')), 0, 2));
-    if (in_array($locale, ['en', 'fr', 'vi'], true)) {
+    if (in_array($locale, ['en', 'fr', 'vi', 'es'], true)) {
         try {
             Database::pdo()->prepare("UPDATE users SET locale = ? WHERE id = ?")
                 ->execute([$locale, $user['id']]);
@@ -5666,7 +5666,7 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     error_log("[push-subscribe] user={$user['id']} platform=$platform token=$token locale=$locale");
 
     // Remember the device language so notifications (push + bell) are localized.
-    if (in_array($locale, ['en', 'fr', 'vi'], true)) {
+    if (in_array($locale, ['en', 'fr', 'vi', 'es'], true)) {
         try {
             Database::pdo()->prepare("UPDATE users SET locale = ? WHERE id = ?")
                 ->execute([$locale, $user['id']]);

@@ -16,7 +16,7 @@ declare(strict_types=1);
  */
 final class NotificationI18n
 {
-    private const SUPPORTED = ['fr', 'vi'];
+    private const SUPPORTED = ['fr', 'vi', 'es'];
 
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
@@ -24,54 +24,67 @@ final class NotificationI18n
         'city_join' => [
             'fr' => ["👀 Quelqu'un est arrivé à {city}", "{name} vient d'arriver"],
             'vi' => ["👀 Có người vừa đến {city}",        "{name} vừa đến"],
+            'es' => ["👀 Alguien acaba de llegar a {city}", "{name} acaba de llegar"],
         ],
         'new_event' => [
             'fr' => ["🔥 Nouvel événement à {city}", null],
             'vi' => ["🔥 Sự kiện mới ở {city}",     null],
+            'es' => ["🔥 Nuevo evento en {city}",   null],
         ],
         'channel_message' => [
             'fr' => ["{name} dans le chat de la ville", null],
             'vi' => ["{name} trong chat thành phố",     null],
+            'es' => ["{name} en el chat de la ciudad",  null],
         ],
         'event_message' => [
             'fr' => ["{name} dans {title}", null],
             'vi' => ["{name} trong {title}", null],
+            'es' => ["{name} en {title}", null],
         ],
         'topic_message' => [
             'fr' => ["{name} dans {title}", null],
             'vi' => ["{name} trong {title}", null],
+            'es' => ["{name} en {title}", null],
         ],
         'dm_message' => [
             'fr' => ["{name} t'a envoyé un message",          null],
             'vi' => ["{name} đã gửi cho bạn một tin nhắn",     null],
+            'es' => ["{name} te ha enviado un mensaje",       null],
         ],
         'event_join' => [
             'fr' => ["👋 {name} a rejoint {title}",   null],
             'vi' => ["👋 {name} đã tham gia {title}", null],
+            'es' => ["👋 {name} se unió a {title}",   null],
         ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
             'vi' => ["{name} đã gửi cho bạn lời mời kết bạn",     null],
+            'es' => ["{name} te ha enviado una solicitud de amistad", null],
         ],
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami 🎉",            null],
             'vi' => ["{name} đã chấp nhận lời mời kết bạn của bạn 🎉",   null],
+            'es' => ["{name} ha aceptado tu solicitud de amistad 🎉",   null],
         ],
         'vibe_received' => [
             'fr' => ["{name} t'a envoyé une vibe ✨",         null],
             'vi' => ["{name} đã gửi cho bạn một vibe ✨",      null],
+            'es' => ["{name} te ha enviado una vibe ✨",      null],
         ],
         'profile_view' => [
             'fr' => ["👀 {name} a regardé ton profil",   null],
             'vi' => ["👀 {name} đã xem hồ sơ của bạn",    null],
+            'es' => ["👀 {name} ha visto tu perfil",      null],
         ],
         'join_request' => [
             'fr' => ["{name} veut rejoindre",  "{name} a demandé à rejoindre {title}"],
             'vi' => ["{name} muốn tham gia",   "{name} đã yêu cầu tham gia {title}"],
+            'es' => ["{name} quiere unirse",   "{name} pidió unirse a {title}"],
         ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
             'vi' => ["Bạn được nhận! 🎉",   "{name} đã thêm bạn vào {title}"],
+            'es' => ["¡Ya estás dentro! 🎉", "{name} te ha añadido a {title}"],
         ],
     ];
 
@@ -84,6 +97,10 @@ final class NotificationI18n
         'vi' => [
             'titled' => "{name} đã nhắc đến bạn trong {title}",
             'city'   => "{name} đã nhắc đến bạn trong chat thành phố",
+        ],
+        'es' => [
+            'titled' => "{name} te ha mencionado en {title}",
+            'city'   => "{name} te ha mencionado en el chat de la ciudad",
         ],
     ];
 

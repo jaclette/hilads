@@ -1,0 +1,17 @@
+{
+  "loading": "Cargando…",
+  "notFound": "Este lugar no está en Hilads.",
+  "loadError": "No se pudo cargar este lugar. Inténtalo de nuevo.",
+  "breadcrumb": "Ruta de navegación",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Cafetería"
+  },
+  "typeInCity": "{{category}} en {{city}}",
+  "address": "Dirección",
+  "hours": "Horario",
+  "openEveryDay": "Abierto todos los días · {{opens}} – {{closes}}",
+  "ctaText": "Mira quién está por {{city}} ahora mismo.",
+  "openCity": "Abrir {{city}}",
+  "lastUpdated": "Actualizado el {{date}}"
+}
