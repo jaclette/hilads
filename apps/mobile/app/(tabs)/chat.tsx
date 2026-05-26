@@ -535,12 +535,12 @@ export default function ChatTab() {
     promptTimersRef.current.push(t1, t2, t3);
   }
 
-  // A reminder card finished its opacity→height collapse (handled on the card
-  // itself, so its cell is already 0-height here) → drop it from the feed and
-  // pulse the NOW tab once. No LayoutAnimation: it doesn't reliably reclaim a
-  // removed cell on an inverted, virtualized FlatList (left black gaps); the
-  // card's own height collapse closes the space instead. The id lives in exactly
-  // one of the three arrays; filtering all three is harmless + simple.
+  // A reminder card finished fading (mount-guarded on the card) → drop it from
+  // the feed and pulse the NOW tab once. Removal alone reflows the list — no
+  // LayoutAnimation (unreliable on an inverted, virtualized list) and no animated
+  // height collapse (it crashed when the cell was removed mid-animation); a tiny
+  // non-animated reflow is the safe trade. The id lives in exactly one of the
+  // three arrays; filtering all three is harmless + simple.
   function handleAutoDismiss(id: string) {
     setPromptItems(prev   => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
     setEventFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
