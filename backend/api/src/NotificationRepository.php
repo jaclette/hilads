@@ -331,6 +331,72 @@ class NotificationRepository
      *     Appropriate for transient signals like 'channel_message' where you
      *     only want to ping users actively engaged in the channel right now.
      */
+    // "Someone arrived" re-notification cooldown. A genuine arrival is only
+    // announced again once the same person has been ABSENT from the city for
+    // at least this long. Foreground/reconnect/brief-background returns all land
+    // inside the window and are suppressed. Tune here (seconds).
+    private const ARRIVAL_COOLDOWN_SECONDS = 600; // 10 minutes
+
+    /**
+     * Announce "X just landed" to the city, with self-exclusion + a server-enforced
+     * per-(arriver, city) cooldown. This is the ONLY entry point the join/bootstrap
+     * paths should use for arrival pushes.
+     *
+     * $arriverUserId — the arriver's registered id, or null. Lean bootstrap (web)
+     *   skips auth so it arrives null here; we resolve it from guest_id so the
+     *   arriver is reliably excluded from their own notification.
+     */
+    public static function notifyCityArrival(
+        string  $cityChannelId,
+        ?string $arriverUserId,
+        string  $arriverGuestId,
+        string  $arriverNickname,
+        ?string $cityName
+    ): void {
+        // Resolve the arriver's registered id when the caller didn't (lean path),
+        // so self-exclusion works and the cooldown keys on a stable identity.
+        if ($arriverUserId === null && $arriverGuestId !== '') {
+            $stmt = Database::pdo()->prepare("SELECT id FROM users WHERE guest_id = ?");
+            $stmt->execute([$arriverGuestId]);
+            $arriverUserId = $stmt->fetchColumn() ?: null;
+        }
+        $arriverKey = $arriverUserId !== null ? ('u:' . $arriverUserId) : ('g:' . $arriverGuestId);
+
+        // Genuine-arrival gate: skip if this person already triggered an arrival
+        // for this city inside the cooldown window (quick return / reconnect).
+        if (!self::tryMarkArrival($arriverKey, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS)) {
+            return;
+        }
+
+        self::notifyCityOnlineUsers(
+            $cityChannelId,
+            $arriverUserId, // exclude the arriver from their own arrival (Bug 1)
+            'city_join',
+            '👀 Someone arrived in ' . ($cityName ?? 'your city'),
+            $arriverNickname . ' just landed',
+            ['channelId' => $cityChannelId, 'arriverName' => $arriverNickname],
+        );
+    }
+
+    /**
+     * Atomic "claim the arrival slot" for (arriver, city). Returns true exactly once
+     * per cooldown window — concurrent join requests race here, only one wins.
+     * Backed by the DB (not APCu) so the cooldown survives across PHP-FPM workers
+     * and APCu being disabled; this is the server-side source of truth.
+     */
+    private static function tryMarkArrival(string $arriverKey, string $channelId, int $cooldownSeconds): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            INSERT INTO arrival_cooldown (arriver_key, channel_id, last_notified_at)
+            VALUES (?, ?, now())
+            ON CONFLICT (arriver_key, channel_id) DO UPDATE SET last_notified_at = now()
+                WHERE arrival_cooldown.last_notified_at < now() - (? || ' seconds')::interval
+            RETURNING 1
+        ");
+        $stmt->execute([$arriverKey, $channelId, (string) $cooldownSeconds]);
+        return (bool) $stmt->fetchColumn();
+    }
+
     public static function notifyCityOnlineUsers(
         string  $cityChannelId,
         ?string $excludeUserId,

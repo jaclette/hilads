@@ -350,6 +350,19 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS mention
 $mentionBackfill = $pdo->exec("UPDATE notification_preferences SET mention_push = TRUE WHERE mention_push = FALSE");
 echo "  OK  backfilled mention_push=TRUE for " . (int) $mentionBackfill . " row(s)\n";
 
+// Per-(arriver, city) "someone arrived" cooldown. One row per arriver per city,
+// updated in place; last_notified_at gates re-notification so a quick
+// leave/return or a foreground/reconnect within the cooldown window does NOT
+// re-spam the city. arriver_key = "u:<userId>" (registered) or "g:<guestId>".
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS arrival_cooldown (
+        arriver_key      TEXT        NOT NULL,
+        channel_id       TEXT        NOT NULL,
+        last_notified_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (arriver_key, channel_id)
+    )
+", 'arrival_cooldown');
+
 // Admin push broadcasts — one row per send action triggered from /admin/push.
 // Doubles as the audit log (admin_username + admin_ip + created_at) since
 // the back office uses single-user env-based auth, not a user table.

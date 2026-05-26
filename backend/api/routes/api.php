@@ -2536,16 +2536,16 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             'guest_id'   => $joinUserId === null ? $guestId : null,
         ]);
 
-        // "Someone arrived in your city" push — every arrival (guest or
-        // registered) notifies the city's online members who opted in.
-        // Rate-limited (1/recipient/city/10 min). Excludes the arriver.
+        // "Someone arrived in your city" push — city members who opted in.
+        // notifyCityArrival self-excludes the arriver and enforces the per-(arriver,
+        // city) cooldown, so a quick return / reconnect doesn't re-spam the city.
         try {
-            $jcCity = 'city_' . $channelId;
-            NotificationRepository::notifyCityOnlineUsers(
-                $jcCity, $joinUserId, 'city_join',
-                '👀 Someone arrived in ' . ($cityInfo['name'] ?? 'your city'),
-                $nickname . ' just landed',
-                ['channelId' => $jcCity, 'arriverName' => $nickname],
+            NotificationRepository::notifyCityArrival(
+                'city_' . $channelId,
+                $joinUserId,
+                $guestId,
+                $nickname,
+                $cityInfo['name'] ?? null,
             );
         } catch (\Throwable $e) {
             error_log('[channel_join] city_join notify failed: ' . $e->getMessage());
@@ -2706,22 +2706,19 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     } catch (\Throwable $e) {
                         error_log('[bootstrap] join event write failed: ' . $e->getMessage());
                     }
-                    // "Someone arrived in your city" push → online members who opted in.
-                    // Fires for EVERY arrival (guest or registered) — the arriver's
-                    // account type doesn't matter; recipients are the online members.
-                    // Rate-limited (1 per recipient per city per 10 min) so frequent
-                    // arrivals can't spam. Excludes the arriver if registered.
+                    // "Someone arrived in your city" push → city members who opted in.
+                    // notifyCityArrival resolves the arriver's user id (lean bootstrap
+                    // skips auth, so $deferJoinUserId is null here) to exclude them from
+                    // their own arrival, and enforces the per-(arriver, city) cooldown so
+                    // a foreground/reconnect/quick-return doesn't re-spam the city.
                     try {
-                        $cityCh   = 'city_' . $deferJoinChannelId;
                         $cityInfo = CityRepository::findById($deferJoinChannelId);
-                        $cityNm   = $cityInfo['name'] ?? 'your city';
-                        NotificationRepository::notifyCityOnlineUsers(
-                            $cityCh,
-                            $deferJoinUserId, // guest arriver → null → no self-exclude needed
-                            'city_join',
-                            '👀 Someone arrived in ' . $cityNm,
-                            $deferJoinNickname . ' just landed',
-                            ['channelId' => $cityCh, 'arriverName' => $deferJoinNickname],
+                        NotificationRepository::notifyCityArrival(
+                            'city_' . $deferJoinChannelId,
+                            $deferJoinUserId,
+                            $deferJoinGuestId,
+                            $deferJoinNickname,
+                            $cityInfo['name'] ?? null,
                         );
                     } catch (\Throwable $e) {
                         error_log('[bootstrap] city_join notify failed: ' . $e->getMessage());
