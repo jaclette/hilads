@@ -6268,8 +6268,8 @@ $router->add('DELETE', '/api/v1/topics/{topicId}', function (array $params) {
 
 // ──────────────────────────────────────────────────────────────────────────────
 // GET /api/v1/channels/{channelId}/now
-// Mixed feed: Hilads events (today) + active topics, sorted for liveness.
-// Events happening now → topics by latest activity → upcoming events.
+// Mixed feed: Hilads events (today + next 2 days) + active topics, sorted for
+// liveness. Events happening now → topics by latest activity → upcoming events.
 // ──────────────────────────────────────────────────────────────────────────────
 $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params) {
     $startedAt = microtime(true);

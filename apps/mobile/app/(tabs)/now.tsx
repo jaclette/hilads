@@ -561,6 +561,8 @@ export default function NowScreen() {
             return (
               <EventCard
                 event={event}
+                tz={city?.timezone ?? undefined}
+                showDay
                 distanceLabel={meters !== undefined ? formatDistance(meters) : undefined}
                 onAvatarsPress={item.kind === 'public_event' ? undefined : () => openMembers('event', event.id, event.participant_count ?? 0)}
                 onPress={() => {

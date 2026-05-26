@@ -389,15 +389,20 @@ class EventRepository
         if ($city === null) {
             $city = CityRepository::findById($channelId);
         }
-        $timezone = $city['timezone'] ?? 'UTC';
-        $tz       = new DateTimeZone($timezone);
-        $today    = (new DateTime('now', $tz))->format('Y-m-d');
-        $now      = time();
+        $timezone  = $city['timezone'] ?? 'UTC';
+        $tz        = new DateTimeZone($timezone);
+        $today     = (new DateTime('now', $tz))->format('Y-m-d');
+        // Now feed spans today + the next 2 days (today/tomorrow/day-after).
+        $windowEnd = (new DateTime('now', $tz))->modify('+2 days')->format('Y-m-d');
+        $now       = time();
 
         $cityId   = 'city_' . $channelId;
         $tzString = $timezone;
+        // Materialize recurring-series occurrences for the whole 3-day window so
+        // tomorrow's/day-after's venue events exist as rows (ensureOccurrencesForRange
+        // loops $i <= $days, so 2 covers today + 2 days). Deferred → appears on next poll.
         register_shutdown_function(static function () use ($cityId, $tzString): void {
-            try { EventSeriesRepository::ensureTodayOccurrences($cityId, $tzString); }
+            try { EventSeriesRepository::ensureOccurrencesForRange($cityId, $tzString, 2); }
             catch (\Throwable) {}
         });
 
@@ -426,10 +431,12 @@ class EventRepository
                 continue;
             }
 
-            // Hilads: apply date visibility filter
+            // Hilads: visible if it starts within the 3-day window (today..+2)
+            // OR is currently ongoing (started earlier, still live today).
             $startDate = (new DateTime('@' . $event['starts_at']))->setTimezone($tz)->format('Y-m-d');
             $endDate   = (new DateTime('@' . $event['expires_at']))->setTimezone($tz)->format('Y-m-d');
-            $isVisible = $startDate >= $today || ($event['starts_at'] <= $now && $endDate >= $today);
+            $isVisible = ($startDate >= $today && $startDate <= $windowEnd)
+                || ($event['starts_at'] <= $now && $endDate >= $today);
             if (!$isVisible) continue;
 
             // Deduplicate recurring series

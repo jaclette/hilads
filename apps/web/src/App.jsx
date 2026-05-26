@@ -4235,7 +4235,7 @@ export default function App() {
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
-                        {getTimeLabel(event.starts_at, tz)}
+                        {getTimeLabel(event.starts_at, tz, { withDay: true })}
                         {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
                       </span>
                       {event.recurrence_label && (

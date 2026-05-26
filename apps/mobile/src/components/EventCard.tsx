@@ -27,6 +27,25 @@ function formatTime(ts: number, tz?: string): string {
   );
 }
 
+// Day prefix for events outside today — '' for today, 'Tomorrow · ' for
+// tomorrow, '{weekday} · ' further out. The Now feed now spans today + 2 days,
+// so a bare time would be ambiguous. Computed in `tz` so the day boundary
+// matches the city's calendar (and the backend window).
+function dayPrefix(ts: number, tz?: string): string {
+  const opts: Intl.DateTimeFormatOptions | undefined = tz ? { timeZone: tz } : undefined;
+  const keyOf = (d: Date) => d.toLocaleDateString('en-CA', opts);
+  const todayKey    = keyOf(new Date());
+  const tomorrowKey = new Date(Date.parse(todayKey + 'T00:00:00Z') + 86400000).toISOString().slice(0, 10);
+  const startKey    = keyOf(new Date(ts * 1000));
+  if (startKey === todayKey)    return '';
+  if (startKey === tomorrowKey) return `${i18n.t('time.tomorrow', { ns: 'common' })} · `;
+  const weekday = new Date(ts * 1000).toLocaleDateString(i18n.language, {
+    weekday: 'short',
+    ...(tz ? { timeZone: tz } : {}),
+  });
+  return `${weekday} · `;
+}
+
 type Props = {
   event:    HiladsEvent | FeedItem;
   tz?:      string;
@@ -38,9 +57,12 @@ type Props = {
   // NOW feed only — tapping the attendee row opens the members list instead of
   // the card. Omitted elsewhere (avatars are not tappable).
   onAvatarsPress?: () => void;
+  // NOW feed only — the feed spans today + 2 days, so prefix the time with the
+  // day (Today→none / Tomorrow / weekday). Other surfaces group by day already.
+  showDay?: boolean;
 };
 
-export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress }: Props) {
+export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, showDay = false }: Props) {
   const { t } = useTranslation('event');
   const isRecurring = !!(event.series_id ?? event.recurrence_label);
   const now         = Date.now() / 1000;
@@ -73,7 +95,7 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress }:
       </View>
 
       <Text style={[styles.cardMetaLine, isLive && styles.cardMetaLineLive]} numberOfLines={1}>
-        🕐 {formatTime(startsAt, tz)}{endsAt ? ` → ${formatTime(endsAt, tz)}` : ''}
+        🕐 {showDay ? dayPrefix(startsAt, tz) : ''}{formatTime(startsAt, tz)}{endsAt ? ` → ${formatTime(endsAt, tz)}` : ''}
         {event.recurrence_label ? `  ·  ↻ ${event.recurrence_label}` : ''}
       </Text>
 
