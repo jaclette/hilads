@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 
 interface Props {
@@ -18,6 +19,7 @@ interface Props {
 }
 
 export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: Props) {
+  const { t } = useTranslation('now');
   const slideAnim   = useRef(new Animated.Value(300)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
 
@@ -71,7 +73,7 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
         <View style={styles.handle} />
 
         {/* Title */}
-        <Text style={styles.title}>What's the move?</Text>
+        <Text style={styles.title}>{t('create.title')}</Text>
 
         {/* Options — hangout (instant "join me now") on top, event (planned)
             below. Internal handlers are unchanged: onSelectTopic → hangout
@@ -87,8 +89,8 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
               <Text style={styles.optionEmoji}>⚡</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Start a hangout</Text>
-              <Text style={styles.optionSub}>Instant — let people join you right now</Text>
+              <Text style={styles.optionLabel}>{t('create.hangoutLabel')}</Text>
+              <Text style={styles.optionSub}>{t('create.hangoutSub')}</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>
@@ -104,8 +106,8 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
               <Text style={styles.optionEmoji}>🎉</Text>
             </View>
             <View style={styles.optionBody}>
-              <Text style={styles.optionLabel}>Create an event</Text>
-              <Text style={styles.optionSub}>Plan something others can join</Text>
+              <Text style={styles.optionLabel}>{t('create.eventLabel')}</Text>
+              <Text style={styles.optionSub}>{t('create.eventSub')}</Text>
             </View>
             <Text style={styles.optionArrow}>›</Text>
           </TouchableOpacity>
@@ -113,7 +115,7 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
 
         {/* Cancel */}
         <TouchableOpacity style={styles.cancel} onPress={onClose} activeOpacity={0.7}>
-          <Text style={styles.cancelText}>Cancel</Text>
+          <Text style={styles.cancelText}>{t('create.cancel')}</Text>
         </TouchableOpacity>
       </Animated.View>
     </Modal>

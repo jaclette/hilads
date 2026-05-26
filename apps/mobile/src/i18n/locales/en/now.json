@@ -22,5 +22,13 @@
   "createNew": "Create new",
   "seeHappened": "see what happened →",
   "going": "going",
-  "inThisHangout": "in this hangout"
+  "inThisHangout": "in this hangout",
+  "create": {
+    "title": "What's the move?",
+    "hangoutLabel": "Start a hangout",
+    "hangoutSub": "Instant — let people join you right now",
+    "eventLabel": "Create an event",
+    "eventSub": "Plan something others can join",
+    "cancel": "Cancel"
+  }
 }

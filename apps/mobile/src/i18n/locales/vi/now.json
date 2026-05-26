@@ -22,5 +22,13 @@
   "createNew": "Tạo mới",
   "seeHappened": "Sự kiện đã qua →",
   "going": "tham gia",
-  "inThisHangout": "trong hangout này"
+  "inThisHangout": "trong hangout này",
+  "create": {
+    "title": "Làm gì đây?",
+    "hangoutLabel": "Tạo hangout",
+    "hangoutSub": "Tức thì — để mọi người tham gia ngay bây giờ",
+    "eventLabel": "Tạo sự kiện",
+    "eventSub": "Lên kế hoạch cho điều người khác có thể tham gia",
+    "cancel": "Hủy"
+  }
 }

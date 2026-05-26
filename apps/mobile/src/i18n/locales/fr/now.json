@@ -22,5 +22,13 @@
   "createNew": "Créer",
   "seeHappened": "Événements passés →",
   "going": "y vont",
-  "inThisHangout": "dans ce hangout"
+  "inThisHangout": "dans ce hangout",
+  "create": {
+    "title": "On fait quoi ?",
+    "hangoutLabel": "Lancer un hangout",
+    "hangoutSub": "Instantané — laisse les gens te rejoindre maintenant",
+    "eventLabel": "Créer un événement",
+    "eventSub": "Organise quelque chose à rejoindre",
+    "cancel": "Annuler"
+  }
 }
