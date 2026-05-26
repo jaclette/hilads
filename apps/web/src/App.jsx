@@ -1,6 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import i18n from './i18n'
+import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
@@ -89,9 +89,22 @@ function parseDeepLink() {
   return null
 }
 
+// Prefix an internal path with the active locale so navigation stays in the
+// localized cluster (Option A): from /fr/, an event link → /fr/event/…. The
+// default locale (en) stays bare (x-default). parseDeepLink() strips the prefix
+// on read, so this only affects what we write to the URL bar.
+function localizePath(path) {
+  const lang = i18n.language
+  if (!lang || lang === DEFAULT_LOCALE || !SUPPORTED.includes(lang)) return path
+  if (!path.startsWith('/')) return path                       // leave hashes / absolute URLs
+  if (path === `/${lang}` || path.startsWith(`/${lang}/`)) return path  // already prefixed
+  return `/${lang}${path}`
+}
+
 function pushUrl(path) {
-  if (window.location.pathname !== path) {
-    window.history.pushState(null, '', path)
+  const target = localizePath(path)
+  if (window.location.pathname !== target) {
+    window.history.pushState(null, '', target)
   }
 }
 

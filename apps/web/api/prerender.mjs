@@ -29,6 +29,40 @@ import { readFile }      from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
+// SSR translation source — the SAME locale tree the client uses (single source
+// of truth; these keys are SSR-only so the client never imports them). esbuild
+// (Vercel's function bundler) inlines these JSON imports at build time.
+import en_ssr from '../src/i18n/locales/en/ssr.json' with { type: 'json' }
+import fr_ssr from '../src/i18n/locales/fr/ssr.json' with { type: 'json' }
+import vi_ssr from '../src/i18n/locales/vi/ssr.json' with { type: 'json' }
+
+const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr }
+const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN' }
+const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN' }
+
+// '' for the default (English) locale; '/fr' | '/vi' otherwise. Used to keep SSR
+// internal links inside the localized cluster (mirrors the redirect/canonical prefixing).
+function localePrefixFor(locale) { return locale === 'en' ? '' : `/${locale}` }
+
+// Localized category label by slug. EN keeps the backend-supplied label (canonical,
+// no regression); non-EN uses the ssr.json label, falling back to the backend label.
+const CAT_KEY = { coffee: 'catCoffee', drinks: 'catDrinks', music: 'catMusic', food: 'catFood', meetup: 'catMeetup', party: 'catParty' }
+function catLabel(locale, slug, fallback) {
+  if (locale === 'en') return fallback
+  const k = CAT_KEY[slug]
+  return k ? T(locale, `city.${k}`) : fallback
+}
+
+// Translate an SSR string. `key` is a dot-path (e.g. 'event.labelWhen'); params
+// fill {placeholders}. Falls back to English on any missing key/locale so a
+// lagging translation never blanks a page. Returns raw text (caller escapes).
+function T(locale, key, params = {}) {
+  const get = (obj) => key.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj)
+  const str = get(SSR_I18N[locale]) ?? get(SSR_I18N.en)
+  if (typeof str !== 'string') return ''
+  return str.replace(/\{(\w+)\}/g, (_, k) => (params[k] != null ? String(params[k]) : ''))
+}
+
 const API_BASE  = process.env.HILADS_API_BASE || 'https://api.hilads.live'
 const SITE_BASE = process.env.HILADS_SITE_BASE || 'https://hilads.live'
 
@@ -162,12 +196,12 @@ function htmlEscape(s) {
     .replace(/'/g, '&#39;')
 }
 
-function formatTime(unixTs, timezone) {
-  return new Date(unixTs * 1000).toLocaleTimeString('en-US', {
+function formatTime(unixTs, timezone, locale = 'en') {
+  return new Date(unixTs * 1000).toLocaleTimeString(DATE_LOCALE[locale] || 'en-US', {
     timeZone: timezone || 'UTC',
     hour:     'numeric',
     minute:   '2-digit',
-    hour12:   true,
+    // Omit hour12 so each locale uses its own convention (en → 12h, fr/vi → 24h).
   })
 }
 
@@ -207,33 +241,39 @@ async function fetchWithStatus(url, ms) {
 // ── Per-surface metadata composers ────────────────────────────────────────────
 
 // Format a past event date as "Friday, May 15, 2026" in the city's timezone.
-function formatPastDate(unixTs, timezone) {
-  return new Date(unixTs * 1000).toLocaleDateString('en-US', {
+function formatPastDate(unixTs, timezone, locale = 'en') {
+  return new Date(unixTs * 1000).toLocaleDateString(DATE_LOCALE[locale] || 'en-US', {
     timeZone: timezone || 'UTC',
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
 }
 
-function composeEventMeta(payload, canonicalPath, eventId) {
+function composeEventMeta(payload, canonicalPath, eventId, locale = 'en') {
   // Backend shape: { event, cityName, country, timezone }
   const ev = payload?.event
   if (!ev || !ev.title) return null
 
-  const where = ev.location ? ` at ${ev.location}` : ''
+  const where = ev.location ? T(locale, 'event.atFrag', { location: ev.location }) : ''
 
   let title, description
   if (ev.is_past) {
     // Past-event framing: honest, no "join now" CTA. Still indexable — past
     // events carry SEO content mass and answer "did X happen" queries.
-    const when    = ev.starts_at ? formatPastDate(ev.starts_at, payload.timezone) : ''
-    const attended = (ev.participant_count ?? 0) > 0 ? ` ${ev.participant_count} attended.` : ''
-    title       = payload.cityName ? `${ev.title} · past event in ${payload.cityName}` : `${ev.title} · past event`
-    description = `${ev.title}${where}${when ? ` happened on ${when}` : ''}.${attended} See upcoming events in ${payload.cityName || 'your city'} on Hilads.`
+    const whenDate = ev.starts_at ? formatPastDate(ev.starts_at, payload.timezone, locale) : ''
+    const when     = whenDate ? T(locale, 'event.happenedOnFrag', { date: whenDate }) : ''
+    const attended = (ev.participant_count ?? 0) > 0 ? T(locale, 'event.attendedFrag', { count: ev.participant_count }) : ''
+    const city     = payload.cityName || T(locale, 'event.cityFallback')
+    title       = payload.cityName
+      ? T(locale, 'event.titlePastCity', { title: ev.title, city: payload.cityName })
+      : T(locale, 'event.titlePast', { title: ev.title })
+    description = T(locale, 'event.descPast', { title: ev.title, where, when, attended, city })
   } else {
-    const time  = ev.starts_at ? ` — 🕐 ${formatTime(ev.starts_at, payload.timezone)}` : ''
-    const going = (ev.participant_count ?? 0) > 0 ? ` ${ev.participant_count} going.` : ''
-    title       = payload.cityName ? `${ev.title} · ${payload.cityName}` : ev.title
-    description = `${ev.title}${where}${time}.${going} See who's there on Hilads.`
+    const time  = ev.starts_at ? T(locale, 'event.timeFrag', { time: formatTime(ev.starts_at, payload.timezone, locale) }) : ''
+    const going = (ev.participant_count ?? 0) > 0 ? T(locale, 'event.goingFrag', { count: ev.participant_count }) : ''
+    title       = payload.cityName
+      ? T(locale, 'event.titleCity', { title: ev.title, city: payload.cityName })
+      : ev.title
+    description = T(locale, 'event.descUpcoming', { title: ev.title, where, time, going })
   }
 
   return {
@@ -247,25 +287,28 @@ function composeEventMeta(payload, canonicalPath, eventId) {
 }
 
 // Category × city meta — adapts to actual bucket size (events + venues).
-function composeCategoryMeta(payload, canonicalPath) {
+function composeCategoryMeta(payload, canonicalPath, locale = 'en') {
   if (!payload?.city?.name || !payload?.category?.label) return null
   const city  = payload.city.name
   const slug  = payload.category.slug
-  const label = payload.category.label
+  const label = catLabel(locale, slug, payload.category.label)
+  const labelCap = label[0].toUpperCase() + label.slice(1)
   const evN   = payload.total_events ?? 0
   const venN  = payload.total_venues ?? 0
   const total = evN + venN
 
   let title, description
   if (total >= 10) {
-    title       = `${label[0].toUpperCase() + label.slice(1)} in ${city} · ${total} on Hilads`
-    description = `${total} ${label} in ${city} right now. See who's going and join in one tap — real-time, no sign-up.`
+    title       = T(locale, 'category.titleCount', { label: labelCap, city, total })
+    description = T(locale, 'category.descMany', { total, label, city })
   } else if (total >= 3) {
-    title       = `${label[0].toUpperCase() + label.slice(1)} in ${city}`
-    description = `${city} ${label} on Hilads. ${evN > 0 ? `${evN} upcoming` : 'Browse venues'} — meet locals and travelers in one tap.`
+    title       = T(locale, 'category.title', { label: labelCap, city })
+    description = evN > 0
+      ? T(locale, 'category.descSomeUpcoming', { label, city, count: evN })
+      : T(locale, 'category.descSomeBrowse', { label, city })
   } else {
-    title       = `${label[0].toUpperCase() + label.slice(1)} in ${city}`
-    description = `Looking for ${label} in ${city}? Hilads lists what's actually on tonight. Small but real.`
+    title       = T(locale, 'category.title', { label: labelCap, city })
+    description = T(locale, 'category.descFew', { label, city })
   }
 
   return {
@@ -315,44 +358,63 @@ function composeCategoryJsonLd(payload, canonicalUrl) {
   }
 }
 
-function composeCategoryBody(payload) {
+function composeCategoryBody(payload, locale = 'en') {
+  const lp       = localePrefixFor(locale)
   const city     = payload.city.name
   const citySlug = payload.city.slug
   const category = payload.category
+  const label    = catLabel(locale, category.slug, category.label)
+  const labelCap = label[0].toUpperCase() + label.slice(1)
   const events   = Array.isArray(payload.events) ? payload.events : []
   const venues   = Array.isArray(payload.venues) ? payload.venues : []
 
-  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(category.label)}</span></nav>`
+  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(label)}</span></nav>`
 
-  const intro = events.length > 0 || venues.length > 0
-    ? `${events.length > 0 ? `${events.length} upcoming ${events.length === 1 ? category.label.replace(/s$/, '') : category.label}` : ''}${events.length > 0 && venues.length > 0 ? ' · ' : ''}${venues.length > 0 ? `${venues.length} ${venues.length === 1 ? 'venue' : 'venues'}` : ''} in ${city}.`
-    : `Browse ${category.label} in ${city}.`
+  let intro
+  if (events.length > 0 || venues.length > 0) {
+    const bits = []
+    if (events.length > 0) {
+      const evLabel = (events.length === 1 && locale === 'en') ? label.replace(/s$/, '') : label
+      bits.push(T(locale, 'category.introEvents', { count: events.length, label: evLabel }))
+    }
+    if (venues.length > 0) {
+      bits.push(venues.length === 1 ? T(locale, 'category.introVenuesOne') : T(locale, 'category.introVenuesMany', { count: venues.length }))
+    }
+    intro = bits.join(T(locale, 'category.introJoiner')) + T(locale, 'category.introSuffix', { city })
+  } else {
+    intro = T(locale, 'category.introBrowse', { label, city })
+  }
 
   const eventsSection = events.length > 0
-    ? `<section><h2>Upcoming ${htmlEscape(category.label)} in ${htmlEscape(city)}</h2><ul>${events.slice(0, 20).map(e => {
+    ? `<section><h2>${T(locale, 'category.upcomingHeading', { label: htmlEscape(label), city: htmlEscape(city) })}</h2><ul>${events.slice(0, 20).map(e => {
         const slug = eventSlug(e)
-        const t = e.starts_at ? formatTime(e.starts_at, payload.city.timezone) : ''
+        const t = e.starts_at ? formatTime(e.starts_at, payload.city.timezone, locale) : ''
         const w = e.location ? ` · ${htmlEscape(e.location)}` : ''
-        return `<li><a href="/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}${w}</li>`
+        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}${w}</li>`
       }).join('')}</ul></section>`
     : ''
 
+  const venuesHeading = category.slug === 'coffee'
+    ? T(locale, 'category.venuesHeadingCoffee', { city: htmlEscape(city) })
+    : category.slug === 'drinks'
+      ? T(locale, 'category.venuesHeadingBars', { city: htmlEscape(city) })
+      : T(locale, 'category.venuesHeadingGeneric', { city: htmlEscape(city) })
   const venuesSection = venues.length > 0
-    ? `<section><h2>${htmlEscape(category.slug === 'coffee' ? 'Coffee shops' : category.slug === 'drinks' ? 'Bars' : 'Venues')} in ${htmlEscape(city)}</h2><ul>${venues.slice(0, 20).map(v => {
+    ? `<section><h2>${venuesHeading}</h2><ul>${venues.slice(0, 20).map(v => {
         const slug = venueSlugFromName(v.name, v.id)
         const icon = v.category === 'bar' ? '🍻' : '☕'
         const a    = v.address ? ` — ${htmlEscape(v.address)}` : ''
-        return `<li>${icon} <a href="/venue/${slug}">${htmlEscape(v.name)}</a>${a}</li>`
+        return `<li>${icon} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${a}</li>`
       }).join('')}</ul></section>`
     : ''
 
-  const evergreen = `<section><h2>About Hilads in ${htmlEscape(city)}</h2><p>Hilads is the easy way to find people for ${htmlEscape(category.label)} in ${htmlEscape(city)}. Open the app, see who's heading out, join in one tap.</p><p>See <a href="/city/${citySlug}">everything else happening in ${htmlEscape(city)}</a> on Hilads.</p></section>`
+  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsInHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'category.aboutBody', { label: htmlEscape(label), city: htmlEscape(city) })}</p><p>${T(locale, 'common.seeOnHilads', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'category.everythingElseLink', { city: htmlEscape(city) })}</a>` })}</p></section>`
 
   return [
     `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
     `<main class="ssr-main">`,
     breadcrumb,
-    `<h1>${htmlEscape(category.label[0].toUpperCase() + category.label.slice(1))} in ${htmlEscape(city)}</h1>`,
+    `<h1>${htmlEscape(T(locale, 'category.title', { label: labelCap, city }))}</h1>`,
     `<p class="ssr-intro">${htmlEscape(intro)}</p>`,
     eventsSection,
     venuesSection,
@@ -368,13 +430,13 @@ function composeCategoryBody(payload) {
 // /event/<slug> pages (which stay indexable); pulses have no detail page so
 // they're listed as plain text for content mass.
 
-function composePastMeta(payload, canonicalPath, citySlug, itemCount) {
+function composePastMeta(payload, canonicalPath, citySlug, itemCount, locale = 'en') {
   if (!payload?.city) return null
   const city  = payload.city
-  const title = `Past hangouts & pulses in ${city} | Hilads`
+  const title = T(locale, 'past.title', { city })
   const description = itemCount > 0
-    ? `A look back at recent hangouts and pulses in ${city} on Hilads — see what locals and travelers got up to, then find what's on next.`
-    : `Past hangouts in ${city} on Hilads.`
+    ? T(locale, 'past.descItems', { city })
+    : T(locale, 'past.descEmpty', { city })
   return {
     title,
     description,
@@ -410,41 +472,43 @@ function composePastJsonLd(payload, items, citySlug, canonicalUrl) {
   }
 }
 
-function composePastBody(payload, items, citySlug) {
+function composePastBody(payload, items, citySlug, locale = 'en') {
+  const lp     = localePrefixFor(locale)
   const city   = payload.city
   const tz     = payload.timezone
   const events = items.filter(it => it.kind === 'event')
   const pulses = items.filter(it => it.kind === 'topic')
 
-  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>Past</span></nav>`
+  const breadcrumb = `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${T(locale, 'past.breadcrumb')}</span></nav>`
   const intro = items.length > 0
-    ? `A look back at recent hangouts and pulses in ${city}.`
-    : `Past hangouts in ${city}.`
+    ? T(locale, 'past.introItems', { city })
+    : T(locale, 'past.introEmpty', { city })
 
   const eventsSection = events.length > 0
-    ? `<section><h2>Past hangouts in ${htmlEscape(city)}</h2><ul>${events.slice(0, 20).map(e => {
+    ? `<section><h2>${T(locale, 'past.pastHangoutsHeading', { city: htmlEscape(city) })}</h2><ul>${events.slice(0, 20).map(e => {
         const slug = eventSlug(e)
-        const when = e.starts_at ? formatPastDate(e.starts_at, tz) : ''
+        const when = e.starts_at ? formatPastDate(e.starts_at, tz, locale) : ''
         const loc  = e.location || e.venue
         const w    = loc ? ` · ${htmlEscape(loc)}` : ''
-        return `<li><a href="/event/${slug}">${htmlEscape(e.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${w}</li>`
+        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${w}</li>`
       }).join('')}</ul></section>`
     : ''
 
   const pulsesSection = pulses.length > 0
-    ? `<section><h2>Past pulses in ${htmlEscape(city)}</h2><ul>${pulses.slice(0, 20).map(p => {
+    ? `<section><h2>${T(locale, 'past.pastPulsesHeading', { city: htmlEscape(city) })}</h2><ul>${pulses.slice(0, 20).map(p => {
         const replies = p.message_count ?? 0
-        return `<li>${htmlEscape(p.title)}${replies > 0 ? ` — ${replies} ${replies === 1 ? 'reply' : 'replies'}` : ''}</li>`
+        const repliesTxt = replies > 0 ? ` — ${T(locale, replies === 1 ? 'past.replyOne' : 'past.replyMany', { count: replies })}` : ''
+        return `<li>${htmlEscape(p.title)}${repliesTxt}</li>`
       }).join('')}</ul></section>`
     : ''
 
-  const evergreen = `<section><h2>What's next in ${htmlEscape(city)}</h2><p>This is what recently happened in ${htmlEscape(city)} on Hilads. See <a href="/city/${citySlug}">what's happening right now</a> and join in one tap.</p></section>`
+  const evergreen = `<section><h2>${T(locale, 'past.whatsNextHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'past.whatsNextBody', { city: htmlEscape(city), link: `<a href="${lp}/city/${citySlug}">${T(locale, 'past.whatsHappeningNowLink')}</a>` })}</p></section>`
 
   return [
     `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
     `<main class="ssr-main">`,
     breadcrumb,
-    `<h1>Past hangouts &amp; pulses in ${htmlEscape(city)}</h1>`,
+    `<h1>${htmlEscape(T(locale, 'past.h1', { city }))}</h1>`,
     `<p class="ssr-intro">${htmlEscape(intro)}</p>`,
     eventsSection,
     pulsesSection,
@@ -453,17 +517,17 @@ function composePastBody(payload, items, citySlug) {
   ].filter(Boolean).join('\n')
 }
 
-function composeVenueMeta(payload, canonicalPath, venueId) {
+function composeVenueMeta(payload, canonicalPath, venueId, locale = 'en') {
   // Backend shape: { venue: { id, name, address, category, hours, city, ... } }
   const v = payload?.venue
   if (!v || !v.name) return null
 
   const cityName = v.city?.name || ''
-  const where    = v.address ? ` at ${v.address}` : ''
-  const description = `${v.name}${where}. See who's around in ${cityName} on Hilads.`
+  const where    = v.address ? T(locale, 'venue.atFrag', { address: v.address }) : ''
+  const description = T(locale, 'venue.desc', { name: v.name, where, city: cityName })
 
   return {
-    title:       cityName ? `${v.name} · ${cityName}` : v.name,
+    title:       cityName ? T(locale, 'venue.titleCity', { name: v.name, city: cityName }) : v.name,
     description,
     url:         `${SITE_BASE}${canonicalPath}`,
     // No dedicated venue OG image yet — reuse the city card so embeds aren't
@@ -478,7 +542,7 @@ function composeVenueMeta(payload, canonicalPath, venueId) {
 // Weekend windows (Fri 18+, Sat <18, Sun <18) override the time-of-day rule.
 // Sun 18+ pivots to "This week" (looking ahead to Monday onward).
 // Falls back to "Today" if the timezone is malformed.
-function cityTimeframe(timezone) {
+function cityTimeframe(timezone, locale = 'en') {
   try {
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: timezone || 'UTC',
@@ -489,17 +553,17 @@ function cityTimeframe(timezone) {
     const hour = parseInt(parts.find(p => p.type === 'hour').value, 10)
     const day  = parts.find(p => p.type === 'weekday').value  // 'Mon'..'Sun'
 
-    if (day === 'Fri' && hour >= 18) return 'This weekend'
-    if (day === 'Sat' && hour <  18) return 'This weekend'
-    if (day === 'Sun' && hour <  18) return 'This weekend'
-    if (day === 'Sun' && hour >= 18) return 'This week'
+    if (day === 'Fri' && hour >= 18) return T(locale, 'timeframe.thisWeekend')
+    if (day === 'Sat' && hour <  18) return T(locale, 'timeframe.thisWeekend')
+    if (day === 'Sun' && hour <  18) return T(locale, 'timeframe.thisWeekend')
+    if (day === 'Sun' && hour >= 18) return T(locale, 'timeframe.thisWeek')
 
-    if (hour >= 2  && hour <= 4 ) return 'Tomorrow'
-    if (hour >= 5  && hour <= 11) return 'Today'
-    if (hour >= 12 && hour <= 17) return 'This afternoon & tonight'
-    return 'Tonight'  // 18-23 or 0-1
+    if (hour >= 2  && hour <= 4 ) return T(locale, 'timeframe.tomorrow')
+    if (hour >= 5  && hour <= 11) return T(locale, 'timeframe.today')
+    if (hour >= 12 && hour <= 17) return T(locale, 'timeframe.afternoonTonight')
+    return T(locale, 'timeframe.tonight')  // 18-23 or 0-1
   } catch {
-    return 'Today'
+    return T(locale, 'timeframe.today')
   }
 }
 
@@ -510,19 +574,19 @@ function cityTimeframe(timezone) {
 // prefix in the title reflects the city's local hour + day of week so the
 // snippet feels live across time zones. Returns {noindex:true} for cities
 // with literally zero indexable content (no events AND no venues AND no chat).
-function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0, messageCount = 0) {
+function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0, messageCount = 0, locale = 'en') {
   if (!payload?.city) return null
   const city      = payload.city
-  const timeframe = cityTimeframe(payload.timezone)
-  const title     = `${timeframe} in ${city} — events, meetups & locals to meet | Hilads`
+  const timeframe = cityTimeframe(payload.timezone, locale)
+  const title     = T(locale, 'city.title', { timeframe, city })
 
   let description
   if (upcomingCount >= 30) {
-    description = `Join real events in ${city} — meetups, dinners, and rooftop hangouts with locals and travelers. Browse ${upcomingCount}+ events tonight & this week. No sign-up needed.`
+    description = T(locale, 'city.descHigh', { city, count: upcomingCount })
   } else if (upcomingCount >= 10) {
-    description = `Join real events in ${city} — meetups, dinners, and hangouts with locals and travelers. Discover upcoming events this week. No sign-up needed.`
+    description = T(locale, 'city.descMid', { city })
   } else {
-    description = `Discover meetups and events in ${city} — connect with locals and travelers, join hangouts, or create your own. No sign-up needed to browse.`
+    description = T(locale, 'city.descLow', { city })
   }
 
   // noindex only when there's truly nothing of substance: zero upcoming
@@ -771,8 +835,8 @@ function flagEmoji(cc) {
 // query keeps reading consistently from SERP → page. Timeframe-led, same
 // timezone-aware logic as composeCityMeta. Branded suffix dropped — the
 // title's "| Hilads" is enough; H1 should stay topical.
-function cityH1(city, timeframe) {
-  return `${timeframe} in ${city}`
+function cityH1(city, timeframe, locale = 'en') {
+  return T(locale, 'city.h1', { timeframe, city })
 }
 
 // Country-name resolver (ISO-2 → full English name) via Intl, with a small
@@ -856,7 +920,8 @@ const CITY_CATEGORIES = [
 // goes to /city/<slug>/<category> which the prerender serves with its own
 // content. Only categories with ≥3 events+venues are shown — same threshold
 // the backend uses to gate the sitemap so we never link to a 404.
-function categoryLinksHtml(city, citySlug, events, venues) {
+function categoryLinksHtml(city, citySlug, events, venues, locale = 'en') {
+  const lp = localePrefixFor(locale)
   const evCounts = {}
   for (const e of events) {
     const t = e?.type
@@ -875,9 +940,9 @@ function categoryLinksHtml(city, citySlug, events, venues) {
   })
 
   if (eligible.length === 0) return ''
-  return `<section><h2>Browse by category in ${htmlEscape(city)}</h2><ul>${
+  return `<section><h2>${T(locale, 'city.browseByCategoryHeading', { city: htmlEscape(city) })}</h2><ul>${
     eligible.map(c =>
-      `<li>${c.icon} <a href="/city/${citySlug}/${c.slug}">${htmlEscape(c.label)} in ${htmlEscape(city)}</a></li>`
+      `<li>${c.icon} <a href="${lp}/city/${citySlug}/${c.slug}">${T(locale, 'city.categoryLink', { label: htmlEscape(catLabel(locale, c.slug, c.label)), city: htmlEscape(city) })}</a></li>`
     ).join('')
   }</ul></section>`
 }
@@ -957,9 +1022,10 @@ const SSR_CITY_STYLES = `
   .ssr-intro   { font-size: 1.05rem; }
 `.replace(/\s+/g, ' ').trim()
 
-function composeCityBody(payload, upcomingEvents, venues) {
+function composeCityBody(payload, upcomingEvents, venues, locale = 'en') {
   const city  = payload.city || ''
   if (!city) return null
+  const lp          = localePrefixFor(locale)
   const country     = payload.country || ''
   const flag        = flagEmoji(country)
   const events      = Array.isArray(upcomingEvents) ? upcomingEvents : []
@@ -968,24 +1034,25 @@ function composeCityBody(payload, upcomingEvents, venues) {
   const venueCount  = venueList.length
 
   const introBits = []
-  if (eventCount > 0) introBits.push(`${eventCount} upcoming ${eventCount === 1 ? 'event' : 'events'}`)
-  if (venueCount > 0) introBits.push(`${venueCount} ${venueCount === 1 ? 'venue' : 'venues'}`)
+  if (eventCount > 0) introBits.push(eventCount === 1 ? T(locale, 'city.introEventsOne') : T(locale, 'city.introEventsMany', { count: eventCount }))
+  if (venueCount > 0) introBits.push(venueCount === 1 ? T(locale, 'city.introVenuesOne') : T(locale, 'city.introVenuesMany', { count: venueCount }))
   const introSuffix = introBits.length > 0
-    ? ` — ${introBits.join(', ')} on Hilads.`
-    : ' — be the first to bring the city out.'
-  const intro = `${flag} ${htmlEscape(city)}${country ? `, ${htmlEscape(country)}` : ''}${introSuffix}`
+    ? T(locale, 'city.introSuffix', { bits: introBits.join(', ') })
+    : T(locale, 'city.introEmpty')
+  const intro = `${flag} ${htmlEscape(city)}${country ? `, ${htmlEscape(country)}` : ''}${htmlEscape(introSuffix)}`
 
   // Events list — up to 20, each linking to /event/<slug>-<id> (slug form for
   // SEO authority; prerender 301s bare hex anyway).
   const eventItems = events.slice(0, 20).map(ev => {
     const slug  = eventSlug(ev)
-    const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone) : ''
+    const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone, locale) : ''
     const where = ev.location ? ` · ${htmlEscape(ev.location)}` : ''
-    return `<li><a href="/event/${slug}">${htmlEscape(ev.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${where}</li>`
+    return `<li><a href="${lp}/event/${slug}">${htmlEscape(ev.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${where}</li>`
   }).join('\n        ')
+  const eventsHeading = T(locale, 'city.upcomingEventsHeading', { city: htmlEscape(city) })
   const eventsSection = eventCount > 0
-    ? `<section><h2>Upcoming events in ${htmlEscape(city)}</h2><ul>\n        ${eventItems}\n      </ul></section>`
-    : `<section><h2>Upcoming events in ${htmlEscape(city)}</h2><p>No events yet — open the app to create the first one.</p></section>`
+    ? `<section><h2>${eventsHeading}</h2><ul>\n        ${eventItems}\n      </ul></section>`
+    : `<section><h2>${eventsHeading}</h2><p>${T(locale, 'city.noEvents')}</p></section>`
 
   // Venues showcase — up to 6
   let venuesSection = ''
@@ -993,40 +1060,39 @@ function composeCityBody(payload, upcomingEvents, venues) {
     const venueItems = venueList.slice(0, 6).map(v => {
       const slug = venueSlugFromName(v.name, v.id)
       const cat  = v.category === 'bar' ? '🍻' : '☕'
-      return `<li>${cat} <a href="/venue/${slug}">${htmlEscape(v.name)}</a>${v.address ? ` — ${htmlEscape(v.address)}` : ''}</li>`
+      return `<li>${cat} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${v.address ? ` — ${htmlEscape(v.address)}` : ''}</li>`
     }).join('\n        ')
-    venuesSection = `<section><h2>Popular venues in ${htmlEscape(city)}</h2><ul>\n        ${venueItems}\n      </ul></section>`
+    venuesSection = `<section><h2>${T(locale, 'city.popularVenuesHeading', { city: htmlEscape(city) })}</h2><ul>\n        ${venueItems}\n      </ul></section>`
   }
 
-  // City-specific signals so each /city/* page has meaningfully different
-  // body text. Three lines fed by real data:
-  //   - regionLine: country flavour (curated per ISO-2)
-  //   - topCategoriesLine: actual event mix (from current upcoming feed)
-  //   - venueMixLine: cafe/bar split (from venues feed)
-  //   - freshnessLine: recency signal when activity is recent
-  const signals = [
-    topCategoriesLine(categoryCounts(events)),
-    venueMixLine(venueList),
-    freshnessLine(events),
-    regionLine(country),
-  ].filter(Boolean)
-  const signalsBlock = signals.length > 0
-    ? `<p class="ssr-signals">${signals.map(htmlEscape).join(' ')}</p>`
-    : ''
+  // City-specific signals (event mix / venue split / freshness / country
+  // flavour). These are EN-only curated micro-copy — on non-default locales we
+  // omit the block entirely rather than leak English, keeping the page fully
+  // in-language. The localized core content above carries the page.
+  let signalsBlock = ''
+  if (locale === 'en') {
+    const signals = [
+      topCategoriesLine(categoryCounts(events)),
+      venueMixLine(venueList),
+      freshnessLine(events),
+      regionLine(country),
+    ].filter(Boolean)
+    signalsBlock = signals.length > 0
+      ? `<p class="ssr-signals">${signals.map(htmlEscape).join(' ')}</p>`
+      : ''
+  }
 
-  // Evergreen copy — varies on city name + the signals above keep it from
-  // looking templated. Two paragraphs, ~80 words. Pure-template wording is
-  // re-used; the differentiation comes from the signals line.
-  const evergreen = `<section><h2>About Hilads in ${htmlEscape(city)}</h2><p>Hilads is a live social layer over ${htmlEscape(city)}. Open the app, see who's around right now, jump into something happening, or host your own event. No friends list to build first, no sign-up to get in.</p><p>Whether you live in ${htmlEscape(city)} or you're visiting for a few days, Hilads makes it easy to meet people the way locals do — through what's actually happening, not through profiles.</p></section>`
+  // Evergreen copy — two paragraphs, city-specific.
+  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsInHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'city.aboutBody1', { city: htmlEscape(city) })}</p><p>${T(locale, 'city.aboutBody2', { city: htmlEscape(city) })}</p></section>`
 
   const citySlug = cityToSlug(city)
-  const categoriesSection = categoryLinksHtml(city, citySlug, events, venueList)
-  const timeframe = cityTimeframe(payload.timezone)
+  const categoriesSection = categoryLinksHtml(city, citySlug, events, venueList, locale)
+  const timeframe = cityTimeframe(payload.timezone, locale)
 
   return [
     `<style>${SSR_CITY_STYLES}</style>`,
     `<main class="ssr-main">`,
-    `<h1>${htmlEscape(cityH1(city, timeframe))}</h1>`,
+    `<h1>${htmlEscape(cityH1(city, timeframe, locale))}</h1>`,
     `<p class="ssr-intro">${intro}</p>`,
     signalsBlock,
     eventsSection,
@@ -1040,35 +1106,36 @@ function composeCityBody(payload, upcomingEvents, venues) {
 // Body for /event/<id> — H1 + when/where/host + breadcrumb + related events
 // in the same city + evergreen. Filters venue-tagged events out of the
 // "Other events" list so we don't link into the redirect chain to /venue/.
-function composeEventBody(payload, otherEvents) {
+function composeEventBody(payload, otherEvents, locale = 'en') {
   const ev = payload?.event
   if (!ev || !ev.title) return null
+  const lp       = localePrefixFor(locale)
   const city     = payload.cityName || ''
   const country  = payload.country  || ''
   const citySlug = city ? cityToSlug(city) : ''
 
-  const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone) : ''
+  const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone, locale) : ''
   const dateStr = ev.starts_at
-    ? new Date(ev.starts_at * 1000).toLocaleDateString('en-US', {
+    ? new Date(ev.starts_at * 1000).toLocaleDateString(DATE_LOCALE[locale] || 'en-US', {
         timeZone: payload.timezone || 'UTC',
         weekday: 'long', month: 'long', day: 'numeric',
       })
     : ''
   // Past events: show a badge + past-tense date + attendee count instead of
   // the upcoming "When:" line. Still fully indexable.
-  const pastBadge = ev.is_past ? `<p class="ssr-past-badge">Past event</p>` : ''
+  const pastBadge = ev.is_past ? `<p class="ssr-past-badge">${T(locale, 'event.pastBadge')}</p>` : ''
   const attendedLine = ev.is_past && (ev.participant_count ?? 0) > 0
-    ? `<p class="ssr-attended"><strong>${ev.participant_count}</strong> ${ev.participant_count === 1 ? 'person attended' : 'people attended'}</p>`
+    ? `<p class="ssr-attended">${T(locale, ev.participant_count === 1 ? 'event.attendedOne' : 'event.attendedMany', { count: `<strong>${ev.participant_count}</strong>` })}</p>`
     : ''
-  const whereLine = ev.location ? `<p class="ssr-where"><strong>Where:</strong> ${htmlEscape(ev.location)}</p>` : ''
+  const whereLine = ev.location ? `<p class="ssr-where"><strong>${T(locale, 'event.labelWhere')}</strong> ${htmlEscape(ev.location)}</p>` : ''
   const whenLine  = ev.is_past
-    ? (dateStr ? `<p class="ssr-when"><strong>Happened on:</strong> ${htmlEscape(dateStr)}${when ? ` · ${htmlEscape(when)}` : ''}</p>` : '')
-    : (dateStr ? `<p class="ssr-when"><strong>When:</strong> ${htmlEscape(dateStr)}${when ? ` · ${htmlEscape(when)}` : ''}</p>` : '')
-  const hostLine  = ev.host_nickname ? `<p class="ssr-host"><strong>Hosted by:</strong> ${htmlEscape(ev.host_nickname)}</p>` : ''
-  const recur     = ev.recurrence_label ? `<p class="ssr-recur"><strong>Recurs:</strong> ${htmlEscape(ev.recurrence_label)}</p>` : ''
+    ? (dateStr ? `<p class="ssr-when"><strong>${T(locale, 'event.labelHappenedOn')}</strong> ${htmlEscape(dateStr)}${when ? ` · ${htmlEscape(when)}` : ''}</p>` : '')
+    : (dateStr ? `<p class="ssr-when"><strong>${T(locale, 'event.labelWhen')}</strong> ${htmlEscape(dateStr)}${when ? ` · ${htmlEscape(when)}` : ''}</p>` : '')
+  const hostLine  = ev.host_nickname ? `<p class="ssr-host"><strong>${T(locale, 'event.labelHostedBy')}</strong> ${htmlEscape(ev.host_nickname)}</p>` : ''
+  const recur     = ev.recurrence_label ? `<p class="ssr-recur"><strong>${T(locale, 'event.labelRecurs')}</strong> ${htmlEscape(ev.recurrence_label)}</p>` : ''
 
   const breadcrumb = city && citySlug
-    ? `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(ev.title)}</span></nav>`
+    ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(ev.title)}</span></nav>`
     : ''
 
   // Related — other events in the same city, exclude self + venue rows.
@@ -1078,21 +1145,21 @@ function composeEventBody(payload, otherEvents) {
     .filter(e => e.id !== ev.id && !e.is_venue)
     .slice(0, 8)
   const relatedHeading = ev.is_past
-    ? `Upcoming events in ${htmlEscape(city)}`
-    : `Other events in ${htmlEscape(city)}`
+    ? T(locale, 'event.upcomingEventsIn', { city: htmlEscape(city) })
+    : T(locale, 'event.otherEventsIn', { city: htmlEscape(city) })
   const relatedSection = related.length > 0
     ? `<section><h2>${relatedHeading}</h2><ul>${related.map(e => {
         const slug = eventSlug(e)
-        const t = e.starts_at ? formatTime(e.starts_at, payload.timezone) : ''
-        return `<li><a href="/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}</li>`
+        const t = e.starts_at ? formatTime(e.starts_at, payload.timezone, locale) : ''
+        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}</li>`
       }).join('')}</ul></section>`
     : ''
 
   const cityLink = city && citySlug
-    ? `<p>See <a href="/city/${citySlug}">other things happening in ${htmlEscape(city)}</a> on Hilads.</p>`
+    ? `<p>${T(locale, 'common.seeOnHilads', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'event.otherThingsLink', { city: htmlEscape(city) })}</a>` })}</p>`
     : ''
 
-  const evergreen = `<section><h2>About Hilads</h2><p>Hilads is a live social layer over cities worldwide. Open the app, see who's around right now, join an event in one tap, or host your own. No friends list to build first.</p>${cityLink}</section>`
+  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsHeading')}</h2><p>${T(locale, 'common.aboutHiladsBody')}</p>${cityLink}</section>`
 
   return [
     `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; } .ssr-past-badge { display: inline-block; background: #2a2a2a; color: #bbb; font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; margin: 0 0 0.5rem; }</style>`,
@@ -1113,41 +1180,42 @@ function composeEventBody(payload, otherEvents) {
 
 // Body for /venue/<id> — H1 + address/hours + breadcrumb + related venues
 // in the same city + evergreen with venue-type context.
-function composeVenueBody(payload, otherVenues) {
+function composeVenueBody(payload, otherVenues, locale = 'en') {
   const v = payload?.venue
   if (!v || !v.name) return null
+  const lp = localePrefixFor(locale)
   const city = v.city?.name || ''
   const citySlug = v.city?.slug || ''
   const isBar = v.category === 'bar'
 
   const breadcrumb = city && citySlug
-    ? `<nav class="ssr-breadcrumb"><a href="/">Hilads</a> › <a href="/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(v.name)}</span></nav>`
+    ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(v.name)}</span></nav>`
     : ''
 
-  const addrLine  = v.address ? `<p class="ssr-where"><strong>Address:</strong> ${htmlEscape(v.address)}</p>` : ''
+  const addrLine  = v.address ? `<p class="ssr-where"><strong>${T(locale, 'venue.labelAddress')}</strong> ${htmlEscape(v.address)}</p>` : ''
   const hoursLine = v.hours?.opens && v.hours?.closes
-    ? `<p class="ssr-when"><strong>Hours:</strong> Open every day · ${htmlEscape(v.hours.opens)} – ${htmlEscape(v.hours.closes)}</p>`
+    ? `<p class="ssr-when"><strong>${T(locale, 'venue.labelHours')}</strong> ${T(locale, 'venue.hoursValue', { opens: htmlEscape(v.hours.opens), closes: htmlEscape(v.hours.closes) })}</p>`
     : ''
-  const catLine = `<p class="ssr-cat"><strong>Type:</strong> ${isBar ? 'Bar / pub' : 'Coffee shop'}</p>`
+  const catLine = `<p class="ssr-cat"><strong>${T(locale, 'venue.labelType')}</strong> ${isBar ? T(locale, 'venue.typeBar') : T(locale, 'venue.typeCafe')}</p>`
 
   const related = (Array.isArray(otherVenues) ? otherVenues : [])
     .filter(o => o.id !== v.id)
     .slice(0, 6)
   const relatedSection = related.length > 0 && city
-    ? `<section><h2>Other venues in ${htmlEscape(city)}</h2><ul>${related.map(o => {
+    ? `<section><h2>${T(locale, 'venue.otherVenuesIn', { city: htmlEscape(city) })}</h2><ul>${related.map(o => {
         const slug = venueSlugFromName(o.name, o.id)
         const cat = o.category === 'bar' ? '🍻' : '☕'
-        return `<li>${cat} <a href="/venue/${slug}">${htmlEscape(o.name)}</a></li>`
+        return `<li>${cat} <a href="${lp}/venue/${slug}">${htmlEscape(o.name)}</a></li>`
       }).join('')}</ul></section>`
     : ''
 
   const cityLink = city && citySlug
-    ? `<p>See <a href="/city/${citySlug}">what's happening in ${htmlEscape(city)}</a> tonight on Hilads.</p>`
+    ? `<p>${T(locale, 'venue.whatsHappeningSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'venue.whatsHappeningLink', { city: htmlEscape(city) })}</a>` })}</p>`
     : ''
 
   const evergreen = isBar
-    ? `<section><h2>About this venue</h2><p>${htmlEscape(v.name)} is a bar in ${htmlEscape(city)}. Hilads shows you who's heading there tonight and other places nearby with the same energy.</p>${cityLink}</section>`
-    : `<section><h2>About this venue</h2><p>${htmlEscape(v.name)} is a coffee shop in ${htmlEscape(city)}. Hilads is the easy way to find people to grab a coffee with — locals and travelers, no awkward profile-swiping.</p>${cityLink}</section>`
+    ? `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutBar', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}</section>`
+    : `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutCafe', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}</section>`
 
   return [
     `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,
@@ -1215,7 +1283,7 @@ function injectBody(shell, body) {
   return shell.replace(/<div id="root">/i, `<div id="root">\n      ${body}`)
 }
 
-function injectMeta(shell, meta) {
+function injectMeta(shell, meta, locale = 'en') {
   const t   = htmlEscape(meta.title)
   const d   = htmlEscape(meta.description)
   const u   = htmlEscape(meta.url)
@@ -1266,6 +1334,27 @@ function injectMeta(shell, meta) {
       .replace(
         /<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/?>/i,
         `<meta name="twitter:image" content="${img}" />`,
+      )
+  }
+
+  // og:locale must match the page language (shell ships en_US — overriding to
+  // it is a no-op on default, fr_FR/vi_VN on localized URLs).
+  out = out.replace(
+    /<meta\s+property="og:locale"\s+content="[^"]*"\s*\/?>/i,
+    `<meta property="og:locale" content="${OG_LOCALE[locale] || 'en_US'}" />`,
+  )
+
+  // On localized pages, point the image alt text at the localized page title.
+  // English keeps the shell's generic brand alt (no regression).
+  if (locale !== 'en') {
+    out = out
+      .replace(
+        /<meta\s+property="og:image:alt"\s+content="[^"]*"\s*\/?>/i,
+        `<meta property="og:image:alt" content="${t}" />`,
+      )
+      .replace(
+        /<meta\s+name="twitter:image:alt"\s+content="[^"]*"\s*\/?>/i,
+        `<meta name="twitter:image:alt" content="${t}" />`,
       )
   }
 
@@ -1399,7 +1488,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
 
         // Canonical URL is always the slug version when we have event data.
         canonicalPath = data?.event ? `/event/${eventSlug(data.event)}` : `/event/${hex}`
-        meta = composeEventMeta(data, canonicalPath, hex)
+        meta = composeEventMeta(data, canonicalPath, hex, locale)
         if (meta) {
           cacheMaxAge = 300                  // 5 min — events churn
           const augmented = {
@@ -1421,7 +1510,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
             )
             otherEvents = Array.isArray(otherData?.events) ? otherData.events : []
           }
-          bodyHtml = composeEventBody(data, otherEvents)
+          bodyHtml = composeEventBody(data, otherEvents, locale)
         }
       }
     } else if (type === 'venue' && typeof id === 'string') {
@@ -1447,7 +1536,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         canonicalPath = data?.venue
           ? `/venue/${venueSlugFromName(data.venue.name, data.venue.id)}`
           : `/venue/${hex}`
-        meta = composeVenueMeta(data, canonicalPath, hex)
+        meta = composeVenueMeta(data, canonicalPath, hex, locale)
         if (meta) {
           cacheMaxAge = 3600                 // 1 h — venue info changes rarely
           jsonLd = composeVenueJsonLd(data, meta.url)
@@ -1461,7 +1550,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
             )
             otherVenues = Array.isArray(otherData?.venues) ? otherData.venues : []
           }
-          bodyHtml = composeVenueBody(data, otherVenues)
+          bodyHtml = composeVenueBody(data, otherVenues, locale)
         }
       }
     } else if (type === 'category' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
@@ -1474,9 +1563,9 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         )
         if (data?.city?.name) {
           cacheMaxAge = 1800            // 30 min — events churn but slower than per-event
-          meta     = composeCategoryMeta(data, canonicalPath)
+          meta     = composeCategoryMeta(data, canonicalPath, locale)
           jsonLd   = composeCategoryJsonLd(data, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
-          bodyHtml = composeCategoryBody(data)
+          bodyHtml = composeCategoryBody(data, locale)
         }
       }
     } else if (type === 'city' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
@@ -1515,9 +1604,9 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         // and falsely flip a chatty city to noindex.
         const messageCount  = Number.isFinite(cityData.messageCount) ? cityData.messageCount : 0
 
-        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length, messageCount)
+        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length, messageCount, locale)
         jsonLd = composeCityJsonLd(cityData, meta.url, upcoming)
-        bodyHtml = composeCityBody(cityData, upcoming, venues)
+        bodyHtml = composeCityBody(cityData, upcoming, venues, locale)
       }
     } else if (type === 'past' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
       canonicalPath = `/city/${slug}/past`
@@ -1534,9 +1623,9 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         )
         const items = Array.isArray(archive?.items) ? archive.items : []
         cacheMaxAge = 1800            // 30 min — past content is stable but newly-expired items trickle in
-        meta     = composePastMeta(cityData, canonicalPath, slug, items.length)
+        meta     = composePastMeta(cityData, canonicalPath, slug, items.length, locale)
         jsonLd   = composePastJsonLd(cityData, items, slug, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
-        bodyHtml = composePastBody(cityData, items, slug)
+        bodyHtml = composePastBody(cityData, items, slug, locale)
       }
     }
   } catch (err) {
@@ -1551,7 +1640,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
   }
 
   let html = setHtmlLang(shell, locale)
-  if (meta)          html = injectMeta(html, meta)
+  if (meta)          html = injectMeta(html, meta, locale)
   if (meta)          html = injectHreflang(html, canonicalPath)
   if (meta?.noindex) html = injectRobotsNoindex(html)
   if (jsonLd)        html = injectJsonLd(html, jsonLd)
