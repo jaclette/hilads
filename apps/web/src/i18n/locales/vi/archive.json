@@ -1,5 +1,5 @@
 {
-  "title": "Đã diễn ra",
+  "title": "Hoạt động đã qua",
   "filters": { "all": "Tất cả", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
   "range": { "recent": "Gần đây", "last7": "7 ngày qua", "last14": "14 ngày qua", "custom": "Tùy chỉnh" },
   "picker": {

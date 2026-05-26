@@ -1,17 +1,20 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { createTopic, updateTopic, HangoutLimitError } from '../api'
 import BackButton from './BackButton'
 
+// Labels are translated at render via t(`create.cat.${value}`); icons stay here.
 const CATEGORIES = [
-  { value: 'general', label: 'General',  icon: '🗣️' },
-  { value: 'tips',    label: 'Tips',     icon: '💡' },
-  { value: 'food',    label: 'Food',     icon: '🍴' },
-  { value: 'drinks',  label: 'Drinks',   icon: '🍺' },
-  { value: 'help',    label: 'Help',     icon: '🙋' },
-  { value: 'meetup',  label: 'Meet up',  icon: '👋' },
+  { value: 'general', icon: '🗣️' },
+  { value: 'tips',    icon: '💡' },
+  { value: 'food',    icon: '🍴' },
+  { value: 'drinks',  icon: '🍺' },
+  { value: 'help',    icon: '🙋' },
+  { value: 'meetup',  icon: '👋' },
 ]
 
 export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated, onBack, userLocation, editTopic, onGoToHangout }) {
+  const { t } = useTranslation('hangout')
   const isEdit = !!editTopic
   const [category,    setCategory]    = useState(editTopic?.category ?? 'general')
   const [title,       setTitle]       = useState(editTopic?.title ?? '')
@@ -40,7 +43,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
     } catch (err) {
       // One-hangout-per-user: surface the existing hangout instead of an error.
       if (err instanceof HangoutLimitError) {
-        setLimitTopic({ id: err.existingTopicId, title: err.existingTitle || 'your hangout' })
+        setLimitTopic({ id: err.existingTopicId, title: err.existingTitle || t('create.yourHangout') })
       } else {
         setError(err.message)
       }
@@ -54,15 +57,15 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
       <div className="full-page">
         <div className="page-header">
           <BackButton onClick={onBack} />
-          <span className="page-title">One at a time</span>
+          <span className="page-title">{t('create.limitHeader')}</span>
         </div>
         <div className="topic-gated">
           <span className="topic-gated-emoji">⚡</span>
-          <strong className="topic-gated-title">You already have a hangout</strong>
+          <strong className="topic-gated-title">{t('create.limitTitle')}</strong>
           <span className="topic-gated-sub">
-            You can run one hangout at a time. Head to “{limitTopic.title}”, or delete it to start a new one.
+            {t('create.limitSub', { title: limitTopic.title })}
           </span>
-          <button className="topic-join-btn" onClick={() => onGoToHangout?.(limitTopic.id)}>Go to my hangout →</button>
+          <button className="topic-join-btn" onClick={() => onGoToHangout?.(limitTopic.id)}>{t('create.limitGo')}</button>
         </div>
       </div>
     )
@@ -72,7 +75,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
     <div className="full-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{isEdit ? 'Edit hangout' : 'Start a hangout'}</span>
+        <span className="page-title">{isEdit ? t('create.editTitle') : t('create.startTitle')}</span>
       </div>
 
       <div className="page-body">
@@ -80,7 +83,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           {/* Category */}
           <div className="cef-section">
-            <p className="cef-label">Category</p>
+            <p className="cef-label">{t('create.category')}</p>
             <div className="cef-category-grid">
               {CATEGORIES.map(cat => (
                 <button
@@ -90,7 +93,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
                   onClick={() => setCategory(cat.value)}
                 >
                   <span style={{ fontSize: 22 }}>{cat.icon}</span>
-                  <span className="cef-cat-label">{cat.label}</span>
+                  <span className="cef-cat-label">{t(`create.cat.${cat.value}`)}</span>
                 </button>
               ))}
             </div>
@@ -98,13 +101,13 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           {/* Title */}
           <div className="cef-section">
-            <label className="cef-label">What's on your mind?</label>
+            <label className="cef-label">{t('create.titleLabel')}</label>
             <input
               className="cef-input"
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder="e.g. Best coffee spot in the area?"
+              placeholder={t('create.titlePlaceholder')}
               maxLength={100}
               autoFocus
             />
@@ -112,12 +115,12 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
           {/* Description */}
           <div className="cef-section">
-            <label className="cef-label">Add details <span style={{ color: 'var(--muted, #888)', fontWeight: 400 }}>(optional)</span></label>
+            <label className="cef-label">{t('create.detailsLabel')} <span style={{ color: 'var(--muted, #888)', fontWeight: 400 }}>{t('create.optional')}</span></label>
             <textarea
               className="cef-input"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              placeholder="Give it some context…"
+              placeholder={t('create.detailsPlaceholder')}
               maxLength={300}
               rows={3}
               style={{ resize: 'none', lineHeight: 1.5 }}
@@ -127,7 +130,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
           {/* Expiry note */}
           {!isEdit && (
             <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center' }}>
-              ⏱ Auto-expires in 24 h
+              {t('create.expiry')}
             </p>
           )}
 
@@ -138,7 +141,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
             className="cef-submit"
             disabled={submitting || !title.trim()}
           >
-            {submitting ? (isEdit ? 'Saving…' : 'Starting…') : (isEdit ? 'Save changes' : 'Start a hangout ⚡')}
+            {submitting ? (isEdit ? t('create.saving') : t('create.starting')) : (isEdit ? t('create.saveChanges') : t('create.startCta'))}
           </button>
 
         </form>

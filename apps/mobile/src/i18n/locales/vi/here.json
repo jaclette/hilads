@@ -1,5 +1,5 @@
 {
-  "title": "Mọi người ở đây",
+  "title": "Quanh bạn",
   "noCityTitle": "Chưa chọn thành phố",
   "noCitySub": "Chọn một thành phố để xem ai đang ở quanh đây.",
   "browseCities": "Xem các thành phố",
@@ -10,7 +10,7 @@
   "hereNow": "Here now",
   "noMatchLive": "Hiện không có ai khớp với các bộ lọc này.",
   "legendsSub": "Họ làm cho thành phố sôi động",
-  "cityCrew": "Nhóm thành phố",
+  "cityCrew": "Thành viên thành phố",
   "noMatchCrew": "Không có thành viên nào khớp với các bộ lọc này.",
   "loadMore": "Xem thêm"
 }

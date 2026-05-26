@@ -1,5 +1,5 @@
 {
-  "title": "Ce qui s'est passé",
+  "title": "Activité passée",
   "filters": { "all": "Tout", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
   "range": { "recent": "Récent", "last7": "7 derniers jours", "last14": "14 derniers jours", "custom": "Perso" },
   "picker": {

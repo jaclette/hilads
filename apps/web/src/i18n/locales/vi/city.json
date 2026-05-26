@@ -85,7 +85,7 @@
     "currentWeather": "Thời tiết hiện tại: {{label}}"
   },
   "here": {
-    "title": "Mọi người ở đây",
+    "title": "Quanh bạn",
     "filterBadge": "Huy hiệu",
     "filterVibe": "Vibe",
     "filterMode": "Chế độ",
@@ -93,7 +93,7 @@
     "hereNow": "Here now",
     "noMatchLive": "Hiện không có ai khớp với các bộ lọc này.",
     "legendsSub": "Họ làm cho thành phố sôi động",
-    "cityCrew": "Nhóm thành phố",
+    "cityCrew": "Thành viên thành phố",
     "noMatchCrew": "Không có thành viên nào khớp với các bộ lọc này.",
     "loadMore": "Xem thêm",
     "messageAria": "Nhắn tin cho {{name}}"
