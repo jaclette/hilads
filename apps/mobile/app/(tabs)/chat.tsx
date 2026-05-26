@@ -15,7 +15,6 @@ import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView,
   TouchableOpacity, Animated, AppState, Alert,
-  LayoutAnimation, Platform, UIManager,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -119,13 +118,6 @@ function ChipLiveDot() {
 // Tab bar is in-flow (flex-column sibling), so the screen content area ends
 // exactly at the tab bar top. No paddingBottom needed on the SafeAreaView.
 // ChatInput uses elevation: 30 to render above the tab bar's upward shadow.
-
-// LayoutAnimation needs an opt-in on old-architecture Android so the feed can
-// smoothly close the gap when a faded reminder card is removed. No-op on iOS /
-// new arch (method may be absent — guarded).
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 export default function ChatTab() {
   const router = useRouter();
@@ -543,11 +535,13 @@ export default function ChatTab() {
     promptTimersRef.current.push(t1, t2, t3);
   }
 
-  // A reminder card finished fading → drop it from the feed (smooth gap-close
-  // via a one-shot LayoutAnimation) and pulse the NOW tab once. The id lives in
-  // exactly one of the three arrays; filtering all three is harmless + simple.
+  // A reminder card finished its opacity→height collapse (handled on the card
+  // itself, so its cell is already 0-height here) → drop it from the feed and
+  // pulse the NOW tab once. No LayoutAnimation: it doesn't reliably reclaim a
+  // removed cell on an inverted, virtualized FlatList (left black gaps); the
+  // card's own height collapse closes the space instead. The id lives in exactly
+  // one of the three arrays; filtering all three is harmless + simple.
   function handleAutoDismiss(id: string) {
-    if (!reduceMotion) LayoutAnimation.easeInEaseOut();
     setPromptItems(prev   => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
     setEventFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
     setTopicFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
@@ -809,7 +803,7 @@ export default function ChatTab() {
           <FlatList
             ref={flatListRef}
             data={allMessages}
-            keyExtractor={(m, idx) => (m.id ? m.id : String(idx))}
+            keyExtractor={(m, idx) => m.id ?? m.localId ?? (m.guestId || m.createdAt ? `${m.guestId ?? ''}:${m.createdAt ?? ''}` : String(idx))}
             renderItem={({ item, index }) => {
               const olderMsg = allMessages[index + 1]; // older (higher index in inverted list)
               const newerMsg = allMessages[index - 1]; // newer (lower index)

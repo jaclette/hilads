@@ -13,7 +13,7 @@
  */
 
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Pressable, StyleSheet, Animated, Platform, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable, StyleSheet, Animated, Platform, Linking, type LayoutChangeEvent } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { MessageImage } from './MessageImage';
 import { ReactionPills } from './ReactionPills';
@@ -164,52 +164,86 @@ function useEntryAnimation(duration = 200) {
   return { opacity, translateY };
 }
 
-// ── Auto-dismiss fade ─────────────────────────────────────────────────────────
-// Reminder cards (event/topic/prompt/ambient) fade out after a delay, then ask
-// the parent to remove them from the feed. ONE timer per card, keyed on a stable
-// id, cleared on unmount; opacity fade runs on the native driver. Reduce-motion
-// skips the fade and removes instantly. Returns cancel() — call it when the user
-// taps the card's CTA so the dismiss can't fire mid-interaction.
+// ── Auto-dismiss collapse ─────────────────────────────────────────────────────
+// Reminder cards (event/topic/prompt/ambient) auto-dismiss after a delay. To
+// reclaim the space on native (an inverted, virtualized FlatList where
+// LayoutAnimation doesn't reliably collapse a removed cell) the dismissal runs
+// in THREE stages on the card itself:
+//   1. opacity → 0           (native driver)
+//   2. measured height → 0   (JS driver; the cell physically shrinks so the
+//                             list reflows and there is no leftover gap)
+//   3. onDismiss(id)         (parent drops it from the data — the cell is
+//                             already 0-height, so removal is invisible)
+// The wrapper measures its natural height once via onLayout, so the WHOLE row
+// (text + any timestamp) collapses together — no orphaned sub-elements. ONE
+// timer per card, cleared on unmount. reduce-motion skips animation and removes
+// instantly. cancel() is called from the card's CTA so a tap can't dismiss
+// mid-interaction.
 const AUTO_DISMISS_MS = 6000;
-const FADE_OUT_MS = 280;
+const FADE_OUT_MS  = 240;
+const COLLAPSE_MS  = 200;
 
-function useAutoDismissFade(
+function useAutoDismissCollapse(
   opacity: Animated.Value,
   opts: { enabled: boolean; id: string; reduceMotion: boolean; onDismiss?: (id: string) => void },
 ) {
   const { enabled, id, reduceMotion, onDismiss } = opts;
-  const cancelledRef = useRef(false);
-  const timerRef     = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const animRef      = useRef<Animated.CompositeAnimation | null>(null);
+  const cancelledRef  = useRef(false);
+  const timerRef      = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fadeRef       = useRef<Animated.CompositeAnimation | null>(null);
+  const collapseRef   = useRef<Animated.CompositeAnimation | null>(null);
+  const measuredRef   = useRef(0);
+  const heightAnim    = useRef(new Animated.Value(0)).current;
+  const [collapsing, setCollapsing] = useState(false);
+
+  // Capture the natural height once, before any collapse begins.
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    if (collapsing) return;
+    const h = e.nativeEvent.layout.height;
+    if (h > 0) measuredRef.current = h;
+  }, [collapsing]);
 
   useEffect(() => {
     if (!enabled) return;
     cancelledRef.current = false;
     timerRef.current = setTimeout(() => {
       if (cancelledRef.current) return;
-      if (reduceMotion) { onDismiss?.(id); return; }
-      animRef.current = Animated.timing(opacity, {
-        toValue: 0, duration: FADE_OUT_MS, useNativeDriver: true,
-      });
-      animRef.current.start(({ finished }) => {
-        if (finished && !cancelledRef.current) onDismiss?.(id);
+      // No measurement yet (or reduce-motion) → remove instantly, no gap either way.
+      if (reduceMotion || measuredRef.current === 0) { onDismiss?.(id); return; }
+      fadeRef.current = Animated.timing(opacity, { toValue: 0, duration: FADE_OUT_MS, useNativeDriver: true });
+      fadeRef.current.start(({ finished }) => {
+        if (!finished || cancelledRef.current) return;
+        heightAnim.setValue(measuredRef.current);
+        setCollapsing(true); // applies the animated height + overflow:hidden
+        collapseRef.current = Animated.timing(heightAnim, { toValue: 0, duration: COLLAPSE_MS, useNativeDriver: false });
+        collapseRef.current.start(({ finished: done }) => {
+          if (done && !cancelledRef.current) onDismiss?.(id);
+        });
       });
     }, AUTO_DISMISS_MS);
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      animRef.current?.stop();
+      fadeRef.current?.stop();
+      collapseRef.current?.stop();
     };
-    // onDismiss is a stable useCallback from the parent; opacity is a stable ref.
+    // onDismiss is a stable useCallback from the parent; opacity/heightAnim are stable refs.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, id, reduceMotion]);
 
-  return useCallback(() => {
+  const cancel = useCallback(() => {
     cancelledRef.current = true;
     if (timerRef.current) clearTimeout(timerRef.current);
-    animRef.current?.stop();
+    fadeRef.current?.stop();
+    collapseRef.current?.stop();
     opacity.setValue(1);
+    setCollapsing(false);
   }, [opacity]);
+
+  // While collapsing, the wrapper drives its own height down to 0; otherwise it
+  // sizes to content (undefined height).
+  const wrapperStyle = collapsing ? { height: heightAnim, overflow: 'hidden' as const } : undefined;
+  return { onLayout, wrapperStyle, cancel };
 }
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -316,24 +350,26 @@ function AnimatedEventPill({
     ]).start();
   }, []);
 
-  const cancelDismiss = useAutoDismissFade(opacity, {
+  const { onLayout, wrapperStyle, cancel: cancelDismiss } = useAutoDismissCollapse(opacity, {
     enabled: autoDismiss, id: message.id ?? '', reduceMotion, onDismiss: onAutoDismiss,
   });
 
   return (
-    <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
-      <View style={styles.eventPill}>
-        <Text style={styles.eventText}>
-          {t('bannerNewEvent', { title: message.content })}
-        </Text>
-        <TouchableOpacity
-          style={styles.eventJoinBtn}
-          activeOpacity={0.8}
-          onPress={() => { cancelDismiss(); if (message.eventId) router.push(`/event/${message.eventId}`); }}
-        >
-          <Text style={styles.eventJoinText}>{t('join')}</Text>
-        </TouchableOpacity>
-      </View>
+    <Animated.View onLayout={onLayout} style={wrapperStyle}>
+      <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
+        <View style={styles.eventPill}>
+          <Text style={styles.eventText}>
+            {t('bannerNewEvent', { title: message.content })}
+          </Text>
+          <TouchableOpacity
+            style={styles.eventJoinBtn}
+            activeOpacity={0.8}
+            onPress={() => { cancelDismiss(); if (message.eventId) router.push(`/event/${message.eventId}`); }}
+          >
+            <Text style={styles.eventJoinText}>{t('join')}</Text>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -492,7 +528,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // Auto-dismiss fade for topic/prompt/activity cards (event is handled inside
   // AnimatedEventPill which owns its own opacity). Hook runs unconditionally;
   // `enabled` gates it. cancelDismiss() is wired into the CTAs below.
-  const cancelDismiss = useAutoDismissFade(opacity, {
+  const { onLayout: dismissOnLayout, wrapperStyle: dismissWrapperStyle, cancel: cancelDismiss } = useAutoDismissCollapse(opacity, {
     enabled: autoDismiss && (message.type === 'topic' || message.type === 'prompt' || message.type === 'activity'),
     id: message.id ?? '',
     reduceMotion,
@@ -541,19 +577,21 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}
-        <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
-          <View style={styles.topicPill}>
-            <Text style={styles.topicText} numberOfLines={1}>
-              💬 {message.content}
-            </Text>
-            <TouchableOpacity
-              style={styles.topicJoinBtn}
-              activeOpacity={0.8}
-              onPress={() => { cancelDismiss(); if (message.topicId) router.push(`/topic/${message.topicId}`); }}
-            >
-              <Text style={styles.topicJoinText}>{t('joinArrow')}</Text>
-            </TouchableOpacity>
-          </View>
+        <Animated.View onLayout={dismissOnLayout} style={dismissWrapperStyle}>
+          <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
+            <View style={styles.topicPill}>
+              <Text style={styles.topicText} numberOfLines={1}>
+                💬 {message.content}
+              </Text>
+              <TouchableOpacity
+                style={styles.topicJoinBtn}
+                activeOpacity={0.8}
+                onPress={() => { cancelDismiss(); if (message.topicId) router.push(`/topic/${message.topicId}`); }}
+              >
+                <Text style={styles.topicJoinText}>{t('joinArrow')}</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
         </Animated.View>
       </>
     );
@@ -562,8 +600,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // ── Activity feed item — ambient muted text, no CTA (web: .feed-activity) ──
   if (message.type === 'activity') {
     return (
-      <Animated.View style={[styles.activityRow, animStyle]}>
-        <Text style={styles.activityText}>{message.content}</Text>
+      <Animated.View onLayout={dismissOnLayout} style={dismissWrapperStyle}>
+        <Animated.View style={[styles.activityRow, animStyle]}>
+          <Text style={styles.activityText}>{message.content}</Text>
+        </Animated.View>
       </Animated.View>
     );
   }
@@ -571,15 +611,17 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // ── Prompt feed item — orange card + CTA button (web: .feed-prompt) ─────────
   if (message.type === 'prompt') {
     return (
-      <Animated.View style={[styles.promptRow, animStyle]}>
-        <Text style={styles.promptText}>{message.content}</Text>
-        <TouchableOpacity
-          style={styles.promptBtn}
-          activeOpacity={0.8}
-          onPress={() => { cancelDismiss(); onPromptCta?.(message.subtype ?? ''); }}
-        >
-          <Text style={styles.promptBtnText}>{message.cta}</Text>
-        </TouchableOpacity>
+      <Animated.View onLayout={dismissOnLayout} style={dismissWrapperStyle}>
+        <Animated.View style={[styles.promptRow, animStyle]}>
+          <Text style={styles.promptText}>{message.content}</Text>
+          <TouchableOpacity
+            style={styles.promptBtn}
+            activeOpacity={0.8}
+            onPress={() => { cancelDismiss(); onPromptCta?.(message.subtype ?? ''); }}
+          >
+            <Text style={styles.promptBtnText}>{message.cta}</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </Animated.View>
     );
   }
