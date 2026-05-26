@@ -103,7 +103,7 @@ class PushService
                     'privateKey' => $vapidPrivate,
                 ]],
                 ['TTL' => 86400],
-                5 // 5-second timeout per push request
+                2 // 2s timeout per push request — on non-FPM this fan-out runs in-request
             );
 
             // Interactive Accept/Decline buttons for actionable requests. The SW

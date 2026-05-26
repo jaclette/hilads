@@ -244,7 +244,7 @@ class MobilePushService
                 'method'        => 'POST',
                 'header'        => "Content-Type: application/json\r\nAccept: application/json\r\n",
                 'content'       => json_encode($payload),
-                'timeout'       => 5,
+                'timeout'       => 2, // keep short: on non-FPM this runs in-request, per recipient
                 'ignore_errors' => true,
             ],
         ]);
