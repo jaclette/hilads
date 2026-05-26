@@ -2063,6 +2063,17 @@ export default function App() {
       setOnlineCount(boot.onlineCount ?? null)
       setStatus('ready')
 
+      // If the user entered via the bare root (hilads.live, /fr, /vi) and then
+      // joined a city — onboarding pick or returning-user auto-rejoin — reflect
+      // the city in the URL (localized via pushUrl). Without this the URL stays
+      // on the root shell, so a fresh load / view-source returns the static
+      // English index.html instead of the city's localized SSR meta. Deep-link
+      // entries (/city, /event, …) already carry the right URL; pushUrl no-ops
+      // when the localized target matches the current path.
+      if (/^\/(fr|vi)?$/.test(window.location.pathname) && location.city) {
+        pushUrl(`/city/${cityToSlug(location.city)}`)
+      }
+
       // ── Deferred badge enrichment ────────────────────────────────────────────
       // Bootstrap (lean=1) skips the badge DB query — messages arrive with ghost
       // badges by default. Enrich registered-user messages immediately after the
