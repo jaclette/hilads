@@ -25,6 +25,15 @@ class MobilePushService
 {
     private const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
 
+    // Expo accepts up to 100 messages per HTTP request. We queue every message
+    // built during a request and flush them in 100-message batches at shutdown,
+    // so a fan-out to N recipients costs ~ceil(messages/100) HTTP calls instead
+    // of N — critical on non-FPM where this runs in-request (see deploy notes).
+    private const EXPO_BATCH_SIZE = 100;
+    /** @var array<int, array{message: array, token: string}> */
+    private static array $queue = [];
+    private static bool $flushRegistered = false;
+
     /** Map notification type → notification_preferences column */
     private static function prefColumn(string $type): ?string
     {
@@ -172,41 +181,62 @@ class MobilePushService
                 'categoryId' => $category, // null → dropped by array_filter
             ], fn($v) => $v !== null), $tokens);
 
-            error_log("[push-send] sending $type to user=$userId (" . count($tokens) . " device(s)) payload=" . json_encode($payload));
-
-            // 5. Send to Expo Push API
-            $response = self::postToExpo($payload);
-            if ($response === null) {
-                error_log("[push-send] Expo API request FAILED (network error or timeout) for user=$userId");
-                return;
+            // 5. Queue the messages — they're POSTed to Expo in batches at
+            //    shutdown (see flush()). $payload is index-aligned with $tokens.
+            foreach ($tokens as $i => $token) {
+                self::$queue[] = ['message' => $payload[$i], 'token' => $token];
             }
-
-            error_log("[push-send] Expo API response for user=$userId: $response");
-
-            // 6. Clean up DeviceNotRegistered tokens
-            $decoded = json_decode($response, true);
-            if (!is_array($decoded['data'] ?? null)) return;
-
-            $invalid = [];
-            foreach ($decoded['data'] as $i => $result) {
-                if (($result['status'] ?? '') === 'error') {
-                    $errCode = $result['details']['error'] ?? 'unknown';
-                    error_log("[push] token error for user $userId token[$i]: $errCode — " . ($result['message'] ?? ''));
-                    if ($errCode === 'DeviceNotRegistered') {
-                        $invalid[] = $tokens[$i];
-                    }
-                }
+            if (!self::$flushRegistered) {
+                self::$flushRegistered = true;
+                register_shutdown_function([self::class, 'flush']);
             }
-
-            if (!empty($invalid)) {
-                error_log("[push] removing " . count($invalid) . " stale token(s) for user $userId");
-                $placeholders = implode(',', array_fill(0, count($invalid), '?'));
-                Database::pdo()
-                    ->prepare("DELETE FROM mobile_push_tokens WHERE token IN ($placeholders)")
-                    ->execute($invalid);
-            }
+            error_log("[push-send] queued $type for user=$userId (" . count($tokens) . " device(s))");
         } catch (\Throwable $e) {
             error_log("[push-send] EXCEPTION for user=$userId type=$type: " . $e->getMessage() . "\n" . $e->getTraceAsString());
+        }
+    }
+
+    /**
+     * Flush all queued Expo messages in batches of EXPO_BATCH_SIZE. Registered
+     * once per request (incl. when send() is itself called from a shutdown
+     * function — newly-registered shutdown fns still run). Expo returns receipts
+     * in request order, so each batch maps response[i] → the i-th token for
+     * DeviceNotRegistered cleanup.
+     */
+    public static function flush(): void
+    {
+        $queue = self::$queue;
+        self::$queue = [];
+        if (empty($queue)) return;
+
+        try {
+            foreach (array_chunk($queue, self::EXPO_BATCH_SIZE) as $chunk) {
+                $messages = array_column($chunk, 'message');
+                $response = self::postToExpo($messages);
+                if ($response === null) {
+                    error_log('[push-flush] Expo request failed for a batch of ' . count($messages));
+                    continue;
+                }
+                $decoded = json_decode($response, true);
+                if (!is_array($decoded['data'] ?? null)) continue;
+
+                $invalid = [];
+                foreach ($decoded['data'] as $i => $result) {
+                    if (($result['status'] ?? '') === 'error'
+                        && ($result['details']['error'] ?? '') === 'DeviceNotRegistered'
+                        && isset($chunk[$i]['token'])) {
+                        $invalid[] = $chunk[$i]['token'];
+                    }
+                }
+                if (!empty($invalid)) {
+                    $ph = implode(',', array_fill(0, count($invalid), '?'));
+                    Database::pdo()
+                        ->prepare("DELETE FROM mobile_push_tokens WHERE token IN ($ph)")
+                        ->execute($invalid);
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[push-flush] EXCEPTION: ' . $e->getMessage());
         }
     }
 
