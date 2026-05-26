@@ -1055,6 +1055,7 @@ export default function App() {
   // from firing twice under React StrictMode in dev.
   const guestAutoJoinedRef = useRef(false)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
+  const switchCityRef = useRef(null) // latest switchCity closure, for the popstate handler
   const chatInputRef = useRef(null)
   // @mention autocomplete for the shared city/event composer. Context follows the
   // active event (event chat) or falls back to the city channel.
@@ -1343,6 +1344,27 @@ export default function App() {
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
     if (link.type === 'forgot-password') setShowForgotPassword(true)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Keep a live reference to switchCity so the popstate handler (registered once)
+  // always invokes the latest closure (current channelId), never a stale one.
+  useEffect(() => { switchCityRef.current = switchCity })
+
+  // Back/forward between cities changes the URL client-side with no reload; without
+  // this the app keeps the previous city's feed/events/presence/WS room. Re-resolve
+  // the city from the URL and run the full switch (reset + refetch + WS re-subscribe).
+  useEffect(() => {
+    const onPop = () => {
+      if (statusRef.current !== 'ready') return
+      const link = parseDeepLink()
+      if (!link || link.type !== 'city') return
+      fetchCityBySlug(link.slug).then(data => {
+        if (!data || data.channelId === activeChannelRef.current) return
+        switchCityRef.current?.(data.channelId, data.city, data.timezone, data.country, { fromPop: true })
+      }).catch(() => {})
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -1914,9 +1936,30 @@ export default function App() {
       // geoChannelId / cityCountry for UI display, but is no longer on the
       // bootstrap critical path.
       let location
+      // A /city|/event|/topic|/past URL is authoritative: the cold-load resolver
+      // pointed locPromiseRef at the linked city, so it must win over the saved
+      // "last city". Without this, a returning user opening /city/abidjan gets
+      // dropped back into their saved channel (header says Abidjan but feed/events
+      // stay HCMC) — and SSR (URL-based) disagrees with the hydrated app.
+      const urlLink = parseDeepLink()
+      const deepLinkCity = !rejoinData && urlLink &&
+        (urlLink.type === 'city' || urlLink.type === 'event' || urlLink.type === 'topic' || urlLink.type === 'past')
       if (rejoinData) {
         console.debug('[hilads:join] path=rejoin ms=0')
         location = await hydrateSavedLocation(rejoinData)
+      } else if (deepLinkCity) {
+        console.debug('[hilads:join] path=deep-link type=' + urlLink.type + ' ms=' + Math.round(performance.now() - _t0))
+        location = await locPromiseRef.current
+        // Resolution failed (bad slug / offline) → fall back to saved city rather
+        // than dumping a returning user into onboarding.
+        if (!location && savedIdentity?.channelId) {
+          location = {
+            channelId: savedIdentity.channelId,
+            city:      savedIdentity.city     ?? null,
+            timezone:  savedIdentity.timezone ?? 'UTC',
+            country:   null,
+          }
+        }
       } else if (savedIdentity?.channelId) {
         // Instant — no network call, no GPS wait
         location = {
@@ -2633,7 +2676,7 @@ export default function App() {
     locPromiseRef.current = startGeolocation()
   }
 
-  async function switchCity(newChannelId, newCityName, newCityTimezone, newCityCountry) {
+  async function switchCity(newChannelId, newCityName, newCityTimezone, newCityCountry, opts = {}) {
     if (newChannelId === channelId) {
       setShowCityPicker(false)
       return
@@ -2675,7 +2718,7 @@ export default function App() {
     setTopics([])
     setHotEventsStatus('loading')
     setActiveEventId(null)
-    pushUrl(`/city/${cityToSlug(newCityName)}`)
+    if (!opts.fromPop) pushUrl(`/city/${cityToSlug(newCityName)}`)
     setPageMeta(`Who's in ${newCityName} right now | Hilads`, `See who's online and what's happening in ${newCityName} right now.`)
     setActiveEvent(null)
     activeEventIdRef.current = null
