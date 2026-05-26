@@ -225,10 +225,11 @@ export type { ReactionType } from '@/lib/reactionEmitter';
 
 /** A resolved @mention on a message: span into content + the current username. */
 export interface MentionRef {
-  userId:   string;
-  username: string;
-  offset:   number;
-  length:   number;
+  userId?:   string;   // member mention
+  guestId?:  string;   // online-guest mention — anchored on the stable guest id
+  username?: string;   // resolved current @name (members); guests render from content
+  offset:    number;
+  length:    number;
 }
 
 export interface Message {

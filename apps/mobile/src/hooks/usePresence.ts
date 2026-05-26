@@ -16,12 +16,15 @@ import { useApp } from '@/context/AppContext';
 import { isBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
 
-type RawUser = { sessionId: string; nickname: string; userId?: string | null; mode?: string | null };
+type RawUser = { sessionId: string; nickname: string; userId?: string | null; guestId?: string | null; mode?: string | null };
 
 function toOnlineUser(u: RawUser): OnlineUser {
   return {
     sessionId:        u.sessionId,
-    guestId:          u.sessionId,   // WS presence uses sessionId; map to guestId field
+    // Stable per-device guest id from the WS presence payload (the client sends
+    // it on joinCity). Anchors guest @mentions; falls back to sessionId only if
+    // an older client didn't broadcast it.
+    guestId:          u.guestId ?? u.sessionId,
     userId:           u.userId ?? undefined,
     nickname:         u.nickname ?? '',
     isRegistered:     Boolean(u.userId),

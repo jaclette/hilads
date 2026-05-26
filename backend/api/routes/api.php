@@ -387,8 +387,30 @@ function sanitizeMentions(mixed $raw, string $context, string $dbChannelId, stri
 {
     if (empty($raw) || !is_array($raw)) return [];
     $allowed = MentionService::mentionableUserIds($context, $dbChannelId);
-    if (empty($allowed)) return [];
-    return MentionService::sanitize($raw, $allowed, strlen($content));
+
+    // Online guests are mentionable too — but only in a CITY channel and only
+    // while currently present (live-only). Resolve the online-guest set lazily:
+    // only when the client actually included a guest mention, so the common
+    // members-only message path pays no extra presence query.
+    $allowedGuests = [];
+    if ($context === 'city' && preg_match('/^city_(\d+)$/', $dbChannelId, $mm)) {
+        $hasGuestMention = false;
+        foreach ($raw as $m) {
+            if (is_array($m) && isset($m['guestId']) && is_string($m['guestId'])) { $hasGuestMention = true; break; }
+        }
+        if ($hasGuestMention) {
+            foreach (PresenceRepository::getOnline((int) $mm[1]) as $row) {
+                // Only true guests (no users row) are guest-mentionable; registered
+                // users present here are mentioned via the member (userId) path.
+                if (empty($row['userId']) && !empty($row['guestId'])) {
+                    $allowedGuests[] = $row['guestId'];
+                }
+            }
+        }
+    }
+
+    if (empty($allowed) && empty($allowedGuests)) return [];
+    return MentionService::sanitize($raw, $allowed, strlen($content), $allowedGuests);
 }
 
 /**

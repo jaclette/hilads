@@ -447,6 +447,39 @@ export default function ChatTab() {
   replyingToRef.current  = replyingTo;
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
+  // Guest self-mention: when an online guest is @mentioned by someone else, give
+  // a real-time in-app signal (highlight + discreet signup nudge). No push.
+  const [mentionNudge,     setMentionNudge]     = useState(false);
+  const seenMsgIdsRef      = useRef<Set<string>>(new Set());
+  const mentionInitedRef   = useRef(false);
+
+  // Reset the self-mention tracking when switching cities.
+  useEffect(() => { mentionInitedRef.current = false; seenMsgIdsRef.current = new Set(); }, [channelId]);
+
+  // Watch for a fresh incoming message that @mentions me (a live guest). On the
+  // first pass we just seed the seen-set so message history doesn't nudge. Guests
+  // only — members are handled by the existing push path.
+  useEffect(() => {
+    if (!mentionInitedRef.current) {
+      for (const m of messages) if (m.id) seenMsgIdsRef.current.add(m.id);
+      mentionInitedRef.current = true;
+      return;
+    }
+    if (account) return;
+    const myGuestId = identity?.guestId;
+    if (!myGuestId) return;
+    for (const m of messages) {
+      if (!m.id || seenMsgIdsRef.current.has(m.id)) continue;
+      seenMsgIdsRef.current.add(m.id);
+      const mine = m.guestId === myGuestId;
+      if (!mine && Array.isArray(m.mentions) && m.mentions.some(x => x.guestId === myGuestId)) {
+        setHighlightedMsgId(m.id);
+        setTimeout(() => setHighlightedMsgId(null), 2500);
+        setMentionNudge(true);
+        setTimeout(() => setMentionNudge(false), 7000);
+      }
+    }
+  }, [messages, account, identity]);
 
   function realMessageCount() {
     return messagesRef.current.filter(m => m.type === 'text' || m.type === 'image').length;
@@ -863,6 +896,25 @@ export default function ChatTab() {
           />
         ))}
 
+        {/* ── Guest @mention nudge — discreet, non-blocking signup prompt ── */}
+        {mentionNudge && !account && (
+          <View style={styles.mentionNudge}>
+            <Text style={styles.mentionNudgeText} numberOfLines={2}>
+              👀 You're getting mentioned! Create an account so you never miss it.
+            </Text>
+            <TouchableOpacity
+              style={styles.mentionNudgeBtn}
+              onPress={() => { setMentionNudge(false); router.push('/auth-gate'); }}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.mentionNudgeBtnText}>Sign up</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setMentionNudge(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <Text style={styles.mentionNudgeDismiss}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* ── Typing indicator bar ── */}
         {typingLabel && (
           <View style={styles.typingBar}>
@@ -1104,6 +1156,23 @@ const styles = StyleSheet.create({
     color:      Colors.muted,
     fontStyle:  'italic',
   },
+  mentionNudge: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               10,
+    marginHorizontal:  Spacing.md,
+    marginBottom:      6,
+    paddingHorizontal: 12,
+    paddingVertical:   10,
+    borderRadius:      14,
+    backgroundColor:   'rgba(139,92,246,0.14)',
+    borderWidth:       1,
+    borderColor:       'rgba(139,92,246,0.45)',
+  },
+  mentionNudgeText:    { flex: 1, fontSize: FontSizes.sm, color: Colors.text, lineHeight: 18 },
+  mentionNudgeBtn:     { backgroundColor: '#8B5CF6', borderRadius: 999, paddingHorizontal: 14, paddingVertical: 6 },
+  mentionNudgeBtnText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
+  mentionNudgeDismiss: { color: Colors.muted, fontSize: 14, paddingHorizontal: 2 },
 
   // ── Messages ─────────────────────────────────────────────────────────────
   // web: .messages { padding: 22px 18px 14px; gap: 8px }

@@ -7015,6 +7015,58 @@ img.pub-profile-avatar {
 }
 .msg-mention:hover { background: rgba(0, 0, 0, 0.42); }
 
+/* Discreet "you got mentioned" signup nudge for online guests — fixed toast,
+   non-blocking, above the composer. */
+.mention-nudge {
+  position: fixed;
+  left: 50%;
+  bottom: 92px;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(92vw, 460px);
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(20, 18, 16, 0.98);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  animation: joinPop 0.3s ease both;
+}
+.mention-nudge-text { font-size: 0.85rem; color: #fff; line-height: 1.3; flex: 1; }
+.mention-nudge-btn {
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  background: #8B5CF6;
+  border: none;
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.mention-nudge-dismiss {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 2px;
+}
+@media (min-width: 768px) { .mention-nudge { bottom: 24px; } }
+
+/* Online-guest mention — same pill, faint 👻 tint, not clickable (inert). */
+.msg-mention--guest {
+  cursor: default;
+  background: rgba(139, 92, 246, 0.18);
+  border-color: rgba(139, 92, 246, 0.45);
+}
+.msg-mention--guest:hover { background: rgba(139, 92, 246, 0.18); }
+/* Guest has left — render as muted styled text, still inert. */
+.msg-mention--offline { opacity: 0.6; }
+
 /* ── Hangout request-to-join ── */
 .join-req-card {
   display: flex;

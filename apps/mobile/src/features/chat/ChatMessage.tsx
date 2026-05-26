@@ -770,7 +770,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                       // spaces ( ) pad the chip slightly without letting the
                       // "@handle" split across a line.
                       : (
-                        <Text key={i} style={styles.mentionText} onPress={() => openMentionedProfile(seg.userId)}>
+                        <Text key={i} style={seg.guestId ? [styles.mentionText, styles.mentionGuest] : styles.mentionText} onPress={seg.guestId ? undefined : () => openMentionedProfile(seg.userId!)}>
                           {` @${seg.username} `}
                         </Text>
                       )
@@ -1048,6 +1048,10 @@ const styles = StyleSheet.create({
     color:           '#fff',
     fontWeight:      '700',
     backgroundColor: 'rgba(0,0,0,0.28)',
+  },
+  // Online-guest mention — purple tint distinguishes it from member mentions.
+  mentionGuest: {
+    backgroundColor: 'rgba(139,92,246,0.30)',
   },
 
   // ── Join-request feed card ─────────────────────────────────────────────────

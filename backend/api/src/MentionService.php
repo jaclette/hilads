@@ -34,23 +34,37 @@ final class MentionService
      * @param int   $contentLen     strlen($content) — loose upper bound (bytes ≥ JS index).
      * @return array Clean [{userId, offset, length}] safe to store.
      */
-    public static function sanitize(array $raw, array $allowedUserIds, int $contentLen): array
+    public static function sanitize(array $raw, array $allowedUserIds, int $contentLen, array $allowedGuestIds = []): array
     {
-        $allowed = array_flip($allowedUserIds);
+        $allowed      = array_flip($allowedUserIds);
+        $allowedGuest = array_flip($allowedGuestIds);
         $out  = [];
         $seen = [];
         foreach ($raw as $m) {
             if (!is_array($m)) continue;
-            $uid = $m['userId'] ?? null;
             $off = $m['offset'] ?? null;
             $len = $m['length'] ?? null;
-            if (!is_string($uid) || !isset($allowed[$uid])) continue;
             if (!is_int($off) || !is_int($len)) continue;
             if ($off < 0 || $len <= 0 || $off + $len > $contentLen) continue;
-            $key = $uid . ':' . $off;
-            if (isset($seen[$key])) continue;
-            $seen[$key] = true;
-            $out[] = ['userId' => $uid, 'offset' => $off, 'length' => $len];
+            $uid = $m['userId'] ?? null;
+            $gid = $m['guestId'] ?? null;
+            if (is_string($uid) && isset($allowed[$uid])) {
+                $key = 'u:' . $uid . ':' . $off;
+                if (isset($seen[$key])) continue;
+                $seen[$key] = true;
+                $out[] = ['userId' => $uid, 'offset' => $off, 'length' => $len];
+            } elseif (is_string($gid) && isset($allowedGuest[$gid])) {
+                // Online-guest mention — anchored on the stable guestId (never the
+                // display name). Live-only: $allowedGuestIds holds guests currently
+                // present in the channel. No username stored (guests have no users
+                // row); the client renders from message content + live presence.
+                $key = 'g:' . $gid . ':' . $off;
+                if (isset($seen[$key])) continue;
+                $seen[$key] = true;
+                $out[] = ['guestId' => $gid, 'offset' => $off, 'length' => $len];
+            } else {
+                continue;
+            }
             if (count($out) >= self::MAX_PER_MESSAGE) break;
         }
         return $out;
@@ -97,12 +111,22 @@ final class MentionService
             $resolved = [];
             foreach ($msg['mentions'] as $m) {
                 $uid = $m['userId'] ?? null;
+                $gid = $m['guestId'] ?? null;
                 if ($uid !== null && isset($nameById[$uid])) {
                     $resolved[] = [
                         'userId'   => $uid,
                         'username' => $nameById[$uid],
                         'offset'   => (int) ($m['offset'] ?? 0),
                         'length'   => (int) ($m['length'] ?? 0),
+                    ];
+                } elseif (is_string($gid) && $gid !== '') {
+                    // Guest mention — no users row to resolve. Pass through; the
+                    // client renders the @name from message content and decides
+                    // online/inert from live presence (guestId is the anchor).
+                    $resolved[] = [
+                        'guestId' => $gid,
+                        'offset'  => (int) ($m['offset'] ?? 0),
+                        'length'  => (int) ($m['length'] ?? 0),
                     ];
                 }
             }

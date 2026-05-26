@@ -69,7 +69,11 @@ interface Props {
 
 export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, mentionContext, mentionChannelId }: Props) {
   const { t } = useTranslation('common');
-  const { account, identity } = useApp();
+  const { account, identity, onlineUsers } = useApp();
+  // Presence mirror — read at suggest time so a guest joining/leaving doesn't
+  // re-fire the debounced fetch on every keystroke.
+  const onlineUsersRef = useRef(onlineUsers);
+  onlineUsersRef.current = onlineUsers;
   const [text,          setText]        = useState('');
   const textRef         = useRef('');
   // @mention autocomplete state
@@ -155,8 +159,19 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
   useEffect(() => {
     if (!mentionsEnabled || mentionQuery === null) { setSuggestions([]); return; }
     const t = setTimeout(async () => {
-      const res = await fetchMentionSuggestions(mentionContext!, String(mentionChannelId), mentionQuery);
-      setSuggestions(res);
+      const members = await fetchMentionSuggestions(mentionContext!, String(mentionChannelId), mentionQuery);
+      // City context: merge currently-online GUESTS (live-only mentionability),
+      // anchored on the stable guestId; exclude self + registered users.
+      let guests: MentionSuggestion[] = [];
+      if (mentionContext === 'city') {
+        const q = (mentionQuery ?? '').toLowerCase();
+        const myGuestId = identity?.guestId;
+        guests = (onlineUsersRef.current ?? [])
+          .filter(u => !u.isRegistered && u.guestId && u.guestId !== myGuestId && (u.nickname || '').toLowerCase().startsWith(q))
+          .slice(0, 6)
+          .map(u => ({ guestId: u.guestId, username: u.nickname, displayName: u.nickname, avatarUrl: null, isGuest: true }));
+      }
+      setSuggestions([...members, ...guests]);
     }, 250);
     return () => clearTimeout(t);
   }, [mentionQuery, mentionsEnabled, mentionContext, mentionChannelId]);
@@ -168,7 +183,11 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     const next   = before + '@' + s.username + ' ' + after;
     setText(next);
     textRef.current = next;
-    setSelectedMentions(prev => prev.some(m => m.userId === s.userId) ? prev : [...prev, { userId: s.userId, username: s.username }]);
+    setSelectedMentions(prev => {
+      const key = s.userId || s.guestId;
+      if (prev.some(m => (m.userId || m.guestId) === key)) return prev;
+      return [...prev, s.userId ? { userId: s.userId, username: s.username } : { guestId: s.guestId!, username: s.username }];
+    });
     setMentionQuery(null);
     setSuggestions([]);
   }

@@ -24,7 +24,13 @@ export function buildMentionsFromText(text, selected) {
       const boundaryOk = nextCh === undefined || !HANDLE_CHAR.test(nextCh)
       const overlap = used.some(u => idx < u.end && end > u.start)
       if (boundaryOk && !overlap) {
-        out.push({ userId: sel.userId, username: sel.username, offset: idx, length: token.length })
+        out.push({
+          ...(sel.userId  ? { userId:  sel.userId  } : {}),
+          ...(sel.guestId ? { guestId: sel.guestId } : {}),
+          username: sel.username,
+          offset: idx,
+          length: token.length,
+        })
         used.push({ start: idx, end })
         break
       }
@@ -50,7 +56,10 @@ export function splitContentByMentions(content, mentions) {
   for (const m of valid) {
     if (m.offset < cursor) continue
     if (m.offset > cursor) segs.push({ type: 'text', text: content.slice(cursor, m.offset) })
-    segs.push({ type: 'mention', userId: m.userId, username: m.username })
+    // Members carry a resolved username; guests render the @name straight from
+    // content (offset points at the '@', so skip it for the label).
+    const label = m.username ?? content.slice(m.offset + 1, m.offset + m.length)
+    segs.push({ type: 'mention', userId: m.userId ?? null, guestId: m.guestId ?? null, username: label })
     cursor = m.offset + m.length
   }
   if (cursor < content.length) segs.push({ type: 'text', text: content.slice(cursor) })

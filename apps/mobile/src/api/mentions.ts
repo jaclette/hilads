@@ -2,16 +2,19 @@ import { api } from './client';
 import type { MentionRef } from '@/types';
 
 export interface MentionSuggestion {
-  userId:      string;
-  username:    string;
-  displayName: string;
-  avatarUrl:   string | null;
+  userId?:      string;   // member suggestion
+  guestId?:     string;   // online-guest suggestion (live-only)
+  isGuest?:     boolean;
+  username:     string;
+  displayName:  string;
+  avatarUrl:    string | null;
 }
 
 export type MentionContext = 'city' | 'event' | 'topic';
 
-/** What the composer sends to the backend — username is resolved server-side on read. */
-export type MentionInput = Pick<MentionRef, 'userId' | 'offset' | 'length'>;
+/** What the composer sends to the backend — username is resolved server-side on read.
+ *  Member mentions carry userId; online-guest mentions carry guestId. */
+export type MentionInput = { userId?: string; guestId?: string; offset: number; length: number };
 
 /**
  * @mention autocomplete suggestions for a context. `channelId` is the city

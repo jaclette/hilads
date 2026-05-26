@@ -12,8 +12,9 @@ import type { MentionRef } from '@/types';
 export type { MentionRef };
 
 export interface SelectedMention {
-  userId:   string;
-  username: string;
+  userId?:   string;   // member
+  guestId?:  string;   // online guest
+  username:  string;
 }
 
 const HANDLE_CHAR = /[a-z0-9_]/i;
@@ -39,7 +40,13 @@ export function buildMentionsFromText(text: string, selected: SelectedMention[])
       const boundaryOk = nextCh === undefined || !HANDLE_CHAR.test(nextCh);
       const overlap = used.some(u => idx < u.end && end > u.start);
       if (boundaryOk && !overlap) {
-        out.push({ userId: sel.userId, username: sel.username, offset: idx, length: token.length });
+        out.push({
+          ...(sel.userId  ? { userId:  sel.userId  } : {}),
+          ...(sel.guestId ? { guestId: sel.guestId } : {}),
+          username: sel.username,
+          offset: idx,
+          length: token.length,
+        });
         used.push({ start: idx, end });
         break;
       }
@@ -51,7 +58,7 @@ export function buildMentionsFromText(text: string, selected: SelectedMention[])
 
 export type MentionSegment =
   | { type: 'text';    text: string }
-  | { type: 'mention'; userId: string; username: string };
+  | { type: 'mention'; userId?: string; guestId?: string; username: string };
 
 /**
  * Split content into renderable segments using resolved mentions (which carry the
@@ -69,7 +76,15 @@ export function splitContentByMentions(content: string, mentions?: MentionRef[] 
   for (const m of valid) {
     if (m.offset < cursor) continue; // overlap guard
     if (m.offset > cursor) segs.push({ type: 'text', text: content.slice(cursor, m.offset) });
-    segs.push({ type: 'mention', userId: m.userId, username: m.username });
+    // Members carry a resolved username; guests render the @name straight from
+    // content (offset points at the '@', so skip it for the label).
+    const label = m.username ?? content.slice(m.offset + 1, m.offset + m.length);
+    segs.push({
+      type: 'mention',
+      ...(m.userId  ? { userId:  m.userId  } : {}),
+      ...(m.guestId ? { guestId: m.guestId } : {}),
+      username: label,
+    });
     cursor = m.offset + m.length;
   }
   if (cursor < content.length) segs.push({ type: 'text', text: content.slice(cursor) });

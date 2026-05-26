@@ -4,8 +4,8 @@ import { Colors, FontSizes } from '@/constants';
 import { avatarColor } from '@/lib/avatarColors';
 import type { MentionSuggestion } from '@/api/mentions';
 
-// Autocomplete list shown above the composer while typing "@". Mirrors the
-// EmojiPanel overlay pattern. Registered users only (backend excludes guests).
+// Autocomplete list shown above the composer while typing "@". Members + (in a
+// city) currently-online guests, the latter tagged 👻 and live-only.
 export function MentionSuggestions({
   suggestions,
   onSelect,
@@ -17,19 +17,21 @@ export function MentionSuggestions({
   return (
     <View style={styles.panel}>
       <ScrollView keyboardShouldPersistTaps="always" showsVerticalScrollIndicator={false}>
-        {suggestions.map(s => (
-          <TouchableOpacity key={s.userId} style={styles.row} onPress={() => onSelect(s)} activeOpacity={0.6}>
-            <View style={[styles.avatar, { backgroundColor: avatarColor(s.userId) }]}>
+        {suggestions.map(s => {
+          const key = s.userId ?? s.guestId ?? s.username;
+          return (
+          <TouchableOpacity key={key} style={styles.row} onPress={() => onSelect(s)} activeOpacity={0.6}>
+            <View style={[styles.avatar, { backgroundColor: avatarColor(key) }]}>
               {s.avatarUrl
                 ? <Image source={{ uri: s.avatarUrl }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
                 : <Text style={styles.letter}>{(s.displayName[0] ?? '?').toUpperCase()}</Text>}
             </View>
             <View style={styles.body}>
               <Text style={styles.username}>@{s.username}</Text>
-              <Text style={styles.name} numberOfLines={1}>{s.displayName}</Text>
+              <Text style={styles.name} numberOfLines={1}>{s.isGuest ? '👻 Guest · online' : s.displayName}</Text>
             </View>
           </TouchableOpacity>
-        ))}
+        ); })}
       </ScrollView>
     </View>
   );

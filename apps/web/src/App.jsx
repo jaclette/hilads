@@ -692,6 +692,7 @@ function buildOnlineUsers(users, mySessionId) {
     sessionId: u.sessionId,
     nickname: u.nickname,
     userId: u.userId ?? null,
+    guestId: u.guestId ?? null,   // stable id for guest @mentions (live-only)
     isRegistered: !!u.userId,
     isMe: u.sessionId === mySessionId,
     mode: u.mode ?? null,
@@ -719,6 +720,7 @@ export default function App() {
   const [replyingTo, setReplyingTo] = useState(null)   // { id, nickname, content, type }
   const [actionBubble, setActionBubble] = useState(null) // { msg, x, y }
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
+  const [mentionNudge, setMentionNudge] = useState(false)  // guest got @mentioned while online
   const msgRefsMap = useRef(new Map())
   const [sendError, setSendError] = useState(null)
   const [reactionBursts, setReactionBursts] = useState([])
@@ -816,11 +818,22 @@ export default function App() {
   // Render message text with @mentions as styled, clickable spans (→ profile).
   // Mentions carry the CURRENT username resolved by the backend.
   function renderMessageContent(item) {
-    return splitContentByMentions(item.content ?? '', item.mentions).map((seg, i) =>
-      seg.type === 'text'
-        ? <span key={i}>{seg.text}</span>
-        : <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); openProfile(seg.userId, seg.username) }}>@{seg.username}</span>
-    )
+    return splitContentByMentions(item.content ?? '', item.mentions).map((seg, i) => {
+      if (seg.type === 'text') return <span key={i}>{seg.text}</span>
+      // Online-guest mention: 👻 pill, inert (no profile nav). Anchored on the
+      // stable guestId; if the guest has left it just renders as styled text.
+      if (seg.guestId) {
+        const online = onlineUsers.some(u => u.guestId === seg.guestId)
+        return (
+          <span
+            key={i}
+            className={`msg-mention msg-mention--guest${online ? '' : ' msg-mention--offline'}`}
+            title={online ? undefined : 'This guest has left'}
+          >👻 @{seg.username}</span>
+        )
+      }
+      return <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); openProfile(seg.userId, seg.username) }}>@{seg.username}</span>
+    })
   }
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
@@ -1049,6 +1062,7 @@ export default function App() {
     value:     input,
     setValue:  setInput,
     inputRef:  chatInputRef,
+    onlineUsers,   // city context: currently-online guests become mentionable (live-only)
   })
   const sessionIdRef = useRef(PAGE_SESSION_ID)
   const guestIdRef   = useRef(null)   // always-current guestId for own-message WS echo detection
@@ -1258,6 +1272,7 @@ export default function App() {
         nicknameRef.current,
         account?.id ?? null,
         account?.mode ?? 'exploring',
+        guestIdRef.current,
       )
     }
     // Subscribe to the per-user WS channel so friend-request events reach
@@ -1397,7 +1412,7 @@ export default function App() {
       }
       if (!activeRef.current) return
       if (activeChannelRef.current) {
-        socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
+        socketRef.current?.joinRoom(activeChannelRef.current, sessionIdRef.current, nicknameRef.current, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', guestIdRef.current)
       }
       const hiddenMs = tabHiddenAtRef.current ? Date.now() - tabHiddenAtRef.current : Infinity
       tabHiddenAtRef.current = null
@@ -2134,6 +2149,19 @@ export default function App() {
           const item = toFeedItem(message, undefined, lastJoinAtRef)
           if (!item) return // throttled join or unhandled system message
           if (item.subtype === 'join') scheduleEphemeral(item.id)
+          // Guest got @mentioned by someone else while online → real-time in-app
+          // signal only (highlight + discreet signup nudge). Guests have no push
+          // channel, so nothing is sent server-side — this is purely local.
+          if (item.type === 'message' && !isOwnMsg && !accountRef.current && myGuestId
+              && Array.isArray(message.mentions)
+              && message.mentions.some(m => m && m.guestId === myGuestId)) {
+            if (message.id) {
+              setHighlightedMsgId(message.id)
+              setTimeout(() => setHighlightedMsgId(null), 2500)
+            }
+            setMentionNudge(true)
+            setTimeout(() => setMentionNudge(false), 7000)
+          }
           setFeed(prev => {
             if (isOwnMsg && item.type === 'message') {
               const pendingIdx = prev.findIndex(f => f.localId != null)
@@ -2210,7 +2238,7 @@ export default function App() {
         triggerReactionBurstRef.current?.(type, messageId)
       })
 
-      socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
+      socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', session.guestId)
 
       // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
       clearInterval(heartbeatRef.current)
@@ -2717,7 +2745,7 @@ export default function App() {
       schedulePrompts()
 
       // Socket: join new room — existing handlers (set up in handleJoin) remain active
-      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring')
+      socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', guestIdRef.current)
 
       // Restart heartbeat for the new room (same policy — no !document.hidden)
       heartbeatRef.current = setInterval(() => {
@@ -5342,6 +5370,15 @@ export default function App() {
       </aside>
 
       {/* Lightbox */}
+      {/* Guest got @mentioned while online — discreet, non-blocking signup nudge. */}
+      {mentionNudge && !account && (
+        <div className="mention-nudge" role="status">
+          <span className="mention-nudge-text">👀 You're getting mentioned! Create an account so you never miss it.</span>
+          <button className="mention-nudge-btn" onClick={() => { setMentionNudge(false); setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>Sign up</button>
+          <button className="mention-nudge-dismiss" onClick={() => setMentionNudge(false)} aria-label="Dismiss">×</button>
+        </div>
+      )}
+
       {lightboxUrl && (
         <div className="lightbox-overlay" onClick={() => setLightboxUrl(null)}>
           <button className="lightbox-close" onClick={() => setLightboxUrl(null)}>✕</button>

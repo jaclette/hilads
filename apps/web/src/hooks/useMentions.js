@@ -13,12 +13,16 @@ import { buildMentionsFromText, detectActiveMention } from '../lib/mentions'
  *   <MessageComposer mentionSuggestions={m.suggestions} onMentionSelect={m.selectMention} />
  *   // on send:  const mentions = m.buildAndReset(finalText)
  */
-export default function useMentions({ context, channelId, value, setValue, inputRef }) {
+export default function useMentions({ context, channelId, value, setValue, inputRef, onlineUsers }) {
   const [suggestions, setSuggestions] = useState([])
   const [query, setQuery] = useState(null)
   const anchorRef   = useRef(0)
-  const selectedRef = useRef([]) // [{userId, username}]
+  const selectedRef = useRef([]) // [{userId|guestId, username}]
   const enabled = !!(context && channelId)
+  // Mirror presence into a ref so a guest joining/leaving doesn't re-trigger the
+  // debounced fetch on every keystroke; read at suggest time.
+  const onlineUsersRef = useRef(onlineUsers)
+  onlineUsersRef.current = onlineUsers
 
   const onValueChange = useCallback((newValue) => {
     setValue(newValue)
@@ -32,7 +36,18 @@ export default function useMentions({ context, channelId, value, setValue, input
   useEffect(() => {
     if (!enabled || query === null) { setSuggestions([]); return }
     const t = setTimeout(async () => {
-      setSuggestions(await fetchMentionSuggestions(context, String(channelId), query))
+      const members = await fetchMentionSuggestions(context, String(channelId), query)
+      // City context: merge currently-online GUESTS (live-only mentionability).
+      // Anchored on the stable guestId; excludes self + registered users.
+      let guests = []
+      if (context === 'city') {
+        const q = query.toLowerCase()
+        guests = (onlineUsersRef.current || [])
+          .filter(u => !u.isRegistered && !u.isMe && u.guestId && (u.nickname || '').toLowerCase().startsWith(q))
+          .slice(0, 6)
+          .map(u => ({ guestId: u.guestId, username: u.nickname, displayName: u.nickname, avatarUrl: null, isGuest: true }))
+      }
+      setSuggestions([...members, ...guests])
     }, 250)
     return () => clearTimeout(t)
   }, [query, enabled, context, channelId])
@@ -42,8 +57,11 @@ export default function useMentions({ context, channelId, value, setValue, input
     const before = value.slice(0, anchorRef.current)
     const after  = value.slice(cursor)
     setValue(before + '@' + s.username + ' ' + after)
-    if (!selectedRef.current.some(m => m.userId === s.userId)) {
-      selectedRef.current.push({ userId: s.userId, username: s.username })
+    const key = s.userId || s.guestId
+    if (key && !selectedRef.current.some(m => (m.userId || m.guestId) === key)) {
+      selectedRef.current.push(s.userId
+        ? { userId: s.userId, username: s.username }
+        : { guestId: s.guestId, username: s.username })
     }
     setQuery(null); setSuggestions([])
     setTimeout(() => inputRef?.current?.focus(), 0)
