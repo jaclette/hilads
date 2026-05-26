@@ -1,11 +1,14 @@
 /**
- * Vercel Edge Middleware — first-visit language detection (Option A).
+ * Vercel Edge Middleware — honor an EXPLICIT stored language choice only.
  *
- * Un-prefixed URLs are the English canonical and are NEVER rewritten here.
- * On a first visit (no `hilads_lang` cookie) by a fr/vi browser, we 302 to the
- * matching /fr or /vi variant. A returning user's cookie choice wins; choosing
- * English keeps them on the bare URLs. Crawlers are never redirected — they
- * index the canonical and discover localized variants via hreflang.
+ * Un-prefixed URLs are the English canonical and are served with 200 here.
+ * We redirect to /fr or /vi ONLY when the visitor has explicitly picked that
+ * language in-app (the `hilads_lang` cookie, set solely by setLocale). A fresh
+ * visitor with NO cookie is NEVER redirected — including on Accept-Language —
+ * so the bare URL serves English 200. This avoids the forced-language-redirect
+ * SEO anti-pattern: Googlebot (Accept-Language: en, US) must reach /city/<slug>,
+ * /fr/... and /vi/... independently with 200, and x-default → bare English must
+ * return 200, not a 302.
  *
  * 302 (not 301) on purpose: the un-prefixed EN URL must stay the indexable
  * canonical. This runs before vercel.json rewrites.
@@ -44,18 +47,17 @@ export default function middleware(request: Request) {
   const ua = request.headers.get('user-agent') || ''
   if (BOT_RE.test(ua)) return
 
-  // Explicit choice wins; 'en' (or anything non-fr/vi) → stay un-prefixed.
+  // Only an EXPLICIT stored choice redirects. `hilads_lang` is written solely
+  // when the user picks a language in-app (setLocale) — never from Accept-Language
+  // and never by initial detection. A returning user who chose fr/vi goes to their
+  // variant; choosing English (or any non-fr/vi value) keeps them un-prefixed.
   const cookie = readCookie(request.headers.get('cookie'), COOKIE)
-  let target: string | null = cookie && LOCALES.includes(cookie) ? cookie : null
+  const target = cookie && LOCALES.includes(cookie) ? cookie : null
 
-  // First visit (no cookie at all): detect from Accept-Language.
-  if (!cookie) {
-    const al = (request.headers.get('accept-language') || '').toLowerCase()
-    const first = al.split(',')[0].trim().slice(0, 2)
-    if (LOCALES.includes(first)) target = first
-  }
-
-  if (!target) return // English default — no redirect
+  // Fresh visitor — no explicit choice → serve the English canonical at the bare
+  // URL with 200. Do NOT redirect on Accept-Language (SEO: every language URL must
+  // be independently reachable with 200; x-default → bare English must be 200).
+  if (!target) return
 
   url.pathname = `/${target}${pathname}`
   return Response.redirect(url, 302)
