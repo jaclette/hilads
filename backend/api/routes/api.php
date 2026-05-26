@@ -2515,15 +2515,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         catch (\Throwable $e) { error_log('[channel_join] presence stamp failed: ' . $e->getMessage()); }
     }
 
-    // ── Post-response: join message INSERT ────────────────────────────────────
-    if ($isNewSession) {
-        try {
-            MessageRepository::addJoinEvent($channelId, $guestId, $nickname, $joinUserId);
-        } catch (\Throwable $e) {
-            error_log('[channel_join] join event write failed: ' . $e->getMessage());
-        }
-    }
-
     // ── Post-response: analytics ──────────────────────────────────────────────
     if ($isNewSession) {
         $cityInfo = CityRepository::findById($channelId); // in-process cache — 0ms
@@ -2536,19 +2527,20 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             'guest_id'   => $joinUserId === null ? $guestId : null,
         ]);
 
-        // "Someone arrived in your city" push — city members who opted in.
-        // notifyCityArrival self-excludes the arriver and enforces the per-(arriver,
-        // city) cooldown, so a quick return / reconnect doesn't re-spam the city.
+        // Arrival: ONE genuine-arrival gate drives BOTH the feed "X just landed"
+        // system message AND the city push. emitCityArrival self-excludes the
+        // arriver (push) and enforces the per-(arriver, city) cooldown atomically,
+        // so a foreground/reconnect/quick-return emits neither a feed msg nor a push.
         try {
-            NotificationRepository::notifyCityArrival(
-                'city_' . $channelId,
+            NotificationRepository::emitCityArrival(
+                $channelId,
                 $joinUserId,
                 $guestId,
                 $nickname,
                 $cityInfo['name'] ?? null,
             );
         } catch (\Throwable $e) {
-            error_log('[channel_join] city_join notify failed: ' . $e->getMessage());
+            error_log('[channel_join] arrival emit failed: ' . $e->getMessage());
         }
     }
 
@@ -2701,27 +2693,23 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             register_shutdown_function(
                 static function () use ($deferJoinChannelId, $deferJoinGuestId, $deferJoinNickname, $deferJoinUserId): void {
                     if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-                    try {
-                        MessageRepository::addJoinEvent($deferJoinChannelId, $deferJoinGuestId, $deferJoinNickname, $deferJoinUserId);
-                    } catch (\Throwable $e) {
-                        error_log('[bootstrap] join event write failed: ' . $e->getMessage());
-                    }
-                    // "Someone arrived in your city" push → city members who opted in.
-                    // notifyCityArrival resolves the arriver's user id (lean bootstrap
-                    // skips auth, so $deferJoinUserId is null here) to exclude them from
-                    // their own arrival, and enforces the per-(arriver, city) cooldown so
-                    // a foreground/reconnect/quick-return doesn't re-spam the city.
+                    // Arrival: ONE genuine-arrival gate drives BOTH the feed "X just
+                    // landed" system message AND the city push. emitCityArrival resolves
+                    // the arriver's user id (lean bootstrap skips auth, so $deferJoinUserId
+                    // is null here) to self-exclude them, and enforces the per-(arriver,
+                    // city) cooldown atomically — so a foreground/reconnect/quick-return
+                    // emits neither a feed message nor a push.
                     try {
                         $cityInfo = CityRepository::findById($deferJoinChannelId);
-                        NotificationRepository::notifyCityArrival(
-                            'city_' . $deferJoinChannelId,
+                        NotificationRepository::emitCityArrival(
+                            $deferJoinChannelId,
                             $deferJoinUserId,
                             $deferJoinGuestId,
                             $deferJoinNickname,
                             $cityInfo['name'] ?? null,
                         );
                     } catch (\Throwable $e) {
-                        error_log('[bootstrap] city_join notify failed: ' . $e->getMessage());
+                        error_log('[bootstrap] arrival emit failed: ' . $e->getMessage());
                     }
                 }
             );

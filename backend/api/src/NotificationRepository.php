@@ -338,21 +338,27 @@ class NotificationRepository
     private const ARRIVAL_COOLDOWN_SECONDS = 600; // 10 minutes
 
     /**
-     * Announce "X just landed" to the city, with self-exclusion + a server-enforced
-     * per-(arriver, city) cooldown. This is the ONLY entry point the join/bootstrap
-     * paths should use for arrival pushes.
+     * Emit a genuine city arrival across BOTH surfaces — the feed "X just landed"
+     * system message AND the "Someone arrived" push — behind a SINGLE atomic
+     * cooldown claim, so the two can never duplicate or diverge. This is the ONLY
+     * entry point the join/bootstrap paths should use for arrivals.
      *
      * $arriverUserId — the arriver's registered id, or null. Lean bootstrap (web)
      *   skips auth so it arrives null here; we resolve it from guest_id so the
-     *   arriver is reliably excluded from their own notification.
+     *   arriver is reliably excluded from their own push.
+     *
+     * The feed message is a channel message everyone polls; the arriver's own
+     * client self-filters it so they never see their own arrival line.
      */
-    public static function notifyCityArrival(
-        string  $cityChannelId,
+    public static function emitCityArrival(
+        int     $channelId,
         ?string $arriverUserId,
         string  $arriverGuestId,
         string  $arriverNickname,
         ?string $cityName
     ): void {
+        $cityChannelId = 'city_' . $channelId;
+
         // Resolve the arriver's registered id when the caller didn't (lean path),
         // so self-exclusion works and the cooldown keys on a stable identity.
         if ($arriverUserId === null && $arriverGuestId !== '') {
@@ -362,15 +368,25 @@ class NotificationRepository
         }
         $arriverKey = $arriverUserId !== null ? ('u:' . $arriverUserId) : ('g:' . $arriverGuestId);
 
-        // Genuine-arrival gate: skip if this person already triggered an arrival
-        // for this city inside the cooldown window (quick return / reconnect).
+        // Single genuine-arrival gate for BOTH surfaces. Atomic + DB-backed, so it
+        // holds across PHP-FPM workers and even if both join paths fire for one
+        // arrival: only the first claim inside the cooldown window emits anything.
         if (!self::tryMarkArrival($arriverKey, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS)) {
             return;
         }
 
+        // Feed system message ("X just landed"). Others see it; the arriver's own
+        // client self-filters it. One per genuine arrival (gated above).
+        try {
+            MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId);
+        } catch (\Throwable $e) {
+            error_log('[arrival] join feed write failed: ' . $e->getMessage());
+        }
+
+        // Push to opted-in city members, excluding the arriver.
         self::notifyCityOnlineUsers(
             $cityChannelId,
-            $arriverUserId, // exclude the arriver from their own arrival (Bug 1)
+            $arriverUserId,
             'city_join',
             '👀 Someone arrived in ' . ($cityName ?? 'your city'),
             $arriverNickname . ' just landed',

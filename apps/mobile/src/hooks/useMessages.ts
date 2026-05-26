@@ -327,13 +327,20 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
   // covers WS pushes from blocked authors and the gap between the user
   // tapping Block and the next refetch. Memoised on blockedSet so the
   // FlatList only re-renders when the set actually changes.
+  // Also drop the user's OWN arrival line — the join is a channel message
+  // everyone polls, but a user must never see their own "X just landed".
+  const selfGuestId = identity?.guestId ?? null;
+  const selfUserId  = account?.id ?? null;
   const visibleMessages = useMemo(
     () => filterBlocked(
       messages,
       m => ({ userId: m.userId ?? null, guestId: m.guestId ?? null }),
       blockedSet,
-    ),
-    [messages, blockedSet],
+    ).filter(m => !(
+      m.type === 'system' && m.event === 'join' &&
+      ((!!m.guestId && m.guestId === selfGuestId) || (!!m.userId && m.userId === selfUserId))
+    )),
+    [messages, blockedSet, selfGuestId, selfUserId],
   );
 
   return {

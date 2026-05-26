@@ -507,10 +507,19 @@ function dedupeWeather(items) {
     : items.filter((item, i) => !(item.type === 'activity' && item.subtype === 'weather') || i === lastWeatherIdx)
 }
 
+// Current user's identity, kept current by the component (see SELF_IDENTITY writes).
+// Module-level because toFeedItem is module-level and runs from many call sites;
+// there is exactly one active user per page session.
+const SELF_IDENTITY = { guestId: null, userId: null }
+
 // lastJoinAtRef: pass the component ref so join messages are throttled to 1 per 8s.
 // Returns null for suppressed joins — callers must filter nulls.
 function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   if (m.type === 'system' && m.event === 'join') {
+    // Never show a user their OWN arrival line (the join is a channel message
+    // everyone polls; others still see it).
+    if ((m.guestId && m.guestId === SELF_IDENTITY.guestId) ||
+        (m.userId  && m.userId  === SELF_IDENTITY.userId)) return null
     if (lastJoinAtRef) {
       const now = Date.now()
       if (now - lastJoinAtRef.current < 8000) return null // throttle rapid joins
@@ -1264,6 +1273,7 @@ export default function App() {
   // Also re-assert WS presence when login/logout happens mid-session.
   useEffect(() => {
     accountRef.current = account
+    SELF_IDENTITY.userId = account?.id ?? null
     // Registered users: override nicknameRef with the backend display_name immediately.
     if (account?.display_name) {
       nicknameRef.current = account.display_name
@@ -1997,6 +2007,7 @@ export default function App() {
         // identifyUser / guest_created deferred to after bootstrap — see below
       }
       guestIdRef.current = session.guestId
+      SELF_IDENTITY.guestId = session.guestId
       setGuest(session)
       setChannelId(location.channelId)
       setCityTimezone(location.timezone ?? 'UTC')
