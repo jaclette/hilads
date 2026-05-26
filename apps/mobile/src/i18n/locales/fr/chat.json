@@ -23,7 +23,7 @@
   "failedRetry": "Échec de l'envoi · touche pour réessayer",
   "feedJoin": {
     "0": "👋 {{name}} vient d'arriver",
-    "1": "🔥 {{name}} nous a rejoint",
+    "1": "🔥 {{name}} nous a rejoints",
     "2": "🍻 {{name}} est là",
     "3": "👀 {{name}} vient de débarquer",
     "4": "✨ {{name}} est arrivé"

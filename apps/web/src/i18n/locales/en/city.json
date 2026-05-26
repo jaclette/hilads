@@ -162,7 +162,7 @@
   },
   "feedJoin": {
     "0": "👋 {{name}} just landed",
-    "1": "🔥 {{name}} joined them",
+    "1": "🔥 {{name}} joined",
     "2": "🍻 {{name}} is here",
     "3": "👀 {{name}} just showed up",
     "4": "✨ {{name}} arrived"

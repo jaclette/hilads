@@ -159,7 +159,7 @@
   },
   "feedJoin": {
     "0": "👋 {{name}} vừa đến",
-    "1": "🔥 {{name}} đã tham gia cùng họ",
+    "1": "🔥 {{name}} đã tham gia",
     "2": "🍻 {{name}} đang ở đây",
     "3": "👀 {{name}} vừa xuất hiện",
     "4": "✨ {{name}} đã đến"
