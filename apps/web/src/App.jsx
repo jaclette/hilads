@@ -499,7 +499,10 @@ const JOIN_TEMPLATES = [
 ]
 
 // Strip duplicate weather items from a feed array built from history, keeping only the most recent.
+// Also drops nulls — toFeedItem returns null for suppressed items (own-arrival join, throttled joins),
+// and a null in the feed would crash the render (item.type) and this dedupe pass.
 function dedupeWeather(items) {
+  items = items.filter(Boolean)
   const lastWeatherIdx = items.reduce((last, item, i) =>
     (item.type === 'activity' && item.subtype === 'weather') ? i : last, -1)
   return lastWeatherIdx === -1
@@ -1530,7 +1533,7 @@ export default function App() {
 
       if (fresh.length > 0) {
         oldestMessageIdRef.current = msgs[0]?.id ?? null // msgs[0] is oldest (ASC order from backend)
-        setFeed(prev => [...fresh.map(m => toFeedItem(m)), ...prev])
+        setFeed(prev => [...fresh.map(m => toFeedItem(m)).filter(Boolean), ...prev])
       }
 
       const more = data.hasMore ?? false
