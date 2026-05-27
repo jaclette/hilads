@@ -87,6 +87,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [vibe,            setVibe]            = useState(account.vibe ?? 'chill')
   const [mode,            setMode]            = useState(account.mode ?? null)
   const [interests,       setInterests]       = useState(new Set(account.interests ?? []))
+  const [langOpen,        setLangOpen]        = useState(false)
   const [uploading,       setUploading]       = useState(false)
   const [saving,          setSaving]          = useState(false)
   const [saved,           setSaved]           = useState(false)
@@ -324,22 +325,45 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </div>
           </div>
 
-          {/* Language switcher — always visible, persists choice, live UI update */}
+          {/* Language switcher — collapsed to the current language; tap to pick
+              from the full list (kept compact now that there are 19 locales). */}
           <div className="profile-mode-section">
             <span className="profile-mode-label">{t('common:language')}</span>
-            <div className="profile-mode-btns">
-              {LANGS.map(l => (
-                <button
-                  key={l.code}
-                  type="button"
-                  className={`profile-mode-btn${i18n.language === l.code ? ' profile-mode-btn--on' : ''}`}
-                  onClick={() => setLocale(l.code)}
-                >
-                  <span className="profile-mode-btn-emoji">{l.flag}</span>
-                  <span className="profile-mode-btn-name">{l.name}</span>
-                </button>
-              ))}
-            </div>
+            {(() => {
+              const cur = LANGS.find(l => l.code === i18n.language) || LANGS[0]
+              return (
+                <>
+                  <button
+                    type="button"
+                    className="profile-lang-trigger"
+                    onClick={() => setLangOpen(o => !o)}
+                    aria-expanded={langOpen}
+                  >
+                    <span className="profile-lang-trigger-flag">{cur.flag}</span>
+                    <span className="profile-lang-trigger-name">{cur.name}</span>
+                    <span className={`profile-lang-chevron${langOpen ? ' profile-lang-chevron--open' : ''}`} aria-hidden="true">▾</span>
+                  </button>
+                  {langOpen && (
+                    <div className="profile-lang-list" role="listbox">
+                      {LANGS.map(l => (
+                        <button
+                          key={l.code}
+                          type="button"
+                          role="option"
+                          aria-selected={i18n.language === l.code}
+                          className={`profile-lang-item${i18n.language === l.code ? ' profile-lang-item--on' : ''}`}
+                          onClick={() => { setLocale(l.code); setLangOpen(false) }}
+                        >
+                          <span className="profile-lang-item-flag">{l.flag}</span>
+                          <span className="profile-lang-item-name">{l.name}</span>
+                          {i18n.language === l.code && <span className="profile-lang-item-check" aria-hidden="true">✓</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )
+            })()}
           </div>
 
           {/* Filter pills */}
