@@ -1,0 +1,234 @@
+{
+  "guestGate": {
+    "createAccount": "إنشاء حساب",
+    "signIn": "تسجيل الدخول",
+    "create_event": {
+      "pageTitle": "إنشاء فعالية",
+      "title": "يمكن للأشباح التصفّح، لكن لا يمكنهم الاستضافة.",
+      "sub": "أنشئ حسابًا لتنظيم فعاليتك الخاصة ووضع مدينتك على الخريطة."
+    },
+    "view_profile": {
+      "pageTitle": "الملف الشخصي",
+      "title": "يمكن للأشباح التصفّح، لكن الملفات الشخصية للأعضاء.",
+      "sub": "أنشئ حسابًا لفتح الملفات الشخصية والتواصل مع الناس وبناء مجموعتك في المدينة."
+    },
+    "join_hangout": {
+      "pageTitle": "الانضمام إلى hangout",
+      "title": "يمكن للأشباح التصفّح، لكن لا يمكنهم الانضمام إلى جلسات الـhangout.",
+      "sub": "سجّل لتنضم إلى جلسات الـhangout، وتحفظ اسمك، وتتلقى إشعارًا عندما يرغب الناس في اللقاء."
+    },
+    "create_hangout": {
+      "pageTitle": "بدء hangout",
+      "title": "يمكن للأشباح التصفّح، لكن لا يمكنهم الاستضافة.",
+      "sub": "سجّل لتبدأ hangout، وتحفظ اسمك، وتجذب الناس للانضمام إليك."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} مباشرة ✨",
+    "dismiss": "إغلاق",
+    "body": "أناس حقيقيون، الآن. قل مرحبًا، وانظر من حولك، أو أحضر صديقًا.",
+    "sayHi": "قل مرحبًا 👋",
+    "invite": "دعوة الأصدقاء"
+  },
+  "imageType": "يرجى اختيار صورة بصيغة JPEG أو PNG أو WebP.",
+  "imageTooLarge": "الصورة كبيرة جدًا. الحجم الأقصى: 10 ميغابايت.",
+  "picker": {
+    "title": "اختر مدينة",
+    "search": "ابحث عن مدينة…",
+    "noResults": "لم يُعثر على أي مدينة لـ «{{query}}»",
+    "topCities": "أكثر المدن نشاطًا الآن",
+    "cities": "المدن"
+  },
+  "joining": "جارٍ الاتصال بـ {{city}}…",
+  "joiningDefault": "جارٍ الاتصال بالدردشة…",
+  "tryAgain": "إعادة المحاولة",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "عام",
+    "activeNow": "● نشط الآن",
+    "repliesNew": "لا توجد ردود بعد — كن الأول",
+    "replies_zero": "💬 لا توجد ردود",
+    "replies_one": "💬 رد واحد",
+    "replies_two": "💬 ردّان",
+    "replies_few": "💬 {{count}} ردود",
+    "replies_many": "💬 {{count}} ردًّا",
+    "replies_other": "💬 {{count}} رد",
+    "going_zero": "🙌 لا أحد ذاهب",
+    "going_one": "🙌 شخص واحد ذاهب",
+    "going_two": "🙌 شخصان ذاهبان",
+    "going_few": "🙌 {{count}} أشخاص ذاهبون",
+    "going_many": "🙌 {{count}} شخصًا ذاهبًا",
+    "going_other": "🙌 {{count}} شخص ذاهب",
+    "hostedBy": "باستضافة {{name}}",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "إنشاء فعالية",
+    "startHangout": "ابدأ hangout ⚡",
+    "openPlace": "افتح مكانك",
+    "loadError": "تعذّر تحميل الفعاليات",
+    "loadErrorSub": "اسحب لإعادة المحاولة لاحقًا أو أنشئ شيئًا جديدًا في {{city}}.",
+    "emptyLocalTitle": "استضف مكانك",
+    "emptyTitle": "لا شيء يحدث بعد",
+    "emptyLocalSub": "اجعل {{city}} تنبض بالحياة. ابدأ فعالية متكررة في مكانك المفضّل.",
+    "emptySub": "كن أول من يحرّك شيئًا في {{city}}",
+    "noEvents": "لا توجد فعاليات الآن",
+    "noHangouts": "لا توجد جلسات hangout بعد",
+    "noEventsSub": "كن أول من ينشئ واحدة في {{city}}",
+    "noHangoutsSub": "ابدأ hangout واجعل المدينة تتحدث",
+    "filterAll": "الكل",
+    "seeComing": "شاهد ما هو قادم 🔮",
+    "seeHappened": "شاهد ما الذي حدث",
+    "createNew": "إنشاء"
+  },
+  "header": {
+    "online": "{{count}} بالقرب",
+    "liveNow": "مباشر الآن",
+    "seeWhosHere": "شاهد من هنا",
+    "onlineAria": "{{count}} أشخاص بالقرب، اضغط لترى من",
+    "notifications": "الإشعارات",
+    "messages": "الرسائل",
+    "shareCity": "مشاركة المدينة",
+    "switchCity": "تبديل المدينة",
+    "changeCity": "تغيير المدينة",
+    "currentWeather": "الطقس الحالي: {{label}}"
+  },
+  "here": {
+    "title": "الناس هنا",
+    "filterBadge": "الشارة",
+    "filterVibe": "Vibe",
+    "filterMode": "الوضع",
+    "you": "(أنت)",
+    "hereNow": "Here now",
+    "noMatchLive": "لا أحد يطابق هذه المرشّحات الآن.",
+    "legendsSub": "هم من يجعلون المدينة تنبض",
+    "cityCrew": "أعضاء المدينة",
+    "noMatchCrew": "لا يوجد عضو يطابق هذه المرشّحات.",
+    "loadMore": "تحميل المزيد",
+    "messageAria": "إرسال رسالة إلى {{name}}"
+  },
+  "eventHeader": {
+    "yourEvent": "فعاليتك",
+    "edit": "تعديل",
+    "join": "انضمام",
+    "joined": "تم الانضمام ✓",
+    "here": "{{count}} هنا",
+    "going_zero": "لا أحد ذاهب",
+    "going_one": "شخص واحد ذاهب",
+    "going_two": "شخصان ذاهبان",
+    "going_few": "{{count}} أشخاص ذاهبون",
+    "going_many": "{{count}} شخصًا ذاهبًا",
+    "going_other": "{{count}} شخص ذاهب",
+    "locationPending": "الموقع غير متاح بعد",
+    "hostedBy": "باستضافة {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "بداية المحادثة",
+    "arriving": "الناس في طريقهم",
+    "firstChat": "كن أول من يكتب هنا 👇",
+    "firstHi": "كن أول من يقول مرحبًا 👇"
+  },
+  "create": {
+    "title": "ما الخطة؟",
+    "hangoutTitle": "ابدأ hangout",
+    "hangoutSub": "فوريًا — دع الناس ينضمّون إليك الآن",
+    "eventTitle": "إنشاء فعالية",
+    "eventSub": "خطّط لشيء يمكن للآخرين الانضمام إليه"
+  },
+  "goingModal": {
+    "going": "ذاهبون",
+    "inThisHangout": "في هذا الـhangout",
+    "loading": "جارٍ التحميل…",
+    "empty": "لا أحد بعد — كن الأول! 🙌"
+  },
+  "nickname": {
+    "label": "الاسم المستعار",
+    "placeholder": "اسمك...",
+    "heroSub": "مجهول الهوية الآن. لا يزال بإمكانك التحكم في كيفية ظهورك.",
+    "save": "حفظ الاسم المستعار",
+    "upgradeHint": "احفظ اسمك. ابقَ محليًا.",
+    "haveAccount": "هل لديك حساب بالفعل؟",
+    "myEvents": "فعالياتي",
+    "anonymous": "// مجهول · لا حاجة للتسجيل"
+  },
+  "prompt": {
+    "exploreText": "🔥 شاهد ما الذي يحدث الآن",
+    "exploreCta": "شاهد ما الذي يحدث",
+    "photoText": "📸 شارك ما الذي يحدث",
+    "shoot": "صوّر",
+    "createEventText": "🎉 هل لديك خطة الليلة؟",
+    "createEventCta": "إنشاء فعالية",
+    "installText": "✨ أضف Hilads إلى شاشتك الرئيسية\nلا تفوّت أبدًا ما الذي يحدث في مدينتك",
+    "installAdd": "إضافة",
+    "installHow": "كيف"
+  },
+  "toast": {
+    "eventDeleted": "تم حذف الفعالية"
+  },
+  "pwa": {
+    "addToHome": "أضف Hilads إلى الشاشة الرئيسية",
+    "add": "إضافة",
+    "keepClose": "أبقِ Hilads قريبًا",
+    "manualHelp": "افتح قائمة متصفحك واختر «إضافة إلى الشاشة الرئيسية».",
+    "dismiss": "إغلاق نافذة التثبيت"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} وصل للتو",
+    "1": "🔥 {{name}} انضم",
+    "2": "🍻 {{name}} هنا",
+    "3": "👀 {{name}} ظهر للتو",
+    "4": "✨ {{name}} وصل"
+  },
+  "ambient": {
+    "0": "🔥 الناس في طريقهم",
+    "1": "🍻 من سيخرج الليلة؟",
+    "2": "💬 المدينة تستيقظ",
+    "3": "🌙 طيور الليل متصلون",
+    "4": "👀 أحدهم وصل للتو",
+    "5": "🔥 وجه جديد في المدينة",
+    "6": "🎉 هناك أناس هنا الآن",
+    "7": "🌆 المحليون يسجّلون حضورهم"
+  },
+  "ownerPrompt": {
+    "text": "🔥 لقد بدأت هذه الفعالية!",
+    "sub": "اجعلها أفضل — أضف وصفًا، أو حدّث الوقت، أو شاركها.",
+    "edit": "✏️ تعديل الفعالية"
+  },
+  "feedNew": {
+    "event": "🔥 فعالية جديدة: {{title}}",
+    "join": "انضمام",
+    "replies_zero": "لا توجد ردود",
+    "replies_one": "رد واحد",
+    "replies_two": "ردّان",
+    "replies_few": "{{count}} ردود",
+    "replies_many": "{{count}} ردًّا",
+    "replies_other": "{{count}} رد"
+  },
+  "replyPreview": {
+    "photo": "📷 صورة"
+  },
+  "placeholder": {
+    "event": "قل شيئًا في {{title}} ✨",
+    "eventFirst": "كن الأول في {{title}} ✨"
+  },
+  "placeholders": [
+    "قل مرحبًا 👋",
+    "من سيخرج الليلة؟",
+    "هل من خطط؟ 👀",
+    "ما الذي يحدث هنا؟",
+    "هل يرغب أحد في شيء؟ 🍻",
+    "اكتب رسالة…"
+  ],
+  "typing": {
+    "one": "{{name}} يكتب…",
+    "two": "{{a}} و{{b}} يكتبان…",
+    "many": "عدة أشخاص يكتبون…"
+  },
+  "myEvent": {
+    "live": "مباشر",
+    "recurring": "↻ متكرر",
+    "upcoming": "قادم",
+    "delete": "حذف الفعالية"
+  }
+}

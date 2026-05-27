@@ -27,6 +27,7 @@ const LANG_NAMES: Record<Locale, string> = {
   id: 'Bahasa Indonesia',
   hi: 'हिन्दी',
   ru: 'Русский',
+  ar: 'العربية',
 };
 
 /**

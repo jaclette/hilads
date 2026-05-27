@@ -1,0 +1,52 @@
+{
+  "language": "اللغة",
+  "cancel": "إلغاء",
+  "loading": "جارٍ التحميل…",
+  "mode": {
+    "local": { "label": "محلي" },
+    "exploring": { "label": "استكشاف" }
+  },
+  "composer": {
+    "attach": "إضافة مرفق",
+    "emoji": "Emoji"
+  },
+  "vibe": {
+    "party": "حفلة",
+    "board_games": "ألعاب الطاولة",
+    "coffee": "قهوة",
+    "music": "موسيقى",
+    "food": "طعام",
+    "chill": "استرخاء"
+  },
+  "weather": {
+    "clear": "سماء صافية",
+    "sunnyHot": "طقس رائع",
+    "clearNight": "ليلة صافية",
+    "mostlyClear": "صافٍ في الغالب",
+    "partly": "بعض الغيوم",
+    "overcast": "سماء رمادية",
+    "fog": "ضباب",
+    "drizzle": "رذاذ خفيف",
+    "rain": "مطر",
+    "snow": "ثلج",
+    "snowShowers": "زخات ثلجية",
+    "thunder": "عاصفة رعدية"
+  },
+  "time": {
+    "happeningNow": "🔥 يحدث الآن",
+    "inMin": "🔥 خلال {{count}} دقيقة",
+    "today": "اليوم",
+    "tomorrow": "غدًا",
+    "yesterday": "أمس",
+    "justNow": "للتو",
+    "nowShort": "الآن",
+    "mAgo": "قبل {{count}} د",
+    "hAgo": "قبل {{count}} س",
+    "dAgo": "قبل {{count}} ي",
+    "expired": "منتهٍ",
+    "expiresSoon": "ينتهي قريبًا",
+    "expiresInMin": "ينتهي خلال {{mins}} د",
+    "expiresInHourMin": "ينتهي خلال {{hours}} س {{mins}} د",
+    "expiresInHour": "ينتهي خلال {{hours}} س"
+  }
+}

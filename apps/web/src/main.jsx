@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client'
 import * as Sentry from '@sentry/react'
 import './index.css'
 import App from './App'
-import i18n, { resolveInitialLocale, loadLocale } from './i18n'
+import i18n, { resolveInitialLocale, loadLocale, RTL_LOCALES } from './i18n'
 
 import posthog from 'posthog-js'
 
@@ -40,6 +40,7 @@ async function bootstrap() {
     }
     if (i18n.language !== locale) await i18n.changeLanguage(locale)
     document.documentElement.lang = locale
+    document.documentElement.dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr'
 
     createRoot(document.getElementById('root')).render(
         <App />,

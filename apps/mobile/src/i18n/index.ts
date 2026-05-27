@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { I18nManager } from 'react-native';
 import * as Localization from 'expo-localization';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -295,8 +296,26 @@ import ru_misc    from './locales/ru/misc.json';
 import ru_cities  from './locales/ru/cities.json';
 import ru_upcoming from './locales/ru/upcoming.json';
 import ru_archive from './locales/ru/archive.json';
+import ar_common  from './locales/ar/common.json';
+import ar_auth    from './locales/ar/auth.json';
+import ar_landing from './locales/ar/landing.json';
+import ar_here    from './locales/ar/here.json';
+import ar_now     from './locales/ar/now.json';
+import ar_chat    from './locales/ar/chat.json';
+import ar_event   from './locales/ar/event.json';
+import ar_hangout from './locales/ar/hangout.json';
+import ar_dm      from './locales/ar/dm.json';
+import ar_notifications from './locales/ar/notifications.json';
+import ar_publicProfile from './locales/ar/publicProfile.json';
+import ar_me      from './locales/ar/me.json';
+import ar_misc    from './locales/ar/misc.json';
+import ar_cities  from './locales/ar/cities.json';
+import ar_upcoming from './locales/ar/upcoming.json';
+import ar_archive from './locales/ar/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar'] as const;
+// Right-to-left locales — drive native I18nManager.forceRTL.
+const RTL_LOCALES = ['ar'];
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -322,7 +341,19 @@ const resources = {
   id: { common: id_common, auth: id_auth, landing: id_landing, here: id_here, now: id_now, chat: id_chat, event: id_event, hangout: id_hangout, dm: id_dm, notifications: id_notifications, publicProfile: id_publicProfile, me: id_me, misc: id_misc, cities: id_cities, upcoming: id_upcoming, archive: id_archive },
   hi: { common: hi_common, auth: hi_auth, landing: hi_landing, here: hi_here, now: hi_now, chat: hi_chat, event: hi_event, hangout: hi_hangout, dm: hi_dm, notifications: hi_notifications, publicProfile: hi_publicProfile, me: hi_me, misc: hi_misc, cities: hi_cities, upcoming: hi_upcoming, archive: hi_archive },
   ru: { common: ru_common, auth: ru_auth, landing: ru_landing, here: ru_here, now: ru_now, chat: ru_chat, event: ru_event, hangout: ru_hangout, dm: ru_dm, notifications: ru_notifications, publicProfile: ru_publicProfile, me: ru_me, misc: ru_misc, cities: ru_cities, upcoming: ru_upcoming, archive: ru_archive },
+  ar: { common: ar_common, auth: ar_auth, landing: ar_landing, here: ar_here, now: ar_now, chat: ar_chat, event: ar_event, hangout: ar_hangout, dm: ar_dm, notifications: ar_notifications, publicProfile: ar_publicProfile, me: ar_me, misc: ar_misc, cities: ar_cities, upcoming: ar_upcoming, archive: ar_archive },
 };
+
+// Sync the native RTL flag to the locale. forceRTL persists natively and takes
+// effect on the NEXT app launch (no expo-updates to reload mid-session), so a
+// switch to/from Arabic needs an app restart to re-mirror the layout — the text
+// itself changes immediately via changeLanguage.
+function syncRTL(locale: string): void {
+  const shouldRTL = RTL_LOCALES.includes(locale);
+  if (I18nManager.isRTL !== shouldRTL) {
+    try { I18nManager.allowRTL(shouldRTL); I18nManager.forceRTL(shouldRTL); } catch { /* no-op */ }
+  }
+}
 
 function isSupported(code: string | null | undefined): code is Locale {
   return !!code && (SUPPORTED as readonly string[]).includes(code);
@@ -379,6 +410,7 @@ export async function applyStoredLocale(): Promise<void> {
   } catch {
     // AsyncStorage unavailable — keep the device-locale default.
   }
+  syncRTL(i18n.language);
 }
 
 /** Manual switch from the language picker: persist + apply. */
@@ -390,6 +422,7 @@ export async function setLocale(locale: Locale): Promise<void> {
     // Non-fatal — the change still applies for this session.
   }
   await i18n.changeLanguage(next);
+  syncRTL(next);
 }
 
 export default i18n;

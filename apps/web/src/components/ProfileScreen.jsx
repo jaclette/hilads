@@ -70,6 +70,7 @@ const LANGS = [
   { code: 'id',    flag: '🇮🇩', name: 'Bahasa Indonesia' },
   { code: 'hi',    flag: '🇮🇳', name: 'हिन्दी' },
   { code: 'ru',    flag: '🇷🇺', name: 'Русский' },
+  { code: 'ar',    flag: '🇸🇦', name: 'العربية' },
 ]
 
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {

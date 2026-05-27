@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "ابدأ hangout",
+    "editTitle": "تعديل الـhangout",
+    "category": "الفئة",
+    "cat": { "general": "عام", "tips": "نصائح", "food": "طعام", "drinks": "مشروبات", "help": "مساعدة", "meetup": "لقاء" },
+    "titleLabel": "ما الذي يدور في ذهنك؟",
+    "titlePlaceholder": "مثال: أفضل مكان لتناول القهوة في المنطقة؟",
+    "detailsLabel": "أضف تفاصيل",
+    "optional": "(اختياري)",
+    "detailsPlaceholder": "أعطِ بعض السياق…",
+    "expiry": "⏱ ينتهي تلقائيًا خلال 24 س",
+    "saving": "جارٍ الحفظ…",
+    "starting": "جارٍ البدء…",
+    "saveChanges": "حفظ التغييرات",
+    "startCta": "ابدأ hangout ⚡",
+    "limitHeader": "واحد في كل مرة",
+    "limitTitle": "لديك hangout بالفعل",
+    "limitSub": "يمكنك تشغيل hangout واحد في كل مرة. توجّه إلى «{{title}}»، أو احذفه لبدء واحد جديد.",
+    "limitGo": "اذهب إلى hangout الخاص بي →",
+    "yourHangout": "hangout الخاص بك"
+  },
+  "deleteConfirm": "حذف هذا الـhangout؟ سيؤدي هذا إلى إنهائه للجميع ولا يمكن التراجع عنه.",
+  "deleteFailedAlert": "تعذّر الحذف. يرجى المحاولة مرة أخرى.",
+  "shareAria": "مشاركة الـhangout",
+  "shareTitle": "شارك هذا الـhangout",
+  "members": {
+    "oneIn": "{{name}} منضم",
+    "countIn": "{{count}} في هذا الـhangout",
+    "seeAll": "عرض الكل →"
+  },
+  "owner": { "edit": "✏️ تعديل", "delete": "🗑 حذف" },
+  "gated": {
+    "title": "hangout للأعضاء فقط",
+    "pending": "الطلب قيد الانتظار — ستتمكن من الانضمام إلى المحادثة بمجرد أن يقبل أحد الأعضاء.",
+    "prompt": "اطلب الانضمام لرؤية المحادثة والدردشة.",
+    "requestBtn": "اطلب الانضمام"
+  },
+  "feed": {
+    "beginning": "بداية المحادثة",
+    "loading": "جارٍ التحميل…",
+    "emptyTitle": "لا توجد ردود بعد",
+    "emptySub": "كن أول من ينضم"
+  },
+  "joinReq": {
+    "someone": "شخص ما",
+    "wantsToJoin": " يريد الانضمام",
+    "joined": " انضم إلى الـhangout",
+    "askedToJoin": " طلب الانضمام",
+    "decline": "رفض",
+    "accept": "قبول",
+    "accepted": "مقبول",
+    "acceptedBy": "قَبِله {{name}}",
+    "declined": "رُفض الطلب"
+  },
+  "modes": { "local": "محلي", "exploring": "استكشاف" },
+  "reply": { "photo": "📷 صورة", "unavailable": "الرسالة الأصلية غير متاحة" },
+  "composer": { "reply": "رد على المحادثة…", "start": "ابدأ الـvibe ✨" },
+  "errors": {
+    "locFailed": "تعذّر الحصول على موقعك. يرجى تفعيل الوصول إلى الموقع والمحاولة مرة أخرى.",
+    "imageType": "يرجى اختيار صورة بصيغة JPEG أو PNG أو WebP.",
+    "imageTooLarge": "الصورة كبيرة جدًا. الحد الأقصى 10 ميغابايت.",
+    "imageSend": "تعذّر إرسال الصورة. يرجى المحاولة مرة أخرى.",
+    "dismiss": "{{error}} · اضغط للإغلاق"
+  }
+}

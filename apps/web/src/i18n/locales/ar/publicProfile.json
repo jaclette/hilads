@@ -1,0 +1,87 @@
+{
+  "title": "الملف الشخصي",
+  "loading": "جارٍ التحميل…",
+  "loadError": "تعذّر تحميل الملف الشخصي.",
+  "badgeMicro": {
+    "ghost": "مجرد تصفّح 👀",
+    "fresh": "وصل للتو 👶",
+    "regular": "يظهر كثيرًا",
+    "host": "يجعل الأمور تحدث 🔥"
+  },
+  "modes": { "local": "محلي", "exploring": "يستكشف" },
+  "vibes": {
+    "party": "حفلة", "board_games": "ألعاب الطاولة", "coffee": "قهوة",
+    "music": "موسيقى", "food": "طعام", "chill": "استرخاء"
+  },
+  "vibeTaglines": {
+    "party": "هنا من أجل الحياة الليلية",
+    "board_games": "أحضر الوجبات الخفيفة والنرد",
+    "coffee": "القهوة أولًا، وكل شيء آخر لاحقًا",
+    "music": "دائمًا في سعيٍ خلف إيقاع جميل",
+    "food": "نأكل أولًا، والأسئلة لاحقًا",
+    "chill": "هادئ، بأجواء رائعة"
+  },
+  "modeSub": {
+    "localIn": "محلي في {{city}}",
+    "local": "محلي",
+    "exploringIn": "يستكشف {{city}}",
+    "exploring": "يستكشف"
+  },
+  "from": "من",
+  "age": "العمر",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "الأصدقاء",
+    "vibes": "Vibes", "picks": "اختيارات المدينة 👑"
+  },
+  "host": "المضيف",
+  "live": "مباشر",
+  "empty": { "hangouts": "لا توجد جلسات hangout بعد", "events": "لا توجد فعاليات بعد", "friends": "لا يوجد أصدقاء بعد" },
+  "vibesTab": {
+    "score": "درجة vibe تبلغ {{score}}",
+    "basedOn_zero": "بناءً على {{count}} vibe",
+    "basedOn_one": "بناءً على vibe واحد",
+    "basedOn_two": "بناءً على vibe-ين",
+    "basedOn_few": "بناءً على {{count}} vibes",
+    "basedOn_many": "بناءً على {{count}} vibe",
+    "basedOn_other": "بناءً على {{count}} vibe",
+    "updateNote": "✏️ حدّث ملاحظتك ({{rating}}★)",
+    "leaveNote": "⭐ اترك ملاحظة",
+    "placeholder": "قل شيئًا لطيفًا… (اختياري)",
+    "cancel": "إلغاء",
+    "sending": "جارٍ الإرسال…",
+    "sendNote": "إرسال الملاحظة ✨",
+    "notesLabel": "الملاحظات · {{count}}",
+    "emptyTitle": "لا توجد ملاحظات بعد",
+    "emptySub": "كن أول من يترك ملاحظة ✨"
+  },
+  "picks": {
+    "restaurant": "المطعم المفضّل",
+    "spot": "جوهرة مخفية",
+    "tip": "نصيحة محلية",
+    "story": "قصة"
+  },
+  "actions": {
+    "opening": "جارٍ الفتح…",
+    "message": "💬 رسالة",
+    "friend": "✓ صديق",
+    "requestSent": "⌛ تم إرسال الطلب",
+    "acceptRequest": "✓ قبول الطلب",
+    "addFriend": "+ صديق",
+    "removing": "جارٍ الإزالة…",
+    "unfriend": "إلغاء الصداقة",
+    "cancel": "إلغاء",
+    "cancelling": "جارٍ الإلغاء…",
+    "cancelRequest": "إلغاء الطلب",
+    "keep": "الإبقاء",
+    "reportTitle": "الإبلاغ عن المستخدم"
+  },
+  "report": {
+    "existing": "لقد أبلغت عن هذا المستخدم في {{date}}. تتم مراجعة بلاغك.",
+    "sent": "تم إرسال البلاغ. شكرًا لإخبارنا.",
+    "placeholder": "صف المشكلة (10 أحرف على الأقل)…",
+    "error": "تعذّر إرسال البلاغ. حاول مرة أخرى.",
+    "sending": "جارٍ الإرسال…",
+    "submit": "إرسال البلاغ",
+    "cancel": "إلغاء"
+  }
+}

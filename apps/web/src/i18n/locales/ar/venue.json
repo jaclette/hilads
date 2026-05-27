@@ -1,0 +1,17 @@
+{
+  "loading": "جارٍ التحميل…",
+  "notFound": "هذا المكان ليس على Hilads.",
+  "loadError": "تعذّر تحميل هذا المكان. يرجى المحاولة مرة أخرى.",
+  "breadcrumb": "مسار التنقّل",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "مقهى"
+  },
+  "typeInCity": "{{category}} في {{city}}",
+  "address": "العنوان",
+  "hours": "ساعات العمل",
+  "openEveryDay": "مفتوح كل يوم · {{opens}} – {{closes}}",
+  "ctaText": "شاهد من حولك في {{city}} الآن.",
+  "openCity": "افتح {{city}}",
+  "lastUpdated": "آخر تحديث {{date}}"
+}

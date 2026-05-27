@@ -1,0 +1,134 @@
+{
+  "pageTitle": "ملفي الشخصي",
+  "changePhoto": "تغيير صورة الملف الشخصي",
+  "yourProfile": "ملفك الشخصي",
+  "mode": "الوضع",
+  "modes": {
+    "local": "محلي",
+    "localDesc": "أنت تعرف هذه المدينة",
+    "exploring": "استكشاف",
+    "exploringDesc": "أنت تكتشفها"
+  },
+  "tabs": {
+    "interests": "الاهتمامات",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "الأصدقاء",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "حفلة",
+    "board_games": "ألعاب الطاولة",
+    "coffee": "قهوة",
+    "music": "موسيقى",
+    "food": "طعام",
+    "chill": "استرخاء"
+  },
+  "interests": {
+    "drinks": "مشروبات",
+    "party": "حفلات",
+    "nightlife": "الحياة الليلية",
+    "music": "موسيقى",
+    "live music": "موسيقى حية",
+    "culture": "ثقافة",
+    "art": "فن",
+    "food": "طعام",
+    "coffee": "قهوة",
+    "sport": "رياضة",
+    "fitness": "لياقة بدنية",
+    "hiking": "المشي لمسافات طويلة",
+    "beach": "شاطئ",
+    "wellness": "العافية",
+    "travel": "سفر",
+    "hangout": "تسكّع",
+    "socializing": "التعارف",
+    "gaming": "ألعاب",
+    "tech": "تقنية",
+    "dating": "مواعدة"
+  },
+  "fields": {
+    "username": "اسم المستخدم",
+    "usernamePlaceholder": "اسم المستخدم",
+    "checking": "جارٍ التحقق…",
+    "available": "‏@{{username}} متاح",
+    "aboutMe": "نبذة عني",
+    "charsLeft": "— بقي {{count}}",
+    "aboutPlaceholder": "أحب طعام الشارع والأحاديث العفوية",
+    "email": "البريد الإلكتروني",
+    "readOnly": "— للقراءة فقط",
+    "homeCity": "المدينة الأصلية",
+    "homeCityPlaceholder": "أين تعيش",
+    "age": "العمر",
+    "agePlaceholder": "عمرك",
+    "myVibe": "vibe الخاص بي",
+    "interests": "الاهتمامات",
+    "interestsHint": "— اختر حتى 5"
+  },
+  "ambassador": {
+    "title": "مختارات المدينة 👑",
+    "subtitle": "تُعرض في ملفك الشخصي كأسطورة محلية.",
+    "restaurant": "المطعم المفضل",
+    "restaurantPlaceholder": "مكان تصطحب الناس إليه دائمًا",
+    "spot": "جوهرة مخفية / spot",
+    "spotPlaceholder": "مكان يفوته معظم السياح",
+    "tip": "نصيحة محلية",
+    "tipPlaceholder": "أفضل نصيحة للقادمين الجدد",
+    "story": "قصة المدينة",
+    "storyPlaceholder": "شيء تحبه في هذه المدينة"
+  },
+  "hangouts": {
+    "empty": "لا توجد hangouts بعد — ابدأ واحدًا ⚡",
+    "host": "المضيف"
+  },
+  "events": {
+    "going": "ذاهب",
+    "goingEmpty": "لا توجد خطط بعد — اعثر على شيء 🔥",
+    "hosting": "أستضيف",
+    "hostingEmpty": "لم تستضف شيئًا بعد — ابدأ شيئًا ✨",
+    "live": "مباشر",
+    "recurring": "↻ متكرر",
+    "upcoming": "قادم",
+    "deleteEvent": "حذف الفعالية"
+  },
+  "friends": {
+    "requests": "طلبات الصداقة",
+    "empty": "لا أصدقاء بعد. أضف بعضهم من الملفات الشخصية.",
+    "mine": "أصدقائي"
+  },
+  "vibesTab": {
+    "received": "Vibes المستلمة",
+    "score": "نتيجة vibe {{score}}",
+    "basedOn_zero": "بناءً على {{count}} vibe",
+    "basedOn_one": "بناءً على {{count}} vibe",
+    "basedOn_two": "بناءً على {{count}} vibe",
+    "basedOn_few": "بناءً على {{count}} vibes",
+    "basedOn_many": "بناءً على {{count}} vibe",
+    "basedOn_other": "بناءً على {{count}} vibes",
+    "empty": "لا توجد vibes بعد",
+    "emptyHint": "ستظهر نتيجتك هنا بمجرد أن يترك لك الناس ملاحظة ✨"
+  },
+  "save": {
+    "uploading": "جارٍ الرفع…",
+    "saving": "جارٍ الحفظ…",
+    "saved": "تم الحفظ ✓",
+    "save": "حفظ الملف الشخصي"
+  },
+  "signOut": "تسجيل الخروج",
+  "deleteAccount": "حذف الحساب",
+  "delete": {
+    "title": "حذف الحساب؟",
+    "body": "ستُحذف بياناتك في الملف الشخصي وأصدقاؤك وإعداداتك نهائيًا. ستبقى رسائلك وفعالياتك في محادثات المدينة بشكل مجهول.",
+    "irreversible": "لا يمكن التراجع عن هذا.",
+    "deleting": "جارٍ الحذف…",
+    "confirm": "نعم، احذف حسابي",
+    "cancel": "إلغاء"
+  },
+  "errors": {
+    "photoUpload": "فشل رفع الصورة. حاول مرة أخرى.",
+    "usernameTooShort": "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل",
+    "usernameTaken": "اسم المستخدم هذا مستخدم بالفعل",
+    "usernameInvalid": "اسم مستخدم غير صالح",
+    "saveFailed": "فشل الحفظ. حاول مرة أخرى.",
+    "generic": "حدث خطأ ما. حاول مرة أخرى."
+  }
+}

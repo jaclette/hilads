@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "طلبات الصداقة",
+    "incoming": "الواردة",
+    "sent": "المرسلة",
+    "wantsToBeFriend": "يريد أن يكون صديقك",
+    "requestSent": "تم إرسال الطلب",
+    "decline": "رفض",
+    "accept": "قبول",
+    "cancel": "إلغاء",
+    "emptyIncomingTitle": "لا توجد طلبات صداقة بعد",
+    "emptySentTitle": "لم ترسل أي طلب",
+    "emptyIncomingSub": "عندما يطلب أحدهم صداقتك، ستراه هنا.",
+    "emptySentSub": "ستظهر هنا طلبات الصداقة المعلّقة التي أرسلتها."
+  },
+  "blocked": {
+    "title": "المستخدمون المحظورون",
+    "thisUser": "هذا المستخدم",
+    "ghostName": "شبح",
+    "guest": "ضيف",
+    "unblock": "إلغاء الحظر",
+    "unblockTitle": "إلغاء حظر {{name}}؟",
+    "unblockBody": "سيتمكن {{name}} من رؤية محتواك والتواصل معك مجددًا.",
+    "unblockFailTitle": "تعذّر إلغاء الحظر",
+    "unblockFailBody": "يرجى المحاولة مرة أخرى.",
+    "emptyTitle": "لم تحظر أحدًا",
+    "emptySub": "لن يرى المستخدمون المحظورون محتواك، ولن ترى محتواهم."
+  }
+}
