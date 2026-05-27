@@ -10,6 +10,14 @@
     "attach": "Añadir un adjunto",
     "emoji": "Emoji"
   },
+  "vibe": {
+    "party": "Fiesta",
+    "board_games": "Juegos de mesa",
+    "coffee": "Café",
+    "music": "Música",
+    "food": "Comida",
+    "chill": "Relax"
+  },
   "weather": {
     "clear": "cielo despejado",
     "sunnyHot": "sol radiante",

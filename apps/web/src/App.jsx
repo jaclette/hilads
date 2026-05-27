@@ -434,14 +434,23 @@ function typingText(users, mySessionId, t) {
 
 // ── Vibe display ──────────────────────────────────────────────────────────────
 
-// Vibe labels live in brand.json (reserved vocabulary — English in every locale).
+// Emoji + English fallback per vibe. The DISPLAY label is resolved at render
+// time by vibeLabel() from common.vibe.* (translated per locale, mirrors the
+// mobile app + profile.json). The English strings here are only the fallback.
 const VIBE_META = {
-  party:       { emoji: '🔥', label: i18n.t('vibe.party',       { ns: 'brand', defaultValue: 'Party' }) },
-  board_games: { emoji: '🎲', label: i18n.t('vibe.board_games', { ns: 'brand', defaultValue: 'Board Games' }) },
-  coffee:      { emoji: '☕', label: i18n.t('vibe.coffee',      { ns: 'brand', defaultValue: 'Coffee' }) },
-  music:       { emoji: '🎧', label: i18n.t('vibe.music',       { ns: 'brand', defaultValue: 'Music' }) },
-  food:        { emoji: '🍜', label: i18n.t('vibe.food',        { ns: 'brand', defaultValue: 'Food' }) },
-  chill:       { emoji: '🧘', label: i18n.t('vibe.chill',       { ns: 'brand', defaultValue: 'Chill' }) },
+  party:       { emoji: '🔥', label: 'Party' },
+  board_games: { emoji: '🎲', label: 'Board Games' },
+  coffee:      { emoji: '☕', label: 'Coffee' },
+  music:       { emoji: '🎧', label: 'Music' },
+  food:        { emoji: '🍜', label: 'Food' },
+  chill:       { emoji: '🧘', label: 'Chill' },
+}
+
+// Localized vibe label. Uses the i18n singleton (not a hook) so it works from
+// the .map() filter builders too; components rendering it already re-render on
+// language change via their own useTranslation, so the label stays in sync.
+function vibeLabel(vibe) {
+  return i18n.t(`vibe.${vibe}`, { ns: 'common', defaultValue: VIBE_META[vibe]?.label || vibe })
 }
 
 const MODE_META = {
@@ -4663,7 +4672,7 @@ export default function App() {
           { key: 'regular', label: badgeLabel('regular') },
           { key: 'host',    label: badgeLabel('host')    },
         ]
-        const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${v.label}` }))
+        const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${vibeLabel(k)}` }))
         const MODE_FILTER_OPTIONS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${t(`mode.${k}.label`, { ns: 'common' })}` }))
 
         // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
@@ -4735,7 +4744,7 @@ export default function App() {
                     <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{user.contextBadge.label}</span>
                   )}
                   {user.vibe && VIBE_META[user.vibe] && (
-                    <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {VIBE_META[user.vibe].label}</span>
+                    <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {vibeLabel(user.vibe)}</span>
                   )}
                 </div>
               </div>
@@ -4778,7 +4787,7 @@ export default function App() {
                   {(m.badges ?? []).map(k => (
                     <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
                   ))}
-                  {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {VIBE_META[m.vibe].label}</span>}
+                  {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {vibeLabel(m.vibe)}</span>}
                 </div>
               </div>
             </div>
@@ -4868,7 +4877,7 @@ export default function App() {
                             {(m.badges ?? []).map(k => (
                               <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
                             ))}
-                            {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {VIBE_META[m.vibe].label}</span>}
+                            {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {vibeLabel(m.vibe)}</span>}
                           </div>
                           {m.ambassadorPicks && (() => {
                             const first = m.ambassadorPicks.tip ?? m.ambassadorPicks.restaurant ?? m.ambassadorPicks.spot ?? m.ambassadorPicks.story
@@ -5304,7 +5313,7 @@ export default function App() {
                           <div className="people-drawer-meta">
                             {badgeKey && <span className={`badge-pill badge-pill--${badgeKey}`}>{badgeLabel(badgeKey)}</span>}
                             {p.vibe && VIBE_META[p.vibe] && (
-                              <span className="vibe-badge">{VIBE_META[p.vibe].emoji} {VIBE_META[p.vibe].label}</span>
+                              <span className="vibe-badge">{VIBE_META[p.vibe].emoji} {vibeLabel(p.vibe)}</span>
                             )}
                           </div>
                         )}

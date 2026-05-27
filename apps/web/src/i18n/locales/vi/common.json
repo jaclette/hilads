@@ -10,6 +10,14 @@
     "attach": "Thêm tệp đính kèm",
     "emoji": "Emoji"
   },
+  "vibe": {
+    "party": "Tiệc tùng",
+    "board_games": "Board game",
+    "coffee": "Cà phê",
+    "music": "Âm nhạc",
+    "food": "Ẩm thực",
+    "chill": "Thư giãn"
+  },
   "weather": {
     "clear": "trời quang",
     "sunnyHot": "nắng đẹp",

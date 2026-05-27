@@ -10,6 +10,14 @@
     "attach": "Ajouter une pièce jointe",
     "emoji": "Emoji"
   },
+  "vibe": {
+    "party": "Fête",
+    "board_games": "Jeux de société",
+    "coffee": "Café",
+    "music": "Musique",
+    "food": "Cuisine",
+    "chill": "Détente"
+  },
   "weather": {
     "clear": "ciel dégagé",
     "sunnyHot": "grand soleil",

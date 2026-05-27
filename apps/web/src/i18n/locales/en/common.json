@@ -10,6 +10,14 @@
     "attach": "Add attachment",
     "emoji": "Emoji"
   },
+  "vibe": {
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Coffee",
+    "music": "Music",
+    "food": "Food",
+    "chill": "Chill"
+  },
   "weather": {
     "clear": "clear skies",
     "sunnyHot": "gorgeous out",
