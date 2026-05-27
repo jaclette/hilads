@@ -20,7 +20,7 @@ import en_publicProfile from './locales/en/publicProfile.json'
 import en_city          from './locales/en/city.json'
 import en_venue         from './locales/en/venue.json'
 
-export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant']
+export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
 const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'venue']
@@ -188,6 +188,22 @@ const LOADERS = {
     city:          () => import('./locales/zh-hant/city.json'),
     venue:         () => import('./locales/zh-hant/venue.json'),
   },
+  ja: {
+    common:  () => import('./locales/ja/common.json'),
+    profile: () => import('./locales/ja/profile.json'),
+    brand:   () => import('./locales/ja/brand.json'),
+    landing: () => import('./locales/ja/landing.json'),
+    auth:    () => import('./locales/ja/auth.json'),
+    event:   () => import('./locales/ja/event.json'),
+    hangout: () => import('./locales/ja/hangout.json'),
+    dm:      () => import('./locales/ja/dm.json'),
+    notifications: () => import('./locales/ja/notifications.json'),
+    upcoming:      () => import('./locales/ja/upcoming.json'),
+    archive:       () => import('./locales/ja/archive.json'),
+    publicProfile: () => import('./locales/ja/publicProfile.json'),
+    city:          () => import('./locales/ja/city.json'),
+    venue:         () => import('./locales/ja/venue.json'),
+  },
 }
 
 i18n.use(initReactI18next).init({
@@ -204,7 +220,7 @@ i18n.use(initReactI18next).init({
   react: { useSuspense: false },          // we preload before render ourselves
 })
 
-const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false, de: false, nl: false, 'zh-hans': false, 'zh-hant': false }
+const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false, de: false, nl: false, 'zh-hans': false, 'zh-hant': false, ja: false }
 
 /** Lazy-load + register every namespace for a locale. Idempotent. */
 export async function loadLocale(locale) {

@@ -1,0 +1,16 @@
+{
+  "title": "ここにいる人",
+  "noCityTitle": "街が選択されていません",
+  "noCitySub": "街を選んで近くにいる人を見てみましょう。",
+  "browseCities": "街を見る",
+  "filterBadge": "バッジ",
+  "filterVibe": "Vibe",
+  "filterMode": "モード",
+  "you": "（あなた）",
+  "hereNow": "Here now",
+  "noMatchLive": "今このフィルターに当てはまる人はいません。",
+  "legendsSub": "街を動かしている人たち",
+  "cityCrew": "街のメンバー",
+  "noMatchCrew": "このフィルターに当てはまるメンバーはいません。",
+  "loadMore": "もっと見る"
+}

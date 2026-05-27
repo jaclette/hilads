@@ -10,13 +10,13 @@ declare(strict_types=1);
  * the case for English/unknown locales and for any field we don't translate
  * (message previews and proper nouns like event/venue/city names stay as-is).
  *
- * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant are translated; English is the source of truth in the call sites.
+ * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant/ja are translated; English is the source of truth in the call sites.
  * Conventions (match the app i18n rules): "tu" form; the brand word "vibe"
  * stays English.
  */
 final class NotificationI18n
 {
-    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant'];
+    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja'];
 
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
@@ -32,6 +32,7 @@ final class NotificationI18n
             'nl'    => ["👀 Er is net iemand aangekomen in {city}", "{name} is net aangekomen"],
             'zh-hans' => ["👀 有人刚到达{city}", "{name} 刚刚到达"],
             'zh-hant' => ["👀 有人剛抵達{city}", "{name} 剛剛抵達"],
+            'ja'      => ["👀 {city}に誰かが到着しました", "{name} が到着しました"],
         ],
         'new_event' => [
             'fr' => ["🔥 Nouvel événement à {city}", null],
@@ -44,6 +45,7 @@ final class NotificationI18n
             'nl'    => ["🔥 Nieuw evenement in {city}", null],
             'zh-hans' => ["🔥 {city}有新活动", null],
             'zh-hant' => ["🔥 {city}有新活動", null],
+            'ja'      => ["🔥 {city}で新しいイベント", null],
         ],
         'channel_message' => [
             'fr' => ["{name} dans le chat de la ville", null],
@@ -56,6 +58,7 @@ final class NotificationI18n
             'nl'    => ["{name} in de stadschat",        null],
             'zh-hans' => ["{name} 在城市聊天里",          null],
             'zh-hant' => ["{name} 在城市聊天室",          null],
+            'ja'      => ["{name}（シティチャット）",      null],
         ],
         'event_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -68,6 +71,7 @@ final class NotificationI18n
             'nl'    => ["{name} in {title}", null],
             'zh-hans' => ["{name} 在 {title}", null],
             'zh-hant' => ["{name} 在 {title}", null],
+            'ja'      => ["{name}（{title}）", null],
         ],
         'topic_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -80,6 +84,7 @@ final class NotificationI18n
             'nl'    => ["{name} in {title}", null],
             'zh-hans' => ["{name} 在 {title}", null],
             'zh-hant' => ["{name} 在 {title}", null],
+            'ja'      => ["{name}（{title}）", null],
         ],
         'dm_message' => [
             'fr' => ["{name} t'a envoyé un message",          null],
@@ -92,6 +97,7 @@ final class NotificationI18n
             'nl'    => ["{name} heeft je een bericht gestuurd",   null],
             'zh-hans' => ["{name} 给你发了一条消息",              null],
             'zh-hant' => ["{name} 傳了一則訊息給你",              null],
+            'ja'      => ["{name} からメッセージが届きました",     null],
         ],
         'event_join' => [
             'fr' => ["👋 {name} a rejoint {title}",   null],
@@ -104,6 +110,7 @@ final class NotificationI18n
             'nl'    => ["👋 {name} doet mee aan {title}",    null],
             'zh-hans' => ["👋 {name} 加入了 {title}",        null],
             'zh-hant' => ["👋 {name} 加入了 {title}",        null],
+            'ja'      => ["👋 {name} が {title} に参加しました", null],
         ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
@@ -116,6 +123,7 @@ final class NotificationI18n
             'nl'    => ["{name} heeft je een vriendschapsverzoek gestuurd",   null],
             'zh-hans' => ["{name} 给你发送了好友请求",                       null],
             'zh-hant' => ["{name} 傳送了好友邀請給你",                       null],
+            'ja'      => ["{name} から友達リクエストが届きました",            null],
         ],
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami 🎉",            null],
@@ -128,6 +136,7 @@ final class NotificationI18n
             'nl'    => ["{name} heeft je vriendschapsverzoek geaccepteerd 🎉", null],
             'zh-hans' => ["{name} 接受了你的好友请求 🎉",                     null],
             'zh-hant' => ["{name} 接受了你的好友邀請 🎉",                     null],
+            'ja'      => ["{name} があなたの友達リクエストを承認しました 🎉",   null],
         ],
         'vibe_received' => [
             'fr' => ["{name} t'a envoyé une vibe ✨",         null],
@@ -140,6 +149,7 @@ final class NotificationI18n
             'nl'    => ["{name} heeft je een vibe gestuurd ✨",  null],
             'zh-hans' => ["{name} 给你发了一个 vibe ✨",         null],
             'zh-hant' => ["{name} 傳了一個 vibe 給你 ✨",        null],
+            'ja'      => ["{name} から vibe が届きました ✨",     null],
         ],
         'profile_view' => [
             'fr' => ["👀 {name} a regardé ton profil",   null],
@@ -152,6 +162,7 @@ final class NotificationI18n
             'nl'    => ["👀 {name} heeft je profiel bekeken",  null],
             'zh-hans' => ["👀 {name} 看了你的个人资料",         null],
             'zh-hant' => ["👀 {name} 看了你的個人資料",         null],
+            'ja'      => ["👀 {name} があなたのプロフィールを見ました", null],
         ],
         'join_request' => [
             'fr' => ["{name} veut rejoindre",  "{name} a demandé à rejoindre {title}"],
@@ -164,6 +175,7 @@ final class NotificationI18n
             'nl'    => ["{name} wil meedoen",       "{name} heeft gevraagd om mee te doen aan {title}"],
             'zh-hans' => ["{name} 想加入",          "{name} 申请加入 {title}"],
             'zh-hant' => ["{name} 想加入",          "{name} 申請加入 {title}"],
+            'ja'      => ["{name} が参加を希望しています", "{name} が {title} への参加をリクエストしました"],
         ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
@@ -176,6 +188,7 @@ final class NotificationI18n
             'nl'    => ["Je bent erbij! 🎉",  "{name} heeft je toegevoegd aan {title}"],
             'zh-hans' => ["你加入了！🎉",     "{name} 把你加入了 {title}"],
             'zh-hant' => ["你加入了！🎉",     "{name} 把你加入了 {title}"],
+            'ja'      => ["参加できました！🎉", "{name} があなたを {title} に追加しました"],
         ],
     ];
 
@@ -220,6 +233,10 @@ final class NotificationI18n
         'zh-hant' => [
             'titled' => "{name} 在 {title} 提到了你",
             'city'   => "{name} 在城市聊天室提到了你",
+        ],
+        'ja' => [
+            'titled' => "{name} が {title} であなたにメンションしました",
+            'city'   => "{name} がシティチャットであなたにメンションしました",
         ],
     ];
 

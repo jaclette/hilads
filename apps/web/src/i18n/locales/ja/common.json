@@ -1,0 +1,52 @@
+{
+  "language": "言語",
+  "cancel": "キャンセル",
+  "loading": "読み込み中…",
+  "mode": {
+    "local": { "label": "ローカル" },
+    "exploring": { "label": "探索中" }
+  },
+  "composer": {
+    "attach": "添付を追加",
+    "emoji": "絵文字"
+  },
+  "vibe": {
+    "party": "パーティー",
+    "board_games": "ボードゲーム",
+    "coffee": "コーヒー",
+    "music": "音楽",
+    "food": "グルメ",
+    "chill": "チル"
+  },
+  "weather": {
+    "clear": "快晴",
+    "sunnyHot": "最高の天気",
+    "clearNight": "今夜は快晴",
+    "mostlyClear": "おおむね晴れ",
+    "partly": "少し雲あり",
+    "overcast": "どんより曇り",
+    "fog": "霧",
+    "drizzle": "小雨",
+    "rain": "雨",
+    "snow": "雪",
+    "snowShowers": "にわか雪",
+    "thunder": "雷雨"
+  },
+  "time": {
+    "happeningNow": "🔥 開催中",
+    "inMin": "🔥 あと{{count}}分",
+    "today": "今日",
+    "tomorrow": "明日",
+    "yesterday": "昨日",
+    "justNow": "たった今",
+    "nowShort": "今",
+    "mAgo": "{{count}}分前",
+    "hAgo": "{{count}}時間前",
+    "dAgo": "{{count}}日前",
+    "expired": "期限切れ",
+    "expiresSoon": "まもなく期限切れ",
+    "expiresInMin": "あと{{mins}}分で期限切れ",
+    "expiresInHourMin": "あと{{hours}}時間{{mins}}分で期限切れ",
+    "expiresInHour": "あと{{hours}}時間で期限切れ"
+  }
+}

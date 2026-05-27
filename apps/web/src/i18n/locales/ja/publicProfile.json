@@ -1,0 +1,83 @@
+{
+  "title": "プロフィール",
+  "loading": "読み込み中…",
+  "loadError": "プロフィールを読み込めませんでした。",
+  "badgeMicro": {
+    "ghost": "ちょっと見てるだけ 👀",
+    "fresh": "来たばかり 👶",
+    "regular": "よく顔を出す",
+    "host": "場を盛り上げる 🔥"
+  },
+  "modes": { "local": "ローカル", "exploring": "探検中" },
+  "vibes": {
+    "party": "パーティー", "board_games": "ボードゲーム", "coffee": "コーヒー",
+    "music": "音楽", "food": "グルメ", "chill": "チル"
+  },
+  "vibeTaglines": {
+    "party": "夜遊びのためにここに",
+    "board_games": "おやつとサイコロを持って",
+    "coffee": "まずはコーヒー、ほかはあとで",
+    "music": "いつもいいビートを探してる",
+    "food": "まず食べる、話はあと",
+    "chill": "ゆるく、いい雰囲気で"
+  },
+  "modeSub": {
+    "localIn": "{{city}}のローカル",
+    "local": "ローカル",
+    "exploringIn": "{{city}}を探検中",
+    "exploring": "探検中"
+  },
+  "from": "出身",
+  "age": "年齢",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "友達",
+    "vibes": "Vibes", "picks": "街のおすすめ 👑"
+  },
+  "host": "ホスト",
+  "live": "ライブ",
+  "empty": { "hangouts": "まだhangoutsはありません", "events": "まだイベントはありません", "friends": "まだ友達はいません" },
+  "vibesTab": {
+    "score": "vibeスコア {{score}}",
+    "basedOn_one": "{{count}}件のvibeに基づく",
+    "basedOn_other": "{{count}}件のvibesに基づく",
+    "updateNote": "✏️ ノートを編集（{{rating}}★）",
+    "leaveNote": "⭐ ノートを残す",
+    "placeholder": "何か優しい一言を…（任意）",
+    "cancel": "キャンセル",
+    "sending": "送信中…",
+    "sendNote": "ノートを送信 ✨",
+    "notesLabel": "ノート · {{count}}",
+    "emptyTitle": "まだノートはありません",
+    "emptySub": "最初のノートを残しましょう ✨"
+  },
+  "picks": {
+    "restaurant": "お気に入りのレストラン",
+    "spot": "隠れた名所",
+    "tip": "ローカルのヒント",
+    "story": "ストーリー"
+  },
+  "actions": {
+    "opening": "開いています…",
+    "message": "💬 メッセージ",
+    "friend": "✓ 友達",
+    "requestSent": "⌛ リクエスト送信済み",
+    "acceptRequest": "✓ リクエストを承認",
+    "addFriend": "+ 友達",
+    "removing": "削除中…",
+    "unfriend": "友達を解除",
+    "cancel": "キャンセル",
+    "cancelling": "キャンセル中…",
+    "cancelRequest": "リクエストを取り消す",
+    "keep": "そのまま",
+    "reportTitle": "ユーザーを報告"
+  },
+  "report": {
+    "existing": "{{date}}にこのユーザーを報告しました。報告は確認中です。",
+    "sent": "報告を送信しました。お知らせいただきありがとうございます。",
+    "placeholder": "問題を説明してください（10文字以上）…",
+    "error": "報告を送信できませんでした。もう一度お試しください。",
+    "sending": "送信中…",
+    "submit": "報告を送信",
+    "cancel": "キャンセル"
+  }
+}

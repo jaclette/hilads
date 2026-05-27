@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "友達リクエスト",
+    "incoming": "受信",
+    "sent": "送信済み",
+    "wantsToBeFriend": "があなたと友達になりたがっています",
+    "requestSent": "リクエスト送信済み",
+    "decline": "辞退",
+    "accept": "承認",
+    "cancel": "キャンセル",
+    "emptyIncomingTitle": "まだ友達リクエストはありません",
+    "emptySentTitle": "まだ送信していません",
+    "emptyIncomingSub": "誰かが友達リクエストを送ると、ここに表示されます。",
+    "emptySentSub": "あなたが送った保留中の友達リクエストがここに表示されます。"
+  },
+  "blocked": {
+    "title": "ブロックしたユーザー",
+    "thisUser": "このユーザー",
+    "ghostName": "ゴースト",
+    "guest": "ゲスト",
+    "unblock": "ブロック解除",
+    "unblockTitle": "{{name}}のブロックを解除しますか？",
+    "unblockBody": "{{name}}は再びあなたのコンテンツを見たり、連絡したりできるようになります。",
+    "unblockFailTitle": "ブロックを解除できませんでした",
+    "unblockFailBody": "もう一度お試しください。",
+    "emptyTitle": "まだ誰もブロックしていません",
+    "emptySub": "ブロックしたユーザーはあなたのコンテンツを見られず、あなたも相手のコンテンツを見られません。"
+  }
+}

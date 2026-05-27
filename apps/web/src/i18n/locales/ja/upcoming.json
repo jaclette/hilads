@@ -1,0 +1,14 @@
+{
+  "title": "これからの予定",
+  "openCalendar": "カレンダーを開く",
+  "today": "今日",
+  "close": "閉じる",
+  "error": "この日のイベントを読み込めませんでした",
+  "retry": "再試行",
+  "emptyTitle": "予定はありません",
+  "emptySub": "この日のイベントはまだありません。",
+  "public": "公開",
+  "going_one": "🙌 {{count}}人が参加",
+  "going_other": "🙌 {{count}}人が参加",
+  "liveNow": "🔥 ライブ中"
+}

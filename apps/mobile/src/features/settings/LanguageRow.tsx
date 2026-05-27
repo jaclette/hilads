@@ -20,6 +20,7 @@ const LANG_NAMES: Record<Locale, string> = {
   nl: 'Nederlands',
   'zh-hans': '简体中文',
   'zh-hant': '繁體中文',
+  ja: '日本語',
 };
 
 /**

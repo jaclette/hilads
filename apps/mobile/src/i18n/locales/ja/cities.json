@@ -1,0 +1,20 @@
+{
+  "title": "街を切り替える",
+  "searchPlaceholder": "街を検索…",
+  "topCities": "今もっとも活発な街",
+  "cities": "街",
+  "filterActive": "🔥 もっとも活発",
+  "filterEvents": "🎉 イベントが最多",
+  "filterOnline": "🟢 オンラインが最多",
+  "backToLocation": "自分の現在地に戻る",
+  "youreHere": "あなたはここにいます",
+  "online": "{{count}}人がオンライン",
+  "events_one": "{{count}}件のイベント",
+  "events_other": "{{count}}件のイベント",
+  "hangout_one": "{{count}}件の hangout",
+  "hangout_other": "{{count}}件の hangouts",
+  "msgs": "{{count}}件のメッセージ",
+  "loadError": "街を読み込めませんでした",
+  "noResults": "「{{query}}」に一致する街が見つかりませんでした",
+  "noCities": "街が見つかりませんでした"
+}

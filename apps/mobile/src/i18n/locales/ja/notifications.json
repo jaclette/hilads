@@ -1,0 +1,30 @@
+{
+  "allTitle": "すべての通知",
+  "markAllRead": "すべて既読にする",
+  "emptyTitle": "まだ通知はありません",
+  "emptySub": "ここにメッセージやイベントの最新情報が表示されます。",
+  "seeAll": "すべての通知を見る",
+  "prefTitle": "通知の設定",
+  "pref": {
+    "mentionLabel": "メンション @",
+    "mentionSub": "メッセージや Hangout で誰かが @ でメンションしたとき",
+    "eventJoinLabel": "誰かがあなたのイベントに参加",
+    "eventJoinSub": "あなたが行くイベントに新しい人が参加したとき",
+    "newEventLabel": "あなたの街の新しいイベント",
+    "newEventSub": "誰かがあなたの街でイベントを作成したとき",
+    "cityJoinLabel": "誰かがあなたの街に到着",
+    "cityJoinSub": "あなたがいる街のチャンネルに誰かが参加したとき",
+    "friendLabel": "友達リクエスト",
+    "friendSub": "誰かが友達リクエストを送ったり、あなたのリクエストを承認したとき",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "誰かがあなたのプロフィールに vibe を残したとき",
+    "profileViewLabel": "プロフィールの閲覧 👀",
+    "profileViewSub": "誰かがあなたのプロフィールを見たとき",
+    "topicReplyLabel": "Hangout の返信 💬",
+    "topicReplySub": "参加した Hangout で誰かが返信したとき",
+    "newTopicLabel": "あなたの街の新しい Hangouts",
+    "newTopicSub": "誰かがあなたの街で新しい Hangout を始めたとき",
+    "announceLabel": "Hilads からのお知らせ",
+    "announceSub": "チームからの不定期の最新情報"
+  }
+}

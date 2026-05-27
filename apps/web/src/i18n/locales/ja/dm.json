@@ -1,0 +1,41 @@
+{
+  "title": "メッセージ",
+  "filters": { "all": "すべて", "dms": "ダイレクトメッセージ", "events": "イベントチャット" },
+  "loading": "読み込み中…",
+  "error": {
+    "loadTitle": "メッセージを読み込めませんでした",
+    "loadSub": "接続を確認して再試行してください。"
+  },
+  "empty": {
+    "eventsTitle": "まだイベントチャットはありません",
+    "eventsSub": "イベントを作成または参加して、参加者とチャットしよう。",
+    "title": "まだメッセージはありません",
+    "sub": "街で出会った人とつながろう。"
+  },
+  "sectionDms": "ダイレクトメッセージ",
+  "sectionEvents": "イベントチャット",
+  "youPrefix": "あなた：{{message}}",
+  "startConversation": "会話を始める",
+  "eventCreated": "あなたが作成しました",
+  "eventJoined": "あなたが参加しました",
+  "prefs": {
+    "title": "通知の設定",
+    "dmName": "新しいダイレクトメッセージ",
+    "dmDesc": "誰かがプライベートメッセージを送ったとき",
+    "eventName": "イベントチャットのメッセージ",
+    "eventDesc": "参加したイベントで誰かがメッセージを送ったとき",
+    "cityName": "街のチャットのメッセージ",
+    "cityDesc": "あなたの街のチャンネルで誰かがメッセージを送ったとき"
+  },
+  "thread": {
+    "loadError": "メッセージを読み込めませんでした。",
+    "beginning": "会話のはじまり",
+    "photo": "📷 写真",
+    "unavailable": "元のメッセージは利用できません",
+    "tapMaps": "タップして地図で開く",
+    "composer": "メッセージ…",
+    "imageType": "JPEG、PNG、または WebP の画像を選択してください。",
+    "imageTooLarge": "画像が大きすぎます。最大サイズ：10MB。",
+    "imageSend": "画像を送信できませんでした。再試行してください。"
+  }
+}

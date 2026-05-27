@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "人を集める ✨",
+    "linkCopied": "リンクをコピーしました ✨",
+    "vibeTitle": "この vibe をシェア",
+    "eventAria": "イベントをシェア"
+  },
+  "title": { "edit": "イベントを編集", "host": "イベントを主催", "create": "イベントを作成" },
+  "delete": {
+    "confirmTitle": "このイベントを削除しますか？",
+    "confirmBody": "イベントとすべてのメッセージが削除されます。この操作は取り消せません。",
+    "cancel": "キャンセル",
+    "deleting": "削除中…",
+    "confirm": "削除",
+    "button": "🗑 イベントを削除"
+  },
+  "quickStart": "クイックスタート",
+  "presets": {
+    "dailySpot": "毎日のスポット", "dailySpotDesc": "毎日",
+    "everyEvening": "毎晩", "everyEveningDesc": "毎日 · 20時",
+    "weekends": "週末", "weekendsDesc": "土・日"
+  },
+  "category": "カテゴリー",
+  "categories": {
+    "drinks": "お酒", "party": "パーティー", "music": "音楽", "food": "グルメ",
+    "coffee": "コーヒー", "sport": "スポーツ", "meetup": "ミートアップ", "other": "その他"
+  },
+  "titleLabel": "タイトル",
+  "titlePlaceholder": "例：ルーフトップバーでジャズの夜",
+  "date": "日付",
+  "today": "今日",
+  "tomorrow": "明日",
+  "todayHint": "今日主催すると一番見てもらえます 🔥",
+  "starts": "開始",
+  "ends": "終了",
+  "repeat": "繰り返し",
+  "recurrence": { "once": "1回のみ", "daily": "毎日", "weekly": "毎週", "everyNDays": "N日ごと" },
+  "weekdays": ["日", "月", "火", "水", "木", "金", "土"],
+  "intervalEvery": "間隔",
+  "intervalDays": "日",
+  "location": "場所",
+  "locating": "現在地を取得中…",
+  "locationPlaceholder": "任意 · タップして地図上で設定",
+  "clearLocation": "場所をクリア",
+  "errors": {
+    "endAfterStart": "終了時刻は開始時刻の少なくとも15分後にしてください",
+    "pickDay": "曜日を少なくとも1つ選んでください",
+    "deleteFailed": "イベントを削除できませんでした。再試行してください。",
+    "locUnavailable": "このブラウザでは位置情報を利用できません。位置情報なしでもイベントを作成できます。",
+    "locFailed": "現在地を取得できませんでした。位置情報へのアクセスを許可するか、地図をスキップしてください。"
+  },
+  "submit": {
+    "saving": "保存中…", "creating": "作成中…",
+    "saveChanges": "変更を保存", "openSpot": "あなたのスポットを開く",
+    "startEvent": "イベントを始める", "create": "イベントを作成"
+  },
+  "recur": {"everyday":"毎日","weekly":"毎週","everyNDays_one":"{{count}}日ごと","everyNDays_other":"{{count}}日ごと"}
+}

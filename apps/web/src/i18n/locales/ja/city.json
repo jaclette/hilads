@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "アカウントを作成",
+    "signIn": "ログイン",
+    "create_event": {
+      "pageTitle": "イベントを作成",
+      "title": "Ghostは見ることはできても、ホストはできません。",
+      "sub": "アカウントを作成して、自分のイベントを開いて街を盛り上げましょう。"
+    },
+    "view_profile": {
+      "pageTitle": "プロフィール",
+      "title": "Ghostは見ることはできても、プロフィールはメンバー限定です。",
+      "sub": "アカウントを作成してプロフィールを解放し、人とつながって街の仲間を作りましょう。"
+    },
+    "join_hangout": {
+      "pageTitle": "hangoutに参加",
+      "title": "Ghostは見ることはできても、hangoutsには参加できません。",
+      "sub": "登録してhangoutsに参加し、名前を保存して、誰かが集まりたいときに通知を受け取りましょう。"
+    },
+    "create_hangout": {
+      "pageTitle": "hangoutを始める",
+      "title": "Ghostは見ることはできても、ホストはできません。",
+      "sub": "登録してhangoutを始め、名前を保存して、みんなを呼び込みましょう。"
+    }
+  },
+  "welcome": {
+    "live": "{{city}}はライブ中 ✨",
+    "dismiss": "閉じる",
+    "body": "今ここに本物の人がいます。挨拶したり、誰がいるか見たり、友達を連れてきたり。",
+    "sayHi": "挨拶する 👋",
+    "invite": "友達を招待"
+  },
+  "imageType": "JPEG、PNG、またはWebP画像を選んでください。",
+  "imageTooLarge": "画像が大きすぎます。最大サイズ：10 MB。",
+  "picker": {
+    "title": "街を選ぶ",
+    "search": "街を検索…",
+    "noResults": "「{{query}}」に一致する街が見つかりません",
+    "topCities": "今もっとも活発な街",
+    "cities": "街"
+  },
+  "joining": "{{city}}に参加中…",
+  "joiningDefault": "チャットに参加中…",
+  "tryAgain": "再試行",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "公開",
+    "activeNow": "● アクティブ",
+    "repliesNew": "まだ返信はありません — 最初の一人に",
+    "replies_one": "💬 {{count}}件の返信",
+    "replies_other": "💬 {{count}}件の返信",
+    "going_one": "🙌 {{count}}人が参加",
+    "going_other": "🙌 {{count}}人が参加",
+    "hostedBy": "{{name}}が主催",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "イベントを作成",
+    "startHangout": "hangoutを始める ⚡",
+    "openPlace": "あなたのお店を開く",
+    "loadError": "イベントを読み込めませんでした",
+    "loadErrorSub": "あとでもう一度試すか、{{city}}で何か新しいものを作りましょう。",
+    "emptyLocalTitle": "あなたのお店を開く",
+    "emptyTitle": "まだ何も起きていません",
+    "emptyLocalSub": "{{city}}を盛り上げましょう。お気に入りの場所で定期イベントを始めましょう。",
+    "emptySub": "{{city}}で最初に何かを起こしましょう",
+    "noEvents": "今イベントはありません",
+    "noHangouts": "まだhangoutsはありません",
+    "noEventsSub": "{{city}}で最初の一つを作りましょう",
+    "noHangoutsSub": "hangoutを始めて街を盛り上げましょう",
+    "filterAll": "すべて",
+    "seeComing": "これからの予定を見る 🔮",
+    "seeHappened": "これまでの出来事を見る",
+    "createNew": "新規作成"
+  },
+  "header": {
+    "online": "近くに{{count}}人",
+    "liveNow": "ライブ中",
+    "seeWhosHere": "ここにいる人を見る",
+    "onlineAria": "近くに{{count}}人、タップして誰がいるか確認",
+    "notifications": "通知",
+    "messages": "メッセージ",
+    "shareCity": "街をシェア",
+    "switchCity": "街を切り替える",
+    "changeCity": "街を変更",
+    "currentWeather": "現在の天気：{{label}}"
+  },
+  "here": {
+    "title": "ここにいる人",
+    "filterBadge": "バッジ",
+    "filterVibe": "Vibe",
+    "filterMode": "モード",
+    "you": "（あなた）",
+    "hereNow": "Here now",
+    "noMatchLive": "今このフィルターに一致する人はいません。",
+    "legendsSub": "街を動かす人たち",
+    "cityCrew": "街のクルー",
+    "noMatchCrew": "このフィルターに一致するメンバーはいません。",
+    "loadMore": "もっと見る",
+    "messageAria": "{{name}}にメッセージ"
+  },
+  "eventHeader": {
+    "yourEvent": "あなたのイベント",
+    "edit": "編集",
+    "join": "参加",
+    "joined": "参加済み ✓",
+    "here": "{{count}}人がここに",
+    "going_one": "{{count}}人が参加",
+    "going_other": "{{count}}人が参加",
+    "locationPending": "場所はまだ利用できません",
+    "hostedBy": "{{name}}が主催"
+  },
+  "chatEmpty": {
+    "beginning": "会話のはじまり",
+    "arriving": "人が集まってきています",
+    "firstChat": "ここで最初にチャットしましょう 👇",
+    "firstHi": "最初に挨拶しましょう 👇"
+  },
+  "create": {
+    "title": "何する？",
+    "hangoutTitle": "hangoutを始める",
+    "hangoutSub": "すぐに — 今みんなに参加してもらおう",
+    "eventTitle": "イベントを作成",
+    "eventSub": "みんなが参加できる何かを計画しよう"
+  },
+  "goingModal": {
+    "going": "参加",
+    "inThisHangout": "このhangoutに",
+    "loading": "読み込み中…",
+    "empty": "まだ誰もいません — 最初の一人になろう！ 🙌"
+  },
+  "nickname": {
+    "label": "ニックネーム",
+    "placeholder": "あなたの名前...",
+    "heroSub": "今は匿名です。それでも見え方は自分で決められます。",
+    "save": "ニックネームを保存",
+    "upgradeHint": "名前を保存して、ローカルでいよう。",
+    "haveAccount": "すでにアカウントをお持ちですか？",
+    "myEvents": "マイイベント",
+    "anonymous": "// 匿名 · 登録不要"
+  },
+  "prompt": {
+    "exploreText": "🔥 今起きていることを見る",
+    "exploreCta": "今起きていることを見る",
+    "photoText": "📸 今起きていることをシェア",
+    "shoot": "撮影",
+    "createEventText": "🎉 今夜のプランある？",
+    "createEventCta": "イベントを作成",
+    "installText": "✨ Hiladsをホーム画面に追加\n街で起きていることを見逃さない",
+    "installAdd": "追加",
+    "installHow": "方法"
+  },
+  "toast": {
+    "eventDeleted": "イベントを削除しました"
+  },
+  "pwa": {
+    "addToHome": "Hiladsをホーム画面に追加",
+    "add": "追加",
+    "keepClose": "Hiladsを手元に",
+    "manualHelp": "ブラウザのメニューを開いて「ホーム画面に追加」を選んでください。",
+    "dismiss": "インストールの案内を閉じる"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}}が来たばかり",
+    "1": "🔥 {{name}}が参加",
+    "2": "🍻 {{name}}がここに",
+    "3": "👀 {{name}}が今やってきた",
+    "4": "✨ {{name}}が到着"
+  },
+  "ambient": {
+    "0": "🔥 人が集まってきています",
+    "1": "🍻 今夜は誰が出かける？",
+    "2": "💬 街が目を覚ましています",
+    "3": "🌙 夜更かし組がオンライン",
+    "4": "👀 誰かが今到着しました",
+    "5": "🔥 街に新しい顔",
+    "6": "🎉 今ここに人がいます",
+    "7": "🌆 ローカルがチェックイン中"
+  },
+  "ownerPrompt": {
+    "text": "🔥 このイベントを始めました！",
+    "sub": "もっと良くしましょう — 説明を追加したり、時間を更新したり、シェアしたり。",
+    "edit": "✏️ イベントを編集"
+  },
+  "feedNew": {
+    "event": "🔥 新しいイベント：{{title}}",
+    "join": "参加",
+    "replies_one": "{{count}}件の返信",
+    "replies_other": "{{count}}件の返信"
+  },
+  "replyPreview": {
+    "photo": "📷 写真"
+  },
+  "placeholder": {
+    "event": "{{title}}で何か言おう ✨",
+    "eventFirst": "{{title}}で最初の一人に ✨"
+  },
+  "placeholders": [
+    "挨拶する 👋",
+    "今夜は誰が出かける？",
+    "何かプランある？ 👀",
+    "ここで何が起きてる？",
+    "誰か一緒にどう？ 🍻",
+    "メッセージを送る…"
+  ],
+  "typing": {
+    "one": "{{name}}が入力中…",
+    "two": "{{a}}と{{b}}が入力中…",
+    "many": "数人が入力中…"
+  },
+  "myEvent": {
+    "live": "ライブ中",
+    "recurring": "↻ 定期",
+    "upcoming": "これから",
+    "delete": "イベントを削除"
+  }
+}
