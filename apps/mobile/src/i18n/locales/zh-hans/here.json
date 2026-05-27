@@ -1,0 +1,16 @@
+{
+  "title": "你周围的人",
+  "noCityTitle": "未选择城市",
+  "noCitySub": "选一座城市，看看谁在附近。",
+  "browseCities": "浏览城市",
+  "filterBadge": "徽章",
+  "filterVibe": "Vibe",
+  "filterMode": "模式",
+  "you": "（你）",
+  "hereNow": "Here now",
+  "noMatchLive": "目前没有符合这些筛选条件的人。",
+  "legendsSub": "他们让城市动起来",
+  "cityCrew": "城市成员",
+  "noMatchCrew": "没有符合这些筛选条件的成员。",
+  "loadMore": "加载更多"
+}

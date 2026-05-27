@@ -1,0 +1,41 @@
+{
+  "title": "訊息",
+  "filters": { "all": "全部", "dms": "私訊", "events": "活動聊天" },
+  "loading": "載入中…",
+  "error": {
+    "loadTitle": "無法載入訊息",
+    "loadSub": "請檢查你的連線後重試。"
+  },
+  "empty": {
+    "eventsTitle": "還沒有活動聊天",
+    "eventsSub": "建立或加入一場活動，與要參加的人聊天。",
+    "title": "還沒有訊息",
+    "sub": "和你在城市裡認識的人聯繫。"
+  },
+  "sectionDms": "私訊",
+  "sectionEvents": "活動聊天",
+  "youPrefix": "你：{{message}}",
+  "startConversation": "開始對話",
+  "eventCreated": "這是你建立的",
+  "eventJoined": "你加入了這個",
+  "prefs": {
+    "title": "通知偏好設定",
+    "dmName": "新的私訊",
+    "dmDesc": "當有人傳私人訊息給你時",
+    "eventName": "活動聊天訊息",
+    "eventDesc": "當有人在你加入的活動中發訊息時",
+    "cityName": "城市聊天訊息",
+    "cityDesc": "當有人在你的城市頻道發訊息時"
+  },
+  "thread": {
+    "loadError": "無法載入訊息。",
+    "beginning": "對話開始",
+    "photo": "📷 相片",
+    "unavailable": "原始訊息無法使用",
+    "tapMaps": "點一下在地圖中開啟",
+    "composer": "訊息…",
+    "imageType": "請選擇 JPEG、PNG 或 WebP 圖片。",
+    "imageTooLarge": "圖片太大。最大尺寸：10 MB。",
+    "imageSend": "無法傳送圖片。請重試。"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "title": "个人资料",
+  "loading": "加载中…",
+  "loadError": "无法加载个人资料。",
+  "badgeMicro": {
+    "ghost": "只是逛逛 👀",
+    "fresh": "刚刚抵达 👶",
+    "regular": "经常出现",
+    "host": "让事情发生 🔥"
+  },
+  "modes": { "local": "本地人", "exploring": "探索中" },
+  "vibes": {
+    "party": "派对", "board_games": "桌游", "coffee": "咖啡",
+    "music": "音乐", "food": "美食", "chill": "放松"
+  },
+  "vibeTaglines": {
+    "party": "为夜生活而来",
+    "board_games": "带上零食和骰子",
+    "coffee": "先喝咖啡，其他都往后放",
+    "music": "永远在追一段好节奏",
+    "food": "先吃，再说",
+    "chill": "低调，氛围满满"
+  },
+  "modeSub": {
+    "localIn": "{{city}}的本地人",
+    "local": "本地人",
+    "exploringIn": "正在探索{{city}}",
+    "exploring": "探索中"
+  },
+  "from": "来自",
+  "age": "年龄",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "好友",
+    "vibes": "Vibes", "picks": "城市推荐 👑"
+  },
+  "host": "主持人",
+  "live": "直播中",
+  "empty": { "hangouts": "还没有 hangouts", "events": "还没有活动", "friends": "还没有好友" },
+  "vibesTab": {
+    "score": "{{score}} vibe 分",
+    "basedOn_one": "基于 {{count}} 个 vibe",
+    "basedOn_other": "基于 {{count}} 个 vibe",
+    "updateNote": "✏️ 更新你的留言（{{rating}}★）",
+    "leaveNote": "⭐ 留个言",
+    "placeholder": "说点好话吧…（可选）",
+    "cancel": "取消",
+    "sending": "发送中…",
+    "sendNote": "发送留言 ✨",
+    "notesLabel": "留言 · {{count}}",
+    "emptyTitle": "还没有留言",
+    "emptySub": "来做第一个留言的人吧 ✨"
+  },
+  "picks": {
+    "restaurant": "最爱的餐厅",
+    "spot": "隐藏宝藏",
+    "tip": "本地小贴士",
+    "story": "故事"
+  },
+  "actions": {
+    "opening": "打开中…",
+    "message": "💬 消息",
+    "friend": "✓ 好友",
+    "requestSent": "⌛ 请求已发送",
+    "acceptRequest": "✓ 接受请求",
+    "addFriend": "+ 好友",
+    "removing": "移除中…",
+    "unfriend": "删除好友",
+    "cancel": "取消",
+    "cancelling": "取消中…",
+    "cancelRequest": "取消请求",
+    "keep": "保留",
+    "reportTitle": "举报用户"
+  },
+  "report": {
+    "existing": "你在 {{date}} 举报了这个用户。你的举报正在审核中。",
+    "sent": "举报已发送。感谢你告知我们。",
+    "placeholder": "描述问题（至少 10 个字符）…",
+    "error": "无法发送举报。请重试。",
+    "sending": "发送中…",
+    "submit": "发送举报",
+    "cancel": "取消"
+  }
+}

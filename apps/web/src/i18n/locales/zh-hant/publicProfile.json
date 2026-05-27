@@ -1,0 +1,83 @@
+{
+  "title": "個人資料",
+  "loading": "載入中…",
+  "loadError": "無法載入個人資料。",
+  "badgeMicro": {
+    "ghost": "只是逛逛 👀",
+    "fresh": "剛剛抵達 👶",
+    "regular": "常常出現",
+    "host": "讓事情發生 🔥"
+  },
+  "modes": { "local": "在地", "exploring": "探索中" },
+  "vibes": {
+    "party": "派對", "board_games": "桌遊", "coffee": "咖啡",
+    "music": "音樂", "food": "美食", "chill": "放鬆"
+  },
+  "vibeTaglines": {
+    "party": "為了夜生活而來",
+    "board_games": "帶上零食和骰子",
+    "coffee": "先來杯咖啡，其他晚點再說",
+    "music": "一直在追逐好節奏",
+    "food": "先吃再說",
+    "chill": "輕鬆自在，氣氛滿分"
+  },
+  "modeSub": {
+    "localIn": "{{city}}在地人",
+    "local": "在地",
+    "exploringIn": "探索{{city}}中",
+    "exploring": "探索中"
+  },
+  "from": "來自",
+  "age": "年齡",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "好友",
+    "vibes": "Vibes", "picks": "城市精選 👑"
+  },
+  "host": "主辦人",
+  "live": "LIVE",
+  "empty": { "hangouts": "還沒有 hangout", "events": "還沒有活動", "friends": "還沒有好友" },
+  "vibesTab": {
+    "score": "{{score}} vibe 分數",
+    "basedOn_one": "依據 {{count}} 個 vibe",
+    "basedOn_other": "依據 {{count}} 個 vibe",
+    "updateNote": "✏️ 更新你的留言（{{rating}}★）",
+    "leaveNote": "⭐ 留個言",
+    "placeholder": "說些好聽的話…（選填）",
+    "cancel": "取消",
+    "sending": "傳送中…",
+    "sendNote": "傳送留言 ✨",
+    "notesLabel": "留言 · {{count}}",
+    "emptyTitle": "還沒有留言",
+    "emptySub": "成為第一個留言的人 ✨"
+  },
+  "picks": {
+    "restaurant": "最愛餐廳",
+    "spot": "私房景點",
+    "tip": "在地推薦",
+    "story": "故事"
+  },
+  "actions": {
+    "opening": "開啟中…",
+    "message": "💬 訊息",
+    "friend": "✓ 好友",
+    "requestSent": "⌛ 邀請已送出",
+    "acceptRequest": "✓ 接受邀請",
+    "addFriend": "+ 好友",
+    "removing": "移除中…",
+    "unfriend": "解除好友",
+    "cancel": "取消",
+    "cancelling": "取消中…",
+    "cancelRequest": "取消邀請",
+    "keep": "保留",
+    "reportTitle": "檢舉使用者"
+  },
+  "report": {
+    "existing": "你在 {{date}} 檢舉了這位使用者。你的檢舉正在審核中。",
+    "sent": "檢舉已送出。感謝你的回報。",
+    "placeholder": "描述問題（至少 10 個字元）…",
+    "error": "無法送出檢舉。請再試一次。",
+    "sending": "傳送中…",
+    "submit": "送出檢舉",
+    "cancel": "取消"
+  }
+}

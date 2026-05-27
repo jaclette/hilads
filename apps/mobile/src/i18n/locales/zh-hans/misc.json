@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "好友请求",
+    "incoming": "收到的",
+    "sent": "已发送",
+    "wantsToBeFriend": "想成为你的好友",
+    "requestSent": "请求已发送",
+    "decline": "拒绝",
+    "accept": "接受",
+    "cancel": "取消",
+    "emptyIncomingTitle": "还没有好友请求",
+    "emptySentTitle": "你还没有发送任何请求",
+    "emptyIncomingSub": "当有人请求成为你的好友时，你会在这里看到。",
+    "emptySentSub": "你发送的待处理好友请求会显示在这里。"
+  },
+  "blocked": {
+    "title": "屏蔽的用户",
+    "thisUser": "此用户",
+    "ghostName": "幽灵",
+    "guest": "访客",
+    "unblock": "取消屏蔽",
+    "unblockTitle": "取消屏蔽 {{name}}？",
+    "unblockBody": "{{name}} 将能够再次看到你的内容并与你联系。",
+    "unblockFailTitle": "无法取消屏蔽",
+    "unblockFailBody": "请再试一次。",
+    "emptyTitle": "你还没有屏蔽任何人",
+    "emptySub": "被屏蔽的用户看不到你的内容，你也看不到他们的内容。"
+  }
+}

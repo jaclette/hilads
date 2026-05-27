@@ -1,0 +1,14 @@
+{
+  "title": "即將登場",
+  "openCalendar": "開啟行事曆",
+  "today": "今天",
+  "close": "關閉",
+  "error": "無法載入這一天的活動",
+  "retry": "重試",
+  "emptyTitle": "沒有任何安排",
+  "emptySub": "這一天還沒有活動。",
+  "public": "公開",
+  "going_one": "🙌 {{count}} 人參加",
+  "going_other": "🙌 {{count}} 人參加",
+  "liveNow": "🔥 正在進行"
+}

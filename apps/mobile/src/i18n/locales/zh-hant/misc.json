@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "好友邀請",
+    "incoming": "收到的",
+    "sent": "已送出",
+    "wantsToBeFriend": "想加你為好友",
+    "requestSent": "邀請已送出",
+    "decline": "拒絕",
+    "accept": "接受",
+    "cancel": "取消",
+    "emptyIncomingTitle": "還沒有好友邀請",
+    "emptySentTitle": "你還沒送出任何邀請",
+    "emptyIncomingSub": "當有人想加你為好友時，你會在這裡看到。",
+    "emptySentSub": "你送出的待處理好友邀請會顯示在這裡。"
+  },
+  "blocked": {
+    "title": "已封鎖的使用者",
+    "thisUser": "這位使用者",
+    "ghostName": "幽靈",
+    "guest": "訪客",
+    "unblock": "解除封鎖",
+    "unblockTitle": "解除封鎖 {{name}}？",
+    "unblockBody": "{{name}} 將可以再次看到你的內容並與你聯繫。",
+    "unblockFailTitle": "無法解除封鎖",
+    "unblockFailBody": "請再試一次。",
+    "emptyTitle": "你還沒封鎖任何人",
+    "emptySub": "被封鎖的使用者看不到你的內容，你也看不到他們的。"
+  }
+}

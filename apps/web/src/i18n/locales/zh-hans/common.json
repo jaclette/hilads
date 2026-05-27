@@ -1,0 +1,52 @@
+{
+  "language": "语言",
+  "cancel": "取消",
+  "loading": "加载中…",
+  "mode": {
+    "local": { "label": "本地" },
+    "exploring": { "label": "探索中" }
+  },
+  "composer": {
+    "attach": "添加附件",
+    "emoji": "Emoji"
+  },
+  "vibe": {
+    "party": "派对",
+    "board_games": "桌游",
+    "coffee": "咖啡",
+    "music": "音乐",
+    "food": "美食",
+    "chill": "放松"
+  },
+  "weather": {
+    "clear": "晴空万里",
+    "sunnyHot": "天气超棒",
+    "clearNight": "今夜晴朗",
+    "mostlyClear": "大致晴朗",
+    "partly": "有几朵云",
+    "overcast": "阴天",
+    "fog": "有雾",
+    "drizzle": "小雨",
+    "rain": "下雨",
+    "snow": "下雪",
+    "snowShowers": "阵雪",
+    "thunder": "雷阵雨"
+  },
+  "time": {
+    "happeningNow": "🔥 正在进行",
+    "inMin": "🔥 {{count}} 分钟后",
+    "today": "今天",
+    "tomorrow": "明天",
+    "yesterday": "昨天",
+    "justNow": "刚刚",
+    "nowShort": "现在",
+    "mAgo": "{{count}} 分钟前",
+    "hAgo": "{{count}} 小时前",
+    "dAgo": "{{count}} 天前",
+    "expired": "已到期",
+    "expiresSoon": "即将到期",
+    "expiresInMin": "{{mins}} 分钟后到期",
+    "expiresInHourMin": "{{hours}} 小时 {{mins}} 分钟后到期",
+    "expiresInHour": "{{hours}} 小时后到期"
+  }
+}

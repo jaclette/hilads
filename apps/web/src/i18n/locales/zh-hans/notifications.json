@@ -1,0 +1,22 @@
+{
+  "title": "通知",
+  "markAllRead": "全部标为已读",
+  "empty": { "title": "全部看完啦", "sub": "通知会显示在这里" },
+  "loading": "加载中…",
+  "seeAll": "查看所有通知 →",
+  "prefs": {
+    "title": "通知偏好设置",
+    "mentionName": "提及 @",
+    "mentionDesc": "当有人在消息或 hangout 中 @提及你时",
+    "newEventName": "你所在城市的新活动",
+    "newEventDesc": "当有人在你所在的城市创建活动时",
+    "friendName": "好友请求",
+    "friendDesc": "当有人向你发送好友请求或接受你的请求时",
+    "notesName": "留言 ✨",
+    "notesDesc": "当有人在你的个人资料上留言时",
+    "profileViewName": "资料访问 👀",
+    "profileViewDesc": "当有人查看你的个人资料时",
+    "announcementName": "来自 Hilads 的公告",
+    "announcementDesc": "团队不定期的更新消息"
+  }
+}

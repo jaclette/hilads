@@ -1,0 +1,30 @@
+{
+  "allTitle": "全部通知",
+  "markAllRead": "全部标为已读",
+  "emptyTitle": "还没有通知",
+  "emptySub": "你会在这里看到消息和活动动态。",
+  "seeAll": "查看全部通知",
+  "prefTitle": "通知偏好",
+  "pref": {
+    "mentionLabel": "提及 @",
+    "mentionSub": "当有人在消息或 hangout 里 @提及 你时",
+    "eventJoinLabel": "有人加入了你的活动",
+    "eventJoinSub": "当有新的人加入你要参加的活动时",
+    "newEventLabel": "你所在城市的新活动",
+    "newEventSub": "当有人在你所在城市创建活动时",
+    "cityJoinLabel": "有人来到了你所在的城市",
+    "cityJoinSub": "当有人加入你所在的城市频道时",
+    "friendLabel": "好友请求",
+    "friendSub": "当有人给你发送好友请求或接受了你的请求时",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "当有人在你的个人资料上留下一个 vibe 时",
+    "profileViewLabel": "个人资料浏览 👀",
+    "profileViewSub": "当有人查看你的个人资料时",
+    "topicReplyLabel": "Hangout 回复 💬",
+    "topicReplySub": "当有人在你加入的 hangout 里回复时",
+    "newTopicLabel": "你所在城市的新 hangouts",
+    "newTopicSub": "当有人在你所在城市发起新的 hangout 时",
+    "announceLabel": "来自 Hilads 的公告",
+    "announceSub": "团队偶尔发布的动态"
+  }
+}

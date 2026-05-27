@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "拉人来 ✨",
+    "linkCopied": "链接已复制 ✨",
+    "vibeTitle": "分享这个 vibe",
+    "eventAria": "分享活动"
+  },
+  "title": { "edit": "编辑活动", "host": "举办一个活动", "create": "创建活动" },
+  "delete": {
+    "confirmTitle": "删除这个活动？",
+    "confirmBody": "这将删除该活动和所有消息。此操作无法撤销。",
+    "cancel": "取消",
+    "deleting": "删除中…",
+    "confirm": "删除",
+    "button": "🗑 删除活动"
+  },
+  "quickStart": "快速开始",
+  "presets": {
+    "dailySpot": "每日据点", "dailySpotDesc": "每天",
+    "everyEvening": "每个晚上", "everyEveningDesc": "每天 · 晚上 8 点",
+    "weekends": "周末", "weekendsDesc": "周六和周日"
+  },
+  "category": "分类",
+  "categories": {
+    "drinks": "喝一杯", "party": "派对", "music": "音乐", "food": "美食",
+    "coffee": "咖啡", "sport": "运动", "meetup": "聚会", "other": "其他"
+  },
+  "titleLabel": "标题",
+  "titlePlaceholder": "例如：天台酒吧爵士之夜",
+  "date": "日期",
+  "today": "今天",
+  "tomorrow": "明天",
+  "todayHint": "今天举办能让你获得最高曝光 🔥",
+  "starts": "开始",
+  "ends": "结束",
+  "repeat": "重复",
+  "recurrence": { "once": "一次", "daily": "每天", "weekly": "每周", "everyNDays": "每 N 天" },
+  "weekdays": ["日", "一", "二", "三", "四", "五", "六"],
+  "intervalEvery": "每",
+  "intervalDays": "天",
+  "location": "地点",
+  "locating": "正在获取你的位置…",
+  "locationPlaceholder": "可选 · 点按在地图上设置",
+  "clearLocation": "清除地点",
+  "errors": {
+    "endAfterStart": "结束时间必须至少比开始时间晚 15 分钟",
+    "pickDay": "请至少选择一周中的一天",
+    "deleteFailed": "无法删除活动。请重试。",
+    "locUnavailable": "此浏览器无法获取位置。你仍可以不带位置创建活动。",
+    "locFailed": "无法获取你的位置。请开启定位权限，或跳过地图。"
+  },
+  "submit": {
+    "saving": "保存中…", "creating": "创建中…",
+    "saveChanges": "保存更改", "openSpot": "开起你的据点",
+    "startEvent": "发起一个活动", "create": "创建活动"
+  },
+  "recur": {"everyday":"每天","weekly":"每周","everyNDays_one":"每 {{count}} 天","everyNDays_other":"每 {{count}} 天"}
+}

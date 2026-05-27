@@ -1,0 +1,15 @@
+{
+  "title": "發生過的事",
+  "loadError": "無法載入封存內容",
+  "filterAll": "全部",
+  "rangeRecent": "近期",
+  "range7": "最近 7 天",
+  "range14": "最近 14 天",
+  "custom": "自訂",
+  "pickEnd": "現在選擇結束日",
+  "pickStart": "選擇開始日（最多 {{max}} 天）",
+  "apply": "套用",
+  "emptyTitle": "這裡還沒有任何內容",
+  "emptyRecentSub": "當城市累積一些歷史後，過去的 events 和 hangouts 就會顯示在這裡。",
+  "emptyWindowSub": "這段期間沒有任何 event 或 hangout。試試更大的範圍。"
+}

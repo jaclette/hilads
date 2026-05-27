@@ -1,0 +1,17 @@
+{
+  "loading": "加载中…",
+  "notFound": "这个场地不在 Hilads 上。",
+  "loadError": "无法加载这个场地。请重试。",
+  "breadcrumb": "导航路径",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "咖啡馆"
+  },
+  "typeInCity": "{{city}}的{{category}}",
+  "address": "地址",
+  "hours": "营业时间",
+  "openEveryDay": "每天营业 · {{opens}} – {{closes}}",
+  "ctaText": "看看现在谁在{{city}}周围。",
+  "openCity": "打开{{city}}",
+  "lastUpdated": "最后更新于 {{date}}"
+}

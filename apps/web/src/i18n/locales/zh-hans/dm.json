@@ -1,0 +1,41 @@
+{
+  "title": "消息",
+  "filters": { "all": "全部", "dms": "私信", "events": "活动聊天" },
+  "loading": "加载中…",
+  "error": {
+    "loadTitle": "无法加载消息",
+    "loadSub": "请检查你的网络连接后重试。"
+  },
+  "empty": {
+    "eventsTitle": "还没有活动聊天",
+    "eventsSub": "创建或加入一个活动，与参加的人聊天。",
+    "title": "还没有消息",
+    "sub": "与你在城市里认识的人建立联系。"
+  },
+  "sectionDms": "私信",
+  "sectionEvents": "活动聊天",
+  "youPrefix": "你：{{message}}",
+  "startConversation": "开始对话",
+  "eventCreated": "这是你创建的",
+  "eventJoined": "你加入了这个",
+  "prefs": {
+    "title": "通知偏好",
+    "dmName": "新私信",
+    "dmDesc": "当有人给你发私信时",
+    "eventName": "活动聊天消息",
+    "eventDesc": "当有人在你加入的活动里发消息时",
+    "cityName": "城市聊天消息",
+    "cityDesc": "当有人在你所在城市的频道里发消息时"
+  },
+  "thread": {
+    "loadError": "无法加载消息。",
+    "beginning": "对话开始",
+    "photo": "📷 照片",
+    "unavailable": "原始消息不可用",
+    "tapMaps": "点按在地图中打开",
+    "composer": "消息…",
+    "imageType": "请选择 JPEG、PNG 或 WebP 图片。",
+    "imageTooLarge": "图片太大。最大尺寸：10 MB。",
+    "imageSend": "无法发送图片。请重试。"
+  }
+}

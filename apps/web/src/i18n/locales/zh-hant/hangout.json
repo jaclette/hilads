@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "開一個 hangout",
+    "editTitle": "編輯 hangout",
+    "category": "類別",
+    "cat": { "general": "一般", "tips": "撇步", "food": "美食", "drinks": "小酌", "help": "求助", "meetup": "聚會" },
+    "titleLabel": "你在想什麼？",
+    "titlePlaceholder": "例如：這一帶最棒的咖啡店？",
+    "detailsLabel": "新增詳細資訊",
+    "optional": "（選填）",
+    "detailsPlaceholder": "給點背景說明…",
+    "expiry": "⏱ 24 小時後自動到期",
+    "saving": "儲存中…",
+    "starting": "開啟中…",
+    "saveChanges": "儲存變更",
+    "startCta": "開一個 hangout ⚡",
+    "limitHeader": "一次一個",
+    "limitTitle": "你已經有一個 hangout 了",
+    "limitSub": "你一次只能開一個 hangout。前往「{{title}}」，或將它刪除以開一個新的。",
+    "limitGo": "前往我的 hangout →",
+    "yourHangout": "你的 hangout"
+  },
+  "deleteConfirm": "刪除這個 hangout？這會為所有人結束它，且無法復原。",
+  "deleteFailedAlert": "無法刪除。請重試。",
+  "shareAria": "分享 hangout",
+  "shareTitle": "分享這個 hangout",
+  "members": {
+    "oneIn": "{{name}} 加入了",
+    "countIn": "{{count}} 人在這個 hangout",
+    "seeAll": "查看全部 →"
+  },
+  "owner": { "edit": "✏️ 編輯", "delete": "🗑 刪除" },
+  "gated": {
+    "title": "僅限成員的 hangout",
+    "pending": "邀請待處理 — 成員接受後你就能加入對話。",
+    "prompt": "請求加入以查看對話並聊天。",
+    "requestBtn": "請求加入"
+  },
+  "feed": {
+    "beginning": "對話開始",
+    "loading": "載入中…",
+    "emptyTitle": "還沒有回覆",
+    "emptySub": "搶先第一個投入"
+  },
+  "joinReq": {
+    "someone": "有人",
+    "wantsToJoin": " 想加入",
+    "joined": " 加入了 hangout",
+    "askedToJoin": " 請求加入",
+    "decline": "拒絕",
+    "accept": "接受",
+    "accepted": "已接受",
+    "acceptedBy": "已由 {{name}} 接受",
+    "declined": "邀請已拒絕"
+  },
+  "modes": { "local": "在地", "exploring": "探索中" },
+  "reply": { "photo": "📷 相片", "unavailable": "原始訊息無法使用" },
+  "composer": { "reply": "回覆對話…", "start": "炒熱這個 vibe ✨" },
+  "errors": {
+    "locFailed": "無法取得你的位置。請啟用位置存取權後再試一次。",
+    "imageType": "請選擇 JPEG、PNG 或 WebP 圖片。",
+    "imageTooLarge": "圖片太大。上限 10 MB。",
+    "imageSend": "無法傳送圖片。請重試。",
+    "dismiss": "{{error}} · 點一下關閉"
+  }
+}

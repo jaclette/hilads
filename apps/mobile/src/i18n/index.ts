@@ -151,8 +151,40 @@ import nl_misc    from './locales/nl/misc.json';
 import nl_cities  from './locales/nl/cities.json';
 import nl_upcoming from './locales/nl/upcoming.json';
 import nl_archive from './locales/nl/archive.json';
+import zhhans_common  from './locales/zh-hans/common.json';
+import zhhans_auth    from './locales/zh-hans/auth.json';
+import zhhans_landing from './locales/zh-hans/landing.json';
+import zhhans_here    from './locales/zh-hans/here.json';
+import zhhans_now     from './locales/zh-hans/now.json';
+import zhhans_chat    from './locales/zh-hans/chat.json';
+import zhhans_event   from './locales/zh-hans/event.json';
+import zhhans_hangout from './locales/zh-hans/hangout.json';
+import zhhans_dm      from './locales/zh-hans/dm.json';
+import zhhans_notifications from './locales/zh-hans/notifications.json';
+import zhhans_publicProfile from './locales/zh-hans/publicProfile.json';
+import zhhans_me      from './locales/zh-hans/me.json';
+import zhhans_misc    from './locales/zh-hans/misc.json';
+import zhhans_cities  from './locales/zh-hans/cities.json';
+import zhhans_upcoming from './locales/zh-hans/upcoming.json';
+import zhhans_archive from './locales/zh-hans/archive.json';
+import zhhant_common  from './locales/zh-hant/common.json';
+import zhhant_auth    from './locales/zh-hant/auth.json';
+import zhhant_landing from './locales/zh-hant/landing.json';
+import zhhant_here    from './locales/zh-hant/here.json';
+import zhhant_now     from './locales/zh-hant/now.json';
+import zhhant_chat    from './locales/zh-hant/chat.json';
+import zhhant_event   from './locales/zh-hant/event.json';
+import zhhant_hangout from './locales/zh-hant/hangout.json';
+import zhhant_dm      from './locales/zh-hant/dm.json';
+import zhhant_notifications from './locales/zh-hant/notifications.json';
+import zhhant_publicProfile from './locales/zh-hant/publicProfile.json';
+import zhhant_me      from './locales/zh-hant/me.json';
+import zhhant_misc    from './locales/zh-hant/misc.json';
+import zhhant_cities  from './locales/zh-hant/cities.json';
+import zhhant_upcoming from './locales/zh-hant/upcoming.json';
+import zhhant_archive from './locales/zh-hant/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -169,6 +201,8 @@ const resources = {
   'pt-pt': { common: ptpt_common, auth: ptpt_auth, landing: ptpt_landing, here: ptpt_here, now: ptpt_now, chat: ptpt_chat, event: ptpt_event, hangout: ptpt_hangout, dm: ptpt_dm, notifications: ptpt_notifications, publicProfile: ptpt_publicProfile, me: ptpt_me, misc: ptpt_misc, cities: ptpt_cities, upcoming: ptpt_upcoming, archive: ptpt_archive },
   de: { common: de_common, auth: de_auth, landing: de_landing, here: de_here, now: de_now, chat: de_chat, event: de_event, hangout: de_hangout, dm: de_dm, notifications: de_notifications, publicProfile: de_publicProfile, me: de_me, misc: de_misc, cities: de_cities, upcoming: de_upcoming, archive: de_archive },
   nl: { common: nl_common, auth: nl_auth, landing: nl_landing, here: nl_here, now: nl_now, chat: nl_chat, event: nl_event, hangout: nl_hangout, dm: nl_dm, notifications: nl_notifications, publicProfile: nl_publicProfile, me: nl_me, misc: nl_misc, cities: nl_cities, upcoming: nl_upcoming, archive: nl_archive },
+  'zh-hans': { common: zhhans_common, auth: zhhans_auth, landing: zhhans_landing, here: zhhans_here, now: zhhans_now, chat: zhhans_chat, event: zhhans_event, hangout: zhhans_hangout, dm: zhhans_dm, notifications: zhhans_notifications, publicProfile: zhhans_publicProfile, me: zhhans_me, misc: zhhans_misc, cities: zhhans_cities, upcoming: zhhans_upcoming, archive: zhhans_archive },
+  'zh-hant': { common: zhhant_common, auth: zhhant_auth, landing: zhhant_landing, here: zhhant_here, now: zhhant_now, chat: zhhant_chat, event: zhhant_event, hangout: zhhant_hangout, dm: zhhant_dm, notifications: zhhant_notifications, publicProfile: zhhant_publicProfile, me: zhhant_me, misc: zhhant_misc, cities: zhhant_cities, upcoming: zhhant_upcoming, archive: zhhant_archive },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {
@@ -185,6 +219,9 @@ function deviceLocale(): Locale {
     // Portuguese is regional: only pt-BR → pt-br; bare "pt" and any other
     // pt-XX (incl. pt-PT) default to European (pt-pt), per product decision.
     if (code === 'pt' || tag.startsWith('pt')) return tag.includes('br') ? 'pt-br' : 'pt-pt';
+    // Chinese is script-based: TW/HK/MO/Hant → Traditional; everything else
+    // zh-* (CN/SG/Hans/bare zh) → Simplified default, per product decision.
+    if (code === 'zh' || tag.startsWith('zh')) return /hant|tw|hk|mo/.test(tag) ? 'zh-hant' : 'zh-hans';
     return isSupported(code) ? code : DEFAULT_LOCALE;
   } catch {
     return DEFAULT_LOCALE;

@@ -18,6 +18,8 @@ const LANG_NAMES: Record<Locale, string> = {
   'pt-pt': 'Português (Portugal)',
   de: 'Deutsch',
   nl: 'Nederlands',
+  'zh-hans': '简体中文',
+  'zh-hant': '繁體中文',
 };
 
 /**

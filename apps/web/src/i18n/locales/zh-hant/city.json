@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "建立帳號",
+    "signIn": "登入",
+    "create_event": {
+      "pageTitle": "建立活動",
+      "title": "幽靈可以瀏覽，但無法主辦。",
+      "sub": "建立帳號來舉辦你自己的活動，讓你的城市登上版圖。"
+    },
+    "view_profile": {
+      "pageTitle": "個人資料",
+      "title": "幽靈可以瀏覽，但個人資料是會員專屬的。",
+      "sub": "建立帳號來解鎖個人資料、與人連結，並打造你的城市好友圈。"
+    },
+    "join_hangout": {
+      "pageTitle": "加入 hangout",
+      "title": "幽靈可以瀏覽，但無法加入 hangout。",
+      "sub": "註冊以加入 hangout、保留你的名字，並在有人想碰面時收到通知。"
+    },
+    "create_hangout": {
+      "pageTitle": "發起 hangout",
+      "title": "幽靈可以瀏覽，但無法主辦。",
+      "sub": "註冊以發起 hangout、保留你的名字，並吸引大家加入你。"
+    }
+  },
+  "welcome": {
+    "live": "{{city}} 正熱鬧 ✨",
+    "dismiss": "關閉",
+    "body": "真實的人，就在此刻。打聲招呼、看看誰在附近，或帶個朋友一起來。",
+    "sayHi": "打招呼 👋",
+    "invite": "邀請好友"
+  },
+  "imageType": "請選擇 JPEG、PNG 或 WebP 圖片。",
+  "imageTooLarge": "圖片太大。最大尺寸：10 MB。",
+  "picker": {
+    "title": "選擇城市",
+    "search": "搜尋城市…",
+    "noResults": "找不到符合「{{query}}」的城市",
+    "topCities": "現在最熱門的城市",
+    "cities": "城市"
+  },
+  "joining": "正在加入 {{city}}…",
+  "joiningDefault": "正在加入聊天…",
+  "tryAgain": "重試",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "公開",
+    "activeNow": "● 現在活躍",
+    "repliesNew": "還沒有回覆 — 搶頭香",
+    "replies_one": "💬 {{count}} 則回覆",
+    "replies_other": "💬 {{count}} 則回覆",
+    "going_one": "🙌 {{count}} 人參加",
+    "going_other": "🙌 {{count}} 人參加",
+    "hostedBy": "由 {{name}} 主辦",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "建立活動",
+    "startHangout": "發起 hangout ⚡",
+    "openPlace": "開放你的場地",
+    "loadError": "無法載入活動",
+    "loadErrorSub": "稍後下拉重試，或在 {{city}} 建立新的內容。",
+    "emptyLocalTitle": "主辦你的場地",
+    "emptyTitle": "目前還沒有任何動靜",
+    "emptyLocalSub": "讓 {{city}} 活起來。在你最愛的地方發起一個固定活動。",
+    "emptySub": "成為第一個在 {{city}} 搞點名堂的人",
+    "noEvents": "目前還沒有活動",
+    "noHangouts": "還沒有 hangout",
+    "noEventsSub": "成為第一個在 {{city}} 建立活動的人",
+    "noHangoutsSub": "發起一個 hangout，讓整座城市聊起來",
+    "filterAll": "全部",
+    "seeComing": "看看即將登場 🔮",
+    "seeHappened": "看看發生過什麼",
+    "createNew": "新增"
+  },
+  "header": {
+    "online": "{{count}} 人在附近",
+    "liveNow": "正在進行",
+    "seeWhosHere": "看看誰在這裡",
+    "onlineAria": "{{count}} 人在附近，點一下看看是誰",
+    "notifications": "通知",
+    "messages": "訊息",
+    "shareCity": "分享城市",
+    "switchCity": "切換城市",
+    "changeCity": "更換城市",
+    "currentWeather": "目前天氣：{{label}}"
+  },
+  "here": {
+    "title": "在這裡的人",
+    "filterBadge": "徽章",
+    "filterVibe": "Vibe",
+    "filterMode": "模式",
+    "you": "（你）",
+    "hereNow": "Here now",
+    "noMatchLive": "目前沒有人符合這些篩選條件。",
+    "legendsSub": "他們讓城市動起來",
+    "cityCrew": "城市成員",
+    "noMatchCrew": "沒有成員符合這些篩選條件。",
+    "loadMore": "載入更多",
+    "messageAria": "傳送訊息給 {{name}}"
+  },
+  "eventHeader": {
+    "yourEvent": "你的活動",
+    "edit": "編輯",
+    "join": "加入",
+    "joined": "已加入 ✓",
+    "here": "{{count}} 人在這裡",
+    "going_one": "{{count}} 人參加",
+    "going_other": "{{count}} 人參加",
+    "locationPending": "尚未提供地點",
+    "hostedBy": "由 {{name}} 主辦"
+  },
+  "chatEmpty": {
+    "beginning": "對話的開頭",
+    "arriving": "大家陸續抵達",
+    "firstChat": "成為第一個在這裡聊天的人 👇",
+    "firstHi": "成為第一個打招呼的人 👇"
+  },
+  "create": {
+    "title": "想做點什麼？",
+    "hangoutTitle": "發起 hangout",
+    "hangoutSub": "即時 — 讓大家現在就加入你",
+    "eventTitle": "建立活動",
+    "eventSub": "規劃讓其他人可以加入的活動"
+  },
+  "goingModal": {
+    "going": "人參加",
+    "inThisHangout": "在這個 hangout 裡",
+    "loading": "載入中…",
+    "empty": "目前還沒有人 — 搶頭香吧！🙌"
+  },
+  "nickname": {
+    "label": "暱稱",
+    "placeholder": "你的名字...",
+    "heroSub": "目前是匿名的。你仍然可以決定自己如何呈現。",
+    "save": "儲存暱稱",
+    "upgradeHint": "保留你的名字。繼續當在地人。",
+    "haveAccount": "已經有帳號了？",
+    "myEvents": "我的活動",
+    "anonymous": "// 匿名 · 無需註冊"
+  },
+  "prompt": {
+    "exploreText": "🔥 看看現在發生什麼事",
+    "exploreCta": "看看發生什麼事",
+    "photoText": "📸 分享正在發生的事",
+    "shoot": "拍照",
+    "createEventText": "🎉 今晚有計畫嗎？",
+    "createEventCta": "建立活動",
+    "installText": "✨ 把 Hilads 加到你的主畫面\n絕不錯過你城市裡正在發生的事",
+    "installAdd": "新增",
+    "installHow": "怎麼做"
+  },
+  "toast": {
+    "eventDeleted": "活動已刪除"
+  },
+  "pwa": {
+    "addToHome": "把 Hilads 加到主畫面",
+    "add": "新增",
+    "keepClose": "把 Hilads 放在手邊",
+    "manualHelp": "開啟瀏覽器選單，選擇「加到主畫面」。",
+    "dismiss": "關閉安裝提示"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} 剛剛抵達",
+    "1": "🔥 {{name}} 加入了",
+    "2": "🍻 {{name}} 在這裡",
+    "3": "👀 {{name}} 剛剛現身",
+    "4": "✨ {{name}} 抵達了"
+  },
+  "ambient": {
+    "0": "🔥 大家陸續抵達",
+    "1": "🍻 今晚誰出來玩？",
+    "2": "💬 城市正在甦醒",
+    "3": "🌙 夜貓子都上線了",
+    "4": "👀 有人剛剛抵達",
+    "5": "🔥 城市裡的新面孔",
+    "6": "🎉 現在有人在這裡",
+    "7": "🌆 在地人陸續報到"
+  },
+  "ownerPrompt": {
+    "text": "🔥 你發起了這個活動！",
+    "sub": "讓它更棒 — 加上說明、更新時間，或分享出去。",
+    "edit": "✏️ 編輯活動"
+  },
+  "feedNew": {
+    "event": "🔥 新活動：{{title}}",
+    "join": "加入",
+    "replies_one": "{{count}} 則回覆",
+    "replies_other": "{{count}} 則回覆"
+  },
+  "replyPreview": {
+    "photo": "📷 照片"
+  },
+  "placeholder": {
+    "event": "在 {{title}} 說點什麼 ✨",
+    "eventFirst": "成為 {{title}} 的第一個人 ✨"
+  },
+  "placeholders": [
+    "打招呼 👋",
+    "今晚誰出來玩？",
+    "有什麼計畫嗎？👀",
+    "這裡發生什麼事？",
+    "有人想一起做點什麼嗎？🍻",
+    "留個訊息…"
+  ],
+  "typing": {
+    "one": "{{name}} 正在輸入…",
+    "two": "{{a}} 和 {{b}} 正在輸入…",
+    "many": "好幾個人正在輸入…"
+  },
+  "myEvent": {
+    "live": "進行中",
+    "recurring": "↻ 固定舉辦",
+    "upcoming": "即將登場",
+    "delete": "刪除活動"
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "sub": "城市在你周圍鮮活躍動。\n找到夥伴、加入正在發生的事，或開創你自己的 spot。"
+  },
+  "join": {
+    "peopleLive_one": "🔥 {{count}} 人現在正在聚聚",
+    "peopleLive_other": "🔥 {{count}} 人現在正在聚聚",
+    "events_one": "🔥 {{count}} 場活動進行中",
+    "events_other": "🔥 {{count}} 場活動進行中",
+    "hangouts_one": "🗣️ {{count}} 個 hangout 活躍中",
+    "hangouts_other": "🗣️ {{count}} 個 hangouts 活躍中",
+    "replies_one": "{{count}} 則回覆",
+    "replies_other": "{{count}} 則回覆",
+    "pickCity": "選一座城市\n加入吧",
+    "locating": "› 正在定位你的城市...",
+    "browseCities": "瀏覽城市 →",
+    "yourName": "你的名字",
+    "namePlaceholder": "用什麼名字打招呼...",
+    "tryAgain": "重試",
+    "useLocation": "改用我的位置",
+    "joinCity": "加入 {{city}} →",
+    "joinChat": "加入聊天 →",
+    "hint": "// 匿名 · 即時存取",
+    "keepIdentity": "或保留你的身分",
+    "createAccount": "✨ 建立帳號",
+    "logIn": "登入",
+    "authHint": "保留你的名字 · 解鎖個人資料 · 新增好友"
+  },
+  "local": {
+    "badge": "🌍 在地",
+    "title": "讓事情發生",
+    "tagline": "你知道最棒的地點。現在分享出來吧。",
+    "bullets": [
+      "在你最愛的在地 spot 主辦定期活動",
+      "帶大家去你喜愛的地方",
+      "成為大家現身的理由"
+    ],
+    "cta": "開創你的 spot"
+  },
+  "exploring": {
+    "badge": "🧭 探索中",
+    "title": "在任何城市找到真實的時刻",
+    "tagline": "無論落腳何處，都能找到你的夥伴。",
+    "bullets": [
+      "找到你附近的即時活動",
+      "立刻認識在地人和其他探索者",
+      "避開觀光陷阱。發掘真正的城市。"
+    ],
+    "cta": "看看正在發生什麼"
+  },
+  "how": {
+    "eyebrow": "運作方式",
+    "title": "三個步驟，認識你附近的人。",
+    "steps": [
+      { "title": "打開 app", "desc": "看看你周圍有誰、附近現在正發生什麼。" },
+      { "title": "選擇你的模式", "desc": "在地。你熟悉這座城市。\n探索中。你想感受它。" },
+      { "title": "投入其中", "desc": "加入一場活動或開創你自己的 spot。真實生活從這裡開始。" }
+    ]
+  },
+  "stats": {
+    "peopleLive": "人正在線上",
+    "cities": "座城市",
+    "eventsCreated": "場活動已建立",
+    "signupsNeeded": "需要註冊"
+  },
+  "concept": {
+    "title": "這不是另一個社群網路。\n而是你的城市，現場直擊。",
+    "rules": [
+      "沒有追蹤者。沒有動態消息。沒有演算法。",
+      "看看周圍有誰。加入你附近正在發生的事。",
+      "真實的人。真實的地方。就是現在。"
+    ]
+  },
+  "seo": "Hilads 是一款即時社交 app，幫助你認識附近的人、發掘城市裡可做的事。找到你附近的活動、認識在地人，無論身在何處都能與旅人交流。想知道台北有什麼好玩的？想在台中認識在地人？正在探索高雄、想知道今晚有什麼活動？Hilads 為你呈現城市現場直擊。無需帳號。直接現身就好。",
+  "download": {
+    "eyebrow": "行動應用程式",
+    "title": "把你的城市裝進口袋。",
+    "sub": "原生 app 即將推出。"
+  },
+  "repeat": {
+    "eyebrow": "投入其中",
+    "titleCity": "{{city}} 現在正現場直擊。",
+    "titleGeneric": "你的城市現在正現場直擊。"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "language": "語言",
+  "cancel": "取消",
+  "loading": "載入中…",
+  "mode": {
+    "local": { "label": "在地" },
+    "exploring": { "label": "探索中" }
+  },
+  "composer": {
+    "attach": "新增附件",
+    "emoji": "表情符號"
+  },
+  "vibe": {
+    "party": "派對",
+    "board_games": "桌遊",
+    "coffee": "咖啡",
+    "music": "音樂",
+    "food": "美食",
+    "chill": "放鬆"
+  },
+  "weather": {
+    "clear": "晴朗無雲",
+    "sunnyHot": "天氣超棒",
+    "clearNight": "今晚晴朗",
+    "mostlyClear": "大致晴朗",
+    "partly": "有些雲",
+    "overcast": "陰天",
+    "fog": "有霧",
+    "drizzle": "毛毛雨",
+    "rain": "下雨",
+    "snow": "下雪",
+    "snowShowers": "陣雪",
+    "thunder": "雷雨"
+  },
+  "time": {
+    "happeningNow": "🔥 正在進行",
+    "inMin": "🔥 {{count}} 分鐘後",
+    "today": "今天",
+    "tomorrow": "明天",
+    "yesterday": "昨天",
+    "justNow": "剛剛",
+    "nowShort": "現在",
+    "mAgo": "{{count}} 分鐘前",
+    "hAgo": "{{count}} 小時前",
+    "dAgo": "{{count}} 天前",
+    "expired": "已到期",
+    "expiresSoon": "即將到期",
+    "expiresInMin": "{{mins}} 分鐘後到期",
+    "expiresInHourMin": "{{hours}} 小時 {{mins}} 分鐘後到期",
+    "expiresInHour": "{{hours}} 小時後到期"
+  }
+}

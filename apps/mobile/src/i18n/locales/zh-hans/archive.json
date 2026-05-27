@@ -1,0 +1,15 @@
+{
+  "title": "过往动态",
+  "loadError": "无法加载存档",
+  "filterAll": "全部",
+  "rangeRecent": "最近",
+  "range7": "最近 7 天",
+  "range14": "最近 14 天",
+  "custom": "自定义",
+  "pickEnd": "现在选择结束日期",
+  "pickStart": "选择开始日期（最多 {{max}} 天）",
+  "apply": "应用",
+  "emptyTitle": "这里还什么都没有",
+  "emptyRecentSub": "当城市有了一些历史记录后，过往的活动和 hangouts 会显示在这里。",
+  "emptyWindowSub": "此时间段内没有活动或 hangouts。试试更大的范围。"
+}

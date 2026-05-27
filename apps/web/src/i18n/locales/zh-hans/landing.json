@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "sub": "整座城市在你身边鲜活起来。\n找到人、加入正在发生的事，或开起你自己的据点。"
+  },
+  "join": {
+    "peopleLive_one": "🔥 {{count}} 人此刻正在出来玩",
+    "peopleLive_other": "🔥 {{count}} 人此刻正在出来玩",
+    "events_one": "🔥 {{count}} 个活动进行中",
+    "events_other": "🔥 {{count}} 个活动进行中",
+    "hangouts_one": "🗣️ {{count}} 个 hangout 活跃中",
+    "hangouts_other": "🗣️ {{count}} 个 hangout 活跃中",
+    "replies_one": "{{count}} 条回复",
+    "replies_other": "{{count}} 条回复",
+    "pickCity": "选一座城市\n加入进来",
+    "locating": "› 正在定位你的城市...",
+    "browseCities": "浏览城市 →",
+    "yourName": "你的名字",
+    "namePlaceholder": "用什么名字打招呼...",
+    "tryAgain": "重试",
+    "useLocation": "改用我的定位",
+    "joinCity": "加入 {{city}} →",
+    "joinChat": "加入聊天 →",
+    "hint": "// 匿名 · 即刻进入",
+    "keepIdentity": "或保留你的身份",
+    "createAccount": "✨ 创建账号",
+    "logIn": "登录",
+    "authHint": "保留你的名字 · 解锁个人资料 · 添加好友"
+  },
+  "local": {
+    "badge": "🌍 本地",
+    "title": "让事情发生",
+    "tagline": "你知道最棒的地方。现在分享出来吧。",
+    "bullets": [
+      "在你最爱的本地据点举办重复活动",
+      "带人去你喜爱的地方",
+      "成为大家出现的理由"
+    ],
+    "cta": "开起你的据点"
+  },
+  "exploring": {
+    "badge": "🧭 探索中",
+    "title": "在任何城市找到真实的瞬间",
+    "tagline": "无论落脚何处，都能找到你的同伴。",
+    "bullets": [
+      "找到你附近的实时活动",
+      "即刻结识本地人和其他探索者",
+      "避开旅游陷阱。发现真正的城市。"
+    ],
+    "cta": "看看正在发生什么"
+  },
+  "how": {
+    "eyebrow": "玩法介绍",
+    "title": "三步就能认识你附近的人。",
+    "steps": [
+      { "title": "打开应用", "desc": "看看此刻你周围有谁、附近正在发生什么。" },
+      { "title": "选择你的模式", "desc": "本地。你了解这座城市。\n探索中。你想感受它。" },
+      { "title": "加入进来", "desc": "加入一个活动或开起你自己的据点。真实生活从这里开始。" }
+    ]
+  },
+  "stats": {
+    "peopleLive": "人正在线",
+    "cities": "座城市",
+    "eventsCreated": "个已创建的活动",
+    "signupsNeeded": "需要注册"
+  },
+  "concept": {
+    "title": "这不是又一个社交网络。\n是你的城市，实时上线。",
+    "rules": [
+      "没有关注。没有信息流。没有算法。",
+      "看看谁在附近。加入你周围正在发生的事。",
+      "真实的人。真实的地方。就在此刻。"
+    ]
+  },
+  "seo": "Hilads 是一款实时社交应用，帮你结识附近的人、发现你所在城市里值得做的事。找到你附近的活动、认识本地人，无论身在何处都能与旅行者建立联系。想知道在巴黎能做什么？想在巴塞罗那认识本地人？正在探索里斯本，想知道今晚有什么活动？Hilads 为你实时呈现这座城市。无需账号。来就对了。",
+  "download": {
+    "eyebrow": "移动应用",
+    "title": "把你的城市装进口袋。",
+    "sub": "原生应用即将推出。"
+  },
+  "repeat": {
+    "eyebrow": "加入进来",
+    "titleCity": "{{city}} 此刻正在上线。",
+    "titleGeneric": "你的城市此刻正在上线。"
+  }
+}

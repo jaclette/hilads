@@ -20,7 +20,7 @@ import en_publicProfile from './locales/en/publicProfile.json'
 import en_city          from './locales/en/city.json'
 import en_venue         from './locales/en/venue.json'
 
-export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl']
+export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
 const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'venue']
@@ -156,6 +156,38 @@ const LOADERS = {
     city:          () => import('./locales/nl/city.json'),
     venue:         () => import('./locales/nl/venue.json'),
   },
+  'zh-hans': {
+    common:  () => import('./locales/zh-hans/common.json'),
+    profile: () => import('./locales/zh-hans/profile.json'),
+    brand:   () => import('./locales/zh-hans/brand.json'),
+    landing: () => import('./locales/zh-hans/landing.json'),
+    auth:    () => import('./locales/zh-hans/auth.json'),
+    event:   () => import('./locales/zh-hans/event.json'),
+    hangout: () => import('./locales/zh-hans/hangout.json'),
+    dm:      () => import('./locales/zh-hans/dm.json'),
+    notifications: () => import('./locales/zh-hans/notifications.json'),
+    upcoming:      () => import('./locales/zh-hans/upcoming.json'),
+    archive:       () => import('./locales/zh-hans/archive.json'),
+    publicProfile: () => import('./locales/zh-hans/publicProfile.json'),
+    city:          () => import('./locales/zh-hans/city.json'),
+    venue:         () => import('./locales/zh-hans/venue.json'),
+  },
+  'zh-hant': {
+    common:  () => import('./locales/zh-hant/common.json'),
+    profile: () => import('./locales/zh-hant/profile.json'),
+    brand:   () => import('./locales/zh-hant/brand.json'),
+    landing: () => import('./locales/zh-hant/landing.json'),
+    auth:    () => import('./locales/zh-hant/auth.json'),
+    event:   () => import('./locales/zh-hant/event.json'),
+    hangout: () => import('./locales/zh-hant/hangout.json'),
+    dm:      () => import('./locales/zh-hant/dm.json'),
+    notifications: () => import('./locales/zh-hant/notifications.json'),
+    upcoming:      () => import('./locales/zh-hant/upcoming.json'),
+    archive:       () => import('./locales/zh-hant/archive.json'),
+    publicProfile: () => import('./locales/zh-hant/publicProfile.json'),
+    city:          () => import('./locales/zh-hant/city.json'),
+    venue:         () => import('./locales/zh-hant/venue.json'),
+  },
 }
 
 i18n.use(initReactI18next).init({
@@ -172,7 +204,7 @@ i18n.use(initReactI18next).init({
   react: { useSuspense: false },          // we preload before render ourselves
 })
 
-const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false, de: false, nl: false }
+const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false, de: false, nl: false, 'zh-hans': false, 'zh-hant': false }
 
 /** Lazy-load + register every namespace for a locale. Idempotent. */
 export async function loadLocale(locale) {
@@ -220,6 +252,11 @@ export function resolveInitialLocale() {
   // other pt-XX fall back to European (pt-pt), per product decision.
   if (lower === 'pt-br') return 'pt-br'
   if (lower.slice(0, 2) === 'pt') return 'pt-pt'
+  // Chinese is script-based: Traditional regions/scripts (TW/HK/MO/Hant) →
+  // zh-hant; everything else zh-* (CN/SG/Hans/bare zh) → Simplified default.
+  if (lower.slice(0, 2) === 'zh') {
+    return /hant|tw|hk|mo/.test(lower) ? 'zh-hant' : 'zh-hans'
+  }
   const short = lower.slice(0, 2)
   return SUPPORTED.includes(short) ? short : DEFAULT_LOCALE
 }

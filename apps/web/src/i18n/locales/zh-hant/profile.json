@@ -1,0 +1,130 @@
+{
+  "pageTitle": "我的個人資料",
+  "changePhoto": "更換個人資料相片",
+  "yourProfile": "你的個人資料",
+  "mode": "模式",
+  "modes": {
+    "local": "在地",
+    "localDesc": "你熟悉這座城市",
+    "exploring": "探索中",
+    "exploringDesc": "你正在發掘它"
+  },
+  "tabs": {
+    "interests": "興趣",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "好友",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "派對",
+    "board_games": "桌遊",
+    "coffee": "咖啡",
+    "music": "音樂",
+    "food": "美食",
+    "chill": "放鬆"
+  },
+  "interests": {
+    "drinks": "小酌",
+    "party": "派對",
+    "nightlife": "夜生活",
+    "music": "音樂",
+    "live music": "現場演出",
+    "culture": "文化",
+    "art": "藝術",
+    "food": "美食",
+    "coffee": "咖啡",
+    "sport": "運動",
+    "fitness": "健身",
+    "hiking": "健行",
+    "beach": "海灘",
+    "wellness": "養生",
+    "travel": "旅遊",
+    "hangout": "聚聚",
+    "socializing": "認識新朋友",
+    "gaming": "電玩",
+    "tech": "科技",
+    "dating": "約會"
+  },
+  "fields": {
+    "username": "使用者名稱",
+    "usernamePlaceholder": "使用者名稱",
+    "checking": "檢查中…",
+    "available": "@{{username}} 可以使用",
+    "aboutMe": "關於我",
+    "charsLeft": "— 還剩 {{count}}",
+    "aboutPlaceholder": "熱愛街頭小吃和隨興的聊天",
+    "email": "電子郵件",
+    "readOnly": "— 唯讀",
+    "homeCity": "居住城市",
+    "homeCityPlaceholder": "你住在哪裡",
+    "age": "年齡",
+    "agePlaceholder": "你的年齡",
+    "myVibe": "我的 vibe",
+    "interests": "興趣",
+    "interestsHint": "— 最多選 5 個"
+  },
+  "ambassador": {
+    "title": "城市推薦 👑",
+    "subtitle": "以在地達人的身分顯示在你的個人資料上。",
+    "restaurant": "最愛的餐廳",
+    "restaurantPlaceholder": "你總會帶朋友去的地方",
+    "spot": "私房景點 / spot",
+    "spotPlaceholder": "大多數遊客錯過的地方",
+    "tip": "在地小撇步",
+    "tipPlaceholder": "給新來者的最佳建議",
+    "story": "城市故事",
+    "storyPlaceholder": "你喜愛這座城市的一件事"
+  },
+  "hangouts": {
+    "empty": "還沒有 hangout — 開一個吧 ⚡",
+    "host": "主辦人"
+  },
+  "events": {
+    "going": "要參加",
+    "goingEmpty": "還沒有計畫 — 找點事做 🔥",
+    "hosting": "主辦中",
+    "hostingEmpty": "還沒主辦任何活動 — 來辦一個 ✨",
+    "live": "進行中",
+    "recurring": "↻ 定期",
+    "upcoming": "即將舉行",
+    "deleteEvent": "刪除活動"
+  },
+  "friends": {
+    "requests": "好友邀請",
+    "empty": "還沒有好友。從個人資料新增吧。",
+    "mine": "我的好友"
+  },
+  "vibesTab": {
+    "received": "收到的 Vibes",
+    "score": "{{score}} vibe 分數",
+    "basedOn_one": "根據 {{count}} 則 vibe",
+    "basedOn_other": "根據 {{count}} 則 vibe",
+    "empty": "還沒有 vibes",
+    "emptyHint": "等有人留言給你後，你的分數就會顯示在這裡 ✨"
+  },
+  "save": {
+    "uploading": "上傳中…",
+    "saving": "儲存中…",
+    "saved": "已儲存 ✓",
+    "save": "儲存個人資料"
+  },
+  "signOut": "登出",
+  "deleteAccount": "刪除帳號",
+  "delete": {
+    "title": "刪除帳號？",
+    "body": "你的個人資料、好友和設定將被永久移除。你的訊息和活動會匿名保留在城市聊天中。",
+    "irreversible": "此操作無法復原。",
+    "deleting": "刪除中…",
+    "confirm": "是的，刪除我的帳號",
+    "cancel": "取消"
+  },
+  "errors": {
+    "photoUpload": "相片上傳失敗。請重試。",
+    "usernameTooShort": "使用者名稱至少需要 3 個字元",
+    "usernameTaken": "該使用者名稱已被使用",
+    "usernameInvalid": "使用者名稱無效",
+    "saveFailed": "儲存失敗。請重試。",
+    "generic": "發生錯誤。請重試。"
+  }
+}

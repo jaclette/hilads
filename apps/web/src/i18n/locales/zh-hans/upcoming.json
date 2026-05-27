@@ -1,0 +1,14 @@
+{
+  "title": "即将发生",
+  "openCalendar": "打开日历",
+  "today": "今天",
+  "close": "关闭",
+  "error": "无法加载这一天的活动",
+  "retry": "重试",
+  "emptyTitle": "暂无安排",
+  "emptySub": "这一天还没有活动。",
+  "public": "公开",
+  "going_one": "🙌 {{count}} 人参加",
+  "going_other": "🙌 {{count}} 人参加",
+  "liveNow": "🔥 正在进行"
+}
