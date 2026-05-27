@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "계정 만들기",
+    "signIn": "로그인",
+    "create_event": {
+      "pageTitle": "이벤트 만들기",
+      "title": "Ghost는 둘러볼 수 있지만 호스트는 할 수 없어요.",
+      "sub": "계정을 만들어 직접 이벤트를 열고 내 도시를 지도에 올려보세요."
+    },
+    "view_profile": {
+      "pageTitle": "프로필",
+      "title": "Ghost는 둘러볼 수 있지만 프로필은 멤버 전용이에요.",
+      "sub": "계정을 만들어 프로필을 열고, 사람들과 연결하고, 내 도시 크루를 만들어보세요."
+    },
+    "join_hangout": {
+      "pageTitle": "hangout 참여하기",
+      "title": "Ghost는 둘러볼 수 있지만 hangout에는 참여할 수 없어요.",
+      "sub": "가입하면 hangout에 참여하고, 이름을 저장하고, 누군가 만나고 싶어할 때 알림을 받을 수 있어요."
+    },
+    "create_hangout": {
+      "pageTitle": "hangout 시작하기",
+      "title": "Ghost는 둘러볼 수 있지만 호스트는 할 수 없어요.",
+      "sub": "가입하면 hangout을 시작하고, 이름을 저장하고, 사람들을 모을 수 있어요."
+    }
+  },
+  "welcome": {
+    "live": "{{city}}이(가) 라이브예요 ✨",
+    "dismiss": "닫기",
+    "body": "진짜 사람들, 바로 지금. 인사하거나, 누가 있는지 보거나, 친구를 데려오세요.",
+    "sayHi": "인사하기 👋",
+    "invite": "친구 초대"
+  },
+  "imageType": "JPEG, PNG 또는 WebP 이미지를 선택해 주세요.",
+  "imageTooLarge": "이미지가 너무 커요. 최대 크기: 10 MB.",
+  "picker": {
+    "title": "도시 선택",
+    "search": "도시 검색…",
+    "noResults": "\"{{query}}\"에 해당하는 도시를 찾지 못했어요",
+    "topCities": "지금 가장 활발한 도시",
+    "cities": "도시"
+  },
+  "joining": "{{city}}에 연결하는 중…",
+  "joiningDefault": "채팅에 연결하는 중…",
+  "tryAgain": "다시 시도",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "공개",
+    "activeNow": "● 지금 활동 중",
+    "repliesNew": "아직 답글이 없어요 — 첫 번째가 되어보세요",
+    "replies_one": "💬 답글 {{count}}개",
+    "replies_other": "💬 답글 {{count}}개",
+    "going_one": "🙌 {{count}}명 참여",
+    "going_other": "🙌 {{count}}명 참여",
+    "hostedBy": "{{name}} 주최",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "이벤트 만들기",
+    "startHangout": "hangout 시작하기 ⚡",
+    "openPlace": "내 장소 열기",
+    "loadError": "이벤트를 불러오지 못했어요",
+    "loadErrorSub": "잠시 후 다시 시도하거나 {{city}}에서 새로운 걸 만들어보세요.",
+    "emptyLocalTitle": "내 단골 장소를 호스트해보세요",
+    "emptyTitle": "아직 아무 일도 없어요",
+    "emptyLocalSub": "{{city}}을(를) 활기차게 만들어보세요. 좋아하는 장소에서 정기 이벤트를 시작하세요.",
+    "emptySub": "{{city}}에서 가장 먼저 무언가를 시작해보세요",
+    "noEvents": "지금은 이벤트가 없어요",
+    "noHangouts": "아직 hangout이 없어요",
+    "noEventsSub": "{{city}}에서 가장 먼저 하나 만들어보세요",
+    "noHangoutsSub": "hangout을 시작해 도시가 떠들썩하게 만들어보세요",
+    "filterAll": "전체",
+    "seeComing": "다가오는 일정 보기 🔮",
+    "seeHappened": "지난 활동 보기",
+    "createNew": "만들기"
+  },
+  "header": {
+    "online": "근처 {{count}}명",
+    "liveNow": "지금 라이브",
+    "seeWhosHere": "누가 있는지 보기",
+    "onlineAria": "근처에 {{count}}명, 누군지 보려면 탭하세요",
+    "notifications": "알림",
+    "messages": "메시지",
+    "shareCity": "도시 공유",
+    "switchCity": "도시 전환",
+    "changeCity": "도시 변경",
+    "currentWeather": "현재 날씨: {{label}}"
+  },
+  "here": {
+    "title": "내 주변 사람들",
+    "filterBadge": "배지",
+    "filterVibe": "Vibe",
+    "filterMode": "모드",
+    "you": "(나)",
+    "hereNow": "Here now",
+    "noMatchLive": "지금 이 필터에 맞는 사람이 없어요.",
+    "legendsSub": "이들이 도시를 움직여요",
+    "cityCrew": "도시 크루",
+    "noMatchCrew": "이 필터에 맞는 멤버가 없어요.",
+    "loadMore": "더 보기",
+    "messageAria": "{{name}}에게 메시지"
+  },
+  "eventHeader": {
+    "yourEvent": "내 이벤트",
+    "edit": "수정",
+    "join": "참여",
+    "joined": "참여함 ✓",
+    "here": "{{count}}명 있음",
+    "going_one": "{{count}}명 참여",
+    "going_other": "{{count}}명 참여",
+    "locationPending": "위치가 아직 없어요",
+    "hostedBy": "{{name}} 주최"
+  },
+  "chatEmpty": {
+    "beginning": "대화의 시작",
+    "arriving": "사람들이 도착하고 있어요",
+    "firstChat": "여기서 가장 먼저 채팅해보세요 👇",
+    "firstHi": "가장 먼저 인사해보세요 👇"
+  },
+  "create": {
+    "title": "뭐 할까요?",
+    "hangoutTitle": "hangout 시작하기",
+    "hangoutSub": "바로 — 지금 사람들이 참여하게 하세요",
+    "eventTitle": "이벤트 만들기",
+    "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요"
+  },
+  "goingModal": {
+    "going": "참여",
+    "inThisHangout": "이 hangout에",
+    "loading": "불러오는 중…",
+    "empty": "아직 아무도 없어요 — 가장 먼저 참여하세요! 🙌"
+  },
+  "nickname": {
+    "label": "닉네임",
+    "placeholder": "이름...",
+    "heroSub": "지금은 익명이에요. 그래도 어떻게 보일지는 꾸밀 수 있어요.",
+    "save": "닉네임 저장",
+    "upgradeHint": "이름을 저장하세요. 로컬로 남으세요.",
+    "haveAccount": "이미 계정이 있나요?",
+    "myEvents": "내 이벤트",
+    "anonymous": "// 익명 · 가입 필요 없음"
+  },
+  "prompt": {
+    "exploreText": "🔥 지금 무슨 일이 있는지 보기",
+    "exploreCta": "무슨 일인지 보기",
+    "photoText": "📸 지금 일어나는 일을 공유하기",
+    "shoot": "촬영",
+    "createEventText": "🎉 오늘 밤 계획 있어요?",
+    "createEventCta": "이벤트 만들기",
+    "installText": "✨ Hilads를 홈 화면에 추가하세요\n내 도시에서 일어나는 일을 놓치지 마세요",
+    "installAdd": "추가",
+    "installHow": "방법"
+  },
+  "toast": {
+    "eventDeleted": "이벤트 삭제됨"
+  },
+  "pwa": {
+    "addToHome": "Hilads를 홈 화면에 추가",
+    "add": "추가",
+    "keepClose": "Hilads를 가까이 두세요",
+    "manualHelp": "브라우저 메뉴를 열고 홈 화면에 추가를 선택하세요.",
+    "dismiss": "설치 안내 닫기"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}}이(가) 방금 도착했어요",
+    "1": "🔥 {{name}}이(가) 참여했어요",
+    "2": "🍻 {{name}}이(가) 여기 있어요",
+    "3": "👀 {{name}}이(가) 방금 나타났어요",
+    "4": "✨ {{name}}이(가) 도착했어요"
+  },
+  "ambient": {
+    "0": "🔥 사람들이 도착하고 있어요",
+    "1": "🍻 오늘 밤 누가 나왔을까요?",
+    "2": "💬 도시가 깨어나고 있어요",
+    "3": "🌙 올빼미들이 온라인이에요",
+    "4": "👀 누군가 방금 도착했어요",
+    "5": "🔥 도시에 새 얼굴이 떴어요",
+    "6": "🎉 지금 여기 사람들이 있어요",
+    "7": "🌆 로컬들이 들어오고 있어요"
+  },
+  "ownerPrompt": {
+    "text": "🔥 이 이벤트를 시작했네요!",
+    "sub": "더 멋지게 — 설명을 추가하거나, 시간을 수정하거나, 공유하세요.",
+    "edit": "✏️ 이벤트 수정"
+  },
+  "feedNew": {
+    "event": "🔥 새 이벤트: {{title}}",
+    "join": "참여",
+    "replies_one": "답글 {{count}}개",
+    "replies_other": "답글 {{count}}개"
+  },
+  "replyPreview": {
+    "photo": "📷 사진"
+  },
+  "placeholder": {
+    "event": "{{title}}에서 한마디 ✨",
+    "eventFirst": "{{title}}에서 가장 먼저 ✨"
+  },
+  "placeholders": [
+    "인사하기 👋",
+    "오늘 밤 누가 나왔어요?",
+    "계획 있어요? 👀",
+    "여기 무슨 일 있어요?",
+    "뭔가 같이 할 사람? 🍻",
+    "메시지를 남겨보세요…"
+  ],
+  "typing": {
+    "one": "{{name}}이(가) 입력 중이에요…",
+    "two": "{{a}}님과 {{b}}님이 입력 중이에요…",
+    "many": "여러 명이 입력 중이에요…"
+  },
+  "myEvent": {
+    "live": "라이브",
+    "recurring": "↻ 반복",
+    "upcoming": "다가오는 일정",
+    "delete": "이벤트 삭제"
+  }
+}

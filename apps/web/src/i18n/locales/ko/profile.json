@@ -1,0 +1,130 @@
+{
+  "pageTitle": "내 프로필",
+  "changePhoto": "프로필 사진 변경",
+  "yourProfile": "내 프로필",
+  "mode": "모드",
+  "modes": {
+    "local": "Local",
+    "localDesc": "이 도시를 잘 알아요",
+    "exploring": "탐색 중",
+    "exploringDesc": "도시를 발견하는 중이에요"
+  },
+  "tabs": {
+    "interests": "관심사",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "친구",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "파티",
+    "board_games": "보드게임",
+    "coffee": "커피",
+    "music": "음악",
+    "food": "맛집",
+    "chill": "칠"
+  },
+  "interests": {
+    "drinks": "술",
+    "party": "파티",
+    "nightlife": "나이트라이프",
+    "music": "음악",
+    "live music": "라이브 음악",
+    "culture": "문화",
+    "art": "예술",
+    "food": "맛집",
+    "coffee": "커피",
+    "sport": "스포츠",
+    "fitness": "피트니스",
+    "hiking": "등산",
+    "beach": "해변",
+    "wellness": "웰니스",
+    "travel": "여행",
+    "hangout": "hangout",
+    "socializing": "사교",
+    "gaming": "게임",
+    "tech": "테크",
+    "dating": "데이트"
+  },
+  "fields": {
+    "username": "사용자 이름",
+    "usernamePlaceholder": "사용자 이름",
+    "checking": "확인하는 중…",
+    "available": "@{{username}} 사용 가능해요",
+    "aboutMe": "내 소개",
+    "charsLeft": "— {{count}}자 남음",
+    "aboutPlaceholder": "길거리 음식과 즉흥적인 대화를 좋아해요",
+    "email": "이메일",
+    "readOnly": "— 읽기 전용",
+    "homeCity": "내 도시",
+    "homeCityPlaceholder": "어디에 사세요",
+    "age": "나이",
+    "agePlaceholder": "나이",
+    "myVibe": "내 vibe",
+    "interests": "관심사",
+    "interestsHint": "— 최대 5개 선택"
+  },
+  "ambassador": {
+    "title": "도시 추천 👑",
+    "subtitle": "로컬 레전드로서 프로필에 표시돼요.",
+    "restaurant": "최애 맛집",
+    "restaurantPlaceholder": "항상 사람들을 데려가는 곳",
+    "spot": "숨은 명소 / 장소",
+    "spotPlaceholder": "대부분의 관광객이 놓치는 곳",
+    "tip": "로컬 팁",
+    "tipPlaceholder": "처음 온 사람들을 위한 최고의 조언",
+    "story": "도시 이야기",
+    "storyPlaceholder": "이 도시에서 사랑하는 무언가"
+  },
+  "hangouts": {
+    "empty": "아직 hangout이 없어요 — 하나 시작해요 ⚡",
+    "host": "호스트"
+  },
+  "events": {
+    "going": "참여 중",
+    "goingEmpty": "아직 계획이 없어요 — 뭔가 찾아봐요 🔥",
+    "hosting": "주최 중",
+    "hostingEmpty": "아직 주최한 게 없어요 — 뭔가 시작해요 ✨",
+    "live": "실시간",
+    "recurring": "↻ 반복",
+    "upcoming": "예정",
+    "deleteEvent": "이벤트 삭제"
+  },
+  "friends": {
+    "requests": "친구 요청",
+    "empty": "아직 친구가 없어요. 프로필에서 추가해 보세요.",
+    "mine": "내 친구"
+  },
+  "vibesTab": {
+    "received": "받은 vibe",
+    "score": "vibe 점수 {{score}}",
+    "basedOn_one": "vibe {{count}}개 기준",
+    "basedOn_other": "vibe {{count}}개 기준",
+    "empty": "아직 vibe가 없어요",
+    "emptyHint": "사람들이 메모를 남기면 여기에 점수가 표시돼요 ✨"
+  },
+  "save": {
+    "uploading": "업로드하는 중…",
+    "saving": "저장하는 중…",
+    "saved": "저장됨 ✓",
+    "save": "프로필 저장"
+  },
+  "signOut": "로그아웃",
+  "deleteAccount": "계정 삭제",
+  "delete": {
+    "title": "계정을 삭제할까요?",
+    "body": "프로필, 친구, 설정이 영구적으로 삭제돼요. 메시지와 이벤트는 도시 채팅에 익명으로 남아요.",
+    "irreversible": "되돌릴 수 없어요.",
+    "deleting": "삭제하는 중…",
+    "confirm": "네, 내 계정을 삭제할게요",
+    "cancel": "취소"
+  },
+  "errors": {
+    "photoUpload": "사진 업로드에 실패했어요. 다시 시도해 주세요.",
+    "usernameTooShort": "사용자 이름은 3자 이상이어야 해요",
+    "usernameTaken": "이미 사용 중인 사용자 이름이에요",
+    "usernameInvalid": "유효하지 않은 사용자 이름이에요",
+    "saveFailed": "저장에 실패했어요. 다시 시도해 주세요.",
+    "generic": "문제가 발생했어요. 다시 시도해 주세요."
+  }
+}

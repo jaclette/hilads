@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "hangout 시작하기",
+    "editTitle": "hangout 수정",
+    "category": "카테고리",
+    "cat": { "general": "일반", "tips": "팁", "food": "맛집", "drinks": "술", "help": "도움", "meetup": "모임" },
+    "titleLabel": "무슨 생각을 하고 있나요?",
+    "titlePlaceholder": "예: 이 근처 최고의 커피 맛집은?",
+    "detailsLabel": "세부 정보 추가",
+    "optional": "(선택 사항)",
+    "detailsPlaceholder": "조금 더 설명해 주세요…",
+    "expiry": "⏱ 24시간 후 자동 만료",
+    "saving": "저장하는 중…",
+    "starting": "시작하는 중…",
+    "saveChanges": "변경 사항 저장",
+    "startCta": "hangout 시작하기 ⚡",
+    "limitHeader": "한 번에 하나씩",
+    "limitTitle": "이미 hangout이 있어요",
+    "limitSub": "hangout은 한 번에 하나만 운영할 수 있어요. “{{title}}”로 가거나, 삭제하고 새로 시작하세요.",
+    "limitGo": "내 hangout으로 가기 →",
+    "yourHangout": "내 hangout"
+  },
+  "deleteConfirm": "이 hangout을 삭제할까요? 모두에게 종료되며 되돌릴 수 없어요.",
+  "deleteFailedAlert": "삭제하지 못했어요. 다시 시도해 주세요.",
+  "shareAria": "hangout 공유",
+  "shareTitle": "이 hangout 공유하기",
+  "members": {
+    "oneIn": "{{name}}님이 참여 중",
+    "countIn": "이 hangout에 {{count}}명",
+    "seeAll": "전체 보기 →"
+  },
+  "owner": { "edit": "✏️ 수정", "delete": "🗑 삭제" },
+  "gated": {
+    "title": "멤버 전용 hangout",
+    "pending": "요청 대기 중 — 멤버가 수락하면 대화에 참여할 수 있어요.",
+    "prompt": "대화를 보고 채팅하려면 참여를 요청하세요.",
+    "requestBtn": "참여 요청"
+  },
+  "feed": {
+    "beginning": "대화의 시작",
+    "loading": "불러오는 중…",
+    "emptyTitle": "아직 답글이 없어요",
+    "emptySub": "가장 먼저 합류해 보세요"
+  },
+  "joinReq": {
+    "someone": "누군가",
+    "wantsToJoin": "님이 참여하고 싶어 해요",
+    "joined": "님이 hangout에 참여했어요",
+    "askedToJoin": "님이 참여를 요청했어요",
+    "decline": "거절",
+    "accept": "수락",
+    "accepted": "수락됨",
+    "acceptedBy": "{{name}}님이 수락함",
+    "declined": "요청 거절됨"
+  },
+  "modes": { "local": "Local", "exploring": "탐색 중" },
+  "reply": { "photo": "📷 사진", "unavailable": "원본 메시지를 사용할 수 없어요" },
+  "composer": { "reply": "대화에 답글 달기…", "start": "vibe를 띄워 보세요 ✨" },
+  "errors": {
+    "locFailed": "위치를 가져오지 못했어요. 위치 접근을 허용하고 다시 시도해 주세요.",
+    "imageType": "JPEG, PNG 또는 WebP 이미지를 선택해 주세요.",
+    "imageTooLarge": "이미지가 너무 커요. 최대 10MB.",
+    "imageSend": "이미지를 보내지 못했어요. 다시 시도해 주세요.",
+    "dismiss": "{{error}} · 탭하여 닫기"
+  }
+}

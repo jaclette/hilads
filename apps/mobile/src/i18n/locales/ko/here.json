@@ -1,0 +1,16 @@
+{
+  "title": "여기 있는 사람들",
+  "noCityTitle": "선택된 도시가 없어요",
+  "noCitySub": "도시를 골라 주변에 누가 있는지 확인하세요.",
+  "browseCities": "도시 둘러보기",
+  "filterBadge": "배지",
+  "filterVibe": "Vibe",
+  "filterMode": "모드",
+  "you": "(나)",
+  "hereNow": "Here now",
+  "noMatchLive": "지금 이 필터에 맞는 사람이 없어요.",
+  "legendsSub": "도시를 살아 움직이게 하는 사람들",
+  "cityCrew": "도시 크루",
+  "noMatchCrew": "이 필터에 맞는 멤버가 없어요.",
+  "loadMore": "더 보기"
+}

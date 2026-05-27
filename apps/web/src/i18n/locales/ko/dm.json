@@ -1,0 +1,41 @@
+{
+  "title": "메시지",
+  "filters": { "all": "전체", "dms": "다이렉트 메시지", "events": "이벤트 채팅" },
+  "loading": "불러오는 중…",
+  "error": {
+    "loadTitle": "메시지를 불러오지 못했어요",
+    "loadSub": "연결을 확인하고 다시 시도해 주세요."
+  },
+  "empty": {
+    "eventsTitle": "아직 이벤트 채팅이 없어요",
+    "eventsSub": "이벤트를 만들거나 참여해서 함께하는 사람들과 채팅해요.",
+    "title": "아직 메시지가 없어요",
+    "sub": "도시에서 만난 사람들과 연결해요."
+  },
+  "sectionDms": "다이렉트 메시지",
+  "sectionEvents": "이벤트 채팅",
+  "youPrefix": "나: {{message}}",
+  "startConversation": "대화 시작하기",
+  "eventCreated": "내가 만들었어요",
+  "eventJoined": "내가 참여했어요",
+  "prefs": {
+    "title": "알림 설정",
+    "dmName": "새 다이렉트 메시지",
+    "dmDesc": "누군가 비공개 메시지를 보낼 때",
+    "eventName": "이벤트 채팅 메시지",
+    "eventDesc": "참여한 이벤트에서 누군가 메시지를 보낼 때",
+    "cityName": "도시 채팅 메시지",
+    "cityDesc": "누군가 내 도시 채널에 메시지를 보낼 때"
+  },
+  "thread": {
+    "loadError": "메시지를 불러오지 못했어요.",
+    "beginning": "대화의 시작",
+    "photo": "📷 사진",
+    "unavailable": "원본 메시지를 사용할 수 없어요",
+    "tapMaps": "탭하여 지도에서 열기",
+    "composer": "메시지…",
+    "imageType": "JPEG, PNG 또는 WebP 이미지를 선택해 주세요.",
+    "imageTooLarge": "이미지가 너무 커요. 최대 크기: 10MB.",
+    "imageSend": "이미지를 보내지 못했어요. 다시 시도해 주세요."
+  }
+}

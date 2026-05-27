@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "친구 요청",
+    "incoming": "받은 요청",
+    "sent": "보낸 요청",
+    "wantsToBeFriend": "님이 친구가 되고 싶어 해요",
+    "requestSent": "요청 보냄",
+    "decline": "거절",
+    "accept": "수락",
+    "cancel": "취소",
+    "emptyIncomingTitle": "아직 친구 요청이 없어요",
+    "emptySentTitle": "보낸 요청이 없어요",
+    "emptyIncomingSub": "누군가 친구가 되자고 요청하면 여기에 표시돼요.",
+    "emptySentSub": "보낸 대기 중인 친구 요청이 여기에 표시돼요."
+  },
+  "blocked": {
+    "title": "차단된 사용자",
+    "thisUser": "이 사용자",
+    "ghostName": "유령",
+    "guest": "게스트",
+    "unblock": "차단 해제",
+    "unblockTitle": "{{name}}님의 차단을 해제할까요?",
+    "unblockBody": "{{name}}님이 다시 내 콘텐츠를 보고 연락할 수 있게 돼요.",
+    "unblockFailTitle": "차단을 해제할 수 없었어요",
+    "unblockFailBody": "다시 시도해 주세요.",
+    "emptyTitle": "차단한 사람이 없어요",
+    "emptySub": "차단된 사용자는 내 콘텐츠를 볼 수 없고, 나도 그들의 콘텐츠를 볼 수 없어요."
+  }
+}

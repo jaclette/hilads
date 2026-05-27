@@ -43,7 +43,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 78,
+      "versionCode": 79,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -131,6 +131,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ja/e/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/e/"
             }
           ],
           "category": [
@@ -201,6 +206,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ja/event"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/event"
             }
           ],
           "category": [
@@ -271,6 +281,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ja/city"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/city"
             }
           ],
           "category": [
@@ -341,6 +356,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ja/t/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/ko/t/"
             }
           ],
           "category": [

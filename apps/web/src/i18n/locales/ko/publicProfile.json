@@ -1,0 +1,83 @@
+{
+  "title": "프로필",
+  "loading": "불러오는 중…",
+  "loadError": "프로필을 불러올 수 없어요.",
+  "badgeMicro": {
+    "ghost": "그냥 둘러보는 중 👀",
+    "fresh": "방금 도착 👶",
+    "regular": "자주 나타나요",
+    "host": "일을 벌이는 사람 🔥"
+  },
+  "modes": { "local": "로컬", "exploring": "탐험 중" },
+  "vibes": {
+    "party": "파티", "board_games": "보드게임", "coffee": "커피",
+    "music": "음악", "food": "맛집", "chill": "칠"
+  },
+  "vibeTaglines": {
+    "party": "밤 문화를 즐기러 왔어요",
+    "board_games": "간식이랑 주사위 챙겨오세요",
+    "coffee": "커피 먼저, 나머지는 나중에",
+    "music": "항상 좋은 비트를 쫓아다녀요",
+    "food": "일단 먹고, 얘기는 나중에",
+    "chill": "느긋하게, 분위기는 좋게"
+  },
+  "modeSub": {
+    "localIn": "{{city}} 로컬",
+    "local": "로컬",
+    "exploringIn": "{{city}} 탐험 중",
+    "exploring": "탐험 중"
+  },
+  "from": "출신",
+  "age": "나이",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "친구",
+    "vibes": "Vibes", "picks": "City Picks 👑"
+  },
+  "host": "호스트",
+  "live": "LIVE",
+  "empty": { "hangouts": "아직 hangout이 없어요", "events": "아직 이벤트가 없어요", "friends": "아직 친구가 없어요" },
+  "vibesTab": {
+    "score": "vibe 점수 {{score}}",
+    "basedOn_one": "vibe {{count}}개 기준",
+    "basedOn_other": "vibe {{count}}개 기준",
+    "updateNote": "✏️ 노트 수정 ({{rating}}★)",
+    "leaveNote": "⭐ 노트 남기기",
+    "placeholder": "좋은 말 한마디… (선택)",
+    "cancel": "취소",
+    "sending": "보내는 중…",
+    "sendNote": "노트 보내기 ✨",
+    "notesLabel": "노트 · {{count}}",
+    "emptyTitle": "아직 노트가 없어요",
+    "emptySub": "가장 먼저 노트를 남겨보세요 ✨"
+  },
+  "picks": {
+    "restaurant": "인생 맛집",
+    "spot": "숨은 명소",
+    "tip": "로컬 팁",
+    "story": "이야기"
+  },
+  "actions": {
+    "opening": "여는 중…",
+    "message": "💬 메시지",
+    "friend": "✓ 친구",
+    "requestSent": "⌛ 요청 보냄",
+    "acceptRequest": "✓ 요청 수락",
+    "addFriend": "+ 친구",
+    "removing": "삭제하는 중…",
+    "unfriend": "친구 삭제",
+    "cancel": "취소",
+    "cancelling": "취소하는 중…",
+    "cancelRequest": "요청 취소",
+    "keep": "유지",
+    "reportTitle": "사용자 신고"
+  },
+  "report": {
+    "existing": "이 사용자를 {{date}}에 신고했어요. 신고가 검토 중이에요.",
+    "sent": "신고가 접수됐어요. 알려주셔서 감사해요.",
+    "placeholder": "문제를 설명해 주세요 (최소 10자)…",
+    "error": "신고를 보내지 못했어요. 다시 시도해 주세요.",
+    "sending": "보내는 중…",
+    "submit": "신고 보내기",
+    "cancel": "취소"
+  }
+}

@@ -199,8 +199,24 @@ import ja_misc    from './locales/ja/misc.json';
 import ja_cities  from './locales/ja/cities.json';
 import ja_upcoming from './locales/ja/upcoming.json';
 import ja_archive from './locales/ja/archive.json';
+import ko_common  from './locales/ko/common.json';
+import ko_auth    from './locales/ko/auth.json';
+import ko_landing from './locales/ko/landing.json';
+import ko_here    from './locales/ko/here.json';
+import ko_now     from './locales/ko/now.json';
+import ko_chat    from './locales/ko/chat.json';
+import ko_event   from './locales/ko/event.json';
+import ko_hangout from './locales/ko/hangout.json';
+import ko_dm      from './locales/ko/dm.json';
+import ko_notifications from './locales/ko/notifications.json';
+import ko_publicProfile from './locales/ko/publicProfile.json';
+import ko_me      from './locales/ko/me.json';
+import ko_misc    from './locales/ko/misc.json';
+import ko_cities  from './locales/ko/cities.json';
+import ko_upcoming from './locales/ko/upcoming.json';
+import ko_archive from './locales/ko/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -220,6 +236,7 @@ const resources = {
   'zh-hans': { common: zhhans_common, auth: zhhans_auth, landing: zhhans_landing, here: zhhans_here, now: zhhans_now, chat: zhhans_chat, event: zhhans_event, hangout: zhhans_hangout, dm: zhhans_dm, notifications: zhhans_notifications, publicProfile: zhhans_publicProfile, me: zhhans_me, misc: zhhans_misc, cities: zhhans_cities, upcoming: zhhans_upcoming, archive: zhhans_archive },
   'zh-hant': { common: zhhant_common, auth: zhhant_auth, landing: zhhant_landing, here: zhhant_here, now: zhhant_now, chat: zhhant_chat, event: zhhant_event, hangout: zhhant_hangout, dm: zhhant_dm, notifications: zhhant_notifications, publicProfile: zhhant_publicProfile, me: zhhant_me, misc: zhhant_misc, cities: zhhant_cities, upcoming: zhhant_upcoming, archive: zhhant_archive },
   ja: { common: ja_common, auth: ja_auth, landing: ja_landing, here: ja_here, now: ja_now, chat: ja_chat, event: ja_event, hangout: ja_hangout, dm: ja_dm, notifications: ja_notifications, publicProfile: ja_publicProfile, me: ja_me, misc: ja_misc, cities: ja_cities, upcoming: ja_upcoming, archive: ja_archive },
+  ko: { common: ko_common, auth: ko_auth, landing: ko_landing, here: ko_here, now: ko_now, chat: ko_chat, event: ko_event, hangout: ko_hangout, dm: ko_dm, notifications: ko_notifications, publicProfile: ko_publicProfile, me: ko_me, misc: ko_misc, cities: ko_cities, upcoming: ko_upcoming, archive: ko_archive },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {

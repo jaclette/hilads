@@ -1,0 +1,17 @@
+{
+  "loading": "불러오는 중…",
+  "notFound": "이 장소는 Hilads에 없어요.",
+  "loadError": "이 장소를 불러오지 못했어요. 다시 시도해 주세요.",
+  "breadcrumb": "탐색 경로",
+  "category": {
+    "bar": "바 / 펍",
+    "cafe": "카페"
+  },
+  "typeInCity": "{{city}}의 {{category}}",
+  "address": "주소",
+  "hours": "영업시간",
+  "openEveryDay": "매일 영업 · {{opens}} – {{closes}}",
+  "ctaText": "지금 {{city}}에 누가 있는지 확인해 보세요.",
+  "openCity": "{{city}} 열기",
+  "lastUpdated": "마지막 업데이트 {{date}}"
+}

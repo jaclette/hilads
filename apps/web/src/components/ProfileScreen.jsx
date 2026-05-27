@@ -64,6 +64,7 @@ const LANGS = [
   { code: 'zh-hans', flag: '🇨🇳', name: '简体中文' },
   { code: 'zh-hant', flag: '🇹🇼', name: '繁體中文' },
   { code: 'ja',    flag: '🇯🇵', name: '日本語' },
+  { code: 'ko',    flag: '🇰🇷', name: '한국어' },
 ]
 
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {

@@ -1,0 +1,15 @@
+{
+  "title": "지난 활동",
+  "loadError": "아카이브를 불러올 수 없었어요",
+  "filterAll": "전체",
+  "rangeRecent": "최근",
+  "range7": "최근 7일",
+  "range14": "최근 14일",
+  "custom": "직접 설정",
+  "pickEnd": "이제 종료일을 선택해요",
+  "pickStart": "시작일을 선택해요 (최대 {{max}}일)",
+  "apply": "적용",
+  "emptyTitle": "아직 여기에 아무것도 없어요",
+  "emptyRecentSub": "지난 이벤트와 hangouts는 도시에 기록이 쌓이면 여기에 표시돼요.",
+  "emptyWindowSub": "이 기간에는 이벤트나 hangout이 없어요. 더 넓은 범위로 시도해 봐요."
+}

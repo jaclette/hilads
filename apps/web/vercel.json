@@ -72,13 +72,13 @@
     { "source": "/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category" },
     { "source": "/cities",               "destination": "/api/cities-index" },
 
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja)/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category&locale=:locale" },
-    { "source": "/(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja)/(.*)",         "destination": "/index.html" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko)/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category&locale=:locale" },
+    { "source": "/(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko)/(.*)",         "destination": "/index.html" },
 
     { "source": "/(.*)",                 "destination": "/index.html" }
   ]

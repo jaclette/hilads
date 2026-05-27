@@ -7,7 +7,7 @@
 // prefixed link would open the app and land on +not-found. Strip the locale
 // segment and route to the canonical screen. The locale prefixes here must stay
 // in sync with the web i18n SUPPORTED list (minus 'en', which has no prefix).
-const LOCALE_PREFIXES = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja'];
+const LOCALE_PREFIXES = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko'];
 
 export function redirectSystemPath({ path }: { path: string; initial: boolean }): string {
   try {

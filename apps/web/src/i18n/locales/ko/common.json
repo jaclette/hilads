@@ -1,0 +1,52 @@
+{
+  "language": "언어",
+  "cancel": "취소",
+  "loading": "불러오는 중…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "탐색 중" }
+  },
+  "composer": {
+    "attach": "첨부 추가",
+    "emoji": "이모지"
+  },
+  "vibe": {
+    "party": "파티",
+    "board_games": "보드게임",
+    "coffee": "커피",
+    "music": "음악",
+    "food": "맛집",
+    "chill": "칠"
+  },
+  "weather": {
+    "clear": "맑은 하늘",
+    "sunnyHot": "화창한 날씨",
+    "clearNight": "맑은 밤",
+    "mostlyClear": "대체로 맑음",
+    "partly": "구름 조금",
+    "overcast": "흐린 하늘",
+    "fog": "안개",
+    "drizzle": "가랑비",
+    "rain": "비",
+    "snow": "눈",
+    "snowShowers": "소나기눈",
+    "thunder": "뇌우"
+  },
+  "time": {
+    "happeningNow": "🔥 지금 진행 중",
+    "inMin": "🔥 {{count}}분 후",
+    "today": "오늘",
+    "tomorrow": "내일",
+    "yesterday": "어제",
+    "justNow": "방금 전",
+    "nowShort": "지금",
+    "mAgo": "{{count}}분 전",
+    "hAgo": "{{count}}시간 전",
+    "dAgo": "{{count}}일 전",
+    "expired": "만료됨",
+    "expiresSoon": "곧 만료",
+    "expiresInMin": "{{mins}}분 후 만료",
+    "expiresInHourMin": "{{hours}}시간 {{mins}}분 후 만료",
+    "expiresInHour": "{{hours}}시간 후 만료"
+  }
+}
