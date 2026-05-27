@@ -2162,6 +2162,46 @@ $router->add('GET', '/api/v1/sitemap/venues', function () {
     ]);
 });
 
+// GET /api/v1/sitemap/events
+// Global list of indexable event pages (/event/<slug>-<id>) across every city.
+// Single-call endpoint used by the dynamic sitemap (apps/web/api/sitemap.mjs).
+//
+// Inclusion rules — must match what /event/<id> actually serves as indexable:
+//   - expires_at > now() ⇒ excludes both expired AND soft-deleted events
+//     (soft-deleted events get expires_at pushed into the past), so we never
+//     list a 410/removed page.
+//   - NOT a venue occurrence — venues have their own /venue/<slug>-<id> page;
+//     this is the same non-venue filter used by /api/v1/sitemap/categories.
+// Hangouts/topics are a different entity entirely and never appear here.
+// Index-backed by idx_channel_events_expires. LIMIT keeps us inside one
+// 50k-URL sitemap file; realistic active-event counts are far below it.
+$router->add('GET', '/api/v1/sitemap/events', function () {
+    $stmt = Database::pdo()->query("
+        SELECT ce.channel_id                              AS id,
+               ce.title,
+               EXTRACT(EPOCH FROM ce.created_at)::INTEGER AS updated_at
+          FROM channel_events ce
+          LEFT JOIN event_series es ON es.id = ce.series_id
+         WHERE ce.expires_at > now()
+           AND (es.id IS NULL
+                OR es.source <> 'import'
+                OR (es.source_key NOT LIKE 'places:v1:%'
+                    AND es.source_key NOT LIKE 'static:v1:%'))
+         ORDER BY ce.starts_at
+         LIMIT 40000
+    ");
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    Response::json([
+        'events' => array_map(static fn(array $r) => [
+            'id'         => $r['id'],
+            'title'      => $r['title'],
+            'updated_at' => (int) $r['updated_at'],
+        ], $rows),
+        'total'  => count($rows),
+    ]);
+});
+
 // GET /api/v1/cities/{slug}/venues
 // Lists active venues in a city. Used by the city page + sitemap generator.
 // Resolves slug to a city channel before query.
