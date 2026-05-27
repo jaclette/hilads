@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -30,16 +30,37 @@ const LANG_NAMES: Record<Locale, string> = {
   ar: 'العربية',
 };
 
+const LANG_FLAGS: Record<Locale, string> = {
+  en: '🇬🇧',
+  fr: '🇫🇷',
+  vi: '🇻🇳',
+  es: '🇪🇸',
+  it: '🇮🇹',
+  'pt-br': '🇧🇷',
+  'pt-pt': '🇵🇹',
+  de: '🇩🇪',
+  nl: '🇳🇱',
+  'zh-hans': '🇨🇳',
+  'zh-hant': '🇹🇼',
+  ja: '🇯🇵',
+  ko: '🇰🇷',
+  fil: '🇵🇭',
+  th: '🇹🇭',
+  id: '🇮🇩',
+  hi: '🇮🇳',
+  ru: '🇷🇺',
+  ar: '🇸🇦',
+};
+
 /**
- * Language picker row for the Profile screen. Renders a single settings-style
- * row; pass `card` to wrap it in a standalone card (used in the guest layout,
- * which has no surrounding settings card).
- *
- * Uses a custom modal list — NOT Alert.alert — because Android's alert dialog
- * only renders up to 3 buttons, so with 4+ locales it silently dropped options
- * (es never appeared). A list scales to any number of languages on both platforms.
+ * Language picker. `trigger` chooses the affordance:
+ *   - 'row'  (default) — a settings-style row (flag + "Language" + current value).
+ *   - 'flag' — a compact flag button, used in the profile header.
+ * Both open the same modal list. `card` wraps the row in a standalone card
+ * (guest layout). The list scales to any number of locales (scrollable) and
+ * shows a flag beside each name.
  */
-export function LanguageRow({ card = false }: { card?: boolean }) {
+export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean; trigger?: 'row' | 'flag' }) {
   const { t, i18n } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const current: Locale = (SUPPORTED as readonly string[]).includes(i18n.language)
@@ -51,18 +72,28 @@ export function LanguageRow({ card = false }: { card?: boolean }) {
     if (code !== current) void setLocale(code);
   }
 
-  const row = (
+  const triggerEl = trigger === 'flag' ? (
+    <TouchableOpacity
+      style={styles.flagBtn}
+      onPress={() => setOpen(true)}
+      activeOpacity={0.7}
+      accessibilityLabel={t('language')}
+    >
+      <Text style={styles.flagBtnEmoji}>{LANG_FLAGS[current]}</Text>
+      <Ionicons name="chevron-down" size={12} color={Colors.muted} />
+    </TouchableOpacity>
+  ) : (
     <TouchableOpacity style={styles.row} onPress={() => setOpen(true)} activeOpacity={0.7}>
       <Ionicons name="language-outline" size={18} color={Colors.muted} />
       <Text style={styles.label}>{t('language')}</Text>
-      <Text style={styles.value}>{LANG_NAMES[current]}</Text>
+      <Text style={styles.value}>{LANG_FLAGS[current]} {LANG_NAMES[current]}</Text>
       <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
     </TouchableOpacity>
   );
 
   return (
     <>
-      {card ? <View style={styles.card}>{row}</View> : row}
+      {card ? <View style={styles.card}>{triggerEl}</View> : triggerEl}
       <Modal
         transparent
         visible={open}
@@ -74,22 +105,25 @@ export function LanguageRow({ card = false }: { card?: boolean }) {
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>{t('language')}</Text>
-            {SUPPORTED.map((code) => {
-              const active = code === current;
-              return (
-                <TouchableOpacity
-                  key={code}
-                  style={styles.option}
-                  activeOpacity={0.7}
-                  onPress={() => choose(code)}
-                >
-                  <Text style={[styles.optionText, active && styles.optionTextActive]}>
-                    {LANG_NAMES[code]}
-                  </Text>
-                  {active && <Ionicons name="checkmark" size={18} color={Colors.accent} />}
-                </TouchableOpacity>
-              );
-            })}
+            <ScrollView contentContainerStyle={styles.sheetListContent} showsVerticalScrollIndicator={false}>
+              {SUPPORTED.map((code) => {
+                const active = code === current;
+                return (
+                  <TouchableOpacity
+                    key={code}
+                    style={styles.option}
+                    activeOpacity={0.7}
+                    onPress={() => choose(code)}
+                  >
+                    <Text style={styles.optionFlag}>{LANG_FLAGS[code]}</Text>
+                    <Text style={[styles.optionText, active && styles.optionTextActive]}>
+                      {LANG_NAMES[code]}
+                    </Text>
+                    {active && <Ionicons name="checkmark" size={18} color={Colors.accent} />}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -116,6 +150,20 @@ const styles = StyleSheet.create({
   label: { flex: 1, fontSize: FontSizes.md, color: Colors.text },
   value: { fontSize: FontSizes.sm, color: Colors.muted },
 
+  // Compact flag button (profile header)
+  flagBtn: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               3,
+    paddingHorizontal: 8,
+    paddingVertical:   5,
+    borderRadius:      Radius.full,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    backgroundColor:   Colors.bg2,
+  },
+  flagBtnEmoji: { fontSize: 18, lineHeight: 22 },
+
   modalRoot: {
     flex:            1,
     justifyContent:  'center',
@@ -126,6 +174,7 @@ const styles = StyleSheet.create({
   sheet: {
     width:           '100%',
     maxWidth:        340,
+    maxHeight:       '80%',
     backgroundColor: Colors.bg2,
     borderWidth:     1,
     borderColor:     Colors.border,
@@ -142,13 +191,15 @@ const styles = StyleSheet.create({
     paddingTop:        Spacing.sm,
     paddingBottom:     Spacing.xs,
   },
+  sheetListContent: { paddingBottom: Spacing.xs },
   option: {
     flexDirection:     'row',
     alignItems:        'center',
-    justifyContent:    'space-between',
+    gap:               Spacing.sm,
     paddingVertical:   Spacing.md,
     paddingHorizontal: Spacing.md,
   },
-  optionText:       { fontSize: FontSizes.md, color: Colors.text },
+  optionFlag:       { fontSize: 20, lineHeight: 24 },
+  optionText:       { flex: 1, fontSize: FontSizes.md, color: Colors.text },
   optionTextActive: { color: Colors.accent, fontWeight: '700' },
 });

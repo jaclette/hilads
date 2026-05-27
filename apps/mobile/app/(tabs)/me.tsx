@@ -404,6 +404,9 @@ export default function MeScreen() {
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('title')}</Text>
         </View>
+        <View style={styles.headerRight}>
+          <LanguageRow trigger="flag" />
+        </View>
       </View>
 
       {/* ══ SCROLLABLE CONTENT ═══════════════════════════════════════════════ */}
@@ -563,8 +566,6 @@ export default function MeScreen() {
                 <Text style={styles.upgradeSecondaryText}>{t('signIn')}</Text>
               </TouchableOpacity>
             </View>
-
-            <LanguageRow card />
           </>
         )}
 
@@ -954,7 +955,6 @@ export default function MeScreen() {
               <Text style={styles.settingsRowLabel}>{t('blockedUsers')}</Text>
               <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
             </TouchableOpacity>
-            <LanguageRow />
           </View>
         )}
 
@@ -1013,6 +1013,15 @@ const styles = StyleSheet.create({
   headerCenter: {
     flex:       1,
     alignItems: 'center',
+  },
+  // Absolute-right so the title stays optically centered regardless of the
+  // flag button's width.
+  headerRight: {
+    position:       'absolute',
+    right:          Spacing.md,
+    top:            0,
+    bottom:         0,
+    justifyContent: 'center',
   },
   headerTitle: {
     fontSize:      FontSizes.xl,
