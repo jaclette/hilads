@@ -1,0 +1,130 @@
+{
+  "pageTitle": "मेरी प्रोफ़ाइल",
+  "changePhoto": "प्रोफ़ाइल फ़ोटो बदलें",
+  "yourProfile": "आपकी प्रोफ़ाइल",
+  "mode": "मोड",
+  "modes": {
+    "local": "Local",
+    "localDesc": "आप इस शहर को जानते हैं",
+    "exploring": "Exploring",
+    "exploringDesc": "आप इसे खोज रहे हैं"
+  },
+  "tabs": {
+    "interests": "रुचियां",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "दोस्त",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "पार्टी",
+    "board_games": "बोर्ड गेम",
+    "coffee": "कॉफ़ी",
+    "music": "संगीत",
+    "food": "खाना",
+    "chill": "चिल"
+  },
+  "interests": {
+    "drinks": "ड्रिंक्स",
+    "party": "पार्टी",
+    "nightlife": "नाइटलाइफ़",
+    "music": "संगीत",
+    "live music": "लाइव संगीत",
+    "culture": "संस्कृति",
+    "art": "कला",
+    "food": "खाना",
+    "coffee": "कॉफ़ी",
+    "sport": "खेल",
+    "fitness": "फ़िटनेस",
+    "hiking": "हाइकिंग",
+    "beach": "बीच",
+    "wellness": "वेलनेस",
+    "travel": "यात्रा",
+    "hangout": "hangout",
+    "socializing": "मेल-जोल",
+    "gaming": "गेमिंग",
+    "tech": "टेक",
+    "dating": "डेटिंग"
+  },
+  "fields": {
+    "username": "यूज़रनेम",
+    "usernamePlaceholder": "यूज़रनेम",
+    "checking": "जांच हो रही है…",
+    "available": "@{{username}} उपलब्ध है",
+    "aboutMe": "मेरे बारे में",
+    "charsLeft": "— {{count}} बचे",
+    "aboutPlaceholder": "स्ट्रीट फ़ूड और बेतरतीब बातचीत बहुत पसंद है",
+    "email": "ईमेल",
+    "readOnly": "— केवल पढ़ने के लिए",
+    "homeCity": "गृह शहर",
+    "homeCityPlaceholder": "आप कहां रहते हैं",
+    "age": "उम्र",
+    "agePlaceholder": "आपकी उम्र",
+    "myVibe": "मेरा vibe",
+    "interests": "रुचियां",
+    "interestsHint": "— ज़्यादा से ज़्यादा 5 चुनें"
+  },
+  "ambassador": {
+    "title": "शहर की पसंद 👑",
+    "subtitle": "आपकी प्रोफ़ाइल पर एक लोकल लेजेंड के रूप में दिखेगा।",
+    "restaurant": "पसंदीदा रेस्टोरेंट",
+    "restaurantPlaceholder": "एक जगह जहां आप हमेशा लोगों को ले जाते हैं",
+    "spot": "छिपा हुआ खज़ाना / spot",
+    "spotPlaceholder": "ऐसी जगह जो ज़्यादातर टूरिस्ट चूक जाते हैं",
+    "tip": "लोकल टिप",
+    "tipPlaceholder": "नए लोगों के लिए आपकी सबसे अच्छी सलाह",
+    "story": "शहर की कहानी",
+    "storyPlaceholder": "इस शहर की कोई बात जो आपको बहुत पसंद है"
+  },
+  "hangouts": {
+    "empty": "अभी कोई hangouts नहीं — एक शुरू करें ⚡",
+    "host": "होस्ट"
+  },
+  "events": {
+    "going": "जा रहे हैं",
+    "goingEmpty": "अभी कोई प्लान नहीं — कुछ ढूंढें 🔥",
+    "hosting": "होस्ट कर रहे हैं",
+    "hostingEmpty": "अभी कुछ होस्ट नहीं किया — कुछ शुरू करें ✨",
+    "live": "लाइव",
+    "recurring": "↻ बार-बार",
+    "upcoming": "आने वाले",
+    "deleteEvent": "इवेंट हटाएं"
+  },
+  "friends": {
+    "requests": "दोस्ती की रिक्वेस्ट",
+    "empty": "अभी कोई दोस्त नहीं। प्रोफ़ाइल से कुछ जोड़ें।",
+    "mine": "मेरे दोस्त"
+  },
+  "vibesTab": {
+    "received": "मिले हुए Vibes",
+    "score": "{{score}} vibe स्कोर",
+    "basedOn_one": "{{count}} vibe पर आधारित",
+    "basedOn_other": "{{count}} vibes पर आधारित",
+    "empty": "अभी कोई vibes नहीं",
+    "emptyHint": "जब लोग आपको कोई नोट छोड़ेंगे तो आपका स्कोर यहां दिखेगा ✨"
+  },
+  "save": {
+    "uploading": "अपलोड हो रहा है…",
+    "saving": "सेव हो रहा है…",
+    "saved": "सेव हो गया ✓",
+    "save": "प्रोफ़ाइल सेव करें"
+  },
+  "signOut": "साइन आउट करें",
+  "deleteAccount": "अकाउंट डिलीट करें",
+  "delete": {
+    "title": "अकाउंट डिलीट करें?",
+    "body": "आपकी प्रोफ़ाइल, दोस्त और सेटिंग्स हमेशा के लिए हटा दिए जाएंगे। आपके मैसेज और इवेंट शहर के चैट में गुमनाम रूप से बने रहेंगे।",
+    "irreversible": "इसे वापस नहीं किया जा सकता।",
+    "deleting": "डिलीट हो रहा है…",
+    "confirm": "हां, मेरा अकाउंट डिलीट करें",
+    "cancel": "रद्द करें"
+  },
+  "errors": {
+    "photoUpload": "फ़ोटो अपलोड नहीं हुई। फिर से कोशिश करें।",
+    "usernameTooShort": "यूज़रनेम कम से कम 3 अक्षर का होना चाहिए",
+    "usernameTaken": "यह यूज़रनेम पहले से लिया जा चुका है",
+    "usernameInvalid": "अमान्य यूज़रनेम",
+    "saveFailed": "सेव नहीं हुआ। फिर से कोशिश करें।",
+    "generic": "कुछ गलत हो गया। फिर से कोशिश करें।"
+  }
+}

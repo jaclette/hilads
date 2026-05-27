@@ -1,0 +1,20 @@
+{
+  "title": "शहर बदलें",
+  "searchPlaceholder": "कोई शहर खोजें…",
+  "topCities": "अभी सबसे एक्टिव शहर",
+  "cities": "शहर",
+  "filterActive": "🔥 सबसे एक्टिव",
+  "filterEvents": "🎉 सबसे ज़्यादा इवेंट",
+  "filterOnline": "🟢 सबसे ज़्यादा ऑनलाइन",
+  "backToLocation": "मेरी लोकेशन पर वापस जाएं",
+  "youreHere": "आप यहां हैं",
+  "online": "{{count}} ऑनलाइन",
+  "events_one": "{{count}} इवेंट",
+  "events_other": "{{count}} इवेंट",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} मैसेज",
+  "loadError": "शहर लोड नहीं हो सके",
+  "noResults": "\"{{query}}\" के लिए कोई शहर नहीं मिला",
+  "noCities": "कोई शहर नहीं मिला"
+}

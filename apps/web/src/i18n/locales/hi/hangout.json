@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "एक hangout शुरू करें",
+    "editTitle": "hangout एडिट करें",
+    "category": "श्रेणी",
+    "cat": { "general": "General", "tips": "टिप्स", "food": "खाना", "drinks": "ड्रिंक्स", "help": "मदद", "meetup": "मीटअप" },
+    "titleLabel": "आपके मन में क्या है?",
+    "titlePlaceholder": "जैसे आसपास सबसे बढ़िया कॉफ़ी की जगह?",
+    "detailsLabel": "डिटेल्स जोड़ें",
+    "optional": "(वैकल्पिक)",
+    "detailsPlaceholder": "थोड़ा संदर्भ दें…",
+    "expiry": "⏱ 24 घंटे में अपने आप समाप्त",
+    "saving": "सेव हो रहा है…",
+    "starting": "शुरू हो रहा है…",
+    "saveChanges": "बदलाव सेव करें",
+    "startCta": "एक hangout शुरू करें ⚡",
+    "limitHeader": "एक बार में एक",
+    "limitTitle": "आपके पास पहले से एक hangout है",
+    "limitSub": "आप एक बार में एक ही hangout चला सकते हैं। “{{title}}” पर जाएं, या नया शुरू करने के लिए इसे डिलीट करें।",
+    "limitGo": "मेरे hangout पर जाएं →",
+    "yourHangout": "आपका hangout"
+  },
+  "deleteConfirm": "यह hangout डिलीट करें? इससे यह सबके लिए खत्म हो जाएगा और इसे वापस नहीं किया जा सकता।",
+  "deleteFailedAlert": "डिलीट नहीं हो सका। कृपया फिर से कोशिश करें।",
+  "shareAria": "hangout शेयर करें",
+  "shareTitle": "इस hangout को शेयर करें",
+  "members": {
+    "oneIn": "{{name}} शामिल है",
+    "countIn": "इस hangout में {{count}}",
+    "seeAll": "सभी देखें →"
+  },
+  "owner": { "edit": "✏️ एडिट करें", "delete": "🗑 हटाएं" },
+  "gated": {
+    "title": "सिर्फ़ मेंबर्स के लिए hangout",
+    "pending": "रिक्वेस्ट पेंडिंग — जैसे ही कोई मेंबर स्वीकार करेगा, आप बातचीत में शामिल हो पाएंगे।",
+    "prompt": "बातचीत देखने और चैट करने के लिए शामिल होने की रिक्वेस्ट भेजें।",
+    "requestBtn": "शामिल होने की रिक्वेस्ट भेजें"
+  },
+  "feed": {
+    "beginning": "बातचीत की शुरुआत",
+    "loading": "लोड हो रहा है…",
+    "emptyTitle": "अभी कोई जवाब नहीं",
+    "emptySub": "सबसे पहले शामिल हों"
+  },
+  "joinReq": {
+    "someone": "कोई",
+    "wantsToJoin": " शामिल होना चाहता है",
+    "joined": " hangout में शामिल हुआ",
+    "askedToJoin": " ने शामिल होने को कहा",
+    "decline": "अस्वीकार करें",
+    "accept": "स्वीकार करें",
+    "accepted": "स्वीकार किया गया",
+    "acceptedBy": "{{name}} ने स्वीकार किया",
+    "declined": "रिक्वेस्ट अस्वीकार की गई"
+  },
+  "modes": { "local": "Local", "exploring": "Exploring" },
+  "reply": { "photo": "📷 फ़ोटो", "unavailable": "मूल मैसेज उपलब्ध नहीं" },
+  "composer": { "reply": "बातचीत का जवाब दें…", "start": "vibe शुरू करें ✨" },
+  "errors": {
+    "locFailed": "आपकी लोकेशन नहीं ली जा सकी। कृपया लोकेशन एक्सेस ऑन करें और फिर से कोशिश करें।",
+    "imageType": "कृपया JPEG, PNG या WebP इमेज चुनें।",
+    "imageTooLarge": "इमेज बहुत बड़ी है। अधिकतम 10 MB.",
+    "imageSend": "इमेज नहीं भेजी जा सकी। कृपया फिर से कोशिश करें।",
+    "dismiss": "{{error}} · बंद करने के लिए टैप करें"
+  }
+}

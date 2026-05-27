@@ -1,0 +1,24 @@
+{
+  "title": "क्या हुआ था",
+  "filters": { "all": "सभी", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "range": { "recent": "हाल का", "last7": "पिछले 7 दिन", "last14": "पिछले 14 दिन", "custom": "कस्टम" },
+  "picker": {
+    "pickEnd": "अब आखिरी दिन चुनें",
+    "pickStart": "एक शुरुआती दिन चुनें ({{max}} दिनों तक)",
+    "apply": "लागू करें"
+  },
+  "public": "पब्लिक",
+  "went_one": "🙌 {{count}} गए",
+  "went_other": "🙌 {{count}} गए",
+  "hangoutTag": "Hangout",
+  "replies_one": "💬 {{count}} जवाब",
+  "replies_other": "💬 {{count}} जवाब",
+  "noReplies": "कोई जवाब नहीं",
+  "error": "आर्काइव लोड नहीं हो सका",
+  "retry": "फिर से कोशिश करें",
+  "emptyTitle": "अभी यहाँ कुछ नहीं है",
+  "emptyRecentSub": "जब शहर का थोड़ा इतिहास बन जाएगा तो पुराने इवेंट और hangouts यहाँ दिखेंगे।",
+  "emptyWindowSub": "इस अवधि में कोई इवेंट या hangout नहीं। एक बड़ी रेंज आज़माएं।",
+  "loadMore": "और लोड करें",
+  "loading": "लोड हो रहा है…"
+}

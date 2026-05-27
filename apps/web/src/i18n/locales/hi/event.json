@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "लोगों को लाएं ✨",
+    "linkCopied": "लिंक कॉपी हो गया ✨",
+    "vibeTitle": "इस vibe को शेयर करें",
+    "eventAria": "इवेंट शेयर करें"
+  },
+  "title": { "edit": "इवेंट एडिट करें", "host": "इवेंट होस्ट करें", "create": "इवेंट बनाएं" },
+  "delete": {
+    "confirmTitle": "यह इवेंट हटाएं?",
+    "confirmBody": "इससे इवेंट और सारे मैसेज हट जाएंगे। इसे वापस नहीं किया जा सकता।",
+    "cancel": "रद्द करें",
+    "deleting": "डिलीट हो रहा है…",
+    "confirm": "हटाएं",
+    "button": "🗑 इवेंट हटाएं"
+  },
+  "quickStart": "क्विक स्टार्ट",
+  "presets": {
+    "dailySpot": "डेली spot", "dailySpotDesc": "हर दिन",
+    "everyEvening": "हर शाम", "everyEveningDesc": "रोज़ · रात 8 बजे",
+    "weekends": "वीकेंड", "weekendsDesc": "शनि और रवि"
+  },
+  "category": "श्रेणी",
+  "categories": {
+    "drinks": "ड्रिंक्स", "party": "पार्टी", "music": "संगीत", "food": "खाना",
+    "coffee": "कॉफ़ी", "sport": "खेल", "meetup": "मीटअप", "other": "अन्य"
+  },
+  "titleLabel": "टाइटल",
+  "titlePlaceholder": "जैसे रूफ़टॉप बार में जैज़ नाइट",
+  "date": "तारीख",
+  "today": "आज",
+  "tomorrow": "कल",
+  "todayHint": "आज होस्ट करने पर सबसे ज़्यादा विज़िबिलिटी मिलती है 🔥",
+  "starts": "शुरू",
+  "ends": "खत्म",
+  "repeat": "दोहराएं",
+  "recurrence": { "once": "एक बार", "daily": "रोज़", "weekly": "हर हफ़्ते", "everyNDays": "हर N दिन" },
+  "weekdays": ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"],
+  "intervalEvery": "हर",
+  "intervalDays": "दिन",
+  "location": "लोकेशन",
+  "locating": "आपकी लोकेशन ली जा रही है…",
+  "locationPlaceholder": "वैकल्पिक · मैप पर सेट करने के लिए टैप करें",
+  "clearLocation": "लोकेशन हटाएं",
+  "errors": {
+    "endAfterStart": "खत्म होने का समय शुरू होने के समय से कम से कम 15 मिनट बाद होना चाहिए",
+    "pickDay": "हफ़्ते का कम से कम एक दिन चुनें",
+    "deleteFailed": "इवेंट डिलीट नहीं हो सका। फिर से कोशिश करें।",
+    "locUnavailable": "इस ब्राउज़र में लोकेशन उपलब्ध नहीं है। आप फिर भी इसके बिना इवेंट बना सकते हैं।",
+    "locFailed": "आपकी लोकेशन नहीं ली जा सकी। लोकेशन एक्सेस ऑन करें, या मैप छोड़ दें।"
+  },
+  "submit": {
+    "saving": "सेव हो रहा है…", "creating": "बन रहा है…",
+    "saveChanges": "बदलाव सेव करें", "openSpot": "अपना spot खोलें",
+    "startEvent": "इवेंट शुरू करें", "create": "इवेंट बनाएं"
+  },
+  "recur": {"everyday":"हर दिन","weekly":"हर हफ़्ते","everyNDays_one":"हर {{count}} दिन","everyNDays_other":"हर {{count}} दिन"}
+}

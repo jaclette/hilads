@@ -1,0 +1,52 @@
+{
+  "language": "भाषा",
+  "cancel": "रद्द करें",
+  "loading": "लोड हो रहा है…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "Exploring" }
+  },
+  "composer": {
+    "attach": "अटैचमेंट जोड़ें",
+    "emoji": "इमोजी"
+  },
+  "vibe": {
+    "party": "पार्टी",
+    "board_games": "बोर्ड गेम",
+    "coffee": "कॉफ़ी",
+    "music": "संगीत",
+    "food": "खाना",
+    "chill": "चिल"
+  },
+  "weather": {
+    "clear": "साफ़ आसमान",
+    "sunnyHot": "बढ़िया मौसम",
+    "clearNight": "आज रात साफ़",
+    "mostlyClear": "ज़्यादातर साफ़",
+    "partly": "कुछ बादल",
+    "overcast": "धूसर आसमान",
+    "fog": "कोहरा",
+    "drizzle": "हल्की बूंदाबांदी",
+    "rain": "बारिश",
+    "snow": "बर्फ़",
+    "snowShowers": "बर्फ़बारी",
+    "thunder": "आंधी-तूफ़ान"
+  },
+  "time": {
+    "happeningNow": "🔥 अभी हो रहा है",
+    "inMin": "🔥 {{count}} मिनट में",
+    "today": "आज",
+    "tomorrow": "कल",
+    "yesterday": "बीता कल",
+    "justNow": "अभी-अभी",
+    "nowShort": "अभी",
+    "mAgo": "{{count}} मिनट पहले",
+    "hAgo": "{{count}} घंटे पहले",
+    "dAgo": "{{count}} दिन पहले",
+    "expired": "समाप्त",
+    "expiresSoon": "जल्द समाप्त",
+    "expiresInMin": "{{mins}} मिनट में समाप्त",
+    "expiresInHourMin": "{{hours}} घंटे {{mins}} मिनट में समाप्त",
+    "expiresInHour": "{{hours}} घंटे में समाप्त"
+  }
+}

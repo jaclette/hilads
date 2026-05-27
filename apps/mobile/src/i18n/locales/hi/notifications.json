@@ -1,0 +1,30 @@
+{
+  "allTitle": "सभी नोटिफिकेशन",
+  "markAllRead": "सभी को पढ़ा हुआ मार्क करें",
+  "emptyTitle": "अभी तक कोई नोटिफिकेशन नहीं",
+  "emptySub": "यहां आपको मैसेज और इवेंट अपडेट दिखेंगे।",
+  "seeAll": "सभी नोटिफिकेशन देखें",
+  "prefTitle": "नोटिफिकेशन प्रेफरेंस",
+  "pref": {
+    "mentionLabel": "मेंशन @",
+    "mentionSub": "जब कोई किसी मैसेज या hangout में आपको @mention करे",
+    "eventJoinLabel": "किसी ने आपके इवेंट में हिस्सा लिया",
+    "eventJoinSub": "जब कोई नया व्यक्ति उस इवेंट में शामिल हो जिसमें आप जा रहे हैं",
+    "newEventLabel": "आपके शहर में नए इवेंट",
+    "newEventSub": "जब कोई आपके शहर में कोई इवेंट बनाए",
+    "cityJoinLabel": "कोई आपके शहर में आया",
+    "cityJoinSub": "जब कोई आपके शहर के चैनल में शामिल हो",
+    "friendLabel": "फ्रेंड रिक्वेस्ट",
+    "friendSub": "जब कोई आपको फ्रेंड रिक्वेस्ट भेजे या आपकी स्वीकार करे",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "जब कोई आपकी प्रोफ़ाइल पर vibe छोड़े",
+    "profileViewLabel": "प्रोफ़ाइल व्यूज़ 👀",
+    "profileViewSub": "जब कोई आपकी प्रोफ़ाइल देखे",
+    "topicReplyLabel": "Hangout के जवाब 💬",
+    "topicReplySub": "जब कोई उस hangout में जवाब दे जिसमें आप शामिल हुए हैं",
+    "newTopicLabel": "आपके शहर में नए hangouts",
+    "newTopicSub": "जब कोई आपके शहर में नया hangout शुरू करे",
+    "announceLabel": "Hilads की ओर से घोषणाएं",
+    "announceSub": "टीम की ओर से कभी-कभार अपडेट"
+  }
+}

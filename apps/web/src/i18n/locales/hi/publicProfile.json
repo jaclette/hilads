@@ -1,0 +1,83 @@
+{
+  "title": "प्रोफ़ाइल",
+  "loading": "लोड हो रहा है…",
+  "loadError": "प्रोफ़ाइल लोड नहीं हो सकी।",
+  "badgeMicro": {
+    "ghost": "बस देख रहे हैं 👀",
+    "fresh": "अभी-अभी आए 👶",
+    "regular": "अक्सर आते हैं",
+    "host": "चीज़ें करवाते हैं 🔥"
+  },
+  "modes": { "local": "लोकल", "exploring": "एक्सप्लोर कर रहे हैं" },
+  "vibes": {
+    "party": "पार्टी", "board_games": "बोर्ड गेम", "coffee": "कॉफ़ी",
+    "music": "संगीत", "food": "खाना", "chill": "चिल"
+  },
+  "vibeTaglines": {
+    "party": "नाइटलाइफ़ के लिए यहाँ हैं",
+    "board_games": "स्नैक्स और पासे ले आओ",
+    "coffee": "पहले कॉफ़ी, बाकी सब बाद में",
+    "music": "हमेशा एक अच्छी धुन की तलाश में",
+    "food": "पहले खाना, सवाल बाद में",
+    "chill": "लो की, हाई vibes"
+  },
+  "modeSub": {
+    "localIn": "{{city}} में लोकल",
+    "local": "लोकल",
+    "exploringIn": "{{city}} एक्सप्लोर कर रहे हैं",
+    "exploring": "एक्सप्लोर कर रहे हैं"
+  },
+  "from": "कहाँ से",
+  "age": "उम्र",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "दोस्त",
+    "vibes": "Vibes", "picks": "सिटी पिक्स 👑"
+  },
+  "host": "होस्ट",
+  "live": "LIVE",
+  "empty": { "hangouts": "अभी कोई hangouts नहीं", "events": "अभी कोई इवेंट नहीं", "friends": "अभी कोई दोस्त नहीं" },
+  "vibesTab": {
+    "score": "{{score}} vibe स्कोर",
+    "basedOn_one": "{{count}} vibe पर आधारित",
+    "basedOn_other": "{{count}} vibes पर आधारित",
+    "updateNote": "✏️ अपना नोट अपडेट करें ({{rating}}★)",
+    "leaveNote": "⭐ एक नोट छोड़ें",
+    "placeholder": "कुछ अच्छा कहें… (वैकल्पिक)",
+    "cancel": "रद्द करें",
+    "sending": "भेजा जा रहा है…",
+    "sendNote": "नोट भेजें ✨",
+    "notesLabel": "नोट्स · {{count}}",
+    "emptyTitle": "अभी कोई नोट नहीं",
+    "emptySub": "नोट छोड़ने वाले पहले व्यक्ति बनें ✨"
+  },
+  "picks": {
+    "restaurant": "पसंदीदा रेस्टोरेंट",
+    "spot": "छुपा हुआ ख़ज़ाना",
+    "tip": "लोकल टिप",
+    "story": "कहानी"
+  },
+  "actions": {
+    "opening": "खुल रहा है…",
+    "message": "💬 मैसेज",
+    "friend": "✓ दोस्त",
+    "requestSent": "⌛ रिक्वेस्ट भेजी गई",
+    "acceptRequest": "✓ रिक्वेस्ट स्वीकार करें",
+    "addFriend": "+ दोस्त",
+    "removing": "हटाया जा रहा है…",
+    "unfriend": "अनफ्रेंड करें",
+    "cancel": "रद्द करें",
+    "cancelling": "रद्द किया जा रहा है…",
+    "cancelRequest": "रिक्वेस्ट रद्द करें",
+    "keep": "रखें",
+    "reportTitle": "यूज़र की रिपोर्ट करें"
+  },
+  "report": {
+    "existing": "आपने इस यूज़र की {{date}} को रिपोर्ट की थी। आपकी रिपोर्ट की समीक्षा हो रही है।",
+    "sent": "रिपोर्ट भेज दी गई। बताने के लिए शुक्रिया।",
+    "placeholder": "समस्या बताएं (कम से कम 10 अक्षर)…",
+    "error": "रिपोर्ट नहीं भेजी जा सकी। फिर से कोशिश करें।",
+    "sending": "भेजा जा रहा है…",
+    "submit": "रिपोर्ट भेजें",
+    "cancel": "रद्द करें"
+  }
+}

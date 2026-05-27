@@ -1,0 +1,17 @@
+{
+  "loading": "लोड हो रहा है…",
+  "notFound": "यह जगह Hilads पर नहीं है।",
+  "loadError": "यह जगह लोड नहीं हो सकी। कृपया फिर से कोशिश करें।",
+  "breadcrumb": "ब्रेडक्रंब",
+  "category": {
+    "bar": "बार / पब",
+    "cafe": "कॉफ़ी शॉप"
+  },
+  "typeInCity": "{{city}} में {{category}}",
+  "address": "पता",
+  "hours": "समय",
+  "openEveryDay": "हर दिन खुला · {{opens}} – {{closes}}",
+  "ctaText": "देखें कि अभी {{city}} में आसपास कौन है।",
+  "openCity": "{{city}} खोलें",
+  "lastUpdated": "अंतिम अपडेट {{date}}"
+}
