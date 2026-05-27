@@ -11,6 +11,11 @@
   },
   "redirects": [
     {
+      "source": "/android",
+      "destination": "https://play.google.com/store/apps/details?id=com.hilads.app",
+      "permanent": false
+    },
+    {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "hilads.vercel.app" }],
       "destination": "https://hilads.live/$1",
