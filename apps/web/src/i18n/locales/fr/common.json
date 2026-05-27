@@ -10,6 +10,20 @@
     "attach": "Ajouter une pièce jointe",
     "emoji": "Emoji"
   },
+  "weather": {
+    "clear": "ciel dégagé",
+    "sunnyHot": "grand soleil",
+    "clearNight": "ciel clair",
+    "mostlyClear": "plutôt dégagé",
+    "partly": "quelques nuages",
+    "overcast": "ciel gris",
+    "fog": "brouillard",
+    "drizzle": "pluie légère",
+    "rain": "pluie",
+    "snow": "neige",
+    "snowShowers": "averses de neige",
+    "thunder": "orage"
+  },
   "time": {
     "happeningNow": "🔥 en ce moment",
     "inMin": "🔥 dans {{count}} min",

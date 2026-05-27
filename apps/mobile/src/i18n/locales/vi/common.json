@@ -64,6 +64,20 @@
   "replies_other": "💬 {{count}} trả lời",
   "noReplies": "Chưa có trả lời",
   "noRepliesFirst": "Chưa có trả lời — hãy là người đầu tiên",
+  "weather": {
+    "clear": "trời quang",
+    "sunnyHot": "nắng đẹp",
+    "clearNight": "đêm quang đãng",
+    "mostlyClear": "trời khá quang",
+    "partly": "ít mây",
+    "overcast": "trời âm u",
+    "fog": "sương mù",
+    "drizzle": "mưa phùn",
+    "rain": "mưa",
+    "snow": "tuyết",
+    "snowShowers": "mưa tuyết",
+    "thunder": "giông bão"
+  },
   "time": {
     "today": "Hôm nay",
     "yesterday": "Hôm qua",

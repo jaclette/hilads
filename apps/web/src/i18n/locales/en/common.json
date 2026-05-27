@@ -10,6 +10,20 @@
     "attach": "Add attachment",
     "emoji": "Emoji"
   },
+  "weather": {
+    "clear": "clear skies",
+    "sunnyHot": "gorgeous out",
+    "clearNight": "clear tonight",
+    "mostlyClear": "mostly clear",
+    "partly": "a few clouds",
+    "overcast": "grey skies",
+    "fog": "foggy",
+    "drizzle": "light drizzle",
+    "rain": "rain",
+    "snow": "snow",
+    "snowShowers": "snow showers",
+    "thunder": "thunderstorm"
+  },
   "time": {
     "happeningNow": "🔥 happening now",
     "inMin": "🔥 in {{count}} min",

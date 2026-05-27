@@ -10,6 +10,20 @@
     "attach": "Thêm tệp đính kèm",
     "emoji": "Emoji"
   },
+  "weather": {
+    "clear": "trời quang",
+    "sunnyHot": "nắng đẹp",
+    "clearNight": "đêm quang đãng",
+    "mostlyClear": "trời khá quang",
+    "partly": "ít mây",
+    "overcast": "trời âm u",
+    "fog": "sương mù",
+    "drizzle": "mưa phùn",
+    "rain": "mưa",
+    "snow": "tuyết",
+    "snowShowers": "mưa tuyết",
+    "thunder": "giông bão"
+  },
   "time": {
     "happeningNow": "🔥 đang diễn ra",
     "inMin": "🔥 sau {{count}} phút",

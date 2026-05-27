@@ -10,6 +10,20 @@
     "attach": "Añadir un adjunto",
     "emoji": "Emoji"
   },
+  "weather": {
+    "clear": "cielo despejado",
+    "sunnyHot": "sol radiante",
+    "clearNight": "noche despejada",
+    "mostlyClear": "casi despejado",
+    "partly": "algunas nubes",
+    "overcast": "cielo gris",
+    "fog": "niebla",
+    "drizzle": "llovizna",
+    "rain": "lluvia",
+    "snow": "nieve",
+    "snowShowers": "chubascos de nieve",
+    "thunder": "tormenta"
+  },
   "time": {
     "happeningNow": "🔥 ahora mismo",
     "inMin": "🔥 en {{count}} min",

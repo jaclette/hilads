@@ -65,6 +65,20 @@
   "replies_other": "💬 {{count}} réponses",
   "noReplies": "Pas de réponses",
   "noRepliesFirst": "Pas encore de réponses — sois le premier",
+  "weather": {
+    "clear": "ciel dégagé",
+    "sunnyHot": "grand soleil",
+    "clearNight": "ciel clair",
+    "mostlyClear": "plutôt dégagé",
+    "partly": "quelques nuages",
+    "overcast": "ciel gris",
+    "fog": "brouillard",
+    "drizzle": "pluie légère",
+    "rain": "pluie",
+    "snow": "neige",
+    "snowShowers": "averses de neige",
+    "thunder": "orage"
+  },
   "time": {
     "today": "Aujourd'hui",
     "yesterday": "Hier",

@@ -65,6 +65,20 @@
   "replies_other": "💬 {{count}} replies",
   "noReplies": "No replies",
   "noRepliesFirst": "No replies yet — be first",
+  "weather": {
+    "clear": "clear skies",
+    "sunnyHot": "gorgeous out",
+    "clearNight": "clear tonight",
+    "mostlyClear": "mostly clear",
+    "partly": "a few clouds",
+    "overcast": "grey skies",
+    "fog": "foggy",
+    "drizzle": "light drizzle",
+    "rain": "rain",
+    "snow": "snow",
+    "snowShowers": "snow showers",
+    "thunder": "thunderstorm"
+  },
   "time": {
     "today": "Today",
     "yesterday": "Yesterday",

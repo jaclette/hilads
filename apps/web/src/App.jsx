@@ -10,6 +10,7 @@ import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug } from './eventUtils'
 import { haversineMeters, formatDistance } from './distance'
 import { formatExpiresIn } from './expiry'
+import { localizeWeather } from './weather'
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
@@ -763,15 +764,13 @@ export default function App() {
   const triggerReactionBurstRef = useRef(null)
   const [onlineCount, setOnlineCount] = useState(null)
   const weatherLabel = useMemo(() => {
-    // Find the most recent weather item (last in chronological feed)
+    // Find the most recent weather item (last in chronological feed). The
+    // backend string is English; localizeWeather rebuilds it from the emoji +
+    // temperature in the active language (i18n.language in deps recomputes it
+    // on a language switch).
     const w = [...feed].reverse().find(item => item.type === 'activity' && item.subtype === 'weather')
-    if (!w?.text) return null
-    // Keep the trailing tip: strip " in CityName" by the known city name (the old
-    // regex over-matched and dropped tips with no em-dash), then em-dash \u2192 middot.
-    let text = w.text
-    if (city) text = text.replace(` in ${city}`, '')
-    return text.replace(/\s*\u2014\s*/, ' \u00B7 ').replace(/\s{2,}/g, ' ').trim()
-  }, [feed, city])
+    return localizeWeather(w?.text, city)
+  }, [feed, city, i18n.language])
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
   const [allChannels, setAllChannels] = useState([])    // all channels unranked (used in search mode)

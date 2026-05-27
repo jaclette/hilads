@@ -42,6 +42,7 @@ import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
+import { localizeWeather } from '@/lib/weather';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
@@ -121,7 +122,7 @@ function ChipLiveDot() {
 
 export default function ChatTab() {
   const router = useRouter();
-  const { t } = useTranslation('chat');
+  const { t, i18n } = useTranslation('chat');
   const {
     city, identity, sessionId, account,
     unreadDMs, setUnreadDMs,
@@ -589,14 +590,8 @@ export default function ChatTab() {
   // Weather — extracted from messages for header display, not rendered in the feed.
   const weatherLabel = useMemo<string | null>(() => {
     const w = messages.find(m => m.type === 'system' && m.event === 'weather');
-    if (!w?.content) return null;
-    // Keep the trailing tip: strip the redundant " in CityName" by the known city
-    // name (the old regex over-matched and dropped tips that had no em-dash, e.g.
-    // "\uD83C\uDF24\uFE0F 28\u00B0C in HCMC right now"), then turn an em-dash separator into a middot.
-    let text = w.content;
-    if (city?.name) text = text.replace(` in ${city.name}`, '');
-    return text.replace(/\s*\u2014\s*/, ' \u00B7 ').replace(/\s{2,}/g, ' ').trim();
-  }, [messages, city?.name]);
+    return localizeWeather(w?.content, city?.name);
+  }, [messages, city?.name, i18n.language]);
 
   // Weather pill marquee gating: scroll only while this tab is focused AND the
   // app is foregrounded (battery), and never under OS reduce-motion.
