@@ -4422,10 +4422,15 @@ export default function App() {
                       {formatExpiresIn(topic.expires_at) && (
                         <span className="city-row-current">⏱ {formatExpiresIn(topic.expires_at)}</span>
                       )}
-                      {replies > 0
-                        ? <span className="city-row-current">{t('feed.replies', { count: replies })}{timeAgo ? ` · ${timeAgo}` : ''}</span>
-                        : <span className="city-row-current">{t('feed.repliesNew')}</span>
-                      }
+                      <span className="city-row-current city-row-current--reply">
+                        <Marquee
+                          text={replies > 0
+                            ? `${t('feed.replies', { count: replies })}${timeAgo ? ` · ${timeAgo}` : ''}`
+                            : t('feed.repliesNew')}
+                          className="now-reply-marquee"
+                          fadeColor="#2b1814"
+                        />
+                      </span>
                     </div>
                     {topic.description && (
                       <span className="er-location">{topic.description}</span>

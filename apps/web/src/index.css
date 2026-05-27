@@ -5528,6 +5528,19 @@ img.pub-profile-avatar {
   white-space: nowrap;
 }
 
+/* Reply-status pill on Now cards: the "be first" nudge can be long and overflow
+   the row, so let it shrink and marquee-scroll its text like the weather pill.
+   Solid bg (≈ the translucent accent over the card) so the edge-fade blends, and
+   overflow:hidden clips the scroll to the pill's rounded ends. */
+.city-row-current--reply {
+  flex-shrink: 1;
+  min-width: 0;
+  display: flex;
+  overflow: hidden;
+  background: #2b1814;
+}
+.now-reply-marquee { flex: 1 1 auto; min-width: 0; }
+
 /* Stats run flush with the rest of the card — no 33 px indent under the flag.
    Single muted line, gap 10. */
 .city-row-stats {
