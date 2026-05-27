@@ -2288,6 +2288,9 @@ export default function App() {
           participant_count: hiladsEvent.participant_count ?? 1,
           is_participating: false,
           recurrence_label: hiladsEvent.recurrence_label ?? null,
+          recurrence_type:  hiladsEvent.recurrence_type ?? null,
+          recurrence_weekdays: hiladsEvent.recurrence_weekdays ?? [],
+          recurrence_interval: hiladsEvent.recurrence_interval ?? null,
         }
         setEvents(prev => prev.some(e => e.id === ev.id) ? prev : [...prev, ev])
         setEventParticipants(prev => ({ ...prev, [ev.id]: ev.participant_count }))
@@ -4451,8 +4454,8 @@ export default function App() {
                         {getTimeLabel(event.starts_at, tz, { withDay: true })}
                         {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
                       </span>
-                      {event.recurrence_label && (
-                        <span className="recur-badge">↻ {event.recurrence_label}</span>
+                      {formatRecurrence(event) && (
+                        <span className="recur-badge">↻ {formatRecurrence(event)}</span>
                       )}
                       {going > 0 && <span className="city-row-current">{t('feed.going', { count: going })}</span>}
                     </div>
