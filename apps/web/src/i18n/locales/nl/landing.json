@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "sub": "De stad leeft om je heen.\nVind mensen, doe mee aan wat er speelt of open je eigen spot."
+  },
+  "join": {
+    "peopleLive_one": "🔥 {{count}} persoon hangt nu rond",
+    "peopleLive_other": "🔥 {{count}} mensen hangen nu rond",
+    "events_one": "🔥 {{count}} evenement bezig",
+    "events_other": "🔥 {{count}} evenementen bezig",
+    "hangouts_one": "🗣️ {{count}} hangout actief",
+    "hangouts_other": "🗣️ {{count}} hangouts actief",
+    "replies_one": "{{count}} reactie",
+    "replies_other": "{{count}} reacties",
+    "pickCity": "Kies een stad\nen doe mee",
+    "locating": "› je stad lokaliseren...",
+    "browseCities": "Steden bekijken →",
+    "yourName": "Jouw naam",
+    "namePlaceholder": "Zeg hallo als...",
+    "tryAgain": "Opnieuw proberen",
+    "useLocation": "Gebruik mijn locatie",
+    "joinCity": "Doe mee in {{city}} →",
+    "joinChat": "Meedoen aan chat →",
+    "hint": "// anoniem · directe toegang",
+    "keepIdentity": "of behoud je identiteit",
+    "createAccount": "✨ Account maken",
+    "logIn": "Inloggen",
+    "authHint": "Bewaar je naam · ontgrendel profielen · voeg vrienden toe"
+  },
+  "local": {
+    "badge": "🌍 Local",
+    "title": "Maak dingen mogelijk",
+    "tagline": "Jij kent de beste plekken. Deel ze nu.",
+    "bullets": [
+      "Organiseer terugkerende evenementen op je favoriete lokale spots",
+      "Breng mensen naar plekken waar je van houdt",
+      "Word de reden waarom mensen komen opdagen"
+    ],
+    "cta": "Open je spot"
+  },
+  "exploring": {
+    "badge": "🧭 Verkennen",
+    "title": "Vind echte momenten in elke stad",
+    "tagline": "Waar je ook belandt, vind je mensen.",
+    "bullets": [
+      "Vind realtime evenementen in de buurt",
+      "Ontmoet locals en andere verkenners in een mum van tijd",
+      "Vermijd toeristenvallen. Ontdek de echte stad."
+    ],
+    "cta": "Bekijk wat er speelt"
+  },
+  "how": {
+    "eyebrow": "Hoe het werkt",
+    "title": "Drie stappen om mensen in de buurt te ontmoeten.",
+    "steps": [
+      { "title": "Open de app", "desc": "Zie wie er om je heen is en wat er nu in de buurt speelt." },
+      { "title": "Kies je modus", "desc": "Local. Je kent de stad.\nVerkennen. Je wilt hem voelen." },
+      { "title": "Doe mee", "desc": "Doe mee aan een evenement of open je eigen spot. Het echte leven begint hier." }
+    ]
+  },
+  "stats": {
+    "peopleLive": "mensen nu online",
+    "cities": "steden",
+    "eventsCreated": "evenementen gemaakt",
+    "signupsNeeded": "aanmelding nodig"
+  },
+  "concept": {
+    "title": "Niet zomaar een sociaal netwerk.\nJouw stad, live.",
+    "rules": [
+      "Geen volgers. Geen feeds. Geen algoritmes.",
+      "Zie wie er om je heen is. Doe mee aan wat er in de buurt speelt.",
+      "Echte mensen. Echte plekken. Nu."
+    ]
+  },
+  "seo": "Hilads is een realtime social app die je helpt mensen in de buurt te ontmoeten en te ontdekken wat er in je stad te doen is. Vind evenementen in de buurt, ontmoet locals en kom in contact met reizigers waar je ook bent. Op zoek naar dingen om te doen in Parijs? Wil je locals ontmoeten in Barcelona? Verken je Lissabon en wil je weten wat er vanavond speelt? Hilads laat je de stad zien, live. Geen account nodig. Kom gewoon langs.",
+  "download": {
+    "eyebrow": "Mobiele apps",
+    "title": "Jouw stad in je broekzak.",
+    "sub": "Native apps komen binnenkort."
+  },
+  "repeat": {
+    "eyebrow": "Doe mee",
+    "titleCity": "{{city}} is nu live.",
+    "titleGeneric": "Jouw stad is nu live."
+  }
+}

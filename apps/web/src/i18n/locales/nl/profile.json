@@ -1,0 +1,130 @@
+{
+  "pageTitle": "Mijn profiel",
+  "changePhoto": "Profielfoto wijzigen",
+  "yourProfile": "Jouw profiel",
+  "mode": "Modus",
+  "modes": {
+    "local": "Local",
+    "localDesc": "Je kent deze stad",
+    "exploring": "Verkennen",
+    "exploringDesc": "Je bent hem aan het ontdekken"
+  },
+  "tabs": {
+    "interests": "Interesses",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Vrienden",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Feest",
+    "board_games": "Bordspellen",
+    "coffee": "Koffie",
+    "music": "Muziek",
+    "food": "Eten",
+    "chill": "Chillen"
+  },
+  "interests": {
+    "drinks": "borrelen",
+    "party": "feest",
+    "nightlife": "nachtleven",
+    "music": "muziek",
+    "live music": "livemuziek",
+    "culture": "cultuur",
+    "art": "kunst",
+    "food": "eten",
+    "coffee": "koffie",
+    "sport": "sport",
+    "fitness": "fitness",
+    "hiking": "wandelen",
+    "beach": "strand",
+    "wellness": "wellness",
+    "travel": "reizen",
+    "hangout": "afspreken",
+    "socializing": "mensen ontmoeten",
+    "gaming": "gamen",
+    "tech": "tech",
+    "dating": "daten"
+  },
+  "fields": {
+    "username": "Gebruikersnaam",
+    "usernamePlaceholder": "gebruikersnaam",
+    "checking": "Controleren…",
+    "available": "@{{username}} is beschikbaar",
+    "aboutMe": "Over mij",
+    "charsLeft": "— nog {{count}}",
+    "aboutPlaceholder": "Dol op streetfood en spontane gesprekken",
+    "email": "E-mail",
+    "readOnly": "— alleen-lezen",
+    "homeCity": "Thuisstad",
+    "homeCityPlaceholder": "Waar je woont",
+    "age": "Leeftijd",
+    "agePlaceholder": "Jouw leeftijd",
+    "myVibe": "Mijn vibe",
+    "interests": "Interesses",
+    "interestsHint": "— kies er maximaal 5"
+  },
+  "ambassador": {
+    "title": "Tips van de stad 👑",
+    "subtitle": "Worden op je profiel getoond als local legend.",
+    "restaurant": "Favoriete restaurant",
+    "restaurantPlaceholder": "Een plek waar je iedereen mee naartoe neemt",
+    "spot": "Verborgen parel / spot",
+    "spotPlaceholder": "Een plek die de meeste toeristen missen",
+    "tip": "Lokale tip",
+    "tipPlaceholder": "Je beste advies voor nieuwkomers",
+    "story": "Verhaal over de stad",
+    "storyPlaceholder": "Iets wat je geweldig vindt aan deze stad"
+  },
+  "hangouts": {
+    "empty": "Nog geen hangouts — start er een ⚡",
+    "host": "Host"
+  },
+  "events": {
+    "going": "Ga ik",
+    "goingEmpty": "Nog geen plannen — vind iets 🔥",
+    "hosting": "Organiseer ik",
+    "hostingEmpty": "Nog niets georganiseerd — start iets ✨",
+    "live": "Live",
+    "recurring": "↻ Terugkerend",
+    "upcoming": "Binnenkort",
+    "deleteEvent": "Evenement verwijderen"
+  },
+  "friends": {
+    "requests": "Vriendschapsverzoeken",
+    "empty": "Nog geen vrienden. Voeg ze toe vanuit profielen.",
+    "mine": "Mijn vrienden"
+  },
+  "vibesTab": {
+    "received": "Ontvangen vibes",
+    "score": "vibe-score van {{score}}",
+    "basedOn_one": "gebaseerd op {{count}} vibe",
+    "basedOn_other": "gebaseerd op {{count}} vibes",
+    "empty": "Nog geen vibes",
+    "emptyHint": "Je score verschijnt hier zodra mensen je een notitie achterlaten ✨"
+  },
+  "save": {
+    "uploading": "Uploaden…",
+    "saving": "Opslaan…",
+    "saved": "Opgeslagen ✓",
+    "save": "Profiel opslaan"
+  },
+  "signOut": "Uitloggen",
+  "deleteAccount": "Account verwijderen",
+  "delete": {
+    "title": "Account verwijderen?",
+    "body": "Je profiel, vrienden en instellingen worden permanent verwijderd. Je berichten en evenementen blijven anoniem in de stadschats staan.",
+    "irreversible": "Dit kan niet ongedaan worden gemaakt.",
+    "deleting": "Verwijderen…",
+    "confirm": "Ja, verwijder mijn account",
+    "cancel": "Annuleren"
+  },
+  "errors": {
+    "photoUpload": "Foto uploaden mislukt. Probeer opnieuw.",
+    "usernameTooShort": "Gebruikersnaam moet minstens 3 tekens lang zijn",
+    "usernameTaken": "Die gebruikersnaam is al in gebruik",
+    "usernameInvalid": "Ongeldige gebruikersnaam",
+    "saveFailed": "Opslaan mislukt. Probeer opnieuw.",
+    "generic": "Er ging iets mis. Probeer opnieuw."
+  }
+}

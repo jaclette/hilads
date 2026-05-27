@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "Account maken",
+    "signIn": "Inloggen",
+    "create_event": {
+      "pageTitle": "Evenement maken",
+      "title": "Ghosts mogen rondkijken, maar niet hosten.",
+      "sub": "Maak een account om je eigen evenement te organiseren en je stad op de kaart te zetten."
+    },
+    "view_profile": {
+      "pageTitle": "Profiel",
+      "title": "Ghosts mogen rondkijken, maar profielen zijn voor leden.",
+      "sub": "Maak een account om profielen te ontgrendelen, met mensen te connecten en je crew in de stad op te bouwen."
+    },
+    "join_hangout": {
+      "pageTitle": "Meedoen met een hangout",
+      "title": "Ghosts mogen rondkijken, maar niet meedoen met hangouts.",
+      "sub": "Meld je aan om mee te doen met hangouts, je naam te bewaren en bericht te krijgen wanneer mensen willen afspreken."
+    },
+    "create_hangout": {
+      "pageTitle": "Een hangout starten",
+      "title": "Ghosts mogen rondkijken, maar niet hosten.",
+      "sub": "Meld je aan om een hangout te starten, je naam te bewaren en mensen te laten meedoen."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} is live ✨",
+    "dismiss": "Sluiten",
+    "body": "Echte mensen, nu meteen. Zeg hallo, kijk wie er om je heen is of neem een vriend mee.",
+    "sayHi": "Zeg hallo 👋",
+    "invite": "Vrienden uitnodigen"
+  },
+  "imageType": "Kies een JPEG-, PNG- of WebP-afbeelding.",
+  "imageTooLarge": "Afbeelding te groot. Max. grootte: 10 MB.",
+  "picker": {
+    "title": "Kies een stad",
+    "search": "Zoek een stad…",
+    "noResults": "Geen stad gevonden voor \"{{query}}\"",
+    "topCities": "Drukste steden nu",
+    "cities": "Steden"
+  },
+  "joining": "Verbinden met {{city}}…",
+  "joiningDefault": "Verbinden met de chat…",
+  "tryAgain": "Opnieuw proberen",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "Openbaar",
+    "activeNow": "● Nu actief",
+    "repliesNew": "Nog geen reacties — wees de eerste",
+    "replies_one": "💬 {{count}} reactie",
+    "replies_other": "💬 {{count}} reacties",
+    "going_one": "🙌 {{count}} deelnemer",
+    "going_other": "🙌 {{count}} deelnemers",
+    "hostedBy": "Georganiseerd door {{name}}",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "Evenement maken",
+    "startHangout": "Een hangout starten ⚡",
+    "openPlace": "Open je plek",
+    "loadError": "Kon de evenementen niet laden",
+    "loadErrorSub": "Probeer het later opnieuw of maak iets nieuws in {{city}}.",
+    "emptyLocalTitle": "Host je plek",
+    "emptyTitle": "Er gebeurt nog niets",
+    "emptyLocalSub": "Maak {{city}} levendig. Start een terugkerend evenement op je favoriete plek.",
+    "emptySub": "Wees de eerste die iets op gang brengt in {{city}}",
+    "noEvents": "Nu geen evenementen",
+    "noHangouts": "Nog geen hangouts",
+    "noEventsSub": "Wees de eerste die er een maakt in {{city}}",
+    "noHangoutsSub": "Start een hangout en breng de stad aan het praten",
+    "filterAll": "Alles",
+    "seeComing": "Kijk wat eraan komt 🔮",
+    "seeHappened": "kijk wat er gebeurd is",
+    "createNew": "Nieuw maken"
+  },
+  "header": {
+    "online": "{{count}} in de buurt",
+    "liveNow": "nu live",
+    "seeWhosHere": "Kijk wie er is",
+    "onlineAria": "{{count}} mensen in de buurt, tik om te zien wie",
+    "notifications": "Meldingen",
+    "messages": "Berichten",
+    "shareCity": "Stad delen",
+    "switchCity": "Van stad wisselen",
+    "changeCity": "Van stad wisselen",
+    "currentWeather": "Huidig weer: {{label}}"
+  },
+  "here": {
+    "title": "Mensen hier",
+    "filterBadge": "Badge",
+    "filterVibe": "Vibe",
+    "filterMode": "Modus",
+    "you": "(jij)",
+    "hereNow": "Here now",
+    "noMatchLive": "Niemand matcht deze filters op dit moment.",
+    "legendsSub": "Zij maken de stad",
+    "cityCrew": "City crew",
+    "noMatchCrew": "Geen leden matchen deze filters.",
+    "loadMore": "Meer laden",
+    "messageAria": "Bericht sturen naar {{name}}"
+  },
+  "eventHeader": {
+    "yourEvent": "Jouw evenement",
+    "edit": "Bewerken",
+    "join": "Meedoen",
+    "joined": "Meegedaan ✓",
+    "here": "{{count}} hier",
+    "going_one": "{{count}} deelnemer",
+    "going_other": "{{count}} deelnemers",
+    "locationPending": "Locatie nog niet beschikbaar",
+    "hostedBy": "Georganiseerd door {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "Begin van het gesprek",
+    "arriving": "Mensen komen binnen",
+    "firstChat": "Wees de eerste die hier chat 👇",
+    "firstHi": "Wees de eerste die hallo zegt 👇"
+  },
+  "create": {
+    "title": "Wat gaan we doen?",
+    "hangoutTitle": "Een hangout starten",
+    "hangoutSub": "Direct — laat mensen nu meteen meedoen",
+    "eventTitle": "Een evenement maken",
+    "eventSub": "Plan iets waar anderen aan mee kunnen doen"
+  },
+  "goingModal": {
+    "going": "doen mee",
+    "inThisHangout": "in deze hangout",
+    "loading": "Laden…",
+    "empty": "Nog niemand — wees de eerste die meedoet! 🙌"
+  },
+  "nickname": {
+    "label": "Bijnaam",
+    "placeholder": "Je naam...",
+    "heroSub": "Voorlopig anoniem. Je kunt nog steeds bepalen hoe je verschijnt.",
+    "save": "Bijnaam opslaan",
+    "upgradeHint": "Bewaar je naam. Blijf local.",
+    "haveAccount": "Heb je al een account?",
+    "myEvents": "Mijn evenementen",
+    "anonymous": "// anoniem · geen aanmelding nodig"
+  },
+  "prompt": {
+    "exploreText": "🔥 Kijk wat er nu gebeurt",
+    "exploreCta": "Kijk wat er gebeurt",
+    "photoText": "📸 Deel wat er gebeurt",
+    "shoot": "Foto",
+    "createEventText": "🎉 Heb je een plan vanavond?",
+    "createEventCta": "Evenement maken",
+    "installText": "✨ Voeg Hilads toe aan je beginscherm\nMis nooit meer wat er in je stad gebeurt",
+    "installAdd": "Toevoegen",
+    "installHow": "Hoe"
+  },
+  "toast": {
+    "eventDeleted": "Evenement verwijderd"
+  },
+  "pwa": {
+    "addToHome": "Voeg Hilads toe aan je beginscherm",
+    "add": "Toevoegen",
+    "keepClose": "Houd Hilads bij de hand",
+    "manualHelp": "Open het menu van je browser en kies Toevoegen aan beginscherm.",
+    "dismiss": "Installatiemelding sluiten"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} is net geland",
+    "1": "🔥 {{name}} heeft zich aangesloten",
+    "2": "🍻 {{name}} is hier",
+    "3": "👀 {{name}} is net opgedoken",
+    "4": "✨ {{name}} is aangekomen"
+  },
+  "ambient": {
+    "0": "🔥 Mensen komen binnen",
+    "1": "🍻 Wie is er vanavond op pad?",
+    "2": "💬 De stad wordt wakker",
+    "3": "🌙 Nachtbrakers zijn online",
+    "4": "👀 Er is net iemand aangekomen",
+    "5": "🔥 Een nieuw gezicht in de stad",
+    "6": "🎉 Er zijn nu mensen hier",
+    "7": "🌆 Locals melden zich"
+  },
+  "ownerPrompt": {
+    "text": "🔥 Jij hebt dit evenement gestart!",
+    "sub": "Maak het nog beter — voeg een beschrijving toe, pas de tijd aan of deel het.",
+    "edit": "✏️ Evenement bewerken"
+  },
+  "feedNew": {
+    "event": "🔥 Nieuw evenement: {{title}}",
+    "join": "Meedoen",
+    "replies_one": "{{count}} reactie",
+    "replies_other": "{{count}} reacties"
+  },
+  "replyPreview": {
+    "photo": "📷 Foto"
+  },
+  "placeholder": {
+    "event": "Zeg iets bij {{title}} ✨",
+    "eventFirst": "Wees de eerste bij {{title}} ✨"
+  },
+  "placeholders": [
+    "Zeg hallo 👋",
+    "Wie is er vanavond op pad?",
+    "Plannen? 👀",
+    "Wat gebeurt hier?",
+    "Heeft iemand zin in iets? 🍻",
+    "Stuur een bericht…"
+  ],
+  "typing": {
+    "one": "{{name}} is aan het typen…",
+    "two": "{{a}} en {{b}} zijn aan het typen…",
+    "many": "Meerdere mensen zijn aan het typen…"
+  },
+  "myEvent": {
+    "live": "Live",
+    "recurring": "↻ Terugkerend",
+    "upcoming": "Binnenkort",
+    "delete": "Evenement verwijderen"
+  }
+}

@@ -10,13 +10,13 @@ declare(strict_types=1);
  * the case for English/unknown locales and for any field we don't translate
  * (message previews and proper nouns like event/venue/city names stay as-is).
  *
- * Only fr/vi/es/it/pt-br/pt-pt/de are translated; English is the source of truth in the call sites.
+ * Only fr/vi/es/it/pt-br/pt-pt/de/nl are translated; English is the source of truth in the call sites.
  * Conventions (match the app i18n rules): "tu" form; the brand word "vibe"
  * stays English.
  */
 final class NotificationI18n
 {
-    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de'];
+    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl'];
 
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
@@ -29,6 +29,7 @@ final class NotificationI18n
             'pt-br' => ["👀 Alguém acabou de chegar em {city}", "{name} acabou de chegar"],
             'pt-pt' => ["👀 Alguém acabou de chegar a {city}",  "{name} acabou de chegar"],
             'de'    => ["👀 Jemand ist gerade in {city} angekommen", "{name} ist gerade angekommen"],
+            'nl'    => ["👀 Er is net iemand aangekomen in {city}", "{name} is net aangekomen"],
         ],
         'new_event' => [
             'fr' => ["🔥 Nouvel événement à {city}", null],
@@ -38,6 +39,7 @@ final class NotificationI18n
             'pt-br' => ["🔥 Novo evento em {city}", null],
             'pt-pt' => ["🔥 Novo evento em {city}", null],
             'de'    => ["🔥 Neues Event in {city}", null],
+            'nl'    => ["🔥 Nieuw evenement in {city}", null],
         ],
         'channel_message' => [
             'fr' => ["{name} dans le chat de la ville", null],
@@ -47,6 +49,7 @@ final class NotificationI18n
             'pt-br' => ["{name} no chat da cidade",     null],
             'pt-pt' => ["{name} no chat da cidade",     null],
             'de'    => ["{name} im Stadt-Chat",         null],
+            'nl'    => ["{name} in de stadschat",        null],
         ],
         'event_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -56,6 +59,7 @@ final class NotificationI18n
             'pt-br' => ["{name} em {title}", null],
             'pt-pt' => ["{name} em {title}", null],
             'de'    => ["{name} in {title}", null],
+            'nl'    => ["{name} in {title}", null],
         ],
         'topic_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -65,6 +69,7 @@ final class NotificationI18n
             'pt-br' => ["{name} em {title}", null],
             'pt-pt' => ["{name} em {title}", null],
             'de'    => ["{name} in {title}", null],
+            'nl'    => ["{name} in {title}", null],
         ],
         'dm_message' => [
             'fr' => ["{name} t'a envoyé un message",          null],
@@ -74,6 +79,7 @@ final class NotificationI18n
             'pt-br' => ["{name} te enviou uma mensagem",      null],
             'pt-pt' => ["{name} enviou-te uma mensagem",      null],
             'de'    => ["{name} hat dir eine Nachricht geschickt", null],
+            'nl'    => ["{name} heeft je een bericht gestuurd",   null],
         ],
         'event_join' => [
             'fr' => ["👋 {name} a rejoint {title}",   null],
@@ -83,6 +89,7 @@ final class NotificationI18n
             'pt-br' => ["👋 {name} entrou em {title}",   null],
             'pt-pt' => ["👋 {name} juntou-se a {title}", null],
             'de'    => ["👋 {name} ist {title} beigetreten", null],
+            'nl'    => ["👋 {name} doet mee aan {title}",    null],
         ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
@@ -92,6 +99,7 @@ final class NotificationI18n
             'pt-br' => ["{name} te enviou um pedido de amizade",      null],
             'pt-pt' => ["{name} enviou-te um pedido de amizade",      null],
             'de'    => ["{name} hat dir eine Freundschaftsanfrage geschickt", null],
+            'nl'    => ["{name} heeft je een vriendschapsverzoek gestuurd",   null],
         ],
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami 🎉",            null],
@@ -101,6 +109,7 @@ final class NotificationI18n
             'pt-br' => ["{name} aceitou seu pedido de amizade 🎉",    null],
             'pt-pt' => ["{name} aceitou o teu pedido de amizade 🎉",   null],
             'de'    => ["{name} hat deine Freundschaftsanfrage angenommen 🎉", null],
+            'nl'    => ["{name} heeft je vriendschapsverzoek geaccepteerd 🎉", null],
         ],
         'vibe_received' => [
             'fr' => ["{name} t'a envoyé une vibe ✨",         null],
@@ -110,6 +119,7 @@ final class NotificationI18n
             'pt-br' => ["{name} te enviou uma vibe ✨",       null],
             'pt-pt' => ["{name} enviou-te uma vibe ✨",       null],
             'de'    => ["{name} hat dir eine vibe geschickt ✨", null],
+            'nl'    => ["{name} heeft je een vibe gestuurd ✨",  null],
         ],
         'profile_view' => [
             'fr' => ["👀 {name} a regardé ton profil",   null],
@@ -119,6 +129,7 @@ final class NotificationI18n
             'pt-br' => ["👀 {name} viu seu perfil",       null],
             'pt-pt' => ["👀 {name} viu o teu perfil",     null],
             'de'    => ["👀 {name} hat dein Profil angesehen", null],
+            'nl'    => ["👀 {name} heeft je profiel bekeken",  null],
         ],
         'join_request' => [
             'fr' => ["{name} veut rejoindre",  "{name} a demandé à rejoindre {title}"],
@@ -128,6 +139,7 @@ final class NotificationI18n
             'pt-br' => ["{name} quer entrar",       "{name} pediu para entrar em {title}"],
             'pt-pt' => ["{name} quer juntar-se",    "{name} pediu para se juntar a {title}"],
             'de'    => ["{name} möchte beitreten",  "{name} hat angefragt, {title} beizutreten"],
+            'nl'    => ["{name} wil meedoen",       "{name} heeft gevraagd om mee te doen aan {title}"],
         ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
@@ -137,6 +149,7 @@ final class NotificationI18n
             'pt-br' => ["Você entrou! 🎉",   "{name} adicionou você a {title}"],
             'pt-pt' => ["Já estás dentro! 🎉", "{name} adicionou-te a {title}"],
             'de'    => ["Du bist dabei! 🎉",  "{name} hat dich zu {title} hinzugefügt"],
+            'nl'    => ["Je bent erbij! 🎉",  "{name} heeft je toegevoegd aan {title}"],
         ],
     ];
 
@@ -169,6 +182,10 @@ final class NotificationI18n
         'de' => [
             'titled' => "{name} hat dich in {title} erwähnt",
             'city'   => "{name} hat dich im Stadt-Chat erwähnt",
+        ],
+        'nl' => [
+            'titled' => "{name} heeft je genoemd in {title}",
+            'city'   => "{name} heeft je genoemd in de stadschat",
         ],
     ];
 

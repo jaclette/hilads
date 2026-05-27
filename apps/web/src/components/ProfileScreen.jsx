@@ -60,6 +60,7 @@ const LANGS = [
   { code: 'pt-br', flag: '🇧🇷', name: 'Português (Brasil)'   },
   { code: 'pt-pt', flag: '🇵🇹', name: 'Português (Portugal)' },
   { code: 'de',    flag: '🇩🇪', name: 'Deutsch'    },
+  { code: 'nl',    flag: '🇳🇱', name: 'Nederlands' },
 ]
 
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {

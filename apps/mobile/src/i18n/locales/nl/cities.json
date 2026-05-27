@@ -1,0 +1,20 @@
+{
+  "title": "Stad wisselen",
+  "searchPlaceholder": "Zoek een stad…",
+  "topCities": "Meest actieve steden",
+  "cities": "Steden",
+  "filterActive": "🔥 Meest actief",
+  "filterEvents": "🎉 Meeste evenementen",
+  "filterOnline": "🟢 Meeste online",
+  "backToLocation": "Terug naar mijn locatie",
+  "youreHere": "je bent hier",
+  "online": "{{count}} online",
+  "events_one": "{{count}} evenement",
+  "events_other": "{{count}} evenementen",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} ber.",
+  "loadError": "Kon steden niet laden",
+  "noResults": "Geen stad gevonden voor \"{{query}}\"",
+  "noCities": "Geen steden gevonden"
+}

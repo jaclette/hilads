@@ -1,0 +1,15 @@
+{
+  "title": "Wat er gebeurd is",
+  "loadError": "Kon het archief niet laden",
+  "filterAll": "Alles",
+  "rangeRecent": "Recent",
+  "range7": "Laatste 7 dagen",
+  "range14": "Laatste 14 dagen",
+  "custom": "Aangepast",
+  "pickEnd": "Kies nu de einddag",
+  "pickStart": "Kies een begindag (tot {{max}} dagen)",
+  "apply": "Toepassen",
+  "emptyTitle": "Hier is nog niets",
+  "emptyRecentSub": "Voorbije evenementen en hangouts verschijnen hier zodra de stad wat geschiedenis heeft.",
+  "emptyWindowSub": "Geen evenementen of hangouts in dit venster. Probeer een ruimer bereik."
+}

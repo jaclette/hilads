@@ -1,0 +1,14 @@
+{
+  "title": "Wat eraan komt",
+  "openCalendar": "Kalender openen",
+  "today": "Vandaag",
+  "close": "Sluiten",
+  "error": "Kon de evenementen voor deze dag niet laden",
+  "retry": "Opnieuw proberen",
+  "emptyTitle": "Niets gepland",
+  "emptySub": "Nog geen evenementen op deze dag.",
+  "public": "Openbaar",
+  "going_one": "🙌 {{count}} deelnemer",
+  "going_other": "🙌 {{count}} deelnemers",
+  "liveNow": "🔥 Nu live"
+}

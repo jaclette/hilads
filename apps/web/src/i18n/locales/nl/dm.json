@@ -1,0 +1,41 @@
+{
+  "title": "Berichten",
+  "filters": { "all": "Alles", "dms": "Directe berichten", "events": "Evenementchats" },
+  "loading": "Laden…",
+  "error": {
+    "loadTitle": "Berichten konden niet worden geladen",
+    "loadSub": "Controleer je verbinding en probeer opnieuw."
+  },
+  "empty": {
+    "eventsTitle": "Nog geen evenementchats",
+    "eventsSub": "Maak een evenement of doe mee om te chatten met de deelnemers.",
+    "title": "Nog geen berichten",
+    "sub": "Kom in contact met mensen die je in de stad ontmoet."
+  },
+  "sectionDms": "Directe berichten",
+  "sectionEvents": "Evenementchats",
+  "youPrefix": "Jij: {{message}}",
+  "startConversation": "Begin het gesprek",
+  "eventCreated": "Jij hebt dit gemaakt",
+  "eventJoined": "Jij doet hieraan mee",
+  "prefs": {
+    "title": "Notificatievoorkeuren",
+    "dmName": "Nieuwe directe berichten",
+    "dmDesc": "Wanneer iemand je een privébericht stuurt",
+    "eventName": "Berichten in evenementchats",
+    "eventDesc": "Wanneer iemand een bericht stuurt in een evenement waaraan je meedoet",
+    "cityName": "Berichten in stadschat",
+    "cityDesc": "Wanneer iemand een bericht stuurt in het kanaal van je stad"
+  },
+  "thread": {
+    "loadError": "Berichten konden niet worden geladen.",
+    "beginning": "Begin van het gesprek",
+    "photo": "📷 Foto",
+    "unavailable": "Oorspronkelijk bericht niet beschikbaar",
+    "tapMaps": "Tik om te openen in Maps",
+    "composer": "Bericht…",
+    "imageType": "Kies een JPEG-, PNG- of WebP-afbeelding.",
+    "imageTooLarge": "Afbeelding te groot. Max. grootte: 10 MB.",
+    "imageSend": "Afbeelding versturen mislukt. Probeer opnieuw."
+  }
+}

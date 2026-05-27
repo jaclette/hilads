@@ -40,10 +40,11 @@ import it_ssr from '../src/i18n/locales/it/ssr.json' with { type: 'json' }
 import ptbr_ssr from '../src/i18n/locales/pt-br/ssr.json' with { type: 'json' }
 import ptpt_ssr from '../src/i18n/locales/pt-pt/ssr.json' with { type: 'json' }
 import de_ssr from '../src/i18n/locales/de/ssr.json' with { type: 'json' }
+import nl_ssr from '../src/i18n/locales/nl/ssr.json' with { type: 'json' }
 
-const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr, es: es_ssr, it: it_ssr, 'pt-br': ptbr_ssr, 'pt-pt': ptpt_ssr, de: de_ssr }
-const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN', es: 'es-ES', it: 'it-IT', 'pt-br': 'pt-BR', 'pt-pt': 'pt-PT', de: 'de-DE' }
-const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN', es: 'es_ES', it: 'it_IT', 'pt-br': 'pt_BR', 'pt-pt': 'pt_PT', de: 'de_DE' }
+const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr, es: es_ssr, it: it_ssr, 'pt-br': ptbr_ssr, 'pt-pt': ptpt_ssr, de: de_ssr, nl: nl_ssr }
+const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN', es: 'es-ES', it: 'it-IT', 'pt-br': 'pt-BR', 'pt-pt': 'pt-PT', de: 'de-DE', nl: 'nl-NL' }
+const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN', es: 'es_ES', it: 'it_IT', 'pt-br': 'pt_BR', 'pt-pt': 'pt_PT', de: 'de_DE', nl: 'nl_NL' }
 
 // '' for the default (English) locale; '/fr' | '/vi' otherwise. Used to keep SSR
 // internal links inside the localized cluster (mirrors the redirect/canonical prefixing).
@@ -1367,7 +1368,7 @@ function injectMeta(shell, meta, locale = 'en') {
 }
 
 // ── Locale (Option A: un-prefixed = English canonical; /fr, /vi additive) ─────
-const I18N_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de']
+const I18N_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl']
 
 function setHtmlLang(shell, locale) {
   return shell.replace(/<html\s+lang="[^"]*"/i, `<html lang="${locale}"`)

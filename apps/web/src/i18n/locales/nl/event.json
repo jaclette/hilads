@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "Mensen meenemen ✨",
+    "linkCopied": "Link gekopieerd ✨",
+    "vibeTitle": "Deel deze vibe",
+    "eventAria": "Evenement delen"
+  },
+  "title": { "edit": "Evenement bewerken", "host": "Organiseer een evenement", "create": "Evenement maken" },
+  "delete": {
+    "confirmTitle": "Dit evenement verwijderen?",
+    "confirmBody": "Hiermee verwijder je het evenement en alle berichten. Dit kan niet ongedaan worden gemaakt.",
+    "cancel": "Annuleren",
+    "deleting": "Verwijderen…",
+    "confirm": "Verwijderen",
+    "button": "🗑 Evenement verwijderen"
+  },
+  "quickStart": "Snel starten",
+  "presets": {
+    "dailySpot": "Dagelijkse spot", "dailySpotDesc": "Elke dag",
+    "everyEvening": "Elke avond", "everyEveningDesc": "Dagelijks · 20:00",
+    "weekends": "Weekenden", "weekendsDesc": "Za & zo"
+  },
+  "category": "Categorie",
+  "categories": {
+    "drinks": "Borrelen", "party": "Feest", "music": "Muziek", "food": "Eten",
+    "coffee": "Koffie", "sport": "Sport", "meetup": "Meetup", "other": "Overig"
+  },
+  "titleLabel": "Titel",
+  "titlePlaceholder": "bijv. Jazzavond op het dakterras",
+  "date": "Datum",
+  "today": "Vandaag",
+  "tomorrow": "Morgen",
+  "todayHint": "Vandaag organiseren geeft je de meeste zichtbaarheid 🔥",
+  "starts": "Begint",
+  "ends": "Eindigt",
+  "repeat": "Herhalen",
+  "recurrence": { "once": "Eenmalig", "daily": "Dagelijks", "weekly": "Wekelijks", "everyNDays": "Om de N dagen" },
+  "weekdays": ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"],
+  "intervalEvery": "Om de",
+  "intervalDays": "dagen",
+  "location": "Locatie",
+  "locating": "Je locatie ophalen…",
+  "locationPlaceholder": "Optioneel · tik om op de kaart te zetten",
+  "clearLocation": "Locatie wissen",
+  "errors": {
+    "endAfterStart": "De eindtijd moet minstens 15 minuten na de begintijd liggen",
+    "pickDay": "Kies minstens één dag van de week",
+    "deleteFailed": "Evenement verwijderen mislukt. Probeer opnieuw.",
+    "locUnavailable": "Locatie is niet beschikbaar in deze browser. Je kunt het evenement toch zonder maken.",
+    "locFailed": "Je locatie kon niet worden opgehaald. Schakel locatietoegang in of sla de kaart over."
+  },
+  "submit": {
+    "saving": "Opslaan…", "creating": "Maken…",
+    "saveChanges": "Wijzigingen opslaan", "openSpot": "Open je spot",
+    "startEvent": "Start een evenement", "create": "Evenement maken"
+  },
+  "recur": {"everyday":"Elke dag","weekly":"Wekelijks","everyNDays_one":"Om de {{count}} dag","everyNDays_other":"Om de {{count}} dagen"}
+}

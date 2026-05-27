@@ -1,0 +1,17 @@
+{
+  "loading": "Laden…",
+  "notFound": "Deze locatie staat niet op Hilads.",
+  "loadError": "Kon deze locatie niet laden. Probeer het opnieuw.",
+  "breadcrumb": "Broodkruimelpad",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Koffiebar"
+  },
+  "typeInCity": "{{category}} in {{city}}",
+  "address": "Adres",
+  "hours": "Openingstijden",
+  "openEveryDay": "Elke dag open · {{opens}} – {{closes}}",
+  "ctaText": "Kijk wie er nu in {{city}} in de buurt is.",
+  "openCity": "{{city}} openen",
+  "lastUpdated": "Laatst bijgewerkt {{date}}"
+}

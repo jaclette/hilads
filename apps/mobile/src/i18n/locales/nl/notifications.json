@@ -1,0 +1,30 @@
+{
+  "allTitle": "Alle meldingen",
+  "markAllRead": "Alles als gelezen markeren",
+  "emptyTitle": "Nog geen meldingen",
+  "emptySub": "Hier zie je berichten en updates over evenementen.",
+  "seeAll": "Alle meldingen bekijken",
+  "prefTitle": "MELDINGSVOORKEUREN",
+  "pref": {
+    "mentionLabel": "Vermeldingen @",
+    "mentionSub": "Wanneer iemand je @vermeldt in een bericht of hangout",
+    "eventJoinLabel": "Iemand doet mee aan je evenement",
+    "eventJoinSub": "Wanneer een nieuw persoon meedoet aan een evenement waar je naartoe gaat",
+    "newEventLabel": "Nieuwe evenementen in je stad",
+    "newEventSub": "Wanneer iemand een evenement maakt in je stad",
+    "cityJoinLabel": "Iemand arriveert in je stad",
+    "cityJoinSub": "Wanneer iemand meedoet aan het kanaal van jouw stad",
+    "friendLabel": "Vriendverzoeken",
+    "friendSub": "Wanneer iemand je een vriendverzoek stuurt of het jouwe accepteert",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "Wanneer iemand een vibe op je profiel achterlaat",
+    "profileViewLabel": "Profielweergaven 👀",
+    "profileViewSub": "Wanneer iemand je profiel bekijkt",
+    "topicReplyLabel": "Hangout-reacties 💬",
+    "topicReplySub": "Wanneer iemand reageert in een hangout waaraan je meedoet",
+    "newTopicLabel": "Nieuwe hangouts in je stad",
+    "newTopicSub": "Wanneer iemand een nieuwe hangout start in je stad",
+    "announceLabel": "Aankondigingen van Hilads",
+    "announceSub": "Af en toe updates van het team"
+  }
+}

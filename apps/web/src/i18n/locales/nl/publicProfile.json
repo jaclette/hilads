@@ -1,0 +1,83 @@
+{
+  "title": "Profiel",
+  "loading": "Laden…",
+  "loadError": "Kon profiel niet laden.",
+  "badgeMicro": {
+    "ghost": "Even rondkijken 👀",
+    "fresh": "Net geland 👶",
+    "regular": "Vaak van de partij",
+    "host": "Maakt het waar 🔥"
+  },
+  "modes": { "local": "Local", "exploring": "Verkennen" },
+  "vibes": {
+    "party": "Feest", "board_games": "Bordspellen", "coffee": "Koffie",
+    "music": "Muziek", "food": "Eten", "chill": "Chillen"
+  },
+  "vibeTaglines": {
+    "party": "Hier voor het nachtleven",
+    "board_games": "Neem snacks en dobbelstenen mee",
+    "coffee": "Eerst koffie, de rest komt later",
+    "music": "Altijd op jacht naar een goede beat",
+    "food": "Eerst eten, dan praten",
+    "chill": "Low key, high vibes"
+  },
+  "modeSub": {
+    "localIn": "Local in {{city}}",
+    "local": "Local",
+    "exploringIn": "{{city}} aan het verkennen",
+    "exploring": "Verkennen"
+  },
+  "from": "Uit",
+  "age": "Leeftijd",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Vrienden",
+    "vibes": "Vibes", "picks": "Tips uit de stad 👑"
+  },
+  "host": "Host",
+  "live": "LIVE",
+  "empty": { "hangouts": "Nog geen hangouts", "events": "Nog geen evenementen", "friends": "Nog geen vrienden" },
+  "vibesTab": {
+    "score": "{{score}} vibe-score",
+    "basedOn_one": "gebaseerd op {{count}} vibe",
+    "basedOn_other": "gebaseerd op {{count}} vibes",
+    "updateNote": "✏️ Je notitie bijwerken ({{rating}}★)",
+    "leaveNote": "⭐ Een notitie achterlaten",
+    "placeholder": "Zeg iets aardigs… (optioneel)",
+    "cancel": "Annuleren",
+    "sending": "Versturen…",
+    "sendNote": "Notitie versturen ✨",
+    "notesLabel": "Notities · {{count}}",
+    "emptyTitle": "Nog geen notities",
+    "emptySub": "Wees de eerste die een notitie achterlaat ✨"
+  },
+  "picks": {
+    "restaurant": "FAVORIETE RESTAURANT",
+    "spot": "VERBORGEN PARELTJE",
+    "tip": "LOKALE TIP",
+    "story": "VERHAAL"
+  },
+  "actions": {
+    "opening": "Openen…",
+    "message": "💬 Bericht",
+    "friend": "✓ Vriend",
+    "requestSent": "⌛ Verzoek verstuurd",
+    "acceptRequest": "✓ Verzoek accepteren",
+    "addFriend": "+ Vriend",
+    "removing": "Verwijderen…",
+    "unfriend": "Ontvrienden",
+    "cancel": "Annuleren",
+    "cancelling": "Annuleren…",
+    "cancelRequest": "Verzoek annuleren",
+    "keep": "Behouden",
+    "reportTitle": "Gebruiker melden"
+  },
+  "report": {
+    "existing": "Je hebt deze gebruiker op {{date}} gemeld. Je melding wordt bekeken.",
+    "sent": "Melding verstuurd. Bedankt voor het doorgeven.",
+    "placeholder": "Beschrijf het probleem (min. 10 tekens)…",
+    "error": "Kon melding niet versturen. Probeer het opnieuw.",
+    "sending": "Versturen…",
+    "submit": "Melding versturen",
+    "cancel": "Annuleren"
+  }
+}

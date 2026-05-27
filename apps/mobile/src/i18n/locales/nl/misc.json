@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "Vriendverzoeken",
+    "incoming": "Ontvangen",
+    "sent": "Verzonden",
+    "wantsToBeFriend": "wil je vriend zijn",
+    "requestSent": "verzoek verstuurd",
+    "decline": "Weigeren",
+    "accept": "Accepteren",
+    "cancel": "Annuleren",
+    "emptyIncomingTitle": "Nog geen vriendverzoeken",
+    "emptySentTitle": "Je hebt er nog geen verstuurd",
+    "emptyIncomingSub": "Wanneer iemand je als vriend wil toevoegen, zie je het hier.",
+    "emptySentSub": "Openstaande vriendverzoeken die je hebt verstuurd verschijnen hier."
+  },
+  "blocked": {
+    "title": "Geblokkeerde gebruikers",
+    "thisUser": "deze gebruiker",
+    "ghostName": "Geest",
+    "guest": "Gast",
+    "unblock": "Deblokkeren",
+    "unblockTitle": "{{name}} deblokkeren?",
+    "unblockBody": "{{name}} kan je content weer zien en weer contact met je opnemen.",
+    "unblockFailTitle": "Kon niet deblokkeren",
+    "unblockFailBody": "Probeer het opnieuw.",
+    "emptyTitle": "Je hebt niemand geblokkeerd",
+    "emptySub": "Geblokkeerde gebruikers zien jouw content niet, en jij niet die van hen."
+  }
+}

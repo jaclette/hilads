@@ -1,0 +1,22 @@
+{
+  "title": "Meldingen",
+  "markAllRead": "Alles als gelezen markeren",
+  "empty": { "title": "Alles bijgewerkt", "sub": "Meldingen verschijnen hier" },
+  "loading": "Laden…",
+  "seeAll": "Alle meldingen bekijken →",
+  "prefs": {
+    "title": "Meldingsvoorkeuren",
+    "mentionName": "Vermeldingen @",
+    "mentionDesc": "Wanneer iemand je @vermeldt in een bericht of hangout",
+    "newEventName": "Nieuwe evenementen in je stad",
+    "newEventDesc": "Wanneer iemand een evenement maakt in je stad",
+    "friendName": "Vriendschapsverzoeken",
+    "friendDesc": "Wanneer iemand je een vriendschapsverzoek stuurt of die van jou accepteert",
+    "notesName": "Notities ✨",
+    "notesDesc": "Wanneer iemand een notitie achterlaat op je profiel",
+    "profileViewName": "Profielweergaven 👀",
+    "profileViewDesc": "Wanneer iemand je profiel bekijkt",
+    "announcementName": "Aankondigingen van Hilads",
+    "announcementDesc": "Af en toe nieuws van het team"
+  }
+}
