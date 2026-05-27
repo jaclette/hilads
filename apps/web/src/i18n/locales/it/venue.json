@@ -1,0 +1,17 @@
+{
+  "loading": "Caricamento…",
+  "notFound": "Questo locale non è su Hilads.",
+  "loadError": "Impossibile caricare questo locale. Riprova.",
+  "breadcrumb": "Percorso di navigazione",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Caffetteria"
+  },
+  "typeInCity": "{{category}} a {{city}}",
+  "address": "Indirizzo",
+  "hours": "Orari",
+  "openEveryDay": "Aperto tutti i giorni · {{opens}} – {{closes}}",
+  "ctaText": "Guarda chi c'è intorno a te a {{city}} proprio ora.",
+  "openCity": "Apri {{city}}",
+  "lastUpdated": "Aggiornato il {{date}}"
+}

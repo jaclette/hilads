@@ -1,0 +1,14 @@
+{
+  "title": "In arrivo",
+  "openCalendar": "Apri il calendario",
+  "today": "Oggi",
+  "close": "Chiudi",
+  "error": "Impossibile caricare gli eventi di questo giorno",
+  "retry": "Riprova",
+  "emptyTitle": "Niente in programma",
+  "emptySub": "Ancora nessun evento in questo giorno.",
+  "public": "Pubblico",
+  "going_one": "🙌 {{count}} partecipante",
+  "going_other": "🙌 {{count}} partecipanti",
+  "liveNow": "🔥 In diretta"
+}

@@ -1,0 +1,6 @@
+{
+  "title": "In arrivo",
+  "loadError": "Impossibile caricare gli eventi di questo giorno",
+  "emptyTitle": "Niente in programma",
+  "emptySub": "Ancora nessun evento in questo giorno."
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Cosa è successo",
+  "loadError": "Impossibile caricare l'archivio",
+  "filterAll": "Tutto",
+  "rangeRecent": "Recenti",
+  "range7": "Ultimi 7 giorni",
+  "range14": "Ultimi 14 giorni",
+  "custom": "Personalizzato",
+  "pickEnd": "Ora scegli il giorno di fine",
+  "pickStart": "Scegli un giorno di inizio (fino a {{max}} giorni)",
+  "apply": "Applica",
+  "emptyTitle": "Ancora niente qui",
+  "emptyRecentSub": "Gli eventi e gli hangout passati appariranno qui quando la città avrà un po' di storia.",
+  "emptyWindowSub": "Nessun evento né hangout in questo periodo. Prova con un intervallo più ampio."
+}

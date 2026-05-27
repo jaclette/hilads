@@ -1,0 +1,30 @@
+{
+  "allTitle": "Tutte le notifiche",
+  "markAllRead": "Segna tutti come letti",
+  "emptyTitle": "Ancora nessuna notifica",
+  "emptySub": "Qui vedrai i messaggi e le novità sugli eventi.",
+  "seeAll": "Vedi tutte le notifiche",
+  "prefTitle": "PREFERENZE DI NOTIFICA",
+  "pref": {
+    "mentionLabel": "Menzioni @",
+    "mentionSub": "Quando qualcuno ti @menziona in un messaggio o in un hangout",
+    "eventJoinLabel": "Qualcuno partecipa al tuo evento",
+    "eventJoinSub": "Quando una nuova persona partecipa a un evento a cui vai",
+    "newEventLabel": "Nuovi eventi nella tua città",
+    "newEventSub": "Quando qualcuno crea un evento nella tua città",
+    "cityJoinLabel": "Qualcuno arriva nella tua città",
+    "cityJoinSub": "Quando qualcuno entra nel canale della tua città",
+    "friendLabel": "Richieste di amicizia",
+    "friendSub": "Quando qualcuno ti invia una richiesta di amicizia o accetta la tua",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "Quando qualcuno lascia una vibe sul tuo profilo",
+    "profileViewLabel": "Visite al tuo profilo 👀",
+    "profileViewSub": "Quando qualcuno guarda il tuo profilo",
+    "topicReplyLabel": "Risposte dell'hangout 💬",
+    "topicReplySub": "Quando qualcuno risponde in un hangout a cui partecipi",
+    "newTopicLabel": "Nuovi hangout nella tua città",
+    "newTopicSub": "Quando qualcuno lancia un nuovo hangout nella tua città",
+    "announceLabel": "Annunci da Hilads",
+    "announceSub": "Novità occasionali dal team"
+  }
+}

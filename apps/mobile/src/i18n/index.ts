@@ -71,8 +71,24 @@ import es_misc    from './locales/es/misc.json';
 import es_cities  from './locales/es/cities.json';
 import es_upcoming from './locales/es/upcoming.json';
 import es_archive from './locales/es/archive.json';
+import it_common  from './locales/it/common.json';
+import it_auth    from './locales/it/auth.json';
+import it_landing from './locales/it/landing.json';
+import it_here    from './locales/it/here.json';
+import it_now     from './locales/it/now.json';
+import it_chat    from './locales/it/chat.json';
+import it_event   from './locales/it/event.json';
+import it_hangout from './locales/it/hangout.json';
+import it_dm      from './locales/it/dm.json';
+import it_notifications from './locales/it/notifications.json';
+import it_publicProfile from './locales/it/publicProfile.json';
+import it_me      from './locales/it/me.json';
+import it_misc    from './locales/it/misc.json';
+import it_cities  from './locales/it/cities.json';
+import it_upcoming from './locales/it/upcoming.json';
+import it_archive from './locales/it/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -84,6 +100,7 @@ const resources = {
   fr: { common: fr_common, auth: fr_auth, landing: fr_landing, here: fr_here, now: fr_now, chat: fr_chat, event: fr_event, hangout: fr_hangout, dm: fr_dm, notifications: fr_notifications, publicProfile: fr_publicProfile, me: fr_me, misc: fr_misc, cities: fr_cities, upcoming: fr_upcoming, archive: fr_archive },
   vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now, chat: vi_chat, event: vi_event, hangout: vi_hangout, dm: vi_dm, notifications: vi_notifications, publicProfile: vi_publicProfile, me: vi_me, misc: vi_misc, cities: vi_cities, upcoming: vi_upcoming, archive: vi_archive },
   es: { common: es_common, auth: es_auth, landing: es_landing, here: es_here, now: es_now, chat: es_chat, event: es_event, hangout: es_hangout, dm: es_dm, notifications: es_notifications, publicProfile: es_publicProfile, me: es_me, misc: es_misc, cities: es_cities, upcoming: es_upcoming, archive: es_archive },
+  it: { common: it_common, auth: it_auth, landing: it_landing, here: it_here, now: it_now, chat: it_chat, event: it_event, hangout: it_hangout, dm: it_dm, notifications: it_notifications, publicProfile: it_publicProfile, me: it_me, misc: it_misc, cities: it_cities, upcoming: it_upcoming, archive: it_archive },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {

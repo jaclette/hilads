@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "Lancia un hangout",
+    "editTitle": "Modifica l'hangout",
+    "category": "Categoria",
+    "cat": { "general": "Generale", "tips": "Consigli", "food": "Cibo", "drinks": "Drink", "help": "Aiuto", "meetup": "Incontro" },
+    "titleLabel": "A cosa stai pensando?",
+    "titlePlaceholder": "es. Miglior posto per il caffè in zona?",
+    "detailsLabel": "Aggiungi dettagli",
+    "optional": "(facoltativo)",
+    "detailsPlaceholder": "Dai un po' di contesto…",
+    "expiry": "⏱ Scade tra 24 h",
+    "saving": "Salvataggio…",
+    "starting": "Avvio…",
+    "saveChanges": "Salva",
+    "startCta": "Lancia un hangout ⚡",
+    "limitHeader": "Uno alla volta",
+    "limitTitle": "Hai già un hangout",
+    "limitSub": "Puoi avere un solo hangout alla volta. Vai su «{{title}}» o eliminalo per lanciarne uno nuovo.",
+    "limitGo": "Vai al mio hangout →",
+    "yourHangout": "il tuo hangout"
+  },
+  "deleteConfirm": "Eliminare questo hangout? Questo lo termina per tutti ed è irreversibile.",
+  "deleteFailedAlert": "Impossibile eliminare. Riprova.",
+  "shareAria": "Condividi l'hangout",
+  "shareTitle": "Condividi questo hangout",
+  "members": {
+    "oneIn": "{{name}} partecipa",
+    "countIn": "{{count}} in questo hangout",
+    "seeAll": "Vedi tutto →"
+  },
+  "owner": { "edit": "✏️ Modifica", "delete": "🗑 Elimina" },
+  "gated": {
+    "title": "Hangout solo per membri",
+    "pending": "Richiesta in sospeso — potrai partecipare alla conversazione non appena un membro accetta.",
+    "prompt": "Chiedi di partecipare per vedere la conversazione e chattare.",
+    "requestBtn": "Chiedi di partecipare"
+  },
+  "feed": {
+    "beginning": "Inizio della conversazione",
+    "loading": "Caricamento…",
+    "emptyTitle": "Ancora nessuna risposta",
+    "emptySub": "Sii il primo a buttarti"
+  },
+  "joinReq": {
+    "someone": "Qualcuno",
+    "wantsToJoin": " vuole partecipare",
+    "joined": " ha partecipato all'hangout",
+    "askedToJoin": " ha chiesto di partecipare",
+    "decline": "Rifiuta",
+    "accept": "Accetta",
+    "accepted": "Accettato",
+    "acceptedBy": "Accettato da {{name}}",
+    "declined": "Richiesta rifiutata"
+  },
+  "modes": { "local": "Locale", "exploring": "In esplorazione" },
+  "reply": { "photo": "📷 Foto", "unavailable": "Messaggio originale non disponibile" },
+  "composer": { "reply": "Rispondi alla conversazione…", "start": "Anima il vibe ✨" },
+  "errors": {
+    "locFailed": "Impossibile ottenere la tua posizione. Attiva l'accesso alla posizione e riprova.",
+    "imageType": "Seleziona un'immagine JPEG, PNG o WebP.",
+    "imageTooLarge": "Immagine troppo grande. Max 10 MB.",
+    "imageSend": "Impossibile inviare l'immagine. Riprova.",
+    "dismiss": "{{error}} · tocca per chiudere"
+  }
+}

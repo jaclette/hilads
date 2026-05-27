@@ -1,0 +1,83 @@
+{
+  "title": "Profilo",
+  "loading": "Caricamento…",
+  "loadError": "Impossibile caricare il profilo.",
+  "badgeMicro": {
+    "ghost": "Solo di passaggio 👀",
+    "fresh": "Appena arrivato 👶",
+    "regular": "Spesso da queste parti",
+    "host": "Fa succedere le cose 🔥"
+  },
+  "modes": { "local": "Local", "exploring": "In esplorazione" },
+  "vibes": {
+    "party": "Festa", "board_games": "Giochi da tavolo", "coffee": "Caffè",
+    "music": "Musica", "food": "Cibo", "chill": "Relax"
+  },
+  "vibeTaglines": {
+    "party": "Qui per la vita notturna",
+    "board_games": "Porta snack e dadi",
+    "coffee": "Prima il caffè, il resto dopo",
+    "music": "Sempre a caccia di un bel ritmo",
+    "food": "Prima si mangia, poi si parla",
+    "chill": "Tranquillo, buone vibes"
+  },
+  "modeSub": {
+    "localIn": "Local a {{city}}",
+    "local": "Local",
+    "exploringIn": "In esplorazione a {{city}}",
+    "exploring": "In esplorazione"
+  },
+  "from": "Da",
+  "age": "Età",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Amici",
+    "vibes": "Vibes", "picks": "Consigli 👑"
+  },
+  "host": "Host",
+  "live": "IN DIRETTA",
+  "empty": { "hangouts": "Ancora nessun hangout", "events": "Ancora nessun evento", "friends": "Ancora nessun amico" },
+  "vibesTab": {
+    "score": "punteggio vibe di {{score}}",
+    "basedOn_one": "basato su {{count}} vibe",
+    "basedOn_other": "basato su {{count}} vibes",
+    "updateNote": "✏️ Modifica la tua nota ({{rating}}★)",
+    "leaveNote": "⭐ Lascia una nota",
+    "placeholder": "Di' qualcosa di carino… (facoltativo)",
+    "cancel": "Annulla",
+    "sending": "Invio in corso…",
+    "sendNote": "Invia la nota ✨",
+    "notesLabel": "Note · {{count}}",
+    "emptyTitle": "Ancora nessuna nota",
+    "emptySub": "Sii il primo a lasciare una nota ✨"
+  },
+  "picks": {
+    "restaurant": "RISTORANTE PREFERITO",
+    "spot": "GEMMA NASCOSTA",
+    "tip": "CONSIGLIO LOCALE",
+    "story": "STORIA"
+  },
+  "actions": {
+    "opening": "Apertura…",
+    "message": "💬 Messaggio",
+    "friend": "✓ Amico",
+    "requestSent": "⌛ Richiesta inviata",
+    "acceptRequest": "✓ Accetta la richiesta",
+    "addFriend": "+ Amico",
+    "removing": "Rimozione…",
+    "unfriend": "Rimuovi",
+    "cancel": "Annulla",
+    "cancelling": "Annullamento…",
+    "cancelRequest": "Annulla la richiesta",
+    "keep": "Mantieni",
+    "reportTitle": "Segnala l'utente"
+  },
+  "report": {
+    "existing": "Hai segnalato questo utente il {{date}}. La tua segnalazione è in fase di revisione.",
+    "sent": "Segnalazione inviata. Grazie per avercelo fatto sapere.",
+    "placeholder": "Descrivi il problema (min. 10 caratteri)…",
+    "error": "Impossibile inviare la segnalazione. Riprova.",
+    "sending": "Invio in corso…",
+    "submit": "Invia la segnalazione",
+    "cancel": "Annulla"
+  }
+}

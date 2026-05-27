@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "sub": "La città è viva intorno a te.\nTrova persone, partecipa a ciò che c'è, o apri il tuo spot."
+  },
+  "join": {
+    "peopleLive_one": "🔥 {{count}} persona in giro proprio ora",
+    "peopleLive_other": "🔥 {{count}} persone in giro proprio ora",
+    "events_one": "🔥 {{count}} evento in corso",
+    "events_other": "🔥 {{count}} eventi in corso",
+    "hangouts_one": "🗣️ {{count}} hangout attivo",
+    "hangouts_other": "🗣️ {{count}} hangouts attivi",
+    "replies_one": "{{count}} risposta",
+    "replies_other": "{{count}} risposte",
+    "pickCity": "Scegli una città\ne partecipa",
+    "locating": "› localizzazione della tua città...",
+    "browseCities": "Esplora le città →",
+    "yourName": "Il tuo nome",
+    "namePlaceholder": "Saluta come...",
+    "tryAgain": "Riprova",
+    "useLocation": "Usa la mia posizione",
+    "joinCity": "Partecipa a {{city}} →",
+    "joinChat": "Partecipa alla chat →",
+    "hint": "// anonimo · accesso immediato",
+    "keepIdentity": "o conserva la tua identità",
+    "createAccount": "✨ Crea un account",
+    "logIn": "Accedi",
+    "authHint": "Conserva il tuo nome · sblocca i profili · aggiungi amici"
+  },
+  "local": {
+    "badge": "🌍 Locale",
+    "title": "Fai succedere le cose",
+    "tagline": "Conosci i posti migliori. Ora condividili.",
+    "bullets": [
+      "Organizza eventi ricorrenti nei tuoi spot preferiti",
+      "Porta le persone nei posti che ami",
+      "Diventa il motivo per cui la gente esce"
+    ],
+    "cta": "Apri il tuo spot"
+  },
+  "exploring": {
+    "badge": "🧭 In esplorazione",
+    "title": "Trova momenti veri in qualsiasi città",
+    "tagline": "Ovunque tu arrivi, trova la tua gente.",
+    "bullets": [
+      "Trova eventi in tempo reale vicino a te",
+      "Conosci locali e altri esploratori all'istante",
+      "Evita le trappole per turisti. Scopri la città vera."
+    ],
+    "cta": "Guarda cosa succede"
+  },
+  "how": {
+    "eyebrow": "Come funziona",
+    "title": "Tre passi per conoscere persone vicino a te.",
+    "steps": [
+      { "title": "Apri l'app", "desc": "Guarda chi è intorno a te e cosa succede vicino a te, adesso." },
+      { "title": "Scegli la tua modalità", "desc": "Locale. Conosci la città.\nIn esplorazione. Vuoi sentirla." },
+      { "title": "Buttati", "desc": "Partecipa a un evento o apri il tuo spot. La vita vera inizia qui." }
+    ]
+  },
+  "stats": {
+    "peopleLive": "persone online ora",
+    "cities": "città",
+    "eventsCreated": "eventi creati",
+    "signupsNeeded": "registrazioni necessarie"
+  },
+  "concept": {
+    "title": "Non un altro social network.\nLa tua città, in diretta.",
+    "rules": [
+      "Niente follower. Niente feed. Niente algoritmi.",
+      "Guarda chi è in giro. Partecipa a ciò che succede vicino a te.",
+      "Persone vere. Posti veri. Proprio ora."
+    ]
+  },
+  "seo": "Hilads è un'app social in tempo reale che ti aiuta a conoscere persone vicine e a scoprire cosa fare nella tua città. Trova eventi vicino a te, conosci la gente del posto e connettiti con i viaggiatori ovunque tu sia. Cerchi cosa fare a Parigi? Vuoi conoscere la gente del posto a Barcellona? Stai esplorando Lisbona e vuoi sapere cosa succede stasera? Hilads ti mostra la città, in diretta. Non serve un account. Basta presentarsi.",
+  "download": {
+    "eyebrow": "App mobile",
+    "title": "La tua città in tasca.",
+    "sub": "App native in arrivo."
+  },
+  "repeat": {
+    "eyebrow": "Buttati",
+    "titleCity": "{{city}} è in diretta proprio ora.",
+    "titleGeneric": "La tua città è in diretta proprio ora."
+  }
+}

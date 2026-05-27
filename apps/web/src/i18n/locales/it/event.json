@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "Invita gente ✨",
+    "linkCopied": "Link copiato ✨",
+    "vibeTitle": "Condividi questo vibe",
+    "eventAria": "Condividi l'evento"
+  },
+  "title": { "edit": "Modifica l'evento", "host": "Organizza un evento", "create": "Crea un evento" },
+  "delete": {
+    "confirmTitle": "Eliminare questo evento?",
+    "confirmBody": "Questo rimuoverà l'evento e tutti i messaggi. È irreversibile.",
+    "cancel": "Annulla",
+    "deleting": "Eliminazione…",
+    "confirm": "Elimina",
+    "button": "🗑 Elimina l'evento"
+  },
+  "quickStart": "Avvio rapido",
+  "presets": {
+    "dailySpot": "Spot quotidiano", "dailySpotDesc": "Tutti i giorni",
+    "everyEvening": "Ogni sera", "everyEveningDesc": "Ogni giorno · 20:00",
+    "weekends": "Weekend", "weekendsDesc": "Sab e dom"
+  },
+  "category": "Categoria",
+  "categories": {
+    "drinks": "Drink", "party": "Festa", "music": "Musica", "food": "Cibo",
+    "coffee": "Caffè", "sport": "Sport", "meetup": "Incontro", "other": "Altro"
+  },
+  "titleLabel": "Titolo",
+  "titlePlaceholder": "es. Serata jazz al Rooftop Bar",
+  "date": "Data",
+  "today": "Oggi",
+  "tomorrow": "Domani",
+  "todayHint": "Organizzare oggi ti dà la massima visibilità 🔥",
+  "starts": "Inizio",
+  "ends": "Fine",
+  "repeat": "Ripeti",
+  "recurrence": { "once": "Una volta", "daily": "Ogni giorno", "weekly": "Ogni settimana", "everyNDays": "Ogni N giorni" },
+  "weekdays": ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"],
+  "intervalEvery": "Ogni",
+  "intervalDays": "giorni",
+  "location": "Luogo",
+  "locating": "Recupero della tua posizione…",
+  "locationPlaceholder": "Opzionale · tocca per impostarlo sulla mappa",
+  "clearLocation": "Cancella il luogo",
+  "errors": {
+    "endAfterStart": "L'ora di fine deve essere almeno 15 minuti dopo l'inizio",
+    "pickDay": "Scegli almeno un giorno della settimana",
+    "deleteFailed": "Impossibile eliminare l'evento. Riprova.",
+    "locUnavailable": "La posizione non è disponibile in questo browser. Puoi comunque creare l'evento senza di essa.",
+    "locFailed": "Impossibile ottenere la tua posizione. Attiva l'accesso alla posizione o salta la mappa."
+  },
+  "submit": {
+    "saving": "Salvataggio…", "creating": "Creazione…",
+    "saveChanges": "Salva", "openSpot": "Apri il tuo spot",
+    "startEvent": "Lancia un evento", "create": "Crea un evento"
+  },
+  "recur": {"everyday":"Ogni giorno","weekly":"Ogni settimana","everyNDays_one":"Ogni {{count}} giorno","everyNDays_other":"Ogni {{count}} giorni"}
+}
