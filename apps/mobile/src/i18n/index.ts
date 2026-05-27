@@ -279,8 +279,24 @@ import hi_misc    from './locales/hi/misc.json';
 import hi_cities  from './locales/hi/cities.json';
 import hi_upcoming from './locales/hi/upcoming.json';
 import hi_archive from './locales/hi/archive.json';
+import ru_common  from './locales/ru/common.json';
+import ru_auth    from './locales/ru/auth.json';
+import ru_landing from './locales/ru/landing.json';
+import ru_here    from './locales/ru/here.json';
+import ru_now     from './locales/ru/now.json';
+import ru_chat    from './locales/ru/chat.json';
+import ru_event   from './locales/ru/event.json';
+import ru_hangout from './locales/ru/hangout.json';
+import ru_dm      from './locales/ru/dm.json';
+import ru_notifications from './locales/ru/notifications.json';
+import ru_publicProfile from './locales/ru/publicProfile.json';
+import ru_me      from './locales/ru/me.json';
+import ru_misc    from './locales/ru/misc.json';
+import ru_cities  from './locales/ru/cities.json';
+import ru_upcoming from './locales/ru/upcoming.json';
+import ru_archive from './locales/ru/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -305,6 +321,7 @@ const resources = {
   th: { common: th_common, auth: th_auth, landing: th_landing, here: th_here, now: th_now, chat: th_chat, event: th_event, hangout: th_hangout, dm: th_dm, notifications: th_notifications, publicProfile: th_publicProfile, me: th_me, misc: th_misc, cities: th_cities, upcoming: th_upcoming, archive: th_archive },
   id: { common: id_common, auth: id_auth, landing: id_landing, here: id_here, now: id_now, chat: id_chat, event: id_event, hangout: id_hangout, dm: id_dm, notifications: id_notifications, publicProfile: id_publicProfile, me: id_me, misc: id_misc, cities: id_cities, upcoming: id_upcoming, archive: id_archive },
   hi: { common: hi_common, auth: hi_auth, landing: hi_landing, here: hi_here, now: hi_now, chat: hi_chat, event: hi_event, hangout: hi_hangout, dm: hi_dm, notifications: hi_notifications, publicProfile: hi_publicProfile, me: hi_me, misc: hi_misc, cities: hi_cities, upcoming: hi_upcoming, archive: hi_archive },
+  ru: { common: ru_common, auth: ru_auth, landing: ru_landing, here: ru_here, now: ru_now, chat: ru_chat, event: ru_event, hangout: ru_hangout, dm: ru_dm, notifications: ru_notifications, publicProfile: ru_publicProfile, me: ru_me, misc: ru_misc, cities: ru_cities, upcoming: ru_upcoming, archive: ru_archive },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {

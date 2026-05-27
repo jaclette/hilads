@@ -10,13 +10,13 @@ declare(strict_types=1);
  * the case for English/unknown locales and for any field we don't translate
  * (message previews and proper nouns like event/venue/city names stay as-is).
  *
- * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant/ja/ko/fil/th/id/hi are translated; English is the source of truth in the call sites.
+ * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant/ja/ko/fil/th/id/hi/ru are translated; English is the source of truth in the call sites.
  * Conventions (match the app i18n rules): "tu" form; the brand word "vibe"
  * stays English.
  */
 final class NotificationI18n
 {
-    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi'];
+    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru'];
 
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
@@ -38,6 +38,7 @@ final class NotificationI18n
             'th'      => ["👀 มีคนเพิ่งมาถึง {city}", "{name} เพิ่งมาถึง"],
             'id'      => ["👀 Ada yang baru tiba di {city}", "{name} baru saja tiba"],
             'hi'      => ["👀 {city} में कोई अभी-अभी पहुंचा", "{name} अभी-अभी पहुंचे"],
+            'ru'      => ["👀 Кто-то только что прибыл в {city}", "{name} только что прибыл"],
         ],
         'new_event' => [
             'fr' => ["🔥 Nouvel événement à {city}", null],
@@ -56,6 +57,7 @@ final class NotificationI18n
             'th'      => ["🔥 มีกิจกรรมใหม่ใน {city}", null],
             'id'      => ["🔥 Ada acara baru di {city}", null],
             'hi'      => ["🔥 {city} में नया इवेंट", null],
+            'ru'      => ["🔥 Новое событие в {city}", null],
         ],
         'channel_message' => [
             'fr' => ["{name} dans le chat de la ville", null],
@@ -74,6 +76,7 @@ final class NotificationI18n
             'th'      => ["{name} ในแชทเมือง",              null],
             'id'      => ["{name} di obrolan kota",          null],
             'hi'      => ["{name} सिटी चैट में",              null],
+            'ru'      => ["{name} в чате города",            null],
         ],
         'event_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -92,6 +95,7 @@ final class NotificationI18n
             'th'      => ["{name} ใน {title}", null],
             'id'      => ["{name} di {title}", null],
             'hi'      => ["{name} {title} में", null],
+            'ru'      => ["{name} в {title}", null],
         ],
         'topic_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -110,6 +114,7 @@ final class NotificationI18n
             'th'      => ["{name} ใน {title}", null],
             'id'      => ["{name} di {title}", null],
             'hi'      => ["{name} {title} में", null],
+            'ru'      => ["{name} в {title}", null],
         ],
         'dm_message' => [
             'fr' => ["{name} t'a envoyé un message",          null],
@@ -128,6 +133,7 @@ final class NotificationI18n
             'th'      => ["{name} ส่งข้อความถึงคุณ",               null],
             'id'      => ["{name} mengirimimu pesan",            null],
             'hi'      => ["{name} ने आपको मैसेज भेजा",            null],
+            'ru'      => ["{name} отправил тебе сообщение",      null],
         ],
         'event_join' => [
             'fr' => ["👋 {name} a rejoint {title}",   null],
@@ -146,6 +152,7 @@ final class NotificationI18n
             'th'      => ["👋 {name} เข้าร่วม {title} แล้ว",      null],
             'id'      => ["👋 {name} bergabung ke {title}",     null],
             'hi'      => ["👋 {name} {title} में शामिल हुए",     null],
+            'ru'      => ["👋 {name} присоединился к {title}",  null],
         ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
@@ -164,6 +171,7 @@ final class NotificationI18n
             'th'      => ["{name} ส่งคำขอเป็นเพื่อนถึงคุณ",                   null],
             'id'      => ["{name} mengirimimu permintaan pertemanan",        null],
             'hi'      => ["{name} ने आपको फ्रेंड रिक्वेस्ट भेजी",              null],
+            'ru'      => ["{name} отправил тебе заявку в друзья",            null],
         ],
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami 🎉",            null],
@@ -182,6 +190,7 @@ final class NotificationI18n
             'th'      => ["{name} ตอบรับคำขอเป็นเพื่อนของคุณแล้ว 🎉",         null],
             'id'      => ["{name} menerima permintaan pertemananmu 🎉",      null],
             'hi'      => ["{name} ने आपकी फ्रेंड रिक्वेस्ट स्वीकार की 🎉",       null],
+            'ru'      => ["{name} принял твою заявку в друзья 🎉",            null],
         ],
         'vibe_received' => [
             'fr' => ["{name} t'a envoyé une vibe ✨",         null],
@@ -200,6 +209,7 @@ final class NotificationI18n
             'th'      => ["{name} ส่ง vibe ถึงคุณ ✨",             null],
             'id'      => ["{name} mengirimimu vibe ✨",           null],
             'hi'      => ["{name} ने आपको vibe भेजा ✨",          null],
+            'ru'      => ["{name} отправил тебе vibe ✨",         null],
         ],
         'profile_view' => [
             'fr' => ["👀 {name} a regardé ton profil",   null],
@@ -218,6 +228,7 @@ final class NotificationI18n
             'th'      => ["👀 {name} ดูโปรไฟล์ของคุณ", null],
             'id'      => ["👀 {name} melihat profilmu", null],
             'hi'      => ["👀 {name} ने आपकी प्रोफ़ाइल देखी", null],
+            'ru'      => ["👀 {name} посмотрел твой профиль", null],
         ],
         'join_request' => [
             'fr' => ["{name} veut rejoindre",  "{name} a demandé à rejoindre {title}"],
@@ -236,6 +247,7 @@ final class NotificationI18n
             'th'      => ["{name} อยากเข้าร่วม",          "{name} ขอเข้าร่วม {title}"],
             'id'      => ["{name} ingin bergabung",      "{name} meminta untuk bergabung ke {title}"],
             'hi'      => ["{name} शामिल होना चाहते हैं",   "{name} ने {title} में शामिल होने का अनुरोध किया"],
+            'ru'      => ["{name} хочет присоединиться", "{name} запросил присоединение к {title}"],
         ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
@@ -254,6 +266,7 @@ final class NotificationI18n
             'th'      => ["เข้าร่วมแล้ว! 🎉", "{name} เพิ่มคุณเข้า {title}"],
             'id'      => ["Kamu sudah gabung! 🎉", "{name} menambahkanmu ke {title}"],
             'hi'      => ["आप शामिल हो गए! 🎉", "{name} ने आपको {title} में जोड़ा"],
+            'ru'      => ["Ты в деле! 🎉", "{name} добавил тебя в {title}"],
         ],
     ];
 
@@ -322,6 +335,10 @@ final class NotificationI18n
         'hi' => [
             'titled' => "{name} ने आपको {title} में मेंशन किया",
             'city'   => "{name} ने आपको सिटी चैट में मेंशन किया",
+        ],
+        'ru' => [
+            'titled' => "{name} упомянул тебя в {title}",
+            'city'   => "{name} упомянул тебя в чате города",
         ],
     ];
 

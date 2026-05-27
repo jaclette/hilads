@@ -1,0 +1,85 @@
+{
+  "title": "Профиль",
+  "loading": "Загрузка…",
+  "loadError": "Не удалось загрузить профиль.",
+  "badgeMicro": {
+    "ghost": "Просто смотрю 👀",
+    "fresh": "Только приехал 👶",
+    "regular": "Часто бывает здесь",
+    "host": "Делает движ 🔥"
+  },
+  "modes": { "local": "Местный", "exploring": "Исследую" },
+  "vibes": {
+    "party": "Вечеринка", "board_games": "Настолки", "coffee": "Кофе",
+    "music": "Музыка", "food": "Еда", "chill": "Чилл"
+  },
+  "vibeTaglines": {
+    "party": "Здесь ради ночной жизни",
+    "board_games": "Захвати снеки и кубики",
+    "coffee": "Сначала кофе, всё остальное потом",
+    "music": "Всегда в поиске хорошего бита",
+    "food": "Сначала едим, потом вопросы",
+    "chill": "Тихо, но с настроением"
+  },
+  "modeSub": {
+    "localIn": "Местный в городе {{city}}",
+    "local": "Местный",
+    "exploringIn": "Исследую {{city}}",
+    "exploring": "Исследую"
+  },
+  "from": "Из",
+  "age": "Возраст",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Друзья",
+    "vibes": "Vibes", "picks": "Рекомендации 👑"
+  },
+  "host": "Организатор",
+  "live": "В ЭФИРЕ",
+  "empty": { "hangouts": "Пока нет hangouts", "events": "Пока нет событий", "friends": "Пока нет друзей" },
+  "vibesTab": {
+    "score": "vibe-рейтинг {{score}}",
+    "basedOn_one": "на основе {{count}} vibe",
+    "basedOn_few": "на основе {{count}} vibes",
+    "basedOn_many": "на основе {{count}} vibes",
+    "basedOn_other": "на основе {{count}} vibes",
+    "updateNote": "✏️ Изменить заметку ({{rating}}★)",
+    "leaveNote": "⭐ Оставить заметку",
+    "placeholder": "Скажи что-нибудь приятное… (по желанию)",
+    "cancel": "Отмена",
+    "sending": "Отправка…",
+    "sendNote": "Отправить заметку ✨",
+    "notesLabel": "Заметки · {{count}}",
+    "emptyTitle": "Пока нет заметок",
+    "emptySub": "Оставь заметку первым ✨"
+  },
+  "picks": {
+    "restaurant": "ЛЮБИМЫЙ РЕСТОРАН",
+    "spot": "СКРЫТАЯ ЖЕМЧУЖИНА",
+    "tip": "СОВЕТ МЕСТНОГО",
+    "story": "ИСТОРИЯ"
+  },
+  "actions": {
+    "opening": "Открываю…",
+    "message": "💬 Сообщение",
+    "friend": "✓ Друг",
+    "requestSent": "⌛ Запрос отправлен",
+    "acceptRequest": "✓ Принять запрос",
+    "addFriend": "+ Друг",
+    "removing": "Удаляю…",
+    "unfriend": "Удалить из друзей",
+    "cancel": "Отмена",
+    "cancelling": "Отмена…",
+    "cancelRequest": "Отменить запрос",
+    "keep": "Оставить",
+    "reportTitle": "Пожаловаться на пользователя"
+  },
+  "report": {
+    "existing": "Ты пожаловался на этого пользователя {{date}}. Твоя жалоба на рассмотрении.",
+    "sent": "Жалоба отправлена. Спасибо, что сообщил.",
+    "placeholder": "Опиши проблему (минимум 10 символов)…",
+    "error": "Не удалось отправить жалобу. Попробуй ещё раз.",
+    "sending": "Отправка…",
+    "submit": "Отправить жалобу",
+    "cancel": "Отмена"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "loading": "Загрузка…",
+  "notFound": "Этого места нет на Hilads.",
+  "loadError": "Не удалось загрузить это место. Попробуй ещё раз.",
+  "breadcrumb": "Навигация",
+  "category": {
+    "bar": "Бар / паб",
+    "cafe": "Кофейня"
+  },
+  "typeInCity": "{{category}} в городе {{city}}",
+  "address": "Адрес",
+  "hours": "Часы работы",
+  "openEveryDay": "Открыто каждый день · {{opens}} – {{closes}}",
+  "ctaText": "Посмотри, кто сейчас рядом в городе {{city}}.",
+  "openCity": "Открыть {{city}}",
+  "lastUpdated": "Обновлено {{date}}"
+}

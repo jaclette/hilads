@@ -1,0 +1,52 @@
+{
+  "language": "Язык",
+  "cancel": "Отмена",
+  "loading": "Загрузка…",
+  "mode": {
+    "local": { "label": "Местный" },
+    "exploring": { "label": "Исследую" }
+  },
+  "composer": {
+    "attach": "Добавить вложение",
+    "emoji": "Эмодзи"
+  },
+  "vibe": {
+    "party": "Вечеринка",
+    "board_games": "Настолки",
+    "coffee": "Кофе",
+    "music": "Музыка",
+    "food": "Еда",
+    "chill": "Чилл"
+  },
+  "weather": {
+    "clear": "ясное небо",
+    "sunnyHot": "отличная погода",
+    "clearNight": "ясная ночь",
+    "mostlyClear": "малооблачно",
+    "partly": "немного облаков",
+    "overcast": "серое небо",
+    "fog": "туман",
+    "drizzle": "лёгкая морось",
+    "rain": "дождь",
+    "snow": "снег",
+    "snowShowers": "снегопад",
+    "thunder": "гроза"
+  },
+  "time": {
+    "happeningNow": "🔥 прямо сейчас",
+    "inMin": "🔥 через {{count}} мин",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "yesterday": "Вчера",
+    "justNow": "только что",
+    "nowShort": "сейчас",
+    "mAgo": "{{count}} мин назад",
+    "hAgo": "{{count}} ч назад",
+    "dAgo": "{{count}} дн назад",
+    "expired": "Истёк",
+    "expiresSoon": "Скоро истекает",
+    "expiresInMin": "Истекает через {{mins}} мин",
+    "expiresInHourMin": "Истекает через {{hours}} ч {{mins}} мин",
+    "expiresInHour": "Истекает через {{hours}} ч"
+  }
+}

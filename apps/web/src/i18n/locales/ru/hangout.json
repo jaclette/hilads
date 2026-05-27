@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "Начать hangout",
+    "editTitle": "Редактировать hangout",
+    "category": "Категория",
+    "cat": { "general": "Общее", "tips": "Советы", "food": "Еда", "drinks": "Напитки", "help": "Помощь", "meetup": "Встреча" },
+    "titleLabel": "Что у тебя на уме?",
+    "titlePlaceholder": "напр. Лучшая кофейня в округе?",
+    "detailsLabel": "Добавить детали",
+    "optional": "(необязательно)",
+    "detailsPlaceholder": "Добавь немного контекста…",
+    "expiry": "⏱ Автоматически истекает через 24 ч",
+    "saving": "Сохранение…",
+    "starting": "Запуск…",
+    "saveChanges": "Сохранить изменения",
+    "startCta": "Начать hangout ⚡",
+    "limitHeader": "По одному за раз",
+    "limitTitle": "У тебя уже есть hangout",
+    "limitSub": "Ты можешь вести только один hangout одновременно. Перейди к «{{title}}» или удали его, чтобы начать новый.",
+    "limitGo": "Перейти к моему hangout →",
+    "yourHangout": "твой hangout"
+  },
+  "deleteConfirm": "Удалить этот hangout? Это завершит его для всех, и это нельзя отменить.",
+  "deleteFailedAlert": "Не удалось удалить. Попробуй ещё раз.",
+  "shareAria": "Поделиться hangout",
+  "shareTitle": "Поделиться этим hangout",
+  "members": {
+    "oneIn": "{{name}} в деле",
+    "countIn": "{{count}} в этом hangout",
+    "seeAll": "Показать всех →"
+  },
+  "owner": { "edit": "✏️ Редактировать", "delete": "🗑 Удалить" },
+  "gated": {
+    "title": "Hangout только для участников",
+    "pending": "Запрос на рассмотрении — ты сможешь присоединиться к беседе, как только участник его примет.",
+    "prompt": "Отправь запрос, чтобы видеть беседу и общаться.",
+    "requestBtn": "Запросить участие"
+  },
+  "feed": {
+    "beginning": "Начало беседы",
+    "loading": "Загрузка…",
+    "emptyTitle": "Пока нет ответов",
+    "emptySub": "Будь первым, кто присоединится"
+  },
+  "joinReq": {
+    "someone": "Кто-то",
+    "wantsToJoin": " хочет присоединиться",
+    "joined": " присоединился к hangout",
+    "askedToJoin": " попросил присоединиться",
+    "decline": "Отклонить",
+    "accept": "Принять",
+    "accepted": "Принято",
+    "acceptedBy": "Принято {{name}}",
+    "declined": "Запрос отклонён"
+  },
+  "modes": { "local": "Местный", "exploring": "Исследую" },
+  "reply": { "photo": "📷 Фото", "unavailable": "Исходное сообщение недоступно" },
+  "composer": { "reply": "Ответить в беседе…", "start": "Зажги vibe ✨" },
+  "errors": {
+    "locFailed": "Не удалось определить твоё местоположение. Разреши доступ к геолокации и попробуй ещё раз.",
+    "imageType": "Выбери изображение в формате JPEG, PNG или WebP.",
+    "imageTooLarge": "Изображение слишком большое. Макс. 10 МБ.",
+    "imageSend": "Не удалось отправить изображение. Попробуй ещё раз.",
+    "dismiss": "{{error}} · нажми, чтобы закрыть"
+  }
+}

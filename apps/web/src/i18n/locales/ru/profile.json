@@ -1,0 +1,132 @@
+{
+  "pageTitle": "Мой профиль",
+  "changePhoto": "Сменить фото профиля",
+  "yourProfile": "Твой профиль",
+  "mode": "Режим",
+  "modes": {
+    "local": "Местный",
+    "localDesc": "Ты знаешь этот город",
+    "exploring": "Исследую",
+    "exploringDesc": "Ты его открываешь"
+  },
+  "tabs": {
+    "interests": "Интересы",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Друзья",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Вечеринка",
+    "board_games": "Настолки",
+    "coffee": "Кофе",
+    "music": "Музыка",
+    "food": "Еда",
+    "chill": "Чилл"
+  },
+  "interests": {
+    "drinks": "напитки",
+    "party": "вечеринки",
+    "nightlife": "ночная жизнь",
+    "music": "музыка",
+    "live music": "живая музыка",
+    "culture": "культура",
+    "art": "искусство",
+    "food": "еда",
+    "coffee": "кофе",
+    "sport": "спорт",
+    "fitness": "фитнес",
+    "hiking": "походы",
+    "beach": "пляж",
+    "wellness": "велнес",
+    "travel": "путешествия",
+    "hangout": "тусовки",
+    "socializing": "общение",
+    "gaming": "игры",
+    "tech": "технологии",
+    "dating": "знакомства"
+  },
+  "fields": {
+    "username": "Имя пользователя",
+    "usernamePlaceholder": "имя пользователя",
+    "checking": "Проверка…",
+    "available": "@{{username}} свободно",
+    "aboutMe": "Обо мне",
+    "charsLeft": "— осталось {{count}}",
+    "aboutPlaceholder": "Люблю уличную еду и случайные разговоры",
+    "email": "Электронная почта",
+    "readOnly": "— только чтение",
+    "homeCity": "Родной город",
+    "homeCityPlaceholder": "Где ты живёшь",
+    "age": "Возраст",
+    "agePlaceholder": "Твой возраст",
+    "myVibe": "Мой vibe",
+    "interests": "Интересы",
+    "interestsHint": "— выбери до 5"
+  },
+  "ambassador": {
+    "title": "Выбор города 👑",
+    "subtitle": "Отображается в твоём профиле как у местной легенды.",
+    "restaurant": "Любимый ресторан",
+    "restaurantPlaceholder": "Место, куда ты всегда водишь людей",
+    "spot": "Скрытая жемчужина / место",
+    "spotPlaceholder": "То, что большинство туристов упускают",
+    "tip": "Местный совет",
+    "tipPlaceholder": "Лучший совет для новичков",
+    "story": "История города",
+    "storyPlaceholder": "Что-то, что ты любишь в этом городе"
+  },
+  "hangouts": {
+    "empty": "Пока нет hangouts — начни свой ⚡",
+    "host": "Организатор"
+  },
+  "events": {
+    "going": "Иду",
+    "goingEmpty": "Пока нет планов — найди что-нибудь 🔥",
+    "hosting": "Организую",
+    "hostingEmpty": "Пока ничего не организовано — начни что-нибудь ✨",
+    "live": "В эфире",
+    "recurring": "↻ Повторяющееся",
+    "upcoming": "Скоро",
+    "deleteEvent": "Удалить событие"
+  },
+  "friends": {
+    "requests": "Запросы в друзья",
+    "empty": "Пока нет друзей. Добавляй из профилей.",
+    "mine": "Мои друзья"
+  },
+  "vibesTab": {
+    "received": "Полученные vibes",
+    "score": "vibe-рейтинг {{score}}",
+    "basedOn_one": "на основе {{count}} vibe",
+    "basedOn_few": "на основе {{count}} vibes",
+    "basedOn_many": "на основе {{count}} vibes",
+    "basedOn_other": "на основе {{count}} vibes",
+    "empty": "Пока нет vibes",
+    "emptyHint": "Твой рейтинг появится здесь, когда люди оставят тебе отметку ✨"
+  },
+  "save": {
+    "uploading": "Загрузка…",
+    "saving": "Сохранение…",
+    "saved": "Сохранено ✓",
+    "save": "Сохранить профиль"
+  },
+  "signOut": "Выйти",
+  "deleteAccount": "Удалить аккаунт",
+  "delete": {
+    "title": "Удалить аккаунт?",
+    "body": "Твой профиль, друзья и настройки будут удалены навсегда. Твои сообщения и события останутся в городских чатах анонимно.",
+    "irreversible": "Это нельзя отменить.",
+    "deleting": "Удаление…",
+    "confirm": "Да, удалить мой аккаунт",
+    "cancel": "Отмена"
+  },
+  "errors": {
+    "photoUpload": "Не удалось загрузить фото. Попробуй ещё раз.",
+    "usernameTooShort": "Имя пользователя должно быть не короче 3 символов",
+    "usernameTaken": "Это имя пользователя занято",
+    "usernameInvalid": "Недопустимое имя пользователя",
+    "saveFailed": "Не удалось сохранить. Попробуй ещё раз.",
+    "generic": "Что-то пошло не так. Попробуй ещё раз."
+  }
+}
