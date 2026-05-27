@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "Einen hangout starten",
+    "editTitle": "Hangout bearbeiten",
+    "category": "Kategorie",
+    "cat": { "general": "Allgemein", "tips": "Tipps", "food": "Essen", "drinks": "Drinks", "help": "Hilfe", "meetup": "Treffen" },
+    "titleLabel": "Was geht dir durch den Kopf?",
+    "titlePlaceholder": "z. B. Bester Kaffee-Spot in der Gegend?",
+    "detailsLabel": "Details hinzufügen",
+    "optional": "(optional)",
+    "detailsPlaceholder": "Gib etwas Kontext…",
+    "expiry": "⏱ Läuft automatisch in 24 Std. ab",
+    "saving": "Wird gespeichert…",
+    "starting": "Wird gestartet…",
+    "saveChanges": "Änderungen speichern",
+    "startCta": "Einen hangout starten ⚡",
+    "limitHeader": "Einer nach dem anderen",
+    "limitTitle": "Du hast bereits einen hangout",
+    "limitSub": "Du kannst nur einen hangout gleichzeitig laufen lassen. Geh zu „{{title}}“ oder lösch ihn, um einen neuen zu starten.",
+    "limitGo": "Zu meinem hangout →",
+    "yourHangout": "deinen hangout"
+  },
+  "deleteConfirm": "Diesen hangout löschen? Das beendet ihn für alle und kann nicht rückgängig gemacht werden.",
+  "deleteFailedAlert": "Löschen fehlgeschlagen. Versuch es erneut.",
+  "shareAria": "Hangout teilen",
+  "shareTitle": "Diesen hangout teilen",
+  "members": {
+    "oneIn": "{{name}} ist dabei",
+    "countIn": "{{count}} in diesem hangout",
+    "seeAll": "Alle ansehen →"
+  },
+  "owner": { "edit": "✏️ Bearbeiten", "delete": "🗑 Löschen" },
+  "gated": {
+    "title": "Hangout nur für Mitglieder",
+    "pending": "Anfrage ausstehend — du kannst der Unterhaltung beitreten, sobald ein Mitglied zustimmt.",
+    "prompt": "Bitte um Beitritt, um die Unterhaltung zu sehen und mitzuchatten.",
+    "requestBtn": "Beitritt anfragen"
+  },
+  "feed": {
+    "beginning": "Anfang der Unterhaltung",
+    "loading": "Wird geladen…",
+    "emptyTitle": "Noch keine Antworten",
+    "emptySub": "Sei die erste Person, die loslegt"
+  },
+  "joinReq": {
+    "someone": "Jemand",
+    "wantsToJoin": " möchte beitreten",
+    "joined": " ist dem hangout beigetreten",
+    "askedToJoin": " hat um Beitritt gebeten",
+    "decline": "Ablehnen",
+    "accept": "Annehmen",
+    "accepted": "Angenommen",
+    "acceptedBy": "Angenommen von {{name}}",
+    "declined": "Anfrage abgelehnt"
+  },
+  "modes": { "local": "Local", "exploring": "Exploring" },
+  "reply": { "photo": "📷 Foto", "unavailable": "Originalnachricht nicht verfügbar" },
+  "composer": { "reply": "Auf die Unterhaltung antworten…", "start": "Bring den vibe in Schwung ✨" },
+  "errors": {
+    "locFailed": "Dein Standort konnte nicht ermittelt werden. Aktiviere den Standortzugriff und versuch es erneut.",
+    "imageType": "Bitte wähle ein JPEG-, PNG- oder WebP-Bild.",
+    "imageTooLarge": "Bild zu groß. Max. 10 MB.",
+    "imageSend": "Bild konnte nicht gesendet werden. Versuch es erneut.",
+    "dismiss": "{{error}} · tippe zum Schließen"
+  }
+}

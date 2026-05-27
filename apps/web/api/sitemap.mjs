@@ -35,7 +35,7 @@ const SITE_BASE = (process.env.HILADS_SITE_BASE || 'https://hilads.live').replac
 // Mirrors gen-sitemap.mjs VENUE_URL_LAUNCH.
 const VENUE_URL_LAUNCH = process.env.SITEMAP_VENUE_LAUNCH || '2026-05-20'
 
-const SITEMAP_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt']
+const SITEMAP_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de']
 
 // ── Slug helpers — keep in sync with App.jsx cityToSlug / eventUtils eventSlug
 //    / prerender.mjs venueSlug (the repo intentionally mirrors these). ──────────

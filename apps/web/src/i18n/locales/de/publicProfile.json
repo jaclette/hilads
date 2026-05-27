@@ -1,0 +1,83 @@
+{
+  "title": "Profil",
+  "loading": "Wird geladen…",
+  "loadError": "Profil konnte nicht geladen werden.",
+  "badgeMicro": {
+    "ghost": "Nur am Stöbern 👀",
+    "fresh": "Gerade gelandet 👶",
+    "regular": "Oft hier",
+    "host": "Macht's möglich 🔥"
+  },
+  "modes": { "local": "Local", "exploring": "Auf Erkundung" },
+  "vibes": {
+    "party": "Party", "board_games": "Brettspiele", "coffee": "Kaffee",
+    "music": "Musik", "food": "Essen", "chill": "Chillen"
+  },
+  "vibeTaglines": {
+    "party": "Hier fürs Nachtleben",
+    "board_games": "Bring Snacks und Würfel mit",
+    "coffee": "Erst Kaffee, alles andere später",
+    "music": "Immer auf der Jagd nach einem guten Beat",
+    "food": "Erst essen, dann Fragen",
+    "chill": "Locker, beste Vibes"
+  },
+  "modeSub": {
+    "localIn": "Local in {{city}}",
+    "local": "Local",
+    "exploringIn": "Erkundet {{city}}",
+    "exploring": "Auf Erkundung"
+  },
+  "from": "Aus",
+  "age": "Alter",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Freunde",
+    "vibes": "Vibes", "picks": "Stadt-Tipps 👑"
+  },
+  "host": "Gastgeber",
+  "live": "LIVE",
+  "empty": { "hangouts": "Noch keine Hangouts", "events": "Noch keine Events", "friends": "Noch keine Freunde" },
+  "vibesTab": {
+    "score": "{{score}} Vibe-Score",
+    "basedOn_one": "basierend auf {{count}} Vibe",
+    "basedOn_other": "basierend auf {{count}} Vibes",
+    "updateNote": "✏️ Aktualisiere deine Notiz ({{rating}}★)",
+    "leaveNote": "⭐ Hinterlasse eine Notiz",
+    "placeholder": "Sag etwas Nettes… (optional)",
+    "cancel": "Abbrechen",
+    "sending": "Wird gesendet…",
+    "sendNote": "Notiz senden ✨",
+    "notesLabel": "Notizen · {{count}}",
+    "emptyTitle": "Noch keine Notizen",
+    "emptySub": "Sei der Erste, der eine Notiz hinterlässt ✨"
+  },
+  "picks": {
+    "restaurant": "LIEBLINGSRESTAURANT",
+    "spot": "GEHEIMTIPP",
+    "tip": "LOKALER TIPP",
+    "story": "STORY"
+  },
+  "actions": {
+    "opening": "Wird geöffnet…",
+    "message": "💬 Nachricht",
+    "friend": "✓ Freund",
+    "requestSent": "⌛ Anfrage gesendet",
+    "acceptRequest": "✓ Anfrage annehmen",
+    "addFriend": "+ Freund",
+    "removing": "Wird entfernt…",
+    "unfriend": "Entfernen",
+    "cancel": "Abbrechen",
+    "cancelling": "Wird abgebrochen…",
+    "cancelRequest": "Anfrage zurückziehen",
+    "keep": "Behalten",
+    "reportTitle": "Nutzer melden"
+  },
+  "report": {
+    "existing": "Du hast diesen Nutzer am {{date}} gemeldet. Deine Meldung wird geprüft.",
+    "sent": "Meldung gesendet. Danke für den Hinweis.",
+    "placeholder": "Beschreibe das Problem (mind. 10 Zeichen)…",
+    "error": "Meldung konnte nicht gesendet werden. Versuch es erneut.",
+    "sending": "Wird gesendet…",
+    "submit": "Meldung senden",
+    "cancel": "Abbrechen"
+  }
+}

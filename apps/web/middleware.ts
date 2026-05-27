@@ -14,7 +14,7 @@
  * canonical. This runs before vercel.json rewrites.
  */
 
-const LOCALES = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt'] // 'en' is the un-prefixed default — no prefix
+const LOCALES = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de'] // 'en' is the un-prefixed default — no prefix
 const COOKIE = 'hilads_lang'
 
 export const config = {

@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "Freundschaftsanfragen",
+    "incoming": "Erhalten",
+    "sent": "Gesendet",
+    "wantsToBeFriend": "möchte dein Freund sein",
+    "requestSent": "Anfrage gesendet",
+    "decline": "Ablehnen",
+    "accept": "Annehmen",
+    "cancel": "Abbrechen",
+    "emptyIncomingTitle": "Noch keine Freundschaftsanfragen",
+    "emptySentTitle": "Du hast noch keine gesendet",
+    "emptyIncomingSub": "Wenn dich jemand als Freund anfragt, siehst du es hier.",
+    "emptySentSub": "Ausstehende Freundschaftsanfragen, die du gesendet hast, erscheinen hier."
+  },
+  "blocked": {
+    "title": "Blockierte Nutzer",
+    "thisUser": "diesen Nutzer",
+    "ghostName": "Geist",
+    "guest": "Gast",
+    "unblock": "Entsperren",
+    "unblockTitle": "{{name}} entsperren?",
+    "unblockBody": "{{name}} kann deine Inhalte wieder sehen und dich erneut kontaktieren.",
+    "unblockFailTitle": "Konnte nicht entsperrt werden",
+    "unblockFailBody": "Bitte versuche es erneut.",
+    "emptyTitle": "Du hast niemanden blockiert",
+    "emptySub": "Blockierte Nutzer sehen deine Inhalte nicht, und du siehst ihre nicht."
+  }
+}

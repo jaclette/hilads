@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "Konto erstellen",
+    "signIn": "Anmelden",
+    "create_event": {
+      "pageTitle": "Event erstellen",
+      "title": "Ghosts dürfen stöbern, aber nicht hosten.",
+      "sub": "Erstelle ein Konto, um dein eigenes Event zu veranstalten und deine Stadt auf die Karte zu bringen."
+    },
+    "view_profile": {
+      "pageTitle": "Profil",
+      "title": "Ghosts dürfen stöbern, aber Profile sind für Mitglieder.",
+      "sub": "Erstelle ein Konto, um Profile freizuschalten, Leute zu treffen und deine Stadt-Crew aufzubauen."
+    },
+    "join_hangout": {
+      "pageTitle": "Bei einem Hangout mitmachen",
+      "title": "Ghosts dürfen stöbern, aber nicht bei Hangouts mitmachen.",
+      "sub": "Registriere dich, um bei Hangouts mitzumachen, deinen Namen zu sichern und Bescheid zu bekommen, wenn Leute sich treffen wollen."
+    },
+    "create_hangout": {
+      "pageTitle": "Hangout starten",
+      "title": "Ghosts dürfen stöbern, aber nicht hosten.",
+      "sub": "Registriere dich, um ein Hangout zu starten, deinen Namen zu sichern und Leute dazuzuholen."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} ist live ✨",
+    "dismiss": "Schließen",
+    "body": "Echte Menschen, genau jetzt. Sag Hallo, sieh, wer um dich herum ist, oder bring einen Freund mit.",
+    "sayHi": "Sag Hallo 👋",
+    "invite": "Freunde einladen"
+  },
+  "imageType": "Bitte wähle ein JPEG-, PNG- oder WebP-Bild.",
+  "imageTooLarge": "Bild zu groß. Maximale Größe: 10 MB.",
+  "picker": {
+    "title": "Wähle eine Stadt",
+    "search": "Stadt suchen…",
+    "noResults": "Keine Stadt gefunden für „{{query}}“",
+    "topCities": "Aktivste Städte gerade jetzt",
+    "cities": "Städte"
+  },
+  "joining": "Verbinde mit {{city}}…",
+  "joiningDefault": "Verbinde mit dem Chat…",
+  "tryAgain": "Erneut versuchen",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "Öffentlich",
+    "activeNow": "● Jetzt aktiv",
+    "repliesNew": "Noch keine Antworten — sei der Erste",
+    "replies_one": "💬 {{count}} Antwort",
+    "replies_other": "💬 {{count}} Antworten",
+    "going_one": "🙌 {{count}} dabei",
+    "going_other": "🙌 {{count}} dabei",
+    "hostedBy": "Veranstaltet von {{name}}",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "Event erstellen",
+    "startHangout": "Hangout starten ⚡",
+    "openPlace": "Öffne deinen Ort",
+    "loadError": "Events konnten nicht geladen werden",
+    "loadErrorSub": "Zieh zum erneuten Versuch oder erstelle etwas Neues in {{city}}.",
+    "emptyLocalTitle": "Veranstalte an deinem Ort",
+    "emptyTitle": "Hier passiert noch nichts",
+    "emptyLocalSub": "Lass {{city}} lebendig werden. Starte ein wiederkehrendes Event an deinem Lieblingsort.",
+    "emptySub": "Sei der Erste, der in {{city}} etwas auf die Beine stellt",
+    "noEvents": "Gerade keine Events",
+    "noHangouts": "Noch keine Hangouts",
+    "noEventsSub": "Sei der Erste, der eins in {{city}} erstellt",
+    "noHangoutsSub": "Starte ein Hangout und bring die Stadt zum Reden",
+    "filterAll": "Alle",
+    "seeComing": "Sieh, was kommt 🔮",
+    "seeHappened": "sieh, was passiert ist",
+    "createNew": "Neu erstellen"
+  },
+  "header": {
+    "online": "{{count}} in der Nähe",
+    "liveNow": "jetzt live",
+    "seeWhosHere": "Sieh, wer hier ist",
+    "onlineAria": "{{count}} Personen in der Nähe, tippe, um zu sehen wer",
+    "notifications": "Benachrichtigungen",
+    "messages": "Nachrichten",
+    "shareCity": "Stadt teilen",
+    "switchCity": "Stadt wechseln",
+    "changeCity": "Stadt wechseln",
+    "currentWeather": "Aktuelles Wetter: {{label}}"
+  },
+  "here": {
+    "title": "Leute hier",
+    "filterBadge": "Abzeichen",
+    "filterVibe": "Vibe",
+    "filterMode": "Modus",
+    "you": "(du)",
+    "hereNow": "Here now",
+    "noMatchLive": "Niemand passt gerade auf diese Filter.",
+    "legendsSub": "Sie bringen die Stadt zum Leben",
+    "cityCrew": "Stadt-Crew",
+    "noMatchCrew": "Kein Mitglied passt auf diese Filter.",
+    "loadMore": "Mehr laden",
+    "messageAria": "{{name}} eine Nachricht senden"
+  },
+  "eventHeader": {
+    "yourEvent": "Dein Event",
+    "edit": "Bearbeiten",
+    "join": "Teilnehmen",
+    "joined": "Dabei ✓",
+    "here": "{{count}} hier",
+    "going_one": "{{count}} dabei",
+    "going_other": "{{count}} dabei",
+    "locationPending": "Standort noch nicht verfügbar",
+    "hostedBy": "Veranstaltet von {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "Anfang des Gesprächs",
+    "arriving": "Leute treffen ein",
+    "firstChat": "Sei der Erste, der hier schreibt 👇",
+    "firstHi": "Sei der Erste, der Hallo sagt 👇"
+  },
+  "create": {
+    "title": "Was geht?",
+    "hangoutTitle": "Hangout starten",
+    "hangoutSub": "Sofort — lass Leute jetzt gleich dazukommen",
+    "eventTitle": "Event erstellen",
+    "eventSub": "Plane etwas, bei dem andere mitmachen können"
+  },
+  "goingModal": {
+    "going": "dabei",
+    "inThisHangout": "in diesem Hangout",
+    "loading": "Wird geladen…",
+    "empty": "Noch niemand — sei der Erste, der mitmacht! 🙌"
+  },
+  "nickname": {
+    "label": "Spitzname",
+    "placeholder": "Dein Name...",
+    "heroSub": "Vorerst anonym. Du kannst trotzdem gestalten, wie du erscheinst.",
+    "save": "Spitznamen speichern",
+    "upgradeHint": "Sichere deinen Namen. Bleib local.",
+    "haveAccount": "Hast du schon ein Konto?",
+    "myEvents": "Meine Events",
+    "anonymous": "// anonym · keine Registrierung nötig"
+  },
+  "prompt": {
+    "exploreText": "🔥 Sieh, was jetzt passiert",
+    "exploreCta": "Sieh, was passiert",
+    "photoText": "📸 Teile, was passiert",
+    "shoot": "Foto",
+    "createEventText": "🎉 Hast du heute Abend einen Plan?",
+    "createEventCta": "Event erstellen",
+    "installText": "✨ Füge Hilads zu deinem Startbildschirm hinzu\nVerpass nie, was in deiner Stadt passiert",
+    "installAdd": "Hinzufügen",
+    "installHow": "Wie"
+  },
+  "toast": {
+    "eventDeleted": "Event gelöscht"
+  },
+  "pwa": {
+    "addToHome": "Hilads zum Startbildschirm hinzufügen",
+    "add": "Hinzufügen",
+    "keepClose": "Hilads griffbereit halten",
+    "manualHelp": "Öffne das Menü deines Browsers und wähle „Zum Startbildschirm hinzufügen“.",
+    "dismiss": "Installationshinweis schließen"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} ist gerade gelandet",
+    "1": "🔥 {{name}} ist dazugekommen",
+    "2": "🍻 {{name}} ist hier",
+    "3": "👀 {{name}} ist gerade aufgetaucht",
+    "4": "✨ {{name}} ist angekommen"
+  },
+  "ambient": {
+    "0": "🔥 Leute treffen ein",
+    "1": "🍻 Wer ist heute Abend unterwegs?",
+    "2": "💬 Die Stadt wacht auf",
+    "3": "🌙 Nachteulen sind online",
+    "4": "👀 Jemand ist gerade angekommen",
+    "5": "🔥 Ein neues Gesicht in der Stadt",
+    "6": "🎉 Es sind gerade Leute hier",
+    "7": "🌆 Locals melden sich"
+  },
+  "ownerPrompt": {
+    "text": "🔥 Du hast dieses Event gestartet!",
+    "sub": "Mach es noch besser — füge eine Beschreibung hinzu, aktualisiere die Zeit oder teile es.",
+    "edit": "✏️ Event bearbeiten"
+  },
+  "feedNew": {
+    "event": "🔥 Neues Event: {{title}}",
+    "join": "Teilnehmen",
+    "replies_one": "{{count}} Antwort",
+    "replies_other": "{{count}} Antworten"
+  },
+  "replyPreview": {
+    "photo": "📷 Foto"
+  },
+  "placeholder": {
+    "event": "Sag etwas bei {{title}} ✨",
+    "eventFirst": "Sei der Erste bei {{title}} ✨"
+  },
+  "placeholders": [
+    "Sag Hallo 👋",
+    "Wer ist heute Abend unterwegs?",
+    "Irgendwelche Pläne? 👀",
+    "Was passiert hier?",
+    "Hat jemand Lust auf was? 🍻",
+    "Schreib eine Nachricht…"
+  ],
+  "typing": {
+    "one": "{{name}} schreibt…",
+    "two": "{{a}} und {{b}} schreiben…",
+    "many": "Mehrere Leute schreiben…"
+  },
+  "myEvent": {
+    "live": "Live",
+    "recurring": "↻ Wiederkehrend",
+    "upcoming": "Demnächst",
+    "delete": "Event löschen"
+  }
+}

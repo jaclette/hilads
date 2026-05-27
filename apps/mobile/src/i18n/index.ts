@@ -119,8 +119,24 @@ import ptpt_misc    from './locales/pt-pt/misc.json';
 import ptpt_cities  from './locales/pt-pt/cities.json';
 import ptpt_upcoming from './locales/pt-pt/upcoming.json';
 import ptpt_archive from './locales/pt-pt/archive.json';
+import de_common  from './locales/de/common.json';
+import de_auth    from './locales/de/auth.json';
+import de_landing from './locales/de/landing.json';
+import de_here    from './locales/de/here.json';
+import de_now     from './locales/de/now.json';
+import de_chat    from './locales/de/chat.json';
+import de_event   from './locales/de/event.json';
+import de_hangout from './locales/de/hangout.json';
+import de_dm      from './locales/de/dm.json';
+import de_notifications from './locales/de/notifications.json';
+import de_publicProfile from './locales/de/publicProfile.json';
+import de_me      from './locales/de/me.json';
+import de_misc    from './locales/de/misc.json';
+import de_cities  from './locales/de/cities.json';
+import de_upcoming from './locales/de/upcoming.json';
+import de_archive from './locales/de/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -135,6 +151,7 @@ const resources = {
   it: { common: it_common, auth: it_auth, landing: it_landing, here: it_here, now: it_now, chat: it_chat, event: it_event, hangout: it_hangout, dm: it_dm, notifications: it_notifications, publicProfile: it_publicProfile, me: it_me, misc: it_misc, cities: it_cities, upcoming: it_upcoming, archive: it_archive },
   'pt-br': { common: ptbr_common, auth: ptbr_auth, landing: ptbr_landing, here: ptbr_here, now: ptbr_now, chat: ptbr_chat, event: ptbr_event, hangout: ptbr_hangout, dm: ptbr_dm, notifications: ptbr_notifications, publicProfile: ptbr_publicProfile, me: ptbr_me, misc: ptbr_misc, cities: ptbr_cities, upcoming: ptbr_upcoming, archive: ptbr_archive },
   'pt-pt': { common: ptpt_common, auth: ptpt_auth, landing: ptpt_landing, here: ptpt_here, now: ptpt_now, chat: ptpt_chat, event: ptpt_event, hangout: ptpt_hangout, dm: ptpt_dm, notifications: ptpt_notifications, publicProfile: ptpt_publicProfile, me: ptpt_me, misc: ptpt_misc, cities: ptpt_cities, upcoming: ptpt_upcoming, archive: ptpt_archive },
+  de: { common: de_common, auth: de_auth, landing: de_landing, here: de_here, now: de_now, chat: de_chat, event: de_event, hangout: de_hangout, dm: de_dm, notifications: de_notifications, publicProfile: de_publicProfile, me: de_me, misc: de_misc, cities: de_cities, upcoming: de_upcoming, archive: de_archive },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {

@@ -1,0 +1,14 @@
+{
+  "title": "Was kommt",
+  "openCalendar": "Kalender öffnen",
+  "today": "Heute",
+  "close": "Schließen",
+  "error": "Events für diesen Tag konnten nicht geladen werden",
+  "retry": "Erneut versuchen",
+  "emptyTitle": "Nichts geplant",
+  "emptySub": "An diesem Tag gibt es noch keine Events.",
+  "public": "Öffentlich",
+  "going_one": "🙌 {{count}} dabei",
+  "going_other": "🙌 {{count}} dabei",
+  "liveNow": "🔥 Jetzt live"
+}

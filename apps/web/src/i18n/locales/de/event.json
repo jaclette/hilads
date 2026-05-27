@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "Leute mitbringen ✨",
+    "linkCopied": "Link kopiert ✨",
+    "vibeTitle": "Diesen vibe teilen",
+    "eventAria": "Event teilen"
+  },
+  "title": { "edit": "Event bearbeiten", "host": "Ein Event hosten", "create": "Event erstellen" },
+  "delete": {
+    "confirmTitle": "Dieses Event löschen?",
+    "confirmBody": "Damit werden das Event und alle Nachrichten entfernt. Das kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
+    "deleting": "Wird gelöscht…",
+    "confirm": "Löschen",
+    "button": "🗑 Event löschen"
+  },
+  "quickStart": "Schnellstart",
+  "presets": {
+    "dailySpot": "Täglicher Spot", "dailySpotDesc": "Jeden Tag",
+    "everyEvening": "Jeden Abend", "everyEveningDesc": "Täglich · 20 Uhr",
+    "weekends": "Wochenenden", "weekendsDesc": "Sa. & So."
+  },
+  "category": "Kategorie",
+  "categories": {
+    "drinks": "Drinks", "party": "Party", "music": "Musik", "food": "Essen",
+    "coffee": "Kaffee", "sport": "Sport", "meetup": "Meetup", "other": "Sonstiges"
+  },
+  "titleLabel": "Titel",
+  "titlePlaceholder": "z. B. Jazz-Abend in der Rooftop Bar",
+  "date": "Datum",
+  "today": "Heute",
+  "tomorrow": "Morgen",
+  "todayHint": "Heute hosten bringt dir die meiste Sichtbarkeit 🔥",
+  "starts": "Beginnt",
+  "ends": "Endet",
+  "repeat": "Wiederholen",
+  "recurrence": { "once": "Einmal", "daily": "Täglich", "weekly": "Wöchentlich", "everyNDays": "Alle N Tage" },
+  "weekdays": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+  "intervalEvery": "Alle",
+  "intervalDays": "Tage",
+  "location": "Ort",
+  "locating": "Dein Standort wird ermittelt…",
+  "locationPlaceholder": "Optional · tippe, um auf der Karte zu setzen",
+  "clearLocation": "Ort löschen",
+  "errors": {
+    "endAfterStart": "Die Endzeit muss mindestens 15 Minuten nach der Startzeit liegen",
+    "pickDay": "Wähle mindestens einen Wochentag",
+    "deleteFailed": "Event konnte nicht gelöscht werden. Versuch es erneut.",
+    "locUnavailable": "Der Standort ist in diesem Browser nicht verfügbar. Du kannst das Event auch ohne ihn erstellen.",
+    "locFailed": "Dein Standort konnte nicht ermittelt werden. Aktiviere den Standortzugriff oder überspring die Karte."
+  },
+  "submit": {
+    "saving": "Wird gespeichert…", "creating": "Wird erstellt…",
+    "saveChanges": "Änderungen speichern", "openSpot": "Eröffne deinen Spot",
+    "startEvent": "Ein Event starten", "create": "Event erstellen"
+  },
+  "recur": {"everyday":"Jeden Tag","weekly":"Wöchentlich","everyNDays_one":"Alle {{count}} Tag","everyNDays_other":"Alle {{count}} Tage"}
+}

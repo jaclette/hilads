@@ -1,0 +1,130 @@
+{
+  "pageTitle": "Mein Profil",
+  "changePhoto": "Profilfoto ändern",
+  "yourProfile": "Dein Profil",
+  "mode": "Modus",
+  "modes": {
+    "local": "Local",
+    "localDesc": "Du kennst diese Stadt",
+    "exploring": "Exploring",
+    "exploringDesc": "Du entdeckst sie gerade"
+  },
+  "tabs": {
+    "interests": "Interessen",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Freunde",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Party",
+    "board_games": "Brettspiele",
+    "coffee": "Kaffee",
+    "music": "Musik",
+    "food": "Essen",
+    "chill": "Chillen"
+  },
+  "interests": {
+    "drinks": "Drinks",
+    "party": "Party",
+    "nightlife": "Nachtleben",
+    "music": "Musik",
+    "live music": "Live-Musik",
+    "culture": "Kultur",
+    "art": "Kunst",
+    "food": "Essen",
+    "coffee": "Kaffee",
+    "sport": "Sport",
+    "fitness": "Fitness",
+    "hiking": "Wandern",
+    "beach": "Strand",
+    "wellness": "Wellness",
+    "travel": "Reisen",
+    "hangout": "hangout",
+    "socializing": "Leute treffen",
+    "gaming": "Gaming",
+    "tech": "Technik",
+    "dating": "Dating"
+  },
+  "fields": {
+    "username": "Benutzername",
+    "usernamePlaceholder": "Benutzername",
+    "checking": "Wird geprüft…",
+    "available": "@{{username}} ist verfügbar",
+    "aboutMe": "Über mich",
+    "charsLeft": "— {{count}} übrig",
+    "aboutPlaceholder": "Liebe Streetfood und spontane Gespräche",
+    "email": "E-Mail",
+    "readOnly": "— nur lesbar",
+    "homeCity": "Heimatstadt",
+    "homeCityPlaceholder": "Wo du wohnst",
+    "age": "Alter",
+    "agePlaceholder": "Dein Alter",
+    "myVibe": "Mein vibe",
+    "interests": "Interessen",
+    "interestsHint": "— wähle bis zu 5"
+  },
+  "ambassador": {
+    "title": "Tipps für die Stadt 👑",
+    "subtitle": "Wird auf deinem Profil als Local Legend angezeigt.",
+    "restaurant": "Lieblingsrestaurant",
+    "restaurantPlaceholder": "Ein Ort, zu dem du immer alle mitnimmst",
+    "spot": "Geheimtipp / Spot",
+    "spotPlaceholder": "Ein Ort, den die meisten Touristen verpassen",
+    "tip": "Lokaler Tipp",
+    "tipPlaceholder": "Dein bester Rat für Neuankömmlinge",
+    "story": "Stadtgeschichte",
+    "storyPlaceholder": "Etwas, das du an dieser Stadt liebst"
+  },
+  "hangouts": {
+    "empty": "Noch keine Hangouts — starte einen ⚡",
+    "host": "Host"
+  },
+  "events": {
+    "going": "Dabei",
+    "goingEmpty": "Noch keine Pläne — finde etwas 🔥",
+    "hosting": "Hoste",
+    "hostingEmpty": "Noch nichts gehostet — starte etwas ✨",
+    "live": "Live",
+    "recurring": "↻ Wiederkehrend",
+    "upcoming": "Demnächst",
+    "deleteEvent": "Event löschen"
+  },
+  "friends": {
+    "requests": "Freundschaftsanfragen",
+    "empty": "Noch keine Freunde. Füge welche über Profile hinzu.",
+    "mine": "Meine Freunde"
+  },
+  "vibesTab": {
+    "received": "Erhaltene Vibes",
+    "score": "{{score}} vibe-Score",
+    "basedOn_one": "basierend auf {{count}} vibe",
+    "basedOn_other": "basierend auf {{count}} vibes",
+    "empty": "Noch keine Vibes",
+    "emptyHint": "Dein Score erscheint hier, sobald dir jemand eine Notiz hinterlässt ✨"
+  },
+  "save": {
+    "uploading": "Wird hochgeladen…",
+    "saving": "Wird gespeichert…",
+    "saved": "Gespeichert ✓",
+    "save": "Profil speichern"
+  },
+  "signOut": "Abmelden",
+  "deleteAccount": "Konto löschen",
+  "delete": {
+    "title": "Konto löschen?",
+    "body": "Dein Profil, deine Freunde und deine Einstellungen werden dauerhaft entfernt. Deine Nachrichten und Events bleiben anonym in den Stadt-Chats erhalten.",
+    "irreversible": "Das kann nicht rückgängig gemacht werden.",
+    "deleting": "Wird gelöscht…",
+    "confirm": "Ja, mein Konto löschen",
+    "cancel": "Abbrechen"
+  },
+  "errors": {
+    "photoUpload": "Foto-Upload fehlgeschlagen. Versuch es erneut.",
+    "usernameTooShort": "Der Benutzername muss mindestens 3 Zeichen lang sein",
+    "usernameTaken": "Dieser Benutzername ist bereits vergeben",
+    "usernameInvalid": "Ungültiger Benutzername",
+    "saveFailed": "Speichern fehlgeschlagen. Versuch es erneut.",
+    "generic": "Etwas ist schiefgelaufen. Versuch es erneut."
+  }
+}

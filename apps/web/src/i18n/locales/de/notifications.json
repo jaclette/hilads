@@ -1,0 +1,22 @@
+{
+  "title": "Benachrichtigungen",
+  "markAllRead": "Alle als gelesen markieren",
+  "empty": { "title": "Alles erledigt", "sub": "Benachrichtigungen erscheinen hier" },
+  "loading": "Wird geladen…",
+  "seeAll": "Alle Benachrichtigungen ansehen →",
+  "prefs": {
+    "title": "Benachrichtigungseinstellungen",
+    "mentionName": "Erwähnungen @",
+    "mentionDesc": "Wenn dich jemand in einer Nachricht oder einem Hangout @erwähnt",
+    "newEventName": "Neue Events in deiner Stadt",
+    "newEventDesc": "Wenn jemand ein Event in deiner Stadt erstellt",
+    "friendName": "Freundschaftsanfragen",
+    "friendDesc": "Wenn dir jemand eine Freundschaftsanfrage schickt oder deine annimmt",
+    "notesName": "Notizen ✨",
+    "notesDesc": "Wenn jemand eine Notiz auf deinem Profil hinterlässt",
+    "profileViewName": "Profilbesuche 👀",
+    "profileViewDesc": "Wenn jemand dein Profil ansieht",
+    "announcementName": "Ankündigungen von Hilads",
+    "announcementDesc": "Gelegentliche Neuigkeiten vom Team"
+  }
+}

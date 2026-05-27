@@ -1,0 +1,15 @@
+{
+  "title": "Was passiert ist",
+  "loadError": "Das Archiv konnte nicht geladen werden",
+  "filterAll": "Alle",
+  "rangeRecent": "Kürzlich",
+  "range7": "Letzte 7 Tage",
+  "range14": "Letzte 14 Tage",
+  "custom": "Benutzerdefiniert",
+  "pickEnd": "Wähle jetzt den End-Tag",
+  "pickStart": "Wähle einen Start-Tag (bis zu {{max}} Tage)",
+  "apply": "Anwenden",
+  "emptyTitle": "Hier ist noch nichts",
+  "emptyRecentSub": "Vergangene Events und Hangouts erscheinen hier, sobald die Stadt etwas Verlauf hat.",
+  "emptyWindowSub": "Keine Events oder Hangouts in diesem Zeitraum. Versuche einen größeren Bereich."
+}
