@@ -52,12 +52,12 @@
     "host": "👑 Legend"
   },
   "vibe": {
-    "party": "Party",
-    "board_games": "Board Games",
-    "coffee": "Coffee",
-    "music": "Music",
-    "food": "Food",
-    "chill": "Chill"
+    "party": "Tiệc tùng",
+    "board_games": "Board game",
+    "coffee": "Cà phê",
+    "music": "Âm nhạc",
+    "food": "Ẩm thực",
+    "chill": "Thư giãn"
   },
   "live": "TRỰC TIẾP",
   "activeNow": "● Đang hoạt động",
