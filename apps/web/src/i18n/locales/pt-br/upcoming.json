@@ -1,0 +1,14 @@
+{
+  "title": "O que vem por aí",
+  "openCalendar": "Abrir o calendário",
+  "today": "Hoje",
+  "close": "Fechar",
+  "error": "Não foi possível carregar os eventos desse dia",
+  "retry": "Tentar de novo",
+  "emptyTitle": "Nada agendado",
+  "emptySub": "Ainda não há eventos nesse dia.",
+  "public": "Público",
+  "going_one": "🙌 {{count}} participante",
+  "going_other": "🙌 {{count}} participantes",
+  "liveNow": "🔥 Ao vivo agora"
+}

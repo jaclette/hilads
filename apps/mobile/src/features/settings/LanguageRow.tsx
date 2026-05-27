@@ -14,6 +14,8 @@ const LANG_NAMES: Record<Locale, string> = {
   vi: 'Tiếng Việt',
   es: 'Español',
   it: 'Italiano',
+  'pt-br': 'Português (Brasil)',
+  'pt-pt': 'Português (Portugal)',
 };
 
 /**

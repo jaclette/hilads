@@ -1,0 +1,22 @@
+{
+  "title": "Notificações",
+  "markAllRead": "Marcar tudo como lido",
+  "empty": { "title": "Tudo em dia", "sub": "As notificações aparecerão aqui" },
+  "loading": "A carregar…",
+  "seeAll": "Ver todas as notificações →",
+  "prefs": {
+    "title": "Preferências de notificação",
+    "mentionName": "Menções @",
+    "mentionDesc": "Quando alguém te @menciona numa mensagem ou hangout",
+    "newEventName": "Novos eventos na tua cidade",
+    "newEventDesc": "Quando alguém cria um evento na tua cidade",
+    "friendName": "Pedidos de amizade",
+    "friendDesc": "Quando alguém te envia um pedido de amizade ou aceita o teu",
+    "notesName": "Notas ✨",
+    "notesDesc": "Quando alguém deixa uma nota no teu perfil",
+    "profileViewName": "Visitas ao teu perfil 👀",
+    "profileViewDesc": "Quando alguém vê o teu perfil",
+    "announcementName": "Anúncios da Hilads",
+    "announcementDesc": "Novidades ocasionais da equipa"
+  }
+}

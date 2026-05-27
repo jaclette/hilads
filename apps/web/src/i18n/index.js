@@ -20,7 +20,7 @@ import en_publicProfile from './locales/en/publicProfile.json'
 import en_city          from './locales/en/city.json'
 import en_venue         from './locales/en/venue.json'
 
-export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it']
+export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
 const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'venue']
@@ -92,6 +92,38 @@ const LOADERS = {
     city:          () => import('./locales/it/city.json'),
     venue:         () => import('./locales/it/venue.json'),
   },
+  'pt-br': {
+    common:  () => import('./locales/pt-br/common.json'),
+    profile: () => import('./locales/pt-br/profile.json'),
+    brand:   () => import('./locales/pt-br/brand.json'),
+    landing: () => import('./locales/pt-br/landing.json'),
+    auth:    () => import('./locales/pt-br/auth.json'),
+    event:   () => import('./locales/pt-br/event.json'),
+    hangout: () => import('./locales/pt-br/hangout.json'),
+    dm:      () => import('./locales/pt-br/dm.json'),
+    notifications: () => import('./locales/pt-br/notifications.json'),
+    upcoming:      () => import('./locales/pt-br/upcoming.json'),
+    archive:       () => import('./locales/pt-br/archive.json'),
+    publicProfile: () => import('./locales/pt-br/publicProfile.json'),
+    city:          () => import('./locales/pt-br/city.json'),
+    venue:         () => import('./locales/pt-br/venue.json'),
+  },
+  'pt-pt': {
+    common:  () => import('./locales/pt-pt/common.json'),
+    profile: () => import('./locales/pt-pt/profile.json'),
+    brand:   () => import('./locales/pt-pt/brand.json'),
+    landing: () => import('./locales/pt-pt/landing.json'),
+    auth:    () => import('./locales/pt-pt/auth.json'),
+    event:   () => import('./locales/pt-pt/event.json'),
+    hangout: () => import('./locales/pt-pt/hangout.json'),
+    dm:      () => import('./locales/pt-pt/dm.json'),
+    notifications: () => import('./locales/pt-pt/notifications.json'),
+    upcoming:      () => import('./locales/pt-pt/upcoming.json'),
+    archive:       () => import('./locales/pt-pt/archive.json'),
+    publicProfile: () => import('./locales/pt-pt/publicProfile.json'),
+    city:          () => import('./locales/pt-pt/city.json'),
+    venue:         () => import('./locales/pt-pt/venue.json'),
+  },
 }
 
 i18n.use(initReactI18next).init({
@@ -108,7 +140,7 @@ i18n.use(initReactI18next).init({
   react: { useSuspense: false },          // we preload before render ourselves
 })
 
-const loaded = { en: true, fr: false, vi: false, es: false, it: false }
+const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false }
 
 /** Lazy-load + register every namespace for a locale. Idempotent. */
 export async function loadLocale(locale) {
@@ -151,7 +183,12 @@ export function resolveInitialLocale() {
   const cookie = getStoredLocale()
   if (cookie) return cookie
   const nav = (typeof navigator !== 'undefined' ? navigator.language : 'en') || 'en'
-  const short = nav.slice(0, 2).toLowerCase()
+  const lower = nav.toLowerCase()
+  // Portuguese is regional: only "pt-BR" → pt-br; bare "pt", "pt-PT" and any
+  // other pt-XX fall back to European (pt-pt), per product decision.
+  if (lower === 'pt-br') return 'pt-br'
+  if (lower.slice(0, 2) === 'pt') return 'pt-pt'
+  const short = lower.slice(0, 2)
   return SUPPORTED.includes(short) ? short : DEFAULT_LOCALE
 }
 

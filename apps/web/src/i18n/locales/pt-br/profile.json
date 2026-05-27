@@ -1,0 +1,130 @@
+{
+  "pageTitle": "Meu perfil",
+  "changePhoto": "Trocar a foto de perfil",
+  "yourProfile": "Seu perfil",
+  "mode": "Modo",
+  "modes": {
+    "local": "Local",
+    "localDesc": "Você conhece esta cidade",
+    "exploring": "Explorando",
+    "exploringDesc": "Você está descobrindo"
+  },
+  "tabs": {
+    "interests": "Interesses",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Amigos",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Festa",
+    "board_games": "Jogos de tabuleiro",
+    "coffee": "Café",
+    "music": "Música",
+    "food": "Comida",
+    "chill": "Relax"
+  },
+  "interests": {
+    "drinks": "drinks",
+    "party": "festa",
+    "nightlife": "vida noturna",
+    "music": "música",
+    "live music": "música ao vivo",
+    "culture": "cultura",
+    "art": "arte",
+    "food": "comida",
+    "coffee": "café",
+    "sport": "esporte",
+    "fitness": "fitness",
+    "hiking": "trilha",
+    "beach": "praia",
+    "wellness": "bem-estar",
+    "travel": "viagens",
+    "hangout": "sair",
+    "socializing": "conhecer gente",
+    "gaming": "games",
+    "tech": "tecnologia",
+    "dating": "encontros"
+  },
+  "fields": {
+    "username": "Nome de usuário",
+    "usernamePlaceholder": "nome de usuário",
+    "checking": "Verificando…",
+    "available": "@{{username}} está disponível",
+    "aboutMe": "Sobre mim",
+    "charsLeft": "— faltam {{count}}",
+    "aboutPlaceholder": "Amo comida de rua e conversas aleatórias",
+    "email": "E-mail",
+    "readOnly": "— somente leitura",
+    "homeCity": "Cidade natal",
+    "homeCityPlaceholder": "Onde você mora",
+    "age": "Idade",
+    "agePlaceholder": "Sua idade",
+    "myVibe": "Minha vibe",
+    "interests": "Interesses",
+    "interestsHint": "— escolha até 5"
+  },
+  "ambassador": {
+    "title": "Dicas da cidade 👑",
+    "subtitle": "Exibidas no seu perfil como uma lenda local.",
+    "restaurant": "Restaurante favorito",
+    "restaurantPlaceholder": "Um lugar para onde você sempre leva as pessoas",
+    "spot": "Joia escondida / spot",
+    "spotPlaceholder": "Um lugar que a maioria dos turistas não conhece",
+    "tip": "Dica local",
+    "tipPlaceholder": "Seu melhor conselho para quem chega",
+    "story": "História da cidade",
+    "storyPlaceholder": "Algo que você ama nesta cidade"
+  },
+  "hangouts": {
+    "empty": "Ainda não há hangouts — crie um ⚡",
+    "host": "Anfitrião"
+  },
+  "events": {
+    "going": "Vou",
+    "goingEmpty": "Ainda sem planos — encontre algo 🔥",
+    "hosting": "Organizando",
+    "hostingEmpty": "Nada organizado ainda — comece algo ✨",
+    "live": "Ao vivo",
+    "recurring": "↻ Recorrente",
+    "upcoming": "Em breve",
+    "deleteEvent": "Excluir o evento"
+  },
+  "friends": {
+    "requests": "Pedidos de amizade",
+    "empty": "Você ainda não tem amigos. Adicione a partir dos perfis.",
+    "mine": "Meus amigos"
+  },
+  "vibesTab": {
+    "received": "Vibes recebidas",
+    "score": "pontuação vibe de {{score}}",
+    "basedOn_one": "com base em {{count}} vibe",
+    "basedOn_other": "com base em {{count}} vibes",
+    "empty": "Ainda não há vibes",
+    "emptyHint": "Sua pontuação aparecerá aqui quando alguém deixar uma nota para você ✨"
+  },
+  "save": {
+    "uploading": "Enviando…",
+    "saving": "Salvando…",
+    "saved": "Salvo ✓",
+    "save": "Salvar o perfil"
+  },
+  "signOut": "Sair",
+  "deleteAccount": "Excluir a conta",
+  "delete": {
+    "title": "Excluir a conta?",
+    "body": "Seu perfil, seus amigos e suas configurações serão removidos permanentemente. Suas mensagens e eventos permanecerão nos chats da cidade de forma anônima.",
+    "irreversible": "Isso não pode ser desfeito.",
+    "deleting": "Excluindo…",
+    "confirm": "Sim, excluir minha conta",
+    "cancel": "Cancelar"
+  },
+  "errors": {
+    "photoUpload": "Falha ao enviar a foto. Tente de novo.",
+    "usernameTooShort": "O nome de usuário deve ter pelo menos 3 caracteres",
+    "usernameTaken": "Esse nome de usuário já está em uso",
+    "usernameInvalid": "Nome de usuário inválido",
+    "saveFailed": "Falha ao salvar. Tente de novo.",
+    "generic": "Algo deu errado. Tente de novo."
+  }
+}

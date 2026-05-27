@@ -1,0 +1,52 @@
+{
+  "language": "Idioma",
+  "cancel": "Cancelar",
+  "loading": "Carregando…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "Explorando" }
+  },
+  "composer": {
+    "attach": "Adicionar um anexo",
+    "emoji": "Emoji"
+  },
+  "vibe": {
+    "party": "Festa",
+    "board_games": "Jogos de tabuleiro",
+    "coffee": "Café",
+    "music": "Música",
+    "food": "Comida",
+    "chill": "Relax"
+  },
+  "weather": {
+    "clear": "céu limpo",
+    "sunnyHot": "tempo lindo",
+    "clearNight": "noite limpa",
+    "mostlyClear": "quase limpo",
+    "partly": "algumas nuvens",
+    "overcast": "céu cinzento",
+    "fog": "neblina",
+    "drizzle": "garoa",
+    "rain": "chuva",
+    "snow": "neve",
+    "snowShowers": "pancadas de neve",
+    "thunder": "tempestade"
+  },
+  "time": {
+    "happeningNow": "🔥 acontecendo agora",
+    "inMin": "🔥 em {{count}} min",
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "yesterday": "Ontem",
+    "justNow": "agora mesmo",
+    "nowShort": "agora",
+    "mAgo": "há {{count}} min",
+    "hAgo": "há {{count}} h",
+    "dAgo": "há {{count}} d",
+    "expired": "Expirado",
+    "expiresSoon": "Expira em breve",
+    "expiresInMin": "Expira em {{mins}} min",
+    "expiresInHourMin": "Expira em {{hours}} h {{mins}} min",
+    "expiresInHour": "Expira em {{hours}} h"
+  }
+}

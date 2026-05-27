@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "Começar um hangout",
+    "editTitle": "Editar o hangout",
+    "category": "Categoria",
+    "cat": { "general": "Geral", "tips": "Dicas", "food": "Comida", "drinks": "Drinks", "help": "Ajuda", "meetup": "Encontro" },
+    "titleLabel": "O que você está pensando?",
+    "titlePlaceholder": "ex. Melhor café da região?",
+    "detailsLabel": "Adicionar detalhes",
+    "optional": "(opcional)",
+    "detailsPlaceholder": "Dê um pouco de contexto…",
+    "expiry": "⏱ Expira automaticamente em 24 h",
+    "saving": "Salvando…",
+    "starting": "Começando…",
+    "saveChanges": "Salvar alterações",
+    "startCta": "Começar um hangout ⚡",
+    "limitHeader": "Um de cada vez",
+    "limitTitle": "Você já tem um hangout",
+    "limitSub": "Você pode ter um hangout de cada vez. Vá para “{{title}}” ou exclua para começar um novo.",
+    "limitGo": "Ir para o meu hangout →",
+    "yourHangout": "seu hangout"
+  },
+  "deleteConfirm": "Excluir este hangout? Isso encerra para todo mundo e não pode ser desfeito.",
+  "deleteFailedAlert": "Não foi possível excluir. Tente de novo.",
+  "shareAria": "Compartilhar o hangout",
+  "shareTitle": "Compartilhar este hangout",
+  "members": {
+    "oneIn": "{{name}} está participando",
+    "countIn": "{{count}} neste hangout",
+    "seeAll": "Ver todos →"
+  },
+  "owner": { "edit": "✏️ Editar", "delete": "🗑 Excluir" },
+  "gated": {
+    "title": "Hangout só para membros",
+    "pending": "Pedido pendente — você poderá entrar na conversa assim que um membro aceitar.",
+    "prompt": "Peça para participar para ver a conversa e conversar.",
+    "requestBtn": "Pedir para participar"
+  },
+  "feed": {
+    "beginning": "Início da conversa",
+    "loading": "Carregando…",
+    "emptyTitle": "Ainda não há respostas",
+    "emptySub": "Seja o primeiro a participar"
+  },
+  "joinReq": {
+    "someone": "Alguém",
+    "wantsToJoin": " quer participar",
+    "joined": " entrou no hangout",
+    "askedToJoin": " pediu para participar",
+    "decline": "Recusar",
+    "accept": "Aceitar",
+    "accepted": "Aceito",
+    "acceptedBy": "Aceito por {{name}}",
+    "declined": "Pedido recusado"
+  },
+  "modes": { "local": "Local", "exploring": "Explorando" },
+  "reply": { "photo": "📷 Foto", "unavailable": "Mensagem original indisponível" },
+  "composer": { "reply": "Responda à conversa…", "start": "Anime a vibe ✨" },
+  "errors": {
+    "locFailed": "Não foi possível obter sua localização. Ative o acesso à localização e tente de novo.",
+    "imageType": "Selecione uma imagem JPEG, PNG ou WebP.",
+    "imageTooLarge": "Imagem muito grande. Máx. 10 MB.",
+    "imageSend": "Não foi possível enviar a imagem. Tente de novo.",
+    "dismiss": "{{error}} · toque para fechar"
+  }
+}

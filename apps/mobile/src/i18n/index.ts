@@ -87,8 +87,40 @@ import it_misc    from './locales/it/misc.json';
 import it_cities  from './locales/it/cities.json';
 import it_upcoming from './locales/it/upcoming.json';
 import it_archive from './locales/it/archive.json';
+import ptbr_common  from './locales/pt-br/common.json';
+import ptbr_auth    from './locales/pt-br/auth.json';
+import ptbr_landing from './locales/pt-br/landing.json';
+import ptbr_here    from './locales/pt-br/here.json';
+import ptbr_now     from './locales/pt-br/now.json';
+import ptbr_chat    from './locales/pt-br/chat.json';
+import ptbr_event   from './locales/pt-br/event.json';
+import ptbr_hangout from './locales/pt-br/hangout.json';
+import ptbr_dm      from './locales/pt-br/dm.json';
+import ptbr_notifications from './locales/pt-br/notifications.json';
+import ptbr_publicProfile from './locales/pt-br/publicProfile.json';
+import ptbr_me      from './locales/pt-br/me.json';
+import ptbr_misc    from './locales/pt-br/misc.json';
+import ptbr_cities  from './locales/pt-br/cities.json';
+import ptbr_upcoming from './locales/pt-br/upcoming.json';
+import ptbr_archive from './locales/pt-br/archive.json';
+import ptpt_common  from './locales/pt-pt/common.json';
+import ptpt_auth    from './locales/pt-pt/auth.json';
+import ptpt_landing from './locales/pt-pt/landing.json';
+import ptpt_here    from './locales/pt-pt/here.json';
+import ptpt_now     from './locales/pt-pt/now.json';
+import ptpt_chat    from './locales/pt-pt/chat.json';
+import ptpt_event   from './locales/pt-pt/event.json';
+import ptpt_hangout from './locales/pt-pt/hangout.json';
+import ptpt_dm      from './locales/pt-pt/dm.json';
+import ptpt_notifications from './locales/pt-pt/notifications.json';
+import ptpt_publicProfile from './locales/pt-pt/publicProfile.json';
+import ptpt_me      from './locales/pt-pt/me.json';
+import ptpt_misc    from './locales/pt-pt/misc.json';
+import ptpt_cities  from './locales/pt-pt/cities.json';
+import ptpt_upcoming from './locales/pt-pt/upcoming.json';
+import ptpt_archive from './locales/pt-pt/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -101,6 +133,8 @@ const resources = {
   vi: { common: vi_common, auth: vi_auth, landing: vi_landing, here: vi_here, now: vi_now, chat: vi_chat, event: vi_event, hangout: vi_hangout, dm: vi_dm, notifications: vi_notifications, publicProfile: vi_publicProfile, me: vi_me, misc: vi_misc, cities: vi_cities, upcoming: vi_upcoming, archive: vi_archive },
   es: { common: es_common, auth: es_auth, landing: es_landing, here: es_here, now: es_now, chat: es_chat, event: es_event, hangout: es_hangout, dm: es_dm, notifications: es_notifications, publicProfile: es_publicProfile, me: es_me, misc: es_misc, cities: es_cities, upcoming: es_upcoming, archive: es_archive },
   it: { common: it_common, auth: it_auth, landing: it_landing, here: it_here, now: it_now, chat: it_chat, event: it_event, hangout: it_hangout, dm: it_dm, notifications: it_notifications, publicProfile: it_publicProfile, me: it_me, misc: it_misc, cities: it_cities, upcoming: it_upcoming, archive: it_archive },
+  'pt-br': { common: ptbr_common, auth: ptbr_auth, landing: ptbr_landing, here: ptbr_here, now: ptbr_now, chat: ptbr_chat, event: ptbr_event, hangout: ptbr_hangout, dm: ptbr_dm, notifications: ptbr_notifications, publicProfile: ptbr_publicProfile, me: ptbr_me, misc: ptbr_misc, cities: ptbr_cities, upcoming: ptbr_upcoming, archive: ptbr_archive },
+  'pt-pt': { common: ptpt_common, auth: ptpt_auth, landing: ptpt_landing, here: ptpt_here, now: ptpt_now, chat: ptpt_chat, event: ptpt_event, hangout: ptpt_hangout, dm: ptpt_dm, notifications: ptpt_notifications, publicProfile: ptpt_publicProfile, me: ptpt_me, misc: ptpt_misc, cities: ptpt_cities, upcoming: ptpt_upcoming, archive: ptpt_archive },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {
@@ -111,7 +145,12 @@ function isSupported(code: string | null | undefined): code is Locale {
 // override is read from AsyncStorage. Falls back to English.
 function deviceLocale(): Locale {
   try {
-    const code = Localization.getLocales()[0]?.languageCode?.toLowerCase();
+    const loc  = Localization.getLocales()[0];
+    const tag  = (loc?.languageTag ?? '').toLowerCase();   // e.g. "pt-br"
+    const code = (loc?.languageCode ?? '').toLowerCase();  // e.g. "pt"
+    // Portuguese is regional: only pt-BR → pt-br; bare "pt" and any other
+    // pt-XX (incl. pt-PT) default to European (pt-pt), per product decision.
+    if (code === 'pt' || tag.startsWith('pt')) return tag.includes('br') ? 'pt-br' : 'pt-pt';
     return isSupported(code) ? code : DEFAULT_LOCALE;
   } catch {
     return DEFAULT_LOCALE;

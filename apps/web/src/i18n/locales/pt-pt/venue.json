@@ -1,0 +1,17 @@
+{
+  "loading": "A carregar…",
+  "notFound": "Este local não está na Hilads.",
+  "loadError": "Não foi possível carregar este local. Tenta novamente.",
+  "breadcrumb": "Trilho de navegação",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Café"
+  },
+  "typeInCity": "{{category}} em {{city}}",
+  "address": "Morada",
+  "hours": "Horário",
+  "openEveryDay": "Aberto todos os dias · {{opens}} – {{closes}}",
+  "ctaText": "Vê quem está por {{city}} agora mesmo.",
+  "openCity": "Abrir {{city}}",
+  "lastUpdated": "Atualizado a {{date}}"
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Pessoas por perto",
+  "noCityTitle": "Nenhuma cidade selecionada",
+  "noCitySub": "Escolhe uma cidade para ver quem está por perto.",
+  "browseCities": "Explorar cidades",
+  "filterBadge": "Badge",
+  "filterVibe": "Vibe",
+  "filterMode": "Modo",
+  "you": "(tu)",
+  "hereNow": "Here now",
+  "noMatchLive": "Ninguém corresponde a estes filtros por agora.",
+  "legendsSub": "São eles que fazem a cidade acontecer",
+  "cityCrew": "Membros da cidade",
+  "noMatchCrew": "Nenhum membro corresponde a estes filtros.",
+  "loadMore": "Ver mais"
+}

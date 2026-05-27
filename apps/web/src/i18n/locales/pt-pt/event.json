@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "Trazer gente ✨",
+    "linkCopied": "Link copiado ✨",
+    "vibeTitle": "Partilhar esta vibe",
+    "eventAria": "Partilhar o evento"
+  },
+  "title": { "edit": "Editar o evento", "host": "Organiza um evento", "create": "Cria um evento" },
+  "delete": {
+    "confirmTitle": "Eliminar este evento?",
+    "confirmBody": "Isto vai remover o evento e todas as mensagens. Não pode ser desfeito.",
+    "cancel": "Cancelar",
+    "deleting": "A eliminar…",
+    "confirm": "Eliminar",
+    "button": "🗑 Eliminar o evento"
+  },
+  "quickStart": "Início rápido",
+  "presets": {
+    "dailySpot": "Spot diário", "dailySpotDesc": "Todos os dias",
+    "everyEvening": "Todas as noites", "everyEveningDesc": "Diariamente · 20:00",
+    "weekends": "Fins de semana", "weekendsDesc": "Sáb. e dom."
+  },
+  "category": "Categoria",
+  "categories": {
+    "drinks": "Copos", "party": "Festa", "music": "Música", "food": "Comida",
+    "coffee": "Café", "sport": "Desporto", "meetup": "Encontro", "other": "Outro"
+  },
+  "titleLabel": "Título",
+  "titlePlaceholder": "ex. Noite de jazz no Rooftop Bar",
+  "date": "Data",
+  "today": "Hoje",
+  "tomorrow": "Amanhã",
+  "todayHint": "Organizar hoje dá-te a maior visibilidade 🔥",
+  "starts": "Início",
+  "ends": "Fim",
+  "repeat": "Repetir",
+  "recurrence": { "once": "Uma vez", "daily": "Diariamente", "weekly": "Semanalmente", "everyNDays": "A cada N dias" },
+  "weekdays": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"],
+  "intervalEvery": "A cada",
+  "intervalDays": "dias",
+  "location": "Local",
+  "locating": "A obter a tua localização…",
+  "locationPlaceholder": "Opcional · toca para situar no mapa",
+  "clearLocation": "Limpar o local",
+  "errors": {
+    "endAfterStart": "A hora de fim deve ser pelo menos 15 minutos depois do início",
+    "pickDay": "Escolhe pelo menos um dia da semana",
+    "deleteFailed": "Não foi possível eliminar o evento. Tenta novamente.",
+    "locUnavailable": "A localização não está disponível neste navegador. Mesmo assim, podes criar o evento sem ela.",
+    "locFailed": "Não foi possível obter a tua localização. Ativa o acesso à localização ou ignora o mapa."
+  },
+  "submit": {
+    "saving": "A guardar…", "creating": "A criar…",
+    "saveChanges": "Guardar alterações", "openSpot": "Abre o teu spot",
+    "startEvent": "Iniciar um evento", "create": "Cria um evento"
+  },
+  "recur": {"everyday":"Todos os dias","weekly":"Semanalmente","everyNDays_one":"A cada {{count}} dia","everyNDays_other":"A cada {{count}} dias"}
+}

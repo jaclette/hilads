@@ -1,0 +1,20 @@
+{
+  "title": "Mudar de cidade",
+  "searchPlaceholder": "Buscar uma cidade…",
+  "topCities": "Cidades mais ativas agora",
+  "cities": "Cidades",
+  "filterActive": "🔥 Mais ativas",
+  "filterEvents": "🎉 Com mais eventos",
+  "filterOnline": "🟢 Mais online",
+  "backToLocation": "Voltar para minha localização",
+  "youreHere": "você está aqui",
+  "online": "{{count}} online",
+  "events_one": "{{count}} evento",
+  "events_other": "{{count}} eventos",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} msgs",
+  "loadError": "Não foi possível carregar as cidades",
+  "noResults": "Nenhuma cidade encontrada para \"{{query}}\"",
+  "noCities": "Nenhuma cidade encontrada"
+}
