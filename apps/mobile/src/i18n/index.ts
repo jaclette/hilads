@@ -215,8 +215,24 @@ import ko_misc    from './locales/ko/misc.json';
 import ko_cities  from './locales/ko/cities.json';
 import ko_upcoming from './locales/ko/upcoming.json';
 import ko_archive from './locales/ko/archive.json';
+import fil_common  from './locales/fil/common.json';
+import fil_auth    from './locales/fil/auth.json';
+import fil_landing from './locales/fil/landing.json';
+import fil_here    from './locales/fil/here.json';
+import fil_now     from './locales/fil/now.json';
+import fil_chat    from './locales/fil/chat.json';
+import fil_event   from './locales/fil/event.json';
+import fil_hangout from './locales/fil/hangout.json';
+import fil_dm      from './locales/fil/dm.json';
+import fil_notifications from './locales/fil/notifications.json';
+import fil_publicProfile from './locales/fil/publicProfile.json';
+import fil_me      from './locales/fil/me.json';
+import fil_misc    from './locales/fil/misc.json';
+import fil_cities  from './locales/fil/cities.json';
+import fil_upcoming from './locales/fil/upcoming.json';
+import fil_archive from './locales/fil/archive.json';
 
-export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko'] as const;
+export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil'] as const;
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -237,6 +253,7 @@ const resources = {
   'zh-hant': { common: zhhant_common, auth: zhhant_auth, landing: zhhant_landing, here: zhhant_here, now: zhhant_now, chat: zhhant_chat, event: zhhant_event, hangout: zhhant_hangout, dm: zhhant_dm, notifications: zhhant_notifications, publicProfile: zhhant_publicProfile, me: zhhant_me, misc: zhhant_misc, cities: zhhant_cities, upcoming: zhhant_upcoming, archive: zhhant_archive },
   ja: { common: ja_common, auth: ja_auth, landing: ja_landing, here: ja_here, now: ja_now, chat: ja_chat, event: ja_event, hangout: ja_hangout, dm: ja_dm, notifications: ja_notifications, publicProfile: ja_publicProfile, me: ja_me, misc: ja_misc, cities: ja_cities, upcoming: ja_upcoming, archive: ja_archive },
   ko: { common: ko_common, auth: ko_auth, landing: ko_landing, here: ko_here, now: ko_now, chat: ko_chat, event: ko_event, hangout: ko_hangout, dm: ko_dm, notifications: ko_notifications, publicProfile: ko_publicProfile, me: ko_me, misc: ko_misc, cities: ko_cities, upcoming: ko_upcoming, archive: ko_archive },
+  fil: { common: fil_common, auth: fil_auth, landing: fil_landing, here: fil_here, now: fil_now, chat: fil_chat, event: fil_event, hangout: fil_hangout, dm: fil_dm, notifications: fil_notifications, publicProfile: fil_publicProfile, me: fil_me, misc: fil_misc, cities: fil_cities, upcoming: fil_upcoming, archive: fil_archive },
 };
 
 function isSupported(code: string | null | undefined): code is Locale {
@@ -256,6 +273,8 @@ function deviceLocale(): Locale {
     // Chinese is script-based: TW/HK/MO/Hant → Traditional; everything else
     // zh-* (CN/SG/Hans/bare zh) → Simplified default, per product decision.
     if (code === 'zh' || tag.startsWith('zh')) return /hant|tw|hk|mo/.test(tag) ? 'zh-hant' : 'zh-hans';
+    // Filipino (3-letter code) + Tagalog (tl) both → fil.
+    if (code === 'fil' || code === 'tl' || tag.startsWith('fil') || tag.startsWith('tl')) return 'fil';
     return isSupported(code) ? code : DEFAULT_LOCALE;
   } catch {
     return DEFAULT_LOCALE;

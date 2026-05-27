@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "sub": "Buhay ang lungsod sa paligid mo.\nMaghanap ng mga tao, sumali sa kung ano ang nangyayari, o buksan ang sarili mong spot."
+  },
+  "join": {
+    "peopleLive_one": "🔥 {{count}} tao ang nagha-hangout ngayon",
+    "peopleLive_other": "🔥 {{count}} tao ang nagha-hangout ngayon",
+    "events_one": "🔥 {{count}} event ang nangyayari",
+    "events_other": "🔥 {{count}} event ang nangyayari",
+    "hangouts_one": "🗣️ {{count}} hangout ang aktibo",
+    "hangouts_other": "🗣️ {{count}} hangout ang aktibo",
+    "replies_one": "{{count}} tugon",
+    "replies_other": "{{count}} tugon",
+    "pickCity": "Pumili ng lungsod\nat sumali na",
+    "locating": "› hinahanap ang lungsod mo...",
+    "browseCities": "Mag-browse ng mga lungsod →",
+    "yourName": "Pangalan mo",
+    "namePlaceholder": "Kumustahin sila bilang...",
+    "tryAgain": "Subukan ulit",
+    "useLocation": "Gamitin na lang ang aking lokasyon",
+    "joinCity": "Sumali sa {{city}} →",
+    "joinChat": "Sumali sa Chat →",
+    "hint": "// anonymous · instant access",
+    "keepIdentity": "o panatilihin ang iyong identity",
+    "createAccount": "✨ Gumawa ng account",
+    "logIn": "Mag-log in",
+    "authHint": "I-save ang pangalan mo · i-unlock ang mga profile · magdagdag ng kaibigan"
+  },
+  "local": {
+    "badge": "🌍 Local",
+    "title": "Pasimulan mo ang aksyon",
+    "tagline": "Kabisado mo ang pinakamagagandang spot. Ngayon, ibahagi mo na sila.",
+    "bullets": [
+      "Mag-host ng paulit-ulit na event sa paborito mong mga local spot",
+      "Dalhin ang mga tao sa mga lugar na mahal mo",
+      "Maging dahilan kung bakit lumalabas ang mga tao"
+    ],
+    "cta": "I-host ang spot mo"
+  },
+  "exploring": {
+    "badge": "🧭 Nag-e-explore",
+    "title": "Maghanap ng tunay na sandali sa kahit anong lungsod",
+    "tagline": "Saan ka man mapadpad, hanapin ang iyong tao.",
+    "bullets": [
+      "Maghanap ng mga real-time na event malapit sa iyo",
+      "Makilala ang mga local at iba pang explorer agad",
+      "Iwasan ang mga tourist trap. Tuklasin ang tunay na lungsod."
+    ],
+    "cta": "Tingnan kung ano ang nangyayari"
+  },
+  "how": {
+    "eyebrow": "Paano ito gumagana",
+    "title": "Tatlong hakbang para makilala ang mga tao malapit sa iyo.",
+    "steps": [
+      { "title": "Buksan ang app", "desc": "Tingnan kung sino ang nasa paligid mo at kung ano ang nangyayari malapit sa iyo ngayon." },
+      { "title": "Piliin ang iyong mode", "desc": "Local. Kabisado mo ang lungsod.\nNag-e-explore. Gusto mong maramdaman ito." },
+      { "title": "Sumali na", "desc": "Sumali sa isang event o buksan ang sarili mong spot. Dito nagsisimula ang totoong buhay." }
+    ]
+  },
+  "stats": {
+    "peopleLive": "tao online ngayon",
+    "cities": "mga lungsod",
+    "eventsCreated": "mga event na ginawa",
+    "signupsNeeded": "kailangang mag-sign up"
+  },
+  "concept": {
+    "title": "Hindi pa isang social network.\nAng lungsod mo, live.",
+    "rules": [
+      "Walang follower. Walang feed. Walang algorithm.",
+      "Tingnan kung sino ang nasa paligid. Sumali sa kung ano ang nangyayari malapit sa iyo.",
+      "Totoong tao. Totoong lugar. Ngayon na."
+    ]
+  },
+  "seo": "Ang Hilads ay isang real-time na social app na tumutulong sa iyong makilala ang mga taong malapit at matuklasan ang mga puwedeng gawin sa lungsod mo. Maghanap ng mga event malapit sa iyo, makilala ang mga local, at kumonekta sa mga manlalakbay saan ka man naroon. Naghahanap ka ba ng puwedeng gawin sa Paris? Gusto mong makilala ang mga local sa Barcelona? Nag-e-explore sa Lisbon at gustong malaman kung ano ang nangyayari ngayong gabi? Ipinapakita sa iyo ng Hilads ang lungsod, live. Walang kailangang account. Sumali ka lang.",
+  "download": {
+    "eyebrow": "Mga mobile app",
+    "title": "Ang lungsod mo sa bulsa mo.",
+    "sub": "Malapit nang dumating ang mga native app."
+  },
+  "repeat": {
+    "eyebrow": "Sumali na",
+    "titleCity": "Live na ang {{city}} ngayon.",
+    "titleGeneric": "Live na ang lungsod mo ngayon."
+  }
+}

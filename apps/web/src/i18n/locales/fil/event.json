@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "Magdala ng mga tao ✨",
+    "linkCopied": "Nakopya ang link ✨",
+    "vibeTitle": "Ibahagi ang vibe na ito",
+    "eventAria": "Ibahagi ang event"
+  },
+  "title": { "edit": "I-edit ang event", "host": "Mag-host ng event", "create": "Gumawa ng event" },
+  "delete": {
+    "confirmTitle": "I-delete ang event na ito?",
+    "confirmBody": "Tatanggalin nito ang event at lahat ng mensahe. Hindi na ito maibabalik.",
+    "cancel": "Kanselahin",
+    "deleting": "Dine-delete…",
+    "confirm": "I-delete",
+    "button": "🗑 I-delete ang event"
+  },
+  "quickStart": "Mabilisang simula",
+  "presets": {
+    "dailySpot": "Daily spot", "dailySpotDesc": "Araw-araw",
+    "everyEvening": "Tuwing gabi", "everyEveningDesc": "Araw-araw · 8pm",
+    "weekends": "Weekends", "weekendsDesc": "Sab at Lin"
+  },
+  "category": "Kategorya",
+  "categories": {
+    "drinks": "Inumin", "party": "Party", "music": "Musika", "food": "Pagkain",
+    "coffee": "Kape", "sport": "Sport", "meetup": "Meetup", "other": "Iba pa"
+  },
+  "titleLabel": "Title",
+  "titlePlaceholder": "hal. Jazz night sa Rooftop Bar",
+  "date": "Petsa",
+  "today": "Ngayon",
+  "tomorrow": "Bukas",
+  "todayHint": "Pinakamalaking visibility ang makukuha mo kapag nag-host ngayon 🔥",
+  "starts": "Magsisimula",
+  "ends": "Magtatapos",
+  "repeat": "Ulitin",
+  "recurrence": { "once": "Minsan", "daily": "Araw-araw", "weekly": "Lingguhan", "everyNDays": "Tuwing N araw" },
+  "weekdays": ["Lin", "Lun", "Mar", "Miy", "Huw", "Biy", "Sab"],
+  "intervalEvery": "Tuwing",
+  "intervalDays": "araw",
+  "location": "Lokasyon",
+  "locating": "Kinukuha ang lokasyon mo…",
+  "locationPlaceholder": "Opsyonal · i-tap para itakda sa mapa",
+  "clearLocation": "I-clear ang lokasyon",
+  "errors": {
+    "endAfterStart": "Dapat hindi bababa sa 15 minuto matapos ang start time ang end time",
+    "pickDay": "Pumili ng kahit isang araw ng linggo",
+    "deleteFailed": "Hindi na-delete ang event. Subukan ulit.",
+    "locUnavailable": "Hindi available ang lokasyon sa browser na ito. Puwede mo pa ring gawin ang event nang wala ito.",
+    "locFailed": "Hindi nakuha ang lokasyon mo. I-enable ang location access, o laktawan ang mapa."
+  },
+  "submit": {
+    "saving": "Sine-save…", "creating": "Ginagawa…",
+    "saveChanges": "I-save ang mga pagbabago", "openSpot": "Buksan ang spot mo",
+    "startEvent": "Magsimula ng event", "create": "Gumawa ng event"
+  },
+  "recur": {"everyday":"Araw-araw","weekly":"Lingguhan","everyNDays_one":"Tuwing {{count}} araw","everyNDays_other":"Tuwing {{count}} araw"}
+}

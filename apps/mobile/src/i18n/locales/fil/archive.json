@@ -1,0 +1,15 @@
+{
+  "title": "Ano ang nangyari",
+  "loadError": "Hindi ma-load ang archive",
+  "filterAll": "Lahat",
+  "rangeRecent": "Kamakailan",
+  "range7": "Huling 7 araw",
+  "range14": "Huling 14 araw",
+  "custom": "Custom",
+  "pickEnd": "Ngayon pumili ng huling araw",
+  "pickStart": "Pumili ng panimulang araw (hanggang {{max}} araw)",
+  "apply": "I-apply",
+  "emptyTitle": "Wala pang laman dito",
+  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at hangouts kapag may kasaysayan na ang lungsod.",
+  "emptyWindowSub": "Walang event o hangout sa panahong ito. Subukan ang mas malawak na range."
+}

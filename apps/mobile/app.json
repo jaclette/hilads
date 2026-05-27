@@ -136,6 +136,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ko/e/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/e/"
             }
           ],
           "category": [
@@ -211,6 +216,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ko/event"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/event"
             }
           ],
           "category": [
@@ -286,6 +296,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ko/city"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/city"
             }
           ],
           "category": [
@@ -361,6 +376,11 @@
               "scheme": "https",
               "host": "hilads.live",
               "pathPrefix": "/ko/t/"
+            },
+            {
+              "scheme": "https",
+              "host": "hilads.live",
+              "pathPrefix": "/fil/t/"
             }
           ],
           "category": [

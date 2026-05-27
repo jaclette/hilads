@@ -1,0 +1,52 @@
+{
+  "language": "Wika",
+  "cancel": "Kanselahin",
+  "loading": "Naglo-load…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "Nag-e-explore" }
+  },
+  "composer": {
+    "attach": "Magdagdag ng attachment",
+    "emoji": "Emoji"
+  },
+  "vibe": {
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Kape",
+    "music": "Musika",
+    "food": "Pagkain",
+    "chill": "Chill"
+  },
+  "weather": {
+    "clear": "maaliwalas na langit",
+    "sunnyHot": "ang ganda ng panahon",
+    "clearNight": "maaliwalas ngayong gabi",
+    "mostlyClear": "halos maaliwalas",
+    "partly": "kaunting ulap",
+    "overcast": "makulimlim na langit",
+    "fog": "maulap",
+    "drizzle": "ambon",
+    "rain": "ulan",
+    "snow": "niyebe",
+    "snowShowers": "ambon ng niyebe",
+    "thunder": "bagyo"
+  },
+  "time": {
+    "happeningNow": "🔥 nangyayari ngayon",
+    "inMin": "🔥 sa {{count}} min",
+    "today": "Ngayon",
+    "tomorrow": "Bukas",
+    "yesterday": "Kahapon",
+    "justNow": "ngayon lang",
+    "nowShort": "ngayon",
+    "mAgo": "{{count}}m ang nakaraan",
+    "hAgo": "{{count}}h ang nakaraan",
+    "dAgo": "{{count}}d ang nakaraan",
+    "expired": "Nag-expire na",
+    "expiresSoon": "Malapit nang mag-expire",
+    "expiresInMin": "Mag-e-expire sa {{mins}}m",
+    "expiresInHourMin": "Mag-e-expire sa {{hours}}h {{mins}}m",
+    "expiresInHour": "Mag-e-expire sa {{hours}}h"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Mga mensahe",
+  "filters": { "all": "Lahat", "dms": "Mga direktang mensahe", "events": "Mga event chat" },
+  "loading": "Naglo-load…",
+  "error": {
+    "loadTitle": "Hindi na-load ang mga mensahe",
+    "loadSub": "Suriin ang koneksyon mo at subukan ulit."
+  },
+  "empty": {
+    "eventsTitle": "Wala pang event chat",
+    "eventsSub": "Gumawa o sumali sa isang event para makachat sa mga pupunta.",
+    "title": "Wala pang mensahe",
+    "sub": "Kumonekta sa mga taong nakikilala mo sa lungsod."
+  },
+  "sectionDms": "Mga direktang mensahe",
+  "sectionEvents": "Mga event chat",
+  "youPrefix": "Ikaw: {{message}}",
+  "startConversation": "Simulan ang usapan",
+  "eventCreated": "Ikaw ang gumawa nito",
+  "eventJoined": "Sumali ka rito",
+  "prefs": {
+    "title": "Mga notification preference",
+    "dmName": "Mga bagong direktang mensahe",
+    "dmDesc": "Kapag may nagpadala sa iyo ng pribadong mensahe",
+    "eventName": "Mga mensahe sa event chat",
+    "eventDesc": "Kapag may nag-message sa isang event na sinalihan mo",
+    "cityName": "Mga mensahe sa city chat",
+    "cityDesc": "Kapag may nagpadala ng mensahe sa channel ng lungsod mo"
+  },
+  "thread": {
+    "loadError": "Hindi na-load ang mga mensahe.",
+    "beginning": "Simula ng usapan",
+    "photo": "📷 Larawan",
+    "unavailable": "Hindi available ang orihinal na mensahe",
+    "tapMaps": "I-tap para buksan sa maps",
+    "composer": "Mensahe…",
+    "imageType": "Pumili ng JPEG, PNG, o WebP na larawan.",
+    "imageTooLarge": "Masyadong malaki ang larawan. Max na laki: 10 MB.",
+    "imageSend": "Hindi naipadala ang larawan. Subukan ulit."
+  }
+}

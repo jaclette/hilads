@@ -1,0 +1,30 @@
+{
+  "allTitle": "Lahat ng Notification",
+  "markAllRead": "Markahang basa lahat",
+  "emptyTitle": "Wala pang notification",
+  "emptySub": "Makikita mo dito ang mga mensahe at update ng event.",
+  "seeAll": "Tingnan lahat ng notification",
+  "prefTitle": "MGA PREFERENCE SA NOTIFICATION",
+  "pref": {
+    "mentionLabel": "Mga banggit @",
+    "mentionSub": "Kapag may nag-@mention sa iyo sa isang mensahe o hangout",
+    "eventJoinLabel": "May sumali sa iyong event",
+    "eventJoinSub": "Kapag may bagong taong sumali sa isang event na pupuntahan mo",
+    "newEventLabel": "Mga bagong event sa iyong lungsod",
+    "newEventSub": "Kapag may gumawa ng event sa iyong lungsod",
+    "cityJoinLabel": "May dumating sa iyong lungsod",
+    "cityJoinSub": "Kapag may sumali sa channel ng lungsod na kinaroroonan mo",
+    "friendLabel": "Mga friend request",
+    "friendSub": "Kapag may nagpadala sa iyo ng friend request o tumanggap ng sa iyo",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "Kapag may nag-iwan ng vibe sa iyong profile",
+    "profileViewLabel": "Mga bisita sa profile 👀",
+    "profileViewSub": "Kapag may tumingin sa iyong profile",
+    "topicReplyLabel": "Mga tugon sa hangout 💬",
+    "topicReplySub": "Kapag may tumugon sa isang hangout na sinalihan mo",
+    "newTopicLabel": "Mga bagong hangout sa iyong lungsod",
+    "newTopicSub": "Kapag may nagsimula ng bagong hangout sa iyong lungsod",
+    "announceLabel": "Mga anunsyo mula sa Hilads",
+    "announceSub": "Paminsan-minsang update mula sa team"
+  }
+}

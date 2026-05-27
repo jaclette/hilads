@@ -1,0 +1,22 @@
+{
+  "title": "Mga notification",
+  "markAllRead": "Markahan lahat na nabasa",
+  "empty": { "title": "Wala nang bago", "sub": "Lalabas dito ang mga notification" },
+  "loading": "Naglo-load…",
+  "seeAll": "Tingnan lahat ng notification →",
+  "prefs": {
+    "title": "Mga preference sa notification",
+    "mentionName": "Mga mention @",
+    "mentionDesc": "Kapag may nag-@mention sa iyo sa isang mensahe o hangout",
+    "newEventName": "Mga bagong event sa iyong lungsod",
+    "newEventDesc": "Kapag may gumawa ng event sa iyong lungsod",
+    "friendName": "Mga friend request",
+    "friendDesc": "Kapag may nagpadala sa iyo ng friend request o tinanggap ang sa iyo",
+    "notesName": "Mga note ✨",
+    "notesDesc": "Kapag may nag-iwan ng note sa iyong profile",
+    "profileViewName": "Mga profile view 👀",
+    "profileViewDesc": "Kapag may tumingin sa iyong profile",
+    "announcementName": "Mga anunsyo mula sa Hilads",
+    "announcementDesc": "Paminsan-minsang update mula sa team"
+  }
+}

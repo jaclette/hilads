@@ -10,13 +10,13 @@ declare(strict_types=1);
  * the case for English/unknown locales and for any field we don't translate
  * (message previews and proper nouns like event/venue/city names stay as-is).
  *
- * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant/ja/ko are translated; English is the source of truth in the call sites.
+ * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant/ja/ko/fil are translated; English is the source of truth in the call sites.
  * Conventions (match the app i18n rules): "tu" form; the brand word "vibe"
  * stays English.
  */
 final class NotificationI18n
 {
-    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko'];
+    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil'];
 
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
@@ -34,6 +34,7 @@ final class NotificationI18n
             'zh-hant' => ["👀 有人剛抵達{city}", "{name} 剛剛抵達"],
             'ja'      => ["👀 {city}に誰かが到着しました", "{name} が到着しました"],
             'ko'      => ["👀 {city}에 누군가 도착했어요", "{name} 님이 방금 도착했어요"],
+            'fil'     => ["👀 May kakarating lang sa {city}", "Kararating lang ni {name}"],
         ],
         'new_event' => [
             'fr' => ["🔥 Nouvel événement à {city}", null],
@@ -48,6 +49,7 @@ final class NotificationI18n
             'zh-hant' => ["🔥 {city}有新活動", null],
             'ja'      => ["🔥 {city}で新しいイベント", null],
             'ko'      => ["🔥 {city}에 새로운 이벤트", null],
+            'fil'     => ["🔥 May bagong event sa {city}", null],
         ],
         'channel_message' => [
             'fr' => ["{name} dans le chat de la ville", null],
@@ -62,6 +64,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 在城市聊天室",          null],
             'ja'      => ["{name}（シティチャット）",      null],
             'ko'      => ["{name} 님 (시티 채팅)",         null],
+            'fil'     => ["{name} sa city chat",            null],
         ],
         'event_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -76,6 +79,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 在 {title}", null],
             'ja'      => ["{name}（{title}）", null],
             'ko'      => ["{name} 님 · {title}", null],
+            'fil'     => ["{name} sa {title}", null],
         ],
         'topic_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -90,6 +94,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 在 {title}", null],
             'ja'      => ["{name}（{title}）", null],
             'ko'      => ["{name} 님 · {title}", null],
+            'fil'     => ["{name} sa {title}", null],
         ],
         'dm_message' => [
             'fr' => ["{name} t'a envoyé un message",          null],
@@ -104,6 +109,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 傳了一則訊息給你",              null],
             'ja'      => ["{name} からメッセージが届きました",     null],
             'ko'      => ["{name} 님이 메시지를 보냈어요",         null],
+            'fil'     => ["Nagpadala si {name} ng mensahe",       null],
         ],
         'event_join' => [
             'fr' => ["👋 {name} a rejoint {title}",   null],
@@ -118,6 +124,7 @@ final class NotificationI18n
             'zh-hant' => ["👋 {name} 加入了 {title}",        null],
             'ja'      => ["👋 {name} が {title} に参加しました", null],
             'ko'      => ["👋 {name} 님이 {title}에 참여했어요", null],
+            'fil'     => ["👋 Sumali si {name} sa {title}",     null],
         ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
@@ -132,6 +139,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 傳送了好友邀請給你",                       null],
             'ja'      => ["{name} から友達リクエストが届きました",            null],
             'ko'      => ["{name} 님이 친구 요청을 보냈어요",                null],
+            'fil'     => ["Pinadalhan ka ni {name} ng friend request",      null],
         ],
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami 🎉",            null],
@@ -146,6 +154,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 接受了你的好友邀請 🎉",                     null],
             'ja'      => ["{name} があなたの友達リクエストを承認しました 🎉",   null],
             'ko'      => ["{name} 님이 친구 요청을 수락했어요 🎉",            null],
+            'fil'     => ["Tinanggap ni {name} ang iyong friend request 🎉",  null],
         ],
         'vibe_received' => [
             'fr' => ["{name} t'a envoyé une vibe ✨",         null],
@@ -160,6 +169,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 傳了一個 vibe 給你 ✨",        null],
             'ja'      => ["{name} から vibe が届きました ✨",     null],
             'ko'      => ["{name} 님이 vibe를 보냈어요 ✨",       null],
+            'fil'     => ["Nagpadala si {name} ng vibe ✨",        null],
         ],
         'profile_view' => [
             'fr' => ["👀 {name} a regardé ton profil",   null],
@@ -174,6 +184,7 @@ final class NotificationI18n
             'zh-hant' => ["👀 {name} 看了你的個人資料",         null],
             'ja'      => ["👀 {name} があなたのプロフィールを見ました", null],
             'ko'      => ["👀 {name} 님이 프로필을 봤어요", null],
+            'fil'     => ["👀 Tiningnan ni {name} ang profile mo", null],
         ],
         'join_request' => [
             'fr' => ["{name} veut rejoindre",  "{name} a demandé à rejoindre {title}"],
@@ -188,6 +199,7 @@ final class NotificationI18n
             'zh-hant' => ["{name} 想加入",          "{name} 申請加入 {title}"],
             'ja'      => ["{name} が参加を希望しています", "{name} が {title} への参加をリクエストしました"],
             'ko'      => ["{name} 님이 참여하고 싶어해요", "{name} 님이 {title} 참여를 요청했어요"],
+            'fil'     => ["Gustong sumali ni {name}",     "Humiling si {name} na sumali sa {title}"],
         ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
@@ -202,6 +214,7 @@ final class NotificationI18n
             'zh-hant' => ["你加入了！🎉",     "{name} 把你加入了 {title}"],
             'ja'      => ["参加できました！🎉", "{name} があなたを {title} に追加しました"],
             'ko'      => ["참여 완료! 🎉", "{name} 님이 당신을 {title}에 추가했어요"],
+            'fil'     => ["Sali ka na! 🎉", "Idinagdag ka ni {name} sa {title}"],
         ],
     ];
 
@@ -254,6 +267,10 @@ final class NotificationI18n
         'ko' => [
             'titled' => "{name} 님이 {title}에서 당신을 언급했어요",
             'city'   => "{name} 님이 시티 채팅에서 당신을 언급했어요",
+        ],
+        'fil' => [
+            'titled' => "Binanggit ka ni {name} sa {title}",
+            'city'   => "Binanggit ka ni {name} sa city chat",
         ],
     ];
 

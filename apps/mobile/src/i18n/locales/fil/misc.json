@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "Mga friend request",
+    "incoming": "Papasok",
+    "sent": "Naipadala",
+    "wantsToBeFriend": "gustong maging kaibigan mo",
+    "requestSent": "naipadala ang request",
+    "decline": "Tanggihan",
+    "accept": "Tanggapin",
+    "cancel": "Kanselahin",
+    "emptyIncomingTitle": "Wala pang friend request",
+    "emptySentTitle": "Wala ka pang naipadala",
+    "emptyIncomingSub": "Kapag may humiling maging kaibigan mo, makikita mo ito dito.",
+    "emptySentSub": "Lalabas dito ang mga naka-pending na friend request na ipinadala mo."
+  },
+  "blocked": {
+    "title": "Mga naka-block na user",
+    "thisUser": "ang user na ito",
+    "ghostName": "Multo",
+    "guest": "Guest",
+    "unblock": "I-unblock",
+    "unblockTitle": "I-unblock si {{name}}?",
+    "unblockBody": "Makikita ulit ni {{name}} ang iyong content at maaari ka na niyang kontakin muli.",
+    "unblockFailTitle": "Hindi ma-unblock",
+    "unblockFailBody": "Pakisubukan ulit.",
+    "emptyTitle": "Wala kang na-block na sinuman",
+    "emptySub": "Hindi makikita ng mga naka-block na user ang iyong content, at hindi mo rin makikita ang sa kanila."
+  }
+}

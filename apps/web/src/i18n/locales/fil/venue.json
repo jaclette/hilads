@@ -1,0 +1,17 @@
+{
+  "loading": "Naglo-load…",
+  "notFound": "Wala ang lugar na ito sa Hilads.",
+  "loadError": "Hindi ma-load ang lugar na ito. Subukan ulit.",
+  "breadcrumb": "Breadcrumb",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Coffee shop"
+  },
+  "typeInCity": "{{category}} sa {{city}}",
+  "address": "Address",
+  "hours": "Oras",
+  "openEveryDay": "Bukas araw-araw · {{opens}} – {{closes}}",
+  "ctaText": "Tingnan kung sino ang nasa paligid ng {{city}} ngayon.",
+  "openCity": "Buksan ang {{city}}",
+  "lastUpdated": "Huling na-update {{date}}"
+}

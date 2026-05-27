@@ -20,7 +20,7 @@ import en_publicProfile from './locales/en/publicProfile.json'
 import en_city          from './locales/en/city.json'
 import en_venue         from './locales/en/venue.json'
 
-export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko']
+export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
 const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'venue']
@@ -220,6 +220,22 @@ const LOADERS = {
     city:          () => import('./locales/ko/city.json'),
     venue:         () => import('./locales/ko/venue.json'),
   },
+  fil: {
+    common:  () => import('./locales/fil/common.json'),
+    profile: () => import('./locales/fil/profile.json'),
+    brand:   () => import('./locales/fil/brand.json'),
+    landing: () => import('./locales/fil/landing.json'),
+    auth:    () => import('./locales/fil/auth.json'),
+    event:   () => import('./locales/fil/event.json'),
+    hangout: () => import('./locales/fil/hangout.json'),
+    dm:      () => import('./locales/fil/dm.json'),
+    notifications: () => import('./locales/fil/notifications.json'),
+    upcoming:      () => import('./locales/fil/upcoming.json'),
+    archive:       () => import('./locales/fil/archive.json'),
+    publicProfile: () => import('./locales/fil/publicProfile.json'),
+    city:          () => import('./locales/fil/city.json'),
+    venue:         () => import('./locales/fil/venue.json'),
+  },
 }
 
 i18n.use(initReactI18next).init({
@@ -241,7 +257,7 @@ i18n.use(initReactI18next).init({
   react: { useSuspense: false },          // we preload before render ourselves
 })
 
-const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false, de: false, nl: false, 'zh-hans': false, 'zh-hant': false, ja: false, ko: false }
+const loaded = { en: true, fr: false, vi: false, es: false, it: false, 'pt-br': false, 'pt-pt': false, de: false, nl: false, 'zh-hans': false, 'zh-hant': false, ja: false, ko: false, fil: false }
 
 /** Lazy-load + register every namespace for a locale. Idempotent. */
 export async function loadLocale(locale) {
@@ -294,6 +310,9 @@ export function resolveInitialLocale() {
   if (lower.slice(0, 2) === 'zh') {
     return /hant|tw|hk|mo/.test(lower) ? 'zh-hant' : 'zh-hans'
   }
+  // Filipino is a 3-letter code; also accept Tagalog (tl). slice(0,2) would give
+  // "fi" (Finnish), so match the full prefix instead.
+  if (lower.slice(0, 3) === 'fil' || lower.slice(0, 2) === 'tl') return 'fil'
   const short = lower.slice(0, 2)
   return SUPPORTED.includes(short) ? short : DEFAULT_LOCALE
 }

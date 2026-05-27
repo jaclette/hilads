@@ -1,0 +1,130 @@
+{
+  "pageTitle": "Aking Profile",
+  "changePhoto": "Palitan ang profile photo",
+  "yourProfile": "Iyong profile",
+  "mode": "Mode",
+  "modes": {
+    "local": "Local",
+    "localDesc": "Kabisado mo ang lungsod na ito",
+    "exploring": "Nag-e-explore",
+    "exploringDesc": "Pinapasimula mo pa lang"
+  },
+  "tabs": {
+    "interests": "Mga interes",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Mga kaibigan",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Kape",
+    "music": "Musika",
+    "food": "Pagkain",
+    "chill": "Chill"
+  },
+  "interests": {
+    "drinks": "inumin",
+    "party": "party",
+    "nightlife": "nightlife",
+    "music": "musika",
+    "live music": "live music",
+    "culture": "kultura",
+    "art": "sining",
+    "food": "pagkain",
+    "coffee": "kape",
+    "sport": "sport",
+    "fitness": "fitness",
+    "hiking": "hiking",
+    "beach": "beach",
+    "wellness": "wellness",
+    "travel": "paglalakbay",
+    "hangout": "hangout",
+    "socializing": "pakikisalamuha",
+    "gaming": "gaming",
+    "tech": "tech",
+    "dating": "dating"
+  },
+  "fields": {
+    "username": "Username",
+    "usernamePlaceholder": "username",
+    "checking": "Sinusuri…",
+    "available": "Available ang @{{username}}",
+    "aboutMe": "Tungkol sa akin",
+    "charsLeft": "— {{count}} pa",
+    "aboutPlaceholder": "Mahilig sa street food at random na kuwentuhan",
+    "email": "Email",
+    "readOnly": "— read only",
+    "homeCity": "Home city",
+    "homeCityPlaceholder": "Kung saan ka nakatira",
+    "age": "Edad",
+    "agePlaceholder": "Edad mo",
+    "myVibe": "Aking vibe",
+    "interests": "Mga interes",
+    "interestsHint": "— pumili ng hanggang 5"
+  },
+  "ambassador": {
+    "title": "Mga pick sa lungsod 👑",
+    "subtitle": "Ipinapakita sa profile mo bilang local legend.",
+    "restaurant": "Paboritong restaurant",
+    "restaurantPlaceholder": "Isang lugar na lagi mong pinagdadalhan ng mga tao",
+    "spot": "Hidden gem / spot",
+    "spotPlaceholder": "Isang lugar na hindi alam ng karamihan sa turista",
+    "tip": "Local tip",
+    "tipPlaceholder": "Pinakamagandang payo para sa mga bagong dating",
+    "story": "Kuwento ng lungsod",
+    "storyPlaceholder": "Isang bagay na gustung-gusto mo sa lungsod na ito"
+  },
+  "hangouts": {
+    "empty": "Wala pang hangouts — magsimula ng isa ⚡",
+    "host": "Host"
+  },
+  "events": {
+    "going": "Pupunta",
+    "goingEmpty": "Wala pang plano — maghanap ng kahit ano 🔥",
+    "hosting": "Nagho-host",
+    "hostingEmpty": "Wala pang hino-host — magsimula ng kahit ano ✨",
+    "live": "Live",
+    "recurring": "↻ Paulit-ulit",
+    "upcoming": "Paparating",
+    "deleteEvent": "I-delete ang event"
+  },
+  "friends": {
+    "requests": "Mga friend request",
+    "empty": "Wala ka pang kaibigan. Magdagdag mula sa mga profile.",
+    "mine": "Aking mga kaibigan"
+  },
+  "vibesTab": {
+    "received": "Mga natanggap na vibe",
+    "score": "{{score}} vibe score",
+    "basedOn_one": "base sa {{count}} vibe",
+    "basedOn_other": "base sa {{count}} vibe",
+    "empty": "Wala pang vibe",
+    "emptyHint": "Lalabas dito ang score mo kapag may nag-iwan sa iyo ng note ✨"
+  },
+  "save": {
+    "uploading": "Ina-upload…",
+    "saving": "Sine-save…",
+    "saved": "Na-save ✓",
+    "save": "I-save ang profile"
+  },
+  "signOut": "Mag-sign out",
+  "deleteAccount": "I-delete ang account",
+  "delete": {
+    "title": "I-delete ang account?",
+    "body": "Permanenteng matatanggal ang iyong profile, mga kaibigan, at mga setting. Mananatili nang anonymous ang iyong mga mensahe at event sa mga city chat.",
+    "irreversible": "Hindi na ito maibabalik.",
+    "deleting": "Dine-delete…",
+    "confirm": "Oo, i-delete ang aking account",
+    "cancel": "Kanselahin"
+  },
+  "errors": {
+    "photoUpload": "Hindi na-upload ang photo. Subukan ulit.",
+    "usernameTooShort": "Dapat hindi bababa sa 3 karakter ang username",
+    "usernameTaken": "Kinuha na ang username na iyan",
+    "usernameInvalid": "Hindi valid na username",
+    "saveFailed": "Hindi na-save. Subukan ulit.",
+    "generic": "May nangyaring mali. Subukan ulit."
+  }
+}

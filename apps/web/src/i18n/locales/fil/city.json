@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "Gumawa ng account",
+    "signIn": "Mag-sign in",
+    "create_event": {
+      "pageTitle": "Gumawa ng event",
+      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi mag-host.",
+      "sub": "Gumawa ng account para mag-host ng sariling event at ilagay ang lungsod mo sa mapa."
+    },
+    "view_profile": {
+      "pageTitle": "Profile",
+      "title": "Pwedeng mag-browse ang mga Ghost, pero ang profile ay para sa miyembro.",
+      "sub": "Gumawa ng account para ma-unlock ang mga profile, kumonekta sa mga tao, at buuin ang crew mo sa lungsod."
+    },
+    "join_hangout": {
+      "pageTitle": "Sumali sa hangout",
+      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi sumali sa hangouts.",
+      "sub": "Mag-sign up para sumali sa hangouts, i-save ang pangalan mo, at ma-notify kapag may gustong magkita."
+    },
+    "create_hangout": {
+      "pageTitle": "Magsimula ng hangout",
+      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi mag-host.",
+      "sub": "Mag-sign up para magsimula ng hangout, i-save ang pangalan mo, at akitin ang mga tao na sumali."
+    }
+  },
+  "welcome": {
+    "live": "Live na ang {{city}} ✨",
+    "dismiss": "Isara",
+    "body": "Tunay na tao, ngayon mismo. Mag-hi, tingnan kung sino ang nasa paligid, o mag-imbita ng kaibigan.",
+    "sayHi": "Mag-hi 👋",
+    "invite": "Mag-imbita ng kaibigan"
+  },
+  "imageType": "Pumili ng larawang JPEG, PNG, o WebP.",
+  "imageTooLarge": "Masyadong malaki ang larawan. Max na laki: 10 MB.",
+  "picker": {
+    "title": "Pumili ng lungsod",
+    "search": "Maghanap ng lungsod…",
+    "noResults": "Walang lungsod na nahanap para sa \"{{query}}\"",
+    "topCities": "Pinaka-aktibong lungsod ngayon",
+    "cities": "Mga lungsod"
+  },
+  "joining": "Kumokonekta sa {{city}}…",
+  "joiningDefault": "Kumokonekta sa chat…",
+  "tryAgain": "Subukan ulit",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "Public",
+    "activeNow": "● Aktibo ngayon",
+    "repliesNew": "Wala pang tugon — maging una",
+    "replies_one": "💬 {{count}} tugon",
+    "replies_other": "💬 {{count}} tugon",
+    "going_one": "🙌 {{count}} sasama",
+    "going_other": "🙌 {{count}} sasama",
+    "hostedBy": "Hino-host ni {{name}}",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "Gumawa ng event",
+    "startHangout": "Magsimula ng hangout ⚡",
+    "openPlace": "Buksan ang lugar mo",
+    "loadError": "Hindi ma-load ang mga event",
+    "loadErrorSub": "Subukan ulit mamaya o gumawa ng bago sa {{city}}.",
+    "emptyLocalTitle": "I-host ang spot mo",
+    "emptyTitle": "Wala pang nangyayari",
+    "emptyLocalSub": "Buhayin ang {{city}}. Magsimula ng recurring event sa paborito mong lugar.",
+    "emptySub": "Maging una sa pagpapangyari ng bagay sa {{city}}",
+    "noEvents": "Walang event ngayon",
+    "noHangouts": "Wala pang hangouts",
+    "noEventsSub": "Maging una sa paggawa ng isa sa {{city}}",
+    "noHangoutsSub": "Magsimula ng hangout at pag-usapin ang lungsod",
+    "filterAll": "Lahat",
+    "seeComing": "Tingnan ang paparating 🔮",
+    "seeHappened": "tingnan ang nangyari",
+    "createNew": "Gumawa ng bago"
+  },
+  "header": {
+    "online": "{{count}} malapit",
+    "liveNow": "live ngayon",
+    "seeWhosHere": "Tingnan kung sino ang nandito",
+    "onlineAria": "{{count}} tao ang malapit, i-tap para makita kung sino",
+    "notifications": "Mga notification",
+    "messages": "Mga mensahe",
+    "shareCity": "Ibahagi ang lungsod",
+    "switchCity": "Magpalit ng lungsod",
+    "changeCity": "Magpalit ng lungsod",
+    "currentWeather": "Kasalukuyang panahon: {{label}}"
+  },
+  "here": {
+    "title": "Mga tao rito",
+    "filterBadge": "Badge",
+    "filterVibe": "Vibe",
+    "filterMode": "Mode",
+    "you": "(ikaw)",
+    "hereNow": "Here now",
+    "noMatchLive": "Walang tumugma sa mga filter na ito ngayon.",
+    "legendsSub": "Sila ang nagpapangyari sa lungsod",
+    "cityCrew": "City crew",
+    "noMatchCrew": "Walang miyembrong tumugma sa mga filter na ito.",
+    "loadMore": "Mag-load pa",
+    "messageAria": "I-message si {{name}}"
+  },
+  "eventHeader": {
+    "yourEvent": "Event mo",
+    "edit": "I-edit",
+    "join": "Sumali",
+    "joined": "Sumali na ✓",
+    "here": "{{count}} narito",
+    "going_one": "{{count}} sasama",
+    "going_other": "{{count}} sasama",
+    "locationPending": "Wala pang available na lokasyon",
+    "hostedBy": "Hino-host ni {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "Simula ng usapan",
+    "arriving": "Dumarating na ang mga tao",
+    "firstChat": "Maging una sa pag-chat dito 👇",
+    "firstHi": "Maging una sa pag-hi 👇"
+  },
+  "create": {
+    "title": "Ano ang plano?",
+    "hangoutTitle": "Magsimula ng hangout",
+    "hangoutSub": "Instant — hayaang sumali ang mga tao ngayon",
+    "eventTitle": "Gumawa ng event",
+    "eventSub": "Magplano ng pwedeng salihan ng iba"
+  },
+  "goingModal": {
+    "going": "sasama",
+    "inThisHangout": "sa hangout na ito",
+    "loading": "Naglo-load…",
+    "empty": "Wala pa — maging una sa pagsali! 🙌"
+  },
+  "nickname": {
+    "label": "Nickname",
+    "placeholder": "Pangalan mo...",
+    "heroSub": "Anonymous muna. Pwede mo pa ring hubugin kung paano ka lumalabas.",
+    "save": "I-save ang nickname",
+    "upgradeHint": "I-save ang pangalan mo. Manatiling local.",
+    "haveAccount": "May account ka na?",
+    "myEvents": "Mga event ko",
+    "anonymous": "// anonymous · walang sign-up na kailangan"
+  },
+  "prompt": {
+    "exploreText": "🔥 Tingnan kung ano ang nangyayari ngayon",
+    "exploreCta": "Tingnan ang nangyayari",
+    "photoText": "📸 Ibahagi kung ano ang nangyayari",
+    "shoot": "Kuha",
+    "createEventText": "🎉 May plano ka ba ngayong gabi?",
+    "createEventCta": "Gumawa ng event",
+    "installText": "✨ Idagdag ang Hilads sa home screen mo\nHuwag palampasin ang nangyayari sa lungsod mo",
+    "installAdd": "Idagdag",
+    "installHow": "Paano"
+  },
+  "toast": {
+    "eventDeleted": "Na-delete ang event"
+  },
+  "pwa": {
+    "addToHome": "Idagdag ang Hilads sa home screen",
+    "add": "Idagdag",
+    "keepClose": "Panatilihing malapit ang Hilads",
+    "manualHelp": "Buksan ang menu ng browser mo at piliin ang Add to Home Screen.",
+    "dismiss": "Isara ang install prompt"
+  },
+  "feedJoin": {
+    "0": "👋 Kakarating lang ni {{name}}",
+    "1": "🔥 Sumali si {{name}}",
+    "2": "🍻 Nandito na si {{name}}",
+    "3": "👀 Kasisipot lang ni {{name}}",
+    "4": "✨ Dumating si {{name}}"
+  },
+  "ambient": {
+    "0": "🔥 Dumarating na ang mga tao",
+    "1": "🍻 Sino ang lalabas ngayong gabi?",
+    "2": "💬 Nagigising na ang lungsod",
+    "3": "🌙 Online na ang mga night owl",
+    "4": "👀 May kararating lang",
+    "5": "🔥 Bagong mukha sa lungsod",
+    "6": "🎉 May mga tao rito ngayon mismo",
+    "7": "🌆 Nagche-check in ang mga local"
+  },
+  "ownerPrompt": {
+    "text": "🔥 Sinimulan mo ang event na ito!",
+    "sub": "Gawing mas maganda pa — magdagdag ng description, i-update ang oras, o ibahagi ito.",
+    "edit": "✏️ I-edit ang event"
+  },
+  "feedNew": {
+    "event": "🔥 Bagong event: {{title}}",
+    "join": "Sumali",
+    "replies_one": "{{count}} tugon",
+    "replies_other": "{{count}} tugon"
+  },
+  "replyPreview": {
+    "photo": "📷 Litrato"
+  },
+  "placeholder": {
+    "event": "Magsabi ng kahit ano sa {{title}} ✨",
+    "eventFirst": "Maging una sa {{title}} ✨"
+  },
+  "placeholders": [
+    "Mag-hi 👋",
+    "Sino ang lalabas ngayong gabi?",
+    "May plano ba? 👀",
+    "Ano ang nangyayari rito?",
+    "May gustong sumama sa kahit ano? 🍻",
+    "Mag-drop ng mensahe…"
+  ],
+  "typing": {
+    "one": "Nagta-type si {{name}}…",
+    "two": "Nagta-type sina {{a}} at {{b}}…",
+    "many": "May ilang taong nagta-type…"
+  },
+  "myEvent": {
+    "live": "Live",
+    "recurring": "↻ Recurring",
+    "upcoming": "Paparating",
+    "delete": "I-delete ang event"
+  }
+}

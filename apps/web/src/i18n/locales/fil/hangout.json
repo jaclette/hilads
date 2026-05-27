@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "Magsimula ng hangout",
+    "editTitle": "I-edit ang hangout",
+    "category": "Kategorya",
+    "cat": { "general": "General", "tips": "Mga tip", "food": "Pagkain", "drinks": "Inumin", "help": "Tulong", "meetup": "Meetup" },
+    "titleLabel": "Ano ang nasa isip mo?",
+    "titlePlaceholder": "hal. Pinakamagandang coffee spot sa lugar?",
+    "detailsLabel": "Magdagdag ng detalye",
+    "optional": "(opsyonal)",
+    "detailsPlaceholder": "Bigyan ng konteksto…",
+    "expiry": "⏱ Awtomatikong mag-e-expire sa 24 h",
+    "saving": "Sine-save…",
+    "starting": "Sinisimulan…",
+    "saveChanges": "I-save ang mga pagbabago",
+    "startCta": "Magsimula ng hangout ⚡",
+    "limitHeader": "Isa lang sa isang pagkakataon",
+    "limitTitle": "May hangout ka na",
+    "limitSub": "Isang hangout lang ang puwede mong patakbuhin sa isang pagkakataon. Pumunta sa “{{title}}”, o i-delete ito para magsimula ng bago.",
+    "limitGo": "Pumunta sa aking hangout →",
+    "yourHangout": "iyong hangout"
+  },
+  "deleteConfirm": "I-delete ang hangout na ito? Tatapusin nito ito para sa lahat at hindi na maibabalik.",
+  "deleteFailedAlert": "Hindi na-delete. Subukan ulit.",
+  "shareAria": "Ibahagi ang hangout",
+  "shareTitle": "Ibahagi ang hangout na ito",
+  "members": {
+    "oneIn": "Sumali si {{name}}",
+    "countIn": "{{count}} sa hangout na ito",
+    "seeAll": "Tingnan lahat →"
+  },
+  "owner": { "edit": "✏️ I-edit", "delete": "🗑 I-delete" },
+  "gated": {
+    "title": "Members-only na hangout",
+    "pending": "Nakabinbin ang request — makakasali ka sa usapan kapag tinanggap ka ng isang member.",
+    "prompt": "Mag-request para sumali upang makita ang usapan at makachat.",
+    "requestBtn": "Mag-request para sumali"
+  },
+  "feed": {
+    "beginning": "Simula ng usapan",
+    "loading": "Naglo-load…",
+    "emptyTitle": "Wala pang tugon",
+    "emptySub": "Maging una sa pagsali"
+  },
+  "joinReq": {
+    "someone": "May isang tao",
+    "wantsToJoin": " na gustong sumali",
+    "joined": " na sumali sa hangout",
+    "askedToJoin": " na humiling na sumali",
+    "decline": "Tanggihan",
+    "accept": "Tanggapin",
+    "accepted": "Tinanggap",
+    "acceptedBy": "Tinanggap ni {{name}}",
+    "declined": "Tinanggihan ang request"
+  },
+  "modes": { "local": "Local", "exploring": "Nag-e-explore" },
+  "reply": { "photo": "📷 Larawan", "unavailable": "Hindi available ang orihinal na mensahe" },
+  "composer": { "reply": "Tumugon sa usapan…", "start": "Start the vibe ✨" },
+  "errors": {
+    "locFailed": "Hindi nakuha ang lokasyon mo. I-enable ang location access at subukan ulit.",
+    "imageType": "Pumili ng JPEG, PNG, o WebP na larawan.",
+    "imageTooLarge": "Masyadong malaki ang larawan. Max 10 MB.",
+    "imageSend": "Hindi naipadala ang larawan. Subukan ulit.",
+    "dismiss": "{{error}} · i-tap para isara"
+  }
+}

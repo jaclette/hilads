@@ -1,0 +1,20 @@
+{
+  "title": "Palitan ang lungsod",
+  "searchPlaceholder": "Maghanap ng lungsod…",
+  "topCities": "Pinaka-aktibong lungsod ngayon",
+  "cities": "Mga Lungsod",
+  "filterActive": "🔥 Pinaka-aktibo",
+  "filterEvents": "🎉 Pinakamaraming event",
+  "filterOnline": "🟢 Pinakamaraming online",
+  "backToLocation": "Bumalik sa aking lokasyon",
+  "youreHere": "nandito ka",
+  "online": "{{count}} online",
+  "events_one": "{{count}} event",
+  "events_other": "{{count}} event",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} mensahe",
+  "loadError": "Hindi ma-load ang mga lungsod",
+  "noResults": "Walang lungsod na nahanap para sa \"{{query}}\"",
+  "noCities": "Walang nahanap na lungsod"
+}

@@ -10,7 +10,8 @@
           "/pt-br/e/*", "/pt-br/event/*", "/pt-br/city/*", "/pt-br/t/*",
           "/pt-pt/e/*", "/pt-pt/event/*", "/pt-pt/city/*", "/pt-pt/t/*",
           "/zh-hans/e/*", "/zh-hans/event/*", "/zh-hans/city/*", "/zh-hans/t/*",
-          "/zh-hant/e/*", "/zh-hant/event/*", "/zh-hant/city/*", "/zh-hant/t/*"
+          "/zh-hant/e/*", "/zh-hant/event/*", "/zh-hant/city/*", "/zh-hant/t/*",
+          "/fil/e/*", "/fil/event/*", "/fil/city/*", "/fil/t/*"
         ]
       }
     ]

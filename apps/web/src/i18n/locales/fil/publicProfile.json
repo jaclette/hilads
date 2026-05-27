@@ -1,0 +1,83 @@
+{
+  "title": "Profile",
+  "loading": "Naglo-load…",
+  "loadError": "Hindi ma-load ang profile.",
+  "badgeMicro": {
+    "ghost": "Nagbo-browse lang 👀",
+    "fresh": "Kakarating lang 👶",
+    "regular": "Madalas sumipot",
+    "host": "Siyang nagpapangyari 🔥"
+  },
+  "modes": { "local": "Local", "exploring": "Nag-e-explore" },
+  "vibes": {
+    "party": "Party", "board_games": "Board Games", "coffee": "Kape",
+    "music": "Musika", "food": "Pagkain", "chill": "Chill"
+  },
+  "vibeTaglines": {
+    "party": "Nandito para sa night life",
+    "board_games": "Magdala ng snacks at dice",
+    "coffee": "Kape muna, saka na ang lahat",
+    "music": "Laging humahabol ng magandang beat",
+    "food": "Kain muna, tanong mamaya",
+    "chill": "Low key, high vibes"
+  },
+  "modeSub": {
+    "localIn": "Local sa {{city}}",
+    "local": "Local",
+    "exploringIn": "Nag-e-explore sa {{city}}",
+    "exploring": "Nag-e-explore"
+  },
+  "from": "Taga",
+  "age": "Edad",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Mga kaibigan",
+    "vibes": "Vibes", "picks": "City Picks 👑"
+  },
+  "host": "Host",
+  "live": "LIVE",
+  "empty": { "hangouts": "Wala pang hangouts", "events": "Wala pang event", "friends": "Wala pang kaibigan" },
+  "vibesTab": {
+    "score": "{{score}} vibe score",
+    "basedOn_one": "base sa {{count}} vibe",
+    "basedOn_other": "base sa {{count}} vibes",
+    "updateNote": "✏️ I-update ang iyong note ({{rating}}★)",
+    "leaveNote": "⭐ Mag-iwan ng note",
+    "placeholder": "Magsabi ng maganda… (opsyonal)",
+    "cancel": "Kanselahin",
+    "sending": "Ipinapadala…",
+    "sendNote": "Ipadala ang note ✨",
+    "notesLabel": "Mga note · {{count}}",
+    "emptyTitle": "Wala pang note",
+    "emptySub": "Maging una sa pag-iwan ng note ✨"
+  },
+  "picks": {
+    "restaurant": "PABORITONG RESTAURANT",
+    "spot": "HIDDEN GEM",
+    "tip": "LOCAL TIP",
+    "story": "KWENTO"
+  },
+  "actions": {
+    "opening": "Binubuksan…",
+    "message": "💬 Mensahe",
+    "friend": "✓ Kaibigan",
+    "requestSent": "⌛ Naipadala na ang request",
+    "acceptRequest": "✓ Tanggapin ang request",
+    "addFriend": "+ Kaibigan",
+    "removing": "Tinatanggal…",
+    "unfriend": "I-unfriend",
+    "cancel": "Kanselahin",
+    "cancelling": "Kinakansela…",
+    "cancelRequest": "Kanselahin ang request",
+    "keep": "Panatilihin",
+    "reportTitle": "I-report ang user"
+  },
+  "report": {
+    "existing": "Ni-report mo ang user na ito noong {{date}}. Sinusuri na ang iyong report.",
+    "sent": "Naipadala ang report. Salamat sa pagsabi.",
+    "placeholder": "Ilarawan ang problema (min 10 karakter)…",
+    "error": "Hindi maipadala ang report. Subukan ulit.",
+    "sending": "Ipinapadala…",
+    "submit": "Ipadala ang report",
+    "cancel": "Kanselahin"
+  }
+}
