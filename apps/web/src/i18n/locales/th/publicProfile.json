@@ -1,0 +1,83 @@
+{
+  "title": "โปรไฟล์",
+  "loading": "กำลังโหลด…",
+  "loadError": "โหลดโปรไฟล์ไม่ได้",
+  "badgeMicro": {
+    "ghost": "แค่มาดูเฉยๆ 👀",
+    "fresh": "เพิ่งมาถึง 👶",
+    "regular": "มาบ่อย",
+    "host": "ทำให้เกิดขึ้นได้ 🔥"
+  },
+  "modes": { "local": "คนท้องถิ่น", "exploring": "กำลังสำรวจ" },
+  "vibes": {
+    "party": "ปาร์ตี้", "board_games": "บอร์ดเกม", "coffee": "กาแฟ",
+    "music": "เพลง", "food": "อาหาร", "chill": "ชิล"
+  },
+  "vibeTaglines": {
+    "party": "มาเพื่อชีวิตยามค่ำคืน",
+    "board_games": "เอาขนมกับลูกเต๋ามาด้วย",
+    "coffee": "กาแฟก่อน เรื่องอื่นค่อยว่ากัน",
+    "music": "ตามหาจังหวะดีๆ อยู่เสมอ",
+    "food": "กินก่อน ค่อยถามทีหลัง",
+    "chill": "สบายๆ แต่บรรยากาศดี"
+  },
+  "modeSub": {
+    "localIn": "คนท้องถิ่นใน {{city}}",
+    "local": "คนท้องถิ่น",
+    "exploringIn": "กำลังสำรวจ {{city}}",
+    "exploring": "กำลังสำรวจ"
+  },
+  "from": "มาจาก",
+  "age": "อายุ",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "เพื่อน",
+    "vibes": "Vibes", "picks": "ที่แนะนำในเมือง 👑"
+  },
+  "host": "เจ้าภาพ",
+  "live": "สด",
+  "empty": { "hangouts": "ยังไม่มี hangouts", "events": "ยังไม่มีกิจกรรม", "friends": "ยังไม่มีเพื่อน" },
+  "vibesTab": {
+    "score": "คะแนน vibe {{score}}",
+    "basedOn_one": "อ้างอิงจาก {{count}} vibe",
+    "basedOn_other": "อ้างอิงจาก {{count}} vibes",
+    "updateNote": "✏️ แก้ไขโน้ตของคุณ ({{rating}}★)",
+    "leaveNote": "⭐ ฝากโน้ต",
+    "placeholder": "พูดอะไรดีๆ สักหน่อย… (ไม่บังคับ)",
+    "cancel": "ยกเลิก",
+    "sending": "กำลังส่ง…",
+    "sendNote": "ส่งโน้ต ✨",
+    "notesLabel": "โน้ต · {{count}}",
+    "emptyTitle": "ยังไม่มีโน้ต",
+    "emptySub": "เป็นคนแรกที่ฝากโน้ต ✨"
+  },
+  "picks": {
+    "restaurant": "ร้านอาหารโปรด",
+    "spot": "ที่ลับเฉพาะ",
+    "tip": "เคล็ดลับคนท้องถิ่น",
+    "story": "เรื่องราว"
+  },
+  "actions": {
+    "opening": "กำลังเปิด…",
+    "message": "💬 ข้อความ",
+    "friend": "✓ เพื่อน",
+    "requestSent": "⌛ ส่งคำขอแล้ว",
+    "acceptRequest": "✓ ยอมรับคำขอ",
+    "addFriend": "+ เพื่อน",
+    "removing": "กำลังลบ…",
+    "unfriend": "เลิกเป็นเพื่อน",
+    "cancel": "ยกเลิก",
+    "cancelling": "กำลังยกเลิก…",
+    "cancelRequest": "ยกเลิกคำขอ",
+    "keep": "เก็บไว้",
+    "reportTitle": "รายงานผู้ใช้"
+  },
+  "report": {
+    "existing": "คุณรายงานผู้ใช้รายนี้เมื่อ {{date}} รายงานของคุณกำลังอยู่ระหว่างการตรวจสอบ",
+    "sent": "ส่งรายงานแล้ว ขอบคุณที่แจ้งให้เราทราบ",
+    "placeholder": "อธิบายปัญหา (อย่างน้อย 10 อักขระ)…",
+    "error": "ส่งรายงานไม่ได้ ลองอีกครั้ง",
+    "sending": "กำลังส่ง…",
+    "submit": "ส่งรายงาน",
+    "cancel": "ยกเลิก"
+  }
+}

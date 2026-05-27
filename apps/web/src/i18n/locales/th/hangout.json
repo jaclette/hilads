@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "เริ่ม hangout",
+    "editTitle": "แก้ไข hangout",
+    "category": "หมวดหมู่",
+    "cat": { "general": "ทั่วไป", "tips": "ทิป", "food": "อาหาร", "drinks": "เครื่องดื่ม", "help": "ช่วยเหลือ", "meetup": "นัดพบ" },
+    "titleLabel": "กำลังคิดอะไรอยู่?",
+    "titlePlaceholder": "เช่น ร้านกาแฟที่ดีที่สุดแถวนี้?",
+    "detailsLabel": "เพิ่มรายละเอียด",
+    "optional": "(ไม่บังคับ)",
+    "detailsPlaceholder": "ให้บริบทสักหน่อย…",
+    "expiry": "⏱ หมดอายุอัตโนมัติใน 24 ชม.",
+    "saving": "กำลังบันทึก…",
+    "starting": "กำลังเริ่ม…",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง",
+    "startCta": "เริ่ม hangout ⚡",
+    "limitHeader": "ทีละหนึ่งอัน",
+    "limitTitle": "คุณมี hangout อยู่แล้ว",
+    "limitSub": "คุณมี hangout ได้ทีละหนึ่งอัน ไปที่ “{{title}}” หรือลบมันเพื่อเริ่มอันใหม่",
+    "limitGo": "ไปที่ hangout ของฉัน →",
+    "yourHangout": "hangout ของคุณ"
+  },
+  "deleteConfirm": "ลบ hangout นี้ไหม? การกระทำนี้จะจบมันสำหรับทุกคนและไม่สามารถย้อนกลับได้",
+  "deleteFailedAlert": "ลบไม่สำเร็จ ลองอีกครั้ง",
+  "shareAria": "แชร์ hangout",
+  "shareTitle": "แชร์ hangout นี้",
+  "members": {
+    "oneIn": "{{name}} ร่วมด้วย",
+    "countIn": "{{count}} คนใน hangout นี้",
+    "seeAll": "ดูทั้งหมด →"
+  },
+  "owner": { "edit": "✏️ แก้ไข", "delete": "🗑 ลบ" },
+  "gated": {
+    "title": "Hangout สำหรับสมาชิกเท่านั้น",
+    "pending": "คำขออยู่ระหว่างรอ — คุณจะเข้าร่วมบทสนทนาได้เมื่อสมาชิกตอบรับ",
+    "prompt": "ขอเข้าร่วมเพื่อดูบทสนทนาและพูดคุย",
+    "requestBtn": "ขอเข้าร่วม"
+  },
+  "feed": {
+    "beginning": "จุดเริ่มต้นของบทสนทนา",
+    "loading": "กำลังโหลด…",
+    "emptyTitle": "ยังไม่มีการตอบกลับ",
+    "emptySub": "เป็นคนแรกที่เข้าร่วม"
+  },
+  "joinReq": {
+    "someone": "บางคน",
+    "wantsToJoin": " ต้องการเข้าร่วม",
+    "joined": " เข้าร่วม hangout แล้ว",
+    "askedToJoin": " ขอเข้าร่วม",
+    "decline": "ปฏิเสธ",
+    "accept": "ตอบรับ",
+    "accepted": "ตอบรับแล้ว",
+    "acceptedBy": "ตอบรับโดย {{name}}",
+    "declined": "ปฏิเสธคำขอแล้ว"
+  },
+  "modes": { "local": "Local", "exploring": "กำลังสำรวจ" },
+  "reply": { "photo": "📷 รูปภาพ", "unavailable": "ข้อความต้นฉบับไม่พร้อมใช้งาน" },
+  "composer": { "reply": "ตอบกลับบทสนทนา…", "start": "เริ่ม vibe กันเลย ✨" },
+  "errors": {
+    "locFailed": "ไม่สามารถหาตำแหน่งของคุณได้ เปิดการเข้าถึงตำแหน่งแล้วลองอีกครั้ง",
+    "imageType": "กรุณาเลือกรูปภาพ JPEG, PNG หรือ WebP",
+    "imageTooLarge": "รูปภาพใหญ่เกินไป สูงสุด 10 MB",
+    "imageSend": "ส่งรูปภาพไม่สำเร็จ ลองอีกครั้ง",
+    "dismiss": "{{error}} · แตะเพื่อปิด"
+  }
+}

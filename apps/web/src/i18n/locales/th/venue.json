@@ -1,0 +1,17 @@
+{
+  "loading": "กำลังโหลด…",
+  "notFound": "สถานที่นี้ไม่ได้อยู่บน Hilads",
+  "loadError": "โหลดสถานที่นี้ไม่ได้ กรุณาลองอีกครั้ง",
+  "breadcrumb": "เส้นทางนำทาง",
+  "category": {
+    "bar": "บาร์ / ผับ",
+    "cafe": "ร้านกาแฟ"
+  },
+  "typeInCity": "{{category}} ใน {{city}}",
+  "address": "ที่อยู่",
+  "hours": "เวลาทำการ",
+  "openEveryDay": "เปิดทุกวัน · {{opens}} – {{closes}}",
+  "ctaText": "ดูว่าใครอยู่แถว {{city}} ตอนนี้",
+  "openCity": "เปิด {{city}}",
+  "lastUpdated": "อัปเดตล่าสุด {{date}}"
+}

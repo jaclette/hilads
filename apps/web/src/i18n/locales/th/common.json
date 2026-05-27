@@ -1,0 +1,52 @@
+{
+  "language": "ภาษา",
+  "cancel": "ยกเลิก",
+  "loading": "กำลังโหลด…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "กำลังสำรวจ" }
+  },
+  "composer": {
+    "attach": "เพิ่มไฟล์แนบ",
+    "emoji": "อิโมจิ"
+  },
+  "vibe": {
+    "party": "ปาร์ตี้",
+    "board_games": "บอร์ดเกม",
+    "coffee": "กาแฟ",
+    "music": "เพลง",
+    "food": "อาหาร",
+    "chill": "ชิล"
+  },
+  "weather": {
+    "clear": "ท้องฟ้าแจ่มใส",
+    "sunnyHot": "อากาศดีสุดๆ",
+    "clearNight": "คืนนี้ฟ้าโปร่ง",
+    "mostlyClear": "ส่วนใหญ่ฟ้าโปร่ง",
+    "partly": "มีเมฆบางส่วน",
+    "overcast": "ฟ้าครึ้ม",
+    "fog": "มีหมอก",
+    "drizzle": "ฝนปรอยๆ",
+    "rain": "ฝนตก",
+    "snow": "หิมะ",
+    "snowShowers": "หิมะตกเป็นช่วงๆ",
+    "thunder": "พายุฝนฟ้าคะนอง"
+  },
+  "time": {
+    "happeningNow": "🔥 กำลังเกิดขึ้นตอนนี้",
+    "inMin": "🔥 ในอีก {{count}} นาที",
+    "today": "วันนี้",
+    "tomorrow": "พรุ่งนี้",
+    "yesterday": "เมื่อวาน",
+    "justNow": "เมื่อสักครู่",
+    "nowShort": "ตอนนี้",
+    "mAgo": "{{count}} นาทีที่แล้ว",
+    "hAgo": "{{count}} ชม. ที่แล้ว",
+    "dAgo": "{{count}} วันที่แล้ว",
+    "expired": "หมดอายุแล้ว",
+    "expiresSoon": "ใกล้หมดอายุ",
+    "expiresInMin": "หมดอายุในอีก {{mins}} นาที",
+    "expiresInHourMin": "หมดอายุในอีก {{hours}} ชม. {{mins}} นาที",
+    "expiresInHour": "หมดอายุในอีก {{hours}} ชม."
+  }
+}

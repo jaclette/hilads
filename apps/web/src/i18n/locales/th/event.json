@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "ชวนคนมา ✨",
+    "linkCopied": "คัดลอกลิงก์แล้ว ✨",
+    "vibeTitle": "แชร์ vibe นี้",
+    "eventAria": "แชร์กิจกรรม"
+  },
+  "title": { "edit": "แก้ไขกิจกรรม", "host": "จัดกิจกรรม", "create": "สร้างกิจกรรม" },
+  "delete": {
+    "confirmTitle": "ลบกิจกรรมนี้ไหม?",
+    "confirmBody": "การกระทำนี้จะลบกิจกรรมและข้อความทั้งหมด ไม่สามารถย้อนกลับได้",
+    "cancel": "ยกเลิก",
+    "deleting": "กำลังลบ…",
+    "confirm": "ลบ",
+    "button": "🗑 ลบกิจกรรม"
+  },
+  "quickStart": "เริ่มอย่างรวดเร็ว",
+  "presets": {
+    "dailySpot": "สปอตประจำวัน", "dailySpotDesc": "ทุกวัน",
+    "everyEvening": "ทุกเย็น", "everyEveningDesc": "ทุกวัน · 20:00",
+    "weekends": "สุดสัปดาห์", "weekendsDesc": "เสาร์และอาทิตย์"
+  },
+  "category": "หมวดหมู่",
+  "categories": {
+    "drinks": "เครื่องดื่ม", "party": "ปาร์ตี้", "music": "เพลง", "food": "อาหาร",
+    "coffee": "กาแฟ", "sport": "กีฬา", "meetup": "นัดพบ", "other": "อื่นๆ"
+  },
+  "titleLabel": "ชื่อ",
+  "titlePlaceholder": "เช่น คืนแจ๊สที่ Rooftop Bar",
+  "date": "วันที่",
+  "today": "วันนี้",
+  "tomorrow": "พรุ่งนี้",
+  "todayHint": "จัดวันนี้จะได้รับการมองเห็นมากที่สุด 🔥",
+  "starts": "เริ่ม",
+  "ends": "สิ้นสุด",
+  "repeat": "ทำซ้ำ",
+  "recurrence": { "once": "ครั้งเดียว", "daily": "ทุกวัน", "weekly": "ทุกสัปดาห์", "everyNDays": "ทุก N วัน" },
+  "weekdays": ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."],
+  "intervalEvery": "ทุก",
+  "intervalDays": "วัน",
+  "location": "สถานที่",
+  "locating": "กำลังหาตำแหน่งของคุณ…",
+  "locationPlaceholder": "ไม่บังคับ · แตะเพื่อปักหมุดบนแผนที่",
+  "clearLocation": "ล้างสถานที่",
+  "errors": {
+    "endAfterStart": "เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่มอย่างน้อย 15 นาที",
+    "pickDay": "เลือกอย่างน้อยหนึ่งวันในสัปดาห์",
+    "deleteFailed": "ลบกิจกรรมไม่สำเร็จ ลองอีกครั้ง",
+    "locUnavailable": "ตำแหน่งไม่พร้อมใช้งานในเบราว์เซอร์นี้ คุณยังสร้างกิจกรรมได้โดยไม่ต้องระบุตำแหน่ง",
+    "locFailed": "ไม่สามารถหาตำแหน่งของคุณได้ เปิดการเข้าถึงตำแหน่ง หรือข้ามแผนที่ไป"
+  },
+  "submit": {
+    "saving": "กำลังบันทึก…", "creating": "กำลังสร้าง…",
+    "saveChanges": "บันทึกการเปลี่ยนแปลง", "openSpot": "เปิดสปอตของคุณ",
+    "startEvent": "เริ่มกิจกรรม", "create": "สร้างกิจกรรม"
+  },
+  "recur": {"everyday":"ทุกวัน","weekly":"ทุกสัปดาห์","everyNDays_one":"ทุก {{count}} วัน","everyNDays_other":"ทุก {{count}} วัน"}
+}

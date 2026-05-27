@@ -23,6 +23,7 @@ const LANG_NAMES: Record<Locale, string> = {
   ja: '日本語',
   ko: '한국어',
   fil: 'Filipino',
+  th: 'ไทย',
 };
 
 /**

@@ -1,0 +1,130 @@
+{
+  "pageTitle": "โปรไฟล์ของฉัน",
+  "changePhoto": "เปลี่ยนรูปโปรไฟล์",
+  "yourProfile": "โปรไฟล์ของคุณ",
+  "mode": "โหมด",
+  "modes": {
+    "local": "Local",
+    "localDesc": "คุณรู้จักเมืองนี้ดี",
+    "exploring": "กำลังสำรวจ",
+    "exploringDesc": "คุณกำลังค้นพบมัน"
+  },
+  "tabs": {
+    "interests": "ความสนใจ",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "เพื่อน",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "ปาร์ตี้",
+    "board_games": "บอร์ดเกม",
+    "coffee": "กาแฟ",
+    "music": "เพลง",
+    "food": "อาหาร",
+    "chill": "ชิล"
+  },
+  "interests": {
+    "drinks": "เครื่องดื่ม",
+    "party": "ปาร์ตี้",
+    "nightlife": "ชีวิตยามค่ำคืน",
+    "music": "เพลง",
+    "live music": "ดนตรีสด",
+    "culture": "วัฒนธรรม",
+    "art": "ศิลปะ",
+    "food": "อาหาร",
+    "coffee": "กาแฟ",
+    "sport": "กีฬา",
+    "fitness": "ฟิตเนส",
+    "hiking": "เดินป่า",
+    "beach": "ชายหาด",
+    "wellness": "สุขภาพ",
+    "travel": "ท่องเที่ยว",
+    "hangout": "ออกไปเที่ยว",
+    "socializing": "เข้าสังคม",
+    "gaming": "เล่นเกม",
+    "tech": "เทคโนโลยี",
+    "dating": "เดต"
+  },
+  "fields": {
+    "username": "ชื่อผู้ใช้",
+    "usernamePlaceholder": "ชื่อผู้ใช้",
+    "checking": "กำลังตรวจสอบ…",
+    "available": "@{{username}} ใช้ได้",
+    "aboutMe": "เกี่ยวกับฉัน",
+    "charsLeft": "— เหลือ {{count}}",
+    "aboutPlaceholder": "ชอบสตรีทฟู้ดและบทสนทนาแบบสุ่มๆ",
+    "email": "อีเมล",
+    "readOnly": "— อ่านอย่างเดียว",
+    "homeCity": "เมืองที่อยู่",
+    "homeCityPlaceholder": "ที่ที่คุณอาศัยอยู่",
+    "age": "อายุ",
+    "agePlaceholder": "อายุของคุณ",
+    "myVibe": "vibe ของฉัน",
+    "interests": "ความสนใจ",
+    "interestsHint": "— เลือกได้สูงสุด 5 อย่าง"
+  },
+  "ambassador": {
+    "title": "ที่เด็ดประจำเมือง 👑",
+    "subtitle": "แสดงบนโปรไฟล์ของคุณในฐานะตำนานท้องถิ่น",
+    "restaurant": "ร้านอาหารที่ชอบที่สุด",
+    "restaurantPlaceholder": "ที่ที่คุณพาคนไปเสมอ",
+    "spot": "ที่ลับ / สปอตเด็ด",
+    "spotPlaceholder": "ที่ที่นักท่องเที่ยวส่วนใหญ่พลาด",
+    "tip": "ทิปจากคนท้องถิ่น",
+    "tipPlaceholder": "คำแนะนำที่ดีที่สุดสำหรับคนที่เพิ่งมาใหม่",
+    "story": "เรื่องราวของเมือง",
+    "storyPlaceholder": "สิ่งที่คุณรักเกี่ยวกับเมืองนี้"
+  },
+  "hangouts": {
+    "empty": "ยังไม่มี hangouts — เริ่มเลย ⚡",
+    "host": "เจ้าภาพ"
+  },
+  "events": {
+    "going": "จะไป",
+    "goingEmpty": "ยังไม่มีแผน — หาอะไรทำสิ 🔥",
+    "hosting": "กำลังจัด",
+    "hostingEmpty": "ยังไม่ได้จัดอะไร — เริ่มเลย ✨",
+    "live": "ไลฟ์",
+    "recurring": "↻ ประจำ",
+    "upcoming": "เร็วๆ นี้",
+    "deleteEvent": "ลบกิจกรรม"
+  },
+  "friends": {
+    "requests": "คำขอเป็นเพื่อน",
+    "empty": "ยังไม่มีเพื่อน เพิ่มเพื่อนได้จากโปรไฟล์",
+    "mine": "เพื่อนของฉัน"
+  },
+  "vibesTab": {
+    "received": "Vibes ที่ได้รับ",
+    "score": "คะแนน vibe {{score}}",
+    "basedOn_one": "จาก {{count}} vibe",
+    "basedOn_other": "จาก {{count}} vibe",
+    "empty": "ยังไม่มี vibes",
+    "emptyHint": "คะแนนของคุณจะแสดงที่นี่เมื่อมีคนทิ้งข้อความถึงคุณ ✨"
+  },
+  "save": {
+    "uploading": "กำลังอัปโหลด…",
+    "saving": "กำลังบันทึก…",
+    "saved": "บันทึกแล้ว ✓",
+    "save": "บันทึกโปรไฟล์"
+  },
+  "signOut": "ออกจากระบบ",
+  "deleteAccount": "ลบบัญชี",
+  "delete": {
+    "title": "ลบบัญชีไหม?",
+    "body": "โปรไฟล์ เพื่อน และการตั้งค่าของคุณจะถูกลบอย่างถาวร ข้อความและกิจกรรมของคุณจะยังคงอยู่ในแชทของเมืองแบบไม่ระบุตัวตน",
+    "irreversible": "การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "deleting": "กำลังลบ…",
+    "confirm": "ใช่ ลบบัญชีของฉัน",
+    "cancel": "ยกเลิก"
+  },
+  "errors": {
+    "photoUpload": "อัปโหลดรูปไม่สำเร็จ ลองอีกครั้ง",
+    "usernameTooShort": "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร",
+    "usernameTaken": "ชื่อผู้ใช้นี้ถูกใช้แล้ว",
+    "usernameInvalid": "ชื่อผู้ใช้ไม่ถูกต้อง",
+    "saveFailed": "บันทึกไม่สำเร็จ ลองอีกครั้ง",
+    "generic": "เกิดข้อผิดพลาด ลองอีกครั้ง"
+  }
+}

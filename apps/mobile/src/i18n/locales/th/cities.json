@@ -1,0 +1,20 @@
+{
+  "title": "เปลี่ยนเมือง",
+  "searchPlaceholder": "ค้นหาเมือง…",
+  "topCities": "เมืองยอดนิยมตอนนี้",
+  "cities": "เมือง",
+  "filterActive": "🔥 คึกคักที่สุด",
+  "filterEvents": "🎉 กิจกรรมมากที่สุด",
+  "filterOnline": "🟢 ออนไลน์มากที่สุด",
+  "backToLocation": "กลับไปยังตำแหน่งของฉัน",
+  "youreHere": "คุณอยู่ที่นี่",
+  "online": "{{count}} ออนไลน์",
+  "events_one": "{{count}} กิจกรรม",
+  "events_other": "{{count}} กิจกรรม",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} ข้อความ",
+  "loadError": "ไม่สามารถโหลดเมืองได้",
+  "noResults": "ไม่พบเมืองสำหรับ \"{{query}}\"",
+  "noCities": "ไม่พบเมือง"
+}
