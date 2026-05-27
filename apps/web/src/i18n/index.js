@@ -231,6 +231,11 @@ i18n.use(initReactI18next).init({
   ns:           NAMESPACES,
   defaultNS:    'profile',
   supportedLngs: SUPPORTED,
+  // Our bundle keys + URL prefixes are all lowercase (pt-br, zh-hans). i18next
+  // otherwise normalizes hyphenated codes to pt-BR / zh-Hans for lookups, which
+  // misses the lowercase bundles and falls back to English. Force lowercase so
+  // the active language always matches our keys.
+  lowerCaseLng: true,
   interpolation: { escapeValue: false }, // React already escapes
   returnEmptyString: false,
   react: { useSuspense: false },          // we preload before render ourselves

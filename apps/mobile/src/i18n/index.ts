@@ -269,6 +269,10 @@ i18n.use(initReactI18next).init({
   ns:            NS as unknown as string[],
   defaultNS:     'common',
   supportedLngs: SUPPORTED as unknown as string[],
+  // Bundle keys are lowercase (pt-br, zh-hans). Without this, i18next normalizes
+  // hyphenated codes to pt-BR / zh-Hans for lookups → misses the bundles and
+  // falls back to English. Force lowercase so the active language matches keys.
+  lowerCaseLng: true,
   interpolation: { escapeValue: false },
   returnEmptyString: false,
   react: { useSuspense: false }, // resources are bundled — no async load to suspend on
