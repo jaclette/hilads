@@ -20,6 +20,11 @@
     "nowShort": "ahora",
     "mAgo": "hace {{count}} min",
     "hAgo": "hace {{count}} h",
-    "dAgo": "hace {{count}} d"
+    "dAgo": "hace {{count}} d",
+    "expired": "Caducado",
+    "expiresSoon": "Caduca pronto",
+    "expiresInMin": "Caduca en {{mins}} min",
+    "expiresInHourMin": "Caduca en {{hours}} h {{mins}} min",
+    "expiresInHour": "Caduca en {{hours}} h"
   }
 }

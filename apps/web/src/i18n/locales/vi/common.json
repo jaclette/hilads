@@ -20,6 +20,11 @@
     "nowShort": "bây giờ",
     "mAgo": "{{count}} phút trước",
     "hAgo": "{{count}} giờ trước",
-    "dAgo": "{{count}} ngày trước"
+    "dAgo": "{{count}} ngày trước",
+    "expired": "Đã hết hạn",
+    "expiresSoon": "Sắp hết hạn",
+    "expiresInMin": "Hết hạn sau {{mins}} phút",
+    "expiresInHourMin": "Hết hạn sau {{hours}} h {{mins}} phút",
+    "expiresInHour": "Hết hạn sau {{hours}} h"
   }
 }
