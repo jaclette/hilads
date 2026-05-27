@@ -1,0 +1,41 @@
+{
+  "title": "Pesan",
+  "filters": { "all": "Semua", "dms": "Pesan langsung", "events": "Chat acara" },
+  "loading": "Memuat…",
+  "error": {
+    "loadTitle": "Tidak bisa memuat pesan",
+    "loadSub": "Periksa koneksimu dan coba lagi."
+  },
+  "empty": {
+    "eventsTitle": "Belum ada chat acara",
+    "eventsSub": "Buat atau gabung acara untuk mengobrol dengan orang yang ikut.",
+    "title": "Belum ada pesan",
+    "sub": "Terhubung dengan orang yang kamu temui di kota."
+  },
+  "sectionDms": "Pesan langsung",
+  "sectionEvents": "Chat acara",
+  "youPrefix": "Kamu: {{message}}",
+  "startConversation": "Mulai percakapan",
+  "eventCreated": "Kamu membuat ini",
+  "eventJoined": "Kamu gabung ini",
+  "prefs": {
+    "title": "Preferensi notifikasi",
+    "dmName": "Pesan langsung baru",
+    "dmDesc": "Saat seseorang mengirimimu pesan pribadi",
+    "eventName": "Pesan chat acara",
+    "eventDesc": "Saat seseorang mengirim pesan di acara yang kamu ikuti",
+    "cityName": "Pesan chat kota",
+    "cityDesc": "Saat seseorang mengirim pesan di channel kotamu"
+  },
+  "thread": {
+    "loadError": "Tidak bisa memuat pesan.",
+    "beginning": "Awal percakapan",
+    "photo": "📷 Foto",
+    "unavailable": "Pesan asli tidak tersedia",
+    "tapMaps": "Ketuk untuk buka di peta",
+    "composer": "Pesan…",
+    "imageType": "Silakan pilih gambar JPEG, PNG, atau WebP.",
+    "imageTooLarge": "Gambar terlalu besar. Ukuran maks: 10 MB.",
+    "imageSend": "Tidak bisa mengirim gambar. Silakan coba lagi."
+  }
+}

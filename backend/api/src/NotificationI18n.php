@@ -10,13 +10,13 @@ declare(strict_types=1);
  * the case for English/unknown locales and for any field we don't translate
  * (message previews and proper nouns like event/venue/city names stay as-is).
  *
- * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant/ja/ko/fil/th are translated; English is the source of truth in the call sites.
+ * Only fr/vi/es/it/pt-br/pt-pt/de/nl/zh-hans/zh-hant/ja/ko/fil/th/id are translated; English is the source of truth in the call sites.
  * Conventions (match the app i18n rules): "tu" form; the brand word "vibe"
  * stays English.
  */
 final class NotificationI18n
 {
-    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th'];
+    private const SUPPORTED = ['fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id'];
 
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
@@ -36,6 +36,7 @@ final class NotificationI18n
             'ko'      => ["👀 {city}에 누군가 도착했어요", "{name} 님이 방금 도착했어요"],
             'fil'     => ["👀 May kakarating lang sa {city}", "Kararating lang ni {name}"],
             'th'      => ["👀 มีคนเพิ่งมาถึง {city}", "{name} เพิ่งมาถึง"],
+            'id'      => ["👀 Ada yang baru tiba di {city}", "{name} baru saja tiba"],
         ],
         'new_event' => [
             'fr' => ["🔥 Nouvel événement à {city}", null],
@@ -52,6 +53,7 @@ final class NotificationI18n
             'ko'      => ["🔥 {city}에 새로운 이벤트", null],
             'fil'     => ["🔥 May bagong event sa {city}", null],
             'th'      => ["🔥 มีกิจกรรมใหม่ใน {city}", null],
+            'id'      => ["🔥 Ada acara baru di {city}", null],
         ],
         'channel_message' => [
             'fr' => ["{name} dans le chat de la ville", null],
@@ -68,6 +70,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님 (시티 채팅)",         null],
             'fil'     => ["{name} sa city chat",            null],
             'th'      => ["{name} ในแชทเมือง",              null],
+            'id'      => ["{name} di obrolan kota",          null],
         ],
         'event_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -84,6 +87,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님 · {title}", null],
             'fil'     => ["{name} sa {title}", null],
             'th'      => ["{name} ใน {title}", null],
+            'id'      => ["{name} di {title}", null],
         ],
         'topic_message' => [
             'fr' => ["{name} dans {title}", null],
@@ -100,6 +104,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님 · {title}", null],
             'fil'     => ["{name} sa {title}", null],
             'th'      => ["{name} ใน {title}", null],
+            'id'      => ["{name} di {title}", null],
         ],
         'dm_message' => [
             'fr' => ["{name} t'a envoyé un message",          null],
@@ -116,6 +121,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님이 메시지를 보냈어요",         null],
             'fil'     => ["Nagpadala si {name} ng mensahe",       null],
             'th'      => ["{name} ส่งข้อความถึงคุณ",               null],
+            'id'      => ["{name} mengirimimu pesan",            null],
         ],
         'event_join' => [
             'fr' => ["👋 {name} a rejoint {title}",   null],
@@ -132,6 +138,7 @@ final class NotificationI18n
             'ko'      => ["👋 {name} 님이 {title}에 참여했어요", null],
             'fil'     => ["👋 Sumali si {name} sa {title}",     null],
             'th'      => ["👋 {name} เข้าร่วม {title} แล้ว",      null],
+            'id'      => ["👋 {name} bergabung ke {title}",     null],
         ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
@@ -148,6 +155,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님이 친구 요청을 보냈어요",                null],
             'fil'     => ["Pinadalhan ka ni {name} ng friend request",      null],
             'th'      => ["{name} ส่งคำขอเป็นเพื่อนถึงคุณ",                   null],
+            'id'      => ["{name} mengirimimu permintaan pertemanan",        null],
         ],
         'friend_request_accepted' => [
             'fr' => ["{name} a accepté ta demande d'ami 🎉",            null],
@@ -164,6 +172,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님이 친구 요청을 수락했어요 🎉",            null],
             'fil'     => ["Tinanggap ni {name} ang iyong friend request 🎉",  null],
             'th'      => ["{name} ตอบรับคำขอเป็นเพื่อนของคุณแล้ว 🎉",         null],
+            'id'      => ["{name} menerima permintaan pertemananmu 🎉",      null],
         ],
         'vibe_received' => [
             'fr' => ["{name} t'a envoyé une vibe ✨",         null],
@@ -180,6 +189,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님이 vibe를 보냈어요 ✨",       null],
             'fil'     => ["Nagpadala si {name} ng vibe ✨",        null],
             'th'      => ["{name} ส่ง vibe ถึงคุณ ✨",             null],
+            'id'      => ["{name} mengirimimu vibe ✨",           null],
         ],
         'profile_view' => [
             'fr' => ["👀 {name} a regardé ton profil",   null],
@@ -196,6 +206,7 @@ final class NotificationI18n
             'ko'      => ["👀 {name} 님이 프로필을 봤어요", null],
             'fil'     => ["👀 Tiningnan ni {name} ang profile mo", null],
             'th'      => ["👀 {name} ดูโปรไฟล์ของคุณ", null],
+            'id'      => ["👀 {name} melihat profilmu", null],
         ],
         'join_request' => [
             'fr' => ["{name} veut rejoindre",  "{name} a demandé à rejoindre {title}"],
@@ -212,6 +223,7 @@ final class NotificationI18n
             'ko'      => ["{name} 님이 참여하고 싶어해요", "{name} 님이 {title} 참여를 요청했어요"],
             'fil'     => ["Gustong sumali ni {name}",     "Humiling si {name} na sumali sa {title}"],
             'th'      => ["{name} อยากเข้าร่วม",          "{name} ขอเข้าร่วม {title}"],
+            'id'      => ["{name} ingin bergabung",      "{name} meminta untuk bergabung ke {title}"],
         ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
@@ -228,6 +240,7 @@ final class NotificationI18n
             'ko'      => ["참여 완료! 🎉", "{name} 님이 당신을 {title}에 추가했어요"],
             'fil'     => ["Sali ka na! 🎉", "Idinagdag ka ni {name} sa {title}"],
             'th'      => ["เข้าร่วมแล้ว! 🎉", "{name} เพิ่มคุณเข้า {title}"],
+            'id'      => ["Kamu sudah gabung! 🎉", "{name} menambahkanmu ke {title}"],
         ],
     ];
 
@@ -288,6 +301,10 @@ final class NotificationI18n
         'th' => [
             'titled' => "{name} กล่าวถึงคุณใน {title}",
             'city'   => "{name} กล่าวถึงคุณในแชทเมือง",
+        ],
+        'id' => [
+            'titled' => "{name} menyebutmu di {title}",
+            'city'   => "{name} menyebutmu di obrolan kota",
         ],
     ];
 

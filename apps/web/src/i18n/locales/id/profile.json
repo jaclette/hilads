@@ -1,0 +1,130 @@
+{
+  "pageTitle": "Profilku",
+  "changePhoto": "Ganti foto profil",
+  "yourProfile": "Profilmu",
+  "mode": "Mode",
+  "modes": {
+    "local": "Local",
+    "localDesc": "Kamu kenal kota ini",
+    "exploring": "Exploring",
+    "exploringDesc": "Kamu sedang menjelajahinya"
+  },
+  "tabs": {
+    "interests": "Minat",
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Teman",
+    "vibes": "Vibes"
+  },
+  "vibes": {
+    "party": "Pesta",
+    "board_games": "Board Game",
+    "coffee": "Kopi",
+    "music": "Musik",
+    "food": "Makanan",
+    "chill": "Santai"
+  },
+  "interests": {
+    "drinks": "minuman",
+    "party": "pesta",
+    "nightlife": "kehidupan malam",
+    "music": "musik",
+    "live music": "musik live",
+    "culture": "budaya",
+    "art": "seni",
+    "food": "makanan",
+    "coffee": "kopi",
+    "sport": "olahraga",
+    "fitness": "kebugaran",
+    "hiking": "mendaki",
+    "beach": "pantai",
+    "wellness": "kesehatan",
+    "travel": "jalan-jalan",
+    "hangout": "hangout",
+    "socializing": "bersosialisasi",
+    "gaming": "gaming",
+    "tech": "teknologi",
+    "dating": "kencan"
+  },
+  "fields": {
+    "username": "Nama pengguna",
+    "usernamePlaceholder": "nama pengguna",
+    "checking": "Memeriksa…",
+    "available": "@{{username}} tersedia",
+    "aboutMe": "Tentang aku",
+    "charsLeft": "— sisa {{count}}",
+    "aboutPlaceholder": "Suka jajanan kaki lima dan ngobrol spontan",
+    "email": "Email",
+    "readOnly": "— hanya baca",
+    "homeCity": "Kota asal",
+    "homeCityPlaceholder": "Tempat tinggalmu",
+    "age": "Usia",
+    "agePlaceholder": "Usiamu",
+    "myVibe": "Vibe-ku",
+    "interests": "Minat",
+    "interestsHint": "— pilih maksimal 5"
+  },
+  "ambassador": {
+    "title": "Pilihan kota 👑",
+    "subtitle": "Ditampilkan di profilmu sebagai legenda lokal.",
+    "restaurant": "Restoran favorit",
+    "restaurantPlaceholder": "Tempat yang selalu kamu ajak orang ke sana",
+    "spot": "Permata tersembunyi / spot",
+    "spotPlaceholder": "Tempat yang dilewatkan sebagian besar turis",
+    "tip": "Tip lokal",
+    "tipPlaceholder": "Saran terbaik untuk pendatang baru",
+    "story": "Cerita kota",
+    "storyPlaceholder": "Sesuatu yang kamu sukai dari kota ini"
+  },
+  "hangouts": {
+    "empty": "Belum ada hangout — mulai satu ⚡",
+    "host": "Tuan rumah"
+  },
+  "events": {
+    "going": "Ikut",
+    "goingEmpty": "Belum ada rencana — cari sesuatu 🔥",
+    "hosting": "Jadi tuan rumah",
+    "hostingEmpty": "Belum ada yang dibuat — mulai sesuatu ✨",
+    "live": "Live",
+    "recurring": "↻ Berulang",
+    "upcoming": "Akan datang",
+    "deleteEvent": "Hapus acara"
+  },
+  "friends": {
+    "requests": "Permintaan pertemanan",
+    "empty": "Belum ada teman. Tambahkan dari profil.",
+    "mine": "Temanku"
+  },
+  "vibesTab": {
+    "received": "Vibes diterima",
+    "score": "skor vibe {{score}}",
+    "basedOn_one": "berdasarkan {{count}} vibe",
+    "basedOn_other": "berdasarkan {{count}} vibe",
+    "empty": "Belum ada vibes",
+    "emptyHint": "Skormu akan muncul di sini setelah orang meninggalkan catatan untukmu ✨"
+  },
+  "save": {
+    "uploading": "Mengunggah…",
+    "saving": "Menyimpan…",
+    "saved": "Tersimpan ✓",
+    "save": "Simpan profil"
+  },
+  "signOut": "Keluar",
+  "deleteAccount": "Hapus akun",
+  "delete": {
+    "title": "Hapus akun?",
+    "body": "Profil, teman, dan pengaturanmu akan dihapus permanen. Pesan dan acaramu akan tetap ada di chat kota secara anonim.",
+    "irreversible": "Tindakan ini tidak bisa dibatalkan.",
+    "deleting": "Menghapus…",
+    "confirm": "Ya, hapus akunku",
+    "cancel": "Batal"
+  },
+  "errors": {
+    "photoUpload": "Gagal mengunggah foto. Coba lagi.",
+    "usernameTooShort": "Nama pengguna harus minimal 3 karakter",
+    "usernameTaken": "Nama pengguna itu sudah dipakai",
+    "usernameInvalid": "Nama pengguna tidak valid",
+    "saveFailed": "Gagal menyimpan. Coba lagi.",
+    "generic": "Terjadi kesalahan. Coba lagi."
+  }
+}

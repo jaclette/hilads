@@ -1,0 +1,22 @@
+{
+  "title": "Notifikasi",
+  "markAllRead": "Tandai semua dibaca",
+  "empty": { "title": "Semua sudah dibaca", "sub": "Notifikasi akan muncul di sini" },
+  "loading": "Memuat…",
+  "seeAll": "Lihat semua notifikasi →",
+  "prefs": {
+    "title": "Preferensi notifikasi",
+    "mentionName": "Sebutan @",
+    "mentionDesc": "Saat seseorang me-@mention kamu di pesan atau hangout",
+    "newEventName": "Acara baru di kotamu",
+    "newEventDesc": "Saat seseorang membuat acara di kotamu",
+    "friendName": "Permintaan pertemanan",
+    "friendDesc": "Saat seseorang mengirim permintaan pertemanan atau menerima permintaanmu",
+    "notesName": "Catatan ✨",
+    "notesDesc": "Saat seseorang meninggalkan catatan di profilmu",
+    "profileViewName": "Kunjungan profil 👀",
+    "profileViewDesc": "Saat seseorang melihat profilmu",
+    "announcementName": "Pengumuman dari Hilads",
+    "announcementDesc": "Sesekali kabar terbaru dari tim"
+  }
+}

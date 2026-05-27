@@ -47,10 +47,11 @@ import ja_ssr from '../src/i18n/locales/ja/ssr.json' with { type: 'json' }
 import ko_ssr from '../src/i18n/locales/ko/ssr.json' with { type: 'json' }
 import fil_ssr from '../src/i18n/locales/fil/ssr.json' with { type: 'json' }
 import th_ssr from '../src/i18n/locales/th/ssr.json' with { type: 'json' }
+import id_ssr from '../src/i18n/locales/id/ssr.json' with { type: 'json' }
 
-const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr, es: es_ssr, it: it_ssr, 'pt-br': ptbr_ssr, 'pt-pt': ptpt_ssr, de: de_ssr, nl: nl_ssr, 'zh-hans': zhhans_ssr, 'zh-hant': zhhant_ssr, ja: ja_ssr, ko: ko_ssr, fil: fil_ssr, th: th_ssr }
-const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN', es: 'es-ES', it: 'it-IT', 'pt-br': 'pt-BR', 'pt-pt': 'pt-PT', de: 'de-DE', nl: 'nl-NL', 'zh-hans': 'zh-CN', 'zh-hant': 'zh-TW', ja: 'ja-JP', ko: 'ko-KR', fil: 'fil-PH', th: 'th-TH' }
-const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN', es: 'es_ES', it: 'it_IT', 'pt-br': 'pt_BR', 'pt-pt': 'pt_PT', de: 'de_DE', nl: 'nl_NL', 'zh-hans': 'zh_CN', 'zh-hant': 'zh_TW', ja: 'ja_JP', ko: 'ko_KR', fil: 'fil_PH', th: 'th_TH' }
+const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr, es: es_ssr, it: it_ssr, 'pt-br': ptbr_ssr, 'pt-pt': ptpt_ssr, de: de_ssr, nl: nl_ssr, 'zh-hans': zhhans_ssr, 'zh-hant': zhhant_ssr, ja: ja_ssr, ko: ko_ssr, fil: fil_ssr, th: th_ssr, id: id_ssr }
+const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN', es: 'es-ES', it: 'it-IT', 'pt-br': 'pt-BR', 'pt-pt': 'pt-PT', de: 'de-DE', nl: 'nl-NL', 'zh-hans': 'zh-CN', 'zh-hant': 'zh-TW', ja: 'ja-JP', ko: 'ko-KR', fil: 'fil-PH', th: 'th-TH', id: 'id-ID' }
+const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN', es: 'es_ES', it: 'it_IT', 'pt-br': 'pt_BR', 'pt-pt': 'pt_PT', de: 'de_DE', nl: 'nl_NL', 'zh-hans': 'zh_CN', 'zh-hant': 'zh_TW', ja: 'ja_JP', ko: 'ko_KR', fil: 'fil_PH', th: 'th_TH', id: 'id_ID' }
 
 // '' for the default (English) locale; '/fr' | '/vi' otherwise. Used to keep SSR
 // internal links inside the localized cluster (mirrors the redirect/canonical prefixing).
@@ -1374,7 +1375,7 @@ function injectMeta(shell, meta, locale = 'en') {
 }
 
 // ── Locale (Option A: un-prefixed = English canonical; /fr, /vi additive) ─────
-const I18N_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th']
+const I18N_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id']
 
 function setHtmlLang(shell, locale) {
   return shell.replace(/<html\s+lang="[^"]*"/i, `<html lang="${locale}"`)

@@ -1,0 +1,66 @@
+{
+  "create": {
+    "startTitle": "Mulai hangout",
+    "editTitle": "Edit hangout",
+    "category": "Kategori",
+    "cat": { "general": "Umum", "tips": "Tips", "food": "Makanan", "drinks": "Minuman", "help": "Bantuan", "meetup": "Meetup" },
+    "titleLabel": "Apa yang ada di pikiranmu?",
+    "titlePlaceholder": "mis. Spot kopi terbaik di sekitar sini?",
+    "detailsLabel": "Tambahkan detail",
+    "optional": "(opsional)",
+    "detailsPlaceholder": "Beri sedikit konteks…",
+    "expiry": "⏱ Berakhir otomatis dalam 24 jam",
+    "saving": "Menyimpan…",
+    "starting": "Memulai…",
+    "saveChanges": "Simpan perubahan",
+    "startCta": "Mulai hangout ⚡",
+    "limitHeader": "Satu per satu",
+    "limitTitle": "Kamu sudah punya hangout",
+    "limitSub": "Kamu hanya bisa menjalankan satu hangout dalam satu waktu. Ke “{{title}}”, atau hapus untuk memulai yang baru.",
+    "limitGo": "Ke hangout-ku →",
+    "yourHangout": "hangout-mu"
+  },
+  "deleteConfirm": "Hapus hangout ini? Ini mengakhirinya untuk semua orang dan tidak bisa dibatalkan.",
+  "deleteFailedAlert": "Tidak bisa menghapus. Silakan coba lagi.",
+  "shareAria": "Bagikan hangout",
+  "shareTitle": "Bagikan hangout ini",
+  "members": {
+    "oneIn": "{{name}} ikut",
+    "countIn": "{{count}} di hangout ini",
+    "seeAll": "Lihat semua →"
+  },
+  "owner": { "edit": "✏️ Edit", "delete": "🗑 Hapus" },
+  "gated": {
+    "title": "Hangout khusus anggota",
+    "pending": "Permintaan menunggu — kamu bisa bergabung ke percakapan begitu seorang anggota menerima.",
+    "prompt": "Minta gabung untuk melihat percakapan dan mengobrol.",
+    "requestBtn": "Minta gabung"
+  },
+  "feed": {
+    "beginning": "Awal percakapan",
+    "loading": "Memuat…",
+    "emptyTitle": "Belum ada balasan",
+    "emptySub": "Jadi yang pertama gabung"
+  },
+  "joinReq": {
+    "someone": "Seseorang",
+    "wantsToJoin": " ingin gabung",
+    "joined": " bergabung ke hangout",
+    "askedToJoin": " minta gabung",
+    "decline": "Tolak",
+    "accept": "Terima",
+    "accepted": "Diterima",
+    "acceptedBy": "Diterima oleh {{name}}",
+    "declined": "Permintaan ditolak"
+  },
+  "modes": { "local": "Local", "exploring": "Exploring" },
+  "reply": { "photo": "📷 Foto", "unavailable": "Pesan asli tidak tersedia" },
+  "composer": { "reply": "Balas percakapan…", "start": "Mulai vibe-nya ✨" },
+  "errors": {
+    "locFailed": "Tidak bisa mengambil lokasimu. Aktifkan akses lokasi dan coba lagi.",
+    "imageType": "Silakan pilih gambar JPEG, PNG, atau WebP.",
+    "imageTooLarge": "Gambar terlalu besar. Maks 10 MB.",
+    "imageSend": "Tidak bisa mengirim gambar. Silakan coba lagi.",
+    "dismiss": "{{error}} · ketuk untuk menutup"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Ganti kota",
+  "searchPlaceholder": "Cari kota…",
+  "topCities": "Kota teraktif saat ini",
+  "cities": "Kota",
+  "filterActive": "🔥 Paling aktif",
+  "filterEvents": "🎉 Acara terbanyak",
+  "filterOnline": "🟢 Paling banyak online",
+  "backToLocation": "Kembali ke lokasiku",
+  "youreHere": "kamu di sini",
+  "online": "{{count}} online",
+  "events_one": "{{count}} acara",
+  "events_other": "{{count}} acara",
+  "hangout_one": "{{count}} hangout",
+  "hangout_other": "{{count}} hangouts",
+  "msgs": "{{count}} pesan",
+  "loadError": "Tidak bisa memuat kota",
+  "noResults": "Tidak ada kota untuk \"{{query}}\"",
+  "noCities": "Tidak ada kota ditemukan"
+}

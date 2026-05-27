@@ -1,0 +1,58 @@
+{
+  "share": {
+    "bringPeople": "Ajak orang ✨",
+    "linkCopied": "Tautan disalin ✨",
+    "vibeTitle": "Bagikan vibe ini",
+    "eventAria": "Bagikan acara"
+  },
+  "title": { "edit": "Edit acara", "host": "Adakan acara", "create": "Buat acara" },
+  "delete": {
+    "confirmTitle": "Hapus acara ini?",
+    "confirmBody": "Ini akan menghapus acara dan semua pesan. Tindakan ini tidak bisa dibatalkan.",
+    "cancel": "Batal",
+    "deleting": "Menghapus…",
+    "confirm": "Hapus",
+    "button": "🗑 Hapus acara"
+  },
+  "quickStart": "Mulai cepat",
+  "presets": {
+    "dailySpot": "Spot harian", "dailySpotDesc": "Setiap hari",
+    "everyEvening": "Setiap malam", "everyEveningDesc": "Harian · 20.00",
+    "weekends": "Akhir pekan", "weekendsDesc": "Sab & Min"
+  },
+  "category": "Kategori",
+  "categories": {
+    "drinks": "Minuman", "party": "Pesta", "music": "Musik", "food": "Makanan",
+    "coffee": "Kopi", "sport": "Olahraga", "meetup": "Meetup", "other": "Lainnya"
+  },
+  "titleLabel": "Judul",
+  "titlePlaceholder": "mis. Malam jazz di Rooftop Bar",
+  "date": "Tanggal",
+  "today": "Hari ini",
+  "tomorrow": "Besok",
+  "todayHint": "Mengadakan hari ini memberimu visibilitas paling tinggi 🔥",
+  "starts": "Mulai",
+  "ends": "Berakhir",
+  "repeat": "Ulangi",
+  "recurrence": { "once": "Sekali", "daily": "Setiap hari", "weekly": "Setiap minggu", "everyNDays": "Setiap N hari" },
+  "weekdays": ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"],
+  "intervalEvery": "Setiap",
+  "intervalDays": "hari",
+  "location": "Lokasi",
+  "locating": "Mengambil lokasimu…",
+  "locationPlaceholder": "Opsional · ketuk untuk atur di peta",
+  "clearLocation": "Hapus lokasi",
+  "errors": {
+    "endAfterStart": "Waktu berakhir harus minimal 15 menit setelah waktu mulai",
+    "pickDay": "Pilih setidaknya satu hari dalam seminggu",
+    "deleteFailed": "Tidak bisa menghapus acara. Coba lagi.",
+    "locUnavailable": "Lokasi tidak tersedia di browser ini. Kamu tetap bisa membuat acara tanpanya.",
+    "locFailed": "Tidak bisa mengambil lokasimu. Aktifkan akses lokasi, atau lewati peta."
+  },
+  "submit": {
+    "saving": "Menyimpan…", "creating": "Membuat…",
+    "saveChanges": "Simpan perubahan", "openSpot": "Buka spot-mu",
+    "startEvent": "Mulai acara", "create": "Buat acara"
+  },
+  "recur": {"everyday":"Setiap hari","weekly":"Setiap minggu","everyNDays_one":"Setiap {{count}} hari","everyNDays_other":"Setiap {{count}} hari"}
+}

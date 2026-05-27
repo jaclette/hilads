@@ -1,0 +1,30 @@
+{
+  "allTitle": "Semua Notifikasi",
+  "markAllRead": "Tandai semua sudah dibaca",
+  "emptyTitle": "Belum ada notifikasi",
+  "emptySub": "Pesan dan pembaruan acara akan muncul di sini.",
+  "seeAll": "Lihat semua notifikasi",
+  "prefTitle": "PREFERENSI NOTIFIKASI",
+  "pref": {
+    "mentionLabel": "Sebutan @",
+    "mentionSub": "Saat seseorang me-@mention kamu di pesan atau hangout",
+    "eventJoinLabel": "Seseorang gabung ke acaramu",
+    "eventJoinSub": "Saat orang baru gabung ke acara yang akan kamu ikuti",
+    "newEventLabel": "Acara baru di kotamu",
+    "newEventSub": "Saat seseorang membuat acara di kotamu",
+    "cityJoinLabel": "Seseorang tiba di kotamu",
+    "cityJoinSub": "Saat ada yang gabung ke channel kota yang kamu ikuti",
+    "friendLabel": "Permintaan pertemanan",
+    "friendSub": "Saat seseorang mengirimimu permintaan pertemanan atau menerima punyamu",
+    "vibeLabel": "Vibes ✨",
+    "vibeSub": "Saat seseorang meninggalkan vibe di profilmu",
+    "profileViewLabel": "Kunjungan profil 👀",
+    "profileViewSub": "Saat seseorang melihat profilmu",
+    "topicReplyLabel": "Balasan hangout 💬",
+    "topicReplySub": "Saat seseorang membalas di hangout yang kamu ikuti",
+    "newTopicLabel": "Hangout baru di kotamu",
+    "newTopicSub": "Saat seseorang memulai hangout baru di kotamu",
+    "announceLabel": "Pengumuman dari Hilads",
+    "announceSub": "Pembaruan sesekali dari tim"
+  }
+}

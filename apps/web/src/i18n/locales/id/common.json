@@ -1,0 +1,52 @@
+{
+  "language": "Bahasa",
+  "cancel": "Batal",
+  "loading": "Memuat…",
+  "mode": {
+    "local": { "label": "Local" },
+    "exploring": { "label": "Exploring" }
+  },
+  "composer": {
+    "attach": "Tambahkan lampiran",
+    "emoji": "Emoji"
+  },
+  "vibe": {
+    "party": "Pesta",
+    "board_games": "Board Game",
+    "coffee": "Kopi",
+    "music": "Musik",
+    "food": "Makanan",
+    "chill": "Santai"
+  },
+  "weather": {
+    "clear": "langit cerah",
+    "sunnyHot": "cuaca indah",
+    "clearNight": "malam cerah",
+    "mostlyClear": "sebagian besar cerah",
+    "partly": "sedikit berawan",
+    "overcast": "langit kelabu",
+    "fog": "berkabut",
+    "drizzle": "gerimis",
+    "rain": "hujan",
+    "snow": "salju",
+    "snowShowers": "hujan salju",
+    "thunder": "badai petir"
+  },
+  "time": {
+    "happeningNow": "🔥 sedang berlangsung",
+    "inMin": "🔥 dalam {{count}} mnt",
+    "today": "Hari ini",
+    "tomorrow": "Besok",
+    "yesterday": "Kemarin",
+    "justNow": "baru saja",
+    "nowShort": "sekarang",
+    "mAgo": "{{count}} mnt lalu",
+    "hAgo": "{{count}} jam lalu",
+    "dAgo": "{{count}} hari lalu",
+    "expired": "Berakhir",
+    "expiresSoon": "Segera berakhir",
+    "expiresInMin": "Berakhir dalam {{mins}} mnt",
+    "expiresInHourMin": "Berakhir dalam {{hours}} jam {{mins}} mnt",
+    "expiresInHour": "Berakhir dalam {{hours}} jam"
+  }
+}

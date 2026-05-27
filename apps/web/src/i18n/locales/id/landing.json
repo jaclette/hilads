@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "sub": "Kota hidup di sekitarmu.\nTemukan orang, gabung yang sedang berlangsung, atau buka spot-mu sendiri."
+  },
+  "join": {
+    "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",
+    "peopleLive_other": "🔥 {{count}} orang sedang nongkrong sekarang",
+    "events_one": "🔥 {{count}} acara berlangsung",
+    "events_other": "🔥 {{count}} acara berlangsung",
+    "hangouts_one": "🗣️ {{count}} hangout aktif",
+    "hangouts_other": "🗣️ {{count}} hangout aktif",
+    "replies_one": "{{count}} balasan",
+    "replies_other": "{{count}} balasan",
+    "pickCity": "Pilih kota\ndan gabung",
+    "locating": "› mencari kotamu...",
+    "browseCities": "Jelajahi kota →",
+    "yourName": "Namamu",
+    "namePlaceholder": "Sapa sebagai...",
+    "tryAgain": "Coba lagi",
+    "useLocation": "Gunakan lokasiku saja",
+    "joinCity": "Gabung {{city}} →",
+    "joinChat": "Gabung Chat →",
+    "hint": "// anonim · akses instan",
+    "keepIdentity": "atau pertahankan identitasmu",
+    "createAccount": "✨ Buat akun",
+    "logIn": "Masuk",
+    "authHint": "Simpan namamu · buka profil · tambah teman"
+  },
+  "local": {
+    "badge": "🌍 Local",
+    "title": "Wujudkan sesuatu",
+    "tagline": "Kamu tahu spot terbaik. Sekarang bagikan.",
+    "bullets": [
+      "Adakan acara berulang di spot lokal favoritmu",
+      "Ajak orang ke tempat yang kamu sukai",
+      "Jadilah alasan orang datang"
+    ],
+    "cta": "Buka spot-mu"
+  },
+  "exploring": {
+    "badge": "🧭 Exploring",
+    "title": "Temukan momen nyata di kota mana pun",
+    "tagline": "Ke mana pun kamu pergi, temukan orang-orangmu.",
+    "bullets": [
+      "Temukan acara real-time di dekatmu",
+      "Bertemu warga lokal dan penjelajah lain secara instan",
+      "Lewati jebakan turis. Temukan kota yang sesungguhnya."
+    ],
+    "cta": "Lihat apa yang sedang terjadi"
+  },
+  "how": {
+    "eyebrow": "Cara kerjanya",
+    "title": "Tiga langkah untuk bertemu orang di dekatmu.",
+    "steps": [
+      { "title": "Buka aplikasinya", "desc": "Lihat siapa yang ada di sekitarmu dan apa yang sedang terjadi di dekatmu sekarang." },
+      { "title": "Pilih mode-mu", "desc": "Local. Kamu kenal kotanya.\nExploring. Kamu ingin merasakannya." },
+      { "title": "Gabung", "desc": "Gabung acara atau buka spot-mu sendiri. Kehidupan nyata dimulai di sini." }
+    ]
+  },
+  "stats": {
+    "peopleLive": "orang online sekarang",
+    "cities": "kota",
+    "eventsCreated": "acara dibuat",
+    "signupsNeeded": "pendaftaran dibutuhkan"
+  },
+  "concept": {
+    "title": "Bukan jejaring sosial lain.\nKotamu, live.",
+    "rules": [
+      "Tanpa pengikut. Tanpa feed. Tanpa algoritma.",
+      "Lihat siapa yang ada di sekitar. Gabung yang sedang terjadi di dekatmu.",
+      "Orang nyata. Tempat nyata. Sekarang juga."
+    ]
+  },
+  "seo": "Hilads adalah aplikasi sosial real-time yang membantumu bertemu orang di dekatmu dan menemukan hal-hal untuk dilakukan di kotamu. Temukan acara di dekatmu, kenali warga lokal, dan terhubung dengan para pelancong di mana pun kamu berada. Mencari hal seru di Jakarta? Ingin bertemu warga lokal di Bali? Sedang menjelajahi Bandung dan ingin tahu apa yang terjadi malam ini? Hilads menunjukkan kotamu, live. Tanpa perlu akun. Cukup datang.",
+  "download": {
+    "eyebrow": "Aplikasi mobile",
+    "title": "Kotamu dalam genggaman.",
+    "sub": "Aplikasi native segera hadir."
+  },
+  "repeat": {
+    "eyebrow": "Gabung",
+    "titleCity": "{{city}} sedang live sekarang.",
+    "titleGeneric": "Kotamu sedang live sekarang."
+  }
+}

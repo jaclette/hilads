@@ -1,0 +1,14 @@
+{
+  "title": "Yang akan datang",
+  "openCalendar": "Buka kalender",
+  "today": "Hari ini",
+  "close": "Tutup",
+  "error": "Tidak bisa memuat acara untuk hari ini",
+  "retry": "Coba lagi",
+  "emptyTitle": "Tidak ada yang dijadwalkan",
+  "emptySub": "Belum ada acara di hari ini.",
+  "public": "Publik",
+  "going_one": "🙌 {{count}} ikut",
+  "going_other": "🙌 {{count}} ikut",
+  "liveNow": "🔥 Live sekarang"
+}

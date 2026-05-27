@@ -1,0 +1,29 @@
+{
+  "friendReq": {
+    "title": "Permintaan pertemanan",
+    "incoming": "Masuk",
+    "sent": "Terkirim",
+    "wantsToBeFriend": "ingin berteman denganmu",
+    "requestSent": "permintaan terkirim",
+    "decline": "Tolak",
+    "accept": "Terima",
+    "cancel": "Batal",
+    "emptyIncomingTitle": "Belum ada permintaan pertemanan",
+    "emptySentTitle": "Kamu belum mengirim satu pun",
+    "emptyIncomingSub": "Saat seseorang ingin berteman denganmu, kamu akan melihatnya di sini.",
+    "emptySentSub": "Permintaan pertemanan tertunda yang kamu kirim akan muncul di sini."
+  },
+  "blocked": {
+    "title": "Pengguna yang diblokir",
+    "thisUser": "pengguna ini",
+    "ghostName": "Hantu",
+    "guest": "Tamu",
+    "unblock": "Buka blokir",
+    "unblockTitle": "Buka blokir {{name}}?",
+    "unblockBody": "{{name}} akan bisa melihat kontenmu dan menghubungimu lagi.",
+    "unblockFailTitle": "Tidak bisa membuka blokir",
+    "unblockFailBody": "Silakan coba lagi.",
+    "emptyTitle": "Kamu belum memblokir siapa pun",
+    "emptySub": "Pengguna yang diblokir tidak akan melihat kontenmu, dan kamu tidak melihat konten mereka."
+  }
+}

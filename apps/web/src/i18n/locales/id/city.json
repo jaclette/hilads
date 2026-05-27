@@ -1,0 +1,218 @@
+{
+  "guestGate": {
+    "createAccount": "Buat akun",
+    "signIn": "Masuk",
+    "create_event": {
+      "pageTitle": "Buat acara",
+      "title": "Ghost bisa lihat-lihat, tapi tidak bisa jadi host.",
+      "sub": "Buat akun untuk mengadakan acaramu sendiri dan menaruh kotamu di peta."
+    },
+    "view_profile": {
+      "pageTitle": "Profil",
+      "title": "Ghost bisa lihat-lihat, tapi profil hanya untuk anggota.",
+      "sub": "Buat akun untuk membuka profil, terhubung dengan orang, dan membangun crew kotamu."
+    },
+    "join_hangout": {
+      "pageTitle": "Gabung hangout",
+      "title": "Ghost bisa lihat-lihat, tapi tidak bisa gabung hangout.",
+      "sub": "Daftar untuk gabung hangout, menyimpan namamu, dan dapat pemberitahuan saat orang ingin bertemu."
+    },
+    "create_hangout": {
+      "pageTitle": "Mulai hangout",
+      "title": "Ghost bisa lihat-lihat, tapi tidak bisa jadi host.",
+      "sub": "Daftar untuk memulai hangout, menyimpan namamu, dan mengajak orang gabung."
+    }
+  },
+  "welcome": {
+    "live": "{{city}} sedang live ✨",
+    "dismiss": "Tutup",
+    "body": "Orang sungguhan, sekarang juga. Sapa, lihat siapa yang ada di sekitar, atau ajak teman.",
+    "sayHi": "Sapa 👋",
+    "invite": "Undang teman"
+  },
+  "imageType": "Silakan pilih gambar JPEG, PNG, atau WebP.",
+  "imageTooLarge": "Gambar terlalu besar. Ukuran maks.: 10 MB.",
+  "picker": {
+    "title": "Pilih kota",
+    "search": "Cari kota…",
+    "noResults": "Tidak ada kota ditemukan untuk \"{{query}}\"",
+    "topCities": "Kota teraktif sekarang",
+    "cities": "Kota"
+  },
+  "joining": "Bergabung dengan {{city}}…",
+  "joiningDefault": "Bergabung dengan chat…",
+  "tryAgain": "Coba lagi",
+  "feed": {
+    "hangoutTag": "Hangout",
+    "eventTag": "Event",
+    "public": "Publik",
+    "activeNow": "● Aktif sekarang",
+    "repliesNew": "Belum ada balasan — jadilah yang pertama",
+    "replies_one": "💬 {{count}} balasan",
+    "replies_other": "💬 {{count}} balasan",
+    "going_one": "🙌 {{count}} ikut",
+    "going_other": "🙌 {{count}} ikut",
+    "hostedBy": "Dipandu oleh {{name}}",
+    "groupHilads": "Hilads Events",
+    "groupPublic": "Public Events",
+    "groupPublicTicket": "🎫 Public Events",
+    "createEvent": "Buat acara",
+    "startHangout": "Mulai hangout ⚡",
+    "openPlace": "Buka tempatmu",
+    "loadError": "Tidak bisa memuat acara",
+    "loadErrorSub": "Tarik untuk coba lagi nanti atau buat sesuatu yang baru di {{city}}.",
+    "emptyLocalTitle": "Jadi host tempatmu",
+    "emptyTitle": "Belum ada apa-apa",
+    "emptyLocalSub": "Buat {{city}} terasa hidup. Mulai acara rutin di tempat favoritmu.",
+    "emptySub": "Jadilah yang pertama bikin sesuatu terjadi di {{city}}",
+    "noEvents": "Belum ada acara sekarang",
+    "noHangouts": "Belum ada hangout",
+    "noEventsSub": "Jadilah yang pertama membuatnya di {{city}}",
+    "noHangoutsSub": "Mulai hangout dan buat kota ramai bicara",
+    "filterAll": "Semua",
+    "seeComing": "Lihat yang akan datang 🔮",
+    "seeHappened": "lihat apa yang terjadi",
+    "createNew": "Buat baru"
+  },
+  "header": {
+    "online": "{{count}} di sekitar",
+    "liveNow": "live sekarang",
+    "seeWhosHere": "Lihat siapa yang ada di sini",
+    "onlineAria": "{{count}} orang di sekitar, ketuk untuk lihat siapa",
+    "notifications": "Notifikasi",
+    "messages": "Pesan",
+    "shareCity": "Bagikan kota",
+    "switchCity": "Ganti kota",
+    "changeCity": "Ganti kota",
+    "currentWeather": "Cuaca saat ini: {{label}}"
+  },
+  "here": {
+    "title": "Orang di sini",
+    "filterBadge": "Badge",
+    "filterVibe": "Vibe",
+    "filterMode": "Mode",
+    "you": "(kamu)",
+    "hereNow": "Here now",
+    "noMatchLive": "Tidak ada yang cocok dengan filter ini sekarang.",
+    "legendsSub": "Mereka yang bikin kota hidup",
+    "cityCrew": "Crew kota",
+    "noMatchCrew": "Tidak ada anggota yang cocok dengan filter ini.",
+    "loadMore": "Muat lebih banyak",
+    "messageAria": "Kirim pesan ke {{name}}"
+  },
+  "eventHeader": {
+    "yourEvent": "Acaramu",
+    "edit": "Edit",
+    "join": "Gabung",
+    "joined": "Bergabung ✓",
+    "here": "{{count}} di sini",
+    "going_one": "{{count}} ikut",
+    "going_other": "{{count}} ikut",
+    "locationPending": "Lokasi belum tersedia",
+    "hostedBy": "Dipandu oleh {{name}}"
+  },
+  "chatEmpty": {
+    "beginning": "Awal percakapan",
+    "arriving": "Orang-orang mulai berdatangan",
+    "firstChat": "Jadilah yang pertama ngobrol di sini 👇",
+    "firstHi": "Jadilah yang pertama menyapa 👇"
+  },
+  "create": {
+    "title": "Mau ngapain?",
+    "hangoutTitle": "Mulai hangout",
+    "hangoutSub": "Instan — biarkan orang gabung denganmu sekarang",
+    "eventTitle": "Buat acara",
+    "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain"
+  },
+  "goingModal": {
+    "going": "ikut",
+    "inThisHangout": "di hangout ini",
+    "loading": "Memuat…",
+    "empty": "Belum ada siapa-siapa — jadilah yang pertama gabung! 🙌"
+  },
+  "nickname": {
+    "label": "Nama panggilan",
+    "placeholder": "Namamu...",
+    "heroSub": "Anonim untuk sekarang. Kamu tetap bisa mengatur tampilanmu.",
+    "save": "Simpan nama panggilan",
+    "upgradeHint": "Simpan namamu. Tetap jadi local.",
+    "haveAccount": "Sudah punya akun?",
+    "myEvents": "Acaraku",
+    "anonymous": "// anonim · tidak perlu mendaftar"
+  },
+  "prompt": {
+    "exploreText": "🔥 Lihat apa yang terjadi sekarang",
+    "exploreCta": "Lihat apa yang terjadi",
+    "photoText": "📸 Bagikan apa yang terjadi",
+    "shoot": "Foto",
+    "createEventText": "🎉 Punya rencana malam ini?",
+    "createEventCta": "Buat acara",
+    "installText": "✨ Tambahkan Hilads ke layar utamamu\nJangan pernah lewatkan apa yang terjadi di kotamu",
+    "installAdd": "Tambahkan",
+    "installHow": "Caranya"
+  },
+  "toast": {
+    "eventDeleted": "Acara dihapus"
+  },
+  "pwa": {
+    "addToHome": "Tambahkan Hilads ke layar utama",
+    "add": "Tambahkan",
+    "keepClose": "Simpan Hilads di dekatmu",
+    "manualHelp": "Buka menu browser-mu dan pilih Tambahkan ke Layar Utama.",
+    "dismiss": "Tutup ajakan pemasangan"
+  },
+  "feedJoin": {
+    "0": "👋 {{name}} baru saja tiba",
+    "1": "🔥 {{name}} bergabung",
+    "2": "🍻 {{name}} ada di sini",
+    "3": "👀 {{name}} baru saja muncul",
+    "4": "✨ {{name}} sudah tiba"
+  },
+  "ambient": {
+    "0": "🔥 Orang-orang mulai berdatangan",
+    "1": "🍻 Siapa yang keluar malam ini?",
+    "2": "💬 Kota mulai bangun",
+    "3": "🌙 Para burung hantu sudah online",
+    "4": "👀 Seseorang baru saja tiba",
+    "5": "🔥 Wajah baru di kota",
+    "6": "🎉 Ada orang di sini sekarang",
+    "7": "🌆 Para local check-in"
+  },
+  "ownerPrompt": {
+    "text": "🔥 Kamu memulai acara ini!",
+    "sub": "Bikin lebih baik lagi — tambahkan deskripsi, perbarui waktu, atau bagikan.",
+    "edit": "✏️ Edit acara"
+  },
+  "feedNew": {
+    "event": "🔥 Acara baru: {{title}}",
+    "join": "Gabung",
+    "replies_one": "{{count}} balasan",
+    "replies_other": "{{count}} balasan"
+  },
+  "replyPreview": {
+    "photo": "📷 Foto"
+  },
+  "placeholder": {
+    "event": "Katakan sesuatu di {{title}} ✨",
+    "eventFirst": "Jadilah yang pertama di {{title}} ✨"
+  },
+  "placeholders": [
+    "Sapa 👋",
+    "Siapa yang keluar malam ini?",
+    "Ada rencana? 👀",
+    "Apa yang terjadi di sini?",
+    "Ada yang mau ikut sesuatu? 🍻",
+    "Kirim pesan…"
+  ],
+  "typing": {
+    "one": "{{name}} sedang mengetik…",
+    "two": "{{a}} dan {{b}} sedang mengetik…",
+    "many": "Beberapa orang sedang mengetik…"
+  },
+  "myEvent": {
+    "live": "Live",
+    "recurring": "↻ Berulang",
+    "upcoming": "Akan datang",
+    "delete": "Hapus acara"
+  }
+}

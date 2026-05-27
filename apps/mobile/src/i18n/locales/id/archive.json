@@ -1,0 +1,15 @@
+{
+  "title": "Yang sudah terjadi",
+  "loadError": "Tidak bisa memuat arsip",
+  "filterAll": "Semua",
+  "rangeRecent": "Terbaru",
+  "range7": "7 hari terakhir",
+  "range14": "14 hari terakhir",
+  "custom": "Kustom",
+  "pickEnd": "Sekarang pilih hari akhir",
+  "pickStart": "Pilih hari mulai (hingga {{max}} hari)",
+  "apply": "Terapkan",
+  "emptyTitle": "Belum ada apa-apa di sini",
+  "emptyRecentSub": "Acara dan hangouts yang sudah lewat akan muncul di sini begitu kota punya riwayat.",
+  "emptyWindowSub": "Tidak ada acara atau hangout di periode ini. Coba rentang yang lebih luas."
+}

@@ -24,6 +24,7 @@ const LANG_NAMES: Record<Locale, string> = {
   ko: '한국어',
   fil: 'Filipino',
   th: 'ไทย',
+  id: 'Bahasa Indonesia',
 };
 
 /**

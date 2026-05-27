@@ -1,0 +1,83 @@
+{
+  "title": "Profil",
+  "loading": "Memuat…",
+  "loadError": "Tidak bisa memuat profil.",
+  "badgeMicro": {
+    "ghost": "Cuma lihat-lihat 👀",
+    "fresh": "Baru saja tiba 👶",
+    "regular": "Sering muncul",
+    "host": "Bikin sesuatu terjadi 🔥"
+  },
+  "modes": { "local": "Local", "exploring": "Menjelajah" },
+  "vibes": {
+    "party": "Pesta", "board_games": "Board Game", "coffee": "Kopi",
+    "music": "Musik", "food": "Makanan", "chill": "Santai"
+  },
+  "vibeTaglines": {
+    "party": "Di sini buat kehidupan malam",
+    "board_games": "Bawa camilan dan dadu",
+    "coffee": "Kopi dulu, yang lain belakangan",
+    "music": "Selalu mengejar beat yang asyik",
+    "food": "Makan dulu, tanya belakangan",
+    "chill": "Santai, vibes mantap"
+  },
+  "modeSub": {
+    "localIn": "Local di {{city}}",
+    "local": "Local",
+    "exploringIn": "Menjelajah {{city}}",
+    "exploring": "Menjelajah"
+  },
+  "from": "Dari",
+  "age": "Usia",
+  "tabs": {
+    "hangouts": "Hangouts", "events": "Events", "friends": "Teman",
+    "vibes": "Vibes", "picks": "Rekomendasi 👑"
+  },
+  "host": "Host",
+  "live": "LIVE",
+  "empty": { "hangouts": "Belum ada hangout", "events": "Belum ada acara", "friends": "Belum ada teman" },
+  "vibesTab": {
+    "score": "skor vibe {{score}}",
+    "basedOn_one": "berdasarkan {{count}} vibe",
+    "basedOn_other": "berdasarkan {{count}} vibe",
+    "updateNote": "✏️ Perbarui catatanmu ({{rating}}★)",
+    "leaveNote": "⭐ Tinggalkan catatan",
+    "placeholder": "Katakan sesuatu yang baik… (opsional)",
+    "cancel": "Batal",
+    "sending": "Mengirim…",
+    "sendNote": "Kirim catatan ✨",
+    "notesLabel": "Catatan · {{count}}",
+    "emptyTitle": "Belum ada catatan",
+    "emptySub": "Jadilah yang pertama meninggalkan catatan ✨"
+  },
+  "picks": {
+    "restaurant": "RESTORAN FAVORIT",
+    "spot": "PERMATA TERSEMBUNYI",
+    "tip": "TIP LOKAL",
+    "story": "CERITA"
+  },
+  "actions": {
+    "opening": "Membuka…",
+    "message": "💬 Pesan",
+    "friend": "✓ Teman",
+    "requestSent": "⌛ Permintaan terkirim",
+    "acceptRequest": "✓ Terima permintaan",
+    "addFriend": "+ Teman",
+    "removing": "Menghapus…",
+    "unfriend": "Hapus teman",
+    "cancel": "Batal",
+    "cancelling": "Membatalkan…",
+    "cancelRequest": "Batalkan permintaan",
+    "keep": "Pertahankan",
+    "reportTitle": "Laporkan pengguna"
+  },
+  "report": {
+    "existing": "Kamu melaporkan pengguna ini pada {{date}}. Laporanmu sedang ditinjau.",
+    "sent": "Laporan terkirim. Terima kasih sudah memberi tahu kami.",
+    "placeholder": "Jelaskan masalahnya (min. 10 karakter)…",
+    "error": "Tidak bisa mengirim laporan. Coba lagi.",
+    "sending": "Mengirim…",
+    "submit": "Kirim laporan",
+    "cancel": "Batal"
+  }
+}

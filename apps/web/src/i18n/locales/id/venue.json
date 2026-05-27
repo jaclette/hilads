@@ -1,0 +1,17 @@
+{
+  "loading": "Memuat…",
+  "notFound": "Tempat ini tidak ada di Hilads.",
+  "loadError": "Tidak bisa memuat tempat ini. Silakan coba lagi.",
+  "breadcrumb": "Breadcrumb",
+  "category": {
+    "bar": "Bar / pub",
+    "cafe": "Kedai kopi"
+  },
+  "typeInCity": "{{category}} di {{city}}",
+  "address": "Alamat",
+  "hours": "Jam buka",
+  "openEveryDay": "Buka setiap hari · {{opens}} – {{closes}}",
+  "ctaText": "Lihat siapa yang ada di sekitar {{city}} sekarang.",
+  "openCity": "Buka {{city}}",
+  "lastUpdated": "Terakhir diperbarui {{date}}"
+}
