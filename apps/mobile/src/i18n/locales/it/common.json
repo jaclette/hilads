@@ -1,4 +1,19 @@
 {
+  "onboarding": {
+    "slide1Title": "Sei a {{city}}",
+    "slide1Body": "Questa è la chat live della tua città. Guarda cosa si muove e saluta.",
+    "slide2Title": "Tocca NOW",
+    "slide2Body": "Ritrovi spontanei a cui unirti subito, più eventi organizzati vicino a te.",
+    "slide3Title": "Guarda chi c'è in giro",
+    "slide3Body": "Gente del posto e viaggiatori nella tua città, in diretta in questo momento.",
+    "slide4Title": "Rendilo tuo",
+    "slide4Body": "Un account gratuito ti permette di unirti ai ritrovi, mantenere il tuo nome, aggiungere amici e ricevere notifiche.",
+    "skip": "Salta ✕",
+    "next": "Avanti",
+    "explore": "Esplora prima",
+    "createAccount": "Crea un account",
+    "fallbackCity": "la tua città"
+  },
   "share": {
     "title": "Condividi qualcosa 👀",
     "snap": "Scatta una foto",

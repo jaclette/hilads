@@ -1,4 +1,19 @@
 {
+  "onboarding": {
+    "slide1Title": "Nasa {{city}} ka",
+    "slide1Body": "Ito ang live chat ng iyong city. Tingnan kung anong buzzing at mag-hi ka.",
+    "slide2Title": "I-tap ang NOW",
+    "slide2Body": "Mga spontaneous na tambayan na puwede mong salihan ngayon, plus mga event na naka-plano sa paligid mo.",
+    "slide3Title": "Tingnan kung sino ang nandiyan",
+    "slide3Body": "Mga local at traveler sa iyong city, live ngayong minutong ito.",
+    "slide4Title": "Gawin mong sariling iyo",
+    "slide4Body": "Sa libreng account, puwede kang sumali sa mga tambayan, panatilihin ang pangalan mo, mag-add ng friends at ma-notify.",
+    "skip": "Laktawan ✕",
+    "next": "Next",
+    "explore": "Mag-explore muna",
+    "createAccount": "Gumawa ng account",
+    "fallbackCity": "iyong city"
+  },
   "share": {
     "title": "Magbahagi ng kahit ano 👀",
     "snap": "Kumuha ng litrato",

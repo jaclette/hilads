@@ -1,4 +1,19 @@
 {
+  "onboarding": {
+    "slide1Title": "You're in {{city}}",
+    "slide1Body": "This is your city's live chat. See what's buzzing and say hi.",
+    "slide2Title": "Tap NOW",
+    "slide2Body": "Spontaneous hangouts to jump into right now, plus events planned around you.",
+    "slide3Title": "See who's around",
+    "slide3Body": "Locals and travelers in your city, live this minute.",
+    "slide4Title": "Make it yours",
+    "slide4Body": "A free account lets you join hangouts, keep your name, add friends & get notified.",
+    "skip": "Skip ✕",
+    "next": "Next",
+    "explore": "Explore first",
+    "createAccount": "Create an account",
+    "fallbackCity": "your city"
+  },
   "share": {
     "title": "Share something 👀",
     "snap": "Snap a photo",

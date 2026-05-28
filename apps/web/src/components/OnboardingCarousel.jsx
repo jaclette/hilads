@@ -1,38 +1,24 @@
 import { useRef, useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // First-time onboarding carousel for GUESTS. Shown once on first city-channel
 // arrival and re-openable via the header "?" button. Registered users never
 // see it (the caller only mounts it for guests). Lightweight: a CSS
 // scroll-snap track + dots, no animation libraries.
 
-function slides(city) {
-  const where = city || 'your city'
+function slides(t, city) {
+  const where = city || t('onboarding.fallbackCity', { defaultValue: 'your city' })
   return [
-    {
-      emoji: '👋',
-      title: `You're in ${where}`,
-      body: <>This is your city's live chat. See what's buzzing and say hi.</>,
-    },
-    {
-      emoji: '🔥',
-      title: 'Tap NOW',
-      body: <>Spontaneous <strong>hangouts</strong> to jump into right now, plus <strong>events</strong> planned around you.</>,
-    },
-    {
-      emoji: '👀',
-      title: 'See who’s around',
-      body: <>Locals and travelers in your city, live this minute.</>,
-    },
-    {
-      emoji: '✨',
-      title: 'Make it yours',
-      body: <>A free account lets you join hangouts, keep your name, add friends &amp; get notified.</>,
-    },
+    { emoji: '👋', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
+    { emoji: '🔥', title: t('onboarding.slide2Title'), body: t('onboarding.slide2Body') },
+    { emoji: '👀', title: t('onboarding.slide3Title'), body: t('onboarding.slide3Body') },
+    { emoji: '✨', title: t('onboarding.slide4Title'), body: t('onboarding.slide4Body') },
   ]
 }
 
 export default function OnboardingCarousel({ city, onSignup, onClose }) {
-  const SLIDES = slides(city)
+  const { t } = useTranslation('common')
+  const SLIDES = slides(t, city)
   const lastIndex = SLIDES.length - 1
   const trackRef = useRef(null)
   const [index, setIndex] = useState(0)
@@ -56,7 +42,7 @@ export default function OnboardingCarousel({ city, onSignup, onClose }) {
 
   return (
     <div className="onboarding-overlay" role="dialog" aria-modal="true" aria-label="Welcome to Hilads">
-      <button className="onboarding-skip" onClick={onClose} aria-label="Skip intro">Skip ✕</button>
+      <button className="onboarding-skip" onClick={onClose} aria-label="Skip intro">{t('onboarding.skip')}</button>
 
       <div className="onboarding-track" ref={trackRef} onScroll={onScroll}>
         {SLIDES.map((s, i) => (
@@ -81,12 +67,12 @@ export default function OnboardingCarousel({ city, onSignup, onClose }) {
         </div>
 
         <button className="onboarding-next" onClick={handlePrimary}>
-          {index >= lastIndex ? 'Explore first' : 'Next'}
+          {index >= lastIndex ? t('onboarding.explore') : t('onboarding.next')}
         </button>
 
         {/* Discreet, low-emphasis signup — present on every screen. */}
         <button className="onboarding-signup-link" onClick={onSignup}>
-          Create an account
+          {t('onboarding.createAccount')}
         </button>
       </div>
     </div>

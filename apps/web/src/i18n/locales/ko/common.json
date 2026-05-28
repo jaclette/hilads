@@ -1,4 +1,19 @@
 {
+  "onboarding": {
+    "slide1Title": "지금 {{city}}에 있어요",
+    "slide1Body": "이곳은 도시의 실시간 채팅이에요. 무슨 일이 벌어지는지 살펴보고 인사를 건네보세요.",
+    "slide2Title": "NOW 탭",
+    "slide2Body": "지금 바로 합류할 수 있는 즉흥 모임과 주변에서 예정된 이벤트를 만나보세요.",
+    "slide3Title": "주변에 누가 있는지 보기",
+    "slide3Body": "바로 이 순간, 당신의 도시에 있는 현지인과 여행자들이에요.",
+    "slide4Title": "나만의 공간으로 만들기",
+    "slide4Body": "무료 계정으로 모임에 참여하고, 이름을 유지하고, 친구를 추가하고, 알림을 받아보세요.",
+    "skip": "건너뛰기 ✕",
+    "next": "다음",
+    "explore": "먼저 둘러보기",
+    "createAccount": "계정 만들기",
+    "fallbackCity": "당신의 도시"
+  },
   "share": {
     "title": "무언가 공유하기 👀",
     "snap": "사진 찍기",

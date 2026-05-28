@@ -5506,7 +5506,7 @@ export default function App() {
       {/* First-time guest onboarding carousel (also re-openable via header "?"). */}
       {showOnboarding && (
         <OnboardingCarousel
-          city={city}
+          city={localizeCityName(city)}
           onSignup={() => {
             markOnboardingSeen()
             setShowOnboarding(false)

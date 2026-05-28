@@ -12,21 +12,19 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 
 interface Slide { emoji: string; title: string; body: string }
 
-function buildSlides(city?: string | null): Slide[] {
-  const where = city || 'your city';
+function buildSlides(t: TFunction, city?: string | null): Slide[] {
+  const where = city || t('onboarding.fallbackCity', { defaultValue: 'your city' }); // localized fallback when no city yet
   return [
-    { emoji: '👋', title: `You're in ${where}`,
-      body: "This is your city's live chat. See what's buzzing and say hi." },
-    { emoji: '🔥', title: 'Tap NOW',
-      body: 'Spontaneous hangouts to jump into right now, plus events planned around you.' },
-    { emoji: '👀', title: 'See who’s around',
-      body: 'Locals and travelers in your city, live this minute.' },
-    { emoji: '✨', title: 'Make it yours',
-      body: 'A free account lets you join hangouts, keep your name, add friends & get notified.' },
+    { emoji: '👋', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
+    { emoji: '🔥', title: t('onboarding.slide2Title'), body: t('onboarding.slide2Body') },
+    { emoji: '👀', title: t('onboarding.slide3Title'), body: t('onboarding.slide3Body') },
+    { emoji: '✨', title: t('onboarding.slide4Title'), body: t('onboarding.slide4Body') },
   ];
 }
 
@@ -40,10 +38,11 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
   const insets   = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const router   = useRouter();
+  const { t } = useTranslation('common');
   const scrollRef = useRef<ScrollView>(null);
   const [index, setIndex] = useState(0);
 
-  const slides = buildSlides(city);
+  const slides = buildSlides(t, city);
   const last   = slides.length - 1;
 
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -70,7 +69,7 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
           onPress={onClose}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Text style={styles.skipText}>Skip ✕</Text>
+          <Text style={styles.skipText}>{t('onboarding.skip')}</Text>
         </TouchableOpacity>
 
         <ScrollView
@@ -98,12 +97,12 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
           </View>
 
           <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.85}>
-            <Text style={styles.nextBtnText}>{index >= last ? 'Explore first' : 'Next'}</Text>
+            <Text style={styles.nextBtnText}>{index >= last ? t('onboarding.explore') : t('onboarding.next')}</Text>
           </TouchableOpacity>
 
           {/* Discreet, low-emphasis signup — present on every screen. */}
           <TouchableOpacity onPress={handleSignup} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={styles.signupLink}>Create an account</Text>
+            <Text style={styles.signupLink}>{t('onboarding.createAccount')}</Text>
           </TouchableOpacity>
         </View>
       </View>
