@@ -2264,11 +2264,11 @@ html, body, #root {
   gap: 3px;
   max-width: 80%;
   align-self: flex-start;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .message.grouped {
-  margin-top: 5px;
+  margin-top: 3px;
 }
 
 .message.mine {
@@ -3335,14 +3335,15 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: 400;
   color: var(--muted2);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 20px;
-  padding: 6px 16px;
-  margin: 12px 0;
+  border-radius: 14px;
+  padding: 4px 13px;
+  margin: 6px 0;
   animation: joinPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 

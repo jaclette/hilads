@@ -947,7 +947,7 @@ const styles = StyleSheet.create({
   //      margin 12px 0, border-radius 20px, bg rgba(255,255,255,0.04)
   systemRow: {
     alignItems:        'center',
-    marginVertical:    16,
+    marginVertical:    6,
     paddingHorizontal: 16,
     gap:               4,
   },
@@ -957,15 +957,16 @@ const styles = StyleSheet.create({
     opacity:    0.6,
   },
   systemText: {
-    fontSize:          15,
-    fontWeight:        '500',
+    fontSize:          FontSizes.xs,   // 13 — smaller than the 15 message body
+    fontStyle:         'italic',
+    fontWeight:        '400',
     color:             Colors.muted2,
     backgroundColor:   'rgba(255,255,255,0.04)',
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.07)',
-    borderRadius:      20,
-    paddingHorizontal: 20,
-    paddingVertical:   9,
+    borderRadius:      14,
+    paddingHorizontal: 13,
+    paddingVertical:   5,
     overflow:          'hidden',
   },
 
@@ -977,8 +978,8 @@ const styles = StyleSheet.create({
   // alignItems shrinks children to content width so short bubbles don't stretch
   rowOther:   { alignSelf: 'flex-start', alignItems: 'flex-start', paddingLeft: 14 },
   rowMine:    { alignSelf: 'flex-end',   alignItems: 'flex-end',   paddingRight: 14 },
-  rowFirst:   { marginTop: 12 },
-  rowGrouped: { marginTop: 5 },
+  rowFirst:   { marginTop: 8 },
+  rowGrouped: { marginTop: 3 },
   rowSending: { opacity: 0.65 },
 
   // ── .msg-meta ─────────────────────────────────────────────────────────────
