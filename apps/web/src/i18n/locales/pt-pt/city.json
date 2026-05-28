@@ -35,9 +35,21 @@
   "picker": {
     "title": "Escolhe uma cidade",
     "search": "Procurar uma cidade…",
-    "noResults": "Não foi encontrada nenhuma cidade para «{{query}}»",
+    "noResults": "Nenhuma cidade encontrada para «{{query}}»",
     "topCities": "Cidades mais ativas agora",
-    "cities": "Cidades"
+    "cities": "Cidades",
+    "switchTitle": "Mudar de cidade",
+    "filterActive": "🔥 As mais ativas",
+    "filterEvents": "🎉 Com mais eventos",
+    "filterOnline": "🟢 Mais online",
+    "backToLocation": "Voltar à minha localização",
+    "youreHere": "estás aqui",
+    "online": "{{count}} online",
+    "events_one": "{{count}} evento",
+    "events_other": "{{count}} eventos",
+    "hangout_one": "{{count}} convívio",
+    "hangout_other": "{{count}} convívios",
+    "msgs": "{{count}} msgs"
   },
   "joining": "A ligar-se a {{city}}…",
   "joiningDefault": "A ligar-se ao chat…",

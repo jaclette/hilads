@@ -37,7 +37,17 @@
     "search": "Tìm thành phố…",
     "noResults": "Không tìm thấy thành phố cho \"{{query}}\"",
     "topCities": "Thành phố sôi động nhất",
-    "cities": "Thành phố"
+    "cities": "Thành phố",
+    "switchTitle": "Đổi thành phố",
+    "filterActive": "🔥 Sôi động nhất",
+    "filterEvents": "🎉 Nhiều sự kiện nhất",
+    "filterOnline": "🟢 Trực tuyến nhiều nhất",
+    "backToLocation": "Về vị trí của tôi",
+    "youreHere": "bạn đang ở đây",
+    "online": "{{count}} trực tuyến",
+    "events_other": "{{count}} sự kiện",
+    "hangout_other": "{{count}} tụ tập",
+    "msgs": "{{count}} tin"
   },
   "joining": "Đang vào {{city}}…",
   "joiningDefault": "Đang vào chat…",

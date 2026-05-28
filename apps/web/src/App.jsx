@@ -3296,13 +3296,13 @@ export default function App() {
             <span className="city-row-flag" aria-hidden="true">{cityFlag(ch.country)}</span>
             <span className="city-row-name">{localizeCityName(ch.city)}</span>
           </div>
-          {isActive && <span className="city-row-current">you're here</span>}
+          {isActive && <span className="city-row-current">{t('picker.youreHere')}</span>}
         </div>
         <div className="city-row-stats">
-          {ch.activeUsers > 0 && <span className="city-row-users">{ch.activeUsers} online</span>}
-          {eventCount > 0 && <span className="city-row-events">{eventCount} {eventCount === 1 ? 'event' : 'events'}</span>}
-          {topicCount > 0 && <span className="city-row-topics">{topicCount} {topicCount === 1 ? 'hangout' : 'hangouts'}</span>}
-          {ch.messageCount > 0 && <span className="city-row-count">{ch.messageCount} msgs</span>}
+          {ch.activeUsers > 0 && <span className="city-row-users">{t('picker.online', { count: ch.activeUsers })}</span>}
+          {eventCount > 0 && <span className="city-row-events">{t('picker.events', { count: eventCount })}</span>}
+          {topicCount > 0 && <span className="city-row-topics">{t('picker.hangout', { count: topicCount })}</span>}
+          {ch.messageCount > 0 && <span className="city-row-count">{t('picker.msgs', { count: ch.messageCount })}</span>}
         </div>
       </button>
     )
@@ -4272,13 +4272,13 @@ export default function App() {
         <div className="full-page">
           <div className="page-header">
             <BackButton onClick={() => setShowCityPicker(false)} />
-            <span className="page-title">Switch city</span>
+            <span className="page-title">{t('picker.switchTitle')}</span>
           </div>
           <div className="city-search-wrap">
             <input
               className="city-search-input"
               type="search"
-              placeholder="Search a city…"
+              placeholder={t('picker.search')}
               value={citySearchQuery}
               onChange={e => setCitySearchQuery(e.target.value)}
               autoFocus
@@ -4287,9 +4287,9 @@ export default function App() {
           {!citySearchQuery.trim() && (
             <div className="city-filter-tabs">
               {[
-                { id: 'active', label: '🔥 Most active' },
-                { id: 'events', label: '🎉 Most events' },
-                { id: 'online', label: '🟢 Most online' },
+                { id: 'active', label: t('picker.filterActive') },
+                { id: 'events', label: t('picker.filterEvents') },
+                { id: 'online', label: t('picker.filterOnline') },
               ].map(f => (
                 <button
                   key={f.id}
@@ -4308,7 +4308,7 @@ export default function App() {
             >
               <span className="back-to-location-icon">📍</span>
               <span className="back-to-location-text">
-                <span className="back-to-location-label">Back to my location</span>
+                <span className="back-to-location-label">{t('picker.backToLocation')}</span>
                 <span className="back-to-location-sub">{geoCity}</span>
               </span>
               <span className="back-to-location-arrow">→</span>
@@ -4336,7 +4336,7 @@ export default function App() {
                 const results = [...allChannels]
                   .filter(ch => ch.city.toLowerCase().includes(q))
                   .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
-                if (results.length === 0) return <div className="city-no-results">No city found for "{q}"</div>
+                if (results.length === 0) return <div className="city-no-results">{t('picker.noResults', { query: q })}</div>
                 return results.map(ch => renderCityRow(
                   ch,
                   (ch) => switchCity(ch.channelId, ch.city, ch.timezone, ch.country),
@@ -4348,7 +4348,7 @@ export default function App() {
               const activeCh = channels.find(ch => ch.channelId === channelId)
               const others   = channels.filter(ch => ch.channelId !== channelId)
               const top10    = activeCh ? [activeCh, ...others] : others
-              const label    = channels.some(ch => (ch.activeUsers ?? 0) > 0) ? 'Top cities right now' : 'Cities'
+              const label    = channels.some(ch => (ch.activeUsers ?? 0) > 0) ? t('picker.topCities') : t('picker.cities')
               return (
                 <>
                   <div className="city-list-label">{label}</div>
