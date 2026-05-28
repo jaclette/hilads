@@ -674,6 +674,13 @@ function composeEventJsonLd(payload, canonicalUrl) {
     organizer:            ev.host_nickname
                             ? { '@type': 'Person', name: ev.host_nickname, url: SITE_BASE }
                             : ORG_NODE,
+    // performer is a recommended Event field (clears the GSC "missing field
+    // performer" warning). Social hangouts have no distinct act, so name the host
+    // (a Person) as the performer; fall back to the event itself as a
+    // PerformingGroup when there's no host. ev.title is guaranteed (checked above).
+    performer:            ev.host_nickname
+                            ? { '@type': 'Person', name: ev.host_nickname, url: SITE_BASE }
+                            : { '@type': 'PerformingGroup', name: ev.title },
     url:                  canonicalUrl,
     // Free events: Google requires an Offer with availability + price=0 to
     // surface in event rich results without warning.
