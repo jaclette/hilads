@@ -382,11 +382,13 @@ class NotificationRepository
      *     Appropriate for transient signals like 'channel_message' where you
      *     only want to ping users actively engaged in the channel right now.
      */
-    // "Someone arrived" re-notification cooldown. A genuine arrival is only
-    // announced again once the same person has been ABSENT from the city for
-    // at least this long. Foreground/reconnect/brief-background returns all land
-    // inside the window and are suppressed. Tune here (seconds).
-    private const ARRIVAL_COOLDOWN_SECONDS = 600; // 10 minutes
+    // "Someone arrived" re-notification cooldown for the SAME arriver (keyed
+    // u:<userId> / g:<guestId> per city). Within this window a returning person
+    // re-announces NOTHING — no feed "just landed" line, no in-app notification,
+    // no push. A foreground/reconnect/quick-return all land inside it. Different
+    // arrivers are NOT affected by this (each has its own key); they're throttled
+    // only by the lighter per-recipient window in notifyCityOnlineUsers. Tune here.
+    private const ARRIVAL_COOLDOWN_SECONDS = 3600; // 1 hour (same arriver, per city)
 
     // Cap the city-wide push fan-out (city_join / new_event) to the N most
     // recently-active city members. Bounds the per-arrival work — which runs
@@ -532,12 +534,13 @@ class NotificationRepository
         foreach ($userIds as $uid) {
             if (!($enabled[$uid] ?? true)) continue;
 
-            // Rate limit per (recipient, city, type). city_join arrivals fire at
-            // near-real-time (1 per 10s) so "someone arrived" feels live; the
+            // Rate limit per (recipient, city, type) — this is the DIFFERENT-arriver
+            // floor. city_join arrivals fire near-real-time (1 per 5s) so distinct
+            // people arriving seconds apart each surface a notification + push; the
             // heavier new_event stays at 10 min so event creators can't spam.
             // MobilePushService applies the same per-type window to native push.
             if ($useCurrentCity) {
-                $window = $type === 'city_join' ? 10 : 600;
+                $window = $type === 'city_join' ? 5 : 600;
                 $rlKey  = "notif:{$type}:{$uid}:{$cityChannelId}";
                 if (!RateLimiter::allow($rlKey, 1, $window)) continue;
             }
