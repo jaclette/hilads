@@ -1,4 +1,8 @@
 {
+  "nowTitle": "अभी",
+  "filterEvents": "🔥 इवेंट",
+  "filterHangouts": "🗣️ मुलाक़ात",
+  "publicEventsSection": "🎫 सार्वजनिक इवेंट",
   "accountWelcome": {
     "title": "बधाई हो, {{username}}! 🎉",
     "subtitle": "आपका अकाउंट तैयार है — अब आप ये कर सकते हैं 👇",

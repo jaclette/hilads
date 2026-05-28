@@ -4370,7 +4370,7 @@ export default function App() {
             {renderAppHeader()}
           </div>
           <div className="page-header">
-            <span className="page-title">Now</span>
+            <span className="page-title">{t('nowTitle', { ns: 'common' })}</span>
           </div>
           <div className="now-filter-bar">
             {['all', 'topics', 'events'].map(f => (
@@ -4379,7 +4379,7 @@ export default function App() {
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all' ? t('feed.filterAll') : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
+                {f === 'all' ? t('feed.filterAll') : f === 'events' ? t('filterEvents', { ns: 'common' }) : t('filterHangouts', { ns: 'common' })}
               </button>
             ))}
           </div>

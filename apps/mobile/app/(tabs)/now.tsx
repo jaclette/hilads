@@ -435,13 +435,13 @@ export default function NowScreen() {
         ...filteredItems,
         ...(showPublic
           ? [
-              { kind: 'section' as const, label: '🎫 Public Events' },
+              { kind: 'section' as const, label: t('publicEventsSection', { ns: 'common' }) },
               ...sortedPublic.map(e => ({ ...e, kind: 'public_event' as const })),
             ]
           : []),
       ];
     },
-    [filteredItems, publicEvents, filter, distanceById],
+    [filteredItems, publicEvents, filter, distanceById, t],
   );
 
   // Still booting or waiting for city — keep showing spinner.
@@ -464,7 +464,7 @@ export default function NowScreen() {
         </View>
         <View style={styles.header}>
           <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Now</Text>
+            <Text style={styles.headerTitle}>{t('nowTitle', { ns: 'common' })}</Text>
           </View>
         </View>
         <View style={styles.empty}>
@@ -504,7 +504,7 @@ export default function NowScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all' ? t('filterAll') : f === 'events' ? '🔥 Events' : '🗣️ Hangouts'}
+              {f === 'all' ? t('filterAll') : f === 'events' ? t('filterEvents', { ns: 'common' }) : t('filterHangouts', { ns: 'common' })}
             </Text>
           </TouchableOpacity>
         ))}

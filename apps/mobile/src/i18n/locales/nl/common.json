@@ -1,4 +1,8 @@
 {
+  "nowTitle": "Nu",
+  "filterEvents": "🔥 Evenementen",
+  "filterHangouts": "🗣️ Meetups",
+  "publicEventsSection": "🎫 Openbare evenementen",
   "accountWelcome": {
     "title": "Gefeliciteerd, {{username}}! 🎉",
     "subtitle": "Je account is klaar — dit kun je nu doen 👇",

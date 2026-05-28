@@ -1,4 +1,8 @@
 {
+  "nowTitle": "Ahora",
+  "filterEvents": "🔥 Eventos",
+  "filterHangouts": "🗣️ Quedadas",
+  "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
     "title": "¡Felicidades, {{username}}! 🎉",
     "subtitle": "Tu cuenta está lista — esto es lo que puedes hacer ahora 👇",

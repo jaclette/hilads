@@ -1,4 +1,8 @@
 {
+  "nowTitle": "Bây giờ",
+  "filterEvents": "🔥 Sự kiện",
+  "filterHangouts": "🗣️ Tụ tập",
+  "publicEventsSection": "🎫 Sự kiện công khai",
   "accountWelcome": {
     "title": "Chúc mừng, {{username}}! 🎉",
     "subtitle": "Tài khoản của bạn đã sẵn sàng — đây là những gì bạn có thể làm ngay 👇",

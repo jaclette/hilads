@@ -1,4 +1,8 @@
 {
+  "nowTitle": "Ngayon",
+  "filterEvents": "🔥 Events",
+  "filterHangouts": "🗣️ Tambayan",
+  "publicEventsSection": "🎫 Public Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}! 🎉",
     "subtitle": "Ready na ang account mo — eto ang pwede mong gawin ngayon 👇",

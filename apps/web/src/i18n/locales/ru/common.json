@@ -1,4 +1,8 @@
 {
+  "nowTitle": "Сейчас",
+  "filterEvents": "🔥 События",
+  "filterHangouts": "🗣️ Тусовки",
+  "publicEventsSection": "🎫 Публичные события",
   "accountWelcome": {
     "title": "Поздравляем, {{username}}! 🎉",
     "subtitle": "Ваш аккаунт готов — вот что вы можете сделать прямо сейчас 👇",

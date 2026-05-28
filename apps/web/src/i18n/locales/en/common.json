@@ -1,4 +1,8 @@
 {
+  "nowTitle": "Now",
+  "filterEvents": "🔥 Events",
+  "filterHangouts": "🗣️ Hangouts",
+  "publicEventsSection": "🎫 Public Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}! 🎉",
     "subtitle": "Your account is ready — here's what you can do now 👇",

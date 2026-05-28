@@ -1,4 +1,8 @@
 {
+  "nowTitle": "지금",
+  "filterEvents": "🔥 이벤트",
+  "filterHangouts": "🗣️ 모임",
+  "publicEventsSection": "🎫 공개 이벤트",
   "accountWelcome": {
     "title": "축하해요, {{username}}님! 🎉",
     "subtitle": "계정이 준비됐어요 — 지금 할 수 있는 것들을 확인해 보세요 👇",
