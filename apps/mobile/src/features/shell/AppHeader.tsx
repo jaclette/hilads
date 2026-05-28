@@ -4,7 +4,7 @@
  *
  * Contains:
  *   - Left:   notification bell with unread badge (registered users only)
- *   - Center: Hilads logo (the icon identifies the app — no tagline)
+ *   - Center: Hilads logo + "Feel local. Anywhere." tagline to its right
  *   - Right:  optional tab-specific extra(s) (e.g. Share on MY CITY),
  *             then the DM icon with unread badge (registered users only)
  *
@@ -12,11 +12,10 @@
  * Tab-specific elements (city selector, chips, filter pills, titles) render
  * BELOW this component inside each tab's own header container.
  *
- * The "Feel local. Anywhere." tagline used to live next to the logo at 11pt
- * with maxWidth:72 forcing it onto two lines. Apple Guideline 4 cited the
- * resulting microscopic, awkwardly-wrapped text as a design issue. The
- * tagline now lives only on LandingScreen (pre-auth marketing surface)
- * where it has the room to breathe.
+ * The "Feel local. Anywhere." tagline mirrors the web persistent header
+ * (`.header-tagline`): ~11px, white at 50% opacity, wrapping onto two lines at
+ * maxWidth 76. (Previously dropped over an Apple Guideline 4 "microscopic text"
+ * note; restored at product request for parity with the web header.)
  */
 
 import React from 'react';
@@ -117,11 +116,12 @@ export function AppHeader({ rightExtra }: Props) {
         )}
       </View>
 
-      {/* Center: logo only — tagline removed (Apple G4) */}
+      {/* Center: logo + tagline to its right (mirrors web persistent header) */}
       <View style={styles.topCenter}>
         <View style={styles.iconGlow}>
           <HiladsIcon size={36} />
         </View>
+        <Text style={styles.tagline}>Feel local. Anywhere.</Text>
       </View>
 
       {/* Right: tab-specific extras + DM icon */}
@@ -237,5 +237,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.55,
     shadowRadius:  14,
     elevation:     10,
+  },
+  // Mirrors the web `.header-tagline` (index.css): ~11px, white at 50% opacity,
+  // wrapping onto two lines ("Feel local." / "Anywhere.") at maxWidth 76.
+  tagline: {
+    fontSize:      11,
+    lineHeight:    14,
+    color:         'rgba(255,255,255,0.5)',
+    fontWeight:    '400',
+    letterSpacing: 0.2,
+    maxWidth:      76,
   },
 });
