@@ -37,6 +37,12 @@ export function buildEventUrl(event: { id: string; title?: string } | string): s
   return `${BASE_URL}${lp}/event/${eventSlug(event)}`;
 }
 
+/** Shareable city URL with the active-locale prefix so the recipient lands on
+ *  the localized page (and the link preview's OG tags render in-language). */
+export function buildCityUrl(slug: string): string {
+  return `${BASE_URL}${sharePrefix()}/city/${slug}`;
+}
+
 // ── Env diagnostics — unconditional, fires in both dev and production APK ─────
 console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined — will use localhost fallback!)');
 console.log('[env] API_URL (resolved)  =', API_URL);

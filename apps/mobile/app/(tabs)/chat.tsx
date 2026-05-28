@@ -39,7 +39,7 @@ import { HiladsIcon } from '@/components/HiladsIcon';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { MarqueeText } from '@/components/MarqueeText';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Colors, FontSizes, Spacing, BASE_URL } from '@/constants';
+import { Colors, FontSizes, Spacing, buildCityUrl } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
@@ -706,7 +706,9 @@ export default function ChatTab() {
               activeOpacity={0.65}
               hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
               onPress={async () => {
-                const url     = `${BASE_URL}/city/${city.slug}`;
+                // Locale-prefixed URL (Option A) so the link preview (OG tags —
+                // all Android shares show) renders in the sharer's language.
+                const url     = buildCityUrl(city.slug);
                 const title   = t('shareTitle', { city: localizeCityName(city.name) });
                 const message = t('shareMessage', { city: localizeCityName(city.name) });
                 await shareLink({ title, message, url });
