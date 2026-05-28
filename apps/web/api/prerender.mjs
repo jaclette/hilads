@@ -1633,6 +1633,29 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
   }
 
   let html = setHtmlLang(shell, locale)
+
+  // Soft-404 guard: a content-entity route (event/venue/category/city/past) that
+  // produced no meta means the backend has no such record — the redirect checks
+  // above already ran, so this is a genuine miss, not a slug/venue redirect.
+  // Serve a real 404 + noindex shell (the SPA still boots and can show its own
+  // not-found UI) instead of falling through to a 200 generic shell, which Google
+  // reports as a soft 404.
+  const CONTENT_TYPES = new Set(['event', 'venue', 'category', 'city', 'past'])
+  if (!meta && CONTENT_TYPES.has(type)) {
+    res.statusCode = 404
+    res.setHeader('Content-Type', 'text/html; charset=utf-8')
+    // Short cache only: a meta-less miss can also be a transient backend
+    // failure (the venue/city/category/past fetches can't distinguish 404 from
+    // 5xx/timeout). 60s bounds the blast radius — a blip that recovers won't
+    // pin a 404 on a valid page, while a genuinely-dead page stays 404 on every
+    // recrawl and gets deindexed.
+    res.setHeader('Cache-Control', 'public, max-age=60')
+    res.setHeader('x-prerender', `${type}-404`)
+    if (shellSource) res.setHeader('x-prerender-shell', shellSource)
+    res.end(injectRobotsNoindex(html))
+    return
+  }
+
   if (meta)          html = injectMeta(html, meta, locale)
   if (meta)          html = injectHreflang(html, canonicalPath)
   if (meta?.noindex) html = injectRobotsNoindex(html)
