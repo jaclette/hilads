@@ -3980,7 +3980,7 @@ export default function App() {
                         <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                       )}
                       {item.contextBadge?.key === 'host' && (
-                        <span className="badge-pill badge-pill--host">{item.contextBadge.label}</span>
+                        <span className="badge-pill badge-pill--host">{badgeLabel(item.contextBadge.key)}</span>
                       )}
                     </div>
                   )}
@@ -4740,13 +4740,13 @@ export default function App() {
                     <span className={`vibe-badge vibe-badge--${user.mode}`}>{MODE_META[user.mode].emoji}</span>
                   )}
                   {user.primaryBadge
-                    ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{user.primaryBadge.label}</span>
+                    ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{badgeLabel(user.primaryBadge.key)}</span>
                     : user.isRegistered
                       ? <span className="badge-pill badge-pill--regular">{badgeLabel('regular')}</span>
                       : <span className="badge-pill badge-pill--ghost">{badgeLabel('ghost')}</span>
                   }
                   {user.contextBadge && (
-                    <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{user.contextBadge.label}</span>
+                    <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{badgeLabel(user.contextBadge.key)}</span>
                   )}
                   {user.vibe && VIBE_META[user.vibe] && (
                     <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {vibeLabel(user.vibe)}</span>

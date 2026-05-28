@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
+import { badgeLabel } from '../badgeMeta'
 import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -573,7 +574,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                     <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                   )}
                   {item.contextBadge?.key === 'host' && (
-                    <span className="badge-pill badge-pill--host">{item.contextBadge.label}</span>
+                    <span className="badge-pill badge-pill--host">{badgeLabel(item.contextBadge.key)}</span>
                   )}
                 </div>
               )}

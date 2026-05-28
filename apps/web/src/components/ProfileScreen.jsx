@@ -292,7 +292,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               <h2 className="profile-identity-name">{username ? `@${username}` : t('yourProfile')}</h2>
               <div className="profile-identity-badges">
                 {account.primaryBadge && (
-                  <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{account.primaryBadge.label}</span>
+                  <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{badgeLabel(account.primaryBadge.key)}</span>
                 )}
                 {homeCity && (
                   <span className="profile-identity-city">📍 {homeCity}</span>
