@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
+import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
@@ -3291,7 +3292,7 @@ export default function App() {
           <div className="city-row-left">
             <span className={`activity-dot${hasActivity ? ' live' : ''}`} />
             <span className="city-row-flag" aria-hidden="true">{cityFlag(ch.country)}</span>
-            <span className="city-row-name">{ch.city}</span>
+            <span className="city-row-name">{localizeCityName(ch.city)}</span>
           </div>
           {isActive && <span className="city-row-current">you're here</span>}
         </div>
@@ -3529,7 +3530,7 @@ export default function App() {
           <div className="header-city-line">
             <span className="header-city-name">
               <span className="header-city-flag" aria-hidden="true">{cityFlag(cityCountry)}</span>
-              <span>{city}</span>
+              <span>{localizeCityName(city)}</span>
             </span>
             <span className="header-city-sep" aria-hidden="true">·</span>
             <button
@@ -3756,7 +3757,7 @@ export default function App() {
                     onClick={openCityPicker}
                     aria-label={t('header.changeCity')}
                   >
-                    <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{city}
+                    <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{localizeCityName(city)}
                     <svg
                       className="header-city-row-chevron"
                       width="14" height="14" viewBox="0 0 24 24"
@@ -3853,7 +3854,7 @@ export default function App() {
               return (
                 <div key={item.id} className="feed-welcome">
                   <div className="feed-welcome-header">
-                    <span className="feed-welcome-city">{t('welcome.live', { city: item.city })}</span>
+                    <span className="feed-welcome-city">{t('welcome.live', { city: localizeCityName(item.city) })}</span>
                     <button
                       className="feed-welcome-dismiss"
                       onClick={() => setFeed(prev => prev.filter(f => f.id !== item.id))}

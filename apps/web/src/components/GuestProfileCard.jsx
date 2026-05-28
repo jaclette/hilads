@@ -1,4 +1,5 @@
 import BackButton from './BackButton'
+import { localizeCityName } from '../i18n/cityName'
 
 // ── Avatar palette — mirrors App.jsx / PublicProfileScreen ────────────────────
 
@@ -38,7 +39,7 @@ export default function GuestProfileCard({ guestId, nickname, cityName, onBack }
           <div className="pub-profile-name">{name}</div>
           <div className="guest-profile-badge">👻 Ghost</div>
           {cityName && (
-            <div className="guest-profile-city">Visiting {cityName}</div>
+            <div className="guest-profile-city">Visiting {localizeCityName(cityName)}</div>
           )}
         </div>
 

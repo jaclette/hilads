@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
+import { localizeCityName } from '../i18n/cityName'
 import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
 
 const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
@@ -350,7 +351,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               ))}
               {cityName && (
                 <div className="pub-profile-city">
-                  <span>{cityFlag(cityCountry)} {cityName}</span>
+                  <span>{cityFlag(cityCountry)} {localizeCityName(cityName)}</span>
                 </div>
               )}
 
@@ -376,8 +377,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                     <span className="pub-profile-identity-card-title">{t(`modes.${mode}`)}</span>
                     <span className="pub-profile-identity-card-sub">
                       {mode === 'local'
-                        ? ((user.homeCity || cityName) ? t('modeSub.localIn', { city: user.homeCity || cityName }) : t('modeSub.local'))
-                        : (cityName ? t('modeSub.exploringIn', { city: cityName }) : t('modeSub.exploring'))}
+                        ? ((user.homeCity || cityName) ? t('modeSub.localIn', { city: localizeCityName(user.homeCity || cityName) }) : t('modeSub.local'))
+                        : (cityName ? t('modeSub.exploringIn', { city: localizeCityName(cityName) }) : t('modeSub.exploring'))}
                     </span>
                   </div>
                 )}

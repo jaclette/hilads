@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
+import { localizeCityName } from '@/i18n/cityName';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchPastArchive } from '@/api/topics';
 import { track } from '@/services/analytics';
@@ -257,7 +258,7 @@ export default function PastArchiveScreen() {
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('title')}</Text>
-          {!!cityName && <Text style={styles.headerSub}>{cityName}</Text>}
+          {!!cityName && <Text style={styles.headerSub}>{localizeCityName(cityName)}</Text>}
         </View>
         <View style={styles.headerSpacer} />
       </View>

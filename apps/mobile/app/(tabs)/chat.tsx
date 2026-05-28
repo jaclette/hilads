@@ -24,6 +24,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
@@ -706,8 +707,8 @@ export default function ChatTab() {
               hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
               onPress={async () => {
                 const url     = `${BASE_URL}/city/${city.slug}`;
-                const title   = t('shareTitle', { city: city.name });
-                const message = t('shareMessage', { city: city.name });
+                const title   = t('shareTitle', { city: localizeCityName(city.name) });
+                const message = t('shareMessage', { city: localizeCityName(city.name) });
                 await shareLink({ title, message, url });
               }}
               accessibilityLabel={t('shareCity')}
@@ -729,7 +730,7 @@ export default function ChatTab() {
           {/* Left spacer balances the right chevron so the name stays centered. */}
           <View style={styles.cityHeroSpacer} />
           <Text style={styles.cityHeroName} numberOfLines={2}>
-            {flag ? `${flag} ` : ''}{city.name}
+            {flag ? `${flag} ` : ''}{localizeCityName(city.name)}
           </Text>
           <Ionicons
             name="chevron-down"

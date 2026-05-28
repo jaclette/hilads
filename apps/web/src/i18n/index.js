@@ -18,6 +18,7 @@ import en_upcoming      from './locales/en/upcoming.json'
 import en_archive       from './locales/en/archive.json'
 import en_publicProfile from './locales/en/publicProfile.json'
 import en_city          from './locales/en/city.json'
+import en_cityNames          from './locales/en/cityNames.json'
 import en_venue         from './locales/en/venue.json'
 
 export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
@@ -25,7 +26,7 @@ export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', '
 export const RTL_LOCALES    = ['ar']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
-const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'venue']
+const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'cityNames', 'venue']
 
 // Lazy loaders — one code-split chunk per (locale, namespace). Vite turns each
 // dynamic import() into its own chunk, fetched only when that locale is needed.
@@ -45,6 +46,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/fr/publicProfile.json'),
     city:          () => import('./locales/fr/city.json'),
     venue:         () => import('./locales/fr/venue.json'),
+    cityNames:         () => import('./locales/fr/cityNames.json'),
   },
   vi: {
     common:  () => import('./locales/vi/common.json'),
@@ -61,6 +63,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/vi/publicProfile.json'),
     city:          () => import('./locales/vi/city.json'),
     venue:         () => import('./locales/vi/venue.json'),
+    cityNames:         () => import('./locales/vi/cityNames.json'),
   },
   es: {
     common:  () => import('./locales/es/common.json'),
@@ -77,6 +80,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/es/publicProfile.json'),
     city:          () => import('./locales/es/city.json'),
     venue:         () => import('./locales/es/venue.json'),
+    cityNames:         () => import('./locales/es/cityNames.json'),
   },
   it: {
     common:  () => import('./locales/it/common.json'),
@@ -93,6 +97,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/it/publicProfile.json'),
     city:          () => import('./locales/it/city.json'),
     venue:         () => import('./locales/it/venue.json'),
+    cityNames:         () => import('./locales/it/cityNames.json'),
   },
   'pt-br': {
     common:  () => import('./locales/pt-br/common.json'),
@@ -109,6 +114,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/pt-br/publicProfile.json'),
     city:          () => import('./locales/pt-br/city.json'),
     venue:         () => import('./locales/pt-br/venue.json'),
+    cityNames:         () => import('./locales/pt-br/cityNames.json'),
   },
   'pt-pt': {
     common:  () => import('./locales/pt-pt/common.json'),
@@ -125,6 +131,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/pt-pt/publicProfile.json'),
     city:          () => import('./locales/pt-pt/city.json'),
     venue:         () => import('./locales/pt-pt/venue.json'),
+    cityNames:         () => import('./locales/pt-pt/cityNames.json'),
   },
   de: {
     common:  () => import('./locales/de/common.json'),
@@ -141,6 +148,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/de/publicProfile.json'),
     city:          () => import('./locales/de/city.json'),
     venue:         () => import('./locales/de/venue.json'),
+    cityNames:         () => import('./locales/de/cityNames.json'),
   },
   nl: {
     common:  () => import('./locales/nl/common.json'),
@@ -157,6 +165,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/nl/publicProfile.json'),
     city:          () => import('./locales/nl/city.json'),
     venue:         () => import('./locales/nl/venue.json'),
+    cityNames:         () => import('./locales/nl/cityNames.json'),
   },
   'zh-hans': {
     common:  () => import('./locales/zh-hans/common.json'),
@@ -173,6 +182,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/zh-hans/publicProfile.json'),
     city:          () => import('./locales/zh-hans/city.json'),
     venue:         () => import('./locales/zh-hans/venue.json'),
+    cityNames:         () => import('./locales/zh-hans/cityNames.json'),
   },
   'zh-hant': {
     common:  () => import('./locales/zh-hant/common.json'),
@@ -189,6 +199,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/zh-hant/publicProfile.json'),
     city:          () => import('./locales/zh-hant/city.json'),
     venue:         () => import('./locales/zh-hant/venue.json'),
+    cityNames:         () => import('./locales/zh-hant/cityNames.json'),
   },
   ja: {
     common:  () => import('./locales/ja/common.json'),
@@ -205,6 +216,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/ja/publicProfile.json'),
     city:          () => import('./locales/ja/city.json'),
     venue:         () => import('./locales/ja/venue.json'),
+    cityNames:         () => import('./locales/ja/cityNames.json'),
   },
   ko: {
     common:  () => import('./locales/ko/common.json'),
@@ -221,6 +233,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/ko/publicProfile.json'),
     city:          () => import('./locales/ko/city.json'),
     venue:         () => import('./locales/ko/venue.json'),
+    cityNames:         () => import('./locales/ko/cityNames.json'),
   },
   fil: {
     common:  () => import('./locales/fil/common.json'),
@@ -237,6 +250,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/fil/publicProfile.json'),
     city:          () => import('./locales/fil/city.json'),
     venue:         () => import('./locales/fil/venue.json'),
+    cityNames:         () => import('./locales/fil/cityNames.json'),
   },
   th: {
     common:  () => import('./locales/th/common.json'),
@@ -253,6 +267,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/th/publicProfile.json'),
     city:          () => import('./locales/th/city.json'),
     venue:         () => import('./locales/th/venue.json'),
+    cityNames:         () => import('./locales/th/cityNames.json'),
   },
   id: {
     common:  () => import('./locales/id/common.json'),
@@ -269,6 +284,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/id/publicProfile.json'),
     city:          () => import('./locales/id/city.json'),
     venue:         () => import('./locales/id/venue.json'),
+    cityNames:         () => import('./locales/id/cityNames.json'),
   },
   hi: {
     common:  () => import('./locales/hi/common.json'),
@@ -285,6 +301,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/hi/publicProfile.json'),
     city:          () => import('./locales/hi/city.json'),
     venue:         () => import('./locales/hi/venue.json'),
+    cityNames:         () => import('./locales/hi/cityNames.json'),
   },
   ru: {
     common:  () => import('./locales/ru/common.json'),
@@ -301,6 +318,7 @@ const LOADERS = {
     publicProfile: () => import('./locales/ru/publicProfile.json'),
     city:          () => import('./locales/ru/city.json'),
     venue:         () => import('./locales/ru/venue.json'),
+    cityNames:         () => import('./locales/ru/cityNames.json'),
   },
   ar: {
     common:  () => import('./locales/ar/common.json'),
@@ -317,12 +335,13 @@ const LOADERS = {
     publicProfile: () => import('./locales/ar/publicProfile.json'),
     city:          () => import('./locales/ar/city.json'),
     venue:         () => import('./locales/ar/venue.json'),
+    cityNames:         () => import('./locales/ar/cityNames.json'),
   },
 }
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing, auth: en_auth, event: en_event, hangout: en_hangout, dm: en_dm, notifications: en_notifications, upcoming: en_upcoming, archive: en_archive, publicProfile: en_publicProfile, city: en_city, venue: en_venue },
+    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing, auth: en_auth, event: en_event, hangout: en_hangout, dm: en_dm, notifications: en_notifications, upcoming: en_upcoming, archive: en_archive, publicProfile: en_publicProfile, city: en_city, venue: en_venue, cityNames: en_cityNames },
   },
   lng:          DEFAULT_LOCALE,
   fallbackLng:  DEFAULT_LOCALE,   // missing key in fr/vi → English

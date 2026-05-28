@@ -10,6 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
 import { Gradients } from '@/constants';
 import { OnboardingCarousel } from '@/features/onboarding/OnboardingCarousel';
+import { localizeCityName } from '@/i18n/cityName';
 import { markOnboardingSeen } from '@/lib/onboarding';
 
 // ── Web parity constants ──────────────────────────────────────────────────────
@@ -354,7 +355,7 @@ export default function TabsLayout() {
       {/* First-time guest onboarding (auto-shown from chat.tsx; "?" reopens it). */}
       <OnboardingCarousel
         visible={showOnboarding}
-        city={city?.name}
+        city={localizeCityName(city?.name)}
         onClose={() => { markOnboardingSeen(); setShowOnboarding(false); }}
       />
     </>

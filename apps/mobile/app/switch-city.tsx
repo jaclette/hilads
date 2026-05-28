@@ -29,6 +29,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { localizeCityName } from '@/i18n/cityName';
 import { fetchChannels, joinChannel, setCurrentCity } from '@/api/channels';
 import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
@@ -96,7 +97,7 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
           <ActivityDot live={live} />
           {!!flag && <Text style={styles.flag}>{flag}</Text>}
           <Text style={[styles.cityName, isActive && styles.cityNameActive]} numberOfLines={2}>
-            {city.name}
+            {localizeCityName(city.name)}
           </Text>
         </View>
         {isActive && (
@@ -311,7 +312,7 @@ export default function SwitchCityScreen() {
           <Ionicons name="locate" size={18} color={Colors.accent} style={styles.backToLocationIcon} />
           <View style={styles.backToLocationText}>
             <Text style={styles.backToLocationLabel}>{t('backToLocation')}</Text>
-            <Text style={styles.backToLocationSub}>{detectedCity.name}</Text>
+            <Text style={styles.backToLocationSub}>{localizeCityName(detectedCity.name)}</Text>
           </View>
           <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
         </TouchableOpacity>

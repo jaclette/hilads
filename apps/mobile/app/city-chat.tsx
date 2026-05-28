@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
+import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage } from '@/api/channels';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -72,7 +73,7 @@ export default function CityChatScreen() {
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>City Chat</Text>
-          {city && <Text style={styles.headerSub}>{city.name}</Text>}
+          {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
         </View>
       </View>
 

@@ -15,6 +15,7 @@ import { TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { localizeCityName } from '@/i18n/cityName';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import { ReportModal } from '@/features/profile/ReportModal';
@@ -107,7 +108,7 @@ export default function GuestProfileScreen() {
         </View>
 
         {city ? (
-          <Text style={styles.cityLabel}>{t('visiting', { city: city.name })}</Text>
+          <Text style={styles.cityLabel}>{t('visiting', { city: localizeCityName(city.name) })}</Text>
         ) : null}
       </View>
 

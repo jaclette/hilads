@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import { useApp } from '@/context/AppContext';
+import { localizeCityName } from '@/i18n/cityName';
 import { fetchNowFeed, fetchHangoutParticipants } from '@/api/topics';
 import { haversineMeters, formatDistance } from '@/lib/distance';
 import { MembersSheet } from '@/components/MembersSheet';
@@ -489,7 +490,7 @@ export default function NowScreen() {
       <View style={styles.header}>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>Now</Text>
-          {city && <Text style={styles.headerSub}>{city.name}</Text>}
+          {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
         </View>
       </View>
 
@@ -523,7 +524,7 @@ export default function NowScreen() {
       ) : listData.length === 0 ? (
         <FilterEmptyState
           filter={filter}
-          city={city?.name}
+          city={localizeCityName(city?.name)}
           userMode={userMode}
           onStartPulse={handleStartPulse}
         />
