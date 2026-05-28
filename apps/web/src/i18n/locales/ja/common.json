@@ -1,4 +1,10 @@
 {
+  "meta": {
+    "cityTitle": "いま {{city}} にいるのは誰？ | Hilads",
+    "cityDesc": "いまオンラインの人と、{{city}} で起きていることをチェック。",
+    "eventTitle": "{{title}} は今まさに開催中 | Hilads",
+    "eventDesc": "Hilads で {{title}} に参加しよう——誰がいて何が起きているか見てみよう。"
+  },
   "nowTitle": "今",
   "filterEvents": "🔥 イベント",
   "filterHangouts": "🗣️ 集まり",

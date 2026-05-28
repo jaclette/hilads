@@ -1,4 +1,10 @@
 {
+  "meta": {
+    "cityTitle": "此刻誰在 {{city}} | Hilads",
+    "cityDesc": "看看此刻誰在線上，以及 {{city}} 正在發生什麼。",
+    "eventTitle": "{{title}} 正在進行 | Hilads",
+    "eventDesc": "在 Hilads 上加入 {{title}}——看看誰在現場、正在發生什麼。"
+  },
   "nowTitle": "現在",
   "filterEvents": "🔥 活動",
   "filterHangouts": "🗣️ 聚會",

@@ -1,4 +1,10 @@
 {
+  "meta": {
+    "cityTitle": "Кто сейчас в {{city}} | Hilads",
+    "cityDesc": "Посмотри, кто онлайн и что сейчас происходит в {{city}}.",
+    "eventTitle": "{{title}} происходит прямо сейчас | Hilads",
+    "eventDesc": "Присоединяйся к {{title}} в Hilads — смотри, кто там и что происходит."
+  },
   "nowTitle": "Сейчас",
   "filterEvents": "🔥 События",
   "filterHangouts": "🗣️ Тусовки",

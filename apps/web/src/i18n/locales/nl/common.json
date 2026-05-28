@@ -1,4 +1,10 @@
 {
+  "meta": {
+    "cityTitle": "Wie is er nu in {{city}} | Hilads",
+    "cityDesc": "Zie wie online is en wat er nu gebeurt in {{city}}.",
+    "eventTitle": "{{title}} is nu bezig | Hilads",
+    "eventDesc": "Doe mee met {{title}} op Hilads — zie wie er is en wat er gebeurt."
+  },
   "nowTitle": "Nu",
   "filterEvents": "🔥 Evenementen",
   "filterHangouts": "🗣️ Meetups",

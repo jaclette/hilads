@@ -1,4 +1,10 @@
 {
+  "meta": {
+    "cityTitle": "अभी {{city}} में कौन है | Hilads",
+    "cityDesc": "देखें कि अभी कौन ऑनलाइन है और {{city}} में क्या हो रहा है।",
+    "eventTitle": "{{title}} अभी चल रहा है | Hilads",
+    "eventDesc": "Hilads पर {{title}} में शामिल हों — देखें कौन है और क्या हो रहा है।"
+  },
   "nowTitle": "अभी",
   "filterEvents": "🔥 इवेंट",
   "filterHangouts": "🗣️ मुलाक़ात",

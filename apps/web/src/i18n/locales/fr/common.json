@@ -1,4 +1,10 @@
 {
+  "meta": {
+    "cityTitle": "Qui est à {{city}} en ce moment | Hilads",
+    "cityDesc": "Découvre qui est en ligne et ce qu'il se passe à {{city}} en ce moment.",
+    "eventTitle": "{{title}}, c'est maintenant | Hilads",
+    "eventDesc": "Rejoins {{title}} sur Hilads — vois qui est là et ce qu'il se passe."
+  },
   "nowTitle": "Maintenant",
   "filterEvents": "🔥 Événements",
   "filterHangouts": "🗣️ Sorties",

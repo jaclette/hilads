@@ -1,4 +1,10 @@
 {
+  "meta": {
+    "cityTitle": "Siapa yang ada di {{city}} sekarang | Hilads",
+    "cityDesc": "Lihat siapa yang online dan apa yang sedang terjadi di {{city}} sekarang.",
+    "eventTitle": "{{title}} sedang berlangsung sekarang | Hilads",
+    "eventDesc": "Gabung {{title}} di Hilads — lihat siapa yang ada di sana dan apa yang terjadi."
+  },
   "nowTitle": "Sekarang",
   "filterEvents": "🔥 Acara",
   "filterHangouts": "🗣️ Nongkrong",

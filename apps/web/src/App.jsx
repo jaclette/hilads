@@ -2782,7 +2782,10 @@ export default function App() {
     setHotEventsStatus('loading')
     setActiveEventId(null)
     if (!opts.fromPop) pushUrl(`/city/${cityToSlug(newCityName)}`)
-    setPageMeta(`Who's in ${newCityName} right now | Hilads`, `See who's online and what's happening in ${newCityName} right now.`)
+    setPageMeta(
+      i18n.t('meta.cityTitle', { ns: 'common', city: localizeCityName(newCityName) }),
+      i18n.t('meta.cityDesc',  { ns: 'common', city: localizeCityName(newCityName) }),
+    )
     setActiveEvent(null)
     activeEventIdRef.current = null
 
@@ -2954,7 +2957,10 @@ export default function App() {
     hasMoreMessagesRef.current = false
     setHasMoreMessages(false)
     pushUrl(`/event/${eventSlug(event)}`)
-    setPageMeta(`${event.title} is happening now | Hilads`, `Join ${event.title} on Hilads — see who's there and what's happening.`)
+    setPageMeta(
+      i18n.t('meta.eventTitle', { ns: 'common', title: event.title }),
+      i18n.t('meta.eventDesc',  { ns: 'common', title: event.title }),
+    )
 
     // Initial fetch for event messages; subsequent messages arrive via WebSocket.
     // doRefresh doubles as the poll fn — only the FIRST load (cursor still null)
@@ -3062,7 +3068,10 @@ export default function App() {
     setActiveEvent(null)
     if (city) {
       pushUrl(`/city/${cityToSlug(city)}`)
-      setPageMeta(`Who's in ${city} right now | Hilads`, `See who's online and what's happening in ${city} right now.`)
+      setPageMeta(
+        i18n.t('meta.cityTitle', { ns: 'common', city: localizeCityName(city) }),
+        i18n.t('meta.cityDesc',  { ns: 'common', city: localizeCityName(city) }),
+      )
     }
 
     // Restore the city feed snapshot cached when entering event mode.
