@@ -431,7 +431,25 @@ class NotificationRepository
         // Single genuine-arrival gate for BOTH surfaces. Atomic + DB-backed, so it
         // holds across PHP-FPM workers and even if both join paths fire for one
         // arrival: only the first claim inside the cooldown window emits anything.
-        if (!self::tryMarkArrival($arriverKey, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS)) {
+        $fresh = self::tryMarkArrival($arriverKey, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS);
+
+        // Guests ALSO gate on their nickname (per city). A guest's guestId is not a
+        // stable identity — it churns on reinstall, cleared storage, or a second
+        // device/browser — so keying on guestId alone lets the "same" guest
+        // re-announce on every visit (no feed line / push suppression). The nickname
+        // key catches that: a returning guest with the same name re-announces nothing
+        // for the window. Emit only when BOTH keys are fresh. Members are unaffected
+        // (they key on a stable u:<userId>), which also avoids muting two registered
+        // users who happen to share a display name.
+        if ($arriverUserId === null) {
+            $nick = mb_strtolower(trim($arriverNickname));
+            if ($nick !== '') {
+                $nameFresh = self::tryMarkArrival('gn:' . $nick, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS);
+                $fresh = $fresh && $nameFresh;
+            }
+        }
+
+        if (!$fresh) {
             return;
         }
 
