@@ -7417,7 +7417,23 @@ img.pub-profile-avatar {
   gap: 8px;
 }
 
+/* Override the absolute-centered .page-title here: a long "mark all read" CTA
+   (e.g. fr "Marquer comme lu") would otherwise overlap the centered title.
+   Let the title flow in the flex row, take the middle space, and ellipsize so
+   the CTA on the right stays visible. */
+.notif-page .page-title {
+  position: static;
+  left: auto;
+  transform: none;
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  text-align: center;
+}
+
 .notif-mark-all {
+  flex-shrink: 0;
+  white-space: nowrap;
   margin-left: auto;
   background: none;
   border: none;
