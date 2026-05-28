@@ -9,6 +9,8 @@
   "signIn": "Masuk",
   "tabInterests": "Minat",
   "tabFriends": "Teman",
+  "tabHangouts": "Nongkrong",
+  "tabEvents": "Acara",
   "fieldUsername": "NAMA PENGGUNA",
   "usernamePlaceholder": "nama pengguna",
   "available": "@{{username}} tersedia",

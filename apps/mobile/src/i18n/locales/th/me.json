@@ -9,6 +9,8 @@
   "signIn": "เข้าสู่ระบบ",
   "tabInterests": "ความสนใจ",
   "tabFriends": "เพื่อน",
+  "tabHangouts": "นัดเจอ",
+  "tabEvents": "กิจกรรม",
   "fieldUsername": "ชื่อผู้ใช้",
   "usernamePlaceholder": "ชื่อผู้ใช้",
   "available": "@{{username}} ว่างอยู่",

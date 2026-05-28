@@ -9,6 +9,8 @@
   "signIn": "Se connecter",
   "tabInterests": "Centres d'intérêt",
   "tabFriends": "Amis",
+  "tabHangouts": "Sorties",
+  "tabEvents": "Événements",
   "fieldUsername": "PSEUDO",
   "usernamePlaceholder": "pseudo",
   "available": "@{{username}} est disponible",

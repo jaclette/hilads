@@ -9,6 +9,8 @@
   "signIn": "登录",
   "tabInterests": "兴趣",
   "tabFriends": "好友",
+  "tabHangouts": "聚会",
+  "tabEvents": "活动",
   "fieldUsername": "用户名",
   "usernamePlaceholder": "用户名",
   "available": "@{{username}} 可用",

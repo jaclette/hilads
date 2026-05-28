@@ -9,6 +9,8 @@
   "signIn": "تسجيل الدخول",
   "tabInterests": "الاهتمامات",
   "tabFriends": "الأصدقاء",
+  "tabHangouts": "لقاءات",
+  "tabEvents": "فعاليات",
   "fieldUsername": "اسم المستخدم",
   "usernamePlaceholder": "اسم المستخدم",
   "available": "@{{username}} متاح",

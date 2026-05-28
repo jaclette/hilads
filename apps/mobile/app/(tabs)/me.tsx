@@ -117,12 +117,12 @@ export default function MeScreen() {
   const { identity, account, setAccount, setIdentity, logout, city } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
-  // Feature labels (Hangouts / Events / Vibes) stay English; Interests & Friends translate.
+  // Hangouts / Events tab labels are now translated (Vibes stays English — brand term).
   const tabLabel = (key: ProfileTab): string =>
     key === 'interests' ? t('tabInterests')
     : key === 'friends' ? t('tabFriends')
-    : key === 'hangouts' ? 'Hangouts'
-    : key === 'events'   ? 'Events'
+    : key === 'hangouts' ? t('tabHangouts')
+    : key === 'events'   ? t('tabEvents')
     : 'Vibes';
 
   const validTabs = PROFILE_TABS;

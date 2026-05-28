@@ -9,6 +9,8 @@
   "signIn": "Войти",
   "tabInterests": "Интересы",
   "tabFriends": "Друзья",
+  "tabHangouts": "Тусовки",
+  "tabEvents": "События",
   "fieldUsername": "НИК",
   "usernamePlaceholder": "ник",
   "available": "@{{username}} свободен",

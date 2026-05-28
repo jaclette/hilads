@@ -9,6 +9,8 @@
   "signIn": "Inloggen",
   "tabInterests": "Interesses",
   "tabFriends": "Vrienden",
+  "tabHangouts": "Meetups",
+  "tabEvents": "Evenementen",
   "fieldUsername": "GEBRUIKERSNAAM",
   "usernamePlaceholder": "gebruikersnaam",
   "available": "@{{username}} is beschikbaar",

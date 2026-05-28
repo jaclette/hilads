@@ -9,6 +9,8 @@
   "signIn": "Accedi",
   "tabInterests": "Interessi",
   "tabFriends": "Amici",
+  "tabHangouts": "Ritrovi",
+  "tabEvents": "Eventi",
   "fieldUsername": "NICKNAME",
   "usernamePlaceholder": "nickname",
   "available": "@{{username}} è disponibile",

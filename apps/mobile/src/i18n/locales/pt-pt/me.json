@@ -9,6 +9,8 @@
   "signIn": "Iniciar sessão",
   "tabInterests": "Interesses",
   "tabFriends": "Amigos",
+  "tabHangouts": "Convívios",
+  "tabEvents": "Eventos",
   "fieldUsername": "ALCUNHA",
   "usernamePlaceholder": "alcunha",
   "available": "@{{username}} está disponível",

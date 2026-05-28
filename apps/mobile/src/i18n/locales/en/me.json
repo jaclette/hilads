@@ -9,6 +9,8 @@
   "signIn": "Sign in",
   "tabInterests": "Interests",
   "tabFriends": "Friends",
+  "tabHangouts": "Hangouts",
+  "tabEvents": "Events",
   "fieldUsername": "USERNAME",
   "usernamePlaceholder": "username",
   "available": "@{{username}} is available",

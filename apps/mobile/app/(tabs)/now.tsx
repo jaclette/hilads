@@ -489,7 +489,7 @@ export default function NowScreen() {
       {/* Tab-specific title (sub-header) */}
       <View style={styles.header}>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Now</Text>
+          <Text style={styles.headerTitle}>{t('nowTitle', { ns: 'common' })}</Text>
           {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
         </View>
       </View>

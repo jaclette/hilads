@@ -9,6 +9,8 @@
   "signIn": "Đăng nhập",
   "tabInterests": "Sở thích",
   "tabFriends": "Bạn bè",
+  "tabHangouts": "Tụ tập",
+  "tabEvents": "Sự kiện",
   "fieldUsername": "TÊN NGƯỜI DÙNG",
   "usernamePlaceholder": "tên người dùng",
   "available": "@{{username}} còn trống",
