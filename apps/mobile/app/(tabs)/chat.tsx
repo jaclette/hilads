@@ -153,18 +153,35 @@ export default function ChatTab() {
     return () => { cancelled = true; };
   }, [joined, account, setShowOnboarding]);
 
-  // Online count — populated by WS presenceSnapshot, fallback "live now"
+  // Online count — fallback "live now" until presence data arrives.
+  //   presenceSnapshot   → sent only to US when we (re)join the room (initial value)
+  //   onlineCountUpdated → sent to EXISTING members when someone else joins/leaves
+  // We must listen to BOTH: snapshot alone never updates once we're in the room,
+  // so the count would freeze at our join value until an app restart.
   const [onlineCount, setOnlineCount] = useState<number | null>(null);
 
   useEffect(() => {
-    const off = socket.on('presenceSnapshot', (data: { count?: number; users?: unknown[] }) => {
-      const next = data.count != null ? data.count
+    const cid = city?.channelId;
+    if (!cid) return;
+    // Server echoes cityId as an integer (e.g. 1); native channelId is a string
+    // ("1"). Coerce + match so we ignore events for other cities the socket may
+    // still be in before server-side cleanup.
+    const matches = (d: Record<string, unknown>) =>
+      String(d.cityId) === cid || String(d.channelId) === cid;
+
+    const offSnap = socket.on('presenceSnapshot', (data: Record<string, unknown>) => {
+      if (!matches(data)) return;
+      const next = typeof data.count === 'number' ? data.count
                  : Array.isArray(data.users) ? data.users.length
                  : null;
       if (next !== null) setOnlineCount(next);
     });
-    return off;
-  }, []);
+    const offCount = socket.on('onlineCountUpdated', (data: Record<string, unknown>) => {
+      if (!matches(data)) return;
+      if (typeof data.count === 'number') setOnlineCount(data.count);
+    });
+    return () => { offSnap(); offCount(); };
+  }, [city?.channelId]);
 
   const channelId = city?.channelId ?? '';
 
