@@ -55,6 +55,7 @@ const HEARTBEAT_TTL_MS = 120_000  // session expires after 120s without heartbea
 const CLEANUP_INTERVAL_MS = 60_000 // check for stale sessions every 60s
 const PING_INTERVAL_MS = 30_000   // detect dead TCP connections
 const TYPING_TTL_MS = 8_000       // auto-clear typing if no typingStop within 8s
+const PRESENCE_GRACE_MS = 20_000  // keep a user "online" 20s after their socket drops (smooths brief disconnects)
 const ALLOWED_ORIGINS = new Set(
   (process.env.WS_ALLOWED_ORIGINS || 'https://hilads.live,https://hilads.vercel.app')
     .split(',')
@@ -597,7 +598,16 @@ wss.on('connection', (ws, req) => {
     }
   })
 
-  ws.on('close', () => removeWs(ws))
+  ws.on('close', () => {
+    // Presence grace period: defer cleanup so a brief disconnect — backgrounding
+    // the app, a network blip — doesn't flicker the user offline instantly.
+    // removeWs only drops entries still pointing at THIS socket, so a reconnect
+    // within the window is a natural no-op: a same-session rejoin replaces the
+    // socket, and a new-session rejoin by the same user evicts the stale entry in
+    // handleJoinRoom. Explicit leaveRoom (city switch / web tab close) is NOT
+    // affected — it removes via handleLeaveRoom and stays instant.
+    setTimeout(() => removeWs(ws), PRESENCE_GRACE_MS)
+  })
   ws.on('error', () => ws.close())
 })
 
