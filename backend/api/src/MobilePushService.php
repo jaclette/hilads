@@ -57,9 +57,11 @@ class MobilePushService
     private static function cooldownSeconds(string $type): int
     {
         return match ($type) {
+            'dm_message'      => 5,     // 5s — one push per conversation (same sender) per recipient
+            'event_message'   => 5,     // 5s — one push per event (any sender) per recipient
+            'channel_message' => 5,     // 5s — one push per city channel (any sender) per recipient
             'event_join'      => 300,   // 5 min — avoid bursts when many people join
             'new_event'       => 3600,  // 1 hour — city events should not spam
-            'channel_message' => 300,   // 5 min — one push per city channel per 5 min per recipient
             'city_join'       => 5,     // 5s — different-arriver floor; same-arriver 1h gate is upstream (NotificationRepository)
             'topic_message'   => 120,   // 2 min — prevents burst spam on active topics
             default           => 0,
