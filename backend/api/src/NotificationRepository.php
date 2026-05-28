@@ -497,6 +497,19 @@ class NotificationRepository
     }
 
     /**
+     * Atomic per-(viewer, target) cooldown for "viewed your profile" notifications.
+     * Returns true at most once per $cooldownSeconds (default 10 min). Reuses the
+     * race-free arrival_cooldown gate, so rapid/duplicate profile fetches can't
+     * fan out a burst of bell rows + pushes — the prior SELECT-then-insert dedup
+     * could be raced by deferred concurrent requests. Keys are namespaced
+     * (pv:/u:) so they never collide with city-arrival keys.
+     */
+    public static function shouldNotifyProfileView(string $viewerId, string $targetId, int $cooldownSeconds = 600): bool
+    {
+        return self::tryMarkArrival('pv:' . $viewerId, 'u:' . $targetId, $cooldownSeconds);
+    }
+
+    /**
      * Fire-and-forget: push a message into a city room via the WS server so
      * clients already in the room render it live. Mirrors the API's
      * broadcastMessageToWs (routes/api.php), including the internal token —

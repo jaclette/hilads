@@ -1161,15 +1161,10 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
             // before the response is flushed (an uncaught error here becomes the
             // HTTP status). Catch everything and log.
             try {
-                $dedup = Database::pdo()->prepare("
-                    SELECT 1 FROM notifications
-                    WHERE user_id = ? AND type = 'profile_view'
-                      AND data->>'viewerId' = ?
-                      AND created_at > NOW() - INTERVAL '60 minutes'
-                    LIMIT 1
-                ");
-                $dedup->execute([$targetId, $viewerId]);
-                if (!$dedup->fetch()) {
+                // Atomic 10-min per-(viewer, target) cooldown. Replaces a racy
+                // SELECT-then-create dedup that, under deferred concurrent profile
+                // fetches, let multiple notifications + pushes through at once.
+                if (NotificationRepository::shouldNotifyProfileView($viewerId, $targetId, 600)) {
                     NotificationRepository::create(
                         $targetId,
                         'profile_view',
