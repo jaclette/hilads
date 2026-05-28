@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "Meetups",
+  "tabEvents": "Evenementen",
   "title": "Profiel",
   "loadError": "Kon profiel niet laden.",
   "goBack": "Terug",

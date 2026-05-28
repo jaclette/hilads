@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "集まり",
+  "tabEvents": "イベント",
   "title": "プロフィール",
   "loadError": "プロフィールを読み込めませんでした。",
   "goBack": "戻る",

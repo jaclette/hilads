@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "Tụ tập",
+  "tabEvents": "Sự kiện",
   "title": "Hồ sơ",
   "loadError": "Không thể tải hồ sơ.",
   "goBack": "Quay lại",

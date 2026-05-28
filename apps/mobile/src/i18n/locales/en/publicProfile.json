@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "Hangouts",
+  "tabEvents": "Events",
   "title": "Profile",
   "loadError": "Could not load profile.",
   "goBack": "Go back",

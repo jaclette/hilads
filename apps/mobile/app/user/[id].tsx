@@ -383,8 +383,8 @@ export default function PublicProfileScreen() {
   );
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: 'hangouts', label: hangouts.length > 0 ? `Hangouts · ${hangouts.length}` : 'Hangouts' },
-    { key: 'events',  label: events.length  > 0 ? `Events · ${events.length}` : 'Events' },
+    { key: 'hangouts', label: hangouts.length > 0 ? `${t('tabHangouts')} · ${hangouts.length}` : t('tabHangouts') },
+    { key: 'events',  label: events.length  > 0 ? `${t('tabEvents')} · ${events.length}` : t('tabEvents') },
     { key: 'friends', label: friends.length > 0 ? `${t('tabFriends')} · ${friends.length}` : t('tabFriends') },
     { key: 'vibes',   label: vibeCount      > 0 ? `Vibes · ${vibeCount}`        : 'Vibes'   },
     ...(hasPicks ? [{ key: 'picks' as TabKey, label: t('tabPicks') }] : []),

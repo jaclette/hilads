@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "Ritrovi",
+  "tabEvents": "Eventi",
   "title": "Profilo",
   "loadError": "Impossibile caricare il profilo.",
   "goBack": "Indietro",

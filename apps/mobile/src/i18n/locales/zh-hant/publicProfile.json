@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "聚會",
+  "tabEvents": "活動",
   "title": "個人資料",
   "loadError": "無法載入個人資料。",
   "goBack": "返回",

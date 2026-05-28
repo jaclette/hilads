@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "Sorties",
+  "tabEvents": "Événements",
   "title": "Profil",
   "loadError": "Impossible de charger le profil.",
   "goBack": "Retour",

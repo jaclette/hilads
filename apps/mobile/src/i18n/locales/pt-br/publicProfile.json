@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "Rolês",
+  "tabEvents": "Eventos",
   "title": "Perfil",
   "loadError": "Não foi possível carregar o perfil.",
   "goBack": "Voltar",

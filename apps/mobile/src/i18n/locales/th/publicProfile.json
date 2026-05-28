@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "นัดเจอ",
+  "tabEvents": "กิจกรรม",
   "title": "โปรไฟล์",
   "loadError": "ไม่สามารถโหลดโปรไฟล์ได้",
   "goBack": "กลับ",

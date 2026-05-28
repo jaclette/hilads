@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "모임",
+  "tabEvents": "이벤트",
   "title": "프로필",
   "loadError": "프로필을 불러올 수 없었어요.",
   "goBack": "뒤로",

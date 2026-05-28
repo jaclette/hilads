@@ -1,4 +1,6 @@
 {
+  "tabHangouts": "Quedadas",
+  "tabEvents": "Eventos",
   "title": "Perfil",
   "loadError": "No se pudo cargar el perfil.",
   "goBack": "Atrás",
