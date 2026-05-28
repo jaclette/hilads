@@ -30,12 +30,12 @@
   "from": "来自",
   "age": "年龄",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "好友",
+    "hangouts": "聚会", "events": "活动", "friends": "好友",
     "vibes": "Vibes", "picks": "城市推荐 👑"
   },
   "host": "主持人",
   "live": "直播中",
-  "empty": { "hangouts": "还没有 hangouts", "events": "还没有活动", "friends": "还没有好友" },
+  "empty": { "hangouts": "还没有聚会", "events": "还没有活动", "friends": "还没有好友" },
   "vibesTab": {
     "score": "{{score}} vibe 分",
     "basedOn_one": "基于 {{count}} 个 vibe",

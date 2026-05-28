@@ -7,7 +7,7 @@
   "prefTitle": "PREFERÊNCIAS DE NOTIFICAÇÃO",
   "pref": {
     "mentionLabel": "Menções @",
-    "mentionSub": "Quando alguém te @menciona em uma mensagem ou hangout",
+    "mentionSub": "Quando alguém te @menciona em uma mensagem ou rolê",
     "eventJoinLabel": "Alguém entrou no seu evento",
     "eventJoinSub": "Quando uma pessoa nova entra em um evento que você vai",
     "newEventLabel": "Novos eventos na sua cidade",
@@ -20,10 +20,10 @@
     "vibeSub": "Quando alguém deixa uma vibe no seu perfil",
     "profileViewLabel": "Visitas ao perfil 👀",
     "profileViewSub": "Quando alguém vê o seu perfil",
-    "topicReplyLabel": "Respostas de hangout 💬",
-    "topicReplySub": "Quando alguém responde em um hangout do qual você participa",
-    "newTopicLabel": "Novos hangouts na sua cidade",
-    "newTopicSub": "Quando alguém começa um novo hangout na sua cidade",
+    "topicReplyLabel": "Respostas de rolê 💬",
+    "topicReplySub": "Quando alguém responde em um rolê do qual você participa",
+    "newTopicLabel": "Novos rolês na sua cidade",
+    "newTopicSub": "Quando alguém começa um novo rolê na sua cidade",
     "announceLabel": "Anúncios da Hilads",
     "announceSub": "Novidades ocasionais da equipe"
   }

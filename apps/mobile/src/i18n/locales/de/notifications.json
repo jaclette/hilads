@@ -7,7 +7,7 @@
   "prefTitle": "BENACHRICHTIGUNGSEINSTELLUNGEN",
   "pref": {
     "mentionLabel": "Erwähnungen @",
-    "mentionSub": "Wenn dich jemand in einer Nachricht oder einem Hangout @erwähnt",
+    "mentionSub": "Wenn dich jemand in einer Nachricht oder einem Treffen @erwähnt",
     "eventJoinLabel": "Jemand nimmt an deinem Event teil",
     "eventJoinSub": "Wenn eine neue Person an einem Event teilnimmt, zu dem du gehst",
     "newEventLabel": "Neue Events in deiner Stadt",
@@ -20,10 +20,10 @@
     "vibeSub": "Wenn jemand einen Vibe auf deinem Profil hinterlässt",
     "profileViewLabel": "Profilaufrufe 👀",
     "profileViewSub": "Wenn sich jemand dein Profil ansieht",
-    "topicReplyLabel": "Hangout-Antworten 💬",
-    "topicReplySub": "Wenn jemand in einem Hangout antwortet, an dem du teilnimmst",
-    "newTopicLabel": "Neue Hangouts in deiner Stadt",
-    "newTopicSub": "Wenn jemand einen neuen Hangout in deiner Stadt startet",
+    "topicReplyLabel": "Treffen-Antworten 💬",
+    "topicReplySub": "Wenn jemand in einem Treffen antwortet, an dem du teilnimmst",
+    "newTopicLabel": "Neue Treffen in deiner Stadt",
+    "newTopicSub": "Wenn jemand ein neues Treffen in deiner Stadt startet",
     "announceLabel": "Ankündigungen von Hilads",
     "announceSub": "Gelegentliche Neuigkeiten vom Team"
   }

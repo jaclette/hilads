@@ -30,12 +30,12 @@
   "from": "출신",
   "age": "나이",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "친구",
+    "hangouts": "모임", "events": "이벤트", "friends": "친구",
     "vibes": "Vibes", "picks": "City Picks 👑"
   },
   "host": "호스트",
   "live": "LIVE",
-  "empty": { "hangouts": "아직 hangout이 없어요", "events": "아직 이벤트가 없어요", "friends": "아직 친구가 없어요" },
+  "empty": { "hangouts": "아직 모임이 없어요", "events": "아직 이벤트가 없어요", "friends": "아직 친구가 없어요" },
   "vibesTab": {
     "score": "vibe 점수 {{score}}",
     "basedOn_one": "vibe {{count}}개 기준",

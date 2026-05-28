@@ -147,6 +147,13 @@ function resolveRoute(data: NotifData): string | null {
       if (data.topicId) return `/topic/${data.topicId}`;
       return '/(tabs)/now';
 
+    case 'join_request':
+      // Tapping the body (not an Accept/Decline action) opens the hangout, where
+      // the request shows inline with Accept/Reject. Action buttons are handled
+      // separately in handleNotificationAction.
+      if (data.topicId) return `/topic/${data.topicId}`;
+      return null;
+
     case 'channel_message':
     case 'city_join':
       // Deep link to the city chat tab — the user's current city channel.

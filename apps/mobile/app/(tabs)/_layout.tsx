@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { Tabs, useFocusEffect } from 'expo-router';
-import { View, Text, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform, Animated } from 'react-native';
+import { View, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform, Animated } from 'react-native';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,6 +26,10 @@ const DOT_HOT     = '#FF7A3C';
 const DOT_GREEN   = '#3DDC84';
 const DOT_PROFILE = '#8B5CF6';
 
+// Neon flash for the NOW tab when a feed bump lands — a bright, hot amber flame
+// that fades in over the dim base icon so the dismissal is hard to miss.
+const NOW_NEON = '#FFC400';
+
 // ── Tab definitions — 4 primary tabs matching web .bottom-nav ─────────────────
 
 type DotKind = 'hot' | 'green' | 'profile' | null;
@@ -40,7 +44,7 @@ type TabDef = {
 
 const TABS: TabDef[] = [
   { name: 'now',  label: 'Now',     icon: 'flame',  outline: 'flame-outline',  dot: 'hot'     },
-  { name: 'chat', label: 'My city', icon: 'earth',  outline: 'earth-outline',  dot: null      },
+  { name: 'chat', label: 'My city', icon: 'business', outline: 'business-outline', dot: null      },
   { name: 'here', label: 'Here',    icon: 'people', outline: 'people-outline', dot: 'green'   },
   { name: 'me',   label: 'Me',      icon: 'person', outline: 'person-outline', dot: 'profile' },
 ];
@@ -106,18 +110,29 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   // by the throttled `nowPulse` counter; a ref guards against firing on mount or
   // looping. Reduce-motion → no pulse (the NOW tab's permanent dot is the cue).
   const nowScale     = useRef(new Animated.Value(1)).current;
+  // Opacity of the neon flame overlay (0→1→0, twice). Opacity is native-driver
+  // safe; animating a vector-icon color prop is not (it crashed).
+  const nowGlow      = useRef(new Animated.Value(0)).current;
   const lastPulseRef = useRef(0);
   useEffect(() => {
     if (nowPulse === lastPulseRef.current) return;
     lastPulseRef.current = nowPulse;
     if (nowPulse === 0 || reduceMotion) return;
-    Animated.sequence([
-      Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
-      Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
-      Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
-      Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
+    Animated.parallel([
+      Animated.sequence([
+        Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
+        Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
+        Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
+        Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
+      ]),
+      Animated.sequence([
+        Animated.timing(nowGlow, { toValue: 1, duration: 140, useNativeDriver: true }),
+        Animated.timing(nowGlow, { toValue: 0, duration: 140, useNativeDriver: true }),
+        Animated.timing(nowGlow, { toValue: 1, duration: 140, useNativeDriver: true }),
+        Animated.timing(nowGlow, { toValue: 0, duration: 140, useNativeDriver: true }),
+      ]),
     ]).start();
-  }, [nowPulse, reduceMotion, nowScale]);
+  }, [nowPulse, reduceMotion, nowScale, nowGlow]);
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(10, insets.bottom) }]}>
@@ -125,6 +140,8 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = state.index === routeIndex;
         const color      = focused ? ACTIVE_COLOR : INACTIVE_COLOR;
+
+        const isNow = tab.name === 'now';
 
         return (
           <Pressable
@@ -160,16 +177,20 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
             >
               <Ionicons
                 name={focused ? tab.icon : tab.outline}
-                size={26}
+                size={30}
                 color={color}
               />
+              {/* Neon flame that ignites over the base icon on a feed bump. */}
+              {isNow && (
+                <Animated.View
+                  pointerEvents="none"
+                  style={[StyleSheet.absoluteFill, styles.nowGlow, { opacity: nowGlow }]}
+                >
+                  <Ionicons name="flame" size={30} color={NOW_NEON} />
+                </Animated.View>
+              )}
               <TabDot kind={tab.dot} />
             </Animated.View>
-
-            {/* Label — web: .bottom-nav-label */}
-            <Text style={[styles.label, { color }]} numberOfLines={1}>
-              {tab.label}
-            </Text>
           </Pressable>
         );
       })}
@@ -239,8 +260,13 @@ const styles = StyleSheet.create({
   },
   // ── Icon ───────────────────────────────────────────────────────────────────
   iconWrap: {
-    width:          28,
-    height:         28,
+    width:          32,
+    height:         32,
+    alignItems:     'center',
+    justifyContent: 'center',
+  },
+  // Neon flame overlay — centered over the base icon, opacity-flashed on a bump.
+  nowGlow: {
     alignItems:     'center',
     justifyContent: 'center',
   },
@@ -278,16 +304,6 @@ const styles = StyleSheet.create({
     // Web uses stroke="var(--bg)" 1px ring around the green dot.
     borderWidth:  1,
     borderColor:  BAR_BG_SOLID,
-  },
-
-  // ── Label ──────────────────────────────────────────────────────────────────
-  // Web: .bottom-nav-label — 0.76rem ≈ 12.2px, weight 600, uppercase,
-  // letter-spacing 0.03em (≈ 0.37px at 12.2px).
-  label: {
-    fontSize:      12,
-    fontWeight:    '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
   },
 });
 

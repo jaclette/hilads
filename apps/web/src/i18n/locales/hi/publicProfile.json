@@ -30,12 +30,12 @@
   "from": "कहाँ से",
   "age": "उम्र",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "दोस्त",
+    "hangouts": "मुलाक़ात", "events": "इवेंट", "friends": "दोस्त",
     "vibes": "Vibes", "picks": "सिटी पिक्स 👑"
   },
   "host": "होस्ट",
   "live": "LIVE",
-  "empty": { "hangouts": "अभी कोई hangouts नहीं", "events": "अभी कोई इवेंट नहीं", "friends": "अभी कोई दोस्त नहीं" },
+  "empty": { "hangouts": "अभी कोई मुलाक़ात नहीं", "events": "अभी कोई इवेंट नहीं", "friends": "अभी कोई दोस्त नहीं" },
   "vibesTab": {
     "score": "{{score}} vibe स्कोर",
     "basedOn_one": "{{count}} vibe पर आधारित",

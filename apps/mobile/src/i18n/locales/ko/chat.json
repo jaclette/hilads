@@ -31,7 +31,7 @@
   "left": "{{name}}님이 나갔어요",
   "joinReq": {
     "wantsToJoin": "님이 참여하고 싶어해요",
-    "joinedHangout": "님이 hangout에 참여했어요",
+    "joinedHangout": "님이 모임에 참여했어요",
     "askedToJoin": "님이 참여를 요청했어요",
     "decline": "거절",
     "accept": "수락",

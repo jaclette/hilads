@@ -10,6 +10,6 @@
   "pickStart": "Kies een begindag (tot {{max}} dagen)",
   "apply": "Toepassen",
   "emptyTitle": "Hier is nog niets",
-  "emptyRecentSub": "Voorbije evenementen en hangouts verschijnen hier zodra de stad wat geschiedenis heeft.",
-  "emptyWindowSub": "Geen evenementen of hangouts in dit venster. Probeer een ruimer bereik."
+  "emptyRecentSub": "Voorbije evenementen en meetups verschijnen hier zodra de stad wat geschiedenis heeft.",
+  "emptyWindowSub": "Geen evenementen of meetups in dit venster. Probeer een ruimer bereik."
 }

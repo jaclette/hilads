@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Chia sẻ điều gì đó 👀",
+    "snap": "Chụp ảnh",
+    "snapDesc": "Chụp hoặc tải ảnh lên",
+    "spot": "Thả vị trí của bạn",
+    "spotDesc": "Chia sẻ vị trí hiện tại",
+    "spotLoading": "Đang lấy vị trí của bạn…"
+  },
+  "locationPicker": {
+    "title": "Bạn đang ở đâu? 👀",
+    "search": "Tìm địa chỉ hoặc địa điểm",
+    "moveHint": "Di chuyển bản đồ để điều chỉnh",
+    "noResults": "Không tìm thấy địa điểm",
+    "loading": "Đang lấy vị trí…",
+    "confirm": "Chia sẻ vị trí này",
+    "yourLocation": "Vị trí của bạn",
+    "close": "Đóng",
+    "clearSearch": "Xóa tìm kiếm"
+  },
   "language": "Ngôn ngữ",
   "cancel": "Hủy",
   "loading": "Đang tải…",
@@ -47,9 +66,9 @@
   },
   "badge": {
     "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "fresh": "✨ Mới",
+    "regular": "😎 Thành viên",
+    "host": "👑 Huyền thoại"
   },
   "vibe": {
     "party": "Tiệc tùng",

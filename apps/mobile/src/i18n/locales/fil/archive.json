@@ -10,6 +10,6 @@
   "pickStart": "Pumili ng panimulang araw (hanggang {{max}} araw)",
   "apply": "I-apply",
   "emptyTitle": "Wala pang laman dito",
-  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at hangouts kapag may kasaysayan na ang lungsod.",
-  "emptyWindowSub": "Walang event o hangout sa panahong ito. Subukan ang mas malawak na range."
+  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at tambayan kapag may kasaysayan na ang lungsod.",
+  "emptyWindowSub": "Walang event o tambayan sa panahong ito. Subukan ang mas malawak na range."
 }

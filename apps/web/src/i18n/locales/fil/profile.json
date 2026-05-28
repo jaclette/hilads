@@ -11,7 +11,7 @@
   },
   "tabs": {
     "interests": "Mga interes",
-    "hangouts": "Hangouts",
+    "hangouts": "Tambayan",
     "events": "Events",
     "friends": "Mga kaibigan",
     "vibes": "Vibes"
@@ -40,7 +40,7 @@
     "beach": "beach",
     "wellness": "wellness",
     "travel": "paglalakbay",
-    "hangout": "hangout",
+    "hangout": "tambayan",
     "socializing": "pakikisalamuha",
     "gaming": "gaming",
     "tech": "tech",
@@ -77,7 +77,7 @@
     "storyPlaceholder": "Isang bagay na gustung-gusto mo sa lungsod na ito"
   },
   "hangouts": {
-    "empty": "Wala pang hangouts — magsimula ng isa ⚡",
+    "empty": "Wala pang tambayan — magsimula ng isa ⚡",
     "host": "Host"
   },
   "events": {

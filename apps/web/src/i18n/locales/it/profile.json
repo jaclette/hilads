@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "Interessi",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "Ritrovi",
+    "events": "Eventi",
     "friends": "Amici",
     "vibes": "Vibes"
   },
@@ -40,7 +40,7 @@
     "beach": "spiaggia",
     "wellness": "benessere",
     "travel": "viaggi",
-    "hangout": "hangout",
+    "hangout": "ritrovi",
     "socializing": "socializzare",
     "gaming": "videogiochi",
     "tech": "tecnologia",
@@ -77,7 +77,7 @@
     "storyPlaceholder": "Qualcosa che ami di questa città"
   },
   "hangouts": {
-    "empty": "Ancora nessun hangout — lanciane uno ⚡",
+    "empty": "Ancora nessun ritrovo — lanciane uno ⚡",
     "host": "Organizzatore"
   },
   "events": {

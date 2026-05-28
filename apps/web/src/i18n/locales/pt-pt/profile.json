@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "Interesses",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "Convívios",
+    "events": "Eventos",
     "friends": "Amigos",
     "vibes": "Vibes"
   },
@@ -77,7 +77,7 @@
     "storyPlaceholder": "Algo que adoras nesta cidade"
   },
   "hangouts": {
-    "empty": "Ainda não há hangouts — lança um ⚡",
+    "empty": "Ainda não há convívios — lança um ⚡",
     "host": "Anfitrião"
   },
   "events": {

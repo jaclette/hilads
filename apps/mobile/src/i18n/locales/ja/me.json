@@ -27,10 +27,10 @@
     "drinks": "お酒", "party": "パーティー", "nightlife": "ナイトライフ", "music": "音楽",
     "live music": "ライブ音楽", "culture": "文化", "art": "アート", "food": "グルメ",
     "coffee": "コーヒー", "sport": "スポーツ", "fitness": "フィットネス", "hiking": "ハイキング",
-    "beach": "ビーチ", "wellness": "ウェルネス", "travel": "旅行", "hangout": "hangout",
+    "beach": "ビーチ", "wellness": "ウェルネス", "travel": "旅行", "hangout": "集まり",
     "socializing": "交流", "gaming": "ゲーム", "tech": "テック", "dating": "デート"
   },
-  "noHangouts": "まだ Hangouts はありません — 始めましょう ⚡",
+  "noHangouts": "まだ集まりはありません — 始めましょう ⚡",
   "host": "ホスト",
   "going": "参加",
   "noPlans": "まだ予定はありません — 何か見つけましょう 🔥",

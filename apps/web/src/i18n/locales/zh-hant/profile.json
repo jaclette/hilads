@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "興趣",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "聚會",
+    "events": "活動",
     "friends": "好友",
     "vibes": "Vibes"
   },
@@ -40,7 +40,7 @@
     "beach": "海灘",
     "wellness": "養生",
     "travel": "旅遊",
-    "hangout": "聚聚",
+    "hangout": "聚會",
     "socializing": "認識新朋友",
     "gaming": "電玩",
     "tech": "科技",
@@ -77,7 +77,7 @@
     "storyPlaceholder": "你喜愛這座城市的一件事"
   },
   "hangouts": {
-    "empty": "還沒有 hangout — 開一個吧 ⚡",
+    "empty": "還沒有聚會 — 開一個吧 ⚡",
     "host": "主辦人"
   },
   "events": {

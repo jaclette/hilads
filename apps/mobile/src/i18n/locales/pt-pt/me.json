@@ -27,10 +27,10 @@
     "drinks": "copos", "party": "festa", "nightlife": "vida noturna", "music": "música",
     "live music": "música ao vivo", "culture": "cultura", "art": "arte", "food": "comida",
     "coffee": "café", "sport": "desporto", "fitness": "fitness", "hiking": "caminhadas",
-    "beach": "praia", "wellness": "bem-estar", "travel": "viagens", "hangout": "hangout",
+    "beach": "praia", "wellness": "bem-estar", "travel": "viagens", "hangout": "convívio",
     "socializing": "socializar", "gaming": "videojogos", "tech": "tecnologia", "dating": "encontros"
   },
-  "noHangouts": "Ainda não há hangouts — lança um ⚡",
+  "noHangouts": "Ainda não há convívios — lança um ⚡",
   "host": "Anfitrião",
   "going": "VOU",
   "noPlans": "Ainda não há planos — encontra algo 🔥",

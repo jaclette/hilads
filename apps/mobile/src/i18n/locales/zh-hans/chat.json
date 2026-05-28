@@ -31,7 +31,7 @@
   "left": "{{name}} 已离开",
   "joinReq": {
     "wantsToJoin": " 想要加入",
-    "joinedHangout": " 加入了 hangout",
+    "joinedHangout": " 加入了聚会",
     "askedToJoin": " 请求加入",
     "decline": "拒绝",
     "accept": "接受",

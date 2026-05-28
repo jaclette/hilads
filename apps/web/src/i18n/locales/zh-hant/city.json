@@ -13,14 +13,14 @@
       "sub": "建立帳號來解鎖個人資料、與人連結，並打造你的城市好友圈。"
     },
     "join_hangout": {
-      "pageTitle": "加入 hangout",
-      "title": "幽靈可以瀏覽，但無法加入 hangout。",
-      "sub": "註冊以加入 hangout、保留你的名字，並在有人想碰面時收到通知。"
+      "pageTitle": "加入聚會",
+      "title": "幽靈可以瀏覽，但無法加入聚會。",
+      "sub": "註冊以加入聚會、保留你的名字，並在有人想碰面時收到通知。"
     },
     "create_hangout": {
-      "pageTitle": "發起 hangout",
+      "pageTitle": "發起聚會",
       "title": "幽靈可以瀏覽，但無法主辦。",
-      "sub": "註冊以發起 hangout、保留你的名字，並吸引大家加入你。"
+      "sub": "註冊以發起聚會、保留你的名字，並吸引大家加入你。"
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "正在加入聊天…",
   "tryAgain": "重試",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "聚會",
+    "eventTag": "活動",
     "public": "公開",
     "activeNow": "● 現在活躍",
     "repliesNew": "還沒有回覆 — 搶頭香",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} 人參加",
     "going_other": "🙌 {{count}} 人參加",
     "hostedBy": "由 {{name}} 主辦",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Hilads 活動",
+    "groupPublic": "公開活動",
+    "groupPublicTicket": "🎫 公開活動",
     "createEvent": "建立活動",
-    "startHangout": "發起 hangout ⚡",
+    "startHangout": "發起聚會 ⚡",
     "openPlace": "開放你的場地",
     "loadError": "無法載入活動",
     "loadErrorSub": "稍後下拉重試，或在 {{city}} 建立新的內容。",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "讓 {{city}} 活起來。在你最愛的地方發起一個固定活動。",
     "emptySub": "成為第一個在 {{city}} 搞點名堂的人",
     "noEvents": "目前還沒有活動",
-    "noHangouts": "還沒有 hangout",
+    "noHangouts": "還沒有聚會",
     "noEventsSub": "成為第一個在 {{city}} 建立活動的人",
-    "noHangoutsSub": "發起一個 hangout，讓整座城市聊起來",
+    "noHangoutsSub": "發起一個聚會，讓整座城市聊起來",
     "filterAll": "全部",
     "seeComing": "看看即將登場 🔮",
     "seeHappened": "看看發生過什麼",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "模式",
     "you": "（你）",
-    "hereNow": "Here now",
+    "hereNow": "此刻在這裡",
     "noMatchLive": "目前沒有人符合這些篩選條件。",
+    "legends": "Hilads 傳奇",
     "legendsSub": "他們讓城市動起來",
     "cityCrew": "城市成員",
     "noMatchCrew": "沒有成員符合這些篩選條件。",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "想做點什麼？",
-    "hangoutTitle": "發起 hangout",
+    "hangoutTitle": "發起聚會",
     "hangoutSub": "即時 — 讓大家現在就加入你",
     "eventTitle": "建立活動",
     "eventSub": "規劃讓其他人可以加入的活動"
   },
   "goingModal": {
     "going": "人參加",
-    "inThisHangout": "在這個 hangout 裡",
+    "inThisHangout": "在這個聚會裡",
     "loading": "載入中…",
     "empty": "目前還沒有人 — 搶頭香吧！🙌"
   },

@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Tạo hangout",
-    "editTitle": "Sửa hangout",
+    "startTitle": "Tạo tụ tập",
+    "editTitle": "Sửa tụ tập",
     "category": "Danh mục",
     "cat": { "general": "Chung", "tips": "Mẹo", "food": "Đồ ăn", "drinks": "Đồ uống", "help": "Trợ giúp", "meetup": "Gặp gỡ" },
     "titleLabel": "Bạn đang nghĩ gì?",
@@ -13,25 +13,25 @@
     "saving": "Đang lưu…",
     "starting": "Đang tạo…",
     "saveChanges": "Lưu thay đổi",
-    "startCta": "Tạo hangout ⚡",
+    "startCta": "Tạo tụ tập ⚡",
     "limitHeader": "Mỗi lần một cái",
-    "limitTitle": "Bạn đã có một hangout",
-    "limitSub": "Bạn chỉ có thể chạy một hangout cùng lúc. Vào “{{title}}”, hoặc xóa nó để tạo cái mới.",
-    "limitGo": "Đến hangout của tôi →",
-    "yourHangout": "hangout của bạn"
+    "limitTitle": "Bạn đã có một tụ tập",
+    "limitSub": "Bạn chỉ có thể chạy một tụ tập cùng lúc. Vào “{{title}}”, hoặc xóa nó để tạo cái mới.",
+    "limitGo": "Đến tụ tập của tôi →",
+    "yourHangout": "tụ tập của bạn"
   },
-  "deleteConfirm": "Xóa hangout này? Việc này kết thúc nó cho mọi người và không thể hoàn tác.",
+  "deleteConfirm": "Xóa tụ tập này? Việc này kết thúc nó cho mọi người và không thể hoàn tác.",
   "deleteFailedAlert": "Không thể xóa. Vui lòng thử lại.",
-  "shareAria": "Chia sẻ hangout",
-  "shareTitle": "Chia sẻ hangout này",
+  "shareAria": "Chia sẻ tụ tập",
+  "shareTitle": "Chia sẻ tụ tập này",
   "members": {
     "oneIn": "{{name}} đã tham gia",
-    "countIn": "{{count}} người trong hangout này",
+    "countIn": "{{count}} người trong tụ tập này",
     "seeAll": "Xem tất cả →"
   },
   "owner": { "edit": "✏️ Sửa", "delete": "🗑 Xóa" },
   "gated": {
-    "title": "Hangout chỉ dành cho thành viên",
+    "title": "Tụ tập chỉ dành cho thành viên",
     "pending": "Yêu cầu đang chờ — bạn sẽ tham gia được cuộc trò chuyện khi một thành viên chấp nhận.",
     "prompt": "Yêu cầu tham gia để xem cuộc trò chuyện và trò chuyện.",
     "requestBtn": "Yêu cầu tham gia"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Ai đó",
     "wantsToJoin": " muốn tham gia",
-    "joined": " đã tham gia hangout",
+    "joined": " đã tham gia tụ tập",
     "askedToJoin": " đã yêu cầu tham gia",
     "decline": "Từ chối",
     "accept": "Chấp nhận",

@@ -27,10 +27,10 @@
     "drinks": "ड्रिंक्स", "party": "पार्टी", "nightlife": "नाइटलाइफ", "music": "संगीत",
     "live music": "लाइव म्यूज़िक", "culture": "संस्कृति", "art": "कला", "food": "खाना",
     "coffee": "कॉफ़ी", "sport": "खेल", "fitness": "फिटनेस", "hiking": "हाइकिंग",
-    "beach": "बीच", "wellness": "वेलनेस", "travel": "ट्रैवल", "hangout": "hangout",
+    "beach": "बीच", "wellness": "वेलनेस", "travel": "ट्रैवल", "hangout": "मुलाक़ात",
     "socializing": "मेलजोल", "gaming": "गेमिंग", "tech": "टेक", "dating": "डेटिंग"
   },
-  "noHangouts": "अभी तक कोई hangouts नहीं — एक शुरू करें ⚡",
+  "noHangouts": "अभी तक कोई मुलाक़ात नहीं — एक शुरू करें ⚡",
   "host": "Host",
   "going": "जा रहे हैं",
   "noPlans": "अभी तक कोई प्लान नहीं — कुछ ढूंढें 🔥",

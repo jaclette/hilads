@@ -13,14 +13,14 @@
       "sub": "계정을 만들어 프로필을 열고, 사람들과 연결하고, 내 도시 크루를 만들어보세요."
     },
     "join_hangout": {
-      "pageTitle": "hangout 참여하기",
-      "title": "Ghost는 둘러볼 수 있지만 hangout에는 참여할 수 없어요.",
-      "sub": "가입하면 hangout에 참여하고, 이름을 저장하고, 누군가 만나고 싶어할 때 알림을 받을 수 있어요."
+      "pageTitle": "모임 참여하기",
+      "title": "Ghost는 둘러볼 수 있지만 모임에는 참여할 수 없어요.",
+      "sub": "가입하면 모임에 참여하고, 이름을 저장하고, 누군가 만나고 싶어할 때 알림을 받을 수 있어요."
     },
     "create_hangout": {
-      "pageTitle": "hangout 시작하기",
+      "pageTitle": "모임 시작하기",
       "title": "Ghost는 둘러볼 수 있지만 호스트는 할 수 없어요.",
-      "sub": "가입하면 hangout을 시작하고, 이름을 저장하고, 사람들을 모을 수 있어요."
+      "sub": "가입하면 모임을 시작하고, 이름을 저장하고, 사람들을 모을 수 있어요."
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "채팅에 연결하는 중…",
   "tryAgain": "다시 시도",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "모임",
+    "eventTag": "이벤트",
     "public": "공개",
     "activeNow": "● 지금 활동 중",
     "repliesNew": "아직 답글이 없어요 — 첫 번째가 되어보세요",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}}명 참여",
     "going_other": "🙌 {{count}}명 참여",
     "hostedBy": "{{name}} 주최",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Hilads 이벤트",
+    "groupPublic": "공개 이벤트",
+    "groupPublicTicket": "🎫 공개 이벤트",
     "createEvent": "이벤트 만들기",
-    "startHangout": "hangout 시작하기 ⚡",
+    "startHangout": "모임 시작하기 ⚡",
     "openPlace": "내 장소 열기",
     "loadError": "이벤트를 불러오지 못했어요",
     "loadErrorSub": "잠시 후 다시 시도하거나 {{city}}에서 새로운 걸 만들어보세요.",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "{{city}}을(를) 활기차게 만들어보세요. 좋아하는 장소에서 정기 이벤트를 시작하세요.",
     "emptySub": "{{city}}에서 가장 먼저 무언가를 시작해보세요",
     "noEvents": "지금은 이벤트가 없어요",
-    "noHangouts": "아직 hangout이 없어요",
+    "noHangouts": "아직 모임이 없어요",
     "noEventsSub": "{{city}}에서 가장 먼저 하나 만들어보세요",
-    "noHangoutsSub": "hangout을 시작해 도시가 떠들썩하게 만들어보세요",
+    "noHangoutsSub": "모임을 시작해 도시가 떠들썩하게 만들어보세요",
     "filterAll": "전체",
     "seeComing": "다가오는 일정 보기 🔮",
     "seeHappened": "지난 활동 보기",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "모드",
     "you": "(나)",
-    "hereNow": "Here now",
+    "hereNow": "지금 여기",
     "noMatchLive": "지금 이 필터에 맞는 사람이 없어요.",
+    "legends": "Hilads 전설",
     "legendsSub": "이들이 도시를 움직여요",
     "cityCrew": "도시 크루",
     "noMatchCrew": "이 필터에 맞는 멤버가 없어요.",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "뭐 할까요?",
-    "hangoutTitle": "hangout 시작하기",
+    "hangoutTitle": "모임 시작하기",
     "hangoutSub": "바로 — 지금 사람들이 참여하게 하세요",
     "eventTitle": "이벤트 만들기",
     "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요"
   },
   "goingModal": {
     "going": "참여",
-    "inThisHangout": "이 hangout에",
+    "inThisHangout": "이 모임에",
     "loading": "불러오는 중…",
     "empty": "아직 아무도 없어요 — 가장 먼저 참여하세요! 🙌"
   },

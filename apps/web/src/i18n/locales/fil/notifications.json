@@ -7,7 +7,7 @@
   "prefs": {
     "title": "Mga preference sa notification",
     "mentionName": "Mga mention @",
-    "mentionDesc": "Kapag may nag-@mention sa iyo sa isang mensahe o hangout",
+    "mentionDesc": "Kapag may nag-@mention sa iyo sa isang mensahe o tambayan",
     "newEventName": "Mga bagong event sa iyong lungsod",
     "newEventDesc": "Kapag may gumawa ng event sa iyong lungsod",
     "friendName": "Mga friend request",

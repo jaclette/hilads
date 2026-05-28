@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Bagikan sesuatu 👀",
+    "snap": "Ambil foto",
+    "snapDesc": "Ambil atau unggah foto",
+    "spot": "Bagikan lokasimu",
+    "spotDesc": "Bagikan lokasi terkinimu",
+    "spotLoading": "Mengambil lokasimu…"
+  },
+  "locationPicker": {
+    "title": "Kamu di mana? 👀",
+    "search": "Cari alamat atau tempat",
+    "moveHint": "Geser peta untuk menyesuaikan",
+    "noResults": "Tidak ada tempat ditemukan",
+    "loading": "Mengambil lokasi…",
+    "confirm": "Bagikan lokasi ini",
+    "yourLocation": "Lokasimu",
+    "close": "Tutup",
+    "clearSearch": "Hapus pencarian"
+  },
   "language": "Bahasa",
   "cancel": "Batal",
   "loading": "Memuat…",

@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Deel iets 👀",
+    "snap": "Maak een foto",
+    "snapDesc": "Maak of upload een foto",
+    "spot": "Deel je plek",
+    "spotDesc": "Deel je huidige locatie",
+    "spotLoading": "Je locatie ophalen…"
+  },
+  "locationPicker": {
+    "title": "Waar ben je? 👀",
+    "search": "Zoek een adres of plek",
+    "moveHint": "Verschuif de kaart om aan te passen",
+    "noResults": "Geen plekken gevonden",
+    "loading": "Locatie ophalen…",
+    "confirm": "Deel deze plek",
+    "yourLocation": "Je locatie",
+    "close": "Sluiten",
+    "clearSearch": "Zoekopdracht wissen"
+  },
   "language": "Taal",
   "cancel": "Annuleren",
   "loading": "Laden…",

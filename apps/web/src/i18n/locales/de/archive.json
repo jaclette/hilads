@@ -1,6 +1,6 @@
 {
   "title": "Was passiert ist",
-  "filters": { "all": "Alle", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "Alle", "events": "🔥 Events", "pulses": "🗣️ Treffen" },
   "range": { "recent": "Kürzlich", "last7": "Letzte 7 Tage", "last14": "Letzte 14 Tage", "custom": "Benutzerdefiniert" },
   "picker": {
     "pickEnd": "Wähle jetzt den Endtag",
@@ -10,15 +10,15 @@
   "public": "Öffentlich",
   "went_one": "🙌 {{count}} war dabei",
   "went_other": "🙌 {{count}} waren dabei",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "Treffen",
   "replies_one": "💬 {{count}} Antwort",
   "replies_other": "💬 {{count}} Antworten",
   "noReplies": "Keine Antworten",
   "error": "Das Archiv konnte nicht geladen werden",
   "retry": "Erneut versuchen",
   "emptyTitle": "Hier ist noch nichts",
-  "emptyRecentSub": "Vergangene Events und Hangouts erscheinen hier, sobald die Stadt etwas Verlauf hat.",
-  "emptyWindowSub": "Keine Events oder Hangouts in diesem Zeitraum. Versuch einen größeren Bereich.",
+  "emptyRecentSub": "Vergangene Events und Treffen erscheinen hier, sobald die Stadt etwas Verlauf hat.",
+  "emptyWindowSub": "Keine Events oder Treffen in diesem Zeitraum. Versuch einen größeren Bereich.",
   "loadMore": "Mehr laden",
   "loading": "Wird geladen…"
 }

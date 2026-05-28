@@ -27,10 +27,10 @@
     "drinks": "inom", "party": "party", "nightlife": "nightlife", "music": "musika",
     "live music": "live music", "culture": "kultura", "art": "sining", "food": "pagkain",
     "coffee": "kape", "sport": "sport", "fitness": "fitness", "hiking": "hiking",
-    "beach": "beach", "wellness": "wellness", "travel": "biyahe", "hangout": "hangout",
+    "beach": "beach", "wellness": "wellness", "travel": "biyahe", "hangout": "tambayan",
     "socializing": "pakikisalamuha", "gaming": "gaming", "tech": "tech", "dating": "dating"
   },
-  "noHangouts": "Wala pang hangouts — magsimula ng isa ⚡",
+  "noHangouts": "Wala pang tambayan — magsimula ng isa ⚡",
   "host": "Host",
   "going": "PUPUNTA",
   "noPlans": "Wala pang plano — maghanap ng aktibidad 🔥",

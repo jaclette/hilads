@@ -10,6 +10,6 @@
   "pickStart": "Pilih hari mulai (hingga {{max}} hari)",
   "apply": "Terapkan",
   "emptyTitle": "Belum ada apa-apa di sini",
-  "emptyRecentSub": "Acara dan hangouts yang sudah lewat akan muncul di sini begitu kota punya riwayat.",
-  "emptyWindowSub": "Tidak ada acara atau hangout di periode ini. Coba rentang yang lebih luas."
+  "emptyRecentSub": "Acara dan nongkrong yang sudah lewat akan muncul di sini begitu kota punya riwayat.",
+  "emptyWindowSub": "Tidak ada acara atau nongkrong di periode ini. Coba rentang yang lebih luas."
 }

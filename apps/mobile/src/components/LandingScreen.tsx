@@ -112,7 +112,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
     identity, sessionId, account,
     geoState, detectedCity,
     setIdentity, setCity, setJoined, setBootstrapData,
-    setUnreadDMs, setUnreadNotifications,
+    setUnreadNotifications,
   } = useApp();
 
   const [nickname,      setNickname]      = useState(identity?.nickname ?? '');
@@ -212,7 +212,10 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
           unreadNotifications: boot.unreadNotifications,
         });
         if (boot.unreadNotifications !== null) setUnreadNotifications(boot.unreadNotifications);
-        if (boot.hasUnreadDMs !== null) setUnreadDMs(boot.hasUnreadDMs ? 1 : 0);
+        // Don't seed the message badge here: boot.hasUnreadDMs is the combined
+        // DM-OR-event-chat flag (server hasAnyUnread), so a joined-but-unopened
+        // event chat would falsely light the DM badge. useGlobalDmNotifications
+        // .joinAll() sets the accurate DM-only count.
         setCity(city);
         // joinCity is safe to call before connect — it queues the replay
         // and the socket fires it on 'connected'.

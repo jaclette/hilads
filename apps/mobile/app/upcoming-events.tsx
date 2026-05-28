@@ -13,6 +13,8 @@ import { track } from '@/services/analytics';
 import type { HiladsEvent } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { EventCard } from '@/components/EventCard';
+import { MarqueeText } from '@/components/MarqueeText';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -51,16 +53,18 @@ function localYmd(d: Date): string {
 // ── Day strip cell ────────────────────────────────────────────────────────────
 
 function DayCell({
-  date, isSelected, hasDot, onPress,
+  date, isSelected, hasDot, onPress, reduceMotion,
 }: {
   date: Date;
   isSelected: boolean;
   hasDot: boolean;
   onPress: () => void;
+  reduceMotion: boolean;
 }) {
   const today    = startOfDay(new Date());
   const isToday  = isSameDay(date, today);
   const dowLabel = date.toLocaleDateString(i18n.language, { weekday: 'short' });
+  const label    = isToday ? i18n.t('time.today', { ns: 'common' }) : dowLabel;
 
   return (
     <TouchableOpacity
@@ -68,9 +72,17 @@ function DayCell({
       activeOpacity={0.75}
       onPress={onPress}
     >
-      <Text style={[styles.dayCellDow, isSelected && styles.dayCellDowSelected]}>
-        {isToday ? i18n.t('time.today', { ns: 'common' }) : dowLabel}
-      </Text>
+      {/* Long labels (e.g. "Aujourd'hui") scroll instead of wrapping — same
+          marquee primitive as the weather pill; static + centered when they fit. */}
+      <MarqueeText
+        text={label}
+        textStyle={[styles.dayCellDow, isSelected && styles.dayCellDowSelected]}
+        style={styles.dayCellDowMarquee}
+        fadeColor={isSelected ? Colors.accent : Colors.bg}
+        fadeWidth={10}
+        center
+        reduceMotion={reduceMotion}
+      />
       <Text style={[styles.dayCellNum, isSelected && styles.dayCellNumSelected]}>
         {date.getDate()}
       </Text>
@@ -189,6 +201,7 @@ function MonthModal({
 export default function UpcomingEventsScreen() {
   const router = useRouter();
   const { t } = useTranslation('upcoming');
+  const reduceMotion = useReducedMotion();
   const { channelId, timezone } = useLocalSearchParams<{ channelId: string; timezone: string }>();
   const tz = decodeURIComponent(timezone ?? 'UTC');
 
@@ -297,6 +310,7 @@ export default function UpcomingEventsScreen() {
             isSelected={isSameDay(d, selected)}
             hasDot={(summary[localYmd(d)] ?? 0) > 0}
             onPress={() => handlePickDate(d)}
+            reduceMotion={reduceMotion}
           />
         ))}
       </ScrollView>
@@ -429,6 +443,8 @@ const styles = StyleSheet.create({
   },
   dayCellDow: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted, letterSpacing: 0.3 },
   dayCellDowSelected: { color: '#fff' },
+  // Fills the cell width so MarqueeText can detect overflow and scroll the label.
+  dayCellDowMarquee: { alignSelf: 'stretch' },
   dayCellNum: { fontSize: 20, fontWeight: '800', color: Colors.text, marginTop: 2 },
   dayCellNumSelected: { color: '#fff' },
   dayCellDotSlot: { height: 8, marginTop: 4, alignItems: 'center', justifyContent: 'center' },

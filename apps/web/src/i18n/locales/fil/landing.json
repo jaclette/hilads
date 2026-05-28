@@ -3,12 +3,12 @@
     "sub": "Buhay ang lungsod sa paligid mo.\nMaghanap ng mga tao, sumali sa kung ano ang nangyayari, o buksan ang sarili mong spot."
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} tao ang nagha-hangout ngayon",
-    "peopleLive_other": "🔥 {{count}} tao ang nagha-hangout ngayon",
+    "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",
+    "peopleLive_other": "🔥 {{count}} tao ang nagta-tambay ngayon",
     "events_one": "🔥 {{count}} event ang nangyayari",
     "events_other": "🔥 {{count}} event ang nangyayari",
-    "hangouts_one": "🗣️ {{count}} hangout ang aktibo",
-    "hangouts_other": "🗣️ {{count}} hangout ang aktibo",
+    "hangouts_one": "🗣️ {{count}} tambayan ang aktibo",
+    "hangouts_other": "🗣️ {{count}} tambayan ang aktibo",
     "replies_one": "{{count}} tugon",
     "replies_other": "{{count}} tugon",
     "pickCity": "Pumili ng lungsod\nat sumali na",

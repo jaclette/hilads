@@ -1317,8 +1317,8 @@ html, body, #root {
 }
 
 .bottom-nav-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
 }
 
 .bottom-nav-icon circle[fill="var(--hot-dot)"] {

@@ -13,14 +13,14 @@
       "sub": "สร้างบัญชีเพื่อปลดล็อกโปรไฟล์ เชื่อมต่อกับผู้คน และสร้างแก๊งในเมืองของคุณ"
     },
     "join_hangout": {
-      "pageTitle": "เข้าร่วม hangout",
-      "title": "Ghost ดูได้ แต่เข้าร่วม hangouts ไม่ได้",
-      "sub": "สมัครเพื่อเข้าร่วม hangouts บันทึกชื่อของคุณ และรับการแจ้งเตือนเมื่อมีคนอยากเจอ"
+      "pageTitle": "เข้าร่วมนัดเจอ",
+      "title": "Ghost ดูได้ แต่เข้าร่วมนัดเจอไม่ได้",
+      "sub": "สมัครเพื่อเข้าร่วมนัดเจอ บันทึกชื่อของคุณ และรับการแจ้งเตือนเมื่อมีคนอยากเจอ"
     },
     "create_hangout": {
-      "pageTitle": "เริ่ม hangout",
+      "pageTitle": "เริ่มนัดเจอ",
       "title": "Ghost ดูได้ แต่จัดงานไม่ได้",
-      "sub": "สมัครเพื่อเริ่ม hangout บันทึกชื่อของคุณ และชวนคนมาเข้าร่วม"
+      "sub": "สมัครเพื่อเริ่มนัดเจอ บันทึกชื่อของคุณ และชวนคนมาเข้าร่วม"
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "กำลังเข้าร่วมแชท…",
   "tryAgain": "ลองอีกครั้ง",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "นัดเจอ",
+    "eventTag": "กิจกรรม",
     "public": "สาธารณะ",
     "activeNow": "● ใช้งานอยู่ตอนนี้",
     "repliesNew": "ยังไม่มีการตอบกลับ — เป็นคนแรกสิ",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} คนเข้าร่วม",
     "going_other": "🙌 {{count}} คนเข้าร่วม",
     "hostedBy": "จัดโดย {{name}}",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "กิจกรรม Hilads",
+    "groupPublic": "กิจกรรมสาธารณะ",
+    "groupPublicTicket": "🎫 กิจกรรมสาธารณะ",
     "createEvent": "สร้างกิจกรรม",
-    "startHangout": "เริ่ม hangout ⚡",
+    "startHangout": "เริ่มนัดเจอ ⚡",
     "openPlace": "เปิดที่ของคุณ",
     "loadError": "โหลดกิจกรรมไม่ได้",
     "loadErrorSub": "ดึงเพื่อลองใหม่ภายหลัง หรือสร้างสิ่งใหม่ใน {{city}}",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "ทำให้ {{city}} มีชีวิตชีวา เริ่มกิจกรรมประจำที่สถานที่โปรดของคุณ",
     "emptySub": "เป็นคนแรกที่ทำให้บางอย่างเกิดขึ้นใน {{city}}",
     "noEvents": "ยังไม่มีกิจกรรมตอนนี้",
-    "noHangouts": "ยังไม่มี hangouts",
+    "noHangouts": "ยังไม่มีนัดเจอ",
     "noEventsSub": "เป็นคนแรกที่สร้างใน {{city}}",
-    "noHangoutsSub": "เริ่ม hangout แล้วทำให้คนทั้งเมืองได้พูดคุยกัน",
+    "noHangoutsSub": "เริ่มนัดเจอแล้วทำให้คนทั้งเมืองได้พูดคุยกัน",
     "filterAll": "ทั้งหมด",
     "seeComing": "ดูสิ่งที่กำลังจะมา 🔮",
     "seeHappened": "ดูสิ่งที่เกิดขึ้น",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "โหมด",
     "you": "(คุณ)",
-    "hereNow": "Here now",
+    "hereNow": "อยู่ที่นี่ตอนนี้",
     "noMatchLive": "ตอนนี้ไม่มีใครตรงกับตัวกรองเหล่านี้",
+    "legends": "ตำนาน Hilads",
     "legendsSub": "พวกเขาทำให้เมืองมีชีวิต",
     "cityCrew": "แก๊งในเมือง",
     "noMatchCrew": "ไม่มีสมาชิกตรงกับตัวกรองเหล่านี้",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "จะทำอะไรดี?",
-    "hangoutTitle": "เริ่ม hangout",
+    "hangoutTitle": "เริ่มนัดเจอ",
     "hangoutSub": "ทันที — ให้คนเข้าร่วมคุณได้เลยตอนนี้",
     "eventTitle": "สร้างกิจกรรม",
     "eventSub": "วางแผนบางอย่างให้คนอื่นมาเข้าร่วม"
   },
   "goingModal": {
     "going": "เข้าร่วม",
-    "inThisHangout": "ใน hangout นี้",
+    "inThisHangout": "ในนัดเจอนี้",
     "loading": "กำลังโหลด…",
     "empty": "ยังไม่มีใคร — เป็นคนแรกที่เข้าร่วมสิ! 🙌"
   },

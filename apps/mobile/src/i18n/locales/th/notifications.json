@@ -7,7 +7,7 @@
   "prefTitle": "การตั้งค่าการแจ้งเตือน",
   "pref": {
     "mentionLabel": "การกล่าวถึง @",
-    "mentionSub": "เมื่อมีคน @กล่าวถึงคุณในข้อความหรือ hangout",
+    "mentionSub": "เมื่อมีคน @กล่าวถึงคุณในข้อความหรือนัดเจอ",
     "eventJoinLabel": "มีคนเข้าร่วมกิจกรรมของคุณ",
     "eventJoinSub": "เมื่อมีคนใหม่เข้าร่วมกิจกรรมที่คุณจะไป",
     "newEventLabel": "กิจกรรมใหม่ในเมืองของคุณ",
@@ -20,10 +20,10 @@
     "vibeSub": "เมื่อมีคนทิ้ง vibe ไว้บนโปรไฟล์ของคุณ",
     "profileViewLabel": "การดูโปรไฟล์ 👀",
     "profileViewSub": "เมื่อมีคนดูโปรไฟล์ของคุณ",
-    "topicReplyLabel": "การตอบกลับ Hangout 💬",
-    "topicReplySub": "เมื่อมีคนตอบกลับใน hangout ที่คุณเข้าร่วม",
-    "newTopicLabel": "Hangouts ใหม่ในเมืองของคุณ",
-    "newTopicSub": "เมื่อมีคนเริ่ม hangout ใหม่ในเมืองของคุณ",
+    "topicReplyLabel": "การตอบกลับนัดเจอ 💬",
+    "topicReplySub": "เมื่อมีคนตอบกลับในนัดเจอที่คุณเข้าร่วม",
+    "newTopicLabel": "นัดเจอใหม่ในเมืองของคุณ",
+    "newTopicSub": "เมื่อมีคนเริ่มนัดเจอใหม่ในเมืองของคุณ",
     "announceLabel": "ประกาศจาก Hilads",
     "announceSub": "ข่าวสารเป็นครั้งคราวจากทีมงาน"
   }

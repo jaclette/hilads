@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Einen hangout starten",
-    "editTitle": "Hangout bearbeiten",
+    "startTitle": "Ein Treffen starten",
+    "editTitle": "Treffen bearbeiten",
     "category": "Kategorie",
     "cat": { "general": "Allgemein", "tips": "Tipps", "food": "Essen", "drinks": "Drinks", "help": "Hilfe", "meetup": "Treffen" },
     "titleLabel": "Was geht dir durch den Kopf?",
@@ -13,25 +13,25 @@
     "saving": "Wird gespeichert…",
     "starting": "Wird gestartet…",
     "saveChanges": "Änderungen speichern",
-    "startCta": "Einen hangout starten ⚡",
-    "limitHeader": "Einer nach dem anderen",
-    "limitTitle": "Du hast bereits einen hangout",
-    "limitSub": "Du kannst nur einen hangout gleichzeitig laufen lassen. Geh zu „{{title}}“ oder lösch ihn, um einen neuen zu starten.",
-    "limitGo": "Zu meinem hangout →",
-    "yourHangout": "deinen hangout"
+    "startCta": "Ein Treffen starten ⚡",
+    "limitHeader": "Eins nach dem anderen",
+    "limitTitle": "Du hast bereits ein Treffen",
+    "limitSub": "Du kannst nur ein Treffen gleichzeitig laufen lassen. Geh zu „{{title}}“ oder lösch es, um ein neues zu starten.",
+    "limitGo": "Zu meinem Treffen →",
+    "yourHangout": "dein Treffen"
   },
-  "deleteConfirm": "Diesen hangout löschen? Das beendet ihn für alle und kann nicht rückgängig gemacht werden.",
+  "deleteConfirm": "Dieses Treffen löschen? Das beendet es für alle und kann nicht rückgängig gemacht werden.",
   "deleteFailedAlert": "Löschen fehlgeschlagen. Versuch es erneut.",
-  "shareAria": "Hangout teilen",
-  "shareTitle": "Diesen hangout teilen",
+  "shareAria": "Treffen teilen",
+  "shareTitle": "Dieses Treffen teilen",
   "members": {
     "oneIn": "{{name}} ist dabei",
-    "countIn": "{{count}} in diesem hangout",
+    "countIn": "{{count}} in diesem Treffen",
     "seeAll": "Alle ansehen →"
   },
   "owner": { "edit": "✏️ Bearbeiten", "delete": "🗑 Löschen" },
   "gated": {
-    "title": "Hangout nur für Mitglieder",
+    "title": "Treffen nur für Mitglieder",
     "pending": "Anfrage ausstehend — du kannst der Unterhaltung beitreten, sobald ein Mitglied zustimmt.",
     "prompt": "Bitte um Beitritt, um die Unterhaltung zu sehen und mitzuchatten.",
     "requestBtn": "Beitritt anfragen"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Jemand",
     "wantsToJoin": " möchte beitreten",
-    "joined": " ist dem hangout beigetreten",
+    "joined": " ist dem Treffen beigetreten",
     "askedToJoin": " hat um Beitritt gebeten",
     "decline": "Ablehnen",
     "accept": "Annehmen",

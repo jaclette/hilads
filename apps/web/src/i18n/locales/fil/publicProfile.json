@@ -30,12 +30,12 @@
   "from": "Taga",
   "age": "Edad",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "Mga kaibigan",
+    "hangouts": "Tambayan", "events": "Events", "friends": "Mga kaibigan",
     "vibes": "Vibes", "picks": "City Picks 👑"
   },
   "host": "Host",
   "live": "LIVE",
-  "empty": { "hangouts": "Wala pang hangouts", "events": "Wala pang event", "friends": "Wala pang kaibigan" },
+  "empty": { "hangouts": "Wala pang tambayan", "events": "Wala pang event", "friends": "Wala pang kaibigan" },
   "vibesTab": {
     "score": "{{score}} vibe score",
     "basedOn_one": "base sa {{count}} vibe",

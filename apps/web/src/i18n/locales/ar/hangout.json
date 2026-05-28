@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "ابدأ hangout",
-    "editTitle": "تعديل الـhangout",
+    "startTitle": "ابدأ لقاءً",
+    "editTitle": "تعديل اللقاء",
     "category": "الفئة",
     "cat": { "general": "عام", "tips": "نصائح", "food": "طعام", "drinks": "مشروبات", "help": "مساعدة", "meetup": "لقاء" },
     "titleLabel": "ما الذي يدور في ذهنك؟",
@@ -13,25 +13,25 @@
     "saving": "جارٍ الحفظ…",
     "starting": "جارٍ البدء…",
     "saveChanges": "حفظ التغييرات",
-    "startCta": "ابدأ hangout ⚡",
+    "startCta": "ابدأ لقاءً ⚡",
     "limitHeader": "واحد في كل مرة",
-    "limitTitle": "لديك hangout بالفعل",
-    "limitSub": "يمكنك تشغيل hangout واحد في كل مرة. توجّه إلى «{{title}}»، أو احذفه لبدء واحد جديد.",
-    "limitGo": "اذهب إلى hangout الخاص بي →",
-    "yourHangout": "hangout الخاص بك"
+    "limitTitle": "لديك لقاء بالفعل",
+    "limitSub": "يمكنك تشغيل لقاء واحد في كل مرة. توجّه إلى «{{title}}»، أو احذفه لبدء واحد جديد.",
+    "limitGo": "اذهب إلى لقائي →",
+    "yourHangout": "لقاؤك"
   },
-  "deleteConfirm": "حذف هذا الـhangout؟ سيؤدي هذا إلى إنهائه للجميع ولا يمكن التراجع عنه.",
+  "deleteConfirm": "حذف هذا اللقاء؟ سيؤدي هذا إلى إنهائه للجميع ولا يمكن التراجع عنه.",
   "deleteFailedAlert": "تعذّر الحذف. يرجى المحاولة مرة أخرى.",
-  "shareAria": "مشاركة الـhangout",
-  "shareTitle": "شارك هذا الـhangout",
+  "shareAria": "مشاركة اللقاء",
+  "shareTitle": "شارك هذا اللقاء",
   "members": {
     "oneIn": "{{name}} منضم",
-    "countIn": "{{count}} في هذا الـhangout",
+    "countIn": "{{count}} في هذا اللقاء",
     "seeAll": "عرض الكل →"
   },
   "owner": { "edit": "✏️ تعديل", "delete": "🗑 حذف" },
   "gated": {
-    "title": "hangout للأعضاء فقط",
+    "title": "لقاء للأعضاء فقط",
     "pending": "الطلب قيد الانتظار — ستتمكن من الانضمام إلى المحادثة بمجرد أن يقبل أحد الأعضاء.",
     "prompt": "اطلب الانضمام لرؤية المحادثة والدردشة.",
     "requestBtn": "اطلب الانضمام"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "شخص ما",
     "wantsToJoin": " يريد الانضمام",
-    "joined": " انضم إلى الـhangout",
+    "joined": " انضم إلى اللقاء",
     "askedToJoin": " طلب الانضمام",
     "decline": "رفض",
     "accept": "قبول",

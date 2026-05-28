@@ -30,12 +30,12 @@
   "from": "來自",
   "age": "年齡",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "好友",
+    "hangouts": "聚會", "events": "活動", "friends": "好友",
     "vibes": "Vibes", "picks": "城市精選 👑"
   },
   "host": "主辦人",
   "live": "LIVE",
-  "empty": { "hangouts": "還沒有 hangout", "events": "還沒有活動", "friends": "還沒有好友" },
+  "empty": { "hangouts": "還沒有聚會", "events": "還沒有活動", "friends": "還沒有好友" },
   "vibesTab": {
     "score": "{{score}} vibe 分數",
     "basedOn_one": "依據 {{count}} 個 vibe",

@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "관심사",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "모임",
+    "events": "이벤트",
     "friends": "친구",
     "vibes": "Vibes"
   },
@@ -40,7 +40,7 @@
     "beach": "해변",
     "wellness": "웰니스",
     "travel": "여행",
-    "hangout": "hangout",
+    "hangout": "모임",
     "socializing": "사교",
     "gaming": "게임",
     "tech": "테크",
@@ -77,7 +77,7 @@
     "storyPlaceholder": "이 도시에서 사랑하는 무언가"
   },
   "hangouts": {
-    "empty": "아직 hangout이 없어요 — 하나 시작해요 ⚡",
+    "empty": "아직 모임이 없어요 — 하나 시작해요 ⚡",
     "host": "호스트"
   },
   "events": {

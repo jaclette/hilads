@@ -31,7 +31,7 @@
   "left": "{{name}} is weg",
   "joinReq": {
     "wantsToJoin": " wil meedoen",
-    "joinedHangout": " is bij de hangout gekomen",
+    "joinedHangout": " is bij de meetup gekomen",
     "askedToJoin": " vroeg om mee te doen",
     "decline": "Weigeren",
     "accept": "Accepteren",

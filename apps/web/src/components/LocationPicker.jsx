@@ -13,6 +13,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
+import { useTranslation } from 'react-i18next'
 import 'leaflet/dist/leaflet.css'
 
 // ── Internal: captures map moveend and forwards center coords ─────────────────
@@ -82,6 +83,7 @@ async function searchPlaces(query) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function LocationPicker({ initialLat, initialLng, nickname, onConfirm, onClose }) {
+  const { t } = useTranslation('common')
   const [place,   setPlace]   = useState('')
   const [address, setAddress] = useState('')
   const [geocoding, setGeocoding] = useState(true)
@@ -157,7 +159,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
   }
 
   function handleConfirm() {
-    const label = place || address || 'your spot'
+    const label = place || address || t('locationPicker.yourLocation')
     onConfirm({ place: label, address, lat: centerRef.current.lat, lng: centerRef.current.lng })
   }
 
@@ -167,8 +169,8 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
 
         {/* ── Header ── */}
         <div className="loc-picker-header">
-          <span className="loc-picker-title">Where are you? 👀</span>
-          <button className="loc-picker-close" onClick={onClose} aria-label="Close">✕</button>
+          <span className="loc-picker-title">{t('locationPicker.title')}</span>
+          <button className="loc-picker-close" onClick={onClose} aria-label={t('locationPicker.close')}>✕</button>
         </div>
 
         {/* ── Map ── */}
@@ -196,7 +198,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
                 className="loc-picker-search-input"
                 value={query}
                 onChange={e => onSearchChange(e.target.value)}
-                placeholder="Search an address or place"
+                placeholder={t('locationPicker.search')}
                 autoComplete="off"
                 spellCheck="false"
               />
@@ -204,7 +206,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
                 <button
                   className="loc-picker-search-clear"
                   onClick={() => { setQuery(''); setHits([]); setSearched(false) }}
-                  aria-label="Clear search"
+                  aria-label={t('locationPicker.clearSearch')}
                 >✕</button>
               )}
             </div>
@@ -219,7 +221,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
                     📍 <span>{hit.label}</span>
                   </button>
                 )) : (
-                  <div className="loc-picker-no-results">No places found</div>
+                  <div className="loc-picker-no-results">{t('locationPicker.noResults')}</div>
                 )}
               </div>
             )}
@@ -229,17 +231,17 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
           <div className="loc-picker-pin" aria-hidden="true">📍</div>
 
           {/* Drag hint */}
-          <div className="loc-picker-hint">Move the map to adjust</div>
+          <div className="loc-picker-hint">{t('locationPicker.moveHint')}</div>
         </div>
 
         {/* ── Footer: address + actions ── */}
         <div className="loc-picker-footer">
           <div className="loc-picker-address-card">
             {geocoding ? (
-              <span className="loc-picker-geocoding">Getting location…</span>
+              <span className="loc-picker-geocoding">{t('locationPicker.loading')}</span>
             ) : (
               <>
-                <span className="loc-picker-place">{place || 'Your location'}</span>
+                <span className="loc-picker-place">{place || t('locationPicker.yourLocation')}</span>
                 {address && <span className="loc-picker-addr">{address}</span>}
               </>
             )}
@@ -250,10 +252,10 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
             onClick={handleConfirm}
             disabled={geocoding}
           >
-            Share this spot
+            {t('locationPicker.confirm')}
           </button>
           <button className="loc-picker-cancel" onClick={onClose}>
-            Cancel
+            {t('cancel')}
           </button>
         </div>
 

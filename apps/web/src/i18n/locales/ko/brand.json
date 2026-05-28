@@ -1,4 +1,10 @@
 {
+  "badge": {
+    "ghost": "👻 Ghost",
+    "fresh": "✨ 새내기",
+    "regular": "😎 단골",
+    "host": "👑 전설"
+  },
   "now": "now",
   "myCity": "my city",
   "here": "here",

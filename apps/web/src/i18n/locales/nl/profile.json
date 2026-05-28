@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "Interesses",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "Meetups",
+    "events": "Evenementen",
     "friends": "Vrienden",
     "vibes": "Vibes"
   },
@@ -77,7 +77,7 @@
     "storyPlaceholder": "Iets wat je geweldig vindt aan deze stad"
   },
   "hangouts": {
-    "empty": "Nog geen hangouts — start er een ⚡",
+    "empty": "Nog geen meetups — start er een ⚡",
     "host": "Host"
   },
   "events": {

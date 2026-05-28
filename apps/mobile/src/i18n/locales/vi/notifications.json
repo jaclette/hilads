@@ -7,7 +7,7 @@
   "prefTitle": "TÙY CHỌN THÔNG BÁO",
   "pref": {
     "mentionLabel": "Nhắc đến @",
-    "mentionSub": "Khi ai đó @nhắc bạn trong tin nhắn hoặc hangout",
+    "mentionSub": "Khi ai đó @nhắc bạn trong tin nhắn hoặc tụ tập",
     "eventJoinLabel": "Có người tham gia sự kiện của bạn",
     "eventJoinSub": "Khi có người mới tham gia sự kiện bạn sẽ đến",
     "newEventLabel": "Sự kiện mới trong thành phố của bạn",
@@ -20,10 +20,10 @@
     "vibeSub": "Khi ai đó để lại một vibe trên hồ sơ của bạn",
     "profileViewLabel": "Lượt xem hồ sơ 👀",
     "profileViewSub": "Khi ai đó xem hồ sơ của bạn",
-    "topicReplyLabel": "Trả lời hangout 💬",
-    "topicReplySub": "Khi ai đó trả lời trong hangout bạn đã tham gia",
-    "newTopicLabel": "Hangout mới trong thành phố của bạn",
-    "newTopicSub": "Khi ai đó tạo hangout mới trong thành phố của bạn",
+    "topicReplyLabel": "Trả lời tụ tập 💬",
+    "topicReplySub": "Khi ai đó trả lời trong tụ tập bạn đã tham gia",
+    "newTopicLabel": "Tụ tập mới trong thành phố của bạn",
+    "newTopicSub": "Khi ai đó tạo tụ tập mới trong thành phố của bạn",
     "announceLabel": "Thông báo từ Hilads",
     "announceSub": "Cập nhật thỉnh thoảng từ đội ngũ"
   }

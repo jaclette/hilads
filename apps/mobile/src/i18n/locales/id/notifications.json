@@ -7,7 +7,7 @@
   "prefTitle": "PREFERENSI NOTIFIKASI",
   "pref": {
     "mentionLabel": "Sebutan @",
-    "mentionSub": "Saat seseorang me-@mention kamu di pesan atau hangout",
+    "mentionSub": "Saat seseorang me-@mention kamu di pesan atau nongkrong",
     "eventJoinLabel": "Seseorang gabung ke acaramu",
     "eventJoinSub": "Saat orang baru gabung ke acara yang akan kamu ikuti",
     "newEventLabel": "Acara baru di kotamu",
@@ -20,10 +20,10 @@
     "vibeSub": "Saat seseorang meninggalkan vibe di profilmu",
     "profileViewLabel": "Kunjungan profil 👀",
     "profileViewSub": "Saat seseorang melihat profilmu",
-    "topicReplyLabel": "Balasan hangout 💬",
-    "topicReplySub": "Saat seseorang membalas di hangout yang kamu ikuti",
-    "newTopicLabel": "Hangout baru di kotamu",
-    "newTopicSub": "Saat seseorang memulai hangout baru di kotamu",
+    "topicReplyLabel": "Balasan nongkrong 💬",
+    "topicReplySub": "Saat seseorang membalas di nongkrong yang kamu ikuti",
+    "newTopicLabel": "Nongkrong baru di kotamu",
+    "newTopicSub": "Saat seseorang memulai nongkrong baru di kotamu",
     "announceLabel": "Pengumuman dari Hilads",
     "announceSub": "Pembaruan sesekali dari tim"
   }

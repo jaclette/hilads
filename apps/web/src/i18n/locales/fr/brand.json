@@ -1,4 +1,10 @@
 {
+  "badge": {
+    "ghost": "👻 Ghost",
+    "fresh": "✨ Nouveau",
+    "regular": "😎 Habitué",
+    "host": "👑 Légende"
+  },
   "now": "now",
   "myCity": "my city",
   "here": "here",

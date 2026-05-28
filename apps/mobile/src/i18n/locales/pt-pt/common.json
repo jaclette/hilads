@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Partilha algo 👀",
+    "snap": "Tira uma foto",
+    "snapDesc": "Tira ou carrega uma foto",
+    "spot": "Marca o teu local",
+    "spotDesc": "Partilha a tua localização atual",
+    "spotLoading": "A obter a tua localização…"
+  },
+  "locationPicker": {
+    "title": "Onde estás? 👀",
+    "search": "Procurar uma morada ou local",
+    "moveHint": "Move o mapa para ajustar",
+    "noResults": "Nenhum local encontrado",
+    "loading": "A obter localização…",
+    "confirm": "Partilhar este local",
+    "yourLocation": "A tua localização",
+    "close": "Fechar",
+    "clearSearch": "Limpar pesquisa"
+  },
   "language": "Idioma",
   "cancel": "Cancelar",
   "loading": "A carregar…",
@@ -47,9 +66,9 @@
   },
   "badge": {
     "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "fresh": "✨ Novato",
+    "regular": "😎 Da malta",
+    "host": "👑 Lenda"
   },
   "vibe": {
     "party": "Festa",

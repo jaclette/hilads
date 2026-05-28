@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "何かをシェア 👀",
+    "snap": "写真を撮る",
+    "snapDesc": "写真を撮る、またはアップロード",
+    "spot": "スポットをシェア",
+    "spotDesc": "今いる場所をシェア",
+    "spotLoading": "現在地を取得しています…"
+  },
+  "locationPicker": {
+    "title": "今どこにいる？👀",
+    "search": "住所または場所を検索",
+    "moveHint": "地図を動かして調整",
+    "noResults": "場所が見つかりません",
+    "loading": "位置情報を取得中…",
+    "confirm": "この場所をシェア",
+    "yourLocation": "現在地",
+    "close": "閉じる",
+    "clearSearch": "検索をクリア"
+  },
   "language": "言語",
   "cancel": "キャンセル",
   "loading": "読み込み中…",
@@ -47,9 +66,9 @@
   },
   "badge": {
     "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "fresh": "✨ 新人",
+    "regular": "😎 常連",
+    "host": "👑 伝説"
   },
   "vibe": {
     "party": "パーティー",

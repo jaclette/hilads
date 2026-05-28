@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "hangout を始める",
-    "editTitle": "hangout を編集",
+    "startTitle": "集まりを始める",
+    "editTitle": "集まりを編集",
     "category": "カテゴリー",
     "cat": { "general": "一般", "tips": "豆知識", "food": "グルメ", "drinks": "お酒", "help": "ヘルプ", "meetup": "ミートアップ" },
     "titleLabel": "今どんな気分？",
@@ -13,25 +13,25 @@
     "saving": "保存中…",
     "starting": "開始中…",
     "saveChanges": "変更を保存",
-    "startCta": "hangout を始める ⚡",
+    "startCta": "集まりを始める ⚡",
     "limitHeader": "一度に1つ",
-    "limitTitle": "すでに hangout があります",
-    "limitSub": "hangout は一度に1つだけ実行できます。「{{title}}」へ移動するか、削除して新しいものを始めてください。",
-    "limitGo": "私の hangout へ →",
-    "yourHangout": "あなたの hangout"
+    "limitTitle": "すでに集まりがあります",
+    "limitSub": "集まりは一度に1つだけ実行できます。「{{title}}」へ移動するか、削除して新しいものを始めてください。",
+    "limitGo": "私の集まりへ →",
+    "yourHangout": "あなたの集まり"
   },
-  "deleteConfirm": "この hangout を削除しますか？全員にとって終了し、取り消せません。",
+  "deleteConfirm": "この集まりを削除しますか？全員にとって終了し、取り消せません。",
   "deleteFailedAlert": "削除できませんでした。再試行してください。",
-  "shareAria": "hangout をシェア",
-  "shareTitle": "この hangout をシェア",
+  "shareAria": "集まりをシェア",
+  "shareTitle": "この集まりをシェア",
   "members": {
     "oneIn": "{{name}} が参加中",
-    "countIn": "この hangout に{{count}}人",
+    "countIn": "この集まりに{{count}}人",
     "seeAll": "すべて見る →"
   },
   "owner": { "edit": "✏️ 編集", "delete": "🗑 削除" },
   "gated": {
-    "title": "メンバー限定の hangout",
+    "title": "メンバー限定の集まり",
     "pending": "リクエスト保留中 — メンバーが承認すると会話に参加できます。",
     "prompt": "会話を見てチャットするには参加をリクエストしてください。",
     "requestBtn": "参加をリクエスト"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "誰か",
     "wantsToJoin": " が参加したがっています",
-    "joined": " が hangout に参加しました",
+    "joined": " が集まりに参加しました",
     "askedToJoin": " が参加を希望しました",
     "decline": "拒否",
     "accept": "承認",

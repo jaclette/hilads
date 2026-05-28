@@ -27,10 +27,10 @@
     "drinks": "đồ uống", "party": "tiệc", "nightlife": "về đêm", "music": "âm nhạc",
     "live music": "nhạc sống", "culture": "văn hóa", "art": "nghệ thuật", "food": "đồ ăn",
     "coffee": "cà phê", "sport": "thể thao", "fitness": "thể hình", "hiking": "leo núi",
-    "beach": "biển", "wellness": "sức khỏe", "travel": "du lịch", "hangout": "hangout",
+    "beach": "biển", "wellness": "sức khỏe", "travel": "du lịch", "hangout": "tụ tập",
     "socializing": "giao lưu", "gaming": "chơi game", "tech": "công nghệ", "dating": "hẹn hò"
   },
-  "noHangouts": "Chưa có hangout — tạo một cái ⚡",
+  "noHangouts": "Chưa có tụ tập — tạo một cái ⚡",
   "host": "Chủ",
   "going": "THAM GIA",
   "noPlans": "Chưa có kế hoạch — tìm gì đó 🔥",

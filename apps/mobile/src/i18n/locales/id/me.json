@@ -27,10 +27,10 @@
     "drinks": "minuman", "party": "pesta", "nightlife": "kehidupan malam", "music": "musik",
     "live music": "musik live", "culture": "budaya", "art": "seni", "food": "makanan",
     "coffee": "kopi", "sport": "olahraga", "fitness": "kebugaran", "hiking": "hiking",
-    "beach": "pantai", "wellness": "kesehatan", "travel": "jalan-jalan", "hangout": "hangout",
+    "beach": "pantai", "wellness": "kesehatan", "travel": "jalan-jalan", "hangout": "nongkrong",
     "socializing": "bersosialisasi", "gaming": "gaming", "tech": "teknologi", "dating": "kencan"
   },
-  "noHangouts": "Belum ada hangouts — mulai satu ⚡",
+  "noHangouts": "Belum ada nongkrong — mulai satu ⚡",
   "host": "Host",
   "going": "IKUT",
   "noPlans": "Belum ada rencana — cari sesuatu 🔥",

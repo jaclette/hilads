@@ -30,12 +30,12 @@
   "from": "มาจาก",
   "age": "อายุ",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "เพื่อน",
+    "hangouts": "นัดเจอ", "events": "กิจกรรม", "friends": "เพื่อน",
     "vibes": "Vibes", "picks": "ที่แนะนำในเมือง 👑"
   },
   "host": "เจ้าภาพ",
   "live": "สด",
-  "empty": { "hangouts": "ยังไม่มี hangouts", "events": "ยังไม่มีกิจกรรม", "friends": "ยังไม่มีเพื่อน" },
+  "empty": { "hangouts": "ยังไม่มีนัดเจอ", "events": "ยังไม่มีกิจกรรม", "friends": "ยังไม่มีเพื่อน" },
   "vibesTab": {
     "score": "คะแนน vibe {{score}}",
     "basedOn_one": "อ้างอิงจาก {{count}} vibe",

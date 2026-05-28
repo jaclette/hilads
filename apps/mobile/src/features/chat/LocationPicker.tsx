@@ -21,6 +21,7 @@ import {
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 
 // ── Leaflet HTML — loaded in WebView ─────────────────────────────────────────
@@ -98,7 +99,8 @@ async function nominatimReverse(lat: number, lng: number): Promise<{ place: stri
 
   const parts = [addr.road, addr.quarter ?? addr.neighbourhood ?? addr.suburb, addr.city ?? addr.town].filter(Boolean) as string[];
   const address = parts.join(', ');
-  return { place: place || 'Your location', address };
+  // Empty place → the component shows a localized "Your location" fallback.
+  return { place, address };
 }
 
 // ── Forward geocode (address search) via Nominatim ───────────────────────────
@@ -170,6 +172,7 @@ interface Props {
 
 export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onClose }: Props) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation('common');
 
   const [place,     setPlace]     = useState('');
   const [address,   setAddress]   = useState('');
@@ -207,7 +210,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
       setPlace(result.place);
       setAddress(result.address);
     } catch {
-      setPlace('Your location');
+      setPlace('');
       setAddress('');
     } finally {
       setGeocoding(false);
@@ -300,7 +303,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
           <TouchableOpacity style={styles.closeBtn} onPress={onClose} activeOpacity={0.7}>
             <Ionicons name="close" size={20} color={Colors.text} />
           </TouchableOpacity>
-          <Text style={styles.title}>Where are you? 👀</Text>
+          <Text style={styles.title}>{t('locationPicker.title')}</Text>
           <View style={styles.closeBtn} />
         </View>
 
@@ -314,7 +317,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
           </View>
 
           <View style={styles.hintWrap} pointerEvents="none">
-            <Text style={styles.hint}>Move the map to adjust</Text>
+            <Text style={styles.hint}>{t('locationPicker.moveHint')}</Text>
           </View>
 
           {/* ── Address search overlay (top of map) ── */}
@@ -325,7 +328,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
                 style={styles.searchInput}
                 value={query}
                 onChangeText={onSearchChange}
-                placeholder="Search an address or place"
+                placeholder={t('locationPicker.search')}
                 placeholderTextColor={Colors.muted2}
                 returnKeyType="search"
                 autoCorrect={false}
@@ -360,7 +363,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
                     ))}
                   </ScrollView>
                 ) : (
-                  <Text style={styles.noResults}>No places found</Text>
+                  <Text style={styles.noResults}>{t('locationPicker.noResults')}</Text>
                 )}
               </View>
             )}
@@ -373,11 +376,11 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
             {geocoding ? (
               <View style={styles.geocodingRow}>
                 <ActivityIndicator size="small" color={Colors.accent} />
-                <Text style={styles.geocodingText}>Getting location…</Text>
+                <Text style={styles.geocodingText}>{t('locationPicker.loading')}</Text>
               </View>
             ) : (
               <>
-                <Text style={styles.placeName} numberOfLines={1}>{place}</Text>
+                <Text style={styles.placeName} numberOfLines={1}>{place || t('locationPicker.yourLocation')}</Text>
                 {!!address && <Text style={styles.addressText} numberOfLines={2}>{address}</Text>}
               </>
             )}
@@ -385,15 +388,15 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
           <TouchableOpacity
             style={[styles.confirmBtn, geocoding && styles.confirmBtnDisabled]}
-            onPress={() => onConfirm({ place: place || 'Your location', address, lat: currentCoords.current.lat, lng: currentCoords.current.lng })}
+            onPress={() => onConfirm({ place: place || t('locationPicker.yourLocation'), address, lat: currentCoords.current.lat, lng: currentCoords.current.lng })}
             disabled={geocoding}
             activeOpacity={0.85}
           >
-            <Text style={styles.confirmBtnText}>Share this spot</Text>
+            <Text style={styles.confirmBtnText}>{t('locationPicker.confirm')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.cancelBtn} onPress={onClose} activeOpacity={0.7}>
-            <Text style={styles.cancelBtnText}>Cancel</Text>
+            <Text style={styles.cancelBtnText}>{t('cancel')}</Text>
           </TouchableOpacity>
         </View>
 

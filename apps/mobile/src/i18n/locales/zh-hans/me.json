@@ -27,10 +27,10 @@
     "drinks": "喝酒", "party": "派对", "nightlife": "夜生活", "music": "音乐",
     "live music": "现场音乐", "culture": "文化", "art": "艺术", "food": "美食",
     "coffee": "咖啡", "sport": "运动", "fitness": "健身", "hiking": "徒步",
-    "beach": "海滩", "wellness": "养生", "travel": "旅行", "hangout": "hangout",
+    "beach": "海滩", "wellness": "养生", "travel": "旅行", "hangout": "聚会",
     "socializing": "社交", "gaming": "游戏", "tech": "科技", "dating": "约会"
   },
-  "noHangouts": "还没有 hangouts —— 发起一个 ⚡",
+  "noHangouts": "还没有聚会 —— 发起一个 ⚡",
   "host": "主办者",
   "going": "参加",
   "noPlans": "还没有计划 —— 找点事做 🔥",

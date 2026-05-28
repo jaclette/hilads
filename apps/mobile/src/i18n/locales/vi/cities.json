@@ -10,7 +10,7 @@
   "youreHere": "bạn đang ở đây",
   "online": "{{count}} trực tuyến",
   "events_other": "{{count}} sự kiện",
-  "hangout_other": "{{count}} hangout",
+  "hangout_other": "{{count}} tụ tập",
   "msgs": "{{count}} tin",
   "loadError": "Không thể tải thành phố",
   "noResults": "Không tìm thấy thành phố cho \"{{query}}\"",

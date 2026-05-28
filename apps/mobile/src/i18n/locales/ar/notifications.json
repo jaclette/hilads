@@ -7,7 +7,7 @@
   "prefTitle": "تفضيلات الإشعارات",
   "pref": {
     "mentionLabel": "الإشارات @",
-    "mentionSub": "عندما يشير إليك أحدهم بـ @ في رسالة أو hangout",
+    "mentionSub": "عندما يشير إليك أحدهم بـ @ في رسالة أو لقاء",
     "eventJoinLabel": "انضم أحدهم إلى فعاليتك",
     "eventJoinSub": "عندما ينضم شخص جديد إلى فعالية أنت ذاهب إليها",
     "newEventLabel": "فعاليات جديدة في مدينتك",
@@ -20,10 +20,10 @@
     "vibeSub": "عندما يترك أحدهم vibe على ملفك الشخصي",
     "profileViewLabel": "مشاهدات الملف الشخصي 👀",
     "profileViewSub": "عندما يطّلع أحدهم على ملفك الشخصي",
-    "topicReplyLabel": "ردود hangout 💬",
-    "topicReplySub": "عندما يرد أحدهم في hangout انضممت إليه",
-    "newTopicLabel": "hangouts جديدة في مدينتك",
-    "newTopicSub": "عندما يبدأ أحدهم hangout جديدًا في مدينتك",
+    "topicReplyLabel": "ردود اللقاء 💬",
+    "topicReplySub": "عندما يرد أحدهم في لقاء انضممت إليه",
+    "newTopicLabel": "لقاءات جديدة في مدينتك",
+    "newTopicSub": "عندما يبدأ أحدهم لقاءً جديدًا في مدينتك",
     "announceLabel": "إعلانات من Hilads",
     "announceSub": "تحديثات عرضية من الفريق"
   }

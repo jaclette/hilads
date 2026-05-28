@@ -13,14 +13,14 @@
       "sub": "アカウントを作成してプロフィールを解放し、人とつながって街の仲間を作りましょう。"
     },
     "join_hangout": {
-      "pageTitle": "hangoutに参加",
-      "title": "Ghostは見ることはできても、hangoutsには参加できません。",
-      "sub": "登録してhangoutsに参加し、名前を保存して、誰かが集まりたいときに通知を受け取りましょう。"
+      "pageTitle": "集まりに参加",
+      "title": "Ghostは見ることはできても、集まりには参加できません。",
+      "sub": "登録して集まりに参加し、名前を保存して、誰かが集まりたいときに通知を受け取りましょう。"
     },
     "create_hangout": {
-      "pageTitle": "hangoutを始める",
+      "pageTitle": "集まりを始める",
       "title": "Ghostは見ることはできても、ホストはできません。",
-      "sub": "登録してhangoutを始め、名前を保存して、みんなを呼び込みましょう。"
+      "sub": "登録して集まりを始め、名前を保存して、みんなを呼び込みましょう。"
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "チャットに参加中…",
   "tryAgain": "再試行",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "集まり",
+    "eventTag": "イベント",
     "public": "公開",
     "activeNow": "● アクティブ",
     "repliesNew": "まだ返信はありません — 最初の一人に",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}}人が参加",
     "going_other": "🙌 {{count}}人が参加",
     "hostedBy": "{{name}}が主催",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Hilads イベント",
+    "groupPublic": "公開イベント",
+    "groupPublicTicket": "🎫 公開イベント",
     "createEvent": "イベントを作成",
-    "startHangout": "hangoutを始める ⚡",
+    "startHangout": "集まりを始める ⚡",
     "openPlace": "あなたのお店を開く",
     "loadError": "イベントを読み込めませんでした",
     "loadErrorSub": "あとでもう一度試すか、{{city}}で何か新しいものを作りましょう。",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "{{city}}を盛り上げましょう。お気に入りの場所で定期イベントを始めましょう。",
     "emptySub": "{{city}}で最初に何かを起こしましょう",
     "noEvents": "今イベントはありません",
-    "noHangouts": "まだhangoutsはありません",
+    "noHangouts": "まだ集まりはありません",
     "noEventsSub": "{{city}}で最初の一つを作りましょう",
-    "noHangoutsSub": "hangoutを始めて街を盛り上げましょう",
+    "noHangoutsSub": "集まりを始めて街を盛り上げましょう",
     "filterAll": "すべて",
     "seeComing": "これからの予定を見る 🔮",
     "seeHappened": "これまでの出来事を見る",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "モード",
     "you": "（あなた）",
-    "hereNow": "Here now",
+    "hereNow": "今ここ",
     "noMatchLive": "今このフィルターに一致する人はいません。",
+    "legends": "Hilads 伝説",
     "legendsSub": "街を動かす人たち",
     "cityCrew": "街のクルー",
     "noMatchCrew": "このフィルターに一致するメンバーはいません。",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "何する？",
-    "hangoutTitle": "hangoutを始める",
+    "hangoutTitle": "集まりを始める",
     "hangoutSub": "すぐに — 今みんなに参加してもらおう",
     "eventTitle": "イベントを作成",
     "eventSub": "みんなが参加できる何かを計画しよう"
   },
   "goingModal": {
     "going": "参加",
-    "inThisHangout": "このhangoutに",
+    "inThisHangout": "この集まりに",
     "loading": "読み込み中…",
     "empty": "まだ誰もいません — 最初の一人になろう！ 🙌"
   },

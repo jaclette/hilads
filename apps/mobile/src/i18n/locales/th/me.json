@@ -27,10 +27,10 @@
     "drinks": "เครื่องดื่ม", "party": "ปาร์ตี้", "nightlife": "ชีวิตกลางคืน", "music": "เพลง",
     "live music": "ดนตรีสด", "culture": "วัฒนธรรม", "art": "ศิลปะ", "food": "อาหาร",
     "coffee": "กาแฟ", "sport": "กีฬา", "fitness": "ฟิตเนส", "hiking": "เดินป่า",
-    "beach": "ชายหาด", "wellness": "สุขภาพ", "travel": "ท่องเที่ยว", "hangout": "hangout",
+    "beach": "ชายหาด", "wellness": "สุขภาพ", "travel": "ท่องเที่ยว", "hangout": "นัดเจอ",
     "socializing": "เข้าสังคม", "gaming": "เล่นเกม", "tech": "เทคโนโลยี", "dating": "เดต"
   },
-  "noHangouts": "ยังไม่มี hangouts — เริ่มเลย ⚡",
+  "noHangouts": "ยังไม่มีนัดเจอ — เริ่มเลย ⚡",
   "host": "ผู้จัด",
   "going": "จะไป",
   "noPlans": "ยังไม่มีแผน — หาอะไรทำกัน 🔥",

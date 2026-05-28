@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "रुचियां",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "मुलाक़ात",
+    "events": "इवेंट",
     "friends": "दोस्त",
     "vibes": "Vibes"
   },
@@ -40,7 +40,7 @@
     "beach": "बीच",
     "wellness": "वेलनेस",
     "travel": "यात्रा",
-    "hangout": "hangout",
+    "hangout": "मुलाक़ात",
     "socializing": "मेल-जोल",
     "gaming": "गेमिंग",
     "tech": "टेक",
@@ -77,7 +77,7 @@
     "storyPlaceholder": "इस शहर की कोई बात जो आपको बहुत पसंद है"
   },
   "hangouts": {
-    "empty": "अभी कोई hangouts नहीं — एक शुरू करें ⚡",
+    "empty": "अभी कोई मुलाक़ात नहीं — एक शुरू करें ⚡",
     "host": "होस्ट"
   },
   "events": {

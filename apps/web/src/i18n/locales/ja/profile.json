@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "興味",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "集まり",
+    "events": "イベント",
     "friends": "友達",
     "vibes": "Vibes"
   },
@@ -40,7 +40,7 @@
     "beach": "ビーチ",
     "wellness": "ウェルネス",
     "travel": "旅行",
-    "hangout": "hangout",
+    "hangout": "集まり",
     "socializing": "交流",
     "gaming": "ゲーム",
     "tech": "テック",
@@ -77,7 +77,7 @@
     "storyPlaceholder": "この街で気に入っていること"
   },
   "hangouts": {
-    "empty": "まだ hangouts はありません — 始めてみよう ⚡",
+    "empty": "まだ集まりはありません — 始めてみよう ⚡",
     "host": "ホスト"
   },
   "events": {

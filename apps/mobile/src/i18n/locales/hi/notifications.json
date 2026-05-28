@@ -7,7 +7,7 @@
   "prefTitle": "नोटिफिकेशन प्रेफरेंस",
   "pref": {
     "mentionLabel": "मेंशन @",
-    "mentionSub": "जब कोई किसी मैसेज या hangout में आपको @mention करे",
+    "mentionSub": "जब कोई किसी मैसेज या मुलाक़ात में आपको @mention करे",
     "eventJoinLabel": "किसी ने आपके इवेंट में हिस्सा लिया",
     "eventJoinSub": "जब कोई नया व्यक्ति उस इवेंट में शामिल हो जिसमें आप जा रहे हैं",
     "newEventLabel": "आपके शहर में नए इवेंट",
@@ -20,10 +20,10 @@
     "vibeSub": "जब कोई आपकी प्रोफ़ाइल पर vibe छोड़े",
     "profileViewLabel": "प्रोफ़ाइल व्यूज़ 👀",
     "profileViewSub": "जब कोई आपकी प्रोफ़ाइल देखे",
-    "topicReplyLabel": "Hangout के जवाब 💬",
-    "topicReplySub": "जब कोई उस hangout में जवाब दे जिसमें आप शामिल हुए हैं",
-    "newTopicLabel": "आपके शहर में नए hangouts",
-    "newTopicSub": "जब कोई आपके शहर में नया hangout शुरू करे",
+    "topicReplyLabel": "मुलाक़ात के जवाब 💬",
+    "topicReplySub": "जब कोई उस मुलाक़ात में जवाब दे जिसमें आप शामिल हुए हैं",
+    "newTopicLabel": "आपके शहर में नई मुलाक़ात",
+    "newTopicSub": "जब कोई आपके शहर में नई मुलाक़ात शुरू करे",
     "announceLabel": "Hilads की ओर से घोषणाएं",
     "announceSub": "टीम की ओर से कभी-कभार अपडेट"
   }

@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "Minat",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "Nongkrong",
+    "events": "Acara",
     "friends": "Teman",
     "vibes": "Vibes"
   },
@@ -40,7 +40,7 @@
     "beach": "pantai",
     "wellness": "kesehatan",
     "travel": "jalan-jalan",
-    "hangout": "hangout",
+    "hangout": "nongkrong",
     "socializing": "bersosialisasi",
     "gaming": "gaming",
     "tech": "teknologi",
@@ -77,7 +77,7 @@
     "storyPlaceholder": "Sesuatu yang kamu sukai dari kota ini"
   },
   "hangouts": {
-    "empty": "Belum ada hangout — mulai satu ⚡",
+    "empty": "Belum ada nongkrong — mulai satu ⚡",
     "host": "Tuan rumah"
   },
   "events": {

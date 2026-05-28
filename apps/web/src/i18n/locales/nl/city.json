@@ -13,14 +13,14 @@
       "sub": "Maak een account om profielen te ontgrendelen, met mensen te connecten en je crew in de stad op te bouwen."
     },
     "join_hangout": {
-      "pageTitle": "Meedoen met een hangout",
-      "title": "Ghosts mogen rondkijken, maar niet meedoen met hangouts.",
-      "sub": "Meld je aan om mee te doen met hangouts, je naam te bewaren en bericht te krijgen wanneer mensen willen afspreken."
+      "pageTitle": "Meedoen met een meetup",
+      "title": "Ghosts mogen rondkijken, maar niet meedoen met meetups.",
+      "sub": "Meld je aan om mee te doen met meetups, je naam te bewaren en bericht te krijgen wanneer mensen willen afspreken."
     },
     "create_hangout": {
-      "pageTitle": "Een hangout starten",
+      "pageTitle": "Een meetup starten",
       "title": "Ghosts mogen rondkijken, maar niet hosten.",
-      "sub": "Meld je aan om een hangout te starten, je naam te bewaren en mensen te laten meedoen."
+      "sub": "Meld je aan om een meetup te starten, je naam te bewaren en mensen te laten meedoen."
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "Verbinden met de chat…",
   "tryAgain": "Opnieuw proberen",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "Meetup",
+    "eventTag": "Evenement",
     "public": "Openbaar",
     "activeNow": "● Nu actief",
     "repliesNew": "Nog geen reacties — wees de eerste",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} deelnemer",
     "going_other": "🙌 {{count}} deelnemers",
     "hostedBy": "Georganiseerd door {{name}}",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Hilads-evenementen",
+    "groupPublic": "Openbare evenementen",
+    "groupPublicTicket": "🎫 Openbare evenementen",
     "createEvent": "Evenement maken",
-    "startHangout": "Een hangout starten ⚡",
+    "startHangout": "Een meetup starten ⚡",
     "openPlace": "Open je plek",
     "loadError": "Kon de evenementen niet laden",
     "loadErrorSub": "Probeer het later opnieuw of maak iets nieuws in {{city}}.",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "Maak {{city}} levendig. Start een terugkerend evenement op je favoriete plek.",
     "emptySub": "Wees de eerste die iets op gang brengt in {{city}}",
     "noEvents": "Nu geen evenementen",
-    "noHangouts": "Nog geen hangouts",
+    "noHangouts": "Nog geen meetups",
     "noEventsSub": "Wees de eerste die er een maakt in {{city}}",
-    "noHangoutsSub": "Start een hangout en breng de stad aan het praten",
+    "noHangoutsSub": "Start een meetup en breng de stad aan het praten",
     "filterAll": "Alles",
     "seeComing": "Kijk wat eraan komt 🔮",
     "seeHappened": "kijk wat er gebeurd is",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "Modus",
     "you": "(jij)",
-    "hereNow": "Here now",
+    "hereNow": "Nu hier",
     "noMatchLive": "Niemand matcht deze filters op dit moment.",
+    "legends": "Hilads-legendes",
     "legendsSub": "Zij maken de stad",
     "cityCrew": "City crew",
     "noMatchCrew": "Geen leden matchen deze filters.",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "Wat gaan we doen?",
-    "hangoutTitle": "Een hangout starten",
+    "hangoutTitle": "Een meetup starten",
     "hangoutSub": "Direct — laat mensen nu meteen meedoen",
     "eventTitle": "Een evenement maken",
     "eventSub": "Plan iets waar anderen aan mee kunnen doen"
   },
   "goingModal": {
     "going": "doen mee",
-    "inThisHangout": "in deze hangout",
+    "inThisHangout": "in deze meetup",
     "loading": "Laden…",
     "empty": "Nog niemand — wees de eerste die meedoet! 🙌"
   },

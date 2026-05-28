@@ -1,6 +1,6 @@
 {
   "title": "これまでの出来事",
-  "filters": { "all": "すべて", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "すべて", "events": "🔥 イベント", "pulses": "🗣️ 集まり" },
   "range": { "recent": "最近", "last7": "過去7日間", "last14": "過去14日間", "custom": "カスタム" },
   "picker": {
     "pickEnd": "終了日を選んでください",
@@ -10,15 +10,15 @@
   "public": "公開",
   "went_one": "🙌 {{count}}人が参加しました",
   "went_other": "🙌 {{count}}人が参加しました",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "集まり",
   "replies_one": "💬 {{count}}件の返信",
   "replies_other": "💬 {{count}}件の返信",
   "noReplies": "返信なし",
   "error": "アーカイブを読み込めませんでした",
   "retry": "再試行",
   "emptyTitle": "まだ何もありません",
-  "emptyRecentSub": "街に履歴がたまると、過去のイベントやhangoutsがここに表示されます。",
-  "emptyWindowSub": "この期間にはイベントもhangoutもありません。もっと広い範囲を試してください。",
+  "emptyRecentSub": "街に履歴がたまると、過去のイベントや集まりがここに表示されます。",
+  "emptyWindowSub": "この期間にはイベントも集まりもありません。もっと広い範囲を試してください。",
   "loadMore": "もっと見る",
   "loading": "読み込み中…"
 }

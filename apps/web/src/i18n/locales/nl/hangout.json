@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Start een hangout",
-    "editTitle": "Hangout bewerken",
+    "startTitle": "Start een meetup",
+    "editTitle": "Meetup bewerken",
     "category": "Categorie",
     "cat": { "general": "Algemeen", "tips": "Tips", "food": "Eten", "drinks": "Borrelen", "help": "Hulp", "meetup": "Afspreken" },
     "titleLabel": "Wat houdt je bezig?",
@@ -13,25 +13,25 @@
     "saving": "Opslaan…",
     "starting": "Starten…",
     "saveChanges": "Wijzigingen opslaan",
-    "startCta": "Start een hangout ⚡",
+    "startCta": "Start een meetup ⚡",
     "limitHeader": "Eén tegelijk",
-    "limitTitle": "Je hebt al een hangout",
-    "limitSub": "Je kunt één hangout tegelijk hebben. Ga naar “{{title}}” of verwijder hem om een nieuwe te starten.",
-    "limitGo": "Ga naar mijn hangout →",
-    "yourHangout": "je hangout"
+    "limitTitle": "Je hebt al een meetup",
+    "limitSub": "Je kunt één meetup tegelijk hebben. Ga naar “{{title}}” of verwijder hem om een nieuwe te starten.",
+    "limitGo": "Ga naar mijn meetup →",
+    "yourHangout": "je meetup"
   },
-  "deleteConfirm": "Deze hangout verwijderen? Hiermee beëindig je hem voor iedereen en dit kan niet ongedaan worden gemaakt.",
+  "deleteConfirm": "Deze meetup verwijderen? Hiermee beëindig je hem voor iedereen en dit kan niet ongedaan worden gemaakt.",
   "deleteFailedAlert": "Verwijderen mislukt. Probeer opnieuw.",
-  "shareAria": "Hangout delen",
-  "shareTitle": "Deel deze hangout",
+  "shareAria": "Meetup delen",
+  "shareTitle": "Deel deze meetup",
   "members": {
     "oneIn": "{{name}} doet mee",
-    "countIn": "{{count}} in deze hangout",
+    "countIn": "{{count}} in deze meetup",
     "seeAll": "Alles bekijken →"
   },
   "owner": { "edit": "✏️ Bewerken", "delete": "🗑 Verwijderen" },
   "gated": {
-    "title": "Hangout alleen voor leden",
+    "title": "Meetup alleen voor leden",
     "pending": "Verzoek in behandeling — je kunt aan het gesprek meedoen zodra een lid akkoord gaat.",
     "prompt": "Vraag om mee te doen om het gesprek te zien en te chatten.",
     "requestBtn": "Vraag om mee te doen"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Iemand",
     "wantsToJoin": " wil meedoen",
-    "joined": " is bij de hangout gekomen",
+    "joined": " is bij de meetup gekomen",
     "askedToJoin": " heeft gevraagd om mee te doen",
     "decline": "Weigeren",
     "accept": "Accepteren",

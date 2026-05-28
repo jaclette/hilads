@@ -1,6 +1,6 @@
 {
   "title": "回顧",
-  "filters": { "all": "全部", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "全部", "events": "🔥 活動", "pulses": "🗣️ 聚會" },
   "range": { "recent": "最近", "last7": "過去 7 天", "last14": "過去 14 天", "custom": "自訂" },
   "picker": {
     "pickEnd": "接著選擇結束日",
@@ -10,15 +10,15 @@
   "public": "公開",
   "went_one": "🙌 {{count}} 人去過",
   "went_other": "🙌 {{count}} 人去過",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "聚會",
   "replies_one": "💬 {{count}} 則回覆",
   "replies_other": "💬 {{count}} 則回覆",
   "noReplies": "沒有回覆",
   "error": "無法載入回顧",
   "retry": "重試",
   "emptyTitle": "這裡還沒有任何內容",
-  "emptyRecentSub": "等城市累積一些紀錄後，過去的活動和 hangout 就會顯示在這裡。",
-  "emptyWindowSub": "這段期間沒有任何活動或 hangout。試試更寬的範圍。",
+  "emptyRecentSub": "等城市累積一些紀錄後，過去的活動和聚會就會顯示在這裡。",
+  "emptyWindowSub": "這段期間沒有任何活動或聚會。試試更寬的範圍。",
   "loadMore": "載入更多",
   "loading": "載入中…"
 }

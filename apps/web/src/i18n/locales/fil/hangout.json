@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Magsimula ng hangout",
-    "editTitle": "I-edit ang hangout",
+    "startTitle": "Magsimula ng tambayan",
+    "editTitle": "I-edit ang tambayan",
     "category": "Kategorya",
     "cat": { "general": "General", "tips": "Mga tip", "food": "Pagkain", "drinks": "Inumin", "help": "Tulong", "meetup": "Meetup" },
     "titleLabel": "Ano ang nasa isip mo?",
@@ -13,25 +13,25 @@
     "saving": "Sine-save…",
     "starting": "Sinisimulan…",
     "saveChanges": "I-save ang mga pagbabago",
-    "startCta": "Magsimula ng hangout ⚡",
+    "startCta": "Magsimula ng tambayan ⚡",
     "limitHeader": "Isa lang sa isang pagkakataon",
-    "limitTitle": "May hangout ka na",
-    "limitSub": "Isang hangout lang ang puwede mong patakbuhin sa isang pagkakataon. Pumunta sa “{{title}}”, o i-delete ito para magsimula ng bago.",
-    "limitGo": "Pumunta sa aking hangout →",
-    "yourHangout": "iyong hangout"
+    "limitTitle": "May tambayan ka na",
+    "limitSub": "Isang tambayan lang ang puwede mong patakbuhin sa isang pagkakataon. Pumunta sa “{{title}}”, o i-delete ito para magsimula ng bago.",
+    "limitGo": "Pumunta sa aking tambayan →",
+    "yourHangout": "iyong tambayan"
   },
-  "deleteConfirm": "I-delete ang hangout na ito? Tatapusin nito ito para sa lahat at hindi na maibabalik.",
+  "deleteConfirm": "I-delete ang tambayan na ito? Tatapusin nito ito para sa lahat at hindi na maibabalik.",
   "deleteFailedAlert": "Hindi na-delete. Subukan ulit.",
-  "shareAria": "Ibahagi ang hangout",
-  "shareTitle": "Ibahagi ang hangout na ito",
+  "shareAria": "Ibahagi ang tambayan",
+  "shareTitle": "Ibahagi ang tambayan na ito",
   "members": {
     "oneIn": "Sumali si {{name}}",
-    "countIn": "{{count}} sa hangout na ito",
+    "countIn": "{{count}} sa tambayan na ito",
     "seeAll": "Tingnan lahat →"
   },
   "owner": { "edit": "✏️ I-edit", "delete": "🗑 I-delete" },
   "gated": {
-    "title": "Members-only na hangout",
+    "title": "Members-only na tambayan",
     "pending": "Nakabinbin ang request — makakasali ka sa usapan kapag tinanggap ka ng isang member.",
     "prompt": "Mag-request para sumali upang makita ang usapan at makachat.",
     "requestBtn": "Mag-request para sumali"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "May isang tao",
     "wantsToJoin": " na gustong sumali",
-    "joined": " na sumali sa hangout",
+    "joined": " na sumali sa tambayan",
     "askedToJoin": " na humiling na sumali",
     "decline": "Tanggihan",
     "accept": "Tanggapin",

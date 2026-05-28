@@ -13,14 +13,14 @@
       "sub": "Cria uma conta para desbloqueares perfis, ligares-te a pessoas e formares o teu grupo na cidade."
     },
     "join_hangout": {
-      "pageTitle": "Juntar-se a um hangout",
-      "title": "Os fantasmas podem ver, mas não juntar-se a hangouts.",
-      "sub": "Regista-te para te juntares a hangouts, guardares o teu nome e receberes aviso quando alguém quiser encontrar-se."
+      "pageTitle": "Juntar-se a um convívio",
+      "title": "Os fantasmas podem ver, mas não juntar-se a convívios.",
+      "sub": "Regista-te para te juntares a convívios, guardares o teu nome e receberes aviso quando alguém quiser encontrar-se."
     },
     "create_hangout": {
-      "pageTitle": "Iniciar um hangout",
+      "pageTitle": "Iniciar um convívio",
       "title": "Os fantasmas podem ver, mas não organizar.",
-      "sub": "Regista-te para iniciares um hangout, guardares o teu nome e atraíres gente."
+      "sub": "Regista-te para iniciares um convívio, guardares o teu nome e atraíres gente."
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "A ligar-se ao chat…",
   "tryAgain": "Tentar novamente",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "Convívio",
+    "eventTag": "Evento",
     "public": "Público",
     "activeNow": "● Ativo agora",
     "repliesNew": "Ainda não há respostas — sê o primeiro",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} participante",
     "going_other": "🙌 {{count}} participantes",
     "hostedBy": "Organizado por {{name}}",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Eventos do Hilads",
+    "groupPublic": "Eventos públicos",
+    "groupPublicTicket": "🎫 Eventos públicos",
     "createEvent": "Cria um evento",
-    "startHangout": "Iniciar um hangout ⚡",
+    "startHangout": "Iniciar um convívio ⚡",
     "openPlace": "Abre o teu spot",
     "loadError": "Não foi possível carregar os eventos",
     "loadErrorSub": "Tenta mais tarde ou cria algo novo em {{city}}.",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "Faz {{city}} ganhar vida. Lança um evento recorrente no teu sítio favorito.",
     "emptySub": "Sê o primeiro a fazer acontecer algo em {{city}}",
     "noEvents": "Ainda não há eventos",
-    "noHangouts": "Ainda não há hangouts",
+    "noHangouts": "Ainda não há convívios",
     "noEventsSub": "Sê o primeiro a criar um em {{city}}",
-    "noHangoutsSub": "Lança um hangout e põe a cidade a falar",
+    "noHangoutsSub": "Lança um convívio e põe a cidade a falar",
     "filterAll": "Tudo",
     "seeComing": "Vê o que aí vem 🔮",
     "seeHappened": "vê o que aconteceu",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "Modo",
     "you": "(tu)",
-    "hereNow": "Here now",
+    "hereNow": "Aqui agora",
     "noMatchLive": "Ninguém corresponde a estes filtros agora.",
+    "legends": "Lendas do Hilads",
     "legendsSub": "Eles fazem a cidade acontecer",
     "cityCrew": "Os membros da cidade",
     "noMatchCrew": "Nenhum membro corresponde a estes filtros.",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "O que fazemos?",
-    "hangoutTitle": "Iniciar um hangout",
+    "hangoutTitle": "Iniciar um convívio",
     "hangoutSub": "Ao instante — deixa a gente juntar-se a ti agora",
     "eventTitle": "Criar um evento",
     "eventSub": "Organiza algo a que se possam juntar"
   },
   "goingModal": {
     "going": "vão",
-    "inThisHangout": "neste hangout",
+    "inThisHangout": "neste convívio",
     "loading": "A carregar…",
     "empty": "Ninguém ainda — sê o primeiro a juntar-te! 🙌"
   },

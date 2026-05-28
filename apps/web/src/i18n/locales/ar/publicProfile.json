@@ -30,12 +30,12 @@
   "from": "من",
   "age": "العمر",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "الأصدقاء",
+    "hangouts": "لقاءات", "events": "فعاليات", "friends": "الأصدقاء",
     "vibes": "Vibes", "picks": "اختيارات المدينة 👑"
   },
   "host": "المضيف",
   "live": "مباشر",
-  "empty": { "hangouts": "لا توجد جلسات hangout بعد", "events": "لا توجد فعاليات بعد", "friends": "لا يوجد أصدقاء بعد" },
+  "empty": { "hangouts": "لا توجد لقاءات بعد", "events": "لا توجد فعاليات بعد", "friends": "لا يوجد أصدقاء بعد" },
   "vibesTab": {
     "score": "درجة vibe تبلغ {{score}}",
     "basedOn_zero": "بناءً على {{count}} vibe",

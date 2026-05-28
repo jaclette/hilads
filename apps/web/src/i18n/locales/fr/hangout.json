@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Lancer un hangout",
-    "editTitle": "Modifier le hangout",
+    "startTitle": "Lancer une sortie",
+    "editTitle": "Modifier la sortie",
     "category": "Catégorie",
     "cat": { "general": "Général", "tips": "Astuces", "food": "Cuisine", "drinks": "Boissons", "help": "Aide", "meetup": "Rencontre" },
     "titleLabel": "Qu'est-ce qui te passe par la tête ?",
@@ -13,25 +13,25 @@
     "saving": "Enregistrement…",
     "starting": "Lancement…",
     "saveChanges": "Enregistrer",
-    "startCta": "Lancer un hangout ⚡",
-    "limitHeader": "Un à la fois",
-    "limitTitle": "Tu as déjà un hangout",
-    "limitSub": "Tu ne peux avoir qu'un hangout à la fois. Va sur « {{title}} », ou supprime-le pour en lancer un nouveau.",
-    "limitGo": "Aller à mon hangout →",
-    "yourHangout": "ton hangout"
+    "startCta": "Lancer une sortie ⚡",
+    "limitHeader": "Une à la fois",
+    "limitTitle": "Tu as déjà une sortie",
+    "limitSub": "Tu ne peux avoir qu'une sortie à la fois. Va sur « {{title}} », ou supprime-la pour en lancer une nouvelle.",
+    "limitGo": "Aller à ma sortie →",
+    "yourHangout": "ta sortie"
   },
-  "deleteConfirm": "Supprimer ce hangout ? Cela y met fin pour tout le monde et c'est irréversible.",
+  "deleteConfirm": "Supprimer cette sortie ? Cela y met fin pour tout le monde et c'est irréversible.",
   "deleteFailedAlert": "Impossible de supprimer. Réessaie.",
-  "shareAria": "Partager le hangout",
-  "shareTitle": "Partager ce hangout",
+  "shareAria": "Partager la sortie",
+  "shareTitle": "Partager cette sortie",
   "members": {
     "oneIn": "{{name}} est dans le coup",
-    "countIn": "{{count}} dans ce hangout",
+    "countIn": "{{count}} dans cette sortie",
     "seeAll": "Voir tout →"
   },
   "owner": { "edit": "✏️ Modifier", "delete": "🗑 Supprimer" },
   "gated": {
-    "title": "Hangout réservé aux membres",
+    "title": "Sortie réservée aux membres",
     "pending": "Demande en attente — tu pourras rejoindre la conversation dès qu'un membre accepte.",
     "prompt": "Demande à rejoindre pour voir la conversation et discuter.",
     "requestBtn": "Demander à rejoindre"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Quelqu'un",
     "wantsToJoin": " veut rejoindre",
-    "joined": " a rejoint le hangout",
+    "joined": " a rejoint la sortie",
     "askedToJoin": " a demandé à rejoindre",
     "decline": "Refuser",
     "accept": "Accepter",

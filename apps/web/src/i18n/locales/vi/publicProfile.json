@@ -30,12 +30,12 @@
   "from": "Đến từ",
   "age": "Tuổi",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "Bạn bè",
+    "hangouts": "Tụ tập", "events": "Sự kiện", "friends": "Bạn bè",
     "vibes": "Vibes", "picks": "Gợi ý 👑"
   },
   "host": "Chủ",
   "live": "TRỰC TIẾP",
-  "empty": { "hangouts": "Chưa có hangout", "events": "Chưa có sự kiện", "friends": "Chưa có bạn bè" },
+  "empty": { "hangouts": "Chưa có tụ tập", "events": "Chưa có sự kiện", "friends": "Chưa có bạn bè" },
   "vibesTab": {
     "score": "điểm vibe {{score}}",
     "basedOn_other": "dựa trên {{count}} vibe",

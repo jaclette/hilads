@@ -304,14 +304,17 @@ function NavIconEvents() {
 function NavIconCity() {
   return (
     <svg {...NAV_ICON_PROPS}>
-      {/* Globe outline */}
-      <circle cx="12" cy="12" r="9" />
-      {/* Longitude ellipse */}
-      <ellipse cx="12" cy="12" rx="3.5" ry="9" />
-      {/* Equator */}
-      <line x1="3" y1="12" x2="21" y2="12" />
-      {/* Active location dot */}
-      <circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" />
+      {/* Building body */}
+      <path d="M6 21V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v16" />
+      {/* Ground line */}
+      <line x1="4" y1="21" x2="20" y2="21" />
+      {/* Door */}
+      <path d="M10.5 21v-3a1.5 1.5 0 0 1 3 0v3" />
+      {/* Windows — two rows of two */}
+      <line x1="9"    y1="8"  x2="10.5" y2="8" />
+      <line x1="13.5" y1="8"  x2="15"   y2="8" />
+      <line x1="9"    y1="12" x2="10.5" y2="12" />
+      <line x1="13.5" y1="12" x2="15"   y2="12" />
     </svg>
   )
 }
@@ -4227,7 +4230,6 @@ export default function App() {
               <NavIconEvents />
               {nowTabDot && <span className="bottom-nav-now-dot" aria-hidden="true" />}
             </span>
-            <span className="bottom-nav-label">Now</span>
           </button>
           <button
             type="button"
@@ -4240,7 +4242,6 @@ export default function App() {
             aria-label="My city"
           >
             <span className="bottom-nav-icon"><NavIconCity /></span>
-            <span className="bottom-nav-label">My city</span>
           </button>
           <button
             type="button"
@@ -4249,7 +4250,6 @@ export default function App() {
             aria-label="People here"
           >
             <span className="bottom-nav-icon"><NavIconPeople /></span>
-            <span className="bottom-nav-label">Here</span>
           </button>
           <button
             type="button"
@@ -4258,7 +4258,6 @@ export default function App() {
             aria-label="Profile"
           >
             <span className="bottom-nav-icon"><NavIconProfile /></span>
-            <span className="bottom-nav-label">Me</span>
           </button>
         </nav>
       </div>
@@ -4861,7 +4860,7 @@ export default function App() {
               {legends.length > 0 && (
                 <>
                   <div className="here-section-header here-section-header--legends" style={{ marginTop: 20 }}>
-                    👑 Hilads Legends
+                    👑 {t('here.legends')}
                     <span className="here-legends-hook">{t('here.legendsSub')}</span>
                   </div>
                   {legends.map(m => {

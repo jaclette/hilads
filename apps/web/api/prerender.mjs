@@ -556,35 +556,6 @@ function composeVenueMeta(payload, canonicalPath, venueId, locale = 'en') {
   }
 }
 
-// Pick the timeframe phrase for a city based on its local hour + day of week.
-// Weekend windows (Fri 18+, Sat <18, Sun <18) override the time-of-day rule.
-// Sun 18+ pivots to "This week" (looking ahead to Monday onward).
-// Falls back to "Today" if the timezone is malformed.
-function cityTimeframe(timezone, locale = 'en') {
-  try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: timezone || 'UTC',
-      hour:     'numeric',
-      hour12:   false,
-      weekday:  'short',
-    }).formatToParts(new Date())
-    const hour = parseInt(parts.find(p => p.type === 'hour').value, 10)
-    const day  = parts.find(p => p.type === 'weekday').value  // 'Mon'..'Sun'
-
-    if (day === 'Fri' && hour >= 18) return T(locale, 'timeframe.thisWeekend')
-    if (day === 'Sat' && hour <  18) return T(locale, 'timeframe.thisWeekend')
-    if (day === 'Sun' && hour <  18) return T(locale, 'timeframe.thisWeekend')
-    if (day === 'Sun' && hour >= 18) return T(locale, 'timeframe.thisWeek')
-
-    if (hour >= 2  && hour <= 4 ) return T(locale, 'timeframe.tomorrow')
-    if (hour >= 5  && hour <= 11) return T(locale, 'timeframe.today')
-    if (hour >= 12 && hour <= 17) return T(locale, 'timeframe.afternoonTonight')
-    return T(locale, 'timeframe.tonight')  // 18-23 or 0-1
-  } catch {
-    return T(locale, 'timeframe.today')
-  }
-}
-
 // City meta tags. The title and description are intent-matched to "what's
 // happening in X" queries (events + meetups), not the vague "see who's
 // around" copy we used to ship. Three description tiers based on actual
@@ -595,7 +566,7 @@ function cityTimeframe(timezone, locale = 'en') {
 function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0, messageCount = 0, locale = 'en') {
   if (!payload?.city) return null
   const city      = payload.city
-  const timeframe = cityTimeframe(payload.timezone, locale)
+  const timeframe = T(locale, 'timeframe.today')
   const title     = T(locale, 'city.title', { timeframe, city })
 
   let description
@@ -1105,7 +1076,7 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en') {
 
   const citySlug = cityToSlug(city)
   const categoriesSection = categoryLinksHtml(city, citySlug, events, venueList, locale)
-  const timeframe = cityTimeframe(payload.timezone, locale)
+  const timeframe = T(locale, 'timeframe.today')
 
   return [
     `<style>${SSR_CITY_STYLES}</style>`,

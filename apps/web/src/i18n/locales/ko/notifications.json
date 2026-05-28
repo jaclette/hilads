@@ -7,7 +7,7 @@
   "prefs": {
     "title": "알림 설정",
     "mentionName": "멘션 @",
-    "mentionDesc": "누군가 메시지나 hangout에서 나를 @멘션할 때",
+    "mentionDesc": "누군가 메시지나 모임에서 나를 @멘션할 때",
     "newEventName": "내 도시의 새 이벤트",
     "newEventDesc": "누군가 내 도시에 이벤트를 만들 때",
     "friendName": "친구 요청",

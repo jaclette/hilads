@@ -1,6 +1,6 @@
 {
   "title": "Ano ang nangyari",
-  "filters": { "all": "Lahat", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "Lahat", "events": "🔥 Events", "pulses": "🗣️ Tambayan" },
   "range": { "recent": "Kamakailan", "last7": "Huling 7 araw", "last14": "Huling 14 araw", "custom": "Custom" },
   "picker": {
     "pickEnd": "Ngayon piliin ang huling araw",
@@ -10,15 +10,15 @@
   "public": "Public",
   "went_one": "🙌 {{count}} sumama",
   "went_other": "🙌 {{count}} sumama",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "Tambayan",
   "replies_one": "💬 {{count}} tugon",
   "replies_other": "💬 {{count}} tugon",
   "noReplies": "Walang tugon",
   "error": "Hindi ma-load ang archive",
   "retry": "Subukan ulit",
   "emptyTitle": "Wala pa rito",
-  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at hangout kapag may history na ang lungsod.",
-  "emptyWindowSub": "Walang event o hangout sa panahong ito. Subukan ang mas malawak na range.",
+  "emptyRecentSub": "Lalabas dito ang mga nakaraang event at tambayan kapag may history na ang lungsod.",
+  "emptyWindowSub": "Walang event o tambayan sa panahong ito. Subukan ang mas malawak na range.",
   "loadMore": "Mag-load pa",
   "loading": "Naglo-load…"
 }

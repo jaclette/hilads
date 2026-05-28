@@ -46,6 +46,8 @@ interface MarqueeTextProps {
   active?:        boolean;
   /** OS reduce-motion: when true, never animate (static + ellipsis). */
   reduceMotion?:  boolean;
+  /** Center the text when it fits (static). The marquee still starts at the left. */
+  center?:        boolean;
 }
 
 const EPSILON = 1;
@@ -61,6 +63,7 @@ export function MarqueeText({
   fadeWidth = 14,
   active = true,
   reduceMotion = false,
+  center = false,
 }: MarqueeTextProps) {
   const translateX = useRef(new Animated.Value(0)).current;
   const [containerW, setContainerW] = useState(0);
@@ -145,7 +148,13 @@ export function MarqueeText({
           />
         </>
       ) : (
-        <Text style={textStyle} numberOfLines={1} ellipsizeMode="tail">{text}</Text>
+        <Text
+          style={[textStyle, center && styles.staticCenter]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {text}
+        </Text>
       )}
     </View>
   );
@@ -164,6 +173,8 @@ const styles = StyleSheet.create({
   // Marquee copies must keep natural width even if textStyle sets flexShrink.
   noShrink:  { flexShrink: 0, flexGrow: 0 },
   measure:   { position: 'absolute', left: 0, top: 0, opacity: 0 },
+  // Static (non-overflowing) text fills the clip window so textAlign can center it.
+  staticCenter: { flex: 1, textAlign: 'center' },
   fade:      { position: 'absolute', top: 0, bottom: 0 },
   fadeLeft:  { left: 0 },
   fadeRight: { right: 0 },

@@ -139,7 +139,7 @@ export function useAppBoot(): Result {
   const {
     setIdentity, setSessionId, setAccount,
     setCity, setBooting, setBootError, setWsConnected,
-    setUnreadDMs, setUnreadNotifications,
+    setUnreadNotifications,
     setGeoState, setDetectedCity, setJoined, setBootstrapData,
     setBlockedSet,
   } = useApp();
@@ -411,7 +411,10 @@ export function useAppBoot(): Result {
                         unreadNotifications: boot.unreadNotifications,
                       });
                       if (boot.unreadNotifications !== null) setUnreadNotifications(boot.unreadNotifications);
-                      if (boot.hasUnreadDMs !== null) setUnreadDMs(boot.hasUnreadDMs ? 1 : 0);
+                      // Don't seed the message badge here: boot.hasUnreadDMs is the
+                      // combined DM-OR-event-chat flag (server hasAnyUnread), so a
+                      // joined-but-unopened event chat would falsely light the DM badge.
+                      // useGlobalDmNotifications.joinAll() sets the accurate DM-only count.
                     }
                   })
                   .catch(() => {});

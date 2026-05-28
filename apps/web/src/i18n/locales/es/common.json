@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Comparte algo 👀",
+    "snap": "Haz una foto",
+    "snapDesc": "Haz o sube una foto",
+    "spot": "Comparte tu sitio",
+    "spotDesc": "Comparte tu ubicación actual",
+    "spotLoading": "Obteniendo tu ubicación…"
+  },
+  "locationPicker": {
+    "title": "¿Dónde estás? 👀",
+    "search": "Busca una dirección o un lugar",
+    "moveHint": "Mueve el mapa para ajustar",
+    "noResults": "No se encontraron lugares",
+    "loading": "Obteniendo ubicación…",
+    "confirm": "Compartir este sitio",
+    "yourLocation": "Tu ubicación",
+    "close": "Cerrar",
+    "clearSearch": "Borrar búsqueda"
+  },
   "language": "Idioma",
   "cancel": "Cancelar",
   "loading": "Cargando…",

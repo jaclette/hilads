@@ -10,6 +10,6 @@
   "pickStart": "Wähle einen Start-Tag (bis zu {{max}} Tage)",
   "apply": "Anwenden",
   "emptyTitle": "Hier ist noch nichts",
-  "emptyRecentSub": "Vergangene Events und Hangouts erscheinen hier, sobald die Stadt etwas Verlauf hat.",
-  "emptyWindowSub": "Keine Events oder Hangouts in diesem Zeitraum. Versuche einen größeren Bereich."
+  "emptyRecentSub": "Vergangene Events und Treffen erscheinen hier, sobald die Stadt etwas Verlauf hat.",
+  "emptyWindowSub": "Keine Events oder Treffen in diesem Zeitraum. Versuche einen größeren Bereich."
 }

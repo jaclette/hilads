@@ -7,7 +7,7 @@
   "prefTitle": "알림 환경설정",
   "pref": {
     "mentionLabel": "멘션 @",
-    "mentionSub": "누군가 메시지나 hangout에서 나를 @멘션할 때",
+    "mentionSub": "누군가 메시지나 모임에서 나를 @멘션할 때",
     "eventJoinLabel": "누군가 내 이벤트에 참여",
     "eventJoinSub": "내가 가는 이벤트에 새로운 사람이 참여할 때",
     "newEventLabel": "내 도시의 새 이벤트",
@@ -20,10 +20,10 @@
     "vibeSub": "누군가 내 프로필에 vibe를 남길 때",
     "profileViewLabel": "프로필 조회 👀",
     "profileViewSub": "누군가 내 프로필을 볼 때",
-    "topicReplyLabel": "Hangout 답글 💬",
-    "topicReplySub": "내가 참여한 hangout에 누군가 답글을 남길 때",
-    "newTopicLabel": "내 도시의 새 hangouts",
-    "newTopicSub": "누군가 내 도시에서 새 hangout을 시작할 때",
+    "topicReplyLabel": "모임 답글 💬",
+    "topicReplySub": "내가 참여한 모임에 누군가 답글을 남길 때",
+    "newTopicLabel": "내 도시의 새 모임",
+    "newTopicSub": "누군가 내 도시에서 새 모임을 시작할 때",
     "announceLabel": "Hilads 공지",
     "announceSub": "팀의 가끔 전하는 소식"
   }

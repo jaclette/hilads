@@ -30,12 +30,12 @@
   "from": "出身",
   "age": "年齢",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "友達",
+    "hangouts": "集まり", "events": "イベント", "friends": "友達",
     "vibes": "Vibes", "picks": "街のおすすめ 👑"
   },
   "host": "ホスト",
   "live": "ライブ",
-  "empty": { "hangouts": "まだhangoutsはありません", "events": "まだイベントはありません", "friends": "まだ友達はいません" },
+  "empty": { "hangouts": "まだ集まりはありません", "events": "まだイベントはありません", "friends": "まだ友達はいません" },
   "vibesTab": {
     "score": "vibeスコア {{score}}",
     "basedOn_one": "{{count}}件のvibeに基づく",

@@ -1,6 +1,6 @@
 {
   "title": "ما الذي حدث",
-  "filters": { "all": "الكل", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "الكل", "events": "🔥 فعاليات", "pulses": "🗣️ لقاءات" },
   "range": { "recent": "الأحدث", "last7": "آخر 7 أيام", "last14": "آخر 14 يومًا", "custom": "مخصّص" },
   "picker": {
     "pickEnd": "الآن اختر يوم النهاية",
@@ -14,7 +14,7 @@
   "went_few": "🙌 حضر {{count}} أشخاص",
   "went_many": "🙌 حضر {{count}} شخصًا",
   "went_other": "🙌 حضر {{count}} شخص",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "لقاء",
   "replies_zero": "💬 لا توجد ردود",
   "replies_one": "💬 رد واحد",
   "replies_two": "💬 ردّان",
@@ -25,8 +25,8 @@
   "error": "تعذّر تحميل الأرشيف",
   "retry": "إعادة المحاولة",
   "emptyTitle": "لا شيء هنا بعد",
-  "emptyRecentSub": "ستظهر الفعاليات وجلسات الـhangout السابقة هنا بمجرد أن يصبح للمدينة بعض السجل.",
-  "emptyWindowSub": "لا توجد فعاليات أو جلسات hangout في هذه الفترة. جرّب نطاقًا أوسع.",
+  "emptyRecentSub": "ستظهر الفعاليات واللقاءات السابقة هنا بمجرد أن يصبح للمدينة بعض السجل.",
+  "emptyWindowSub": "لا توجد فعاليات أو لقاءات في هذه الفترة. جرّب نطاقًا أوسع.",
   "loadMore": "تحميل المزيد",
   "loading": "جارٍ التحميل…"
 }

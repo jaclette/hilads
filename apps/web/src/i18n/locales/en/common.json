@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Share something 👀",
+    "snap": "Snap a photo",
+    "snapDesc": "Take or upload a photo",
+    "spot": "Drop your spot",
+    "spotDesc": "Share your current spot",
+    "spotLoading": "Getting your location…"
+  },
+  "locationPicker": {
+    "title": "Where are you? 👀",
+    "search": "Search an address or place",
+    "moveHint": "Move the map to adjust",
+    "noResults": "No places found",
+    "loading": "Getting location…",
+    "confirm": "Share this spot",
+    "yourLocation": "Your location",
+    "close": "Close",
+    "clearSearch": "Clear search"
+  },
   "language": "Language",
   "cancel": "Cancel",
   "loading": "Loading…",

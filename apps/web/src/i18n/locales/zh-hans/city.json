@@ -13,14 +13,14 @@
       "sub": "创建账户来解锁个人资料、结识他人，组建你的城市 crew。"
     },
     "join_hangout": {
-      "pageTitle": "加入 hangout",
-      "title": "Ghost 可以浏览，但不能加入 hangout。",
-      "sub": "注册来加入 hangout、保存你的名字，并在有人想见面时收到通知。"
+      "pageTitle": "加入聚会",
+      "title": "Ghost 可以浏览，但不能加入聚会。",
+      "sub": "注册来加入聚会、保存你的名字，并在有人想见面时收到通知。"
     },
     "create_hangout": {
-      "pageTitle": "发起 hangout",
+      "pageTitle": "发起聚会",
       "title": "Ghost 可以浏览，但不能主持。",
-      "sub": "注册来发起 hangout、保存你的名字，吸引别人加入你。"
+      "sub": "注册来发起聚会、保存你的名字，吸引别人加入你。"
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "正在加入聊天…",
   "tryAgain": "重试",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "聚会",
+    "eventTag": "活动",
     "public": "公开",
     "activeNow": "● 当前活跃",
     "repliesNew": "还没有回复 — 来做第一个",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} 人参加",
     "going_other": "🙌 {{count}} 人参加",
     "hostedBy": "由 {{name}} 主持",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Hilads 活动",
+    "groupPublic": "公开活动",
+    "groupPublicTicket": "🎫 公开活动",
     "createEvent": "创建活动",
-    "startHangout": "发起 hangout ⚡",
+    "startHangout": "发起聚会 ⚡",
     "openPlace": "开放你的场地",
     "loadError": "无法加载活动",
     "loadErrorSub": "稍后下拉重试，或在{{city}}创建点新东西。",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "让{{city}}活起来。在你最爱的地方发起一个定期活动。",
     "emptySub": "来做{{city}}里第一个让事情发生的人",
     "noEvents": "现在没有活动",
-    "noHangouts": "还没有 hangouts",
+    "noHangouts": "还没有聚会",
     "noEventsSub": "来做{{city}}里第一个创建活动的人",
-    "noHangoutsSub": "发起一个 hangout，让全城聊起来",
+    "noHangoutsSub": "发起一个聚会，让全城聊起来",
     "filterAll": "全部",
     "seeComing": "看看即将发生什么 🔮",
     "seeHappened": "看看发生过什么",
@@ -94,6 +94,7 @@
     "you": "(你)",
     "hereNow": "此刻在这里",
     "noMatchLive": "目前没有人符合这些筛选条件。",
+    "legends": "Hilads 传奇",
     "legendsSub": "他们让城市动起来",
     "cityCrew": "城市成员",
     "noMatchCrew": "没有成员符合这些筛选条件。",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "想做点什么？",
-    "hangoutTitle": "发起 hangout",
+    "hangoutTitle": "发起聚会",
     "hangoutSub": "即刻开始 — 让大家现在就加入你",
     "eventTitle": "创建活动",
     "eventSub": "策划一件别人可以加入的事"
   },
   "goingModal": {
     "going": "人参加",
-    "inThisHangout": "在这个 hangout 里",
+    "inThisHangout": "在这个聚会里",
     "loading": "加载中…",
     "empty": "还没有人 — 来做第一个加入的人吧！🙌"
   },

@@ -1,6 +1,6 @@
 {
   "title": "Apa yang terjadi",
-  "filters": { "all": "Semua", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "Semua", "events": "🔥 Acara", "pulses": "🗣️ Nongkrong" },
   "range": { "recent": "Terbaru", "last7": "7 hari terakhir", "last14": "14 hari terakhir", "custom": "Khusus" },
   "picker": {
     "pickEnd": "Sekarang pilih hari akhir",
@@ -10,15 +10,15 @@
   "public": "Publik",
   "went_one": "🙌 {{count}} datang",
   "went_other": "🙌 {{count}} datang",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "Nongkrong",
   "replies_one": "💬 {{count}} balasan",
   "replies_other": "💬 {{count}} balasan",
   "noReplies": "Tidak ada balasan",
   "error": "Tidak bisa memuat arsip",
   "retry": "Coba lagi",
   "emptyTitle": "Belum ada apa-apa di sini",
-  "emptyRecentSub": "Acara dan hangout yang sudah lewat akan muncul di sini setelah kota punya sedikit riwayat.",
-  "emptyWindowSub": "Tidak ada acara atau hangout dalam rentang ini. Coba rentang yang lebih luas.",
+  "emptyRecentSub": "Acara dan nongkrong yang sudah lewat akan muncul di sini setelah kota punya sedikit riwayat.",
+  "emptyWindowSub": "Tidak ada acara atau nongkrong dalam rentang ini. Coba rentang yang lebih luas.",
   "loadMore": "Muat lebih banyak",
   "loading": "Memuat…"
 }

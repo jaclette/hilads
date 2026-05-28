@@ -30,12 +30,12 @@
   "from": "Из",
   "age": "Возраст",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "Друзья",
+    "hangouts": "Тусовки", "events": "События", "friends": "Друзья",
     "vibes": "Vibes", "picks": "Рекомендации 👑"
   },
   "host": "Организатор",
   "live": "В ЭФИРЕ",
-  "empty": { "hangouts": "Пока нет hangouts", "events": "Пока нет событий", "friends": "Пока нет друзей" },
+  "empty": { "hangouts": "Пока нет тусовок", "events": "Пока нет событий", "friends": "Пока нет друзей" },
   "vibesTab": {
     "score": "vibe-рейтинг {{score}}",
     "basedOn_one": "на основе {{count}} vibe",

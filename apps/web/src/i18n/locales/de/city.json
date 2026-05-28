@@ -13,14 +13,14 @@
       "sub": "Erstelle ein Konto, um Profile freizuschalten, Leute zu treffen und deine Stadt-Crew aufzubauen."
     },
     "join_hangout": {
-      "pageTitle": "Bei einem Hangout mitmachen",
-      "title": "Ghosts dürfen stöbern, aber nicht bei Hangouts mitmachen.",
-      "sub": "Registriere dich, um bei Hangouts mitzumachen, deinen Namen zu sichern und Bescheid zu bekommen, wenn Leute sich treffen wollen."
+      "pageTitle": "Bei einem Treffen mitmachen",
+      "title": "Ghosts dürfen stöbern, aber nicht bei Treffen mitmachen.",
+      "sub": "Registriere dich, um bei Treffen mitzumachen, deinen Namen zu sichern und Bescheid zu bekommen, wenn Leute sich treffen wollen."
     },
     "create_hangout": {
-      "pageTitle": "Hangout starten",
+      "pageTitle": "Treffen starten",
       "title": "Ghosts dürfen stöbern, aber nicht hosten.",
-      "sub": "Registriere dich, um ein Hangout zu starten, deinen Namen zu sichern und Leute dazuzuholen."
+      "sub": "Registriere dich, um ein Treffen zu starten, deinen Namen zu sichern und Leute dazuzuholen."
     }
   },
   "welcome": {
@@ -43,7 +43,7 @@
   "joiningDefault": "Verbinde mit dem Chat…",
   "tryAgain": "Erneut versuchen",
   "feed": {
-    "hangoutTag": "Hangout",
+    "hangoutTag": "Treffen",
     "eventTag": "Event",
     "public": "Öffentlich",
     "activeNow": "● Jetzt aktiv",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} dabei",
     "going_other": "🙌 {{count}} dabei",
     "hostedBy": "Veranstaltet von {{name}}",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Hilads-Events",
+    "groupPublic": "Öffentliche Events",
+    "groupPublicTicket": "🎫 Öffentliche Events",
     "createEvent": "Event erstellen",
-    "startHangout": "Hangout starten ⚡",
+    "startHangout": "Treffen starten ⚡",
     "openPlace": "Öffne deinen Ort",
     "loadError": "Events konnten nicht geladen werden",
     "loadErrorSub": "Zieh zum erneuten Versuch oder erstelle etwas Neues in {{city}}.",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "Lass {{city}} lebendig werden. Starte ein wiederkehrendes Event an deinem Lieblingsort.",
     "emptySub": "Sei der Erste, der in {{city}} etwas auf die Beine stellt",
     "noEvents": "Gerade keine Events",
-    "noHangouts": "Noch keine Hangouts",
+    "noHangouts": "Noch keine Treffen",
     "noEventsSub": "Sei der Erste, der eins in {{city}} erstellt",
-    "noHangoutsSub": "Starte ein Hangout und bring die Stadt zum Reden",
+    "noHangoutsSub": "Starte ein Treffen und bring die Stadt zum Reden",
     "filterAll": "Alle",
     "seeComing": "Sieh, was kommt 🔮",
     "seeHappened": "sieh, was passiert ist",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "Modus",
     "you": "(du)",
-    "hereNow": "Here now",
+    "hereNow": "Jetzt hier",
     "noMatchLive": "Niemand passt gerade auf diese Filter.",
+    "legends": "Hilads-Legenden",
     "legendsSub": "Sie bringen die Stadt zum Leben",
     "cityCrew": "Stadt-Crew",
     "noMatchCrew": "Kein Mitglied passt auf diese Filter.",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "Was geht?",
-    "hangoutTitle": "Hangout starten",
+    "hangoutTitle": "Treffen starten",
     "hangoutSub": "Sofort — lass Leute jetzt gleich dazukommen",
     "eventTitle": "Event erstellen",
     "eventSub": "Plane etwas, bei dem andere mitmachen können"
   },
   "goingModal": {
     "going": "dabei",
-    "inThisHangout": "in diesem Hangout",
+    "inThisHangout": "in diesem Treffen",
     "loading": "Wird geladen…",
     "empty": "Noch niemand — sei der Erste, der mitmacht! 🙌"
   },

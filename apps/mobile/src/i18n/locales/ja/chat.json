@@ -31,7 +31,7 @@
   "left": "{{name}}が退出しました",
   "joinReq": {
     "wantsToJoin": " が参加したがっています",
-    "joinedHangout": " がhangoutに参加しました",
+    "joinedHangout": " が集まりに参加しました",
     "askedToJoin": " が参加をリクエストしました",
     "decline": "辞退",
     "accept": "承認",

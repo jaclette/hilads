@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Magbahagi ng kahit ano 👀",
+    "snap": "Kumuha ng litrato",
+    "snapDesc": "Kumuha o mag-upload ng litrato",
+    "spot": "I-drop ang iyong lugar",
+    "spotDesc": "Ibahagi ang iyong kasalukuyang lugar",
+    "spotLoading": "Kinukuha ang iyong lokasyon…"
+  },
+  "locationPicker": {
+    "title": "Nasaan ka? 👀",
+    "search": "Maghanap ng address o lugar",
+    "moveHint": "Igalaw ang mapa para i-adjust",
+    "noResults": "Walang nahanap na lugar",
+    "loading": "Kinukuha ang lokasyon…",
+    "confirm": "Ibahagi ang lugar na ito",
+    "yourLocation": "Ang iyong lokasyon",
+    "close": "Isara",
+    "clearSearch": "I-clear ang paghahanap"
+  },
   "language": "Wika",
   "cancel": "Kanselahin",
   "loading": "Naglo-load…",

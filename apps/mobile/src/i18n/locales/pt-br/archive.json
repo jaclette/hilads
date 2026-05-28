@@ -10,6 +10,6 @@
   "pickStart": "Escolha um dia inicial (até {{max}} dias)",
   "apply": "Aplicar",
   "emptyTitle": "Ainda não há nada aqui",
-  "emptyRecentSub": "Eventos e hangouts passados aparecerão aqui quando a cidade tiver algum histórico.",
-  "emptyWindowSub": "Nenhum evento ou hangout neste período. Tente um intervalo maior."
+  "emptyRecentSub": "Eventos e rolês passados aparecerão aqui quando a cidade tiver algum histórico.",
+  "emptyWindowSub": "Nenhum evento ou rolê neste período. Tente um intervalo maior."
 }

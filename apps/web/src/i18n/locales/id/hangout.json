@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Mulai hangout",
-    "editTitle": "Edit hangout",
+    "startTitle": "Mulai nongkrong",
+    "editTitle": "Edit nongkrong",
     "category": "Kategori",
     "cat": { "general": "Umum", "tips": "Tips", "food": "Makanan", "drinks": "Minuman", "help": "Bantuan", "meetup": "Meetup" },
     "titleLabel": "Apa yang ada di pikiranmu?",
@@ -13,25 +13,25 @@
     "saving": "Menyimpan…",
     "starting": "Memulai…",
     "saveChanges": "Simpan perubahan",
-    "startCta": "Mulai hangout ⚡",
+    "startCta": "Mulai nongkrong ⚡",
     "limitHeader": "Satu per satu",
-    "limitTitle": "Kamu sudah punya hangout",
-    "limitSub": "Kamu hanya bisa menjalankan satu hangout dalam satu waktu. Ke “{{title}}”, atau hapus untuk memulai yang baru.",
-    "limitGo": "Ke hangout-ku →",
-    "yourHangout": "hangout-mu"
+    "limitTitle": "Kamu sudah punya nongkrong",
+    "limitSub": "Kamu hanya bisa menjalankan satu nongkrong dalam satu waktu. Ke “{{title}}”, atau hapus untuk memulai yang baru.",
+    "limitGo": "Ke nongkrong-ku →",
+    "yourHangout": "nongkrong-mu"
   },
-  "deleteConfirm": "Hapus hangout ini? Ini mengakhirinya untuk semua orang dan tidak bisa dibatalkan.",
+  "deleteConfirm": "Hapus nongkrong ini? Ini mengakhirinya untuk semua orang dan tidak bisa dibatalkan.",
   "deleteFailedAlert": "Tidak bisa menghapus. Silakan coba lagi.",
-  "shareAria": "Bagikan hangout",
-  "shareTitle": "Bagikan hangout ini",
+  "shareAria": "Bagikan nongkrong",
+  "shareTitle": "Bagikan nongkrong ini",
   "members": {
     "oneIn": "{{name}} ikut",
-    "countIn": "{{count}} di hangout ini",
+    "countIn": "{{count}} di nongkrong ini",
     "seeAll": "Lihat semua →"
   },
   "owner": { "edit": "✏️ Edit", "delete": "🗑 Hapus" },
   "gated": {
-    "title": "Hangout khusus anggota",
+    "title": "Nongkrong khusus anggota",
     "pending": "Permintaan menunggu — kamu bisa bergabung ke percakapan begitu seorang anggota menerima.",
     "prompt": "Minta gabung untuk melihat percakapan dan mengobrol.",
     "requestBtn": "Minta gabung"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Seseorang",
     "wantsToJoin": " ingin gabung",
-    "joined": " bergabung ke hangout",
+    "joined": " bergabung ke nongkrong",
     "askedToJoin": " minta gabung",
     "decline": "Tolak",
     "accept": "Terima",

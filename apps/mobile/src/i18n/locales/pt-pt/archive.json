@@ -10,6 +10,6 @@
   "pickStart": "Escolhe um dia de início (até {{max}} dias)",
   "apply": "Aplicar",
   "emptyTitle": "Ainda não há nada aqui",
-  "emptyRecentSub": "Os eventos e hangouts passados aparecerão aqui quando a cidade tiver algum histórico.",
-  "emptyWindowSub": "Nenhum evento ou hangout neste período. Tenta um intervalo mais alargado."
+  "emptyRecentSub": "Os eventos e convívios passados aparecerão aqui quando a cidade tiver algum histórico.",
+  "emptyWindowSub": "Nenhum evento ou convívio neste período. Tenta um intervalo mais alargado."
 }

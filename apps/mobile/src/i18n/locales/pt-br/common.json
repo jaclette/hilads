@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "Compartilhe algo 👀",
+    "snap": "Tire uma foto",
+    "snapDesc": "Tire ou envie uma foto",
+    "spot": "Marque seu lugar",
+    "spotDesc": "Compartilhe sua localização atual",
+    "spotLoading": "Obtendo sua localização…"
+  },
+  "locationPicker": {
+    "title": "Onde você está? 👀",
+    "search": "Buscar um endereço ou lugar",
+    "moveHint": "Mova o mapa para ajustar",
+    "noResults": "Nenhum lugar encontrado",
+    "loading": "Obtendo localização…",
+    "confirm": "Compartilhar este lugar",
+    "yourLocation": "Sua localização",
+    "close": "Fechar",
+    "clearSearch": "Limpar busca"
+  },
   "language": "Idioma",
   "cancel": "Cancelar",
   "loading": "Carregando…",
@@ -47,9 +66,9 @@
   },
   "badge": {
     "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "fresh": "✨ Novato",
+    "regular": "😎 Da turma",
+    "host": "👑 Lenda"
   },
   "vibe": {
     "party": "Festa",

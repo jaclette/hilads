@@ -1,6 +1,6 @@
 {
   "title": "O que aconteceu",
-  "filters": { "all": "Tudo", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "Tudo", "events": "🔥 Eventos", "pulses": "🗣️ Convívios" },
   "range": { "recent": "Recente", "last7": "Últimos 7 dias", "last14": "Últimos 14 dias", "custom": "Personalizado" },
   "picker": {
     "pickEnd": "Agora escolhe o dia de fim",
@@ -10,15 +10,15 @@
   "public": "Público",
   "went_one": "🙌 {{count}} foi",
   "went_other": "🙌 {{count}} foram",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "Convívio",
   "replies_one": "💬 {{count}} resposta",
   "replies_other": "💬 {{count}} respostas",
   "noReplies": "Sem respostas",
   "error": "Não foi possível carregar o arquivo",
   "retry": "Tentar novamente",
   "emptyTitle": "Ainda não há nada aqui",
-  "emptyRecentSub": "Os eventos e hangouts passados aparecerão aqui quando a cidade tiver algum historial.",
-  "emptyWindowSub": "Nenhum evento ou hangout neste período. Experimenta um intervalo mais alargado.",
+  "emptyRecentSub": "Os eventos e convívios passados aparecerão aqui quando a cidade tiver algum historial.",
+  "emptyWindowSub": "Nenhum evento ou convívio neste período. Experimenta um intervalo mais alargado.",
   "loadMore": "Carregar mais",
   "loading": "A carregar…"
 }

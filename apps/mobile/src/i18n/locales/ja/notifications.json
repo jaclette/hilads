@@ -7,7 +7,7 @@
   "prefTitle": "通知の設定",
   "pref": {
     "mentionLabel": "メンション @",
-    "mentionSub": "メッセージや Hangout で誰かが @ でメンションしたとき",
+    "mentionSub": "メッセージや集まりで誰かが @ でメンションしたとき",
     "eventJoinLabel": "誰かがあなたのイベントに参加",
     "eventJoinSub": "あなたが行くイベントに新しい人が参加したとき",
     "newEventLabel": "あなたの街の新しいイベント",
@@ -20,10 +20,10 @@
     "vibeSub": "誰かがあなたのプロフィールに vibe を残したとき",
     "profileViewLabel": "プロフィールの閲覧 👀",
     "profileViewSub": "誰かがあなたのプロフィールを見たとき",
-    "topicReplyLabel": "Hangout の返信 💬",
-    "topicReplySub": "参加した Hangout で誰かが返信したとき",
-    "newTopicLabel": "あなたの街の新しい Hangouts",
-    "newTopicSub": "誰かがあなたの街で新しい Hangout を始めたとき",
+    "topicReplyLabel": "集まりの返信 💬",
+    "topicReplySub": "参加した集まりで誰かが返信したとき",
+    "newTopicLabel": "あなたの街の新しい集まり",
+    "newTopicSub": "誰かがあなたの街で新しい集まりを始めたとき",
     "announceLabel": "Hilads からのお知らせ",
     "announceSub": "チームからの不定期の最新情報"
   }

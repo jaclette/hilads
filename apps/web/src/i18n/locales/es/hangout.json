@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Lanzar un hangout",
-    "editTitle": "Editar el hangout",
+    "startTitle": "Lanzar una quedada",
+    "editTitle": "Editar la quedada",
     "category": "Categoría",
     "cat": { "general": "General", "tips": "Consejos", "food": "Comida", "drinks": "Bebidas", "help": "Ayuda", "meetup": "Quedada" },
     "titleLabel": "¿Qué se te pasa por la cabeza?",
@@ -13,25 +13,25 @@
     "saving": "Guardando…",
     "starting": "Lanzando…",
     "saveChanges": "Guardar",
-    "startCta": "Lanzar un hangout ⚡",
-    "limitHeader": "Uno a la vez",
-    "limitTitle": "Ya tienes un hangout",
-    "limitSub": "Solo puedes tener un hangout a la vez. Ve a «{{title}}» o elimínalo para lanzar uno nuevo.",
-    "limitGo": "Ir a mi hangout →",
-    "yourHangout": "tu hangout"
+    "startCta": "Lanzar una quedada ⚡",
+    "limitHeader": "Una a la vez",
+    "limitTitle": "Ya tienes una quedada",
+    "limitSub": "Solo puedes tener una quedada a la vez. Ve a «{{title}}» o elimínala para lanzar una nueva.",
+    "limitGo": "Ir a mi quedada →",
+    "yourHangout": "tu quedada"
   },
-  "deleteConfirm": "¿Eliminar este hangout? Esto lo termina para todos y es irreversible.",
+  "deleteConfirm": "¿Eliminar esta quedada? Esto la termina para todos y es irreversible.",
   "deleteFailedAlert": "No se pudo eliminar. Inténtalo de nuevo.",
-  "shareAria": "Compartir el hangout",
-  "shareTitle": "Compartir este hangout",
+  "shareAria": "Compartir la quedada",
+  "shareTitle": "Compartir esta quedada",
   "members": {
     "oneIn": "{{name}} se apunta",
-    "countIn": "{{count}} en este hangout",
+    "countIn": "{{count}} en esta quedada",
     "seeAll": "Ver todo →"
   },
   "owner": { "edit": "✏️ Editar", "delete": "🗑 Eliminar" },
   "gated": {
-    "title": "Hangout solo para miembros",
+    "title": "Quedada solo para miembros",
     "pending": "Solicitud pendiente — podrás unirte a la conversación en cuanto un miembro acepte.",
     "prompt": "Pide unirte para ver la conversación y participar.",
     "requestBtn": "Pedir unirse"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Alguien",
     "wantsToJoin": " quiere unirse",
-    "joined": " se unió al hangout",
+    "joined": " se unió a la quedada",
     "askedToJoin": " pidió unirse",
     "decline": "Rechazar",
     "accept": "Aceptar",

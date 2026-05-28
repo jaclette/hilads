@@ -7,7 +7,7 @@
   "prefTitle": "MGA PREFERENCE SA NOTIFICATION",
   "pref": {
     "mentionLabel": "Mga banggit @",
-    "mentionSub": "Kapag may nag-@mention sa iyo sa isang mensahe o hangout",
+    "mentionSub": "Kapag may nag-@mention sa iyo sa isang mensahe o tambayan",
     "eventJoinLabel": "May sumali sa iyong event",
     "eventJoinSub": "Kapag may bagong taong sumali sa isang event na pupuntahan mo",
     "newEventLabel": "Mga bagong event sa iyong lungsod",
@@ -20,10 +20,10 @@
     "vibeSub": "Kapag may nag-iwan ng vibe sa iyong profile",
     "profileViewLabel": "Mga bisita sa profile 👀",
     "profileViewSub": "Kapag may tumingin sa iyong profile",
-    "topicReplyLabel": "Mga tugon sa hangout 💬",
-    "topicReplySub": "Kapag may tumugon sa isang hangout na sinalihan mo",
-    "newTopicLabel": "Mga bagong hangout sa iyong lungsod",
-    "newTopicSub": "Kapag may nagsimula ng bagong hangout sa iyong lungsod",
+    "topicReplyLabel": "Mga tugon sa tambayan 💬",
+    "topicReplySub": "Kapag may tumugon sa isang tambayan na sinalihan mo",
+    "newTopicLabel": "Mga bagong tambayan sa iyong lungsod",
+    "newTopicSub": "Kapag may nagsimula ng bagong tambayan sa iyong lungsod",
     "announceLabel": "Mga anunsyo mula sa Hilads",
     "announceSub": "Paminsan-minsang update mula sa team"
   }

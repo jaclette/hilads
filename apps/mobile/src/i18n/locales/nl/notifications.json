@@ -7,7 +7,7 @@
   "prefTitle": "MELDINGSVOORKEUREN",
   "pref": {
     "mentionLabel": "Vermeldingen @",
-    "mentionSub": "Wanneer iemand je @vermeldt in een bericht of hangout",
+    "mentionSub": "Wanneer iemand je @vermeldt in een bericht of meetup",
     "eventJoinLabel": "Iemand doet mee aan je evenement",
     "eventJoinSub": "Wanneer een nieuw persoon meedoet aan een evenement waar je naartoe gaat",
     "newEventLabel": "Nieuwe evenementen in je stad",
@@ -20,10 +20,10 @@
     "vibeSub": "Wanneer iemand een vibe op je profiel achterlaat",
     "profileViewLabel": "Profielweergaven 👀",
     "profileViewSub": "Wanneer iemand je profiel bekijkt",
-    "topicReplyLabel": "Hangout-reacties 💬",
-    "topicReplySub": "Wanneer iemand reageert in een hangout waaraan je meedoet",
-    "newTopicLabel": "Nieuwe hangouts in je stad",
-    "newTopicSub": "Wanneer iemand een nieuwe hangout start in je stad",
+    "topicReplyLabel": "Meetup-reacties 💬",
+    "topicReplySub": "Wanneer iemand reageert in een meetup waaraan je meedoet",
+    "newTopicLabel": "Nieuwe meetups in je stad",
+    "newTopicSub": "Wanneer iemand een nieuwe meetup start in je stad",
     "announceLabel": "Aankondigingen van Hilads",
     "announceSub": "Af en toe updates van het team"
   }

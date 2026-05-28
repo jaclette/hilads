@@ -30,12 +30,12 @@
   "from": "De",
   "age": "Idade",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "Amigos",
+    "hangouts": "Rolês", "events": "Eventos", "friends": "Amigos",
     "vibes": "Vibes", "picks": "Dicas da cidade 👑"
   },
   "host": "Anfitrião",
   "live": "AO VIVO",
-  "empty": { "hangouts": "Ainda não há hangouts", "events": "Ainda não há eventos", "friends": "Ainda não há amigos" },
+  "empty": { "hangouts": "Ainda não há rolês", "events": "Ainda não há eventos", "friends": "Ainda não há amigos" },
   "vibesTab": {
     "score": "{{score}} de vibe score",
     "basedOn_one": "com base em {{count}} vibe",

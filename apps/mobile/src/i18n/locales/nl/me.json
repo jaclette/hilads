@@ -27,10 +27,10 @@
     "drinks": "drankjes", "party": "feest", "nightlife": "nachtleven", "music": "muziek",
     "live music": "livemuziek", "culture": "cultuur", "art": "kunst", "food": "eten",
     "coffee": "koffie", "sport": "sport", "fitness": "fitness", "hiking": "wandelen",
-    "beach": "strand", "wellness": "wellness", "travel": "reizen", "hangout": "hangout",
+    "beach": "strand", "wellness": "wellness", "travel": "reizen", "hangout": "meetup",
     "socializing": "socializen", "gaming": "gamen", "tech": "tech", "dating": "daten"
   },
-  "noHangouts": "Nog geen hangouts — start er een ⚡",
+  "noHangouts": "Nog geen meetups — start er een ⚡",
   "host": "Host",
   "going": "GAAT",
   "noPlans": "Nog geen plannen — vind iets 🔥",

@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "ความสนใจ",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "นัดเจอ",
+    "events": "กิจกรรม",
     "friends": "เพื่อน",
     "vibes": "Vibes"
   },
@@ -77,7 +77,7 @@
     "storyPlaceholder": "สิ่งที่คุณรักเกี่ยวกับเมืองนี้"
   },
   "hangouts": {
-    "empty": "ยังไม่มี hangouts — เริ่มเลย ⚡",
+    "empty": "ยังไม่มีนัดเจอ — เริ่มเลย ⚡",
     "host": "เจ้าภาพ"
   },
   "events": {

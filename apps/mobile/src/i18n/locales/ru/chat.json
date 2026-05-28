@@ -31,7 +31,7 @@
   "left": "{{name}} ушёл",
   "joinReq": {
     "wantsToJoin": " хочет присоединиться",
-    "joinedHangout": " присоединился к hangout",
+    "joinedHangout": " присоединился к тусовке",
     "askedToJoin": " попросился присоединиться",
     "decline": "Отклонить",
     "accept": "Принять",

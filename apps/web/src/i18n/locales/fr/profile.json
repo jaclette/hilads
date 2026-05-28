@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "Intérêts",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "Sorties",
+    "events": "Événements",
     "friends": "Amis",
     "vibes": "Vibes"
   },
@@ -77,7 +77,7 @@
     "storyPlaceholder": "Quelque chose que tu adores dans cette ville"
   },
   "hangouts": {
-    "empty": "Pas encore de hangout — lance-en un ⚡",
+    "empty": "Pas encore de sortie — lance-en une ⚡",
     "host": "Hôte"
   },
   "events": {

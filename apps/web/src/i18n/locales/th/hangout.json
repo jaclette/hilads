@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "เริ่ม hangout",
-    "editTitle": "แก้ไข hangout",
+    "startTitle": "เริ่มนัดเจอ",
+    "editTitle": "แก้ไขนัดเจอ",
     "category": "หมวดหมู่",
     "cat": { "general": "ทั่วไป", "tips": "ทิป", "food": "อาหาร", "drinks": "เครื่องดื่ม", "help": "ช่วยเหลือ", "meetup": "นัดพบ" },
     "titleLabel": "กำลังคิดอะไรอยู่?",
@@ -13,25 +13,25 @@
     "saving": "กำลังบันทึก…",
     "starting": "กำลังเริ่ม…",
     "saveChanges": "บันทึกการเปลี่ยนแปลง",
-    "startCta": "เริ่ม hangout ⚡",
+    "startCta": "เริ่มนัดเจอ ⚡",
     "limitHeader": "ทีละหนึ่งอัน",
-    "limitTitle": "คุณมี hangout อยู่แล้ว",
-    "limitSub": "คุณมี hangout ได้ทีละหนึ่งอัน ไปที่ “{{title}}” หรือลบมันเพื่อเริ่มอันใหม่",
-    "limitGo": "ไปที่ hangout ของฉัน →",
-    "yourHangout": "hangout ของคุณ"
+    "limitTitle": "คุณมีนัดเจออยู่แล้ว",
+    "limitSub": "คุณมีนัดเจอได้ทีละหนึ่งอัน ไปที่ “{{title}}” หรือลบมันเพื่อเริ่มอันใหม่",
+    "limitGo": "ไปที่นัดเจอของฉัน →",
+    "yourHangout": "นัดเจอของคุณ"
   },
-  "deleteConfirm": "ลบ hangout นี้ไหม? การกระทำนี้จะจบมันสำหรับทุกคนและไม่สามารถย้อนกลับได้",
+  "deleteConfirm": "ลบนัดเจอนี้ไหม? การกระทำนี้จะจบมันสำหรับทุกคนและไม่สามารถย้อนกลับได้",
   "deleteFailedAlert": "ลบไม่สำเร็จ ลองอีกครั้ง",
-  "shareAria": "แชร์ hangout",
-  "shareTitle": "แชร์ hangout นี้",
+  "shareAria": "แชร์นัดเจอ",
+  "shareTitle": "แชร์นัดเจอนี้",
   "members": {
     "oneIn": "{{name}} ร่วมด้วย",
-    "countIn": "{{count}} คนใน hangout นี้",
+    "countIn": "{{count}} คนในนัดเจอนี้",
     "seeAll": "ดูทั้งหมด →"
   },
   "owner": { "edit": "✏️ แก้ไข", "delete": "🗑 ลบ" },
   "gated": {
-    "title": "Hangout สำหรับสมาชิกเท่านั้น",
+    "title": "นัดเจอสำหรับสมาชิกเท่านั้น",
     "pending": "คำขออยู่ระหว่างรอ — คุณจะเข้าร่วมบทสนทนาได้เมื่อสมาชิกตอบรับ",
     "prompt": "ขอเข้าร่วมเพื่อดูบทสนทนาและพูดคุย",
     "requestBtn": "ขอเข้าร่วม"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "บางคน",
     "wantsToJoin": " ต้องการเข้าร่วม",
-    "joined": " เข้าร่วม hangout แล้ว",
+    "joined": " เข้าร่วมนัดเจอแล้ว",
     "askedToJoin": " ขอเข้าร่วม",
     "decline": "ปฏิเสธ",
     "accept": "ตอบรับ",

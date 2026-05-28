@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Começar um hangout",
-    "editTitle": "Editar o hangout",
+    "startTitle": "Começar um rolê",
+    "editTitle": "Editar o rolê",
     "category": "Categoria",
     "cat": { "general": "Geral", "tips": "Dicas", "food": "Comida", "drinks": "Drinks", "help": "Ajuda", "meetup": "Encontro" },
     "titleLabel": "O que você está pensando?",
@@ -13,25 +13,25 @@
     "saving": "Salvando…",
     "starting": "Começando…",
     "saveChanges": "Salvar alterações",
-    "startCta": "Começar um hangout ⚡",
+    "startCta": "Começar um rolê ⚡",
     "limitHeader": "Um de cada vez",
-    "limitTitle": "Você já tem um hangout",
-    "limitSub": "Você pode ter um hangout de cada vez. Vá para “{{title}}” ou exclua para começar um novo.",
-    "limitGo": "Ir para o meu hangout →",
-    "yourHangout": "seu hangout"
+    "limitTitle": "Você já tem um rolê",
+    "limitSub": "Você pode ter um rolê de cada vez. Vá para “{{title}}” ou exclua para começar um novo.",
+    "limitGo": "Ir para o meu rolê →",
+    "yourHangout": "seu rolê"
   },
-  "deleteConfirm": "Excluir este hangout? Isso encerra para todo mundo e não pode ser desfeito.",
+  "deleteConfirm": "Excluir este rolê? Isso encerra para todo mundo e não pode ser desfeito.",
   "deleteFailedAlert": "Não foi possível excluir. Tente de novo.",
-  "shareAria": "Compartilhar o hangout",
-  "shareTitle": "Compartilhar este hangout",
+  "shareAria": "Compartilhar o rolê",
+  "shareTitle": "Compartilhar este rolê",
   "members": {
     "oneIn": "{{name}} está participando",
-    "countIn": "{{count}} neste hangout",
+    "countIn": "{{count}} neste rolê",
     "seeAll": "Ver todos →"
   },
   "owner": { "edit": "✏️ Editar", "delete": "🗑 Excluir" },
   "gated": {
-    "title": "Hangout só para membros",
+    "title": "Rolê só para membros",
     "pending": "Pedido pendente — você poderá entrar na conversa assim que um membro aceitar.",
     "prompt": "Peça para participar para ver a conversa e conversar.",
     "requestBtn": "Pedir para participar"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Alguém",
     "wantsToJoin": " quer participar",
-    "joined": " entrou no hangout",
+    "joined": " entrou no rolê",
     "askedToJoin": " pediu para participar",
     "decline": "Recusar",
     "accept": "Aceitar",

@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "開一個 hangout",
-    "editTitle": "編輯 hangout",
+    "startTitle": "開一個聚會",
+    "editTitle": "編輯聚會",
     "category": "類別",
     "cat": { "general": "一般", "tips": "撇步", "food": "美食", "drinks": "小酌", "help": "求助", "meetup": "聚會" },
     "titleLabel": "你在想什麼？",
@@ -13,25 +13,25 @@
     "saving": "儲存中…",
     "starting": "開啟中…",
     "saveChanges": "儲存變更",
-    "startCta": "開一個 hangout ⚡",
+    "startCta": "開一個聚會 ⚡",
     "limitHeader": "一次一個",
-    "limitTitle": "你已經有一個 hangout 了",
-    "limitSub": "你一次只能開一個 hangout。前往「{{title}}」，或將它刪除以開一個新的。",
-    "limitGo": "前往我的 hangout →",
-    "yourHangout": "你的 hangout"
+    "limitTitle": "你已經有一個聚會了",
+    "limitSub": "你一次只能開一個聚會。前往「{{title}}」，或將它刪除以開一個新的。",
+    "limitGo": "前往我的聚會 →",
+    "yourHangout": "你的聚會"
   },
-  "deleteConfirm": "刪除這個 hangout？這會為所有人結束它，且無法復原。",
+  "deleteConfirm": "刪除這個聚會？這會為所有人結束它，且無法復原。",
   "deleteFailedAlert": "無法刪除。請重試。",
-  "shareAria": "分享 hangout",
-  "shareTitle": "分享這個 hangout",
+  "shareAria": "分享聚會",
+  "shareTitle": "分享這個聚會",
   "members": {
     "oneIn": "{{name}} 加入了",
-    "countIn": "{{count}} 人在這個 hangout",
+    "countIn": "{{count}} 人在這個聚會",
     "seeAll": "查看全部 →"
   },
   "owner": { "edit": "✏️ 編輯", "delete": "🗑 刪除" },
   "gated": {
-    "title": "僅限成員的 hangout",
+    "title": "僅限成員的聚會",
     "pending": "邀請待處理 — 成員接受後你就能加入對話。",
     "prompt": "請求加入以查看對話並聊天。",
     "requestBtn": "請求加入"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "有人",
     "wantsToJoin": " 想加入",
-    "joined": " 加入了 hangout",
+    "joined": " 加入了聚會",
     "askedToJoin": " 請求加入",
     "decline": "拒絕",
     "accept": "接受",

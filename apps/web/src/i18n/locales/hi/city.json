@@ -13,14 +13,14 @@
       "sub": "प्रोफ़ाइल अनलॉक करने, लोगों से जुड़ने और अपनी सिटी क्रू बनाने के लिए अकाउंट बनाएं।"
     },
     "join_hangout": {
-      "pageTitle": "एक hangout में शामिल हों",
-      "title": "Ghosts देख सकते हैं, पर hangouts में शामिल नहीं हो सकते।",
-      "sub": "hangouts में शामिल होने, अपना नाम सेव करने और लोग मिलना चाहें तब नोटिफिकेशन पाने के लिए साइन अप करें।"
+      "pageTitle": "एक मुलाक़ात में शामिल हों",
+      "title": "Ghosts देख सकते हैं, पर मुलाक़ात में शामिल नहीं हो सकते।",
+      "sub": "मुलाक़ात में शामिल होने, अपना नाम सेव करने और लोग मिलना चाहें तब नोटिफिकेशन पाने के लिए साइन अप करें।"
     },
     "create_hangout": {
-      "pageTitle": "एक hangout शुरू करें",
+      "pageTitle": "एक मुलाक़ात शुरू करें",
       "title": "Ghosts देख सकते हैं, पर होस्ट नहीं कर सकते।",
-      "sub": "एक hangout शुरू करने, अपना नाम सेव करने और लोगों को साथ लाने के लिए साइन अप करें।"
+      "sub": "एक मुलाक़ात शुरू करने, अपना नाम सेव करने और लोगों को साथ लाने के लिए साइन अप करें।"
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "चैट से जुड़ रहे हैं…",
   "tryAgain": "फिर से कोशिश करें",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "मुलाक़ात",
+    "eventTag": "इवेंट",
     "public": "पब्लिक",
     "activeNow": "● अभी एक्टिव",
     "repliesNew": "अभी कोई जवाब नहीं — पहले बनें",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} जा रहे हैं",
     "going_other": "🙌 {{count}} जा रहे हैं",
     "hostedBy": "{{name}} द्वारा होस्ट किया गया",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Hilads इवेंट",
+    "groupPublic": "सार्वजनिक इवेंट",
+    "groupPublicTicket": "🎫 सार्वजनिक इवेंट",
     "createEvent": "इवेंट बनाएं",
-    "startHangout": "एक hangout शुरू करें ⚡",
+    "startHangout": "एक मुलाक़ात शुरू करें ⚡",
     "openPlace": "अपनी जगह खोलें",
     "loadError": "इवेंट लोड नहीं हो सके",
     "loadErrorSub": "बाद में फिर कोशिश करें या {{city}} में कुछ नया बनाएं।",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "{{city}} को जिंदादिल बनाएं। अपनी पसंदीदा जगह पर एक रेगुलर इवेंट शुरू करें।",
     "emptySub": "{{city}} में कुछ करवाने वाले पहले व्यक्ति बनें",
     "noEvents": "अभी कोई इवेंट नहीं",
-    "noHangouts": "अभी कोई hangouts नहीं",
+    "noHangouts": "अभी कोई मुलाक़ात नहीं",
     "noEventsSub": "{{city}} में एक बनाने वाले पहले व्यक्ति बनें",
-    "noHangoutsSub": "एक hangout शुरू करें और शहर को बातों में लगाएं",
+    "noHangoutsSub": "एक मुलाक़ात शुरू करें और शहर को बातों में लगाएं",
     "filterAll": "सभी",
     "seeComing": "देखें आगे क्या है 🔮",
     "seeHappened": "देखें क्या हुआ था",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "मोड",
     "you": "(आप)",
-    "hereNow": "Here now",
+    "hereNow": "अभी यहाँ",
     "noMatchLive": "अभी कोई इन फ़िल्टर से मैच नहीं करता।",
+    "legends": "Hilads दिग्गज",
     "legendsSub": "ये शहर को जिंदादिल बनाते हैं",
     "cityCrew": "सिटी क्रू",
     "noMatchCrew": "कोई मेंबर इन फ़िल्टर से मैच नहीं करता।",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "क्या प्लान है?",
-    "hangoutTitle": "एक hangout शुरू करें",
+    "hangoutTitle": "एक मुलाक़ात शुरू करें",
     "hangoutSub": "तुरंत — लोगों को अभी आपके साथ जुड़ने दें",
     "eventTitle": "एक इवेंट बनाएं",
     "eventSub": "कुछ ऐसा प्लान करें जिसमें दूसरे शामिल हो सकें"
   },
   "goingModal": {
     "going": "जा रहे हैं",
-    "inThisHangout": "इस hangout में",
+    "inThisHangout": "इस मुलाक़ात में",
     "loading": "लोड हो रहा है…",
     "empty": "अभी कोई नहीं — शामिल होने वाले पहले बनें! 🙌"
   },

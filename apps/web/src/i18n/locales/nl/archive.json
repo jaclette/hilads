@@ -1,6 +1,6 @@
 {
   "title": "Wat er gebeurd is",
-  "filters": { "all": "Alles", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "Alles", "events": "🔥 Evenementen", "pulses": "🗣️ Meetups" },
   "range": { "recent": "Recent", "last7": "Laatste 7 dagen", "last14": "Laatste 14 dagen", "custom": "Aangepast" },
   "picker": {
     "pickEnd": "Kies nu de einddag",
@@ -10,15 +10,15 @@
   "public": "Openbaar",
   "went_one": "🙌 {{count}} was erbij",
   "went_other": "🙌 {{count}} waren erbij",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "Meetup",
   "replies_one": "💬 {{count}} reactie",
   "replies_other": "💬 {{count}} reacties",
   "noReplies": "Geen reacties",
   "error": "Kon het archief niet laden",
   "retry": "Opnieuw proberen",
   "emptyTitle": "Hier is nog niets",
-  "emptyRecentSub": "Afgelopen evenementen en hangouts verschijnen hier zodra de stad wat geschiedenis heeft.",
-  "emptyWindowSub": "Geen evenementen of hangouts in deze periode. Probeer een ruimere periode.",
+  "emptyRecentSub": "Afgelopen evenementen en meetups verschijnen hier zodra de stad wat geschiedenis heeft.",
+  "emptyWindowSub": "Geen evenementen of meetups in deze periode. Probeer een ruimere periode.",
   "loadMore": "Meer laden",
   "loading": "Laden…"
 }

@@ -1,6 +1,6 @@
 {
   "title": "已发生",
-  "filters": { "all": "全部", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "全部", "events": "🔥 活动", "pulses": "🗣️ 聚会" },
   "range": { "recent": "最近", "last7": "最近 7 天", "last14": "最近 14 天", "custom": "自定义" },
   "picker": {
     "pickEnd": "现在选择结束日期",
@@ -10,15 +10,15 @@
   "public": "公开",
   "went_one": "🙌 {{count}} 人参加了",
   "went_other": "🙌 {{count}} 人参加了",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "聚会",
   "replies_one": "💬 {{count}} 条回复",
   "replies_other": "💬 {{count}} 条回复",
   "noReplies": "没有回复",
   "error": "无法加载历史记录",
   "retry": "重试",
   "emptyTitle": "这里还什么都没有",
-  "emptyRecentSub": "等城市积累一些历史后，过去的 events 和 hangouts 会显示在这里。",
-  "emptyWindowSub": "这段时间内没有 events 或 hangouts。试试更大的时间范围。",
+  "emptyRecentSub": "等城市积累一些历史后，过去的活动和聚会会显示在这里。",
+  "emptyWindowSub": "这段时间内没有活动或聚会。试试更大的时间范围。",
   "loadMore": "加载更多",
   "loading": "加载中…"
 }

@@ -7,7 +7,7 @@
   "prefTitle": "PRÉFÉRENCES DE NOTIFICATION",
   "pref": {
     "mentionLabel": "Mentions @",
-    "mentionSub": "Quand quelqu'un te @mentionne dans un message ou un hangout",
+    "mentionSub": "Quand quelqu'un te @mentionne dans un message ou une sortie",
     "eventJoinLabel": "Quelqu'un rejoint ton événement",
     "eventJoinSub": "Quand une nouvelle personne rejoint un événement où tu vas",
     "newEventLabel": "Nouveaux événements dans ta ville",
@@ -20,10 +20,10 @@
     "vibeSub": "Quand quelqu'un laisse une vibe sur ton profil",
     "profileViewLabel": "Vues de profil 👀",
     "profileViewSub": "Quand quelqu'un regarde ton profil",
-    "topicReplyLabel": "Réponses de hangout 💬",
-    "topicReplySub": "Quand quelqu'un répond dans un hangout que tu as rejoint",
-    "newTopicLabel": "Nouveaux hangouts dans ta ville",
-    "newTopicSub": "Quand quelqu'un lance un nouveau hangout dans ta ville",
+    "topicReplyLabel": "Réponses de sortie 💬",
+    "topicReplySub": "Quand quelqu'un répond dans une sortie que tu as rejointe",
+    "newTopicLabel": "Nouvelles sorties dans ta ville",
+    "newTopicSub": "Quand quelqu'un lance une nouvelle sortie dans ta ville",
     "announceLabel": "Annonces de Hilads",
     "announceSub": "Des nouvelles occasionnelles de l'équipe"
   }

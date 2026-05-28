@@ -10,6 +10,6 @@
   "pickStart": "開始日を選択してください（最大{{max}}日）",
   "apply": "適用",
   "emptyTitle": "まだ何もありません",
-  "emptyRecentSub": "街に履歴がたまると、過去のイベントや hangouts がここに表示されます。",
-  "emptyWindowSub": "この期間にイベントや hangouts はありません。範囲を広げてお試しください。"
+  "emptyRecentSub": "街に履歴がたまると、過去のイベントや集まりがここに表示されます。",
+  "emptyWindowSub": "この期間にイベントや集まりはありません。範囲を広げてお試しください。"
 }

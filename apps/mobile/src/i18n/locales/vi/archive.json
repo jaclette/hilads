@@ -10,6 +10,6 @@
   "pickStart": "Chọn ngày bắt đầu (tối đa {{max}} ngày)",
   "apply": "Áp dụng",
   "emptyTitle": "Chưa có gì ở đây",
-  "emptyRecentSub": "Các sự kiện và hangout đã qua sẽ hiển thị ở đây khi thành phố có lịch sử.",
-  "emptyWindowSub": "Không có sự kiện hoặc hangout trong khoảng này. Thử khoảng rộng hơn."
+  "emptyRecentSub": "Các sự kiện và tụ tập đã qua sẽ hiển thị ở đây khi thành phố có lịch sử.",
+  "emptyWindowSub": "Không có sự kiện hoặc tụ tập trong khoảng này. Thử khoảng rộng hơn."
 }

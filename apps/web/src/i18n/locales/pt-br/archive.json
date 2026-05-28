@@ -1,6 +1,6 @@
 {
   "title": "O que rolou",
-  "filters": { "all": "Tudo", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
+  "filters": { "all": "Tudo", "events": "🔥 Eventos", "pulses": "🗣️ Rolês" },
   "range": { "recent": "Recente", "last7": "Últimos 7 dias", "last14": "Últimos 14 dias", "custom": "Personalizado" },
   "picker": {
     "pickEnd": "Agora escolha o dia final",
@@ -10,15 +10,15 @@
   "public": "Público",
   "went_one": "🙌 {{count}} foi",
   "went_other": "🙌 {{count}} foram",
-  "hangoutTag": "Hangout",
+  "hangoutTag": "Rolê",
   "replies_one": "💬 {{count}} resposta",
   "replies_other": "💬 {{count}} respostas",
   "noReplies": "Sem respostas",
   "error": "Não foi possível carregar o histórico",
   "retry": "Tentar de novo",
   "emptyTitle": "Ainda não há nada aqui",
-  "emptyRecentSub": "Os eventos e hangouts passados vão aparecer aqui quando a cidade tiver algum histórico.",
-  "emptyWindowSub": "Nenhum evento ou hangout nesse período. Tente um intervalo maior.",
+  "emptyRecentSub": "Os eventos e rolês passados vão aparecer aqui quando a cidade tiver algum histórico.",
+  "emptyWindowSub": "Nenhum evento ou rolê nesse período. Tente um intervalo maior.",
   "loadMore": "Carregar mais",
   "loading": "Carregando…"
 }

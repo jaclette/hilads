@@ -31,7 +31,7 @@
   "left": "{{name}} hat den Chat verlassen",
   "joinReq": {
     "wantsToJoin": " möchte teilnehmen",
-    "joinedHangout": " ist dem Hangout beigetreten",
+    "joinedHangout": " ist dem Treffen beigetreten",
     "askedToJoin": " hat um Teilnahme gebeten",
     "decline": "Ablehnen",
     "accept": "Annehmen",

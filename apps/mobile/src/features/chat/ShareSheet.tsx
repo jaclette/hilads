@@ -11,6 +11,7 @@ import {
   Modal, View, Text, TouchableOpacity, TouchableWithoutFeedback,
   StyleSheet, ActivityIndicator,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius } from '@/constants';
 
 interface Props {
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Props) {
+  const { t } = useTranslation('common');
   return (
     <Modal
       visible={visible}
@@ -35,7 +37,7 @@ export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Pr
       </TouchableWithoutFeedback>
 
       <View style={styles.sheet}>
-        <Text style={styles.title}>Share something 👀</Text>
+        <Text style={styles.title}>{t('share.title')}</Text>
 
         <View style={styles.actions}>
           {/* Snap the vibe */}
@@ -47,8 +49,8 @@ export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Pr
           >
             <Text style={styles.actionIcon}>📸</Text>
             <View style={styles.actionBody}>
-              <Text style={styles.actionLabel}>Snap a photo</Text>
-              <Text style={styles.actionDesc}>Take or upload a photo</Text>
+              <Text style={styles.actionLabel}>{t('share.snap')}</Text>
+              <Text style={styles.actionDesc}>{t('share.snapDesc')}</Text>
             </View>
           </TouchableOpacity>
 
@@ -64,16 +66,16 @@ export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Pr
               : <Text style={styles.actionIcon}>📍</Text>
             }
             <View style={styles.actionBody}>
-              <Text style={styles.actionLabel}>Drop your spot</Text>
+              <Text style={styles.actionLabel}>{t('share.spot')}</Text>
               <Text style={styles.actionDesc}>
-                {spotLoading ? 'Getting your location…' : 'Share your current spot'}
+                {spotLoading ? t('share.spotLoading') : t('share.spotDesc')}
               </Text>
             </View>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.cancel} onPress={onClose} activeOpacity={0.7}>
-          <Text style={styles.cancelText}>Cancel</Text>
+          <Text style={styles.cancelText}>{t('cancel')}</Text>
         </TouchableOpacity>
       </View>
     </Modal>

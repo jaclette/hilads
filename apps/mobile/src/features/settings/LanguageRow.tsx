@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -62,6 +62,7 @@ const LANG_FLAGS: Record<Locale, string> = {
  */
 export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean; trigger?: 'row' | 'flag' }) {
   const { t, i18n } = useTranslation('common');
+  const { height } = useWindowDimensions();
   const [open, setOpen] = useState(false);
   const current: Locale = (SUPPORTED as readonly string[]).includes(i18n.language)
     ? (i18n.language as Locale)
@@ -105,7 +106,14 @@ export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean;
           <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>{t('language')}</Text>
-            <ScrollView contentContainerStyle={styles.sheetListContent} showsVerticalScrollIndicator={false}>
+            {/* Numeric maxHeight gives the ScrollView a definite bound so it
+                sizes to content and scrolls — a percentage/auto height collapses
+                it to zero inside this content-sized sheet (RN flexShrink defaults to 0). */}
+            <ScrollView
+              style={{ maxHeight: height * 0.6 }}
+              contentContainerStyle={styles.sheetListContent}
+              showsVerticalScrollIndicator={false}
+            >
               {SUPPORTED.map((code) => {
                 const active = code === current;
                 return (

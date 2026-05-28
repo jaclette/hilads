@@ -10,6 +10,6 @@
   "pickStart": "Scegli un giorno di inizio (fino a {{max}} giorni)",
   "apply": "Applica",
   "emptyTitle": "Ancora niente qui",
-  "emptyRecentSub": "Gli eventi e gli hangout passati appariranno qui quando la città avrà un po' di storia.",
-  "emptyWindowSub": "Nessun evento né hangout in questo periodo. Prova con un intervallo più ampio."
+  "emptyRecentSub": "Gli eventi e i ritrovi passati appariranno qui quando la città avrà un po' di storia.",
+  "emptyWindowSub": "Nessun evento né ritrovo in questo periodo. Prova con un intervallo più ampio."
 }

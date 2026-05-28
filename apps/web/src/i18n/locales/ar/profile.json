@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "الاهتمامات",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "لقاءات",
+    "events": "فعاليات",
     "friends": "الأصدقاء",
     "vibes": "Vibes"
   },
@@ -77,7 +77,7 @@
     "storyPlaceholder": "شيء تحبه في هذه المدينة"
   },
   "hangouts": {
-    "empty": "لا توجد hangouts بعد — ابدأ واحدًا ⚡",
+    "empty": "لا توجد لقاءات بعد — ابدأ واحدًا ⚡",
     "host": "المضيف"
   },
   "events": {

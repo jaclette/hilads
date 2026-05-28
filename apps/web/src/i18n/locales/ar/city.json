@@ -13,14 +13,14 @@
       "sub": "أنشئ حسابًا لفتح الملفات الشخصية والتواصل مع الناس وبناء مجموعتك في المدينة."
     },
     "join_hangout": {
-      "pageTitle": "الانضمام إلى hangout",
-      "title": "يمكن للأشباح التصفّح، لكن لا يمكنهم الانضمام إلى جلسات الـhangout.",
-      "sub": "سجّل لتنضم إلى جلسات الـhangout، وتحفظ اسمك، وتتلقى إشعارًا عندما يرغب الناس في اللقاء."
+      "pageTitle": "الانضمام إلى لقاء",
+      "title": "يمكن للأشباح التصفّح، لكن لا يمكنهم الانضمام إلى اللقاءات.",
+      "sub": "سجّل لتنضم إلى اللقاءات، وتحفظ اسمك، وتتلقى إشعارًا عندما يرغب الناس في الالتقاء."
     },
     "create_hangout": {
-      "pageTitle": "بدء hangout",
+      "pageTitle": "بدء لقاء",
       "title": "يمكن للأشباح التصفّح، لكن لا يمكنهم الاستضافة.",
-      "sub": "سجّل لتبدأ hangout، وتحفظ اسمك، وتجذب الناس للانضمام إليك."
+      "sub": "سجّل لتبدأ لقاءً، وتحفظ اسمك، وتجذب الناس للانضمام إليك."
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "جارٍ الاتصال بالدردشة…",
   "tryAgain": "إعادة المحاولة",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "لقاء",
+    "eventTag": "فعالية",
     "public": "عام",
     "activeNow": "● نشط الآن",
     "repliesNew": "لا توجد ردود بعد — كن الأول",
@@ -61,11 +61,11 @@
     "going_many": "🙌 {{count}} شخصًا ذاهبًا",
     "going_other": "🙌 {{count}} شخص ذاهب",
     "hostedBy": "باستضافة {{name}}",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "فعاليات Hilads",
+    "groupPublic": "فعاليات عامة",
+    "groupPublicTicket": "🎫 فعاليات عامة",
     "createEvent": "إنشاء فعالية",
-    "startHangout": "ابدأ hangout ⚡",
+    "startHangout": "ابدأ لقاءً ⚡",
     "openPlace": "افتح مكانك",
     "loadError": "تعذّر تحميل الفعاليات",
     "loadErrorSub": "اسحب لإعادة المحاولة لاحقًا أو أنشئ شيئًا جديدًا في {{city}}.",
@@ -74,9 +74,9 @@
     "emptyLocalSub": "اجعل {{city}} تنبض بالحياة. ابدأ فعالية متكررة في مكانك المفضّل.",
     "emptySub": "كن أول من يحرّك شيئًا في {{city}}",
     "noEvents": "لا توجد فعاليات الآن",
-    "noHangouts": "لا توجد جلسات hangout بعد",
+    "noHangouts": "لا توجد لقاءات بعد",
     "noEventsSub": "كن أول من ينشئ واحدة في {{city}}",
-    "noHangoutsSub": "ابدأ hangout واجعل المدينة تتحدث",
+    "noHangoutsSub": "ابدأ لقاءً واجعل المدينة تتحدث",
     "filterAll": "الكل",
     "seeComing": "شاهد ما هو قادم 🔮",
     "seeHappened": "شاهد ما الذي حدث",
@@ -100,8 +100,9 @@
     "filterVibe": "Vibe",
     "filterMode": "الوضع",
     "you": "(أنت)",
-    "hereNow": "Here now",
+    "hereNow": "هنا الآن",
     "noMatchLive": "لا أحد يطابق هذه المرشّحات الآن.",
+    "legends": "أساطير Hilads",
     "legendsSub": "هم من يجعلون المدينة تنبض",
     "cityCrew": "أعضاء المدينة",
     "noMatchCrew": "لا يوجد عضو يطابق هذه المرشّحات.",
@@ -131,14 +132,14 @@
   },
   "create": {
     "title": "ما الخطة؟",
-    "hangoutTitle": "ابدأ hangout",
+    "hangoutTitle": "ابدأ لقاءً",
     "hangoutSub": "فوريًا — دع الناس ينضمّون إليك الآن",
     "eventTitle": "إنشاء فعالية",
     "eventSub": "خطّط لشيء يمكن للآخرين الانضمام إليه"
   },
   "goingModal": {
     "going": "ذاهبون",
-    "inThisHangout": "في هذا الـhangout",
+    "inThisHangout": "في هذا اللقاء",
     "loading": "جارٍ التحميل…",
     "empty": "لا أحد بعد — كن الأول! 🙌"
   },

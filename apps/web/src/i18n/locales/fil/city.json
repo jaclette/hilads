@@ -13,14 +13,14 @@
       "sub": "Gumawa ng account para ma-unlock ang mga profile, kumonekta sa mga tao, at buuin ang crew mo sa lungsod."
     },
     "join_hangout": {
-      "pageTitle": "Sumali sa hangout",
-      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi sumali sa hangouts.",
-      "sub": "Mag-sign up para sumali sa hangouts, i-save ang pangalan mo, at ma-notify kapag may gustong magkita."
+      "pageTitle": "Sumali sa tambayan",
+      "title": "Pwedeng mag-browse ang mga Ghost, pero hindi sumali sa tambayan.",
+      "sub": "Mag-sign up para sumali sa tambayan, i-save ang pangalan mo, at ma-notify kapag may gustong magkita."
     },
     "create_hangout": {
-      "pageTitle": "Magsimula ng hangout",
+      "pageTitle": "Magsimula ng tambayan",
       "title": "Pwedeng mag-browse ang mga Ghost, pero hindi mag-host.",
-      "sub": "Mag-sign up para magsimula ng hangout, i-save ang pangalan mo, at akitin ang mga tao na sumali."
+      "sub": "Mag-sign up para magsimula ng tambayan, i-save ang pangalan mo, at akitin ang mga tao na sumali."
     }
   },
   "welcome": {
@@ -43,7 +43,7 @@
   "joiningDefault": "Kumokonekta sa chat…",
   "tryAgain": "Subukan ulit",
   "feed": {
-    "hangoutTag": "Hangout",
+    "hangoutTag": "Tambayan",
     "eventTag": "Event",
     "public": "Public",
     "activeNow": "● Aktibo ngayon",
@@ -57,7 +57,7 @@
     "groupPublic": "Public Events",
     "groupPublicTicket": "🎫 Public Events",
     "createEvent": "Gumawa ng event",
-    "startHangout": "Magsimula ng hangout ⚡",
+    "startHangout": "Magsimula ng tambayan ⚡",
     "openPlace": "Buksan ang lugar mo",
     "loadError": "Hindi ma-load ang mga event",
     "loadErrorSub": "Subukan ulit mamaya o gumawa ng bago sa {{city}}.",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "Buhayin ang {{city}}. Magsimula ng recurring event sa paborito mong lugar.",
     "emptySub": "Maging una sa pagpapangyari ng bagay sa {{city}}",
     "noEvents": "Walang event ngayon",
-    "noHangouts": "Wala pang hangouts",
+    "noHangouts": "Wala pang tambayan",
     "noEventsSub": "Maging una sa paggawa ng isa sa {{city}}",
-    "noHangoutsSub": "Magsimula ng hangout at pag-usapin ang lungsod",
+    "noHangoutsSub": "Magsimula ng tambayan at pag-usapin ang lungsod",
     "filterAll": "Lahat",
     "seeComing": "Tingnan ang paparating 🔮",
     "seeHappened": "tingnan ang nangyari",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "Mode",
     "you": "(ikaw)",
-    "hereNow": "Here now",
+    "hereNow": "Nandito ngayon",
     "noMatchLive": "Walang tumugma sa mga filter na ito ngayon.",
+    "legends": "Mga Alamat ng Hilads",
     "legendsSub": "Sila ang nagpapangyari sa lungsod",
     "cityCrew": "City crew",
     "noMatchCrew": "Walang miyembrong tumugma sa mga filter na ito.",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "Ano ang plano?",
-    "hangoutTitle": "Magsimula ng hangout",
+    "hangoutTitle": "Magsimula ng tambayan",
     "hangoutSub": "Instant — hayaang sumali ang mga tao ngayon",
     "eventTitle": "Gumawa ng event",
     "eventSub": "Magplano ng pwedeng salihan ng iba"
   },
   "goingModal": {
     "going": "sasama",
-    "inThisHangout": "sa hangout na ito",
+    "inThisHangout": "sa tambayan na ito",
     "loading": "Naglo-load…",
     "empty": "Wala pa — maging una sa pagsali! 🙌"
   },

@@ -27,10 +27,10 @@
     "drinks": "مشروبات", "party": "حفلة", "nightlife": "حياة ليلية", "music": "موسيقى",
     "live music": "موسيقى حية", "culture": "ثقافة", "art": "فن", "food": "طعام",
     "coffee": "قهوة", "sport": "رياضة", "fitness": "لياقة", "hiking": "مشي لمسافات",
-    "beach": "شاطئ", "wellness": "عافية", "travel": "سفر", "hangout": "hangout",
+    "beach": "شاطئ", "wellness": "عافية", "travel": "سفر", "hangout": "لقاء",
     "socializing": "تواصل اجتماعي", "gaming": "ألعاب", "tech": "تقنية", "dating": "مواعدة"
   },
-  "noHangouts": "لا توجد hangouts بعد — ابدأ واحدًا ⚡",
+  "noHangouts": "لا توجد لقاءات بعد — ابدأ واحدًا ⚡",
   "host": "المضيف",
   "going": "ذاهب",
   "noPlans": "لا توجد خطط بعد — جد شيئًا 🔥",

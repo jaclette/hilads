@@ -11,8 +11,8 @@
   },
   "tabs": {
     "interests": "Интересы",
-    "hangouts": "Hangouts",
-    "events": "Events",
+    "hangouts": "Тусовки",
+    "events": "События",
     "friends": "Друзья",
     "vibes": "Vibes"
   },
@@ -77,7 +77,7 @@
     "storyPlaceholder": "Что-то, что ты любишь в этом городе"
   },
   "hangouts": {
-    "empty": "Пока нет hangouts — начни свой ⚡",
+    "empty": "Пока нет тусовок — начни свою ⚡",
     "host": "Организатор"
   },
   "events": {

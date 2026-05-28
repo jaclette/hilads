@@ -13,14 +13,14 @@
       "sub": "Buat akun untuk membuka profil, terhubung dengan orang, dan membangun crew kotamu."
     },
     "join_hangout": {
-      "pageTitle": "Gabung hangout",
-      "title": "Ghost bisa lihat-lihat, tapi tidak bisa gabung hangout.",
-      "sub": "Daftar untuk gabung hangout, menyimpan namamu, dan dapat pemberitahuan saat orang ingin bertemu."
+      "pageTitle": "Gabung nongkrong",
+      "title": "Ghost bisa lihat-lihat, tapi tidak bisa gabung nongkrong.",
+      "sub": "Daftar untuk gabung nongkrong, menyimpan namamu, dan dapat pemberitahuan saat orang ingin bertemu."
     },
     "create_hangout": {
-      "pageTitle": "Mulai hangout",
+      "pageTitle": "Mulai nongkrong",
       "title": "Ghost bisa lihat-lihat, tapi tidak bisa jadi host.",
-      "sub": "Daftar untuk memulai hangout, menyimpan namamu, dan mengajak orang gabung."
+      "sub": "Daftar untuk memulai nongkrong, menyimpan namamu, dan mengajak orang gabung."
     }
   },
   "welcome": {
@@ -43,8 +43,8 @@
   "joiningDefault": "Bergabung dengan chat…",
   "tryAgain": "Coba lagi",
   "feed": {
-    "hangoutTag": "Hangout",
-    "eventTag": "Event",
+    "hangoutTag": "Nongkrong",
+    "eventTag": "Acara",
     "public": "Publik",
     "activeNow": "● Aktif sekarang",
     "repliesNew": "Belum ada balasan — jadilah yang pertama",
@@ -53,11 +53,11 @@
     "going_one": "🙌 {{count}} ikut",
     "going_other": "🙌 {{count}} ikut",
     "hostedBy": "Dipandu oleh {{name}}",
-    "groupHilads": "Hilads Events",
-    "groupPublic": "Public Events",
-    "groupPublicTicket": "🎫 Public Events",
+    "groupHilads": "Acara Hilads",
+    "groupPublic": "Acara publik",
+    "groupPublicTicket": "🎫 Acara publik",
     "createEvent": "Buat acara",
-    "startHangout": "Mulai hangout ⚡",
+    "startHangout": "Mulai nongkrong ⚡",
     "openPlace": "Buka tempatmu",
     "loadError": "Tidak bisa memuat acara",
     "loadErrorSub": "Tarik untuk coba lagi nanti atau buat sesuatu yang baru di {{city}}.",
@@ -66,9 +66,9 @@
     "emptyLocalSub": "Buat {{city}} terasa hidup. Mulai acara rutin di tempat favoritmu.",
     "emptySub": "Jadilah yang pertama bikin sesuatu terjadi di {{city}}",
     "noEvents": "Belum ada acara sekarang",
-    "noHangouts": "Belum ada hangout",
+    "noHangouts": "Belum ada nongkrong",
     "noEventsSub": "Jadilah yang pertama membuatnya di {{city}}",
-    "noHangoutsSub": "Mulai hangout dan buat kota ramai bicara",
+    "noHangoutsSub": "Mulai nongkrong dan buat kota ramai bicara",
     "filterAll": "Semua",
     "seeComing": "Lihat yang akan datang 🔮",
     "seeHappened": "lihat apa yang terjadi",
@@ -92,8 +92,9 @@
     "filterVibe": "Vibe",
     "filterMode": "Mode",
     "you": "(kamu)",
-    "hereNow": "Here now",
+    "hereNow": "Di sini sekarang",
     "noMatchLive": "Tidak ada yang cocok dengan filter ini sekarang.",
+    "legends": "Legenda Hilads",
     "legendsSub": "Mereka yang bikin kota hidup",
     "cityCrew": "Crew kota",
     "noMatchCrew": "Tidak ada anggota yang cocok dengan filter ini.",
@@ -119,14 +120,14 @@
   },
   "create": {
     "title": "Mau ngapain?",
-    "hangoutTitle": "Mulai hangout",
+    "hangoutTitle": "Mulai nongkrong",
     "hangoutSub": "Instan — biarkan orang gabung denganmu sekarang",
     "eventTitle": "Buat acara",
     "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain"
   },
   "goingModal": {
     "going": "ikut",
-    "inThisHangout": "di hangout ini",
+    "inThisHangout": "di nongkrong ini",
     "loading": "Memuat…",
     "empty": "Belum ada siapa-siapa — jadilah yang pertama gabung! 🙌"
   },

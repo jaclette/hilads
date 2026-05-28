@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "شارك شيئًا 👀",
+    "snap": "التقط صورة",
+    "snapDesc": "التقط صورة أو ارفعها",
+    "spot": "حدّد موقعك",
+    "spotDesc": "شارك موقعك الحالي",
+    "spotLoading": "جارٍ تحديد موقعك…"
+  },
+  "locationPicker": {
+    "title": "أين أنت؟ 👀",
+    "search": "ابحث عن عنوان أو مكان",
+    "moveHint": "حرّك الخريطة للضبط",
+    "noResults": "لم يتم العثور على أماكن",
+    "loading": "جارٍ تحديد الموقع…",
+    "confirm": "شارك هذا المكان",
+    "yourLocation": "موقعك",
+    "close": "إغلاق",
+    "clearSearch": "مسح البحث"
+  },
   "language": "اللغة",
   "cancel": "إلغاء",
   "loading": "جارٍ التحميل…",
@@ -47,9 +66,9 @@
   },
   "badge": {
     "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "fresh": "✨ جديد",
+    "regular": "😎 من الطاقم",
+    "host": "👑 أسطورة"
   },
   "vibe": {
     "party": "حفلة",

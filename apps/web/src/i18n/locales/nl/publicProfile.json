@@ -30,12 +30,12 @@
   "from": "Uit",
   "age": "Leeftijd",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "Vrienden",
+    "hangouts": "Meetups", "events": "Evenementen", "friends": "Vrienden",
     "vibes": "Vibes", "picks": "Tips uit de stad 👑"
   },
   "host": "Host",
   "live": "LIVE",
-  "empty": { "hangouts": "Nog geen hangouts", "events": "Nog geen evenementen", "friends": "Nog geen vrienden" },
+  "empty": { "hangouts": "Nog geen meetups", "events": "Nog geen evenementen", "friends": "Nog geen vrienden" },
   "vibesTab": {
     "score": "{{score}} vibe-score",
     "basedOn_one": "gebaseerd op {{count}} vibe",

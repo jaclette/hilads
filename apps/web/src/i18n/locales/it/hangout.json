@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "Lancia un hangout",
-    "editTitle": "Modifica l'hangout",
+    "startTitle": "Lancia un ritrovo",
+    "editTitle": "Modifica il ritrovo",
     "category": "Categoria",
     "cat": { "general": "Generale", "tips": "Consigli", "food": "Cibo", "drinks": "Drink", "help": "Aiuto", "meetup": "Incontro" },
     "titleLabel": "A cosa stai pensando?",
@@ -13,25 +13,25 @@
     "saving": "Salvataggio…",
     "starting": "Avvio…",
     "saveChanges": "Salva",
-    "startCta": "Lancia un hangout ⚡",
+    "startCta": "Lancia un ritrovo ⚡",
     "limitHeader": "Uno alla volta",
-    "limitTitle": "Hai già un hangout",
-    "limitSub": "Puoi avere un solo hangout alla volta. Vai su «{{title}}» o eliminalo per lanciarne uno nuovo.",
-    "limitGo": "Vai al mio hangout →",
-    "yourHangout": "il tuo hangout"
+    "limitTitle": "Hai già un ritrovo",
+    "limitSub": "Puoi avere un solo ritrovo alla volta. Vai su «{{title}}» o eliminalo per lanciarne uno nuovo.",
+    "limitGo": "Vai al mio ritrovo →",
+    "yourHangout": "il tuo ritrovo"
   },
-  "deleteConfirm": "Eliminare questo hangout? Questo lo termina per tutti ed è irreversibile.",
+  "deleteConfirm": "Eliminare questo ritrovo? Questo lo termina per tutti ed è irreversibile.",
   "deleteFailedAlert": "Impossibile eliminare. Riprova.",
-  "shareAria": "Condividi l'hangout",
-  "shareTitle": "Condividi questo hangout",
+  "shareAria": "Condividi il ritrovo",
+  "shareTitle": "Condividi questo ritrovo",
   "members": {
     "oneIn": "{{name}} partecipa",
-    "countIn": "{{count}} in questo hangout",
+    "countIn": "{{count}} in questo ritrovo",
     "seeAll": "Vedi tutto →"
   },
   "owner": { "edit": "✏️ Modifica", "delete": "🗑 Elimina" },
   "gated": {
-    "title": "Hangout solo per membri",
+    "title": "Ritrovo solo per membri",
     "pending": "Richiesta in sospeso — potrai partecipare alla conversazione non appena un membro accetta.",
     "prompt": "Chiedi di partecipare per vedere la conversazione e chattare.",
     "requestBtn": "Chiedi di partecipare"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "Qualcuno",
     "wantsToJoin": " vuole partecipare",
-    "joined": " ha partecipato all'hangout",
+    "joined": " ha partecipato al ritrovo",
     "askedToJoin": " ha chiesto di partecipare",
     "decline": "Rifiuta",
     "accept": "Accetta",

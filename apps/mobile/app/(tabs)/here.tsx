@@ -376,7 +376,7 @@ export default function HereScreen() {
           <>
             <View style={[styles.sectionHeader, { marginTop: Spacing.xl, flexDirection: 'column', alignItems: 'flex-start', gap: 2 }]}>
               <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: Colors.text }]}>
-                👑 Hilads Legends
+                👑 {t('legends')}
               </Text>
               <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>{t('legendsSub')}</Text>
             </View>

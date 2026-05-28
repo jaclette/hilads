@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "分享點什麼 👀",
+    "snap": "拍張照片",
+    "snapDesc": "拍攝或上傳照片",
+    "spot": "分享你的位置",
+    "spotDesc": "分享你目前的位置",
+    "spotLoading": "正在取得你的位置…"
+  },
+  "locationPicker": {
+    "title": "你在哪裡？👀",
+    "search": "搜尋地址或地點",
+    "moveHint": "移動地圖進行調整",
+    "noResults": "找不到地點",
+    "loading": "正在取得位置…",
+    "confirm": "分享這個位置",
+    "yourLocation": "你的位置",
+    "close": "關閉",
+    "clearSearch": "清除搜尋"
+  },
   "language": "語言",
   "cancel": "取消",
   "loading": "載入中…",
@@ -47,9 +66,9 @@
   },
   "badge": {
     "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "fresh": "✨ 新人",
+    "regular": "😎 熟客",
+    "host": "👑 傳奇"
   },
   "vibe": {
     "party": "派對",

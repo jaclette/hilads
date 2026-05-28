@@ -1,7 +1,7 @@
 {
   "create": {
-    "startTitle": "发起一个 hangout",
-    "editTitle": "编辑 hangout",
+    "startTitle": "发起一个聚会",
+    "editTitle": "编辑聚会",
     "category": "分类",
     "cat": { "general": "综合", "tips": "贴士", "food": "美食", "drinks": "喝一杯", "help": "求助", "meetup": "聚会" },
     "titleLabel": "你在想什么？",
@@ -13,25 +13,25 @@
     "saving": "保存中…",
     "starting": "发起中…",
     "saveChanges": "保存更改",
-    "startCta": "发起一个 hangout ⚡",
+    "startCta": "发起一个聚会 ⚡",
     "limitHeader": "一次一个",
-    "limitTitle": "你已经有一个 hangout 了",
-    "limitSub": "你一次只能运行一个 hangout。去“{{title}}”看看，或删除它来发起新的。",
-    "limitGo": "前往我的 hangout →",
-    "yourHangout": "你的 hangout"
+    "limitTitle": "你已经有一个聚会了",
+    "limitSub": "你一次只能运行一个聚会。去“{{title}}”看看，或删除它来发起新的。",
+    "limitGo": "前往我的聚会 →",
+    "yourHangout": "你的聚会"
   },
-  "deleteConfirm": "删除这个 hangout？这会为所有人结束它，且无法撤销。",
+  "deleteConfirm": "删除这个聚会？这会为所有人结束它，且无法撤销。",
   "deleteFailedAlert": "无法删除。请重试。",
-  "shareAria": "分享 hangout",
-  "shareTitle": "分享这个 hangout",
+  "shareAria": "分享聚会",
+  "shareTitle": "分享这个聚会",
   "members": {
     "oneIn": "{{name}} 加入了",
-    "countIn": "{{count}} 人在这个 hangout 里",
+    "countIn": "{{count}} 人在这个聚会里",
     "seeAll": "查看全部 →"
   },
   "owner": { "edit": "✏️ 编辑", "delete": "🗑 删除" },
   "gated": {
-    "title": "仅限成员的 hangout",
+    "title": "仅限成员的聚会",
     "pending": "请求待处理 — 成员接受后你就能加入对话。",
     "prompt": "请求加入以查看对话并参与聊天。",
     "requestBtn": "请求加入"
@@ -45,7 +45,7 @@
   "joinReq": {
     "someone": "有人",
     "wantsToJoin": " 想加入",
-    "joined": " 加入了 hangout",
+    "joined": " 加入了聚会",
     "askedToJoin": " 申请加入",
     "decline": "拒绝",
     "accept": "接受",

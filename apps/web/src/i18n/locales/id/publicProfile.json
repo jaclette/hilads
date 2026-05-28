@@ -30,12 +30,12 @@
   "from": "Dari",
   "age": "Usia",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "Teman",
+    "hangouts": "Nongkrong", "events": "Acara", "friends": "Teman",
     "vibes": "Vibes", "picks": "Rekomendasi 👑"
   },
   "host": "Host",
   "live": "LIVE",
-  "empty": { "hangouts": "Belum ada hangout", "events": "Belum ada acara", "friends": "Belum ada teman" },
+  "empty": { "hangouts": "Belum ada nongkrong", "events": "Belum ada acara", "friends": "Belum ada teman" },
   "vibesTab": {
     "score": "skor vibe {{score}}",
     "basedOn_one": "berdasarkan {{count}} vibe",

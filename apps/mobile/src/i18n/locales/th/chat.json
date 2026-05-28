@@ -31,7 +31,7 @@
   "left": "{{name}} ออกไปแล้ว",
   "joinReq": {
     "wantsToJoin": " อยากเข้าร่วม",
-    "joinedHangout": " เข้าร่วม hangout แล้ว",
+    "joinedHangout": " เข้าร่วมนัดเจอแล้ว",
     "askedToJoin": " ขอเข้าร่วม",
     "decline": "ปฏิเสธ",
     "accept": "ยอมรับ",

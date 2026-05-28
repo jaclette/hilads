@@ -1,4 +1,23 @@
 {
+  "share": {
+    "title": "무언가 공유하기 👀",
+    "snap": "사진 찍기",
+    "snapDesc": "사진을 찍거나 업로드하세요",
+    "spot": "내 위치 공유",
+    "spotDesc": "현재 위치를 공유하세요",
+    "spotLoading": "위치를 가져오는 중…"
+  },
+  "locationPicker": {
+    "title": "지금 어디에 있나요? 👀",
+    "search": "주소 또는 장소 검색",
+    "moveHint": "지도를 움직여 조정하세요",
+    "noResults": "장소를 찾을 수 없습니다",
+    "loading": "위치 가져오는 중…",
+    "confirm": "이 위치 공유",
+    "yourLocation": "내 위치",
+    "close": "닫기",
+    "clearSearch": "검색 지우기"
+  },
   "language": "언어",
   "cancel": "취소",
   "loading": "불러오는 중…",
@@ -47,9 +66,9 @@
   },
   "badge": {
     "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "fresh": "✨ 새내기",
+    "regular": "😎 단골",
+    "host": "👑 전설"
   },
   "vibe": {
     "party": "파티",
