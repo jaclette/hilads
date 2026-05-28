@@ -120,7 +120,7 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
 export default function EventDetailScreen() {
   const router = useRouter();
   const { t } = useTranslation('event');
-  const { id: routeParam } = useLocalSearchParams<{ id: string }>();
+  const { id: routeParam, autojoin } = useLocalSearchParams<{ id: string; autojoin?: string }>();
   // The route param can be a slug (`cong-ca-phe-2e617620a3f3b6f7`) or a bare
   // hex ID. Backend, WS rooms, analytics all key off the canonical hex.
   // `id` everywhere below is the hex; only the URL bar / share path uses slug.
@@ -244,6 +244,16 @@ export default function EventDetailScreen() {
     await toggleParticipation();
     fetchEventParticipants(id, identity?.guestId).then(({ participants: p }) => setParticipants(p));
   }, [event, toggleParticipation, id, identity?.guestId]);
+
+  // Auto-join when arriving from the "Join" push action (?autojoin=1). Fires once,
+  // and only if not already in — never toggles an existing participant back out.
+  const autoJoinedRef = useRef(false);
+  useEffect(() => {
+    if (autojoin === '1' && event && !event.is_participating && !toggling && !autoJoinedRef.current) {
+      autoJoinedRef.current = true;
+      handleToggle();
+    }
+  }, [autojoin, event, toggling, handleToggle]);
 
   // Join / leave WS event room so the server routes newMessage events here
   useEffect(() => {

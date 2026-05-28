@@ -167,6 +167,7 @@ class MobilePushService
             $category = match ($type) {
                 'friend_request_received' => 'friend_request',
                 'join_request'            => 'join_request',
+                'new_event'               => 'new_event',
                 default                   => null,
             };
 

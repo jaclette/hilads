@@ -63,12 +63,25 @@ export async function setupNotificationChannel(): Promise<void> {
 // NotificationHandler.tsx (acts directly without opening the app).
 export async function setupNotificationCategories(): Promise<void> {
   try {
-    const actions = [
+    // Friend request: act in the background, never open the app.
+    await Notifications.setNotificationCategoryAsync('friend_request', [
       { identifier: 'accept',  buttonTitle: 'Accept',  options: { opensAppToForeground: false } },
       { identifier: 'decline', buttonTitle: 'Decline', options: { opensAppToForeground: false, isDestructive: true } },
-    ];
-    await Notifications.setNotificationCategoryAsync('friend_request', actions);
-    await Notifications.setNotificationCategoryAsync('join_request', actions);
+    ]);
+
+    // Hangout join request: accepting opens the app and lands on the hangout so
+    // the host sees it worked (otherwise it feels like nothing happened).
+    // Declining stays silent in the background.
+    await Notifications.setNotificationCategoryAsync('join_request', [
+      { identifier: 'accept',  buttonTitle: 'Accept',  options: { opensAppToForeground: true } },
+      { identifier: 'decline', buttonTitle: 'Decline', options: { opensAppToForeground: false, isDestructive: true } },
+    ]);
+
+    // New event in your city: one-tap Join opens the event and auto-joins it.
+    // Reuses the already-translated event "join" label.
+    await Notifications.setNotificationCategoryAsync('new_event', [
+      { identifier: 'join', buttonTitle: i18n.t('join', { ns: 'event' }), options: { opensAppToForeground: true } },
+    ]);
     console.log('[push-mobile] notification categories registered');
   } catch (e) {
     console.warn('[push-mobile] setNotificationCategoryAsync failed:', String(e));

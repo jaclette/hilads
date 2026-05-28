@@ -26,15 +26,36 @@ import { track } from '@/services/analytics';
 
 const _coldStartPromise = Notifications.getLastNotificationResponseAsync().catch(() => null);
 
+// Cold-start is consumed exactly once across BOTH callers (useAppBoot via
+// getColdStartNotificationRoute, and the component mount effect). The guard
+// prevents double navigation AND double side-effects (e.g. an Accept action
+// button firing its API call twice).
+let _coldStartConsumed = false;
+
 /**
- * Returns the deep-link route the user should land on if they cold-started the
- * app by tapping a push notification, or null if there was no such notification.
- * Safe to call multiple times — reuses the same single promise.
+ * Resolve the cold-start notification once. For a plain tap it returns the deep
+ * link; for an action button (Join / Accept / Decline) it performs the action's
+ * side-effect and returns the route to land on afterwards. Returns null if there
+ * was no cold-start notification, or if it was already consumed by the other caller.
+ */
+async function consumeColdStart(): Promise<string | null> {
+  const response = await _coldStartPromise;
+  if (!response || _coldStartConsumed) return null;
+  _coldStartConsumed = true;
+  const data     = response.notification.request.content.data as NotifData;
+  const actionId = response.actionIdentifier;
+  if (actionId === 'accept' || actionId === 'decline' || actionId === 'join') {
+    return handleNotificationAction(data, actionId);
+  }
+  return resolveRoute(data);
+}
+
+/**
+ * Returns the route the user should land on if they cold-started the app by
+ * tapping a push notification (or an action button on it), or null otherwise.
  */
 export async function getColdStartNotificationRoute(): Promise<string | null> {
-  const response = await _coldStartPromise;
-  if (!response) return null;
-  const route = resolveRoute(response.notification.request.content.data as NotifData);
+  const route = await consumeColdStart();
   console.log('[push-nav] cold-start notification check → route:', route ?? 'none');
   return route;
 }
@@ -101,18 +122,33 @@ Notifications.setNotificationHandler({
 
 // ── Route resolver ────────────────────────────────────────────────────────────
 
-// Handle an Accept/Decline action button tapped on a push notification — calls
-// the API directly so the user never has to open the app. Best-effort.
-function handleNotificationAction(data: NotifData, action: 'accept' | 'decline'): void {
+// Handle an action button tapped on a push notification. Performs the side-effect
+// (API call) and returns the route to navigate to afterwards, or null to stay put.
+// Best-effort — API failures are logged, never thrown.
+function handleNotificationAction(data: NotifData, action: string): string | null {
   console.log('[push-action]', action, '| type:', data.type ?? '(none)');
   track('notification_action', { type: data.type ?? 'unknown', action });
+
+  // "Join" on a new-event push → open the event and auto-join there (the event
+  // screen owns the join logic, so the button just deep-links with autojoin=1).
+  if (action === 'join') {
+    return data.type === 'new_event' && data.eventId ? `/event/${data.eventId}?autojoin=1` : null;
+  }
+
   if (data.type === 'friend_request_received' && data.requestId) {
     const p = action === 'accept' ? acceptFriendRequest(data.requestId) : declineFriendRequest(data.requestId);
     p.catch(err => console.warn('[push-action] friend request failed:', String(err)));
-  } else if (data.type === 'join_request' && data.topicId && data.requestId) {
+    return null; // friend request resolves in-place; no navigation
+  }
+
+  if (data.type === 'join_request' && data.topicId && data.requestId) {
     resolveHangoutJoinRequest(data.topicId, data.requestId, action === 'accept' ? 'accept' : 'reject')
       .catch(err => console.warn('[push-action] join request failed:', String(err)));
+    // After accepting, open the hangout so the host sees it actually worked.
+    return action === 'accept' ? `/topic/${data.topicId}` : null;
   }
+
+  return null;
 }
 
 function resolveRoute(data: NotifData): string | null {
@@ -213,10 +249,7 @@ export function NotificationHandler() {
     setupNotificationChannel();
     setupNotificationCategories();
 
-    _coldStartPromise.then(response => {
-      if (!response) return;
-      const data  = response.notification.request.content.data as NotifData;
-      const route = resolveRoute(data);
+    consumeColdStart().then(route => {
       if (route) {
         console.log('[push-nav] cold-start route stored in pendingRoute:', route);
         pendingRoute.current = route;
@@ -244,10 +277,15 @@ export function NotificationHandler() {
     const sub = Notifications.addNotificationResponseReceivedListener(response => {
       const data  = response.notification.request.content.data as NotifData;
 
-      // Accept / Decline action button tapped → act directly, no navigation.
+      // Action button tapped (Join / Accept / Decline) → run its side-effect,
+      // then navigate to the route it returns (Join → event, Accept → hangout).
       const actionId = response.actionIdentifier;
-      if (actionId === 'accept' || actionId === 'decline') {
-        handleNotificationAction(data, actionId);
+      if (actionId === 'accept' || actionId === 'decline' || actionId === 'join') {
+        const actionRoute = handleNotificationAction(data, actionId);
+        if (actionRoute) {
+          if (bootingRef.current) pendingRoute.current = actionRoute;
+          else router.push(actionRoute as Parameters<typeof router.push>[0]);
+        }
         return;
       }
 
