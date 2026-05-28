@@ -1,4 +1,14 @@
 {
+  "accountWelcome": {
+    "title": "Selamat, {{username}}! 🎉",
+    "subtitle": "Akunmu sudah siap — ini yang bisa kamu lakukan sekarang 👇",
+    "f1": "🎉 Mulai nongkrong dan kumpulkan orang sekarang juga",
+    "f2": "📅 Adakan acara di kotamu",
+    "f3": "💬 Kirim pesan pribadi ke siapa saja",
+    "f4": "📍 Lihat siapa yang ada di dekatmu, langsung",
+    "f5": "🤝 Terhubung dengan warga lokal dan para penjelajah",
+    "cta": "Ayo mulai 🚀"
+  },
   "onboarding": {
     "slide1Title": "Kamu di {{city}}",
     "slide1Body": "Ini chat langsung kotamu. Lihat apa yang lagi seru dan sapa semua orang.",

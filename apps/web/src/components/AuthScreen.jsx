@@ -56,7 +56,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
       const data = tab === 'signup'
         ? await authSignup(email, password, username, username, guestId, mode, true /* eulaAccepted */)
         : await authLogin(email, password)
-      onSuccess(data.user)
+      onSuccess(data.user, tab === 'signup')
     } catch (err) {
       setError(err.message)
     } finally {

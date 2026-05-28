@@ -1,4 +1,14 @@
 {
+  "accountWelcome": {
+    "title": "Parabéns, {{username}}! 🎉",
+    "subtitle": "A tua conta está pronta — vê o que podes fazer agora 👇",
+    "f1": "🎉 Começa um convívio e junta as pessoas agora mesmo",
+    "f2": "📅 Organiza um evento na tua cidade",
+    "f3": "💬 Envia uma mensagem privada a qualquer pessoa",
+    "f4": "📍 Vê quem está por perto, em direto",
+    "f5": "🤝 Liga-te a locais e exploradores",
+    "cta": "Vamos lá 🚀"
+  },
   "onboarding": {
     "slide1Title": "Estás em {{city}}",
     "slide1Body": "Este é o chat ao vivo da tua cidade. Vê o que se passa e diz olá.",

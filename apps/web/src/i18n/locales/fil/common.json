@@ -1,4 +1,14 @@
 {
+  "accountWelcome": {
+    "title": "Congrats, {{username}}! 🎉",
+    "subtitle": "Ready na ang account mo — eto ang pwede mong gawin ngayon 👇",
+    "f1": "🎉 Mag-start ng tambayan at tipunin ang mga tao ngayon din",
+    "f2": "📅 Mag-organize ng event sa city mo",
+    "f3": "💬 Magpadala ng private message kahit kanino",
+    "f4": "📍 Tingnan kung sino ang malapit, live",
+    "f5": "🤝 Makipag-connect sa mga local at explorer",
+    "cta": "Tara na 🚀"
+  },
   "onboarding": {
     "slide1Title": "Nasa {{city}} ka",
     "slide1Body": "Ito ang live chat ng iyong city. Tingnan kung anong buzzing at mag-hi ka.",

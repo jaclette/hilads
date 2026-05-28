@@ -52,6 +52,7 @@ interface AppState {
   onlineUsers:          OnlineUser[];    // live presence list for the current city
   bootstrapData:        BootstrapData | null; // pre-loaded from /bootstrap, consumed once by tabs
   showOnboarding:       boolean;         // first-time guest carousel visibility (auto-show + "?" reopen)
+  showAccountWelcome:   boolean;         // one-time congrats screen shown right after signup
   // Monotonic counter bumped when a chat reminder card auto-dismisses; the tab
   // bar watches it to pulse the NOW icon once. Throttled so a burst = one pulse.
   nowPulse:             number;
@@ -83,6 +84,7 @@ interface AppActions {
   setOnlineUsers:          (users: OnlineUser[]) => void;
   setBootstrapData:        (data: BootstrapData | null) => void;
   setShowOnboarding:       (show: boolean) => void;
+  setShowAccountWelcome:   (show: boolean) => void;
   /** Signal the NOW tab to pulse once (e.g. a chat reminder faded). Throttled. */
   pulseNow:                () => void;
   setBlockedSet:           (set: BlockedSet) => void;
@@ -114,6 +116,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [onlineUsers,    setOnlineUsers]    = useState<OnlineUser[]>([]);
   const [bootstrapData,  setBootstrapData]  = useState<BootstrapData | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showAccountWelcome, setShowAccountWelcome] = useState(false);
   const [nowPulse,       setNowPulse]       = useState(0);
   const lastPulseAtRef   = useRef(0);
   const [blockedSet,     setBlockedSetRaw]  = useState<BlockedSet>(EMPTY_BLOCKED_SET);
@@ -205,7 +208,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       value={{
         booting, bootError, identity, sessionId, account, city, wsConnected,
         unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-        geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, nowPulse, blockedSet,
+        geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
         setBooting, setBootError,
         setIdentity,
         setSessionId:            useCallback((id: string) => setSessionId(id), []),
@@ -225,6 +228,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setOnlineUsers:          useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
         setBootstrapData:        useCallback((d: BootstrapData | null) => setBootstrapData(d), []),
         setShowOnboarding:       useCallback((s: boolean) => setShowOnboarding(s), []),
+        setShowAccountWelcome:   useCallback((s: boolean) => setShowAccountWelcome(s), []),
         pulseNow,
         setBlockedSet,
         addBlocked,

@@ -25,7 +25,7 @@ export default function SignUpScreen() {
   const router = useRouter();
   const { t } = useTranslation('auth');
   const {
-    setAccount, setJoined, setCity, setIdentity,
+    setAccount, setJoined, setCity, setIdentity, setShowAccountWelcome,
     identity, sessionId,
     joined,        // false when coming from the pre-join landing screen
     detectedCity,  // geo-resolved city waiting to be joined
@@ -84,6 +84,7 @@ export default function SignUpScreen() {
       const guestId = identity?.guestId ?? '';
       const { user } = await authSignup(e, p, username, username, guestId, mode, true /* eulaAccepted */);
       setAccount(user);
+      setShowAccountWelcome(true);   // one-time congrats screen (rendered in the root layout)
       identifyUser(user.id, { account_type: 'registered', username: user.username ?? user.display_name });
       setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null });
       track('user_authenticated');

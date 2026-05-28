@@ -25,6 +25,7 @@ import TopicChatPage from './components/TopicChatPage'
 import OnboardingCarousel from './components/OnboardingCarousel'
 import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
+import AccountWelcome from './components/AccountWelcome'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
 import ProfileScreen from './components/ProfileScreen'
@@ -889,6 +890,7 @@ export default function App() {
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
   const [showAuthScreenTab, setShowAuthScreenTab] = useState('signup') // 'signup' | 'login'
+  const [showAccountWelcome, setShowAccountWelcome] = useState(false)  // one-time congrats, shown after signup only
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
@@ -3364,11 +3366,12 @@ export default function App() {
           guestId={guest?.guestId ?? loadGuestId() ?? undefined}
           guestNickname={nickname}
           initialTab={obAuthInitialTab}
-          onSuccess={(user) => {
+          onSuccess={(user, isSignup) => {
             localStorage.setItem(AUTH_FLAG_KEY, '1') // skip useless authMe() 401 on next boot
             accountRef.current = user // sync ref before handleJoin reads it
             setAccount(user)
             setObShowAuth(false)
+            if (isSignup) setShowAccountWelcome(true)
             identifyUser(user.id, { account_type: 'registered', username: user.display_name })
             setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })
             track('user_authenticated')
@@ -5189,12 +5192,13 @@ export default function App() {
           guestId={guest?.guestId}
           guestNickname={nickname}
           initialTab={showAuthScreenTab}
-          onSuccess={(user) => {
+          onSuccess={(user, isSignup) => {
             localStorage.setItem(AUTH_FLAG_KEY, '1') // skip useless authMe() 401 on next boot
             accountRef.current = user // sync ref so closures see updated identity immediately
             setAccount(user)
             setShowAuthScreen(false)
             setShowProfileDrawer(false)
+            if (isSignup) setShowAccountWelcome(true)
             identifyUser(user.id, { account_type: 'registered', username: user.display_name })
             setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })
             track('user_authenticated')
@@ -5518,6 +5522,14 @@ export default function App() {
             markOnboardingSeen()
             setShowOnboarding(false)
           }}
+        />
+      )}
+
+      {/* One-time congrats screen, shown right after account creation (signup only). */}
+      {showAccountWelcome && account && (
+        <AccountWelcome
+          username={account.username ?? account.display_name ?? ''}
+          onClose={() => setShowAccountWelcome(false)}
         />
       )}
     </div>

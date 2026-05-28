@@ -10189,3 +10189,87 @@ body.has-app-promo-banner .page-header {
   text-decoration: underline;
 }
 .onboarding-signup-link:hover { color: var(--text); }
+
+/* ── Account welcome (post-signup congrats) ───────────────────────────────── */
+.account-welcome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--bg, #0d0b09);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+.account-welcome-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--surface, #161210);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text, #fff);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.account-welcome-card {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+.account-welcome-emoji { font-size: 64px; line-height: 1; }
+.account-welcome-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text, #fff);
+  margin: 0;
+}
+.account-welcome-subtitle {
+  font-size: 0.95rem;
+  color: var(--muted, rgba(255, 255, 255, 0.6));
+  margin: 0 0 8px;
+}
+.account-welcome-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.account-welcome-features li {
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--text, #fff);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  padding: 13px 15px;
+}
+.account-welcome-cta {
+  margin-top: 8px;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 14px;
+  background: var(--accent, #FF7A3C);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 122, 60, 0.3);
+}
+.account-welcome-cta:active { transform: scale(0.98); }

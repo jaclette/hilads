@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 import { acceptEula } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
+import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -43,7 +44,7 @@ console.log('[layout] ── MODULE LOADED ────────────�
 
 function RootLayoutInner() {
   const app = useApp();
-  const { booting, bootError, joined, account, city, sessionId, identity, setAccount } = app;
+  const { booting, bootError, joined, account, city, sessionId, identity, setAccount, showAccountWelcome, setShowAccountWelcome } = app;
   // DIAG (shaking repro): the auth gate is confirmed stable (guest landing), so
   // the loop driver is some OTHER context value. Log the full relevant state
   // every render — whichever field flips between consecutive lines is the
@@ -203,6 +204,13 @@ function RootLayoutInner() {
         loading={eulaSubmitting}
         error={eulaError}
         onAccept={handleAcceptEula}
+      />
+
+      {/* One-time congrats screen, shown right after signup (set in sign-up.tsx). */}
+      <AccountWelcome
+        visible={showAccountWelcome}
+        username={account?.username ?? account?.display_name ?? ''}
+        onClose={() => setShowAccountWelcome(false)}
       />
     </>
   );

@@ -1,4 +1,14 @@
 {
+  "accountWelcome": {
+    "title": "Chúc mừng, {{username}}! 🎉",
+    "subtitle": "Tài khoản của bạn đã sẵn sàng — đây là những gì bạn có thể làm ngay 👇",
+    "f1": "🎉 Mở một buổi tụ tập và rủ mọi người ngay bây giờ",
+    "f2": "📅 Tổ chức một sự kiện trong thành phố của bạn",
+    "f3": "💬 Gửi tin nhắn riêng cho bất kỳ ai",
+    "f4": "📍 Xem ai đang ở gần, theo thời gian thực",
+    "f5": "🤝 Kết nối với người địa phương và những người ưa khám phá",
+    "cta": "Bắt đầu thôi 🚀"
+  },
   "onboarding": {
     "slide1Title": "Bạn đang ở {{city}}",
     "slide1Body": "Đây là chat trực tiếp của thành phố bạn. Xem có gì đang sôi động và chào mọi người nhé.",
