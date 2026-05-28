@@ -55,7 +55,11 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
   // Track seen IDs to deduplicate WS + initial load + send
   const _initKey = (m: Message) => m.id ?? `${m.guestId ?? ''}:${m.createdAt}`;
   const seenIds        = useRef(new Set<string>(initialData ? initialData.messages.map(_initKey) : []));
-  const oldestIdRef    = useRef<string | null>(initialData && initialData.messages.length > 0 ? initialData.messages[0]?.id ?? null : null);
+  // Cursor = oldest message that HAS an id (not just messages[0]). City feeds
+  // interleave system messages (arrivals "X just landed", weather) that the API
+  // returns WITHOUT an id, so the true-oldest is often id-less; using it would
+  // null the cursor and silently kill load-older. DMs never hit this.
+  const oldestIdRef    = useRef<string | null>(initialData ? (initialData.messages.find(m => m.id)?.id ?? null) : null);
   const loadingOlderRef = useRef(false);              // guards against concurrent loadOlder calls
 
   // Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
@@ -125,7 +129,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
         if (msgs.length > 0) console.log('[messages] sample:', JSON.stringify(msgs[msgs.length - 1]));
       }
       seenIds.current  = new Set(msgs.map(m => msgKey(m)));
-      oldestIdRef.current = msgs.length > 0 ? msgs[0]?.id ?? null : null; // msgs[0] = oldest (ASC from backend)
+      oldestIdRef.current = msgs.find(m => m.id)?.id ?? null; // oldest id-bearing msg (skip id-less system messages)
       setMessages([...msgs].reverse()); // newest first for inverted FlatList
       setHasMore(more);
     } catch {
@@ -209,7 +213,11 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       });
 
       if (fresh.length > 0) {
-        oldestIdRef.current = older[0]?.id ?? null; // older[0] is the oldest of the new batch (ASC)
+        // Advance cursor to the oldest id-bearing message of this batch; keep the
+        // previous cursor if the batch is entirely id-less system messages, so
+        // pagination never stalls on a null cursor.
+        const nextCursor = older.find(m => m.id)?.id;
+        if (nextCursor) oldestIdRef.current = nextCursor;
         // Sort newest-first within the batch, then append to end of array
         // (end = visual top in inverted FlatList)
         const sorted = [...fresh].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));

@@ -1567,7 +1567,11 @@ export default function App() {
       fresh.forEach(m => knownIdsRef.current.add(messageKey(m)))
 
       if (fresh.length > 0) {
-        oldestMessageIdRef.current = msgs[0]?.id ?? null // msgs[0] is oldest (ASC order from backend)
+        // Cursor = oldest message that HAS an id; city/event feeds interleave
+        // id-less system messages (arrivals, weather) so msgs[0] is often id-less.
+        // Keep the previous cursor if this batch is all system messages.
+        const nextOldest = msgs.find(m => m.id)?.id
+        if (nextOldest) oldestMessageIdRef.current = nextOldest
         setFeed(prev => [...fresh.map(m => toFeedItem(m)).filter(Boolean), ...prev])
       }
 
@@ -2089,11 +2093,12 @@ export default function App() {
 
       setFeed(initialItems)
 
-      // Set pagination cursor: boot.messages[0] is the oldest message (backend returns ASC)
+      // Set pagination cursor: oldest message that HAS an id (system messages
+      // — arrivals/weather — come back id-less, so boot.messages[0] is often id-less).
       const more = boot.hasMore ?? false
       hasMoreMessagesRef.current = more
       setHasMoreMessages(more)
-      if (more && boot.messages.length > 0) oldestMessageIdRef.current = boot.messages[0]?.id ?? null
+      if (more) oldestMessageIdRef.current = boot.messages.find(m => m.id)?.id ?? null
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
       setOnlineCount(boot.onlineCount ?? null)
       setStatus('ready')
@@ -2822,11 +2827,11 @@ export default function App() {
       }))
       setFeed(initialItems)
 
-      // Set pagination cursor
+      // Set pagination cursor: oldest message that HAS an id (skip id-less system messages)
       const switchMore = boot.hasMore ?? false
       hasMoreMessagesRef.current = switchMore
       setHasMoreMessages(switchMore)
-      if (switchMore && boot.messages.length > 0) oldestMessageIdRef.current = boot.messages[0]?.id ?? null
+      if (switchMore) oldestMessageIdRef.current = boot.messages.find(m => m.id)?.id ?? null
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: activeNickname, isMe: true }])
       setOnlineCount(boot.onlineCount ?? null)
       if (joinKey) scheduleEphemeral(joinKey)
@@ -2977,7 +2982,7 @@ export default function App() {
         setFeed(prev => [...prev, ...items])
       }
       if (isInitial && latest.messages.length > 0) {
-        oldestMessageIdRef.current = latest.messages[0]?.id ?? null
+        oldestMessageIdRef.current = latest.messages.find(m => m.id)?.id ?? null // skip id-less system messages
         hasMoreMessagesRef.current = latest.hasMore ?? false
         setHasMoreMessages(latest.hasMore ?? false)
       }
