@@ -456,9 +456,14 @@ class NotificationRepository
         // Feed system message ("X just landed"). Others see it; the arriver's own
         // client self-filters it. One per genuine arrival (gated above).
         try {
-            MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId);
+            $joinMsg = MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId);
+            // Broadcast over WS so clients already in the city see the line live.
+            // Without this the join row is only written to the DB and appears for
+            // others on their NEXT fetch (app restart) — chat messages broadcast,
+            // arrivals didn't.
+            self::broadcastMessageToWs($channelId, $joinMsg);
         } catch (\Throwable $e) {
-            error_log('[arrival] join feed write failed: ' . $e->getMessage());
+            error_log('[arrival] join feed write/broadcast failed: ' . $e->getMessage());
         }
 
         // Push to opted-in city members, excluding the arriver.
@@ -489,6 +494,37 @@ class NotificationRepository
         ");
         $stmt->execute([$arriverKey, $channelId, (string) $cooldownSeconds]);
         return (bool) $stmt->fetchColumn();
+    }
+
+    /**
+     * Fire-and-forget: push a message into a city room via the WS server so
+     * clients already in the room render it live. Mirrors the API's
+     * broadcastMessageToWs (routes/api.php), including the internal token —
+     * $channelId MUST be the integer city id so the WS server keys the city room.
+     */
+    private static function broadcastMessageToWs(int|string $channelId, array $message): void
+    {
+        $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
+        $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
+        $payload = json_encode(['channelId' => $channelId, 'message' => $message]);
+
+        $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
+        if ($token !== '') {
+            $headers .= "X-Internal-Token: {$token}\r\n";
+        }
+
+        $ctx = stream_context_create(['http' => [
+            'method'        => 'POST',
+            'header'        => $headers,
+            'content'       => $payload,
+            'timeout'       => 2,
+            'ignore_errors' => true,
+        ]]);
+
+        if (@file_get_contents($wsUrl . '/broadcast/message', false, $ctx) === false) {
+            $err = error_get_last();
+            error_log('[arrival] ws broadcast failed: ' . ($err['message'] ?? 'unknown'));
+        }
     }
 
     public static function notifyCityOnlineUsers(
