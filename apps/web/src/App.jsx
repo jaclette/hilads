@@ -1566,16 +1566,17 @@ export default function App() {
       const fresh = msgs.filter(m => !knownIdsRef.current.has(messageKey(m)))
       fresh.forEach(m => knownIdsRef.current.add(messageKey(m)))
 
+      // Cursor = oldest message that HAS an id (system rows now carry one too).
+      const nextOldest = msgs.find(m => m.id)?.id
+      if (nextOldest) oldestMessageIdRef.current = nextOldest
+
       if (fresh.length > 0) {
-        // Cursor = oldest message that HAS an id; city/event feeds interleave
-        // id-less system messages (arrivals, weather) so msgs[0] is often id-less.
-        // Keep the previous cursor if this batch is all system messages.
-        const nextOldest = msgs.find(m => m.id)?.id
-        if (nextOldest) oldestMessageIdRef.current = nextOldest
         setFeed(prev => [...fresh.map(m => toFeedItem(m)).filter(Boolean), ...prev])
       }
 
-      const more = data.hasMore ?? false
+      // Stop if the cursor couldn't advance: a page with no id-bearing message
+      // would otherwise refetch the SAME before_id forever (the request flood).
+      const more = (data.hasMore ?? false) && !!nextOldest
       hasMoreMessagesRef.current = more
       setHasMoreMessages(more)
 

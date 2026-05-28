@@ -212,19 +212,21 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
         return true;
       });
 
+      // Advance cursor to the oldest id-bearing message of this batch (system
+      // rows now carry an id too).
+      const nextCursor = older.find(m => m.id)?.id;
+      if (nextCursor) oldestIdRef.current = nextCursor;
+
       if (fresh.length > 0) {
-        // Advance cursor to the oldest id-bearing message of this batch; keep the
-        // previous cursor if the batch is entirely id-less system messages, so
-        // pagination never stalls on a null cursor.
-        const nextCursor = older.find(m => m.id)?.id;
-        if (nextCursor) oldestIdRef.current = nextCursor;
         // Sort newest-first within the batch, then append to end of array
         // (end = visual top in inverted FlatList)
         const sorted = [...fresh].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
         setMessages(prev => [...prev, ...sorted]);
       }
 
-      setHasMore(moreLeft);
+      // Stop if the cursor couldn't advance: a page with no id-bearing message
+      // would otherwise refetch the SAME before_id forever (the request flood).
+      setHasMore(moreLeft && !!nextCursor);
     } catch {
       // silent — user can scroll up again to retry
     } finally {

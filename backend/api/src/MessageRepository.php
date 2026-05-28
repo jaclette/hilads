@@ -31,9 +31,15 @@ class MessageRepository
         $createdAt = (int) $row['created_at'];
 
         if ($row['type'] === 'system') {
-            // Weather system messages carry display text in `content`
+            // `id` is exposed so reverse-scroll pagination can use a system row as
+            // the before_id cursor. Cities accumulate long runs of join lines, and
+            // without an id the cursor stalls on them and the client refetches the
+            // same page forever. Clients still key system rows off type/event for
+            // rendering + dedup, so surfacing the id is display-inert.
+            // Weather system messages carry display text in `content`.
             if ($row['event'] === 'weather') {
                 return [
+                    'id'        => $row['id'],
                     'type'      => 'system',
                     'event'     => 'weather',
                     'content'   => $row['content'] ?? '',
@@ -41,6 +47,7 @@ class MessageRepository
                 ];
             }
             return [
+                'id'        => $row['id'],
                 'type'      => 'system',
                 'event'     => $row['event'],
                 'guestId'   => $row['guest_id'],
@@ -310,12 +317,16 @@ class MessageRepository
 
     public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null): array
     {
+        $id = bin2hex(random_bytes(8));
         Database::pdo()->prepare("
             INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname)
             VALUES (?, ?, 'system', 'join', ?, ?, ?)
-        ")->execute([bin2hex(random_bytes(8)), self::dbKey($channelId), $guestId, $userId, $nickname]);
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname]);
 
+        // Return the id so the live WS broadcast carries it too — matches the
+        // fetched (format()) shape so reverse-scroll pagination + dedup line up.
         return [
+            'id'        => $id,
             'type'      => 'system',
             'event'     => 'join',
             'guestId'   => $guestId,
