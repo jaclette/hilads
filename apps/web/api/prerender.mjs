@@ -668,8 +668,11 @@ function composeEventJsonLd(payload, canonicalUrl) {
     location:             place,
     image:                [payload._ogImage || `${SITE_BASE}/og/og-default.png`],
     description:          payload._descriptionForSchema,
+    // organizer.url is required by Google's Event structured data. Hosts have no
+    // public profile page, so point a Person organizer at the platform (matches
+    // ORG_NODE) — this clears the GSC "missing field url (in organizer)" warning.
     organizer:            ev.host_nickname
-                            ? { '@type': 'Person', name: ev.host_nickname }
+                            ? { '@type': 'Person', name: ev.host_nickname, url: SITE_BASE }
                             : ORG_NODE,
     url:                  canonicalUrl,
     // Free events: Google requires an Offer with availability + price=0 to
