@@ -49,6 +49,7 @@ $baseQuery = "
     FROM channel_events ce
     JOIN channels c      ON c.id = ce.channel_id
     LEFT JOIN channels p ON p.id = c.parent_id
+    LEFT JOIN users u    ON u.id = ce.created_by
     $whereClause
 ";
 
@@ -69,6 +70,8 @@ $stmt = $pdo->prepare("
         ce.series_id,
         ce.created_by,
         ce.guest_id,
+        ce.host_nickname,
+        u.display_name AS creator_display_name,
         ce.starts_at,
         ce.ends_at,
         ce.expires_at,
@@ -175,11 +178,15 @@ admin_nav('/admin/events');
                                     <span style="color:#555">One-shot</span>
                                 <?php endif; ?>
                             </td>
-                            <td>
+                            <td class="td-clip">
                                 <?php if ($ev['created_by'] !== null): ?>
+                                    <?php $creatorName = $ev['creator_display_name'] ?: $ev['host_nickname'] ?: substr($ev['created_by'], 0, 10) . '…'; ?>
                                     <span class="badge badge-registered" title="<?= htmlspecialchars($ev['created_by'], ENT_QUOTES) ?>">Reg.</span>
+                                    <span style="color:#ccc"><?= htmlspecialchars($creatorName, ENT_QUOTES) ?></span>
                                 <?php elseif ($ev['guest_id'] !== null): ?>
+                                    <?php $creatorName = $ev['host_nickname'] ?: substr($ev['guest_id'], 0, 10) . '…'; ?>
                                     <span class="badge badge-guest" title="<?= htmlspecialchars($ev['guest_id'], ENT_QUOTES) ?>">Guest</span>
+                                    <span style="color:#888"><?= htmlspecialchars($creatorName, ENT_QUOTES) ?></span>
                                 <?php else: ?>
                                     <span style="color:#444">—</span>
                                 <?php endif; ?>
