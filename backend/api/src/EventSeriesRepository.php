@@ -1019,7 +1019,7 @@ class EventSeriesRepository
                 ce.series_id,
                 ce.occurrence_date::TEXT                    AS occurrence_date,
                 EXTRACT(EPOCH FROM ce.starts_at)::INTEGER  AS starts_at,
-                EXTRACT(EPOCH FROM ce.expires_at)::INTEGER AS expires_at,
+                EXTRACT(EPOCH FROM ce.expires_at)::BIGINT  AS expires_at,
                 EXTRACT(EPOCH FROM c.created_at)::INTEGER  AS created_at
             FROM channels c
             JOIN channel_events ce ON ce.channel_id = c.id

@@ -42,7 +42,7 @@ class EventRepository
             es.ends_on::TEXT                            AS series_ends_on,
             c.status                                    AS channel_status,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
-            EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
+            EXTRACT(EPOCH FROM ce.expires_at)::BIGINT   AS expires_at,
             EXTRACT(EPOCH FROM c.created_at)::INTEGER   AS created_at
         FROM channel_events ce
         JOIN channels c ON c.id = ce.channel_id
@@ -82,7 +82,7 @@ class EventRepository
             es.starts_on::TEXT                          AS series_starts_on,
             es.ends_on::TEXT                            AS series_ends_on,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
-            EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
+            EXTRACT(EPOCH FROM ce.expires_at)::BIGINT   AS expires_at,
             EXTRACT(EPOCH FROM ce.created_at)::INTEGER  AS created_at
         FROM channel_events ce
         LEFT JOIN event_series es ON es.id = ce.series_id
