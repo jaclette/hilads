@@ -1917,6 +1917,24 @@ $router->add('GET', '/api/v1/events/{eventId}/venue-redirect', function (array $
     ]]);
 });
 
+// GET /api/v1/events/{eventId}/redirect
+// Maps a retired recurring-occurrence channel_id → its surviving canonical
+// event channel_id (event_redirects table, populated by the collapse migration).
+// The prerender's 404-fallback uses this to 301 old /event/<occurrence-hex> URLs
+// Google cached to the canonical event. Returns the bare canonical hex; the
+// prerender's own bare-hex→slug 301 produces the final slug URL.
+$router->add('GET', '/api/v1/events/{eventId}/redirect', function (array $params) {
+    $eventId = strtolower(trim($params['eventId'] ?? ''));
+    if (!preg_match('/^[a-f0-9]{16}$/', $eventId)) {
+        Response::json(['error' => 'Invalid eventId'], 400);
+    }
+    $to = EventRedirectRepository::resolve($eventId);
+    if ($to === null) {
+        Response::json(['to' => null], 404);
+    }
+    Response::json(['to' => $to]);
+});
+
 // GET /api/v1/venues/{venueId}
 // Returns a single venue (coffee shop / bar) by its event_series.id (16-hex).
 // SEO target: venues get their own LocalBusiness page, distinct from events.
@@ -2197,7 +2215,12 @@ $router->add('GET', '/api/v1/sitemap/events', function () {
                     OR es.source <> 'import'
                     OR (es.source_key NOT LIKE 'places:v1:%'
                         AND es.source_key NOT LIKE 'static:v1:%'))
-             ORDER BY COALESCE(ce.series_id, ce.channel_id), ce.starts_at
+             -- Prefer the canonical recurring row (occurrence_date IS NULL → sorts
+             -- first) over any legacy materialized occurrence during the migration
+             -- window, so DISTINCT ON never emits a soon-to-be-deleted occurrence.
+             ORDER BY COALESCE(ce.series_id, ce.channel_id),
+                      (ce.occurrence_date IS NOT NULL),
+                      ce.starts_at
         ) dedup
         ORDER BY dedup.starts_at
         LIMIT 40000
@@ -4710,6 +4733,115 @@ $router->add('POST', '/internal/event-series/generate', function () {
     $results = EventSeriesRepository::generateAll($lookahead);
 
     Response::json(['ok' => true, 'results' => $results]);
+});
+
+// Internal: ONE-TIME migration — collapse each recurring (hilads) series to a
+// single canonical channel_events row. Idempotent + resumable (per-series
+// transactions). For each series: create the canonical row, merge per-date
+// participants into it, repoint chat messages, record redirects for the old
+// occurrence URLs, then delete the legacy occurrence channels.
+$router->add('POST', '/internal/event-series/collapse', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $pdo = Database::pdo();
+
+    // Hilads recurring series only (user/admin-created). Venues are source
+    // 'import' and were never materialized — left untouched.
+    $series = $pdo->query("
+        SELECT es.* FROM event_series es WHERE es.source IN ('user', 'admin')
+    ")->fetchAll(\PDO::FETCH_ASSOC);
+
+    $processed = 0; $canonicals = 0; $occDeleted = 0; $partsMerged = 0;
+    $msgsMoved = 0; $redirects = 0; $errors = [];
+
+    foreach ($series as $s) {
+        $sid = $s['id'];
+        try {
+            $pdo->beginTransaction();
+
+            $occStmt = $pdo->prepare(
+                "SELECT channel_id FROM channel_events WHERE series_id = ? AND occurrence_date IS NOT NULL"
+            );
+            $occStmt->execute([$sid]);
+            $ids = $occStmt->fetchAll(\PDO::FETCH_COLUMN);
+
+            // 1. Canonical row (idempotent; auto-joins the creator).
+            $canonicalId = EventSeriesRepository::createCanonical($s);
+            $canonicals++;
+
+            if (!empty($ids)) {
+                $ph = implode(',', array_fill(0, count($ids), '?'));
+
+                // 2. Merge participants → canonical (one row per guest_id).
+                $stmt = $pdo->prepare("
+                    INSERT INTO event_participants (channel_id, guest_id, user_id, nickname, joined_at, last_read_at)
+                    SELECT ?, guest_id,
+                           (array_agg(user_id) FILTER (WHERE user_id IS NOT NULL))[1],
+                           (array_agg(nickname ORDER BY joined_at))[1],
+                           MIN(joined_at),
+                           MAX(last_read_at)
+                      FROM event_participants
+                     WHERE channel_id IN ($ph)
+                     GROUP BY guest_id
+                    ON CONFLICT (channel_id, guest_id) DO UPDATE
+                       SET joined_at    = LEAST(event_participants.joined_at, EXCLUDED.joined_at),
+                           user_id      = COALESCE(event_participants.user_id, EXCLUDED.user_id),
+                           nickname     = CASE WHEN EXCLUDED.nickname <> '' THEN EXCLUDED.nickname
+                                               ELSE event_participants.nickname END,
+                           last_read_at = GREATEST(COALESCE(event_participants.last_read_at, to_timestamp(0)),
+                                                   COALESCE(EXCLUDED.last_read_at,            to_timestamp(0)))
+                ");
+                $stmt->execute(array_merge([$canonicalId], $ids));
+                $partsMerged += $stmt->rowCount();
+
+                // 3. Repoint chat messages → canonical (consolidate threads).
+                $stmt = $pdo->prepare("UPDATE messages SET channel_id = ? WHERE channel_id IN ($ph)");
+                $stmt->execute(array_merge([$canonicalId], $ids));
+                $msgsMoved += $stmt->rowCount();
+
+                // 4. Redirects (old occurrence URL → canonical) for cached links.
+                $stmt = $pdo->prepare("
+                    INSERT INTO event_redirects (from_channel_id, to_channel_id)
+                    SELECT channel_id, ? FROM channel_events
+                     WHERE series_id = ? AND occurrence_date IS NOT NULL
+                    ON CONFLICT (from_channel_id) DO NOTHING
+                ");
+                $stmt->execute([$canonicalId, $sid]);
+                $redirects += $stmt->rowCount();
+
+                // 5. Delete legacy occurrence channels (cascades channel_events,
+                //    presence, leftover participants on those channels).
+                $stmt = $pdo->prepare("DELETE FROM channels WHERE id IN ($ph)");
+                $stmt->execute($ids);
+                $occDeleted += $stmt->rowCount();
+            }
+
+            $pdo->commit();
+            $processed++;
+        } catch (\Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            $errors[] = $sid . ': ' . $e->getMessage();
+            error_log('[collapse] series ' . $sid . ' failed: ' . $e->getMessage());
+        }
+    }
+
+    Response::json([
+        'ok'                  => empty($errors),
+        'series_processed'    => $processed,
+        'canonicals_created'  => $canonicals,
+        'participants_merged' => $partsMerged,
+        'messages_repointed'  => $msgsMoved,
+        'redirects_inserted'  => $redirects,
+        'occurrences_deleted' => $occDeleted,
+        'errors'              => $errors,
+    ]);
 });
 
 $router->add('POST', '/internal/event-series/refresh-static-occurrences', function () {

@@ -188,6 +188,26 @@ run($pdo, "
     )
 ", 'channel_events');
 
+// Partial index for the canonical recurring-event lookup (one row per series).
+run($pdo, "
+    CREATE INDEX IF NOT EXISTS idx_channel_events_canonical
+        ON channel_events (series_id)
+        WHERE series_id IS NOT NULL AND occurrence_date IS NULL
+", 'idx_channel_events_canonical');
+
+// Maps a retired recurring-occurrence channel_id → its surviving canonical
+// channel_id, so old /event/<occurrence-hex> URLs Google cached can 301 to the
+// canonical event. The per-date occurrence id is a one-way hash, so a lookup
+// table is required. No FK: from_channel_id intentionally points at a deleted
+// channel.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS event_redirects (
+        from_channel_id TEXT        PRIMARY KEY,
+        to_channel_id   TEXT        NOT NULL,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'event_redirects');
+
 run($pdo, "
     CREATE TABLE IF NOT EXISTS messages (
         id          TEXT        PRIMARY KEY,

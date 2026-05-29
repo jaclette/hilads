@@ -1483,11 +1483,26 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
           return
         }
 
-        // Expired-occurrence fallback: the event 404s but the channel_id
-        // might still resolve to a venue (we stopped materializing future
-        // occurrences but Google has them cached). One extra hop in the
-        // tail of the SEO transition; cheap and correct.
+        // 404-fallback: the event row is gone but the channel_id may be a
+        // retired recurring-occurrence whose canonical event still exists, or a
+        // venue occurrence. Both kept alive for Google's cached /event/<hash>
+        // URLs. One extra hop in the SEO-transition tail; cheap and correct.
         if (!data?.event && !isShortLink) {
+          // (1) Retired recurring occurrence → canonical event (bare hex; the
+          //     bare-hex→slug 301 below resolves it to the final slug URL).
+          const evtRedirect = await fetchWithTimeout(
+            `${API_BASE}/api/v1/events/${encodeURIComponent(hex)}/redirect`,
+            API_TIMEOUT_MS,
+          )
+          if (evtRedirect?.to) {
+            res.statusCode = 301
+            res.setHeader('Location', `${SITE_BASE}${localePrefix}/event/${evtRedirect.to}`)
+            res.setHeader('Cache-Control', 'public, max-age=3600')
+            res.end()
+            return
+          }
+
+          // (2) Venue occurrence → canonical /venue/ page.
           const redirect = await fetchWithTimeout(
             `${API_BASE}/api/v1/events/${encodeURIComponent(hex)}/venue-redirect`,
             API_TIMEOUT_MS,

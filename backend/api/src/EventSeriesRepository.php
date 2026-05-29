@@ -113,6 +113,132 @@ class EventSeriesRepository
         return $channelId;
     }
 
+    // ── Canonical recurring-event model (one stable row per series) ─────────────
+    //
+    // Instead of materializing one channel_events row per date, a recurring
+    // (hilads) series has a SINGLE canonical row (occurrence_date IS NULL, stable
+    // channel_id) and the dated instances shown in the feed/calendar are
+    // synthesized on-read from the recurrence rule. These helpers back that.
+
+    /** Stable channel_id for a series' single canonical event row. Distinct from
+     *  the legacy per-date occurrence hash so the two id-spaces never collide. */
+    public static function canonicalChannelId(string $seriesId): string
+    {
+        return substr(hash('sha256', 'series-canonical:' . $seriesId), 0, 16);
+    }
+
+    /** Local start/end unix for a date, handling midnight crossover. Shared by
+     *  createCanonical + read-side synthesis so the time math lives in one place. */
+    public static function computeOccurrenceTimes(array $series, string $date): array
+    {
+        $tz       = $series['timezone'];
+        $startsAt = self::localToUnix($date, $series['start_time'], $tz);
+        $endsAt   = self::localToUnix($date, $series['end_time'],   $tz);
+        if ($endsAt <= $startsAt) $endsAt += 86400; // end < start → next day
+        return ['starts_at' => $startsAt, 'ends_at' => $endsAt];
+    }
+
+    /** First matching date on/after $fromYmd within [starts_on, ends_on], or null
+     *  if the series has ended / no match within the lookahead. */
+    public static function nextOccurrenceDate(array $series, string $fromYmd, int $maxLookaheadDays = 400): ?string
+    {
+        $tz     = new DateTimeZone($series['timezone'] ?? 'UTC');
+        $startsOn = (string) ($series['starts_on'] ?? $fromYmd);
+        $start  = $startsOn > $fromYmd ? $startsOn : $fromYmd; // ISO dates compare lexically
+        $endsOn = !empty($series['ends_on']) ? (string) $series['ends_on'] : null;
+        $cursor = new DateTime($start, $tz);
+        for ($i = 0; $i <= $maxLookaheadDays; $i++) {
+            $d = $cursor->format('Y-m-d');
+            if ($endsOn !== null && $d > $endsOn) return null;
+            if (self::matchesRecurrence($series, $d)) return $d;
+            $cursor->modify('+1 day');
+        }
+        return null;
+    }
+
+    /** All matching dates in [fromYmd, toYmd] inclusive, clamped to the series
+     *  window. Used to synthesize calendar/upcoming instances. */
+    public static function occurrenceDatesInRange(array $series, string $fromYmd, string $toYmd): array
+    {
+        $startsOn = (string) ($series['starts_on'] ?? $fromYmd);
+        $endsOn   = !empty($series['ends_on']) ? (string) $series['ends_on'] : null;
+        $from = $startsOn > $fromYmd ? $startsOn : $fromYmd;
+        $to   = ($endsOn !== null && $endsOn < $toYmd) ? $endsOn : $toYmd;
+        if ($from > $to) return [];
+        $tz     = new DateTimeZone($series['timezone'] ?? 'UTC');
+        $cursor = new DateTime($from, $tz);
+        $end    = new DateTime($to, $tz);
+        $dates  = [];
+        $guard  = 0;
+        while ($cursor <= $end && $guard++ < 800) {
+            $d = $cursor->format('Y-m-d');
+            if (self::matchesRecurrence($series, $d)) $dates[] = $d;
+            $cursor->modify('+1 day');
+        }
+        return $dates;
+    }
+
+    /** Create the single canonical channel_events + channels row for a series.
+     *  Idempotent (ON CONFLICT DO NOTHING); channel_id is stable. Replaces the
+     *  old generateOccurrences() materialization at series-create time. */
+    public static function createCanonical(array $series): string
+    {
+        $pdo       = Database::pdo();
+        $channelId = self::canonicalChannelId($series['id']);
+
+        // Stored starts_at = the series' first occurrence (a stable sort anchor).
+        // Reads recompute the *next* occurrence for display.
+        $anchorDate = self::nextOccurrenceDate($series, (string) $series['starts_on'])
+            ?? (string) $series['starts_on'];
+        $times      = self::computeOccurrenceTimes($series, $anchorDate);
+
+        // expires_at: ends_on end-of-day if bounded, else far-future sentinel so
+        // the canonical row never drops out of active filters or gets reaped by
+        // the cleanup cron.
+        $expiresAt = !empty($series['ends_on'])
+            ? self::localToUnix((string) $series['ends_on'], '23:59', $series['timezone'])
+            : (new DateTime('2999-12-31', new DateTimeZone($series['timezone'])))->getTimestamp();
+
+        $pdo->prepare("
+            INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
+            VALUES (?, 'event', ?, ?, 'active', now(), now())
+            ON CONFLICT (id) DO NOTHING
+        ")->execute([$channelId, $series['city_id'], $series['title']]);
+
+        $pdo->prepare("
+            INSERT INTO channel_events
+                (channel_id, source_type, created_by, guest_id, title, event_type,
+                 location, venue_lat, venue_lng, starts_at, expires_at, series_id, occurrence_date, city_id)
+            VALUES
+                (?, 'hilads', ?, ?, ?, ?,
+                 ?, ?, ?, to_timestamp(?), to_timestamp(?), ?, NULL, ?)
+            ON CONFLICT (channel_id) DO NOTHING
+        ")->execute([
+            $channelId,
+            $series['created_by'] ?? null,
+            $series['guest_id'] ?? null,
+            $series['title'],
+            $series['event_type'],
+            $series['location'] ?? null,
+            isset($series['lat']) ? $series['lat'] : null,
+            isset($series['lng']) ? $series['lng'] : null,
+            $times['starts_at'],
+            $expiresAt,
+            $series['id'],
+            $series['city_id'],
+        ]);
+
+        if (!empty($series['guest_id'])) {
+            $pdo->prepare("
+                INSERT INTO event_participants (channel_id, guest_id, user_id)
+                VALUES (?, ?, ?)
+                ON CONFLICT (channel_id, guest_id) DO NOTHING
+            ")->execute([$channelId, $series['guest_id'], $series['created_by'] ?? null]);
+        }
+
+        return $channelId;
+    }
+
     // ── Venue detection ───────────────────────────────────────────────────────
     //
     // Some "event_series" rows are actually venues (coffee shops, bars) seeded
@@ -333,7 +459,7 @@ class EventSeriesRepository
             'lng'            => $lng,
         ];
 
-        self::generateOccurrences($series, 7);
+        self::createCanonical($series);
 
         return [
             'series_id'  => $id,
@@ -407,7 +533,7 @@ class EventSeriesRepository
             'lng'             => $lng,
         ];
 
-        self::generateOccurrences($series, 30);
+        self::createCanonical($series);
 
         return ['series_id' => $id];
     }

@@ -35,6 +35,11 @@ class EventRepository
             es.interval_days,
             es.source                                   AS series_source,
             es.source_key                               AS series_source_key,
+            es.start_time                               AS series_start_time,
+            es.end_time                                 AS series_end_time,
+            es.timezone                                 AS series_timezone,
+            es.starts_on::TEXT                          AS series_starts_on,
+            es.ends_on::TEXT                            AS series_ends_on,
             c.status                                    AS channel_status,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
             EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
@@ -71,6 +76,11 @@ class EventRepository
             es.interval_days,
             es.source                                   AS series_source,
             es.source_key                               AS series_source_key,
+            es.start_time                               AS series_start_time,
+            es.end_time                                 AS series_end_time,
+            es.timezone                                 AS series_timezone,
+            es.starts_on::TEXT                          AS series_starts_on,
+            es.ends_on::TEXT                            AS series_ends_on,
             EXTRACT(EPOCH FROM ce.starts_at)::INTEGER   AS starts_at,
             EXTRACT(EPOCH FROM ce.expires_at)::INTEGER  AS expires_at,
             EXTRACT(EPOCH FROM ce.created_at)::INTEGER  AS created_at
@@ -162,6 +172,71 @@ class EventRepository
         ];
     }
 
+    // ── Canonical recurring-event synthesis helpers ───────────────────────────
+    //
+    // A recurring (hilads) series has ONE canonical channel_events row
+    // (occurrence_date IS NULL). The dated instances shown in feeds/calendar are
+    // synthesized here from the series rule (no stored occurrence rows). The
+    // SELECT/SELECT_CITY constants expose the series fields under series_* aliases.
+
+    /** Series-shaped array (for the EventSeriesRepository synthesis helpers). */
+    private static function seriesFromRow(array $row): array
+    {
+        return [
+            'recurrence_type' => $row['recurrence_type'] ?? null,
+            'weekdays'        => $row['series_weekdays'] ?? null,
+            'interval_days'   => $row['interval_days'] ?? null,
+            'starts_on'       => $row['series_starts_on'] ?? null,
+            'ends_on'         => $row['series_ends_on'] ?? null,
+            'start_time'      => $row['series_start_time'] ?? null,
+            'end_time'        => $row['series_end_time'] ?? null,
+            'timezone'        => $row['series_timezone'] ?? null,
+        ];
+    }
+
+    /** True when a row is a canonical recurring event with enough data to synthesize. */
+    private static function isCanonicalRecurring(array $row): bool
+    {
+        return !empty($row['series_id'])
+            && !empty($row['recurrence_type'])
+            && !empty($row['series_start_time'])
+            && !empty($row['series_timezone']);
+    }
+
+    /** Format a canonical row as its occurrence on $date (overwrites times). */
+    private static function formatForDate(array $row, string $date): array
+    {
+        $ev     = self::format($row);
+        $t      = EventSeriesRepository::computeOccurrenceTimes(self::seriesFromRow($row), $date);
+        $ev['starts_at']       = $t['starts_at'];
+        $ev['ends_at']         = $t['ends_at'];
+        $ev['expires_at']      = $t['ends_at'];
+        $ev['is_past']         = $t['ends_at'] < time();
+        $ev['occurrence_date'] = $date;
+        return $ev;
+    }
+
+    /** Format a single event for detail/profile reads. Canonical recurring rows
+     *  show their NEXT occurrence (+ next_occurrence_date); ended series fall back
+     *  to the stored row (is_past via expires_at). One-offs format normally. */
+    private static function formatSingle(array $row): array
+    {
+        if (!self::isCanonicalRecurring($row)) {
+            return self::format($row);
+        }
+        $series = self::seriesFromRow($row);
+        $today  = (new DateTime('now', new DateTimeZone($series['timezone'])))->format('Y-m-d');
+        $next   = EventSeriesRepository::nextOccurrenceDate($series, $today);
+        if ($next !== null) {
+            $ev = self::formatForDate($row, $next);
+            $ev['next_occurrence_date'] = $next;
+            return $ev;
+        }
+        $ev = self::format($row); // series ended — keep stored times; is_past from expires_at
+        $ev['next_occurrence_date'] = null;
+        return $ev;
+    }
+
     // ── Public reads ──────────────────────────────────────────────────────────
 
     /**
@@ -179,22 +254,14 @@ class EventRepository
         $today = (new DateTime('now', $tz))->format('Y-m-d');
         $now = time();
 
-        // Deferred safety net: generate missing series occurrences after the response is sent.
-        // Non-critical — runs after PHP shutdown so it never blocks the HTTP response.
-        $cityId   = 'city_' . $channelId;
-        $tzString = $timezone;
-        register_shutdown_function(static function () use ($cityId, $tzString): void {
-            try {
-                EventSeriesRepository::ensureTodayOccurrences($cityId, $tzString);
-            } catch (\Throwable) {
-                // silent — non-critical background task
-            }
-        });
-
+        // One-off + canonical recurring rows only (occurrence_date IS NULL).
+        // Recurring events are a single canonical row; today's occurrence is
+        // synthesized below from the series rule — no materialization needed.
         $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
-            WHERE ce.city_id     = :city_id
-              AND ce.source_type = 'hilads'
-              AND ce.expires_at  > now()
+            WHERE ce.city_id        = :city_id
+              AND ce.source_type    = 'hilads'
+              AND ce.occurrence_date IS NULL
+              AND ce.expires_at     > now()
             ORDER BY ce.starts_at ASC
         ");
         $stmt->execute(['city_id' => 'city_' . $channelId]);
@@ -208,7 +275,15 @@ class EventRepository
         $seenKeys = [];
 
         foreach ($stmt->fetchAll() as $row) {
-            $event = self::format($row);
+            if (self::isCanonicalRecurring($row)) {
+                // Recurring: only show if today matches the rule; use today's times.
+                if (!EventSeriesRepository::matchesRecurrence(self::seriesFromRow($row), $today)) {
+                    continue;
+                }
+                $event = self::formatForDate($row, $today);
+            } else {
+                $event = self::format($row);
+            }
 
             $startDate = (new DateTime('@' . $event['starts_at']))->setTimezone($tz)->format('Y-m-d');
             $endDate   = (new DateTime('@' . $event['expires_at']))->setTimezone($tz)->format('Y-m-d');
@@ -307,49 +382,59 @@ class EventRepository
     {
         $city     = CityRepository::findById($channelId);
         $timezone = $city['timezone'] ?? 'UTC';
+        $tz       = new DateTimeZone($timezone);
+        $cityId   = 'city_' . $channelId;
+        $now      = time();
 
         if ($fromYmd !== null && $toYmd !== null) {
-            // Range mode — translate YYYY-MM-DD bounds into tz-aware unix
-            // timestamps. `to + 1 day` because we want the to-date inclusive.
-            $tz       = new DateTimeZone($timezone);
-            $fromTs   = (new DateTime($fromYmd . ' 00:00:00', $tz))->getTimestamp();
-            $toTs     = (new DateTime($toYmd   . ' 00:00:00', $tz))->modify('+1 day')->getTimestamp();
-            // Bound how far ahead we'll materialize series occurrences.
-            $daysAhead = max(1, (int) (($toTs - time()) / 86400) + 1);
-            EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $daysAhead);
-
-            $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
-                WHERE ce.city_id    = :city_id
-                  AND ce.starts_at  >= to_timestamp(:from_ts)
-                  AND ce.starts_at  <  to_timestamp(:to_ts)
-                ORDER BY ce.starts_at ASC
-                LIMIT 100
-            ");
-            $stmt->execute([
-                'city_id' => 'city_' . $channelId,
-                'from_ts' => $fromTs,
-                'to_ts'   => $toTs,
-            ]);
+            // Range mode (calendar strip): explicit [from, to] window.
+            $winFrom = $fromYmd;
+            $winTo   = $toYmd;
+            $fromTs  = (new DateTime($fromYmd . ' 00:00:00', $tz))->getTimestamp();
+            $toTs    = (new DateTime($toYmd   . ' 00:00:00', $tz))->modify('+1 day')->getTimestamp();
         } else {
-            // Default mode — next $days days from now (back-compat).
-            $now      = time();
-            $cutoff   = $now + $days * 86400;
-            EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $days);
-
-            $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
-                WHERE ce.city_id    = :city_id
-                  AND ce.expires_at  > now()
-                  AND ce.starts_at   < to_timestamp(:cutoff)
-                ORDER BY ce.starts_at ASC
-                LIMIT 100
-            ");
-            $stmt->execute(['city_id' => 'city_' . $channelId, 'cutoff' => $cutoff]);
+            // Default mode: now .. now + $days.
+            $winFrom = (new DateTime('now', $tz))->format('Y-m-d');
+            $winTo   = (new DateTime('now', $tz))->modify("+{$days} days")->format('Y-m-d');
+            $fromTs  = $now;
+            $toTs    = $now + $days * 86400;
         }
 
-        $events = array_map([self::class, 'format'], $stmt->fetchAll());
+        // Fetch one-off rows in the window + ALL canonical recurring rows for the
+        // city (their stored anchor starts_at may be outside the window — the
+        // in-window dates are synthesized in PHP). occurrence_date IS NULL keeps
+        // any legacy materialized occurrence rows out during the migration window.
+        $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
+            WHERE ce.city_id = :city_id
+              AND ce.occurrence_date IS NULL
+              AND (
+                  ce.series_id IS NOT NULL
+                  OR (ce.expires_at > now()
+                      AND ce.starts_at >= to_timestamp(:from_ts)
+                      AND ce.starts_at <  to_timestamp(:to_ts))
+              )
+        ");
+        $stmt->execute(['city_id' => $cityId, 'from_ts' => $fromTs, 'to_ts' => $toTs]);
+
+        $events = [];
+        foreach ($stmt->fetchAll() as $row) {
+            if (self::isCanonicalRecurring($row)) {
+                $series = self::seriesFromRow($row);
+                foreach (EventSeriesRepository::occurrenceDatesInRange($series, $winFrom, $winTo) as $d) {
+                    $events[] = self::formatForDate($row, $d);
+                }
+            } else {
+                $events[] = self::format($row);
+            }
+        }
+
+        usort($events, static fn(array $a, array $b): int => $a['starts_at'] <=> $b['starts_at']);
+        if (count($events) > 100) $events = array_slice($events, 0, 100);
 
         if (!empty($events)) {
-            $ids          = array_column($events, 'id');
+            // Synthesized instances of one series share the canonical id, so a
+            // single batch keyed by id gives every instance the same count/preview.
+            $ids          = array_values(array_unique(array_column($events, 'id')));
             $placeholders = implode(',', array_fill(0, count($ids), '?'));
             $countStmt    = Database::pdo()->prepare("
                 SELECT channel_id, COUNT(*) AS cnt
@@ -404,19 +489,15 @@ class EventRepository
         $now       = time();
 
         $cityId   = 'city_' . $channelId;
-        $tzString = $timezone;
-        // Materialize recurring-series occurrences for the whole 3-day window so
-        // tomorrow's/day-after's venue events exist as rows (ensureOccurrencesForRange
-        // loops $i <= $days, so 2 covers today + 2 days). Deferred → appears on next poll.
-        register_shutdown_function(static function () use ($cityId, $tzString): void {
-            try { EventSeriesRepository::ensureOccurrencesForRange($cityId, $tzString, 2); }
-            catch (\Throwable) {}
-        });
 
-        // One query for both source types — hits idx_channel_events_city_active
+        // One query for both source types — hits idx_channel_events_city_active.
+        // occurrence_date IS NULL: one-off + ticketmaster + canonical recurring
+        // rows only (legacy materialized occurrences are excluded; recurring
+        // events are synthesized below from the series rule).
         $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
             WHERE ce.city_id      = :city_id
               AND ce.source_type IN ('hilads', 'ticketmaster')
+              AND ce.occurrence_date IS NULL
               AND ce.expires_at   > now()
             ORDER BY ce.source_type ASC, ce.starts_at ASC
             LIMIT 200
@@ -433,7 +514,14 @@ class EventRepository
         $seenKeys       = [];
 
         foreach ($stmt->fetchAll() as $row) {
-            $event = self::format($row);
+            if (self::isCanonicalRecurring($row)) {
+                // Recurring: show the next occurrence within the 3-day window, if any.
+                $next = EventSeriesRepository::nextOccurrenceDate(self::seriesFromRow($row), $today);
+                if ($next === null || $next > $windowEnd) continue;
+                $event = self::formatForDate($row, $next);
+            } else {
+                $event = self::format($row);
+            }
 
             if ($event['source'] === 'ticketmaster') {
                 if (count($publicEvents) < self::MAX_PUBLIC) {
@@ -545,7 +633,7 @@ class EventRepository
         ");
         $stmt->execute(['id' => $eventId]);
         $row = $stmt->fetch();
-        return $row ? self::format($row) : null;
+        return $row ? self::formatSingle($row) : null;
     }
 
     /**
@@ -562,7 +650,7 @@ class EventRepository
         $stmt = Database::pdo()->prepare(self::SELECT . " WHERE c.id = :id");
         $stmt->execute(['id' => $eventId]);
         $row = $stmt->fetch();
-        return $row ? self::format($row) : null;
+        return $row ? self::formatSingle($row) : null;
     }
 
     /**
@@ -578,6 +666,7 @@ class EventRepository
                 WHERE c.type         = 'event'
                   AND c.status       = 'active'
                   AND ce.source_type = 'hilads'
+                  AND ce.occurrence_date IS NULL
                   AND ce.expires_at  > now()
                   AND (ce.guest_id = :guest_id OR ce.created_by = :user_id
                        OR EXISTS (
@@ -592,6 +681,7 @@ class EventRepository
                 WHERE c.type         = 'event'
                   AND c.status       = 'active'
                   AND ce.source_type = 'hilads'
+                  AND ce.occurrence_date IS NULL
                   AND ce.expires_at  > now()
                   AND (ce.guest_id = :guest_id OR EXISTS (
                       SELECT 1 FROM event_participants ep
@@ -612,7 +702,7 @@ class EventRepository
                 if (isset($seenSeries[$sid])) continue;
                 $seenSeries[$sid] = true;
             }
-            $result[] = self::format($row);
+            $result[] = self::formatSingle($row);
         }
         return $result;
     }
@@ -646,7 +736,7 @@ class EventRepository
                 if (isset($seenSeries[$sid])) continue;
                 $seenSeries[$sid] = true;
             }
-            $result[] = self::format($row);
+            $result[] = self::formatSingle($row);
         }
         return $result;
     }
@@ -1072,27 +1162,27 @@ class EventRepository
     {
         $city     = CityRepository::findById($channelId);
         $timezone = $city['timezone'] ?? 'UTC';
+        $tz       = new DateTimeZone($timezone);
+        $cityId   = 'city_' . $channelId;
+        $fromTs   = (new DateTime($fromYmd . ' 00:00:00', $tz))->getTimestamp();
+        $toTs     = (new DateTime($toYmd   . ' 00:00:00', $tz))->modify('+1 day')->getTimestamp();
 
-        // Materialize series occurrences for the range so recurring events
-        // contribute to the dot counts even before the daily cron runs.
-        $tz     = new DateTimeZone($timezone);
-        $fromTs = (new DateTime($fromYmd . ' 00:00:00', $tz))->getTimestamp();
-        $toTs   = (new DateTime($toYmd   . ' 00:00:00', $tz))->modify('+1 day')->getTimestamp();
-        $daysAhead = max(1, (int) (($toTs - time()) / 86400) + 1);
-        EventSeriesRepository::ensureOccurrencesForRange('city_' . $channelId, $timezone, $daysAhead);
-
+        // Dot counts for one-off / ticketmaster rows (occurrence_date IS NULL +
+        // series_id IS NULL). Canonical recurring series are synthesized below.
         $stmt = Database::pdo()->prepare("
             SELECT to_char((starts_at AT TIME ZONE :tz)::date, 'YYYY-MM-DD') AS d,
                    COUNT(*) AS cnt
             FROM channel_events
             WHERE city_id = :city_id
+              AND occurrence_date IS NULL
+              AND series_id IS NULL
               AND starts_at >= to_timestamp(:from_ts)
               AND starts_at <  to_timestamp(:to_ts)
             GROUP BY d
         ");
         $stmt->execute([
             'tz'      => $timezone,
-            'city_id' => 'city_' . $channelId,
+            'city_id' => $cityId,
             'from_ts' => $fromTs,
             'to_ts'   => $toTs,
         ]);
@@ -1100,6 +1190,20 @@ class EventRepository
         $out = [];
         foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $row) {
             $out[$row['d']] = (int) $row['cnt'];
+        }
+
+        // Add canonical recurring series' synthesized dates to the dot counts.
+        $rstmt = Database::pdo()->prepare(self::SELECT_CITY . "
+            WHERE ce.city_id = :city_id
+              AND ce.occurrence_date IS NULL
+              AND ce.series_id IS NOT NULL
+        ");
+        $rstmt->execute(['city_id' => $cityId]);
+        foreach ($rstmt->fetchAll() as $row) {
+            if (!self::isCanonicalRecurring($row)) continue;
+            foreach (EventSeriesRepository::occurrenceDatesInRange(self::seriesFromRow($row), $fromYmd, $toYmd) as $d) {
+                $out[$d] = ($out[$d] ?? 0) + 1;
+            }
         }
         return $out;
     }
