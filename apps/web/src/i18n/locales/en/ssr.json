@@ -81,7 +81,7 @@
     "everythingElseLink": "everything else happening in {city}"
   },
   "city": {
-    "title": "What is happening in {city} {timeframe} — events, meetups and locals to meet | Hilads",
+    "title": "What is happening locally in {city} {timeframe} — events, meetups and locals to meet | Hilads",
     "descHigh": "Join real events in {city} — meetups, dinners, and rooftop hangouts with locals and travelers. Browse {count}+ events today & this week. No sign-up needed.",
     "descMid": "Join real events in {city} — meetups, dinners, and hangouts with locals and travelers. Discover upcoming events this week. No sign-up needed.",
     "descLow": "Discover meetups and events in {city} — connect with locals and travelers, join hangouts, or create your own. No sign-up needed to browse.",

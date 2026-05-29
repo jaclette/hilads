@@ -81,7 +81,7 @@
     "everythingElseLink": "{city} 正在发生的其他一切"
   },
   "city": {
-    "title": "{city}{timeframe}正在发生什么 — 活动、聚会和可结识的本地人 | Hilads",
+    "title": "{city}{timeframe}本地正在发生什么 — 活动、聚会和可结识的本地人 | Hilads",
     "descHigh": "加入 {city} 的真实活动 — 与本地人和旅行者一起聚会、聚餐、在屋顶聚会。浏览今天及本周 {count}+ 个活动。无需注册。",
     "descMid": "加入 {city} 的真实活动 — 与本地人和旅行者一起聚会、聚餐和聚会。发现本周即将举行的活动。无需注册。",
     "descLow": "发现 {city} 的聚会和活动 — 与本地人和旅行者连接、加入聚会，或创建你自己的。浏览无需注册。",
