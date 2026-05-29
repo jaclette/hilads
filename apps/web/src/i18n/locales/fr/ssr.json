@@ -79,8 +79,8 @@
     "everythingElseLink": "tout ce qui se passe d'autre à {city}"
   },
   "city": {
-    "title": "{timeframe} à {city} — événements, rencontres & locaux à rencontrer | Hilads",
-    "descHigh": "Rejoins de vrais événements à {city} — rencontres, dîners et soirées sur les toits avec des locaux et des voyageurs. Parcours {count}+ événements ce soir & cette semaine. Sans inscription.",
+    "title": "Que se passe-t-il à {city} {timeframe} — événements, rencontres & locaux à rencontrer | Hilads",
+    "descHigh": "Rejoins de vrais événements à {city} — rencontres, dîners et soirées sur les toits avec des locaux et des voyageurs. Parcours {count}+ événements aujourd'hui & cette semaine. Sans inscription.",
     "descMid": "Rejoins de vrais événements à {city} — rencontres, dîners et sorties avec des locaux et des voyageurs. Découvre les événements à venir cette semaine. Sans inscription.",
     "descLow": "Découvre des rencontres et des événements à {city} — connecte-toi avec des locaux et des voyageurs, rejoins des sorties, ou crée la tienne. Sans inscription pour explorer.",
     "h1": "{timeframe} à {city}",

@@ -79,8 +79,8 @@
     "everythingElseLink": "todo lo demás que pasa en {city}"
   },
   "city": {
-    "title": "{timeframe} en {city} — eventos, quedadas y locales a quienes conocer | Hilads",
-    "descHigh": "Únete a eventos reales en {city} — quedadas, cenas y fiestas en azoteas con locales y viajeros. Explora {count}+ eventos esta noche y esta semana. Sin registro.",
+    "title": "Qué está pasando en {city} {timeframe} — eventos, quedadas y locales a quienes conocer | Hilads",
+    "descHigh": "Únete a eventos reales en {city} — quedadas, cenas y fiestas en azoteas con locales y viajeros. Explora {count}+ eventos hoy y esta semana. Sin registro.",
     "descMid": "Únete a eventos reales en {city} — quedadas, cenas y encuentros con locales y viajeros. Descubre los eventos de esta semana. Sin registro.",
     "descLow": "Descubre quedadas y eventos en {city} — conecta con locales y viajeros, únete a quedadas o crea la tuya. Sin registro para explorar.",
     "h1": "{timeframe} en {city}",

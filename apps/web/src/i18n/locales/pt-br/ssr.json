@@ -79,8 +79,8 @@
     "everythingElseLink": "tudo o mais que está rolando em {city}"
   },
   "city": {
-    "title": "{timeframe} em {city} — eventos, encontros e locais para conhecer | Hilads",
-    "descHigh": "Participe de eventos reais em {city} — encontros, jantares e rolês em rooftops com locais e viajantes. Explore {count}+ eventos hoje à noite e nesta semana. Sem cadastro.",
+    "title": "O que está rolando em {city} {timeframe} — eventos, encontros e locais para conhecer | Hilads",
+    "descHigh": "Participe de eventos reais em {city} — encontros, jantares e rolês em rooftops com locais e viajantes. Explore {count}+ eventos hoje e nesta semana. Sem cadastro.",
     "descMid": "Participe de eventos reais em {city} — encontros, jantares e rolês com locais e viajantes. Descubra os eventos desta semana. Sem cadastro.",
     "descLow": "Descubra encontros e eventos em {city} — conecte-se com locais e viajantes, participe de rolês ou crie o seu. Sem cadastro para explorar.",
     "h1": "{timeframe} em {city}",

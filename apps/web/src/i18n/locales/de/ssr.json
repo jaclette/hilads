@@ -79,8 +79,8 @@
     "everythingElseLink": "alles andere, was in {city} passiert"
   },
   "city": {
-    "title": "{timeframe} in {city} — Events, Meetups und Locals zum Kennenlernen | Hilads",
-    "descHigh": "Tritt echten Events in {city} bei — Meetups, Dinners und Rooftop-Treffen mit Locals und Reisenden. Durchstöbere {count}+ Events heute Abend und diese Woche. Keine Registrierung nötig.",
+    "title": "Was ist in {city} {timeframe} los — Events, Meetups und Locals zum Kennenlernen | Hilads",
+    "descHigh": "Tritt echten Events in {city} bei — Meetups, Dinners und Rooftop-Treffen mit Locals und Reisenden. Durchstöbere {count}+ Events heute und diese Woche. Keine Registrierung nötig.",
     "descMid": "Tritt echten Events in {city} bei — Meetups, Dinners und Treffen mit Locals und Reisenden. Entdecke die kommenden Events dieser Woche. Keine Registrierung nötig.",
     "descLow": "Entdecke Meetups und Events in {city} — verbinde dich mit Locals und Reisenden, mach bei Treffen mit oder erstelle dein eigenes. Keine Registrierung zum Stöbern nötig.",
     "h1": "{timeframe} in {city}",

@@ -80,8 +80,8 @@
     "everythingElseLink": "tất cả những điều khác đang diễn ra ở {city}"
   },
   "city": {
-    "title": "{timeframe} ở {city} — sự kiện, gặp gỡ & người địa phương để gặp | Hilads",
-    "descHigh": "Tham gia các sự kiện thật ở {city} — gặp gỡ, ăn tối và tiệc trên sân thượng với người địa phương và du khách. Duyệt {count}+ sự kiện tối nay & tuần này. Không cần đăng ký.",
+    "title": "Có gì đang diễn ra ở {city} {timeframe} — sự kiện, gặp gỡ và người địa phương để gặp | Hilads",
+    "descHigh": "Tham gia các sự kiện thật ở {city} — gặp gỡ, ăn tối và tiệc trên sân thượng với người địa phương và du khách. Duyệt {count}+ sự kiện hôm nay & tuần này. Không cần đăng ký.",
     "descMid": "Tham gia các sự kiện thật ở {city} — gặp gỡ, ăn tối và tụ tập với người địa phương và du khách. Khám phá các sự kiện sắp tới tuần này. Không cần đăng ký.",
     "descLow": "Khám phá các buổi gặp gỡ và sự kiện ở {city} — kết nối với người địa phương và du khách, tham gia tụ tập, hoặc tự tạo. Không cần đăng ký để xem.",
     "h1": "{timeframe} ở {city}",
