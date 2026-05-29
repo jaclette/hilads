@@ -48,18 +48,28 @@ class ParticipantRepository
      */
     public static function getParticipants(string $eventId): array
     {
+        // Dedupe by person: a registered user who joined via several ephemeral
+        // web sessions (or, pre-migration, across many occurrences) has multiple
+        // rows with the same user_id but different guest_ids. COALESCE(user_id,
+        // guest_id) collapses those to one attendee (earliest join kept).
         $stmt = Database::pdo()->prepare("
-            SELECT ep.guest_id, ep.user_id, ep.nickname,
-                   EXTRACT(EPOCH FROM ep.joined_at)::int AS joined_at,
-                   -- NULL-out deleted users so the PHP fallback renders them as guests
-                   CASE WHEN u.deleted_at IS NULL THEN u.display_name      ELSE NULL END AS display_name,
-                   CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url ELSE NULL END AS profile_photo_url,
-                   CASE WHEN u.deleted_at IS NULL THEN u.vibe              ELSE NULL END AS vibe,
-                   CASE WHEN u.deleted_at IS NULL THEN u.created_at        ELSE NULL END AS created_at
-            FROM event_participants ep
-            LEFT JOIN users u ON u.id = ep.user_id
-            WHERE ep.channel_id = ?
-            ORDER BY ep.joined_at ASC
+            SELECT guest_id, user_id, nickname, joined_at,
+                   display_name, profile_photo_url, vibe, created_at
+            FROM (
+                SELECT DISTINCT ON (COALESCE(ep.user_id, ep.guest_id))
+                       ep.guest_id, ep.user_id, ep.nickname,
+                       EXTRACT(EPOCH FROM ep.joined_at)::int AS joined_at,
+                       -- NULL-out deleted users so the PHP fallback renders them as guests
+                       CASE WHEN u.deleted_at IS NULL THEN u.display_name      ELSE NULL END AS display_name,
+                       CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url ELSE NULL END AS profile_photo_url,
+                       CASE WHEN u.deleted_at IS NULL THEN u.vibe              ELSE NULL END AS vibe,
+                       CASE WHEN u.deleted_at IS NULL THEN u.created_at        ELSE NULL END AS created_at
+                FROM event_participants ep
+                LEFT JOIN users u ON u.id = ep.user_id
+                WHERE ep.channel_id = ?
+                ORDER BY COALESCE(ep.user_id, ep.guest_id), ep.joined_at ASC
+            ) d
+            ORDER BY d.joined_at ASC
         ");
         $stmt->execute([$eventId]);
 
@@ -113,18 +123,26 @@ class ParticipantRepository
         // $limit is a trusted int (constant/caller) — interpolated like the other
         // LIMIT clauses here, which sidesteps a Postgres bigint <= text param mismatch.
         $limit = max(1, (int) $limit);
+        // Inner DISTINCT ON collapses multiple rows for the same person (same
+        // user_id, different ephemeral guest_ids) to one before we pick the top-N
+        // avatars — otherwise a user who joined repeatedly shows multiple times.
         $stmt = Database::pdo()->prepare("
             SELECT channel_id, id, display_name, nickname, thumb_url, full_url FROM (
-                SELECT ep.channel_id,
-                       COALESCE(ep.user_id, ep.guest_id) AS id,
-                       ep.nickname,
-                       CASE WHEN u.deleted_at IS NULL THEN u.display_name            ELSE NULL END AS display_name,
-                       CASE WHEN u.deleted_at IS NULL THEN u.profile_thumb_photo_url ELSE NULL END AS thumb_url,
-                       CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url        ELSE NULL END AS full_url,
-                       row_number() OVER (PARTITION BY ep.channel_id ORDER BY ep.joined_at DESC) AS rn
-                FROM event_participants ep
-                LEFT JOIN users u ON u.id = ep.user_id
-                WHERE ep.channel_id IN ($placeholders)
+                SELECT *, row_number() OVER (PARTITION BY channel_id ORDER BY joined_at DESC) AS rn
+                FROM (
+                    SELECT DISTINCT ON (ep.channel_id, COALESCE(ep.user_id, ep.guest_id))
+                           ep.channel_id,
+                           COALESCE(ep.user_id, ep.guest_id) AS id,
+                           ep.nickname,
+                           ep.joined_at,
+                           CASE WHEN u.deleted_at IS NULL THEN u.display_name            ELSE NULL END AS display_name,
+                           CASE WHEN u.deleted_at IS NULL THEN u.profile_thumb_photo_url ELSE NULL END AS thumb_url,
+                           CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url        ELSE NULL END AS full_url
+                    FROM event_participants ep
+                    LEFT JOIN users u ON u.id = ep.user_id
+                    WHERE ep.channel_id IN ($placeholders)
+                    ORDER BY ep.channel_id, COALESCE(ep.user_id, ep.guest_id), ep.joined_at DESC
+                ) deduped
             ) t
             WHERE t.rn <= $limit
             ORDER BY t.channel_id, t.rn
@@ -149,7 +167,7 @@ class ParticipantRepository
     public static function getCount(string $eventId): int
     {
         $stmt = Database::pdo()->prepare("
-            SELECT COUNT(*) FROM event_participants WHERE channel_id = ?
+            SELECT COUNT(DISTINCT COALESCE(user_id, guest_id)) FROM event_participants WHERE channel_id = ?
         ");
         $stmt->execute([$eventId]);
         return (int) $stmt->fetchColumn();

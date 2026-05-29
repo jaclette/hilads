@@ -334,7 +334,7 @@ class EventRepository
             $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
             $countStmt = Database::pdo()->prepare("
-                SELECT channel_id, COUNT(*) AS cnt
+                SELECT channel_id, COUNT(DISTINCT COALESCE(user_id, guest_id)) AS cnt
                 FROM event_participants WHERE channel_id IN ($placeholders)
                 GROUP BY channel_id
             ");
@@ -437,7 +437,7 @@ class EventRepository
             $ids          = array_values(array_unique(array_column($events, 'id')));
             $placeholders = implode(',', array_fill(0, count($ids), '?'));
             $countStmt    = Database::pdo()->prepare("
-                SELECT channel_id, COUNT(*) AS cnt
+                SELECT channel_id, COUNT(DISTINCT COALESCE(user_id, guest_id)) AS cnt
                 FROM event_participants WHERE channel_id IN ($placeholders)
                 GROUP BY channel_id
             ");
@@ -568,7 +568,7 @@ class EventRepository
             $placeholders = implode(',', array_fill(0, count($ids), '?'));
 
             $cntStmt = Database::pdo()->prepare(
-                "SELECT channel_id, COUNT(*) AS cnt FROM event_participants WHERE channel_id IN ($placeholders) GROUP BY channel_id"
+                "SELECT channel_id, COUNT(DISTINCT COALESCE(user_id, guest_id)) AS cnt FROM event_participants WHERE channel_id IN ($placeholders) GROUP BY channel_id"
             );
             $cntStmt->execute($ids);
             $counts = array_column($cntStmt->fetchAll(\PDO::FETCH_ASSOC), 'cnt', 'channel_id');

@@ -4825,6 +4825,39 @@ $router->add('POST', '/internal/event-series/collapse', function () {
     ]);
 });
 
+// Internal: ONE-TIME cleanup — dedupe duplicate registered-user participant
+// rows to one per (channel_id, user_id). The recurring-event collapse merged
+// per-occurrence joins (web uses an ephemeral sessionId as guest_id, so one
+// user accrued many guest_id rows), surfacing as duplicate attendees. Keeps the
+// earliest join; guest-only rows (user_id NULL) are left untouched. Idempotent.
+$router->add('POST', '/internal/participants/dedupe', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $stmt = Database::pdo()->query("
+        DELETE FROM event_participants
+        WHERE (channel_id, guest_id) IN (
+            SELECT channel_id, guest_id FROM (
+                SELECT channel_id, guest_id,
+                       row_number() OVER (
+                           PARTITION BY channel_id, user_id
+                           ORDER BY joined_at ASC, guest_id ASC
+                       ) AS rn
+                FROM event_participants
+                WHERE user_id IS NOT NULL
+            ) t WHERE t.rn > 1
+        )
+    ");
+
+    Response::json(['ok' => true, 'rows_deleted' => $stmt->rowCount()]);
+});
+
 $router->add('POST', '/internal/event-series/refresh-static-occurrences', function () {
     $expectedKey = getenv('MIGRATION_KEY') ?: null;
     if ($expectedKey === null) {
