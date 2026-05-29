@@ -323,6 +323,7 @@ class EventRepository
                   AND ce.starts_at  >= to_timestamp(:from_ts)
                   AND ce.starts_at  <  to_timestamp(:to_ts)
                 ORDER BY ce.starts_at ASC
+                LIMIT 100
             ");
             $stmt->execute([
                 'city_id' => 'city_' . $channelId,
@@ -340,6 +341,7 @@ class EventRepository
                   AND ce.expires_at  > now()
                   AND ce.starts_at   < to_timestamp(:cutoff)
                 ORDER BY ce.starts_at ASC
+                LIMIT 100
             ");
             $stmt->execute(['city_id' => 'city_' . $channelId, 'cutoff' => $cutoff]);
         }
@@ -417,7 +419,11 @@ class EventRepository
               AND ce.source_type IN ('hilads', 'ticketmaster')
               AND ce.expires_at   > now()
             ORDER BY ce.source_type ASC, ce.starts_at ASC
+            LIMIT 200
         ");
+        // LIMIT 200: /now only ever shows MAX_HILADS(6)+MAX_PUBLIC(10). hilads rows
+        // sort first, then soonest ticketmaster — the displayed set is always in the
+        // first rows. Caps egress when a city has thousands of imported future events.
         // ORDER BY source_type ASC: 'hilads' < 'ticketmaster' — hilads rows arrive first
         $stmt->execute(['city_id' => $cityId]);
 

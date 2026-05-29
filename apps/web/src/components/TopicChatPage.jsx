@@ -117,6 +117,9 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   // Members-only gate: true once the server returns 403 on the message load
   // (non-member / pending requester). Drops to false the moment a member accepts.
   const [gated,      setGated]      = useState(false)
+  // WS connectivity — when live, the socket delivers messages, so the fallback
+  // poll stays off (it used to re-download the whole list every 30s regardless).
+  const [wsConnected, setWsConnected] = useState(() => !!socket?.isConnected)
   // Participant list (shown like an event's "going" strip).
   const [participants, setParticipants] = useState([])
   const [showMembers,  setShowMembers]  = useState(false)
@@ -236,12 +239,30 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
     }
   }, [topic.id, socket, sessionId, gated])
 
-  // Fallback poll — catches messages if WS is down; also re-checks membership
-  // while gated (faster) so the conversation unlocks right after acceptance.
+  // Track WS connectivity; on (re)connect do one catch-up fetch, since the socket
+  // replays room joins but not messages missed while it was down.
   useEffect(() => {
-    const id = setInterval(loadMessages, gated ? 15_000 : 30_000)
-    return () => clearInterval(id)
-  }, [loadMessages, gated])
+    if (!socket) return
+    setWsConnected(!!socket.isConnected)
+    const offC = socket.on('connected',    () => { setWsConnected(true); loadMessages() })
+    const offD = socket.on('disconnected', () => setWsConnected(false))
+    return () => { offC(); offD() }
+  }, [socket, loadMessages])
+
+  // Fallback poll — catches messages if WS is down; also re-checks membership
+  // while gated (faster, since gated users have no WS room) so the conversation
+  // unlocks right after acceptance. When WS is live and the user is a member,
+  // messages arrive over the socket — no poll. Always pause while the tab hidden.
+  useEffect(() => {
+    if (!gated && wsConnected) return
+    let id
+    const start = () => { if (!id && !document.hidden) id = setInterval(loadMessages, gated ? 15_000 : 30_000) }
+    const stop  = () => { if (id) { clearInterval(id); id = undefined } }
+    const onVis = () => { if (document.hidden) stop(); else { loadMessages(); start() } }
+    start()
+    document.addEventListener('visibilitychange', onVis)
+    return () => { stop(); document.removeEventListener('visibilitychange', onVis) }
+  }, [loadMessages, gated, wsConnected])
 
   useEffect(() => {
     // Skip the jump-to-bottom when older messages were just prepended.

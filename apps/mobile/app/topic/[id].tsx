@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, AppState,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
@@ -173,28 +173,37 @@ export default function TopicChatScreen() {
 
     let timer: ReturnType<typeof setInterval> | null = null;
 
-    function startFallbackPoll() {
-      if (timer !== null) return;
-      timer = setInterval(() => reloadRef.current(), 30_000);
-    }
-
     function stopFallbackPoll() {
       if (timer !== null) { clearInterval(timer); timer = null; }
     }
 
-    // Start immediately if WS is already down; otherwise wait for a disconnect.
-    if (!socket.isConnected) startFallbackPoll();
+    // Poll only as a fallback: WS down AND app foregrounded. No point fetching
+    // every 30s while the phone is locked / the app is backgrounded.
+    function syncFallbackPoll() {
+      if (!socket.isConnected && AppState.currentState === 'active') {
+        if (timer === null) timer = setInterval(() => reloadRef.current(), 30_000);
+      } else {
+        stopFallbackPoll();
+      }
+    }
 
-    const offDisconnected = socket.on('disconnected', () => startFallbackPoll());
+    syncFallbackPoll();
+
+    const offDisconnected = socket.on('disconnected', () => syncFallbackPoll());
     const offConnected    = socket.on('connected', () => {
       stopFallbackPoll();
       reloadRef.current(); // catch up on messages missed during the gap
+    });
+    const appSub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') { reloadRef.current(); syncFallbackPoll(); }
+      else stopFallbackPoll();
     });
 
     return () => {
       stopFallbackPoll();
       offDisconnected();
       offConnected();
+      appSub.remove();
     };
   }, [id, sessionId]));
 
@@ -212,8 +221,14 @@ export default function TopicChatScreen() {
   // (A tapped acceptance push re-opens the screen and re-loads too.)
   useEffect(() => {
     if (!gated || !account) return;
-    const t = setInterval(() => { reloadRef.current(); }, 15_000);
-    return () => clearInterval(t);
+    let t: ReturnType<typeof setInterval> | null = null;
+    const start = () => { if (t === null) t = setInterval(() => reloadRef.current(), 15_000); };
+    const stop  = () => { if (t !== null) { clearInterval(t); t = null; } };
+    if (AppState.currentState === 'active') start();
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') { reloadRef.current(); start(); } else stop();
+    });
+    return () => { stop(); sub.remove(); };
   }, [gated, account]);
 
   return (

@@ -1521,7 +1521,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         canonicalPath = data?.event ? `/event/${eventSlug(data.event)}` : `/event/${hex}`
         meta = composeEventMeta(data, canonicalPath, hex, locale)
         if (meta) {
-          cacheMaxAge = 300                  // 5 min — events churn
+          cacheMaxAge = 1800                 // 30 min — SSR meta/JSON-LD; crawler freshness doesn't need 5 min, and per-locale URLs multiply backend egress
           const augmented = {
             ...data,
             _descriptionForSchema: meta.description,

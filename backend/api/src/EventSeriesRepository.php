@@ -583,8 +583,30 @@ class EventSeriesRepository
      * Uses a single EXISTS query per series to find gaps, then fills them.
      * Safe for concurrent calls — createOccurrence uses ON CONFLICT DO NOTHING.
      */
+    /**
+     * Read-path throttle window. ensureOccurrencesForRange() runs on every /now
+     * poll and every upcoming/event crawl — two SELECTs + a write loop each time,
+     * all DB egress. Materializing recurring occurrences that often is pure waste;
+     * a few minutes of staleness for freshly-created series is fine (the nightly
+     * /internal/event-series/generate cron is the source of truth). File-based so
+     * the throttle itself costs no DB egress; per web instance is acceptable.
+     */
+    private const MATERIALIZE_THROTTLE_SECONDS = 600;
+
+    private static function recentlyMaterialized(string $cityDbId, int $days): bool
+    {
+        $file = sys_get_temp_dir() . '/hilads_mat_' . md5($cityDbId . ':' . $days);
+        if (is_file($file) && (time() - (int) @filemtime($file)) < self::MATERIALIZE_THROTTLE_SECONDS) {
+            return true; // ran recently for this city+window — skip
+        }
+        @touch($file); // mark up-front so concurrent polls don't all run it
+        return false;
+    }
+
     public static function ensureOccurrencesForRange(string $cityDbId, string $timezone, int $days = 7): void
     {
+        if (self::recentlyMaterialized($cityDbId, $days)) return;
+
         $tz       = new DateTimeZone($timezone);
         $today    = new DateTime('today', $tz);
         $todayStr = $today->format('Y-m-d');
