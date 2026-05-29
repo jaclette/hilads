@@ -265,29 +265,36 @@ class MessageRepository
      */
     public static function getStatsBatch(): array
     {
-        $rows = Database::pdo()
-            ->query("
-                SELECT
-                    m.channel_id,
-                    COUNT(*)                                                                         AS message_count,
-                    COUNT(*) FILTER (WHERE m.created_at > NOW() - INTERVAL '24 hours')              AS recent_message_count,
-                    EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER                                   AS last_activity_at
-                FROM messages m
-                JOIN channels c ON c.id = m.channel_id AND c.type = 'city'
-                GROUP BY m.channel_id
-            ")
-            ->fetchAll(PDO::FETCH_ASSOC);
+        // Cached: this aggregates the WHOLE messages table (full GROUP BY scan)
+        // on every /channels call — heavy DB load that grows with message volume.
+        // It only feeds the cities-list counts + "active" ranking, where a few
+        // minutes of staleness is fine. Live online-counts come from a separate
+        // presence query (getCountBatch), which stays uncached.
+        return Cache::remember('city_msg_stats_v1', 300, static function (): array {
+            $rows = Database::pdo()
+                ->query("
+                    SELECT
+                        m.channel_id,
+                        COUNT(*)                                                                         AS message_count,
+                        COUNT(*) FILTER (WHERE m.created_at > NOW() - INTERVAL '24 hours')              AS recent_message_count,
+                        EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER                                   AS last_activity_at
+                    FROM messages m
+                    JOIN channels c ON c.id = m.channel_id AND c.type = 'city'
+                    GROUP BY m.channel_id
+                ")
+                ->fetchAll(PDO::FETCH_ASSOC);
 
-        $stats = [];
-        foreach ($rows as $row) {
-            $cityId         = (int) substr($row['channel_id'], 5);
-            $stats[$cityId] = [
-                'messageCount'       => (int) $row['message_count'],
-                'recentMessageCount' => (int) $row['recent_message_count'],
-                'lastActivityAt'     => $row['last_activity_at'] ? (int) $row['last_activity_at'] : null,
-            ];
-        }
-        return $stats;
+            $stats = [];
+            foreach ($rows as $row) {
+                $cityId         = (int) substr($row['channel_id'], 5);
+                $stats[$cityId] = [
+                    'messageCount'       => (int) $row['message_count'],
+                    'recentMessageCount' => (int) $row['recent_message_count'],
+                    'lastActivityAt'     => $row['last_activity_at'] ? (int) $row['last_activity_at'] : null,
+                ];
+            }
+            return $stats;
+        }) ?? [];
     }
 
     // ── Writes ────────────────────────────────────────────────────────────────
