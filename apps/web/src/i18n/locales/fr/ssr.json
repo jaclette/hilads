@@ -43,8 +43,9 @@
     "otherThingsLink": "ce qui se passe d'autre à {city}"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Vois qui est dans le coin à {city} sur Hilads.",
+    "title": "{name} — rencontre des locaux et des voyageurs | Hilads",
+    "titleCity": "{name} à {city} — rencontre des locaux et des voyageurs | Hilads",
+    "desc": "{name}{where} — rencontre des locaux et des voyageurs et vois ce qui se passe dans le coin sur Hilads. En temps réel, sans inscription.",
     "atFrag": " à {address}",
     "labelAddress": "Adresse :",
     "labelHours": "Horaires :",
@@ -54,10 +55,10 @@
     "typeCafe": "Café",
     "otherVenuesIn": "Autres lieux à {city}",
     "aboutHeading": "À propos de ce lieu",
-    "aboutBar": "{name} est un bar à {city}. Hilads te montre qui y va ce soir et d'autres endroits du coin avec la même énergie.",
+    "aboutBar": "{name} est un bar à {city}. Hilads te montre qui y va aujourd'hui et d'autres endroits du coin avec la même énergie.",
     "aboutCafe": "{name} est un café à {city}. Hilads, c'est le moyen simple de trouver des gens avec qui prendre un café — locaux et voyageurs, sans swipe de profils gênant.",
     "whatsHappeningLink": "ce qui se passe à {city}",
-    "whatsHappeningSentence": "Vois {link} ce soir sur Hilads."
+    "whatsHappeningSentence": "Vois {link} aujourd'hui sur Hilads."
   },
   "category": {
     "titleCount": "{label} à {city} · {total} sur Hilads",

@@ -44,8 +44,9 @@
     "otherThingsLink": "những điều khác đang diễn ra ở {city}"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Xem ai đang ở quanh đây ở {city} trên Hilads.",
+    "title": "{name} — gặp gỡ người địa phương và du khách | Hilads",
+    "titleCity": "{name} ở {city} — gặp gỡ người địa phương và du khách | Hilads",
+    "desc": "{name}{where} — gặp gỡ người địa phương và du khách và xem có gì đang diễn ra gần đây trên Hilads. Real-time, không cần đăng ký.",
     "atFrag": " tại {address}",
     "labelAddress": "Địa chỉ:",
     "labelHours": "Giờ mở cửa:",
@@ -55,10 +56,10 @@
     "typeCafe": "Quán cà phê",
     "otherVenuesIn": "Địa điểm khác ở {city}",
     "aboutHeading": "Về địa điểm này",
-    "aboutBar": "{name} là một quán bar ở {city}. Hilads cho bạn thấy ai sẽ đến đó tối nay và những nơi gần đó với năng lượng tương tự.",
+    "aboutBar": "{name} là một quán bar ở {city}. Hilads cho bạn thấy ai sẽ đến đó hôm nay và những nơi gần đó với năng lượng tương tự.",
     "aboutCafe": "{name} là một quán cà phê ở {city}. Hilads là cách dễ dàng để tìm người đi cà phê cùng — người địa phương và du khách, không cần lướt hồ sơ ngại ngùng.",
     "whatsHappeningLink": "những gì đang diễn ra ở {city}",
-    "whatsHappeningSentence": "Xem {link} tối nay trên Hilads."
+    "whatsHappeningSentence": "Xem {link} hôm nay trên Hilads."
   },
   "category": {
     "titleCount": "{label} ở {city} · {total} trên Hilads",

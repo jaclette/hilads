@@ -43,8 +43,9 @@
     "otherThingsLink": "{city}で起きているその他のこと"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}。今{city}に誰がいるかをHiladsで見る。",
+    "title": "{name} — ローカルと旅行者に出会う | Hilads",
+    "titleCity": "{city}の{name} — ローカルと旅行者に出会う | Hilads",
+    "desc": "{name}{where} — ローカルと旅行者に出会い、近くで何が起きているかをHiladsで見よう。リアルタイム、登録不要。",
     "atFrag": " {address}にて",
     "labelAddress": "住所：",
     "labelHours": "営業時間：",
@@ -54,10 +55,10 @@
     "typeCafe": "コーヒーショップ",
     "otherVenuesIn": "{city}のその他の会場",
     "aboutHeading": "この会場について",
-    "aboutBar": "{name}は{city}にあるバーです。Hiladsは今夜そこへ向かう人や、近くにある同じ雰囲気の場所を教えてくれます。",
+    "aboutBar": "{name}は{city}にあるバーです。Hiladsは今日そこへ向かう人や、近くにある同じ雰囲気の場所を教えてくれます。",
     "aboutCafe": "{name}は{city}にあるコーヒーショップです。Hiladsは一緒にコーヒーを飲む人を見つける手軽な方法です — ローカルも旅行者も、気まずいプロフィール探しは不要。",
     "whatsHappeningLink": "{city}で起きていること",
-    "whatsHappeningSentence": "今夜の{link}をHiladsで見る。"
+    "whatsHappeningSentence": "今日の{link}をHiladsで見る。"
   },
   "category": {
     "titleCount": "{city}の{label} · Hiladsに{total}件",

@@ -43,8 +43,9 @@
     "otherThingsLink": "สิ่งอื่นๆ ที่กำลังเกิดขึ้นใน {city}"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. ดูว่าใครอยู่แถว {city} บน Hilads",
+    "title": "{name} — เจอคนท้องถิ่นและนักเดินทาง | Hilads",
+    "titleCity": "{name} ใน {city} — เจอคนท้องถิ่นและนักเดินทาง | Hilads",
+    "desc": "{name}{where} — เจอคนท้องถิ่นและนักเดินทาง และดูว่ามีอะไรเกิดขึ้นใกล้ ๆ บน Hilads เรียลไทม์ ไม่ต้องสมัคร",
     "atFrag": " ที่ {address}",
     "labelAddress": "ที่อยู่:",
     "labelHours": "เวลาทำการ:",
@@ -54,10 +55,10 @@
     "typeCafe": "ร้านกาแฟ",
     "otherVenuesIn": "สถานที่อื่นๆ ใน {city}",
     "aboutHeading": "เกี่ยวกับสถานที่นี้",
-    "aboutBar": "{name} เป็นบาร์ใน {city} Hilads จะแสดงให้คุณเห็นว่าใครกำลังจะไปที่นั่นคืนนี้ และสถานที่อื่นๆ ใกล้เคียงที่มีบรรยากาศแบบเดียวกัน",
+    "aboutBar": "{name} เป็นบาร์ใน {city} Hilads จะแสดงให้คุณเห็นว่าใครกำลังจะไปที่นั่นวันนี้ และสถานที่อื่นๆ ใกล้เคียงที่มีบรรยากาศแบบเดียวกัน",
     "aboutCafe": "{name} เป็นร้านกาแฟใน {city} Hilads คือวิธีง่ายๆ ในการหาคนไปจิบกาแฟด้วยกัน — ทั้งคนท้องถิ่นและนักเดินทาง โดยไม่ต้องปัดดูโปรไฟล์ให้เก้อเขิน",
     "whatsHappeningLink": "สิ่งที่กำลังเกิดขึ้นใน {city}",
-    "whatsHappeningSentence": "ดู {link} คืนนี้บน Hilads"
+    "whatsHappeningSentence": "ดู {link} วันนี้บน Hilads"
   },
   "category": {
     "titleCount": "{label} ใน {city} · {total} บน Hilads",

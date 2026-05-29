@@ -545,7 +545,7 @@ function composeVenueMeta(payload, canonicalPath, venueId, locale = 'en') {
   const description = T(locale, 'venue.desc', { name: v.name, where, city: cityName })
 
   return {
-    title:       cityName ? T(locale, 'venue.titleCity', { name: v.name, city: cityName }) : v.name,
+    title:       cityName ? T(locale, 'venue.titleCity', { name: v.name, city: cityName }) : T(locale, 'venue.title', { name: v.name }),
     description,
     url:         `${SITE_BASE}${canonicalPath}`,
     // No dedicated venue OG image yet — reuse the city card so embeds aren't

@@ -43,8 +43,9 @@
     "otherThingsLink": "{city} में और क्या हो रहा है"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Hilads पर देखें अभी {city} में आसपास कौन है।",
+    "title": "{name} — लोकल और ट्रैवलर से मिलो | Hilads",
+    "titleCity": "{city} में {name} — लोकल और ट्रैवलर से मिलो | Hilads",
+    "desc": "{name}{where} — लोकल और ट्रैवलर से मिलो और देखो आसपास क्या हो रहा है, Hilads पर। रियल-टाइम, बिना साइन-अप।",
     "atFrag": " {address} पर",
     "labelAddress": "पता:",
     "labelHours": "समय:",
@@ -54,10 +55,10 @@
     "typeCafe": "कॉफ़ी शॉप",
     "otherVenuesIn": "{city} में अन्य जगहें",
     "aboutHeading": "इस जगह के बारे में",
-    "aboutBar": "{name} {city} में एक बार है। Hilads आपको दिखाता है कि आज रात वहाँ कौन जा रहा है और आसपास की दूसरी जगहें जिनमें वही एनर्जी है।",
+    "aboutBar": "{name} {city} में एक बार है। Hilads आपको दिखाता है कि आज वहाँ कौन जा रहा है और आसपास की दूसरी जगहें जिनमें वही एनर्जी है।",
     "aboutCafe": "{name} {city} में एक कॉफ़ी शॉप है। Hilads कॉफ़ी पीने के लिए लोग ढूंढने का आसान तरीका है — लोकल और ट्रैवलर, बिना किसी अजीब प्रोफ़ाइल-स्वाइपिंग के।",
     "whatsHappeningLink": "{city} में क्या हो रहा है",
-    "whatsHappeningSentence": "Hilads पर आज रात {link} देखें।"
+    "whatsHappeningSentence": "Hilads पर आज {link} देखें।"
   },
   "category": {
     "titleCount": "{city} में {label} · Hilads पर {total}",

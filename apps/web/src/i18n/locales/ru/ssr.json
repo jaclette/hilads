@@ -43,8 +43,9 @@
     "otherThingsLink": "что ещё происходит в городе {city}"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Смотри, кто рядом в городе {city}, на Hilads.",
+    "title": "{name} — знакомься с местными и путешественниками | Hilads",
+    "titleCity": "{name} в городе {city} — знакомься с местными и путешественниками | Hilads",
+    "desc": "{name}{where} — знакомься с местными и путешественниками и смотри, что происходит рядом, на Hilads. В реальном времени, без регистрации.",
     "atFrag": " по адресу {address}",
     "labelAddress": "Адрес:",
     "labelHours": "Часы работы:",
@@ -54,10 +55,10 @@
     "typeCafe": "Кофейня",
     "otherVenuesIn": "Другие места в городе {city}",
     "aboutHeading": "Об этом месте",
-    "aboutBar": "{name} — это бар в городе {city}. Hilads показывает, кто собирается туда сегодня вечером, и другие места поблизости с такой же энергией.",
+    "aboutBar": "{name} — это бар в городе {city}. Hilads показывает, кто собирается туда сегодня, и другие места поблизости с такой же энергией.",
     "aboutCafe": "{name} — это кофейня в городе {city}. Hilads — это простой способ найти людей, с кем выпить кофе: местных и путешественников, без неловкого пролистывания профилей.",
     "whatsHappeningLink": "что происходит в городе {city}",
-    "whatsHappeningSentence": "Смотри {link} сегодня вечером на Hilads."
+    "whatsHappeningSentence": "Смотри {link} сегодня на Hilads."
   },
   "category": {
     "titleCount": "{label} в городе {city} · {total} на Hilads",

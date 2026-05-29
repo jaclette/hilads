@@ -43,8 +43,9 @@
     "otherThingsLink": "iba pang nangyayari sa {city}"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Tingnan kung sino ang nasa paligid ng {city} sa Hilads.",
+    "title": "{name} — makilala ang mga local at biyahero | Hilads",
+    "titleCity": "{name} sa {city} — makilala ang mga local at biyahero | Hilads",
+    "desc": "{name}{where} — makilala ang mga local at biyahero at tingnan kung ano ang nangyayari sa paligid sa Hilads. Real-time, walang sign-up.",
     "atFrag": " sa {address}",
     "labelAddress": "Address:",
     "labelHours": "Oras:",
@@ -54,10 +55,10 @@
     "typeCafe": "Coffee shop",
     "otherVenuesIn": "Iba pang lugar sa {city}",
     "aboutHeading": "Tungkol sa lugar na ito",
-    "aboutBar": "Ang {name} ay isang bar sa {city}. Ipinapakita ng Hilads kung sino ang pupunta roon ngayong gabi at iba pang lugar sa paligid na may parehong energy.",
+    "aboutBar": "Ang {name} ay isang bar sa {city}. Ipinapakita ng Hilads kung sino ang pupunta roon ngayong araw at iba pang lugar sa paligid na may parehong energy.",
     "aboutCafe": "Ang {name} ay isang coffee shop sa {city}. Ang Hilads ang madaling paraan para makahanap ng mga taong makakasama sa pag-kape — mga local at biyahero, walang nakakahiyang profile-swiping.",
     "whatsHappeningLink": "kung ano ang nangyayari sa {city}",
-    "whatsHappeningSentence": "Tingnan ang {link} ngayong gabi sa Hilads."
+    "whatsHappeningSentence": "Tingnan ang {link} ngayong araw sa Hilads."
   },
   "category": {
     "titleCount": "{label} sa {city} · {total} sa Hilads",

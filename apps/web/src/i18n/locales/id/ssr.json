@@ -43,8 +43,9 @@
     "otherThingsLink": "hal lain yang terjadi di {city}"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Lihat siapa yang ada di sekitar {city} di Hilads.",
+    "title": "{name} — temui local dan pelancong | Hilads",
+    "titleCity": "{name} di {city} — temui local dan pelancong | Hilads",
+    "desc": "{name}{where} — temui local dan pelancong dan lihat apa yang terjadi di sekitar di Hilads. Real-time, tanpa daftar.",
     "atFrag": " di {address}",
     "labelAddress": "Alamat:",
     "labelHours": "Jam buka:",
@@ -54,10 +55,10 @@
     "typeCafe": "Kedai kopi",
     "otherVenuesIn": "Tempat lain di {city}",
     "aboutHeading": "Tentang tempat ini",
-    "aboutBar": "{name} adalah bar di {city}. Hilads menunjukkan siapa yang menuju ke sana malam ini dan tempat lain di sekitar dengan energi yang sama.",
+    "aboutBar": "{name} adalah bar di {city}. Hilads menunjukkan siapa yang menuju ke sana hari ini dan tempat lain di sekitar dengan energi yang sama.",
     "aboutCafe": "{name} adalah kedai kopi di {city}. Hilads adalah cara mudah menemukan orang untuk ngopi bareng — local dan pelancong, tanpa swipe profil yang canggung.",
     "whatsHappeningLink": "apa yang terjadi di {city}",
-    "whatsHappeningSentence": "Lihat {link} malam ini di Hilads."
+    "whatsHappeningSentence": "Lihat {link} hari ini di Hilads."
   },
   "category": {
     "titleCount": "{label} di {city} · {total} di Hilads",

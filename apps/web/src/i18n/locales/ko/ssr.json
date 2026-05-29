@@ -43,8 +43,9 @@
     "otherThingsLink": "{city}에서 일어나는 다른 일들"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Hilads에서 {city}에 누가 있는지 확인하세요.",
+    "title": "{name} — 로컬과 여행자를 만나보세요 | Hilads",
+    "titleCity": "{city}의 {name} — 로컬과 여행자를 만나보세요 | Hilads",
+    "desc": "{name}{where} — 로컬과 여행자를 만나고 근처에서 무슨 일이 일어나는지 Hilads에서 확인하세요. 실시간, 가입 필요 없음.",
     "atFrag": " 주소: {address}",
     "labelAddress": "주소:",
     "labelHours": "영업시간:",
@@ -54,10 +55,10 @@
     "typeCafe": "카페",
     "otherVenuesIn": "{city}의 다른 장소",
     "aboutHeading": "이 장소 소개",
-    "aboutBar": "{name}은(는) {city}에 있는 바예요. Hilads는 오늘 밤 누가 그곳으로 향하는지, 그리고 같은 분위기의 근처 다른 장소들을 보여줘요.",
+    "aboutBar": "{name}은(는) {city}에 있는 바예요. Hilads는 오늘 누가 그곳으로 향하는지, 그리고 같은 분위기의 근처 다른 장소들을 보여줘요.",
     "aboutCafe": "{name}은(는) {city}에 있는 카페예요. Hilads는 함께 커피 마실 사람을 찾는 쉬운 방법이에요 — 로컬과 여행자, 어색한 프로필 스와이프 없이.",
     "whatsHappeningLink": "{city}에서 무슨 일이 있는지",
-    "whatsHappeningSentence": "Hilads에서 오늘 밤 {link}을(를) 확인하세요."
+    "whatsHappeningSentence": "Hilads에서 오늘 {link}을(를) 확인하세요."
   },
   "category": {
     "titleCount": "{city}의 {label} · Hilads에 {total}개",

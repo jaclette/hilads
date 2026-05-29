@@ -43,8 +43,9 @@
     "otherThingsLink": "wat er nog meer gebeurt in {city}"
   },
   "venue": {
-    "titleCity": "{name} · {city}",
-    "desc": "{name}{where}. Kijk wie er in de buurt is in {city} op Hilads.",
+    "title": "{name} — ontmoet locals en reizigers | Hilads",
+    "titleCity": "{name} in {city} — ontmoet locals en reizigers | Hilads",
+    "desc": "{name}{where} — ontmoet locals en reizigers en zie wat er in de buurt speelt op Hilads. Realtime, zonder aanmelding.",
     "atFrag": " bij {address}",
     "labelAddress": "Adres:",
     "labelHours": "Openingstijden:",
@@ -54,10 +55,10 @@
     "typeCafe": "Koffiebar",
     "otherVenuesIn": "Andere locaties in {city}",
     "aboutHeading": "Over deze locatie",
-    "aboutBar": "{name} is een bar in {city}. Hilads laat je zien wie er vanavond heen gaat en andere plekken in de buurt met dezelfde energie.",
+    "aboutBar": "{name} is een bar in {city}. Hilads laat je zien wie er vandaag heen gaat en andere plekken in de buurt met dezelfde energie.",
     "aboutCafe": "{name} is een koffiebar in {city}. Hilads is de makkelijke manier om mensen te vinden om een koffie mee te drinken — locals en reizigers, zonder ongemakkelijk geswipe door profielen.",
     "whatsHappeningLink": "wat er gebeurt in {city}",
-    "whatsHappeningSentence": "Bekijk {link} vanavond op Hilads."
+    "whatsHappeningSentence": "Bekijk {link} vandaag op Hilads."
   },
   "category": {
     "titleCount": "{label} in {city} · {total} op Hilads",
