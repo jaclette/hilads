@@ -286,12 +286,12 @@ function composeEventMeta(payload, canonicalPath, eventId, locale = 'en') {
       : T(locale, 'event.titlePast', { title: ev.title })
     description = T(locale, 'event.descPast', { title: ev.title, where, when, attended, city })
   } else {
-    const time  = ev.starts_at ? T(locale, 'event.timeFrag', { time: formatTime(ev.starts_at, payload.timezone, locale) }) : ''
-    const going = (ev.participant_count ?? 0) > 0 ? T(locale, 'event.goingFrag', { count: ev.participant_count }) : ''
+    const time = ev.starts_at ? T(locale, 'event.timeFrag', { time: formatTime(ev.starts_at, payload.timezone, locale) }) : ''
+    const city = payload.cityName || T(locale, 'event.cityFallback')
     title       = payload.cityName
       ? T(locale, 'event.titleCity', { title: ev.title, city: payload.cityName })
-      : ev.title
-    description = T(locale, 'event.descUpcoming', { title: ev.title, where, time, going })
+      : T(locale, 'event.title', { title: ev.title })
+    description = T(locale, 'event.descUpcoming', { title: ev.title, city, time })
   }
 
   return {
