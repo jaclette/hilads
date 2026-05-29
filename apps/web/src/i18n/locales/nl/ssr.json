@@ -1,4 +1,13 @@
 {
+  "home": {
+    "title": "Hilads — zie wie er in de buurt is & wat er nu speelt in jouw stad",
+    "description": "Zie wie er nu in de buurt is en doe mee aan wat er vanavond speelt in jouw stad — live city-chat, evenementen en mensen dichtbij. Realtime, zonder aanmelding.",
+    "h1": "Voel je lokaal. Overal.",
+    "intro": "Hilads is een live sociale laag over steden. Open 'm en zie meteen wie er in de buurt is, wat er vanavond speelt, en duik in evenementen en gesprekken bij jou in de buurt — geen profielen, geen aanmelding.",
+    "aboutHeading": "Zo werkt Hilads",
+    "aboutBody": "Kies je stad en je zit binnen enkele seconden in de live chat. Zie wie er in de buurt online is, ontdek evenementen en meetups van vandaag, en begin iets van jezelf. Hilads is gebouwd om elke stad nú levend te laten voelen.",
+    "citiesCta": "Blader door alle Hilads-steden"
+  },
   "brand": "Hilads",
   "dateLocale": "nl-NL",
   "ogLocale": "nl_NL",

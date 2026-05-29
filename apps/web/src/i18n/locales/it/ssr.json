@@ -1,4 +1,13 @@
 {
+  "home": {
+    "title": "Hilads — guarda chi c'è intorno e cosa sta succedendo nella tua città, ora",
+    "description": "Guarda chi c'è intorno a te proprio ora e unisciti a ciò che sta succedendo nella tua città stasera — chat di città in diretta, eventi e gente vicino a te. In tempo reale, senza registrazione.",
+    "h1": "Senti la tua città. Ovunque.",
+    "intro": "Hilads è un livello social in tempo reale sopra le città. Aprila e vedi all'istante chi c'è intorno, cosa succede stasera, e lanciati negli eventi e nelle conversazioni vicino a te — senza profili, senza registrazione.",
+    "aboutHeading": "Come funziona Hilads",
+    "aboutBody": "Scegli la tua città e in pochi secondi sei nella sua chat in diretta. Guarda chi è online lì vicino, scopri eventi e ritrovi di oggi, e dai il via a qualcosa di tuo. Hilads è fatto per far sentire viva ogni città, proprio ora.",
+    "citiesCta": "Esplora tutte le città di Hilads"
+  },
   "brand": "Hilads",
   "dateLocale": "it-IT",
   "ogLocale": "it_IT",

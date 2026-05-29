@@ -1,4 +1,13 @@
 {
+  "home": {
+    "title": "Hilads — see who's around & what's happening in your city, right now",
+    "description": "See who's around right now and join what's happening in your city tonight — live city chat, events and people nearby. Real-time, no sign-up.",
+    "h1": "Feel local. Anywhere.",
+    "intro": "Hilads is a live social layer on top of cities. Open it and instantly see who's around, what's happening tonight, and jump into events and conversations near you — no profiles, no sign-up.",
+    "aboutHeading": "How Hilads works",
+    "aboutBody": "Pick your city and you're in its live chat in seconds. See who's online nearby, discover events and hangouts happening today, and start something of your own. Hilads is built to make every city feel alive, right now.",
+    "citiesCta": "Browse all Hilads cities"
+  },
   "brand": "Hilads",
   "dateLocale": "en-US",
   "ogLocale": "en_US",

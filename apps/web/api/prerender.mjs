@@ -1102,6 +1102,37 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en') {
   ].join('\n')
 }
 
+// ── Home (localized landing) ──────────────────────────────────────────────────
+// Static — no backend fetch, so the homepage always renders even if the API is
+// slow/down. Mirrors the city page shape (meta + body + site graph), localized
+// via the `home.*` ssr.json keys. The final-serve block rewrites meta.url to the
+// per-locale form (/fr/ etc.); hreflang for basePath '/' already emits all locales.
+function composeHomeMeta(canonicalPath, locale = 'en') {
+  return {
+    title:       T(locale, 'home.title'),
+    description: T(locale, 'home.description'),
+    url:         `${SITE_BASE}${canonicalPath}`,
+    image:       `${SITE_BASE}/og/og-default.png`,
+  }
+}
+
+function composeHomeJsonLd() {
+  return { '@context': 'https://schema.org', '@graph': siteGraphNodes() }
+}
+
+function composeHomeBody(locale = 'en') {
+  const lp = localePrefixFor(locale)
+  return [
+    `<style>${SSR_CITY_STYLES}</style>`,
+    `<main class="ssr-main">`,
+    `<h1>${htmlEscape(T(locale, 'home.h1'))}</h1>`,
+    `<p class="ssr-intro">${htmlEscape(T(locale, 'home.intro'))}</p>`,
+    `<section><h2>${htmlEscape(T(locale, 'home.aboutHeading'))}</h2><p>${htmlEscape(T(locale, 'home.aboutBody'))}</p></section>`,
+    `<p><a href="${lp}/cities">${htmlEscape(T(locale, 'home.citiesCta'))}</a></p>`,
+    `</main>`,
+  ].join('\n')
+}
+
 // Body for /event/<id> — H1 + when/where/host + breadcrumb + related events
 // in the same city + evergreen. Filters venue-tagged events out of the
 // "Other events" list so we don't link into the redirect chain to /venue/.
@@ -1627,6 +1658,13 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         jsonLd   = composePastJsonLd(cityData, items, slug, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
         bodyHtml = composePastBody(cityData, items, slug, locale)
       }
+    } else if (type === 'home') {
+      // Localized landing page. Static (no backend fetch) so it always renders.
+      canonicalPath = '/'
+      cacheMaxAge   = 3600
+      meta     = composeHomeMeta(canonicalPath, locale)
+      jsonLd   = composeHomeJsonLd()
+      bodyHtml = composeHomeBody(locale)
     }
   } catch (err) {
     console.error('[prerender] composer failed:', err)

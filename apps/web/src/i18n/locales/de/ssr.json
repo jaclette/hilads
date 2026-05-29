@@ -1,4 +1,13 @@
 {
+  "home": {
+    "title": "Hilads — sieh, wer um dich herum ist & was gerade in deiner Stadt los ist",
+    "description": "Sieh, wer gerade um dich herum ist, und spring in das, was heute Abend in deiner Stadt passiert — Live-City-Chat, Events und Leute in der Nähe. In Echtzeit, ohne Registrierung.",
+    "h1": "Fühl dich lokal. Überall.",
+    "intro": "Hilads ist eine soziale Echtzeitschicht über Städten. Öffne die App und sieh sofort, wer um dich herum ist, was heute Abend läuft, und spring in Events und Gespräche in deiner Nähe — keine Profile, keine Registrierung.",
+    "aboutHeading": "So funktioniert Hilads",
+    "aboutBody": "Wähl deine Stadt und du bist in Sekunden in ihrem Live-Chat. Sieh, wer in der Nähe online ist, entdecke Events und Treffen, die heute stattfinden, und starte etwas Eigenes. Hilads ist gebaut, um jede Stadt lebendig zu machen — genau jetzt.",
+    "citiesCta": "Alle Hilads-Städte durchstöbern"
+  },
   "brand": "Hilads",
   "dateLocale": "de-DE",
   "ogLocale": "de_DE",

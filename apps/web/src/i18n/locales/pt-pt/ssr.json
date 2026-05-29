@@ -1,4 +1,13 @@
 {
+  "home": {
+    "title": "Hilads — vê quem está por perto e o que se passa na tua cidade, agora",
+    "description": "Vê quem está por perto agora mesmo e junta-te ao que se passa na tua cidade esta noite — chat da cidade ao vivo, eventos e gente perto de ti. Em tempo real, sem registo.",
+    "h1": "Sente a tua cidade. Onde quer que estejas.",
+    "intro": "A Hilads é uma camada social em tempo real sobre as cidades. Abre-a e vê logo quem está por perto, o que se passa esta noite, e junta-te aos eventos e às conversas perto de ti — sem perfis, sem registo.",
+    "aboutHeading": "Como funciona a Hilads",
+    "aboutBody": "Escolhe a tua cidade e em segundos estás no chat ao vivo dela. Vê quem está online por perto, descobre eventos e convívios de hoje, e começa algo teu. A Hilads foi feita para fazer cada cidade sentir-se viva, agora mesmo.",
+    "citiesCta": "Explorar todas as cidades da Hilads"
+  },
   "brand": "Hilads",
   "dateLocale": "pt-PT",
   "ogLocale": "pt_PT",
