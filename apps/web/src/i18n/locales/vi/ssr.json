@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — xem ai đang ở quanh bạn & thành phố đang có gì hot, ngay lúc này",
-    "description": "Xem ngay ai đang ở gần và nhảy vào những gì đang diễn ra trong thành phố tối nay — chat thành phố trực tiếp, sự kiện và người quanh bạn. Real-time, không cần đăng ký.",
+    "title": "Hilads — gặp người địa phương và du khách trong thành phố của bạn, ngay bây giờ",
+    "description": "Xem ngay ai đang ở quanh bạn và gặp gỡ người địa phương cùng du khách trong thành phố của bạn hôm nay — chat thành phố trực tiếp, sự kiện và buổi gặp gỡ gần bạn. Real-time, không cần đăng ký.",
     "h1": "Bắt sóng thành phố. Ở bất cứ đâu.",
-    "intro": "Hilads là lớp xã hội sống động phủ lên các thành phố. Mở lên là thấy ngay ai đang ở quanh bạn, tối nay có gì hot, rồi nhảy thẳng vào sự kiện và những cuộc trò chuyện gần bạn — không hồ sơ, không đăng ký.",
+    "intro": "Hilads là lớp xã hội sống động phủ lên các thành phố. Mở lên là thấy ngay ai đang ở quanh bạn hôm nay, gặp gỡ người địa phương và du khách, rồi nhảy thẳng vào các sự kiện và buổi gặp gỡ gần bạn — không hồ sơ, không đăng ký.",
     "aboutHeading": "Hilads hoạt động thế nào",
-    "aboutBody": "Chọn thành phố của bạn và chỉ vài giây sau bạn đã ở trong chat trực tiếp của nó. Xem ai đang online gần đó, khám phá sự kiện và buổi gặp gỡ diễn ra hôm nay, và tự mình tạo ra điều gì đó. Hilads sinh ra để khiến mọi thành phố sống động, ngay lúc này.",
+    "aboutBody": "Chọn thành phố của bạn và chỉ vài giây sau bạn đã ở trong chat trực tiếp của nó. Xem ai đang online gần đó, gặp gỡ người địa phương và du khách, khám phá các sự kiện và buổi gặp gỡ diễn ra hôm nay, rồi tự mình tạo ra điều gì đó. Hilads khiến mọi thành phố sống động, ngay lúc này.",
     "citiesCta": "Khám phá tất cả thành phố trên Hilads"
   },
   "_note": "Vietnamese SSR strings are DRAFTS — pending native review.",
