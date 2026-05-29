@@ -82,8 +82,8 @@
   },
   "city": {
     "title": "Ano ang nangyayari sa {city} {timeframe} sa lugar mo — events, meetups at mga local na makikilala | Hilads",
-    "descHigh": "Sumali sa mga totoong event sa {city} — mga meetup, hapunan, at rooftop tambayan kasama ang mga local at biyahero. Mag-browse ng {count}+ event ngayong araw at ngayong linggo. Walang sign-up na kailangan.",
-    "descMid": "Sumali sa mga totoong event sa {city} — mga meetup, hapunan, at tambayan kasama ang mga local at biyahero. Tuklasin ang mga paparating na event ngayong linggo. Walang sign-up na kailangan.",
+    "descHigh": "Sumali sa mga local na event sa {city} — mga meetup, hapunan, at rooftop tambayan kasama ang mga local at biyahero. Mag-browse ng {count}+ event ngayong araw at ngayong linggo. Walang sign-up na kailangan.",
+    "descMid": "Sumali sa mga local na event sa {city} — mga meetup, hapunan, at tambayan kasama ang mga local at biyahero. Tuklasin ang mga paparating na event ngayong linggo. Walang sign-up na kailangan.",
     "descLow": "Tuklasin ang mga meetup at event sa {city} — kumonekta sa mga local at biyahero, sumali sa tambayan, o gumawa ng sarili mo. Walang sign-up na kailangan para mag-browse.",
     "h1": "{timeframe} sa {city}",
     "introEventsOne": "1 paparating na event",

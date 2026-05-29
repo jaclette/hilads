@@ -82,8 +82,8 @@
   },
   "city": {
     "title": "Cosa sta succedendo in zona a {city} {timeframe} — eventi, incontri e local da conoscere | Hilads",
-    "descHigh": "Partecipa a eventi reali a {city} — incontri, cene e ritrovi in terrazza con local e viaggiatori. Esplora {count}+ eventi oggi e questa settimana. Senza registrazione.",
-    "descMid": "Partecipa a eventi reali a {city} — incontri, cene e ritrovi con local e viaggiatori. Scopri i prossimi eventi di questa settimana. Senza registrazione.",
+    "descHigh": "Partecipa a eventi locali a {city} — incontri, cene e ritrovi in terrazza con local e viaggiatori. Esplora {count}+ eventi oggi e questa settimana. Senza registrazione.",
+    "descMid": "Partecipa a eventi locali a {city} — incontri, cene e ritrovi con local e viaggiatori. Scopri i prossimi eventi di questa settimana. Senza registrazione.",
     "descLow": "Scopri incontri ed eventi a {city} — connettiti con local e viaggiatori, partecipa ai ritrovi o crea il tuo. Senza registrazione per esplorare.",
     "h1": "{timeframe} a {city}",
     "introEventsOne": "1 evento in arrivo",
