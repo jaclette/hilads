@@ -1851,32 +1851,38 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
         Response::json(['error' => 'Missing slug'], 400);
     }
 
-    foreach (CityRepository::all() as $city) {
-        $citySlug = preg_replace('/[^a-z0-9]+/', '-', strtolower($city['name']));
-        $citySlug = trim($citySlug, '-');
-        if ($citySlug === $slug) {
+    $build = static function () use ($slug): ?array {
+        foreach (CityRepository::all() as $city) {
+            $citySlug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($city['name'])), '-');
+            if ($citySlug !== $slug) continue;
             // Chat volume drives SEO indexability (consumed by the prerender's
             // robots logic). City chat messages are keyed by the 'city_<id>'
             // channel; count every row (text/image + system) — a city with any
             // activity at all is worth indexing.
-            $stmt = Database::pdo()->prepare(
-                "SELECT COUNT(*) FROM messages WHERE channel_id = ?"
-            );
+            $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM messages WHERE channel_id = ?");
             $stmt->execute(['city_' . $city['id']]);
-            $messageCount = (int) $stmt->fetchColumn();
-
-            Response::json([
+            return [
                 'channelId'    => $city['id'],
                 'city'         => $city['name'],
                 'country'      => $city['country'] ?? null,
                 'timezone'     => $city['timezone'],
                 'slug'         => $citySlug,
-                'messageCount' => $messageCount,
-            ]);
+                'messageCount' => (int) $stmt->fetchColumn(),
+            ];
         }
-    }
+        return null;
+    };
 
-    Response::json(['error' => 'City not found'], 404);
+    // Crawler hits (prerender, ×19 locales) are cached to spare Postgres; the
+    // live app computes fresh. City metadata is very stable → 30 min.
+    $payload = isset($_SERVER['HTTP_X_HILADS_SSR'])
+        ? Cache::remember("city_by_slug:$slug", 1800, $build)
+        : $build();
+
+    if ($payload === null) {
+        Response::json(['error' => 'City not found'], 404);
+    }
+    Response::json($payload);
 });
 
 // GET /api/v1/events/{eventId}/venue-redirect
@@ -2206,30 +2212,38 @@ $router->add('GET', '/api/v1/cities/{slug}/venues', function (array $params) {
         Response::json(['error' => 'Missing slug'], 400);
     }
 
-    $city = null;
-    foreach (CityRepository::all() as $c) {
-        $citySlug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($c['name'])), '-');
-        if ($citySlug === $slug) {
-            $city = $c;
-            break;
+    $build = static function () use ($slug): ?array {
+        $city = null;
+        foreach (CityRepository::all() as $c) {
+            $citySlug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($c['name'])), '-');
+            if ($citySlug === $slug) { $city = $c; break; }
         }
-    }
-    if ($city === null) {
+        if ($city === null) return null;
+
+        $venues = EventSeriesRepository::listVenuesByCity((int) $city['id']);
+        return [
+            'venues'  => array_map(static fn(array $v) => [
+                'id'         => $v['id'],
+                'name'       => $v['title'],
+                'address'    => $v['location'],
+                'category'   => $v['event_type'] === 'drinks' ? 'bar' : 'cafe',
+                'event_type' => $v['event_type'],
+                'updated_at' => (int) $v['created_at'],
+            ], $venues),
+            'total'   => count($venues),
+        ];
+    };
+
+    // Crawler hits cached (×19 locales collapse to one query); app computes fresh.
+    // Venue lists change rarely → 30 min.
+    $payload = isset($_SERVER['HTTP_X_HILADS_SSR'])
+        ? Cache::remember("city_venues:$slug", 1800, $build)
+        : $build();
+
+    if ($payload === null) {
         Response::json(['error' => 'City not found'], 404);
     }
-
-    $venues = EventSeriesRepository::listVenuesByCity((int) $city['id']);
-    Response::json([
-        'venues'  => array_map(static fn(array $v) => [
-            'id'         => $v['id'],
-            'name'       => $v['title'],
-            'address'    => $v['location'],
-            'category'   => $v['event_type'] === 'drinks' ? 'bar' : 'cafe',
-            'event_type' => $v['event_type'],
-            'updated_at' => (int) $v['created_at'],
-        ], $venues),
-        'total'   => count($venues),
-    ]);
+    Response::json($payload);
 });
 
 // GET /api/v1/events/{eventId}
@@ -3726,6 +3740,10 @@ $router->add('GET', '/api/v1/channels/{channelId}/events/upcoming', function (ar
         Response::json(['error' => 'Invalid channelId'], 400);
     }
 
+    // Crawler hits (prerender, ×19 locales) cached to spare Postgres; the live
+    // app computes fresh so attendee counts stay current. SSR-only, 10 min.
+    $ssr = isset($_SERVER['HTTP_X_HILADS_SSR']);
+
     // Range mode: ?from=YYYY-MM-DD&to=YYYY-MM-DD — used by the calendar
     // strip on the upcoming-events screen. Both must be present and within
     // ~6 months of today. Falls back to ?days= when range is missing.
@@ -3739,14 +3757,16 @@ $router->add('GET', '/api/v1/channels/{channelId}/events/upcoming', function (ar
         if ($from > $to) {
             Response::json(['error' => 'from must be <= to'], 422);
         }
-        $events = EventRepository::getUpcoming($channelId, 7, $from, $to);
-        Response::json(['events' => $events]);
+        $build  = static fn(): array => ['events' => EventRepository::getUpcoming($channelId, 7, $from, $to)];
+        $payload = $ssr ? Cache::remember("ev_up:$channelId:$from:$to", 600, $build) : $build();
+        Response::json($payload);
     }
 
     $days = filter_var($_GET['days'] ?? 7, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 90]]);
     if ($days === false) $days = 7;
-    $events = EventRepository::getUpcoming($channelId, $days);
-    Response::json(['events' => $events]);
+    $build  = static fn(): array => ['events' => EventRepository::getUpcoming($channelId, $days)];
+    $payload = $ssr ? Cache::remember("ev_up:$channelId:d$days", 600, $build) : $build();
+    Response::json($payload);
 });
 
 // GET /api/v1/channels/{channelId}/events/calendar-summary?from=&to=

@@ -227,7 +227,7 @@ async function fetchWithTimeout(url, ms) {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), ms)
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json' } })
+    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Hilads-SSR': '1' } })
     if (!res.ok) return null
     return await res.json()
   } catch (err) {
@@ -245,7 +245,7 @@ async function fetchWithStatus(url, ms) {
   const ctrl = new AbortController()
   const t = setTimeout(() => ctrl.abort(), ms)
   try {
-    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json' } })
+    const res = await fetch(url, { signal: ctrl.signal, headers: { Accept: 'application/json', 'X-Hilads-SSR': '1' } })
     const data = res.ok ? await res.json() : null
     return { status: res.status, data }
   } catch (err) {

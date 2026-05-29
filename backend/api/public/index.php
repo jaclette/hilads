@@ -137,6 +137,7 @@ if (getenv('SENTRY_DSN') && !defined('SENTRY_INITIALIZED')) {
 
 require_once __DIR__ . '/../src/Storage.php';
 require_once __DIR__ . '/../src/Database.php';
+require_once __DIR__ . '/../src/Cache.php';
 require_once __DIR__ . '/../src/UserRepository.php';
 require_once __DIR__ . '/../src/AuthService.php';
 require_once __DIR__ . '/../src/UsernameService.php';
