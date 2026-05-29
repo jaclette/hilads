@@ -13,13 +13,23 @@ class CityRepository
             return self::$cities;
         }
 
-        // APCu cross-worker cache — cities change at most a few times per year.
-        // Eliminates the DB round-trip (and the DB connection establishment cost
-        // on cold workers) for every endpoint that validates or looks up a city.
-        // TTL: 1 hour. Cleared automatically when APCu is restarted on deploy.
-        if (function_exists('apcu_fetch') && PHP_SAPI !== 'cli') {
+        // Cross-request cache — cities change at most a few times per year, so we
+        // avoid re-reading the full ~350-row set on every city lookup/validation.
+        // APCu when available (fastest, shared across workers); otherwise a
+        // file-based fallback. APCu is NOT enabled on Render's mod_php, and
+        // without the fallback this query ran ~147k× and dominated DB egress
+        // (~5GB). TTL: 1 hour. Both stores clear on deploy / instance restart.
+        $apcu = function_exists('apcu_fetch') && PHP_SAPI !== 'cli';
+        if ($apcu) {
             $cached = apcu_fetch('hilads_cities_v1');
             if (is_array($cached)) {
+                self::$cities = $cached;
+                return self::$cities;
+            }
+        }
+        if (PHP_SAPI !== 'cli') {
+            $cached = Cache::get('cities_all_v1');
+            if ($cached !== null) {
                 self::$cities = $cached;
                 return self::$cities;
             }
@@ -54,8 +64,11 @@ class CityRepository
             ];
         }, $rows);
 
-        if (function_exists('apcu_store') && PHP_SAPI !== 'cli') {
+        if ($apcu) {
             apcu_store('hilads_cities_v1', self::$cities, 3600);
+        }
+        if (PHP_SAPI !== 'cli') {
+            Cache::set('cities_all_v1', self::$cities, 3600);
         }
 
         return self::$cities;
