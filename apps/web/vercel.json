@@ -72,13 +72,13 @@
     { "source": "/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category" },
     { "source": "/cities",               "destination": "/api/cities-index" },
 
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
-    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru)/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category&locale=:locale" },
-    { "source": "/(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru)/(.*)",         "destination": "/index.html" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug/:category", "destination": "/api/prerender?type=category&slug=:slug&category=:category&locale=:locale" },
+    { "source": "/(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/(.*)",         "destination": "/index.html" },
 
     { "source": "/(.*)",                 "destination": "/index.html" }
   ]

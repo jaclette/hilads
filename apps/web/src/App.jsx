@@ -57,11 +57,20 @@ function cityToSlug(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+// Leading locale segment to strip from deep-link paths (Option A): ANY supported
+// locale prefix, e.g. /fr, /es, /it, /pt-br, /zh-hans. Built from the canonical
+// SUPPORTED list so adding a locale never desyncs the router — the old hardcoded
+// (fr|vi|es) silently dropped /it, /de, … to the landing page. Longest-first +
+// a segment-boundary lookahead so /zh-hant can't be shadowed by a shorter prefix.
+const LOCALE_PREFIX_RE = new RegExp(
+  `^/(${[...SUPPORTED].sort((a, b) => b.length - a.length).join('|')})(?=/|$)`
+)
+
 function parseDeepLink() {
-  // Strip an optional leading locale segment (/fr, /vi) — Option A localized
-  // routes resolve to the same views as their un-prefixed English canonical.
-  // The locale itself is read separately by src/i18n (resolveInitialLocale).
-  const path = window.location.pathname.replace(/^\/(fr|vi|es)(?=\/|$)/, '') || '/'
+  // Strip an optional leading locale segment — Option A localized routes resolve
+  // to the same views as their un-prefixed English canonical. The locale itself
+  // is read separately by src/i18n (resolveInitialLocale).
+  const path = window.location.pathname.replace(LOCALE_PREFIX_RE, '') || '/'
   const params = new URLSearchParams(window.location.search)
   const cityMatch         = path.match(/^\/city\/([^/]+)$/)
   const cityPastMatch     = path.match(/^\/city\/([^/]+)\/past$/)
