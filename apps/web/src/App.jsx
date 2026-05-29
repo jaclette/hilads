@@ -101,6 +101,23 @@ function parseDeepLink() {
   return null
 }
 
+// Did the visitor land directly on a content deep-link (/city, /event, /venue,
+// /topic, …) instead of entering through the landing page? Captured ONCE at page
+// load, before any client-side navigation, so it reflects the true entry URL.
+// Used to suppress the first-time onboarding carousel for deep-linked visitors —
+// only landing-funnel visitors should see it.
+const ENTRY_WAS_DEEP_LINK = parseDeepLink() !== null
+
+// Did they arrive from another hilads.live page (the landing / in-app nav) rather
+// than an external shared link? The main landing→city hop is a client-side SPA
+// transition (referrer unchanged), so this only flips true for real cross-page
+// navigations within the site (e.g. venue→city full-nav) — enough to still show
+// onboarding when someone reached a /city page from inside Hilads.
+const REFERRED_FROM_SITE = (() => {
+  try { return !!document.referrer && new URL(document.referrer).origin === window.location.origin }
+  catch { return false }
+})()
+
 // Prefix an internal path with the active locale so navigation stays in the
 // localized cluster (Option A): from /fr/, an event link → /fr/event/…. The
 // default locale (en) stays bare (x-default). parseDeepLink() strips the prefix
@@ -920,6 +937,9 @@ export default function App() {
   // hasSeenOnboarding() keeps it from re-appearing on later visits.
   useEffect(() => {
     if (status !== 'ready' || account || hasSeenOnboarding()) return
+    // Deep-linked from outside the site (typed/shared /city or /event URL) → skip
+    // onboarding. It's only for visitors who came in through the landing page.
+    if (ENTRY_WAS_DEEP_LINK && !REFERRED_FROM_SITE) return
     const t = setTimeout(() => setShowOnboarding(true), 350)
     return () => clearTimeout(t)
   }, [status, account])
