@@ -4715,25 +4715,6 @@ $router->add('POST', '/internal/cleanup', function () {
     ]);
 });
 
-// Internal: generate upcoming occurrences for all active series (call from a daily cron)
-$router->add('POST', '/internal/event-series/generate', function () {
-    $expectedKey = getenv('MIGRATION_KEY') ?: null;
-    if ($expectedKey === null) {
-        Response::json(['error' => 'Not found'], 404);
-    }
-
-    $providedKey = $_GET['key'] ?? '';
-    if (!hash_equals($expectedKey, $providedKey)) {
-        Response::json(['error' => 'Forbidden'], 403);
-    }
-
-    $lookahead = filter_var($_GET['days'] ?? 7, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 30]]);
-    if ($lookahead === false) $lookahead = 7;
-
-    $results = EventSeriesRepository::generateAll($lookahead);
-
-    Response::json(['ok' => true, 'results' => $results]);
-});
 
 // Internal: ONE-TIME migration — collapse each recurring (hilads) series to a
 // single canonical channel_events row. Idempotent + resumable (per-series
@@ -6530,8 +6511,8 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
         $timezone = $city['timezone'] ?? 'UTC';
 
         // One round-trip for both hilads + ticketmaster events (was two separate calls).
-        // getAllByChannel defers ensureTodayOccurrences internally.
-        // getAllByChannel uses SELECT_CITY (no channels JOIN) + combined WHERE source_type IN (...)
+        // Recurring events are single canonical rows; getAllByChannel synthesizes
+        // today's occurrence on-read. Uses SELECT_CITY + combined source_type IN (...).
         $t0       = microtime(true);
         $allEvs   = EventRepository::getAllByChannel($channelId, $participantKey, $city);
         $events   = $allEvs['hilads'];

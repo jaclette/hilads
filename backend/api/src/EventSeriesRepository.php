@@ -354,44 +354,6 @@ class EventSeriesRepository
 
     // ── Public API ────────────────────────────────────────────────────────────
 
-    /**
-     * Ensure today's occurrence exists for every active series in this city.
-     * Called at the start of getByChannel so recurring events are always visible
-     * even when the daily cron job hasn't run yet (or failed).
-     *
-     * Uses deterministic channel IDs so concurrent calls are safe — if two
-     * requests fire at once they both try to INSERT the same channel_id and
-     * the loser just hits ON CONFLICT DO NOTHING.
-     */
-    public static function ensureTodayOccurrences(string $cityDbId, string $timezone): void
-    {
-        $tz    = new DateTimeZone($timezone);
-        $today = (new DateTime('today', $tz))->format('Y-m-d');
-
-        // Find active series that should have today's occurrence but don't yet.
-        // The check is against occurrence_date (not expires_at) so a cleaned-up
-        // old occurrence doesn't prevent a fresh one from being generated.
-        $stmt = Database::pdo()->prepare("
-            SELECT es.*
-            FROM event_series es
-            WHERE es.city_id  = ?
-              AND es.starts_on <= ?
-              AND (es.ends_on IS NULL OR es.ends_on >= ?)
-              AND " . self::NOT_VENUE_SQL . "
-              AND NOT EXISTS (
-                  SELECT 1 FROM channel_events ce
-                  WHERE ce.series_id       = es.id
-                    AND ce.occurrence_date = ?::date
-              )
-        ");
-        $stmt->execute([$cityDbId, $today, $today, $today]);
-
-        foreach ($stmt->fetchAll() as $series) {
-            if (self::matchesRecurrence($series, $today)) {
-                self::createOccurrence($series, $today);
-            }
-        }
-    }
 
     /**
      * Create a user-initiated series (requires authenticated user + guestId).
@@ -704,83 +666,6 @@ class EventSeriesRepository
         ];
     }
 
-    /**
-     * Ensure occurrences exist for all active series in this city for the next $days days.
-     * Uses a single EXISTS query per series to find gaps, then fills them.
-     * Safe for concurrent calls — createOccurrence uses ON CONFLICT DO NOTHING.
-     */
-    /**
-     * Read-path throttle window. ensureOccurrencesForRange() runs on every /now
-     * poll and every upcoming/event crawl — two SELECTs + a write loop each time,
-     * all DB egress. Materializing recurring occurrences that often is pure waste;
-     * a few minutes of staleness for freshly-created series is fine (the nightly
-     * /internal/event-series/generate cron is the source of truth). File-based so
-     * the throttle itself costs no DB egress; per web instance is acceptable.
-     */
-    private const MATERIALIZE_THROTTLE_SECONDS = 600;
-
-    private static function recentlyMaterialized(string $cityDbId, int $days): bool
-    {
-        $file = sys_get_temp_dir() . '/hilads_mat_' . md5($cityDbId . ':' . $days);
-        if (is_file($file) && (time() - (int) @filemtime($file)) < self::MATERIALIZE_THROTTLE_SECONDS) {
-            return true; // ran recently for this city+window — skip
-        }
-        @touch($file); // mark up-front so concurrent polls don't all run it
-        return false;
-    }
-
-    public static function ensureOccurrencesForRange(string $cityDbId, string $timezone, int $days = 7): void
-    {
-        if (self::recentlyMaterialized($cityDbId, $days)) return;
-
-        $tz       = new DateTimeZone($timezone);
-        $today    = new DateTime('today', $tz);
-        $todayStr = $today->format('Y-m-d');
-        $endStr   = (clone $today)->modify("+{$days} days")->format('Y-m-d');
-
-        $stmt = Database::pdo()->prepare("
-            SELECT es.*
-            FROM event_series es
-            WHERE es.city_id   = ?
-              AND es.starts_on <= ?
-              AND (es.ends_on IS NULL OR es.ends_on >= ?)
-              AND " . self::NOT_VENUE_SQL . "
-        ");
-        $stmt->execute([$cityDbId, $endStr, $todayStr]);
-        $allSeries = $stmt->fetchAll();
-
-        if (empty($allSeries)) return;
-
-        // Fetch all already-generated occurrences in this window in one query
-        $seriesIds    = array_column($allSeries, 'id');
-        $placeholders = implode(',', array_fill(0, count($seriesIds), '?'));
-        $existsStmt   = Database::pdo()->prepare("
-            SELECT series_id, occurrence_date::TEXT AS d
-            FROM channel_events
-            WHERE series_id IN ($placeholders)
-              AND occurrence_date >= ?::date
-              AND occurrence_date <= ?::date
-        ");
-        $existsStmt->execute(array_merge($seriesIds, [$todayStr, $endStr]));
-
-        $existing = [];
-        foreach ($existsStmt->fetchAll() as $row) {
-            $existing[$row['series_id'] . ':' . $row['d']] = true;
-        }
-
-        foreach ($allSeries as $series) {
-            $current = clone $today;
-            for ($i = 0; $i <= $days; $i++) {
-                $date = $current->format('Y-m-d');
-                $key  = $series['id'] . ':' . $date;
-                if (!isset($existing[$key]) && self::matchesRecurrence($series, $date)) {
-                    self::createOccurrence($series, $date);
-                }
-                $current->modify('+1 day');
-            }
-        }
-    }
-
     public static function generateOccurrences(array $series, int $lookaheadDays = 7): int
     {
         // Venue-derived "series" (coffee shops, bars) are not events — they
@@ -856,8 +741,9 @@ class EventSeriesRepository
 
         $pdo->beginTransaction();
         try {
-            // Stop future generation: ends_on in the past excludes this series from all
-            // generateAll() / ensureTodayOccurrences() / ensureOccurrencesForRange() calls.
+            // ends_on in the past marks the series finished — read-side synthesis
+            // (nextOccurrenceDate/occurrenceDatesInRange) then yields no future
+            // dates. The canonical row itself is soft-deleted just below.
             $pdo->prepare("
                 UPDATE event_series SET ends_on = CURRENT_DATE - INTERVAL '1 day' WHERE id = ?
             ")->execute([$seriesId]);
@@ -885,23 +771,6 @@ class EventSeriesRepository
         }
 
         return true;
-    }
-
-    public static function generateAll(int $lookaheadDays = 7): array
-    {
-        $allRows = Database::pdo()->query("
-            SELECT es.* FROM event_series es
-            WHERE (es.ends_on IS NULL OR es.ends_on >= CURRENT_DATE)
-              AND " . self::NOT_VENUE_SQL . "
-        ")->fetchAll();
-
-        $results = [];
-        foreach ($allRows as $series) {
-            $n = self::generateOccurrences($series, $lookaheadDays);
-            $results[] = ['series_id' => $series['id'], 'created' => $n];
-        }
-
-        return $results;
     }
 
     public static function refreshImportedOccurrences(?int $channelId = null): array
