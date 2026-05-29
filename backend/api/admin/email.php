@@ -381,6 +381,23 @@ echo '</div>';
 
 echo '</div>';
 echo '</form>';
+
+// ── All registered emails (copy-paste) ────────────────────────────────────
+// Same source as the "Send to all registered users" broadcast, exposed as a
+// plain comma-separated list so the admin can copy it into another tool.
+$allEmails = all_registered_emails();
+$emailList = implode(', ', $allEmails);
+echo '<details class="form-card" style="margin-top:20px">';
+echo '<summary style="cursor:pointer;font-weight:600">All registered emails (' . count($allEmails) . ') — copy-paste</summary>';
+echo '<div style="margin-top:12px">';
+echo '<textarea id="all-emails" readonly rows="6" style="width:100%;font-family:monospace;font-size:12px" onclick="this.select()" placeholder="No registered users with an email address.">' . htmlspecialchars($emailList, ENT_QUOTES) . '</textarea>';
+echo '<div class="hint">Comma-separated. Click the field to select all, or use the button.</div>';
+echo '<div class="form-actions" style="margin-top:10px">';
+echo '<button type="button" id="copy-all-emails" class="btn btn-secondary">Copy all</button>';
+echo '</div>';
+echo '</div>';
+echo '</details>';
+
 echo '</div>';
 
 // Confirm before a real broadcast (high blast radius — every registered user).
@@ -406,6 +423,28 @@ echo '</div>';
       }
     });
   }
+})();
+
+(function () {
+  var copyBtn = document.getElementById('copy-all-emails');
+  var field   = document.getElementById('all-emails');
+  if (!copyBtn || !field) return;
+
+  copyBtn.addEventListener('click', function () {
+    field.select();
+    var done = function () {
+      var label = copyBtn.textContent;
+      copyBtn.textContent = 'Copied ✓';
+      setTimeout(function () { copyBtn.textContent = label; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(field.value).then(done, function () {
+        document.execCommand('copy'); done();
+      });
+    } else {
+      document.execCommand('copy'); done();
+    }
+  });
 })();
 </script>
 <?php
