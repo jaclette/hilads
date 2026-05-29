@@ -2173,23 +2173,34 @@ $router->add('GET', '/api/v1/sitemap/venues', function () {
 //     list a 410/removed page.
 //   - NOT a venue occurrence — venues have their own /venue/<slug>-<id> page;
 //     this is the same non-venue filter used by /api/v1/sitemap/categories.
+//   - ONE occurrence per recurring series — a recurring series (e.g. a daily
+//     "happy hours") generates many near-identical dated occurrence pages.
+//     Advertising them all made Google cluster them as duplicates ("Google
+//     chose a different canonical"). We emit only the soonest non-expired
+//     occurrence per series (via DISTINCT ON); one-off events (series_id NULL)
+//     are all kept. Cuts crawl sprawl and the response payload.
 // Hangouts/topics are a different entity entirely and never appear here.
 // Index-backed by idx_channel_events_expires. LIMIT keeps us inside one
 // 50k-URL sitemap file; realistic active-event counts are far below it.
 $router->add('GET', '/api/v1/sitemap/events', function () {
     $stmt = Database::pdo()->query("
-        SELECT ce.channel_id                              AS id,
-               ce.title,
-               EXTRACT(EPOCH FROM ce.created_at)::INTEGER AS updated_at
-          FROM channel_events ce
-          LEFT JOIN event_series es ON es.id = ce.series_id
-         WHERE ce.expires_at > now()
-           AND (es.id IS NULL
-                OR es.source <> 'import'
-                OR (es.source_key NOT LIKE 'places:v1:%'
-                    AND es.source_key NOT LIKE 'static:v1:%'))
-         ORDER BY ce.starts_at
-         LIMIT 40000
+        SELECT id, title, updated_at FROM (
+            SELECT DISTINCT ON (COALESCE(ce.series_id, ce.channel_id))
+                   ce.channel_id                              AS id,
+                   ce.title                                   AS title,
+                   ce.starts_at                               AS starts_at,
+                   EXTRACT(EPOCH FROM ce.created_at)::INTEGER AS updated_at
+              FROM channel_events ce
+              LEFT JOIN event_series es ON es.id = ce.series_id
+             WHERE ce.expires_at > now()
+               AND (es.id IS NULL
+                    OR es.source <> 'import'
+                    OR (es.source_key NOT LIKE 'places:v1:%'
+                        AND es.source_key NOT LIKE 'static:v1:%'))
+             ORDER BY COALESCE(ce.series_id, ce.channel_id), ce.starts_at
+        ) dedup
+        ORDER BY dedup.starts_at
+        LIMIT 40000
     ");
     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
