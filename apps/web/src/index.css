@@ -2273,15 +2273,14 @@ html, body, #root {
 
 .message.mine {
   align-self: flex-end;
+  width: fit-content;
   margin-left: auto;
-  /* `width: max-content` (capped by inherited max-width: 80%): the bubble row
-     hugs its content width exactly so the time stamp + reaction pills align
-     to the right edge of the bubble, not the right edge of the chat area.
-     Why not `fit-content`: combined with .msg-content's word-break:break-word,
-     fit-content resolves to min-content (~1 character) and collapses short
-     bubbles like "haha" into one-character-wide columns. max-content never
-     drops below the longest unbroken run, so "haha" stays on one line. */
-  width: max-content;
+  /* fit-content is the original right-alignment mechanism. The earlier
+     "haha" collapse wasn't fit-content's fault — it was word-break: break-word
+     dropping min-content to 1 char, which fit-content's clamp(min, available,
+     max) would then resolve to. Now that .msg-content uses overflow-wrap
+     (not word-break), min-content = longest word, and fit-content resolves
+     to max-content for short messages (clamped at 80% for long ones). */
 }
 
 /* fade-in for new and initial messages */
