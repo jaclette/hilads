@@ -166,6 +166,49 @@ function broadcastDmReactionToWs(string $conversationId, string $messageId, arra
     ]);
 }
 
+// ── Edit / delete broadcast helpers ───────────────────────────────────────────
+// Fire-and-forget: pushes messageEdited / messageDeleted events to channel or
+// conversation rooms so all live viewers update the bubble (or render the
+// "(edited)" tag / tombstone) without a refetch.
+
+function broadcastMessageEditedToWs(int|string $channelId, string $messageId, string $content, int $editedAt): void
+{
+    postToWs('/broadcast/message-edited', [
+        'channelId' => $channelId,
+        'messageId' => $messageId,
+        'content'   => $content,
+        'editedAt'  => $editedAt,
+    ]);
+}
+
+function broadcastMessageDeletedToWs(int|string $channelId, string $messageId, int $deletedAt): void
+{
+    postToWs('/broadcast/message-deleted', [
+        'channelId' => $channelId,
+        'messageId' => $messageId,
+        'deletedAt' => $deletedAt,
+    ]);
+}
+
+function broadcastDmMessageEditedToWs(string $conversationId, string $messageId, string $content, string $editedAt): void
+{
+    postToWs('/broadcast/dm-message-edited', [
+        'conversationId' => $conversationId,
+        'messageId'      => $messageId,
+        'content'        => $content,
+        'editedAt'       => $editedAt,
+    ]);
+}
+
+function broadcastDmMessageDeletedToWs(string $conversationId, string $messageId, string $deletedAt): void
+{
+    postToWs('/broadcast/dm-message-deleted', [
+        'conversationId' => $conversationId,
+        'messageId'      => $messageId,
+        'deletedAt'      => $deletedAt,
+    ]);
+}
+
 // ── Reaction toggle helper ────────────────────────────────────────────────────
 // Shared by channel and event reaction endpoints (both use `message_reactions` table).
 // Returns ['reactions' => [...], 'added' => bool].
@@ -5563,6 +5606,132 @@ $router->add('POST', '/api/v1/conversations/direct', function () {
     Response::json([
         'conversation' => $conversation,
         'otherUser'    => AuthService::publicFields($target),
+    ]);
+});
+
+// ── Edit + delete (channel messages — city/event/topic share `messages`) ─────
+
+// PATCH /api/v1/messages/{messageId}  body: { content, guestId? }
+// Owner-only. Caller is identified by Authorization cookie/header (user_id) and
+// the optional guestId in the body (legacy guest sessions). Only text messages
+// can be edited; deleted rows are 410.
+$router->add('PATCH', '/api/v1/messages/{messageId}', function (array $params) {
+    $messageId = strtolower(trim((string) ($params['messageId'] ?? '')));
+    if (!preg_match('/^[a-f0-9]{16}$/', $messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+    $body = Request::json();
+    if ($body === null) Response::json(['error' => 'Invalid body'], 400);
+    $content = trim((string) ($body['content'] ?? ''));
+    if ($content === '')              Response::json(['error' => 'Content required'], 422);
+    if (mb_strlen($content) > 4000)   Response::json(['error' => 'Content too long'], 422);
+
+    $viewer  = AuthService::currentUser();
+    $userId  = $viewer['id'] ?? null;
+    $guestId = isset($body['guestId']) && is_string($body['guestId']) ? $body['guestId'] : null;
+
+    $row = MessageRepository::findOwned($messageId, $userId, $guestId);
+    if (!$row)                                Response::json(['error' => 'Not found or not owned'], 404);
+    if (($row['type'] ?? 'text') !== 'text')  Response::json(['error' => 'Only text messages can be edited'], 422);
+    if (!empty($row['deleted_at']))           Response::json(['error' => 'Cannot edit a deleted message'], 410);
+
+    $editedAt = MessageRepository::edit($messageId, $content);
+
+    // Channels share the messages table; channel_id is "city_<n>" for cities and
+    // raw 16-hex for event/topic. WS broadcastNewMessage handler expects int for
+    // cities, string otherwise — match that contract.
+    $rawChan  = (string) $row['channel_id'];
+    $wsChanId = str_starts_with($rawChan, 'city_') ? (int) substr($rawChan, 5) : $rawChan;
+    broadcastMessageEditedToWs($wsChanId, $messageId, $content, $editedAt);
+
+    Response::json([
+        'ok'        => true,
+        'messageId' => $messageId,
+        'content'   => $content,
+        'editedAt'  => $editedAt,
+    ]);
+});
+
+// DELETE /api/v1/messages/{messageId}  body: { guestId? } — soft-delete (tombstone).
+$router->add('DELETE', '/api/v1/messages/{messageId}', function (array $params) {
+    $messageId = strtolower(trim((string) ($params['messageId'] ?? '')));
+    if (!preg_match('/^[a-f0-9]{16}$/', $messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+    $body    = Request::json() ?? [];
+    $viewer  = AuthService::currentUser();
+    $userId  = $viewer['id'] ?? null;
+    $guestId = isset($body['guestId']) && is_string($body['guestId']) ? $body['guestId'] : null;
+
+    $row = MessageRepository::findOwned($messageId, $userId, $guestId);
+    if (!$row)                       Response::json(['error' => 'Not found or not owned'], 404);
+    if (!empty($row['deleted_at'])) {
+        // Idempotent — second delete is a no-op.
+        Response::json(['ok' => true, 'messageId' => $messageId, 'alreadyDeleted' => true]);
+    }
+
+    $deletedAt = MessageRepository::softDelete($messageId);
+    $rawChan   = (string) $row['channel_id'];
+    $wsChanId  = str_starts_with($rawChan, 'city_') ? (int) substr($rawChan, 5) : $rawChan;
+    broadcastMessageDeletedToWs($wsChanId, $messageId, $deletedAt);
+
+    Response::json([
+        'ok'        => true,
+        'messageId' => $messageId,
+        'deletedAt' => $deletedAt,
+    ]);
+});
+
+// ── Edit + delete (DM messages — registered users only) ─────────────────────
+
+$router->add('PATCH', '/api/v1/dm-messages/{messageId}', function (array $params) {
+    $user      = AuthService::requireAuth();
+    $messageId = strtolower(trim((string) ($params['messageId'] ?? '')));
+    if (!preg_match('/^[a-f0-9]{16}$/', $messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+    $body = Request::json();
+    if ($body === null) Response::json(['error' => 'Invalid body'], 400);
+    $content = trim((string) ($body['content'] ?? ''));
+    if ($content === '')              Response::json(['error' => 'Content required'], 422);
+    if (mb_strlen($content) > 4000)   Response::json(['error' => 'Content too long'], 422);
+
+    $row = ConversationRepository::findOwnedMessage($messageId, $user['id']);
+    if (!$row)                                Response::json(['error' => 'Not found or not owned'], 404);
+    if (($row['type'] ?? 'text') !== 'text')  Response::json(['error' => 'Only text messages can be edited'], 422);
+    if (!empty($row['deleted_at']))           Response::json(['error' => 'Cannot edit a deleted message'], 410);
+
+    $editedAt = ConversationRepository::editMessage($messageId, $content);
+    broadcastDmMessageEditedToWs($row['conversation_id'], $messageId, $content, $editedAt);
+
+    Response::json([
+        'ok'        => true,
+        'messageId' => $messageId,
+        'content'   => $content,
+        'editedAt'  => $editedAt,
+    ]);
+});
+
+$router->add('DELETE', '/api/v1/dm-messages/{messageId}', function (array $params) {
+    $user      = AuthService::requireAuth();
+    $messageId = strtolower(trim((string) ($params['messageId'] ?? '')));
+    if (!preg_match('/^[a-f0-9]{16}$/', $messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+
+    $row = ConversationRepository::findOwnedMessage($messageId, $user['id']);
+    if (!$row)                       Response::json(['error' => 'Not found or not owned'], 404);
+    if (!empty($row['deleted_at'])) {
+        Response::json(['ok' => true, 'messageId' => $messageId, 'alreadyDeleted' => true]);
+    }
+
+    $deletedAt = ConversationRepository::softDeleteMessage($messageId);
+    broadcastDmMessageDeletedToWs($row['conversation_id'], $messageId, $deletedAt);
+
+    Response::json([
+        'ok'        => true,
+        'messageId' => $messageId,
+        'deletedAt' => $deletedAt,
     ]);
 });
 

@@ -69,18 +69,24 @@ class MessageRepository
             ];
         }
 
+        $deletedAt = !empty($row['deleted_at']) ? (int) $row['deleted_at'] : null;
+        $editedAt  = !empty($row['edited_at'])  ? (int) $row['edited_at']  : null;
+
         if ($row['type'] === 'image') {
-            return [
+            $img = [
                 'id'        => $row['id'],
                 'channelId' => $channelId,
                 'guestId'   => $row['guest_id'],
                 'userId'    => $row['user_id'] ?? null,
                 'nickname'  => $row['nickname'],
                 'type'      => 'image',
-                'imageUrl'  => $row['image_url'],
+                'imageUrl'  => $deletedAt !== null ? null : $row['image_url'],
                 'content'   => '',
                 'createdAt' => $createdAt,
             ];
+            if ($deletedAt !== null) $img['deletedAt'] = $deletedAt;
+            if ($editedAt  !== null) $img['editedAt']  = $editedAt;
+            return $img;
         }
 
         $msg = [
@@ -89,9 +95,13 @@ class MessageRepository
             'guestId'   => $row['guest_id'],
             'userId'    => $row['user_id'] ?? null,
             'nickname'  => $row['nickname'],
-            'content'   => $row['content'],
+            // Deleted messages keep their slot (tombstone rendered client-side)
+            // but the content is already cleared in the DB at delete time.
+            'content'   => $deletedAt !== null ? '' : $row['content'],
             'createdAt' => $createdAt,
         ];
+        if ($deletedAt !== null) $msg['deletedAt'] = $deletedAt;
+        if ($editedAt  !== null) $msg['editedAt']  = $editedAt;
 
         // Preserve non-text types (e.g. 'join_request') so clients render the
         // styled card instead of dumping the JSON content as a text bubble.
@@ -156,13 +166,16 @@ class MessageRepository
             $stmt = Database::pdo()->prepare("
                 SELECT id, channel_id, type, event,
                        guest_id, user_id, nickname, content, image_url, created_at, mentions,
-                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
+                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                       edited_at, deleted_at
                 FROM (
                     SELECT
                         id, channel_id, type, event,
                         guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
-                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
+                        EXTRACT(EPOCH FROM edited_at)::INTEGER  AS edited_at,
+                        EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
                     FROM messages
                     WHERE channel_id = ?
                       AND created_at < (SELECT created_at FROM messages WHERE id = ?)
@@ -176,13 +189,16 @@ class MessageRepository
             $stmt = Database::pdo()->prepare("
                 SELECT id, channel_id, type, event,
                        guest_id, user_id, nickname, content, image_url, created_at, mentions,
-                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type
+                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                       edited_at, deleted_at
                 FROM (
                     SELECT
                         id, channel_id, type, event,
                         guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
-                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
+                        EXTRACT(EPOCH FROM edited_at)::INTEGER  AS edited_at,
+                        EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
                     FROM messages
                     WHERE channel_id = ?
                     ORDER BY created_at DESC
@@ -511,5 +527,72 @@ class MessageRepository
             'content'   => '',
             'createdAt' => time(),
         ];
+    }
+
+    // ── Edit / soft-delete ────────────────────────────────────────────────────
+
+    /**
+     * Locate a message by id and confirm the caller owns it. Ownership matches
+     * by registered user_id when present, otherwise by guest_id. Returns the
+     * row (with channel_id + edited_at + deleted_at) or null if not found / not
+     * owned. Used to gate edit + delete.
+     */
+    public static function findOwned(string $messageId, ?string $userId, ?string $guestId): ?array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT id, channel_id, type, user_id, guest_id,
+                   EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
+                   EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
+              FROM messages
+             WHERE id = ?
+             LIMIT 1
+        ");
+        $stmt->execute([$messageId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$row) return null;
+
+        $ownsAsUser  = $userId  !== null && $userId  !== '' && ($row['user_id']  ?? null) === $userId;
+        $ownsAsGuest = $guestId !== null && $guestId !== '' && ($row['guest_id'] ?? null) === $guestId;
+        if (!$ownsAsUser && !$ownsAsGuest) return null;
+
+        return $row;
+    }
+
+    /** Update message content + stamp edited_at = now(). Caller must already
+     *  have verified ownership via findOwned(). Returns the new editedAt int. */
+    public static function edit(string $messageId, string $newContent): int
+    {
+        Database::pdo()->prepare("
+            UPDATE messages
+               SET content    = ?,
+                   edited_at  = now()
+             WHERE id = ?
+        ")->execute([$newContent, $messageId]);
+
+        $stmt = Database::pdo()->prepare(
+            "SELECT EXTRACT(EPOCH FROM edited_at)::INTEGER AS edited_at FROM messages WHERE id = ?"
+        );
+        $stmt->execute([$messageId]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** Soft-delete: clear content + image_url, stamp deleted_at = now(). The
+     *  row stays so the client can render a tombstone in the message slot.
+     *  Returns the new deletedAt int. */
+    public static function softDelete(string $messageId): int
+    {
+        Database::pdo()->prepare("
+            UPDATE messages
+               SET content    = '',
+                   image_url  = NULL,
+                   deleted_at = now()
+             WHERE id = ?
+        ")->execute([$messageId]);
+
+        $stmt = Database::pdo()->prepare(
+            "SELECT EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at FROM messages WHERE id = ?"
+        );
+        $stmt->execute([$messageId]);
+        return (int) $stmt->fetchColumn();
     }
 }

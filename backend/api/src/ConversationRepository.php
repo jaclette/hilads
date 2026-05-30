@@ -325,7 +325,8 @@ class ConversationRepository
         $limit = max(1, min(100, $limit));
         $fetch = $limit + 1;
         $cols  = "cm.id, cm.conversation_id, cm.sender_id, cm.content, cm.type, cm.image_url,
-                  cm.created_at, cm.reply_to_id, cm.reply_to_nickname, cm.reply_to_content, cm.reply_to_type,
+                  cm.created_at, cm.edited_at, cm.deleted_at,
+                  cm.reply_to_id, cm.reply_to_nickname, cm.reply_to_content, cm.reply_to_type,
                   COALESCE(u.display_name, 'Deleted user') AS sender_name,
                   u.profile_photo_url                       AS sender_photo";
 
@@ -375,6 +376,8 @@ class ConversationRepository
                 cm.type,
                 cm.image_url,
                 cm.created_at,
+                cm.edited_at,
+                cm.deleted_at,
                 cm.reply_to_id,
                 cm.reply_to_nickname,
                 cm.reply_to_content,
@@ -402,6 +405,8 @@ class ConversationRepository
                 cm.type,
                 cm.image_url,
                 cm.created_at,
+                cm.edited_at,
+                cm.deleted_at,
                 cm.reply_to_id,
                 cm.reply_to_nickname,
                 cm.reply_to_content,
@@ -414,5 +419,55 @@ class ConversationRepository
         ");
         $stmt->execute([$id]);
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
+
+    // ── Edit / soft-delete (DM messages) ──────────────────────────────────────
+
+    /**
+     * Locate a DM message and confirm $userId is the sender. Returns the row or
+     * null if not found / not owned. DMs are always between registered users,
+     * so ownership is just sender_id.
+     */
+    public static function findOwnedMessage(string $messageId, string $userId): ?array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT id, conversation_id, sender_id, type, deleted_at
+              FROM conversation_messages
+             WHERE id = ?
+             LIMIT 1
+        ");
+        $stmt->execute([$messageId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$row || ($row['sender_id'] ?? null) !== $userId) return null;
+        return $row;
+    }
+
+    public static function editMessage(string $messageId, string $newContent): string
+    {
+        Database::pdo()->prepare("
+            UPDATE conversation_messages
+               SET content   = ?,
+                   edited_at = now()
+             WHERE id = ?
+        ")->execute([$newContent, $messageId]);
+
+        $stmt = Database::pdo()->prepare("SELECT edited_at FROM conversation_messages WHERE id = ?");
+        $stmt->execute([$messageId]);
+        return (string) $stmt->fetchColumn();
+    }
+
+    public static function softDeleteMessage(string $messageId): string
+    {
+        Database::pdo()->prepare("
+            UPDATE conversation_messages
+               SET content    = '',
+                   image_url  = NULL,
+                   deleted_at = now()
+             WHERE id = ?
+        ")->execute([$messageId]);
+
+        $stmt = Database::pdo()->prepare("SELECT deleted_at FROM conversation_messages WHERE id = ?");
+        $stmt->execute([$messageId]);
+        return (string) $stmt->fetchColumn();
     }
 }

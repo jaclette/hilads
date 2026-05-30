@@ -536,6 +536,26 @@ function handleBroadcastRequest(req, res) {
         broadcastDmReactionUpdate(conversationId, messageId, reactions)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/message-edited') {
+        const { channelId, messageId, content, editedAt } = JSON.parse(body)
+        broadcastMessageEdited(channelId, messageId, content, editedAt)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'POST' && req.url === '/broadcast/message-deleted') {
+        const { channelId, messageId, deletedAt } = JSON.parse(body)
+        broadcastMessageDeleted(channelId, messageId, deletedAt)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'POST' && req.url === '/broadcast/dm-message-edited') {
+        const { conversationId, messageId, content, editedAt } = JSON.parse(body)
+        broadcastDmMessageEdited(conversationId, messageId, content, editedAt)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'POST' && req.url === '/broadcast/dm-message-deleted') {
+        const { conversationId, messageId, deletedAt } = JSON.parse(body)
+        broadcastDmMessageDeleted(conversationId, messageId, deletedAt)
+        res.writeHead(200); res.end('ok')
+
       } else if (req.method === 'POST' && req.url === '/broadcast/user-event') {
         const { userId, event, payload } = JSON.parse(body)
         const sockets = userRooms.get(userId)
@@ -705,6 +725,61 @@ function broadcastDmReactionUpdate(conversationId, messageId, reactions) {
     if (ws.readyState === 1 /* OPEN */) { ws.send(msg); recipients++ }
   }
   console.log(`[WS][emit] event=dmReactionUpdate target=dm:${conversationId.slice(0, 8)} recipients=${recipients}/${room.size}`)
+}
+
+// ── Message edit / soft-delete broadcasts ────────────────────────────────────
+// channelId convention matches broadcastNewMessage: number = city room, string
+// = event/topic room. Clients listen for messageEdited / messageDeleted and
+// patch the message in place (or render the tombstone) without a refetch.
+
+function resolveChannelRoom(channelId) {
+  if (typeof channelId === 'number') return { room: rooms.get(channelId), target: `city:${channelId}` }
+  if (eventRooms.has(channelId))     return { room: eventRooms.get(channelId), target: `event:${channelId}` }
+  return { room: topicRooms.get(channelId), target: `topic:${channelId}` }
+}
+
+function broadcastMessageEdited(channelId, messageId, content, editedAt) {
+  const { room, target } = resolveChannelRoom(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'messageEdited', channelId, messageId, content, editedAt })
+  let recipients = 0
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=messageEdited target=${target} msgId=${messageId} recipients=${recipients}/${room.size}`)
+}
+
+function broadcastMessageDeleted(channelId, messageId, deletedAt) {
+  const { room, target } = resolveChannelRoom(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'messageDeleted', channelId, messageId, deletedAt })
+  let recipients = 0
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=messageDeleted target=${target} msgId=${messageId} recipients=${recipients}/${room.size}`)
+}
+
+function broadcastDmMessageEdited(conversationId, messageId, content, editedAt) {
+  const room = dmRooms.get(conversationId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'dmMessageEdited', conversationId, messageId, content, editedAt })
+  let recipients = 0
+  for (const [, { ws }] of room) {
+    if (ws.readyState === 1 /* OPEN */) { ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=dmMessageEdited target=dm:${conversationId.slice(0, 8)} msgId=${messageId} recipients=${recipients}/${room.size}`)
+}
+
+function broadcastDmMessageDeleted(conversationId, messageId, deletedAt) {
+  const room = dmRooms.get(conversationId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'dmMessageDeleted', conversationId, messageId, deletedAt })
+  let recipients = 0
+  for (const [, { ws }] of room) {
+    if (ws.readyState === 1 /* OPEN */) { ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=dmMessageDeleted target=dm:${conversationId.slice(0, 8)} msgId=${messageId} recipients=${recipients}/${room.size}`)
 }
 
 // ── Reaction burst broadcast ────────────────────────────────────────────────────

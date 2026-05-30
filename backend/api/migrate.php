@@ -960,4 +960,13 @@ foreach ($missingUsernames as $uRow) {
 }
 echo "  OK  backfilled username for {$filledUsernames} legacy user(s)\n";
 
+// ── Edit / delete columns on messages + conversation_messages ───────────────
+// Soft-delete: deleted_at IS NOT NULL ⇒ render the bubble as a tombstone client-
+// side (content is cleared at delete time so no leakage). edited_at: timestamp
+// of the last edit; client renders "(edited)" tag when present.
+run($pdo, "ALTER TABLE messages              ADD COLUMN IF NOT EXISTS edited_at  TIMESTAMPTZ DEFAULT NULL", 'messages.edited_at');
+run($pdo, "ALTER TABLE messages              ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL", 'messages.deleted_at');
+run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS edited_at  TIMESTAMPTZ DEFAULT NULL", 'conversation_messages.edited_at');
+run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL", 'conversation_messages.deleted_at');
+
 echo "\nDone.\n";
