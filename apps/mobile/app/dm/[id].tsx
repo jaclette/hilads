@@ -31,6 +31,7 @@ import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { linkifyText } from '@/lib/linkify';
+import * as Clipboard from 'expo-clipboard';
 import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
 import { avatarColor } from '@/lib/avatarColors';
 import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
@@ -748,6 +749,10 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         }}
         onReply={actionSheetMsg ? () => {
           setReplyingTo({ id: actionSheetMsg.id, nickname: actionSheetMsg.sender_name, content: actionSheetMsg.content ?? '', type: actionSheetMsg.type ?? 'text' });
+        } : undefined}
+        onCopy={actionSheetMsg?.content ? () => {
+          Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         } : undefined}
         onClose={() => setActionSheetMsg(null)}
       />

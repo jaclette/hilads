@@ -19,10 +19,11 @@ interface Props {
   reactions: Reaction[];
   onReact:   (emoji: string) => void;
   onReply?:  () => void;
+  onCopy?:   () => void;
   onClose:   () => void;
 }
 
-export function MessageActionSheet({ visible, reactions, onReact, onReply, onClose }: Props) {
+export function MessageActionSheet({ visible, reactions, onReact, onReply, onCopy, onClose }: Props) {
   const selfMap = Object.fromEntries(reactions.map(r => [r.emoji, r.self]));
 
   return (
@@ -61,6 +62,18 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onClo
           >
             <Text style={styles.actionIcon}>↩️</Text>
             <Text style={styles.actionLabel}>Reply</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Copy action — text messages only; callers pass undefined for images/locations. */}
+        {onCopy && (
+          <TouchableOpacity
+            style={styles.action}
+            onPress={() => { onCopy(); onClose(); }}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.actionIcon}>📋</Text>
+            <Text style={styles.actionLabel}>Copy</Text>
           </TouchableOpacity>
         )}
 

@@ -35,6 +35,7 @@ import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import * as Clipboard from 'expo-clipboard';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { MarqueeText } from '@/components/MarqueeText';
@@ -952,6 +953,7 @@ export default function ChatTab() {
         reactions={actionSheetMsg?.reactions ?? []}
         onReact={emoji => { if (actionSheetMsg) handleReact(actionSheetMsg, emoji); }}
         onReply={actionSheetMsg ? () => handleReply(actionSheetMsg) : undefined}
+        onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
         onClose={() => setActionSheetMsg(null)}
       />
     </SafeAreaView>

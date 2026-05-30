@@ -18,6 +18,7 @@ import { fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEvent
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import * as Clipboard from 'expo-clipboard';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
@@ -601,6 +602,10 @@ export default function EventDetailScreen() {
         }}
         onReply={actionSheetMsg ? () => {
           setReplyingTo({ id: actionSheetMsg.id, nickname: actionSheetMsg.nickname, content: actionSheetMsg.content ?? '', type: actionSheetMsg.type });
+        } : undefined}
+        onCopy={actionSheetMsg?.content ? () => {
+          Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         } : undefined}
         onClose={() => setActionSheetMsg(null)}
       />

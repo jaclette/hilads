@@ -4177,6 +4177,20 @@ export default function App() {
               >
                 ↩ Reply
               </button>
+              {actionBubble.msg.content && (
+                <button
+                  className="action-bubble-btn"
+                  onClick={() => {
+                    const text = actionBubble.msg.content ?? ''
+                    if (navigator.clipboard?.writeText) {
+                      navigator.clipboard.writeText(text).catch(() => {})
+                    }
+                    setActionBubble(null)
+                  }}
+                >
+                  📋 Copy
+                </button>
+              )}
             </div>
           </div>
         )}
