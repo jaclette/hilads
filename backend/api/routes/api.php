@@ -1682,6 +1682,14 @@ $router->add('GET', '/api/v1/users/{userId}/vibes', function (array $params) {
 // ── Guest sessions ────────────────────────────────────────────────────────────
 
 $router->add('POST', '/api/v1/guest/session', function () {
+    // Crawlers / link previewers occasionally still execute JS and hit this.
+    // Defense in depth: return a stub so we don't burn rate-limit slots or
+    // pollute analytics with bot "guest_created" events. The web SPA also
+    // skips React hydration for these UAs upstream (apps/web/src/main.jsx).
+    if (Request::isBot()) {
+        Response::json(['guestId' => 'bot', 'nickname' => 'bot'], 201);
+    }
+
     enforceRateLimit('guest_session', 15, 3600);
     $guestId = bin2hex(random_bytes(16));
 
@@ -4870,6 +4878,44 @@ $router->add('POST', '/internal/participants/dedupe', function () {
         'ok'                    => true,
         'user_duplicates_deleted' => $userDedupe,
         'nameless_guests_deleted' => $namelessGuests,
+    ]);
+});
+
+// Internal: delete event_participants rows for specific bot-identified guest
+// nicknames. Targets only user_id IS NULL rows so we never touch registered
+// users who happen to share a display name. Idempotent. Defaults to the two
+// known Googlebot-generated nicknames; pass {"nicknames": [...]} to override.
+$router->add('POST', '/internal/participants/cleanup-bot-rows', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    $providedKey = $_GET['key'] ?? '';
+    if (!hash_equals($expectedKey, $providedKey)) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+
+    $body = Request::json();
+    $nicknames = is_array($body['nicknames'] ?? null)
+        ? array_values(array_filter(array_map('strval', $body['nicknames']), fn($s) => $s !== ''))
+        : ['calm_regular_4138', 'sunny_nomad_5259'];
+
+    if (empty($nicknames)) {
+        Response::json(['ok' => true, 'rows_deleted' => 0, 'nicknames' => []]);
+    }
+
+    $placeholders = implode(',', array_fill(0, count($nicknames), '?'));
+    $stmt = Database::pdo()->prepare("
+        DELETE FROM event_participants
+        WHERE user_id IS NULL
+          AND nickname IN ($placeholders)
+    ");
+    $stmt->execute($nicknames);
+
+    Response::json([
+        'ok'           => true,
+        'rows_deleted' => $stmt->rowCount(),
+        'nicknames'    => $nicknames,
     ]);
 });
 

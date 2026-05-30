@@ -6,6 +6,17 @@ import i18n, { resolveInitialLocale, loadLocale, RTL_LOCALES } from './i18n'
 
 import posthog from 'posthog-js'
 
+// Crawler / bot / link-previewer short-circuit. The prerender already shipped
+// the SSR HTML (title, meta, hreflang, JSON-LD, body) that bots index — running
+// the SPA on top adds nothing for SEO and only wastes backend calls (creates a
+// guest record, joins the city, polls). Skip everything for them. NOT cloaking:
+// humans receive the exact same HTML on first paint; we only skip *hydration*
+// for known bot UAs, which is the dynamic-rendering pattern Google blesses.
+const BOT_UA_RE = /Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|WhatsApp|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider/i
+const IS_BOT = typeof navigator !== 'undefined' && BOT_UA_RE.test(navigator.userAgent || '')
+
+if (!IS_BOT) {
+
 posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
     api_host: 'https://eu.posthog.com',
     disable_toolbar: true,
@@ -48,3 +59,5 @@ async function bootstrap() {
 }
 
 bootstrap()
+
+} // end if (!IS_BOT)

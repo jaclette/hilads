@@ -25,4 +25,19 @@ class Request
 
         return trim((string) $forwarded) ?: 'unknown';
     }
+
+    /**
+     * Crawler / link-previewer User-Agent match. The web SPA also skips React
+     * hydration for these UAs (apps/web/src/main.jsx), so this is defense in
+     * depth — short-circuits any backend write that might slip through.
+     */
+    public static function isBot(): bool
+    {
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
+        if ($ua === '') return false;
+        return (bool) preg_match(
+            '/(Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|WhatsApp|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider)/i',
+            $ua,
+        );
+    }
 }
