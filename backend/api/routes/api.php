@@ -1943,6 +1943,28 @@ $router->add('GET', '/api/v1/events/{eventId}/redirect', function (array $params
     Response::json(['to' => $to]);
 });
 
+// GET /api/v1/link-preview?url=<URL>
+// Open Graph preview for a URL posted in chat. SSRF-guarded + 24h cached so
+// the same URL across many messages costs one upstream fetch. Returns
+// { preview: { url, title, description, image, site_name } } where any field
+// may be null (missing OG / fetch failure — still cached so we don't retry hot).
+$router->add('GET', '/api/v1/link-preview', function () {
+    $url = trim((string) ($_GET['url'] ?? ''));
+    if ($url === '') {
+        Response::json(['error' => 'Missing url'], 400);
+    }
+    enforceRateLimit('link_preview', 120, 60); // 120/min/IP — plenty for chat browsing
+
+    $preview = LinkPreviewService::get($url);
+    if ($preview === null) {
+        Response::json(['error' => 'Unsafe or invalid url'], 400);
+    }
+
+    // Browser caches 1h, Vercel CDN 24h with SWR — the URL is highly cacheable.
+    header('Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400');
+    Response::json(['preview' => $preview]);
+});
+
 // GET /api/v1/venues/{venueId}
 // Returns a single venue (coffee shop / bar) by its event_series.id (16-hex).
 // SEO target: venues get their own LocalBusiness page, distinct from events.

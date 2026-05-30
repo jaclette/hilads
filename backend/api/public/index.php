@@ -156,6 +156,7 @@ require_once __DIR__ . '/../src/MentionService.php';
 require_once __DIR__ . '/../src/EventRepository.php';
 require_once __DIR__ . '/../src/EventSeriesRepository.php';
 require_once __DIR__ . '/../src/EventRedirectRepository.php';
+require_once __DIR__ . '/../src/LinkPreviewService.php';
 require_once __DIR__ . '/../src/Geocoder.php';
 require_once __DIR__ . '/../src/PlacesService.php';
 require_once __DIR__ . '/../src/VenueSeeder.php';

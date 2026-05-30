@@ -208,6 +208,23 @@ run($pdo, "
     )
 ", 'event_redirects');
 
+// Cached Open Graph previews for URLs posted in chat. PK is the SHA-1 of the
+// URL so the index stays bounded regardless of URL length. ttl_until controls
+// re-fetch cadence (24 h on success, 1 h on failure — fields stay nullable so
+// the negative result is also cached).
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS link_previews (
+        url_hash    CHAR(40)     PRIMARY KEY,
+        url         TEXT         NOT NULL,
+        title       TEXT,
+        description TEXT,
+        image       TEXT,
+        site_name   TEXT,
+        fetched_at  TIMESTAMPTZ  NOT NULL DEFAULT now(),
+        ttl_until   TIMESTAMPTZ  NOT NULL
+    )
+", 'link_previews');
+
 run($pdo, "
     CREATE TABLE IF NOT EXISTS messages (
         id          TEXT        PRIMARY KEY,
