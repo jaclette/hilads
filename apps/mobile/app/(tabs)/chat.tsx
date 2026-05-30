@@ -820,6 +820,11 @@ export default function ChatTab() {
             ref={flatListRef}
             data={allMessages}
             keyExtractor={(m, idx) => m.id ?? m.localId ?? (m.guestId || m.createdAt ? `${m.guestId ?? ''}:${m.createdAt ?? ''}` : String(idx))}
+            // Reply-quote taps call scrollToIndex on the parent message; on iOS
+            // that throws (crashing JS) if the target is currently virtualized
+            // off-screen. Silent no-op matches the other surfaces (city-chat,
+            // dm, event): no crash, no jump if the message isn't laid out.
+            onScrollToIndexFailed={() => {}}
             renderItem={({ item, index }) => {
               const olderMsg = allMessages[index + 1]; // older (higher index in inverted list)
               const newerMsg = allMessages[index - 1]; // newer (lower index)
