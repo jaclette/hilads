@@ -33,6 +33,17 @@ class NotificationRepository
         array   $data = [],
         ?string $locale = null
     ): array {
+        // Crawler / bot accounts: drop EVERYTHING they would trigger as an actor
+        // — no bell row written, no web push, no native push. Recipients of
+        // their actions (mentions, DMs from them, profile-view of them, …) see
+        // nothing. Reads / crawl are unaffected (gate is here on the write/push
+        // side, not on the request). Common actor keys are inspected via
+        // BotAccountService::isBotActor; arrivals are gated separately upstream
+        // in emitCityArrival because they don't go through this path.
+        if (BotAccountService::isBotActor($data)) {
+            return [];
+        }
+
         // Localize per recipient — covers the stored bell row AND both push
         // channels below, since they all read $title/$body from here. English /
         // unknown locales and untranslated fields fall back to the caller's text.
@@ -425,6 +436,15 @@ class NotificationRepository
             $stmt = Database::pdo()->prepare("SELECT id FROM users WHERE guest_id = ?");
             $stmt->execute([$arriverGuestId]);
             $arriverUserId = $stmt->fetchColumn() ?: null;
+        }
+
+        // Crawler / bot accounts: their reads still work (POST /bootstrap
+        // upstream already wrote presence), we just don't want them to
+        // generate the visible noise of an arrival — no feed "X just landed"
+        // line, no WS broadcast, no city-wide push fan-out. Check both the
+        // resolved user_id and the nickname so a guest-mode bot is caught too.
+        if (BotAccountService::isBotUserId($arriverUserId) || BotAccountService::isBotNickname($arriverNickname)) {
+            return;
         }
         $arriverKey = $arriverUserId !== null ? ('u:' . $arriverUserId) : ('g:' . $arriverGuestId);
 
