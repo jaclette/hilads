@@ -9,6 +9,20 @@ import { Linking, StyleSheet, Text, type TextStyle } from 'react-native';
 const URL_RE   = /\bhttps?:\/\/\S+/gi;
 const TRAIL_RE = /[.,!?;:)\]}>"'»]+$/;
 
+// First http/https URL in the text (with trailing punctuation trimmed), or
+// null. Used to drive the link-preview card under chat bubbles — we only
+// preview the first URL per message to keep the UI tight.
+export function extractFirstUrl(text: string | null | undefined): string | null {
+  if (!text) return null;
+  URL_RE.lastIndex = 0;
+  const m = URL_RE.exec(String(text));
+  if (!m) return null;
+  let url = m[0];
+  const tm = TRAIL_RE.exec(url);
+  if (tm) url = url.slice(0, -tm[0].length);
+  return url || null;
+}
+
 const openUrl = (url: string) => { Linking.openURL(url).catch(() => {}); };
 
 export function linkifyText(

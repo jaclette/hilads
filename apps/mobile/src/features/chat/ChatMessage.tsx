@@ -30,7 +30,8 @@ import type { Message, Badge } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { splitContentByMentions } from '@/lib/mentions';
-import { linkifyText } from '@/lib/linkify';
+import { linkifyText, extractFirstUrl } from '@/lib/linkify';
+import { LinkPreviewCard } from '@/features/chat/LinkPreviewCard';
 
 // ── Location message helpers ──────────────────────────────────────────────────
 // Messages starting with '📍' are location shares sent by the LocationPicker.
@@ -775,6 +776,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                       )
                   ))}
                 </Text>
+                {(() => {
+                  const u = extractFirstUrl(message.content);
+                  return u ? <LinkPreviewCard url={u} isMine={isMine} /> : null;
+                })()}
               </View>
             )}
             {isFailed && (

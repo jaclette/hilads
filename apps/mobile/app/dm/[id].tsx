@@ -30,7 +30,8 @@ import { useApp } from '@/context/AppContext';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
-import { linkifyText } from '@/lib/linkify';
+import { linkifyText, extractFirstUrl } from '@/lib/linkify';
+import { LinkPreviewCard } from '@/features/chat/LinkPreviewCard';
 import * as Clipboard from 'expo-clipboard';
 import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
 import { avatarColor } from '@/lib/avatarColors';
@@ -318,6 +319,10 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                 {linkifyText(msg.content)}
               </Text>
+              {(() => {
+                const u = extractFirstUrl(msg.content);
+                return u ? <LinkPreviewCard url={u} isMine={isMine} /> : null;
+              })()}
             </View>
           </Pressable>
         )}

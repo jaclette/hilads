@@ -1,0 +1,40 @@
+import { API_URL } from '@/constants';
+
+// Per-session cache mirroring the web side. Backend has a 24h DB cache, this
+// layer just avoids re-fetching the same URL across many bubbles in one screen.
+// Returns a shared Promise so concurrent N renders trigger one network hop.
+
+export interface LinkPreview {
+  url:         string;
+  title:       string | null;
+  description: string | null;
+  image:       string | null;
+  site_name:   string | null;
+}
+
+const cache = new Map<string, Promise<LinkPreview | null>>();
+
+export function getLinkPreview(url: string | null | undefined): Promise<LinkPreview | null> {
+  if (!url) return Promise.resolve(null);
+  const existing = cache.get(url);
+  if (existing) return existing;
+
+  const p: Promise<LinkPreview | null> = (async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/v1/link-preview?url=${encodeURIComponent(url)}`, {
+        headers: { Accept: 'application/json' },
+      });
+      if (!res.ok) return null;
+      const data    = await res.json();
+      const preview = data?.preview ?? null;
+      if (!preview) return null;
+      // No title AND no image → not useful as a card.
+      if (!preview.title && !preview.image) return null;
+      return preview as LinkPreview;
+    } catch {
+      return null;
+    }
+  })();
+  cache.set(url, p);
+  return p;
+}
