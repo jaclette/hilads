@@ -67,6 +67,9 @@ class ParticipantRepository
                 FROM event_participants ep
                 LEFT JOIN users u ON u.id = ep.user_id
                 WHERE ep.channel_id = ?
+                  -- Hide nameless guest rows (auto-join / empty-nickname joins)
+                  -- that have no visible identity in the UI.
+                  AND (ep.user_id IS NOT NULL OR trim(ep.nickname) <> '')
                 ORDER BY COALESCE(ep.user_id, ep.guest_id), ep.joined_at ASC
             ) d
             ORDER BY d.joined_at ASC
@@ -141,6 +144,7 @@ class ParticipantRepository
                     FROM event_participants ep
                     LEFT JOIN users u ON u.id = ep.user_id
                     WHERE ep.channel_id IN ($placeholders)
+                      AND (ep.user_id IS NOT NULL OR trim(ep.nickname) <> '')
                     ORDER BY ep.channel_id, COALESCE(ep.user_id, ep.guest_id), ep.joined_at DESC
                 ) deduped
             ) t
@@ -167,7 +171,10 @@ class ParticipantRepository
     public static function getCount(string $eventId): int
     {
         $stmt = Database::pdo()->prepare("
-            SELECT COUNT(DISTINCT COALESCE(user_id, guest_id)) FROM event_participants WHERE channel_id = ?
+            SELECT COUNT(DISTINCT COALESCE(user_id, guest_id))
+              FROM event_participants
+             WHERE channel_id = ?
+               AND (user_id IS NOT NULL OR trim(nickname) <> '')
         ");
         $stmt->execute([$eventId]);
         return (int) $stmt->fetchColumn();

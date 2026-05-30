@@ -4840,7 +4840,10 @@ $router->add('POST', '/internal/participants/dedupe', function () {
         Response::json(['error' => 'Forbidden'], 403);
     }
 
-    $stmt = Database::pdo()->query("
+    $pdo = Database::pdo();
+
+    // (1) Dedupe registered-user rows to one per (channel_id, user_id).
+    $userDedupe = $pdo->query("
         DELETE FROM event_participants
         WHERE (channel_id, guest_id) IN (
             SELECT channel_id, guest_id FROM (
@@ -4853,9 +4856,21 @@ $router->add('POST', '/internal/participants/dedupe', function () {
                 WHERE user_id IS NOT NULL
             ) t WHERE t.rn > 1
         )
-    ");
+    ")->rowCount();
 
-    Response::json(['ok' => true, 'rows_deleted' => $stmt->rowCount()]);
+    // (2) Delete nameless guests (user_id NULL + empty nickname) — they have no
+    // visible identity in the UI (auto-join cruft / joins without a nickname).
+    $namelessGuests = $pdo->query("
+        DELETE FROM event_participants
+        WHERE user_id IS NULL
+          AND trim(nickname) = ''
+    ")->rowCount();
+
+    Response::json([
+        'ok'                    => true,
+        'user_duplicates_deleted' => $userDedupe,
+        'nameless_guests_deleted' => $namelessGuests,
+    ]);
 });
 
 $router->add('POST', '/internal/event-series/refresh-static-occurrences', function () {
