@@ -1124,3 +1124,12 @@ export async function fetchReportStatus({ guestId, targetUserId, targetGuestId }
   if (!res.ok) return { reported: false }
   return res.json() // { reported: bool, existing_report?: {...} }
 }
+
+export async function fetchLinkPreview(url) {
+  const res = await fetch(`${BASE}/link-preview?url=${encodeURIComponent(url)}`, {
+    headers: { Accept: 'application/json' },
+  })
+  if (!res.ok) return null
+  const data = await res.json()
+  return data?.preview ?? null
+}

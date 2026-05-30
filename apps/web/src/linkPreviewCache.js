@@ -3,6 +3,8 @@
 // one page session and gives us an immediate Promise share so the same URL
 // rendered N times only triggers one network request.
 
+import { fetchLinkPreview } from './api'
+
 const cache = new Map() // url -> Promise<Preview|null>
 
 export function getLinkPreview(url) {
@@ -11,12 +13,7 @@ export function getLinkPreview(url) {
   if (p) return p
   p = (async () => {
     try {
-      const res = await fetch(`/api/v1/link-preview?url=${encodeURIComponent(url)}`, {
-        headers: { Accept: 'application/json' },
-      })
-      if (!res.ok) return null
-      const data    = await res.json()
-      const preview = data?.preview ?? null
+      const preview = await fetchLinkPreview(url)
       if (!preview) return null
       // Hide cards that carry no usable content (no title AND no image) —
       // showing an empty card is worse than no card.
