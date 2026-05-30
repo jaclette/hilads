@@ -10,7 +10,8 @@ import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
 import useMentions from '../hooks/useMentions'
 import { splitContentByMentions } from '../lib/mentions'
-import { linkifyText } from '../linkify.jsx'
+import { linkifyText, extractFirstUrl } from '../linkify.jsx'
+import LinkPreviewCard from './LinkPreviewCard'
 import { formatExpiresIn } from '../expiry'
 
 const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
@@ -618,7 +619,13 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                   )}
                   {item.type === 'image' && item.imageUrl
                     ? <img src={item.imageUrl} alt="" className="msg-image" style={{ maxWidth: '100%', borderRadius: 10, display: 'block' }} />
-                    : <span className="msg-text">{renderMessageContent(item)}</span>
+                    : <>
+                        <span className="msg-text">{renderMessageContent(item)}</span>
+                        {(() => {
+                          const u = extractFirstUrl(item.content)
+                          return u ? <LinkPreviewCard url={u} /> : null
+                        })()}
+                      </>
                   }
                 </div>
               </div>

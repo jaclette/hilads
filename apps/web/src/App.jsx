@@ -19,7 +19,8 @@ import EventsSidebar from './components/EventsSidebar'
 import AttendeeAvatars from './components/AttendeeAvatars'
 import useMentions from './hooks/useMentions'
 import { splitContentByMentions } from './lib/mentions'
-import { linkifyText } from './linkify.jsx'
+import { linkifyText, extractFirstUrl } from './linkify.jsx'
+import LinkPreviewCard from './components/LinkPreviewCard'
 import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
@@ -4085,6 +4086,10 @@ export default function App() {
                           </div>
                         )}
                         <span className="msg-text">{renderMessageContent(item)}</span>
+                        {(() => {
+                          const u = extractFirstUrl(item.content)
+                          return u ? <LinkPreviewCard url={u} /> : null
+                        })()}
                       </div>
                     )}
                   </div>

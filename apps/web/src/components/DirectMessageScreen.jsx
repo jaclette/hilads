@@ -6,7 +6,8 @@ import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
-import { linkifyText } from '../linkify.jsx'
+import { linkifyText, extractFirstUrl } from '../linkify.jsx'
+import LinkPreviewCard from './LinkPreviewCard'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -414,6 +415,10 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                           </div>
                         )}
                         <span className="msg-text">{linkifyText(msg.content)}</span>
+                        {(() => {
+                          const u = extractFirstUrl(msg.content)
+                          return u ? <LinkPreviewCard url={u} /> : null
+                        })()}
                       </div>
                 }
               </div>
