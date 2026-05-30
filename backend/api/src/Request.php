@@ -36,7 +36,11 @@ class Request
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
         if ($ua === '') return false;
         return (bool) preg_match(
-            '/(Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|WhatsApp|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider)/i',
+            // "WhatsApp" intentionally excluded — Android in-app browsers append
+            // "WhatsApp/<ver>" to a regular Chromium UA; matching it would
+            // mis-classify real human users. The link previewer doesn't hit
+            // /guest/session anyway.
+            '/(Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider)/i',
             $ua,
         );
     }

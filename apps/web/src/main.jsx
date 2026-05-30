@@ -12,7 +12,12 @@ import posthog from 'posthog-js'
 // guest record, joins the city, polls). Skip everything for them. NOT cloaking:
 // humans receive the exact same HTML on first paint; we only skip *hydration*
 // for known bot UAs, which is the dynamic-rendering pattern Google blesses.
-const BOT_UA_RE = /Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|WhatsApp|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider/i
+// NOTE: each token here must be a crawler-only marker. "WhatsApp" was REMOVED
+// because Android WhatsApp's in-app browser (pre-Custom-Tabs) appends
+// "WhatsApp/<ver>" to a normal Chromium UA — matching it would break real
+// human users clicking a WhatsApp link. The link previewer doesn't run JS
+// anyway, so removing it costs nothing.
+const BOT_UA_RE = /Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider/i
 const IS_BOT = typeof navigator !== 'undefined' && BOT_UA_RE.test(navigator.userAgent || '')
 
 if (!IS_BOT) {
