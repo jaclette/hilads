@@ -10,6 +10,7 @@ import {
   Modal, View, Text, TouchableOpacity, TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import type { Reaction } from '@/types';
 
 const EMOJIS = ['❤️', '👍', '😂', '😮', '🔥'] as const;
@@ -20,10 +21,13 @@ interface Props {
   onReact:   (emoji: string) => void;
   onReply?:  () => void;
   onCopy?:   () => void;
+  onEdit?:   () => void;
+  onDelete?: () => void;
   onClose:   () => void;
 }
 
-export function MessageActionSheet({ visible, reactions, onReact, onReply, onCopy, onClose }: Props) {
+export function MessageActionSheet({ visible, reactions, onReact, onReply, onCopy, onEdit, onDelete, onClose }: Props) {
+  const { t } = useTranslation('chat');
   const selfMap = Object.fromEntries(reactions.map(r => [r.emoji, r.self]));
 
   return (
@@ -61,7 +65,7 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onCop
             activeOpacity={0.75}
           >
             <Text style={styles.actionIcon}>↩️</Text>
-            <Text style={styles.actionLabel}>Reply</Text>
+            <Text style={styles.actionLabel}>{t('actionReply')}</Text>
           </TouchableOpacity>
         )}
 
@@ -73,12 +77,37 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onCop
             activeOpacity={0.75}
           >
             <Text style={styles.actionIcon}>📋</Text>
-            <Text style={styles.actionLabel}>Copy</Text>
+            <Text style={styles.actionLabel}>{t('actionCopy')}</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Edit / Delete — only present when the viewer owns the message. Callers
+            pass undefined for messages they don't own, or for non-editable kinds
+            (image/location). */}
+        {onEdit && (
+          <TouchableOpacity
+            style={styles.action}
+            onPress={() => { onEdit(); onClose(); }}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.actionIcon}>✏️</Text>
+            <Text style={styles.actionLabel}>{t('actionEdit')}</Text>
+          </TouchableOpacity>
+        )}
+
+        {onDelete && (
+          <TouchableOpacity
+            style={styles.action}
+            onPress={() => { onDelete(); onClose(); }}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.actionIcon}>🗑️</Text>
+            <Text style={[styles.actionLabel, styles.actionLabelDanger]}>{t('actionDelete')}</Text>
           </TouchableOpacity>
         )}
 
         <TouchableOpacity style={styles.cancel} onPress={onClose} activeOpacity={0.7}>
-          <Text style={styles.cancelText}>Cancel</Text>
+          <Text style={styles.cancelText}>{t('actionCancel')}</Text>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -137,6 +166,9 @@ const styles = StyleSheet.create({
     fontSize:   16,
     color:      'rgba(255,255,255,0.85)',
     fontWeight: '500',
+  },
+  actionLabelDanger: {
+    color: '#FF6B5C',
   },
   cancel: {
     alignItems:      'center',

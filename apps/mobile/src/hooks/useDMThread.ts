@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { fetchDmMessages, sendDmMessage, sendDmImageMessage, markDmRead } from '@/api/conversations';
+import { fetchDmMessages, sendDmMessage, sendDmImageMessage, markDmRead, editDmMessage as apiEditDmMessage, deleteDmMessage as apiDeleteDmMessage } from '@/api/conversations';
 import { uploadFile } from '@/api/uploads';
 import { socket } from '@/lib/socket';
 import { reactionEmitter } from '@/lib/reactionEmitter';
@@ -21,6 +21,8 @@ interface Result {
   sendImage:           (localUri: string) => Promise<void>;
   loadOlder:           () => Promise<void>;
   setMessageReactions: (messageId: string, reactions: Reaction[]) => void;
+  editMessage:         (messageId: string, content: string) => Promise<void>;
+  deleteMessage:       (messageId: string) => Promise<void>;
 }
 
 function makeLocalId(): string {
@@ -103,9 +105,29 @@ export function useDMThread(conversationId: string): Result {
       reactionEmitter.emit(msgId, type as ReactionType);
     });
 
+    // Edit / delete broadcasts for this DM thread — patch in place.
+    const offEdited = socket.on('dmMessageEdited', (data) => {
+      if (data.conversationId !== conversationId || !data.messageId) return;
+      setMessages(prev => prev.map(m =>
+        m.id === String(data.messageId)
+          ? { ...m, content: (data.content as string | undefined) ?? m.content, edited_at: (data.editedAt as string | undefined) ?? new Date().toISOString() }
+          : m,
+      ));
+    });
+    const offDeleted = socket.on('dmMessageDeleted', (data) => {
+      if (data.conversationId !== conversationId || !data.messageId) return;
+      setMessages(prev => prev.map(m =>
+        m.id === String(data.messageId)
+          ? { ...m, content: '', image_url: undefined, deleted_at: (data.deletedAt as string | undefined) ?? new Date().toISOString() }
+          : m,
+      ));
+    });
+
     return () => {
       off();
       offReaction();
+      offEdited();
+      offDeleted();
       setActiveDmId(null);
     };
   }, [conversationId, account, addNew, setActiveDmId]);
@@ -230,6 +252,41 @@ export function useDMThread(conversationId: string): Result {
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));
   }
 
+  // ── Edit / delete (optimistic, with rollback) ──────────────────────────────
+  const editMessage = useCallback(async (messageId: string, content: string) => {
+    let prevSnapshot: { content?: string; edited_at?: string | null } | null = null;
+    setMessages(prev => prev.map(m => {
+      if (m.id !== messageId) return m;
+      prevSnapshot = { content: m.content, edited_at: m.edited_at };
+      return { ...m, content, edited_at: new Date().toISOString() };
+    }));
+    try {
+      await apiEditDmMessage(messageId, content);
+    } catch (e) {
+      if (prevSnapshot) {
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: prevSnapshot!.content ?? '', edited_at: prevSnapshot!.edited_at ?? null } : m));
+      }
+      throw e;
+    }
+  }, []);
+
+  const deleteMessage = useCallback(async (messageId: string) => {
+    let prevSnapshot: { content?: string; image_url?: string; deleted_at?: string | null } | null = null;
+    setMessages(prev => prev.map(m => {
+      if (m.id !== messageId) return m;
+      prevSnapshot = { content: m.content, image_url: m.image_url, deleted_at: m.deleted_at };
+      return { ...m, content: '', image_url: undefined, deleted_at: new Date().toISOString() };
+    }));
+    try {
+      await apiDeleteDmMessage(messageId);
+    } catch (e) {
+      if (prevSnapshot) {
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: prevSnapshot!.content ?? '', image_url: prevSnapshot!.image_url, deleted_at: prevSnapshot!.deleted_at ?? null } : m));
+      }
+      throw e;
+    }
+  }, []);
+
   // Block filter (Apple G1.2). DM messages only have a sender_id (registered
   // users — no guests in DMs), so we map it onto the userId slot.
   const visibleMessages = useMemo(
@@ -248,5 +305,7 @@ export function useDMThread(conversationId: string): Result {
     sendImage,
     loadOlder,
     setMessageReactions,
+    editMessage,
+    deleteMessage,
   };
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
@@ -790,6 +790,10 @@ export default function App() {
   const [showEmoji, setShowEmoji] = useState(false)
   const [sending, setSending] = useState(false)
   const [replyingTo, setReplyingTo] = useState(null)   // { id, nickname, content, type }
+  // Edit mode — { id, content, surface: 'channel'|'dm' } | null. Pre-fills the
+  // input; handleSend dispatches to the right edit endpoint instead of sending
+  // a new message. Reply and edit are mutually exclusive.
+  const [editingMsg, setEditingMsg] = useState(null)
   const [actionBubble, setActionBubble] = useState(null) // { msg, x, y }
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
   const [mentionNudge, setMentionNudge] = useState(false)  // guest got @mentioned while online
@@ -2372,6 +2376,27 @@ export default function App() {
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
       })
 
+      // Edit / delete broadcasts — channel feed (city + event).
+      socket.on('messageEdited', ({ channelId: ch, messageId, content, editedAt }) => {
+        const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
+        const isEventMatch = ch === activeEventIdRef.current
+        if (!isCityMatch && !isEventMatch) return
+        setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content, editedAt: editedAt ?? Math.floor(Date.now() / 1000) } : m))
+      })
+      socket.on('messageDeleted', ({ channelId: ch, messageId, deletedAt }) => {
+        const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
+        const isEventMatch = ch === activeEventIdRef.current
+        if (!isCityMatch && !isEventMatch) return
+        setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content: '', imageUrl: undefined, deletedAt: deletedAt ?? Math.floor(Date.now() / 1000) } : m))
+      })
+      // DM edit / delete — feed holds both surfaces while a DM is open; match by id.
+      socket.on('dmMessageEdited', ({ messageId, content, editedAt }) => {
+        setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content, edited_at: editedAt ?? new Date().toISOString() } : m))
+      })
+      socket.on('dmMessageDeleted', ({ messageId, deletedAt }) => {
+        setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content: '', image_url: undefined, deleted_at: deletedAt ?? new Date().toISOString() } : m))
+      })
+
       // Real-time reaction animations — purely visual, no stored state changed.
       socket.on('reaction', ({ type, messageId }) => {
         triggerReactionBurstRef.current?.(type, messageId)
@@ -2571,8 +2596,60 @@ export default function App() {
     e.preventDefault()
     const content = input.trim()
     if (!content) return
+    // Edit mode: dispatch to the edit endpoint and exit edit mode.
+    if (editingMsg) {
+      const current = editingMsg
+      setEditingMsg(null)
+      setInput('')
+      if (content === current.content) return  // no-op when unchanged
+      // Optimistic patch — server WS broadcast will reconcile.
+      const stamp = current.surface === 'dm' ? new Date().toISOString() : Math.floor(Date.now() / 1000)
+      const key = current.surface === 'dm' ? 'edited_at' : 'editedAt'
+      setFeed(prev => prev.map(m => m.id === current.id ? { ...m, content, [key]: stamp } : m))
+      try {
+        if (current.surface === 'dm') {
+          await editDmMessage(current.id, content)
+        } else {
+          await editChannelMessage(current.id, content, guest?.guestId)
+        }
+      } catch (err) {
+        console.error('[edit] failed:', err)
+        setFeed(prev => prev.map(m => m.id === current.id ? { ...m, content: current.content, [key]: undefined } : m))
+        setSendError(t('editFailed', { ns: 'chat', defaultValue: "Couldn't save edit. Please try again." }))
+        setTimeout(() => setSendError(null), 4000)
+      }
+      return
+    }
     setInput('')
     await doSendText(content)
+  }
+
+  // Tombstone a message (optimistic + rollback). `surface` selects channel vs DM endpoint.
+  async function deleteMessageAction(msg, surface) {
+    const confirmed = window.confirm(t('deleteConfirmBody', { ns: 'chat', defaultValue: 'Delete this message? It will be removed for everyone.' }))
+    if (!confirmed) return
+    const key = surface === 'dm' ? 'deleted_at' : 'deletedAt'
+    const stamp = surface === 'dm' ? new Date().toISOString() : Math.floor(Date.now() / 1000)
+    const prevContent = msg.content
+    const prevImageUrl = surface === 'dm' ? msg.image_url : msg.imageUrl
+    setFeed(prev => prev.map(m => m.id === msg.id
+      ? (surface === 'dm'
+          ? { ...m, content: '', image_url: undefined, [key]: stamp }
+          : { ...m, content: '', imageUrl: undefined, [key]: stamp })
+      : m))
+    try {
+      if (surface === 'dm') await deleteDmMessage(msg.id)
+      else                  await deleteChannelMessage(msg.id, guest?.guestId)
+    } catch (err) {
+      console.error('[delete] failed:', err)
+      setFeed(prev => prev.map(m => m.id === msg.id
+        ? (surface === 'dm'
+            ? { ...m, content: prevContent, image_url: prevImageUrl, [key]: undefined }
+            : { ...m, content: prevContent, imageUrl: prevImageUrl, [key]: undefined })
+        : m))
+      setSendError(t('deleteFailed', { ns: 'chat', defaultValue: "Couldn't delete message. Please try again." }))
+      setTimeout(() => setSendError(null), 4000)
+    }
   }
 
   async function handleMySpot() {
@@ -4031,11 +4108,16 @@ export default function App() {
                     className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}
                     onClick={e => {
                       if (item.type === 'system' || item.type === 'event' || item.type === 'topic') return
+                      if (item.deletedAt) return  // tombstone has no actions
                       const rect = e.currentTarget.getBoundingClientRect()
                       setActionBubble({ msg: item, x: rect.left, y: rect.top, isMine })
                     }}
                   >
-                    {item.type === 'image' ? (
+                    {item.deletedAt ? (
+                      <div className="msg-content msg-content--deleted">
+                        <span className="msg-text">{t('messageDeleted', { ns: 'chat', defaultValue: 'Message deleted' })}</span>
+                      </div>
+                    ) : item.type === 'image' ? (
                       <img
                         src={item.imageUrl}
                         className="msg-image"
@@ -4085,7 +4167,12 @@ export default function App() {
                             </span>
                           </div>
                         )}
-                        <span className="msg-text">{renderMessageContent(item)}</span>
+                        <span className="msg-text">
+                          {renderMessageContent(item)}
+                          {item.editedAt && (
+                            <span className="msg-edited-tag">{` ${t('edited', { ns: 'chat', defaultValue: 'edited' })}`}</span>
+                          )}
+                        </span>
                         {(() => {
                           const u = extractFirstUrl(item.content)
                           return u ? <LinkPreviewCard url={u} /> : null
@@ -4180,7 +4267,7 @@ export default function App() {
                   chatInputRef.current?.focus()
                 }}
               >
-                ↩ Reply
+                {t('actionReply', { ns: 'chat', defaultValue: '↩ Reply' })}
               </button>
               {actionBubble.msg.content && (
                 <button
@@ -4193,7 +4280,35 @@ export default function App() {
                     setActionBubble(null)
                   }}
                 >
-                  📋 Copy
+                  {t('actionCopy', { ns: 'chat', defaultValue: '📋 Copy' })}
+                </button>
+              )}
+              {/* Edit + Delete are visible only when the viewer owns the bubble.
+                  Edit is text-only — image and location messages don't expose it. */}
+              {actionBubble.isMine && actionBubble.msg.content && !actionBubble.msg.content.startsWith('📍') && (actionBubble.msg.type ?? 'text') === 'text' && (
+                <button
+                  className="action-bubble-btn"
+                  onClick={() => {
+                    setReplyingTo(null)
+                    setEditingMsg({ id: actionBubble.msg.id, content: actionBubble.msg.content ?? '', surface: 'channel' })
+                    setInput(actionBubble.msg.content ?? '')
+                    setActionBubble(null)
+                    chatInputRef.current?.focus()
+                  }}
+                >
+                  {t('actionEdit', { ns: 'chat', defaultValue: '✏️ Edit' })}
+                </button>
+              )}
+              {actionBubble.isMine && (
+                <button
+                  className="action-bubble-btn action-bubble-btn--danger"
+                  onClick={() => {
+                    const msg = actionBubble.msg
+                    setActionBubble(null)
+                    deleteMessageAction(msg, 'channel')
+                  }}
+                >
+                  {t('actionDelete', { ns: 'chat', defaultValue: '🗑️ Delete' })}
                 </button>
               )}
             </div>
@@ -4240,7 +4355,7 @@ export default function App() {
           />
         )}
 
-        {replyingTo && (
+        {replyingTo && !editingMsg && (
           <div className="reply-preview">
             <div className="reply-preview-body">
               <span className="reply-preview-name">{replyingTo.nickname}</span>
@@ -4249,6 +4364,22 @@ export default function App() {
               </span>
             </div>
             <button className="reply-preview-close" type="button" onClick={() => setReplyingTo(null)}>✕</button>
+          </div>
+        )}
+
+        {editingMsg && (
+          <div className="edit-preview">
+            <div className="edit-preview-body">
+              <span className="edit-preview-name">{t('editingBanner', { ns: 'chat', defaultValue: 'Editing message' })}</span>
+              <span className="edit-preview-text">{editingMsg.content}</span>
+            </div>
+            <button
+              className="edit-preview-close"
+              type="button"
+              onClick={() => { setEditingMsg(null); setInput('') }}
+            >
+              ✕
+            </button>
           </div>
         )}
 

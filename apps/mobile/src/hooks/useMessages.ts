@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { socket } from '@/lib/socket';
 import { uploadFile } from '@/api/uploads';
+import { editMessage as apiEditMessage, deleteMessage as apiDeleteMessage } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { reactionEmitter } from '@/lib/reactionEmitter';
 import { filterBlocked } from '@/lib/blockFilter';
@@ -27,6 +28,8 @@ interface Result {
   sendImage:         (localUri: string) => Promise<void>;
   loadOlder:         () => Promise<void>;
   setMessageReactions: (messageId: string, reactions: Reaction[]) => void;
+  editMessage:       (messageId: string, content: string) => Promise<void>;
+  deleteMessage:     (messageId: string) => Promise<void>;
   reload:       () => void;
 }
 
@@ -177,6 +180,32 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     const off3 = socket.on('reactionUpdate', reactionHandler);
     const off4 = socket.on('dmReactionUpdate', reactionHandler);
 
+    // Edit / delete updates — the server broadcasts after a successful PATCH /
+    // DELETE. We patch the message in place. City rooms use "city_N", events /
+    // topics use the raw hex channel id — same matcher as reactions above.
+    function editHandler(data: Record<string, unknown>) {
+      const incoming = String(data.channelId ?? '');
+      const match = incoming === channelId || incoming === `city_${channelId}`;
+      if (!match || !data.messageId) return;
+      setMessages(prev => prev.map(m =>
+        m.id === String(data.messageId)
+          ? { ...m, content: (data.content as string | undefined) ?? m.content, editedAt: (data.editedAt as number | undefined) ?? Math.floor(Date.now() / 1000) }
+          : m,
+      ));
+    }
+    function deleteHandler(data: Record<string, unknown>) {
+      const incoming = String(data.channelId ?? '');
+      const match = incoming === channelId || incoming === `city_${channelId}`;
+      if (!match || !data.messageId) return;
+      setMessages(prev => prev.map(m =>
+        m.id === String(data.messageId)
+          ? { ...m, content: '', imageUrl: undefined, deletedAt: (data.deletedAt as number | undefined) ?? Math.floor(Date.now() / 1000) }
+          : m,
+      ));
+    }
+    const off6 = socket.on('messageEdited', editHandler);
+    const off7 = socket.on('messageDeleted', deleteHandler);
+
     // Real-time reaction animations — purely visual, no stored state changed.
     // Server relays: { event: 'reaction', type, messageId, userId, timestamp }
     const off5 = socket.on('reaction', (data) => {
@@ -190,7 +219,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     // disconnect gap. Best-effort: keeps the live feed current after restore.
     const offConnected = socket.on('connected', load);
 
-    return () => { off1(); off2(); off3(); off4(); off5(); offConnected(); };
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); offConnected(); };
   }, [channelId, addNew, load]);
 
   // ── Load older messages (pagination) ──────────────────────────────────────
@@ -333,6 +362,45 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));
   }
 
+  // ── Edit / delete (optimistic, with rollback) ─────────────────────────────
+  // The server validates ownership and re-broadcasts via WS so other clients
+  // converge; the local optimistic patch + WS arrival reach the same final
+  // state, so they idempotently overlap.
+  const editMessage = useCallback(async (messageId: string, content: string) => {
+    let prevSnapshot: { content?: string; editedAt?: number | null } | null = null;
+    setMessages(prev => prev.map(m => {
+      if (m.id !== messageId) return m;
+      prevSnapshot = { content: m.content, editedAt: m.editedAt };
+      return { ...m, content, editedAt: Math.floor(Date.now() / 1000) };
+    }));
+    try {
+      await apiEditMessage(messageId, content, identity?.guestId ?? null);
+    } catch (e) {
+      // Rollback to the captured previous state.
+      if (prevSnapshot) {
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: prevSnapshot!.content, editedAt: prevSnapshot!.editedAt ?? null } : m));
+      }
+      throw e;
+    }
+  }, [identity]);
+
+  const deleteMessage = useCallback(async (messageId: string) => {
+    let prevSnapshot: { content?: string; imageUrl?: string; deletedAt?: number | null } | null = null;
+    setMessages(prev => prev.map(m => {
+      if (m.id !== messageId) return m;
+      prevSnapshot = { content: m.content, imageUrl: m.imageUrl, deletedAt: m.deletedAt };
+      return { ...m, content: '', imageUrl: undefined, deletedAt: Math.floor(Date.now() / 1000) };
+    }));
+    try {
+      await apiDeleteMessage(messageId, identity?.guestId ?? null);
+    } catch (e) {
+      if (prevSnapshot) {
+        setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: prevSnapshot!.content, imageUrl: prevSnapshot!.imageUrl, deletedAt: prevSnapshot!.deletedAt ?? null } : m));
+      }
+      throw e;
+    }
+  }, [identity]);
+
   // Block filter (Apple G1.2) — server already filters initial fetches; this
   // covers WS pushes from blocked authors and the gap between the user
   // tapping Block and the next refetch. Memoised on blockedSet so the
@@ -357,5 +425,6 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     messages: visibleMessages, loading, loadingOlder, hasMore, sending, error,
     clearError: () => setError(null),
     sendText, sendImage, loadOlder, reload: load, setMessageReactions,
+    editMessage, deleteMessage,
   };
 }

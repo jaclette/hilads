@@ -1,0 +1,12 @@
+{
+  "edited": "đã chỉnh sửa",
+  "messageDeleted": "Tin nhắn đã bị xóa",
+  "editingBanner": "Đang chỉnh sửa tin nhắn",
+  "actionReply": "↩ Trả lời",
+  "actionCopy": "📋 Sao chép",
+  "actionEdit": "✏️ Chỉnh sửa",
+  "actionDelete": "🗑️ Xóa",
+  "deleteConfirmBody": "Xóa tin nhắn này? Nó sẽ bị xóa với mọi người.",
+  "editFailed": "Không thể lưu chỉnh sửa. Vui lòng thử lại.",
+  "deleteFailed": "Không thể xóa tin nhắn. Vui lòng thử lại."
+}

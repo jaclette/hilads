@@ -1,0 +1,12 @@
+{
+  "edited": "bearbeitet",
+  "messageDeleted": "Nachricht gelöscht",
+  "editingBanner": "Nachricht bearbeiten",
+  "actionReply": "↩ Antworten",
+  "actionCopy": "📋 Kopieren",
+  "actionEdit": "✏️ Bearbeiten",
+  "actionDelete": "🗑️ Löschen",
+  "deleteConfirmBody": "Diese Nachricht löschen? Sie wird für alle entfernt.",
+  "editFailed": "Bearbeitung konnte nicht gespeichert werden. Versuch's nochmal.",
+  "deleteFailed": "Nachricht konnte nicht gelöscht werden. Versuch's nochmal."
+}

@@ -22,6 +22,7 @@ import * as Location from 'expo-location';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import { useDMThread } from '@/hooks/useDMThread';
 import { findOrCreateDM, toggleDmReaction, fetchConversations } from '@/api/conversations';
@@ -269,7 +270,19 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
       )}
 
       <View style={[styles.bubbleCol, isMine && styles.bubbleColMine]}>
-        {msg.type === 'image' ? (
+        {msg.deleted_at ? (
+          /* Tombstone — server clears content + image_url, we render a flat italic bubble. */
+          <View style={[
+            styles.bubble,
+            isMine  ? styles.bubbleMine  : styles.bubbleOther,
+            isMine  ? bubbleMineShape    : bubbleOtherShape,
+            { opacity: 0.6 },
+          ]}>
+            <Text style={[styles.bubbleText, { fontStyle: 'italic', color: 'rgba(255,255,255,0.55)' }]}>
+              {i18n.t('messageDeleted', { ns: 'chat' })}
+            </Text>
+          </View>
+        ) : msg.type === 'image' ? (
           <View style={[
             styles.imageBubble,
             isMine  ? styles.bubbleMine  : styles.bubbleOther,
@@ -318,6 +331,11 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               )}
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                 {linkifyText(msg.content)}
+                {msg.edited_at && (
+                  <Text style={{ fontSize: 11, color: isMine ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.45)' }}>
+                    {`  ${i18n.t('edited', { ns: 'chat' })}`}
+                  </Text>
+                )}
               </Text>
               {(() => {
                 const u = extractFirstUrl(msg.content);
@@ -365,7 +383,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { t } = useTranslation('dm');
   const { account } = useApp();
-  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions } = useDMThread(conversationId);
+  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage } = useDMThread(conversationId);
   const [text,          setText]          = useState('');
   const [uploading,     setUploading]     = useState(false);
   const [focused,       setFocused]       = useState(false);
@@ -378,6 +396,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   replyingToRef.current = replyingTo;
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<DmMessage | null>(null);
+  const [editingMsg,       setEditingMsg]       = useState<{ id: string; content: string } | null>(null);
   const flatListRef = useRef<FlatList<DmMessage>>(null);
   const lastSel   = useRef({ start: 0, end: 0 });
 
@@ -401,10 +420,29 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   const initial = displayName.slice(0, 1).toUpperCase();
   const busy    = sending || uploading;
 
+  // Seed composer when entering edit mode; clear on exit.
+  useEffect(() => {
+    if (editingMsg) setText(editingMsg.content);
+    else setText('');
+  }, [editingMsg?.id]);
+
   function handleSend() {
     const trimmed = text.trim();
     if (!trimmed || busy) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Edit mode short-circuits normal send: save the edit and exit edit mode.
+    if (editingMsg) {
+      const idToEdit = editingMsg.id;
+      const original = editingMsg.content;
+      setEditingMsg(null);
+      setText('');
+      if (trimmed === original) return;  // no-op when unchanged
+      editMessage(idToEdit, trimmed).catch(e => {
+        console.warn('[dm] edit failed:', e);
+        Alert.alert(i18n.t('editFailed', { ns: 'chat' }));
+      });
+      return;
+    }
     const reply = replyingToRef.current;
     setReplyingTo(null);
     sendText(trimmed, reply);
@@ -665,7 +703,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
       />
 
       {/* ── Reply preview strip ── */}
-      {replyingTo && (
+      {replyingTo && !editingMsg && (
         <View style={dmComposerReplyStyles.strip}>
           <View style={dmComposerReplyStyles.body}>
             <Text style={dmComposerReplyStyles.name}>{replyingTo.nickname}</Text>
@@ -675,6 +713,19 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           </View>
           <TouchableOpacity onPress={() => setReplyingTo(null)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Text style={dmComposerReplyStyles.close}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* ── Edit banner — visible while editing one of your own DM messages ── */}
+      {editingMsg && (
+        <View style={dmComposerEditStyles.strip}>
+          <View style={dmComposerEditStyles.body}>
+            <Text style={dmComposerEditStyles.name}>{i18n.t('editingBanner', { ns: 'chat' })}</Text>
+            <Text style={dmComposerEditStyles.preview} numberOfLines={1}>{editingMsg.content}</Text>
+          </View>
+          <TouchableOpacity onPress={() => setEditingMsg(null)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Text style={dmComposerEditStyles.close}>✕</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -759,6 +810,34 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         } : undefined}
+        onEdit={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = !!account?.id && actionSheetMsg.sender_id === account.id;
+          const editable = (actionSheetMsg.type ?? 'text') === 'text' && !actionSheetMsg.deleted_at && !!actionSheetMsg.content && !actionSheetMsg.content.startsWith('📍');
+          return mine && editable ? () => {
+            setReplyingTo(null);
+            setEditingMsg({ id: actionSheetMsg.id, content: actionSheetMsg.content });
+          } : undefined;
+        })()}
+        onDelete={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = !!account?.id && actionSheetMsg.sender_id === account.id;
+          return mine && !actionSheetMsg.deleted_at ? () => {
+            const msgId = actionSheetMsg.id;
+            Alert.alert(
+              i18n.t('deleteConfirmTitle', { ns: 'chat' }),
+              i18n.t('deleteConfirmBody', { ns: 'chat' }),
+              [
+                { text: i18n.t('deleteConfirmCancel', { ns: 'chat' }), style: 'cancel' },
+                { text: i18n.t('deleteConfirmCta', { ns: 'chat' }), style: 'destructive',
+                  onPress: async () => {
+                    try { await deleteMessage(msgId); }
+                    catch (e) { console.warn('[dm] delete failed:', e); Alert.alert(i18n.t('deleteFailed', { ns: 'chat' })); }
+                  } },
+              ],
+            );
+          } : undefined;
+        })()}
         onClose={() => setActionSheetMsg(null)}
       />
     </KeyboardAvoidingView>
@@ -1011,6 +1090,23 @@ const dmComposerReplyStyles = StyleSheet.create({
   },
   body:    { flex: 1, minWidth: 0 },
   name:    { fontSize: 12, fontWeight: '700', color: Colors.accent, marginBottom: 2 },
+  preview: { fontSize: 12, color: Colors.muted2 },
+  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
+});
+
+const dmComposerEditStyles = StyleSheet.create({
+  strip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 16,
+    paddingVertical:   8,
+    backgroundColor:   'rgba(255,122,60,0.10)',
+    borderTopWidth:    1,
+    borderTopColor:    'rgba(255,122,60,0.22)',
+    gap:               10,
+  },
+  body:    { flex: 1, minWidth: 0 },
+  name:    { fontSize: 12, fontWeight: '700', color: '#FF7A3C', marginBottom: 2 },
   preview: { fontSize: 12, color: Colors.muted2 },
   close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
 });

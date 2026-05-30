@@ -260,6 +260,8 @@ export interface Message {
   replyTo?: ReplyRef;             // snapshot of the message this is a reply to
   mentions?: MentionRef[];        // @mentions resolved to current usernames by the backend
   reactions?: Reaction[];         // emoji reactions (empty array = none)
+  editedAt?: number | null;       // unix seconds — present (truthy) if the message has been edited
+  deletedAt?: number | null;      // unix seconds — present (truthy) for tombstoned messages (content blanked server-side)
   // Optimistic send state — absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
   status?: 'sending' | 'failed'; // undefined = confirmed
@@ -355,6 +357,8 @@ export interface DmMessage {
   sender_photo?: string;
   replyTo?: ReplyRef;
   reactions?: Reaction[];
+  edited_at?: string | null;   // ISO timestamp — present (truthy) when edited
+  deleted_at?: string | null;  // ISO timestamp — present (truthy) for tombstoned messages
   // Optimistic send state — absent on confirmed server messages
   localId?: string;
   status?: 'sending' | 'failed';

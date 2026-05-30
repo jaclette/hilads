@@ -1,0 +1,12 @@
+{
+  "edited": "수정됨",
+  "messageDeleted": "삭제된 메시지",
+  "editingBanner": "메시지 수정 중",
+  "actionReply": "↩ 답장",
+  "actionCopy": "📋 복사",
+  "actionEdit": "✏️ 수정",
+  "actionDelete": "🗑️ 삭제",
+  "deleteConfirmBody": "이 메시지를 삭제할까요? 모든 사람에게서 사라져요.",
+  "editFailed": "수정을 저장하지 못했어요. 다시 시도해 주세요.",
+  "deleteFailed": "메시지를 삭제하지 못했어요. 다시 시도해 주세요."
+}

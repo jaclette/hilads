@@ -1,0 +1,12 @@
+{
+  "edited": "in-edit",
+  "messageDeleted": "Tinanggal ang mensahe",
+  "editingBanner": "Ini-edit ang mensahe",
+  "actionReply": "↩ Sagot",
+  "actionCopy": "📋 Kopya",
+  "actionEdit": "✏️ I-edit",
+  "actionDelete": "🗑️ Tanggalin",
+  "deleteConfirmBody": "Tanggalin ang mensaheng ito? Maaalis ito para sa lahat.",
+  "editFailed": "Hindi nai-save ang edit. Subukan ulit.",
+  "deleteFailed": "Hindi natanggal ang mensahe. Subukan ulit."
+}

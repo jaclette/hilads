@@ -1,0 +1,12 @@
+{
+  "edited": "已編輯",
+  "messageDeleted": "訊息已刪除",
+  "editingBanner": "正在編輯訊息",
+  "actionReply": "↩ 回覆",
+  "actionCopy": "📋 複製",
+  "actionEdit": "✏️ 編輯",
+  "actionDelete": "🗑️ 刪除",
+  "deleteConfirmBody": "刪除這則訊息？所有人都將看不到它。",
+  "editFailed": "無法儲存編輯，請再試一次。",
+  "deleteFailed": "無法刪除訊息，請再試一次。"
+}

@@ -3,7 +3,7 @@ import { socket } from '@/lib/socket';
 import {
   View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Modal, ScrollView,
-  Animated, Linking, ToastAndroid,
+  Animated, Linking, ToastAndroid, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -148,6 +148,7 @@ export default function EventDetailScreen() {
   const flatListRef = useRef<FlatList<Message>>(null);
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
+  const [editingMsg,       setEditingMsg]       = useState<{ id: string; content: string } | null>(null);
 
   // Header collapses (hides meta + address + host) once the user scrolls into
   // older messages. The FlatList is inverted, so scrollY > 0 = scrolled up
@@ -293,7 +294,7 @@ export default function EventDetailScreen() {
     [id, identity, nickname],
   );
 
-  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, setMessageReactions } = useMessages({
+  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage } = useMessages({
     channelId,
     loadFn,
     postTextFn,
@@ -584,6 +585,15 @@ export default function EventDetailScreen() {
             }
             replyingTo={replyingTo}
             onCancelReply={() => setReplyingTo(null)}
+            editing={editingMsg}
+            onSubmitEdit={async (text) => {
+              if (!editingMsg) return;
+              const idToEdit = editingMsg.id;
+              setEditingMsg(null);
+              try { await editMessage(idToEdit, text); }
+              catch (e) { console.warn('[event] edit failed:', e); Alert.alert(i18n.t('editFailed', { ns: 'chat' })); }
+            }}
+            onCancelEdit={() => setEditingMsg(null)}
           />
         </KeyboardAvoidingView>
       )}
@@ -607,6 +617,34 @@ export default function EventDetailScreen() {
           Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         } : undefined}
+        onEdit={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = (account?.id && actionSheetMsg.userId === account.id) || (identity?.guestId && actionSheetMsg.guestId === identity.guestId);
+          const editable = actionSheetMsg.type === 'text' && !actionSheetMsg.deletedAt && !!actionSheetMsg.content && !actionSheetMsg.content.startsWith('📍');
+          return mine && editable ? () => {
+            setReplyingTo(null);
+            setEditingMsg({ id: actionSheetMsg.id!, content: actionSheetMsg.content! });
+          } : undefined;
+        })()}
+        onDelete={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = (account?.id && actionSheetMsg.userId === account.id) || (identity?.guestId && actionSheetMsg.guestId === identity.guestId);
+          return mine && !actionSheetMsg.deletedAt ? () => {
+            const msgId = actionSheetMsg.id!;
+            Alert.alert(
+              i18n.t('deleteConfirmTitle', { ns: 'chat' }),
+              i18n.t('deleteConfirmBody', { ns: 'chat' }),
+              [
+                { text: i18n.t('deleteConfirmCancel', { ns: 'chat' }), style: 'cancel' },
+                { text: i18n.t('deleteConfirmCta', { ns: 'chat' }), style: 'destructive',
+                  onPress: async () => {
+                    try { await deleteMessage(msgId); }
+                    catch (e) { console.warn('[event] delete failed:', e); Alert.alert(i18n.t('deleteFailed', { ns: 'chat' })); }
+                  } },
+              ],
+            );
+          } : undefined;
+        })()}
         onClose={() => setActionSheetMsg(null)}
       />
 

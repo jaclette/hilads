@@ -20,6 +20,9 @@ import { MembersSheet } from '@/components/MembersSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
+import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import * as Clipboard from 'expo-clipboard';
+import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { formatExpiresIn } from '@/lib/expiry';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -47,6 +50,8 @@ export default function TopicChatScreen() {
   }, [id]);
   const [shared, setShared] = useState(false);
   const [joinState, setJoinState] = useState<'idle' | 'requested' | 'in'>('idle');
+  const [actionSheetMsg, setActionSheetMsg] = useState<Message | null>(null);
+  const [editingMsg,     setEditingMsg]     = useState<{ id: string; content: string } | null>(null);
   // Members-only gate: true once the server returns 403 on the message load
   // (non-member / pending requester). Flips back to false the moment a member
   // accepts and the next load succeeds.
@@ -153,7 +158,7 @@ export default function TopicChatScreen() {
     [id, identity, nickname],
   );
 
-  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, reload } = useMessages({
+  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, reload, editMessage, deleteMessage } = useMessages({
     channelId: id,
     loadFn,
     postTextFn,
@@ -329,6 +334,7 @@ export default function TopicChatScreen() {
         </View>
       ) : (
       /* Messages + Input */
+      <>
       <KeyboardAvoidingView style={styles.flex} behavior="padding">
         <FlatList
           data={messages}
@@ -358,6 +364,10 @@ export default function TopicChatScreen() {
                 isGrouped={isGrouped}
                 showTime={showTime}
                 dateLabel={dateLabel}
+                onLongPress={(msg) => {
+                  if (!msg.id || msg.id.startsWith('local-')) return;
+                  setActionSheetMsg(msg);
+                }}
                 onResolveJoinRequest={handleResolveJoinRequest}
               />
             );
@@ -405,8 +415,51 @@ export default function TopicChatScreen() {
               ? t('composerReply')
               : t('composerFirst')
           }
+          editing={editingMsg}
+          onSubmitEdit={async (text) => {
+            if (!editingMsg) return;
+            const idToEdit = editingMsg.id;
+            setEditingMsg(null);
+            try { await editMessage(idToEdit, text); }
+            catch (e) { console.warn('[topic] edit failed:', e); Alert.alert(i18n.t('editFailed', { ns: 'chat' })); }
+          }}
+          onCancelEdit={() => setEditingMsg(null)}
         />
       </KeyboardAvoidingView>
+
+      <MessageActionSheet
+        visible={actionSheetMsg !== null}
+        reactions={actionSheetMsg?.reactions ?? []}
+        onReact={() => {}}  /* Topic has no reactions yet — emoji strip is harmless visual no-op. */
+        onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
+        onEdit={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = (account?.id && actionSheetMsg.userId === account.id) || (identity?.guestId && actionSheetMsg.guestId === identity.guestId);
+          const editable = actionSheetMsg.type === 'text' && !actionSheetMsg.deletedAt && !!actionSheetMsg.content && !actionSheetMsg.content.startsWith('📍');
+          return mine && editable ? () => setEditingMsg({ id: actionSheetMsg.id!, content: actionSheetMsg.content! }) : undefined;
+        })()}
+        onDelete={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = (account?.id && actionSheetMsg.userId === account.id) || (identity?.guestId && actionSheetMsg.guestId === identity.guestId);
+          return mine && !actionSheetMsg.deletedAt ? () => {
+            const msgId = actionSheetMsg.id!;
+            Alert.alert(
+              i18n.t('deleteConfirmTitle', { ns: 'chat' }),
+              i18n.t('deleteConfirmBody', { ns: 'chat' }),
+              [
+                { text: i18n.t('deleteConfirmCancel', { ns: 'chat' }), style: 'cancel' },
+                { text: i18n.t('deleteConfirmCta', { ns: 'chat' }), style: 'destructive',
+                  onPress: async () => {
+                    try { await deleteMessage(msgId); }
+                    catch (e) { console.warn('[topic] delete failed:', e); Alert.alert(i18n.t('deleteFailed', { ns: 'chat' })); }
+                  } },
+              ],
+            );
+          } : undefined;
+        })()}
+        onClose={() => setActionSheetMsg(null)}
+      />
+      </>
       )}
 
       <MembersSheet

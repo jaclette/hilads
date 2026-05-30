@@ -1,0 +1,12 @@
+{
+  "edited": "bewerkt",
+  "messageDeleted": "Bericht verwijderd",
+  "editingBanner": "Bericht bewerken",
+  "actionReply": "↩ Antwoorden",
+  "actionCopy": "📋 Kopiëren",
+  "actionEdit": "✏️ Bewerken",
+  "actionDelete": "🗑️ Verwijderen",
+  "deleteConfirmBody": "Dit bericht verwijderen? Het wordt voor iedereen verwijderd.",
+  "editFailed": "Kon bewerking niet opslaan. Probeer het opnieuw.",
+  "deleteFailed": "Kon bericht niet verwijderen. Probeer het opnieuw."
+}

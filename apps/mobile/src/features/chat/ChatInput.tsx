@@ -65,9 +65,16 @@ interface Props {
   /** Reply context — shown as a preview strip above the input until cancelled. */
   replyingTo?:      ReplyRef | null;
   onCancelReply?:   () => void;
+  /** Edit mode — when set, the composer pre-fills with content and Send saves
+      the edit via onSubmitEdit instead of sending a new message. Parents must
+      clear `editing` after onSubmitEdit resolves. Reply and edit are mutually
+      exclusive — parent should not set both. */
+  editing?:         { id: string; content: string } | null;
+  onSubmitEdit?:    (text: string) => void;
+  onCancelEdit?:    () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, mentionContext, mentionChannelId }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId }: Props) {
   const { t } = useTranslation('common');
   const { account, identity, onlineUsers } = useApp();
   // Presence mirror — read at suggest time so a guest joining/leaving doesn't
@@ -99,6 +106,28 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
   function vibePressOut() {
     Animated.timing(vibScale, { toValue: 1, duration: 200, useNativeDriver: true }).start();
   }
+
+  // Seed composer text when entering edit mode. We key on editing?.id so
+  // switching from edit-msg-A to edit-msg-B (rare, but possible if the user
+  // long-presses another own-message while already editing) re-seeds the
+  // textbox. Exiting edit mode clears the box.
+  useEffect(() => {
+    if (editing) {
+      setText(editing.content);
+      textRef.current = editing.content;
+      // Focus + place cursor at end on the next tick so the platform finishes
+      // mounting the field before we ask for focus.
+      setTimeout(() => inputRef.current?.focus(), 50);
+    } else {
+      // Exiting edit mode: clear so the next normal message starts blank.
+      // (If a parent toggles `editing` off after successful save, this also
+      // resets the textbox.)
+      setText('');
+      textRef.current = '';
+      setSelectedMentions([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing?.id]);
 
   // Pulse loop when channel has live activity
   useEffect(() => {
@@ -200,6 +229,18 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     if (isTypingRef.current) {
       isTypingRef.current = false;
       onTypingStop?.();
+    }
+    // Edit mode: short-circuit normal send. We don't dirty mentions/offsets
+    // because edits are content-only — keeping the original mentions would
+    // require re-resolving offsets, which we don't want for v1 (the backend
+    // also doesn't currently accept mentions on edit).
+    if (editing && onSubmitEdit) {
+      // No-op when content unchanged — avoid round-trip + needless WS echo.
+      if (trimmed === editing.content) { onCancelEdit?.(); return; }
+      onSubmitEdit(trimmed);
+      // Parent clears `editing` after the request resolves, which triggers the
+      // useEffect above to wipe text.
+      return;
     }
     // Re-derive mention offsets against the final text — tokens the user deleted
     // are dropped, so only intact, explicitly-selected @mentions are sent.
@@ -420,7 +461,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
 
     {/* ── Reply preview strip ── */}
-    {replyingTo && (
+    {replyingTo && !editing && (
       <View style={replyStyles.strip}>
         <View style={replyStyles.body}>
           <Text style={replyStyles.name}>{replyingTo.nickname}</Text>
@@ -434,14 +475,32 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       </View>
     )}
 
+    {/* ── Edit preview strip — visible while the user is editing one of their
+        own messages. Same chrome as the reply strip so the cancel affordance
+        feels familiar. */}
+    {editing && (
+      <View style={editStyles.strip}>
+        <View style={editStyles.body}>
+          <Text style={editStyles.name}>{t('editingBanner', { ns: 'chat' })}</Text>
+          <Text style={editStyles.preview} numberOfLines={1}>{editing.content}</Text>
+        </View>
+        <TouchableOpacity onPress={onCancelEdit} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Text style={editStyles.close}>✕</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+
     <View style={styles.container}>
 
       {/* ── Vibe button ── */}
+      {/* Hidden while editing: edit mode is text-only — exposing the photo/spot
+          attach affordance would imply you can change a text message into an
+          image, which the backend doesn't support. */}
       <Animated.View style={[
         styles.vibeBtnGlow,
         { transform: [{ scale: vibScale }] },
-        busy && styles.btnDisabled,
-        pulse && {
+        (busy || !!editing) && styles.btnDisabled,
+        pulse && !editing && {
           shadowOpacity: vibGlow.interpolate({ inputRange: [0, 1], outputRange: [0.45, 0.75] }),
         },
       ]}>
@@ -449,7 +508,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
           onPress={handleShare}
           onPressIn={vibePressIn}
           onPressOut={vibePressOut}
-          disabled={busy}
+          disabled={busy || !!editing}
           accessibilityRole="button"
           accessibilityLabel={t('composer.attach')}
         >
@@ -640,6 +699,23 @@ const replyStyles = StyleSheet.create({
   },
   body:    { flex: 1, minWidth: 0 },
   name:    { fontSize: 12, fontWeight: '700', color: Colors.accent, marginBottom: 2 },
+  preview: { fontSize: 12, color: Colors.muted2 },
+  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
+});
+
+const editStyles = StyleSheet.create({
+  strip: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: 16,
+    paddingVertical:   8,
+    backgroundColor:   'rgba(255,122,60,0.10)',
+    borderTopWidth:    1,
+    borderTopColor:    'rgba(255,122,60,0.22)',
+    gap:               10,
+  },
+  body:    { flex: 1, minWidth: 0 },
+  name:    { fontSize: 12, fontWeight: '700', color: '#FF7A3C', marginBottom: 2 },
   preview: { fontSize: 12, color: Colors.muted2 },
   close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
 });

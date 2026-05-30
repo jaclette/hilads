@@ -64,3 +64,23 @@ export async function toggleDmReaction(
   );
   return data.reactions;
 }
+
+// Edit / delete a DM message — owner is always the registered sender, checked
+// server-side by sender_id === auth user.
+export async function editDmMessage(
+  messageId: string,
+  content: string,
+): Promise<{ content: string; editedAt: string }> {
+  const data = await api.patch<{ content: string; editedAt: string }>(
+    `/dm-messages/${messageId}`,
+    { content },
+  );
+  return { content: data.content, editedAt: data.editedAt };
+}
+
+export async function deleteDmMessage(messageId: string): Promise<{ deletedAt: string }> {
+  const data = await api.delete<{ deletedAt?: string; alreadyDeleted?: boolean }>(
+    `/dm-messages/${messageId}`,
+  );
+  return { deletedAt: data.deletedAt ?? new Date().toISOString() };
+}

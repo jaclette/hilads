@@ -1,0 +1,12 @@
+{
+  "edited": "edited",
+  "messageDeleted": "Message deleted",
+  "editingBanner": "Editing message",
+  "actionReply": "↩ Reply",
+  "actionCopy": "📋 Copy",
+  "actionEdit": "✏️ Edit",
+  "actionDelete": "🗑️ Delete",
+  "deleteConfirmBody": "Delete this message? It will be removed for everyone.",
+  "editFailed": "Couldn't save edit. Please try again.",
+  "deleteFailed": "Couldn't delete message. Please try again."
+}

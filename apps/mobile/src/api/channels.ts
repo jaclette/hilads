@@ -267,3 +267,33 @@ export async function toggleChannelReaction(
   );
   return data.reactions;
 }
+
+// Edit a channel message (city / event / topic share the messages table, so a
+// single endpoint handles all three). Backend checks ownership by user_id
+// (registered) or guest_id (guest).
+export async function editMessage(
+  messageId: string,
+  content: string,
+  guestId?: string | null,
+): Promise<{ content: string; editedAt: number }> {
+  const body: Record<string, unknown> = { content };
+  if (guestId) body.guestId = guestId;
+  const data = await api.patch<{ content: string; editedAt: number }>(
+    `/messages/${messageId}`,
+    body,
+  );
+  return { content: data.content, editedAt: data.editedAt };
+}
+
+export async function deleteMessage(
+  messageId: string,
+  guestId?: string | null,
+): Promise<{ deletedAt: number }> {
+  const body: Record<string, unknown> = {};
+  if (guestId) body.guestId = guestId;
+  const data = await api.delete<{ deletedAt?: number; alreadyDeleted?: boolean }>(
+    `/messages/${messageId}`,
+    body,
+  );
+  return { deletedAt: data.deletedAt ?? Math.floor(Date.now() / 1000) };
+}

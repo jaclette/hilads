@@ -1080,6 +1080,56 @@ export async function toggleDmReaction(conversationId, messageId, emoji) {
   return res.json()
 }
 
+// ── Edit / delete (channel: city+event+topic share the same endpoint) ──────
+// Backend validates ownership: userId for registered, guestId for guest.
+export async function editChannelMessage(messageId, content, guestId = null) {
+  const body = { content }
+  if (guestId) body.guestId = guestId
+  const res = await fetch(`${BASE}/messages/${encodeURIComponent(messageId)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error('Failed to edit message')
+  return res.json()
+}
+
+export async function deleteChannelMessage(messageId, guestId = null) {
+  const body = {}
+  if (guestId) body.guestId = guestId
+  const res = await fetch(`${BASE}/messages/${encodeURIComponent(messageId)}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error('Failed to delete message')
+  return res.json()
+}
+
+// ── DM edit / delete (auth required — sender_id ownership) ─────────────────
+export async function editDmMessage(messageId, content) {
+  const res = await fetch(`${BASE}/dm-messages/${encodeURIComponent(messageId)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ content }),
+  })
+  if (!res.ok) throw new Error('Failed to edit DM message')
+  return res.json()
+}
+
+export async function deleteDmMessage(messageId) {
+  const res = await fetch(`${BASE}/dm-messages/${encodeURIComponent(messageId)}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+  })
+  if (!res.ok) throw new Error('Failed to delete DM message')
+  return res.json()
+}
+
 
 export class DuplicateReportError extends Error {
   constructor(existing) {

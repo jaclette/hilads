@@ -1,0 +1,12 @@
+{
+  "edited": "تم التعديل",
+  "messageDeleted": "تم حذف الرسالة",
+  "editingBanner": "جارٍ تعديل الرسالة",
+  "actionReply": "↩ رد",
+  "actionCopy": "📋 نسخ",
+  "actionEdit": "✏️ تعديل",
+  "actionDelete": "🗑️ حذف",
+  "deleteConfirmBody": "حذف هذه الرسالة؟ ستتم إزالتها للجميع.",
+  "editFailed": "تعذّر حفظ التعديل. حاول مرة أخرى.",
+  "deleteFailed": "تعذّر حذف الرسالة. حاول مرة أخرى."
+}

@@ -1,0 +1,12 @@
+{
+  "edited": "editada",
+  "messageDeleted": "Mensagem apagada",
+  "editingBanner": "A editar a mensagem",
+  "actionReply": "↩ Responder",
+  "actionCopy": "📋 Copiar",
+  "actionEdit": "✏️ Editar",
+  "actionDelete": "🗑️ Apagar",
+  "deleteConfirmBody": "Apagar esta mensagem? Será apagada para todos.",
+  "editFailed": "Não foi possível guardar a edição. Tenta outra vez.",
+  "deleteFailed": "Não foi possível apagar a mensagem. Tenta outra vez."
+}

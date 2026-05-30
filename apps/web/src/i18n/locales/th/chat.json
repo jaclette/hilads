@@ -1,0 +1,12 @@
+{
+  "edited": "แก้ไขแล้ว",
+  "messageDeleted": "ข้อความถูกลบ",
+  "editingBanner": "กำลังแก้ไขข้อความ",
+  "actionReply": "↩ ตอบกลับ",
+  "actionCopy": "📋 คัดลอก",
+  "actionEdit": "✏️ แก้ไข",
+  "actionDelete": "🗑️ ลบ",
+  "deleteConfirmBody": "ลบข้อความนี้? จะถูกลบสำหรับทุกคน",
+  "editFailed": "บันทึกการแก้ไขไม่ได้ ลองอีกครั้ง",
+  "deleteFailed": "ลบข้อความไม่ได้ ลองอีกครั้ง"
+}

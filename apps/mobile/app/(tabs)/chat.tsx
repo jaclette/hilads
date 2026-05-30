@@ -433,7 +433,7 @@ export default function ChatTab() {
   // Use pre-loaded data from the bootstrap endpoint if available for the current channel.
   const chatBootstrap = bootstrapData?.channelId === channelId ? bootstrapData : undefined;
 
-  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions } = useMessages({
+  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage } = useMessages({
     channelId,
     loadFn,
     postTextFn,
@@ -459,6 +459,8 @@ export default function ChatTab() {
   replyingToRef.current  = replyingTo;
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
+  // Edit mode — null when not editing. ChatInput consumes this via `editing`.
+  const [editingMsg,       setEditingMsg]       = useState<{ id: string; content: string } | null>(null);
   // Guest self-mention: when an online guest is @mentioned by someone else, give
   // a real-time in-app signal (highlight + discreet signup nudge). No push.
   const [mentionNudge,     setMentionNudge]     = useState(false);
@@ -664,6 +666,51 @@ export default function ChatTab() {
       type:     msg.type ?? 'text',
     });
   }, []);
+
+  // Owner check mirrors backend MessageRepository::findOwned: a registered
+  // user owns by userId, a guest owns by guestId.
+  const isOwnMessage = useCallback((msg: Message): boolean => {
+    if (account?.id && msg.userId === account.id) return true;
+    if (identity?.guestId && msg.guestId === identity.guestId) return true;
+    return false;
+  }, [account, identity]);
+
+  const handleEdit = useCallback((msg: Message) => {
+    if (!msg.id || !msg.content) return;
+    setReplyingTo(null);  // edit and reply are mutually exclusive
+    setEditingMsg({ id: msg.id, content: msg.content });
+  }, []);
+
+  const submitEdit = useCallback(async (text: string) => {
+    if (!editingMsg) return;
+    const id = editingMsg.id;
+    setEditingMsg(null);  // close banner immediately — optimistic patch already in flight
+    try {
+      await editMessage(id, text);
+    } catch (e) {
+      console.warn('[chat] edit failed:', e);
+      Alert.alert(t('editFailed'));
+    }
+  }, [editingMsg, editMessage, t]);
+
+  const handleDelete = useCallback((msg: Message) => {
+    if (!msg.id) return;
+    Alert.alert(
+      t('deleteConfirmTitle'),
+      t('deleteConfirmBody'),
+      [
+        { text: t('deleteConfirmCancel'), style: 'cancel' },
+        {
+          text:    t('deleteConfirmCta'),
+          style:   'destructive',
+          onPress: async () => {
+            try { await deleteMessage(msg.id!); }
+            catch (e) { console.warn('[chat] delete failed:', e); Alert.alert(t('deleteFailed')); }
+          },
+        },
+      ],
+    );
+  }, [deleteMessage, t]);
 
   // Wraps useMessages sendText to inject the current replyingTo before clearing it.
   const handleSendText = useCallback((text: string, mentions?: MentionRef[]) => {
@@ -950,6 +997,9 @@ export default function ChatTab() {
           onTypingStop={handleTypingStop}
           replyingTo={replyingTo}
           onCancelReply={() => setReplyingTo(null)}
+          editing={editingMsg}
+          onSubmitEdit={submitEdit}
+          onCancelEdit={() => setEditingMsg(null)}
         />
       </KeyboardAvoidingView>
 
@@ -959,6 +1009,11 @@ export default function ChatTab() {
         onReact={emoji => { if (actionSheetMsg) handleReact(actionSheetMsg, emoji); }}
         onReply={actionSheetMsg ? () => handleReply(actionSheetMsg) : undefined}
         onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
+        // Edit is text-only (no image/location edits); Delete works for any owned bubble.
+        onEdit={actionSheetMsg && isOwnMessage(actionSheetMsg) && actionSheetMsg.type === 'text' && !actionSheetMsg.deletedAt && actionSheetMsg.content && !actionSheetMsg.content.startsWith('📍')
+          ? () => handleEdit(actionSheetMsg) : undefined}
+        onDelete={actionSheetMsg && isOwnMessage(actionSheetMsg) && !actionSheetMsg.deletedAt
+          ? () => handleDelete(actionSheetMsg) : undefined}
         onClose={() => setActionSheetMsg(null)}
       />
     </SafeAreaView>

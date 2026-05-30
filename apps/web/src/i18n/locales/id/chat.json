@@ -1,0 +1,12 @@
+{
+  "edited": "diedit",
+  "messageDeleted": "Pesan dihapus",
+  "editingBanner": "Mengedit pesan",
+  "actionReply": "↩ Balas",
+  "actionCopy": "📋 Salin",
+  "actionEdit": "✏️ Edit",
+  "actionDelete": "🗑️ Hapus",
+  "deleteConfirmBody": "Hapus pesan ini? Akan dihapus untuk semua orang.",
+  "editFailed": "Tidak bisa menyimpan suntingan. Coba lagi.",
+  "deleteFailed": "Tidak bisa menghapus pesan. Coba lagi."
+}

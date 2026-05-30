@@ -640,9 +640,55 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   const initial = (message.nickname?.[0] ?? '?').toUpperCase();
   const isSending = message.status === 'sending';
   const isFailed  = message.status === 'failed';
+  const isDeleted = Boolean(message.deletedAt);
+  const isEdited  = !isDeleted && Boolean(message.editedAt);
 
   // ── Image message ─────────────────────────────────────────────────────────
   if (message.type === 'image') {
+    // Tombstoned image → render as a plain text-style "deleted" bubble (the
+    // image URL was cleared server-side, and we want a single visual treatment
+    // across kinds so deletions feel consistent).
+    if (isDeleted) {
+      return (
+        <>
+          {dateLabel && <DateSeparator label={dateLabel} />}
+          <Animated.View style={[
+            styles.row,
+            isMine    ? styles.rowMine    : styles.rowOther,
+            isGrouped ? styles.rowGrouped : styles.rowFirst,
+            animStyle,
+          ]}>
+            {!isMine && !isGrouped && (
+              <SenderMeta
+                nickname={message.nickname ?? '?'}
+                color={c1}
+                initial={initial}
+                userId={message.userId}
+                guestId={message.guestId}
+                primaryBadge={message.primaryBadge}
+                contextBadge={message.contextBadge}
+                vibe={message.vibe}
+                mode={message.mode}
+              />
+            )}
+            <View style={styles.bubbleWrap}>
+              <View style={[
+                styles.bubble,
+                isMine ? styles.bubbleMine : styles.bubbleOther,
+                styles.bubbleTombstone,
+              ]}>
+                <Text style={styles.tombstoneText}>{t('messageDeleted')}</Text>
+              </View>
+              {showTime && (
+                <Text style={[styles.timestamp, isMine ? styles.timestampMine : styles.timestampOther]}>
+                  {formatSmartTime(message.createdAt)}
+                </Text>
+              )}
+            </View>
+          </Animated.View>
+        </>
+      );
+    }
     if (!message.imageUrl) {
       console.warn('[msg] image message missing imageUrl:', JSON.stringify(message));
       return null;
@@ -698,7 +744,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   }
 
   // ── Text message ─────────────────────────────────────────────────────────
-  if (!message.content) {
+  // For deleted messages we render the tombstone bubble unconditionally —
+  // server clears `content`, so the "missing content" guard below would
+  // otherwise drop the row entirely.
+  if (!message.content && !isDeleted) {
     console.warn('[msg] text message missing content:', JSON.stringify(message));
     return null;
   }
@@ -732,8 +781,20 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
 
         {/* ── Bubble + timestamp + reactions — wrapped so reactions stay attached ── */}
         <View style={styles.bubbleWrap}>
-          <Pressable onPress={handlePress} onLongPress={handleLongPress} delayLongPress={350}>
-            {isLocationMessage(message.content) ? (
+          <Pressable
+            onPress={isDeleted ? undefined : handlePress}
+            onLongPress={isDeleted ? undefined : handleLongPress}
+            delayLongPress={350}
+          >
+            {isDeleted ? (
+              <View style={[
+                styles.bubble,
+                isMine ? styles.bubbleMine : styles.bubbleOther,
+                styles.bubbleTombstone,
+              ]}>
+                <Text style={styles.tombstoneText}>{t('messageDeleted')}</Text>
+              </View>
+            ) : isLocationMessage(message.content) ? (
               <LocationBubble content={message.content!} isMine={isMine} />
             ) : (
               <View style={[
@@ -775,6 +836,11 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                         </Text>
                       )
                   ))}
+                  {isEdited && (
+                    <Text style={[styles.editedTag, isMine && styles.editedTagMine]}>
+                      {`  ${t('edited')}`}
+                    </Text>
+                  )}
                 </Text>
                 {(() => {
                   const u = extractFirstUrl(message.content);
@@ -1043,6 +1109,26 @@ const styles = StyleSheet.create({
   },
   bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
+  // Tombstone — keep the same bubble silhouette but flatten the fill so it
+  // visually reads as inactive without losing the position-in-thread anchor.
+  bubbleTombstone: {
+    opacity: 0.6,
+  },
+  tombstoneText: {
+    fontSize:   15,
+    fontStyle:  'italic',
+    color:      'rgba(255,255,255,0.55)',
+    lineHeight: 20,
+  },
+  // "edited" suffix — small muted text appended after the message content. Kept
+  // inline (inside the same <Text>) so it wraps naturally with the last word.
+  editedTag: {
+    fontSize: 11,
+    color:    'rgba(255,255,255,0.45)',
+  },
+  editedTagMine: {
+    color: 'rgba(255,255,255,0.65)',
+  },
   // @mention — inline highlight on a nested <Text> (no nested <View>, which can
   // render invisible on RN). Dark fill + white bold text reads on the dark
   // received bubble AND the orange/red sent bubble (#B87228): white-on-fill

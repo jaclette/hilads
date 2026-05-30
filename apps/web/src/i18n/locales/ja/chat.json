@@ -1,0 +1,12 @@
+{
+  "edited": "編集済み",
+  "messageDeleted": "メッセージは削除されました",
+  "editingBanner": "メッセージを編集中",
+  "actionReply": "↩ 返信",
+  "actionCopy": "📋 コピー",
+  "actionEdit": "✏️ 編集",
+  "actionDelete": "🗑️ 削除",
+  "deleteConfirmBody": "このメッセージを削除しますか？全員から削除されます。",
+  "editFailed": "編集を保存できませんでした。もう一度お試しください。",
+  "deleteFailed": "メッセージを削除できませんでした。もう一度お試しください。"
+}

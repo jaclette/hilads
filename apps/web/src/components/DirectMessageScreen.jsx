@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
-import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage } from '../api'
+import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage, editDmMessage, deleteDmMessage } from '../api'
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
@@ -103,6 +103,10 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const loadingOlderRef   = useRef(false)
   const skipAutoScrollRef = useRef(false)
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
+  // Action menu — opened by clicking own bubble. { msg, x, y } | null
+  const [actionMsg, setActionMsg] = useState(null)
+  // Edit mode — pre-fills input, toggles handleSend to save instead of send.
+  const [editingMsg, setEditingMsg] = useState(null)
 
   const otherName = otherUser?.display_name ?? '?'
   const [c1, c2] = avatarColors(otherName)
@@ -150,6 +154,15 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         }
         return [...prev, message]
       })
+    })
+
+    socket.on('dmMessageEdited', ({ conversationId, messageId, content, editedAt }) => {
+      if (conversationId !== conversation.id) return
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content, edited_at: editedAt ?? new Date().toISOString() } : m))
+    })
+    socket.on('dmMessageDeleted', ({ conversationId, messageId, deletedAt }) => {
+      if (conversationId !== conversation.id) return
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, content: '', image_url: undefined, deleted_at: deletedAt ?? new Date().toISOString() } : m))
     })
 
     return () => {
@@ -289,8 +302,44 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
     e.preventDefault()
     const content = input.trim()
     if (!content) return
+    // Edit mode short-circuits the normal send pipeline.
+    if (editingMsg) {
+      const current = editingMsg
+      setEditingMsg(null)
+      setInput('')
+      if (content === current.content) return  // no-op when unchanged
+      const stamp = new Date().toISOString()
+      const prevContent = current.content
+      setMessages(prev => prev.map(m => m.id === current.id ? { ...m, content, edited_at: stamp } : m))
+      try {
+        await editDmMessage(current.id, content)
+      } catch (err) {
+        console.error('[dm edit] failed:', err)
+        setMessages(prev => prev.map(m => m.id === current.id ? { ...m, content: prevContent, edited_at: undefined } : m))
+        setError(i18n.t('editFailed', { ns: 'chat', defaultValue: "Couldn't save edit. Please try again." }))
+        setTimeout(() => setError(null), 4000)
+      }
+      return
+    }
     setInput('')
     await doSendText(content)
+  }
+
+  async function handleDelete(msg) {
+    const confirmed = window.confirm(i18n.t('deleteConfirmBody', { ns: 'chat', defaultValue: 'Delete this message? It will be removed for everyone.' }))
+    if (!confirmed) return
+    const prevContent = msg.content
+    const prevImageUrl = msg.image_url
+    const stamp = new Date().toISOString()
+    setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, content: '', image_url: undefined, deleted_at: stamp } : m))
+    try {
+      await deleteDmMessage(msg.id)
+    } catch (err) {
+      console.error('[dm delete] failed:', err)
+      setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, content: prevContent, image_url: prevImageUrl, deleted_at: undefined } : m))
+      setError(i18n.t('deleteFailed', { ns: 'chat', defaultValue: "Couldn't delete message. Please try again." }))
+      setTimeout(() => setError(null), 4000)
+    }
   }
 
   async function handleMySpot() {
@@ -365,7 +414,11 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                 </div>
               )}
               <div className={`dm-bubble-wrap${isMe ? ' dm-bubble-wrap--me' : ''}${isGrouped ? ' dm-bubble-wrap--grouped' : ''}${highlightedMsgId === msg.id ? ' dm-bubble-wrap--highlight' : ''}`}>
-                {msg.type === 'image'
+                {msg.deleted_at
+                  ? <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''} dm-bubble--deleted`}>
+                      <span className="msg-text">{i18n.t('messageDeleted', { ns: 'chat', defaultValue: 'Message deleted' })}</span>
+                    </div>
+                  : msg.type === 'image'
                   ? <img
                       src={msg.image_url}
                       className="dm-image"
@@ -402,11 +455,17 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                           </div>
                         )
                       })()
-                    : <div className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}>
+                    : <div
+                        className={`dm-bubble${isMe ? ' dm-bubble--me' : ''}`}
+                        onClick={isMe ? (e) => {
+                          const rect = e.currentTarget.getBoundingClientRect()
+                          setActionMsg({ msg, x: rect.left, y: rect.top })
+                        } : undefined}
+                      >
                         {msg.replyTo && (
                           <div
                             className={`dm-reply-quote${msg.replyTo.id ? ' dm-reply-quote--tappable' : ''}`}
-                            onClick={msg.replyTo.id ? () => scrollToMessage(msg.replyTo.id) : undefined}
+                            onClick={msg.replyTo.id ? (e) => { e.stopPropagation(); scrollToMessage(msg.replyTo.id) } : undefined}
                           >
                             <span className="dm-reply-quote-name">{msg.replyTo.nickname}</span>
                             <span className="dm-reply-quote-text">
@@ -414,7 +473,12 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                             </span>
                           </div>
                         )}
-                        <span className="msg-text">{linkifyText(msg.content)}</span>
+                        <span className="msg-text">
+                          {linkifyText(msg.content)}
+                          {msg.edited_at && (
+                            <span className="msg-edited-tag">{` ${i18n.t('edited', { ns: 'chat', defaultValue: 'edited' })}`}</span>
+                          )}
+                        </span>
                         {(() => {
                           const u = extractFirstUrl(msg.content)
                           return u ? <LinkPreviewCard url={u} /> : null
@@ -450,6 +514,75 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
           onClose={() => setShowShareSheet(false)}
           spotLoading={spotLoading}
         />
+      )}
+
+      {/* Action menu — opens on own-bubble click. Same shape as App.jsx's
+          action-bubble but minimal: just Copy / Edit / Delete (no reactions
+          on DMs yet, no Reply UI in this screen). */}
+      {actionMsg && (
+        <div className="action-bubble-overlay" onClick={() => setActionMsg(null)}>
+          <div
+            className="action-bubble"
+            style={{
+              top:   Math.max(8, actionMsg.y - 64),
+              right: 16,
+              left:  'auto',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            {actionMsg.msg.content && (
+              <button
+                className="action-bubble-btn"
+                onClick={() => {
+                  const text = actionMsg.msg.content ?? ''
+                  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text).catch(() => {})
+                  setActionMsg(null)
+                }}
+              >
+                {i18n.t('actionCopy', { ns: 'chat', defaultValue: '📋 Copy' })}
+              </button>
+            )}
+            {actionMsg.msg.content && !actionMsg.msg.content.startsWith('📍') && (actionMsg.msg.type ?? 'text') === 'text' && (
+              <button
+                className="action-bubble-btn"
+                onClick={() => {
+                  setEditingMsg({ id: actionMsg.msg.id, content: actionMsg.msg.content ?? '' })
+                  setInput(actionMsg.msg.content ?? '')
+                  setActionMsg(null)
+                  dmInputRef.current?.focus()
+                }}
+              >
+                {i18n.t('actionEdit', { ns: 'chat', defaultValue: '✏️ Edit' })}
+              </button>
+            )}
+            <button
+              className="action-bubble-btn action-bubble-btn--danger"
+              onClick={() => {
+                const msg = actionMsg.msg
+                setActionMsg(null)
+                handleDelete(msg)
+              }}
+            >
+              {i18n.t('actionDelete', { ns: 'chat', defaultValue: '🗑️ Delete' })}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {editingMsg && (
+        <div className="edit-preview">
+          <div className="edit-preview-body">
+            <span className="edit-preview-name">{i18n.t('editingBanner', { ns: 'chat', defaultValue: 'Editing message' })}</span>
+            <span className="edit-preview-text">{editingMsg.content}</span>
+          </div>
+          <button
+            className="edit-preview-close"
+            type="button"
+            onClick={() => { setEditingMsg(null); setInput('') }}
+          >
+            ✕
+          </button>
+        </div>
       )}
 
       {/* Composer */}
