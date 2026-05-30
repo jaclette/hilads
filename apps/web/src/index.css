@@ -2765,6 +2765,15 @@ html, body, #root {
   white-space: pre-wrap;
 }
 
+/* Auto-linkified URLs inside message text. Inherit the bubble's text color so
+   they're readable on both received (dark) and sent (orange) bubbles; underline
+   provides the affordance. Break long URLs so they wrap inside the bubble. */
+.msg-text a {
+  color: inherit;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
 /* ── Action bubble overlay ────────────────────────────── */
 
 .action-bubble-overlay {

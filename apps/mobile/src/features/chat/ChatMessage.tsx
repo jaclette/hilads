@@ -30,6 +30,7 @@ import type { Message, Badge } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { splitContentByMentions } from '@/lib/mentions';
+import { linkifyText } from '@/lib/linkify';
 
 // ── Location message helpers ──────────────────────────────────────────────────
 // Messages starting with '📍' are location shares sent by the LocationPicker.
@@ -758,7 +759,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                 <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                   {splitContentByMentions(message.content ?? '', message.mentions).map((seg, i) => (
                     seg.type === 'text'
-                      ? seg.text
+                      ? linkifyText(seg.text, undefined, `m${i}-`)
                       // Mention = a nested <Text> with a dark highlight + white
                       // text. Stays a plain inline Text (NOT a nested <View>):
                       // inline Views inside Text can render zero-size/invisible on

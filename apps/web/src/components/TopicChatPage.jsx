@@ -10,6 +10,7 @@ import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
 import useMentions from '../hooks/useMentions'
 import { splitContentByMentions } from '../lib/mentions'
+import { linkifyText } from '../linkify.jsx'
 import { formatExpiresIn } from '../expiry'
 
 const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
@@ -164,7 +165,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   function renderMessageContent(item) {
     return splitContentByMentions(item.content ?? '', item.mentions).map((seg, i) =>
       seg.type === 'text'
-        ? <span key={i}>{seg.text}</span>
+        ? <span key={i}>{linkifyText(seg.text, `m${i}-`)}</span>
         : <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); onViewProfile?.(seg.userId, seg.username) }}>@{seg.username}</span>
     )
   }

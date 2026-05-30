@@ -30,6 +30,7 @@ import { useApp } from '@/context/AppContext';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
+import { linkifyText } from '@/lib/linkify';
 import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
 import { avatarColor } from '@/lib/avatarColors';
 import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
@@ -314,7 +315,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
                 </TouchableOpacity>
               )}
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-                {msg.content}
+                {linkifyText(msg.content)}
               </Text>
             </View>
           </Pressable>

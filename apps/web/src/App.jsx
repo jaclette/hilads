@@ -19,6 +19,7 @@ import EventsSidebar from './components/EventsSidebar'
 import AttendeeAvatars from './components/AttendeeAvatars'
 import useMentions from './hooks/useMentions'
 import { splitContentByMentions } from './lib/mentions'
+import { linkifyText } from './linkify.jsx'
 import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
@@ -887,7 +888,7 @@ export default function App() {
   // Mentions carry the CURRENT username resolved by the backend.
   function renderMessageContent(item) {
     return splitContentByMentions(item.content ?? '', item.mentions).map((seg, i) => {
-      if (seg.type === 'text') return <span key={i}>{seg.text}</span>
+      if (seg.type === 'text') return <span key={i}>{linkifyText(seg.text, `m${i}-`)}</span>
       // Online-guest mention: 👻 pill, inert (no profile nav). Anchored on the
       // stable guestId; if the guest has left it just renders as styled text.
       if (seg.guestId) {

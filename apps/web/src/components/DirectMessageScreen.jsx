@@ -6,6 +6,7 @@ import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
+import { linkifyText } from '../linkify.jsx'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -412,7 +413,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                             </span>
                           </div>
                         )}
-                        <span className="msg-text">{msg.content}</span>
+                        <span className="msg-text">{linkifyText(msg.content)}</span>
                       </div>
                 }
               </div>
