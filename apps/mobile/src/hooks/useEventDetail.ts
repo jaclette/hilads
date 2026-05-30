@@ -63,8 +63,14 @@ export function useEventDetail(eventId: string): Result {
     }
   }, [event, guestId, nickname, toggling]);
 
+  // Ownership match — registered users match by account.id (stable across
+  // devices / re-installs), guests by persistent guestId. The guest_id check
+  // alone broke when a registered user opened an event from a device other
+  // than the one that created it (different identity.guestId, same account):
+  // the Edit CTA disappeared even though they own the event.
   const isOwner = Boolean(
-    identity && event?.guest_id && event.guest_id === identity.guestId,
+    (account?.id && event?.created_by && event.created_by === account.id) ||
+    (identity?.guestId && event?.guest_id && event.guest_id === identity.guestId),
   );
 
   return { event, cityName, loading, error, toggling, isOwner, toggleParticipation, reload: load };
