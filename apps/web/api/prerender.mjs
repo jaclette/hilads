@@ -1288,8 +1288,15 @@ function jsonLdSafe(obj) {
 // rich results + ItemList ranking signals; doesn't affect human visitors.
 function injectJsonLd(shell, jsonLd) {
   if (!jsonLd) return shell
+  // Strip any JSON-LD baked into the shell (the static bare-/ home includes a
+  // brand-level Organization+WebSite block); page-specific JSON-LD already
+  // carries those nodes via siteGraphNodes(), so we'd duplicate otherwise.
+  const stripped = shell.replace(
+    /[ \t]*<script[^>]*type="application\/ld\+json"[^>]*>[\s\S]*?<\/script>\s*/gi,
+    '',
+  )
   const tag = `<script type="application/ld+json">${jsonLdSafe(jsonLd)}</script>\n  </head>`
-  return shell.replace(/<\/head>/i, tag)
+  return stripped.replace(/<\/head>/i, tag)
 }
 
 // Inject a robots noindex directive into <head>. Used for cities with zero
@@ -1310,6 +1317,12 @@ function injectRobotsNoindex(shell) {
 // indexes it as the canonical body content for the URL.
 function injectBody(shell, body) {
   if (!body) return shell
+  // Shell ships an <main class="ssr-main"> for the bare-/ English home; for
+  // other prerendered pages we replace that block with the page-specific body
+  // so we don't end up with two stacked <main>s. Fallback: prepend (legacy).
+  if (/<main class="ssr-main"/i.test(shell)) {
+    return shell.replace(/[ \t]*<main class="ssr-main"[\s\S]*?<\/main>\s*/i, `${body}\n      `)
+  }
   return shell.replace(/<div id="root">/i, `<div id="root">\n      ${body}`)
 }
 
@@ -1409,7 +1422,14 @@ function injectHreflang(shell, basePath) {
     ...I18N_LOCALES.map((loc) => `<link rel="alternate" hreflang="${loc}" href="${alt(loc)}" />`),
     `<link rel="alternate" hreflang="x-default" href="${alt('en')}" />`,
   ].join('\n  ')
-  return shell.replace(/<\/head>/i, `${links}\n  </head>`)
+  // Strip any hreflang links baked into the shell (used for the static bare-/
+  // home so Googlebot sees the locale cluster without going through prerender)
+  // before re-injecting the page-specific block.
+  const stripped = shell.replace(
+    /[ \t]*<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>\s*/gi,
+    '',
+  )
+  return stripped.replace(/<\/head>/i, `${links}\n  </head>`)
 }
 
 // ── Handler ──────────────────────────────────────────────────────────────────

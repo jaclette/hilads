@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Hilads · Feel local. Anywhere.</title>
+    <title>Hilads — see what&#39;s happening in your city &amp; meet locals and travelers</title>
     <meta name="google-site-verification" content="2V6_2ikx5B9ubDRUj6-JME54cc0D2aUyF4g65XcQTYY" />
-    <meta name="description" content="See who's around right now. Join what's happening in your city tonight. Real-time, no sign-up." />
+    <meta name="description" content="See who&#39;s around and what&#39;s happening in your city today, and meet locals and travelers — live city chat, events and hangouts nearby. Real-time, no sign-up." />
     <meta name="theme-color" content="#161210" />
 
     <!-- iOS PWA -->
@@ -19,8 +19,8 @@
     <meta property="og:type"          content="website" />
     <meta property="og:site_name"     content="Hilads" />
     <meta property="og:url"           content="https://hilads.live/" />
-    <meta property="og:title"         content="Hilads · Feel local. Anywhere." />
-    <meta property="og:description"   content="See who's around right now. Join what's happening in your city tonight. Real-time, no sign-up." />
+    <meta property="og:title"         content="Hilads — see what&#39;s happening in your city &amp; meet locals and travelers" />
+    <meta property="og:description"   content="See who&#39;s around and what&#39;s happening in your city today, and meet locals and travelers — live city chat, events and hangouts nearby. Real-time, no sign-up." />
     <meta property="og:image"         content="https://hilads.live/og/og-default.png" />
     <meta property="og:image:secure_url" content="https://hilads.live/og/og-default.png" />
     <meta property="og:image:type"    content="image/png" />
@@ -31,12 +31,43 @@
 
     <!-- Twitter / X card. summary_large_image renders the full 1200×630 banner instead of a tiny avatar. -->
     <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:title"       content="Hilads · Feel local. Anywhere." />
-    <meta name="twitter:description" content="See who's around right now. Join what's happening in your city tonight. Real-time, no sign-up." />
+    <meta name="twitter:title"       content="Hilads — see what&#39;s happening in your city &amp; meet locals and travelers" />
+    <meta name="twitter:description" content="See who&#39;s around and what&#39;s happening in your city today, and meet locals and travelers — live city chat, events and hangouts nearby. Real-time, no sign-up." />
     <meta name="twitter:image"       content="https://hilads.live/og/og-default.png" />
     <meta name="twitter:image:alt"   content="Hilads — feel local, anywhere." />
 
     <link rel="canonical" href="https://hilads.live/" />
+    <!-- hreflang cluster — bare / is the English canonical / x-default; localized
+         variants are at /<locale>/. Vercel serves dist/index.html directly for
+         "/" (filesystem precedence), so this block is what Googlebot sees on the
+         home; the prerender strips and re-injects per-page hreflang for /city,
+         /event, /venue, /<locale>/ pages. -->
+    <link rel="alternate" hreflang="en"      href="https://hilads.live/" />
+    <link rel="alternate" hreflang="fr"      href="https://hilads.live/fr/" />
+    <link rel="alternate" hreflang="vi"      href="https://hilads.live/vi/" />
+    <link rel="alternate" hreflang="es"      href="https://hilads.live/es/" />
+    <link rel="alternate" hreflang="it"      href="https://hilads.live/it/" />
+    <link rel="alternate" hreflang="pt-br"   href="https://hilads.live/pt-br/" />
+    <link rel="alternate" hreflang="pt-pt"   href="https://hilads.live/pt-pt/" />
+    <link rel="alternate" hreflang="de"      href="https://hilads.live/de/" />
+    <link rel="alternate" hreflang="nl"      href="https://hilads.live/nl/" />
+    <link rel="alternate" hreflang="zh-hans" href="https://hilads.live/zh-hans/" />
+    <link rel="alternate" hreflang="zh-hant" href="https://hilads.live/zh-hant/" />
+    <link rel="alternate" hreflang="ja"      href="https://hilads.live/ja/" />
+    <link rel="alternate" hreflang="ko"      href="https://hilads.live/ko/" />
+    <link rel="alternate" hreflang="fil"     href="https://hilads.live/fil/" />
+    <link rel="alternate" hreflang="th"      href="https://hilads.live/th/" />
+    <link rel="alternate" hreflang="id"      href="https://hilads.live/id/" />
+    <link rel="alternate" hreflang="hi"      href="https://hilads.live/hi/" />
+    <link rel="alternate" hreflang="ru"      href="https://hilads.live/ru/" />
+    <link rel="alternate" hreflang="ar"      href="https://hilads.live/ar/" />
+    <link rel="alternate" hreflang="x-default" href="https://hilads.live/" />
+
+    <!-- Brand-level structured data; the prerender strips this and re-injects
+         page-specific JSON-LD (Event, LocalBusiness, ItemList) for /event,
+         /city, etc., so no duplicate Organization/WebSite nodes downstream. -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://hilads.live/#organization","name":"Hilads","url":"https://hilads.live/","logo":"https://hilads.live/logo/icon.svg"},{"@type":"WebSite","@id":"https://hilads.live/#website","url":"https://hilads.live/","name":"Hilads","inLanguage":"en","publisher":{"@id":"https://hilads.live/#organization"}}]}</script>
+
     <link rel="icon" type="image/svg+xml" href="/logo/icon.svg">
     <link rel="manifest" href="/manifest.webmanifest">
   </head>
@@ -45,9 +76,15 @@
          is accessed by Zalo's injected script before the SDK fully initialises. -->
     <script>window.zaloJSV2 = window.zaloJSV2 || {};</script>
     <div id="root">
-      <!-- SEO/no-JS discovery: crawlers and screen readers without JS see a
-           link into the cities index. The SPA replaces this content on mount,
-           so JS users never see it. -->
+      <!-- SSR body for the bare / English homepage. React hydration replaces
+           #root on mount for humans (LCP-friendly); bots index this content.
+           The prerender replaces this whole <main> for non-home pages. -->
+      <main class="ssr-main">
+        <h1>Feel local. Anywhere.</h1>
+        <p class="ssr-intro">Hilads is a live social layer on top of cities. Open it and instantly see who&#39;s around and what&#39;s happening today, meet locals and travelers, and jump into events and hangouts near you — no profiles, no sign-up.</p>
+        <section><h2>How Hilads works</h2><p>Pick your city and you&#39;re in its live chat in seconds. See who&#39;s online nearby, meet locals and travelers, discover events and hangouts happening today, and start something of your own. Hilads makes every city feel alive, right now.</p></section>
+        <p><a href="/cities">Browse all Hilads cities</a></p>
+      </main>
       <noscript>
         <p>Hilads — see live activity in cities worldwide.</p>
         <p><a href="/cities">Browse all Hilads cities</a></p>
