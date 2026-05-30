@@ -2354,12 +2354,15 @@ html, body, #root {
   word-break: break-word;
   color: var(--text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  /* Cap the bubble so a reply-quote with white-space: nowrap can't stretch the
-     whole bubble past the viewport — the quote then truncates with its
-     existing overflow:hidden + ellipsis rules. min-width: 0 is required so the
-     bubble actually shrinks inside its flex parent. */
+  /* Cap the bubble so a reply-quote with white-space: nowrap can't stretch
+     the whole bubble past the viewport — the quote then truncates with its
+     own overflow:hidden + ellipsis rules. We deliberately do NOT set
+     min-width: 0 here — that let short bubbles ("ha ha") collapse to
+     single-character width on mobile Safari, because the grandparent has
+     width: fit-content and word-break: break-word would then wrap each word
+     onto its own line. The reply-quote min-content is killed at the quote
+     itself via min-width: 0 on .msg-reply-quote (see below). */
   max-width: min(85%, 540px);
-  min-width: 0;
 }
 
 .msg-bubble-wrap.mine .msg-content {
@@ -2770,6 +2773,13 @@ html, body, #root {
   gap: 2px;
   cursor: default;
   overflow: hidden;
+  /* Kill the nowrap-cascade at the quote itself: as a flex item, our default
+     min-width: auto resolves to min-content, which for the nowrap name/text
+     spans is their max-content (the full unbreakable string). That used to
+     push the entire bubble past the viewport. With min-width: 0 here, the
+     quote's intrinsic min stops cascading up to .msg-content — and the
+     spans' own overflow:hidden + ellipsis truncate as designed. */
+  min-width: 0;
 }
 
 /* "mine" bubbles have reversed corner radii */
