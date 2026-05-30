@@ -2358,7 +2358,13 @@ html, body, #root {
   padding: 7px 11px;
   font-size: 0.9rem;
   line-height: 1.45;
-  word-break: break-word;
+  /* overflow-wrap: break-word, NOT word-break: break-word — the latter
+     reduces min-content to ~1 character, and on flex layouts that causes the
+     bubble to collapse to a single column with each character wrapping onto
+     its own line ("haha" → "h"/"a"/"h"/"a"). overflow-wrap still breaks long
+     URLs / unbroken strings that would overflow, but it leaves min-content
+     equal to the longest word so the bubble can't shrink below that. */
+  overflow-wrap: break-word;
   color: var(--text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
   /* Cap the bubble so a reply-quote with white-space: nowrap can't stretch
@@ -2848,7 +2854,10 @@ html, body, #root {
 
 /* actual message text node below the quote */
 .msg-text {
-  word-break: break-word;
+  /* overflow-wrap (not word-break) — see .msg-content for why. Same rule:
+     break long unbroken runs that would overflow, but don't pull min-content
+     down to 1 character. */
+  overflow-wrap: break-word;
   white-space: pre-wrap;
 }
 
