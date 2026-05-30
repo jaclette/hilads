@@ -2366,15 +2366,16 @@ html, body, #root {
   overflow-wrap: break-word;
   color: var(--text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  /* Cap the bubble so a reply-quote with white-space: nowrap can't stretch
-     the whole bubble past the viewport — the quote then truncates with its
-     own overflow:hidden + ellipsis rules. We deliberately do NOT set
-     min-width: 0 here — that let short bubbles ("ha ha") collapse to
-     single-character width on mobile Safari, because the grandparent has
-     width: fit-content and word-break: break-word would then wrap each word
-     onto its own line. The reply-quote min-content is killed at the quote
-     itself via min-width: 0 on .msg-reply-quote (see below). */
-  max-width: min(85%, 540px);
+  /* Desktop max-width only — absolute pixels, no percentage. The grandparent
+     .msg-bubble-wrap has display:flex with no defined width (it auto-sizes
+     to its content), so a percentage max-width would resolve against an
+     indefinite container and collapse the bubble down to min-content
+     (longest word) — that was the cause of "good night guys !" wrapping
+     even though it easily fits the chat area. The viewport-relative cap
+     lives on .message (max-width: 80%) which resolves against .messages
+     (a definite-width flex column), so it works correctly. The reply-quote
+     overflow protection is handled at .msg-reply-quote { min-width: 0 }. */
+  max-width: 540px;
 }
 
 .msg-bubble-wrap.mine .msg-content {
