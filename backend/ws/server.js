@@ -51,8 +51,8 @@ process.on('unhandledRejection', (reason) => console.error('[server] unhandledRe
 
 const PORT = process.env.PORT || 8081
 const INTERNAL_TOKEN = process.env.WS_INTERNAL_TOKEN || ''
-const HEARTBEAT_TTL_MS = 120_000  // session expires after 120s without heartbeat
-const CLEANUP_INTERVAL_MS = 60_000 // check for stale sessions every 60s
+const HEARTBEAT_TTL_MS = 300_000  // session expires after 5 min without heartbeat (clients heartbeat every 30s → ~10 missed)
+const CLEANUP_INTERVAL_MS = 90_000 // check for stale sessions every 90s
 const PING_INTERVAL_MS = 30_000   // detect dead TCP connections
 const TYPING_TTL_MS = 8_000       // auto-clear typing if no typingStop within 8s
 const PRESENCE_GRACE_MS = 20_000  // keep a user "online" 20s after their socket drops (smooths brief disconnects)

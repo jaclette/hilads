@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class PresenceRepository
 {
-    private const TTL = 120; // must match HEARTBEAT_TTL_MS in ws/server.js (2 minutes)
+    private const TTL = 300; // must match HEARTBEAT_TTL_MS in ws/server.js (5 minutes)
 
     private static function dbKey(int $channelId): string
     {
