@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, disconnectBeacon, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { createSocket } from './socket'
@@ -1494,14 +1494,14 @@ export default function App() {
       }
     }
 
-    // Remove this tab from presence on close — sendBeacon survives page unload
-    const handleUnload = () => {
-      if (activeChannelRef.current) {
-        socketRef.current?.leaveRoom(activeChannelRef.current, sessionIdRef.current)
-      }
-      disconnectBeacon(sessionIdRef.current)
-    }
-    window.addEventListener('beforeunload', handleUnload)
+    // Tab close is treated as a SILENT disconnect, not an explicit leave —
+    // intentionally NO leaveRoom / disconnectBeacon here. The WS server's 20s
+    // grace + 5-min heartbeat TTL (HEARTBEAT_TTL_MS) lets the user linger on
+    // the Here screen the same way mobile users do when the app is killed.
+    // City switch still calls leaveRoom (see channel-change handler below) —
+    // that's a different intent and stays instant. If you reopen the tab
+    // inside the window, joinRoom on mount re-registers the same session
+    // and the presence row just gets its last_seen_at bumped.
 
     // When returning to a hidden tab: re-assert presence and refresh messages.
     // Send joinRoom (not just heartbeat) so the session is re-registered if it somehow expired.
@@ -1534,7 +1534,6 @@ export default function App() {
       clearTimeout(activityRef.current)
       clearTimeout(typingTimeoutRef.current)
       socketRef.current?.disconnect()
-      window.removeEventListener('beforeunload', handleUnload)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       document.removeEventListener('keydown', handleKeyDown)
     }
