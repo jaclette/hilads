@@ -453,20 +453,28 @@ class NotificationRepository
         // arrival: only the first claim inside the cooldown window emits anything.
         $fresh = self::tryMarkArrival($arriverKey, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS);
 
-        // Guests ALSO gate on their nickname (per city). A guest's guestId is not a
-        // stable identity — it churns on reinstall, cleared storage, or a second
-        // device/browser — so keying on guestId alone lets the "same" guest
-        // re-announce on every visit (no feed line / push suppression). The nickname
-        // key catches that: a returning guest with the same name re-announces nothing
-        // for the window. Emit only when BOTH keys are fresh. Members are unaffected
-        // (they key on a stable u:<userId>), which also avoids muting two registered
-        // users who happen to share a display name.
-        if ($arriverUserId === null) {
-            $nick = mb_strtolower(trim($arriverNickname));
-            if ($nick !== '') {
-                $nameFresh = self::tryMarkArrival('gn:' . $nick, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS);
-                $fresh = $fresh && $nameFresh;
-            }
+        // ALWAYS-on nickname gate as a secondary lock. Catches the cross-device /
+        // lean-mode case for registered users: web /bootstrap in lean mode skips
+        // AuthService::currentUser(), so $arriverUserId is null at the call site;
+        // emitCityArrival then falls back to a `SELECT users WHERE guest_id = ?`,
+        // which only matches if the request's guest_id equals the one stamped on
+        // users at signup. A registered user on a different device (different
+        // guest_id) falls through to arriverKey = 'g:<newGuestId>' — a brand-new
+        // primary key that the 1h gate has never seen, so it fires even though
+        // the same person arrived an hour earlier on another device under
+        // 'u:<userId>'. The nickname gate (now run unconditionally) catches that
+        // collision because the user's displayed nickname is the same in both
+        // calls, locking them into the same secondary row.
+        //
+        // Edge cost: two distinct accounts choosing the SAME display nickname
+        // arriving within the same hour — one of their arrival pings is muted.
+        // Auto-generated handles (kitty_3-style) are unique per account so this
+        // never happens for them; for hand-picked display names it's rare and the
+        // worst-case symptom is a missed feed line, not over-spam.
+        $nick = mb_strtolower(trim($arriverNickname));
+        if ($nick !== '') {
+            $nameFresh = self::tryMarkArrival('nm:' . $nick, $cityChannelId, self::ARRIVAL_COOLDOWN_SECONDS);
+            $fresh = $fresh && $nameFresh;
         }
 
         if (!$fresh) {
