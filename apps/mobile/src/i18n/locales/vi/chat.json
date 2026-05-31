@@ -71,5 +71,16 @@
   "promptPhoto": "📸 Chia sẻ điều đang diễn ra",
   "promptPhotoCta": "Chụp",
   "promptCreate": "🎉 Có kế hoạch tối nay?",
-  "promptCreateCta": "Tạo sự kiện"
+  "promptCreateCta": "Tạo sự kiện",
+  "actionDownload": "Lưu",
+  "actionShare": "Chia sẻ",
+  "downloadSuccess": "Đã lưu vào Ảnh",
+  "downloadFailed": "Không thể lưu ảnh",
+  "shareFailed": "Không thể chia sẻ ảnh",
+  "shareUnavailable": "Không thể chia sẻ ở đây",
+  "shareDialogTitle": "Chia sẻ ảnh",
+  "linkCopied": "Đã sao chép liên kết",
+  "photoSavePermTitle": "Cần quyền truy cập Ảnh",
+  "photoSavePermBody": "Cho phép truy cập Ảnh để lưu hình.",
+  "photoSavePermSettings": "Cho phép truy cập Ảnh trong Cài đặt để lưu hình."
 }

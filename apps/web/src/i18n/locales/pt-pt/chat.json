@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ Apagar",
   "deleteConfirmBody": "Apagar esta mensagem? Será apagada para todos.",
   "editFailed": "Não foi possível guardar a edição. Tenta outra vez.",
-  "deleteFailed": "Não foi possível apagar a mensagem. Tenta outra vez."
+  "deleteFailed": "Não foi possível apagar a mensagem. Tenta outra vez.",
+  "actionDownload": "Guardar",
+  "actionShare": "Partilhar",
+  "downloadSuccess": "Guardado em Fotos",
+  "downloadFailed": "Não foi possível guardar a foto",
+  "shareFailed": "Não foi possível partilhar a foto",
+  "shareUnavailable": "Partilha indisponível aqui",
+  "shareDialogTitle": "Partilhar foto",
+  "linkCopied": "Ligação copiada",
+  "photoSavePermTitle": "Acesso a fotos necessário",
+  "photoSavePermBody": "Permite o acesso a fotos para guardar imagens.",
+  "photoSavePermSettings": "Permite o acesso a fotos em Definições para guardar imagens."
 }

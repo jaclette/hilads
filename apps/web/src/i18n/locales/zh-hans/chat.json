@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ 删除",
   "deleteConfirmBody": "删除这条消息？所有人都将看不到它。",
   "editFailed": "无法保存编辑，请重试。",
-  "deleteFailed": "无法删除消息，请重试。"
+  "deleteFailed": "无法删除消息，请重试。",
+  "actionDownload": "保存",
+  "actionShare": "分享",
+  "downloadSuccess": "已保存到照片",
+  "downloadFailed": "无法保存照片",
+  "shareFailed": "无法分享照片",
+  "shareUnavailable": "此处无法分享",
+  "shareDialogTitle": "分享照片",
+  "linkCopied": "已复制链接",
+  "photoSavePermTitle": "需要照片访问权限",
+  "photoSavePermBody": "请允许照片访问以保存图片。",
+  "photoSavePermSettings": "请在设置中允许照片访问以保存图片。"
 }

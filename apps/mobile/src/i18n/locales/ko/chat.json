@@ -71,5 +71,16 @@
   "promptPhoto": "📸 지금 일어나는 일을 공유하세요",
   "promptPhotoCta": "촬영",
   "promptCreate": "🎉 오늘 밤 계획 있어요?",
-  "promptCreateCta": "이벤트 만들기"
+  "promptCreateCta": "이벤트 만들기",
+  "actionDownload": "저장",
+  "actionShare": "공유",
+  "downloadSuccess": "사진에 저장됨",
+  "downloadFailed": "사진을 저장하지 못했어요",
+  "shareFailed": "사진을 공유하지 못했어요",
+  "shareUnavailable": "여기에서는 공유할 수 없어요",
+  "shareDialogTitle": "사진 공유",
+  "linkCopied": "링크가 복사됨",
+  "photoSavePermTitle": "사진 접근 권한이 필요해요",
+  "photoSavePermBody": "이미지를 저장하려면 사진 접근을 허용해 주세요.",
+  "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요."
 }

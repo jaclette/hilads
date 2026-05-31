@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ Delete",
   "deleteConfirmBody": "Delete this message? It will be removed for everyone.",
   "editFailed": "Couldn't save edit. Please try again.",
-  "deleteFailed": "Couldn't delete message. Please try again."
+  "deleteFailed": "Couldn't delete message. Please try again.",
+  "actionDownload": "Download",
+  "actionShare": "Share",
+  "downloadSuccess": "Saved",
+  "downloadFailed": "Couldn't download the photo",
+  "shareFailed": "Couldn't share the photo",
+  "shareUnavailable": "Sharing isn't available here",
+  "shareDialogTitle": "Share photo",
+  "linkCopied": "Link copied",
+  "photoSavePermTitle": "Photo access needed",
+  "photoSavePermBody": "Allow photo access to save images.",
+  "photoSavePermSettings": "Allow photo access in Settings to save images."
 }

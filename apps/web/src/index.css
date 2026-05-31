@@ -2617,6 +2617,57 @@ html, body, #root {
   background: rgba(255, 255, 255, 0.22);
 }
 
+/* ── Lightbox action bar — Download + Share buttons under the image ─── */
+.lightbox-actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;  /* let the backdrop click through gaps between buttons */
+}
+.lightbox-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lightbox-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+.lightbox-btn--busy {
+  opacity: 0.5;
+  cursor: progress;
+}
+.lightbox-btn-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+.lightbox-toast {
+  position: fixed;
+  bottom: calc(max(22px, env(safe-area-inset-bottom)) + 64px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 18px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  pointer-events: none;
+}
+
 /* ── Success toast ────────────────────────────────────── */
 
 .success-toast {

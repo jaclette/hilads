@@ -71,5 +71,16 @@
   "promptPhoto": "📸 Partilha o que se passa",
   "promptPhotoCta": "Foto",
   "promptCreate": "🎉 Tens algum plano esta noite?",
-  "promptCreateCta": "Criar evento"
+  "promptCreateCta": "Criar evento",
+  "actionDownload": "Guardar",
+  "actionShare": "Partilhar",
+  "downloadSuccess": "Guardado em Fotos",
+  "downloadFailed": "Não foi possível guardar a foto",
+  "shareFailed": "Não foi possível partilhar a foto",
+  "shareUnavailable": "Partilha indisponível aqui",
+  "shareDialogTitle": "Partilhar foto",
+  "linkCopied": "Ligação copiada",
+  "photoSavePermTitle": "Acesso a fotos necessário",
+  "photoSavePermBody": "Permite o acesso a fotos para guardar imagens.",
+  "photoSavePermSettings": "Permite o acesso a fotos em Definições para guardar imagens."
 }

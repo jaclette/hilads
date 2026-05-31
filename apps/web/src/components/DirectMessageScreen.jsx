@@ -6,6 +6,7 @@ import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
+import Lightbox from './Lightbox'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
 import LinkPreviewCard from './LinkPreviewCard'
 
@@ -111,12 +112,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const otherName = otherUser?.display_name ?? '?'
   const [c1, c2] = avatarColors(otherName)
 
-  // Close lightbox on Escape
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') setLightboxUrl(null) }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  // Escape-to-close is owned by <Lightbox>; we just gate the open state here.
 
   // Load message history and mark as read immediately on open
   useEffect(() => {
@@ -605,17 +601,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         autoFocus
       />
 
-      {lightboxUrl && (
-        <div className="lightbox-overlay" onClick={() => setLightboxUrl(null)}>
-          <button className="lightbox-close" onClick={() => setLightboxUrl(null)}>✕</button>
-          <img
-            src={lightboxUrl}
-            className="lightbox-img"
-            alt="full-size preview"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
-      )}
+      <Lightbox url={lightboxUrl} onClose={() => setLightboxUrl(null)} />
     </div>
   )
 }

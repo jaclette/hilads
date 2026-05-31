@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ Supprimer",
   "deleteConfirmBody": "Supprimer ce message ? Il sera supprimé pour tout le monde.",
   "editFailed": "Impossible d'enregistrer la modification. Réessaie.",
-  "deleteFailed": "Impossible de supprimer le message. Réessaie."
+  "deleteFailed": "Impossible de supprimer le message. Réessaie.",
+  "actionDownload": "Enregistrer",
+  "actionShare": "Partager",
+  "downloadSuccess": "Enregistré dans Photos",
+  "downloadFailed": "Impossible d'enregistrer la photo",
+  "shareFailed": "Impossible de partager la photo",
+  "shareUnavailable": "Le partage n'est pas disponible ici",
+  "shareDialogTitle": "Partager la photo",
+  "linkCopied": "Lien copié",
+  "photoSavePermTitle": "Accès aux photos requis",
+  "photoSavePermBody": "Autorise l'accès aux photos pour enregistrer les images.",
+  "photoSavePermSettings": "Autorise l'accès aux photos dans Réglages pour enregistrer les images."
 }

@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ Tanggalin",
   "deleteConfirmBody": "Tanggalin ang mensaheng ito? Maaalis ito para sa lahat.",
   "editFailed": "Hindi nai-save ang edit. Subukan ulit.",
-  "deleteFailed": "Hindi natanggal ang mensahe. Subukan ulit."
+  "deleteFailed": "Hindi natanggal ang mensahe. Subukan ulit.",
+  "actionDownload": "I-save",
+  "actionShare": "I-share",
+  "downloadSuccess": "Na-save sa Photos",
+  "downloadFailed": "Hindi na-save ang larawan",
+  "shareFailed": "Hindi na-share ang larawan",
+  "shareUnavailable": "Walang share dito",
+  "shareDialogTitle": "I-share ang larawan",
+  "linkCopied": "Nakopya ang link",
+  "photoSavePermTitle": "Kailangan ng pahintulot sa larawan",
+  "photoSavePermBody": "Pahintulutan ang access sa larawan para makapag-save.",
+  "photoSavePermSettings": "Payagan ang access sa larawan sa Settings para makapag-save."
 }

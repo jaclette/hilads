@@ -71,5 +71,16 @@
   "promptPhoto": "📸 Comparte lo que está pasando",
   "promptPhotoCta": "Foto",
   "promptCreate": "🎉 ¿Algún plan esta noche?",
-  "promptCreateCta": "Crear un evento"
+  "promptCreateCta": "Crear un evento",
+  "actionDownload": "Guardar",
+  "actionShare": "Compartir",
+  "downloadSuccess": "Guardada en Fotos",
+  "downloadFailed": "No se pudo guardar la foto",
+  "shareFailed": "No se pudo compartir la foto",
+  "shareUnavailable": "Compartir no está disponible aquí",
+  "shareDialogTitle": "Compartir foto",
+  "linkCopied": "Enlace copiado",
+  "photoSavePermTitle": "Se necesita acceso a Fotos",
+  "photoSavePermBody": "Permite el acceso a Fotos para guardar imágenes.",
+  "photoSavePermSettings": "Permite el acceso a Fotos en Ajustes para guardar imágenes."
 }

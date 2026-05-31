@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ Löschen",
   "deleteConfirmBody": "Diese Nachricht löschen? Sie wird für alle entfernt.",
   "editFailed": "Bearbeitung konnte nicht gespeichert werden. Versuch's nochmal.",
-  "deleteFailed": "Nachricht konnte nicht gelöscht werden. Versuch's nochmal."
+  "deleteFailed": "Nachricht konnte nicht gelöscht werden. Versuch's nochmal.",
+  "actionDownload": "Speichern",
+  "actionShare": "Teilen",
+  "downloadSuccess": "In Fotos gespeichert",
+  "downloadFailed": "Foto konnte nicht gespeichert werden",
+  "shareFailed": "Foto konnte nicht geteilt werden",
+  "shareUnavailable": "Teilen ist hier nicht verfügbar",
+  "shareDialogTitle": "Foto teilen",
+  "linkCopied": "Link kopiert",
+  "photoSavePermTitle": "Foto-Zugriff erforderlich",
+  "photoSavePermBody": "Erlaube den Foto-Zugriff, um Bilder zu speichern.",
+  "photoSavePermSettings": "Erlaube den Foto-Zugriff in den Einstellungen, um Bilder zu speichern."
 }

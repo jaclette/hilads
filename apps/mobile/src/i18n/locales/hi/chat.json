@@ -71,5 +71,16 @@
   "promptPhoto": "📸 जो हो रहा है उसे शेयर करें",
   "promptPhotoCta": "फ़ोटो",
   "promptCreate": "🎉 आज रात कोई प्लान है?",
-  "promptCreateCta": "इवेंट बनाएं"
+  "promptCreateCta": "इवेंट बनाएं",
+  "actionDownload": "सहेजें",
+  "actionShare": "शेयर करें",
+  "downloadSuccess": "फ़ोटो में सहेजा गया",
+  "downloadFailed": "फ़ोटो सहेजी नहीं जा सकी",
+  "shareFailed": "फ़ोटो शेयर नहीं हो सकी",
+  "shareUnavailable": "यहाँ शेयरिंग उपलब्ध नहीं है",
+  "shareDialogTitle": "फ़ोटो शेयर करें",
+  "linkCopied": "लिंक कॉपी हो गया",
+  "photoSavePermTitle": "फ़ोटो एक्सेस ज़रूरी है",
+  "photoSavePermBody": "इमेज सहेजने के लिए फ़ोटो एक्सेस की अनुमति दें।",
+  "photoSavePermSettings": "इमेज सहेजने के लिए सेटिंग्स में फ़ोटो एक्सेस की अनुमति दें।"
 }

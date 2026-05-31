@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ حذف",
   "deleteConfirmBody": "حذف هذه الرسالة؟ ستتم إزالتها للجميع.",
   "editFailed": "تعذّر حفظ التعديل. حاول مرة أخرى.",
-  "deleteFailed": "تعذّر حذف الرسالة. حاول مرة أخرى."
+  "deleteFailed": "تعذّر حذف الرسالة. حاول مرة أخرى.",
+  "actionDownload": "حفظ",
+  "actionShare": "مشاركة",
+  "downloadSuccess": "تم الحفظ في الصور",
+  "downloadFailed": "تعذّر حفظ الصورة",
+  "shareFailed": "تعذّر مشاركة الصورة",
+  "shareUnavailable": "المشاركة غير متاحة هنا",
+  "shareDialogTitle": "مشاركة الصورة",
+  "linkCopied": "تم نسخ الرابط",
+  "photoSavePermTitle": "مطلوب الوصول إلى الصور",
+  "photoSavePermBody": "اسمح بالوصول إلى الصور لحفظها.",
+  "photoSavePermSettings": "اسمح بالوصول إلى الصور من الإعدادات."
 }

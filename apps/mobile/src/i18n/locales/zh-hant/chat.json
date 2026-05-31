@@ -71,5 +71,16 @@
   "promptPhoto": "📸 分享正在發生的事",
   "promptPhotoCta": "拍照",
   "promptCreate": "🎉 今晚有計畫嗎？",
-  "promptCreateCta": "建立活動"
+  "promptCreateCta": "建立活動",
+  "actionDownload": "儲存",
+  "actionShare": "分享",
+  "downloadSuccess": "已儲存至照片",
+  "downloadFailed": "無法儲存照片",
+  "shareFailed": "無法分享照片",
+  "shareUnavailable": "此處無法分享",
+  "shareDialogTitle": "分享照片",
+  "linkCopied": "已複製連結",
+  "photoSavePermTitle": "需要照片存取權限",
+  "photoSavePermBody": "請允許照片存取以儲存圖片。",
+  "photoSavePermSettings": "請在設定中允許照片存取以儲存圖片。"
 }

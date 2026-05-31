@@ -71,5 +71,16 @@
   "promptPhoto": "📸 شارك ما يحدث",
   "promptPhotoCta": "تصوير",
   "promptCreate": "🎉 هل لديك خطة الليلة؟",
-  "promptCreateCta": "إنشاء فعالية"
+  "promptCreateCta": "إنشاء فعالية",
+  "actionDownload": "حفظ",
+  "actionShare": "مشاركة",
+  "downloadSuccess": "تم الحفظ في الصور",
+  "downloadFailed": "تعذّر حفظ الصورة",
+  "shareFailed": "تعذّر مشاركة الصورة",
+  "shareUnavailable": "المشاركة غير متاحة هنا",
+  "shareDialogTitle": "مشاركة الصورة",
+  "linkCopied": "تم نسخ الرابط",
+  "photoSavePermTitle": "مطلوب الوصول إلى الصور",
+  "photoSavePermBody": "اسمح بالوصول إلى الصور لحفظها.",
+  "photoSavePermSettings": "اسمح بالوصول إلى الصور من الإعدادات."
 }

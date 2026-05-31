@@ -71,5 +71,16 @@
   "promptPhoto": "📸 Condividi cosa succede",
   "promptPhotoCta": "Scatta",
   "promptCreate": "🎉 Hai un piano per stasera?",
-  "promptCreateCta": "Crea evento"
+  "promptCreateCta": "Crea evento",
+  "actionDownload": "Salva",
+  "actionShare": "Condividi",
+  "downloadSuccess": "Salvata in Foto",
+  "downloadFailed": "Impossibile salvare la foto",
+  "shareFailed": "Impossibile condividere la foto",
+  "shareUnavailable": "Condivisione non disponibile qui",
+  "shareDialogTitle": "Condividi foto",
+  "linkCopied": "Link copiato",
+  "photoSavePermTitle": "Accesso alle foto necessario",
+  "photoSavePermBody": "Consenti l'accesso alle foto per salvare le immagini.",
+  "photoSavePermSettings": "Consenti l'accesso alle foto in Impostazioni per salvare le immagini."
 }

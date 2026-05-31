@@ -71,5 +71,16 @@
   "promptPhoto": "📸 今の様子をシェアしよう",
   "promptPhotoCta": "撮る",
   "promptCreate": "🎉 今夜の予定はある？",
-  "promptCreateCta": "イベントを作成"
+  "promptCreateCta": "イベントを作成",
+  "actionDownload": "保存",
+  "actionShare": "シェア",
+  "downloadSuccess": "写真に保存しました",
+  "downloadFailed": "写真を保存できませんでした",
+  "shareFailed": "写真を共有できませんでした",
+  "shareUnavailable": "ここでは共有できません",
+  "shareDialogTitle": "写真をシェア",
+  "linkCopied": "リンクをコピーしました",
+  "photoSavePermTitle": "写真へのアクセスが必要です",
+  "photoSavePermBody": "画像を保存するには写真へのアクセスを許可してください。",
+  "photoSavePermSettings": "設定で写真へのアクセスを許可してください。"
 }

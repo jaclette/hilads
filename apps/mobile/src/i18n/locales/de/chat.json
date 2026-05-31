@@ -71,5 +71,16 @@
   "promptPhoto": "📸 Teile, was gerade los ist",
   "promptPhotoCta": "Schießen",
   "promptCreate": "🎉 Hast du heute Abend was vor?",
-  "promptCreateCta": "Event erstellen"
+  "promptCreateCta": "Event erstellen",
+  "actionDownload": "Speichern",
+  "actionShare": "Teilen",
+  "downloadSuccess": "In Fotos gespeichert",
+  "downloadFailed": "Foto konnte nicht gespeichert werden",
+  "shareFailed": "Foto konnte nicht geteilt werden",
+  "shareUnavailable": "Teilen ist hier nicht verfügbar",
+  "shareDialogTitle": "Foto teilen",
+  "linkCopied": "Link kopiert",
+  "photoSavePermTitle": "Foto-Zugriff erforderlich",
+  "photoSavePermBody": "Erlaube den Foto-Zugriff, um Bilder zu speichern.",
+  "photoSavePermSettings": "Erlaube den Foto-Zugriff in den Einstellungen, um Bilder zu speichern."
 }

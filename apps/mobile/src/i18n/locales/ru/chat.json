@@ -71,5 +71,16 @@
   "promptPhoto": "📸 Поделись тем, что происходит",
   "promptPhotoCta": "Снять",
   "promptCreate": "🎉 Есть план на вечер?",
-  "promptCreateCta": "Создать событие"
+  "promptCreateCta": "Создать событие",
+  "actionDownload": "Сохранить",
+  "actionShare": "Поделиться",
+  "downloadSuccess": "Сохранено в Фото",
+  "downloadFailed": "Не удалось сохранить фото",
+  "shareFailed": "Не удалось поделиться фото",
+  "shareUnavailable": "Поделиться здесь нельзя",
+  "shareDialogTitle": "Поделиться фото",
+  "linkCopied": "Ссылка скопирована",
+  "photoSavePermTitle": "Нужен доступ к Фото",
+  "photoSavePermBody": "Разреши доступ к Фото, чтобы сохранять изображения.",
+  "photoSavePermSettings": "Разреши доступ к Фото в настройках, чтобы сохранять изображения."
 }

@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ 削除",
   "deleteConfirmBody": "このメッセージを削除しますか？全員から削除されます。",
   "editFailed": "編集を保存できませんでした。もう一度お試しください。",
-  "deleteFailed": "メッセージを削除できませんでした。もう一度お試しください。"
+  "deleteFailed": "メッセージを削除できませんでした。もう一度お試しください。",
+  "actionDownload": "保存",
+  "actionShare": "シェア",
+  "downloadSuccess": "写真に保存しました",
+  "downloadFailed": "写真を保存できませんでした",
+  "shareFailed": "写真を共有できませんでした",
+  "shareUnavailable": "ここでは共有できません",
+  "shareDialogTitle": "写真をシェア",
+  "linkCopied": "リンクをコピーしました",
+  "photoSavePermTitle": "写真へのアクセスが必要です",
+  "photoSavePermBody": "画像を保存するには写真へのアクセスを許可してください。",
+  "photoSavePermSettings": "設定で写真へのアクセスを許可してください。"
 }

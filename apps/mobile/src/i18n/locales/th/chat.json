@@ -71,5 +71,16 @@
   "promptPhoto": "📸 แชร์สิ่งที่กำลังเกิดขึ้น",
   "promptPhotoCta": "ถ่าย",
   "promptCreate": "🎉 มีแผนคืนนี้ไหม?",
-  "promptCreateCta": "สร้างกิจกรรม"
+  "promptCreateCta": "สร้างกิจกรรม",
+  "actionDownload": "บันทึก",
+  "actionShare": "แชร์",
+  "downloadSuccess": "บันทึกใน Photos แล้ว",
+  "downloadFailed": "บันทึกรูปไม่ได้",
+  "shareFailed": "แชร์รูปไม่ได้",
+  "shareUnavailable": "แชร์ที่นี่ไม่ได้",
+  "shareDialogTitle": "แชร์รูป",
+  "linkCopied": "คัดลอกลิงก์แล้ว",
+  "photoSavePermTitle": "ต้องการสิทธิ์เข้าถึง Photos",
+  "photoSavePermBody": "อนุญาตการเข้าถึง Photos เพื่อบันทึกรูป",
+  "photoSavePermSettings": "เปิดอนุญาตเข้าถึง Photos ในการตั้งค่า เพื่อบันทึกรูป"
 }

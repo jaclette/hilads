@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ Xóa",
   "deleteConfirmBody": "Xóa tin nhắn này? Nó sẽ bị xóa với mọi người.",
   "editFailed": "Không thể lưu chỉnh sửa. Vui lòng thử lại.",
-  "deleteFailed": "Không thể xóa tin nhắn. Vui lòng thử lại."
+  "deleteFailed": "Không thể xóa tin nhắn. Vui lòng thử lại.",
+  "actionDownload": "Lưu",
+  "actionShare": "Chia sẻ",
+  "downloadSuccess": "Đã lưu vào Ảnh",
+  "downloadFailed": "Không thể lưu ảnh",
+  "shareFailed": "Không thể chia sẻ ảnh",
+  "shareUnavailable": "Không thể chia sẻ ở đây",
+  "shareDialogTitle": "Chia sẻ ảnh",
+  "linkCopied": "Đã sao chép liên kết",
+  "photoSavePermTitle": "Cần quyền truy cập Ảnh",
+  "photoSavePermBody": "Cho phép truy cập Ảnh để lưu hình.",
+  "photoSavePermSettings": "Cho phép truy cập Ảnh trong Cài đặt để lưu hình."
 }

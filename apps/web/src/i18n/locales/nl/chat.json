@@ -8,5 +8,16 @@
   "actionDelete": "🗑️ Verwijderen",
   "deleteConfirmBody": "Dit bericht verwijderen? Het wordt voor iedereen verwijderd.",
   "editFailed": "Kon bewerking niet opslaan. Probeer het opnieuw.",
-  "deleteFailed": "Kon bericht niet verwijderen. Probeer het opnieuw."
+  "deleteFailed": "Kon bericht niet verwijderen. Probeer het opnieuw.",
+  "actionDownload": "Opslaan",
+  "actionShare": "Delen",
+  "downloadSuccess": "Opgeslagen in Foto's",
+  "downloadFailed": "Kon de foto niet opslaan",
+  "shareFailed": "Kon de foto niet delen",
+  "shareUnavailable": "Delen is hier niet beschikbaar",
+  "shareDialogTitle": "Foto delen",
+  "linkCopied": "Link gekopieerd",
+  "photoSavePermTitle": "Toegang tot foto's nodig",
+  "photoSavePermBody": "Geef toegang tot foto's om afbeeldingen op te slaan.",
+  "photoSavePermSettings": "Geef in Instellingen toegang tot foto's om afbeeldingen op te slaan."
 }

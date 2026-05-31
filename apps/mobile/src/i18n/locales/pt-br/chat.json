@@ -71,5 +71,16 @@
   "promptPhoto": "📸 Compartilhe o que está rolando",
   "promptPhotoCta": "Foto",
   "promptCreate": "🎉 Tem algum plano hoje?",
-  "promptCreateCta": "Criar evento"
+  "promptCreateCta": "Criar evento",
+  "actionDownload": "Salvar",
+  "actionShare": "Compartilhar",
+  "downloadSuccess": "Salvo em Fotos",
+  "downloadFailed": "Não foi possível salvar a foto",
+  "shareFailed": "Não foi possível compartilhar a foto",
+  "shareUnavailable": "Compartilhamento indisponível aqui",
+  "shareDialogTitle": "Compartilhar foto",
+  "linkCopied": "Link copiado",
+  "photoSavePermTitle": "Acesso às fotos necessário",
+  "photoSavePermBody": "Permita o acesso às fotos para salvar imagens.",
+  "photoSavePermSettings": "Permita o acesso às fotos em Configurações para salvar imagens."
 }
