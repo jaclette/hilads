@@ -14,11 +14,12 @@ import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 interface Props {
   visible: boolean;
   onClose: () => void;
+  onSelectChallenge: () => void;
   onSelectEvent: () => void;
   onSelectTopic: () => void;
 }
 
-export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: Props) {
+export function CreateSheet({ visible, onClose, onSelectChallenge, onSelectEvent, onSelectTopic }: Props) {
   const { t } = useTranslation('now');
   const slideAnim   = useRef(new Animated.Value(300)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
@@ -75,11 +76,29 @@ export function CreateSheet({ visible, onClose, onSelectEvent, onSelectTopic }: 
         {/* Title */}
         <Text style={styles.title}>{t('create.title')}</Text>
 
-        {/* Options — hangout (instant "join me now") on top, event (planned)
-            below. Internal handlers are unchanged: onSelectTopic → hangout
-            (formerly pulse) create, onSelectEvent → event create. Only the
-            user-facing copy + order changed. */}
+        {/* Options — order: Challenge (new core feature, top) → Hangout (instant)
+            → Event (planned). Challenge is placed first per the product spec
+            (it's now the primary creation flow connecting locals & explorers).
+            Internal handlers: onSelectChallenge → challenge create,
+            onSelectTopic → hangout create, onSelectEvent → event create. */}
         <View style={styles.options}>
+          <TouchableOpacity
+            style={styles.option}
+            activeOpacity={0.75}
+            onPress={() => handleOption(onSelectChallenge)}
+          >
+            <View style={[styles.optionIcon, styles.optionIconChallenge]}>
+              <Text style={styles.optionEmoji}>🔥</Text>
+            </View>
+            <View style={styles.optionBody}>
+              <Text style={styles.optionLabel}>{t('create.challengeLabel')}</Text>
+              <Text style={styles.optionSub}>{t('create.challengeSub')}</Text>
+            </View>
+            <Text style={styles.optionArrow}>›</Text>
+          </TouchableOpacity>
+
+          <View style={styles.divider} />
+
           <TouchableOpacity
             style={styles.option}
             activeOpacity={0.75}
@@ -191,6 +210,11 @@ const styles = StyleSheet.create({
   optionIconTopic: {
     backgroundColor: 'rgba(96,165,250,0.10)',
     borderColor:     'rgba(96,165,250,0.22)',
+  },
+  optionIconChallenge: {
+    // Hilads orange — challenge is the new primary CTA, so it gets the brand color.
+    backgroundColor: 'rgba(255,122,60,0.14)',
+    borderColor:     'rgba(255,122,60,0.30)',
   },
 
   optionEmoji: {

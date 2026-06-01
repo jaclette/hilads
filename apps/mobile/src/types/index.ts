@@ -84,6 +84,31 @@ export interface Topic {
   created_at:       number;          // unix timestamp
 }
 
+// ── Challenges (Défis) ────────────────────────────────────────────────────────
+// Third primary entity alongside events + hangouts. Created in a city, accepted
+// by other users, validated by the creator once complete. Persistent (no TTL).
+
+export type ChallengeType     = 'food' | 'place' | 'culture' | 'help';
+export type ChallengeAudience = 'locals' | 'explorers';
+export type ChallengeStatus   = 'open' | 'validated';
+
+export interface Challenge {
+  id:                    string;
+  city_id:               string;
+  created_by:            string | null;
+  guest_id:              string | null;
+  title:                 string;
+  challenge_type:        ChallengeType;
+  audience:              ChallengeAudience;
+  status:                ChallengeStatus;
+  message_count:         number;
+  last_activity_at:      number | null;   // unix timestamp
+  validated_at:          number | null;   // unix timestamp; set when status flips to 'validated'
+  created_at:            number;           // unix timestamp
+  participants_preview:  ParticipantPreview[];
+  participant_count:     number;
+}
+
 /** Item in the /now mixed feed — either an event or a topic. */
 export type NowItem =
   | (HiladsEvent & { kind: 'event' })

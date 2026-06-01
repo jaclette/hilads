@@ -176,6 +176,12 @@ export default function NowScreen() {
     if (!account) { router.push('/auth-gate?reason=create_hangout'); return; }
     router.push('/topic/create');
   }
+  function handleCreateChallenge() {
+    // Challenges allow guests (mirrors events, not hangouts). Server enforces
+    // the 5/hour rate limit per city. `as never` because expo-router's typed
+    // routes haven't picked up the new app/challenge/create.tsx yet.
+    router.push('/challenge/create' as never);
+  }
   async function handleHostSpot() {
     if (!city) return;
     try {
@@ -630,6 +636,7 @@ export default function NowScreen() {
       <CreateSheet
         visible={showCreateSheet}
         onClose={() => setShowCreateSheet(false)}
+        onSelectChallenge={handleCreateChallenge}
         onSelectEvent={handleHostSpot}
         onSelectTopic={handleStartPulse}
       />

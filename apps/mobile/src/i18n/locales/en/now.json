@@ -25,6 +25,8 @@
   "inThisHangout": "in this hangout",
   "create": {
     "title": "What's the move?",
+    "challengeLabel": "Launch a challenge",
+    "challengeSub": "Locals & explorers — connect through a challenge",
     "hangoutLabel": "Start a hangout",
     "hangoutSub": "Instant — let people join you right now",
     "eventLabel": "Create an event",

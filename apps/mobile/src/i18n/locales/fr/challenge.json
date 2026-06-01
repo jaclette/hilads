@@ -1,0 +1,36 @@
+{
+  "createTitle": "Lance un défi",
+  "editTitle": "Modifier le défi",
+  "audience": "Pour qui ?",
+  "aud": {
+    "locals": "Locaux",
+    "explorers": "Explorateurs"
+  },
+  "type": "Type",
+  "tp": {
+    "food": "Bouffe",
+    "place": "Lieu",
+    "culture": "Culture",
+    "help": "Aide"
+  },
+  "titleLabel": "Ton défi",
+  "titlePlaceholder": "ex. Emmène-moi dans ton spot café préféré",
+  "createCta": "Lancer le défi 🔥",
+  "saveChanges": "Enregistrer",
+  "errSave": "Impossible d'enregistrer",
+  "errStart": "Impossible de lancer le défi",
+  "validateTitle": "Valider ce défi ?",
+  "validateBody": "Une fois validé, le défi passe dans les défis passés. Toutes les personnes qui l'ont accepté reçoivent une notif.",
+  "validateConfirm": "Valider",
+  "validateCancel": "Pas encore",
+  "deleteTitle": "Supprimer le défi ?",
+  "deleteBody": "Le défi sera supprimé pour tout le monde. Action irréversible.",
+  "deleteConfirm": "Supprimer",
+  "acceptCta": "Relever le défi",
+  "acceptedCta": "Relevé ✓",
+  "validatedBadge": "Validé",
+  "openBadge": "Ouvert",
+  "forLocals": "Pour les locaux",
+  "forExplorers": "Pour les explorateurs",
+  "notFound": "Défi introuvable"
+}

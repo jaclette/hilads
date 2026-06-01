@@ -1,0 +1,36 @@
+{
+  "createTitle": "Create a challenge",
+  "editTitle": "Edit challenge",
+  "audience": "Who's it for?",
+  "aud": {
+    "locals": "Locals",
+    "explorers": "Explorers"
+  },
+  "type": "Type",
+  "tp": {
+    "food": "Food",
+    "place": "Place",
+    "culture": "Culture",
+    "help": "Help"
+  },
+  "titleLabel": "Your challenge",
+  "titlePlaceholder": "e.g. Bring me to your favorite hidden coffee spot",
+  "createCta": "Launch challenge 🔥",
+  "saveChanges": "Save changes",
+  "errSave": "Failed to save changes",
+  "errStart": "Failed to launch challenge",
+  "validateTitle": "Validate this challenge?",
+  "validateBody": "Once validated, the challenge moves to past challenges. Everyone who accepted gets notified.",
+  "validateConfirm": "Validate",
+  "validateCancel": "Not yet",
+  "deleteTitle": "Delete challenge?",
+  "deleteBody": "This removes the challenge for everyone. This cannot be undone.",
+  "deleteConfirm": "Delete",
+  "acceptCta": "Accept the challenge",
+  "acceptedCta": "Accepted ✓",
+  "validatedBadge": "Validated",
+  "openBadge": "Open",
+  "forLocals": "For locals",
+  "forExplorers": "For explorers",
+  "notFound": "Challenge not found"
+}
