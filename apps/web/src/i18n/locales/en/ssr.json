@@ -1,11 +1,12 @@
 {
   "home": {
-    "title": "Hilads — see what's happening in your city & meet locals and travelers",
-    "description": "See who's around and what's happening in your city today, and meet locals and travelers — live city chat, events and hangouts nearby. Real-time, no sign-up.",
+    "title": "Hilads — Connect with locals & explorers through challenges",
+    "description": "You're a local or an explorer. Launch a challenge — food, place, culture, help — and meet people who accept. Real-time, no sign-up.",
     "h1": "Feel local. Anywhere.",
-    "intro": "Hilads is a live social layer on top of cities. Open it and instantly see who's around and what's happening today, meet locals and travelers, and jump into events and hangouts near you — no profiles, no sign-up.",
+    "subhead": "🔥 Now powered by challenges",
+    "intro": "Hilads connects locals and explorers in every city through challenges. Drop one for the other side — pick a type, give it a title, watch people accept. Once it's done, the creator validates. Real-time, no sign-up.",
     "aboutHeading": "How Hilads works",
-    "aboutBody": "Pick your city and you're in its live chat in seconds. See who's online nearby, meet locals and travelers, discover events and hangouts happening today, and start something of your own. Hilads makes every city feel alive, right now.",
+    "aboutBody": "Pick your city. Launch a challenge for the other side, or accept one that speaks to you. Meet locals and travelers through what you actually want to do — food, place, culture, help. Hilads makes every city feel alive, right now.",
     "citiesCta": "Browse all Hilads cities"
   },
   "brand": "Hilads",

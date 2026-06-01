@@ -1139,9 +1139,10 @@ function composeHomeJsonLd() {
 function composeHomeBody(locale = 'en') {
   const lp = localePrefixFor(locale)
   return [
-    `<style>${SSR_CITY_STYLES}</style>`,
+    `<style>${SSR_CITY_STYLES} .ssr-subhead { font-size: 1.05rem; font-weight: 700; color: #FF7A3C; margin: 0 0 0.75rem; letter-spacing: 0.2px; }</style>`,
     `<main class="ssr-main">`,
     `<h1>${htmlEscape(T(locale, 'home.h1'))}</h1>`,
+    `<p class="ssr-subhead">${htmlEscape(T(locale, 'home.subhead'))}</p>`,
     `<p class="ssr-intro">${htmlEscape(T(locale, 'home.intro'))}</p>`,
     `<section><h2>${htmlEscape(T(locale, 'home.aboutHeading'))}</h2><p>${htmlEscape(T(locale, 'home.aboutBody'))}</p></section>`,
     `<p><a href="${lp}/cities">${htmlEscape(T(locale, 'home.citiesCta'))}</a></p>`,

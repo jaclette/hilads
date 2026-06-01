@@ -1,11 +1,12 @@
 {
   "home": {
-    "title": "Hilads — vois ce qui se passe dans ta ville & rencontre des locaux et des voyageurs",
-    "description": "Vois qui est dans le coin et ce qui se passe dans ta ville aujourd'hui, et rencontre des locaux et des voyageurs — chat de ville en direct, événements et sorties tout près. En temps réel, sans inscription.",
+    "title": "Hilads — Connecte locaux & explorateurs par les défis",
+    "description": "Tu es local ou explorateur. Lance un défi — bouffe, lieu, culture, aide — et rencontre les gens qui le relèvent. En temps réel, sans inscription.",
     "h1": "Sens ta ville. Partout.",
-    "intro": "Hilads est une couche sociale en temps réel posée sur les villes. Ouvre l'app et vois aussitôt qui est dans le coin et ce qui se passe aujourd'hui, rencontre des locaux et des voyageurs, et lance-toi dans les événements et les sorties près de toi — sans profils, sans inscription.",
+    "subhead": "🔥 Maintenant propulsé par les défis",
+    "intro": "Hilads connecte locaux et explorateurs dans chaque ville par les défis. Lance-en un pour l'autre côté — choisis un type, donne-lui un titre, regarde les gens le relever. Une fois terminé, le créateur valide. En temps réel, sans inscription.",
     "aboutHeading": "Comment fonctionne Hilads",
-    "aboutBody": "Choisis ta ville et tu es dans son chat en direct en quelques secondes. Vois qui est en ligne tout près, rencontre des locaux et des voyageurs, découvre les événements et les sorties du jour, et lance ton propre truc. Hilads est fait pour que chaque ville se sente vivante, là, maintenant.",
+    "aboutBody": "Choisis ta ville. Lance un défi pour l'autre côté, ou relève-en un qui te parle. Rencontre des locaux et des voyageurs par ce que tu as vraiment envie de faire — bouffe, lieu, culture, aide. Hilads est fait pour que chaque ville se sente vivante, là, maintenant.",
     "citiesCta": "Parcourir toutes les villes Hilads"
   },
   "brand": "Hilads",
