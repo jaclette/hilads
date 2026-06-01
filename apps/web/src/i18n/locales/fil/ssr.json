@@ -1,12 +1,13 @@
 {
   "home": {
-    "title": "Hilads — tingnan kung ano ang nangyayari sa city mo & makilala ang mga local at biyahero",
-    "description": "Tingnan agad kung sino ang nasa paligid at kung ano ang nangyayari sa city mo ngayong araw, at makilala ang mga local at biyahero — live na city chat, events at hangouts na malapit. Real-time, walang sign-up.",
+    "title": "Hilads — Ikonekta ang mga local at biyahero sa pamamagitan ng mga challenge",
+    "description": "Local ka ba o biyahero. Maglunsad ng challenge — pagkain, lugar, kultura, tulong — at makilala ang mga tatanggap. Real-time, walang sign-up.",
     "h1": "Maging local. Kahit saan.",
-    "intro": "Ang Hilads ay isang live social layer sa ibabaw ng mga lungsod. Buksan mo lang at agad mong makikita kung sino ang nasa paligid at kung ano ang nangyayari ngayong araw, makilala ang mga local at biyahero, at sumabak sa mga events at hangouts na malapit sa'yo — walang profiles, walang sign-up.",
+    "intro": "Pinagdudugtong ng Hilads ang mga local at biyahero sa bawat lungsod sa pamamagitan ng mga challenge. Maglunsad para sa kabilang panig — pumili ng uri, lagyan ng pamagat, tingnan ang mga tatanggap. Pagkatapos, ang gumawa ay magvavalidate. Real-time, walang sign-up.",
     "aboutHeading": "Paano gumagana ang Hilads",
-    "aboutBody": "Piliin mo lang ang city mo at nasa live chat ka na nito sa loob ng ilang segundo. Tingnan kung sino ang online na malapit, makilala ang mga local at biyahero, tuklasin ang mga events at hangouts ngayong araw, at magsimula ng sarili mo. Ginagawa ng Hilads na buhay ang pakiramdam ng bawat city, ngayon mismo.",
-    "citiesCta": "I-browse lahat ng cities ng Hilads"
+    "aboutBody": "Piliin ang iyong lungsod. Maglunsad ng challenge para sa kabilang panig, o tumanggap ng isang umaapela sa iyo. Makilala ang mga local at biyahero sa pamamagitan ng gusto mong gawin — pagkain, lugar, kultura, tulong. Pinaramdam ng Hilads na buhay ang bawat lungsod, ngayon mismo.",
+    "citiesCta": "I-browse lahat ng cities ng Hilads",
+    "subhead": "🔥 Pinapatakbo na ng mga challenge"
   },
   "brand": "Hilads",
   "dateLocale": "fil-PH",
@@ -139,5 +140,29 @@
     "today": "Ngayon",
     "afternoonTonight": "Ngayong hapon at gabi",
     "tonight": "Ngayong gabi"
+  },
+  "challenge": {
+    "title": "{title} — challenge sa {city} | Hilads",
+    "titleNoCity": "{title} — challenge sa Hilads",
+    "descLocals": "{title} — challenge para sa mga local ng {city}. Tanggapin ang challenge, makilala ang mga biyahero, walang sign-up.",
+    "descExplorers": "{title} — challenge para sa mga biyahero sa {city}. Tanggapin ang challenge, makilala ang mga local, walang sign-up.",
+    "descGeneric": "{title} — tanggapin ang challenge sa Hilads at makilala ang mga local o biyahero sa {city}.",
+    "h1Tag": "Challenge",
+    "audienceLocals": "Para sa mga local ng {city}",
+    "audienceExplorers": "Para sa mga biyahero sa {city}",
+    "validatedBadge": "✓ Validated",
+    "openBadge": "Bukas",
+    "typeLabel": "Uri:",
+    "typeFood": "Pagkain",
+    "typePlace": "Lugar",
+    "typeCulture": "Kultura",
+    "typeHelp": "Tulong",
+    "participantsOne": "1 tao ang tumanggap",
+    "participantsMany": "{count} tao ang tumanggap",
+    "noParticipants": "Maging unang tumanggap.",
+    "aboutHeading": "Tungkol sa challenge na ito",
+    "aboutBody": "Sa Hilads, ang mga local at biyahero ay nagkokonekta sa pamamagitan ng mga challenge. Pumili ng uri — pagkain, lugar, kultura, tulong — lagyan ng pamagat at tingnan ang mga tatanggap. Kapag natapos na, vavalidahin ng gumawa ang challenge.",
+    "cityLink": "Tingnan kung ano ang nangyayari sa {city}",
+    "removed": "Tinanggal na ang challenge na ito."
   }
 }

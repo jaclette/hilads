@@ -1,12 +1,13 @@
 {
   "home": {
-    "title": "Hilads — zie wat er speelt in jouw stad en ontmoet locals en reizigers",
-    "description": "Zie wie er in de buurt is en wat er vandaag speelt in jouw stad, en ontmoet locals en reizigers — live city-chat, evenementen en meetups dichtbij. Realtime, zonder aanmelding.",
+    "title": "Hilads — Verbind locals & reizigers via challenges",
+    "description": "Je bent local of reiziger. Start een challenge — eten, plek, cultuur, hulp — en ontmoet wie hem aanneemt. Real-time, geen aanmelding.",
     "h1": "Voel je lokaal. Overal.",
-    "intro": "Hilads is een live sociale laag over steden. Open 'm en zie meteen wie er in de buurt is en wat er vandaag speelt, ontmoet locals en reizigers, en duik in evenementen en meetups bij jou in de buurt — geen profielen, geen aanmelding.",
+    "intro": "Hilads verbindt locals en reizigers in elke stad via challenges. Start er een voor de andere kant — kies een type, geef een titel, kijk wie hem aanneemt. Wanneer klaar, valideert de starter. Real-time, geen aanmelding.",
     "aboutHeading": "Zo werkt Hilads",
-    "aboutBody": "Kies je stad en je zit binnen enkele seconden in de live chat. Zie wie er in de buurt online is, ontmoet locals en reizigers, ontdek evenementen en meetups van vandaag, en begin iets van jezelf. Hilads laat elke stad nú levend voelen.",
-    "citiesCta": "Blader door alle Hilads-steden"
+    "aboutBody": "Kies je stad. Start een challenge voor de andere kant, of neem er een aan die je aanspreekt. Ontmoet locals en reizigers via wat je echt wilt doen — eten, plek, cultuur, hulp. Hilads laat elke stad nu meteen levend aanvoelen.",
+    "citiesCta": "Blader door alle Hilads-steden",
+    "subhead": "🔥 Nu met challenges"
   },
   "brand": "Hilads",
   "dateLocale": "nl-NL",
@@ -139,5 +140,29 @@
     "today": "Vandaag",
     "afternoonTonight": "Vanmiddag en vanavond",
     "tonight": "Vanavond"
+  },
+  "challenge": {
+    "title": "{title} — challenge in {city} | Hilads",
+    "titleNoCity": "{title} — challenge op Hilads",
+    "descLocals": "{title} — challenge voor locals van {city}. Neem de challenge aan, ontmoet reizigers, geen aanmelding.",
+    "descExplorers": "{title} — challenge voor reizigers in {city}. Neem de challenge aan, ontmoet locals, geen aanmelding.",
+    "descGeneric": "{title} — neem de challenge aan op Hilads en ontmoet locals of reizigers in {city}.",
+    "h1Tag": "Challenge",
+    "audienceLocals": "Voor locals van {city}",
+    "audienceExplorers": "Voor reizigers in {city}",
+    "validatedBadge": "✓ Gevalideerd",
+    "openBadge": "Open",
+    "typeLabel": "Type:",
+    "typeFood": "Eten",
+    "typePlace": "Plek",
+    "typeCulture": "Cultuur",
+    "typeHelp": "Hulp",
+    "participantsOne": "1 persoon aangenomen",
+    "participantsMany": "{count} mensen aangenomen",
+    "noParticipants": "Wees de eerste die hem aanneemt.",
+    "aboutHeading": "Over deze challenge",
+    "aboutBody": "Op Hilads verbinden locals en reizigers zich via challenges. Kies een type — eten, plek, cultuur, hulp — geef hem een titel en kijk wie hem aanneemt. Wanneer voltooid, valideert de starter de challenge.",
+    "cityLink": "Bekijk wat er in {city} gebeurt",
+    "removed": "Deze challenge is verwijderd."
   }
 }

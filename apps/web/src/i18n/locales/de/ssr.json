@@ -1,12 +1,13 @@
 {
   "home": {
-    "title": "Hilads — sieh, was in deiner Stadt los ist, und triff Locals und Reisende",
-    "description": "Sieh, wer um dich herum ist und was heute in deiner Stadt los ist, und triff Locals und Reisende — Live-City-Chat, Events und Treffen in der Nähe. In Echtzeit, ohne Registrierung.",
+    "title": "Hilads — Locals & Reisende verbinden sich durch Challenges",
+    "description": "Du bist Local oder Reisender. Starte eine Challenge — Essen, Ort, Kultur, Hilfe — und triff Leute, die annehmen. In Echtzeit, ohne Registrierung.",
     "h1": "Fühl dich lokal. Überall.",
-    "intro": "Hilads ist eine soziale Echtzeitschicht über Städten. Öffne die App und sieh sofort, wer um dich herum ist und was heute passiert, triff Locals und Reisende, und spring in Events und Treffen in deiner Nähe — keine Profile, keine Registrierung.",
+    "intro": "Hilads verbindet Locals und Reisende in jeder Stadt durch Challenges. Starte eine für die andere Seite — wähle einen Typ, gib ihr einen Titel, schau zu, wie Leute annehmen. Wenn sie fertig ist, validiert der Ersteller. In Echtzeit, ohne Registrierung.",
     "aboutHeading": "So funktioniert Hilads",
-    "aboutBody": "Wähl deine Stadt und du bist in Sekunden in ihrem Live-Chat. Sieh, wer in der Nähe online ist, triff Locals und Reisende, entdecke Events und Treffen, die heute stattfinden, und starte etwas Eigenes. Hilads lässt jede Stadt lebendig wirken — genau jetzt.",
-    "citiesCta": "Alle Hilads-Städte durchstöbern"
+    "aboutBody": "Wähle deine Stadt. Starte eine Challenge für die andere Seite, oder nimm eine an, die dich anspricht. Triff Locals und Reisende durch das, was du wirklich tun willst — Essen, Ort, Kultur, Hilfe. Hilads lässt jede Stadt lebendig wirken, genau jetzt.",
+    "citiesCta": "Alle Hilads-Städte durchstöbern",
+    "subhead": "🔥 Jetzt mit Challenges"
   },
   "brand": "Hilads",
   "dateLocale": "de-DE",
@@ -139,5 +140,29 @@
     "today": "Heute",
     "afternoonTonight": "Heute Nachmittag und Abend",
     "tonight": "Heute Abend"
+  },
+  "challenge": {
+    "title": "{title} — Challenge in {city} | Hilads",
+    "titleNoCity": "{title} — Challenge auf Hilads",
+    "descLocals": "{title} — Challenge für Locals aus {city}. Nimm die Challenge an, triff Reisende, ohne Registrierung.",
+    "descExplorers": "{title} — Challenge für Reisende in {city}. Nimm die Challenge an, triff Locals, ohne Registrierung.",
+    "descGeneric": "{title} — nimm die Challenge auf Hilads an und triff Locals oder Reisende in {city}.",
+    "h1Tag": "Challenge",
+    "audienceLocals": "Für Locals aus {city}",
+    "audienceExplorers": "Für Reisende in {city}",
+    "validatedBadge": "✓ Validiert",
+    "openBadge": "Offen",
+    "typeLabel": "Typ:",
+    "typeFood": "Essen",
+    "typePlace": "Ort",
+    "typeCulture": "Kultur",
+    "typeHelp": "Hilfe",
+    "participantsOne": "1 Person hat angenommen",
+    "participantsMany": "{count} Personen haben angenommen",
+    "noParticipants": "Sei die erste Person, die annimmt.",
+    "aboutHeading": "Über diese Challenge",
+    "aboutBody": "Auf Hilads verbinden sich Locals und Reisende durch Challenges. Wähle einen Typ — Essen, Ort, Kultur, Hilfe — gib ihr einen Titel und schau zu, wie Leute annehmen. Wenn fertig, validiert der Ersteller die Challenge.",
+    "cityLink": "Sieh, was in {city} läuft",
+    "removed": "Diese Challenge wurde entfernt."
   }
 }

@@ -1,12 +1,13 @@
 {
   "home": {
-    "title": "Hilads — xem có gì đang diễn ra trong thành phố của bạn & gặp người địa phương và du khách",
-    "description": "Xem ngay ai đang ở quanh bạn và có gì đang diễn ra trong thành phố của bạn hôm nay, rồi gặp gỡ người địa phương và du khách — chat thành phố trực tiếp, sự kiện và buổi gặp gỡ gần bạn. Real-time, không cần đăng ký.",
+    "title": "Hilads — Kết nối người địa phương & du khách qua những thử thách",
+    "description": "Bạn là người địa phương hay du khách. Tạo một thử thách — ăn uống, địa điểm, văn hóa, giúp đỡ — và gặp những người chấp nhận. Thời gian thực, không cần đăng ký.",
     "h1": "Bắt sóng thành phố. Ở bất cứ đâu.",
-    "intro": "Hilads là lớp xã hội sống động phủ lên các thành phố. Mở lên là thấy ngay ai đang ở quanh bạn và có gì đang diễn ra hôm nay, gặp gỡ người địa phương và du khách, rồi nhảy thẳng vào các sự kiện và buổi gặp gỡ gần bạn — không hồ sơ, không đăng ký.",
+    "intro": "Hilads kết nối người địa phương và du khách trong mỗi thành phố qua những thử thách. Tạo một thử thách cho phía bên kia — chọn loại, đặt tiêu đề, xem mọi người chấp nhận. Khi hoàn thành, người tạo xác nhận. Thời gian thực, không cần đăng ký.",
     "aboutHeading": "Hilads hoạt động thế nào",
-    "aboutBody": "Chọn thành phố của bạn và chỉ vài giây sau bạn đã ở trong chat trực tiếp của nó. Xem ai đang online gần đó, gặp gỡ người địa phương và du khách, khám phá các sự kiện và buổi gặp gỡ diễn ra hôm nay, rồi tự mình tạo ra điều gì đó. Hilads khiến mọi thành phố sống động, ngay lúc này.",
-    "citiesCta": "Khám phá tất cả thành phố trên Hilads"
+    "aboutBody": "Chọn thành phố của bạn. Tạo một thử thách cho phía bên kia, hoặc chấp nhận một thử thách mà bạn thích. Gặp người địa phương và du khách qua những gì bạn thực sự muốn làm — ăn uống, địa điểm, văn hóa, giúp đỡ. Hilads làm cho mỗi thành phố trở nên sống động, ngay bây giờ.",
+    "citiesCta": "Khám phá tất cả thành phố trên Hilads",
+    "subhead": "🔥 Giờ đây với những thử thách"
   },
   "_note": "Vietnamese SSR strings are DRAFTS — pending native review.",
   "brand": "Hilads",
@@ -140,5 +141,29 @@
     "today": "Hôm nay",
     "afternoonTonight": "Chiều & tối nay",
     "tonight": "Tối nay"
+  },
+  "challenge": {
+    "title": "{title} — thử thách tại {city} | Hilads",
+    "titleNoCity": "{title} — thử thách trên Hilads",
+    "descLocals": "{title} — thử thách cho người địa phương tại {city}. Chấp nhận thử thách, gặp du khách, không cần đăng ký.",
+    "descExplorers": "{title} — thử thách cho du khách tại {city}. Chấp nhận thử thách, gặp người địa phương, không cần đăng ký.",
+    "descGeneric": "{title} — chấp nhận thử thách trên Hilads và gặp người địa phương hoặc du khách tại {city}.",
+    "h1Tag": "Thử thách",
+    "audienceLocals": "Cho người địa phương tại {city}",
+    "audienceExplorers": "Cho du khách tại {city}",
+    "validatedBadge": "✓ Đã xác nhận",
+    "openBadge": "Mở",
+    "typeLabel": "Loại:",
+    "typeFood": "Ăn uống",
+    "typePlace": "Địa điểm",
+    "typeCulture": "Văn hóa",
+    "typeHelp": "Giúp đỡ",
+    "participantsOne": "1 người đã chấp nhận",
+    "participantsMany": "{count} người đã chấp nhận",
+    "noParticipants": "Hãy là người đầu tiên chấp nhận.",
+    "aboutHeading": "Về thử thách này",
+    "aboutBody": "Trên Hilads, người địa phương và du khách kết nối qua những thử thách. Chọn loại — ăn uống, địa điểm, văn hóa, giúp đỡ — đặt tiêu đề và xem mọi người chấp nhận. Khi hoàn thành, người tạo xác nhận thử thách.",
+    "cityLink": "Xem điều gì đang diễn ra tại {city}",
+    "removed": "Thử thách này đã bị xóa."
   }
 }

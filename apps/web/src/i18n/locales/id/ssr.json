@@ -1,12 +1,13 @@
 {
   "home": {
-    "title": "Hilads — lihat apa yang lagi seru di kotamu & temui local dan pelancong",
-    "description": "Lihat siapa yang ada di sekitar dan apa yang lagi seru di kotamu hari ini, lalu temui local dan pelancong — chat kota langsung, event, dan nongkrong di dekatmu. Real-time, tanpa daftar.",
+    "title": "Hilads — Hubungkan local & pelancong lewat tantangan",
+    "description": "Kamu local atau pelancong. Buat tantangan — makanan, tempat, budaya, bantuan — dan temui yang menerima. Real-time, tanpa daftar.",
     "h1": "Rasakan kotanya. Di mana saja.",
-    "intro": "Hilads adalah lapisan sosial hidup di atas kota-kota. Buka aja dan langsung lihat siapa yang ada di sekitar dan apa yang lagi seru hari ini, temui local dan pelancong, lalu ikut event dan nongkrong di dekatmu — tanpa profil, tanpa daftar.",
+    "intro": "Hilads menghubungkan local dan pelancong di setiap kota lewat tantangan. Buat satu untuk sisi lain — pilih jenis, beri judul, lihat orang menerima. Setelah selesai, pembuat memvalidasi. Real-time, tanpa daftar.",
     "aboutHeading": "Cara kerja Hilads",
-    "aboutBody": "Pilih kotamu dan dalam hitungan detik kamu udah masuk ke chat langsungnya. Lihat siapa yang online di dekatmu, temui local dan pelancong, temukan event dan nongkrong yang lagi jalan hari ini, dan mulai sesuatu versimu sendiri. Hilads bikin setiap kota terasa hidup, sekarang juga.",
-    "citiesCta": "Jelajahi semua kota di Hilads"
+    "aboutBody": "Pilih kotamu. Buat tantangan untuk sisi lain, atau terima yang menarik bagimu. Temui local dan pelancong lewat apa yang benar-benar ingin kamu lakukan — makanan, tempat, budaya, bantuan. Hilads membuat setiap kota terasa hidup, saat ini juga.",
+    "citiesCta": "Jelajahi semua kota di Hilads",
+    "subhead": "🔥 Sekarang didukung tantangan"
   },
   "brand": "Hilads",
   "dateLocale": "id-ID",
@@ -139,5 +140,29 @@
     "today": "Hari ini",
     "afternoonTonight": "Sore & malam ini",
     "tonight": "Malam ini"
+  },
+  "challenge": {
+    "title": "{title} — tantangan di {city} | Hilads",
+    "titleNoCity": "{title} — tantangan di Hilads",
+    "descLocals": "{title} — tantangan untuk local {city}. Terima tantangan, temui pelancong, tanpa daftar.",
+    "descExplorers": "{title} — tantangan untuk pelancong di {city}. Terima tantangan, temui local, tanpa daftar.",
+    "descGeneric": "{title} — terima tantangan di Hilads dan temui local atau pelancong di {city}.",
+    "h1Tag": "Tantangan",
+    "audienceLocals": "Untuk local {city}",
+    "audienceExplorers": "Untuk pelancong di {city}",
+    "validatedBadge": "✓ Tervalidasi",
+    "openBadge": "Terbuka",
+    "typeLabel": "Jenis:",
+    "typeFood": "Makanan",
+    "typePlace": "Tempat",
+    "typeCulture": "Budaya",
+    "typeHelp": "Bantuan",
+    "participantsOne": "1 orang menerima",
+    "participantsMany": "{count} orang menerima",
+    "noParticipants": "Jadilah yang pertama menerima.",
+    "aboutHeading": "Tentang tantangan ini",
+    "aboutBody": "Di Hilads, local dan pelancong terhubung lewat tantangan. Pilih jenis — makanan, tempat, budaya, bantuan — beri judul, dan lihat orang menerima. Setelah selesai, pembuat memvalidasi tantangan.",
+    "cityLink": "Lihat apa yang terjadi di {city}",
+    "removed": "Tantangan ini telah dihapus."
   }
 }
