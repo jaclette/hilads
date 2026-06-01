@@ -82,9 +82,9 @@
   },
   "city": {
     "title": "What is happening locally in {city} {timeframe} — events, meetups and locals to meet | Hilads",
-    "descHigh": "Join local events in {city} — meetups, dinners, and rooftop hangouts with locals and travelers. Browse {count}+ events today & this week. No sign-up needed.",
-    "descMid": "Join local events in {city} — meetups, dinners, and hangouts with locals and travelers. Discover upcoming events this week. No sign-up needed.",
-    "descLow": "Discover meetups and events in {city} — connect with locals and travelers, join hangouts, or create your own. No sign-up needed to browse.",
+    "descHigh": "{count}+ events in {city} this week — meetups, dinners, rooftop hangouts. Live chat with locals online right now. No sign-up.",
+    "descMid": "Tonight in {city}: meetups, dinners and hangouts with locals and travelers. Live chat + see who's online right now. No sign-up.",
+    "descLow": "See who's in {city} right now and what's happening tonight — live city chat, meetups, hangouts. Real-time, no sign-up.",
     "h1": "{timeframe} in {city}",
     "introEventsOne": "1 upcoming event",
     "introEventsMany": "{count} upcoming events",

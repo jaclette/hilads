@@ -82,9 +82,9 @@
   },
   "city": {
     "title": "Apa yang lagi seru di {city} {timeframe} di sekitarmu — acara, meetup, dan local untuk ditemui | Hilads",
-    "descHigh": "Gabung ke acara lokal di {city} — meetup, makan malam, dan nongkrong rooftop bersama local dan pelancong. Jelajahi {count}+ acara hari ini & minggu ini. Tanpa daftar.",
-    "descMid": "Gabung ke acara lokal di {city} — meetup, makan malam, dan nongkrong bersama local dan pelancong. Temukan acara mendatang minggu ini. Tanpa daftar.",
-    "descLow": "Temukan meetup dan acara di {city} — terhubung dengan local dan pelancong, gabung ke nongkrong, atau buat sendiri. Tanpa daftar untuk menjelajah.",
+    "descHigh": "{count}+ acara di {city} minggu ini — meetup, makan malam, nongkrong rooftop. Chat langsung dengan local yang online sekarang. Tanpa daftar.",
+    "descMid": "Malam ini di {city}: meetup, makan malam, dan nongkrong bersama local dan pelancong. Chat langsung + lihat siapa yang online sekarang. Tanpa daftar.",
+    "descLow": "Lihat siapa yang ada di {city} sekarang dan apa yang terjadi malam ini — chat langsung kota, meetup, nongkrong. Real-time, tanpa daftar.",
     "h1": "{timeframe} di {city}",
     "introEventsOne": "1 acara mendatang",
     "introEventsMany": "{count} acara mendatang",

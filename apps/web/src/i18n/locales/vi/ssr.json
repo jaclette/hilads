@@ -83,9 +83,9 @@
   },
   "city": {
     "title": "Có gì đang diễn ra ở {city} {timeframe} quanh đây — sự kiện, gặp gỡ và người địa phương để gặp | Hilads",
-    "descHigh": "Tham gia các sự kiện địa phương ở {city} — gặp gỡ, ăn tối và tiệc trên sân thượng với người địa phương và du khách. Duyệt {count}+ sự kiện hôm nay & tuần này. Không cần đăng ký.",
-    "descMid": "Tham gia các sự kiện địa phương ở {city} — gặp gỡ, ăn tối và tụ tập với người địa phương và du khách. Khám phá các sự kiện sắp tới tuần này. Không cần đăng ký.",
-    "descLow": "Khám phá các buổi gặp gỡ và sự kiện ở {city} — kết nối với người địa phương và du khách, tham gia tụ tập, hoặc tự tạo. Không cần đăng ký để xem.",
+    "descHigh": "{count}+ sự kiện ở {city} tuần này — gặp gỡ, ăn tối, tiệc sân thượng. Chat trực tiếp với người địa phương đang online ngay bây giờ. Không cần đăng ký.",
+    "descMid": "Tối nay ở {city}: gặp gỡ, ăn tối và tụ tập với người địa phương và du khách. Chat trực tiếp + xem ai đang online ngay bây giờ. Không cần đăng ký.",
+    "descLow": "Xem ai đang ở {city} ngay bây giờ và có gì diễn ra tối nay — chat trực tiếp thành phố, gặp gỡ, tụ tập. Thời gian thực, không cần đăng ký.",
     "h1": "{timeframe} ở {city}",
     "introEventsOne": "1 sự kiện sắp tới",
     "introEventsMany": "{count} sự kiện sắp tới",
