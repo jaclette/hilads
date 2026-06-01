@@ -82,6 +82,10 @@ function parseDeepLink() {
   // formats — e.g. /event/cong-ca-phe-2e617620a3f3b6f7. The trailing 16 hex
   // chars are always extracted as the canonical ID via extractEventHex().
   const eventMatch     = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
+  // /challenge/:slug accepts both bare hex AND slug+hex (same shape as events).
+  // The SSR prerender renders the full SEO content; the SPA just joins the
+  // host city on hydration so the user lands in a usable place.
+  const challengeMatch = path.match(/^\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const venueMatch     = path.match(/^\/venue\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
@@ -92,6 +96,7 @@ function parseDeepLink() {
   if (cityCategoryMatch)   return { type: 'city',          slug: cityCategoryMatch[1], category: cityCategoryMatch[2] }
   if (cityMatch)           return { type: 'city',          slug: cityMatch[1] }
   if (eventMatch)          return { type: 'event',         id: eventMatch[1] }
+  if (challengeMatch)      return { type: 'challenge',     id: challengeMatch[1] }
   if (venueMatch)          return { type: 'venue',         id: venueMatch[1] }
   if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
   if (topicMatch)          return { type: 'topic',         id: topicMatch[1] }

@@ -205,6 +205,22 @@ function venueSlugFromName(name, id) {
   return titleSlug ? `${titleSlug}-${id}` : id
 }
 
+// Challenge URLs use the exact same `<slug>-<16hex>` shape as events. Kept
+// separate from eventSlug for clarity even though the implementation is
+// identical — if either entity's slug rules diverge later, they don't bleed.
+function challengeSlug(challenge) {
+  if (!challenge?.id) return ''
+  const titleSlug = String(challenge.title || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/g, '')
+  return titleSlug ? `${titleSlug}-${challenge.id}` : challenge.id
+}
+
 function htmlEscape(s) {
   return String(s ?? '')
     .replace(/&/g, '&amp;')
@@ -1261,6 +1277,141 @@ function composeVenueBody(payload, otherVenues, locale = 'en') {
   ].filter(Boolean).join('\n')
 }
 
+// ── Challenge (Défi) composers ────────────────────────────────────────────────
+// Challenges are the third entity type Hilads indexes for SEO. Schema.org
+// type is `CreativeWork` (not Event) per the implementation plan — an Event
+// requires `startDate`, which is meaningless for a persistent challenge and
+// would trigger GSC validation warnings if we faked a sentinel value.
+// CreativeWork validates cleanly + still gives us a rich breadcrumb + the
+// page ranks via the textual content (H1, audience, type, about block).
+
+function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
+  const ch = payload?.challenge
+  if (!ch || !ch.title) return null
+
+  const cityName = payload?.cityName || ''
+  const title    = cityName
+    ? T(locale, 'challenge.title',       { title: ch.title, city: cityName })
+    : T(locale, 'challenge.titleNoCity', { title: ch.title })
+
+  // Audience-targeted description — surfaces the "for whom" angle which is
+  // the single most decision-relevant signal on a challenge page.
+  const descKey  = ch.audience === 'locals'    ? 'challenge.descLocals'
+                 : ch.audience === 'explorers' ? 'challenge.descExplorers'
+                 :                               'challenge.descGeneric'
+  const description = T(locale, descKey, { title: ch.title, city: cityName || '' }).trim()
+
+  return {
+    title,
+    description,
+    url:   `${SITE_BASE}${canonicalPath}`,
+    // Reuse the city OG card so embeds aren't generic. A dedicated
+    // /api/og?type=challenge can ship later.
+    image: payload?.citySlug
+            ? `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(payload.citySlug)}`
+            : `${SITE_BASE}/og/og-default.png`,
+  }
+}
+
+function composeChallengeJsonLd(payload, canonicalUrl) {
+  const ch = payload?.challenge
+  if (!ch) return null
+
+  const cityName = payload?.cityName || ''
+  // CreativeWork — sidesteps the Event-requires-startDate problem while still
+  // exposing structured author/about/breadcrumb signals.
+  const work = {
+    '@type':       'CreativeWork',
+    '@id':         canonicalUrl,
+    name:          ch.title,
+    url:           canonicalUrl,
+    inLanguage:    payload?.locale || 'en',
+    dateCreated:   ch.created_at ? new Date(ch.created_at * 1000).toISOString() : undefined,
+    // author always present — anonymous guests still count as the platform.
+    author: {
+      '@type': 'Person',
+      name:    ch.creator_nickname || 'Hilads member',
+      // Mirror the Event-organizer fix: include a url field so Google's
+      // Person rich result validation doesn't warn on missing url.
+      url:     SITE_BASE,
+    },
+    about:    cityName ? cityName : undefined,
+    keywords: ['challenge', cityName, ch.challenge_type, ch.audience].filter(Boolean).join(', '),
+  }
+  // Drop undefined keys so the JSON-LD stays minimal.
+  for (const k of Object.keys(work)) if (work[k] === undefined) delete work[k]
+
+  const breadcrumb = composeBreadcrumb([
+    { name: 'Home',  url: `${SITE_BASE}/` },
+    payload?.cityName && payload?.citySlug
+      ? { name: payload.cityName, url: `${SITE_BASE}/city/${payload.citySlug}` }
+      : null,
+    { name: ch.title, url: canonicalUrl },
+  ].filter(Boolean))
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [...siteGraphNodes(), work, breadcrumb],
+  }
+}
+
+const CHALLENGE_TYPE_ICONS = {
+  food:    '🍜',
+  place:   '📍',
+  culture: '🎭',
+  help:    '🤝',
+}
+
+function composeChallengeBody(payload, locale = 'en') {
+  const ch = payload?.challenge
+  if (!ch) return null
+  const lp        = localePrefixFor(locale)
+  const cityName  = payload?.cityName || ''
+  const citySlug  = payload?.citySlug || ''
+  const typeIcon  = CHALLENGE_TYPE_ICONS[ch.challenge_type] || '🔥'
+  const typeLabel = T(locale, `challenge.type${ch.challenge_type.charAt(0).toUpperCase()}${ch.challenge_type.slice(1)}`)
+  const audienceLabel = ch.audience === 'locals'
+    ? T(locale, 'challenge.audienceLocals',    { city: htmlEscape(cityName) })
+    : T(locale, 'challenge.audienceExplorers', { city: htmlEscape(cityName) })
+  const isValidated = ch.status === 'validated'
+
+  const breadcrumb = cityName && citySlug
+    ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(cityName)}</a> › <span>${T(locale, 'challenge.h1Tag')}</span></nav>`
+    : ''
+
+  // Badge row — Challenge tag + audience pill + (when validated) ✓ badge.
+  // Inlined as text so the SSR body remains paint-fast (no external CSS).
+  const statusBadge = isValidated
+    ? `<span class="ssr-badge ssr-badge-validated">${T(locale, 'challenge.validatedBadge')}</span>`
+    : `<span class="ssr-badge ssr-badge-open">${T(locale, 'challenge.openBadge')}</span>`
+
+  const participantsLine = (ch.participant_count ?? 0) === 0
+    ? T(locale, 'challenge.noParticipants')
+    : (ch.participant_count === 1
+        ? T(locale, 'challenge.participantsOne')
+        : T(locale, 'challenge.participantsMany', { count: ch.participant_count }))
+
+  const cityLink = cityName && citySlug
+    ? `<p><a href="${lp}/city/${citySlug}">${T(locale, 'challenge.cityLink', { city: htmlEscape(cityName) })}</a></p>`
+    : ''
+
+  return [
+    `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; } .ssr-badge-row { display:flex; gap:8px; flex-wrap:wrap; margin: 0 0 0.5rem; } .ssr-badge { display:inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.06); color: #ccc; } .ssr-badge-challenge { background: rgba(255,122,60,0.14); border-color: rgba(255,122,60,0.30); color: #FF7A3C; } .ssr-badge-validated { background: rgba(34,197,94,0.10); border-color: rgba(34,197,94,0.20); color: #4ade80; }</style>`,
+    `<main class="ssr-main">`,
+    breadcrumb,
+    `<div class="ssr-badge-row">`,
+      `<span class="ssr-badge ssr-badge-challenge">${T(locale, 'challenge.h1Tag').toUpperCase()}</span>`,
+      `<span class="ssr-badge">${audienceLabel}</span>`,
+      statusBadge,
+    `</div>`,
+    `<h1>${typeIcon} ${htmlEscape(ch.title)}</h1>`,
+    `<p class="ssr-cat"><strong>${T(locale, 'challenge.typeLabel')}</strong> ${typeLabel}</p>`,
+    `<p class="ssr-meta">${participantsLine}</p>`,
+    `<section><h2>${T(locale, 'challenge.aboutHeading')}</h2><p>${T(locale, 'challenge.aboutBody')}</p>${cityLink}</section>`,
+    `</main>`,
+  ].filter(Boolean).join('\n')
+}
+
 function composeBreadcrumb(items) {
   return {
     '@type': 'BreadcrumbList',
@@ -1579,6 +1730,45 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
           bodyHtml = composeEventBody(data, otherEvents, locale)
         }
       }
+    } else if (type === 'challenge' && typeof id === 'string') {
+      // Same `<slug>-<16hex>` URL shape as events. Bare hex 301s to the slug
+      // form to consolidate SEO authority on a single canonical.
+      const hex = extractEventHex(id)
+      if (hex) {
+        const inputIsHexOnly = id.toLowerCase() === hex
+        const data = await fetchWithTimeout(
+          `${API_BASE}/api/v1/challenges/${encodeURIComponent(hex)}`,
+          API_TIMEOUT_MS,
+        )
+
+        if (data?.challenge && inputIsHexOnly) {
+          const slugId = challengeSlug(data.challenge)
+          res.statusCode = 301
+          res.setHeader('Location', `${SITE_BASE}${localePrefix}/challenge/${slugId}`)
+          res.setHeader('Cache-Control', 'public, max-age=3600')
+          res.end()
+          return
+        }
+
+        // Canonical = slug form when we resolved the challenge; bare hex
+        // otherwise (the route will still 404-render below if `meta` is null).
+        canonicalPath = data?.challenge
+          ? `/challenge/${challengeSlug(data.challenge)}`
+          : `/challenge/${hex}`
+
+        const augmented = data?.challenge
+          ? { ...data, citySlug: data.cityName ? cityToSlug(data.cityName) : undefined, locale }
+          : null
+
+        if (augmented) {
+          meta = composeChallengeMeta(augmented, canonicalPath, locale)
+        }
+        if (meta) {
+          cacheMaxAge = 1800   // 30 min — challenges churn slowly, validated state changes rarely
+          jsonLd = composeChallengeJsonLd(augmented, meta.url)
+          bodyHtml = composeChallengeBody(augmented, locale)
+        }
+      }
     } else if (type === 'venue' && typeof id === 'string') {
       const hex = extractEventHex(id)
       if (hex) {
@@ -1720,7 +1910,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
   // Serve a real 404 + noindex shell (the SPA still boots and can show its own
   // not-found UI) instead of falling through to a 200 generic shell, which Google
   // reports as a soft 404.
-  const CONTENT_TYPES = new Set(['event', 'venue', 'category', 'city', 'past'])
+  const CONTENT_TYPES = new Set(['event', 'challenge', 'venue', 'category', 'city', 'past'])
   if (!meta && CONTENT_TYPES.has(type)) {
     res.statusCode = 404
     res.setHeader('Content-Type', 'text/html; charset=utf-8')

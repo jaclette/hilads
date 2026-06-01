@@ -71,6 +71,18 @@ function eventSlug(title, id) {
   return t ? `${t}-${id}` : id
 }
 
+// Challenge URLs use the same slug shape as events — kept separate for
+// future divergence, but the implementation matches today.
+function challengeSlug(title, id) {
+  const t = stripDiacritics(title)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/g, '')
+  return t ? `${t}-${id}` : id
+}
+
 // ── XML builders ────────────────────────────────────────────────────────────
 
 function xmlEscape(s) {
@@ -126,7 +138,7 @@ async function fetchJson(path, pick) {
 
 // ── Entry assembly ────────────────────────────────────────────────────────────
 
-function buildEntries({ channels, venues, categoryPairs, events }) {
+function buildEntries({ channels, venues, categoryPairs, events, challenges }) {
   const today = new Date().toISOString().slice(0, 10)
 
   const entries = [
@@ -179,6 +191,15 @@ function buildEntries({ channels, venues, categoryPairs, events }) {
     entries.push(urlEntry({ loc: `${SITE_BASE}/event/${eventSlug(e.title, e.id)}`, lastmod, changefreq: 'daily', priority: '0.7' }))
   }
 
+  // Challenge pages — both open and validated are indexable (validated stay
+  // up; only hard-deleted via channels.status='deleted' get filtered server-
+  // side). LIMIT 40000 on the backend keeps us inside one sitemap file.
+  for (const c of (challenges || [])) {
+    if (!c?.id || !c?.title) continue
+    const lastmod = c.updated_at ? dayFromEpoch(c.updated_at) : today
+    entries.push(urlEntry({ loc: `${SITE_BASE}/challenge/${challengeSlug(c.title, c.id)}`, lastmod, changefreq: 'weekly', priority: '0.7' }))
+  }
+
   return entries
 }
 
@@ -195,14 +216,15 @@ function renderSitemap(entries) {
 // ── Handler ────────────────────────────────────────────────────────────────────
 
 export default async function handler(req, res) {
-  const [channels, venues, categoryPairs, events] = await Promise.all([
+  const [channels, venues, categoryPairs, events, challenges] = await Promise.all([
     fetchJson('/api/v1/channels',           d => d?.channels),
     fetchJson('/api/v1/sitemap/venues',     d => d?.venues),
     fetchJson('/api/v1/sitemap/categories', d => d?.pairs),
     fetchJson('/api/v1/sitemap/events',     d => d?.events),
+    fetchJson('/api/v1/sitemap/challenges', d => d?.challenges),
   ])
 
-  const entries = buildEntries({ channels, venues, categoryPairs, events })
+  const entries = buildEntries({ channels, venues, categoryPairs, events, challenges })
   const xml = renderSitemap(entries)
 
   res.statusCode = 200

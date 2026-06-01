@@ -66,6 +66,7 @@
     { "source": "/.well-known/(.*)",     "destination": "/.well-known/$1" },
     { "source": "/event/:id",            "destination": "/api/prerender?type=event&id=:id" },
     { "source": "/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1" },
+    { "source": "/challenge/:id",        "destination": "/api/prerender?type=challenge&id=:id" },
     { "source": "/venue/:id",            "destination": "/api/prerender?type=venue&id=:id" },
     { "source": "/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug" },
     { "source": "/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug" },
@@ -75,6 +76,7 @@
 
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/challenge/:id",        "destination": "/api/prerender?type=challenge&id=:id&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/venue/:id",            "destination": "/api/prerender?type=venue&id=:id&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug",           "destination": "/api/prerender?type=city&slug=:slug&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/city/:slug/past",      "destination": "/api/prerender?type=past&slug=:slug&locale=:locale" },
