@@ -7,6 +7,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SW, height: SH } = Dimensions.get('window');
 
@@ -39,6 +40,7 @@ async function ensureLocalCopy(remoteUrl: string): Promise<string> {
 
 export function ImagePreviewModal({ uri, onClose }: Props) {
   const { t } = useTranslation('chat');
+  const insets = useSafeAreaInsets();
   const translateY = useRef(new Animated.Value(0)).current;
   const bgOpacity  = useRef(new Animated.Value(1)).current;
   const [busy, setBusy] = useState<'download' | 'share' | null>(null);
@@ -155,7 +157,14 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
       statusBarTranslucent
     >
       <StatusBar hidden />
-      <Animated.View style={[styles.backdrop, { opacity: bgOpacity }]}>
+      <View style={styles.backdrop}>
+
+        {/* Dark backdrop — fades during swipe-to-dismiss. Kept separate from
+            the action bar so the buttons stay fully opaque even mid-gesture. */}
+        <Animated.View
+          style={[StyleSheet.absoluteFill, styles.backdropFill, { opacity: bgOpacity }]}
+          pointerEvents="none"
+        />
 
         {/* Full-screen tap area — tap anywhere to close */}
         <TouchableOpacity
@@ -164,9 +173,10 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
           activeOpacity={1}
         />
 
-        {/* Image — drag down to dismiss */}
+        {/* Image — drag down to dismiss. Also fades with bgOpacity so the
+            image follows the dismiss gesture visually. */}
         <Animated.View
-          style={[styles.imageWrap, { transform: [{ translateY }] }]}
+          style={[styles.imageWrap, { transform: [{ translateY }], opacity: bgOpacity }]}
           {...panResponder.panHandlers}
         >
           {uri && (
@@ -178,15 +188,23 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
           )}
         </Animated.View>
 
-        {/* Close button (top-right) */}
-        <TouchableOpacity style={styles.closeBtn} onPress={onClose} activeOpacity={0.75}>
+        {/* Close button (top-right) — safe-area aware so it never lands under
+            the notch / status bar area. */}
+        <TouchableOpacity
+          style={[styles.closeBtn, { top: Math.max(insets.top + 8, 28) }]}
+          onPress={onClose}
+          activeOpacity={0.75}
+        >
           <Text style={styles.closeIcon}>✕</Text>
         </TouchableOpacity>
 
         {/* Action bar — bottom of the lightbox. Two thumb-friendly pill
-            buttons (Apple G2 / large tap targets). They sit above the
-            home-indicator zone on iOS. */}
-        <View style={styles.actionBar} pointerEvents="box-none">
+            buttons. Bottom inset keeps them above the Android nav bar /
+            iOS home indicator on every device. */}
+        <View
+          style={[styles.actionBar, { bottom: Math.max(insets.bottom + 12, Platform.OS === 'ios' ? 38 : 24) }]}
+          pointerEvents="box-none"
+        >
           <TouchableOpacity
             style={[styles.actionBtn, busy === 'download' && styles.actionBtnBusy]}
             onPress={handleDownload}
@@ -207,7 +225,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
           </TouchableOpacity>
         </View>
 
-      </Animated.View>
+      </View>
     </Modal>
   );
 }
@@ -215,9 +233,11 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.95)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  backdropFill: {
+    backgroundColor: 'rgba(0,0,0,0.95)',
   },
   imageWrap: {
     width:           SW,
@@ -231,7 +251,6 @@ const styles = StyleSheet.create({
   },
   closeBtn: {
     position:        'absolute',
-    top:             52,
     right:           20,
     width:           36,
     height:          36,
@@ -247,7 +266,6 @@ const styles = StyleSheet.create({
   },
   actionBar: {
     position:       'absolute',
-    bottom:         Platform.OS === 'ios' ? 38 : 24,
     left:           0,
     right:          0,
     flexDirection:  'row',
