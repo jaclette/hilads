@@ -1,0 +1,36 @@
+{
+  "createTitle": "أنشئ تحديًا",
+  "editTitle": "تعديل التحدي",
+  "audience": "لمن؟",
+  "aud": {
+    "locals": "المحليون",
+    "explorers": "المستكشفون"
+  },
+  "type": "النوع",
+  "tp": {
+    "food": "طعام",
+    "place": "مكان",
+    "culture": "ثقافة",
+    "help": "مساعدة"
+  },
+  "titleLabel": "تحديك",
+  "titlePlaceholder": "مثال: خذني إلى مقهاك المفضل",
+  "createCta": "أطلق التحدي 🔥",
+  "saveChanges": "حفظ التغييرات",
+  "errSave": "تعذر الحفظ",
+  "errStart": "تعذر إطلاق التحدي",
+  "validateTitle": "التحقق من هذا التحدي؟",
+  "validateBody": "بعد التحقق، ينتقل التحدي إلى التحديات السابقة. يتم إخطار كل من قبله.",
+  "validateConfirm": "تحقق",
+  "validateCancel": "ليس بعد",
+  "deleteTitle": "حذف التحدي؟",
+  "deleteBody": "سيُحذف التحدي للجميع. لا يمكن التراجع.",
+  "deleteConfirm": "حذف",
+  "acceptCta": "اقبل التحدي",
+  "acceptedCta": "تم القبول ✓",
+  "validatedBadge": "مُتحقق",
+  "openBadge": "مفتوح",
+  "forLocals": "للمحليين",
+  "forExplorers": "للمستكشفين",
+  "notFound": "لم يُعثر على التحدي"
+}

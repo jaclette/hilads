@@ -12,6 +12,7 @@ import en_landing from './locales/en/landing.json'
 import en_auth    from './locales/en/auth.json'
 import en_event   from './locales/en/event.json'
 import en_hangout from './locales/en/hangout.json'
+import en_challenge from './locales/en/challenge.json'
 import en_dm      from './locales/en/dm.json'
 import en_notifications from './locales/en/notifications.json'
 import en_upcoming      from './locales/en/upcoming.json'
@@ -27,7 +28,7 @@ export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', '
 export const RTL_LOCALES    = ['ar']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
-const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'cityNames', 'venue', 'chat']
+const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'challenge', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'cityNames', 'venue', 'chat']
 
 // Lazy loaders — one code-split chunk per (locale, namespace). Vite turns each
 // dynamic import() into its own chunk, fetched only when that locale is needed.
@@ -40,6 +41,8 @@ const LOADERS = {
     auth:    () => import('./locales/fr/auth.json'),
     event:   () => import('./locales/fr/event.json'),
     hangout: () => import('./locales/fr/hangout.json'),
+
+    challenge: () => import('./locales/fr/challenge.json'),
     dm:      () => import('./locales/fr/dm.json'),
     notifications: () => import('./locales/fr/notifications.json'),
     upcoming:      () => import('./locales/fr/upcoming.json'),
@@ -58,6 +61,8 @@ const LOADERS = {
     auth:    () => import('./locales/vi/auth.json'),
     event:   () => import('./locales/vi/event.json'),
     hangout: () => import('./locales/vi/hangout.json'),
+
+    challenge: () => import('./locales/vi/challenge.json'),
     dm:      () => import('./locales/vi/dm.json'),
     notifications: () => import('./locales/vi/notifications.json'),
     upcoming:      () => import('./locales/vi/upcoming.json'),
@@ -76,6 +81,8 @@ const LOADERS = {
     auth:    () => import('./locales/es/auth.json'),
     event:   () => import('./locales/es/event.json'),
     hangout: () => import('./locales/es/hangout.json'),
+
+    challenge: () => import('./locales/es/challenge.json'),
     dm:      () => import('./locales/es/dm.json'),
     notifications: () => import('./locales/es/notifications.json'),
     upcoming:      () => import('./locales/es/upcoming.json'),
@@ -94,6 +101,8 @@ const LOADERS = {
     auth:    () => import('./locales/it/auth.json'),
     event:   () => import('./locales/it/event.json'),
     hangout: () => import('./locales/it/hangout.json'),
+
+    challenge: () => import('./locales/it/challenge.json'),
     dm:      () => import('./locales/it/dm.json'),
     notifications: () => import('./locales/it/notifications.json'),
     upcoming:      () => import('./locales/it/upcoming.json'),
@@ -112,6 +121,8 @@ const LOADERS = {
     auth:    () => import('./locales/pt-br/auth.json'),
     event:   () => import('./locales/pt-br/event.json'),
     hangout: () => import('./locales/pt-br/hangout.json'),
+
+    challenge: () => import('./locales/pt-br/challenge.json'),
     dm:      () => import('./locales/pt-br/dm.json'),
     notifications: () => import('./locales/pt-br/notifications.json'),
     upcoming:      () => import('./locales/pt-br/upcoming.json'),
@@ -130,6 +141,8 @@ const LOADERS = {
     auth:    () => import('./locales/pt-pt/auth.json'),
     event:   () => import('./locales/pt-pt/event.json'),
     hangout: () => import('./locales/pt-pt/hangout.json'),
+
+    challenge: () => import('./locales/pt-pt/challenge.json'),
     dm:      () => import('./locales/pt-pt/dm.json'),
     notifications: () => import('./locales/pt-pt/notifications.json'),
     upcoming:      () => import('./locales/pt-pt/upcoming.json'),
@@ -148,6 +161,8 @@ const LOADERS = {
     auth:    () => import('./locales/de/auth.json'),
     event:   () => import('./locales/de/event.json'),
     hangout: () => import('./locales/de/hangout.json'),
+
+    challenge: () => import('./locales/de/challenge.json'),
     dm:      () => import('./locales/de/dm.json'),
     notifications: () => import('./locales/de/notifications.json'),
     upcoming:      () => import('./locales/de/upcoming.json'),
@@ -166,6 +181,8 @@ const LOADERS = {
     auth:    () => import('./locales/nl/auth.json'),
     event:   () => import('./locales/nl/event.json'),
     hangout: () => import('./locales/nl/hangout.json'),
+
+    challenge: () => import('./locales/nl/challenge.json'),
     dm:      () => import('./locales/nl/dm.json'),
     notifications: () => import('./locales/nl/notifications.json'),
     upcoming:      () => import('./locales/nl/upcoming.json'),
@@ -184,6 +201,8 @@ const LOADERS = {
     auth:    () => import('./locales/zh-hans/auth.json'),
     event:   () => import('./locales/zh-hans/event.json'),
     hangout: () => import('./locales/zh-hans/hangout.json'),
+
+    challenge: () => import('./locales/zh-hans/challenge.json'),
     dm:      () => import('./locales/zh-hans/dm.json'),
     notifications: () => import('./locales/zh-hans/notifications.json'),
     upcoming:      () => import('./locales/zh-hans/upcoming.json'),
@@ -202,6 +221,8 @@ const LOADERS = {
     auth:    () => import('./locales/zh-hant/auth.json'),
     event:   () => import('./locales/zh-hant/event.json'),
     hangout: () => import('./locales/zh-hant/hangout.json'),
+
+    challenge: () => import('./locales/zh-hant/challenge.json'),
     dm:      () => import('./locales/zh-hant/dm.json'),
     notifications: () => import('./locales/zh-hant/notifications.json'),
     upcoming:      () => import('./locales/zh-hant/upcoming.json'),
@@ -220,6 +241,8 @@ const LOADERS = {
     auth:    () => import('./locales/ja/auth.json'),
     event:   () => import('./locales/ja/event.json'),
     hangout: () => import('./locales/ja/hangout.json'),
+
+    challenge: () => import('./locales/ja/challenge.json'),
     dm:      () => import('./locales/ja/dm.json'),
     notifications: () => import('./locales/ja/notifications.json'),
     upcoming:      () => import('./locales/ja/upcoming.json'),
@@ -238,6 +261,8 @@ const LOADERS = {
     auth:    () => import('./locales/ko/auth.json'),
     event:   () => import('./locales/ko/event.json'),
     hangout: () => import('./locales/ko/hangout.json'),
+
+    challenge: () => import('./locales/ko/challenge.json'),
     dm:      () => import('./locales/ko/dm.json'),
     notifications: () => import('./locales/ko/notifications.json'),
     upcoming:      () => import('./locales/ko/upcoming.json'),
@@ -256,6 +281,8 @@ const LOADERS = {
     auth:    () => import('./locales/fil/auth.json'),
     event:   () => import('./locales/fil/event.json'),
     hangout: () => import('./locales/fil/hangout.json'),
+
+    challenge: () => import('./locales/fil/challenge.json'),
     dm:      () => import('./locales/fil/dm.json'),
     notifications: () => import('./locales/fil/notifications.json'),
     upcoming:      () => import('./locales/fil/upcoming.json'),
@@ -274,6 +301,8 @@ const LOADERS = {
     auth:    () => import('./locales/th/auth.json'),
     event:   () => import('./locales/th/event.json'),
     hangout: () => import('./locales/th/hangout.json'),
+
+    challenge: () => import('./locales/th/challenge.json'),
     dm:      () => import('./locales/th/dm.json'),
     notifications: () => import('./locales/th/notifications.json'),
     upcoming:      () => import('./locales/th/upcoming.json'),
@@ -292,6 +321,8 @@ const LOADERS = {
     auth:    () => import('./locales/id/auth.json'),
     event:   () => import('./locales/id/event.json'),
     hangout: () => import('./locales/id/hangout.json'),
+
+    challenge: () => import('./locales/id/challenge.json'),
     dm:      () => import('./locales/id/dm.json'),
     notifications: () => import('./locales/id/notifications.json'),
     upcoming:      () => import('./locales/id/upcoming.json'),
@@ -310,6 +341,8 @@ const LOADERS = {
     auth:    () => import('./locales/hi/auth.json'),
     event:   () => import('./locales/hi/event.json'),
     hangout: () => import('./locales/hi/hangout.json'),
+
+    challenge: () => import('./locales/hi/challenge.json'),
     dm:      () => import('./locales/hi/dm.json'),
     notifications: () => import('./locales/hi/notifications.json'),
     upcoming:      () => import('./locales/hi/upcoming.json'),
@@ -328,6 +361,8 @@ const LOADERS = {
     auth:    () => import('./locales/ru/auth.json'),
     event:   () => import('./locales/ru/event.json'),
     hangout: () => import('./locales/ru/hangout.json'),
+
+    challenge: () => import('./locales/ru/challenge.json'),
     dm:      () => import('./locales/ru/dm.json'),
     notifications: () => import('./locales/ru/notifications.json'),
     upcoming:      () => import('./locales/ru/upcoming.json'),
@@ -346,6 +381,8 @@ const LOADERS = {
     auth:    () => import('./locales/ar/auth.json'),
     event:   () => import('./locales/ar/event.json'),
     hangout: () => import('./locales/ar/hangout.json'),
+
+    challenge: () => import('./locales/ar/challenge.json'),
     dm:      () => import('./locales/ar/dm.json'),
     notifications: () => import('./locales/ar/notifications.json'),
     upcoming:      () => import('./locales/ar/upcoming.json'),
@@ -360,7 +397,7 @@ const LOADERS = {
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing, auth: en_auth, event: en_event, hangout: en_hangout, dm: en_dm, notifications: en_notifications, upcoming: en_upcoming, archive: en_archive, publicProfile: en_publicProfile, city: en_city, venue: en_venue, cityNames: en_cityNames, chat: en_chat },
+    en: { common: en_common, profile: en_profile, brand: en_brand, landing: en_landing, auth: en_auth, event: en_event, hangout: en_hangout, challenge: en_challenge, dm: en_dm, notifications: en_notifications, upcoming: en_upcoming, archive: en_archive, publicProfile: en_publicProfile, city: en_city, venue: en_venue, cityNames: en_cityNames, chat: en_chat },
   },
   lng:          DEFAULT_LOCALE,
   fallbackLng:  DEFAULT_LOCALE,   // missing key in fr/vi → English

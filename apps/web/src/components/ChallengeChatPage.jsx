@@ -193,7 +193,7 @@ export default function ChallengeChatPage({
 
   if (!challenge) {
     return (
-      <div className="topic-chat-page">
+      <div className="full-page topic-chat-page">
         <div className="topic-chat-header"><BackButton onClick={onBack} /></div>
         <div className="topic-chat-empty">{t('notFound')}</div>
       </div>
@@ -204,7 +204,7 @@ export default function ChallengeChatPage({
   const audienceLabel = challenge.audience === 'locals' ? t('forLocals') : t('forExplorers')
 
   return (
-    <div className="topic-chat-page">
+    <div className="full-page topic-chat-page">
       {/* Header */}
       <div className="topic-chat-header">
         <BackButton onClick={onBack} />

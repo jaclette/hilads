@@ -1,0 +1,36 @@
+{
+  "createTitle": "Gumawa ng challenge",
+  "editTitle": "I-edit ang challenge",
+  "audience": "Para kanino?",
+  "aud": {
+    "locals": "Mga local",
+    "explorers": "Mga biyahero"
+  },
+  "type": "Uri",
+  "tp": {
+    "food": "Pagkain",
+    "place": "Lugar",
+    "culture": "Kultura",
+    "help": "Tulong"
+  },
+  "titleLabel": "Iyong challenge",
+  "titlePlaceholder": "hal. Dalhin mo ako sa paborito mong coffee spot",
+  "createCta": "Ilunsad ang challenge 🔥",
+  "saveChanges": "I-save ang mga pagbabago",
+  "errSave": "Hindi na-save",
+  "errStart": "Hindi nailunsad ang challenge",
+  "validateTitle": "I-validate ang challenge na ito?",
+  "validateBody": "Pagkatapos i-validate, mapupunta ang challenge sa mga nakaraan. Maa-abisuhan ang lahat ng tumanggap.",
+  "validateConfirm": "I-validate",
+  "validateCancel": "Hindi pa",
+  "deleteTitle": "Tanggalin ang challenge?",
+  "deleteBody": "Tatanggalin ang challenge para sa lahat. Hindi na maibabalik.",
+  "deleteConfirm": "Tanggalin",
+  "acceptCta": "Tanggapin ang challenge",
+  "acceptedCta": "Tinanggap ✓",
+  "validatedBadge": "Validated",
+  "openBadge": "Bukas",
+  "forLocals": "Para sa mga local",
+  "forExplorers": "Para sa mga biyahero",
+  "notFound": "Hindi nahanap ang challenge"
+}

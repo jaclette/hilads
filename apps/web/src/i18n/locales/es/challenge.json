@@ -1,0 +1,36 @@
+{
+  "createTitle": "Crear un reto",
+  "editTitle": "Editar reto",
+  "audience": "¿Para quién?",
+  "aud": {
+    "locals": "Locales",
+    "explorers": "Exploradores"
+  },
+  "type": "Tipo",
+  "tp": {
+    "food": "Comida",
+    "place": "Lugar",
+    "culture": "Cultura",
+    "help": "Ayuda"
+  },
+  "titleLabel": "Tu reto",
+  "titlePlaceholder": "ej. Llévame a tu café favorito",
+  "createCta": "Lanzar reto 🔥",
+  "saveChanges": "Guardar cambios",
+  "errSave": "No se pudo guardar",
+  "errStart": "No se pudo lanzar el reto",
+  "validateTitle": "¿Validar este reto?",
+  "validateBody": "Una vez validado, el reto pasa a los retos pasados. Todos los que lo aceptaron reciben una notificación.",
+  "validateConfirm": "Validar",
+  "validateCancel": "Aún no",
+  "deleteTitle": "¿Eliminar reto?",
+  "deleteBody": "El reto se elimina para todos. No se puede deshacer.",
+  "deleteConfirm": "Eliminar",
+  "acceptCta": "Aceptar el reto",
+  "acceptedCta": "Aceptado ✓",
+  "validatedBadge": "Validado",
+  "openBadge": "Abierto",
+  "forLocals": "Para locales",
+  "forExplorers": "Para exploradores",
+  "notFound": "Reto no encontrado"
+}
