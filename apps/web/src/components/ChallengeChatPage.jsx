@@ -208,7 +208,8 @@ export default function ChallengeChatPage({
 
   return (
     <div className="full-page topic-chat-page">
-      {/* Header */}
+      {/* Header — same 3-col layout as TopicChatPage (back | icon+title | spacer).
+          No share button for v1; can be added later if needed. */}
       <div className="topic-chat-header">
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
@@ -218,14 +219,11 @@ export default function ChallengeChatPage({
         <div style={{ width: 36 }} />
       </div>
 
-      {/* Hero badges — Challenge / audience / status */}
-      <div className="challenge-hero">
-        <span className="challenge-badge challenge-badge--kind">
-          {t('createTitle').toUpperCase()}
-        </span>
-        <span className="challenge-badge challenge-badge--audience">
-          {audienceLabel}
-        </span>
+      {/* Description band — audience + status badges sit here in place of the
+          description text TopicChatPage uses. Keeps the visual rhythm
+          (header → desc → members → owner-row → feed) identical. */}
+      <div className="topic-chat-desc challenge-meta-row">
+        <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
         {isValidated && (
           <span className="challenge-badge challenge-badge--validated">
             ✓ {t('validatedBadge')}
@@ -233,7 +231,7 @@ export default function ChallengeChatPage({
         )}
       </div>
 
-      {/* Members strip — preview only (no modal in v1) */}
+      {/* Members strip — mirrors TopicChatPage exactly. */}
       {participants.length > 0 && (
         <div className="topic-members-strip" style={{ pointerEvents: 'none' }}>
           <AttendeeAvatars
@@ -251,27 +249,26 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* Action row — Accept (non-owner) or Validate (owner). Both hidden once
+      {/* Action row — same shape as topic-owner-row for the creator's
+          Validate button. Non-creators get the orange Accept CTA (more
+          prominent because it's the new-user action). Both hidden once
           validated; the chat stays read-only afterwards. */}
-      {!isValidated && (
+      {!isValidated && isOwner && (
+        <div className="topic-owner-row">
+          <button className="topic-owner-btn challenge-validate-btn-inline" onClick={handleValidate} disabled={busy === 'validate'}>
+            {busy === 'validate' ? '…' : `✓ ${t('validateConfirm')}`}
+          </button>
+        </div>
+      )}
+      {!isValidated && !isOwner && (
         <div className="challenge-actions">
-          {isOwner ? (
-            <button
-              className="challenge-validate-btn"
-              onClick={handleValidate}
-              disabled={busy === 'validate'}
-            >
-              {busy === 'validate' ? '…' : `✓ ${t('validateConfirm')}`}
-            </button>
-          ) : (
-            <button
-              className={`challenge-accept-btn ${isParticipant ? 'challenge-accept-btn--in' : ''}`}
-              onClick={handleAccept}
-              disabled={busy === 'accept'}
-            >
-              {busy === 'accept' ? '…' : (isParticipant ? t('acceptedCta') : t('acceptCta'))}
-            </button>
-          )}
+          <button
+            className={`challenge-accept-btn ${isParticipant ? 'challenge-accept-btn--in' : ''}`}
+            onClick={handleAccept}
+            disabled={busy === 'accept'}
+          >
+            {busy === 'accept' ? '…' : (isParticipant ? t('acceptedCta') : t('acceptCta'))}
+          </button>
         </div>
       )}
 
@@ -285,7 +282,11 @@ export default function ChallengeChatPage({
         {!loading && messages.length === 0 && (
           <div className="topic-chat-empty">
             <span className="topic-chat-empty-icon">✨</span>
-            <span>{t('createTitle')}</span>
+            {/* Reuse hangout's generic chat-empty copy — semantically the
+                same ("no messages yet, be the first") and saves shipping
+                duplicate keys across 19 locales. */}
+            <strong>{t('feed.emptyTitle', { ns: 'hangout' })}</strong>
+            <span>{t('feed.emptySub',  { ns: 'hangout' })}</span>
           </div>
         )}
         {messages.map((m, idx) => {

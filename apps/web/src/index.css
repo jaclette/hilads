@@ -10535,12 +10535,22 @@ body.has-app-promo-banner .page-header {
    challenge-specific hero badges + actions row with the orange brand.
    ───────────────────────────────────────────────────────────────────────── */
 
-.challenge-hero {
+/* Challenge meta row — sits as a sibling to .topic-chat-desc and mirrors its
+   visual rhythm (small, muted, border-bottom). Holds the audience pill +
+   optional validated badge in place of the hangout's free-text description. */
+.challenge-meta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 10px 16px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-style: normal;
+}
+
+/* Inline validate button — sized like .topic-owner-btn but tinted orange to
+   signal the primary creator action. Used inside .topic-owner-row. */
+.challenge-validate-btn-inline {
+  color: #FF7A3C !important;
+  border-color: rgba(255, 122, 60, 0.30) !important;
+  background: rgba(255, 122, 60, 0.10) !important;
 }
 
 .challenge-badge {
