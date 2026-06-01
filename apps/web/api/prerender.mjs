@@ -805,7 +805,7 @@ function composeCityJsonLd(payload, canonicalUrl, upcomingEvents) {
       itemListElement: upcomingEvents.slice(0, 10).map((ev, i) => ({
         '@type':   'ListItem',
         position:  i + 1,
-        url:       `${SITE_BASE}/event/${ev.id}`,
+        url:       `${SITE_BASE}/event/${eventSlug(ev)}`,
         name:      ev.title,
       })),
     })
