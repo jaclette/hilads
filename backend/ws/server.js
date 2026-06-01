@@ -77,6 +77,13 @@ const eventRooms = new Map()
 // topicRooms: Map<topicId, Map<sessionId, { sessionId, ws }>>
 const topicRooms = new Map()
 
+// challengeRooms: Map<challengeId, Map<sessionId, { sessionId, ws }>>. Separate
+// from event/topic rooms — a user can sit in an event AND a challenge AND a
+// hangout simultaneously; the per-room auto-leave should only fire within the
+// same entity type. (If we piggybacked on eventRooms, opening a challenge
+// would silently evict you from any open event.)
+const challengeRooms = new Map()
+
 // dmRooms: Map<conversationId, Map<userId, { userId, ws }>>
 // Keyed by userId (not sessionId) because DMs are tied to registered accounts.
 const dmRooms = new Map()
@@ -359,6 +366,25 @@ function handleLeaveTopic(ws, { topicId, sessionId }) {
   if (room.size === 0) topicRooms.delete(topicId)
 }
 
+// ── Challenge room helpers ─────────────────────────────────────────────────────
+// Same shape as topic rooms — open membership, no presence broadcast (we don't
+// surface "live in this challenge" the way events do).
+
+function handleJoinChallenge(ws, { challengeId, sessionId }) {
+  if (!challengeId || !sessionId) return
+  if (!challengeRooms.has(challengeId)) challengeRooms.set(challengeId, new Map())
+  challengeRooms.get(challengeId).set(sessionId, { sessionId, ws })
+  console.log(`[WS] joinChallenge: ${sessionId.slice(0, 8)} -> challenge ${challengeId.slice(0, 8)} (${challengeRooms.get(challengeId).size} in room)`)
+}
+
+function handleLeaveChallenge(ws, { challengeId, sessionId }) {
+  const room = challengeRooms.get(challengeId)
+  if (!room) return
+  room.delete(sessionId)
+  console.log(`[WS] leaveChallenge: ${sessionId.slice(0, 8)} <- challenge ${challengeId.slice(0, 8)} (${room.size} in room)`)
+  if (room.size === 0) challengeRooms.delete(challengeId)
+}
+
 // ── DM conversation helpers ────────────────────────────────────────────────────
 
 function handleJoinConversation(ws, { conversationId, userId }) {
@@ -437,6 +463,14 @@ function removeWs(ws) {
       if (member.ws === ws) {
         room.delete(sessionId)
         if (room.size === 0) topicRooms.delete(topicId)
+      }
+    }
+  }
+  for (const [challengeId, room] of challengeRooms) {
+    for (const [sessionId, member] of room) {
+      if (member.ws === ws) {
+        room.delete(sessionId)
+        if (room.size === 0) challengeRooms.delete(challengeId)
       }
     }
   }
@@ -627,6 +661,8 @@ wss.on('connection', (ws, req) => {
       case 'leaveEvent':         return handleLeaveEvent(ws, msg)
       case 'joinTopic':          return handleJoinTopic(ws, msg)
       case 'leaveTopic':         return handleLeaveTopic(ws, msg)
+      case 'joinChallenge':      return handleJoinChallenge(ws, msg)
+      case 'leaveChallenge':     return handleLeaveChallenge(ws, msg)
       case 'joinConversation':   return handleJoinConversation(ws, msg)
       case 'leaveConversation':  return handleLeaveConversation(ws, msg)
       case 'joinUser':           return handleJoinUser(ws, msg)
@@ -725,9 +761,12 @@ function broadcastNewMessage(channelId, message) {
   if (typeof channelId === 'number') {
     room = rooms.get(channelId); kind = 'city'
   } else {
-    // String channelId — could be an event room or a topic room; check both
-    if (eventRooms.has(channelId)) { room = eventRooms.get(channelId); kind = 'event' }
-    else                            { room = topicRooms.get(channelId); kind = 'topic' }
+    // String channelId — could be an event, topic, or challenge room; check
+    // all three. Three independent rooms because users can sit in one of each
+    // simultaneously (auto-leave is per-room-type).
+    if (eventRooms.has(channelId))           { room = eventRooms.get(channelId);     kind = 'event' }
+    else if (topicRooms.has(channelId))      { room = topicRooms.get(channelId);     kind = 'topic' }
+    else if (challengeRooms.has(channelId))  { room = challengeRooms.get(channelId); kind = 'challenge' }
   }
   if (!room) return
   const msg = JSON.stringify({ event: 'newMessage', channelId, message })

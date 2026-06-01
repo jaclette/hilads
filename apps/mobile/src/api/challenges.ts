@@ -3,6 +3,8 @@ import type {
   Challenge,
   ChallengeType,
   ChallengeAudience,
+  Message,
+  UserDTO,
 } from '@/types';
 
 // ── Reads ─────────────────────────────────────────────────────────────────────
@@ -130,4 +132,55 @@ export async function toggleChallengeParticipation(
     `/challenges/${challengeId}/participants/toggle`,
     { guestId, nickname },
   );
+}
+
+// ── Participants + chat (detail screen) ──────────────────────────────────────
+
+/** Full participant list for the members modal. */
+export async function fetchChallengeParticipants(challengeId: string): Promise<{ participants: UserDTO[]; count: number }> {
+  try {
+    const data = await api.get<{ participants?: UserDTO[]; count?: number }>(`/challenges/${challengeId}/participants`);
+    return { participants: data.participants ?? [], count: data.count ?? (data.participants?.length ?? 0) };
+  } catch {
+    return { participants: [], count: 0 };
+  }
+}
+
+/** Paginated chat messages for a challenge channel. */
+export async function fetchChallengeMessages(
+  challengeId: string,
+  opts: { beforeId?: string; limit?: number } = {},
+): Promise<{ messages: Message[]; hasMore: boolean }> {
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+  if (opts.beforeId) q.set('before_id', opts.beforeId);
+  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
+    `/challenges/${challengeId}/messages?${q}`,
+  );
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
+}
+
+export async function sendChallengeMessage(
+  challengeId: string,
+  guestId: string,
+  nickname: string,
+  content: string,
+  mentions?: import('./mentions').MentionInput[],
+): Promise<Message> {
+  const body: Record<string, unknown> = { guestId, nickname, content };
+  if (mentions && mentions.length) body.mentions = mentions;
+  return api.post<Message>(`/challenges/${challengeId}/messages`, body);
+}
+
+export async function sendChallengeImageMessage(
+  challengeId: string,
+  guestId: string,
+  nickname: string,
+  imageUrl: string,
+): Promise<Message> {
+  return api.post<Message>(`/challenges/${challengeId}/messages`, {
+    guestId,
+    nickname,
+    imageUrl,
+    type: 'image',
+  });
 }

@@ -647,13 +647,12 @@ export default function NowScreen() {
                   challenge={ch}
                   onPress={() => {
                     track('challenge_opened', { challengeId: ch.id });
-                    // TODO Phase 5: route to /challenge/{id} detail. The strip
-                    // is still discoverable today via the See-all CTA.
+                    router.push(`/challenge/${ch.id}` as never);
                   }}
-                  // Avatar tap intentionally not wired here — the participants
-                  // list endpoint + modal flow lands in Phase 5 alongside the
-                  // detail screen. Avatars stay visible (count + preview) as
-                  // a static social-proof signal.
+                  onAvatarsPress={() => {
+                    track('challenge_opened', { challengeId: ch.id, via: 'avatars' });
+                    router.push(`/challenge/${ch.id}` as never);
+                  }}
                 />
               );
             }

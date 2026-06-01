@@ -155,6 +155,12 @@ final class MentionService
             // member who joined but hasn't messaged yet is still mentionable.
             $stmt = $pdo->prepare("SELECT user_id FROM topic_participants WHERE topic_id = ?");
             $stmt->execute([$channelId]);
+        } elseif ($context === 'challenge') {
+            // Participants of the challenge (challenge_participants). Guests can
+            // accept too, but only registered users are mentionable (matches the
+            // existing event/topic policy — guest IDs have no @ handle).
+            $stmt = $pdo->prepare("SELECT user_id FROM challenge_participants WHERE channel_id = ? AND user_id IS NOT NULL");
+            $stmt->execute([$channelId]);
         } else { // city
             // Mentionable in a city = registered users who are part of THIS city's
             // conversation: either it's their home city (current_city_id) OR they've
@@ -213,6 +219,21 @@ final class MentionService
                 FROM topic_participants tp
                 JOIN users u ON u.id = tp.user_id
                 WHERE tp.topic_id = ?
+                  AND u.username IS NOT NULL AND u.deleted_at IS NULL
+                  AND lower(u.username) LIKE ?
+                  AND (CAST(? AS text) IS NULL OR u.id != ?)
+                ORDER BY u.username ASC
+                LIMIT $cap";
+            $params = [$channelId, $like, $excludeUserId, $excludeUserId];
+        } elseif ($context === 'challenge') {
+            // Suggest the challenge's registered participants. Guests can accept
+            // too but have no @ handle so they're filtered out by the user_id
+            // NOT NULL clause.
+            $sql = "
+                SELECT DISTINCT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
+                FROM challenge_participants cp
+                JOIN users u ON u.id = cp.user_id
+                WHERE cp.channel_id = ?
                   AND u.username IS NOT NULL AND u.deleted_at IS NULL
                   AND lower(u.username) LIKE ?
                   AND (CAST(? AS text) IS NULL OR u.id != ?)

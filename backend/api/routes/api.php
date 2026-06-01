@@ -6684,6 +6684,14 @@ $router->add('GET', '/api/v1/topics/{topicId}/mention-suggestions', function (ar
     Response::json(['suggestions' => MentionService::suggest('topic', $topicId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
 });
 
+$router->add('GET', '/api/v1/challenges/{challengeId}/mention-suggestions', function (array $params) {
+    enforceRateLimit('mention_suggest', 120, 60);
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) Response::json(['error' => 'Invalid challengeId'], 400);
+    $viewer = AuthService::currentUser();
+    Response::json(['suggestions' => MentionService::suggest('challenge', $challengeId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
+});
+
 // POST /api/v1/topics/{topicId}/mark-read
 // Upserts an event_participants row (reuses same unread-tracking table) and sets last_read_at.
 // Idempotent — safe to call on every topic open.
@@ -7578,6 +7586,137 @@ $router->add('GET', '/api/v1/users/{userId}/challenges', function (array $params
         return;
     }
     Response::json(['challenges' => ChallengeRepository::getByUser($user['id'])]);
+});
+
+// GET /api/v1/challenges/{challengeId}/participants
+// Full participant list for the members modal. Public — same names/avatars
+// already shown in the card preview. Returns canonical UserDTOs.
+$router->add('GET', '/api/v1/challenges/{challengeId}/participants', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    Response::json([
+        'participants' => ChallengeRepository::getParticipants($challengeId),
+        'count'        => ChallengeRepository::participantCount($challengeId),
+    ]);
+});
+
+// GET /api/v1/challenges/{challengeId}/messages
+// Chat messages for a challenge. Challenges are open (no members-only gate
+// like hangouts), so any authenticated or guest user can read. Cursor
+// pagination via before_id, capped at 100 messages per page.
+$router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    try {
+        if (ChallengeRepository::findById($challengeId) === null) {
+            Response::json(['error' => 'Challenge not found'], 404);
+        }
+
+        $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
+        $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
+        $res = MessageRepository::getByChannel($challengeId, $beforeId ?: null, $limit);
+        Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
+    } catch (\Throwable $e) {
+        error_log('[challenge-messages] GET failed for challenge ' . $challengeId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to load messages'], 500);
+    }
+});
+
+// POST /api/v1/challenges/{challengeId}/messages
+// Send a message to a challenge. Mirrors events (guests allowed) — challenges
+// are open by design, NOT members-only like hangouts. Rate limit + size +
+// image-URL validation match the topic-message endpoint.
+$router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    if (ChallengeRepository::findById($challengeId) === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId  = $body['guestId']  ?? null;
+    $nickname = $body['nickname'] ?? null;
+    $content  = $body['content']  ?? null;
+    $type     = $body['type']     ?? 'text';
+    $imageUrl = $body['imageUrl'] ?? null;
+
+    enforceRateLimit('challenge_message', 45, 300, $challengeId);
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+    if (empty($nickname) || !is_string($nickname)) {
+        Response::json(['error' => 'nickname is required'], 400);
+    }
+    $nickname = mb_substr(trim(strip_tags($nickname)), 0, 32);
+    if ($nickname === '') {
+        Response::json(['error' => 'nickname must not be empty'], 400);
+    }
+    if (!in_array($type, ['text', 'image'], true)) {
+        Response::json(['error' => 'type must be text or image'], 400);
+    }
+
+    $senderUser   = AuthService::currentUser();
+    $senderUserId = $senderUser['id'] ?? null;
+
+    if ($type === 'image') {
+        if (empty($imageUrl) || !is_string($imageUrl)) {
+            Response::json(['error' => 'imageUrl is required for image messages'], 400);
+        }
+        $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+        if (!str_starts_with($imageUrl, $r2Base)) {
+            Response::json(['error' => 'Invalid image URL'], 400);
+        }
+        $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
+        if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
+            Response::json(['error' => 'Invalid image reference'], 400);
+        }
+        try {
+            $message = MessageRepository::addImage($challengeId, $guestId, $nickname, $imageUrl, $senderUserId);
+        } catch (\Throwable $e) {
+            error_log("[challenge-msg] DB error inserting image message challengeId={$challengeId}: " . $e->getMessage());
+            Response::json(['error' => 'Failed to send message'], 500);
+        }
+    } else {
+        if (empty($content) || !is_string($content)) {
+            Response::json(['error' => 'content is required'], 400);
+        }
+        if (strlen($content) > 1000) {
+            Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+        }
+        try {
+            $replySnap = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+            $mentions  = sanitizeMentions($body['mentions'] ?? null, 'challenge', $challengeId, $content);
+            $message = MessageRepository::add(
+                $challengeId, $guestId, $nickname, $content, $senderUserId,
+                $replySnap['id'] ?? null,
+                $replySnap['nickname'] ?? null,
+                $replySnap['content']  ?? null,
+                $replySnap['type']     ?? 'text',
+                $mentions
+            );
+        } catch (\Throwable $e) {
+            error_log("[challenge-msg] DB error inserting message challengeId={$challengeId}: " . $e->getMessage());
+            Response::json(['error' => 'Failed to send message'], 500);
+        }
+    }
+
+    $message = enrichBroadcastMessage($message, $senderUser ?? null);
+    broadcastMessageToWs($challengeId, $message);
+
+    Response::json($message, 201);
 });
 
 // GET /api/v1/sitemap/challenges

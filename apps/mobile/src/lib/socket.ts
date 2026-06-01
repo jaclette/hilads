@@ -22,6 +22,7 @@ const RAPID_RETRY_MS  = 3000;
 type PendingCity  = { cityId: string; sessionId: string; nickname: string; userId?: string; guestId?: string; mode?: string | null };
 type PendingEvent = { eventId: string; sessionId: string; nickname?: string };
 type PendingTopic = { topicId: string; sessionId: string };
+type PendingChallenge = { challengeId: string; sessionId: string };
 type PendingDm    = { conversationId: string; userId: string };
 type PendingUser  = { userId: string };
 
@@ -35,7 +36,8 @@ class HiladsSocket {
 
   private pendingCity:  PendingCity  | null = null;
   private pendingEvent: PendingEvent | null = null;
-  private pendingTopic: PendingTopic | null = null;
+  private pendingTopic:     PendingTopic     | null = null;
+  private pendingChallenge: PendingChallenge | null = null;
   private pendingDm:    PendingDm    | null = null;
   private pendingUser:  PendingUser  | null = null;
 
@@ -154,6 +156,21 @@ class HiladsSocket {
     this.send({ event: 'leaveTopic', topicId, sessionId });
   }
 
+  // Same pattern as joinTopic — pendingChallenge replays the room after a
+  // WS reconnect (single active subscription at a time per socket).
+  joinChallenge(challengeId: string, sessionId: string): void {
+    if (this.pendingChallenge && this.pendingChallenge.challengeId !== challengeId) {
+      this.send({ event: 'leaveChallenge', challengeId: this.pendingChallenge.challengeId, sessionId: this.pendingChallenge.sessionId });
+    }
+    this.pendingChallenge = { challengeId, sessionId };
+    this.send({ event: 'joinChallenge', challengeId, sessionId });
+  }
+
+  leaveChallenge(challengeId: string, sessionId: string): void {
+    if (this.pendingChallenge?.challengeId === challengeId) this.pendingChallenge = null;
+    this.send({ event: 'leaveChallenge', challengeId, sessionId });
+  }
+
   /**
    * Broadcast a reaction animation to everyone in the same city channel.
    * type: 'heart' | 'like' | 'laugh' | 'wow' | 'fire'
@@ -200,11 +217,12 @@ class HiladsSocket {
    * silently re-join rooms tied to the previous identity.
    */
   resetPending(): void {
-    this.pendingCity  = null;
-    this.pendingEvent = null;
-    this.pendingTopic = null;
-    this.pendingDm    = null;
-    this.pendingUser  = null;
+    this.pendingCity      = null;
+    this.pendingEvent     = null;
+    this.pendingTopic     = null;
+    this.pendingChallenge = null;
+    this.pendingDm        = null;
+    this.pendingUser      = null;
   }
 
   // ── Internal ─────────────────────────────────────────────────────────────────
@@ -232,8 +250,9 @@ class HiladsSocket {
           const e = this.pendingEvent;
           this.send({ event: 'joinEvent', eventId: e.eventId, sessionId: e.sessionId, ...(e.nickname ? { nickname: e.nickname } : {}) });
         }
-        if (this.pendingTopic) this.send({ event: 'joinTopic',        ...this.pendingTopic });
-        if (this.pendingDm)    this.send({ event: 'joinConversation', ...this.pendingDm });
+        if (this.pendingTopic)     this.send({ event: 'joinTopic',        ...this.pendingTopic });
+        if (this.pendingChallenge) this.send({ event: 'joinChallenge',    ...this.pendingChallenge });
+        if (this.pendingDm)        this.send({ event: 'joinConversation', ...this.pendingDm });
         if (this.pendingUser)  this.send({ event: 'joinUser',         ...this.pendingUser });
         this._dispatch('connected', {});
       };

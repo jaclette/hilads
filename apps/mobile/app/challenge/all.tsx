@@ -103,7 +103,7 @@ export default function AllChallengesScreen() {
               challenge={item}
               onPress={() => {
                 track('challenge_opened', { challengeId: item.id, source: 'see_all' });
-                // TODO Phase 5: route to /challenge/{id} detail.
+                router.push(`/challenge/${item.id}` as never);
               }}
             />
           )}

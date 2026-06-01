@@ -509,7 +509,12 @@ class ChallengeRepository
         return $map;
     }
 
-    /** Full participant list for the members modal — joined-order. */
+    /**
+     * Full participant list for the members modal — canonical UserDTOs
+     * (id, displayName, username, avatarUrl, accountType, badges, vibe…),
+     * joined-order. Handles both registered users AND guests (challenges
+     * accept guest participants, unlike hangouts which are members-only).
+     */
     public static function getParticipants(string $challengeId): array
     {
         $stmt = Database::pdo()->prepare("
@@ -527,7 +532,29 @@ class ChallengeRepository
             ORDER BY cp.joined_at ASC
         ");
         $stmt->execute([$challengeId]);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return array_map(static function (array $r): array {
+            $joinedAt = (int) $r['joined_at'];
+            // Registered user (with a live account) → full UserDTO.
+            if ($r['user_id'] !== null && $r['display_name'] !== null) {
+                return array_merge(UserResource::fromUser([
+                    'id'                => $r['user_id'],
+                    'display_name'      => $r['display_name'],
+                    'profile_photo_url' => $r['profile_photo_url'],
+                    'vibe'              => $r['vibe'],
+                    'created_at'        => $r['user_created_at'],
+                    'home_city'         => null,
+                ]), ['joinedAt' => $joinedAt]);
+            }
+            // Registered user whose account was deleted → discreet placeholder.
+            if ($r['user_id'] !== null) {
+                return array_merge(UserResource::fromGuest($r['user_id'], 'Former member'), ['joinedAt' => $joinedAt]);
+            }
+            // Pure guest — show the nickname they used when accepting.
+            return array_merge(
+                UserResource::fromGuest($r['guest_id'], $r['guest_nickname'] ?? 'Guest'),
+                ['joinedAt' => $joinedAt],
+            );
+        }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

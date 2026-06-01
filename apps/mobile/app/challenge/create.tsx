@@ -72,7 +72,7 @@ export default function CreateChallengeScreen() {
     // back gracefully when nickname is null.
     const nickname = account?.display_name ?? identity.nickname ?? null;
     try {
-      await createChallenge(
+      const created = await createChallenge(
         city.channelId,
         identity.guestId,
         nickname,
@@ -80,10 +80,9 @@ export default function CreateChallengeScreen() {
         type,
         audience,
       );
-      // Phase 3 — land back on NOW; the challenge appears via the WS broadcast.
-      // TODO Phase 6: replace with router.replace(`/challenge/${created.id}`)
-      // once the detail screen ships.
-      router.back();
+      // Land the creator on the freshly-created challenge so they can share
+      // it + watch participants accept in real time.
+      router.replace(`/challenge/${created.id}` as never);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errStart'));
     } finally {
