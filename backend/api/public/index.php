@@ -57,6 +57,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/EventRedirectRepository.php';
     require_once __DIR__ . '/../src/Geocoder.php';
     require_once __DIR__ . '/../src/TopicRepository.php';
+    require_once __DIR__ . '/../src/ChallengeRepository.php';
     require_once __DIR__ . '/../src/R2Uploader.php';
     // Push broadcast page needs these — both for the page itself and for the
     // deferred dispatch loop that runs after the response flushes.
@@ -163,6 +164,7 @@ require_once __DIR__ . '/../src/PlacesService.php';
 require_once __DIR__ . '/../src/VenueSeeder.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/TopicRepository.php';
+require_once __DIR__ . '/../src/ChallengeRepository.php';
 require_once __DIR__ . '/../src/VibeRepository.php';
 require_once __DIR__ . '/../src/ConversationRepository.php';
 require_once __DIR__ . '/../src/FriendRequestRepository.php';

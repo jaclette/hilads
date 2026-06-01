@@ -969,4 +969,55 @@ run($pdo, "ALTER TABLE messages              ADD COLUMN IF NOT EXISTS deleted_at
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS edited_at  TIMESTAMPTZ DEFAULT NULL", 'conversation_messages.edited_at');
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL", 'conversation_messages.deleted_at');
 
+// ── Challenges (Défis) ────────────────────────────────────────────────────────
+// Third primary entity alongside events + hangouts. Challenges are persistent
+// (no TTL — expires_at uses a 2999 sentinel to keep the existing > now() guards
+// happy) and have an explicit lifecycle: status 'open' (active feed) → 'validated'
+// (archive, surfaced via "See past challenges"). Hard-delete still goes through
+// channels.status = 'deleted'.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS channel_challenges (
+        channel_id     TEXT        PRIMARY KEY REFERENCES channels(id) ON DELETE CASCADE,
+        city_id        TEXT        NOT NULL REFERENCES channels(id),
+        created_by     TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        guest_id       TEXT,
+        title          TEXT        NOT NULL,
+        challenge_type TEXT        NOT NULL,
+        audience       TEXT        NOT NULL,
+        status         TEXT        NOT NULL DEFAULT 'open',
+        expires_at     TIMESTAMPTZ NOT NULL DEFAULT '2999-01-01T00:00:00Z'::timestamptz,
+        validated_at   TIMESTAMPTZ,
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'channel_challenges');
+
+// Participants — mirrors event_participants exactly (channel_id + guest_id PK,
+// optional user_id, joined_at, last_read_at for chat read state). Kept as a
+// separate table from event_participants so queries / schemas don't entangle.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_participants (
+        channel_id   TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        guest_id     TEXT        NOT NULL,
+        user_id      TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        nickname     TEXT,
+        joined_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        last_read_at TIMESTAMPTZ,
+        PRIMARY KEY (channel_id, guest_id)
+    )
+", 'challenge_participants');
+
+// Main feed query: city_id + status + created_at DESC (NOW screen, top 5).
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_city_status ON channel_challenges (city_id, status, created_at DESC)", 'idx_channel_challenges_city_status');
+// Past-challenges feed (validated) per city.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_status      ON channel_challenges (status)", 'idx_channel_challenges_status');
+// Profile filter: user's created challenges.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_created_by  ON channel_challenges (created_by) WHERE created_by IS NOT NULL", 'idx_channel_challenges_created_by');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_guest       ON channel_challenges (guest_id)    WHERE guest_id IS NOT NULL",   'idx_channel_challenges_guest');
+// Type filter (food/place/culture/help) — bounded cardinality, btree is fine.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_type        ON channel_challenges (challenge_type)", 'idx_channel_challenges_type');
+
+// Participant lookups.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_challenge_participants_channel ON challenge_participants (channel_id)", 'idx_challenge_participants_channel');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_challenge_participants_user    ON challenge_participants (user_id) WHERE user_id IS NOT NULL", 'idx_challenge_participants_user');
+
 echo "\nDone.\n";
