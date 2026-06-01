@@ -289,6 +289,18 @@ function broadcastNewTopicToWs(int $channelId, array $topic): void
     postToWs('/broadcast/new-topic', ['channelId' => $channelId, 'topic' => $topic]);
 }
 
+function broadcastNewChallengeToWs(int $channelId, array $challenge): void
+{
+    error_log("[ws-broadcast] → new-challenge channelId={$channelId} challengeId=" . ($challenge['id'] ?? 'null'));
+    postToWs('/broadcast/new-challenge', ['channelId' => $channelId, 'challenge' => $challenge]);
+}
+
+function broadcastChallengeValidatedToWs(int $channelId, array $challenge): void
+{
+    error_log("[ws-broadcast] → challenge-validated channelId={$channelId} challengeId=" . ($challenge['id'] ?? 'null'));
+    postToWs('/broadcast/challenge-validated', ['channelId' => $channelId, 'challenge' => $challenge]);
+}
+
 
 // ── Now-feed DTO helpers ──────────────────────────────────────────────────────
 // Normalize raw repository rows into a consistent FeedItem shape consumed by
@@ -7218,6 +7230,382 @@ $router->add('POST', '/api/v1/users/me/eula', function () {
         'first_time' => $viewer['eula_accepted_at'] === null,
     ]);
     Response::json(['user' => AuthService::ownFields($user)]);
+});
+
+// ── Challenges (Défis) ───────────────────────────────────────────────────────
+// Third primary entity alongside events + hangouts. Created by a local or
+// explorer in a city, accepted by others, and validated by the creator when
+// done. See ChallengeRepository for the data model. URLs use the bare hex form
+// server-side (slug-id is a client-only concern, like events).
+
+// GET /api/v1/channels/{channelId}/challenges
+// Active (status='open') challenges for a city, most-recent first.
+// Optional ?limit query (capped at 200 in the repository).
+$router->add('GET', '/api/v1/channels/{channelId}/challenges', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 50;
+    try {
+        $challenges = ChallengeRepository::getByCity('city_' . $channelId, $limit);
+        Response::json(['challenges' => $challenges]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] GET list failed ch=' . $channelId . ': ' . $e->getMessage());
+        Response::json(['challenges' => []], 200);
+    }
+});
+
+// GET /api/v1/channels/{channelId}/challenges/validated
+// Past (status='validated') challenges for a city — feeds the "See past
+// challenges" CTA. Most-recently-validated first.
+$router->add('GET', '/api/v1/channels/{channelId}/challenges/validated', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $limit    = isset($_GET['limit'])  ? (int) $_GET['limit']  : 30;
+    $beforeTs = isset($_GET['before']) ? (int) $_GET['before'] : null;
+    try {
+        $challenges = ChallengeRepository::getValidatedByCity('city_' . $channelId, $limit, $beforeTs);
+        Response::json(['challenges' => $challenges]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] GET validated failed ch=' . $channelId . ': ' . $e->getMessage());
+        Response::json(['challenges' => []], 200);
+    }
+});
+
+// POST /api/v1/channels/{channelId}/challenges
+// Create a new challenge. Auth optional — guests can create.
+// Rate-limit: 5 challenges per hour per city (challenges are persistent, so
+// stricter than topics' 3/5min but more lenient than events' 1/day).
+$router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array $params) {
+    $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($channelId === false) {
+        Response::json(['error' => 'Invalid channelId'], 400);
+    }
+    if (CityRepository::findById($channelId) === null) {
+        Response::json(['error' => 'Channel not found'], 404);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId       = $body['guestId']       ?? null;
+    $title         = $body['title']         ?? null;
+    $challengeType = $body['challengeType'] ?? $body['type']     ?? null;
+    $audience      = $body['audience']      ?? null;
+    $nickname      = $body['nickname']      ?? null;
+
+    enforceRateLimit('challenge_create', 5, 3600, (string) $channelId);
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+    if (empty($title) || !is_string($title)) {
+        Response::json(['error' => 'title is required'], 400);
+    }
+    $title = mb_substr(trim(strip_tags($title)), 0, 100);
+    if ($title === '') {
+        Response::json(['error' => 'title must not be empty'], 400);
+    }
+    if (!in_array($challengeType, ChallengeRepository::allowedTypes(), true)) {
+        Response::json(['error' => 'challengeType must be one of: ' . implode(', ', ChallengeRepository::allowedTypes())], 400);
+    }
+    if (!in_array($audience, ChallengeRepository::allowedAudiences(), true)) {
+        Response::json(['error' => 'audience must be one of: ' . implode(', ', ChallengeRepository::allowedAudiences())], 400);
+    }
+    if ($nickname !== null) {
+        $nickname = mb_substr(trim(strip_tags((string) $nickname)), 0, 32) ?: null;
+    }
+
+    $currentUser = AuthService::currentUser();
+    $userId      = $currentUser['id'] ?? null;
+
+    try {
+        $challenge = ChallengeRepository::create(
+            'city_' . $channelId,
+            $guestId,
+            $userId,
+            $nickname,
+            $title,
+            $challengeType,
+            $audience,
+        );
+
+        try {
+            broadcastNewChallengeToWs($channelId, $challenge);
+        } catch (\Throwable $e) {
+            error_log('[challenges] ws broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+
+        AnalyticsService::defer('created_challenge', $userId ?? $guestId, [
+            'challenge_id'   => $challenge['id'],
+            'challenge_type' => $challengeType,
+            'audience'       => $audience,
+            'city_id'        => $channelId,
+            'is_guest'       => $userId === null,
+        ]);
+
+        Response::json($challenge, 201);
+    } catch (\Throwable $e) {
+        error_log('[challenges] POST create failed ch=' . $channelId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to create challenge'], 500);
+    }
+});
+
+// GET /api/v1/challenges/{challengeId}
+// Single challenge detail + city context for deep links.
+$router->add('GET', '/api/v1/challenges/{challengeId}', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $challenge = ChallengeRepository::findById($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    $cityIntId = (int) substr($challenge['city_id'], 5);
+    $city      = CityRepository::findById($cityIntId);
+    Response::json([
+        'challenge' => $challenge,
+        'channelId' => $cityIntId,
+        'cityName'  => $city['name']     ?? null,
+        'country'   => $city['country']  ?? null,
+        'timezone'  => $city['timezone'] ?? 'UTC',
+    ]);
+});
+
+// PUT /api/v1/challenges/{challengeId}
+// Owner-gated edit of title / type / audience. Status is NOT editable here —
+// use POST /validate to flip open → validated.
+$router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId       = $body['guestId']       ?? null;
+    $title         = $body['title']         ?? null;
+    $challengeType = $body['challengeType'] ?? $body['type'] ?? null;
+    $audience      = $body['audience']      ?? null;
+
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+    if (empty($title) || !is_string($title)) {
+        Response::json(['error' => 'title is required'], 400);
+    }
+    $title = mb_substr(trim(strip_tags($title)), 0, 100);
+    if ($title === '') {
+        Response::json(['error' => 'title must not be empty'], 400);
+    }
+    if (!in_array($challengeType, ChallengeRepository::allowedTypes(), true)) {
+        Response::json(['error' => 'challengeType invalid'], 400);
+    }
+    if (!in_array($audience, ChallengeRepository::allowedAudiences(), true)) {
+        Response::json(['error' => 'audience invalid'], 400);
+    }
+
+    $userId = AuthService::currentUser()['id'] ?? null;
+    $updated = ChallengeRepository::update($challengeId, $guestId, $userId, $title, $challengeType, $audience);
+    if ($updated === null) {
+        Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
+    }
+
+    Response::json($updated);
+});
+
+// DELETE /api/v1/challenges/{challengeId}
+// Owner-gated soft-delete (channels.status='deleted').
+$router->add('DELETE', '/api/v1/challenges/{challengeId}', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $body    = Request::json();
+    $guestId = $body['guestId'] ?? null;
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $userId  = AuthService::currentUser()['id'] ?? null;
+    $deleted = ChallengeRepository::delete($challengeId, $guestId, $userId);
+    if (!$deleted) {
+        Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
+    }
+
+    Response::json(['ok' => true]);
+});
+
+// POST /api/v1/challenges/{challengeId}/validate
+// Creator flips status: 'open' → 'validated'. Idempotent. Fans out a push
+// notification to every other registered participant ("X validated the
+// challenge"). Broadcasts a city-room WS event so live feeds drop the bubble
+// from the active list without a refetch.
+$router->add('POST', '/api/v1/challenges/{challengeId}/validate', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $body    = Request::json();
+    $guestId = $body['guestId'] ?? null;
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $currentUser = AuthService::currentUser();
+    $userId      = $currentUser['id'] ?? null;
+    $updated     = ChallengeRepository::validate($challengeId, $guestId, $userId);
+    if ($updated === null) {
+        Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
+    }
+
+    // Fan-out notification to participants (creator excluded).
+    try {
+        $creatorName = $currentUser['display_name'] ?? 'Someone';
+        NotificationRepository::notifyChallengeParticipants(
+            $challengeId,
+            $userId,                  // exclude the creator
+            'challenge_validated',
+            "🎉 Challenge validated",
+            "{$creatorName} validated \"{$updated['title']}\"",
+            [
+                'challengeId' => $challengeId,
+                'senderUserId' => $userId,
+                'senderName'  => $creatorName,
+                'title'       => $updated['title'],
+            ],
+        );
+    } catch (\Throwable $e) {
+        error_log('[challenges] validate notif fanout failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // Live update so the feed flips the badge without a refetch.
+    try {
+        $cityIntId = (int) substr($updated['city_id'], 5);
+        broadcastChallengeValidatedToWs($cityIntId, $updated);
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws validate broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    AnalyticsService::defer('validated_challenge', $userId ?? $guestId, [
+        'challenge_id' => $challengeId,
+    ]);
+
+    Response::json($updated);
+});
+
+// POST /api/v1/challenges/{challengeId}/participants/toggle
+// Accept / leave a challenge. Mirrors event participants/toggle — guests
+// allowed (guestId is the participant key).
+$router->add('POST', '/api/v1/challenges/{challengeId}/participants/toggle', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $challenge = ChallengeRepository::findById($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+
+    $guestId = $body['guestId'] ?? null;
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+    $nickname = isset($body['nickname']) ? mb_substr(trim((string) $body['nickname']), 0, 32) : null;
+
+    enforceRateLimit('challenge_participant_toggle', 60, 300, $challengeId);
+
+    $currentUser = AuthService::currentUser();
+    $userId      = $currentUser['id'] ?? null;
+
+    $wasIn = ChallengeRepository::isParticipant($challengeId, $guestId);
+    if ($wasIn) {
+        ChallengeRepository::removeParticipant($challengeId, $guestId);
+        $isIn = false;
+    } else {
+        ChallengeRepository::addParticipant($challengeId, $guestId, $userId, $nickname);
+        $isIn = true;
+    }
+    $count = ChallengeRepository::participantCount($challengeId);
+
+    if ($isIn) {
+        AnalyticsService::defer('accepted_challenge', $userId ?? $guestId, [
+            'challenge_id' => $challengeId,
+            'is_guest'     => $userId === null,
+        ]);
+    }
+
+    Response::json(['count' => $count, 'isIn' => $isIn]);
+});
+
+// GET /api/v1/users/{userId}/challenges — challenges the user created or
+// accepted, for the profile "Challenges" tab. Each item carries `is_owner`.
+$router->add('GET', '/api/v1/users/{userId}/challenges', function (array $params) {
+    $userId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+    $user = UserRepository::findById($userId) ?? UserRepository::findByGuestId($userId);
+    if ($user === null) {
+        Response::json(['challenges' => []]);
+        return;
+    }
+    Response::json(['challenges' => ChallengeRepository::getByUser($user['id'])]);
+});
+
+// GET /api/v1/sitemap/challenges
+// All indexable challenges (open + validated) across every city. Validated
+// ones stay indexed — they're permanent content, not removed pages. Used by
+// apps/web/api/sitemap.mjs to advertise /challenge/<slug>-<id> to crawlers.
+// LIMIT 40000 = one sitemap file; realistic counts are far below it.
+$router->add('GET', '/api/v1/sitemap/challenges', function () {
+    $stmt = Database::pdo()->query("
+        SELECT cc.channel_id                              AS id,
+               cc.title                                   AS title,
+               EXTRACT(EPOCH FROM cc.created_at)::INTEGER AS updated_at
+        FROM channel_challenges cc
+        JOIN channels c ON c.id = cc.channel_id
+        WHERE c.status = 'active'
+        ORDER BY cc.created_at DESC
+        LIMIT 40000
+    ");
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    Response::json([
+        'challenges' => array_map(static fn(array $r) => [
+            'id'         => $r['id'],
+            'title'      => $r['title'],
+            'updated_at' => (int) $r['updated_at'],
+        ], $rows),
+        'total'      => count($rows),
+    ]);
 });
 
 // ── TEMPORARY: Sentry test endpoint ──────────────────────────────────────────

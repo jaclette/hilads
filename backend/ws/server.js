@@ -31,6 +31,8 @@
  *                    POST /broadcast/conversation-message { conversationId, message }
  *                    POST /broadcast/new-event            { channelId, hiladsEvent }
  *                    POST /broadcast/new-topic            { channelId, topic }
+ *                    POST /broadcast/new-challenge        { channelId, challenge }
+ *                    POST /broadcast/challenge-validated  { channelId, challenge }
  *                    POST /broadcast/user-event           { userId, event, payload }
  *
  * All events are JSON objects with an `event` field.
@@ -524,6 +526,20 @@ function handleBroadcastRequest(req, res) {
         broadcastNewTopic(channelId, topic)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/new-challenge') {
+        const { channelId, challenge } = JSON.parse(body)
+        const room = rooms.get(channelId)
+        console.log(`[internal] broadcast new-challenge channelId=${channelId} challengeId=${challenge?.id} roomSize=${room ? room.size : 0}`)
+        broadcastNewChallenge(channelId, challenge)
+        res.writeHead(200); res.end('ok')
+
+      } else if (req.method === 'POST' && req.url === '/broadcast/challenge-validated') {
+        const { channelId, challenge } = JSON.parse(body)
+        const room = rooms.get(channelId)
+        console.log(`[internal] broadcast challenge-validated channelId=${channelId} challengeId=${challenge?.id} roomSize=${room ? room.size : 0}`)
+        broadcastChallengeValidated(channelId, challenge)
+        res.writeHead(200); res.end('ok')
+
       } else if (req.method === 'POST' && req.url === '/broadcast/reaction') {
         const { channelId, messageId, reactions } = JSON.parse(body)
         console.log(`[internal] broadcast reaction channelId=${JSON.stringify(channelId)} msgId=${messageId}`)
@@ -670,6 +686,34 @@ function broadcastNewTopic(channelId, topic) {
     if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
   console.log(`[WS][emit] event=newTopic target=city:${channelId} recipients=${recipients}/${room.size}`)
+}
+
+// ── Challenge broadcasts ────────────────────────────────────────────────────────
+
+// New challenge created — appears in the NOW feed instantly without a poll.
+// channelId is an integer (city room key).
+function broadcastNewChallenge(channelId, challenge) {
+  const room = rooms.get(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'new_challenge', channelId, challenge })
+  let recipients = 0
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=new_challenge target=city:${channelId} recipients=${recipients}/${room.size}`)
+}
+
+// Challenge moved open → validated. Clients use this to flip the badge live
+// and remove the bubble from the active NOW feed without a refetch.
+function broadcastChallengeValidated(channelId, challenge) {
+  const room = rooms.get(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'challenge_validated', channelId, challenge })
+  let recipients = 0
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=challenge_validated target=city:${channelId} recipients=${recipients}/${room.size}`)
 }
 
 // ── Message broadcast ───────────────────────────────────────────────────────────

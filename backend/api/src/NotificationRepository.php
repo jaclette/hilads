@@ -378,6 +378,37 @@ class NotificationRepository
     }
 
     /**
+     * Notify all registered participants of a challenge, excluding one user.
+     * Used when the creator validates the challenge (fan-out to acceptors).
+     */
+    public static function notifyChallengeParticipants(
+        string  $challengeId,
+        ?string $excludeUserId,
+        string  $type,
+        string  $title,
+        ?string $body,
+        array   $data
+    ): void {
+        $stmt = Database::pdo()->prepare("
+            SELECT DISTINCT user_id FROM challenge_participants
+            WHERE channel_id = ?
+              AND user_id IS NOT NULL
+              AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
+        ");
+        $stmt->execute([$challengeId, $excludeUserId, $excludeUserId]);
+        $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($userIds)) return;
+
+        $enabled = self::batchIsEnabled($userIds, $type);
+        $locales = self::batchLocale($userIds);
+        foreach ($userIds as $uid) {
+            if ($enabled[$uid] ?? true) {
+                self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
+            }
+        }
+    }
+
+    /**
      * Notify registered users associated with a city channel, excluding one user.
      *
      * Recipient set depends on $type:
