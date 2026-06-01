@@ -114,26 +114,20 @@ export default function ChallengeChatScreen() {
     ]);
   }, [id, identity, router, t]);
 
-  const handleValidate = useCallback(() => {
+  const handleValidate = useCallback(async () => {
     if (!identity) return;
-    Alert.alert(t('validateTitle'), t('validateBody'), [
-      { text: t('validateCancel'), style: 'cancel' },
-      {
-        text: t('validateConfirm'), style: 'default',
-        onPress: async () => {
-          setValidateBusy(true);
-          try {
-            const updated = await validateChallenge(id, identity.guestId);
-            setChallenge(updated);
-            track('challenge_validated', { challengeId: id });
-          } catch {
-            Alert.alert(t('errSave'));
-          } finally {
-            setValidateBusy(false);
-          }
-        },
-      },
-    ]);
+    // One-click validate — no Alert popup. The orange Validate button is its
+    // own confirmation; the extra dialog was friction per user feedback.
+    setValidateBusy(true);
+    try {
+      const updated = await validateChallenge(id, identity.guestId);
+      setChallenge(updated);
+      track('challenge_validated', { challengeId: id });
+    } catch {
+      Alert.alert(t('errSave'));
+    } finally {
+      setValidateBusy(false);
+    }
   }, [id, identity, t]);
 
   // ── Participant actions (non-owner) ──────────────────────────────────────────

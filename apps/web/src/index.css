@@ -10684,3 +10684,12 @@ body.has-app-promo-banner .page-header {
 .cef-submit--challenge:hover {
   background: #ff8753;
 }
+
+/* Challenge cards in the NOW feed — orange-tinted tag + audience pill, same
+   visual rhythm as the topic/event cards above them. */
+.challenge-row-card {
+  border-color: rgba(255, 122, 60, 0.15);
+}
+.er-going--challenge {
+  color: #FF7A3C;
+}

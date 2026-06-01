@@ -153,7 +153,10 @@ export default function ChallengeChatPage({
 
   const handleValidate = useCallback(async () => {
     if (!guest?.guestId || busy) return
-    if (!window.confirm(t('validateBody'))) return
+    // One-click validate — no confirm popup. The button label already says
+    // "Validate", clicking it is the confirmation. Mirrors mobile UX which
+    // currently uses an Alert.alert but per user feedback the extra step is
+    // unnecessary friction.
     setBusy('validate')
     try {
       const updated = await validateChallenge(id, guest.guestId)

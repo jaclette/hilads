@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { createSocket } from './socket'
@@ -1002,7 +1002,8 @@ export default function App() {
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
   const [showCreateChooser,  setShowCreateChooser]  = useState(false)
-  const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'events' | 'topics'
+  const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'challenges' | 'events' | 'topics'
+  const [cityChallenges,     setCityChallenges]     = useState([])
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
@@ -2459,6 +2460,7 @@ export default function App() {
       // Bootstrap no longer includes events — /now fires separately so it never
       // blocks the initial chat render. hotEventsStatus was set to 'loading' above.
       const joinChannelId = location.channelId
+      fetchCityChallenges(joinChannelId).then(chs => { if (activeChannelRef.current === joinChannelId) setCityChallenges(chs) }).catch(() => {})
       fetchNowFeed(joinChannelId, sessionIdRef.current).then(data => {
         if (activeChannelRef.current !== joinChannelId) return
         const nowItems = data.items ?? []
@@ -3016,6 +3018,7 @@ export default function App() {
       pollFnRef.current = doRefresh
 
       // Events + Topics: fetch in background after messages are shown
+      fetchCityChallenges(newChannelId).then(chs => { if (activeChannelRef.current === newChannelId) setCityChallenges(chs) }).catch(() => {})
       fetchNowFeed(newChannelId, sessionIdRef.current).then(data => {
         if (activeChannelRef.current !== newChannelId) return
         const nowItems = data.items ?? []
@@ -3361,6 +3364,7 @@ export default function App() {
     // Confirm with server (catches any server-side pruning or ordering)
     const cid = activeChannelRef.current
     if (!cid) return
+    fetchCityChallenges(cid).then(chs => { if (activeChannelRef.current === cid) setCityChallenges(chs) }).catch(() => {})
     fetchNowFeed(cid, sessionIdRef.current).then(data => {
       if (activeChannelRef.current === cid) {
         const nowItems = data.items ?? []
@@ -4589,18 +4593,78 @@ export default function App() {
             <span className="page-title">{t('nowTitle', { ns: 'common' })}</span>
           </div>
           <div className="now-filter-bar">
-            {['all', 'topics', 'events'].map(f => (
+            {['all', 'challenges', 'topics', 'events'].map(f => (
               <button
                 key={f}
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all' ? t('feed.filterAll') : f === 'events' ? t('filterEvents', { ns: 'common' }) : t('filterHangouts', { ns: 'common' })}
+                {f === 'all'        ? t('feed.filterAll')
+                  : f === 'challenges' ? `🔥 ${t('createTitle', { ns: 'challenge' })}`
+                  : f === 'events'     ? t('filterEvents',   { ns: 'common' })
+                  :                      t('filterHangouts', { ns: 'common' })}
               </button>
             ))}
           </div>
           <div className="page-body" ref={nowBodyRef}>
-            {(() => {
+            {/* Challenges strip — shown on All + Challenges filters per spec.
+                Up to 5 cards by created_at DESC; tap → opens the challenge
+                detail page (Phase 10 ChallengeChatPage). */}
+            {(nowFilter === 'all' || nowFilter === 'challenges') && cityChallenges.length > 0 && (
+              <div className="now-challenges-section">
+                {nowFilter === 'all' && (
+                  <p className="events-group-label" style={{ padding: '10px 12px 2px', color: '#FF7A3C' }}>
+                    🔥 {t('createTitle', { ns: 'challenge' })}
+                  </p>
+                )}
+                {cityChallenges.slice(0, nowFilter === 'challenges' ? 50 : 5).map(c => {
+                  const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[c.challenge_type] ?? '🔥'
+                  const audienceLabel = c.audience === 'locals'
+                    ? t('forLocals',    { ns: 'challenge' })
+                    : t('forExplorers', { ns: 'challenge' })
+                  const isValidated = c.status === 'validated'
+                  return (
+                    <button
+                      key={c.id}
+                      className="city-row event-row-card challenge-row-card"
+                      style={{ cursor: 'pointer', textAlign: 'left' }}
+                      onClick={() => { setShowEventDrawer(false); setActiveChallenge(c) }}
+                    >
+                      <div className="er-header">
+                        <span className="er-title">{typeIcon} {c.title}</span>
+                        <span className="er-going er-going--challenge">{t('createTitle', { ns: 'challenge' })}</span>
+                      </div>
+                      <div className="er-badges">
+                        <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
+                        {isValidated && (
+                          <span className="challenge-badge challenge-badge--validated">
+                            ✓ {t('validatedBadge', { ns: 'challenge' })}
+                          </span>
+                        )}
+                      </div>
+                      <AttendeeAvatars
+                        preview={c.participants_preview ?? []}
+                        total={c.participant_count ?? 0}
+                      />
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* Empty state for the 'challenges' filter — only fires when the
+                whole challenges array is empty (no validated either). */}
+            {nowFilter === 'challenges' && cityChallenges.length === 0 && (
+              <div className="events-empty-state">
+                <p className="events-empty-title">{t('createTitle', { ns: 'challenge' })}</p>
+                <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateChallenge() }} style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}>
+                  🔥 {t('createCta', { ns: 'challenge' })}
+                </button>
+              </div>
+            )}
+
+            {/* Filter='challenges' → don't render events/topics below */}
+            {nowFilter !== 'challenges' && (() => {
               const openCreate = () => { tryOpenCreateEvent({ fromDrawer: true }) }
               const tz = cityTimezone || 'UTC'
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
