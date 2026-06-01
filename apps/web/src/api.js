@@ -464,6 +464,106 @@ export async function deleteTopic(topicId, guestId) {
   }
 }
 
+// ── Challenges (Défis) ────────────────────────────────────────────────────────
+// Third primary entity alongside events + hangouts. Persistent (no TTL), with
+// an `open` → `validated` lifecycle. Web client supports: read, accept/leave,
+// validate (creator), chat. Edit/delete stay mobile-only for now.
+
+export async function fetchChallengeById(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch challenge')
+  return res.json() // { challenge, channelId, cityName, country, timezone }
+}
+
+export async function fetchCityChallenges(channelId, limit = 50) {
+  const res = await fetch(`${BASE}/channels/${encodeURIComponent(channelId)}/challenges?limit=${limit}`)
+  if (!res.ok) return []
+  const data = await res.json()
+  return data.challenges ?? []
+}
+
+export async function fetchValidatedChallenges(channelId, { limit = 30, before } = {}) {
+  const params = new URLSearchParams({ limit: String(limit) })
+  if (before) params.set('before', String(before))
+  const res = await fetch(`${BASE}/channels/${encodeURIComponent(channelId)}/challenges/validated?${params}`)
+  if (!res.ok) return []
+  const data = await res.json()
+  return data.challenges ?? []
+}
+
+export async function fetchChallengeMessages(challengeId, { beforeId, limit } = {}) {
+  const params = new URLSearchParams({ limit: String(limit ?? 50) })
+  if (beforeId) params.set('before_id', beforeId)
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/messages?${params}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch challenge messages')
+  return res.json() // { messages, hasMore }
+}
+
+export async function sendChallengeMessage(challengeId, guestId, nickname, content, mentions = null) {
+  const body = { guestId, nickname, content }
+  if (mentions && mentions.length) body.mentions = mentions
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send message')
+  }
+  return res.json()
+}
+
+export async function sendChallengeImageMessage(challengeId, guestId, nickname, imageUrl) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, nickname, type: 'image', imageUrl }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to send image')
+  }
+  return res.json()
+}
+
+export async function fetchChallengeParticipants(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/participants`)
+  if (!res.ok) return { participants: [], count: 0 }
+  return res.json() // { participants, count }
+}
+
+export async function toggleChallengeParticipation(challengeId, guestId, nickname = null) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/participants/toggle`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, nickname }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to toggle participation')
+  }
+  return res.json() // { count, isIn }
+}
+
+export async function validateChallenge(challengeId, guestId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/validate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to validate challenge')
+  }
+  return res.json() // updated challenge object
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

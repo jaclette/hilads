@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { createSocket } from './socket'
@@ -25,6 +25,7 @@ import LinkPreviewCard from './components/LinkPreviewCard'
 import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
+import ChallengeChatPage from './components/ChallengeChatPage'
 import OnboardingCarousel from './components/OnboardingCarousel'
 import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
@@ -1002,6 +1003,7 @@ export default function App() {
   const [showCreateChooser,  setShowCreateChooser]  = useState(false)
   const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'events' | 'topics'
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
+  const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
   // Hangouts are members-only — gate guests to signup, otherwise open the channel.
@@ -1423,6 +1425,22 @@ export default function App() {
       })
     }
 
+    if (link.type === 'challenge') {
+      // Same flow as topic: fetch metadata for the host city, join it, then
+      // open the challenge chat once the city's loaded so the user lands on
+      // a fully-hydrated page. Skip the city-join setTimeout if the fetch
+      // returned null (404) — we'll just stay on home.
+      locPromiseRef.current = fetchChallengeById(link.id).then(data => {
+        if (!data) return null
+        const { challenge, channelId, cityName, country, timezone } = data
+        setCity(cityName)
+        setCityCountry(country)
+        setCityTimezone(timezone)
+        setTimeout(() => setActiveChallenge(challenge), 800)
+        return { channelId, city: cityName, timezone, country }
+      })
+    }
+
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
@@ -1489,7 +1507,7 @@ export default function App() {
       // entry point only for direct hilads.live/ visits (the marketing path).
       const link = parseDeepLink()
       const isPublicDeepLink =
-        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic' || link.type === 'venue' || link.type === 'past')
+        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic' || link.type === 'challenge' || link.type === 'venue' || link.type === 'past')
       if (isPublicDeepLink && !guestAutoJoinedRef.current) {
         guestAutoJoinedRef.current = true
         // handleJoin awaits locPromiseRef.current (already set by the deep-link
@@ -2030,7 +2048,7 @@ export default function App() {
       // stay HCMC) — and SSR (URL-based) disagrees with the hydrated app.
       const urlLink = parseDeepLink()
       const deepLinkCity = !rejoinData && urlLink &&
-        (urlLink.type === 'city' || urlLink.type === 'event' || urlLink.type === 'topic' || urlLink.type === 'past')
+        (urlLink.type === 'city' || urlLink.type === 'event' || urlLink.type === 'topic' || urlLink.type === 'challenge' || urlLink.type === 'past')
       if (rejoinData) {
         console.debug('[hilads:join] path=rejoin ms=0')
         location = await hydrateSavedLocation(rejoinData)
@@ -5648,6 +5666,21 @@ export default function App() {
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
           onViewProfile={openProfile}
+        />
+      )}
+
+      {/* Challenge chat — Phase 10 web-side detail screen. Reuses the
+          topic-chat-page CSS skeleton for consistent layout; brand-orange
+          accents come from the inline challenge-* classes (see App.css). */}
+      {activeChallenge && (
+        <ChallengeChatPage
+          challenge={activeChallenge}
+          guest={guest}
+          nickname={activeNickname}
+          account={account}
+          onBack={() => setActiveChallenge(null)}
+          socket={socketRef.current}
+          sessionId={PAGE_SESSION_ID}
         />
       )}
 

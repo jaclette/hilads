@@ -10528,3 +10528,82 @@ body.has-app-promo-banner .page-header {
   box-shadow: 0 6px 20px rgba(255, 122, 60, 0.3);
 }
 .account-welcome-cta:active { transform: scale(0.98); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Challenge chat page — Phase 10. Mirrors topic-chat-page layout (header,
+   feed, composer come from the same skeleton classes) and adds the
+   challenge-specific hero badges + actions row with the orange brand.
+   ───────────────────────────────────────────────────────────────────────── */
+
+.challenge-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 10px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.challenge-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted, #b3b3b3);
+}
+.challenge-badge--kind {
+  background: rgba(255, 122, 60, 0.14);
+  border-color: rgba(255, 122, 60, 0.30);
+  color: #FF7A3C;
+  letter-spacing: 0.5px;
+}
+.challenge-badge--audience {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted, #b3b3b3);
+}
+.challenge-badge--validated {
+  background: rgba(34, 197, 94, 0.10);
+  border-color: rgba(34, 197, 94, 0.20);
+  color: #4ade80;
+}
+
+.challenge-actions {
+  padding: 10px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.challenge-accept-btn,
+.challenge-validate-btn {
+  width: 100%;
+  padding: 13px 16px;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.08s ease, opacity 0.15s ease;
+}
+.challenge-accept-btn {
+  background: #FF7A3C;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(255, 122, 60, 0.25);
+}
+.challenge-accept-btn--in {
+  background: rgba(255, 122, 60, 0.14);
+  color: #FF7A3C;
+  border: 1px solid rgba(255, 122, 60, 0.30);
+  box-shadow: none;
+}
+.challenge-validate-btn {
+  background: rgba(255, 122, 60, 0.14);
+  color: #FF7A3C;
+  border: 1px solid rgba(255, 122, 60, 0.30);
+}
+.challenge-accept-btn:active,
+.challenge-validate-btn:active { transform: scale(0.985); }
+.challenge-accept-btn:disabled,
+.challenge-validate-btn:disabled { opacity: 0.5; cursor: default; }

@@ -67,6 +67,7 @@ export function createSocket() {
   let pendingEventJoin        = null
   let pendingConversationJoin = null
   let pendingTopicJoin        = null
+  let pendingChallengeJoin    = null
   let pendingUserJoin         = null  // per-user channel for friend reqs etc.
 
   // ── Dispatch ────────────────────────────────────────────────────────────────
@@ -98,6 +99,7 @@ export function createSocket() {
       if (pendingEventJoin)        send({ event: 'joinEvent',         ...pendingEventJoin })
       if (pendingConversationJoin) send({ event: 'joinConversation',  ...pendingConversationJoin })
       if (pendingTopicJoin)        send({ event: 'joinTopic',         ...pendingTopicJoin })
+      if (pendingChallengeJoin)    send({ event: 'joinChallenge',     ...pendingChallengeJoin })
       if (pendingUserJoin)         send({ event: 'joinUser',          ...pendingUserJoin })
 
       // Notify subscribers — useful for catch-up fetches after a disconnect gap
@@ -209,6 +211,18 @@ export function createSocket() {
     leaveTopic(topicId, sessionId) {
       pendingTopicJoin = null
       send({ event: 'leaveTopic', topicId, sessionId })
+    },
+
+    /** Join a challenge room. Replayed automatically on reconnect. */
+    joinChallenge(challengeId, sessionId) {
+      pendingChallengeJoin = { challengeId, sessionId }
+      send({ event: 'joinChallenge', challengeId, sessionId })
+    },
+
+    /** Leave a challenge room. */
+    leaveChallenge(challengeId, sessionId) {
+      pendingChallengeJoin = null
+      send({ event: 'leaveChallenge', challengeId, sessionId })
     },
 
     /** Subscribe to real-time messages for a DM conversation. Replayed automatically on reconnect. */
