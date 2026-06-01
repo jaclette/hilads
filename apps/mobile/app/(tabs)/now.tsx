@@ -14,15 +14,22 @@ import { fetchNowFeed, fetchHangoutParticipants } from '@/api/topics';
 import { haversineMeters, formatDistance } from '@/lib/distance';
 import { MembersSheet } from '@/components/MembersSheet';
 import { fetchCanCreateEvent, fetchEventParticipants } from '@/api/events';
+import { fetchCityChallenges } from '@/api/challenges';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
-import type { FeedItem, HiladsEvent, UserDTO } from '@/types';
+import type { FeedItem, HiladsEvent, UserDTO, Challenge } from '@/types';
 import { Colors, FontSizes, Spacing, Radius, Gradients, Shadows } from '@/constants';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { CreateSheet } from '@/components/CreateSheet';
 import { EventCard } from '@/components/EventCard';
 import { TopicCard } from '@/components/TopicCard';
+import { ChallengeCard } from '@/components/ChallengeCard';
 import { LinearGradient } from 'expo-linear-gradient';
+
+// Cap the inline challenge strip shown on NOW. The full list lives at
+// /challenge/all behind the "See all" CTA. Spec: "Show maximum 5 défis,
+// sorted by most recent."
+const NOW_CHALLENGES_CAP = 5;
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
@@ -43,13 +50,24 @@ function EmptyState({ city }: { city?: string }) {
 function FilterEmptyState({
   filter, city, userMode, onStartPulse,
 }: {
-  filter:        'all' | 'events' | 'topics';
+  filter:        'all' | 'challenges' | 'events' | 'topics';
   city?:         string;
   userMode?:     string | null;
   onStartPulse?: () => void;
 }) {
   const { t } = useTranslation('now');
   if (filter === 'all') return <EmptyState city={city} />;
+  if (filter === 'challenges') {
+    return (
+      <View style={styles.empty}>
+        <Text style={styles.emptyEmoji}>🔥</Text>
+        <Text style={styles.emptyTitle}>{t('noChallenges')}</Text>
+        <Text style={styles.emptySub}>
+          {city ? t('noChallengesCity', { city }) : t('noChallengesGeneric')}
+        </Text>
+      </View>
+    );
+  }
   if (filter === 'events' && userMode === 'local') {
     return (
       <View style={styles.empty}>
@@ -114,10 +132,11 @@ export default function NowScreen() {
 
   const [items,         setItems]         = useState<FeedItem[]>([]);
   const [publicEvents,  setPublicEvents]  = useState<FeedItem[]>([]);
+  const [challenges,    setChallenges]    = useState<Challenge[]>([]);
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
-  const [filter,        setFilter]        = useState<'all' | 'events' | 'topics'>('all');
+  const [filter,        setFilter]        = useState<'all' | 'challenges' | 'events' | 'topics'>('all');
   // Viewer coords for NOW distance display. Read ONCE from the OS cache on load /
   // pull-to-refresh (getLastKnownPositionAsync — no watcher, no permission prompt;
   // permission was already requested at boot). null → no usable location → cards
@@ -181,6 +200,10 @@ export default function NowScreen() {
     // the 5/hour rate limit per city. `as never` because expo-router's typed
     // routes haven't picked up the new app/challenge/create.tsx yet.
     router.push('/challenge/create' as never);
+  }
+  function handleSeeAllChallenges() {
+    if (!city) return;
+    router.push(`/challenge/all?channelId=${city.channelId}` as never);
   }
   async function handleHostSpot() {
     if (!city) return;
@@ -246,10 +269,17 @@ export default function NowScreen() {
     else setLoading(true);
     setError(null);
     try {
-      const { items: nowData, publicEvents: pubData } = await fetchNowFeed(city.channelId, identity?.guestId);
-      console.log('[NowScreen] fetch done —', nowData.length, 'items,', pubData.length, 'public events');
+      // Parallel — challenges are a sibling fetch (no backend change needed to
+      // unify /now). Failure of either is non-fatal; the other section still
+      // renders. fetchCityChallenges already catches + returns [] on failure.
+      const [{ items: nowData, publicEvents: pubData }, chData] = await Promise.all([
+        fetchNowFeed(city.channelId, identity?.guestId),
+        fetchCityChallenges(city.channelId, 50),
+      ]);
+      console.log('[NowScreen] fetch done —', nowData.length, 'items,', pubData.length, 'public events,', chData.length, 'challenges');
       setItems(applyCountCache(nowData));
       setPublicEvents(pubData);
+      setChallenges(chData);
     } catch (err) {
       console.warn('[NowScreen] fetch error:', err);
       setError(t('loadError'));
@@ -363,6 +393,32 @@ export default function NowScreen() {
     return off;
   }, [city]);
 
+  // New challenge created in this city — server pushes new_challenge via WS.
+  // Append at the head of the local list (backend sorts by created_at DESC so
+  // a fresh one is always first). Same defensive city-room match as events.
+  useEffect(() => {
+    const off = socket.on('new_challenge', (data: Record<string, unknown>) => {
+      const ch = data.challenge as Challenge | undefined;
+      if (!ch?.id || !city || String(data.channelId) !== String(city.channelId)) return;
+      setChallenges(prev => prev.some(c => c.id === ch.id) ? prev : [ch, ...prev]);
+    });
+    return off;
+  }, [city]);
+
+  // Challenge validated by its creator — flip the badge live + remove from the
+  // active strip (the See-all-past screen picks it up via its own fetch).
+  useEffect(() => {
+    const off = socket.on('challenge_validated', (data: Record<string, unknown>) => {
+      const ch = data.challenge as Challenge | undefined;
+      if (!ch?.id || !city || String(data.channelId) !== String(city.channelId)) return;
+      // Validated challenges leave the active feed but the channel still
+      // exists — when we ship the detail screen in Phase 5 the user can still
+      // open the chat. Here we just drop them from the strip.
+      setChallenges(prev => prev.filter(c => c.id !== ch.id));
+    });
+    return off;
+  }, [city]);
+
   // Filter + flat-list memos. These MUST run on every render, so they live
   // ABOVE the early returns below — otherwise when `city` flips null→set the
   // hook count changes and React throws "Rendered more hooks than during the
@@ -385,6 +441,9 @@ export default function NowScreen() {
   }, [items, publicEvents, userLocation]);
 
   const filteredItems = useMemo(() => {
+    // 'challenges' filter hides events + hangouts entirely — the strip below
+    // is the only section in that mode.
+    if (filter === 'challenges') return [];
     const base = filter === 'events' ? items.filter(i => i.kind === 'event')
                : filter === 'topics' ? items.filter(i => i.kind === 'topic')
                : items;
@@ -423,9 +482,26 @@ export default function NowScreen() {
     });
   }, [items, filter, blockedSet, distanceById]);
 
-  const listData = useMemo<Array<FeedItem | { kind: 'section'; label: string } | (HiladsEvent & { kind: 'public_event' })>>(
+  // Top 5 challenges for the inline strip (open status, most-recent first —
+  // backend already sorts). Both 'all' and 'challenges' filters surface them.
+  const topChallenges = useMemo(
+    () => (filter === 'events' || filter === 'topics' ? [] : challenges.slice(0, NOW_CHALLENGES_CAP)),
+    [challenges, filter],
+  );
+
+  // Note: see_all_challenges carries an explicit `label?: undefined` to keep
+  // TS's array-literal type inference aligned with the section/see_all rows.
+  // Without it, the discriminated union inference adds it implicitly and
+  // mismatches the explicit annotation.
+  const listData = useMemo<Array<
+    FeedItem
+    | { kind: 'section'; label: string }
+    | { kind: 'challenge'; challenge: Challenge }
+    | { kind: 'see_all_challenges'; label?: undefined }
+    | (HiladsEvent & { kind: 'public_event' })
+  >>(
     () => {
-      const showPublic = filter !== 'topics' && publicEvents.length > 0;
+      const showPublic = filter !== 'topics' && filter !== 'challenges' && publicEvents.length > 0;
       // Public events are distance-sorted within their section too (nearest →
       // farthest; no-coord last), consistent with the main feed.
       const sortedPublic = [...publicEvents].sort((a, b) => {
@@ -437,7 +513,18 @@ export default function NowScreen() {
         if (aHas && bHas && aDist !== bDist) return aDist! - bDist!;
         return 0;
       });
+      const challengesBlock = topChallenges.length > 0
+        ? [
+            { kind: 'section' as const, label: t('challengesSection') },
+            ...topChallenges.map(c => ({ kind: 'challenge' as const, challenge: c })),
+            // See-all CTA only when there are more challenges than the cap.
+            ...(challenges.length > NOW_CHALLENGES_CAP
+              ? [{ kind: 'see_all_challenges' as const }]
+              : []),
+          ]
+        : [];
       return [
+        ...challengesBlock,
         ...filteredItems,
         ...(showPublic
           ? [
@@ -447,7 +534,7 @@ export default function NowScreen() {
           : []),
       ];
     },
-    [filteredItems, publicEvents, filter, distanceById, t],
+    [filteredItems, topChallenges, challenges.length, publicEvents, filter, distanceById, t],
   );
 
   // Still booting or waiting for city — keep showing spinner.
@@ -500,9 +587,10 @@ export default function NowScreen() {
         </View>
       </View>
 
-      {/* Filter pills */}
+      {/* Filter pills — order: All → Challenges (new primary) → Hangouts → Events.
+          Spec: "Défi filter chip placed before Sortie and Événements". */}
       <View style={styles.filterBar}>
-        {(['all', 'topics', 'events'] as const).map(f => (
+        {(['all', 'challenges', 'topics', 'events'] as const).map(f => (
           <TouchableOpacity
             key={f}
             style={[styles.filterPill, filter === f && styles.filterPillActive]}
@@ -510,7 +598,10 @@ export default function NowScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all' ? t('filterAll') : f === 'events' ? t('filterEvents', { ns: 'common' }) : t('filterHangouts', { ns: 'common' })}
+              {f === 'all'        ? t('filterAll')
+                : f === 'challenges' ? t('filterChallenges')
+                : f === 'events'     ? t('filterEvents', { ns: 'common' })
+                :                      t('filterHangouts', { ns: 'common' })}
             </Text>
           </TouchableOpacity>
         ))}
@@ -537,13 +628,41 @@ export default function NowScreen() {
       ) : (
         <FlatList
           data={listData}
-          keyExtractor={(item, idx) => ('id' in item ? item.id : `section-${idx}`)}
+          keyExtractor={(item, idx) =>
+            item.kind === 'challenge'           ? `challenge-${item.challenge.id}`
+              : item.kind === 'see_all_challenges' ? `see-all-challenges-${idx}`
+              : 'id' in item                       ? item.id
+              :                                      `section-${idx}`}
           removeClippedSubviews
           maxToRenderPerBatch={6}
           windowSize={5}
           renderItem={({ item }) => {
             if (item.kind === 'section') {
               return <Text style={styles.sectionLabel}>{item.label}</Text>;
+            }
+            if (item.kind === 'challenge') {
+              const ch = item.challenge;
+              return (
+                <ChallengeCard
+                  challenge={ch}
+                  onPress={() => {
+                    track('challenge_opened', { challengeId: ch.id });
+                    // TODO Phase 5: route to /challenge/{id} detail. The strip
+                    // is still discoverable today via the See-all CTA.
+                  }}
+                  // Avatar tap intentionally not wired here — the participants
+                  // list endpoint + modal flow lands in Phase 5 alongside the
+                  // detail screen. Avatars stay visible (count + preview) as
+                  // a static social-proof signal.
+                />
+              );
+            }
+            if (item.kind === 'see_all_challenges') {
+              return (
+                <TouchableOpacity style={styles.seeAllRow} activeOpacity={0.7} onPress={handleSeeAllChallenges}>
+                  <Text style={styles.seeAllText}>{t('seeAllChallenges')}</Text>
+                </TouchableOpacity>
+              );
             }
             if (item.kind === 'topic') {
               const topicMeters = distanceById.get(item.id);
@@ -728,6 +847,19 @@ const styles = StyleSheet.create({
     letterSpacing:     1.0,
     textTransform:     'uppercase',
     color:             Colors.muted,
+  },
+  // "See all challenges →" row that sits at the end of the inline strip.
+  seeAllRow: {
+    alignSelf:         'flex-end',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical:   Spacing.xs,
+    marginTop:         Spacing.xs,
+  },
+  seeAllText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      '#FF7A3C',
+    letterSpacing: 0.2,
   },
 
   // paddingBottom reserves room for the sticky single-row bottomActions block
