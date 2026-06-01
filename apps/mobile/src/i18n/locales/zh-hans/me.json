@@ -26,11 +26,26 @@
   "fieldInterests": "兴趣",
   "interestsHint": "— 最多选 5 个",
   "interest": {
-    "drinks": "喝酒", "party": "派对", "nightlife": "夜生活", "music": "音乐",
-    "live music": "现场音乐", "culture": "文化", "art": "艺术", "food": "美食",
-    "coffee": "咖啡", "sport": "运动", "fitness": "健身", "hiking": "徒步",
-    "beach": "海滩", "wellness": "养生", "travel": "旅行", "hangout": "聚会",
-    "socializing": "社交", "gaming": "游戏", "tech": "科技", "dating": "约会"
+    "drinks": "喝酒",
+    "party": "派对",
+    "nightlife": "夜生活",
+    "music": "音乐",
+    "live music": "现场音乐",
+    "culture": "文化",
+    "art": "艺术",
+    "food": "美食",
+    "coffee": "咖啡",
+    "sport": "运动",
+    "fitness": "健身",
+    "hiking": "徒步",
+    "beach": "海滩",
+    "wellness": "养生",
+    "travel": "旅行",
+    "hangout": "聚会",
+    "socializing": "社交",
+    "gaming": "游戏",
+    "tech": "科技",
+    "dating": "约会"
   },
   "noHangouts": "还没有聚会 —— 发起一个 ⚡",
   "host": "主办者",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "你的个人资料、好友和设置将被永久删除。\n\n此操作无法撤销。",
   "deleteAccountConfirm": "删除我的账户",
   "errorTitle": "错误",
-  "deleteAccountFail": "无法删除账户。请再试一次。"
+  "deleteAccountFail": "无法删除账户。请再试一次。",
+  "tabChallenges": "挑战",
+  "noChallenges": "暂无挑战 — 发起一个 🔥"
 }

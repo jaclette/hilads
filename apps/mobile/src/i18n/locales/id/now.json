@@ -29,6 +29,14 @@
     "hangoutSub": "Instan — biarkan orang gabung sekarang",
     "eventLabel": "Buat acara",
     "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain",
-    "cancel": "Batal"
-  }
+    "cancel": "Batal",
+    "challengeLabel": "Luncurkan tantangan",
+    "challengeSub": "Local & pelancong — terhubung lewat tantangan"
+  },
+  "filterChallenges": "🔥 Tantangan",
+  "challengesSection": "Tantangan",
+  "seeAllChallenges": "Lihat semua →",
+  "noChallenges": "Belum ada tantangan",
+  "noChallengesCity": "Jadilah yang pertama meluncurkan di {{city}}",
+  "noChallengesGeneric": "Jadilah yang pertama meluncurkan tantangan."
 }

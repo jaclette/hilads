@@ -66,5 +66,7 @@
   "blocking": "Memblokir…",
   "ghostName": "Hantu",
   "visiting": "Berkunjung ke {{city}}",
-  "ghostNote": "Melayang-layang sebagai hantu 👻"
+  "ghostNote": "Melayang-layang sebagai hantu 👻",
+  "tabChallenges": "Tantangan",
+  "noChallenges": "Belum ada tantangan"
 }

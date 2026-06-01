@@ -29,6 +29,14 @@
     "hangoutSub": "바로 — 지금 사람들이 참여하게 하세요",
     "eventLabel": "이벤트 만들기",
     "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요",
-    "cancel": "취소"
-  }
+    "cancel": "취소",
+    "challengeLabel": "챌린지 시작",
+    "challengeSub": "로컬과 여행자 — 챌린지로 연결"
+  },
+  "filterChallenges": "🔥 챌린지",
+  "challengesSection": "챌린지",
+  "seeAllChallenges": "전체 보기 →",
+  "noChallenges": "아직 챌린지가 없습니다",
+  "noChallengesCity": "{{city}}에서 첫 번째로 만들어 보세요",
+  "noChallengesGeneric": "첫 번째로 챌린지를 만들어 보세요."
 }

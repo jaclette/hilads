@@ -29,6 +29,14 @@
     "hangoutSub": "All'istante — lascia che la gente si unisca subito",
     "eventLabel": "Crea un evento",
     "eventSub": "Organizza qualcosa a cui unirsi",
-    "cancel": "Annulla"
-  }
+    "cancel": "Annulla",
+    "challengeLabel": "Lancia una sfida",
+    "challengeSub": "Local & viaggiatori — connettetevi attraverso una sfida"
+  },
+  "filterChallenges": "🔥 Sfide",
+  "challengesSection": "Sfide",
+  "seeAllChallenges": "Vedi tutte →",
+  "noChallenges": "Nessuna sfida ancora",
+  "noChallengesCity": "Sii il primo a lanciarne una a {{city}}",
+  "noChallengesGeneric": "Sii il primo a lanciare una sfida."
 }

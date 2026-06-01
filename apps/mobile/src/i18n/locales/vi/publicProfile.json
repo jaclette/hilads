@@ -65,5 +65,7 @@
   "blocking": "Đang chặn…",
   "ghostName": "Vãng lai",
   "visiting": "Đang ghé thăm {{city}}",
-  "ghostNote": "Đang lượn lờ như một bóng ma 👻"
+  "ghostNote": "Đang lượn lờ như một bóng ma 👻",
+  "tabChallenges": "Thử thách",
+  "noChallenges": "Chưa có thử thách nào"
 }

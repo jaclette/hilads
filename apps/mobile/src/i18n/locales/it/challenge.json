@@ -1,0 +1,36 @@
+{
+  "createTitle": "Crea una sfida",
+  "editTitle": "Modifica sfida",
+  "audience": "Per chi?",
+  "aud": {
+    "locals": "Local",
+    "explorers": "Esploratori"
+  },
+  "type": "Tipo",
+  "tp": {
+    "food": "Cibo",
+    "place": "Posto",
+    "culture": "Cultura",
+    "help": "Aiuto"
+  },
+  "titleLabel": "La tua sfida",
+  "titlePlaceholder": "es. Portami al tuo caffè preferito",
+  "createCta": "Lancia la sfida 🔥",
+  "saveChanges": "Salva modifiche",
+  "errSave": "Impossibile salvare",
+  "errStart": "Impossibile lanciare la sfida",
+  "validateTitle": "Validare questa sfida?",
+  "validateBody": "Una volta validata, la sfida va negli archivi. Chi l'ha accettata riceve una notifica.",
+  "validateConfirm": "Valida",
+  "validateCancel": "Non ancora",
+  "deleteTitle": "Eliminare la sfida?",
+  "deleteBody": "La sfida viene rimossa per tutti. Non può essere annullato.",
+  "deleteConfirm": "Elimina",
+  "acceptCta": "Accetta la sfida",
+  "acceptedCta": "Accettata ✓",
+  "validatedBadge": "Validata",
+  "openBadge": "Aperta",
+  "forLocals": "Per i local",
+  "forExplorers": "Per gli esploratori",
+  "notFound": "Sfida non trovata"
+}

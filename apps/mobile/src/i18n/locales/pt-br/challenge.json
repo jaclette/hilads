@@ -1,0 +1,36 @@
+{
+  "createTitle": "Criar um desafio",
+  "editTitle": "Editar desafio",
+  "audience": "Para quem?",
+  "aud": {
+    "locals": "Locais",
+    "explorers": "Exploradores"
+  },
+  "type": "Tipo",
+  "tp": {
+    "food": "Comida",
+    "place": "Lugar",
+    "culture": "Cultura",
+    "help": "Ajuda"
+  },
+  "titleLabel": "Seu desafio",
+  "titlePlaceholder": "ex. Me leve ao seu café favorito",
+  "createCta": "Lançar desafio 🔥",
+  "saveChanges": "Salvar alterações",
+  "errSave": "Não foi possível salvar",
+  "errStart": "Não foi possível lançar o desafio",
+  "validateTitle": "Validar este desafio?",
+  "validateBody": "Depois de validado, o desafio vai para os desafios passados. Quem aceitou recebe uma notificação.",
+  "validateConfirm": "Validar",
+  "validateCancel": "Agora não",
+  "deleteTitle": "Excluir desafio?",
+  "deleteBody": "O desafio é removido para todos. Não pode ser desfeito.",
+  "deleteConfirm": "Excluir",
+  "acceptCta": "Aceitar o desafio",
+  "acceptedCta": "Aceito ✓",
+  "validatedBadge": "Validado",
+  "openBadge": "Aberto",
+  "forLocals": "Para locais",
+  "forExplorers": "Para exploradores",
+  "notFound": "Desafio não encontrado"
+}

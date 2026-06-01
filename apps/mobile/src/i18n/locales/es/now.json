@@ -29,6 +29,14 @@
     "hangoutSub": "Al instante — deja que la gente se una ahora",
     "eventLabel": "Crear un evento",
     "eventSub": "Organiza algo a lo que unirse",
-    "cancel": "Cancelar"
-  }
+    "cancel": "Cancelar",
+    "challengeLabel": "Lanzar un reto",
+    "challengeSub": "Locales y exploradores — conecten a través de un reto"
+  },
+  "filterChallenges": "🔥 Retos",
+  "challengesSection": "Retos",
+  "seeAllChallenges": "Ver todos →",
+  "noChallenges": "Aún no hay retos",
+  "noChallengesCity": "Sé la primera en lanzar uno en {{city}}",
+  "noChallengesGeneric": "Sé la primera en lanzar un reto."
 }

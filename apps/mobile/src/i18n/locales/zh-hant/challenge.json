@@ -1,0 +1,36 @@
+{
+  "createTitle": "發起挑戰",
+  "editTitle": "編輯挑戰",
+  "audience": "給誰?",
+  "aud": {
+    "locals": "在地人",
+    "explorers": "旅人"
+  },
+  "type": "類型",
+  "tp": {
+    "food": "美食",
+    "place": "地點",
+    "culture": "文化",
+    "help": "幫助"
+  },
+  "titleLabel": "你的挑戰",
+  "titlePlaceholder": "例如,帶我去你最愛的咖啡館",
+  "createCta": "發起挑戰 🔥",
+  "saveChanges": "儲存變更",
+  "errSave": "儲存失敗",
+  "errStart": "無法發起挑戰",
+  "validateTitle": "驗證這個挑戰?",
+  "validateBody": "驗證後,挑戰會進入過往挑戰。所有接受的人都會收到通知。",
+  "validateConfirm": "驗證",
+  "validateCancel": "暫不",
+  "deleteTitle": "刪除挑戰?",
+  "deleteBody": "挑戰將對所有人刪除。無法復原。",
+  "deleteConfirm": "刪除",
+  "acceptCta": "接受挑戰",
+  "acceptedCta": "已接受 ✓",
+  "validatedBadge": "已驗證",
+  "openBadge": "開放",
+  "forLocals": "給在地人",
+  "forExplorers": "給旅人",
+  "notFound": "找不到挑戰"
+}

@@ -26,7 +26,9 @@
     "next": "次へ",
     "explore": "まずは見てみる",
     "createAccount": "アカウントを作成",
-    "fallbackCity": "あなたの街"
+    "fallbackCity": "あなたの街",
+    "slideChallengeTitle": "チャレンジでつながる",
+    "slideChallengeBody": "あなたはローカル、または旅行者。反対側のためにチャレンジを投げよう — タイプを選び、タイトルをつけ、人々が受け入れるのを見守ろう。終わったら確認しよう。"
   },
   "share": {
     "title": "何かをシェア 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "モード",
   "mode": {
-    "local": { "label": "Local", "desc": "この街を知っている" },
-    "exploring": { "label": "Exploring", "desc": "この街を探検中" }
+    "local": {
+      "label": "Local",
+      "desc": "この街を知っている"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "この街を探検中"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

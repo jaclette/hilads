@@ -29,6 +29,14 @@
     "hangoutSub": "すぐに — 今みんなを呼び込もう",
     "eventLabel": "イベントを作成",
     "eventSub": "みんなが参加できる何かを企画しよう",
-    "cancel": "キャンセル"
-  }
+    "cancel": "キャンセル",
+    "challengeLabel": "チャレンジを開始",
+    "challengeSub": "ローカルと旅行者 — チャレンジでつながる"
+  },
+  "filterChallenges": "🔥 チャレンジ",
+  "challengesSection": "チャレンジ",
+  "seeAllChallenges": "すべて見る →",
+  "noChallenges": "まだチャレンジはありません",
+  "noChallengesCity": "{{city}}で最初の一人になろう",
+  "noChallengesGeneric": "最初にチャレンジを始めよう。"
 }

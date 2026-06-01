@@ -26,11 +26,26 @@
   "fieldInterests": "MINAT",
   "interestsHint": "— pilih hingga 5",
   "interest": {
-    "drinks": "minuman", "party": "pesta", "nightlife": "kehidupan malam", "music": "musik",
-    "live music": "musik live", "culture": "budaya", "art": "seni", "food": "makanan",
-    "coffee": "kopi", "sport": "olahraga", "fitness": "kebugaran", "hiking": "hiking",
-    "beach": "pantai", "wellness": "kesehatan", "travel": "jalan-jalan", "hangout": "nongkrong",
-    "socializing": "bersosialisasi", "gaming": "gaming", "tech": "teknologi", "dating": "kencan"
+    "drinks": "minuman",
+    "party": "pesta",
+    "nightlife": "kehidupan malam",
+    "music": "musik",
+    "live music": "musik live",
+    "culture": "budaya",
+    "art": "seni",
+    "food": "makanan",
+    "coffee": "kopi",
+    "sport": "olahraga",
+    "fitness": "kebugaran",
+    "hiking": "hiking",
+    "beach": "pantai",
+    "wellness": "kesehatan",
+    "travel": "jalan-jalan",
+    "hangout": "nongkrong",
+    "socializing": "bersosialisasi",
+    "gaming": "gaming",
+    "tech": "teknologi",
+    "dating": "kencan"
   },
   "noHangouts": "Belum ada nongkrong — mulai satu ⚡",
   "host": "Host",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "Profil, teman, dan pengaturanmu akan dihapus secara permanen.\n\nIni tidak bisa dibatalkan.",
   "deleteAccountConfirm": "Hapus akunku",
   "errorTitle": "Error",
-  "deleteAccountFail": "Tidak bisa menghapus akun. Coba lagi."
+  "deleteAccountFail": "Tidak bisa menghapus akun. Coba lagi.",
+  "tabChallenges": "Tantangan",
+  "noChallenges": "Belum ada tantangan — luncurkan satu 🔥"
 }

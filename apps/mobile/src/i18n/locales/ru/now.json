@@ -29,6 +29,14 @@
     "hangoutSub": "Мгновенно — пусть люди присоединятся прямо сейчас",
     "eventLabel": "Создать событие",
     "eventSub": "Спланируй то, к чему присоединятся другие",
-    "cancel": "Отмена"
-  }
+    "cancel": "Отмена",
+    "challengeLabel": "Запустить челлендж",
+    "challengeSub": "Местные и путешественники — соединяйтесь через челлендж"
+  },
+  "filterChallenges": "🔥 Челленджи",
+  "challengesSection": "Челленджи",
+  "seeAllChallenges": "Смотреть все →",
+  "noChallenges": "Пока нет челленджей",
+  "noChallengesCity": "Запусти первый в городе {{city}}",
+  "noChallengesGeneric": "Запусти первый челлендж."
 }

@@ -66,5 +66,7 @@
   "blocking": "屏蔽中…",
   "ghostName": "幽灵",
   "visiting": "正在到访 {{city}}",
-  "ghostNote": "以幽灵身份四处漂浮 👻"
+  "ghostNote": "以幽灵身份四处漂浮 👻",
+  "tabChallenges": "挑战",
+  "noChallenges": "暂无挑战"
 }

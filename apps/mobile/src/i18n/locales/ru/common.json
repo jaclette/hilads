@@ -26,7 +26,9 @@
     "next": "Далее",
     "explore": "Сначала осмотреться",
     "createAccount": "Создать аккаунт",
-    "fallbackCity": "ваш город"
+    "fallbackCity": "ваш город",
+    "slideChallengeTitle": "Соединяйтесь через челленджи",
+    "slideChallengeBody": "Ты местный или путешественник. Запусти челлендж для другой стороны — выбери тип, дай ему название, смотри, как люди принимают. Подтверди, когда закончится."
   },
   "share": {
     "title": "Поделись чем-нибудь 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "РЕЖИМ",
   "mode": {
-    "local": { "label": "Local", "desc": "Ты знаешь этот город" },
-    "exploring": { "label": "Exploring", "desc": "Ты его открываешь" }
+    "local": {
+      "label": "Local",
+      "desc": "Ты знаешь этот город"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "Ты его открываешь"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

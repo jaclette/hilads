@@ -70,5 +70,7 @@
   "blocking": "جارٍ الحظر…",
   "ghostName": "شبح",
   "visiting": "يزور {{city}}",
-  "ghostNote": "يتجوّل هنا كشبح 👻"
+  "ghostNote": "يتجوّل هنا كشبح 👻",
+  "tabChallenges": "التحديات",
+  "noChallenges": "لا توجد تحديات بعد"
 }

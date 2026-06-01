@@ -29,6 +29,14 @@
     "hangoutSub": "Instant — payagan ang mga tao na sumali sa iyo ngayon",
     "eventLabel": "Gumawa ng event",
     "eventSub": "Magplano ng kayang salihan ng iba",
-    "cancel": "Kanselahin"
-  }
+    "cancel": "Kanselahin",
+    "challengeLabel": "Maglunsad ng challenge",
+    "challengeSub": "Mga local & biyahero — magkonekta sa pamamagitan ng challenge"
+  },
+  "filterChallenges": "🔥 Mga Challenge",
+  "challengesSection": "Mga Challenge",
+  "seeAllChallenges": "Tingnan lahat →",
+  "noChallenges": "Walang challenge pa",
+  "noChallengesCity": "Maging unang maglunsad sa {{city}}",
+  "noChallengesGeneric": "Maging unang maglunsad ng challenge."
 }

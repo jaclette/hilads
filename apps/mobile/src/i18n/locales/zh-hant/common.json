@@ -26,7 +26,9 @@
     "next": "下一步",
     "explore": "先逛逛",
     "createAccount": "建立帳號",
-    "fallbackCity": "你的城市"
+    "fallbackCity": "你的城市",
+    "slideChallengeTitle": "透過挑戰連結",
+    "slideChallengeBody": "你是在地人或旅人。為另一方發起一個挑戰 — 選擇類型,給它一個標題,看著人們接受。完成後驗證。"
   },
   "share": {
     "title": "分享點什麼 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "模式",
   "mode": {
-    "local": { "label": "Local", "desc": "你熟悉這座城市" },
-    "exploring": { "label": "探索中", "desc": "你正在探索它" }
+    "local": {
+      "label": "Local",
+      "desc": "你熟悉這座城市"
+    },
+    "exploring": {
+      "label": "探索中",
+      "desc": "你正在探索它"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

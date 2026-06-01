@@ -26,11 +26,26 @@
   "fieldInterests": "INTERESSEN",
   "interestsHint": "— wähle bis zu 5",
   "interest": {
-    "drinks": "Drinks", "party": "Party", "nightlife": "Nachtleben", "music": "Musik",
-    "live music": "Live-Musik", "culture": "Kultur", "art": "Kunst", "food": "Essen",
-    "coffee": "Kaffee", "sport": "Sport", "fitness": "Fitness", "hiking": "Wandern",
-    "beach": "Strand", "wellness": "Wellness", "travel": "Reisen", "hangout": "Treffen",
-    "socializing": "Leute treffen", "gaming": "Gaming", "tech": "Technik", "dating": "Dating"
+    "drinks": "Drinks",
+    "party": "Party",
+    "nightlife": "Nachtleben",
+    "music": "Musik",
+    "live music": "Live-Musik",
+    "culture": "Kultur",
+    "art": "Kunst",
+    "food": "Essen",
+    "coffee": "Kaffee",
+    "sport": "Sport",
+    "fitness": "Fitness",
+    "hiking": "Wandern",
+    "beach": "Strand",
+    "wellness": "Wellness",
+    "travel": "Reisen",
+    "hangout": "Treffen",
+    "socializing": "Leute treffen",
+    "gaming": "Gaming",
+    "tech": "Technik",
+    "dating": "Dating"
   },
   "noHangouts": "Noch keine Treffen — starte eins ⚡",
   "host": "Host",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "Dein Profil, deine Freunde und deine Einstellungen werden dauerhaft entfernt.\n\nDies kann nicht rückgängig gemacht werden.",
   "deleteAccountConfirm": "Mein Konto löschen",
   "errorTitle": "Fehler",
-  "deleteAccountFail": "Konto konnte nicht gelöscht werden. Versuche es erneut."
+  "deleteAccountFail": "Konto konnte nicht gelöscht werden. Versuche es erneut.",
+  "tabChallenges": "Challenges",
+  "noChallenges": "Noch keine Challenges — starte eine 🔥"
 }

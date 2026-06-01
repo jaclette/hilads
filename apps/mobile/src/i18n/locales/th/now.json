@@ -29,6 +29,14 @@
     "hangoutSub": "ทันที — ให้ผู้คนเข้าร่วมกับคุณตอนนี้เลย",
     "eventLabel": "สร้างกิจกรรม",
     "eventSub": "วางแผนอะไรสักอย่างให้คนอื่นเข้าร่วม",
-    "cancel": "ยกเลิก"
-  }
+    "cancel": "ยกเลิก",
+    "challengeLabel": "เริ่มชาเลนจ์",
+    "challengeSub": "คนท้องถิ่นและนักเดินทาง — เชื่อมต่อกันผ่านชาเลนจ์"
+  },
+  "filterChallenges": "🔥 ชาเลนจ์",
+  "challengesSection": "ชาเลนจ์",
+  "seeAllChallenges": "ดูทั้งหมด →",
+  "noChallenges": "ยังไม่มีชาเลนจ์",
+  "noChallengesCity": "เป็นคนแรกที่เริ่มใน {{city}}",
+  "noChallengesGeneric": "เป็นคนแรกที่เริ่มชาเลนจ์"
 }

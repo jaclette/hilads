@@ -66,5 +66,7 @@
   "blocking": "Bloqueando…",
   "ghostName": "Fantasma",
   "visiting": "De visita en {{city}}",
-  "ghostNote": "Flota por aquí como un fantasma 👻"
+  "ghostNote": "Flota por aquí como un fantasma 👻",
+  "tabChallenges": "Retos",
+  "noChallenges": "Aún no hay retos"
 }

@@ -26,11 +26,26 @@
   "fieldInterests": "INTERESSES",
   "interestsHint": "— escolha até 5",
   "interest": {
-    "drinks": "drinks", "party": "festa", "nightlife": "vida noturna", "music": "música",
-    "live music": "música ao vivo", "culture": "cultura", "art": "arte", "food": "comida",
-    "coffee": "café", "sport": "esporte", "fitness": "fitness", "hiking": "trilha",
-    "beach": "praia", "wellness": "bem-estar", "travel": "viagens", "hangout": "rolê",
-    "socializing": "socializar", "gaming": "games", "tech": "tecnologia", "dating": "namoro"
+    "drinks": "drinks",
+    "party": "festa",
+    "nightlife": "vida noturna",
+    "music": "música",
+    "live music": "música ao vivo",
+    "culture": "cultura",
+    "art": "arte",
+    "food": "comida",
+    "coffee": "café",
+    "sport": "esporte",
+    "fitness": "fitness",
+    "hiking": "trilha",
+    "beach": "praia",
+    "wellness": "bem-estar",
+    "travel": "viagens",
+    "hangout": "rolê",
+    "socializing": "socializar",
+    "gaming": "games",
+    "tech": "tecnologia",
+    "dating": "namoro"
   },
   "noHangouts": "Ainda não há rolês — comece um ⚡",
   "host": "Anfitrião",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "Seu perfil, seus amigos e suas configurações serão removidos permanentemente.\n\nIsso não pode ser desfeito.",
   "deleteAccountConfirm": "Excluir minha conta",
   "errorTitle": "Erro",
-  "deleteAccountFail": "Não foi possível excluir a conta. Tente de novo."
+  "deleteAccountFail": "Não foi possível excluir a conta. Tente de novo.",
+  "tabChallenges": "Desafios",
+  "noChallenges": "Nenhum desafio ainda — lance um 🔥"
 }

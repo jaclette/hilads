@@ -26,11 +26,26 @@
   "fieldInterests": "ความสนใจ",
   "interestsHint": "— เลือกได้สูงสุด 5 อย่าง",
   "interest": {
-    "drinks": "เครื่องดื่ม", "party": "ปาร์ตี้", "nightlife": "ชีวิตกลางคืน", "music": "เพลง",
-    "live music": "ดนตรีสด", "culture": "วัฒนธรรม", "art": "ศิลปะ", "food": "อาหาร",
-    "coffee": "กาแฟ", "sport": "กีฬา", "fitness": "ฟิตเนส", "hiking": "เดินป่า",
-    "beach": "ชายหาด", "wellness": "สุขภาพ", "travel": "ท่องเที่ยว", "hangout": "นัดเจอ",
-    "socializing": "เข้าสังคม", "gaming": "เล่นเกม", "tech": "เทคโนโลยี", "dating": "เดต"
+    "drinks": "เครื่องดื่ม",
+    "party": "ปาร์ตี้",
+    "nightlife": "ชีวิตกลางคืน",
+    "music": "เพลง",
+    "live music": "ดนตรีสด",
+    "culture": "วัฒนธรรม",
+    "art": "ศิลปะ",
+    "food": "อาหาร",
+    "coffee": "กาแฟ",
+    "sport": "กีฬา",
+    "fitness": "ฟิตเนส",
+    "hiking": "เดินป่า",
+    "beach": "ชายหาด",
+    "wellness": "สุขภาพ",
+    "travel": "ท่องเที่ยว",
+    "hangout": "นัดเจอ",
+    "socializing": "เข้าสังคม",
+    "gaming": "เล่นเกม",
+    "tech": "เทคโนโลยี",
+    "dating": "เดต"
   },
   "noHangouts": "ยังไม่มีนัดเจอ — เริ่มเลย ⚡",
   "host": "ผู้จัด",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "โปรไฟล์ เพื่อน และการตั้งค่าของคุณจะถูกลบอย่างถาวร\n\nการกระทำนี้ไม่สามารถยกเลิกได้",
   "deleteAccountConfirm": "ลบบัญชีของฉัน",
   "errorTitle": "ข้อผิดพลาด",
-  "deleteAccountFail": "ไม่สามารถลบบัญชีได้ ลองอีกครั้ง"
+  "deleteAccountFail": "ไม่สามารถลบบัญชีได้ ลองอีกครั้ง",
+  "tabChallenges": "ชาเลนจ์",
+  "noChallenges": "ยังไม่มีชาเลนจ์ — เริ่มสักอันสิ 🔥"
 }

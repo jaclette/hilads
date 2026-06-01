@@ -1,0 +1,36 @@
+{
+  "createTitle": "Challenge starten",
+  "editTitle": "Challenge bearbeiten",
+  "audience": "Für wen?",
+  "aud": {
+    "locals": "Locals",
+    "explorers": "Reisende"
+  },
+  "type": "Typ",
+  "tp": {
+    "food": "Essen",
+    "place": "Ort",
+    "culture": "Kultur",
+    "help": "Hilfe"
+  },
+  "titleLabel": "Deine Challenge",
+  "titlePlaceholder": "z. B. Bring mich zu deinem Lieblings-Café",
+  "createCta": "Challenge starten 🔥",
+  "saveChanges": "Änderungen speichern",
+  "errSave": "Speichern fehlgeschlagen",
+  "errStart": "Challenge konnte nicht gestartet werden",
+  "validateTitle": "Diese Challenge validieren?",
+  "validateBody": "Einmal validiert, wandert die Challenge in das Archiv. Alle, die angenommen haben, werden benachrichtigt.",
+  "validateConfirm": "Validieren",
+  "validateCancel": "Noch nicht",
+  "deleteTitle": "Challenge löschen?",
+  "deleteBody": "Die Challenge wird für alle entfernt. Nicht rückgängig zu machen.",
+  "deleteConfirm": "Löschen",
+  "acceptCta": "Challenge annehmen",
+  "acceptedCta": "Angenommen ✓",
+  "validatedBadge": "Validiert",
+  "openBadge": "Offen",
+  "forLocals": "Für Locals",
+  "forExplorers": "Für Reisende",
+  "notFound": "Challenge nicht gefunden"
+}

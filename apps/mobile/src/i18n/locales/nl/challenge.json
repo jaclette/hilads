@@ -1,0 +1,36 @@
+{
+  "createTitle": "Maak een challenge",
+  "editTitle": "Challenge bewerken",
+  "audience": "Voor wie?",
+  "aud": {
+    "locals": "Locals",
+    "explorers": "Reizigers"
+  },
+  "type": "Type",
+  "tp": {
+    "food": "Eten",
+    "place": "Plek",
+    "culture": "Cultuur",
+    "help": "Hulp"
+  },
+  "titleLabel": "Jouw challenge",
+  "titlePlaceholder": "bv. Breng me naar je favoriete koffieplek",
+  "createCta": "Challenge starten 🔥",
+  "saveChanges": "Wijzigingen opslaan",
+  "errSave": "Opslaan mislukt",
+  "errStart": "Challenge kon niet worden gestart",
+  "validateTitle": "Deze challenge valideren?",
+  "validateBody": "Eenmaal gevalideerd komt de challenge in het archief. Iedereen die hem aannam krijgt een melding.",
+  "validateConfirm": "Valideren",
+  "validateCancel": "Nog niet",
+  "deleteTitle": "Challenge verwijderen?",
+  "deleteBody": "De challenge wordt voor iedereen verwijderd. Kan niet ongedaan worden gemaakt.",
+  "deleteConfirm": "Verwijderen",
+  "acceptCta": "Neem de challenge aan",
+  "acceptedCta": "Aangenomen ✓",
+  "validatedBadge": "Gevalideerd",
+  "openBadge": "Open",
+  "forLocals": "Voor locals",
+  "forExplorers": "Voor reizigers",
+  "notFound": "Challenge niet gevonden"
+}

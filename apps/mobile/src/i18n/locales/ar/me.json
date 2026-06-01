@@ -26,11 +26,26 @@
   "fieldInterests": "الاهتمامات",
   "interestsHint": "— اختر حتى 5",
   "interest": {
-    "drinks": "مشروبات", "party": "حفلة", "nightlife": "حياة ليلية", "music": "موسيقى",
-    "live music": "موسيقى حية", "culture": "ثقافة", "art": "فن", "food": "طعام",
-    "coffee": "قهوة", "sport": "رياضة", "fitness": "لياقة", "hiking": "مشي لمسافات",
-    "beach": "شاطئ", "wellness": "عافية", "travel": "سفر", "hangout": "لقاء",
-    "socializing": "تواصل اجتماعي", "gaming": "ألعاب", "tech": "تقنية", "dating": "مواعدة"
+    "drinks": "مشروبات",
+    "party": "حفلة",
+    "nightlife": "حياة ليلية",
+    "music": "موسيقى",
+    "live music": "موسيقى حية",
+    "culture": "ثقافة",
+    "art": "فن",
+    "food": "طعام",
+    "coffee": "قهوة",
+    "sport": "رياضة",
+    "fitness": "لياقة",
+    "hiking": "مشي لمسافات",
+    "beach": "شاطئ",
+    "wellness": "عافية",
+    "travel": "سفر",
+    "hangout": "لقاء",
+    "socializing": "تواصل اجتماعي",
+    "gaming": "ألعاب",
+    "tech": "تقنية",
+    "dating": "مواعدة"
   },
   "noHangouts": "لا توجد لقاءات بعد — ابدأ واحدًا ⚡",
   "host": "المضيف",
@@ -76,5 +91,7 @@
   "deleteAccountBody": "سيتم حذف ملفك الشخصي وأصدقائك وإعداداتك نهائيًا.\n\nلا يمكن التراجع عن هذا.",
   "deleteAccountConfirm": "حذف حسابي",
   "errorTitle": "خطأ",
-  "deleteAccountFail": "تعذّر حذف الحساب. حاول مرة أخرى."
+  "deleteAccountFail": "تعذّر حذف الحساب. حاول مرة أخرى.",
+  "tabChallenges": "التحديات",
+  "noChallenges": "لا توجد تحديات بعد — أطلق واحدًا 🔥"
 }

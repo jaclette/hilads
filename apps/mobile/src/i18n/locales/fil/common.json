@@ -26,7 +26,9 @@
     "next": "Next",
     "explore": "Mag-explore muna",
     "createAccount": "Gumawa ng account",
-    "fallbackCity": "iyong city"
+    "fallbackCity": "iyong city",
+    "slideChallengeTitle": "Magkonekta sa pamamagitan ng mga challenge",
+    "slideChallengeBody": "Local ka o biyahero. Maglunsad ng challenge para sa kabilang panig — pumili ng uri, lagyan ng pamagat, tingnan ang mga tatanggap. I-validate kapag natapos na."
   },
   "share": {
     "title": "Magbahagi ng kahit ano 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "MODE",
   "mode": {
-    "local": { "label": "Local", "desc": "Kabisado mo ang lungsod na ito" },
-    "exploring": { "label": "Exploring", "desc": "Nadiskubre mo pa lang ito" }
+    "local": {
+      "label": "Local",
+      "desc": "Kabisado mo ang lungsod na ito"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "Nadiskubre mo pa lang ito"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

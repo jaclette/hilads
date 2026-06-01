@@ -66,5 +66,7 @@
   "blocking": "Bina-block…",
   "ghostName": "Multo",
   "visiting": "Bumibisita sa {{city}}",
-  "ghostNote": "Lumulutang dito bilang multo 👻"
+  "ghostNote": "Lumulutang dito bilang multo 👻",
+  "tabChallenges": "Mga Challenge",
+  "noChallenges": "Walang challenge pa"
 }

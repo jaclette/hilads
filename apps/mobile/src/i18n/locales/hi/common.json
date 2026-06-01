@@ -26,7 +26,9 @@
     "next": "आगे",
     "explore": "पहले एक्सप्लोर करें",
     "createAccount": "खाता बनाएँ",
-    "fallbackCity": "आपका शहर"
+    "fallbackCity": "आपका शहर",
+    "slideChallengeTitle": "चैलेंजेस के ज़रिए जुड़ें",
+    "slideChallengeBody": "तुम लोकल हो या एक्सप्लोरर। दूसरी तरफ़ के लिए एक चैलेंज लॉन्च करो — टाइप चुनो, टाइटल दो, लोगों को स्वीकार करते देखो। पूरा होने पर वैलिडेट करो।"
   },
   "share": {
     "title": "कुछ शेयर करें 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "MODE",
   "mode": {
-    "local": { "label": "Local", "desc": "आप इस शहर को जानते हैं" },
-    "exploring": { "label": "Exploring", "desc": "आप इसे खोज रहे हैं" }
+    "local": {
+      "label": "Local",
+      "desc": "आप इस शहर को जानते हैं"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "आप इसे खोज रहे हैं"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

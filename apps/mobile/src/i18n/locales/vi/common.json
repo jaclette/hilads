@@ -26,7 +26,9 @@
     "next": "Tiếp",
     "explore": "Khám phá trước",
     "createAccount": "Tạo tài khoản",
-    "fallbackCity": "thành phố của bạn"
+    "fallbackCity": "thành phố của bạn",
+    "slideChallengeTitle": "Kết nối qua những thử thách",
+    "slideChallengeBody": "Bạn là người địa phương hay du khách. Tạo một thử thách cho phía bên kia — chọn loại, đặt tiêu đề, xem mọi người chấp nhận. Xác nhận khi hoàn thành."
   },
   "share": {
     "title": "Chia sẻ điều gì đó 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "CHẾ ĐỘ",
   "mode": {
-    "local": { "label": "Địa phương", "desc": "Bạn rành thành phố này" },
-    "exploring": { "label": "Khám phá", "desc": "Bạn đang khám phá nó" }
+    "local": {
+      "label": "Địa phương",
+      "desc": "Bạn rành thành phố này"
+    },
+    "exploring": {
+      "label": "Khám phá",
+      "desc": "Bạn đang khám phá nó"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

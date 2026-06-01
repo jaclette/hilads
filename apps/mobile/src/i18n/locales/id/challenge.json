@@ -1,0 +1,36 @@
+{
+  "createTitle": "Buat tantangan",
+  "editTitle": "Edit tantangan",
+  "audience": "Untuk siapa?",
+  "aud": {
+    "locals": "Local",
+    "explorers": "Pelancong"
+  },
+  "type": "Jenis",
+  "tp": {
+    "food": "Makanan",
+    "place": "Tempat",
+    "culture": "Budaya",
+    "help": "Bantuan"
+  },
+  "titleLabel": "Tantanganmu",
+  "titlePlaceholder": "mis. Ajak aku ke kafe favoritmu",
+  "createCta": "Luncurkan tantangan 🔥",
+  "saveChanges": "Simpan perubahan",
+  "errSave": "Gagal menyimpan",
+  "errStart": "Gagal meluncurkan tantangan",
+  "validateTitle": "Validasi tantangan ini?",
+  "validateBody": "Setelah divalidasi, tantangan masuk ke arsip. Semua yang menerima akan diberi tahu.",
+  "validateConfirm": "Validasi",
+  "validateCancel": "Belum",
+  "deleteTitle": "Hapus tantangan?",
+  "deleteBody": "Tantangan akan dihapus untuk semua orang. Tidak bisa dibatalkan.",
+  "deleteConfirm": "Hapus",
+  "acceptCta": "Terima tantangan",
+  "acceptedCta": "Diterima ✓",
+  "validatedBadge": "Tervalidasi",
+  "openBadge": "Terbuka",
+  "forLocals": "Untuk local",
+  "forExplorers": "Untuk pelancong",
+  "notFound": "Tantangan tidak ditemukan"
+}

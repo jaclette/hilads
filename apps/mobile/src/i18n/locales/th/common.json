@@ -26,7 +26,9 @@
     "next": "ถัดไป",
     "explore": "สำรวจก่อน",
     "createAccount": "สร้างบัญชี",
-    "fallbackCity": "เมืองของคุณ"
+    "fallbackCity": "เมืองของคุณ",
+    "slideChallengeTitle": "เชื่อมต่อกันผ่านชาเลนจ์",
+    "slideChallengeBody": "คุณเป็นคนท้องถิ่นหรือนักสำรวจ ตั้งชาเลนจ์สำหรับอีกฝั่ง — เลือกประเภท ตั้งชื่อ ดูคนตอบรับ ยืนยันเมื่อเสร็จ"
   },
   "share": {
     "title": "แชร์อะไรสักอย่าง 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "MODE",
   "mode": {
-    "local": { "label": "Local", "desc": "คุณรู้จักเมืองนี้" },
-    "exploring": { "label": "Exploring", "desc": "คุณกำลังสำรวจมันอยู่" }
+    "local": {
+      "label": "Local",
+      "desc": "คุณรู้จักเมืองนี้"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "คุณกำลังสำรวจมันอยู่"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

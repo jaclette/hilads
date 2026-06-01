@@ -66,5 +66,7 @@
   "blocking": "กำลังบล็อก…",
   "ghostName": "ผี",
   "visiting": "กำลังมาเยือน {{city}}",
-  "ghostNote": "ล่องลอยไปมาเป็นผี 👻"
+  "ghostNote": "ล่องลอยไปมาเป็นผี 👻",
+  "tabChallenges": "ชาเลนจ์",
+  "noChallenges": "ยังไม่มีชาเลนจ์"
 }

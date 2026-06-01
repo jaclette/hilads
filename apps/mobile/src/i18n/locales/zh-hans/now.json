@@ -29,6 +29,14 @@
     "hangoutSub": "即时 — 让大家现在就加入你",
     "eventLabel": "创建一个活动",
     "eventSub": "规划一些别人可以加入的事",
-    "cancel": "取消"
-  }
+    "cancel": "取消",
+    "challengeLabel": "发起挑战",
+    "challengeSub": "本地人和探索者 — 通过一个挑战连接"
+  },
+  "filterChallenges": "🔥 挑战",
+  "challengesSection": "挑战",
+  "seeAllChallenges": "查看全部 →",
+  "noChallenges": "暂无挑战",
+  "noChallengesCity": "在 {{city}} 第一个发起一个吧",
+  "noChallengesGeneric": "第一个发起一个挑战吧。"
 }

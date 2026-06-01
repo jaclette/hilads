@@ -68,5 +68,7 @@
   "blocking": "Блокировка…",
   "ghostName": "Призрак",
   "visiting": "В гостях в {{city}}",
-  "ghostNote": "Летает здесь как призрак 👻"
+  "ghostNote": "Летает здесь как призрак 👻",
+  "tabChallenges": "Челленджи",
+  "noChallenges": "Пока нет челленджей"
 }

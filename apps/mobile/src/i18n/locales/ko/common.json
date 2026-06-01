@@ -26,7 +26,9 @@
     "next": "다음",
     "explore": "먼저 둘러보기",
     "createAccount": "계정 만들기",
-    "fallbackCity": "당신의 도시"
+    "fallbackCity": "당신의 도시",
+    "slideChallengeTitle": "챌린지로 연결",
+    "slideChallengeBody": "당신은 로컬 또는 여행자입니다. 반대편을 위한 챌린지를 만들어 보세요 — 유형을 선택하고, 제목을 붙이고, 사람들이 수락하는 것을 보세요. 완료되면 검증하세요."
   },
   "share": {
     "title": "무언가 공유하기 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "모드",
   "mode": {
-    "local": { "label": "Local", "desc": "이 도시를 잘 알아요" },
-    "exploring": { "label": "탐험 중", "desc": "도시를 알아가는 중이에요" }
+    "local": {
+      "label": "Local",
+      "desc": "이 도시를 잘 알아요"
+    },
+    "exploring": {
+      "label": "탐험 중",
+      "desc": "도시를 알아가는 중이에요"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

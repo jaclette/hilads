@@ -66,5 +66,7 @@
   "blocking": "Blokkeren…",
   "ghostName": "Geest",
   "visiting": "Op bezoek in {{city}}",
-  "ghostNote": "Zweeft hier rond als een geest 👻"
+  "ghostNote": "Zweeft hier rond als een geest 👻",
+  "tabChallenges": "Challenges",
+  "noChallenges": "Nog geen challenges"
 }

@@ -26,11 +26,26 @@
   "fieldInterests": "रुचियां",
   "interestsHint": "— 5 तक चुनें",
   "interest": {
-    "drinks": "ड्रिंक्स", "party": "पार्टी", "nightlife": "नाइटलाइफ", "music": "संगीत",
-    "live music": "लाइव म्यूज़िक", "culture": "संस्कृति", "art": "कला", "food": "खाना",
-    "coffee": "कॉफ़ी", "sport": "खेल", "fitness": "फिटनेस", "hiking": "हाइकिंग",
-    "beach": "बीच", "wellness": "वेलनेस", "travel": "ट्रैवल", "hangout": "मुलाक़ात",
-    "socializing": "मेलजोल", "gaming": "गेमिंग", "tech": "टेक", "dating": "डेटिंग"
+    "drinks": "ड्रिंक्स",
+    "party": "पार्टी",
+    "nightlife": "नाइटलाइफ",
+    "music": "संगीत",
+    "live music": "लाइव म्यूज़िक",
+    "culture": "संस्कृति",
+    "art": "कला",
+    "food": "खाना",
+    "coffee": "कॉफ़ी",
+    "sport": "खेल",
+    "fitness": "फिटनेस",
+    "hiking": "हाइकिंग",
+    "beach": "बीच",
+    "wellness": "वेलनेस",
+    "travel": "ट्रैवल",
+    "hangout": "मुलाक़ात",
+    "socializing": "मेलजोल",
+    "gaming": "गेमिंग",
+    "tech": "टेक",
+    "dating": "डेटिंग"
   },
   "noHangouts": "अभी तक कोई मुलाक़ात नहीं — एक शुरू करें ⚡",
   "host": "Host",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "आपकी प्रोफ़ाइल, दोस्त और सेटिंग्स हमेशा के लिए हटा दी जाएंगी।\n\nइसे वापस नहीं किया जा सकता।",
   "deleteAccountConfirm": "मेरा अकाउंट डिलीट करें",
   "errorTitle": "एरर",
-  "deleteAccountFail": "अकाउंट डिलीट नहीं हो सका। दोबारा कोशिश करें।"
+  "deleteAccountFail": "अकाउंट डिलीट नहीं हो सका। दोबारा कोशिश करें।",
+  "tabChallenges": "चैलेंजेस",
+  "noChallenges": "अभी कोई चैलेंज नहीं — एक लॉन्च करो 🔥"
 }

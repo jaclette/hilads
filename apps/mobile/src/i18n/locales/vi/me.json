@@ -26,11 +26,26 @@
   "fieldInterests": "SỞ THÍCH",
   "interestsHint": "— chọn tối đa 5",
   "interest": {
-    "drinks": "đồ uống", "party": "tiệc", "nightlife": "về đêm", "music": "âm nhạc",
-    "live music": "nhạc sống", "culture": "văn hóa", "art": "nghệ thuật", "food": "đồ ăn",
-    "coffee": "cà phê", "sport": "thể thao", "fitness": "thể hình", "hiking": "leo núi",
-    "beach": "biển", "wellness": "sức khỏe", "travel": "du lịch", "hangout": "tụ tập",
-    "socializing": "giao lưu", "gaming": "chơi game", "tech": "công nghệ", "dating": "hẹn hò"
+    "drinks": "đồ uống",
+    "party": "tiệc",
+    "nightlife": "về đêm",
+    "music": "âm nhạc",
+    "live music": "nhạc sống",
+    "culture": "văn hóa",
+    "art": "nghệ thuật",
+    "food": "đồ ăn",
+    "coffee": "cà phê",
+    "sport": "thể thao",
+    "fitness": "thể hình",
+    "hiking": "leo núi",
+    "beach": "biển",
+    "wellness": "sức khỏe",
+    "travel": "du lịch",
+    "hangout": "tụ tập",
+    "socializing": "giao lưu",
+    "gaming": "chơi game",
+    "tech": "công nghệ",
+    "dating": "hẹn hò"
   },
   "noHangouts": "Chưa có tụ tập — tạo một cái ⚡",
   "host": "Chủ",
@@ -71,5 +86,7 @@
   "deleteAccountBody": "Hồ sơ, bạn bè và cài đặt của bạn sẽ bị xóa vĩnh viễn.\n\nKhông thể hoàn tác.",
   "deleteAccountConfirm": "Xóa tài khoản của tôi",
   "errorTitle": "Lỗi",
-  "deleteAccountFail": "Không thể xóa tài khoản. Thử lại."
+  "deleteAccountFail": "Không thể xóa tài khoản. Thử lại.",
+  "tabChallenges": "Thử thách",
+  "noChallenges": "Chưa có thử thách — tạo một 🔥"
 }

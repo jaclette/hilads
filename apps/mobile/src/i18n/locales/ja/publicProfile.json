@@ -66,5 +66,7 @@
   "blocking": "ブロック中…",
   "ghostName": "ゴースト",
   "visiting": "{{city}}に訪問中",
-  "ghostNote": "ゴーストとして漂っています 👻"
+  "ghostNote": "ゴーストとして漂っています 👻",
+  "tabChallenges": "チャレンジ",
+  "noChallenges": "まだチャレンジはありません"
 }

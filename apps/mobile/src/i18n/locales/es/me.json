@@ -26,11 +26,26 @@
   "fieldInterests": "INTERESES",
   "interestsHint": "— elige hasta 5",
   "interest": {
-    "drinks": "copas", "party": "fiesta", "nightlife": "vida nocturna", "music": "música",
-    "live music": "música en directo", "culture": "cultura", "art": "arte", "food": "comida",
-    "coffee": "café", "sport": "deporte", "fitness": "fitness", "hiking": "senderismo",
-    "beach": "playa", "wellness": "bienestar", "travel": "viajes", "hangout": "quedadas",
-    "socializing": "socializar", "gaming": "videojuegos", "tech": "tecnología", "dating": "citas"
+    "drinks": "copas",
+    "party": "fiesta",
+    "nightlife": "vida nocturna",
+    "music": "música",
+    "live music": "música en directo",
+    "culture": "cultura",
+    "art": "arte",
+    "food": "comida",
+    "coffee": "café",
+    "sport": "deporte",
+    "fitness": "fitness",
+    "hiking": "senderismo",
+    "beach": "playa",
+    "wellness": "bienestar",
+    "travel": "viajes",
+    "hangout": "quedadas",
+    "socializing": "socializar",
+    "gaming": "videojuegos",
+    "tech": "tecnología",
+    "dating": "citas"
   },
   "noHangouts": "Aún no hay quedadas — lanza una ⚡",
   "host": "Anfitrión",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "Tu perfil, tus amigos y tus ajustes se eliminarán de forma permanente.\n\nEsta acción es irreversible.",
   "deleteAccountConfirm": "Eliminar mi cuenta",
   "errorTitle": "Error",
-  "deleteAccountFail": "No se pudo eliminar la cuenta. Inténtalo de nuevo."
+  "deleteAccountFail": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
+  "tabChallenges": "Retos",
+  "noChallenges": "Aún no hay retos — lanza uno 🔥"
 }

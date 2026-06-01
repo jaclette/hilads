@@ -29,6 +29,14 @@
     "hangoutSub": "فوري — دع الناس ينضمّون إليك الآن",
     "eventLabel": "إنشاء فعالية",
     "eventSub": "خطّط لشيء يمكن للآخرين الانضمام إليه",
-    "cancel": "إلغاء"
-  }
+    "cancel": "إلغاء",
+    "challengeLabel": "أطلق تحديًا",
+    "challengeSub": "محليون ومستكشفون — اتصلوا عبر تحدٍّ"
+  },
+  "filterChallenges": "🔥 التحديات",
+  "challengesSection": "التحديات",
+  "seeAllChallenges": "عرض الكل →",
+  "noChallenges": "لا توجد تحديات بعد",
+  "noChallengesCity": "كن أول من يطلق واحدًا في {{city}}",
+  "noChallengesGeneric": "كن أول من يطلق تحديًا."
 }

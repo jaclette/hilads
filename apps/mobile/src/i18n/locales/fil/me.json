@@ -26,11 +26,26 @@
   "fieldInterests": "MGA INTERES",
   "interestsHint": "— pumili ng hanggang 5",
   "interest": {
-    "drinks": "inom", "party": "party", "nightlife": "nightlife", "music": "musika",
-    "live music": "live music", "culture": "kultura", "art": "sining", "food": "pagkain",
-    "coffee": "kape", "sport": "sport", "fitness": "fitness", "hiking": "hiking",
-    "beach": "beach", "wellness": "wellness", "travel": "biyahe", "hangout": "tambayan",
-    "socializing": "pakikisalamuha", "gaming": "gaming", "tech": "tech", "dating": "dating"
+    "drinks": "inom",
+    "party": "party",
+    "nightlife": "nightlife",
+    "music": "musika",
+    "live music": "live music",
+    "culture": "kultura",
+    "art": "sining",
+    "food": "pagkain",
+    "coffee": "kape",
+    "sport": "sport",
+    "fitness": "fitness",
+    "hiking": "hiking",
+    "beach": "beach",
+    "wellness": "wellness",
+    "travel": "biyahe",
+    "hangout": "tambayan",
+    "socializing": "pakikisalamuha",
+    "gaming": "gaming",
+    "tech": "tech",
+    "dating": "dating"
   },
   "noHangouts": "Wala pang tambayan — magsimula ng isa ⚡",
   "host": "Host",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "Permanenteng maaalis ang iyong profile, mga kaibigan, at mga setting.\n\nHindi na ito maibabalik.",
   "deleteAccountConfirm": "Burahin ang aking account",
   "errorTitle": "Error",
-  "deleteAccountFail": "Hindi mabura ang account. Subukan ulit."
+  "deleteAccountFail": "Hindi mabura ang account. Subukan ulit.",
+  "tabChallenges": "Mga Challenge",
+  "noChallenges": "Walang challenge pa — maglunsad ng isa 🔥"
 }

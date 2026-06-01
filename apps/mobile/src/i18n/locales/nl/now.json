@@ -29,6 +29,14 @@
     "hangoutSub": "Direct — laat mensen nu bij je meedoen",
     "eventLabel": "Maak een evenement",
     "eventSub": "Plan iets waar anderen aan mee kunnen doen",
-    "cancel": "Annuleren"
-  }
+    "cancel": "Annuleren",
+    "challengeLabel": "Start een challenge",
+    "challengeSub": "Locals & reizigers — verbind via een challenge"
+  },
+  "filterChallenges": "🔥 Challenges",
+  "challengesSection": "Challenges",
+  "seeAllChallenges": "Alles bekijken →",
+  "noChallenges": "Nog geen challenges",
+  "noChallengesCity": "Wees de eerste die er een start in {{city}}",
+  "noChallengesGeneric": "Wees de eerste die een challenge start."
 }

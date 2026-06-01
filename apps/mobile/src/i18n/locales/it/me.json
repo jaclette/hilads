@@ -26,11 +26,26 @@
   "fieldInterests": "INTERESSI",
   "interestsHint": "— scegline fino a 5",
   "interest": {
-    "drinks": "drink", "party": "festa", "nightlife": "vita notturna", "music": "musica",
-    "live music": "musica dal vivo", "culture": "cultura", "art": "arte", "food": "cibo",
-    "coffee": "caffè", "sport": "sport", "fitness": "fitness", "hiking": "escursionismo",
-    "beach": "spiaggia", "wellness": "benessere", "travel": "viaggi", "hangout": "ritrovi",
-    "socializing": "socializzare", "gaming": "videogiochi", "tech": "tecnologia", "dating": "appuntamenti"
+    "drinks": "drink",
+    "party": "festa",
+    "nightlife": "vita notturna",
+    "music": "musica",
+    "live music": "musica dal vivo",
+    "culture": "cultura",
+    "art": "arte",
+    "food": "cibo",
+    "coffee": "caffè",
+    "sport": "sport",
+    "fitness": "fitness",
+    "hiking": "escursionismo",
+    "beach": "spiaggia",
+    "wellness": "benessere",
+    "travel": "viaggi",
+    "hangout": "ritrovi",
+    "socializing": "socializzare",
+    "gaming": "videogiochi",
+    "tech": "tecnologia",
+    "dating": "appuntamenti"
   },
   "noHangouts": "Ancora nessun ritrovo — lanciane uno ⚡",
   "host": "Host",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "Il tuo profilo, i tuoi amici e le tue impostazioni saranno rimossi in modo permanente.\n\nQuesta azione è irreversibile.",
   "deleteAccountConfirm": "Elimina il mio account",
   "errorTitle": "Errore",
-  "deleteAccountFail": "Impossibile eliminare l'account. Riprova."
+  "deleteAccountFail": "Impossibile eliminare l'account. Riprova.",
+  "tabChallenges": "Sfide",
+  "noChallenges": "Nessuna sfida ancora — lanciane una 🔥"
 }

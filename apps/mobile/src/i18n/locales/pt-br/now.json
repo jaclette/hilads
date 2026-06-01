@@ -29,6 +29,14 @@
     "hangoutSub": "Na hora — deixe as pessoas entrarem agora",
     "eventLabel": "Criar um evento",
     "eventSub": "Planeje algo para outros participarem",
-    "cancel": "Cancelar"
-  }
+    "cancel": "Cancelar",
+    "challengeLabel": "Lançar um desafio",
+    "challengeSub": "Locais & exploradores — conectem-se através de um desafio"
+  },
+  "filterChallenges": "🔥 Desafios",
+  "challengesSection": "Desafios",
+  "seeAllChallenges": "Ver todos →",
+  "noChallenges": "Nenhum desafio ainda",
+  "noChallengesCity": "Seja o primeiro a lançar um em {{city}}",
+  "noChallengesGeneric": "Seja o primeiro a lançar um desafio."
 }

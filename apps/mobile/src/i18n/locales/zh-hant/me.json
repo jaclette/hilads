@@ -26,11 +26,26 @@
   "fieldInterests": "興趣",
   "interestsHint": "— 最多選 5 個",
   "interest": {
-    "drinks": "小酌", "party": "派對", "nightlife": "夜生活", "music": "音樂",
-    "live music": "現場音樂", "culture": "文化", "art": "藝術", "food": "美食",
-    "coffee": "咖啡", "sport": "運動", "fitness": "健身", "hiking": "健行",
-    "beach": "海灘", "wellness": "養生", "travel": "旅行", "hangout": "聚會",
-    "socializing": "社交", "gaming": "電玩", "tech": "科技", "dating": "約會"
+    "drinks": "小酌",
+    "party": "派對",
+    "nightlife": "夜生活",
+    "music": "音樂",
+    "live music": "現場音樂",
+    "culture": "文化",
+    "art": "藝術",
+    "food": "美食",
+    "coffee": "咖啡",
+    "sport": "運動",
+    "fitness": "健身",
+    "hiking": "健行",
+    "beach": "海灘",
+    "wellness": "養生",
+    "travel": "旅行",
+    "hangout": "聚會",
+    "socializing": "社交",
+    "gaming": "電玩",
+    "tech": "科技",
+    "dating": "約會"
   },
   "noHangouts": "還沒有聚會 — 發起一個吧 ⚡",
   "host": "主辦人",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "你的個人資料、好友和設定將被永久移除。\n\n此操作無法復原。",
   "deleteAccountConfirm": "刪除我的帳號",
   "errorTitle": "錯誤",
-  "deleteAccountFail": "無法刪除帳號。請再試一次。"
+  "deleteAccountFail": "無法刪除帳號。請再試一次。",
+  "tabChallenges": "挑戰",
+  "noChallenges": "尚無挑戰 — 發起一個 🔥"
 }

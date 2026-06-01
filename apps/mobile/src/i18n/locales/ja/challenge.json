@@ -1,0 +1,36 @@
+{
+  "createTitle": "チャレンジを作成",
+  "editTitle": "チャレンジを編集",
+  "audience": "誰に向けて?",
+  "aud": {
+    "locals": "ローカル",
+    "explorers": "旅行者"
+  },
+  "type": "タイプ",
+  "tp": {
+    "food": "食",
+    "place": "場所",
+    "culture": "文化",
+    "help": "ヘルプ"
+  },
+  "titleLabel": "あなたのチャレンジ",
+  "titlePlaceholder": "例:お気に入りのカフェに連れて行って",
+  "createCta": "チャレンジ開始 🔥",
+  "saveChanges": "変更を保存",
+  "errSave": "保存できませんでした",
+  "errStart": "チャレンジを開始できませんでした",
+  "validateTitle": "このチャレンジを確認?",
+  "validateBody": "確認すると、チャレンジは過去のチャレンジに移ります。受け入れた全員に通知が届きます。",
+  "validateConfirm": "確認",
+  "validateCancel": "まだ",
+  "deleteTitle": "チャレンジを削除?",
+  "deleteBody": "チャレンジは全員から削除されます。元に戻せません。",
+  "deleteConfirm": "削除",
+  "acceptCta": "チャレンジを受ける",
+  "acceptedCta": "受けた ✓",
+  "validatedBadge": "確認済み",
+  "openBadge": "オープン",
+  "forLocals": "ローカル向け",
+  "forExplorers": "旅行者向け",
+  "notFound": "チャレンジが見つかりません"
+}

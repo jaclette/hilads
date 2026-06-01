@@ -26,7 +26,9 @@
     "next": "التالي",
     "explore": "استكشف أولًا",
     "createAccount": "أنشئ حسابًا",
-    "fallbackCity": "مدينتك"
+    "fallbackCity": "مدينتك",
+    "slideChallengeTitle": "اتصلوا عبر التحديات",
+    "slideChallengeBody": "أنت محلي أو مستكشف. أطلق تحديًا للطرف الآخر — اختر النوع، أعطه عنوانًا، وشاهد الناس يقبلونه. تحقق عند الانتهاء."
   },
   "share": {
     "title": "شارك شيئًا 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "الوضع",
   "mode": {
-    "local": { "label": "Local", "desc": "تعرف هذه المدينة" },
-    "exploring": { "label": "Exploring", "desc": "أنت تكتشفها" }
+    "local": {
+      "label": "Local",
+      "desc": "تعرف هذه المدينة"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "أنت تكتشفها"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

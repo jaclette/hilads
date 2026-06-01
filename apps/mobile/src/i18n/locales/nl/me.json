@@ -26,11 +26,26 @@
   "fieldInterests": "INTERESSES",
   "interestsHint": "— kies er maximaal 5",
   "interest": {
-    "drinks": "drankjes", "party": "feest", "nightlife": "nachtleven", "music": "muziek",
-    "live music": "livemuziek", "culture": "cultuur", "art": "kunst", "food": "eten",
-    "coffee": "koffie", "sport": "sport", "fitness": "fitness", "hiking": "wandelen",
-    "beach": "strand", "wellness": "wellness", "travel": "reizen", "hangout": "meetup",
-    "socializing": "socializen", "gaming": "gamen", "tech": "tech", "dating": "daten"
+    "drinks": "drankjes",
+    "party": "feest",
+    "nightlife": "nachtleven",
+    "music": "muziek",
+    "live music": "livemuziek",
+    "culture": "cultuur",
+    "art": "kunst",
+    "food": "eten",
+    "coffee": "koffie",
+    "sport": "sport",
+    "fitness": "fitness",
+    "hiking": "wandelen",
+    "beach": "strand",
+    "wellness": "wellness",
+    "travel": "reizen",
+    "hangout": "meetup",
+    "socializing": "socializen",
+    "gaming": "gamen",
+    "tech": "tech",
+    "dating": "daten"
   },
   "noHangouts": "Nog geen meetups — start er een ⚡",
   "host": "Host",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "Je profiel, vrienden en instellingen worden permanent verwijderd.\n\nDit kan niet ongedaan worden gemaakt.",
   "deleteAccountConfirm": "Mijn account verwijderen",
   "errorTitle": "Fout",
-  "deleteAccountFail": "Kon account niet verwijderen. Probeer het opnieuw."
+  "deleteAccountFail": "Kon account niet verwijderen. Probeer het opnieuw.",
+  "tabChallenges": "Challenges",
+  "noChallenges": "Nog geen challenges — start er een 🔥"
 }

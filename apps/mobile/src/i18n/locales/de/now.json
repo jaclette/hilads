@@ -29,6 +29,14 @@
     "hangoutSub": "Sofort — lass Leute jetzt zu dir dazukommen",
     "eventLabel": "Event erstellen",
     "eventSub": "Plane etwas, an dem andere teilnehmen können",
-    "cancel": "Abbrechen"
-  }
+    "cancel": "Abbrechen",
+    "challengeLabel": "Challenge starten",
+    "challengeSub": "Locals & Reisende — verbindet euch durch eine Challenge"
+  },
+  "filterChallenges": "🔥 Challenges",
+  "challengesSection": "Challenges",
+  "seeAllChallenges": "Alle ansehen →",
+  "noChallenges": "Noch keine Challenges",
+  "noChallengesCity": "Sei die erste Person, die in {{city}} eine startet",
+  "noChallengesGeneric": "Sei die erste Person, die eine Challenge startet."
 }

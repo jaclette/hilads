@@ -26,7 +26,9 @@
     "next": "Lanjut",
     "explore": "Jelajahi dulu",
     "createAccount": "Buat akun",
-    "fallbackCity": "kotamu"
+    "fallbackCity": "kotamu",
+    "slideChallengeTitle": "Terhubung lewat tantangan",
+    "slideChallengeBody": "Kamu local atau pelancong. Buat tantangan untuk sisi lain — pilih jenis, beri judul, lihat orang menerima. Validasi saat selesai."
   },
   "share": {
     "title": "Bagikan sesuatu 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "MODE",
   "mode": {
-    "local": { "label": "Local", "desc": "Kamu kenal kota ini" },
-    "exploring": { "label": "Exploring", "desc": "Kamu sedang menjelajahinya" }
+    "local": {
+      "label": "Local",
+      "desc": "Kamu kenal kota ini"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "Kamu sedang menjelajahinya"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

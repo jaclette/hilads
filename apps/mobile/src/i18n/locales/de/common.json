@@ -26,7 +26,9 @@
     "next": "Weiter",
     "explore": "Zuerst erkunden",
     "createAccount": "Konto erstellen",
-    "fallbackCity": "deine Stadt"
+    "fallbackCity": "deine Stadt",
+    "slideChallengeTitle": "Verbindet euch durch Challenges",
+    "slideChallengeBody": "Du bist Local oder Reisender. Starte eine Challenge für die andere Seite — wähle einen Typ, gib ihr einen Titel, schau zu, wie Leute annehmen. Validiere, wenn fertig."
   },
   "share": {
     "title": "Teile etwas 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "MODUS",
   "mode": {
-    "local": { "label": "Local", "desc": "Du kennst diese Stadt" },
-    "exploring": { "label": "Exploring", "desc": "Du entdeckst sie gerade" }
+    "local": {
+      "label": "Local",
+      "desc": "Du kennst diese Stadt"
+    },
+    "exploring": {
+      "label": "Exploring",
+      "desc": "Du entdeckst sie gerade"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

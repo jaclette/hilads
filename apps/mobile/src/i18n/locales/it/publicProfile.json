@@ -66,5 +66,7 @@
   "blocking": "Blocco in corso…",
   "ghostName": "Ghost",
   "visiting": "In visita a {{city}}",
-  "ghostNote": "Fluttua qui come un fantasma 👻"
+  "ghostNote": "Fluttua qui come un fantasma 👻",
+  "tabChallenges": "Sfide",
+  "noChallenges": "Nessuna sfida ancora"
 }

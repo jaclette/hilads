@@ -26,11 +26,26 @@
   "fieldInterests": "興味",
   "interestsHint": "— 最大5つまで選択",
   "interest": {
-    "drinks": "お酒", "party": "パーティー", "nightlife": "ナイトライフ", "music": "音楽",
-    "live music": "ライブ音楽", "culture": "文化", "art": "アート", "food": "グルメ",
-    "coffee": "コーヒー", "sport": "スポーツ", "fitness": "フィットネス", "hiking": "ハイキング",
-    "beach": "ビーチ", "wellness": "ウェルネス", "travel": "旅行", "hangout": "集まり",
-    "socializing": "交流", "gaming": "ゲーム", "tech": "テック", "dating": "デート"
+    "drinks": "お酒",
+    "party": "パーティー",
+    "nightlife": "ナイトライフ",
+    "music": "音楽",
+    "live music": "ライブ音楽",
+    "culture": "文化",
+    "art": "アート",
+    "food": "グルメ",
+    "coffee": "コーヒー",
+    "sport": "スポーツ",
+    "fitness": "フィットネス",
+    "hiking": "ハイキング",
+    "beach": "ビーチ",
+    "wellness": "ウェルネス",
+    "travel": "旅行",
+    "hangout": "集まり",
+    "socializing": "交流",
+    "gaming": "ゲーム",
+    "tech": "テック",
+    "dating": "デート"
   },
   "noHangouts": "まだ集まりはありません — 始めましょう ⚡",
   "host": "ホスト",
@@ -72,5 +87,7 @@
   "deleteAccountBody": "プロフィール、友達、設定が完全に削除されます。\n\nこの操作は取り消せません。",
   "deleteAccountConfirm": "アカウントを削除する",
   "errorTitle": "エラー",
-  "deleteAccountFail": "アカウントを削除できませんでした。もう一度お試しください。"
+  "deleteAccountFail": "アカウントを削除できませんでした。もう一度お試しください。",
+  "tabChallenges": "チャレンジ",
+  "noChallenges": "まだチャレンジはありません — 始めよう 🔥"
 }

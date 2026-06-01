@@ -26,7 +26,9 @@
     "next": "Volgende",
     "explore": "Eerst verkennen",
     "createAccount": "Een account aanmaken",
-    "fallbackCity": "jouw stad"
+    "fallbackCity": "jouw stad",
+    "slideChallengeTitle": "Verbind via challenges",
+    "slideChallengeBody": "Je bent local of reiziger. Start een challenge voor de andere kant — kies een type, geef hem een titel, kijk wie hem aanneemt. Valideer wanneer klaar."
   },
   "share": {
     "title": "Deel iets 👀",
@@ -90,8 +92,14 @@
   },
   "modeHeading": "MODUS",
   "mode": {
-    "local": { "label": "Local", "desc": "Je kent deze stad" },
-    "exploring": { "label": "Verkennen", "desc": "Je bent hem aan het ontdekken" }
+    "local": {
+      "label": "Local",
+      "desc": "Je kent deze stad"
+    },
+    "exploring": {
+      "label": "Verkennen",
+      "desc": "Je bent hem aan het ontdekken"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

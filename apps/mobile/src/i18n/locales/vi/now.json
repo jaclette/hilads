@@ -29,6 +29,14 @@
     "hangoutSub": "Tức thì — để mọi người tham gia ngay bây giờ",
     "eventLabel": "Tạo sự kiện",
     "eventSub": "Lên kế hoạch cho điều người khác có thể tham gia",
-    "cancel": "Hủy"
-  }
+    "cancel": "Hủy",
+    "challengeLabel": "Tạo một thử thách",
+    "challengeSub": "Người địa phương & du khách — kết nối qua một thử thách"
+  },
+  "filterChallenges": "🔥 Thử thách",
+  "challengesSection": "Thử thách",
+  "seeAllChallenges": "Xem tất cả →",
+  "noChallenges": "Chưa có thử thách nào",
+  "noChallengesCity": "Hãy là người đầu tiên tạo một thử thách tại {{city}}",
+  "noChallengesGeneric": "Hãy là người đầu tiên tạo một thử thách."
 }

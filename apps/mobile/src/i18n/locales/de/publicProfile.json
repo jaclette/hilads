@@ -66,5 +66,7 @@
   "blocking": "Wird blockiert…",
   "ghostName": "Geist",
   "visiting": "Zu Besuch in {{city}}",
-  "ghostNote": "Schwebt hier als Geist umher 👻"
+  "ghostNote": "Schwebt hier als Geist umher 👻",
+  "tabChallenges": "Challenges",
+  "noChallenges": "Noch keine Challenges"
 }
