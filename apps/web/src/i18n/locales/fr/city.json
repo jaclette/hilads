@@ -135,7 +135,22 @@
     "hangoutTitle": "Lancer une sortie",
     "hangoutSub": "Instantané — laisse les gens te rejoindre maintenant",
     "eventTitle": "Créer un événement",
-    "eventSub": "Organise quelque chose à rejoindre"
+    "eventSub": "Organise quelque chose à rejoindre",
+    "challengeTitle": "Lancer un défi",
+    "challengeSub": "Locaux & explorateurs — connectez-vous par un défi",
+    "challengePageTitle": "Lance un défi",
+    "challengeAudience": "Pour qui ?",
+    "challengeAudLocals": "Locaux",
+    "challengeAudExplorers": "Explorateurs",
+    "challengeType": "Type",
+    "challengeTypeFood": "Bouffe",
+    "challengeTypePlace": "Lieu",
+    "challengeTypeCulture": "Culture",
+    "challengeTypeHelp": "Aide",
+    "challengeTitleLabel": "Ton défi",
+    "challengeTitlePlaceholder": "ex. Emmène-moi dans ton spot café préféré",
+    "challengeCta": "Lancer le défi 🔥",
+    "challengeErrStart": "Impossible de lancer le défi"
   },
   "goingModal": {
     "going": "y vont",

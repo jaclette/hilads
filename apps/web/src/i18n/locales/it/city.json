@@ -135,7 +135,22 @@
     "hangoutTitle": "Lancia un ritrovo",
     "hangoutSub": "Subito — lascia che la gente si unisca a te proprio ora",
     "eventTitle": "Crea un evento",
-    "eventSub": "Organizza qualcosa a cui gli altri possono partecipare"
+    "eventSub": "Organizza qualcosa a cui gli altri possono partecipare",
+    "challengeTitle": "Lancia una sfida",
+    "challengeSub": "Local & viaggiatori — connettetevi attraverso una sfida",
+    "challengePageTitle": "Crea una sfida",
+    "challengeAudience": "Per chi?",
+    "challengeAudLocals": "Local",
+    "challengeAudExplorers": "Esploratori",
+    "challengeType": "Tipo",
+    "challengeTypeFood": "Cibo",
+    "challengeTypePlace": "Posto",
+    "challengeTypeCulture": "Cultura",
+    "challengeTypeHelp": "Aiuto",
+    "challengeTitleLabel": "La tua sfida",
+    "challengeTitlePlaceholder": "es. Portami al tuo caffè preferito",
+    "challengeCta": "Lancia la sfida 🔥",
+    "challengeErrStart": "Impossibile lanciare la sfida"
   },
   "goingModal": {
     "going": "partecipano",

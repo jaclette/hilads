@@ -10607,3 +10607,80 @@ body.has-app-promo-banner .page-header {
 .challenge-validate-btn:active { transform: scale(0.985); }
 .challenge-accept-btn:disabled,
 .challenge-validate-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Challenge creation — Web counterpart to mobile app/challenge/create.tsx.
+   Reuses .cef-* form skeleton (label, input, error, submit) and adds:
+     - .cef-audience-row    2-pill row, full-width
+     - .cef-type-btn / grid same shape as .cef-cat-btn but 4 columns
+     - .cef-submit--challenge orange variant
+     - .create-chooser-option--challenge  orange-tinted entry in the bottom sheet
+   ───────────────────────────────────────────────────────────────────────── */
+
+.create-chooser-option--challenge .create-chooser-icon {
+  background: rgba(255, 122, 60, 0.14);
+  color: #FF7A3C;
+}
+
+.cef-audience-row {
+  display: flex;
+  gap: 8px;
+}
+.cef-audience-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--surface);
+  color: var(--muted, #b3b3b3);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.cef-audience-btn:active { transform: scale(0.985); }
+.cef-audience-btn.selected {
+  color: #FF7A3C;
+  border-color: rgba(255, 122, 60, 0.45);
+  background: rgba(255, 122, 60, 0.10);
+}
+
+.cef-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.cef-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 4px 11px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--surface);
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  aspect-ratio: 1;
+}
+.cef-type-btn:active { transform: scale(0.93); }
+.cef-type-btn.selected {
+  color: #FF7A3C;
+  border-color: rgba(255, 122, 60, 0.45);
+  background: rgba(255, 122, 60, 0.07);
+  box-shadow: 0 0 14px rgba(255, 122, 60, 0.1);
+}
+.cef-type-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.cef-submit--challenge {
+  background: #FF7A3C;
+  box-shadow: 0 6px 20px rgba(255, 122, 60, 0.25);
+}
+.cef-submit--challenge:hover {
+  background: #ff8753;
+}

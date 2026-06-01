@@ -135,7 +135,22 @@
     "hangoutTitle": "發起聚會",
     "hangoutSub": "即時 — 讓大家現在就加入你",
     "eventTitle": "建立活動",
-    "eventSub": "規劃讓其他人可以加入的活動"
+    "eventSub": "規劃讓其他人可以加入的活動",
+    "challengeTitle": "發起挑戰",
+    "challengeSub": "在地人和旅人 — 透過一個挑戰連結",
+    "challengePageTitle": "發起挑戰",
+    "challengeAudience": "給誰?",
+    "challengeAudLocals": "在地人",
+    "challengeAudExplorers": "旅人",
+    "challengeType": "類型",
+    "challengeTypeFood": "美食",
+    "challengeTypePlace": "地點",
+    "challengeTypeCulture": "文化",
+    "challengeTypeHelp": "幫助",
+    "challengeTitleLabel": "你的挑戰",
+    "challengeTitlePlaceholder": "例如,帶我去你最愛的咖啡館",
+    "challengeCta": "發起挑戰 🔥",
+    "challengeErrStart": "無法發起挑戰"
   },
   "goingModal": {
     "going": "人參加",

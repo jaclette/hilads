@@ -135,7 +135,22 @@
     "hangoutTitle": "集まりを始める",
     "hangoutSub": "すぐに — 今みんなに参加してもらおう",
     "eventTitle": "イベントを作成",
-    "eventSub": "みんなが参加できる何かを計画しよう"
+    "eventSub": "みんなが参加できる何かを計画しよう",
+    "challengeTitle": "チャレンジを始める",
+    "challengeSub": "ローカルと旅行者 — チャレンジでつながる",
+    "challengePageTitle": "チャレンジを作成",
+    "challengeAudience": "誰に向けて?",
+    "challengeAudLocals": "ローカル",
+    "challengeAudExplorers": "旅行者",
+    "challengeType": "タイプ",
+    "challengeTypeFood": "食",
+    "challengeTypePlace": "場所",
+    "challengeTypeCulture": "文化",
+    "challengeTypeHelp": "ヘルプ",
+    "challengeTitleLabel": "あなたのチャレンジ",
+    "challengeTitlePlaceholder": "例:お気に入りのカフェに連れて行って",
+    "challengeCta": "チャレンジ開始 🔥",
+    "challengeErrStart": "チャレンジを開始できませんでした"
   },
   "goingModal": {
     "going": "参加",

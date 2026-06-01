@@ -135,7 +135,22 @@
     "hangoutTitle": "Lanzar una quedada",
     "hangoutSub": "Al instante — deja que la gente se una ahora",
     "eventTitle": "Crear un evento",
-    "eventSub": "Organiza algo a lo que unirse"
+    "eventSub": "Organiza algo a lo que unirse",
+    "challengeTitle": "Lanzar un reto",
+    "challengeSub": "Locales y exploradores — conecten a través de un reto",
+    "challengePageTitle": "Crear un reto",
+    "challengeAudience": "¿Para quién?",
+    "challengeAudLocals": "Locales",
+    "challengeAudExplorers": "Exploradores",
+    "challengeType": "Tipo",
+    "challengeTypeFood": "Comida",
+    "challengeTypePlace": "Lugar",
+    "challengeTypeCulture": "Cultura",
+    "challengeTypeHelp": "Ayuda",
+    "challengeTitleLabel": "Tu reto",
+    "challengeTitlePlaceholder": "ej. Llévame a tu café favorito",
+    "challengeCta": "Lanzar reto 🔥",
+    "challengeErrStart": "No se pudo lanzar el reto"
   },
   "goingModal": {
     "going": "van",

@@ -135,7 +135,22 @@
     "hangoutTitle": "एक मुलाक़ात शुरू करें",
     "hangoutSub": "तुरंत — लोगों को अभी आपके साथ जुड़ने दें",
     "eventTitle": "एक इवेंट बनाएं",
-    "eventSub": "कुछ ऐसा प्लान करें जिसमें दूसरे शामिल हो सकें"
+    "eventSub": "कुछ ऐसा प्लान करें जिसमें दूसरे शामिल हो सकें",
+    "challengeTitle": "चैलेंज लॉन्च करें",
+    "challengeSub": "लोकल्स और एक्सप्लोरर्स — एक चैलेंज से जुड़ें",
+    "challengePageTitle": "एक चैलेंज बनाएं",
+    "challengeAudience": "किसके लिए?",
+    "challengeAudLocals": "लोकल्स",
+    "challengeAudExplorers": "एक्सप्लोरर्स",
+    "challengeType": "टाइप",
+    "challengeTypeFood": "फ़ूड",
+    "challengeTypePlace": "जगह",
+    "challengeTypeCulture": "कल्चर",
+    "challengeTypeHelp": "मदद",
+    "challengeTitleLabel": "तुम्हारा चैलेंज",
+    "challengeTitlePlaceholder": "जैसे, मुझे अपनी पसंदीदा कॉफ़ी जगह ले चलो",
+    "challengeCta": "चैलेंज लॉन्च करें 🔥",
+    "challengeErrStart": "चैलेंज लॉन्च नहीं हो सका"
   },
   "goingModal": {
     "going": "जा रहे हैं",

@@ -135,7 +135,22 @@
     "hangoutTitle": "모임 시작하기",
     "hangoutSub": "바로 — 지금 사람들이 참여하게 하세요",
     "eventTitle": "이벤트 만들기",
-    "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요"
+    "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요",
+    "challengeTitle": "챌린지 시작",
+    "challengeSub": "로컬과 여행자 — 챌린지로 연결",
+    "challengePageTitle": "챌린지 만들기",
+    "challengeAudience": "누구를 위해?",
+    "challengeAudLocals": "로컬",
+    "challengeAudExplorers": "여행자",
+    "challengeType": "유형",
+    "challengeTypeFood": "음식",
+    "challengeTypePlace": "장소",
+    "challengeTypeCulture": "문화",
+    "challengeTypeHelp": "도움",
+    "challengeTitleLabel": "당신의 챌린지",
+    "challengeTitlePlaceholder": "예: 가장 좋아하는 카페로 데려가 주세요",
+    "challengeCta": "챌린지 시작 🔥",
+    "challengeErrStart": "챌린지를 시작하지 못했습니다"
   },
   "goingModal": {
     "going": "참여",

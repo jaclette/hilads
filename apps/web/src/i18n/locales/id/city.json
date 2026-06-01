@@ -135,7 +135,22 @@
     "hangoutTitle": "Mulai nongkrong",
     "hangoutSub": "Instan — biarkan orang gabung denganmu sekarang",
     "eventTitle": "Buat acara",
-    "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain"
+    "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain",
+    "challengeTitle": "Luncurkan tantangan",
+    "challengeSub": "Local & pelancong — terhubung lewat tantangan",
+    "challengePageTitle": "Buat tantangan",
+    "challengeAudience": "Untuk siapa?",
+    "challengeAudLocals": "Local",
+    "challengeAudExplorers": "Pelancong",
+    "challengeType": "Jenis",
+    "challengeTypeFood": "Makanan",
+    "challengeTypePlace": "Tempat",
+    "challengeTypeCulture": "Budaya",
+    "challengeTypeHelp": "Bantuan",
+    "challengeTitleLabel": "Tantanganmu",
+    "challengeTitlePlaceholder": "mis. Ajak aku ke kafe favoritmu",
+    "challengeCta": "Luncurkan tantangan 🔥",
+    "challengeErrStart": "Gagal meluncurkan tantangan"
   },
   "goingModal": {
     "going": "ikut",

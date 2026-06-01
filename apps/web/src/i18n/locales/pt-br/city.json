@@ -135,7 +135,22 @@
     "hangoutTitle": "Iniciar um rolê",
     "hangoutSub": "Na hora — deixe as pessoas participarem agora",
     "eventTitle": "Criar um evento",
-    "eventSub": "Planeje algo para outros participarem"
+    "eventSub": "Planeje algo para outros participarem",
+    "challengeTitle": "Lançar um desafio",
+    "challengeSub": "Locais & exploradores — conectem-se através de um desafio",
+    "challengePageTitle": "Criar um desafio",
+    "challengeAudience": "Para quem?",
+    "challengeAudLocals": "Locais",
+    "challengeAudExplorers": "Exploradores",
+    "challengeType": "Tipo",
+    "challengeTypeFood": "Comida",
+    "challengeTypePlace": "Lugar",
+    "challengeTypeCulture": "Cultura",
+    "challengeTypeHelp": "Ajuda",
+    "challengeTitleLabel": "Seu desafio",
+    "challengeTitlePlaceholder": "ex. Me leve ao seu café favorito",
+    "challengeCta": "Lançar desafio 🔥",
+    "challengeErrStart": "Não foi possível lançar o desafio"
   },
   "goingModal": {
     "going": "vão",

@@ -141,7 +141,22 @@
     "hangoutTitle": "Запустить тусовку",
     "hangoutSub": "Моментально — пусть люди присоединятся к тебе прямо сейчас",
     "eventTitle": "Создать событие",
-    "eventSub": "Запланируй что-то, к чему другие смогут присоединиться"
+    "eventSub": "Запланируй что-то, к чему другие смогут присоединиться",
+    "challengeTitle": "Запустить челлендж",
+    "challengeSub": "Местные и путешественники — соединяйтесь через челлендж",
+    "challengePageTitle": "Создать челлендж",
+    "challengeAudience": "Для кого?",
+    "challengeAudLocals": "Местные",
+    "challengeAudExplorers": "Путешественники",
+    "challengeType": "Тип",
+    "challengeTypeFood": "Еда",
+    "challengeTypePlace": "Место",
+    "challengeTypeCulture": "Культура",
+    "challengeTypeHelp": "Помощь",
+    "challengeTitleLabel": "Твой челлендж",
+    "challengeTitlePlaceholder": "напр. Отведи меня в своё любимое кафе",
+    "challengeCta": "Запустить челлендж 🔥",
+    "challengeErrStart": "Не удалось запустить челлендж"
   },
   "goingModal": {
     "going": "идут",

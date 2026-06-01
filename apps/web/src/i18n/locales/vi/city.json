@@ -130,7 +130,22 @@
     "hangoutTitle": "Tạo tụ tập",
     "hangoutSub": "Tức thì — để mọi người tham gia ngay bây giờ",
     "eventTitle": "Tạo sự kiện",
-    "eventSub": "Lên kế hoạch cho điều người khác có thể tham gia"
+    "eventSub": "Lên kế hoạch cho điều người khác có thể tham gia",
+    "challengeTitle": "Tạo một thử thách",
+    "challengeSub": "Người địa phương & du khách — kết nối qua một thử thách",
+    "challengePageTitle": "Tạo một thử thách",
+    "challengeAudience": "Dành cho ai?",
+    "challengeAudLocals": "Người địa phương",
+    "challengeAudExplorers": "Du khách",
+    "challengeType": "Loại",
+    "challengeTypeFood": "Ăn uống",
+    "challengeTypePlace": "Địa điểm",
+    "challengeTypeCulture": "Văn hóa",
+    "challengeTypeHelp": "Giúp đỡ",
+    "challengeTitleLabel": "Thử thách của bạn",
+    "challengeTitlePlaceholder": "vd. Đưa tôi đến quán cà phê yêu thích của bạn",
+    "challengeCta": "Tạo thử thách 🔥",
+    "challengeErrStart": "Không thể tạo thử thách"
   },
   "goingModal": {
     "going": "tham gia",

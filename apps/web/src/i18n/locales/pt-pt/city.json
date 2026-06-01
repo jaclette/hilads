@@ -135,7 +135,22 @@
     "hangoutTitle": "Iniciar um convívio",
     "hangoutSub": "Ao instante — deixa a gente juntar-se a ti agora",
     "eventTitle": "Criar um evento",
-    "eventSub": "Organiza algo a que se possam juntar"
+    "eventSub": "Organiza algo a que se possam juntar",
+    "challengeTitle": "Lançar um desafio",
+    "challengeSub": "Locais & exploradores — liguem-se através de um desafio",
+    "challengePageTitle": "Criar um desafio",
+    "challengeAudience": "Para quem?",
+    "challengeAudLocals": "Locais",
+    "challengeAudExplorers": "Exploradores",
+    "challengeType": "Tipo",
+    "challengeTypeFood": "Comida",
+    "challengeTypePlace": "Sítio",
+    "challengeTypeCulture": "Cultura",
+    "challengeTypeHelp": "Ajuda",
+    "challengeTitleLabel": "O teu desafio",
+    "challengeTitlePlaceholder": "ex. Leva-me ao teu café favorito",
+    "challengeCta": "Lançar desafio 🔥",
+    "challengeErrStart": "Não foi possível lançar o desafio"
   },
   "goingModal": {
     "going": "vão",

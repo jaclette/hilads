@@ -135,7 +135,22 @@
     "hangoutTitle": "Magsimula ng tambayan",
     "hangoutSub": "Instant — hayaang sumali ang mga tao ngayon",
     "eventTitle": "Gumawa ng event",
-    "eventSub": "Magplano ng pwedeng salihan ng iba"
+    "eventSub": "Magplano ng pwedeng salihan ng iba",
+    "challengeTitle": "Maglunsad ng challenge",
+    "challengeSub": "Mga local & biyahero — magkonekta sa pamamagitan ng challenge",
+    "challengePageTitle": "Gumawa ng challenge",
+    "challengeAudience": "Para kanino?",
+    "challengeAudLocals": "Mga local",
+    "challengeAudExplorers": "Mga biyahero",
+    "challengeType": "Uri",
+    "challengeTypeFood": "Pagkain",
+    "challengeTypePlace": "Lugar",
+    "challengeTypeCulture": "Kultura",
+    "challengeTypeHelp": "Tulong",
+    "challengeTitleLabel": "Iyong challenge",
+    "challengeTitlePlaceholder": "hal. Dalhin mo ako sa paborito mong coffee spot",
+    "challengeCta": "Ilunsad ang challenge 🔥",
+    "challengeErrStart": "Hindi nailunsad ang challenge"
   },
   "goingModal": {
     "going": "sasama",

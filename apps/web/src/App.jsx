@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { createSocket } from './socket'
@@ -26,6 +26,7 @@ import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
+import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
 import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
@@ -1004,6 +1005,7 @@ export default function App() {
   const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'events' | 'topics'
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
+  const [showCreateChallenge, setShowCreateChallenge] = useState(false)
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
   // Hangouts are members-only — gate guests to signup, otherwise open the channel.
@@ -1016,6 +1018,8 @@ export default function App() {
     if (!account) { setGuestGate({ reason: 'create_hangout' }); return }
     setShowCreateTopic(true)
   }
+  // Challenges allow guests (mirrors events, not hangouts). No auth gate.
+  const openCreateChallenge = () => { setShowCreateChallenge(true) }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)
@@ -5606,6 +5610,19 @@ export default function App() {
         />
       )}
 
+      {/* Challenge create — orange-brand full-page modal. On success, lands
+          the creator on the just-created challenge's detail page so they can
+          share it + see participants accept in real time. */}
+      {showCreateChallenge && (
+        <CreateChallengePage
+          channelId={channelId}
+          guest={guest}
+          account={account}
+          onCreated={(ch) => { setShowCreateChallenge(false); setActiveChallenge(ch) }}
+          onBack={() => setShowCreateChallenge(false)}
+        />
+      )}
+
       {/* Event limit reached — friendly full-page over the feed/drawer. */}
       {showEventLimitReached && (
         <EventLimitReachedScreen
@@ -5616,14 +5633,28 @@ export default function App() {
         />
       )}
 
-      {/* Creation chooser bottom sheet — hangout (instant join-me-now) on top,
-          event (planned) below. Handlers unchanged: setShowCreateTopic → hangout
-          (formerly pulse), openCreateEvent → event. */}
+      {/* Creation chooser bottom sheet — challenge (the new primary CTA) on
+          top per the product spec, hangout (instant) in the middle, event
+          (planned) at the bottom. Mirrors the mobile CreateSheet ordering. */}
       {showCreateChooser && (
         <div className="create-chooser-overlay" onClick={() => setShowCreateChooser(false)}>
           <div className="create-chooser-sheet" onClick={e => e.stopPropagation()}>
             <div className="create-chooser-handle" />
             <p className="create-chooser-title">{t('create.title')}</p>
+            <button
+              className="create-chooser-option create-chooser-option--challenge"
+              onClick={() => {
+                setShowCreateChooser(false)
+                openCreateChallenge()
+              }}
+            >
+              <span className="create-chooser-icon">🔥</span>
+              <span className="create-chooser-label">
+                <strong>{t('create.challengeTitle')}</strong>
+                <span>{t('create.challengeSub')}</span>
+              </span>
+              <span className="create-chooser-arrow">→</span>
+            </button>
             <button
               className="create-chooser-option"
               onClick={() => {

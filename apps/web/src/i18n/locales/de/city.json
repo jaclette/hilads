@@ -135,7 +135,22 @@
     "hangoutTitle": "Treffen starten",
     "hangoutSub": "Sofort — lass Leute jetzt gleich dazukommen",
     "eventTitle": "Event erstellen",
-    "eventSub": "Plane etwas, bei dem andere mitmachen können"
+    "eventSub": "Plane etwas, bei dem andere mitmachen können",
+    "challengeTitle": "Challenge starten",
+    "challengeSub": "Locals & Reisende — verbindet euch durch eine Challenge",
+    "challengePageTitle": "Challenge starten",
+    "challengeAudience": "Für wen?",
+    "challengeAudLocals": "Locals",
+    "challengeAudExplorers": "Reisende",
+    "challengeType": "Typ",
+    "challengeTypeFood": "Essen",
+    "challengeTypePlace": "Ort",
+    "challengeTypeCulture": "Kultur",
+    "challengeTypeHelp": "Hilfe",
+    "challengeTitleLabel": "Deine Challenge",
+    "challengeTitlePlaceholder": "z. B. Bring mich zu deinem Lieblings-Café",
+    "challengeCta": "Challenge starten 🔥",
+    "challengeErrStart": "Challenge konnte nicht gestartet werden"
   },
   "goingModal": {
     "going": "dabei",

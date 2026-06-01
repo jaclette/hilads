@@ -135,7 +135,22 @@
     "hangoutTitle": "Start a hangout",
     "hangoutSub": "Instant — let people join you right now",
     "eventTitle": "Create an event",
-    "eventSub": "Plan something others can join"
+    "eventSub": "Plan something others can join",
+    "challengeTitle": "Launch a challenge",
+    "challengeSub": "Locals & explorers — connect through a challenge",
+    "challengePageTitle": "Create a challenge",
+    "challengeAudience": "Who's it for?",
+    "challengeAudLocals": "Locals",
+    "challengeAudExplorers": "Explorers",
+    "challengeType": "Type",
+    "challengeTypeFood": "Food",
+    "challengeTypePlace": "Place",
+    "challengeTypeCulture": "Culture",
+    "challengeTypeHelp": "Help",
+    "challengeTitleLabel": "Your challenge",
+    "challengeTitlePlaceholder": "e.g. Bring me to your favorite hidden coffee spot",
+    "challengeCta": "Launch challenge 🔥",
+    "challengeErrStart": "Failed to launch challenge"
   },
   "goingModal": {
     "going": "going",

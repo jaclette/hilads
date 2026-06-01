@@ -147,7 +147,22 @@
     "hangoutTitle": "ابدأ لقاءً",
     "hangoutSub": "فوريًا — دع الناس ينضمّون إليك الآن",
     "eventTitle": "إنشاء فعالية",
-    "eventSub": "خطّط لشيء يمكن للآخرين الانضمام إليه"
+    "eventSub": "خطّط لشيء يمكن للآخرين الانضمام إليه",
+    "challengeTitle": "أطلق تحديًا",
+    "challengeSub": "محليون ومستكشفون — اتصلوا عبر تحدٍّ",
+    "challengePageTitle": "أنشئ تحديًا",
+    "challengeAudience": "لمن؟",
+    "challengeAudLocals": "المحليون",
+    "challengeAudExplorers": "المستكشفون",
+    "challengeType": "النوع",
+    "challengeTypeFood": "طعام",
+    "challengeTypePlace": "مكان",
+    "challengeTypeCulture": "ثقافة",
+    "challengeTypeHelp": "مساعدة",
+    "challengeTitleLabel": "تحديك",
+    "challengeTitlePlaceholder": "مثال: خذني إلى مقهاك المفضل",
+    "challengeCta": "أطلق التحدي 🔥",
+    "challengeErrStart": "تعذر إطلاق التحدي"
   },
   "goingModal": {
     "going": "ذاهبون",

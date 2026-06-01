@@ -135,7 +135,22 @@
     "hangoutTitle": "Een meetup starten",
     "hangoutSub": "Direct — laat mensen nu meteen meedoen",
     "eventTitle": "Een evenement maken",
-    "eventSub": "Plan iets waar anderen aan mee kunnen doen"
+    "eventSub": "Plan iets waar anderen aan mee kunnen doen",
+    "challengeTitle": "Start een challenge",
+    "challengeSub": "Locals & reizigers — verbind via een challenge",
+    "challengePageTitle": "Maak een challenge",
+    "challengeAudience": "Voor wie?",
+    "challengeAudLocals": "Locals",
+    "challengeAudExplorers": "Reizigers",
+    "challengeType": "Type",
+    "challengeTypeFood": "Eten",
+    "challengeTypePlace": "Plek",
+    "challengeTypeCulture": "Cultuur",
+    "challengeTypeHelp": "Hulp",
+    "challengeTitleLabel": "Jouw challenge",
+    "challengeTitlePlaceholder": "bv. Breng me naar je favoriete koffieplek",
+    "challengeCta": "Challenge starten 🔥",
+    "challengeErrStart": "Challenge kon niet worden gestart"
   },
   "goingModal": {
     "going": "doen mee",
