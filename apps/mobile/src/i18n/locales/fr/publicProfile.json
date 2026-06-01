@@ -1,4 +1,5 @@
 {
+  "tabChallenges": "Défis",
   "tabHangouts": "Sorties",
   "tabEvents": "Événements",
   "title": "Profil",
@@ -26,6 +27,7 @@
   "age": "Âge",
   "tabFriends": "Amis",
   "tabPicks": "Coups de cœur 👑",
+  "noChallenges": "Pas encore de défi",
   "noHangouts": "Pas encore de sortie",
   "noEvents": "Pas encore d'événement",
   "noFriends": "Pas encore d'amis",

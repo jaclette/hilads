@@ -9,6 +9,7 @@
   "signIn": "Sign in",
   "tabInterests": "Interests",
   "tabFriends": "Friends",
+  "tabChallenges": "Challenges",
   "tabHangouts": "Hangouts",
   "tabEvents": "Events",
   "fieldUsername": "USERNAME",
@@ -32,6 +33,7 @@
     "beach": "beach", "wellness": "wellness", "travel": "travel", "hangout": "hangout",
     "socializing": "socializing", "gaming": "gaming", "tech": "tech", "dating": "dating"
   },
+  "noChallenges": "No challenges yet — launch one 🔥",
   "noHangouts": "No hangouts yet — start one ⚡",
   "host": "Host",
   "going": "GOING",

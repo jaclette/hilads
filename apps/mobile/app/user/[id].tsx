@@ -31,6 +31,7 @@ import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { EventPill } from '@/features/events/EventPill';
 import { fetchUserHangouts, type ProfileHangout } from '@/api/topics';
+import { fetchUserChallenges, type ProfileChallenge } from '@/api/challenges';
 import { ReportModal } from '@/features/profile/ReportModal';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
@@ -98,10 +99,14 @@ const VIBE_META: Record<string, { emoji: string; label: string; caption: string 
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
-type TabKey = 'hangouts' | 'events' | 'friends' | 'vibes' | 'picks';
+type TabKey = 'challenges' | 'hangouts' | 'events' | 'friends' | 'vibes' | 'picks';
 
 const HANGOUT_ICONS: Record<string, string> = {
   general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+};
+
+const CHALLENGE_ICONS: Record<string, string> = {
+  food: '🍜', place: '📍', culture: '🎭', help: '🤝',
 };
 
 // ── Screen ────────────────────────────────────────────────────────────────────
@@ -116,6 +121,7 @@ export default function PublicProfileScreen() {
   const [user,         setUser]         = useState<PublicProfile | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
   const [hangouts,     setHangouts]     = useState<ProfileHangout[]>([]);
+  const [challenges,   setChallenges]   = useState<ProfileChallenge[]>([]);
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState<string | null>(null);
   // 4-state machine driven by isFriend + pendingFriendRequest from the profile
@@ -138,7 +144,8 @@ export default function PublicProfileScreen() {
   const [showActionSheet,    setShowActionSheet]    = useState(false);
   const [blockBusy,          setBlockBusy]          = useState(false);
   const [existingReport,     setExistingReport]     = useState<ExistingReport | null>(null);
-  const [activeTab,    setActiveTab]    = useState<TabKey>('hangouts');
+  // Challenges first — primary activity surface (mirrors NOW + me.tsx ordering).
+  const [activeTab,    setActiveTab]    = useState<TabKey>('challenges');
 
   useEffect(() => {
     if (!canAccessProfile(account)) {
@@ -150,11 +157,12 @@ export default function PublicProfileScreen() {
     if (!id) return;
     setLoading(true);
 
-    Promise.all([fetchPublicProfile(id), fetchUserEvents(id), fetchUserHangouts(id)])
-      .then(([u, evs, hgs]) => {
+    Promise.all([fetchPublicProfile(id), fetchUserEvents(id), fetchUserHangouts(id), fetchUserChallenges(id)])
+      .then(([u, evs, hgs, chs]) => {
         setUser(u);
         setEvents(evs);
         setHangouts(hgs);
+        setChallenges(chs);
         // Derive friendState from server payload. isFriend wins because once
         // accepted, the request row is no longer pending.
         if (u.isFriend) {
@@ -383,6 +391,7 @@ export default function PublicProfileScreen() {
   );
 
   const tabs: { key: TabKey; label: string }[] = [
+    { key: 'challenges', label: challenges.length > 0 ? `${t('tabChallenges')} · ${challenges.length}` : t('tabChallenges') },
     { key: 'hangouts', label: hangouts.length > 0 ? `${t('tabHangouts')} · ${hangouts.length}` : t('tabHangouts') },
     { key: 'events',  label: events.length  > 0 ? `${t('tabEvents')} · ${events.length}` : t('tabEvents') },
     { key: 'friends', label: friends.length > 0 ? `${t('tabFriends')} · ${friends.length}` : t('tabFriends') },
@@ -531,6 +540,33 @@ export default function PublicProfileScreen() {
               ))}
             </ScrollView>
           </View>
+
+            {/* Challenges tab */}
+            {activeTab === 'challenges' && (
+              challenges.length === 0 ? (
+                <Text style={styles.tabEmpty}>{t('noChallenges')}</Text>
+              ) : (
+                <View style={styles.eventList}>
+                  {challenges.map(c => (
+                    <TouchableOpacity
+                      key={c.id}
+                      style={styles.hangoutRow}
+                      activeOpacity={0.75}
+                      onPress={() => router.push(`/challenge/${c.id}` as never)}
+                    >
+                      <Text style={styles.hangoutIcon}>{CHALLENGE_ICONS[c.challenge_type] ?? '🔥'}</Text>
+                      <Text style={styles.hangoutTitle} numberOfLines={1}>{c.title}</Text>
+                      {c.status === 'validated' && (
+                        <View style={[styles.hostTag, { backgroundColor: 'rgba(34,197,94,0.10)', borderColor: 'rgba(34,197,94,0.20)' }]}>
+                          <Text style={[styles.hostTagText, { color: '#4ade80' }]}>✓</Text>
+                        </View>
+                      )}
+                      {c.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )
+            )}
 
             {/* Hangouts tab */}
             {activeTab === 'hangouts' && (

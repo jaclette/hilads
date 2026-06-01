@@ -9,6 +9,7 @@
   "signIn": "Se connecter",
   "tabInterests": "Centres d'intérêt",
   "tabFriends": "Amis",
+  "tabChallenges": "Défis",
   "tabHangouts": "Sorties",
   "tabEvents": "Événements",
   "fieldUsername": "PSEUDO",
@@ -32,6 +33,7 @@
     "beach": "plage", "wellness": "bien-être", "travel": "voyage", "hangout": "sorties",
     "socializing": "sociabilité", "gaming": "jeux vidéo", "tech": "tech", "dating": "rencontres"
   },
+  "noChallenges": "Pas encore de défi — lances-en un 🔥",
   "noHangouts": "Pas encore de sortie — lances-en une ⚡",
   "host": "Hôte",
   "going": "JE PARTICIPE",

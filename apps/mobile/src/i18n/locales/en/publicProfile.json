@@ -1,4 +1,5 @@
 {
+  "tabChallenges": "Challenges",
   "tabHangouts": "Hangouts",
   "tabEvents": "Events",
   "title": "Profile",
@@ -26,6 +27,7 @@
   "age": "Age",
   "tabFriends": "Friends",
   "tabPicks": "City Picks 👑",
+  "noChallenges": "No challenges yet",
   "noHangouts": "No hangouts yet",
   "noEvents": "No events yet",
   "noFriends": "No friends yet",

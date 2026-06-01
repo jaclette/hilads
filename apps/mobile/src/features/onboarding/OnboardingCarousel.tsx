@@ -24,6 +24,10 @@ function buildSlides(t: TFunction, city?: string | null): Slide[] {
     { emoji: '👋', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
     { emoji: '🔥', title: t('onboarding.slide2Title'), body: t('onboarding.slide2Body') },
     { emoji: '👀', title: t('onboarding.slide3Title'), body: t('onboarding.slide3Body') },
+    // Phase 6 — new challenge-loop slide explaining the local ↔ explorer dynamic.
+    // Sits between "See who's around" and "Make it yours" so it's surfaced as
+    // the core value prop on the path to action.
+    { emoji: '🤝', title: t('onboarding.slideChallengeTitle'), body: t('onboarding.slideChallengeBody') },
     { emoji: '✨', title: t('onboarding.slide4Title'), body: t('onboarding.slide4Body') },
   ];
 }

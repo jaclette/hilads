@@ -31,6 +31,7 @@ import { uploadFile } from '@/api/uploads';
 import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
 import { fetchUserHangouts, type ProfileHangout } from '@/api/topics';
+import { fetchUserChallenges, type ProfileChallenge } from '@/api/challenges';
 import { fetchIncomingFriendRequestCount } from '@/api/friendRequests';
 import { socket } from '@/lib/socket';
 import type { UserVibe } from '@/api/users';
@@ -72,12 +73,18 @@ const EVENT_ICONS: Record<string, string> = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 };
 
-type ProfileTab = 'interests' | 'hangouts' | 'events' | 'friends' | 'vibes';
+type ProfileTab = 'interests' | 'challenges' | 'hangouts' | 'events' | 'friends' | 'vibes';
 
-const PROFILE_TABS: ProfileTab[] = ['interests', 'hangouts', 'events', 'friends', 'vibes'];
+// Challenges placed before Hangouts/Events to mirror the NOW-screen filter
+// ordering (Phase 4) — challenges are the primary activity type now.
+const PROFILE_TABS: ProfileTab[] = ['interests', 'challenges', 'hangouts', 'events', 'friends', 'vibes'];
 
 const HANGOUT_ICONS: Record<string, string> = {
   general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋',
+};
+
+const CHALLENGE_ICONS: Record<string, string> = {
+  food: '🍜', place: '📍', culture: '🎭', help: '🤝',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -119,10 +126,11 @@ export default function MeScreen() {
 
   // Hangouts / Events tab labels are now translated (Vibes stays English — brand term).
   const tabLabel = (key: ProfileTab): string =>
-    key === 'interests' ? t('tabInterests')
-    : key === 'friends' ? t('tabFriends')
+    key === 'interests'  ? t('tabInterests')
+    : key === 'friends'  ? t('tabFriends')
     : key === 'hangouts' ? t('tabHangouts')
     : key === 'events'   ? t('tabEvents')
+    : key === 'challenges' ? t('tabChallenges')
     : 'Vibes';
 
   const validTabs = PROFILE_TABS;
@@ -143,6 +151,7 @@ export default function MeScreen() {
   const [saveError,          setSaveError]          = useState<string | null>(null);
   const [myFriends,          setMyFriends]          = useState<UserDTO[]>([]);
   const [myHangouts,         setMyHangouts]         = useState<ProfileHangout[]>([]);
+  const [myChallenges,       setMyChallenges]       = useState<ProfileChallenge[]>([]);
   const [friendsLoading,     setFriendsLoading]     = useState(false);
   const [myReceivedVibes,    setMyReceivedVibes]    = useState<UserVibe[]>([]);
   const [myVibeScore,        setMyVibeScore]        = useState<number | null>(null);
@@ -171,6 +180,11 @@ export default function MeScreen() {
   useEffect(() => {
     if (!account?.id) { setMyHangouts([]); return; }
     fetchUserHangouts(account.id).then(setMyHangouts).catch(() => {});
+  }, [account?.id]);
+
+  useEffect(() => {
+    if (!account?.id) { setMyChallenges([]); return; }
+    fetchUserChallenges(account.id).then(setMyChallenges).catch(() => {});
   }, [account?.id]);
 
   // Pending incoming friend-request count for the inbox badge. Cheap COUNT
@@ -709,6 +723,37 @@ export default function MeScreen() {
               <Text style={styles.version}>v{APP_VERSION}</Text>
             </TouchableOpacity>
           </>
+        )}
+
+        {/* ── Tab: Challenges (created + accepted; owner tagged "Host") ── */}
+        {!isGuest && activeTab === 'challenges' && (
+          <View style={styles.eventsCard}>
+            {myChallenges.length === 0 ? (
+              <Text style={styles.eventsEmpty}>{t('noChallenges')}</Text>
+            ) : myChallenges.map((c, idx) => (
+              <View key={c.id}>
+                {idx > 0 && <View style={styles.divider} />}
+                <TouchableOpacity
+                  style={styles.eventRow}
+                  onPress={() => router.push(`/challenge/${c.id}` as never)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.eventIcon}>{CHALLENGE_ICONS[c.challenge_type] ?? '🔥'}</Text>
+                  <View style={styles.eventInfo}>
+                    <Text style={styles.eventTitle} numberOfLines={1}>{c.title}</Text>
+                  </View>
+                  {c.status === 'validated' && (
+                    <View style={[styles.hostTag, { backgroundColor: 'rgba(34,197,94,0.10)', borderColor: 'rgba(34,197,94,0.20)' }]}>
+                      <Text style={[styles.hostTagText, { color: '#4ade80' }]}>✓</Text>
+                    </View>
+                  )}
+                  {c.is_owner && (
+                    <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>
+                  )}
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
         )}
 
         {/* ── Tab: Hangouts (joined + owned; owner tagged "Host") ── */}
