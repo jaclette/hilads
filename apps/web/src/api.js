@@ -550,6 +550,20 @@ export async function toggleChallengeParticipation(challengeId, guestId, nicknam
   return res.json() // { count, isIn }
 }
 
+export async function createChallenge(channelId, guestId, nickname, title, challengeType, audience) {
+  const res = await fetch(`${BASE}/channels/${encodeURIComponent(channelId)}/challenges`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, nickname, title, challengeType, audience }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to create challenge')
+  }
+  return res.json() // newly-created Challenge object
+}
+
 export async function validateChallenge(challengeId, guestId) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/validate`, {
     method: 'POST',
