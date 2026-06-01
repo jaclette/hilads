@@ -161,6 +161,29 @@ final class NotificationI18n
             'ru'      => ["👋 {name} присоединился к {title}",  null],
             'ar'      => ["👋 {name} انضم إلى {title}",          null],
         ],
+        // Challenge creator validates → fans out to every other registered
+        // participant. Both title + body are translated; English-locale users
+        // get the caller's hardcoded text (see api.php POST /challenges/{id}/validate).
+        'challenge_validated' => [
+            'fr'      => ["🎉 Défi validé",                         "{name} a validé « {title} »"],
+            'vi'      => ["🎉 Thử thách đã được xác nhận",          "{name} đã xác nhận \"{title}\""],
+            'es'      => ["🎉 Reto validado",                        "{name} validó \"{title}\""],
+            'it'      => ["🎉 Sfida validata",                       "{name} ha validato \"{title}\""],
+            'pt-br'   => ["🎉 Desafio validado",                     "{name} validou \"{title}\""],
+            'pt-pt'   => ["🎉 Desafio validado",                     "{name} validou \"{title}\""],
+            'de'      => ["🎉 Challenge validiert",                  "{name} hat \"{title}\" validiert"],
+            'nl'      => ["🎉 Challenge gevalideerd",                "{name} heeft \"{title}\" gevalideerd"],
+            'zh-hans' => ["🎉 挑战已验证",                            "{name} 验证了\"{title}\""],
+            'zh-hant' => ["🎉 挑戰已驗證",                            "{name} 驗證了「{title}」"],
+            'ja'      => ["🎉 チャレンジが確認されました",              "{name} が「{title}」を確認しました"],
+            'ko'      => ["🎉 챌린지가 검증되었어요",                  "{name} 님이 \"{title}\" 을(를) 검증했어요"],
+            'fil'     => ["🎉 Na-validate ang challenge",            "Vinalidate ni {name} ang \"{title}\""],
+            'th'      => ["🎉 ยืนยันชาเลนจ์แล้ว",                       "{name} ยืนยัน \"{title}\""],
+            'id'      => ["🎉 Tantangan tervalidasi",                "{name} memvalidasi \"{title}\""],
+            'hi'      => ["🎉 चैलेंज वैलिडेट हो गया",                    "{name} ने \"{title}\" को वैलिडेट किया"],
+            'ru'      => ["🎉 Челлендж подтверждён",                  "{name} подтвердил «{title}»"],
+            'ar'      => ["🎉 تم التحقق من التحدي",                   "{name} تحقق من \"{title}\""],
+        ],
         'friend_request_received' => [
             'fr' => ["{name} t'a envoyé une demande d'ami",      null],
             'vi' => ["{name} đã gửi cho bạn lời mời kết bạn",     null],
