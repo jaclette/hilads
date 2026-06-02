@@ -82,7 +82,7 @@
     "everythingElseLink": "{city}에서 일어나는 그 밖의 모든 것"
   },
   "city": {
-    "title": "{city}에서 {timeframe} 동네에서 무슨 일이 일어나고 있을까 — 이벤트, 모임 & 만날 로컬들 | Hilads",
+    "title": "{city} {timeframe} 도전 & 이벤트 — 로컬과 만나기 | Hilads",
     "descHigh": "이번 주 {city}에서 로컬 도전을 받아보세요 — {count}+개 이벤트, 로컬과 실시간 채팅. 가입 없이.",
     "descMid": "오늘 밤 {city}에서 도전을 받거나 모임에 참여 — 디너, 옥상, 실시간 시티 채팅. 가입 없이.",
     "descLow": "로컬 도전을 받거나 지금 {city}에 누가 있는지 보세요 — 실시간 채팅, 모임, 활동. 가입 없이.",

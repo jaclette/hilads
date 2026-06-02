@@ -106,7 +106,7 @@
     "everythingElseLink": "tout ce qui se passe d'autre à {city}"
   },
   "city": {
-    "title": "Que se passe-t-il localement à {city} {timeframe} — événements, rencontres & locaux à rencontrer | Hilads",
+    "title": "Défis & événements à {city} {timeframe} — rencontres locales | Hilads",
     "descHigh": "Relève un défi local à {city} cette semaine — {count}+ événements à rejoindre, chat live avec des locaux. Sans inscription.",
     "descMid": "Relève un défi ou rejoins un événement à {city} ce soir — dîners, soirées, chat live de la ville. Sans inscription.",
     "descLow": "Relève un défi local ou vois qui est à {city} en ce moment — chat live, rencontres, sorties. En temps réel, sans inscription.",

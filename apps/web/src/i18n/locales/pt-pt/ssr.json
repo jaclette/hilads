@@ -82,7 +82,7 @@
     "everythingElseLink": "tudo o resto que está a acontecer em {city}"
   },
   "city": {
-    "title": "O que está a acontecer perto de ti em {city} {timeframe} — eventos, encontros e locais para conhecer | Hilads",
+    "title": "Desafios & eventos em {city} {timeframe} — conhece os locais | Hilads",
     "descHigh": "Aceita um desafio local em {city} esta semana — {count}+ eventos para ir, chat ao vivo com locais. Sem registo.",
     "descMid": "Aceita um desafio ou junta-te a um plano em {city} esta noite — jantares, saídas, chat ao vivo da cidade. Sem registo.",
     "descLow": "Aceita um desafio local ou vê quem está em {city} agora — chat ao vivo, encontros, atividade em tempo real. Sem registo.",

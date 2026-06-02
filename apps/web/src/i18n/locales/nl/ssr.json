@@ -82,7 +82,7 @@
     "everythingElseLink": "al het andere dat gebeurt in {city}"
   },
   "city": {
-    "title": "Wat speelt er lokaal in {city} {timeframe} — evenementen, meetups en locals om te ontmoeten | Hilads",
+    "title": "Challenges & events in {city} {timeframe} — ontmoet locals | Hilads",
     "descHigh": "Doe mee aan een lokale challenge in {city} deze week — {count}+ events om aan te sluiten, live citychat. Geen aanmelding.",
     "descMid": "Doe mee aan een challenge of meetup in {city} vanavond — etentjes, rooftops, live citychat. Geen aanmelding.",
     "descLow": "Doe mee aan een lokale challenge of zie wie er nu in {city} is — live citychat, meetups, real-time activiteit. Geen aanmelding.",

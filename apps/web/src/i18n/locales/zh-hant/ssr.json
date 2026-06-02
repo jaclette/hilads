@@ -82,7 +82,7 @@
     "everythingElseLink": "{city} 正在發生的其他一切"
   },
   "city": {
-    "title": "{city}{timeframe}在地正在發生什麼 — 活動、聚會與可結識的在地人 | Hilads",
+    "title": "{city}{timeframe}的挑戰與活動 — 結識本地人 | Hilads",
     "descHigh": "本週在 {city} 接受本地挑戰 — {count}+ 場活動可加入，與當地人即時聊天。無需註冊。",
     "descMid": "今晚在 {city} 接受挑戰或加入活動 — 晚餐、聚會、即時城市聊天。無需註冊。",
     "descLow": "在 {city} 接受本地挑戰，或看看現在誰在城裡 — 即時城市聊天、聚會、即時活動。無需註冊。",

@@ -83,7 +83,7 @@
     "everythingElseLink": "tất cả những điều khác đang diễn ra ở {city}"
   },
   "city": {
-    "title": "Có gì đang diễn ra ở {city} {timeframe} quanh đây — sự kiện, gặp gỡ và người địa phương để gặp | Hilads",
+    "title": "Thử thách & sự kiện tại {city} {timeframe} — gặp người địa phương | Hilads",
     "descHigh": "Nhận một thử thách tại {city} tuần này — {count}+ sự kiện để tham gia, chat trực tiếp với người địa phương. Không cần đăng ký.",
     "descMid": "Nhận thử thách hoặc tham gia buổi gặp ở {city} tối nay — ăn tối, gặp mặt, chat trực tiếp. Không cần đăng ký.",
     "descLow": "Nhận một thử thách hoặc xem ai đang ở {city} ngay bây giờ — chat trực tiếp, gặp gỡ, hoạt động thời gian thực. Không cần đăng ký.",
