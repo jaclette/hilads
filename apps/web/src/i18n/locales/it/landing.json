@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "La città è viva intorno a te.\nLancia una sfida, unisciti a ciò che succede, o apri il tuo spot."
+    "sub": "La città è viva intorno a te.\nSfida i locali o gli esploratori, unisciti a ciò che succede, o apri il tuo spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persona in giro proprio ora",
@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Locale",
-    "title": "Lancia la tua sfida",
-    "tagline": "Conosci la città. Sfida chi vuole scoprirla.",
+    "title": "Sfida la città",
+    "tagline": "Conosci i posti. Sfida i locali o gli esploratori a trovarli.",
     "bullets": [
-      "Lancia sfide cibo, luogo, cultura o aiuto",
+      "Sfida locali o esploratori — cibo, luogo, cultura o aiuto",
       "Porta le persone nei posti che ami",
       "Diventa il locale che le persone ricordano"
     ],
-    "cta": "Lancia una sfida"
+    "cta": "Sfida la città"
   },
   "exploring": {
     "badge": "🧭 In esplorazione",

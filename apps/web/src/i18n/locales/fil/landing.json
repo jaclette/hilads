@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Buhay ang siyudad sa paligid mo.\nMag-launch ng challenge, sumali sa nangyayari, o buksan ang sarili mong spot."
+    "sub": "Buhay ang siyudad sa paligid mo.\nHamunin ang mga lokal o explorer, sumali sa nangyayari, o buksan ang sarili mong spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",
@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "I-launch ang challenge mo",
-    "tagline": "Alam mo ang siyudad. Hamunin ang mga gustong matuklasan ito.",
+    "title": "Hamunin ang siyudad",
+    "tagline": "Alam mo ang mga spot. Hamunin ang mga lokal o explorer na hanapin ang mga ito.",
     "bullets": [
-      "Mag-launch ng food, lugar, kultura o help challenges",
+      "Hamunin ang mga lokal o explorer — pagkain, lugar, kultura o tulong",
       "Dalhin ang mga tao sa mga spot na mahal mo",
       "Maging ang lokal na natatandaan ng mga tao"
     ],
-    "cta": "I-launch ang challenge"
+    "cta": "Hamunin ang siyudad"
   },
   "exploring": {
     "badge": "🧭 Nag-e-explore",

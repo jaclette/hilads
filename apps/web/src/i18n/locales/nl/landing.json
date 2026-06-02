@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "De stad leeft om je heen.\nLanceer een challenge, doe mee, of open je eigen spot."
+    "sub": "De stad leeft om je heen.\nDaag de locals of explorers uit, doe mee, of open je eigen spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persoon hangt nu rond",
@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Lanceer je challenge",
-    "tagline": "Jij kent de stad. Daag uit wie haar wil ontdekken.",
+    "title": "Daag de stad uit",
+    "tagline": "Jij kent de spots. Daag locals of explorers uit ze te vinden.",
     "bullets": [
-      "Lanceer food-, plaats-, cultuur- of hulp-challenges",
+      "Daag locals of explorers uit — food, plaats, cultuur of hulp",
       "Breng mensen naar de plekken waar jij van houdt",
       "Word de local die mensen onthouden"
     ],
-    "cta": "Challenge lanceren"
+    "cta": "Daag de stad uit"
   },
   "exploring": {
     "badge": "🧭 Verkennen",

@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "The city is alive around you.\nLaunch a défi, join what's on, or open your own spot."
+    "sub": "The city is alive around you.\nChallenge the locals or the explorers, join what's on, or open your own spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} person hanging out right now",
@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Launch a défi",
-    "tagline": "You know the city. Now challenge people to discover it.",
+    "title": "Challenge the city",
+    "tagline": "You know the spots. Challenge the locals or the explorers to find them.",
     "bullets": [
-      "Launch food, place, culture or help défis",
+      "Challenge locals or explorers — food, place, culture or help",
       "Pull people to the spots you love",
       "Become the local people remember"
     ],
-    "cta": "Launch a défi"
+    "cta": "Challenge the city"
   },
   "exploring": {
     "badge": "🧭 Exploring",

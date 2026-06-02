@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Die Stadt lebt um dich herum.\nStarte eine Challenge, mach mit oder eröffne deinen Spot."
+    "sub": "Die Stadt lebt um dich herum.\nFordere die Locals oder Explorer heraus, mach mit oder eröffne deinen Spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} Person ist gerade unterwegs",
@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Starte deine Challenge",
-    "tagline": "Du kennst die Stadt. Fordere die heraus, die sie entdecken wollen.",
+    "title": "Fordere die Stadt heraus",
+    "tagline": "Du kennst die Spots. Fordere Locals oder Explorer heraus, sie zu finden.",
     "bullets": [
-      "Starte Food-, Orts-, Kultur- oder Hilfe-Challenges",
+      "Fordere Locals oder Explorer heraus — Food, Ort, Kultur oder Hilfe",
       "Bring Leute an die Orte, die du liebst",
       "Werde der Local, an den sich Leute erinnern"
     ],
-    "cta": "Challenge starten"
+    "cta": "Stadt herausfordern"
   },
   "exploring": {
     "badge": "🧭 Exploring",

@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "La ville est vivante autour de toi.\nLance un défi, rejoins ce qui se passe, ou ouvre ton spot."
+    "sub": "La ville est vivante autour de toi.\nDéfie les locaux ou les explorateurs, rejoins ce qui se passe, ou ouvre ton spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} personne dans le coin en ce moment",
@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Lance ton défi",
-    "tagline": "Tu connais ta ville. Lance un défi à ceux qui veulent la découvrir.",
+    "title": "Défie la ville",
+    "tagline": "Tu connais les spots. Défie les locaux ou les explorateurs de les trouver.",
     "bullets": [
-      "Lance un défi bouffe, lieu, culture ou aide",
+      "Défie les locaux ou les explorateurs — bouffe, lieu, culture ou aide",
       "Fais venir les gens dans les spots que tu aimes",
       "Deviens le local que les gens retiennent"
     ],
-    "cta": "Lance un défi"
+    "cta": "Défie la ville"
   },
   "exploring": {
     "badge": "🧭 Exploration",
