@@ -382,21 +382,36 @@ export default function ChallengeChatPage({
         )}
       </div>
 
-      {/* Owner action row — Validate (when not yet validated) + Edit + Delete.
-          Same pill shape as topic-owner-btn for visual rhythm with hangouts. */}
+      {/* Owner actions — Validate is the primary ownership move so it gets
+          a full-width orange CTA (matches the Accept button used by non-
+          owners). Edit + Delete demote to small icon ghosts below. */}
       {isOwner && (
-        <div className="topic-owner-row">
+        <div className="challenge-owner-actions">
           {!isValidated && (
-            <button className="topic-owner-btn challenge-validate-btn-inline" onClick={handleValidate} disabled={busy !== null}>
-              {busy === 'validate' ? '…' : `✓ ${t('validateConfirm')}`}
+            <button
+              type="button"
+              className="challenge-validate-cta"
+              onClick={handleValidate}
+              disabled={busy !== null}
+            >
+              {busy === 'validate' ? '…' : (
+                <>
+                  <span aria-hidden="true">✓</span>
+                  <span>{t('validateLong')}</span>
+                </>
+              )}
             </button>
           )}
-          <button className="topic-owner-btn" onClick={handleEdit} disabled={busy !== null}>
-            ✏️ {t('editBtn')}
-          </button>
-          <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDelete} disabled={busy !== null}>
-            {busy === 'delete' ? '…' : `🗑️ ${t('deleteBtn')}`}
-          </button>
+          <div className="challenge-owner-secondary">
+            <button type="button" className="challenge-owner-iconbtn" onClick={handleEdit} disabled={busy !== null}>
+              <span aria-hidden="true">✏️</span>
+              <span>{t('editBtn')}</span>
+            </button>
+            <button type="button" className="challenge-owner-iconbtn challenge-owner-iconbtn--danger" onClick={handleDelete} disabled={busy !== null}>
+              <span aria-hidden="true">🗑️</span>
+              <span>{busy === 'delete' ? '…' : t('deleteBtn')}</span>
+            </button>
+          </div>
         </div>
       )}
 

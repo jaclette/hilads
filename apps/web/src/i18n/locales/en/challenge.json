@@ -69,5 +69,6 @@
       "A doctor who speaks English",
       "Where to fix a phone screen"
     ]
-  }
+  },
+  "validateLong": "Validate the challenge"
 }

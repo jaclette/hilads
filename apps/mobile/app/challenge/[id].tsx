@@ -318,34 +318,39 @@ export default function ChallengeChatScreen() {
           )}
         </View>
 
-        {/* Owner actions: Edit / Delete / Validate. Only the creator sees these.
-            Validate is hidden once the challenge is already validated. */}
+        {/* Owner actions — redesigned for hierarchy. Validate is the primary
+            ownership move (challenge done!), so it gets a full-width solid
+            orange CTA matching the Accept button style for non-owners. Edit
+            + Delete are housekeeping; demote them to small icon-only ghost
+            buttons below the CTA. */}
         {isOwner && (
-          <View style={styles.ownerRow}>
+          <>
             {!isValidated && (
               <TouchableOpacity
-                style={[styles.ownerBtn, styles.ownerBtnPrimary]}
+                style={styles.validateCta}
                 onPress={handleValidate}
-                activeOpacity={0.8}
+                activeOpacity={0.85}
                 disabled={validateBusy}
               >
                 {validateBusy
-                  ? <ActivityIndicator color="#FF7A3C" size="small" />
+                  ? <ActivityIndicator color={Colors.white} size="small" />
                   : <>
-                      <Ionicons name="checkmark-circle-outline" size={15} color="#FF7A3C" />
-                      <Text style={[styles.ownerBtnText, { color: '#FF7A3C' }]}>{t('validateConfirm')}</Text>
+                      <Ionicons name="checkmark-circle" size={18} color={Colors.white} />
+                      <Text style={styles.validateCtaText}>{t('validateLong')}</Text>
                     </>}
               </TouchableOpacity>
             )}
-            <TouchableOpacity style={styles.ownerBtn} onPress={handleEdit} activeOpacity={0.8}>
-              <Ionicons name="create-outline" size={15} color={Colors.text} />
-              <Text style={styles.ownerBtnText}>{t('editTitle')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.ownerBtn, styles.ownerBtnDanger]} onPress={handleDelete} activeOpacity={0.8}>
-              <Ionicons name="trash-outline" size={15} color={Colors.red} />
-              <Text style={[styles.ownerBtnText, { color: Colors.red }]}>{t('deleteConfirm')}</Text>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.ownerSecondaryRow}>
+              <TouchableOpacity style={styles.ownerIconBtn} onPress={handleEdit} activeOpacity={0.75} accessibilityLabel={t('editTitle')}>
+                <Ionicons name="create-outline" size={16} color={Colors.muted} />
+                <Text style={styles.ownerIconLabel}>{t('editTitle')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.ownerIconBtn} onPress={handleDelete} activeOpacity={0.75} accessibilityLabel={t('deleteConfirm')}>
+                <Ionicons name="trash-outline" size={16} color={Colors.muted} />
+                <Text style={styles.ownerIconLabel}>{t('deleteConfirm')}</Text>
+              </TouchableOpacity>
+            </View>
+          </>
         )}
 
         {/* Non-owner accept CTA — also hidden when the challenge is validated. */}
@@ -593,17 +598,36 @@ const styles = StyleSheet.create({
   },
   validatedBadgeText: { fontSize: 11, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
-  ownerRow: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, marginTop: Spacing.xs },
-  ownerBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm - 2,
-    borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1, borderColor: Colors.border,
+  // Primary owner CTA — full-width orange filled button. Mirrors the
+  // Accept CTA used by non-owners for consistent "primary action" rhythm.
+  validateCta: {
+    flexDirection:   'row',
+    alignItems:      'center',
+    justifyContent:  'center',
+    gap:             8,
+    marginTop:       Spacing.sm,
+    backgroundColor: '#FF7A3C',
+    borderRadius:    Radius.full,
+    paddingVertical: Spacing.md,
   },
-  ownerBtnPrimary: { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.30)' },
-  ownerBtnDanger:  { backgroundColor: 'rgba(239,68,68,0.06)',  borderColor: 'rgba(239,68,68,0.20)' },
-  ownerBtnText:    { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  validateCtaText: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.white, letterSpacing: 0.2 },
+
+  // Secondary housekeeping row — icon + small label, ghost styling so the
+  // eye lands on the orange CTA above first.
+  ownerSecondaryRow: {
+    flexDirection:  'row',
+    justifyContent: 'center',
+    gap:            Spacing.lg,
+    marginTop:      Spacing.sm,
+  },
+  ownerIconBtn: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    gap:            4,
+    paddingVertical:   4,
+    paddingHorizontal: 6,
+  },
+  ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
 
   acceptBtn: {
     marginTop: Spacing.xs,

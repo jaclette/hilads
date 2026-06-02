@@ -3688,6 +3688,61 @@ html, body, #root {
   border-color: rgba(74, 222, 128, 0.30);
 }
 
+/* Owner action block on the challenge détail screen — Validate is a
+   full-width orange CTA, Edit + Delete are small ghost icons below. */
+.challenge-owner-actions {
+  padding: 8px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.challenge-validate-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 18px;
+  background: #FF7A3C;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 122, 60, 0.22);
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, transform 0.1s ease;
+}
+.challenge-validate-cta:hover  { background: #ff8753; }
+.challenge-validate-cta:active { transform: scale(0.99); }
+.challenge-validate-cta:disabled { opacity: 0.6; cursor: default; }
+
+.challenge-owner-secondary {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  padding-top: 2px;
+}
+.challenge-owner-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
+  color: var(--muted2);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.12s ease;
+}
+.challenge-owner-iconbtn:hover { color: var(--text); }
+.challenge-owner-iconbtn--danger:hover { color: #f87171; }
+
 /* ── Owner prompt card — shown in event feed for creators ── */
 
 .feed-owner-prompt {
