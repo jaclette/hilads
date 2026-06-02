@@ -14,7 +14,8 @@
     "hangouts": "นัดเจอ",
     "events": "กิจกรรม",
     "friends": "เพื่อน",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "ชาเลนจ์"
   },
   "vibes": {
     "party": "ปาร์ตี้",
@@ -126,5 +127,9 @@
     "usernameInvalid": "ชื่อผู้ใช้ไม่ถูกต้อง",
     "saveFailed": "บันทึกไม่สำเร็จ ลองอีกครั้ง",
     "generic": "เกิดข้อผิดพลาด ลองอีกครั้ง"
+  },
+  "challenges": {
+    "empty": "ยังไม่มีชาเลนจ์ — เปิดสักอัน 🔥",
+    "challenger": "ผู้ท้าทาย"
   }
 }

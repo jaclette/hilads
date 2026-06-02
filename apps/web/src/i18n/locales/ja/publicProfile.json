@@ -8,10 +8,17 @@
     "regular": "よく顔を出す",
     "host": "場を盛り上げる 🔥"
   },
-  "modes": { "local": "ローカル", "exploring": "探検中" },
+  "modes": {
+    "local": "ローカル",
+    "exploring": "探検中"
+  },
   "vibes": {
-    "party": "パーティー", "board_games": "ボードゲーム", "coffee": "コーヒー",
-    "music": "音楽", "food": "グルメ", "chill": "チル"
+    "party": "パーティー",
+    "board_games": "ボードゲーム",
+    "coffee": "コーヒー",
+    "music": "音楽",
+    "food": "グルメ",
+    "chill": "チル"
   },
   "vibeTaglines": {
     "party": "夜遊びのためにここに",
@@ -30,12 +37,21 @@
   "from": "出身",
   "age": "年齢",
   "tabs": {
-    "hangouts": "集まり", "events": "イベント", "friends": "友達",
-    "vibes": "Vibes", "picks": "街のおすすめ 👑"
+    "hangouts": "集まり",
+    "events": "イベント",
+    "friends": "友達",
+    "vibes": "Vibes",
+    "picks": "街のおすすめ 👑",
+    "challenges": "挑戦"
   },
   "host": "ホスト",
   "live": "ライブ",
-  "empty": { "hangouts": "まだ集まりはありません", "events": "まだイベントはありません", "friends": "まだ友達はいません" },
+  "empty": {
+    "hangouts": "まだ集まりはありません",
+    "events": "まだイベントはありません",
+    "friends": "まだ友達はいません",
+    "challenges": "まだ挑戦がありません — 立ち上げよう 🔥"
+  },
   "vibesTab": {
     "score": "vibeスコア {{score}}",
     "basedOn_one": "{{count}}件のvibeに基づく",

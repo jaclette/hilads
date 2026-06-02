@@ -8,10 +8,17 @@
     "regular": "Sering muncul",
     "host": "Bikin sesuatu terjadi 🔥"
   },
-  "modes": { "local": "Local", "exploring": "Menjelajah" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Menjelajah"
+  },
   "vibes": {
-    "party": "Pesta", "board_games": "Board Game", "coffee": "Kopi",
-    "music": "Musik", "food": "Makanan", "chill": "Santai"
+    "party": "Pesta",
+    "board_games": "Board Game",
+    "coffee": "Kopi",
+    "music": "Musik",
+    "food": "Makanan",
+    "chill": "Santai"
   },
   "vibeTaglines": {
     "party": "Di sini buat kehidupan malam",
@@ -30,12 +37,21 @@
   "from": "Dari",
   "age": "Usia",
   "tabs": {
-    "hangouts": "Nongkrong", "events": "Acara", "friends": "Teman",
-    "vibes": "Vibes", "picks": "Rekomendasi 👑"
+    "hangouts": "Nongkrong",
+    "events": "Acara",
+    "friends": "Teman",
+    "vibes": "Vibes",
+    "picks": "Rekomendasi 👑",
+    "challenges": "Tantangan"
   },
   "host": "Host",
   "live": "LIVE",
-  "empty": { "hangouts": "Belum ada nongkrong", "events": "Belum ada acara", "friends": "Belum ada teman" },
+  "empty": {
+    "hangouts": "Belum ada nongkrong",
+    "events": "Belum ada acara",
+    "friends": "Belum ada teman",
+    "challenges": "Belum ada tantangan — luncurkan satu 🔥"
+  },
   "vibesTab": {
     "score": "skor vibe {{score}}",
     "basedOn_one": "berdasarkan {{count}} vibe",

@@ -5388,6 +5388,7 @@ export default function App() {
           onBack={() => setViewingProfile(null)}
           onViewProfile={(uid, nickname) => openProfile(uid, nickname)}
           onOpenHangout={(h) => { setViewingProfile(null); openHangout(h) }}
+          onOpenChallenge={(c) => { setViewingProfile(null); setActiveChallenge(c) }}
           onOpenLightbox={setLightboxUrl}
           onSendDm={account ? async (targetUserId) => {
             try {
@@ -5465,6 +5466,7 @@ export default function App() {
           }}
           onSelectEvent={(ev) => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
           onOpenHangout={(h) => { setShowProfileDrawer(false); openHangout(h) }}
+          onOpenChallenge={(c) => { setShowProfileDrawer(false); setActiveChallenge(c) }}
           onDeleteEvent={async (ev) => {
             try {
               await deleteEvent(ev.id, guest?.guestId ?? '')

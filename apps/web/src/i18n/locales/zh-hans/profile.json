@@ -14,7 +14,8 @@
     "hangouts": "聚会",
     "events": "活动",
     "friends": "好友",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "挑战"
   },
   "vibes": {
     "party": "派对",
@@ -126,5 +127,9 @@
     "usernameInvalid": "用户名无效",
     "saveFailed": "保存失败。请重试。",
     "generic": "出错了。请重试。"
+  },
+  "challenges": {
+    "empty": "还没有挑战 — 发起一个 🔥",
+    "challenger": "挑战者"
   }
 }

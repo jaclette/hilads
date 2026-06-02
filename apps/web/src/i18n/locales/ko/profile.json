@@ -14,7 +14,8 @@
     "hangouts": "모임",
     "events": "이벤트",
     "friends": "친구",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "도전"
   },
   "vibes": {
     "party": "파티",
@@ -126,5 +127,9 @@
     "usernameInvalid": "유효하지 않은 사용자 이름이에요",
     "saveFailed": "저장에 실패했어요. 다시 시도해 주세요.",
     "generic": "문제가 발생했어요. 다시 시도해 주세요."
+  },
+  "challenges": {
+    "empty": "아직 도전이 없어요 — 하나 던지세요 🔥",
+    "challenger": "도전자"
   }
 }

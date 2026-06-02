@@ -14,7 +14,8 @@
     "hangouts": "Tụ tập",
     "events": "Sự kiện",
     "friends": "Bạn bè",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "Thử thách"
   },
   "vibes": {
     "party": "Tiệc tùng",
@@ -125,5 +126,9 @@
     "usernameInvalid": "Tên người dùng không hợp lệ",
     "saveFailed": "Lưu thất bại. Thử lại.",
     "generic": "Đã xảy ra lỗi. Thử lại."
+  },
+  "challenges": {
+    "empty": "Chưa có thử thách — hãy tung một cái 🔥",
+    "challenger": "Người tung thử thách"
   }
 }

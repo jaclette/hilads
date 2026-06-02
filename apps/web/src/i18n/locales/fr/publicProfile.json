@@ -8,10 +8,17 @@
     "regular": "Souvent dans le coin",
     "host": "Fait bouger les choses 🔥"
   },
-  "modes": { "local": "Local", "exploring": "Exploration" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Exploration"
+  },
   "vibes": {
-    "party": "Fête", "board_games": "Jeux de société", "coffee": "Café",
-    "music": "Musique", "food": "Cuisine", "chill": "Détente"
+    "party": "Fête",
+    "board_games": "Jeux de société",
+    "coffee": "Café",
+    "music": "Musique",
+    "food": "Cuisine",
+    "chill": "Détente"
   },
   "vibeTaglines": {
     "party": "Là pour la vie nocturne",
@@ -30,12 +37,21 @@
   "from": "De",
   "age": "Âge",
   "tabs": {
-    "hangouts": "Sorties", "events": "Événements", "friends": "Amis",
-    "vibes": "Vibes", "picks": "Coups de cœur 👑"
+    "hangouts": "Sorties",
+    "events": "Événements",
+    "friends": "Amis",
+    "vibes": "Vibes",
+    "picks": "Coups de cœur 👑",
+    "challenges": "Défis"
   },
   "host": "Hôte",
   "live": "EN DIRECT",
-  "empty": { "hangouts": "Pas encore de sortie", "events": "Pas encore d'événement", "friends": "Pas encore d'amis" },
+  "empty": {
+    "hangouts": "Pas encore de sortie",
+    "events": "Pas encore d'événement",
+    "friends": "Pas encore d'amis",
+    "challenges": "Pas encore de défi — lance-en un 🔥"
+  },
   "vibesTab": {
     "score": "score vibe de {{score}}",
     "basedOn_one": "basé sur {{count}} vibe",

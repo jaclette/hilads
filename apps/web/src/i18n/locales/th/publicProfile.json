@@ -8,10 +8,17 @@
     "regular": "มาบ่อย",
     "host": "ทำให้เกิดขึ้นได้ 🔥"
   },
-  "modes": { "local": "คนท้องถิ่น", "exploring": "กำลังสำรวจ" },
+  "modes": {
+    "local": "คนท้องถิ่น",
+    "exploring": "กำลังสำรวจ"
+  },
   "vibes": {
-    "party": "ปาร์ตี้", "board_games": "บอร์ดเกม", "coffee": "กาแฟ",
-    "music": "เพลง", "food": "อาหาร", "chill": "ชิล"
+    "party": "ปาร์ตี้",
+    "board_games": "บอร์ดเกม",
+    "coffee": "กาแฟ",
+    "music": "เพลง",
+    "food": "อาหาร",
+    "chill": "ชิล"
   },
   "vibeTaglines": {
     "party": "มาเพื่อชีวิตยามค่ำคืน",
@@ -30,12 +37,21 @@
   "from": "มาจาก",
   "age": "อายุ",
   "tabs": {
-    "hangouts": "นัดเจอ", "events": "กิจกรรม", "friends": "เพื่อน",
-    "vibes": "Vibes", "picks": "ที่แนะนำในเมือง 👑"
+    "hangouts": "นัดเจอ",
+    "events": "กิจกรรม",
+    "friends": "เพื่อน",
+    "vibes": "Vibes",
+    "picks": "ที่แนะนำในเมือง 👑",
+    "challenges": "ชาเลนจ์"
   },
   "host": "เจ้าภาพ",
   "live": "สด",
-  "empty": { "hangouts": "ยังไม่มีนัดเจอ", "events": "ยังไม่มีกิจกรรม", "friends": "ยังไม่มีเพื่อน" },
+  "empty": {
+    "hangouts": "ยังไม่มีนัดเจอ",
+    "events": "ยังไม่มีกิจกรรม",
+    "friends": "ยังไม่มีเพื่อน",
+    "challenges": "ยังไม่มีชาเลนจ์ — เปิดสักอัน 🔥"
+  },
   "vibesTab": {
     "score": "คะแนน vibe {{score}}",
     "basedOn_one": "อ้างอิงจาก {{count}} vibe",

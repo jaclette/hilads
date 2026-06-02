@@ -14,7 +14,8 @@
     "hangouts": "Sorties",
     "events": "Événements",
     "friends": "Amis",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "Défis"
   },
   "vibes": {
     "party": "Fête",
@@ -126,5 +127,9 @@
     "usernameInvalid": "Nom d'utilisateur invalide",
     "saveFailed": "Échec de l'enregistrement. Réessaie.",
     "generic": "Une erreur s'est produite. Réessaie."
+  },
+  "challenges": {
+    "empty": "Pas encore de défi — lance-en un 🔥",
+    "challenger": "Challenger"
   }
 }

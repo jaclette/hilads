@@ -8,10 +8,17 @@
     "regular": "A menudo por aquí",
     "host": "Hace que pasen cosas 🔥"
   },
-  "modes": { "local": "Local", "exploring": "Explorando" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Explorando"
+  },
   "vibes": {
-    "party": "Fiesta", "board_games": "Juegos de mesa", "coffee": "Café",
-    "music": "Música", "food": "Comida", "chill": "Relax"
+    "party": "Fiesta",
+    "board_games": "Juegos de mesa",
+    "coffee": "Café",
+    "music": "Música",
+    "food": "Comida",
+    "chill": "Relax"
   },
   "vibeTaglines": {
     "party": "Aquí por la vida nocturna",
@@ -30,12 +37,21 @@
   "from": "De",
   "age": "Edad",
   "tabs": {
-    "hangouts": "Quedadas", "events": "Eventos", "friends": "Amigos",
-    "vibes": "Vibes", "picks": "Recomendaciones 👑"
+    "hangouts": "Quedadas",
+    "events": "Eventos",
+    "friends": "Amigos",
+    "vibes": "Vibes",
+    "picks": "Recomendaciones 👑",
+    "challenges": "Retos"
   },
   "host": "Anfitrión",
   "live": "EN DIRECTO",
-  "empty": { "hangouts": "Aún no hay quedadas", "events": "Aún no hay eventos", "friends": "Aún no hay amigos" },
+  "empty": {
+    "hangouts": "Aún no hay quedadas",
+    "events": "Aún no hay eventos",
+    "friends": "Aún no hay amigos",
+    "challenges": "Sin retos aún — lanza uno 🔥"
+  },
   "vibesTab": {
     "score": "puntuación vibe de {{score}}",
     "basedOn_one": "basado en {{count}} vibe",

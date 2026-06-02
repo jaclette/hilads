@@ -8,10 +8,17 @@
     "regular": "Thường xuyên xuất hiện",
     "host": "Người tạo nên mọi thứ 🔥"
   },
-  "modes": { "local": "Người địa phương", "exploring": "Đang khám phá" },
+  "modes": {
+    "local": "Người địa phương",
+    "exploring": "Đang khám phá"
+  },
   "vibes": {
-    "party": "Tiệc tùng", "board_games": "Board game", "coffee": "Cà phê",
-    "music": "Âm nhạc", "food": "Ẩm thực", "chill": "Thư giãn"
+    "party": "Tiệc tùng",
+    "board_games": "Board game",
+    "coffee": "Cà phê",
+    "music": "Âm nhạc",
+    "food": "Ẩm thực",
+    "chill": "Thư giãn"
   },
   "vibeTaglines": {
     "party": "Ở đây vì cuộc sống về đêm",
@@ -30,12 +37,21 @@
   "from": "Đến từ",
   "age": "Tuổi",
   "tabs": {
-    "hangouts": "Tụ tập", "events": "Sự kiện", "friends": "Bạn bè",
-    "vibes": "Vibes", "picks": "Gợi ý 👑"
+    "hangouts": "Tụ tập",
+    "events": "Sự kiện",
+    "friends": "Bạn bè",
+    "vibes": "Vibes",
+    "picks": "Gợi ý 👑",
+    "challenges": "Thử thách"
   },
   "host": "Chủ",
   "live": "TRỰC TIẾP",
-  "empty": { "hangouts": "Chưa có tụ tập", "events": "Chưa có sự kiện", "friends": "Chưa có bạn bè" },
+  "empty": {
+    "hangouts": "Chưa có tụ tập",
+    "events": "Chưa có sự kiện",
+    "friends": "Chưa có bạn bè",
+    "challenges": "Chưa có thử thách — hãy tung một cái 🔥"
+  },
   "vibesTab": {
     "score": "điểm vibe {{score}}",
     "basedOn_other": "dựa trên {{count}} vibe",

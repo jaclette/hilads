@@ -8,10 +8,17 @@
     "regular": "Shows up often",
     "host": "Makes it happen 🔥"
   },
-  "modes": { "local": "Local", "exploring": "Exploring" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Exploring"
+  },
   "vibes": {
-    "party": "Party", "board_games": "Board Games", "coffee": "Coffee",
-    "music": "Music", "food": "Food", "chill": "Chill"
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Coffee",
+    "music": "Music",
+    "food": "Food",
+    "chill": "Chill"
   },
   "vibeTaglines": {
     "party": "Here for the night life",
@@ -30,12 +37,21 @@
   "from": "From",
   "age": "Age",
   "tabs": {
-    "hangouts": "Hangouts", "events": "Events", "friends": "Friends",
-    "vibes": "Vibes", "picks": "City Picks 👑"
+    "hangouts": "Hangouts",
+    "events": "Events",
+    "friends": "Friends",
+    "vibes": "Vibes",
+    "picks": "City Picks 👑",
+    "challenges": "Challenges"
   },
   "host": "Host",
   "live": "LIVE",
-  "empty": { "hangouts": "No hangouts yet", "events": "No events yet", "friends": "No friends yet" },
+  "empty": {
+    "hangouts": "No hangouts yet",
+    "events": "No events yet",
+    "friends": "No friends yet",
+    "challenges": "No challenges yet — launch one 🔥"
+  },
   "vibesTab": {
     "score": "{{score}} vibe score",
     "basedOn_one": "based on {{count}} vibe",

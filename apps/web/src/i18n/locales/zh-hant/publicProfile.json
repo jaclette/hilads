@@ -8,10 +8,17 @@
     "regular": "常常出現",
     "host": "讓事情發生 🔥"
   },
-  "modes": { "local": "在地", "exploring": "探索中" },
+  "modes": {
+    "local": "在地",
+    "exploring": "探索中"
+  },
   "vibes": {
-    "party": "派對", "board_games": "桌遊", "coffee": "咖啡",
-    "music": "音樂", "food": "美食", "chill": "放鬆"
+    "party": "派對",
+    "board_games": "桌遊",
+    "coffee": "咖啡",
+    "music": "音樂",
+    "food": "美食",
+    "chill": "放鬆"
   },
   "vibeTaglines": {
     "party": "為了夜生活而來",
@@ -30,12 +37,21 @@
   "from": "來自",
   "age": "年齡",
   "tabs": {
-    "hangouts": "聚會", "events": "活動", "friends": "好友",
-    "vibes": "Vibes", "picks": "城市精選 👑"
+    "hangouts": "聚會",
+    "events": "活動",
+    "friends": "好友",
+    "vibes": "Vibes",
+    "picks": "城市精選 👑",
+    "challenges": "挑戰"
   },
   "host": "主辦人",
   "live": "LIVE",
-  "empty": { "hangouts": "還沒有聚會", "events": "還沒有活動", "friends": "還沒有好友" },
+  "empty": {
+    "hangouts": "還沒有聚會",
+    "events": "還沒有活動",
+    "friends": "還沒有好友",
+    "challenges": "還沒有挑戰 — 發起一個 🔥"
+  },
   "vibesTab": {
     "score": "{{score}} vibe 分數",
     "basedOn_one": "依據 {{count}} 個 vibe",

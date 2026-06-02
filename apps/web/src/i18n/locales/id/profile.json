@@ -14,7 +14,8 @@
     "hangouts": "Nongkrong",
     "events": "Acara",
     "friends": "Teman",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "Tantangan"
   },
   "vibes": {
     "party": "Pesta",
@@ -126,5 +127,9 @@
     "usernameInvalid": "Nama pengguna tidak valid",
     "saveFailed": "Gagal menyimpan. Coba lagi.",
     "generic": "Terjadi kesalahan. Coba lagi."
+  },
+  "challenges": {
+    "empty": "Belum ada tantangan — luncurkan satu 🔥",
+    "challenger": "Penantang"
   }
 }

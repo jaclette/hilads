@@ -8,10 +8,17 @@
     "regular": "Oft hier",
     "host": "Macht's möglich 🔥"
   },
-  "modes": { "local": "Local", "exploring": "Auf Erkundung" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Auf Erkundung"
+  },
   "vibes": {
-    "party": "Party", "board_games": "Brettspiele", "coffee": "Kaffee",
-    "music": "Musik", "food": "Essen", "chill": "Chillen"
+    "party": "Party",
+    "board_games": "Brettspiele",
+    "coffee": "Kaffee",
+    "music": "Musik",
+    "food": "Essen",
+    "chill": "Chillen"
   },
   "vibeTaglines": {
     "party": "Hier fürs Nachtleben",
@@ -30,12 +37,21 @@
   "from": "Aus",
   "age": "Alter",
   "tabs": {
-    "hangouts": "Treffen", "events": "Events", "friends": "Freunde",
-    "vibes": "Vibes", "picks": "Stadt-Tipps 👑"
+    "hangouts": "Treffen",
+    "events": "Events",
+    "friends": "Freunde",
+    "vibes": "Vibes",
+    "picks": "Stadt-Tipps 👑",
+    "challenges": "Challenges"
   },
   "host": "Gastgeber",
   "live": "LIVE",
-  "empty": { "hangouts": "Noch keine Treffen", "events": "Noch keine Events", "friends": "Noch keine Freunde" },
+  "empty": {
+    "hangouts": "Noch keine Treffen",
+    "events": "Noch keine Events",
+    "friends": "Noch keine Freunde",
+    "challenges": "Noch keine Challenges — starte eine 🔥"
+  },
   "vibesTab": {
     "score": "{{score}} Vibe-Score",
     "basedOn_one": "basierend auf {{count}} Vibe",

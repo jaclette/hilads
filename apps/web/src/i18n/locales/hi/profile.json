@@ -14,7 +14,8 @@
     "hangouts": "मुलाक़ात",
     "events": "इवेंट",
     "friends": "दोस्त",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "चुनौतियाँ"
   },
   "vibes": {
     "party": "पार्टी",
@@ -126,5 +127,9 @@
     "usernameInvalid": "अमान्य यूज़रनेम",
     "saveFailed": "सेव नहीं हुआ। फिर से कोशिश करें।",
     "generic": "कुछ गलत हो गया। फिर से कोशिश करें।"
+  },
+  "challenges": {
+    "empty": "अभी कोई चुनौती नहीं — एक लॉन्च करो 🔥",
+    "challenger": "चैलेंजर"
   }
 }

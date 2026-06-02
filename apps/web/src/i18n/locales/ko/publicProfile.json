@@ -8,10 +8,17 @@
     "regular": "자주 나타나요",
     "host": "일을 벌이는 사람 🔥"
   },
-  "modes": { "local": "로컬", "exploring": "탐험 중" },
+  "modes": {
+    "local": "로컬",
+    "exploring": "탐험 중"
+  },
   "vibes": {
-    "party": "파티", "board_games": "보드게임", "coffee": "커피",
-    "music": "음악", "food": "맛집", "chill": "칠"
+    "party": "파티",
+    "board_games": "보드게임",
+    "coffee": "커피",
+    "music": "음악",
+    "food": "맛집",
+    "chill": "칠"
   },
   "vibeTaglines": {
     "party": "밤 문화를 즐기러 왔어요",
@@ -30,12 +37,21 @@
   "from": "출신",
   "age": "나이",
   "tabs": {
-    "hangouts": "모임", "events": "이벤트", "friends": "친구",
-    "vibes": "Vibes", "picks": "City Picks 👑"
+    "hangouts": "모임",
+    "events": "이벤트",
+    "friends": "친구",
+    "vibes": "Vibes",
+    "picks": "City Picks 👑",
+    "challenges": "도전"
   },
   "host": "호스트",
   "live": "LIVE",
-  "empty": { "hangouts": "아직 모임이 없어요", "events": "아직 이벤트가 없어요", "friends": "아직 친구가 없어요" },
+  "empty": {
+    "hangouts": "아직 모임이 없어요",
+    "events": "아직 이벤트가 없어요",
+    "friends": "아직 친구가 없어요",
+    "challenges": "아직 도전이 없어요 — 하나 던지세요 🔥"
+  },
   "vibesTab": {
     "score": "vibe 점수 {{score}}",
     "basedOn_one": "vibe {{count}}개 기준",

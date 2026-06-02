@@ -8,10 +8,17 @@
     "regular": "Madalas sumipot",
     "host": "Siyang nagpapangyari 🔥"
   },
-  "modes": { "local": "Local", "exploring": "Nag-e-explore" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Nag-e-explore"
+  },
   "vibes": {
-    "party": "Party", "board_games": "Board Games", "coffee": "Kape",
-    "music": "Musika", "food": "Pagkain", "chill": "Chill"
+    "party": "Party",
+    "board_games": "Board Games",
+    "coffee": "Kape",
+    "music": "Musika",
+    "food": "Pagkain",
+    "chill": "Chill"
   },
   "vibeTaglines": {
     "party": "Nandito para sa night life",
@@ -30,12 +37,21 @@
   "from": "Taga",
   "age": "Edad",
   "tabs": {
-    "hangouts": "Tambayan", "events": "Events", "friends": "Mga kaibigan",
-    "vibes": "Vibes", "picks": "City Picks 👑"
+    "hangouts": "Tambayan",
+    "events": "Events",
+    "friends": "Mga kaibigan",
+    "vibes": "Vibes",
+    "picks": "City Picks 👑",
+    "challenges": "Mga challenge"
   },
   "host": "Host",
   "live": "LIVE",
-  "empty": { "hangouts": "Wala pang tambayan", "events": "Wala pang event", "friends": "Wala pang kaibigan" },
+  "empty": {
+    "hangouts": "Wala pang tambayan",
+    "events": "Wala pang event",
+    "friends": "Wala pang kaibigan",
+    "challenges": "Wala pang challenge — mag-launch ka 🔥"
+  },
   "vibesTab": {
     "score": "{{score}} vibe score",
     "basedOn_one": "base sa {{count}} vibe",

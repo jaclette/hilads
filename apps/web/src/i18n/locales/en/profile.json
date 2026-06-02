@@ -14,7 +14,8 @@
     "hangouts": "Hangouts",
     "events": "Events",
     "friends": "Friends",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "Challenges"
   },
   "vibes": {
     "party": "Party",
@@ -126,5 +127,9 @@
     "usernameInvalid": "Invalid username",
     "saveFailed": "Save failed. Try again.",
     "generic": "Something went wrong. Try again."
+  },
+  "challenges": {
+    "empty": "No challenges yet — launch one 🔥",
+    "challenger": "Challenger"
   }
 }

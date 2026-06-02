@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import { localizeCityName } from '../i18n/cityName'
-import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
+import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserChallenges, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
 
 const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 import { cityFlag } from '../cityMeta'
@@ -55,11 +55,15 @@ function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout }) {
+// Type emoji for challenge cards — mirrors the rest of the app.
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+
+export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout, onOpenChallenge }) {
   const { t } = useTranslation('publicProfile')
   const [user,       setUser]       = useState(null)
   const [events,     setEvents]     = useState([])
   const [hangouts,   setHangouts]   = useState([])
+  const [challenges, setChallenges] = useState([])
   const [friends,    setFriends]    = useState([])
   const [error,      setError]      = useState(null)
   const [dmBusy,       setDmBusy]       = useState(false)
@@ -105,7 +109,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     setVibeRating(0)
     setVibeMessage('')
     setShowVibeForm(false)
-    setActiveTab('hangouts')
+    setChallenges([])
+    setActiveTab('challenges')
     setExistingReport(null)
     setShowReportForm(false)
     profileVibeCountRef.current = 0
@@ -148,6 +153,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
     fetchUserHangouts(userId)
       .then(data => setHangouts(data.hangouts ?? []))
+      .catch(() => {})
+
+    fetchUserChallenges(userId)
+      .then(data => setChallenges(data.challenges ?? []))
       .catch(() => {})
   }, [userId])
 
@@ -294,7 +303,10 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   // Legend = user has ambassador picks
   const hasPicks = !!(user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0)
 
+  // Challenges placed before Hangouts/Events to mirror the NOW filter rhythm
+  // — the primary entity sits first.
   const tabs = [
+    { key: 'challenges' },
     { key: 'hangouts' },
     { key: 'events'   },
     { key: 'friends'  },
@@ -418,6 +430,32 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
           </div>
 
           {/* Tab content — continues inside pub-profile-body below */}
+
+            {/* Challenges tab */}
+            {activeTab === 'challenges' && (
+              <div className="pub-profile-events">
+                {challenges.length === 0
+                  ? <p className="pub-profile-tab-empty">{t('empty.challenges')}</p>
+                  : challenges.map(c => (
+                      <div
+                        key={c.id}
+                        className="pub-profile-event-row"
+                        onClick={() => onOpenChallenge ? onOpenChallenge(c) : undefined}
+                        style={{ cursor: onOpenChallenge ? 'pointer' : 'default' }}
+                      >
+                        <span className="pub-profile-event-icon">{CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'}</span>
+                        <div className="pub-profile-event-info">
+                          <span className="pub-profile-event-title">{c.title}</span>
+                          {c.status === 'validated' && (
+                            <span className="pub-profile-event-live">{t('validatedBadge', { ns: 'challenge' })}</span>
+                          )}
+                          {c.is_owner && <span className="profile-host-tag">{t('host')}</span>}
+                        </div>
+                      </div>
+                    ))
+                }
+              </div>
+            )}
 
             {/* Events tab */}
             {activeTab === 'hangouts' && (

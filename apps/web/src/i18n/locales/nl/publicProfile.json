@@ -8,10 +8,17 @@
     "regular": "Vaak van de partij",
     "host": "Maakt het waar 🔥"
   },
-  "modes": { "local": "Local", "exploring": "Verkennen" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Verkennen"
+  },
   "vibes": {
-    "party": "Feest", "board_games": "Bordspellen", "coffee": "Koffie",
-    "music": "Muziek", "food": "Eten", "chill": "Chillen"
+    "party": "Feest",
+    "board_games": "Bordspellen",
+    "coffee": "Koffie",
+    "music": "Muziek",
+    "food": "Eten",
+    "chill": "Chillen"
   },
   "vibeTaglines": {
     "party": "Hier voor het nachtleven",
@@ -30,12 +37,21 @@
   "from": "Uit",
   "age": "Leeftijd",
   "tabs": {
-    "hangouts": "Meetups", "events": "Evenementen", "friends": "Vrienden",
-    "vibes": "Vibes", "picks": "Tips uit de stad 👑"
+    "hangouts": "Meetups",
+    "events": "Evenementen",
+    "friends": "Vrienden",
+    "vibes": "Vibes",
+    "picks": "Tips uit de stad 👑",
+    "challenges": "Challenges"
   },
   "host": "Host",
   "live": "LIVE",
-  "empty": { "hangouts": "Nog geen meetups", "events": "Nog geen evenementen", "friends": "Nog geen vrienden" },
+  "empty": {
+    "hangouts": "Nog geen meetups",
+    "events": "Nog geen evenementen",
+    "friends": "Nog geen vrienden",
+    "challenges": "Nog geen challenges — lanceer er een 🔥"
+  },
   "vibesTab": {
     "score": "{{score}} vibe-score",
     "basedOn_one": "gebaseerd op {{count}} vibe",

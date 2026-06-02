@@ -14,7 +14,8 @@
     "hangouts": "لقاءات",
     "events": "فعاليات",
     "friends": "الأصدقاء",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "التحديات"
   },
   "vibes": {
     "party": "حفلة",
@@ -130,5 +131,9 @@
     "usernameInvalid": "اسم مستخدم غير صالح",
     "saveFailed": "فشل الحفظ. حاول مرة أخرى.",
     "generic": "حدث خطأ ما. حاول مرة أخرى."
+  },
+  "challenges": {
+    "empty": "لا توجد تحديات بعد — أطلق واحداً 🔥",
+    "challenger": "صاحب التحدّي"
   }
 }

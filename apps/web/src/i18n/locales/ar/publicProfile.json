@@ -8,10 +8,17 @@
     "regular": "يظهر كثيرًا",
     "host": "يجعل الأمور تحدث 🔥"
   },
-  "modes": { "local": "محلي", "exploring": "يستكشف" },
+  "modes": {
+    "local": "محلي",
+    "exploring": "يستكشف"
+  },
   "vibes": {
-    "party": "حفلة", "board_games": "ألعاب الطاولة", "coffee": "قهوة",
-    "music": "موسيقى", "food": "طعام", "chill": "استرخاء"
+    "party": "حفلة",
+    "board_games": "ألعاب الطاولة",
+    "coffee": "قهوة",
+    "music": "موسيقى",
+    "food": "طعام",
+    "chill": "استرخاء"
   },
   "vibeTaglines": {
     "party": "هنا من أجل الحياة الليلية",
@@ -30,12 +37,21 @@
   "from": "من",
   "age": "العمر",
   "tabs": {
-    "hangouts": "لقاءات", "events": "فعاليات", "friends": "الأصدقاء",
-    "vibes": "Vibes", "picks": "اختيارات المدينة 👑"
+    "hangouts": "لقاءات",
+    "events": "فعاليات",
+    "friends": "الأصدقاء",
+    "vibes": "Vibes",
+    "picks": "اختيارات المدينة 👑",
+    "challenges": "التحديات"
   },
   "host": "المضيف",
   "live": "مباشر",
-  "empty": { "hangouts": "لا توجد لقاءات بعد", "events": "لا توجد فعاليات بعد", "friends": "لا يوجد أصدقاء بعد" },
+  "empty": {
+    "hangouts": "لا توجد لقاءات بعد",
+    "events": "لا توجد فعاليات بعد",
+    "friends": "لا يوجد أصدقاء بعد",
+    "challenges": "لا توجد تحديات بعد — أطلق واحداً 🔥"
+  },
   "vibesTab": {
     "score": "درجة vibe تبلغ {{score}}",
     "basedOn_zero": "بناءً على {{count}} vibe",

@@ -14,7 +14,8 @@
     "hangouts": "Ritrovi",
     "events": "Eventi",
     "friends": "Amici",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "Sfide"
   },
   "vibes": {
     "party": "Festa",
@@ -126,5 +127,9 @@
     "usernameInvalid": "Nome utente non valido",
     "saveFailed": "Salvataggio non riuscito. Riprova.",
     "generic": "Qualcosa è andato storto. Riprova."
+  },
+  "challenges": {
+    "empty": "Nessuna sfida — lanciane una 🔥",
+    "challenger": "Sfidante"
   }
 }

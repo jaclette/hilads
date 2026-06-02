@@ -14,7 +14,8 @@
     "hangouts": "Tambayan",
     "events": "Events",
     "friends": "Mga kaibigan",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "Mga challenge"
   },
   "vibes": {
     "party": "Party",
@@ -126,5 +127,9 @@
     "usernameInvalid": "Hindi valid na username",
     "saveFailed": "Hindi na-save. Subukan ulit.",
     "generic": "May nangyaring mali. Subukan ulit."
+  },
+  "challenges": {
+    "empty": "Wala pang challenge — mag-launch ka 🔥",
+    "challenger": "Challenger"
   }
 }

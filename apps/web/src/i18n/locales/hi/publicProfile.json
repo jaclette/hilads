@@ -8,10 +8,17 @@
     "regular": "अक्सर आते हैं",
     "host": "चीज़ें करवाते हैं 🔥"
   },
-  "modes": { "local": "लोकल", "exploring": "एक्सप्लोर कर रहे हैं" },
+  "modes": {
+    "local": "लोकल",
+    "exploring": "एक्सप्लोर कर रहे हैं"
+  },
   "vibes": {
-    "party": "पार्टी", "board_games": "बोर्ड गेम", "coffee": "कॉफ़ी",
-    "music": "संगीत", "food": "खाना", "chill": "चिल"
+    "party": "पार्टी",
+    "board_games": "बोर्ड गेम",
+    "coffee": "कॉफ़ी",
+    "music": "संगीत",
+    "food": "खाना",
+    "chill": "चिल"
   },
   "vibeTaglines": {
     "party": "नाइटलाइफ़ के लिए यहाँ हैं",
@@ -30,12 +37,21 @@
   "from": "कहाँ से",
   "age": "उम्र",
   "tabs": {
-    "hangouts": "मुलाक़ात", "events": "इवेंट", "friends": "दोस्त",
-    "vibes": "Vibes", "picks": "सिटी पिक्स 👑"
+    "hangouts": "मुलाक़ात",
+    "events": "इवेंट",
+    "friends": "दोस्त",
+    "vibes": "Vibes",
+    "picks": "सिटी पिक्स 👑",
+    "challenges": "चुनौतियाँ"
   },
   "host": "होस्ट",
   "live": "LIVE",
-  "empty": { "hangouts": "अभी कोई मुलाक़ात नहीं", "events": "अभी कोई इवेंट नहीं", "friends": "अभी कोई दोस्त नहीं" },
+  "empty": {
+    "hangouts": "अभी कोई मुलाक़ात नहीं",
+    "events": "अभी कोई इवेंट नहीं",
+    "friends": "अभी कोई दोस्त नहीं",
+    "challenges": "अभी कोई चुनौती नहीं — एक लॉन्च करो 🔥"
+  },
   "vibesTab": {
     "score": "{{score}} vibe स्कोर",
     "basedOn_one": "{{count}} vibe पर आधारित",

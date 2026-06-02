@@ -969,6 +969,16 @@ export async function fetchUserHangouts(userId) {
   return res.json() // { hangouts }
 }
 
+// Challenges the user created or accepted — for the profile "Challenges"
+// tab. Mirrors fetchUserHangouts/fetchUserEvents. Backend already exists
+// at GET /users/{userId}/challenges; the mobile app calls it via its own
+// helper, this is the web parity.
+export async function fetchUserChallenges(userId) {
+  const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/challenges`, { credentials: 'include' })
+  if (!res.ok) return { challenges: [] }
+  return res.json() // { challenges }
+}
+
 export async function fetchMyEvents(guestId) {
   const res = await fetch(`${BASE}/users/me/events?guestId=${encodeURIComponent(guestId)}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch my events')

@@ -8,10 +8,17 @@
     "regular": "Часто бывает здесь",
     "host": "Делает движ 🔥"
   },
-  "modes": { "local": "Местный", "exploring": "Исследую" },
+  "modes": {
+    "local": "Местный",
+    "exploring": "Исследую"
+  },
   "vibes": {
-    "party": "Вечеринка", "board_games": "Настолки", "coffee": "Кофе",
-    "music": "Музыка", "food": "Еда", "chill": "Чилл"
+    "party": "Вечеринка",
+    "board_games": "Настолки",
+    "coffee": "Кофе",
+    "music": "Музыка",
+    "food": "Еда",
+    "chill": "Чилл"
   },
   "vibeTaglines": {
     "party": "Здесь ради ночной жизни",
@@ -30,12 +37,21 @@
   "from": "Из",
   "age": "Возраст",
   "tabs": {
-    "hangouts": "Тусовки", "events": "События", "friends": "Друзья",
-    "vibes": "Vibes", "picks": "Рекомендации 👑"
+    "hangouts": "Тусовки",
+    "events": "События",
+    "friends": "Друзья",
+    "vibes": "Vibes",
+    "picks": "Рекомендации 👑",
+    "challenges": "Вызовы"
   },
   "host": "Организатор",
   "live": "В ЭФИРЕ",
-  "empty": { "hangouts": "Пока нет тусовок", "events": "Пока нет событий", "friends": "Пока нет друзей" },
+  "empty": {
+    "hangouts": "Пока нет тусовок",
+    "events": "Пока нет событий",
+    "friends": "Пока нет друзей",
+    "challenges": "Пока нет вызовов — брось один 🔥"
+  },
   "vibesTab": {
     "score": "vibe-рейтинг {{score}}",
     "basedOn_one": "на основе {{count}} vibe",

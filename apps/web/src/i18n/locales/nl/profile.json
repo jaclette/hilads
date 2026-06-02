@@ -14,7 +14,8 @@
     "hangouts": "Meetups",
     "events": "Evenementen",
     "friends": "Vrienden",
-    "vibes": "Vibes"
+    "vibes": "Vibes",
+    "challenges": "Challenges"
   },
   "vibes": {
     "party": "Feest",
@@ -126,5 +127,9 @@
     "usernameInvalid": "Ongeldige gebruikersnaam",
     "saveFailed": "Opslaan mislukt. Probeer opnieuw.",
     "generic": "Er ging iets mis. Probeer opnieuw."
+  },
+  "challenges": {
+    "empty": "Nog geen challenges — lanceer er een 🔥",
+    "challenger": "Challenger"
   }
 }

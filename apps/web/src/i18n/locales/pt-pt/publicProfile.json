@@ -8,10 +8,17 @@
     "regular": "Aparece muitas vezes",
     "host": "Faz acontecer 🔥"
   },
-  "modes": { "local": "Local", "exploring": "A explorar" },
+  "modes": {
+    "local": "Local",
+    "exploring": "A explorar"
+  },
   "vibes": {
-    "party": "Festa", "board_games": "Jogos de tabuleiro", "coffee": "Café",
-    "music": "Música", "food": "Comida", "chill": "Relax"
+    "party": "Festa",
+    "board_games": "Jogos de tabuleiro",
+    "coffee": "Café",
+    "music": "Música",
+    "food": "Comida",
+    "chill": "Relax"
   },
   "vibeTaglines": {
     "party": "Aqui pela vida noturna",
@@ -30,12 +37,21 @@
   "from": "De",
   "age": "Idade",
   "tabs": {
-    "hangouts": "Convívios", "events": "Eventos", "friends": "Amigos",
-    "vibes": "Vibes", "picks": "Recomendações 👑"
+    "hangouts": "Convívios",
+    "events": "Eventos",
+    "friends": "Amigos",
+    "vibes": "Vibes",
+    "picks": "Recomendações 👑",
+    "challenges": "Desafios"
   },
   "host": "Anfitrião",
   "live": "AO VIVO",
-  "empty": { "hangouts": "Ainda não há convívios", "events": "Ainda não há eventos", "friends": "Ainda não há amigos" },
+  "empty": {
+    "hangouts": "Ainda não há convívios",
+    "events": "Ainda não há eventos",
+    "friends": "Ainda não há amigos",
+    "challenges": "Sem desafios ainda — lança um 🔥"
+  },
   "vibesTab": {
     "score": "pontuação vibe de {{score}}",
     "basedOn_one": "com base em {{count}} vibe",

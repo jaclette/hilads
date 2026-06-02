@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { updateProfile, uploadImage, fetchUserVibes, fetchUserHangouts, deleteAccount, checkUsernameAvailability } from '../api'
+import { updateProfile, uploadImage, fetchUserVibes, fetchUserHangouts, fetchUserChallenges, deleteAccount, checkUsernameAvailability } from '../api'
 import { setLocale } from '../i18n'
 
 const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
@@ -41,7 +41,11 @@ const INTERESTS = [
   'hangout', 'socializing', 'gaming', 'tech', 'dating',
 ]
 
-const PROFILE_TABS = ['interests', 'hangouts', 'events', 'friends', 'vibes']
+// Challenges placed before Hangouts/Events to mirror the NOW filter ordering
+// — challenges are the primary entity now.
+const PROFILE_TABS = ['interests', 'challenges', 'hangouts', 'events', 'friends', 'vibes']
+
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
 
 const AMBASSADOR_PICKS = [
   { key: 'restaurant', emoji: '🍜', maxLen: 200 },
@@ -73,7 +77,7 @@ const LANGS = [
   { code: 'ar',    flag: '🇸🇦', name: 'العربية' },
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onOpenChallenge, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
   const { t, i18n } = useTranslation(['profile', 'common'])
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
@@ -116,10 +120,16 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [deleteError,       setDeleteError]       = useState(null)
   const [deleteLoading,     setDeleteLoading]     = useState(false)
   const [myHangouts,        setMyHangouts]        = useState([])
+  const [myChallenges,      setMyChallenges]      = useState([])
 
   useEffect(() => {
     if (!account?.id) { setMyHangouts([]); return }
     fetchUserHangouts(account.id).then(data => setMyHangouts(data.hangouts ?? [])).catch(() => {})
+  }, [account?.id])
+
+  useEffect(() => {
+    if (!account?.id) { setMyChallenges([]); return }
+    fetchUserChallenges(account.id).then(data => setMyChallenges(data.challenges ?? [])).catch(() => {})
   }, [account?.id])
 
   useEffect(() => {
@@ -516,6 +526,35 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             )}
 
           </>
+        )}
+
+        {/* ── Tab: Challenges (created + accepted) ── */}
+        {activeTab === 'challenges' && (
+          <div className="profile-card">
+            {myChallenges.length === 0
+              ? <p className="profile-tab-empty">{t('challenges.empty')}</p>
+              : myChallenges.map(c => (
+                  <div key={c.id} className="my-event-row">
+                    <button className="my-event-row-body" onClick={() => onOpenChallenge?.(c)}>
+                      <span className="my-event-title">
+                        {CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'} {c.title}
+                      </span>
+                      <span className="my-event-meta">
+                        {c.audience === 'locals'
+                          ? t('forLocals',    { ns: 'challenge' })
+                          : t('forExplorers', { ns: 'challenge' })}
+                      </span>
+                      <span className={`my-event-badge${c.status === 'validated' ? ' my-event-badge--recurring' : ''}`}>
+                        {c.status === 'validated'
+                          ? t('validatedBadge', { ns: 'challenge' })
+                          : t('openBadge',      { ns: 'challenge' })}
+                      </span>
+                      {c.is_owner && <span className="profile-host-tag">{t('challenges.challenger')}</span>}
+                    </button>
+                  </div>
+                ))
+            }
+          </div>
         )}
 
         {/* ── Tab: Hangouts ── */}
