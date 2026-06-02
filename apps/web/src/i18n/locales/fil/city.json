@@ -215,7 +215,10 @@
     "event": "🔥 Bagong event: {{title}}",
     "join": "Sumali",
     "replies_one": "{{count}} tugon",
-    "replies_other": "{{count}} tugon"
+    "replies_other": "{{count}} tugon",
+    "challengeLocals": "🔥 Hinahamon ni {{name}} ang mga lokal: {{title}}",
+    "challengeExplorers": "🔥 Hinahamon ni {{name}} ang mga explorer: {{title}}",
+    "challengeCta": "Tingnan →"
   },
   "replyPreview": {
     "photo": "📷 Litrato"

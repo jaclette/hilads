@@ -209,7 +209,10 @@
   "feedNew": {
     "event": "🔥 Sự kiện mới: {{title}}",
     "join": "Tham gia",
-    "replies_other": "{{count}} trả lời"
+    "replies_other": "{{count}} trả lời",
+    "challengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",
+    "challengeExplorers": "🔥 {{name}} thách người khám phá: {{title}}",
+    "challengeCta": "Xem →"
   },
   "replyPreview": {
     "photo": "📷 Ảnh"

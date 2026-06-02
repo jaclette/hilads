@@ -215,7 +215,10 @@
     "event": "🔥 Novo evento: {{title}}",
     "join": "Juntar-se",
     "replies_one": "{{count}} resposta",
-    "replies_other": "{{count}} respostas"
+    "replies_other": "{{count}} respostas",
+    "challengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
+    "challengeExplorers": "🔥 {{name}} desafia os exploradores: {{title}}",
+    "challengeCta": "Ver →"
   },
   "replyPreview": {
     "photo": "📷 Foto"

@@ -82,5 +82,7 @@
   "linkCopied": "लिंक कॉपी हो गया",
   "photoSavePermTitle": "फ़ोटो एक्सेस ज़रूरी है",
   "photoSavePermBody": "इमेज सहेजने के लिए फ़ोटो एक्सेस की अनुमति दें।",
-  "photoSavePermSettings": "इमेज सहेजने के लिए सेटिंग्स में फ़ोटो एक्सेस की अनुमति दें।"
+  "photoSavePermSettings": "इमेज सहेजने के लिए सेटिंग्स में फ़ोटो एक्सेस की अनुमति दें।",
+  "bannerChallengeLocals": "🔥 {{name}} ने स्थानीयों को चुनौती दी: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} ने एक्सप्लोरर्स को चुनौती दी: {{title}}"
 }

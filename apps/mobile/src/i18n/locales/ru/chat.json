@@ -82,5 +82,7 @@
   "linkCopied": "Ссылка скопирована",
   "photoSavePermTitle": "Нужен доступ к Фото",
   "photoSavePermBody": "Разреши доступ к Фото, чтобы сохранять изображения.",
-  "photoSavePermSettings": "Разреши доступ к Фото в настройках, чтобы сохранять изображения."
+  "photoSavePermSettings": "Разреши доступ к Фото в настройках, чтобы сохранять изображения.",
+  "bannerChallengeLocals": "🔥 {{name}} бросает вызов местным: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} бросает вызов исследователям: {{title}}"
 }

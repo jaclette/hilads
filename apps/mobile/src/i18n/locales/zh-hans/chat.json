@@ -82,5 +82,7 @@
   "linkCopied": "已复制链接",
   "photoSavePermTitle": "需要照片访问权限",
   "photoSavePermBody": "请允许照片访问以保存图片。",
-  "photoSavePermSettings": "请在设置中允许照片访问以保存图片。"
+  "photoSavePermSettings": "请在设置中允许照片访问以保存图片。",
+  "bannerChallengeLocals": "🔥 {{name}} 向本地人发起挑战：{{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} 向探索者发起挑战：{{title}}"
 }

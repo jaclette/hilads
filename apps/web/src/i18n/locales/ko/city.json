@@ -215,7 +215,10 @@
     "event": "🔥 새 이벤트: {{title}}",
     "join": "참여",
     "replies_one": "답글 {{count}}개",
-    "replies_other": "답글 {{count}}개"
+    "replies_other": "답글 {{count}}개",
+    "challengeLocals": "🔥 {{name}} 님이 로컬에게 도전: {{title}}",
+    "challengeExplorers": "🔥 {{name}} 님이 익스플로러에게 도전: {{title}}",
+    "challengeCta": "보기 →"
   },
   "replyPreview": {
     "photo": "📷 사진"

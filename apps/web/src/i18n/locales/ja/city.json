@@ -215,7 +215,10 @@
     "event": "🔥 新しいイベント：{{title}}",
     "join": "参加",
     "replies_one": "{{count}}件の返信",
-    "replies_other": "{{count}}件の返信"
+    "replies_other": "{{count}}件の返信",
+    "challengeLocals": "🔥 {{name}} がローカル向けに挑戦：{{title}}",
+    "challengeExplorers": "🔥 {{name}} がエクスプローラー向けに挑戦：{{title}}",
+    "challengeCta": "見る →"
   },
   "replyPreview": {
     "photo": "📷 写真"

@@ -7356,7 +7356,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         );
 
         try {
-            broadcastNewChallengeToWs($channelId, $challenge);
+            // Enrich the WS payload with the creator's nickname — the
+            // challenge row itself doesn't carry it (created_by / guest_id
+            // only), but the city-feed pill on web + mobile needs it for
+            // "{name} défie les locaux : {title}". Falls back to a generic
+            // placeholder if the client didn't pass one (rare guest path).
+            broadcastNewChallengeToWs(
+                $channelId,
+                array_merge($challenge, ['nickname' => $nickname ?? 'Someone']),
+            );
         } catch (\Throwable $e) {
             error_log('[challenges] ws broadcast failed (non-fatal): ' . $e->getMessage());
         }

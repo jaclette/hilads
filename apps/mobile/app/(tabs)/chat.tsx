@@ -29,6 +29,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
+import { fetchCityChallenges } from '@/api/challenges';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
@@ -409,6 +410,64 @@ export default function ChatTab() {
     return () => { stopTopicPoll(); offDisconnected(); offConnected(); offTopic(); };
   }, [channelId]);
 
+  // ── Challenge feed item synthesis ────────────────────────────────────────
+  // Active challenges appear as orange pills in the city chat ("X défie les
+  // locaux : <title>"). Same pattern as events: fetch on channel load to
+  // synthesize current items, WS new_challenge appends fresh ones.
+
+  const seenChallengeIds = useRef(new Set<string>());
+  const [challengeFeedItems, setChallengeFeedItems] = useState<Message[]>([]);
+
+  useEffect(() => {
+    if (!channelId) return;
+    seenChallengeIds.current.clear();
+    setChallengeFeedItems([]);
+
+    fetchCityChallenges(channelId).then(chs => {
+      const now = Date.now() / 1000;
+      const fresh: Message[] = [];
+      for (const c of chs) {
+        if (!seenChallengeIds.current.has(c.id)) {
+          seenChallengeIds.current.add(c.id);
+          // participants_preview[0] is the creator (auto-joined at create
+          // time); fall back to a generic placeholder if for some reason
+          // the preview is empty.
+          const creatorName = c.participants_preview?.[0]?.displayName ?? '';
+          fresh.push({
+            id:          `challenge-msg-${c.id}`,
+            type:        'challenge',
+            challengeId: c.id,
+            content:     c.title,
+            nickname:    creatorName,
+            audience:    c.audience,
+            createdAt:   now,
+          });
+        }
+      }
+      if (fresh.length > 0) setChallengeFeedItems(prev => [...prev, ...fresh]);
+    }).catch(() => {});
+
+    // WS: new challenge created — append pill immediately (no poll).
+    const offChallenge = socket.on('new_challenge', (data: Record<string, unknown>) => {
+      if (String(data.channelId) !== String(channelId)) return;
+      const ch = data.challenge as Record<string, unknown> | undefined;
+      const id = (ch?.id ?? '') as string;
+      if (!id || seenChallengeIds.current.has(id)) return;
+      seenChallengeIds.current.add(id);
+      setChallengeFeedItems(prev => [...prev, {
+        id:          `challenge-msg-${id}`,
+        type:        'challenge' as const,
+        challengeId: id,
+        content:     (ch?.title as string) ?? '',
+        nickname:    (ch?.nickname as string) ?? '',
+        audience:    (ch?.audience as 'locals' | 'explorers') ?? 'locals',
+        createdAt:   Date.now() / 1000,
+      }]);
+    });
+
+    return () => { offChallenge(); };
+  }, [channelId]);
+
   const loadFn = useCallback(
     (opts?: { beforeId?: string }) => fetchMessages(channelId, opts),
     [channelId],
@@ -635,9 +694,9 @@ export default function ChatTab() {
   // Sorting by timestamp places them naturally at the bottom of history.
   const allMessages = useMemo<Message[]>(() => {
     const chat = messages.filter(m => !(m.type === 'system' && m.event === 'weather'));
-    return [...chat, ...eventFeedItems, ...topicFeedItems, ...promptItems]
+    return [...chat, ...eventFeedItems, ...topicFeedItems, ...challengeFeedItems, ...promptItems]
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-  }, [messages, eventFeedItems, topicFeedItems, promptItems]);
+  }, [messages, eventFeedItems, topicFeedItems, challengeFeedItems, promptItems]);
 
   // ── Reply callbacks ───────────────────────────────────────────────────────────
 

@@ -82,5 +82,7 @@
   "linkCopied": "링크가 복사됨",
   "photoSavePermTitle": "사진 접근 권한이 필요해요",
   "photoSavePermBody": "이미지를 저장하려면 사진 접근을 허용해 주세요.",
-  "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요."
+  "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요.",
+  "bannerChallengeLocals": "🔥 {{name}} 님이 로컬에게 도전: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} 님이 익스플로러에게 도전: {{title}}"
 }

@@ -215,7 +215,10 @@
     "event": "🔥 Nieuw evenement: {{title}}",
     "join": "Meedoen",
     "replies_one": "{{count}} reactie",
-    "replies_other": "{{count}} reacties"
+    "replies_other": "{{count}} reacties",
+    "challengeLocals": "🔥 {{name}} daagt de locals uit: {{title}}",
+    "challengeExplorers": "🔥 {{name}} daagt de explorers uit: {{title}}",
+    "challengeCta": "Bekijk →"
   },
   "replyPreview": {
     "photo": "📷 Foto"

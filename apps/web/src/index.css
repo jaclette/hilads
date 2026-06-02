@@ -3670,6 +3670,13 @@ html, body, #root {
   opacity: 0.85;
 }
 
+/* Challenge variant — same orange family as events but more saturated so
+   the brand-new primary entity reads distinct in the chat feed. */
+.feed-prompt--challenge {
+  background: rgba(255, 122, 60, 0.14);
+  border-color: rgba(255, 122, 60, 0.30);
+}
+
 /* ── Owner prompt card — shown in event feed for creators ── */
 
 .feed-owner-prompt {

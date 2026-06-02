@@ -82,5 +82,7 @@
   "linkCopied": "Link gekopieerd",
   "photoSavePermTitle": "Toegang tot foto's nodig",
   "photoSavePermBody": "Geef toegang tot foto's om afbeeldingen op te slaan.",
-  "photoSavePermSettings": "Geef in Instellingen toegang tot foto's om afbeeldingen op te slaan."
+  "photoSavePermSettings": "Geef in Instellingen toegang tot foto's om afbeeldingen op te slaan.",
+  "bannerChallengeLocals": "🔥 {{name}} daagt de locals uit: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} daagt de explorers uit: {{title}}"
 }

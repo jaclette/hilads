@@ -223,7 +223,10 @@
     "replies_one": "{{count}} ответ",
     "replies_few": "{{count}} ответа",
     "replies_many": "{{count}} ответов",
-    "replies_other": "{{count}} ответов"
+    "replies_other": "{{count}} ответов",
+    "challengeLocals": "🔥 {{name}} бросает вызов местным: {{title}}",
+    "challengeExplorers": "🔥 {{name}} бросает вызов исследователям: {{title}}",
+    "challengeCta": "Смотреть →"
   },
   "replyPreview": {
     "photo": "📷 Фото"

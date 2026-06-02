@@ -494,7 +494,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // AnimatedEventPill which owns its own opacity). Hook runs unconditionally;
   // `enabled` gates it. cancelDismiss() is wired into the CTAs below.
   const cancelDismiss = useAutoDismissFade({
-    enabled: autoDismiss && (message.type === 'topic' || message.type === 'prompt' || message.type === 'activity'),
+    enabled: autoDismiss && (message.type === 'topic' || message.type === 'challenge' || message.type === 'prompt' || message.type === 'activity'),
     id: message.id ?? '',
     onDismiss: onAutoDismiss,
   });
@@ -552,6 +552,33 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               onPress={() => { cancelDismiss(); if (message.topicId) router.push(`/topic/${message.topicId}`); }}
             >
               <Text style={styles.topicJoinText}>{t('joinArrow')}</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </>
+    );
+  }
+
+  // ── Challenge feed item — orange pill, "{name} défie les locaux : {title}".
+  // Mirrors the web .feed-prompt--challenge layout. Tap → /challenge/{id}.
+  if (message.type === 'challenge') {
+    const textKey = message.audience === 'explorers'
+      ? 'bannerChallengeExplorers'
+      : 'bannerChallengeLocals';
+    return (
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
+          <View style={styles.challengePill}>
+            <Text style={styles.challengeText} numberOfLines={2}>
+              {t(textKey, { name: message.nickname, title: message.content })}
+            </Text>
+            <TouchableOpacity
+              style={styles.challengeJoinBtn}
+              activeOpacity={0.8}
+              onPress={() => { cancelDismiss(); if (message.challengeId) router.push(`/challenge/${message.challengeId}`); }}
+            >
+              <Text style={styles.challengeJoinText}>→</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -958,6 +985,41 @@ const styles = StyleSheet.create({
     flexShrink:        0,
   },
   topicJoinText: {
+    color:      '#fff',
+    fontSize:   15,
+    fontWeight: '700',
+  },
+
+  // ── Challenge feed pill — orange brand variant, mirrors web
+  //    .feed-prompt--challenge (rgba(255,122,60,0.14) bg + .30 border). ────
+  challengePill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
+    backgroundColor:   'rgba(255,122,60,0.14)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.30)',
+    borderRadius:      22,
+    paddingHorizontal: 16,
+    paddingVertical:   12,
+    maxWidth:          '82%',
+  },
+  challengeText: {
+    flexShrink:  1,
+    fontSize:    16,
+    fontWeight:  '600',
+    color:       Colors.text,
+    lineHeight:  22,
+    marginRight: 10,
+  },
+  challengeJoinBtn: {
+    backgroundColor:   'rgba(255,122,60,0.28)',
+    borderRadius:      12,
+    paddingHorizontal: 11,
+    paddingVertical:   4,
+    flexShrink:        0,
+  },
+  challengeJoinText: {
     color:      '#fff',
     fontSize:   15,
     fontWeight: '700',

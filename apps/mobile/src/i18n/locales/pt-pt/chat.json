@@ -82,5 +82,7 @@
   "linkCopied": "Ligação copiada",
   "photoSavePermTitle": "Acesso a fotos necessário",
   "photoSavePermBody": "Permite o acesso a fotos para guardar imagens.",
-  "photoSavePermSettings": "Permite o acesso a fotos em Definições para guardar imagens."
+  "photoSavePermSettings": "Permite o acesso a fotos em Definições para guardar imagens.",
+  "bannerChallengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} desafia os exploradores: {{title}}"
 }

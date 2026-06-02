@@ -215,7 +215,10 @@
     "event": "🔥 กิจกรรมใหม่: {{title}}",
     "join": "เข้าร่วม",
     "replies_one": "{{count}} การตอบกลับ",
-    "replies_other": "{{count}} การตอบกลับ"
+    "replies_other": "{{count}} การตอบกลับ",
+    "challengeLocals": "🔥 {{name}} ท้าทายคนท้องถิ่น: {{title}}",
+    "challengeExplorers": "🔥 {{name}} ท้าทายผู้สำรวจ: {{title}}",
+    "challengeCta": "ดู →"
   },
   "replyPreview": {
     "photo": "📷 รูปภาพ"

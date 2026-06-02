@@ -215,7 +215,10 @@
     "event": "🔥 新活動：{{title}}",
     "join": "加入",
     "replies_one": "{{count}} 則回覆",
-    "replies_other": "{{count}} 則回覆"
+    "replies_other": "{{count}} 則回覆",
+    "challengeLocals": "🔥 {{name}} 向本地人發起挑戰：{{title}}",
+    "challengeExplorers": "🔥 {{name}} 向探索者發起挑戰：{{title}}",
+    "challengeCta": "查看 →"
   },
   "replyPreview": {
     "photo": "📷 照片"

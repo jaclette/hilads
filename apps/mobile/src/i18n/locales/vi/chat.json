@@ -82,5 +82,7 @@
   "linkCopied": "Đã sao chép liên kết",
   "photoSavePermTitle": "Cần quyền truy cập Ảnh",
   "photoSavePermBody": "Cho phép truy cập Ảnh để lưu hình.",
-  "photoSavePermSettings": "Cho phép truy cập Ảnh trong Cài đặt để lưu hình."
+  "photoSavePermSettings": "Cho phép truy cập Ảnh trong Cài đặt để lưu hình.",
+  "bannerChallengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} thách người khám phá: {{title}}"
 }

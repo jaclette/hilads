@@ -231,7 +231,10 @@
     "replies_two": "ردّان",
     "replies_few": "{{count}} ردود",
     "replies_many": "{{count}} ردًّا",
-    "replies_other": "{{count}} رد"
+    "replies_other": "{{count}} رد",
+    "challengeLocals": "🔥 {{name}} يتحدّى السكان المحليين: {{title}}",
+    "challengeExplorers": "🔥 {{name}} يتحدّى المستكشفين: {{title}}",
+    "challengeCta": "عرض →"
   },
   "replyPreview": {
     "photo": "📷 صورة"

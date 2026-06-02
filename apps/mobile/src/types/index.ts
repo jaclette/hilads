@@ -266,7 +266,7 @@ export interface MentionRef {
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
-  type: 'text' | 'system' | 'image' | 'event' | 'topic' | 'activity' | 'prompt' | 'join_request';
+  type: 'text' | 'system' | 'image' | 'event' | 'topic' | 'challenge' | 'activity' | 'prompt' | 'join_request';
   event?: string;                 // system message subtype: 'join' | etc.
   subtype?: string;               // activity/prompt subtype: 'crowd' | 'explore' | 'photo' | 'create-event'
   cta?: string;                   // prompt CTA button label
@@ -278,6 +278,8 @@ export interface Message {
   createdAt: number | string;     // unix seconds (number) or ISO string
   eventId?: string;               // for type === 'event' synthetic feed items
   topicId?: string;               // for type === 'topic' synthetic feed items
+  challengeId?: string;           // for type === 'challenge' synthetic feed items
+  audience?: 'locals' | 'explorers'; // for type === 'challenge': picks the locale-aware verb template
   primaryBadge?: Badge;           // identity badge (ghost/fresh/crew)
   contextBadge?: Badge | null;    // city-specific badge (host = Legend)
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)

@@ -215,7 +215,10 @@
     "event": "🔥 Acara baru: {{title}}",
     "join": "Gabung",
     "replies_one": "{{count}} balasan",
-    "replies_other": "{{count}} balasan"
+    "replies_other": "{{count}} balasan",
+    "challengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
+    "challengeExplorers": "🔥 {{name}} menantang para penjelajah: {{title}}",
+    "challengeCta": "Lihat →"
   },
   "replyPreview": {
     "photo": "📷 Foto"

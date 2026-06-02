@@ -1139,6 +1139,7 @@ export default function App() {
   const lastJoinAtRef = useRef(0)          // throttle: timestamp of last join shown in feed
   const promptsShownRef = useRef(new Set())// tracks which prompt subtypes have been injected
   const prevEventCountRef = useRef(0)      // detects new events added to the events list
+  const prevChallengeCountRef = useRef(0)  // detects new challenges added to cityChallenges
   const locPromiseRef = useRef(null)
   const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
   // Guard for the auto-bootstrap effect — prevents the deep-link auto-join
@@ -2374,6 +2375,16 @@ export default function App() {
         setEventParticipants(prev => ({ ...prev, [ev.id]: ev.participant_count }))
       })
 
+      // Socket: handle new_challenge — append to cityChallenges so (a) the
+      // NOW screen strip updates live without a refetch, and (b) the
+      // useEffect watching cityChallenges below injects a feed pill into
+      // the city chat (mirrors how new_event populates the feed).
+      socket.on('new_challenge', ({ channelId, challenge }) => {
+        if (String(channelId) !== String(activeChannelRef.current)) return
+        if (!challenge?.id) return
+        setCityChallenges(prev => prev.some(c => c.id === challenge.id) ? prev : [...prev, challenge])
+      })
+
       // Socket: handle newTopic — append pill directly from WS payload.
       socket.on('newTopic', ({ channelId, topic }) => {
         if (String(channelId) !== String(activeChannelRef.current)) return
@@ -3426,6 +3437,35 @@ export default function App() {
     prevEventCountRef.current = events.length
   }, [events]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Inject a new-challenge pill when cityChallenges grows (real-time defi
+  // added). Mirrors the events injection above — only in city chat (not
+  // when an event is open), dedup via prev.some, stays in feed permanently
+  // like a normal message. Audience picks the locale-aware verb template.
+  useEffect(() => {
+    if (!activeRef.current || activeEventIdRef.current) {
+      prevChallengeCountRef.current = cityChallenges.length
+      return
+    }
+    if (cityChallenges.length > prevChallengeCountRef.current) {
+      const newOnes = cityChallenges.slice(prevChallengeCountRef.current)
+      newOnes.forEach(ch => {
+        const id = `challenge-msg-${ch.id}`
+        setFeed(prev => {
+          if (prev.some(f => f.id === id)) return prev
+          return [...prev, {
+            type:        'challenge',
+            id,
+            challengeId: ch.id,
+            title:       ch.title,
+            nickname:    ch.nickname,
+            audience:    ch.audience,
+          }]
+        })
+      })
+    }
+    prevChallengeCountRef.current = cityChallenges.length
+  }, [cityChallenges]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Inject active topics into city feed when topics load or a new topic appears.
   // Uses same dedup guard as events (prev.some). Topics sorted by activity DESC —
   // reverse so most-active topic ends up at the bottom (newest position).
@@ -4074,6 +4114,25 @@ export default function App() {
                 <div key={item.id} className={`feed-prompt${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
                   <span className="feed-prompt-text">{item.title ? t('feedNew.event', { title: item.title }) : item.text}</span>
                   <button className="feed-prompt-btn" onClick={() => ev && handleSelectEvent(ev)}>{t('feedNew.join')}</button>
+                </div>
+              )
+            }
+
+            // Challenge feed item — parallel shape to events. The text key
+            // varies by target audience (locals vs explorers); tapping
+            // "Voir →" opens the ChallengeChatPage via setActiveChallenge.
+            if (item.type === 'challenge') {
+              const challenge = cityChallenges.find(c => c.id === item.challengeId)
+              const textKey   = item.audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
+              return (
+                <div key={item.id} className={`feed-prompt feed-prompt--challenge${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
+                  <span className="feed-prompt-text">{t(textKey, { name: item.nickname, title: item.title })}</span>
+                  <button
+                    className="feed-prompt-btn"
+                    onClick={() => challenge && setActiveChallenge(challenge)}
+                  >
+                    {t('feedNew.challengeCta')}
+                  </button>
                 </div>
               )
             }

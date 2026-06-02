@@ -82,5 +82,7 @@
   "promptPhoto": "📸 Share what's happening",
   "promptPhotoCta": "Shoot",
   "promptCreate": "🎉 Got a plan tonight?",
-  "promptCreateCta": "Create event"
+  "promptCreateCta": "Create event",
+  "bannerChallengeLocals": "🔥 {{name}} challenges the locals: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} challenges the explorers: {{title}}"
 }

@@ -82,5 +82,7 @@
   "linkCopied": "リンクをコピーしました",
   "photoSavePermTitle": "写真へのアクセスが必要です",
   "photoSavePermBody": "画像を保存するには写真へのアクセスを許可してください。",
-  "photoSavePermSettings": "設定で写真へのアクセスを許可してください。"
+  "photoSavePermSettings": "設定で写真へのアクセスを許可してください。",
+  "bannerChallengeLocals": "🔥 {{name}} がローカル向けに挑戦:{{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} がエクスプローラー向けに挑戦:{{title}}"
 }
