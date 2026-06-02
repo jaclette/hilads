@@ -1194,7 +1194,7 @@ const styles = StyleSheet.create({
     color:         'rgba(255,255,255,0.5)',
     fontWeight:    '400',
     letterSpacing: 0.2,
-    // Narrow enough to force "Challenge the city." / "Anywhere." onto separate lines
+    // Narrow enough to force "Challenge the city." onto separate lines
     maxWidth:      72,
   },
 
