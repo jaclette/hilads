@@ -388,13 +388,17 @@ export default function ChallengeChatScreen() {
           </TouchableOpacity>
 
           <View style={styles.quickActions}>
+            {/* Share gets a label — the verb ("Challenge your friends ✨" /
+                "Lance-le à tes potes ✨") is the social hook and needs to
+                read at a glance. Accept stays icon-only round next to it. */}
             <TouchableOpacity
-              style={styles.quickBtn}
+              style={styles.sharePill}
               onPress={handleShare}
-              activeOpacity={0.7}
+              activeOpacity={0.75}
               accessibilityLabel={t('shareCta')}
             >
-              <Ionicons name="share-social-outline" size={18} color="#FF7A3C" />
+              <Ionicons name="share-social-outline" size={16} color="#FF7A3C" />
+              <Text style={styles.sharePillText} numberOfLines={1}>{t('shareCta')}</Text>
             </TouchableOpacity>
             {!isOwner && !isValidated && (
               <TouchableOpacity
@@ -664,9 +668,22 @@ const styles = StyleSheet.create({
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
   challengerTag:  { fontSize: 11, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.3 },
 
-  // Inline quick-action buttons — 36px round, brand-orange ghost.
-  // Accept-in flips to filled to confirm "you're in".
-  quickActions: { flexDirection: 'row', gap: 8 },
+  // Inline quick-action group — Share is a labeled pill (verb is the
+  // social hook), Accept is the compact icon-only round next to it.
+  quickActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  sharePill: {
+    flexDirection:    'row',
+    alignItems:       'center',
+    gap:              6,
+    height:           36,
+    paddingHorizontal: 12,
+    borderRadius:     18,
+    backgroundColor:  'rgba(255,122,60,0.10)',
+    borderWidth:      1,
+    borderColor:      'rgba(255,122,60,0.30)',
+    maxWidth:         200,
+  },
+  sharePillText: { color: '#FF7A3C', fontSize: 12, fontWeight: '800', letterSpacing: 0.1 },
   quickBtn: {
     width:           36,
     height:          36,

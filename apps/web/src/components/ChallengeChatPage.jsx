@@ -351,12 +351,12 @@ export default function ChallengeChatPage({
           <div className="challenge-creator-actions">
             <button
               type="button"
-              className="challenge-quick-btn challenge-quick-btn--share"
+              className="challenge-share-pill"
               onClick={handleShare}
-              title={t('shareCta')}
               aria-label={t('shareCta')}
             >
               <span aria-hidden="true">↗</span>
+              <span className="challenge-share-pill-text">{t('shareCta')}</span>
             </button>
             {!isValidated && !isOwner && (
               <button

@@ -10968,6 +10968,32 @@ body.has-app-promo-banner .page-header {
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s ease, transform 0.1s ease, color 0.12s ease;
 }
+
+/* Share is the only quick action that gets a label, because the verb
+   ("Challenge your friends ✨" / "Lance-le à tes potes ✨" / …) is the
+   social hook of the screen and needs to read at a glance. Accept stays
+   a round 36px icon button next to it. */
+.challenge-share-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 18px;
+  background: rgba(255, 122, 60, 0.10);
+  border: 1px solid rgba(255, 122, 60, 0.30);
+  color: #FF7A3C;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1px;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, transform 0.1s ease;
+}
+.challenge-share-pill:hover  { background: rgba(255, 122, 60, 0.18); }
+.challenge-share-pill:active { transform: scale(0.98); }
+.challenge-share-pill-text { font-size: 12px; font-weight: 800; }
 .challenge-quick-btn:hover  { background: rgba(255, 122, 60, 0.18); }
 .challenge-quick-btn:active { transform: scale(0.96); }
 .challenge-quick-btn:disabled { opacity: 0.6; cursor: default; }
