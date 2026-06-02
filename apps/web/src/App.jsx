@@ -2727,6 +2727,19 @@ export default function App() {
 
   // "My city" bottom-tab handler — closes every drawer so the City Channel
   // (the implicit default render) becomes visible.
+  // Dismiss anything rendered as a .full-page overlay (z-index: 200) so the
+  // bottom-nav tabs actually swap screens instead of staying buried under
+  // a stuck Topic/Challenge/Create page. Called from every goTo* handler.
+  function dismissFullPageOverlays() {
+    setActiveTopic(null)
+    setActiveChallenge(null)
+    setShowCreateChallenge(false)
+    setEditChallengeObj(null)
+    setShowCreateEvent(false)
+    setShowCreateTopic(false)
+    setShowCreateChooser(false)
+  }
+
   function goToCityChannel() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
@@ -2735,6 +2748,7 @@ export default function App() {
     setShowConversations(false)
     setShowNotifications(false)
     setViewingProfile(null)
+    dismissFullPageOverlays()
   }
 
   // Bottom-tab handlers for NOW / HERE / ME — each clears every other
@@ -2748,6 +2762,7 @@ export default function App() {
     setShowConversations(false)
     setShowNotifications(false)
     setViewingProfile(null)
+    dismissFullPageOverlays()
     setShowEventDrawer(true)
   }
   function goToHereTab() {
@@ -2757,6 +2772,7 @@ export default function App() {
     setShowConversations(false)
     setShowNotifications(false)
     setViewingProfile(null)
+    dismissFullPageOverlays()
     setShowPeopleDrawer(true)
   }
   function goToMeTab() {
@@ -2767,6 +2783,7 @@ export default function App() {
     setShowNotifications(false)
     setViewingProfile(null)
     setProfileNickInput(activeNickname)
+    dismissFullPageOverlays()
     setShowProfileDrawer(true)
   }
 
