@@ -90,6 +90,14 @@ export default function CreateChallengeScreen() {
     }
   }
 
+  // Guest gate — challenge creation requires a registered account (mirrors
+  // event + hangout creation). Guests can still browse / accept / chat in
+  // challenge channels; only authoring is locked.
+  if (!account) {
+    router.replace('/auth-gate?reason=create_challenge');
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}

@@ -21,6 +21,11 @@
       "pageTitle": "Iniciar um rolê",
       "title": "Fantasmas podem dar uma olhada, mas não podem organizar.",
       "sub": "Cadastre-se para iniciar um rolê, salvar seu nome e atrair gente."
+    },
+    "create_challenge": {
+      "pageTitle": "Lançar um desafio",
+      "title": "Fantasmas olham, mas não desafiam.",
+      "sub": "Cadastre-se para lançar um desafio para locais ou exploradores e validá-lo."
     }
   },
   "welcome": {

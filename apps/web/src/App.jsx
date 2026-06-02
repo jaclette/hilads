@@ -190,6 +190,12 @@ const GUEST_GATE_COPY = {
     title:     "Ghosts can browse, but can't host.",
     sub:       'Sign up to start a hangout, save your name, and get people to join you.',
   },
+  create_challenge: {
+    pageTitle: 'Launch a challenge',
+    emoji:     '🔥',
+    title:     "Ghosts can browse, but can't challenge.",
+    sub:       'Sign up to launch a challenge for locals or explorers, and own its validation.',
+  },
 }
 
 function setPageMeta(title, description) {
@@ -1026,7 +1032,14 @@ export default function App() {
     setShowCreateTopic(true)
   }
   // Challenges allow guests (mirrors events, not hangouts). No auth gate.
-  const openCreateChallenge = () => { setShowCreateChallenge(true) }
+  const openCreateChallenge = () => {
+    // Registered-only — same gate as openCreateEvent / openCreateTopic.
+    // Guests can still browse, accept and chat in challenge channels;
+    // creation requires an account so we have a verified owner for
+    // validate/edit/delete and a target for participant notifications.
+    if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
+    setShowCreateChallenge(true)
+  }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)

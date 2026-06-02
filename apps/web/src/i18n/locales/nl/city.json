@@ -21,6 +21,11 @@
       "pageTitle": "Een meetup starten",
       "title": "Ghosts mogen rondkijken, maar niet hosten.",
       "sub": "Meld je aan om een meetup te starten, je naam te bewaren en mensen te laten meedoen."
+    },
+    "create_challenge": {
+      "pageTitle": "Challenge starten",
+      "title": "Ghosts kijken toe, maar dagen niet uit.",
+      "sub": "Maak een account aan om locals of explorers uit te dagen en de challenge te valideren."
     }
   },
   "welcome": {

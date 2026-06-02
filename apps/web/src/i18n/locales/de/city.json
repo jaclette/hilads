@@ -21,6 +21,11 @@
       "pageTitle": "Treffen starten",
       "title": "Ghosts dürfen stöbern, aber nicht hosten.",
       "sub": "Registriere dich, um ein Treffen zu starten, deinen Namen zu sichern und Leute dazuzuholen."
+    },
+    "create_challenge": {
+      "pageTitle": "Challenge starten",
+      "title": "Ghosts schauen zu, aber sie fordern niemanden heraus.",
+      "sub": "Registriere dich, um eine Challenge an Locals oder Explorer zu starten und sie zu validieren."
     }
   },
   "welcome": {

@@ -15,14 +15,15 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout';
+type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout' | 'create_challenge';
 
 const GATE_EMOJI: Record<GateReason, string> = {
-  view_profile:   '👻',
-  join_hangout:   '⚡',
-  create_hangout: '⚡',
-  create_event:   '🎉',
-  send_dm:        '💬',
+  view_profile:    '👻',
+  join_hangout:    '⚡',
+  create_hangout:  '⚡',
+  create_event:    '🎉',
+  create_challenge: '🔥',
+  send_dm:         '💬',
 };
 
 const BENEFITS = [

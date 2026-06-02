@@ -21,6 +21,11 @@
       "pageTitle": "Mulai nongkrong",
       "title": "Ghost bisa lihat-lihat, tapi tidak bisa jadi host.",
       "sub": "Daftar untuk memulai nongkrong, menyimpan namamu, dan mengajak orang gabung."
+    },
+    "create_challenge": {
+      "pageTitle": "Luncurkan tantangan",
+      "title": "Hantu boleh lihat, tapi tak bisa menantang.",
+      "sub": "Daftar untuk meluncurkan tantangan ke warga lokal atau penjelajah dan memvalidasinya."
     }
   },
   "welcome": {

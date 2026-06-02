@@ -21,6 +21,11 @@
       "pageTitle": "Iniciar um convívio",
       "title": "Os fantasmas podem ver, mas não organizar.",
       "sub": "Regista-te para iniciares um convívio, guardares o teu nome e atraíres gente."
+    },
+    "create_challenge": {
+      "pageTitle": "Lançar um desafio",
+      "title": "Fantasmas vêem, mas não desafiam.",
+      "sub": "Cria conta para lançar um desafio a locais ou exploradores e validá-lo."
     }
   },
   "welcome": {

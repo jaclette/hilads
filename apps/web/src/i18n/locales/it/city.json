@@ -21,6 +21,11 @@
       "pageTitle": "Lancia un ritrovo",
       "title": "I fantasmi possono guardare, ma non organizzare.",
       "sub": "Registrati per lanciare un ritrovo, conservare il tuo nome e attirare gente."
+    },
+    "create_challenge": {
+      "pageTitle": "Lancia una sfida",
+      "title": "I fantasmi guardano, ma non sfidano.",
+      "sub": "Iscriviti per lanciare una sfida a locali o esploratori e poterla validare."
     }
   },
   "welcome": {

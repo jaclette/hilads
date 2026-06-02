@@ -21,6 +21,11 @@
       "pageTitle": "Lanzar una quedada",
       "title": "Los fantasmas pueden mirar, pero no organizar.",
       "sub": "Regístrate para lanzar una quedada, conservar tu nombre y atraer gente."
+    },
+    "create_challenge": {
+      "pageTitle": "Lanzar un reto",
+      "title": "Los fantasmas miran, pero no retan.",
+      "sub": "Regístrate para lanzar un reto a locales o exploradores y validarlo."
     }
   },
   "welcome": {

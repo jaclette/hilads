@@ -21,6 +21,11 @@
       "pageTitle": "Lancer une sortie",
       "title": "Les fantômes peuvent regarder, mais pas organiser.",
       "sub": "Inscris-toi pour lancer une sortie, garder ton nom et faire venir des gens."
+    },
+    "create_challenge": {
+      "pageTitle": "Lancer un défi",
+      "title": "Les fantômes peuvent regarder, pas défier.",
+      "sub": "Inscris-toi pour lancer un défi aux locaux ou aux explorateurs et le valider."
     }
   },
   "welcome": {

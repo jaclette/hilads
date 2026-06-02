@@ -21,6 +21,11 @@
       "pageTitle": "Magsimula ng tambayan",
       "title": "Pwedeng mag-browse ang mga Ghost, pero hindi mag-host.",
       "sub": "Mag-sign up para magsimula ng tambayan, i-save ang pangalan mo, at akitin ang mga tao na sumali."
+    },
+    "create_challenge": {
+      "pageTitle": "Mag-launch ng challenge",
+      "title": "Pwede tumingin ang ghosts, pero hindi makakahamon.",
+      "sub": "Mag-sign up para mag-launch ng challenge sa mga lokal o explorer at i-validate ito."
     }
   },
   "welcome": {

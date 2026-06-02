@@ -21,6 +21,11 @@
       "pageTitle": "Tạo tụ tập",
       "title": "Khách vãng lai có thể xem, nhưng không thể tổ chức.",
       "sub": "Đăng ký để tạo tụ tập, giữ tên của bạn và thu hút mọi người tham gia."
+    },
+    "create_challenge": {
+      "pageTitle": "Tung thử thách",
+      "title": "Khách lướt qua, không tung thử thách được.",
+      "sub": "Đăng ký để tung thử thách cho người địa phương hoặc người khám phá và xác nhận nó."
     }
   },
   "welcome": {

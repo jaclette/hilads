@@ -7296,7 +7296,8 @@ $router->add('GET', '/api/v1/channels/{channelId}/challenges/validated', functio
 });
 
 // POST /api/v1/channels/{channelId}/challenges
-// Create a new challenge. Auth optional — guests can create.
+// Create a new challenge. Requires a registered account — guests may browse,
+// accept, and chat but cannot author challenges (same rule as events).
 // Rate-limit: 5 challenges per hour per city (challenges are persistent, so
 // stricter than topics' 3/5min but more lenient than events' 1/day).
 $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array $params) {
@@ -7341,8 +7342,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         $nickname = mb_substr(trim(strip_tags((string) $nickname)), 0, 32) ?: null;
     }
 
-    $currentUser = AuthService::currentUser();
-    $userId      = $currentUser['id'] ?? null;
+    // Registered account required — mirrors event creation. Guests get a
+    // 401 here (the web SPA + mobile both gate this at the UI layer too,
+    // so this is defense in depth).
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
 
     try {
         $challenge = ChallengeRepository::create(

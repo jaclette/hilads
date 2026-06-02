@@ -21,6 +21,11 @@
       "pageTitle": "Start a hangout",
       "title": "Ghosts can browse, but can't host.",
       "sub": "Sign up to start a hangout, save your name, and get people to join you."
+    },
+    "create_challenge": {
+      "pageTitle": "Launch a challenge",
+      "title": "Ghosts can browse, but can't challenge.",
+      "sub": "Sign up to launch a challenge for locals or explorers, and own its validation."
     }
   },
   "welcome": {
