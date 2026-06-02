@@ -121,7 +121,7 @@ export function AppHeader({ rightExtra }: Props) {
         <View style={styles.iconGlow}>
           <HiladsIcon size={36} />
         </View>
-        <Text style={styles.tagline}>Challenge the city. Anywhere.</Text>
+        <Text style={styles.tagline}>{'Challenge\nthe city.\nAnywhere.'}</Text>
       </View>
 
       {/* Right: tab-specific extras + DM icon */}
@@ -239,13 +239,14 @@ const styles = StyleSheet.create({
     elevation:     10,
   },
   // Mirrors the web `.header-tagline` (index.css): ~11px, white at 50% opacity,
-  // wrapping onto two lines ("Challenge the city." / "Anywhere.") at maxWidth 76.
+  // stacked on 3 explicit lines ("Challenge" / "the city." / "Anywhere.")
+  // via embedded \n. maxWidth bumped to 90 so the longest line breathes.
   tagline: {
     fontSize:      11,
     lineHeight:    14,
     color:         'rgba(255,255,255,0.5)',
     fontWeight:    '400',
     letterSpacing: 0.2,
-    maxWidth:      76,
+    maxWidth:      90,
   },
 });

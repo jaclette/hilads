@@ -747,8 +747,11 @@ html, body, #root {
   white-space: normal;   /* override the old hero rule that set nowrap */
   overflow: visible;
   text-overflow: unset;
-  /* Narrow enough to wrap "Challenge the city." / "Anywhere." on separate lines */
-  max-width: 76px;
+  /* Tagline carries explicit <br/> breaks ("Challenge" / "the city." /
+     "Anywhere.") so we no longer depend on word-wrap math. max-width
+     stays as a defensive cap so a longer locale variant can't blow up
+     the header. */
+  max-width: 90px;
 }
 
 /* On very narrow phones, hide the tagline so the logo never gets squeezed */
