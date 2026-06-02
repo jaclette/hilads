@@ -10710,13 +10710,23 @@ body.has-app-promo-banner .page-header {
    topic-chat-page skeleton (header / desc / strip / owner-row).
    ───────────────────────────────────────────────────────────────────────── */
 
-/* Header emoji — sits in the right column where TopicChatPage puts share. */
+/* Header emoji — sits in the right column where TopicChatPage puts share.
+   min-width matches the back-button so the title column is true-centered. */
 .challenge-header-emoji {
   font-size: 2rem;
   line-height: 1;
   flex-shrink: 0;
   align-self: flex-start;
   padding: 4px 6px;
+  min-width: 46px;
+  text-align: center;
+}
+
+/* Challenge header variant — center the title. The base
+   .topic-chat-header-center is left-aligned (matches TopicChatPage); for
+   challenges we want it visually centered between back and emoji. */
+.challenge-chat-header .topic-chat-header-center {
+  text-align: center;
 }
 
 /* Creator row — the originating user, called out separately. */

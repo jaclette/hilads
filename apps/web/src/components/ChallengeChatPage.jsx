@@ -127,7 +127,22 @@ export default function ChallengeChatPage({
       const key = m.id ?? `${m.guestId}:${m.createdAt}`
       if (knownIds.current.has(key)) return
       knownIds.current.add(key)
-      setMessages(prev => [...prev, m].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
+      setMessages(prev => {
+        // The WS broadcast almost always beats the HTTP response — when it
+        // does, replace the matching optimistic row instead of appending,
+        // otherwise we end up with the canonical msg twice (WS appended +
+        // HTTP-replaced optimistic both carry the same server id).
+        const optIdx = prev.findIndex(x =>
+          typeof x.id === 'string' && x.id.startsWith('local-') &&
+          x.guestId === m.guestId && (x.content ?? '') === (m.content ?? '')
+        )
+        if (optIdx >= 0) {
+          const copy = [...prev]
+          copy[optIdx] = m
+          return copy
+        }
+        return [...prev, m].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
+      })
     })
     const offValidated = socket.on('challenge_validated', (data) => {
       if (data.challenge?.id === id) setChallenge(data.challenge)
@@ -240,10 +255,12 @@ export default function ChallengeChatPage({
 
   return (
     <div className="full-page topic-chat-page">
-      {/* Header — back | title (left-aligned) | big type emoji (right column).
-          Mirrors TopicChatPage's 3-col rhythm; the emoji takes the slot
-          where TopicChatPage puts its share button. */}
-      <div className="page-header topic-chat-header">
+      {/* Header — back | title (true-centered) | big type emoji (right column).
+          Both flanks are sized equal (back-button is 46px, emoji has min-width
+          46px) so text-align:center on the middle column reads as visually
+          centered on the screen. Long titles wrap on multiple lines via the
+          existing word-break: break-word on .topic-chat-header-title. */}
+      <div className="page-header topic-chat-header challenge-chat-header">
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
           <span className="topic-chat-header-title">{challenge.title}</span>
