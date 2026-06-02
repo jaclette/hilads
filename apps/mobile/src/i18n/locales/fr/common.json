@@ -1,6 +1,6 @@
 {
   "nowTitle": "Maintenant",
-  "filterEvents": "🔥 Événements",
+  "filterEvents": "🎉 Événements",
   "filterHangouts": "🗣️ Sorties",
   "publicEventsSection": "🎫 Événements publics",
   "accountWelcome": {
@@ -92,8 +92,14 @@
   },
   "modeHeading": "MODE",
   "mode": {
-    "local": { "label": "Local", "desc": "Tu connais cette ville" },
-    "exploring": { "label": "Explorateur", "desc": "Tu la découvres" }
+    "local": {
+      "label": "Local",
+      "desc": "Tu connais cette ville"
+    },
+    "exploring": {
+      "label": "Explorateur",
+      "desc": "Tu la découvres"
+    }
   },
   "badge": {
     "ghost": "👻 Ghost",

@@ -6,7 +6,7 @@
     "eventDesc": "Entre em {{title}} no Hilads — veja quem está lá e o que está rolando."
   },
   "nowTitle": "Agora",
-  "filterEvents": "🔥 Eventos",
+  "filterEvents": "🎉 Eventos",
   "filterHangouts": "🗣️ Rolês",
   "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
@@ -57,8 +57,12 @@
   "cancel": "Cancelar",
   "loading": "Carregando…",
   "mode": {
-    "local": { "label": "Local" },
-    "exploring": { "label": "Explorando" }
+    "local": {
+      "label": "Local"
+    },
+    "exploring": {
+      "label": "Explorando"
+    }
   },
   "composer": {
     "attach": "Adicionar um anexo",
@@ -102,5 +106,6 @@
     "expiresInMin": "Expira em {{mins}} min",
     "expiresInHourMin": "Expira em {{hours}} h {{mins}} min",
     "expiresInHour": "Expira em {{hours}} h"
-  }
+  },
+  "filterChallenges": "🔥 Desafios"
 }

@@ -6,7 +6,7 @@
     "eventDesc": "Tham gia {{title}} trên Hilads — xem ai đang ở đó và điều gì đang diễn ra."
   },
   "nowTitle": "Bây giờ",
-  "filterEvents": "🔥 Sự kiện",
+  "filterEvents": "🎉 Sự kiện",
   "filterHangouts": "🗣️ Tụ tập",
   "publicEventsSection": "🎫 Sự kiện công khai",
   "accountWelcome": {
@@ -57,8 +57,12 @@
   "cancel": "Hủy",
   "loading": "Đang tải…",
   "mode": {
-    "local": { "label": "Địa phương" },
-    "exploring": { "label": "Khám phá" }
+    "local": {
+      "label": "Địa phương"
+    },
+    "exploring": {
+      "label": "Khám phá"
+    }
   },
   "composer": {
     "attach": "Thêm tệp đính kèm",
@@ -102,5 +106,6 @@
     "expiresInMin": "Hết hạn sau {{mins}} phút",
     "expiresInHourMin": "Hết hạn sau {{hours}} h {{mins}} phút",
     "expiresInHour": "Hết hạn sau {{hours}} h"
-  }
+  },
+  "filterChallenges": "🔥 Thử thách"
 }

@@ -4617,10 +4617,10 @@ export default function App() {
                 className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
                 onClick={() => setNowFilter(f)}
               >
-                {f === 'all'        ? t('feed.filterAll')
-                  : f === 'challenges' ? `🔥 ${t('createTitle', { ns: 'challenge' })}`
-                  : f === 'events'     ? t('filterEvents',   { ns: 'common' })
-                  :                      t('filterHangouts', { ns: 'common' })}
+                {f === 'all'           ? t('feed.filterAll')
+                  : f === 'challenges' ? t('filterChallenges', { ns: 'common' })
+                  : f === 'events'     ? t('filterEvents',     { ns: 'common' })
+                  :                      t('filterHangouts',   { ns: 'common' })}
               </button>
             ))}
           </div>
@@ -4632,7 +4632,7 @@ export default function App() {
               <div className="now-challenges-section">
                 {nowFilter === 'all' && (
                   <p className="events-group-label" style={{ padding: '10px 12px 2px', color: '#FF7A3C' }}>
-                    🔥 {t('createTitle', { ns: 'challenge' })}
+                    🔥 {t('noun', { ns: 'challenge' })}
                   </p>
                 )}
                 {cityChallenges.slice(0, nowFilter === 'challenges' ? 50 : 5).map(c => {
@@ -4650,7 +4650,7 @@ export default function App() {
                     >
                       <div className="er-header">
                         <span className="er-title">{typeIcon} {c.title}</span>
-                        <span className="er-going er-going--challenge">{t('createTitle', { ns: 'challenge' })}</span>
+                        <span className="er-going er-going--challenge">{t('noun', { ns: 'challenge' })}</span>
                       </div>
                       <div className="er-badges">
                         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
@@ -4674,7 +4674,7 @@ export default function App() {
                 whole challenges array is empty (no validated either). */}
             {nowFilter === 'challenges' && cityChallenges.length === 0 && (
               <div className="events-empty-state">
-                <p className="events-empty-title">{t('createTitle', { ns: 'challenge' })}</p>
+                <p className="events-empty-title">{t('noun', { ns: 'challenge' })}</p>
                 <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateChallenge() }} style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}>
                   🔥 {t('createCta', { ns: 'challenge' })}
                 </button>

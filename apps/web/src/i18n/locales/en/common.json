@@ -6,7 +6,7 @@
     "eventDesc": "Join {{title}} on Hilads — see who's there and what's happening."
   },
   "nowTitle": "Now",
-  "filterEvents": "🔥 Events",
+  "filterEvents": "🎉 Events",
   "filterHangouts": "🗣️ Hangouts",
   "publicEventsSection": "🎫 Public Events",
   "accountWelcome": {
@@ -57,8 +57,12 @@
   "cancel": "Cancel",
   "loading": "Loading…",
   "mode": {
-    "local": { "label": "Local" },
-    "exploring": { "label": "Exploring" }
+    "local": {
+      "label": "Local"
+    },
+    "exploring": {
+      "label": "Exploring"
+    }
   },
   "composer": {
     "attach": "Add attachment",
@@ -102,5 +106,6 @@
     "expiresInMin": "Expires in {{mins}}m",
     "expiresInHourMin": "Expires in {{hours}}h {{mins}}m",
     "expiresInHour": "Expires in {{hours}}h"
-  }
+  },
+  "filterChallenges": "🔥 Challenges"
 }

@@ -44,7 +44,7 @@ export function ChallengeCard({
       {/* Top row — entity badge + audience pill + (when validated) badge */}
       <View style={styles.kindRow}>
         <View style={styles.kindBadge}>
-          <Text style={styles.kindBadgeText}>{t('createTitle').toUpperCase()}</Text>
+          <Text style={styles.kindBadgeText}>{t('noun').toUpperCase()}</Text>
         </View>
         <View style={styles.audiencePill}>
           <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>

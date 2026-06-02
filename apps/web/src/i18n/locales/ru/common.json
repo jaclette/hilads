@@ -6,7 +6,7 @@
     "eventDesc": "Присоединяйся к {{title}} в Hilads — смотри, кто там и что происходит."
   },
   "nowTitle": "Сейчас",
-  "filterEvents": "🔥 События",
+  "filterEvents": "🎉 События",
   "filterHangouts": "🗣️ Тусовки",
   "publicEventsSection": "🎫 Публичные события",
   "accountWelcome": {
@@ -57,8 +57,12 @@
   "cancel": "Отмена",
   "loading": "Загрузка…",
   "mode": {
-    "local": { "label": "Местный" },
-    "exploring": { "label": "Исследую" }
+    "local": {
+      "label": "Местный"
+    },
+    "exploring": {
+      "label": "Исследую"
+    }
   },
   "composer": {
     "attach": "Добавить вложение",
@@ -102,5 +106,6 @@
     "expiresInMin": "Истекает через {{mins}} мин",
     "expiresInHourMin": "Истекает через {{hours}} ч {{mins}} мин",
     "expiresInHour": "Истекает через {{hours}} ч"
-  }
+  },
+  "filterChallenges": "🔥 Вызовы"
 }

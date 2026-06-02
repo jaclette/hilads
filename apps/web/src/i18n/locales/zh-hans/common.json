@@ -6,7 +6,7 @@
     "eventDesc": "在 Hilads 上加入 {{title}}——看看谁在现场、正在发生什么。"
   },
   "nowTitle": "现在",
-  "filterEvents": "🔥 活动",
+  "filterEvents": "🎉 活动",
   "filterHangouts": "🗣️ 聚会",
   "publicEventsSection": "🎫 公开活动",
   "accountWelcome": {
@@ -57,8 +57,12 @@
   "cancel": "取消",
   "loading": "加载中…",
   "mode": {
-    "local": { "label": "本地" },
-    "exploring": { "label": "探索中" }
+    "local": {
+      "label": "本地"
+    },
+    "exploring": {
+      "label": "探索中"
+    }
   },
   "composer": {
     "attach": "添加附件",
@@ -102,5 +106,6 @@
     "expiresInMin": "{{mins}} 分钟后到期",
     "expiresInHourMin": "{{hours}} 小时 {{mins}} 分钟后到期",
     "expiresInHour": "{{hours}} 小时后到期"
-  }
+  },
+  "filterChallenges": "🔥 挑战"
 }

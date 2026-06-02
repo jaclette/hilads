@@ -6,7 +6,7 @@
     "eventDesc": "Hilads で {{title}} に参加しよう——誰がいて何が起きているか見てみよう。"
   },
   "nowTitle": "今",
-  "filterEvents": "🔥 イベント",
+  "filterEvents": "🎉 イベント",
   "filterHangouts": "🗣️ 集まり",
   "publicEventsSection": "🎫 公開イベント",
   "accountWelcome": {
@@ -57,8 +57,12 @@
   "cancel": "キャンセル",
   "loading": "読み込み中…",
   "mode": {
-    "local": { "label": "ローカル" },
-    "exploring": { "label": "探索中" }
+    "local": {
+      "label": "ローカル"
+    },
+    "exploring": {
+      "label": "探索中"
+    }
   },
   "composer": {
     "attach": "添付を追加",
@@ -102,5 +106,6 @@
     "expiresInMin": "あと{{mins}}分で期限切れ",
     "expiresInHourMin": "あと{{hours}}時間{{mins}}分で期限切れ",
     "expiresInHour": "あと{{hours}}時間で期限切れ"
-  }
+  },
+  "filterChallenges": "🔥 挑戦"
 }
