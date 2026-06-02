@@ -21,7 +21,12 @@ const TYPES     = [
   { value: 'culture', icon: '🎭' },
   { value: 'help',    icon: '🤝' },
 ]
-const AUDIENCES = ['locals', 'explorers']
+const AUDIENCES = [
+  // 'explorers' is kept as the technical key (DB value, API enum). The
+  // user-visible label was renamed to Travelers / Voyageurs / etc.
+  { value: 'locals',    icon: '🏠' },
+  { value: 'explorers', icon: '🧳' },
+]
 
 export default function CreateChallengePage({ channelId, guest, account, editChallenge = null, onCreated, onUpdated, onBack }) {
   const { t } = useTranslation('city')
@@ -72,12 +77,13 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
             <div className="cef-audience-row">
               {AUDIENCES.map(a => (
                 <button
-                  key={a}
+                  key={a.value}
                   type="button"
-                  className={`cef-audience-btn${audience === a ? ' selected' : ''}`}
-                  onClick={() => setAudience(a)}
+                  className={`cef-audience-btn${audience === a.value ? ' selected' : ''}`}
+                  onClick={() => setAudience(a.value)}
                 >
-                  {a === 'locals' ? t('create.challengeAudLocals') : t('create.challengeAudExplorers')}
+                  <span className="cef-audience-emoji" aria-hidden="true">{a.icon}</span>
+                  <span>{a.value === 'locals' ? t('create.challengeAudLocals') : t('create.challengeAudExplorers')}</span>
                 </button>
               ))}
             </div>

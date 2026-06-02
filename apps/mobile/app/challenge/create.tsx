@@ -20,6 +20,9 @@ const TYPES: { value: ChallengeType; icon: string }[] = [
 ];
 
 const AUDIENCES: ChallengeAudience[] = ['locals', 'explorers'];
+// Emoji per audience — 🏠 reads as "where they live" for locals,
+// 🧳 as "they're passing through" for travelers.
+const AUDIENCE_ICONS: Record<ChallengeAudience, string> = { locals: '🏠', explorers: '🧳' };
 
 export default function CreateChallengeScreen() {
   const router = useRouter();
@@ -124,6 +127,7 @@ export default function CreateChallengeScreen() {
                 onPress={() => setAudience(a)}
                 activeOpacity={0.7}
               >
+                <Text style={styles.audienceEmoji}>{AUDIENCE_ICONS[a]}</Text>
                 <Text style={[styles.audienceLabel, selected && styles.audienceLabelSelected]}>
                   {t(`aud.${a}`)}
                 </Text>
@@ -259,13 +263,17 @@ const styles = StyleSheet.create({
   },
   audienceBtn: {
     flex:              1,
+    flexDirection:     'row',
     paddingVertical:   Spacing.md - 2,
     borderRadius:      Radius.full,
     borderWidth:       1,
     borderColor:       Colors.border,
     backgroundColor:   Colors.bg2,
     alignItems:        'center',
+    justifyContent:    'center',
+    gap:               8,
   },
+  audienceEmoji: { fontSize: 18, lineHeight: 20 },
   audienceBtnSelected: {
     borderColor:     '#FF7A3C',
     backgroundColor: 'rgba(255,122,60,0.10)',

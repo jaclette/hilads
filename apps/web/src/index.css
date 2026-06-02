@@ -10718,6 +10718,10 @@ body.has-app-promo-banner .page-header {
 }
 .cef-audience-btn {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 12px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.10);
@@ -10728,6 +10732,7 @@ body.has-app-promo-banner .page-header {
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s, background 0.15s;
 }
+.cef-audience-emoji { font-size: 1.15rem; line-height: 1; }
 .cef-audience-btn:active { transform: scale(0.985); }
 .cef-audience-btn.selected {
   color: #FF7A3C;
