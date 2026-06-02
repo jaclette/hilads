@@ -550,6 +550,33 @@ export async function toggleChallengeParticipation(challengeId, guestId, nicknam
   return res.json() // { count, isIn }
 }
 
+export async function updateChallenge(challengeId, guestId, title, challengeType, audience) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId, title, challengeType, audience }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to update challenge')
+  }
+  return res.json()
+}
+
+export async function deleteChallenge(challengeId, guestId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to delete challenge')
+  }
+}
+
 export async function createChallenge(channelId, guestId, nickname, title, challengeType, audience) {
   const res = await fetch(`${BASE}/channels/${encodeURIComponent(channelId)}/challenges`, {
     method: 'POST',

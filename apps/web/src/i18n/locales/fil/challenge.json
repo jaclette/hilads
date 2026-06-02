@@ -32,5 +32,15 @@
   "openBadge": "Bukas",
   "forLocals": "Para sa mga local",
   "forExplorers": "Para sa mga biyahero",
-  "notFound": "Hindi nahanap ang challenge"
+  "notFound": "Hindi nahanap ang challenge",
+  "typeBadge": {
+    "food": "Pagkain challenge",
+    "place": "Lugar challenge",
+    "culture": "Kultura challenge",
+    "help": "Tulong challenge"
+  },
+  "challengerTag": "Challenger",
+  "participantsLabel": "Mga kalahok",
+  "editBtn": "I-edit",
+  "deleteBtn": "Tanggalin"
 }

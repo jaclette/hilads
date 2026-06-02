@@ -32,5 +32,15 @@
   "openBadge": "Mở",
   "forLocals": "Cho người địa phương",
   "forExplorers": "Cho du khách",
-  "notFound": "Không tìm thấy thử thách"
+  "notFound": "Không tìm thấy thử thách",
+  "typeBadge": {
+    "food": "Thử thách ăn uống",
+    "place": "Thử thách địa điểm",
+    "culture": "Thử thách văn hóa",
+    "help": "Thử thách giúp đỡ"
+  },
+  "challengerTag": "Người tạo",
+  "participantsLabel": "Người tham gia",
+  "editBtn": "Chỉnh sửa",
+  "deleteBtn": "Xóa"
 }

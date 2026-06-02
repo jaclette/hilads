@@ -32,5 +32,15 @@
   "openBadge": "Открыт",
   "forLocals": "Для местных",
   "forExplorers": "Для путешественников",
-  "notFound": "Челлендж не найден"
+  "notFound": "Челлендж не найден",
+  "typeBadge": {
+    "food": "Челлендж еды",
+    "place": "Челлендж места",
+    "culture": "Челлендж культуры",
+    "help": "Челлендж помощи"
+  },
+  "challengerTag": "Челленджер",
+  "participantsLabel": "Участники",
+  "editBtn": "Редактировать",
+  "deleteBtn": "Удалить"
 }

@@ -1007,6 +1007,7 @@ export default function App() {
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
+  const [editChallengeObj,    setEditChallengeObj]    = useState(null)  // challenge being edited (owner)
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
   // Hangouts are members-only — gate guests to signup, otherwise open the channel.
@@ -5674,16 +5675,19 @@ export default function App() {
         />
       )}
 
-      {/* Challenge create — orange-brand full-page modal. On success, lands
-          the creator on the just-created challenge's detail page so they can
-          share it + see participants accept in real time. */}
-      {showCreateChallenge && (
+      {/* Challenge create / edit — orange-brand full-page modal. Same
+          component handles both modes via the editChallenge prop. On create
+          success, lands on the new challenge's detail page. On edit success,
+          reopens the same detail page with the updated data. */}
+      {(showCreateChallenge || editChallengeObj) && (
         <CreateChallengePage
           channelId={channelId}
           guest={guest}
           account={account}
+          editChallenge={editChallengeObj}
           onCreated={(ch) => { setShowCreateChallenge(false); setActiveChallenge(ch) }}
-          onBack={() => setShowCreateChallenge(false)}
+          onUpdated={(ch) => { setEditChallengeObj(null); setActiveChallenge(ch) }}
+          onBack={() => { setShowCreateChallenge(false); setEditChallengeObj(null) }}
         />
       )}
 
@@ -5774,6 +5778,8 @@ export default function App() {
           nickname={activeNickname}
           account={account}
           onBack={() => setActiveChallenge(null)}
+          onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
+          onDeleted={() => setActiveChallenge(null)}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
         />

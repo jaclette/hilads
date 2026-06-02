@@ -32,5 +32,15 @@
   "openBadge": "Terbuka",
   "forLocals": "Untuk local",
   "forExplorers": "Untuk pelancong",
-  "notFound": "Tantangan tidak ditemukan"
+  "notFound": "Tantangan tidak ditemukan",
+  "typeBadge": {
+    "food": "Tantangan makanan",
+    "place": "Tantangan tempat",
+    "culture": "Tantangan budaya",
+    "help": "Tantangan bantuan"
+  },
+  "challengerTag": "Penantang",
+  "participantsLabel": "Peserta",
+  "editBtn": "Edit",
+  "deleteBtn": "Hapus"
 }

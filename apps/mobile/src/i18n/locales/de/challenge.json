@@ -32,5 +32,15 @@
   "openBadge": "Offen",
   "forLocals": "Für Locals",
   "forExplorers": "Für Reisende",
-  "notFound": "Challenge nicht gefunden"
+  "notFound": "Challenge nicht gefunden",
+  "typeBadge": {
+    "food": "Food Challenge",
+    "place": "Ort Challenge",
+    "culture": "Kultur Challenge",
+    "help": "Hilfe Challenge"
+  },
+  "challengerTag": "Challenger",
+  "participantsLabel": "Teilnehmer",
+  "editBtn": "Bearbeiten",
+  "deleteBtn": "Löschen"
 }

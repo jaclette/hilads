@@ -32,5 +32,15 @@
   "openBadge": "開放",
   "forLocals": "給在地人",
   "forExplorers": "給旅人",
-  "notFound": "找不到挑戰"
+  "notFound": "找不到挑戰",
+  "typeBadge": {
+    "food": "美食挑戰",
+    "place": "地點挑戰",
+    "culture": "文化挑戰",
+    "help": "幫助挑戰"
+  },
+  "challengerTag": "發起人",
+  "participantsLabel": "參與者",
+  "editBtn": "編輯",
+  "deleteBtn": "刪除"
 }

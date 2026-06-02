@@ -32,5 +32,15 @@
   "openBadge": "オープン",
   "forLocals": "ローカル向け",
   "forExplorers": "旅行者向け",
-  "notFound": "チャレンジが見つかりません"
+  "notFound": "チャレンジが見つかりません",
+  "typeBadge": {
+    "food": "食チャレンジ",
+    "place": "場所チャレンジ",
+    "culture": "文化チャレンジ",
+    "help": "ヘルプチャレンジ"
+  },
+  "challengerTag": "発起人",
+  "participantsLabel": "参加者",
+  "editBtn": "編集",
+  "deleteBtn": "削除"
 }

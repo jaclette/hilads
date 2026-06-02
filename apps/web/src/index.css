@@ -10703,3 +10703,66 @@ body.has-app-promo-banner .page-header {
 .er-going--challenge {
   color: #FF7A3C;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Challenge detail — large type emoji in the header, creator/participants
+   split, with brand-orange Challenger pill. Built on top of the
+   topic-chat-page skeleton (header / desc / strip / owner-row).
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Header emoji — sits in the right column where TopicChatPage puts share. */
+.challenge-header-emoji {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+  align-self: flex-start;
+  padding: 4px 6px;
+}
+
+/* Creator row — the originating user, called out separately. */
+.challenge-creator-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.challenge-creator-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.challenge-creator-avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.challenge-creator-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.challenge-creator-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.challenge-creator-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: #FF7A3C;
+  text-transform: uppercase;
+}
+
+/* Other participants — same as topic-members-strip but a different label
+   semantic (acceptors, not the creator). No visual override needed but the
+   class hook stays available for future tweaks. */
+.challenge-participants-strip {
+  /* inherits .topic-members-strip rules — no overrides for now */
+}

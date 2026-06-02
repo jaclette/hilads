@@ -32,5 +32,15 @@
   "openBadge": "열림",
   "forLocals": "로컬을 위해",
   "forExplorers": "여행자를 위해",
-  "notFound": "챌린지를 찾을 수 없습니다"
+  "notFound": "챌린지를 찾을 수 없습니다",
+  "typeBadge": {
+    "food": "음식 챌린지",
+    "place": "장소 챌린지",
+    "culture": "문화 챌린지",
+    "help": "도움 챌린지"
+  },
+  "challengerTag": "챌린저",
+  "participantsLabel": "참가자",
+  "editBtn": "편집",
+  "deleteBtn": "삭제"
 }

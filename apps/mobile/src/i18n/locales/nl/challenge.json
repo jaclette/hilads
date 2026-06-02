@@ -32,5 +32,15 @@
   "openBadge": "Open",
   "forLocals": "Voor locals",
   "forExplorers": "Voor reizigers",
-  "notFound": "Challenge niet gevonden"
+  "notFound": "Challenge niet gevonden",
+  "typeBadge": {
+    "food": "Eten challenge",
+    "place": "Plek challenge",
+    "culture": "Cultuur challenge",
+    "help": "Hulp challenge"
+  },
+  "challengerTag": "Challenger",
+  "participantsLabel": "Deelnemers",
+  "editBtn": "Bewerken",
+  "deleteBtn": "Verwijderen"
 }

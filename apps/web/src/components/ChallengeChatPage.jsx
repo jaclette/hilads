@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import {
   fetchChallengeById, fetchChallengeMessages, sendChallengeMessage,
   fetchChallengeParticipants, toggleChallengeParticipation, validateChallenge,
+  deleteChallenge,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -51,6 +52,8 @@ export default function ChallengeChatPage({
   nickname,
   account,
   onBack,
+  onEdit,
+  onDeleted,
   socket,
   sessionId,
 }) {
@@ -153,10 +156,6 @@ export default function ChallengeChatPage({
 
   const handleValidate = useCallback(async () => {
     if (!guest?.guestId || busy) return
-    // One-click validate — no confirm popup. The button label already says
-    // "Validate", clicking it is the confirmation. Mirrors mobile UX which
-    // currently uses an Alert.alert but per user feedback the extra step is
-    // unnecessary friction.
     setBusy('validate')
     try {
       const updated = await validateChallenge(id, guest.guestId)
@@ -167,6 +166,29 @@ export default function ChallengeChatPage({
       setBusy(null)
     }
   }, [id, guest, busy, t])
+
+  // Delete: confirm before destructive action (this one IS destructive — not
+  // the same as Validate). Closes the page on success.
+  const handleDelete = useCallback(async () => {
+    if (!guest?.guestId || busy) return
+    if (!window.confirm(t('deleteBody'))) return
+    setBusy('delete')
+    try {
+      await deleteChallenge(id, guest.guestId)
+      onDeleted?.()
+    } catch {
+      window.alert(t('errSave'))
+    } finally {
+      setBusy(null)
+    }
+  }, [id, guest, busy, t, onDeleted])
+
+  // Edit: hand off to the parent (App.jsx) which opens the CreateChallengePage
+  // in edit mode. No need for a local edit form — single source of truth.
+  const handleEdit = useCallback(() => {
+    if (!challenge) return
+    onEdit?.(challenge)
+  }, [challenge, onEdit])
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
@@ -206,27 +228,36 @@ export default function ChallengeChatPage({
   const typeIcon = TYPE_ICONS[challenge.challenge_type] || '🔥'
   const audienceLabel = challenge.audience === 'locals' ? t('forLocals') : t('forExplorers')
 
+  // Separate the creator from the other participants. Creator-match is by
+  // user_id OR guest_id (matches the ownership logic used elsewhere). The
+  // members list comes from challenge_participants which always includes the
+  // creator (they're auto-joined at create time).
+  const creator = participants.find(p =>
+    (challenge.created_by && p.id === challenge.created_by) ||
+    (challenge.guest_id   && p.id === challenge.guest_id)
+  )
+  const otherParticipants = participants.filter(p => p !== creator)
+
   return (
     <div className="full-page topic-chat-page">
-      {/* Header — same 3-col layout as TopicChatPage. CRITICAL: the layout
-          requires BOTH .page-header (provides display:flex) AND
-          .topic-chat-header (overrides padding/alignment). Without
-          .page-header, children stack vertically because .topic-chat-header
-          on its own only declares flex-only properties (gap, align-items)
-          which are no-ops outside a flex container. */}
+      {/* Header — back | title (left-aligned) | big type emoji (right column).
+          Mirrors TopicChatPage's 3-col rhythm; the emoji takes the slot
+          where TopicChatPage puts its share button. */}
       <div className="page-header topic-chat-header">
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
-          <span className="topic-chat-header-icon">{typeIcon}</span>
           <span className="topic-chat-header-title">{challenge.title}</span>
         </div>
-        <div style={{ width: 36 }} />
+        <span className="challenge-header-emoji" aria-hidden="true">{typeIcon}</span>
       </div>
 
-      {/* Description band — audience + status badges sit here in place of the
-          description text TopicChatPage uses. Keeps the visual rhythm
-          (header → desc → members → owner-row → feed) identical. */}
+      {/* Description band — type badge ("DÉFI BOUFFE") + audience pill
+          + (when applicable) validated badge. Sits where the hangout
+          description text sits. */}
       <div className="topic-chat-desc challenge-meta-row">
+        <span className="challenge-badge challenge-badge--kind">
+          {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
+        </span>
         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
         {isValidated && (
           <span className="challenge-badge challenge-badge--validated">
@@ -235,35 +266,64 @@ export default function ChallengeChatPage({
         )}
       </div>
 
-      {/* Members strip — mirrors TopicChatPage exactly. */}
-      {participants.length > 0 && (
-        <div className="topic-members-strip" style={{ pointerEvents: 'none' }}>
+      {/* Challenger — explicitly distinguished from other participants. The
+          crown emoji + Challenger pill make the originating user visible at
+          a glance. */}
+      {creator && (
+        <div className="challenge-creator-row">
+          <span
+            className="challenge-creator-avatar"
+            style={{ background: `linear-gradient(135deg, ${avatarColors(creator.displayName)[0]}, ${avatarColors(creator.displayName)[1]})` }}
+          >
+            {creator.thumbAvatarUrl || creator.avatarUrl
+              ? <img src={creator.thumbAvatarUrl ?? creator.avatarUrl} alt="" className="challenge-creator-avatar-img" />
+              : (creator.displayName ?? '?')[0].toUpperCase()}
+          </span>
+          <div className="challenge-creator-info">
+            <span className="challenge-creator-name">{creator.displayName}</span>
+            <span className="challenge-creator-tag">👑 {t('challengerTag')}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Other participants — only render the strip when there's at least
+          one acceptor besides the creator. */}
+      {otherParticipants.length > 0 && (
+        <div className="topic-members-strip challenge-participants-strip" style={{ pointerEvents: 'none' }}>
           <AttendeeAvatars
-            preview={participants.slice(0, 5).map(p => ({
+            preview={otherParticipants.slice(0, 5).map(p => ({
               id: p.id, displayName: p.displayName,
               thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl,
             }))}
-            total={participants.length}
+            total={otherParticipants.length}
           />
           <span className="topic-members-label">
-            {participants.length === 1
-              ? participants[0].displayName
-              : `${participants.length}`}
+            {t('participantsLabel')} · {otherParticipants.length}
           </span>
         </div>
       )}
 
-      {/* Action row — same shape as topic-owner-row for the creator's
-          Validate button. Non-creators get the orange Accept CTA (more
-          prominent because it's the new-user action). Both hidden once
-          validated; the chat stays read-only afterwards. */}
-      {!isValidated && isOwner && (
+      {/* Owner action row — Validate (when not yet validated) + Edit + Delete.
+          Same pill shape as topic-owner-btn for visual rhythm with hangouts. */}
+      {isOwner && (
         <div className="topic-owner-row">
-          <button className="topic-owner-btn challenge-validate-btn-inline" onClick={handleValidate} disabled={busy === 'validate'}>
-            {busy === 'validate' ? '…' : `✓ ${t('validateConfirm')}`}
+          {!isValidated && (
+            <button className="topic-owner-btn challenge-validate-btn-inline" onClick={handleValidate} disabled={busy !== null}>
+              {busy === 'validate' ? '…' : `✓ ${t('validateConfirm')}`}
+            </button>
+          )}
+          <button className="topic-owner-btn" onClick={handleEdit} disabled={busy !== null}>
+            ✏️ {t('editBtn')}
+          </button>
+          <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDelete} disabled={busy !== null}>
+            {busy === 'delete' ? '…' : `🗑️ ${t('deleteBtn')}`}
           </button>
         </div>
       )}
+
+      {/* Non-creator Accept CTA — kept as the prominent orange brand button
+          because it's the primary first-time-visitor action. Hidden once the
+          challenge is validated (no more accepting an archived challenge). */}
       {!isValidated && !isOwner && (
         <div className="challenge-actions">
           <button

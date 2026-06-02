@@ -32,5 +32,15 @@
   "openBadge": "เปิด",
   "forLocals": "สำหรับคนท้องถิ่น",
   "forExplorers": "สำหรับนักสำรวจ",
-  "notFound": "ไม่พบชาเลนจ์"
+  "notFound": "ไม่พบชาเลนจ์",
+  "typeBadge": {
+    "food": "ชาเลนจ์อาหาร",
+    "place": "ชาเลนจ์สถานที่",
+    "culture": "ชาเลนจ์วัฒนธรรม",
+    "help": "ชาเลนจ์ช่วยเหลือ"
+  },
+  "challengerTag": "ผู้เริ่ม",
+  "participantsLabel": "ผู้เข้าร่วม",
+  "editBtn": "แก้ไข",
+  "deleteBtn": "ลบ"
 }

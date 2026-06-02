@@ -32,5 +32,15 @@
   "openBadge": "مفتوح",
   "forLocals": "للمحليين",
   "forExplorers": "للمستكشفين",
-  "notFound": "لم يُعثر على التحدي"
+  "notFound": "لم يُعثر على التحدي",
+  "typeBadge": {
+    "food": "تحدي طعام",
+    "place": "تحدي مكان",
+    "culture": "تحدي ثقافة",
+    "help": "تحدي مساعدة"
+  },
+  "challengerTag": "المُتحدي",
+  "participantsLabel": "المشاركون",
+  "editBtn": "تعديل",
+  "deleteBtn": "حذف"
 }

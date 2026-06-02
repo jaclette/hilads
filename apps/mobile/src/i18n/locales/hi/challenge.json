@@ -32,5 +32,15 @@
   "openBadge": "ओपन",
   "forLocals": "लोकल्स के लिए",
   "forExplorers": "एक्सप्लोरर्स के लिए",
-  "notFound": "चैलेंज नहीं मिला"
+  "notFound": "चैलेंज नहीं मिला",
+  "typeBadge": {
+    "food": "फ़ूड चैलेंज",
+    "place": "जगह चैलेंज",
+    "culture": "कल्चर चैलेंज",
+    "help": "मदद चैलेंज"
+  },
+  "challengerTag": "चैलेंजर",
+  "participantsLabel": "प्रतिभागी",
+  "editBtn": "एडिट करें",
+  "deleteBtn": "डिलीट करें"
 }

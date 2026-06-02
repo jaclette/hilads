@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { createChallenge } from '../api'
+import { createChallenge, updateChallenge } from '../api'
 import BackButton from './BackButton'
 
 /**
@@ -23,12 +23,14 @@ const TYPES     = [
 ]
 const AUDIENCES = ['locals', 'explorers']
 
-export default function CreateChallengePage({ channelId, guest, account, onCreated, onBack }) {
+export default function CreateChallengePage({ channelId, guest, account, editChallenge = null, onCreated, onUpdated, onBack }) {
   const { t } = useTranslation('city')
+  const isEdit = !!editChallenge
 
-  const [audience,   setAudience]   = useState('locals')
-  const [type,       setType]       = useState('food')
-  const [title,      setTitle]      = useState('')
+  // Edit mode pre-populates from the existing challenge; create starts fresh.
+  const [audience,   setAudience]   = useState(editChallenge?.audience       ?? 'locals')
+  const [type,       setType]       = useState(editChallenge?.challenge_type ?? 'food')
+  const [title,      setTitle]      = useState(editChallenge?.title          ?? '')
   const [submitting, setSubmitting] = useState(false)
   const [error,      setError]      = useState(null)
 
@@ -39,9 +41,14 @@ export default function CreateChallengePage({ channelId, guest, account, onCreat
     setSubmitting(true)
     setError(null)
     try {
-      const nickname = account?.display_name ?? guest?.nickname ?? null
-      const challenge = await createChallenge(channelId, guest.guestId, nickname, trimmed, type, audience)
-      onCreated?.(challenge)
+      if (isEdit) {
+        const updated = await updateChallenge(editChallenge.id, guest.guestId, trimmed, type, audience)
+        onUpdated?.(updated)
+      } else {
+        const nickname = account?.display_name ?? guest?.nickname ?? null
+        const challenge = await createChallenge(channelId, guest.guestId, nickname, trimmed, type, audience)
+        onCreated?.(challenge)
+      }
     } catch (err) {
       setError(err?.message || t('create.challengeErrStart'))
     } finally {

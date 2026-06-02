@@ -32,5 +32,15 @@
   "openBadge": "开放",
   "forLocals": "给本地人",
   "forExplorers": "给探索者",
-  "notFound": "未找到挑战"
+  "notFound": "未找到挑战",
+  "typeBadge": {
+    "food": "美食挑战",
+    "place": "地点挑战",
+    "culture": "文化挑战",
+    "help": "帮助挑战"
+  },
+  "challengerTag": "发起人",
+  "participantsLabel": "参与者",
+  "editBtn": "编辑",
+  "deleteBtn": "删除"
 }
