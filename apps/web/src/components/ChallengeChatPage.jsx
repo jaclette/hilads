@@ -197,7 +197,7 @@ export default function ChallengeChatPage({
   if (!challenge) {
     return (
       <div className="full-page topic-chat-page">
-        <div className="topic-chat-header"><BackButton onClick={onBack} /></div>
+        <div className="page-header topic-chat-header"><BackButton onClick={onBack} /></div>
         <div className="topic-chat-empty">{t('notFound')}</div>
       </div>
     )
@@ -208,9 +208,13 @@ export default function ChallengeChatPage({
 
   return (
     <div className="full-page topic-chat-page">
-      {/* Header — same 3-col layout as TopicChatPage (back | icon+title | spacer).
-          No share button for v1; can be added later if needed. */}
-      <div className="topic-chat-header">
+      {/* Header — same 3-col layout as TopicChatPage. CRITICAL: the layout
+          requires BOTH .page-header (provides display:flex) AND
+          .topic-chat-header (overrides padding/alignment). Without
+          .page-header, children stack vertically because .topic-chat-header
+          on its own only declares flex-only properties (gap, align-items)
+          which are no-ops outside a flex container. */}
+      <div className="page-header topic-chat-header">
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
           <span className="topic-chat-header-icon">{typeIcon}</span>
