@@ -41,14 +41,14 @@
   },
   "exploring": {
     "badge": "🧭 Exploring",
-    "title": "Take on local défis anywhere",
+    "title": "Take on local challenges anywhere",
     "tagline": "Wherever you land, take on what locals built.",
     "bullets": [
-      "Take on défis launched by locals",
+      "Take on challenges launched by locals",
       "Find the real spots, recommended by people who live there",
       "Live the city like a local, not like a tourist"
     ],
-    "cta": "See the défis"
+    "cta": "See the challenges"
   },
   "how": {
     "eyebrow": "How it works",
@@ -64,7 +64,7 @@
       },
       {
         "title": "Jump in",
-        "desc": "Launch a défi, join an event, or open your own spot. Real life starts here."
+        "desc": "Launch a challenge, join an event, or open your own spot. Real life starts here."
       }
     ]
   },
@@ -78,11 +78,11 @@
     "title": "Not another social network.\nYour city, live.",
     "rules": [
       "No followers. No feeds. No algorithms.",
-      "Launch a défi. See who's around. Join what's happening near you.",
+      "Launch a challenge. See who's around. Join what's happening near you.",
       "Real people. Real places. Right now."
     ]
   },
-  "seo": "Hilads is a real-time social app where you launch local défis, meet people nearby and discover what's happening in your city. Take on a défi from a local in Paris, find what's on tonight in Barcelona, or launch one in Lisbon — Hilads shows you the city, live. No account needed. Just show up.",
+  "seo": "Hilads is a real-time social app where you launch local challenges, meet people nearby and discover what's happening in your city. Take on a challenge from a local in Paris, find what's on tonight in Barcelona, or launch one in Lisbon — Hilads shows you the city, live. No account needed. Just show up.",
   "download": {
     "eyebrow": "Mobile apps",
     "title": "Your city in your pocket.",

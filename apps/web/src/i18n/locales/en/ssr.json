@@ -108,7 +108,7 @@
   "city": {
     "title": "Challenges & events in {city} {timeframe} — meet locals | Hilads",
     "descHigh": "Take on a local challenge in {city} this week — {count}+ events to join, live city chat with people online now. No signup.",
-    "descMid": "Take on a défi or join a meetup in {city} tonight — dinners, rooftop hangs, live city chat. No signup.",
+    "descMid": "Take on a challenge or join a meetup in {city} tonight — dinners, rooftop hangs, live city chat. No signup.",
     "descLow": "Take on a local challenge or see who's in {city} right now — live city chat, meetups, real-time activity. No signup.",
     "h1": "{timeframe} in {city}",
     "introEventsOne": "1 upcoming event",
