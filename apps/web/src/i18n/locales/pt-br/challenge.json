@@ -46,5 +46,28 @@
   "shareCta": "Desafie seus amigos ✨",
   "shareInvite": "Topa esse desafio comigo!",
   "shareCopied": "Link copiado ✓",
-  "noun": "Desafio"
+  "noun": "Desafio",
+  "examples": {
+    "label": "Sem ideias? Toca pra usar",
+    "food": [
+      "O melhor café da cidade",
+      "Onde os locais realmente almoçam",
+      "O melhor street food por aqui"
+    ],
+    "place": [
+      "O melhor spot pra ver o pôr do sol",
+      "Um lugar que os turistas não acham",
+      "Pra onde você vai pra dar uma respirada"
+    ],
+    "culture": [
+      "Uma noite real de música local nesse fim de semana",
+      "Arte de rua que vale ver",
+      "Um show local que vou lembrar"
+    ],
+    "help": [
+      "Um cabeleireiro que não vai ferrar minha semana",
+      "Um médico que fala inglês",
+      "Onde consertar a tela do celular"
+    ]
+  }
 }

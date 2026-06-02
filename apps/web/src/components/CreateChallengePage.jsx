@@ -131,6 +131,32 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
             {submitting ? '…' : t('create.challengeCta')}
           </button>
 
+          {/* Examples — 3 tappable starters that swap based on the selected
+              type. Keeps the screen useful when the user has no idea what
+              to write. Tapping fills the input directly (real challenge
+              title, not just inspiration). Pulls from the `challenge` ns. */}
+          {(() => {
+            const examples = t(`examples.${type}`, { ns: 'challenge', returnObjects: true })
+            if (!Array.isArray(examples) || examples.length === 0) return null
+            return (
+              <div className="cef-examples">
+                <p className="cef-examples-label">{t('examples.label', { ns: 'challenge' })}</p>
+                <div className="cef-examples-grid">
+                  {examples.map((ex, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className="cef-example-chip"
+                      onClick={() => setTitle(ex)}
+                    >
+                      {ex}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
+
         </form>
       </div>
     </div>

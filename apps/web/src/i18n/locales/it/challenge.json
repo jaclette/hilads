@@ -46,5 +46,28 @@
   "shareCta": "Sfida i tuoi amici ✨",
   "shareInvite": "Accetta la sfida con me!",
   "shareCopied": "Link copiato ✓",
-  "noun": "Sfida"
+  "noun": "Sfida",
+  "examples": {
+    "label": "Niente idee? Tocca per usare",
+    "food": [
+      "Il miglior caffè della città",
+      "Dove pranzano davvero i locali",
+      "Il miglior posto di street food qui vicino"
+    ],
+    "place": [
+      "Il miglior posto per vedere il tramonto",
+      "Un posto che i turisti non trovano",
+      "Dove vai per staccare la testa"
+    ],
+    "culture": [
+      "Una vera serata musicale locale questo weekend",
+      "Street art che vale la pena vedere",
+      "Uno spettacolo locale che ricorderò"
+    ],
+    "help": [
+      "Un parrucchiere che non rovinerà la mia settimana",
+      "Un medico che parla inglese",
+      "Dove riparare lo schermo del telefono"
+    ]
+  }
 }

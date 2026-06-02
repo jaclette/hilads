@@ -46,5 +46,28 @@
   "shareCta": "Reta a tus amigos ✨",
   "shareInvite": "¡Acepta este reto conmigo!",
   "shareCopied": "Enlace copiado ✓",
-  "noun": "Reto"
+  "noun": "Reto",
+  "examples": {
+    "label": "¿Sin ideas? Toca para usar",
+    "food": [
+      "El mejor café de la ciudad",
+      "Dónde almuerzan los locales",
+      "El mejor spot de comida callejera"
+    ],
+    "place": [
+      "El mejor spot para ver el atardecer",
+      "Un lugar que los turistas no encuentran",
+      "A dónde vas para despejarte"
+    ],
+    "culture": [
+      "Una noche de música local este finde",
+      "Arte callejero que vale la pena",
+      "Un show local que recordaré"
+    ],
+    "help": [
+      "Una peluquería que no arruine mi semana",
+      "Un médico que hable inglés",
+      "Dónde reparar la pantalla del móvil"
+    ]
+  }
 }

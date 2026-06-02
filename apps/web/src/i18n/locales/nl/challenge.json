@@ -46,5 +46,28 @@
   "shareCta": "Daag je vrienden uit ✨",
   "shareInvite": "Doe deze uitdaging met me mee!",
   "shareCopied": "Link gekopieerd ✓",
-  "noun": "Challenge"
+  "noun": "Challenge",
+  "examples": {
+    "label": "Geen ideeën? Tik er eentje aan",
+    "food": [
+      "De beste koffie in de stad",
+      "Waar locals echt lunchen",
+      "De beste street food in de buurt"
+    ],
+    "place": [
+      "De beste plek voor de zonsondergang",
+      "Een plek die toeristen nooit vinden",
+      "Waar je heen gaat om je hoofd leeg te maken"
+    ],
+    "culture": [
+      "Een echte lokale muziekavond dit weekend",
+      "Street art die het waard is",
+      "Een lokale show die ik niet vergeet"
+    ],
+    "help": [
+      "Een kapper die mijn week niet verpest",
+      "Een dokter die Engels spreekt",
+      "Waar ik een telefoonscherm kan laten maken"
+    ]
+  }
 }

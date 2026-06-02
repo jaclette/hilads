@@ -46,5 +46,28 @@
   "shareCta": "Lance-le à tes potes ✨",
   "shareInvite": "Relève ce défi avec moi !",
   "shareCopied": "Lien copié ✓",
-  "noun": "Défi"
+  "noun": "Défi",
+  "examples": {
+    "label": "Pas d’inspi ? Touche pour utiliser",
+    "food": [
+      "Le meilleur café de la ville",
+      "Où les locaux mangent vraiment",
+      "Le meilleur spot street food du coin"
+    ],
+    "place": [
+      "Le meilleur spot pour le coucher de soleil",
+      "Un endroit que les touristes ne trouvent jamais",
+      "Où tu vas pour décompresser"
+    ],
+    "culture": [
+      "Une vraie soirée musicale locale ce week-end",
+      "Du street art qui vaut le détour",
+      "Un spectacle local dont je me souviendrai"
+    ],
+    "help": [
+      "Un coiffeur qui ne va pas ruiner ma semaine",
+      "Un médecin qui parle anglais",
+      "Où réparer un écran de téléphone"
+    ]
+  }
 }

@@ -46,5 +46,28 @@
   "shareCta": "Tantang teman-temanmu ✨",
   "shareInvite": "Ayo ikut tantangan ini bareng!",
   "shareCopied": "Tautan disalin ✓",
-  "noun": "Tantangan"
+  "noun": "Tantangan",
+  "examples": {
+    "label": "Tidak ada ide? Ketuk untuk pakai",
+    "food": [
+      "Kopi terbaik di kota",
+      "Tempat warga lokal benar-benar makan siang",
+      "Street food terbaik di sekitar sini"
+    ],
+    "place": [
+      "Spot terbaik untuk lihat matahari terbenam",
+      "Tempat yang tak pernah ditemukan turis",
+      "Tempat kamu pergi untuk menjernihkan pikiran"
+    ],
+    "culture": [
+      "Malam musik lokal asli akhir pekan ini",
+      "Street art yang layak dilihat",
+      "Pertunjukan lokal yang akan kuingat"
+    ],
+    "help": [
+      "Tukang cukur yang tak menghancurkan mingguku",
+      "Dokter yang bisa bahasa Inggris",
+      "Tempat memperbaiki layar HP"
+    ]
+  }
 }

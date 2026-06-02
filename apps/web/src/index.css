@@ -10714,6 +10714,49 @@ body.has-app-promo-banner .page-header {
   background: #ff8753;
 }
 
+/* Example chips below the CTA — tappable starters that fill the title.
+   Subtle muted look (text-secondary) so they don't compete with the
+   orange submit button right above. Stack vertically for readability;
+   chip width fits the longest example without truncation. */
+.cef-examples {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cef-examples-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--muted2);
+  text-transform: uppercase;
+  margin: 0 0 2px;
+}
+.cef-examples-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cef-example-chip {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.1s ease;
+}
+.cef-example-chip:hover {
+  background: rgba(255, 122, 60, 0.10);
+  border-color: rgba(255, 122, 60, 0.30);
+}
+.cef-example-chip:active {
+  transform: scale(0.99);
+}
+
 /* Challenge cards in the NOW feed — orange-tinted tag + audience pill, same
    visual rhythm as the topic/event cards above them. */
 .challenge-row-card {

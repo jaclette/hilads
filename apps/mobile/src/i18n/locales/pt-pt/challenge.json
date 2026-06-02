@@ -46,5 +46,28 @@
   "shareCta": "Desafia os teus amigos ✨",
   "shareInvite": "Aceitas este desafio comigo?",
   "shareCopied": "Link copiado ✓",
-  "noun": "Desafio"
+  "noun": "Desafio",
+  "examples": {
+    "label": "Sem ideias? Toca para usar",
+    "food": [
+      "O melhor café da cidade",
+      "Onde os locais almoçam mesmo",
+      "O melhor sítio de street food por perto"
+    ],
+    "place": [
+      "O melhor sítio para ver o pôr do sol",
+      "Um sítio que os turistas não encontram",
+      "Para onde vais para arejar a cabeça"
+    ],
+    "culture": [
+      "Uma noite mesmo local de música este fim de semana",
+      "Arte de rua que vale a pena ver",
+      "Um espetáculo local de que me vou lembrar"
+    ],
+    "help": [
+      "Um cabeleireiro que não me estrague a semana",
+      "Um médico que fale inglês",
+      "Onde reparar o ecrã do telemóvel"
+    ]
+  }
 }

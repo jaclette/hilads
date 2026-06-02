@@ -46,5 +46,28 @@
   "shareCta": "Thách bạn bè đi ✨",
   "shareInvite": "Cùng tớ chấp nhận thử thách này!",
   "shareCopied": "Đã copy link ✓",
-  "noun": "Thử thách"
+  "noun": "Thử thách",
+  "examples": {
+    "label": "Hết ý tưởng? Chạm để dùng",
+    "food": [
+      "Cà phê ngon nhất trong phố",
+      "Người địa phương thực sự ăn trưa ở đâu",
+      "Quán đường phố ngon nhất gần đây"
+    ],
+    "place": [
+      "Spot ngắm hoàng hôn đẹp nhất",
+      "Một nơi du khách không bao giờ tìm thấy",
+      "Nơi bạn đi để thư giãn đầu óc"
+    ],
+    "culture": [
+      "Một đêm nhạc địa phương thật sự cuối tuần này",
+      "Tranh đường phố đáng xem",
+      "Một show địa phương đáng nhớ"
+    ],
+    "help": [
+      "Tiệm cắt tóc không làm hỏng tuần của tôi",
+      "Bác sĩ nói được tiếng Anh",
+      "Nơi sửa màn hình điện thoại"
+    ]
+  }
 }

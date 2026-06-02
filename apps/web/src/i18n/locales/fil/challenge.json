@@ -46,5 +46,28 @@
   "shareCta": "Hamunin ang mga tropa mo ✨",
   "shareInvite": "Sama sa challenge na 'to!",
   "shareCopied": "Na-copy ang link ✓",
-  "noun": "Challenge"
+  "noun": "Challenge",
+  "examples": {
+    "label": "Walang idea? Tap mo",
+    "food": [
+      "Pinakamasarap na kape sa siyudad",
+      "Kung saan talaga kumakain ng tanghalian ang mga lokal",
+      "Pinakamasarap na street food sa malapit"
+    ],
+    "place": [
+      "Pinakamagandang sunset spot",
+      "Lugar na hindi nakikita ng mga turista",
+      "Kung saan ka pumupunta para mag-isip"
+    ],
+    "culture": [
+      "Tunay na lokal na music night ngayong weekend",
+      "Street art na worth tingnan",
+      "Lokal na show na hindi ko makakalimutan"
+    ],
+    "help": [
+      "Barbero na hindi sisira ng linggo ko",
+      "Doktor na nag-iingles",
+      "Saan magpapaayos ng phone screen"
+    ]
+  }
 }

@@ -174,6 +174,32 @@ export default function CreateChallengeScreen() {
           }
         </TouchableOpacity>
 
+        {/* Examples — 3 starters that swap with the selected type. Tap
+            fills the title input directly (real challenge text, not just
+            inspiration). Sits below the CTA so it doesn't pull focus
+            from the primary action. */}
+        {(() => {
+          const examples = t(`examples.${type}`, { returnObjects: true }) as unknown as string[];
+          if (!Array.isArray(examples) || examples.length === 0) return null;
+          return (
+            <View style={styles.examplesBlock}>
+              <Text style={styles.examplesLabel}>{t('examples.label')}</Text>
+              <View style={styles.examplesGrid}>
+                {examples.map((ex, i) => (
+                  <TouchableOpacity
+                    key={i}
+                    style={styles.exampleChip}
+                    activeOpacity={0.75}
+                    onPress={() => setTitle(ex)}
+                  >
+                    <Text style={styles.exampleChipText}>{ex}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          );
+        })()}
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -300,4 +326,25 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize:   FontSizes.md,
   },
+
+  // Examples — mirrors the web .cef-examples* block. Muted chips so they
+  // sit underneath the orange CTA without competing for the eye.
+  examplesBlock:  { marginTop: Spacing.lg, gap: Spacing.sm - 1 },
+  examplesLabel:  {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    color:         Colors.muted2,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  examplesGrid:   { gap: 6 },
+  exampleChip:    {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,255,255,0.10)',
+    borderRadius:    10,
+    paddingVertical:   10,
+    paddingHorizontal: 14,
+  },
+  exampleChipText: { color: Colors.text, fontSize: FontSizes.xs + 1 },
 });

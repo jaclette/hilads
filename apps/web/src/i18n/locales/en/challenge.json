@@ -46,5 +46,28 @@
   "shareCta": "Challenge your friends ✨",
   "shareInvite": "Take on this challenge with me!",
   "shareCopied": "Link copied ✓",
-  "noun": "Challenge"
+  "noun": "Challenge",
+  "examples": {
+    "label": "Need ideas? Tap one",
+    "food": [
+      "Find me the best coffee in town",
+      "Where locals actually eat lunch",
+      "Best street food spot near here"
+    ],
+    "place": [
+      "Show me the best sunset spot",
+      "A place tourists never find",
+      "Where you go to clear your head"
+    ],
+    "culture": [
+      "A real local music night this weekend",
+      "Street art worth seeing",
+      "A local show I will remember"
+    ],
+    "help": [
+      "A haircut spot that won’t ruin my week",
+      "A doctor who speaks English",
+      "Where to fix a phone screen"
+    ]
+  }
 }
