@@ -14,6 +14,7 @@ export const BASE_URL =
 // ── Link builders ─────────────────────────────────────────────────────────────
 
 import { eventSlug } from '@/lib/eventSlug';
+import { challengeSlug } from '@/lib/challengeSlug';
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
 
 // Active-locale prefix for shared links: '' for English (default), '/fr' | '/vi'
@@ -41,6 +42,18 @@ export function buildEventUrl(event: { id: string; title?: string } | string): s
  *  the localized page (and the link preview's OG tags render in-language). */
 export function buildCityUrl(slug: string): string {
   return `${BASE_URL}${sharePrefix()}/city/${slug}`;
+}
+
+/**
+ * Build a shareable challenge URL. Mirrors buildEventUrl: prefer the slug
+ * form when a title is available (readable + SEO), fall back to bare hex
+ * when only an ID is known. Active-locale prefix carried so the recipient
+ * lands on the localized SSR page.
+ */
+export function buildChallengeUrl(challenge: { id: string; title?: string } | string): string {
+  const lp = sharePrefix();
+  if (typeof challenge === 'string') return `${BASE_URL}${lp}/challenge/${challenge}`;
+  return `${BASE_URL}${lp}/challenge/${challengeSlug(challenge)}`;
 }
 
 // ── Env diagnostics — unconditional, fires in both dev and production APK ─────

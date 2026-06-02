@@ -42,5 +42,8 @@
   "challengerTag": "Retador",
   "participantsLabel": "Participantes",
   "editBtn": "Editar",
-  "deleteBtn": "Eliminar"
+  "deleteBtn": "Eliminar",
+  "shareCta": "Reta a tus amigos ✨",
+  "shareInvite": "¡Acepta este reto conmigo!",
+  "shareCopied": "Enlace copiado ✓"
 }

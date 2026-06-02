@@ -42,5 +42,8 @@
   "challengerTag": "Challenger",
   "participantsLabel": "Mga kalahok",
   "editBtn": "I-edit",
-  "deleteBtn": "Tanggalin"
+  "deleteBtn": "Tanggalin",
+  "shareCta": "Hamunin ang mga tropa mo ✨",
+  "shareInvite": "Sama sa challenge na 'to!",
+  "shareCopied": "Na-copy ang link ✓"
 }

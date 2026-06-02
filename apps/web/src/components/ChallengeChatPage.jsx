@@ -10,6 +10,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
   fetchChallengeById, fetchChallengeMessages, sendChallengeMessage,
   fetchChallengeParticipants, toggleChallengeParticipation, validateChallenge,
@@ -20,6 +21,30 @@ import BackButton from './BackButton'
 import MessageComposer from './MessageComposer'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
 import LinkPreviewCard from './LinkPreviewCard'
+
+// Slug builder — mirrors apps/web/api/sitemap.mjs:challengeSlug and
+// apps/mobile/src/lib/challengeSlug.ts. Kept inline since it's a single
+// 8-line function and not used elsewhere on the web SPA today.
+function challengeSlug(challenge) {
+  if (!challenge?.id) return ''
+  const t = String(challenge.title || '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/g, '')
+  return t ? `${t}-${challenge.id}` : challenge.id
+}
+
+// Build a localized share URL. Active-locale prefix (everything except 'en')
+// is added so the recipient lands on the SSR-prerendered translated page
+// instead of bouncing through a redirect. Mirrors mobile's sharePrefix().
+function buildChallengeUrl(challenge) {
+  const lang = i18n.language
+  const lp = lang && lang !== DEFAULT_LOCALE && SUPPORTED.includes(lang) ? `/${lang}` : ''
+  return `${window.location.origin}${lp}/challenge/${challengeSlug(challenge)}`
+}
 
 const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
 
@@ -66,6 +91,7 @@ export default function ChallengeChatPage({
   const [sending,      setSending]      = useState(false)
   const [busy,         setBusy]         = useState(null) // 'accept' | 'validate' | null
   const [loading,      setLoading]      = useState(true)
+  const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
   const feedRef    = useRef(null)
   const knownIds   = useRef(new Set())
 
@@ -205,6 +231,26 @@ export default function ChallengeChatPage({
     onEdit?.(challenge)
   }, [challenge, onEdit])
 
+  // Share — Web Share API where available (mobile Safari + Chromium-on-Android +
+  // PWA), clipboard fallback otherwise (desktop browsers). Defensive pre-copy
+  // mirrors TopicChatPage: the system share sheet's "Copy" button can otherwise
+  // concatenate title + url with a space, producing a broken paste. Pass just
+  // { title, url } to navigator.share so the URL stays clean.
+  const handleShare = useCallback(async () => {
+    if (!challenge) return
+    const url = buildChallengeUrl(challenge)
+    if (navigator.clipboard?.writeText) {
+      try { await navigator.clipboard.writeText(url) } catch (_) {}
+    }
+    if (navigator.share) {
+      try { await navigator.share({ title: challenge.title, url }) } catch (_) {}
+      return
+    }
+    // Already attempted clipboard above — flash the toast so the user knows.
+    setShareToast(true)
+    setTimeout(() => setShareToast(false), 1800)
+  }, [challenge])
+
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
     const content = composer.trim()
@@ -319,6 +365,22 @@ export default function ChallengeChatPage({
           </span>
         </div>
       )}
+
+      {/* Share row — always visible, brand-orange tinted pill. Lives above
+          the chat so it reads as a primary social action ("rally friends")
+          rather than a small header icon. The toast fires only when the
+          browser has no Web Share API (desktop fallback to clipboard). */}
+      <div className="challenge-share-row">
+        <button type="button" className="challenge-share-btn" onClick={handleShare}>
+          <span aria-hidden="true">↗</span>
+          <span>{t('shareCta')}</span>
+        </button>
+        {shareToast && (
+          <span className="challenge-share-toast" role="status">
+            {t('shareCopied')}
+          </span>
+        )}
+      </div>
 
       {/* Owner action row — Validate (when not yet validated) + Edit + Delete.
           Same pill shape as topic-owner-btn for visual rhythm with hangouts. */}

@@ -42,5 +42,8 @@
   "challengerTag": "챌린저",
   "participantsLabel": "참가자",
   "editBtn": "편집",
-  "deleteBtn": "삭제"
+  "deleteBtn": "삭제",
+  "shareCta": "친구에게 도전장을 ✨",
+  "shareInvite": "이 도전을 같이 해요!",
+  "shareCopied": "링크가 복사됨 ✓"
 }

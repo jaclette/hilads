@@ -18,6 +18,7 @@ import {
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { MembersSheet } from '@/components/MembersSheet';
 import { avatarColor } from '@/lib/avatarColors';
+import { shareLink } from '@/lib/shareLink';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
@@ -26,7 +27,7 @@ import * as Clipboard from 'expo-clipboard';
 import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius, buildChallengeUrl } from '@/constants';
 import type { Challenge, ChallengeType, ChallengeAudience, Message, UserDTO } from '@/types';
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
@@ -133,6 +134,24 @@ export default function ChallengeChatScreen() {
   }, [id, identity, t]);
 
   // ── Participant actions (non-owner) ──────────────────────────────────────────
+
+  // Share — uses the shared shareLink helper so Android gets URL-only in
+  // `message` (Intent.EXTRA_TEXT) while iOS gets the three fields separate.
+  // Available to everyone (creator + participants + drive-by visitors), even
+  // when the challenge is validated — sharing an archived défi is fine.
+  const handleShare = useCallback(async () => {
+    if (!challenge) return;
+    try {
+      await shareLink({
+        title:   challenge.title,
+        message: t('shareInvite'),
+        url:     buildChallengeUrl(challenge),
+      });
+      track('challenge_shared', { challengeId: challenge.id });
+    } catch {
+      // user cancelled or share failed — no-op
+    }
+  }, [challenge, t]);
 
   const handleAccept = useCallback(async () => {
     if (!identity || acceptBusy) return;
@@ -393,6 +412,15 @@ export default function ChallengeChatScreen() {
         </TouchableOpacity>
       )}
 
+      {/* Share — full-width pill, brand orange. Always rendered so users can
+          rally friends regardless of status (open or validated). Sits as its
+          own row above the chat so it reads as a primary social action, not
+          a secondary header icon (the small-header-action rule from CLAUDE.md). */}
+      <TouchableOpacity style={styles.shareRow} activeOpacity={0.85} onPress={handleShare}>
+        <Ionicons name="share-social-outline" size={18} color="#FF7A3C" />
+        <Text style={styles.shareText}>{t('shareCta')}</Text>
+      </TouchableOpacity>
+
       {/* Message error banner */}
       {msgError && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
@@ -614,6 +642,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
   membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
+
+  // Share row — full-width tinted pill, brand orange. Sized to read as a
+  // primary CTA (not a header icon), without competing with Accept which
+  // gets the solid-orange filled treatment.
+  shareRow: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'center',
+    gap:               8,
+    marginHorizontal:  Spacing.md,
+    marginTop:         Spacing.sm,
+    marginBottom:      Spacing.xs,
+    paddingVertical:   Spacing.sm + 2,
+    borderRadius:      Radius.full,
+    backgroundColor:   'rgba(255,122,60,0.10)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.30)',
+  },
+  shareText: { fontSize: FontSizes.sm, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.2 },
 
   // Chat
   listContent:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },

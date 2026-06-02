@@ -42,5 +42,8 @@
   "challengerTag": "ผู้เริ่ม",
   "participantsLabel": "ผู้เข้าร่วม",
   "editBtn": "แก้ไข",
-  "deleteBtn": "ลบ"
+  "deleteBtn": "ลบ",
+  "shareCta": "ท้าเพื่อนสิ ✨",
+  "shareInvite": "มาทำชาเลนจ์นี้ด้วยกัน!",
+  "shareCopied": "คัดลอกลิงก์แล้ว ✓"
 }

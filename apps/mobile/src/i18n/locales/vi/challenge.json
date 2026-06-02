@@ -42,5 +42,8 @@
   "challengerTag": "Người tạo",
   "participantsLabel": "Người tham gia",
   "editBtn": "Chỉnh sửa",
-  "deleteBtn": "Xóa"
+  "deleteBtn": "Xóa",
+  "shareCta": "Thách bạn bè đi ✨",
+  "shareInvite": "Cùng tớ chấp nhận thử thách này!",
+  "shareCopied": "Đã copy link ✓"
 }

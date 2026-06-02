@@ -42,5 +42,8 @@
   "challengerTag": "चैलेंजर",
   "participantsLabel": "प्रतिभागी",
   "editBtn": "एडिट करें",
-  "deleteBtn": "डिलीट करें"
+  "deleteBtn": "डिलीट करें",
+  "shareCta": "अपने दोस्तों को चुनौती दो ✨",
+  "shareInvite": "मेरे साथ इस चुनौती में शामिल हो!",
+  "shareCopied": "लिंक कॉपी हो गया ✓"
 }

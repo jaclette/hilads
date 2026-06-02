@@ -42,5 +42,8 @@
   "challengerTag": "Challenger",
   "participantsLabel": "Teilnehmer",
   "editBtn": "Bearbeiten",
-  "deleteBtn": "Löschen"
+  "deleteBtn": "Löschen",
+  "shareCta": "Fordere deine Freunde heraus ✨",
+  "shareInvite": "Nimm diese Herausforderung mit mir an!",
+  "shareCopied": "Link kopiert ✓"
 }

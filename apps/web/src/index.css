@@ -10729,6 +10729,45 @@ body.has-app-promo-banner .page-header {
   text-align: center;
 }
 
+/* Share row — full-width tinted pill, brand orange. Mirrors the mobile
+   shareRow style. Toast appears inline on the clipboard-fallback path. */
+.challenge-share-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 6px 16px 10px;
+}
+.challenge-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 999px;
+  background: rgba(255, 122, 60, 0.10);
+  border: 1px solid rgba(255, 122, 60, 0.30);
+  color: #FF7A3C;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+.challenge-share-btn:hover  { background: rgba(255, 122, 60, 0.16); }
+.challenge-share-btn:active { transform: scale(0.98); }
+
+.challenge-share-toast {
+  align-self: center;
+  font-size: 12px;
+  color: #4ade80;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(74, 222, 128, 0.10);
+  border: 1px solid rgba(74, 222, 128, 0.22);
+}
+
 /* Creator row — the originating user, called out separately. */
 .challenge-creator-row {
   display: flex;

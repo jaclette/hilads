@@ -42,5 +42,8 @@
   "challengerTag": "发起人",
   "participantsLabel": "参与者",
   "editBtn": "编辑",
-  "deleteBtn": "删除"
+  "deleteBtn": "删除",
+  "shareCta": "向你的朋友发起挑战 ✨",
+  "shareInvite": "和我一起接受这个挑战！",
+  "shareCopied": "链接已复制 ✓"
 }

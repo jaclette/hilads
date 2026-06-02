@@ -42,5 +42,8 @@
   "challengerTag": "Челленджер",
   "participantsLabel": "Участники",
   "editBtn": "Редактировать",
-  "deleteBtn": "Удалить"
+  "deleteBtn": "Удалить",
+  "shareCta": "Бросай вызов друзьям ✨",
+  "shareInvite": "Прими этот вызов вместе со мной!",
+  "shareCopied": "Ссылка скопирована ✓"
 }

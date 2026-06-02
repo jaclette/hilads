@@ -42,5 +42,8 @@
   "challengerTag": "Penantang",
   "participantsLabel": "Peserta",
   "editBtn": "Edit",
-  "deleteBtn": "Hapus"
+  "deleteBtn": "Hapus",
+  "shareCta": "Tantang teman-temanmu ✨",
+  "shareInvite": "Ayo ikut tantangan ini bareng!",
+  "shareCopied": "Tautan disalin ✓"
 }

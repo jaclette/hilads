@@ -42,5 +42,8 @@
   "challengerTag": "Sfidante",
   "participantsLabel": "Partecipanti",
   "editBtn": "Modifica",
-  "deleteBtn": "Elimina"
+  "deleteBtn": "Elimina",
+  "shareCta": "Sfida i tuoi amici ✨",
+  "shareInvite": "Accetta la sfida con me!",
+  "shareCopied": "Link copiato ✓"
 }
