@@ -853,6 +853,11 @@ export default function App() {
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
   const [previewTopics,     setPreviewTopics]     = useState([])
+  // Landing preview defis — parallel fetch alongside /now (which is event +
+  // topic only). Surfaces the new primary entity in the city card so the
+  // first-impression activity advertises défis, not just events/hangouts.
+  const [previewChallengeCount, setPreviewChallengeCount] = useState(0)
+  const [previewChallenges,     setPreviewChallenges]     = useState([])
   const [previewChannelId, setPreviewChannelId]   = useState(() => loadIdentity()?.channelId ?? null)
   // Geo-resolved city — persisted to localStorage so "Back to my location" survives
   // page refreshes. These are set once when geo resolves and never overwritten on city switch.
@@ -1840,6 +1845,16 @@ export default function App() {
         setPreviewEvents(eventsToShow.slice(0, 3))
       })
       .catch(() => {})
+
+    // Parallel — challenges aren't part of /now (separate axis); fetch them
+    // alongside so the landing card surfaces the new primary entity. Best-
+    // effort; any failure just leaves previewChallenges empty.
+    fetchCityChallenges(previewChannelId, 3).then(chs => {
+      if (controller.signal.aborted) return
+      const list = Array.isArray(chs) ? chs : []
+      setPreviewChallengeCount(list.length)
+      setPreviewChallenges(list.slice(0, 3))
+    }).catch(() => {})
 
     return () => { controller.abort(); previewNowAbortRef.current = null }
   }, [previewChannelId])
@@ -3601,6 +3616,8 @@ export default function App() {
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
           previewTopicCount={previewTopicCount}
+          previewChallengeCount={previewChallengeCount}
+          previewChallenges={previewChallenges}
           previewTopics={previewTopics}
           previewEvents={previewEvents}
           previewTimezone={previewTimezone}

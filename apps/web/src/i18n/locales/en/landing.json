@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "The city is alive around you.\nFind people, join what's on, or open your own spot."
+    "sub": "The city is alive around you.\nLaunch a défi, join what's on, or open your own spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} person hanging out right now",
@@ -24,37 +24,48 @@
     "keepIdentity": "or keep your identity",
     "createAccount": "✨ Create account",
     "logIn": "Log in",
-    "authHint": "Save your name · unlock profiles · add friends"
+    "authHint": "Save your name · unlock profiles · add friends",
+    "challenges_one": "🔥 {{count}} open challenge",
+    "challenges_other": "🔥 {{count}} open challenges"
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Make things happen",
-    "tagline": "You know the best spots. Now share them.",
+    "title": "Launch a défi",
+    "tagline": "You know the city. Now challenge people to discover it.",
     "bullets": [
-      "Host recurring events at your favorite local spots",
-      "Bring people to places you love",
-      "Become the reason people show up"
+      "Launch food, place, culture or help défis",
+      "Pull people to the spots you love",
+      "Become the local people remember"
     ],
-    "cta": "Host your spot"
+    "cta": "Launch a défi"
   },
   "exploring": {
     "badge": "🧭 Exploring",
-    "title": "Find real moments in any city",
-    "tagline": "Wherever you land, find your people.",
+    "title": "Take on local défis anywhere",
+    "tagline": "Wherever you land, take on what locals built.",
     "bullets": [
-      "Find real-time events near you",
-      "Meet locals and other explorers instantly",
-      "Skip tourist traps. Discover the real city."
+      "Take on défis launched by locals",
+      "Find the real spots, recommended by people who live there",
+      "Live the city like a local, not like a tourist"
     ],
-    "cta": "See what's happening"
+    "cta": "See the défis"
   },
   "how": {
     "eyebrow": "How it works",
     "title": "Three steps to meet people near you.",
     "steps": [
-      { "title": "Open the app", "desc": "See who's around you and what's happening near you right now." },
-      { "title": "Pick your mode", "desc": "Local. You know the city.\nExploring. You want to feel it." },
-      { "title": "Jump in", "desc": "Join an event or open your own spot. Real life starts here." }
+      {
+        "title": "Open the app",
+        "desc": "See who's around you and what's happening near you right now."
+      },
+      {
+        "title": "Pick your mode",
+        "desc": "Local. You know the city.\nExploring. You want to feel it."
+      },
+      {
+        "title": "Jump in",
+        "desc": "Launch a défi, join an event, or open your own spot. Real life starts here."
+      }
     ]
   },
   "stats": {
@@ -67,11 +78,11 @@
     "title": "Not another social network.\nYour city, live.",
     "rules": [
       "No followers. No feeds. No algorithms.",
-      "See who's around. Join what's happening near you.",
+      "Launch a défi. See who's around. Join what's happening near you.",
       "Real people. Real places. Right now."
     ]
   },
-  "seo": "Hilads is a real-time social app that helps you meet people nearby and discover things to do in your city. Find events near you, meet locals, and connect with travelers wherever you are. Looking for things to do in Paris? Want to meet locals in Barcelona? Exploring Lisbon and want to find what's happening tonight? Hilads shows you the city, live. No account needed. Just show up.",
+  "seo": "Hilads is a real-time social app where you launch local défis, meet people nearby and discover what's happening in your city. Take on a défi from a local in Paris, find what's on tonight in Barcelona, or launch one in Lisbon — Hilads shows you the city, live. No account needed. Just show up.",
   "download": {
     "eyebrow": "Mobile apps",
     "title": "Your city in your pocket.",

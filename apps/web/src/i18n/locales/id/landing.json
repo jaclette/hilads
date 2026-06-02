@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Kota hidup di sekitarmu.\nTemukan orang, gabung yang sedang berlangsung, atau buka spot-mu sendiri."
+    "sub": "Kota hidup di sekitarmu.\nLuncurkan tantangan, ikut yang sedang berlangsung, atau buka spot-mu sendiri."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",
@@ -24,37 +24,48 @@
     "keepIdentity": "atau pertahankan identitasmu",
     "createAccount": "✨ Buat akun",
     "logIn": "Masuk",
-    "authHint": "Simpan namamu · buka profil · tambah teman"
+    "authHint": "Simpan namamu · buka profil · tambah teman",
+    "challenges_one": "🔥 {{count}} tantangan terbuka",
+    "challenges_other": "🔥 {{count}} tantangan terbuka"
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Wujudkan sesuatu",
-    "tagline": "Kamu tahu spot terbaik. Sekarang bagikan.",
+    "title": "Luncurkan tantanganmu",
+    "tagline": "Kamu kenal kota ini. Tantang yang ingin menjelajahinya.",
     "bullets": [
-      "Adakan acara berulang di spot lokal favoritmu",
-      "Ajak orang ke tempat yang kamu sukai",
-      "Jadilah alasan orang datang"
+      "Luncurkan tantangan makanan, tempat, budaya atau bantuan",
+      "Bawa orang ke spot favoritmu",
+      "Jadi orang lokal yang diingat orang"
     ],
-    "cta": "Buka spot-mu"
+    "cta": "Luncurkan tantangan"
   },
   "exploring": {
     "badge": "🧭 Exploring",
-    "title": "Temukan momen nyata di kota mana pun",
-    "tagline": "Ke mana pun kamu pergi, temukan orang-orangmu.",
+    "title": "Terima tantangan lokal di kota mana saja",
+    "tagline": "Di mana pun kamu mendarat, terima apa yang diluncurkan warga lokal.",
     "bullets": [
-      "Temukan acara real-time di dekatmu",
-      "Bertemu warga lokal dan penjelajah lain secara instan",
-      "Lewati jebakan turis. Temukan kota yang sesungguhnya."
+      "Terima tantangan yang diluncurkan warga lokal",
+      "Temukan spot asli, direkomendasikan oleh yang tinggal di sana",
+      "Jalani kota seperti warga lokal, bukan turis"
     ],
-    "cta": "Lihat apa yang sedang terjadi"
+    "cta": "Lihat tantangan"
   },
   "how": {
     "eyebrow": "Cara kerjanya",
     "title": "Tiga langkah untuk bertemu orang di dekatmu.",
     "steps": [
-      { "title": "Buka aplikasinya", "desc": "Lihat siapa yang ada di sekitarmu dan apa yang sedang terjadi di dekatmu sekarang." },
-      { "title": "Pilih mode-mu", "desc": "Local. Kamu kenal kotanya.\nExploring. Kamu ingin merasakannya." },
-      { "title": "Gabung", "desc": "Gabung acara atau buka spot-mu sendiri. Kehidupan nyata dimulai di sini." }
+      {
+        "title": "Buka aplikasinya",
+        "desc": "Lihat siapa yang ada di sekitarmu dan apa yang sedang terjadi di dekatmu sekarang."
+      },
+      {
+        "title": "Pilih mode-mu",
+        "desc": "Local. Kamu kenal kotanya.\nExploring. Kamu ingin merasakannya."
+      },
+      {
+        "title": "Gabung",
+        "desc": "Luncurkan tantangan, ikut acara, atau buka spot-mu sendiri. Hidup nyata mulai di sini."
+      }
     ]
   },
   "stats": {
@@ -67,11 +78,11 @@
     "title": "Bukan jejaring sosial lain.\nKotamu, live.",
     "rules": [
       "Tanpa pengikut. Tanpa feed. Tanpa algoritma.",
-      "Lihat siapa yang ada di sekitar. Gabung yang sedang terjadi di dekatmu.",
+      "Luncurkan tantangan. Lihat siapa yang ada. Ikut yang sedang berlangsung.",
       "Orang nyata. Tempat nyata. Sekarang juga."
     ]
   },
-  "seo": "Hilads adalah aplikasi sosial real-time yang membantumu bertemu orang di dekatmu dan menemukan hal-hal untuk dilakukan di kotamu. Temukan acara di dekatmu, kenali warga lokal, dan terhubung dengan para pelancong di mana pun kamu berada. Mencari hal seru di Jakarta? Ingin bertemu warga lokal di Bali? Sedang menjelajahi Bandung dan ingin tahu apa yang terjadi malam ini? Hilads menunjukkan kotamu, live. Tanpa perlu akun. Cukup datang.",
+  "seo": "Hilads adalah aplikasi sosial real-time tempat kamu meluncurkan tantangan lokal, bertemu orang terdekat, dan menemukan apa yang terjadi di kotamu. Terima tantangan warga lokal di Paris, cari acara malam ini di Barcelona, atau luncurkan punyamu di Lisbon — Hilads menunjukkan kota, secara langsung. Tanpa akun. Datang saja.",
   "download": {
     "eyebrow": "Aplikasi mobile",
     "title": "Kotamu dalam genggaman.",

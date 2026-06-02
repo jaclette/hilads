@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Buhay ang lungsod sa paligid mo.\nMaghanap ng mga tao, sumali sa kung ano ang nangyayari, o buksan ang sarili mong spot."
+    "sub": "Buhay ang siyudad sa paligid mo.\nMag-launch ng challenge, sumali sa nangyayari, o buksan ang sarili mong spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",
@@ -24,37 +24,48 @@
     "keepIdentity": "o panatilihin ang iyong identity",
     "createAccount": "✨ Gumawa ng account",
     "logIn": "Mag-log in",
-    "authHint": "I-save ang pangalan mo · i-unlock ang mga profile · magdagdag ng kaibigan"
+    "authHint": "I-save ang pangalan mo · i-unlock ang mga profile · magdagdag ng kaibigan",
+    "challenges_one": "🔥 {{count}} bukas na challenge",
+    "challenges_other": "🔥 {{count}} bukas na challenge"
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Pasimulan mo ang aksyon",
-    "tagline": "Kabisado mo ang pinakamagagandang spot. Ngayon, ibahagi mo na sila.",
+    "title": "I-launch ang challenge mo",
+    "tagline": "Alam mo ang siyudad. Hamunin ang mga gustong matuklasan ito.",
     "bullets": [
-      "Mag-host ng paulit-ulit na event sa paborito mong mga local spot",
-      "Dalhin ang mga tao sa mga lugar na mahal mo",
-      "Maging dahilan kung bakit lumalabas ang mga tao"
+      "Mag-launch ng food, lugar, kultura o help challenges",
+      "Dalhin ang mga tao sa mga spot na mahal mo",
+      "Maging ang lokal na natatandaan ng mga tao"
     ],
-    "cta": "I-host ang spot mo"
+    "cta": "I-launch ang challenge"
   },
   "exploring": {
     "badge": "🧭 Nag-e-explore",
-    "title": "Maghanap ng tunay na sandali sa kahit anong lungsod",
-    "tagline": "Saan ka man mapadpad, hanapin ang iyong tao.",
+    "title": "Tanggapin ang mga lokal na challenge kahit saan",
+    "tagline": "Saan ka man dumating, tanggapin ang mga in-launch ng mga lokal.",
     "bullets": [
-      "Maghanap ng mga real-time na event malapit sa iyo",
-      "Makilala ang mga local at iba pang explorer agad",
-      "Iwasan ang mga tourist trap. Tuklasin ang tunay na lungsod."
+      "Tanggapin ang mga challenge ng mga lokal",
+      "Hanapin ang totoong mga spot, rekomendado ng nakatira doon",
+      "Maranasan ang siyudad bilang lokal, hindi turista"
     ],
-    "cta": "Tingnan kung ano ang nangyayari"
+    "cta": "Tingnan ang mga challenge"
   },
   "how": {
     "eyebrow": "Paano ito gumagana",
     "title": "Tatlong hakbang para makilala ang mga tao malapit sa iyo.",
     "steps": [
-      { "title": "Buksan ang app", "desc": "Tingnan kung sino ang nasa paligid mo at kung ano ang nangyayari malapit sa iyo ngayon." },
-      { "title": "Piliin ang iyong mode", "desc": "Local. Kabisado mo ang lungsod.\nNag-e-explore. Gusto mong maramdaman ito." },
-      { "title": "Sumali na", "desc": "Sumali sa isang event o buksan ang sarili mong spot. Dito nagsisimula ang totoong buhay." }
+      {
+        "title": "Buksan ang app",
+        "desc": "Tingnan kung sino ang nasa paligid mo at kung ano ang nangyayari malapit sa iyo ngayon."
+      },
+      {
+        "title": "Piliin ang iyong mode",
+        "desc": "Local. Kabisado mo ang lungsod.\nNag-e-explore. Gusto mong maramdaman ito."
+      },
+      {
+        "title": "Sumali na",
+        "desc": "Mag-launch ng challenge, sumali sa event, o buksan ang sarili mong spot. Dito nagsisimula ang totoong buhay."
+      }
     ]
   },
   "stats": {
@@ -67,11 +78,11 @@
     "title": "Hindi pa isang social network.\nAng lungsod mo, live.",
     "rules": [
       "Walang follower. Walang feed. Walang algorithm.",
-      "Tingnan kung sino ang nasa paligid. Sumali sa kung ano ang nangyayari malapit sa iyo.",
+      "Mag-launch ng challenge. Tingnan kung sino ang nasa paligid. Sumali sa nangyayari.",
       "Totoong tao. Totoong lugar. Ngayon na."
     ]
   },
-  "seo": "Ang Hilads ay isang real-time na social app na tumutulong sa iyong makilala ang mga taong malapit at matuklasan ang mga puwedeng gawin sa lungsod mo. Maghanap ng mga event malapit sa iyo, makilala ang mga local, at kumonekta sa mga manlalakbay saan ka man naroon. Naghahanap ka ba ng puwedeng gawin sa Paris? Gusto mong makilala ang mga local sa Barcelona? Nag-e-explore sa Lisbon at gustong malaman kung ano ang nangyayari ngayong gabi? Ipinapakita sa iyo ng Hilads ang lungsod, live. Walang kailangang account. Sumali ka lang.",
+  "seo": "Ang Hilads ay isang real-time social app kung saan nag-la-launch ka ng mga lokal na challenge, nakikilala ang mga taong malapit, at nakakatuklas ng nangyayari sa siyudad mo. Tanggapin ang challenge ng isang lokal sa Paris, hanapin kung anong meron ngayong gabi sa Barcelona, o mag-launch ng iyo sa Lisbon — ipinapakita sa iyo ng Hilads ang siyudad, live. Walang account. Sumipot lang.",
   "download": {
     "eyebrow": "Mga mobile app",
     "title": "Ang lungsod mo sa bulsa mo.",

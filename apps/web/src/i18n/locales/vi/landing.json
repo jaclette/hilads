@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Thành phố đang sống động quanh bạn.\nTìm mọi người, tham gia điều đang diễn ra, hoặc mở spot của riêng bạn."
+    "sub": "Thành phố đang sống quanh bạn.\nNhận thử thách, tham gia hoạt động, hoặc mở spot riêng."
   },
   "join": {
     "peopleLive_other": "🔥 {{count}} người đang ở quanh đây",
@@ -20,37 +20,48 @@
     "keepIdentity": "hoặc giữ danh tính của bạn",
     "createAccount": "✨ Tạo tài khoản",
     "logIn": "Đăng nhập",
-    "authHint": "Giữ tên · mở khóa hồ sơ · thêm bạn bè"
+    "authHint": "Giữ tên · mở khóa hồ sơ · thêm bạn bè",
+    "challenges_one": "🔥 {{count}} thử thách đang mở",
+    "challenges_other": "🔥 {{count}} thử thách đang mở"
   },
   "local": {
     "badge": "🌍 Người địa phương",
-    "title": "Tạo nên điều gì đó",
-    "tagline": "Bạn rành những chỗ hay nhất. Hãy chia sẻ chúng.",
+    "title": "Tung thử thách của bạn",
+    "tagline": "Bạn biết thành phố. Hãy thách những ai muốn khám phá nó.",
     "bullets": [
-      "Tổ chức sự kiện định kỳ tại những chỗ yêu thích",
-      "Đưa mọi người đến những nơi bạn yêu thích",
-      "Trở thành lý do mọi người xuất hiện"
+      "Tung thử thách đồ ăn, nơi chốn, văn hóa hoặc giúp đỡ",
+      "Đưa người ta đến những spot bạn yêu",
+      "Trở thành người địa phương mà mọi người nhớ đến"
     ],
-    "cta": "Mở spot của bạn"
+    "cta": "Tung thử thách"
   },
   "exploring": {
     "badge": "🧭 Khám phá",
-    "title": "Tìm những khoảnh khắc thật ở bất kỳ thành phố nào",
-    "tagline": "Dù bạn đến đâu, hãy tìm thấy hội của mình.",
+    "title": "Nhận thử thách địa phương ở mọi nơi",
+    "tagline": "Đến đâu cũng nhận lấy những gì người địa phương đã tung ra.",
     "bullets": [
-      "Tìm sự kiện thời gian thực gần bạn",
-      "Gặp người địa phương và những người khám phá khác ngay lập tức",
-      "Bỏ qua bẫy du lịch. Khám phá thành phố thật."
+      "Nhận thử thách do người địa phương tung",
+      "Tìm những spot thật sự, do người sống ở đó giới thiệu",
+      "Sống thành phố như một người địa phương, không phải khách du lịch"
     ],
-    "cta": "Xem có gì đang diễn ra"
+    "cta": "Xem các thử thách"
   },
   "how": {
     "eyebrow": "Cách hoạt động",
     "title": "Ba bước để gặp gỡ mọi người gần bạn.",
     "steps": [
-      { "title": "Mở ứng dụng", "desc": "Xem ai đang ở quanh bạn và điều gì đang diễn ra gần bạn ngay bây giờ." },
-      { "title": "Chọn chế độ", "desc": "Người địa phương. Bạn rành thành phố.\nKhám phá. Bạn muốn cảm nhận nó." },
-      { "title": "Tham gia", "desc": "Tham gia một sự kiện hoặc mở spot của riêng bạn. Cuộc sống thật bắt đầu từ đây." }
+      {
+        "title": "Mở ứng dụng",
+        "desc": "Xem ai đang ở quanh bạn và điều gì đang diễn ra gần bạn ngay bây giờ."
+      },
+      {
+        "title": "Chọn chế độ",
+        "desc": "Người địa phương. Bạn rành thành phố.\nKhám phá. Bạn muốn cảm nhận nó."
+      },
+      {
+        "title": "Tham gia",
+        "desc": "Tung một thử thách, tham gia sự kiện, hoặc mở spot riêng. Cuộc sống thật bắt đầu ở đây."
+      }
     ]
   },
   "stats": {
@@ -63,11 +74,11 @@
     "title": "Không phải một mạng xã hội khác.\nThành phố của bạn, trực tiếp.",
     "rules": [
       "Không người theo dõi. Không bảng tin. Không thuật toán.",
-      "Xem ai đang ở quanh đây. Tham gia điều đang diễn ra gần bạn.",
+      "Tung một thử thách. Xem ai đang ở quanh. Tham gia điều gì đang xảy ra.",
       "Người thật. Nơi thật. Ngay bây giờ."
     ]
   },
-  "seo": "Hilads là ứng dụng xã hội thời gian thực giúp bạn gặp gỡ những người ở gần và khám phá điều thú vị trong thành phố. Tìm sự kiện gần bạn, gặp người địa phương và kết nối với du khách dù bạn ở đâu. Đang tìm việc gì để làm ở Paris? Muốn gặp người địa phương ở Barcelona? Đang khám phá Lisbon và muốn biết tối nay có gì? Hilads cho bạn thấy thành phố, trực tiếp. Không cần tài khoản. Cứ đến thôi.",
+  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi bạn tung thử thách địa phương, gặp gỡ người gần và khám phá thành phố. Nhận thử thách từ người địa phương ở Paris, tìm hoạt động tối nay ở Barcelona, hoặc tung của bạn ở Lisbon — Hilads cho bạn thấy thành phố, trực tiếp. Không cần tài khoản. Cứ đến.",
   "download": {
     "eyebrow": "Ứng dụng di động",
     "title": "Thành phố của bạn trong túi.",

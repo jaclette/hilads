@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "De stad leeft om je heen.\nVind mensen, doe mee aan wat er speelt of open je eigen spot."
+    "sub": "De stad leeft om je heen.\nLanceer een challenge, doe mee, of open je eigen spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persoon hangt nu rond",
@@ -24,37 +24,48 @@
     "keepIdentity": "of behoud je identiteit",
     "createAccount": "✨ Account maken",
     "logIn": "Inloggen",
-    "authHint": "Bewaar je naam · ontgrendel profielen · voeg vrienden toe"
+    "authHint": "Bewaar je naam · ontgrendel profielen · voeg vrienden toe",
+    "challenges_one": "🔥 {{count}} open challenge",
+    "challenges_other": "🔥 {{count}} open challenges"
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Maak dingen mogelijk",
-    "tagline": "Jij kent de beste plekken. Deel ze nu.",
+    "title": "Lanceer je challenge",
+    "tagline": "Jij kent de stad. Daag uit wie haar wil ontdekken.",
     "bullets": [
-      "Organiseer terugkerende evenementen op je favoriete lokale spots",
-      "Breng mensen naar plekken waar je van houdt",
-      "Word de reden waarom mensen komen opdagen"
+      "Lanceer food-, plaats-, cultuur- of hulp-challenges",
+      "Breng mensen naar de plekken waar jij van houdt",
+      "Word de local die mensen onthouden"
     ],
-    "cta": "Open je spot"
+    "cta": "Challenge lanceren"
   },
   "exploring": {
     "badge": "🧭 Verkennen",
-    "title": "Vind echte momenten in elke stad",
-    "tagline": "Waar je ook belandt, vind je mensen.",
+    "title": "Doe lokale challenges aan overal",
+    "tagline": "Waar je ook landt, doe mee aan wat locals hebben gelanceerd.",
     "bullets": [
-      "Vind realtime evenementen in de buurt",
-      "Ontmoet locals en andere verkenners in een mum van tijd",
-      "Vermijd toeristenvallen. Ontdek de echte stad."
+      "Doe mee aan challenges van locals",
+      "Vind de echte spots, aanbevolen door wie er woont",
+      "Beleef de stad als een local, niet als toerist"
     ],
-    "cta": "Bekijk wat er speelt"
+    "cta": "Bekijk de challenges"
   },
   "how": {
     "eyebrow": "Hoe het werkt",
     "title": "Drie stappen om mensen in de buurt te ontmoeten.",
     "steps": [
-      { "title": "Open de app", "desc": "Zie wie er om je heen is en wat er nu in de buurt speelt." },
-      { "title": "Kies je modus", "desc": "Local. Je kent de stad.\nVerkennen. Je wilt hem voelen." },
-      { "title": "Doe mee", "desc": "Doe mee aan een evenement of open je eigen spot. Het echte leven begint hier." }
+      {
+        "title": "Open de app",
+        "desc": "Zie wie er om je heen is en wat er nu in de buurt speelt."
+      },
+      {
+        "title": "Kies je modus",
+        "desc": "Local. Je kent de stad.\nVerkennen. Je wilt hem voelen."
+      },
+      {
+        "title": "Doe mee",
+        "desc": "Lanceer een challenge, doe mee aan een event, of open je eigen spot. Het echte leven begint hier."
+      }
     ]
   },
   "stats": {
@@ -67,11 +78,11 @@
     "title": "Niet zomaar een sociaal netwerk.\nJouw stad, live.",
     "rules": [
       "Geen volgers. Geen feeds. Geen algoritmes.",
-      "Zie wie er om je heen is. Doe mee aan wat er in de buurt speelt.",
+      "Lanceer een challenge. Zie wie er is. Doe mee aan wat er gebeurt.",
       "Echte mensen. Echte plekken. Nu."
     ]
   },
-  "seo": "Hilads is een realtime social app die je helpt mensen in de buurt te ontmoeten en te ontdekken wat er in je stad te doen is. Vind evenementen in de buurt, ontmoet locals en kom in contact met reizigers waar je ook bent. Op zoek naar dingen om te doen in Parijs? Wil je locals ontmoeten in Barcelona? Verken je Lissabon en wil je weten wat er vanavond speelt? Hilads laat je de stad zien, live. Geen account nodig. Kom gewoon langs.",
+  "seo": "Hilads is een realtime sociale app waar je lokale challenges lanceert, mensen in de buurt ontmoet en ontdekt wat er in je stad gebeurt. Doe mee aan een challenge van een local in Parijs, vind wat er vanavond in Barcelona is, of lanceer er een in Lissabon — Hilads toont je de stad, live. Geen account nodig. Gewoon komen.",
   "download": {
     "eyebrow": "Mobiele apps",
     "title": "Jouw stad in je broekzak.",

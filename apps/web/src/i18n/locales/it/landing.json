@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "La città è viva intorno a te.\nTrova persone, partecipa a ciò che c'è, o apri il tuo spot."
+    "sub": "La città è viva intorno a te.\nLancia una sfida, unisciti a ciò che succede, o apri il tuo spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persona in giro proprio ora",
@@ -24,37 +24,48 @@
     "keepIdentity": "o conserva la tua identità",
     "createAccount": "✨ Crea un account",
     "logIn": "Accedi",
-    "authHint": "Conserva il tuo nome · sblocca i profili · aggiungi amici"
+    "authHint": "Conserva il tuo nome · sblocca i profili · aggiungi amici",
+    "challenges_one": "🔥 {{count}} sfida aperta",
+    "challenges_other": "🔥 {{count}} sfide aperte"
   },
   "local": {
     "badge": "🌍 Locale",
-    "title": "Fai succedere le cose",
-    "tagline": "Conosci i posti migliori. Ora condividili.",
+    "title": "Lancia la tua sfida",
+    "tagline": "Conosci la città. Sfida chi vuole scoprirla.",
     "bullets": [
-      "Organizza eventi ricorrenti nei tuoi spot preferiti",
+      "Lancia sfide cibo, luogo, cultura o aiuto",
       "Porta le persone nei posti che ami",
-      "Diventa il motivo per cui la gente esce"
+      "Diventa il locale che le persone ricordano"
     ],
-    "cta": "Apri il tuo spot"
+    "cta": "Lancia una sfida"
   },
   "exploring": {
     "badge": "🧭 In esplorazione",
-    "title": "Trova momenti veri in qualsiasi città",
-    "tagline": "Ovunque tu arrivi, trova la tua gente.",
+    "title": "Accetta sfide locali ovunque",
+    "tagline": "Ovunque atterri, accetta ciò che i locali hanno lanciato.",
     "bullets": [
-      "Trova eventi in tempo reale vicino a te",
-      "Conosci locali e altri esploratori all'istante",
-      "Evita le trappole per turisti. Scopri la città vera."
+      "Accetta sfide lanciate dai locali",
+      "Trova i veri posti, consigliati da chi ci vive",
+      "Vivi la città come un locale, non come un turista"
     ],
-    "cta": "Guarda cosa succede"
+    "cta": "Vedi le sfide"
   },
   "how": {
     "eyebrow": "Come funziona",
     "title": "Tre passi per conoscere persone vicino a te.",
     "steps": [
-      { "title": "Apri l'app", "desc": "Guarda chi è intorno a te e cosa succede vicino a te, adesso." },
-      { "title": "Scegli la tua modalità", "desc": "Locale. Conosci la città.\nIn esplorazione. Vuoi sentirla." },
-      { "title": "Buttati", "desc": "Partecipa a un evento o apri il tuo spot. La vita vera inizia qui." }
+      {
+        "title": "Apri l'app",
+        "desc": "Guarda chi è intorno a te e cosa succede vicino a te, adesso."
+      },
+      {
+        "title": "Scegli la tua modalità",
+        "desc": "Locale. Conosci la città.\nIn esplorazione. Vuoi sentirla."
+      },
+      {
+        "title": "Buttati",
+        "desc": "Lancia una sfida, unisciti a un evento, o apri il tuo spot. La vita vera inizia qui."
+      }
     ]
   },
   "stats": {
@@ -67,11 +78,11 @@
     "title": "Non un altro social network.\nLa tua città, in diretta.",
     "rules": [
       "Niente follower. Niente feed. Niente algoritmi.",
-      "Guarda chi è in giro. Partecipa a ciò che succede vicino a te.",
+      "Lancia una sfida. Guarda chi c'è. Unisciti a ciò che succede.",
       "Persone vere. Posti veri. Proprio ora."
     ]
   },
-  "seo": "Hilads è un'app social in tempo reale che ti aiuta a conoscere persone vicine e a scoprire cosa fare nella tua città. Trova eventi vicino a te, conosci la gente del posto e connettiti con i viaggiatori ovunque tu sia. Cerchi cosa fare a Parigi? Vuoi conoscere la gente del posto a Barcellona? Stai esplorando Lisbona e vuoi sapere cosa succede stasera? Hilads ti mostra la città, in diretta. Non serve un account. Basta presentarsi.",
+  "seo": "Hilads è un'app sociale in tempo reale dove lanci sfide locali, incontri persone vicine e scopri ciò che succede in città. Accetta una sfida da un locale a Parigi, trova cosa c'è stasera a Barcellona, o lancia la tua a Lisbona — Hilads ti mostra la città, in diretta. Senza account. Basta esserci.",
   "download": {
     "eyebrow": "App mobile",
     "title": "La tua città in tasca.",

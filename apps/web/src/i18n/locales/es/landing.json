@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "La ciudad está viva a tu alrededor.\nEncuentra gente, únete a lo que está pasando o abre tu propio spot."
+    "sub": "La ciudad está viva a tu alrededor.\nLanza un reto, únete a lo que pasa, o abre tu propio spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persona por aquí ahora mismo",
@@ -24,37 +24,48 @@
     "keepIdentity": "o conserva tu identidad",
     "createAccount": "✨ Crear una cuenta",
     "logIn": "Iniciar sesión",
-    "authHint": "Conserva tu nombre · desbloquea perfiles · añade amigos"
+    "authHint": "Conserva tu nombre · desbloquea perfiles · añade amigos",
+    "challenges_one": "🔥 {{count}} reto abierto",
+    "challenges_other": "🔥 {{count}} retos abiertos"
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Haz que pasen cosas",
-    "tagline": "Conoces los mejores sitios. Compártelos.",
+    "title": "Lanza tu reto",
+    "tagline": "Conoces tu ciudad. Rétate a quien quiera descubrirla.",
     "bullets": [
-      "Organiza eventos recurrentes en tus spots favoritos",
-      "Lleva a la gente a los sitios que te gustan",
-      "Conviértete en la razón por la que la gente sale"
+      "Lanza retos de comida, lugar, cultura o ayuda",
+      "Lleva a la gente a los lugares que amas",
+      "Conviértete en el local que recuerdan"
     ],
-    "cta": "Abre tu spot"
+    "cta": "Lanzar un reto"
   },
   "exploring": {
     "badge": "🧭 Explorando",
-    "title": "Encuentra momentos reales en cualquier ciudad",
-    "tagline": "Aterrices donde aterrices, encuentra a tu gente.",
+    "title": "Acepta retos locales en cualquier ciudad",
+    "tagline": "Donde sea que aterrices, acepta lo que los locales lanzaron.",
     "bullets": [
-      "Encuentra eventos en tiempo real cerca de ti",
-      "Conoce a locales y a otros exploradores al instante",
-      "Evita las trampas para turistas. Descubre la ciudad de verdad."
+      "Acepta retos lanzados por locales",
+      "Descubre los spots reales, recomendados por quienes viven ahí",
+      "Vive la ciudad como un local, no como turista"
     ],
-    "cta": "Ver qué está pasando"
+    "cta": "Ver los retos"
   },
   "how": {
     "eyebrow": "Cómo funciona",
     "title": "Tres pasos para conocer gente cerca de ti.",
     "steps": [
-      { "title": "Abre la app", "desc": "Mira quién está a tu alrededor y qué pasa cerca de ti, ahora." },
-      { "title": "Elige tu modo", "desc": "Local. Conoces la ciudad.\nExplorando. Quieres sentirla." },
-      { "title": "Lánzate", "desc": "Únete a un evento o abre tu propio spot. La vida real empieza aquí." }
+      {
+        "title": "Abre la app",
+        "desc": "Mira quién está a tu alrededor y qué pasa cerca de ti, ahora."
+      },
+      {
+        "title": "Elige tu modo",
+        "desc": "Local. Conoces la ciudad.\nExplorando. Quieres sentirla."
+      },
+      {
+        "title": "Lánzate",
+        "desc": "Lanza un reto, únete a un evento, o abre tu propio spot. La vida real empieza aquí."
+      }
     ]
   },
   "stats": {
@@ -67,11 +78,11 @@
     "title": "No es otra red social más.\nTu ciudad, en directo.",
     "rules": [
       "Sin seguidores. Sin feed. Sin algoritmos.",
-      "Mira quién está por aquí. Únete a lo que pasa cerca de ti.",
+      "Lanza un reto. Mira quién está cerca. Únete a lo que pasa.",
       "Gente real. Lugares reales. Ahora."
     ]
   },
-  "seo": "Hilads es una app social en tiempo real que te ayuda a conocer gente cerca y a descubrir qué hacer en tu ciudad. Encuentra eventos cerca de ti, conoce a locales y conecta con viajeros estés donde estés. ¿Buscas qué hacer en Madrid? ¿Quieres conocer locales en Barcelona? ¿Estás explorando Lisboa y quieres saber qué pasa esta noche? Hilads te muestra la ciudad, en directo. No hace falta cuenta. Solo entra.",
+  "seo": "Hilads es una app social en tiempo real donde lanzas retos locales, conoces gente cercana y descubres lo que pasa en tu ciudad. Acepta un reto de un local en París, encuentra qué hay esta noche en Barcelona, o lanza el tuyo en Lisboa — Hilads te muestra la ciudad, en vivo. Sin cuenta. Solo aparece.",
   "download": {
     "eyebrow": "Apps móviles",
     "title": "Tu ciudad en tu bolsillo.",

@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "A cidade está viva ao seu redor.\nEncontre pessoas, participe do que está rolando ou abra o seu próprio spot."
+    "sub": "A cidade está viva ao seu redor.\nLance um desafio, entre num rolê, ou abra seu próprio spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} pessoa por aqui agora mesmo",
@@ -24,37 +24,48 @@
     "keepIdentity": "ou mantenha sua identidade",
     "createAccount": "✨ Criar uma conta",
     "logIn": "Entrar",
-    "authHint": "Guarde seu nome · desbloqueie perfis · adicione amigos"
+    "authHint": "Guarde seu nome · desbloqueie perfis · adicione amigos",
+    "challenges_one": "🔥 {{count}} desafio aberto",
+    "challenges_other": "🔥 {{count}} desafios abertos"
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Faça as coisas acontecerem",
-    "tagline": "Você conhece os melhores lugares. Agora compartilhe.",
+    "title": "Lance seu desafio",
+    "tagline": "Você conhece a cidade. Desafie quem quer descobrir.",
     "bullets": [
-      "Organize eventos recorrentes nos seus spots favoritos",
-      "Leve as pessoas aos lugares que você ama",
-      "Seja o motivo das pessoas aparecerem"
+      "Lance desafios de comida, lugar, cultura ou ajuda",
+      "Leve as pessoas pros lugares que você ama",
+      "Vire o local que as pessoas lembram"
     ],
-    "cta": "Abra o seu spot"
+    "cta": "Lançar desafio"
   },
   "exploring": {
     "badge": "🧭 Explorando",
-    "title": "Encontre momentos reais em qualquer cidade",
-    "tagline": "Onde quer que você chegue, encontre a sua turma.",
+    "title": "Topa desafios locais em qualquer cidade",
+    "tagline": "Onde quer que você chegue, topa o que os locais lançaram.",
     "bullets": [
-      "Encontre eventos em tempo real perto de você",
-      "Conheça locais e outros exploradores na hora",
-      "Fuja das ciladas de turista. Descubra a cidade de verdade."
+      "Topa desafios lançados por locais",
+      "Descubra os spots reais, recomendados por quem mora lá",
+      "Viva a cidade como um local, não como turista"
     ],
-    "cta": "Ver o que está rolando"
+    "cta": "Ver os desafios"
   },
   "how": {
     "eyebrow": "Como funciona",
     "title": "Três passos para conhecer gente perto de você.",
     "steps": [
-      { "title": "Abra o app", "desc": "Veja quem está perto de você e o que está rolando agora." },
-      { "title": "Escolha seu modo", "desc": "Local. Você conhece a cidade.\nExplorando. Você quer sentir." },
-      { "title": "Participe", "desc": "Entre em um evento ou abra o seu próprio spot. A vida real começa aqui." }
+      {
+        "title": "Abra o app",
+        "desc": "Veja quem está perto de você e o que está rolando agora."
+      },
+      {
+        "title": "Escolha seu modo",
+        "desc": "Local. Você conhece a cidade.\nExplorando. Você quer sentir."
+      },
+      {
+        "title": "Participe",
+        "desc": "Lance um desafio, entre num evento, ou abra seu próprio spot. A vida real começa aqui."
+      }
     ]
   },
   "stats": {
@@ -67,11 +78,11 @@
     "title": "Não é mais uma rede social.\nSua cidade, ao vivo.",
     "rules": [
       "Sem seguidores. Sem feed. Sem algoritmos.",
-      "Veja quem está por aqui. Participe do que está rolando perto de você.",
+      "Lance um desafio. Veja quem tá por perto. Entre no que tá rolando.",
       "Pessoas reais. Lugares reais. Agora."
     ]
   },
-  "seo": "Hilads é um app social em tempo real que ajuda você a conhecer gente por perto e descobrir o que fazer na sua cidade. Encontre eventos perto de você, conheça locais e conecte-se com viajantes onde quer que esteja. Procurando o que fazer em São Paulo? Quer conhecer locais no Rio de Janeiro? Está explorando Lisboa e quer saber o que rola hoje à noite? Hilads mostra a cidade pra você, ao vivo. Sem precisar de conta. É só aparecer.",
+  "seo": "Hilads é um app social em tempo real onde você lança desafios locais, conhece pessoas perto e descobre o que tá rolando na sua cidade. Topa um desafio de um local em Paris, descubra o que tem hoje em Barcelona, ou lance o seu em Lisboa — Hilads te mostra a cidade, ao vivo. Sem cadastro. Só aparecer.",
   "download": {
     "eyebrow": "Apps para celular",
     "title": "Sua cidade no seu bolso.",

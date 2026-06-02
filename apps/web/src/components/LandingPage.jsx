@@ -38,7 +38,12 @@ const HOW_META = [
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
 
-function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
+// Type-emoji map for challenge rows in the preview card. Mirrors the
+// detail-screen / NOW-screen mapping so the brand glyph stays consistent
+// across surfaces.
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+
+function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewChallengeCount = 0, previewChallenges = [], previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
   const { t } = useTranslation('landing')
   const noGeo = geoState === 'denied' || geoState === 'error'
   const [c1, c2] = avatarColors(nickname || 'A')
@@ -59,6 +64,11 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
               <span className="ob-activity-line">
                 {t('join.peopleLive', { count: previewLiveCount })}
               </span>
+              {previewChallengeCount > 0 && (
+                <span className="ob-activity-line">
+                  {t('join.challenges', { count: previewChallengeCount })}
+                </span>
+              )}
               {previewEventCount > 0 && (
                 <span className="ob-activity-line">
                   {t('join.events', { count: previewEventCount })}
@@ -70,6 +80,17 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 </span>
               )}
             </div>
+            {previewChallenges.length > 0 && (
+              <div className="ob-events-preview ob-challenges-preview">
+                {previewChallenges.map(ch => (
+                  <div key={ch.id} className="ob-event-row ob-challenge-row">
+                    <span className="ob-event-title">
+                      {CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? '🔥'} {ch.title}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
             {previewEvents.length > 0 && (
               <div className="ob-events-preview">
                 {previewEvents.map(e => (
@@ -345,6 +366,8 @@ export default function LandingPage({
   previewLiveCount,
   previewEventCount = 0,
   previewTopicCount = 0,
+  previewChallengeCount = 0,
+  previewChallenges = [],
   previewTopics = [],
   previewEvents = [],
   previewTimezone = 'UTC',
@@ -410,6 +433,8 @@ export default function LandingPage({
             previewLiveCount={previewLiveCount}
             previewEventCount={previewEventCount}
             previewTopicCount={previewTopicCount}
+            previewChallengeCount={previewChallengeCount}
+            previewChallenges={previewChallenges}
             previewTopics={previewTopics}
             previewEvents={previewEvents}
             previewTimezone={previewTimezone}
@@ -558,6 +583,8 @@ export default function LandingPage({
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
           previewTopicCount={previewTopicCount}
+          previewChallengeCount={previewChallengeCount}
+          previewChallenges={previewChallenges}
           previewTopics={previewTopics}
           previewEvents={previewEvents}
           previewTimezone={previewTimezone}
