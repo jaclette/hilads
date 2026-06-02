@@ -386,11 +386,13 @@ export default function ChallengeChatPage({
 
       {/* Composer — hidden when the challenge is validated; chat stays
           readable but no new posts. Anyone (including guests) can post on an
-          open challenge — mirrors events, NOT the members-only hangout gate. */}
+          open challenge — mirrors events, NOT the members-only hangout gate.
+          MessageComposer passes the raw input event to onChange (not the
+          string value), so we extract e.target.value here. */}
       {!isValidated && guest?.guestId && nickname && (
         <MessageComposer
           value={composer}
-          onChange={setComposer}
+          onChange={(e) => setComposer(e.target.value)}
           onSubmit={handleSubmit}
           sending={sending}
           placeholder={t('titlePlaceholder')}
