@@ -115,7 +115,13 @@
     "catMeetup": "ミートアップ",
     "catParty": "パーティー",
     "aboutBody1": "Hiladsは{city}に広がるリアルタイムの社会レイヤーです。アプリを開けば、今この街に誰がいるかが分かり、起きていることに飛び込んだり、自分のイベントを開いたりできます。まず友達リストを作る必要も、入るための登録も不要。",
-    "aboutBody2": "{city}に住んでいても、数日だけ訪れていても、Hiladsならローカルのやり方で人と出会えます — プロフィールではなく、実際に起きていることを通じて。"
+    "aboutBody2": "{city}に住んでいても、数日だけ訪れていても、Hiladsならローカルのやり方で人と出会えます — プロフィールではなく、実際に起きていることを通じて。",
+    "introChallengesOne": "1 件の挑戦中",
+    "introChallengesMany": "{count} 件の挑戦中",
+    "descChallengeSuffix": "さらに {count} 件の挑戦が受付中。",
+    "openChallengesHeading": "{city} の挑戦中",
+    "challengeForLocals": "ローカル向け",
+    "challengeForExplorers": "エクスプローラー向け"
   },
   "past": {
     "title": "{city}の過去の集まりとpulses | Hilads",

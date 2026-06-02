@@ -139,7 +139,13 @@
     "catMeetup": "Rencontres",
     "catParty": "Soirées",
     "aboutBody1": "Hilads est une couche sociale en temps réel posée sur {city}. Ouvre l'app, vois qui est dans le coin en ce moment, lance-toi dans ce qui se passe, ou organise ton propre événement. Aucune liste d'amis à construire d'abord, aucune inscription pour entrer.",
-    "aboutBody2": "Que tu vives à {city} ou que tu sois de passage pour quelques jours, Hilads te permet de rencontrer des gens comme le font les locaux — à travers ce qui se passe vraiment, pas à travers des profils."
+    "aboutBody2": "Que tu vives à {city} ou que tu sois de passage pour quelques jours, Hilads te permet de rencontrer des gens comme le font les locaux — à travers ce qui se passe vraiment, pas à travers des profils.",
+    "introChallengesOne": "1 défi en cours",
+    "introChallengesMany": "{count} défis en cours",
+    "descChallengeSuffix": "+ {count} défis à relever lancés par la ville.",
+    "openChallengesHeading": "Défis lancés à {city}",
+    "challengeForLocals": "pour les locaux",
+    "challengeForExplorers": "pour les explorateurs"
   },
   "past": {
     "title": "Sorties & pulses passés à {city} | Hilads",

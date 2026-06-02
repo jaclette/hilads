@@ -115,7 +115,13 @@
     "catMeetup": "모임",
     "catParty": "파티",
     "aboutBody1": "Hilads는 {city} 위에 펼쳐진 실시간 소셜 레이어예요. 앱을 열고, 지금 누가 근처에 있는지 보고, 일어나고 있는 일에 뛰어들거나 직접 이벤트를 호스트하세요. 먼저 만들어야 할 친구 목록도, 들어오기 위한 가입도 없어요.",
-    "aboutBody2": "{city}에 살든 며칠 여행 중이든, Hilads는 로컬들이 하는 방식으로 사람을 만나게 해줘요 — 프로필이 아니라 실제로 일어나는 일을 통해서요."
+    "aboutBody2": "{city}에 살든 며칠 여행 중이든, Hilads는 로컬들이 하는 방식으로 사람을 만나게 해줘요 — 프로필이 아니라 실제로 일어나는 일을 통해서요.",
+    "introChallengesOne": "진행 중 도전 1개",
+    "introChallengesMany": "진행 중 도전 {count}개",
+    "descChallengeSuffix": "도전 {count}개가 더 열려 있어요.",
+    "openChallengesHeading": "{city}의 진행 중 도전",
+    "challengeForLocals": "로컬용",
+    "challengeForExplorers": "익스플로러용"
   },
   "past": {
     "title": "{city}의 지난 모임 & pulse | Hilads",

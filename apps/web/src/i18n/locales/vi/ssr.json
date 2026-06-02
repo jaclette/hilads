@@ -116,7 +116,13 @@
     "catMeetup": "Gặp gỡ",
     "catParty": "Tiệc",
     "aboutBody1": "Hilads là một lớp xã hội thời gian thực phủ lên {city}. Mở ứng dụng, xem ai đang ở quanh đây ngay bây giờ, tham gia vào điều đang diễn ra, hoặc tự tổ chức sự kiện của bạn. Không cần xây dựng danh sách bạn bè trước, không cần đăng ký để vào.",
-    "aboutBody2": "Dù bạn sống ở {city} hay chỉ ghé qua vài ngày, Hilads giúp bạn gặp gỡ mọi người theo cách của người địa phương — thông qua những gì thực sự đang diễn ra, không phải qua hồ sơ."
+    "aboutBody2": "Dù bạn sống ở {city} hay chỉ ghé qua vài ngày, Hilads giúp bạn gặp gỡ mọi người theo cách của người địa phương — thông qua những gì thực sự đang diễn ra, không phải qua hồ sơ.",
+    "introChallengesOne": "1 thử thách đang mở",
+    "introChallengesMany": "{count} thử thách đang mở",
+    "descChallengeSuffix": "+ {count} thử thách đang chờ bạn tham gia.",
+    "openChallengesHeading": "Thử thách đang mở tại {city}",
+    "challengeForLocals": "dành cho người địa phương",
+    "challengeForExplorers": "dành cho người khám phá"
   },
   "past": {
     "title": "Tụ tập & pulses đã qua ở {city} | Hilads",

@@ -139,7 +139,13 @@
     "catMeetup": "Meetups",
     "catParty": "Parties",
     "aboutBody1": "Hilads is a live social layer over {city}. Open the app, see who's around right now, jump into something happening, or host your own event. No friends list to build first, no sign-up to get in.",
-    "aboutBody2": "Whether you live in {city} or you're visiting for a few days, Hilads makes it easy to meet people the way locals do — through what's actually happening, not through profiles."
+    "aboutBody2": "Whether you live in {city} or you're visiting for a few days, Hilads makes it easy to meet people the way locals do — through what's actually happening, not through profiles.",
+    "introChallengesOne": "1 open challenge",
+    "introChallengesMany": "{count} open challenges",
+    "descChallengeSuffix": "+ {count} open challenges to take on.",
+    "openChallengesHeading": "Open challenges in {city}",
+    "challengeForLocals": "for locals",
+    "challengeForExplorers": "for explorers"
   },
   "past": {
     "title": "Past hangouts & pulses in {city} | Hilads",

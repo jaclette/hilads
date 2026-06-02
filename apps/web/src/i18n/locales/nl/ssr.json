@@ -115,7 +115,13 @@
     "catMeetup": "Meetups",
     "catParty": "Feesten",
     "aboutBody1": "Hilads is een live sociale laag over {city}. Open de app, kijk wie er nu in de buurt is, duik in iets wat er gebeurt of host je eigen evenement. Geen vriendenlijst die je eerst moet opbouwen, geen aanmelding om binnen te komen.",
-    "aboutBody2": "Of je nu in {city} woont of er een paar dagen op bezoek bent, met Hilads ontmoet je makkelijk mensen zoals locals dat doen — via wat er echt gebeurt, niet via profielen."
+    "aboutBody2": "Of je nu in {city} woont of er een paar dagen op bezoek bent, met Hilads ontmoet je makkelijk mensen zoals locals dat doen — via wat er echt gebeurt, niet via profielen.",
+    "introChallengesOne": "1 open challenge",
+    "introChallengesMany": "{count} open challenges",
+    "descChallengeSuffix": "+ {count} open challenges om aan te nemen.",
+    "openChallengesHeading": "Open challenges in {city}",
+    "challengeForLocals": "voor locals",
+    "challengeForExplorers": "voor explorers"
   },
   "past": {
     "title": "Afgelopen meetups en pulses in {city} | Hilads",

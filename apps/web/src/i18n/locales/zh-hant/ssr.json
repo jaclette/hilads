@@ -115,7 +115,13 @@
     "catMeetup": "聚會",
     "catParty": "派對",
     "aboutBody1": "Hilads 是覆蓋在 {city} 之上的即時社交層。開啟 app，看看現在誰在附近，加入正在發生的事，或舉辦你自己的活動。不必先建立好友名單，也不必註冊就能進入。",
-    "aboutBody2": "無論你住在 {city} 還是只來訪幾天，Hilads 讓你像在地人一樣認識他人 — 透過真正在發生的事，而不是透過個人資料。"
+    "aboutBody2": "無論你住在 {city} 還是只來訪幾天，Hilads 讓你像在地人一樣認識他人 — 透過真正在發生的事，而不是透過個人資料。",
+    "introChallengesOne": "1 個進行中的挑戰",
+    "introChallengesMany": "{count} 個進行中的挑戰",
+    "descChallengeSuffix": "另有 {count} 個挑戰等你接受。",
+    "openChallengesHeading": "{city}的進行中挑戰",
+    "challengeForLocals": "面向本地人",
+    "challengeForExplorers": "面向探索者"
   },
   "past": {
     "title": "{city} 過往的聚會與 pulses | Hilads",

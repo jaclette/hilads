@@ -579,7 +579,7 @@ function composeVenueMeta(payload, canonicalPath, venueId, locale = 'en') {
 // prefix in the title reflects the city's local hour + day of week so the
 // snippet feels live across time zones. Returns {noindex:true} for cities
 // with literally zero indexable content (no events AND no venues AND no chat).
-function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0, messageCount = 0, locale = 'en') {
+function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, venueCount = 0, messageCount = 0, locale = 'en', challengeCount = 0) {
   if (!payload?.city) return null
   const city      = payload.city
   const timeframe = T(locale, 'timeframe.today')
@@ -593,12 +593,18 @@ function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, ve
   } else {
     description = T(locale, 'city.descLow', { city })
   }
+  // Append a "+ N défis lancés" suffix when the city has open challenges.
+  // The base description tier reads on its own; the suffix is added text
+  // (not a tier replacement) so we don't lose the events-based phrasing.
+  if (challengeCount > 0) {
+    description += ' ' + T(locale, 'city.descChallengeSuffix', { count: challengeCount })
+  }
 
   // noindex only when there's truly nothing of substance: zero upcoming
-  // events AND zero seeded venues AND zero chat messages. Any one of these
-  // makes the page worth indexing — events/venues add unique content, and a
-  // city with real chat activity is a live page worth surfacing.
-  const noindex = upcomingCount === 0 && venueCount === 0 && messageCount === 0
+  // events AND zero seeded venues AND zero chat messages AND zero open
+  // challenges. Any one of these makes the page worth indexing — a city
+  // with just a defi or two is still a live page worth surfacing.
+  const noindex = upcomingCount === 0 && venueCount === 0 && messageCount === 0 && challengeCount === 0
 
   return {
     title,
@@ -789,7 +795,7 @@ function composeVenueJsonLd(payload, canonicalUrl) {
   }
 }
 
-function composeCityJsonLd(payload, canonicalUrl, upcomingEvents) {
+function composeCityJsonLd(payload, canonicalUrl, upcomingEvents, challenges) {
   if (!payload?.city) return null
 
   const place = {
@@ -823,6 +829,23 @@ function composeCityJsonLd(payload, canonicalUrl, upcomingEvents) {
         position:  i + 1,
         url:       `${SITE_BASE}/event/${eventSlug(ev)}`,
         name:      ev.title,
+      })),
+    })
+  }
+
+  // Second ItemList — open challenges in this city. Same authority pitch as
+  // events, scoped to the new primary entity so /challenge/{slug}-{id} URLs
+  // get linked from the city's most-authoritative page.
+  if (Array.isArray(challenges) && challenges.length > 0) {
+    graph.push({
+      '@type': 'ItemList',
+      name:    `Open challenges in ${payload.city}`,
+      numberOfItems: challenges.length,
+      itemListElement: challenges.slice(0, 10).map((ch, i) => ({
+        '@type':   'ListItem',
+        position:  i + 1,
+        url:       `${SITE_BASE}/challenge/${challengeSlug(ch)}`,
+        name:      ch.title,
       })),
     })
   }
@@ -1037,20 +1060,23 @@ const SSR_CITY_STYLES = `
   .ssr-intro   { font-size: 1.05rem; }
 `.replace(/\s+/g, ' ').trim()
 
-function composeCityBody(payload, upcomingEvents, venues, locale = 'en') {
+function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challenges = []) {
   const city  = payload.city || ''
   if (!city) return null
-  const lp          = localePrefixFor(locale)
-  const country     = payload.country || ''
-  const flag        = flagEmoji(country)
-  const events      = Array.isArray(upcomingEvents) ? upcomingEvents : []
-  const venueList   = Array.isArray(venues) ? venues : []
-  const eventCount  = events.length
-  const venueCount  = venueList.length
+  const lp             = localePrefixFor(locale)
+  const country        = payload.country || ''
+  const flag           = flagEmoji(country)
+  const events         = Array.isArray(upcomingEvents) ? upcomingEvents : []
+  const venueList      = Array.isArray(venues) ? venues : []
+  const challengeList  = Array.isArray(challenges) ? challenges : []
+  const eventCount     = events.length
+  const venueCount     = venueList.length
+  const challengeCount = challengeList.length
 
   const introBits = []
-  if (eventCount > 0) introBits.push(eventCount === 1 ? T(locale, 'city.introEventsOne') : T(locale, 'city.introEventsMany', { count: eventCount }))
-  if (venueCount > 0) introBits.push(venueCount === 1 ? T(locale, 'city.introVenuesOne') : T(locale, 'city.introVenuesMany', { count: venueCount }))
+  if (eventCount     > 0) introBits.push(eventCount     === 1 ? T(locale, 'city.introEventsOne')     : T(locale, 'city.introEventsMany',     { count: eventCount }))
+  if (venueCount     > 0) introBits.push(venueCount     === 1 ? T(locale, 'city.introVenuesOne')     : T(locale, 'city.introVenuesMany',     { count: venueCount }))
+  if (challengeCount > 0) introBits.push(challengeCount === 1 ? T(locale, 'city.introChallengesOne') : T(locale, 'city.introChallengesMany', { count: challengeCount }))
   const introSuffix = introBits.length > 0
     ? T(locale, 'city.introSuffix', { bits: introBits.join(', ') })
     : T(locale, 'city.introEmpty')
@@ -1078,6 +1104,23 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en') {
       return `<li>${cat} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${v.address ? ` — ${htmlEscape(v.address)}` : ''}</li>`
     }).join('\n        ')
     venuesSection = `<section><h2>${T(locale, 'city.popularVenuesHeading', { city: htmlEscape(city) })}</h2><ul>\n        ${venueItems}\n      </ul></section>`
+  }
+
+  // Open challenges — up to 10. Type emoji + title link to the canonical
+  // /challenge/{slug}-{id}. Audience badge ("for locals" / "for explorers")
+  // disambiguates target. Skipped entirely when the city has no open défi.
+  let challengesSection = ''
+  if (challengeCount > 0) {
+    const typeIcon = (t) => ({ food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[t] || '🔥')
+    const challengeItems = challengeList.slice(0, 10).map(ch => {
+      const slug     = challengeSlug(ch)
+      const icon     = typeIcon(ch.challenge_type)
+      const audience = ch.audience === 'explorers'
+        ? T(locale, 'city.challengeForExplorers')
+        : T(locale, 'city.challengeForLocals')
+      return `<li>${icon} <a href="${lp}/challenge/${slug}">${htmlEscape(ch.title)}</a> — <em>${htmlEscape(audience)}</em></li>`
+    }).join('\n        ')
+    challengesSection = `<section><h2>${T(locale, 'city.openChallengesHeading', { city: htmlEscape(city) })}</h2><ul>\n        ${challengeItems}\n      </ul></section>`
   }
 
   // City-specific signals (event mix / venue split / freshness / country
@@ -1111,6 +1154,7 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en') {
     `<p class="ssr-intro">${intro}</p>`,
     signalsBlock,
     eventsSection,
+    challengesSection,
     categoriesSection,
     venuesSection,
     evergreen,
@@ -1833,10 +1877,11 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
       )
       if (cityData?.city) {
         cacheMaxAge = 3600                 // 1 h — cities stable
-        // Parallel: upcoming events (for ItemList + body) + venues (for body
-        // showcase). Best-effort — either failure is non-fatal; we just emit
-        // less content. Same timeout budget as cityData itself.
-        const [upcomingData, venuesData] = cityData?.channelId
+        // Parallel: upcoming events (ItemList + body) + venues (body showcase)
+        // + challenges (body section + ItemList). Best-effort — any failure
+        // is non-fatal; we just emit less content. Same timeout budget as
+        // cityData itself.
+        const [upcomingData, venuesData, challengesData] = cityData?.channelId
           ? await Promise.all([
               fetchWithTimeout(
                 `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/events/upcoming?days=7`,
@@ -1846,24 +1891,30 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
                 `${API_BASE}/api/v1/cities/${encodeURIComponent(slug)}/venues`,
                 API_TIMEOUT_MS,
               ),
+              fetchWithTimeout(
+                `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/challenges?limit=20`,
+                API_TIMEOUT_MS,
+              ),
             ])
-          : [null, null]
+          : [null, null, null]
         const rawUpcoming   = Array.isArray(upcomingData?.events) ? upcomingData.events : []
         // Filter out venue-derived "events" — those have a dedicated /venue/
         // page; including them here would create a 301 chain (city → event →
         // venue) and dilute link equity. They surface separately under
         // "Popular venues". is_venue is set by EventRepository::format.
-        const upcoming      = rawUpcoming.filter(ev => !ev.is_venue)
-        const venues        = Array.isArray(venuesData?.venues) ? venuesData.venues : []
-        const upcomingCount = upcoming.length
+        const upcoming       = rawUpcoming.filter(ev => !ev.is_venue)
+        const venues         = Array.isArray(venuesData?.venues) ? venuesData.venues : []
+        const challenges     = Array.isArray(challengesData?.challenges) ? challengesData.challenges : []
+        const upcomingCount  = upcoming.length
+        const challengeCount = challenges.length
         // messageCount comes from the by-slug payload (same server-side fetch),
         // so it's present at SSR time — no separate request that could time out
         // and falsely flip a chatty city to noindex.
         const messageCount  = Number.isFinite(cityData.messageCount) ? cityData.messageCount : 0
 
-        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length, messageCount, locale)
-        jsonLd = composeCityJsonLd(cityData, meta.url, upcoming)
-        bodyHtml = composeCityBody(cityData, upcoming, venues, locale)
+        meta   = composeCityMeta(cityData, canonicalPath, slug, upcomingCount, venues.length, messageCount, locale, challengeCount)
+        jsonLd = composeCityJsonLd(cityData, meta.url, upcoming, challenges)
+        bodyHtml = composeCityBody(cityData, upcoming, venues, locale, challenges)
       }
     } else if (type === 'past' && typeof slug === 'string' && /^[a-z0-9-]{1,80}$/.test(slug)) {
       canonicalPath = `/city/${slug}/past`

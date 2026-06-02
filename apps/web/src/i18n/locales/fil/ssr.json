@@ -115,7 +115,13 @@
     "catMeetup": "Mga meetup",
     "catParty": "Mga party",
     "aboutBody1": "Ang Hilads ay isang live na social layer sa ibabaw ng {city}. Buksan ang app, tingnan kung sino ang nasa paligid ngayon mismo, sumali sa kung ano ang nangyayari, o mag-host ng sarili mong event. Walang friends list na kailangang buuin muna, walang sign-up para makapasok.",
-    "aboutBody2": "Nakatira ka man sa {city} o nagbibisita lang nang ilang araw, pinapadali ng Hilads na makilala ang mga tao tulad ng ginagawa ng mga local — sa pamamagitan ng aktwal na nangyayari, hindi sa pamamagitan ng mga profile."
+    "aboutBody2": "Nakatira ka man sa {city} o nagbibisita lang nang ilang araw, pinapadali ng Hilads na makilala ang mga tao tulad ng ginagawa ng mga local — sa pamamagitan ng aktwal na nangyayari, hindi sa pamamagitan ng mga profile.",
+    "introChallengesOne": "1 bukas na challenge",
+    "introChallengesMany": "{count} bukas na challenge",
+    "descChallengeSuffix": "+ {count} bukas na challenge na pwedeng tanggapin.",
+    "openChallengesHeading": "Bukas na mga challenge sa {city}",
+    "challengeForLocals": "para sa mga lokal",
+    "challengeForExplorers": "para sa mga explorer"
   },
   "past": {
     "title": "Mga nakaraang tambayan at pulse sa {city} | Hilads",

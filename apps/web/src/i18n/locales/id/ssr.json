@@ -115,7 +115,13 @@
     "catMeetup": "Meetup",
     "catParty": "Pesta",
     "aboutBody1": "Hilads adalah lapisan sosial real-time di atas {city}. Buka app, lihat siapa yang ada di sekitar sekarang, lompat ke sesuatu yang sedang terjadi, atau jadi host acaramu sendiri. Tidak perlu membangun daftar teman dulu, tanpa daftar untuk masuk.",
-    "aboutBody2": "Baik kamu tinggal di {city} atau sedang berkunjung beberapa hari, Hilads memudahkanmu bertemu orang seperti yang dilakukan local — lewat apa yang benar-benar terjadi, bukan lewat profil."
+    "aboutBody2": "Baik kamu tinggal di {city} atau sedang berkunjung beberapa hari, Hilads memudahkanmu bertemu orang seperti yang dilakukan local — lewat apa yang benar-benar terjadi, bukan lewat profil.",
+    "introChallengesOne": "1 tantangan terbuka",
+    "introChallengesMany": "{count} tantangan terbuka",
+    "descChallengeSuffix": "+ {count} tantangan terbuka untuk diterima.",
+    "openChallengesHeading": "Tantangan terbuka di {city}",
+    "challengeForLocals": "untuk warga lokal",
+    "challengeForExplorers": "untuk para penjelajah"
   },
   "past": {
     "title": "Nongkrong & pulses lampau di {city} | Hilads",

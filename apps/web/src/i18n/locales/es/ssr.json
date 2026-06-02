@@ -115,7 +115,13 @@
     "catMeetup": "Quedadas",
     "catParty": "Fiestas",
     "aboutBody1": "Hilads es una capa social en tiempo real sobre {city}. Abre la app, mira quién está por aquí ahora mismo, lánzate a lo que está pasando u organiza tu propio evento. Sin listas de amigos que construir primero, sin registro para entrar.",
-    "aboutBody2": "Tanto si vives en {city} como si estás de paso unos días, Hilads te permite conocer gente como lo hacen los locales — a través de lo que de verdad pasa, no a través de perfiles."
+    "aboutBody2": "Tanto si vives en {city} como si estás de paso unos días, Hilads te permite conocer gente como lo hacen los locales — a través de lo que de verdad pasa, no a través de perfiles.",
+    "introChallengesOne": "1 reto abierto",
+    "introChallengesMany": "{count} retos abiertos",
+    "descChallengeSuffix": "+ {count} retos abiertos para aceptar.",
+    "openChallengesHeading": "Retos abiertos en {city}",
+    "challengeForLocals": "para locales",
+    "challengeForExplorers": "para exploradores"
   },
   "past": {
     "title": "Quedadas y pulses pasados en {city} | Hilads",
