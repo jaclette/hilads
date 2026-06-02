@@ -87,7 +87,7 @@ export function CreateSheet({ visible, onClose, onSelectChallenge, onSelectEvent
             activeOpacity={0.75}
             onPress={() => handleOption(onSelectChallenge)}
           >
-            <View style={[styles.optionIcon, styles.optionIconChallenge]}>
+            <View style={styles.optionIcon}>
               <Text style={styles.optionEmoji}>🔥</Text>
             </View>
             <View style={styles.optionBody}>
@@ -104,7 +104,7 @@ export function CreateSheet({ visible, onClose, onSelectChallenge, onSelectEvent
             activeOpacity={0.75}
             onPress={() => handleOption(onSelectTopic)}
           >
-            <View style={[styles.optionIcon, styles.optionIconTopic]}>
+            <View style={styles.optionIcon}>
               <Text style={styles.optionEmoji}>🗣️</Text>
             </View>
             <View style={styles.optionBody}>
@@ -196,25 +196,17 @@ const styles = StyleSheet.create({
     gap:               Spacing.sm,
   },
 
+  // Bare icon slot — emoji renders on its own. We used to tint the box with
+  // category colors (orange / blue / orange-stronger), but only the strongest
+  // tint was visible against the warm-dark surface, which made challenge look
+  // like the odd one out with a brown box. Cleaner to drop the tint for all
+  // three so the emojis read consistently.
   optionIcon: {
-    width:           50,
-    height:          50,
-    borderRadius:    Radius.md,
-    backgroundColor: 'rgba(255,122,60,0.12)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,122,60,0.22)',
-    alignItems:      'center',
-    justifyContent:  'center',
-    flexShrink:      0,
-  },
-  optionIconTopic: {
-    backgroundColor: 'rgba(96,165,250,0.10)',
-    borderColor:     'rgba(96,165,250,0.22)',
-  },
-  optionIconChallenge: {
-    // Hilads orange — challenge is the new primary CTA, so it gets the brand color.
-    backgroundColor: 'rgba(255,122,60,0.14)',
-    borderColor:     'rgba(255,122,60,0.30)',
+    width:          50,
+    height:         50,
+    alignItems:     'center',
+    justifyContent: 'center',
+    flexShrink:     0,
   },
 
   optionEmoji: {

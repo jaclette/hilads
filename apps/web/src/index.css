@@ -10708,10 +10708,9 @@ body.has-app-promo-banner .page-header {
      - .create-chooser-option--challenge  orange-tinted entry in the bottom sheet
    ───────────────────────────────────────────────────────────────────────── */
 
-.create-chooser-option--challenge .create-chooser-icon {
-  background: rgba(255, 122, 60, 0.14);
-  color: #FF7A3C;
-}
+/* Challenge tile no longer tints its icon background — the 🔥 emoji reads
+   on its own, and the box looked out of place next to the bare 🗣️ and 🎉
+   icons on the other two tiles. */
 
 .cef-audience-row {
   display: flex;
