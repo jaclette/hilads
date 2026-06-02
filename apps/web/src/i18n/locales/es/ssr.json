@@ -7,7 +7,7 @@
     "aboutHeading": "Cómo funciona Hilads",
     "aboutBody": "Elige tu ciudad. Lanza un reto para el otro lado, o acepta uno que te llame la atención. Conoce a locales y viajeros a través de lo que realmente quieres hacer — comida, lugar, cultura, ayuda. Hilads hace que cada ciudad se sienta viva, ahora mismo.",
     "citiesCta": "Explorar todas las ciudades de Hilads",
-    "subhead": "🔥 Ahora impulsado por retos"
+    "subhead": "🔥 Locales y exploradores se conectan a través de retos."
   },
   "brand": "Hilads",
   "dateLocale": "es-ES",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "para exploradores"
   },
   "past": {
-    "title": "Quedadas y pulses pasados en {city} | Hilads",
-    "descItems": "Un repaso a las quedadas y pulses recientes en {city} en Hilads — mira qué hicieron los locales y los viajeros, y luego descubre qué viene después.",
+    "title": "Actividad pasada en {city} | Hilads",
+    "descItems": "Un repaso de las quedadas, pulses y retos validados recientes en {city} en Hilads — mira qué hicieron locales y viajeros, y descubre lo que viene.",
     "descEmpty": "Quedadas pasadas en {city} en Hilads.",
     "breadcrumb": "Pasado",
-    "h1": "Quedadas y pulses pasados en {city}",
-    "introItems": "Un repaso a las quedadas y pulses recientes en {city}.",
+    "h1": "Actividad pasada en {city}",
+    "introItems": "Un repaso de las quedadas, pulses y retos validados recientes en {city}.",
     "introEmpty": "Quedadas pasadas en {city}.",
     "pastHangoutsHeading": "Quedadas pasadas en {city}",
     "pastPulsesHeading": "Pulses pasados en {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} respuestas",
     "whatsNextHeading": "Y ahora qué en {city}",
     "whatsNextBody": "Esto es lo que pasó hace poco en {city} en Hilads. Mira {link} y únete con un toque.",
-    "whatsHappeningNowLink": "qué está pasando ahora mismo"
+    "whatsHappeningNowLink": "qué está pasando ahora mismo",
+    "pastChallengesHeading": "Retos validados en {city}"
   },
   "timeframe": {
     "thisWeekend": "Este fin de semana",

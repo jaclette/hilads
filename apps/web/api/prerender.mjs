@@ -506,15 +506,20 @@ function composePastJsonLd(payload, items, citySlug, canonicalUrl) {
   }
 }
 
-function composePastBody(payload, items, citySlug, locale = 'en') {
+function composePastBody(payload, items, citySlug, locale = 'en', validatedChallenges = []) {
   const lp     = localePrefixFor(locale)
   const city   = payload.city
   const tz     = payload.timezone
   const events = items.filter(it => it.kind === 'event')
   const pulses = items.filter(it => it.kind === 'topic')
+  const challenges = Array.isArray(validatedChallenges) ? validatedChallenges : []
 
+  // Adjust the intro empty-vs-items decision so a city with only validated
+  // challenges (no past events/pulses) still gets the "look back" copy
+  // instead of the empty placeholder.
+  const hasAny = items.length > 0 || challenges.length > 0
   const breadcrumb = `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${T(locale, 'past.breadcrumb')}</span></nav>`
-  const intro = items.length > 0
+  const intro = hasAny
     ? T(locale, 'past.introItems', { city })
     : T(locale, 'past.introEmpty', { city })
 
@@ -536,6 +541,19 @@ function composePastBody(payload, items, citySlug, locale = 'en') {
       }).join('')}</ul></section>`
     : ''
 
+  // Validated challenges — evergreen content (no expiry), so this section
+  // is the long-tail SEO asset of the past page. Type emoji + title link
+  // to the canonical /challenge/{slug}-{id}. Cap at 20 to match the other
+  // sections.
+  const typeIcon = (t) => ({ food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[t] || '🔥')
+  const challengesSection = challenges.length > 0
+    ? `<section><h2>${T(locale, 'past.pastChallengesHeading', { city: htmlEscape(city) })}</h2><ul>${challenges.slice(0, 20).map(ch => {
+        const slug = challengeSlug(ch)
+        const icon = typeIcon(ch.challenge_type)
+        return `<li>${icon} <a href="${lp}/challenge/${slug}">${htmlEscape(ch.title)}</a></li>`
+      }).join('')}</ul></section>`
+    : ''
+
   const evergreen = `<section><h2>${T(locale, 'past.whatsNextHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'past.whatsNextBody', { city: htmlEscape(city), link: `<a href="${lp}/city/${citySlug}">${T(locale, 'past.whatsHappeningNowLink')}</a>` })}</p></section>`
 
   return [
@@ -546,6 +564,7 @@ function composePastBody(payload, items, citySlug, locale = 'en') {
     `<p class="ssr-intro">${htmlEscape(intro)}</p>`,
     eventsSection,
     pulsesSection,
+    challengesSection,
     evergreen,
     `</main>`,
   ].filter(Boolean).join('\n')
@@ -1933,17 +1952,30 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         API_TIMEOUT_MS,
       )
       if (cityData?.city && cityData?.channelId) {
-        // Pull the most recent finished hangouts + expired pulses (one batched
-        // request). Best-effort — an empty/failed fetch yields a noindex page.
-        const archive = await fetchWithTimeout(
-          `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/past?type=both&limit=20`,
-          API_TIMEOUT_MS,
-        )
-        const items = Array.isArray(archive?.items) ? archive.items : []
+        // Pull the most recent finished hangouts + expired pulses + validated
+        // challenges in parallel. Best-effort on each; empty arrays drop the
+        // corresponding section silently.
+        const [archive, validatedData] = await Promise.all([
+          fetchWithTimeout(
+            `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/past?type=both&limit=20`,
+            API_TIMEOUT_MS,
+          ),
+          fetchWithTimeout(
+            `${API_BASE}/api/v1/channels/${encodeURIComponent(cityData.channelId)}/challenges/validated?limit=20`,
+            API_TIMEOUT_MS,
+          ),
+        ])
+        const items                = Array.isArray(archive?.items)           ? archive.items           : []
+        const validatedChallenges  = Array.isArray(validatedData?.challenges) ? validatedData.challenges : []
+        // Past page is indexable as soon as ANY of the three archive types
+        // has content — composePastMeta only had `items.length` to decide;
+        // also feed it the validated-challenge count so a city with only
+        // archived défis is still indexable.
+        const totalArchive = items.length + validatedChallenges.length
         cacheMaxAge = 1800            // 30 min — past content is stable but newly-expired items trickle in
-        meta     = composePastMeta(cityData, canonicalPath, slug, items.length, locale)
+        meta     = composePastMeta(cityData, canonicalPath, slug, totalArchive, locale)
         jsonLd   = composePastJsonLd(cityData, items, slug, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
-        bodyHtml = composePastBody(cityData, items, slug, locale)
+        bodyHtml = composePastBody(cityData, items, slug, locale, validatedChallenges)
       }
     } else if (type === 'home') {
       // Localized landing page. Static (no backend fetch) so it always renders.

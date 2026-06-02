@@ -3,7 +3,7 @@
     "title": "Hilads — Connecte locaux & explorateurs par les défis",
     "description": "Tu es local ou explorateur. Lance un défi — bouffe, lieu, culture, aide — et rencontre les gens qui le relèvent. En temps réel, sans inscription.",
     "h1": "Défie la ville. Partout.",
-    "subhead": "🔥 Maintenant propulsé par les défis",
+    "subhead": "🔥 Locaux et explorateurs se connectent à travers les défis.",
     "intro": "Hilads connecte locaux et explorateurs dans chaque ville par les défis. Lance-en un pour l'autre côté — choisis un type, donne-lui un titre, regarde les gens le relever. Une fois terminé, le créateur valide. En temps réel, sans inscription.",
     "aboutHeading": "Comment fonctionne Hilads",
     "aboutBody": "Choisis ta ville. Lance un défi pour l'autre côté, ou relève-en un qui te parle. Rencontre des locaux et des voyageurs par ce que tu as vraiment envie de faire — bouffe, lieu, culture, aide. Hilads est fait pour que chaque ville se sente vivante, là, maintenant.",
@@ -150,12 +150,12 @@
     "challengeForExplorers": "pour les explorateurs"
   },
   "past": {
-    "title": "Sorties & pulses passés à {city} | Hilads",
-    "descItems": "Un retour sur les sorties et pulses récents à {city} sur Hilads — vois ce que les locaux et les voyageurs ont fait, puis trouve ce qui arrive ensuite.",
+    "title": "Activité passée à {city} | Hilads",
+    "descItems": "Retour sur les sorties, pulses et défis validés récents à {city} sur Hilads — vois ce que les locaux et les voyageurs ont fait, puis trouve ce qui se passe ensuite.",
     "descEmpty": "Sorties passées à {city} sur Hilads.",
     "breadcrumb": "Passé",
-    "h1": "Sorties & pulses passés à {city}",
-    "introItems": "Un retour sur les sorties et pulses récents à {city}.",
+    "h1": "Activité passée à {city}",
+    "introItems": "Retour sur les sorties, pulses et défis validés récents à {city}.",
     "introEmpty": "Sorties passées à {city}.",
     "pastHangoutsHeading": "Sorties passées à {city}",
     "pastPulsesHeading": "Pulses passés à {city}",
@@ -163,7 +163,8 @@
     "replyMany": "{count} réponses",
     "whatsNextHeading": "Et ensuite à {city}",
     "whatsNextBody": "Voici ce qui s'est passé récemment à {city} sur Hilads. Vois {link} et rejoins en un geste.",
-    "whatsHappeningNowLink": "ce qui se passe en ce moment"
+    "whatsHappeningNowLink": "ce qui se passe en ce moment",
+    "pastChallengesHeading": "Défis validés à {city}"
   },
   "timeframe": {
     "thisWeekend": "Ce week-end",

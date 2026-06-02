@@ -7,7 +7,7 @@
     "aboutHeading": "Paano gumagana ang Hilads",
     "aboutBody": "Piliin ang iyong lungsod. Maglunsad ng challenge para sa kabilang panig, o tumanggap ng isang umaapela sa iyo. Makilala ang mga local at biyahero sa pamamagitan ng gusto mong gawin — pagkain, lugar, kultura, tulong. Pinaramdam ng Hilads na buhay ang bawat lungsod, ngayon mismo.",
     "citiesCta": "I-browse lahat ng cities ng Hilads",
-    "subhead": "🔥 Pinapatakbo na ng mga challenge"
+    "subhead": "🔥 Kung saan nag-uugnay ang mga lokal at explorer sa pamamagitan ng challenges."
   },
   "brand": "Hilads",
   "dateLocale": "fil-PH",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "para sa mga explorer"
   },
   "past": {
-    "title": "Mga nakaraang tambayan at pulse sa {city} | Hilads",
-    "descItems": "Isang balik-tanaw sa mga kamakailang tambayan at pulse sa {city} sa Hilads — tingnan kung ano ang ginawa ng mga local at biyahero, tapos tuklasin kung ano ang susunod.",
+    "title": "Nakaraang aktibidad sa {city} | Hilads",
+    "descItems": "Balikan ang mga nakaraang lakad, pulses at validated challenges sa {city} sa Hilads — tingnan kung ano ang ginawa ng mga lokal at biyahero, tapos hanapin kung ano ang susunod.",
     "descEmpty": "Mga nakaraang tambayan sa {city} sa Hilads.",
     "breadcrumb": "Nakaraan",
-    "h1": "Mga nakaraang tambayan at pulse sa {city}",
-    "introItems": "Isang balik-tanaw sa mga kamakailang tambayan at pulse sa {city}.",
+    "h1": "Nakaraang aktibidad sa {city}",
+    "introItems": "Balikan ang mga nakaraang lakad, pulses at validated challenges sa {city}.",
     "introEmpty": "Mga nakaraang tambayan sa {city}.",
     "pastHangoutsHeading": "Mga nakaraang tambayan sa {city}",
     "pastPulsesHeading": "Mga nakaraang pulse sa {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} tugon",
     "whatsNextHeading": "Ano ang susunod sa {city}",
     "whatsNextBody": "Ito ang kamakailang nangyari sa {city} sa Hilads. Tingnan ang {link} at sumali sa isang tap.",
-    "whatsHappeningNowLink": "kung ano ang nangyayari ngayon mismo"
+    "whatsHappeningNowLink": "kung ano ang nangyayari ngayon mismo",
+    "pastChallengesHeading": "Validated challenges sa {city}"
   },
   "timeframe": {
     "thisWeekend": "Ngayong weekend",

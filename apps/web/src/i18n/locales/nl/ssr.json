@@ -7,7 +7,7 @@
     "aboutHeading": "Zo werkt Hilads",
     "aboutBody": "Kies je stad. Start een challenge voor de andere kant, of neem er een aan die je aanspreekt. Ontmoet locals en reizigers via wat je echt wilt doen — eten, plek, cultuur, hulp. Hilads laat elke stad nu meteen levend aanvoelen.",
     "citiesCta": "Blader door alle Hilads-steden",
-    "subhead": "🔥 Nu met challenges"
+    "subhead": "🔥 Waar locals en explorers samenkomen via challenges."
   },
   "brand": "Hilads",
   "dateLocale": "nl-NL",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "voor explorers"
   },
   "past": {
-    "title": "Afgelopen meetups en pulses in {city} | Hilads",
-    "descItems": "Een terugblik op de recente meetups en pulses in {city} op Hilads — kijk wat locals en reizigers gedaan hebben en ontdek dan wat er hierna komt.",
+    "title": "Eerdere activiteit in {city} | Hilads",
+    "descItems": "Een terugblik op recente hangouts, pulses en gevalideerde challenges in {city} op Hilads — zie wat locals en reizigers deden, vind dan wat hierna komt.",
     "descEmpty": "Afgelopen meetups in {city} op Hilads.",
     "breadcrumb": "Verleden",
-    "h1": "Afgelopen meetups en pulses in {city}",
-    "introItems": "Een terugblik op de recente meetups en pulses in {city}.",
+    "h1": "Eerdere activiteit in {city}",
+    "introItems": "Een terugblik op recente hangouts, pulses en gevalideerde challenges in {city}.",
     "introEmpty": "Afgelopen meetups in {city}.",
     "pastHangoutsHeading": "Afgelopen meetups in {city}",
     "pastPulsesHeading": "Afgelopen pulses in {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} reacties",
     "whatsNextHeading": "Wat er hierna komt in {city}",
     "whatsNextBody": "Dit is wat er onlangs gebeurd is in {city} op Hilads. Bekijk {link} en doe met één tik mee.",
-    "whatsHappeningNowLink": "wat er nu gebeurt"
+    "whatsHappeningNowLink": "wat er nu gebeurt",
+    "pastChallengesHeading": "Gevalideerde challenges in {city}"
   },
   "timeframe": {
     "thisWeekend": "Dit weekend",

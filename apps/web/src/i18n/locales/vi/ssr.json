@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads hoạt động thế nào",
     "aboutBody": "Chọn thành phố của bạn. Tạo một thử thách cho phía bên kia, hoặc chấp nhận một thử thách mà bạn thích. Gặp người địa phương và du khách qua những gì bạn thực sự muốn làm — ăn uống, địa điểm, văn hóa, giúp đỡ. Hilads làm cho mỗi thành phố trở nên sống động, ngay bây giờ.",
     "citiesCta": "Khám phá tất cả thành phố trên Hilads",
-    "subhead": "🔥 Giờ đây với những thử thách"
+    "subhead": "🔥 Nơi người địa phương và người khám phá kết nối qua thử thách."
   },
   "_note": "Vietnamese SSR strings are DRAFTS — pending native review.",
   "brand": "Hilads",
@@ -127,12 +127,12 @@
     "challengeForExplorers": "dành cho người khám phá"
   },
   "past": {
-    "title": "Tụ tập & pulses đã qua ở {city} | Hilads",
-    "descItems": "Nhìn lại các tụ tập và pulse gần đây ở {city} trên Hilads — xem người địa phương và du khách đã làm gì, rồi tìm điều sắp diễn ra.",
+    "title": "Hoạt động đã qua tại {city} | Hilads",
+    "descItems": "Nhìn lại các buổi gặp, pulses và thử thách đã xác nhận gần đây tại {city} trên Hilads — xem người địa phương và du khách đã làm gì, rồi tìm điều sắp tới.",
     "descEmpty": "Tụ tập đã qua ở {city} trên Hilads.",
     "breadcrumb": "Đã qua",
-    "h1": "Tụ tập & pulses đã qua ở {city}",
-    "introItems": "Nhìn lại các tụ tập và pulse gần đây ở {city}.",
+    "h1": "Hoạt động đã qua tại {city}",
+    "introItems": "Nhìn lại các buổi gặp, pulses và thử thách đã xác nhận gần đây tại {city}.",
     "introEmpty": "Tụ tập đã qua ở {city}.",
     "pastHangoutsHeading": "Tụ tập đã qua ở {city}",
     "pastPulsesHeading": "Pulses đã qua ở {city}",
@@ -140,7 +140,8 @@
     "replyMany": "{count} phản hồi",
     "whatsNextHeading": "Tiếp theo ở {city}",
     "whatsNextBody": "Đây là những gì đã diễn ra gần đây ở {city} trên Hilads. Xem {link} và tham gia chỉ với một chạm.",
-    "whatsHappeningNowLink": "những gì đang diễn ra ngay bây giờ"
+    "whatsHappeningNowLink": "những gì đang diễn ra ngay bây giờ",
+    "pastChallengesHeading": "Thử thách đã xác nhận tại {city}"
   },
   "timeframe": {
     "thisWeekend": "Cuối tuần này",

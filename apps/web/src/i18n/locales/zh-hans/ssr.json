@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads 怎么用",
     "aboutBody": "选择你的城市。为另一方发起一个挑战,或接受一个吸引你的挑战。通过你真正想做的事情认识本地人和旅行者 — 美食、地点、文化、帮助。Hilads 让每个城市此刻就感觉生机勃勃。",
     "citiesCta": "浏览所有 Hilads 城市",
-    "subhead": "🔥 现在由挑战驱动"
+    "subhead": "🔥 本地人与探索者通过挑战相连。"
   },
   "brand": "Hilads",
   "dateLocale": "zh-CN",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "面向探索者"
   },
   "past": {
-    "title": "{city} 的往期聚会和 pulses | Hilads",
-    "descItems": "回顾 {city} 在 Hilads 上最近的聚会和 pulses — 看看本地人和旅行者都做了什么，再找找接下来有什么。",
+    "title": "{city}的过往活动 | Hilads",
+    "descItems": "回顾 Hilads 上 {city} 最近的聚会、pulses 和已验证的挑战 — 看看本地人和旅行者做了什么，然后发现接下来要发生什么。",
     "descEmpty": "Hilads 上 {city} 的往期聚会。",
     "breadcrumb": "往期",
-    "h1": "{city} 的往期聚会和 pulses",
-    "introItems": "回顾 {city} 最近的聚会和 pulses。",
+    "h1": "{city}的过往活动",
+    "introItems": "回顾 {city} 最近的聚会、pulses 和已验证的挑战。",
     "introEmpty": "{city} 的往期聚会。",
     "pastHangoutsHeading": "{city} 的往期聚会",
     "pastPulsesHeading": "{city} 的往期 pulses",
@@ -139,7 +139,8 @@
     "replyMany": "{count} 条回复",
     "whatsNextHeading": "{city} 接下来有什么",
     "whatsNextBody": "这是 {city} 最近在 Hilads 上发生的事。看看 {link}，一键加入。",
-    "whatsHappeningNowLink": "现在正在发生什么"
+    "whatsHappeningNowLink": "现在正在发生什么",
+    "pastChallengesHeading": "{city}已验证的挑战"
   },
   "timeframe": {
     "thisWeekend": "这个周末",

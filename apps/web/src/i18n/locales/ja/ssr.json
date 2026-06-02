@@ -7,7 +7,7 @@
     "aboutHeading": "Hiladsの使い方",
     "aboutBody": "街を選ぼう。反対側のためにチャレンジを始めるか、あなたに響くものを受け入れよう。本当にやりたいことを通して、ローカルや旅行者と出会える — 食、場所、文化、ヘルプ。Hilads はすべての街を、今この瞬間、生きた場所に変える。",
     "citiesCta": "Hiladsのすべての街を見る",
-    "subhead": "🔥 今、チャレンジで動く"
+    "subhead": "🔥 ローカルとエクスプローラーが挑戦でつながる場所。"
   },
   "brand": "Hilads",
   "dateLocale": "ja-JP",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "エクスプローラー向け"
   },
   "past": {
-    "title": "{city}の過去の集まりとpulses | Hilads",
-    "descItems": "{city}での最近の集まりとpulsesを振り返り — ローカルや旅行者が何をしたか見て、次に何があるか見つけよう。",
+    "title": "{city}の過去の活動 | Hilads",
+    "descItems": "{city}での最近のミートアップ、pulses、承認された挑戦を振り返ろう — ローカルや旅行者がしたことを見て、次に何があるかを見つけよう。",
     "descEmpty": "{city}の過去の集まりをHiladsで。",
     "breadcrumb": "過去",
-    "h1": "{city}の過去の集まりとpulses",
-    "introItems": "{city}での最近の集まりとpulsesの振り返り。",
+    "h1": "{city}の過去の活動",
+    "introItems": "{city}での最近のミートアップ、pulses、承認された挑戦の振り返り。",
     "introEmpty": "{city}の過去の集まり。",
     "pastHangoutsHeading": "{city}の過去の集まり",
     "pastPulsesHeading": "{city}の過去のpulses",
@@ -139,7 +139,8 @@
     "replyMany": "{count}件の返信",
     "whatsNextHeading": "{city}の次の予定",
     "whatsNextBody": "これは{city}で最近起きたことです（Hilads）。{link}を見て、ワンタップで参加しよう。",
-    "whatsHappeningNowLink": "今起きていること"
+    "whatsHappeningNowLink": "今起きていること",
+    "pastChallengesHeading": "{city}の承認された挑戦"
   },
   "timeframe": {
     "thisWeekend": "今週末",

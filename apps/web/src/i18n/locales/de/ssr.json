@@ -7,7 +7,7 @@
     "aboutHeading": "So funktioniert Hilads",
     "aboutBody": "Wähle deine Stadt. Starte eine Challenge für die andere Seite, oder nimm eine an, die dich anspricht. Triff Locals und Reisende durch das, was du wirklich tun willst — Essen, Ort, Kultur, Hilfe. Hilads lässt jede Stadt lebendig wirken, genau jetzt.",
     "citiesCta": "Alle Hilads-Städte durchstöbern",
-    "subhead": "🔥 Jetzt mit Challenges"
+    "subhead": "🔥 Wo Locals und Explorer durch Challenges zusammenkommen."
   },
   "brand": "Hilads",
   "dateLocale": "de-DE",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "für Explorer"
   },
   "past": {
-    "title": "Vergangene Treffen und Pulses in {city} | Hilads",
-    "descItems": "Ein Rückblick auf die jüngsten Treffen und Pulses in {city} auf Hilads — sieh, was Locals und Reisende erlebt haben, und finde dann heraus, was als Nächstes ansteht.",
+    "title": "Vergangene Aktivität in {city} | Hilads",
+    "descItems": "Ein Rückblick auf Treffen, Pulses und validierte Challenges in {city} auf Hilads — sieh, was Locals und Reisende erlebt haben, und finde dann heraus, was als Nächstes kommt.",
     "descEmpty": "Vergangene Treffen in {city} auf Hilads.",
     "breadcrumb": "Vergangenes",
-    "h1": "Vergangene Treffen und Pulses in {city}",
-    "introItems": "Ein Rückblick auf die jüngsten Treffen und Pulses in {city}.",
+    "h1": "Vergangene Aktivität in {city}",
+    "introItems": "Ein Rückblick auf Treffen, Pulses und validierte Challenges in {city}.",
     "introEmpty": "Vergangene Treffen in {city}.",
     "pastHangoutsHeading": "Vergangene Treffen in {city}",
     "pastPulsesHeading": "Vergangene Pulses in {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} Antworten",
     "whatsNextHeading": "Was als Nächstes kommt in {city}",
     "whatsNextBody": "Das ist kürzlich in {city} auf Hilads passiert. Sieh {link} und mach mit einem Tippen mit.",
-    "whatsHappeningNowLink": "was gerade jetzt passiert"
+    "whatsHappeningNowLink": "was gerade jetzt passiert",
+    "pastChallengesHeading": "Validierte Challenges in {city}"
   },
   "timeframe": {
     "thisWeekend": "Dieses Wochenende",

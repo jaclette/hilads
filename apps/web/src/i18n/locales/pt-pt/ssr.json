@@ -7,7 +7,7 @@
     "aboutHeading": "Como funciona a Hilads",
     "aboutBody": "Escolhe a tua cidade. Lança um desafio para o outro lado, ou aceita um que te fale. Conhece locais e viajantes pelo que realmente queres fazer — comida, sítio, cultura, ajuda. Hilads faz cada cidade sentir-se viva, agora mesmo.",
     "citiesCta": "Explorar todas as cidades da Hilads",
-    "subhead": "🔥 Agora com desafios"
+    "subhead": "🔥 Locais e exploradores conectam-se através de desafios."
   },
   "brand": "Hilads",
   "dateLocale": "pt-PT",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "para exploradores"
   },
   "past": {
-    "title": "Convívios e pulses passados em {city} | Hilads",
-    "descItems": "Uma retrospetiva dos convívios e pulses recentes em {city} na Hilads — vê o que os locais e os viajantes andaram a fazer e depois descobre o que aí vem.",
+    "title": "Atividade passada em {city} | Hilads",
+    "descItems": "Um olhar sobre os encontros, pulses e desafios validados recentes em {city} no Hilads — vê o que os locais e viajantes fizeram, depois descobre o que vem a seguir.",
     "descEmpty": "Convívios passados em {city} na Hilads.",
     "breadcrumb": "Passado",
-    "h1": "Convívios e pulses passados em {city}",
-    "introItems": "Uma retrospetiva dos convívios e pulses recentes em {city}.",
+    "h1": "Atividade passada em {city}",
+    "introItems": "Um olhar sobre os encontros, pulses e desafios validados recentes em {city}.",
     "introEmpty": "Convívios passados em {city}.",
     "pastHangoutsHeading": "Convívios passados em {city}",
     "pastPulsesHeading": "Pulses passados em {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} respostas",
     "whatsNextHeading": "O que aí vem em {city}",
     "whatsNextBody": "Isto é o que aconteceu há pouco em {city} na Hilads. Vê {link} e junta-te com um toque.",
-    "whatsHappeningNowLink": "o que está a acontecer agora mesmo"
+    "whatsHappeningNowLink": "o que está a acontecer agora mesmo",
+    "pastChallengesHeading": "Desafios validados em {city}"
   },
   "timeframe": {
     "thisWeekend": "Este fim de semana",

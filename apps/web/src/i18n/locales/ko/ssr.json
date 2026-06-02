@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads 사용법",
     "aboutBody": "도시를 선택하세요. 반대편을 위한 챌린지를 만들거나, 마음에 드는 챌린지를 수락하세요. 정말로 하고 싶은 일을 통해 로컬과 여행자를 만나세요 — 음식, 장소, 문화, 도움. Hilads는 모든 도시를 지금 이 순간 살아있는 곳으로 만듭니다.",
     "citiesCta": "모든 Hilads 도시 둘러보기",
-    "subhead": "🔥 이제 챌린지로 작동합니다"
+    "subhead": "🔥 로컬과 익스플로러가 도전으로 연결되는 곳."
   },
   "brand": "Hilads",
   "dateLocale": "ko-KR",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "익스플로러용"
   },
   "past": {
-    "title": "{city}의 지난 모임 & pulse | Hilads",
-    "descItems": "Hilads에서 {city}의 최근 모임과 pulse를 돌아봐요 — 로컬과 여행자가 무엇을 했는지 보고, 다음에 무엇이 있는지 찾아보세요.",
+    "title": "{city}의 지난 활동 | Hilads",
+    "descItems": "Hilads에서 {city}의 최근 모임, pulses, 검증된 도전을 돌아보세요 — 로컬과 여행자들이 무엇을 했는지 보고, 다음에 무엇이 있는지 찾으세요.",
     "descEmpty": "Hilads에서 {city}의 지난 모임.",
     "breadcrumb": "지난 활동",
-    "h1": "{city}의 지난 모임 & pulse",
-    "introItems": "{city}의 최근 모임과 pulse를 돌아봐요.",
+    "h1": "{city}의 지난 활동",
+    "introItems": "{city}의 최근 모임, pulses, 검증된 도전을 돌아보기.",
     "introEmpty": "{city}의 지난 모임.",
     "pastHangoutsHeading": "{city}의 지난 모임",
     "pastPulsesHeading": "{city}의 지난 pulse",
@@ -139,7 +139,8 @@
     "replyMany": "답글 {count}개",
     "whatsNextHeading": "{city}에서 다음은?",
     "whatsNextBody": "이것은 최근 {city}에서 Hilads에 일어난 일이에요. {link}을(를) 보고 한 번의 탭으로 참여하세요.",
-    "whatsHappeningNowLink": "지금 무슨 일이 있는지"
+    "whatsHappeningNowLink": "지금 무슨 일이 있는지",
+    "pastChallengesHeading": "{city}의 검증된 도전"
   },
   "timeframe": {
     "thisWeekend": "이번 주말",

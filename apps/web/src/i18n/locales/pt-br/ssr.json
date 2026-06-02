@@ -7,7 +7,7 @@
     "aboutHeading": "Como a Hilads funciona",
     "aboutBody": "Escolha sua cidade. Lance um desafio para o outro lado, ou aceite um que te chame. Conheça locais e viajantes através do que você realmente quer fazer — comida, lugar, cultura, ajuda. Hilads faz cada cidade se sentir viva, agora mesmo.",
     "citiesCta": "Explorar todas as cidades da Hilads",
-    "subhead": "🔥 Agora movido por desafios"
+    "subhead": "🔥 Locais e exploradores se conectam por meio de desafios."
   },
   "brand": "Hilads",
   "dateLocale": "pt-BR",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "para exploradores"
   },
   "past": {
-    "title": "Rolês e pulses passados em {city} | Hilads",
-    "descItems": "Uma retrospectiva dos rolês e pulses recentes em {city} na Hilads — veja o que locais e viajantes aprontaram, e descubra o que vem a seguir.",
+    "title": "Atividade passada em {city} | Hilads",
+    "descItems": "Um retrospecto dos rolês, pulses e desafios validados recentes em {city} no Hilads — veja o que os locais e viajantes fizeram, depois descubra o que vem.",
     "descEmpty": "Rolês passados em {city} na Hilads.",
     "breadcrumb": "Passado",
-    "h1": "Rolês e pulses passados em {city}",
-    "introItems": "Uma retrospectiva dos rolês e pulses recentes em {city}.",
+    "h1": "Atividade passada em {city}",
+    "introItems": "Um retrospecto dos rolês, pulses e desafios validados recentes em {city}.",
     "introEmpty": "Rolês passados em {city}.",
     "pastHangoutsHeading": "Rolês passados em {city}",
     "pastPulsesHeading": "Pulses passados em {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} respostas",
     "whatsNextHeading": "O que vem a seguir em {city}",
     "whatsNextBody": "Isto é o que rolou recentemente em {city} na Hilads. Veja {link} e participe com um toque.",
-    "whatsHappeningNowLink": "o que está rolando agora mesmo"
+    "whatsHappeningNowLink": "o que está rolando agora mesmo",
+    "pastChallengesHeading": "Desafios validados em {city}"
   },
   "timeframe": {
     "thisWeekend": "Neste fim de semana",

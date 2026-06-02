@@ -7,7 +7,7 @@
     "aboutHeading": "Cara kerja Hilads",
     "aboutBody": "Pilih kotamu. Buat tantangan untuk sisi lain, atau terima yang menarik bagimu. Temui local dan pelancong lewat apa yang benar-benar ingin kamu lakukan — makanan, tempat, budaya, bantuan. Hilads membuat setiap kota terasa hidup, saat ini juga.",
     "citiesCta": "Jelajahi semua kota di Hilads",
-    "subhead": "🔥 Sekarang didukung tantangan"
+    "subhead": "🔥 Tempat warga lokal dan penjelajah terhubung lewat tantangan."
   },
   "brand": "Hilads",
   "dateLocale": "id-ID",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "untuk para penjelajah"
   },
   "past": {
-    "title": "Nongkrong & pulses lampau di {city} | Hilads",
-    "descItems": "Melihat kembali nongkrong dan pulses terbaru di {city} di Hilads — lihat apa yang dilakukan local dan pelancong, lalu temukan apa yang berikutnya.",
+    "title": "Aktivitas lampau di {city} | Hilads",
+    "descItems": "Lihat balik nongkrong, pulses, dan tantangan tervalidasi terbaru di {city} di Hilads — lihat apa yang dilakukan warga lokal dan pelancong, lalu temukan apa yang berikutnya.",
     "descEmpty": "Nongkrong lampau di {city} di Hilads.",
     "breadcrumb": "Lampau",
-    "h1": "Nongkrong & pulses lampau di {city}",
-    "introItems": "Melihat kembali nongkrong dan pulses terbaru di {city}.",
+    "h1": "Aktivitas lampau di {city}",
+    "introItems": "Lihat balik nongkrong, pulses, dan tantangan tervalidasi terbaru di {city}.",
     "introEmpty": "Nongkrong lampau di {city}.",
     "pastHangoutsHeading": "Nongkrong lampau di {city}",
     "pastPulsesHeading": "Pulses lampau di {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} balasan",
     "whatsNextHeading": "Apa berikutnya di {city}",
     "whatsNextBody": "Ini yang baru-baru ini terjadi di {city} di Hilads. Lihat {link} dan gabung dengan satu ketuk.",
-    "whatsHappeningNowLink": "apa yang terjadi sekarang"
+    "whatsHappeningNowLink": "apa yang terjadi sekarang",
+    "pastChallengesHeading": "Tantangan tervalidasi di {city}"
   },
   "timeframe": {
     "thisWeekend": "Akhir pekan ini",

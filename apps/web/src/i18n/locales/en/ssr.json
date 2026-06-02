@@ -3,7 +3,7 @@
     "title": "Hilads — Connect with locals & explorers through challenges",
     "description": "You're a local or an explorer. Launch a challenge — food, place, culture, help — and meet people who accept. Real-time, no sign-up.",
     "h1": "Challenge the city. Anywhere.",
-    "subhead": "🔥 Now powered by challenges",
+    "subhead": "🔥 Where locals and explorers connect through challenges.",
     "intro": "Hilads connects locals and explorers in every city through challenges. Drop one for the other side — pick a type, give it a title, watch people accept. Once it's done, the creator validates. Real-time, no sign-up.",
     "aboutHeading": "How Hilads works",
     "aboutBody": "Pick your city. Launch a challenge for the other side, or accept one that speaks to you. Meet locals and travelers through what you actually want to do — food, place, culture, help. Hilads makes every city feel alive, right now.",
@@ -150,12 +150,12 @@
     "challengeForExplorers": "for explorers"
   },
   "past": {
-    "title": "Past hangouts & pulses in {city} | Hilads",
-    "descItems": "A look back at recent hangouts and pulses in {city} on Hilads — see what locals and travelers got up to, then find what's on next.",
+    "title": "Past activity in {city} | Hilads",
+    "descItems": "A look back at recent hangouts, pulses and validated challenges in {city} on Hilads — see what locals and travelers got up to, then find what's on next.",
     "descEmpty": "Past hangouts in {city} on Hilads.",
     "breadcrumb": "Past",
-    "h1": "Past hangouts & pulses in {city}",
-    "introItems": "A look back at recent hangouts and pulses in {city}.",
+    "h1": "Past activity in {city}",
+    "introItems": "A look back at recent hangouts, pulses and validated challenges in {city}.",
     "introEmpty": "Past hangouts in {city}.",
     "pastHangoutsHeading": "Past hangouts in {city}",
     "pastPulsesHeading": "Past pulses in {city}",
@@ -163,7 +163,8 @@
     "replyMany": "{count} replies",
     "whatsNextHeading": "What's next in {city}",
     "whatsNextBody": "This is what recently happened in {city} on Hilads. See {link} and join in one tap.",
-    "whatsHappeningNowLink": "what's happening right now"
+    "whatsHappeningNowLink": "what's happening right now",
+    "pastChallengesHeading": "Validated challenges in {city}"
   },
   "timeframe": {
     "thisWeekend": "This weekend",

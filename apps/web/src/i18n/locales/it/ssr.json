@@ -7,7 +7,7 @@
     "aboutHeading": "Come funziona Hilads",
     "aboutBody": "Scegli la tua città. Lancia una sfida per l'altro lato, o accetta una che ti parla. Incontra local e viaggiatori attraverso ciò che vuoi davvero fare — cibo, posto, cultura, aiuto. Hilads fa sentire viva ogni città, proprio adesso.",
     "citiesCta": "Esplora tutte le città di Hilads",
-    "subhead": "🔥 Ora con le sfide"
+    "subhead": "🔥 Locali ed esploratori si connettono attraverso le sfide."
   },
   "brand": "Hilads",
   "dateLocale": "it-IT",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "per gli esploratori"
   },
   "past": {
-    "title": "Ritrovi e pulses passati a {city} | Hilads",
-    "descItems": "Uno sguardo ai ritrovi e ai pulses recenti a {city} su Hilads — guarda cosa hanno combinato local e viaggiatori, poi scopri cosa c'è in arrivo.",
+    "title": "Attività passata a {city} | Hilads",
+    "descItems": "Uno sguardo a ritrovi, pulses e sfide validate recenti a {city} su Hilads — guarda cosa hanno fatto locali e viaggiatori, poi scopri cosa c'è dopo.",
     "descEmpty": "Ritrovi passati a {city} su Hilads.",
     "breadcrumb": "Passato",
-    "h1": "Ritrovi e pulses passati a {city}",
-    "introItems": "Uno sguardo ai ritrovi e ai pulses recenti a {city}.",
+    "h1": "Attività passata a {city}",
+    "introItems": "Uno sguardo a ritrovi, pulses e sfide validate recenti a {city}.",
     "introEmpty": "Ritrovi passati a {city}.",
     "pastHangoutsHeading": "Ritrovi passati a {city}",
     "pastPulsesHeading": "Pulses passati a {city}",
@@ -139,7 +139,8 @@
     "replyMany": "{count} risposte",
     "whatsNextHeading": "E adesso a {city}",
     "whatsNextBody": "Questo è ciò che è successo di recente a {city} su Hilads. Guarda {link} e unisciti con un tocco.",
-    "whatsHappeningNowLink": "cosa sta succedendo proprio ora"
+    "whatsHappeningNowLink": "cosa sta succedendo proprio ora",
+    "pastChallengesHeading": "Sfide validate a {city}"
   },
   "timeframe": {
     "thisWeekend": "Questo weekend",

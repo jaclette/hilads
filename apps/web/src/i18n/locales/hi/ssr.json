@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads कैसे काम करता है",
     "aboutBody": "अपना शहर चुनो। दूसरी तरफ़ के लिए एक चैलेंज लॉन्च करो, या ऐसा एक स्वीकार करो जो तुम्हें पसंद आए। जो तुम सच में करना चाहते हो उसके ज़रिए लोकल और ट्रैवलर्स से मिलो — फ़ूड, जगह, कल्चर, मदद। Hilads हर शहर को अभी इसी पल ज़िंदा महसूस कराता है।",
     "citiesCta": "Hilads के सभी शहर देखो",
-    "subhead": "🔥 अब चैलेंजेस के साथ"
+    "subhead": "🔥 जहाँ स्थानीय और एक्सप्लोरर्स चुनौतियों के ज़रिए जुड़ते हैं।"
   },
   "brand": "Hilads",
   "dateLocale": "hi-IN",
@@ -126,12 +126,12 @@
     "challengeForExplorers": "एक्सप्लोरर्स के लिए"
   },
   "past": {
-    "title": "{city} में पुरानी मुलाक़ात और pulses | Hilads",
-    "descItems": "Hilads पर {city} में हाल की मुलाक़ात और pulses पर एक नज़र — देखें लोकल और ट्रैवलर ने क्या किया, फिर जानें आगे क्या है।",
+    "title": "{city} में पुरानी गतिविधि | Hilads",
+    "descItems": "{city} में Hilads पर हाल की मुलाक़ात, pulses और मान्यता प्राप्त चुनौतियों को देखो — स्थानीयों और यात्रियों ने क्या किया देखो, फिर देखो आगे क्या है।",
     "descEmpty": "Hilads पर {city} में पुरानी मुलाक़ात।",
     "breadcrumb": "पुराना",
-    "h1": "{city} में पुरानी मुलाक़ात और pulses",
-    "introItems": "{city} में हाल की मुलाक़ात और pulses पर एक नज़र।",
+    "h1": "{city} में पुरानी गतिविधि",
+    "introItems": "{city} में हाल की मुलाक़ात, pulses और मान्यता प्राप्त चुनौतियों की झलक।",
     "introEmpty": "{city} में पुरानी मुलाक़ात।",
     "pastHangoutsHeading": "{city} में पुरानी मुलाक़ात",
     "pastPulsesHeading": "{city} में पुराने pulses",
@@ -139,7 +139,8 @@
     "replyMany": "{count} जवाब",
     "whatsNextHeading": "{city} में आगे क्या है",
     "whatsNextBody": "यह हाल ही में Hilads पर {city} में जो हुआ वह है। {link} देखें और एक टैप में शामिल हों।",
-    "whatsHappeningNowLink": "अभी क्या हो रहा है"
+    "whatsHappeningNowLink": "अभी क्या हो रहा है",
+    "pastChallengesHeading": "{city} में मान्यता प्राप्त चुनौतियाँ"
   },
   "timeframe": {
     "thisWeekend": "इस वीकेंड",
