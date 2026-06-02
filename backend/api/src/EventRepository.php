@@ -788,7 +788,8 @@ class EventRepository
                 location   = :location,
                 event_type = :type,
                 starts_at  = to_timestamp(:starts_at),
-                expires_at = to_timestamp(:expires_at)
+                expires_at = to_timestamp(:expires_at),
+                updated_at = now()
             WHERE channel_id = :id
         ")->execute([
             'title'      => $title,

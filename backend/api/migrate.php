@@ -634,6 +634,12 @@ run($pdo,
 // Denormalized created_at: mirrors channels.created_at so we can drop the channels JOIN
 // from city-channel event queries entirely (previously needed c.created_at in SELECT)
 run($pdo, "ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'channel_events.created_at');
+// Edit-signal for /sitemap/events <lastmod>. Bumped on every user edit in
+// EventRepository::update(); DEFAULT now() on ALTER means pre-migration rows
+// take the migration timestamp (one re-crawl wave, then quiet). TM-imported
+// events keep INSERT-time updated_at — re-sync UPSERTs deliberately don't
+// bump it because most syncs are no-ops (same data, false re-crawl signal).
+run($pdo, "ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'channel_events.updated_at');
 // Backfill from channels.created_at — idempotent (re-run just sets the same value)
 run($pdo,
     "UPDATE channel_events ce SET created_at = c.created_at FROM channels c WHERE c.id = ce.channel_id",

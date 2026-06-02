@@ -2286,13 +2286,17 @@ $router->add('GET', '/api/v1/sitemap/venues', function () {
 // Index-backed by idx_channel_events_expires. LIMIT keeps us inside one
 // 50k-URL sitemap file; realistic active-event counts are far below it.
 $router->add('GET', '/api/v1/sitemap/events', function () {
+    // updated_at is bumped on every Hilads-event edit (EventRepository::update)
+    // so this is a real change-signal for Google. TM-imported events keep
+    // updated_at = created_at because re-syncs are no-ops most of the time
+    // and we don't want false re-crawl signals every cron tick.
     $stmt = Database::pdo()->query("
         SELECT id, title, updated_at FROM (
             SELECT DISTINCT ON (COALESCE(ce.series_id, ce.channel_id))
                    ce.channel_id                              AS id,
                    ce.title                                   AS title,
                    ce.starts_at                               AS starts_at,
-                   EXTRACT(EPOCH FROM ce.created_at)::INTEGER AS updated_at
+                   EXTRACT(EPOCH FROM ce.updated_at)::INTEGER AS updated_at
               FROM channel_events ce
               LEFT JOIN event_series es ON es.id = ce.series_id
              WHERE ce.expires_at > now()
