@@ -388,9 +388,9 @@ export default function ChallengeChatScreen() {
           </TouchableOpacity>
 
           <View style={styles.quickActions}>
-            {/* Share gets a label — the verb ("Challenge your friends ✨" /
-                "Lance-le à tes potes ✨") is the social hook and needs to
-                read at a glance. Accept stays icon-only round next to it. */}
+            {/* Share gets the only inline action — the verb ("Challenge
+                your friends ✨" / "Lance-le à tes potes ✨") is the social
+                hook. Accept moved to the participants row below. */}
             <TouchableOpacity
               style={styles.sharePill}
               onPress={handleShare}
@@ -400,41 +400,54 @@ export default function ChallengeChatScreen() {
               <Ionicons name="share-social-outline" size={16} color="#FF7A3C" />
               <Text style={styles.sharePillText} numberOfLines={1}>{t('shareCta')}</Text>
             </TouchableOpacity>
-            {!isOwner && !isValidated && (
-              <TouchableOpacity
-                style={[styles.quickBtn, isParticipant && styles.quickBtnAcceptIn]}
-                onPress={handleAccept}
-                activeOpacity={0.7}
-                disabled={acceptBusy}
-                accessibilityLabel={isParticipant ? t('acceptedCta') : t('acceptCta')}
-              >
-                {acceptBusy
-                  ? <ActivityIndicator color={isParticipant ? Colors.white : '#FF7A3C'} size="small" />
-                  : <Ionicons
-                      name={isParticipant ? 'checkmark' : 'add'}
-                      size={20}
-                      color={isParticipant ? Colors.white : '#FF7A3C'}
-                    />}
-              </TouchableOpacity>
-            )}
           </View>
         </View>
       )}
 
-      {/* Other participants — only render the strip when somebody has
-          actually accepted (besides the creator). Tapping opens the full
-          members sheet. */}
-      {otherParticipants.length > 0 && (
-        <TouchableOpacity style={styles.membersStrip} activeOpacity={0.75} onPress={() => setMembersOpen(true)}>
-          <AttendeeAvatars
-            preview={otherParticipants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
-            total={otherParticipants.length}
-            borderColor={Colors.bg}
-          />
-          <Text style={styles.membersLabel}>
-            {t('participantsLabel')} · {otherParticipants.length}
-          </Text>
-        </TouchableOpacity>
+      {/* Participants row — always rendered for visitors who can accept (so
+          the + Accept button has a home). For the owner only when somebody
+          else has accepted. The whole left side (avatars + label or empty
+          copy) is tappable to open the members sheet. */}
+      {(otherParticipants.length > 0 || (!isOwner && !isValidated)) && (
+        <View style={styles.participantsRow}>
+          <TouchableOpacity
+            style={styles.participantsInfo}
+            activeOpacity={otherParticipants.length > 0 ? 0.75 : 1}
+            onPress={() => { if (otherParticipants.length > 0) setMembersOpen(true); }}
+          >
+            {otherParticipants.length > 0 ? (
+              <>
+                <AttendeeAvatars
+                  preview={otherParticipants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
+                  total={otherParticipants.length}
+                  borderColor={Colors.bg}
+                />
+                <Text style={styles.membersLabel}>
+                  {t('participantsLabel')} · {otherParticipants.length}
+                </Text>
+              </>
+            ) : (
+              <Text style={styles.participantsEmpty}>{t('beFirstToAccept')}</Text>
+            )}
+          </TouchableOpacity>
+          {!isOwner && !isValidated && (
+            <TouchableOpacity
+              style={[styles.quickBtn, isParticipant && styles.quickBtnAcceptIn]}
+              onPress={handleAccept}
+              activeOpacity={0.7}
+              disabled={acceptBusy}
+              accessibilityLabel={isParticipant ? t('acceptedCta') : t('acceptCta')}
+            >
+              {acceptBusy
+                ? <ActivityIndicator color={isParticipant ? Colors.white : '#FF7A3C'} size="small" />
+                : <Ionicons
+                    name={isParticipant ? 'checkmark' : 'add'}
+                    size={20}
+                    color={isParticipant ? Colors.white : '#FF7A3C'}
+                  />}
+            </TouchableOpacity>
+          )}
+        </View>
       )}
 
       {/* Share + Accept moved into the challenger row above. */}
@@ -699,13 +712,19 @@ const styles = StyleSheet.create({
     borderColor:     '#FF7A3C',
   },
 
-  // Members (other participants, not the creator)
-  membersStrip: {
+  // Participants row — always shown for non-owners so the Accept button
+  // has a permanent home; for owners only when somebody else accepted.
+  participantsRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
     borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
+  participantsInfo: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+    minWidth: 0,
+  },
   membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
+  participantsEmpty: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
 
   // Chat
   listContent:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },

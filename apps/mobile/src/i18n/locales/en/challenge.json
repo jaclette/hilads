@@ -70,5 +70,6 @@
       "Where to fix a phone screen"
     ]
   },
-  "validateLong": "Validate the challenge"
+  "validateLong": "Validate the challenge",
+  "beFirstToAccept": "Be the first to accept"
 }

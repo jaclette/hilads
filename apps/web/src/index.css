@@ -10968,6 +10968,29 @@ body.has-app-promo-banner .page-header {
   transition: background 0.12s ease, transform 0.1s ease, color 0.12s ease;
 }
 
+/* Participants row — always present for visitors so the + Accept button
+   has a home. Avatars + count on the left when there are acceptors,
+   "Be the first to accept" copy when empty. */
+.challenge-participants-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.challenge-participants-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.challenge-participants-empty {
+  font-size: 13px;
+  color: var(--muted2);
+  font-weight: 500;
+}
+
 /* Share is the only quick action that gets a label, because the verb
    ("Challenge your friends ✨" / "Lance-le à tes potes ✨" / …) is the
    social hook of the screen and needs to read at a glance. Accept stays

@@ -358,36 +358,47 @@ export default function ChallengeChatPage({
               <span aria-hidden="true">↗</span>
               <span className="challenge-share-pill-text">{t('shareCta')}</span>
             </button>
-            {!isValidated && !isOwner && (
-              <button
-                type="button"
-                className={`challenge-quick-btn challenge-quick-btn--accept${isParticipant ? ' challenge-quick-btn--accept-in' : ''}`}
-                onClick={handleAccept}
-                disabled={busy === 'accept'}
-                title={isParticipant ? t('acceptedCta') : t('acceptCta')}
-                aria-label={isParticipant ? t('acceptedCta') : t('acceptCta')}
-              >
-                <span aria-hidden="true">{busy === 'accept' ? '…' : (isParticipant ? '✓' : '+')}</span>
-              </button>
-            )}
           </div>
         </div>
       )}
 
-      {/* Other participants — only render the strip when there's at least
-          one acceptor besides the creator. */}
-      {otherParticipants.length > 0 && (
-        <div className="topic-members-strip challenge-participants-strip" style={{ pointerEvents: 'none' }}>
-          <AttendeeAvatars
-            preview={otherParticipants.slice(0, 5).map(p => ({
-              id: p.id, displayName: p.displayName,
-              thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl,
-            }))}
-            total={otherParticipants.length}
-          />
-          <span className="topic-members-label">
-            {t('participantsLabel')} · {otherParticipants.length}
-          </span>
+      {/* Participants row — always rendered for visitors who can accept (so
+          there's a place for the + button). For the owner it only appears
+          when somebody else has accepted, since they can't accept their own
+          challenge. For validated challenges, the row is shown if anyone
+          accepted (acceptor history), without the button. */}
+      {(otherParticipants.length > 0 || (!isOwner && !isValidated)) && (
+        <div className="challenge-participants-row">
+          <div className="challenge-participants-info">
+            {otherParticipants.length > 0 ? (
+              <>
+                <AttendeeAvatars
+                  preview={otherParticipants.slice(0, 5).map(p => ({
+                    id: p.id, displayName: p.displayName,
+                    thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl,
+                  }))}
+                  total={otherParticipants.length}
+                />
+                <span className="topic-members-label">
+                  {t('participantsLabel')} · {otherParticipants.length}
+                </span>
+              </>
+            ) : (
+              <span className="challenge-participants-empty">{t('beFirstToAccept')}</span>
+            )}
+          </div>
+          {!isValidated && !isOwner && (
+            <button
+              type="button"
+              className={`challenge-quick-btn challenge-quick-btn--accept${isParticipant ? ' challenge-quick-btn--accept-in' : ''}`}
+              onClick={handleAccept}
+              disabled={busy === 'accept'}
+              title={isParticipant ? t('acceptedCta') : t('acceptCta')}
+              aria-label={isParticipant ? t('acceptedCta') : t('acceptCta')}
+            >
+              <span aria-hidden="true">{busy === 'accept' ? '…' : (isParticipant ? '✓' : '+')}</span>
+            </button>
+          )}
         </div>
       )}
 
