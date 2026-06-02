@@ -25,7 +25,7 @@
     "titleCity": "{city}的{title} — 结识本地人和旅行者 | Hilads",
     "titlePast": "{title} — 往期活动 | Hilads",
     "titlePastCity": "{city}的{title} — 往期活动 | Hilads",
-    "descUpcoming": "加入{city}的{title}{time} — 结识本地人和旅行者，看看附近正在发生什么。在 Hilads 上无需注册。",
+    "descUpcoming": "加入 {city}{time} 的 {title} — 结识本地人和旅行者，接受本地挑战，看看附近发生什么。Hilads 上无需注册。",
     "descPast": "{title}在{city}{when}。{attended} 在 Hilads 上看看现在正在发生什么，结识本地人和旅行者。",
     "atFrag": "，地点在 {location}",
     "happenedOnFrag": "，发生于 {date}",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — 结识本地人和旅行者 | Hilads",
     "titleCity": "{city}的{name} — 结识本地人和旅行者 | Hilads",
-    "desc": "{name}{where} — 结识本地人和旅行者，在 Hilads 上看看附近正在发生什么。实时，无需注册。",
+    "desc": "{name}{where} — 结识本地人和旅行者，接受本地挑战，看看附近发生什么。Hilads 上实时，无需注册。",
     "atFrag": "，地址 {address}",
     "labelAddress": "地址：",
     "labelHours": "营业时间：",

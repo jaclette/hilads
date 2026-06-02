@@ -25,7 +25,7 @@
     "titleCity": "{title} sa {city} — makilala ang mga local at biyahero | Hilads",
     "titlePast": "{title} — nakaraang event | Hilads",
     "titlePastCity": "{title} sa {city} — nakaraang event | Hilads",
-    "descUpcoming": "Sumali sa {title} sa {city}{time} — makilala ang mga local at biyahero at tingnan kung ano ang nangyayari sa paligid. Walang sign-up sa Hilads.",
+    "descUpcoming": "Sumali sa {title} sa {city}{time} — makilala ang mga lokal at biyahero, tanggapin ang lokal na challenge, tingnan kung ano ang nasa paligid. Walang signup sa Hilads.",
     "descPast": "{title} sa {city}{when}.{attended} Tingnan kung ano ang nangyayari ngayon at makilala ang mga local at biyahero sa Hilads.",
     "atFrag": " sa {location}",
     "happenedOnFrag": " naganap noong {date}",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — makilala ang mga local at biyahero | Hilads",
     "titleCity": "{name} sa {city} — makilala ang mga local at biyahero | Hilads",
-    "desc": "{name}{where} — makilala ang mga local at biyahero at tingnan kung ano ang nangyayari sa paligid sa Hilads. Real-time, walang sign-up.",
+    "desc": "{name}{where} — makilala ang mga lokal at biyahero, tanggapin ang lokal na challenge, tingnan kung ano ang nasa paligid sa Hilads. Real-time, walang signup.",
     "atFrag": " sa {address}",
     "labelAddress": "Address:",
     "labelHours": "Oras:",

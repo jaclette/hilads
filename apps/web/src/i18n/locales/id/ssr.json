@@ -25,7 +25,7 @@
     "titleCity": "{title} di {city} — temui local dan pelancong | Hilads",
     "titlePast": "{title} — acara lampau | Hilads",
     "titlePastCity": "{title} di {city} — acara lampau | Hilads",
-    "descUpcoming": "Gabung ke {title} di {city}{time} — temui local dan pelancong dan lihat apa yang terjadi di sekitar. Tanpa daftar di Hilads.",
+    "descUpcoming": "Ikut {title} di {city}{time} — temui warga lokal dan pelancong, terima tantangan lokal, lihat apa yang ada di sekitar. Tanpa daftar di Hilads.",
     "descPast": "{title} di {city}{when}.{attended} Lihat apa yang terjadi sekarang dan temui local dan pelancong di Hilads.",
     "atFrag": " di {location}",
     "happenedOnFrag": " berlangsung pada {date}",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — temui local dan pelancong | Hilads",
     "titleCity": "{name} di {city} — temui local dan pelancong | Hilads",
-    "desc": "{name}{where} — temui local dan pelancong dan lihat apa yang terjadi di sekitar di Hilads. Real-time, tanpa daftar.",
+    "desc": "{name}{where} — temui warga lokal dan pelancong, terima tantangan lokal, lihat apa yang ada di sekitar di Hilads. Real-time, tanpa daftar.",
     "atFrag": " di {address}",
     "labelAddress": "Alamat:",
     "labelHours": "Jam buka:",

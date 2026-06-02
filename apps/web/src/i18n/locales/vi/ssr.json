@@ -26,7 +26,7 @@
     "titleCity": "{title} ở {city} — gặp gỡ người địa phương và du khách | Hilads",
     "titlePast": "{title} — sự kiện đã qua | Hilads",
     "titlePastCity": "{title} ở {city} — sự kiện đã qua | Hilads",
-    "descUpcoming": "Tham gia {title} ở {city}{time} — gặp gỡ người địa phương và du khách và xem có gì đang diễn ra gần đây. Không cần đăng ký trên Hilads.",
+    "descUpcoming": "Tham gia {title} tại {city}{time} — gặp người địa phương và du khách, nhận một thử thách địa phương, xem có gì gần đó. Không cần đăng ký trên Hilads.",
     "descPast": "{title} ở {city}{when}.{attended} Xem có gì đang diễn ra ngay bây giờ và gặp gỡ người địa phương và du khách trên Hilads.",
     "atFrag": " tại {location}",
     "happenedOnFrag": " đã diễn ra vào {date}",
@@ -49,7 +49,7 @@
   "venue": {
     "title": "{name} — gặp gỡ người địa phương và du khách | Hilads",
     "titleCity": "{name} ở {city} — gặp gỡ người địa phương và du khách | Hilads",
-    "desc": "{name}{where} — gặp gỡ người địa phương và du khách và xem có gì đang diễn ra gần đây trên Hilads. Real-time, không cần đăng ký.",
+    "desc": "{name}{where} — gặp người địa phương và du khách, nhận một thử thách địa phương, xem có gì gần đó trên Hilads. Thời gian thực, không cần đăng ký.",
     "atFrag": " tại {address}",
     "labelAddress": "Địa chỉ:",
     "labelHours": "Giờ mở cửa:",

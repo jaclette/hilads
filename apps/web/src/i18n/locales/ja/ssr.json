@@ -25,7 +25,7 @@
     "titleCity": "{city}の{title} — ローカルと旅行者に出会う | Hilads",
     "titlePast": "{title} — 過去のイベント | Hilads",
     "titlePastCity": "{city}の{title} — 過去のイベント | Hilads",
-    "descUpcoming": "{city}の{title}{time}に参加 — ローカルと旅行者に出会い、近くで何が起きているかを見よう。Hiladsは登録不要。",
+    "descUpcoming": "{city}{time}の{title}に参加 — ローカルや旅行者と出会い、ローカル挑戦を受け、近くで何が起きてるか見よう。Hilads は登録不要。",
     "descPast": "{title}（{city}）{when}。{attended} Hiladsで今何が起きているかを見て、ローカルと旅行者に出会おう。",
     "atFrag": " {location}にて",
     "happenedOnFrag": " {date}に開催",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — ローカルと旅行者に出会う | Hilads",
     "titleCity": "{city}の{name} — ローカルと旅行者に出会う | Hilads",
-    "desc": "{name}{where} — ローカルと旅行者に出会い、近くで何が起きているかをHiladsで見よう。リアルタイム、登録不要。",
+    "desc": "{name}{where} — ローカルや旅行者と出会い、ローカル挑戦を受け、近くで何が起きてるか見よう。Hilads はリアルタイム、登録不要。",
     "atFrag": " {address}にて",
     "labelAddress": "住所：",
     "labelHours": "営業時間：",

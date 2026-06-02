@@ -25,7 +25,7 @@
     "titleCity": "{city}의 {title} — 로컬과 여행자를 만나보세요 | Hilads",
     "titlePast": "{title} — 지난 이벤트 | Hilads",
     "titlePastCity": "{city}의 {title} — 지난 이벤트 | Hilads",
-    "descUpcoming": "{city}의 {title}{time}에 참여하세요 — 로컬과 여행자를 만나고 근처에서 무슨 일이 일어나는지 보세요. Hilads는 가입이 필요 없어요.",
+    "descUpcoming": "{city}{time}의 {title}에 참여 — 로컬과 여행자를 만나고, 로컬 도전을 받고, 주변에 무엇이 있는지 보세요. Hilads는 가입 없이.",
     "descPast": "{title}, {city}{when}.{attended} Hilads에서 지금 무슨 일이 일어나는지 보고 로컬과 여행자를 만나보세요.",
     "atFrag": " 장소: {location}",
     "happenedOnFrag": " {date}에 열렸어요",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — 로컬과 여행자를 만나보세요 | Hilads",
     "titleCity": "{city}의 {name} — 로컬과 여행자를 만나보세요 | Hilads",
-    "desc": "{name}{where} — 로컬과 여행자를 만나고 근처에서 무슨 일이 일어나는지 Hilads에서 확인하세요. 실시간, 가입 필요 없음.",
+    "desc": "{name}{where} — 로컬과 여행자를 만나고, 로컬 도전을 받고, 주변에 무엇이 있는지 보세요. Hilads는 실시간, 가입 없이.",
     "atFrag": " 주소: {address}",
     "labelAddress": "주소:",
     "labelHours": "영업시간:",

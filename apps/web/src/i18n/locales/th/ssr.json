@@ -25,7 +25,7 @@
     "titleCity": "{title} ใน {city} — เจอคนท้องถิ่นและนักเดินทาง | Hilads",
     "titlePast": "{title} — กิจกรรมที่ผ่านมา | Hilads",
     "titlePastCity": "{title} ใน {city} — กิจกรรมที่ผ่านมา | Hilads",
-    "descUpcoming": "เข้าร่วม {title} ใน {city}{time} — เจอคนท้องถิ่นและนักเดินทาง และดูว่ามีอะไรเกิดขึ้นใกล้ ๆ ไม่ต้องสมัครบน Hilads",
+    "descUpcoming": "เข้าร่วม {title} ใน {city}{time} — พบคนท้องถิ่นและนักเดินทาง รับชาเลนจ์ท้องถิ่น ดูว่ามีอะไรใกล้ๆ ไม่ต้องสมัครบน Hilads",
     "descPast": "{title} ใน {city}{when}.{attended} ดูว่ามีอะไรเกิดขึ้นตอนนี้และเจอคนท้องถิ่นและนักเดินทางบน Hilads",
     "atFrag": " ที่ {location}",
     "happenedOnFrag": " เกิดขึ้นเมื่อ {date}",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — เจอคนท้องถิ่นและนักเดินทาง | Hilads",
     "titleCity": "{name} ใน {city} — เจอคนท้องถิ่นและนักเดินทาง | Hilads",
-    "desc": "{name}{where} — เจอคนท้องถิ่นและนักเดินทาง และดูว่ามีอะไรเกิดขึ้นใกล้ ๆ บน Hilads เรียลไทม์ ไม่ต้องสมัคร",
+    "desc": "{name}{where} — พบคนท้องถิ่นและนักเดินทาง รับชาเลนจ์ท้องถิ่น ดูว่ามีอะไรใกล้ๆ บน Hilads เรียลไทม์ ไม่ต้องสมัคร",
     "atFrag": " ที่ {address}",
     "labelAddress": "ที่อยู่:",
     "labelHours": "เวลาทำการ:",

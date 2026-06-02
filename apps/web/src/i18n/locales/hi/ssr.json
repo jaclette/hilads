@@ -25,7 +25,7 @@
     "titleCity": "{city} में {title} — लोकल और ट्रैवलर से मिलो | Hilads",
     "titlePast": "{title} — पुराना इवेंट | Hilads",
     "titlePastCity": "{city} में {title} — पुराना इवेंट | Hilads",
-    "descUpcoming": "{city} में {title}{time} में शामिल हो — लोकल और ट्रैवलर से मिलो और देखो आसपास क्या हो रहा है। Hilads पर कोई साइन-अप नहीं।",
+    "descUpcoming": "{city}{time} में {title} में शामिल हो — स्थानीयों और यात्रियों से मिलो, स्थानीय चुनौती लो, देखो आसपास क्या है। Hilads पर बिना साइनअप।",
     "descPast": "{city} में {title}{when}.{attended} देखो अभी क्या हो रहा है और Hilads पर लोकल और ट्रैवलर से मिलो।",
     "atFrag": " {location} पर",
     "happenedOnFrag": " {date} को हुआ था",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — लोकल और ट्रैवलर से मिलो | Hilads",
     "titleCity": "{city} में {name} — लोकल और ट्रैवलर से मिलो | Hilads",
-    "desc": "{name}{where} — लोकल और ट्रैवलर से मिलो और देखो आसपास क्या हो रहा है, Hilads पर। रियल-टाइम, बिना साइन-अप।",
+    "desc": "{name}{where} — स्थानीयों और यात्रियों से मिलो, स्थानीय चुनौती लो, देखो आसपास क्या है Hilads पर। रियल-टाइम, बिना साइनअप।",
     "atFrag": " {address} पर",
     "labelAddress": "पता:",
     "labelHours": "समय:",

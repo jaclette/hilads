@@ -25,7 +25,7 @@
     "titleCity": "{title} a {city} — conosci local e viaggiatori | Hilads",
     "titlePast": "{title} — evento passato | Hilads",
     "titlePastCity": "{title} a {city} — evento passato | Hilads",
-    "descUpcoming": "Partecipa a {title} a {city}{time} — conosci local e viaggiatori e guarda cosa succede lì vicino. Senza registrazione su Hilads.",
+    "descUpcoming": "Unisciti a {title} a {city}{time} — incontra locali e viaggiatori, accetta una sfida locale, guarda cosa c'è vicino. Senza registrazione su Hilads.",
     "descPast": "{title} a {city}{when}.{attended} Guarda cosa succede ora e conosci local e viaggiatori su Hilads.",
     "atFrag": " a {location}",
     "happenedOnFrag": " si è svolto il {date}",
@@ -48,7 +48,7 @@
   "venue": {
     "title": "{name} — conosci local e viaggiatori | Hilads",
     "titleCity": "{name} a {city} — conosci local e viaggiatori | Hilads",
-    "desc": "{name}{where} — conosci local e viaggiatori e guarda cosa sta succedendo nei dintorni su Hilads. In tempo reale, senza registrazione.",
+    "desc": "{name}{where} — incontra locali e viaggiatori, accetta una sfida locale, guarda cosa c'è vicino su Hilads. In tempo reale, senza registrazione.",
     "atFrag": " a {address}",
     "labelAddress": "Indirizzo:",
     "labelHours": "Orari:",
