@@ -6495,7 +6495,14 @@ img.pub-profile-avatar {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   flex-shrink: 0;
   background: var(--surface);
+  /* Horizontal scroll when the row of pills overflows. Scrollbar is hidden
+     so the row looks clean — the user discovers the scroll on drag/swipe. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;              /* Firefox */
+  -webkit-overflow-scrolling: touch;  /* iOS momentum */
 }
+.now-filter-bar::-webkit-scrollbar { display: none; }  /* WebKit / Blink */
 
 .now-filter-pill {
   padding: 6px 14px;
@@ -6507,6 +6514,7 @@ img.pub-profile-avatar {
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;                     /* keep pill widths intact in the scroller */
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s, color 0.12s, border-color 0.12s;
 }

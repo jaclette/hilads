@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet,
+  View, Text, FlatList, StyleSheet, ScrollView,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -588,8 +588,15 @@ export default function NowScreen() {
       </View>
 
       {/* Filter pills — order: All → Challenges (new primary) → Hangouts → Events.
-          Spec: "Défi filter chip placed before Sortie and Événements". */}
-      <View style={styles.filterBar}>
+          Spec: "Défi filter chip placed before Sortie and Événements".
+          Horizontally scrollable so longer locale labels (e.g. "Mga Challenge")
+          or future filters never clip on narrow screens. */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filterBar}
+        contentContainerStyle={styles.filterBarContent}
+      >
         {(['all', 'challenges', 'topics', 'events'] as const).map(f => (
           <TouchableOpacity
             key={f}
@@ -605,7 +612,7 @@ export default function NowScreen() {
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       {loading && !refreshing ? (
         <View style={styles.center}>
@@ -803,13 +810,21 @@ const styles = StyleSheet.create({
   headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
 
   // ── Filter bar ─────────────────────────────────────────────────────────────
+  // ScrollView style. flexGrow:0 is critical — without it the ScrollView
+  // expands to fill the column and pushes the FlatList off-screen.
   filterBar: {
+    flexGrow:          0,
+    flexShrink:        0,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  // Inner row — what was previously the filterBar's layout.
+  filterBarContent: {
     flexDirection:     'row',
+    alignItems:        'center',
     gap:               8,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
   },
   filterPill: {
     paddingHorizontal: 14,
