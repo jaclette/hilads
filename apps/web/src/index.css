@@ -10942,6 +10942,50 @@ body.has-app-promo-banner .page-header {
   color: #FF7A3C;
   text-transform: uppercase;
 }
+/* Creator info takes the available space; quick-action buttons sit on
+   the right with their own margin-left:auto group. */
+.challenge-creator-row > .challenge-creator-info { flex: 1 1 auto; }
+.challenge-creator-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.challenge-quick-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  background: rgba(255, 122, 60, 0.10);
+  border: 1px solid rgba(255, 122, 60, 0.30);
+  color: #FF7A3C;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, transform 0.1s ease, color 0.12s ease;
+}
+.challenge-quick-btn:hover  { background: rgba(255, 122, 60, 0.18); }
+.challenge-quick-btn:active { transform: scale(0.96); }
+.challenge-quick-btn:disabled { opacity: 0.6; cursor: default; }
+/* Accept button when already in — invert to filled brand so the
+   "you're in" state reads as confirmed. */
+.challenge-quick-btn--accept-in {
+  background: #FF7A3C;
+  border-color: #FF7A3C;
+  color: #fff;
+}
+.challenge-quick-btn--accept-in:hover { background: #ff8753; }
+
+/* Toast moves below the participants strip when only the inline quick
+   buttons are visible above (no more standalone share row). */
+.challenge-share-toast--inline {
+  align-self: center;
+  margin: 4px 16px 0;
+}
 
 /* Other participants — same as topic-members-strip but a different label
    semantic (acceptors, not the creator). No visual override needed but the

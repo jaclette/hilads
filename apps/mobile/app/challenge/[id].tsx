@@ -353,52 +353,68 @@ export default function ChallengeChatScreen() {
           </>
         )}
 
-        {/* Non-owner accept CTA — also hidden when the challenge is validated. */}
-        {!isOwner && !isValidated && (
-          <TouchableOpacity
-            style={[styles.acceptBtn, isParticipant && styles.acceptBtnSecondary]}
-            onPress={handleAccept}
-            activeOpacity={0.85}
-            disabled={acceptBusy}
-          >
-            {acceptBusy
-              ? <ActivityIndicator color={Colors.white} size="small" />
-              : <Text style={styles.acceptBtnText}>
-                  {isParticipant ? t('acceptedCta') : t('acceptCta')}
-                </Text>}
-          </TouchableOpacity>
-        )}
       </View>
 
-      {/* Challenger — the originating user, called out separately so the
-          person who launched the défi is recognisable at a glance (👑 pill).
-          Tapping opens the creator's profile, same as on a member tile. */}
+      {/* Challenger — the originating user. Tap opens their profile.
+          Quick actions (Share, Accept) sit on the right of the row so
+          they read as the viewer's "what now" panel instead of two
+          stacked competing pills below. */}
       {creator && (
-        <TouchableOpacity
-          style={styles.challengerRow}
-          activeOpacity={0.75}
-          onPress={() => router.push({ pathname: '/user/[id]', params: { id: creator.id } })}
-        >
-          <View style={[styles.challengerAvatar, { backgroundColor: avatarColor(creator.id) }]}>
-            {creator.thumbAvatarUrl || creator.avatarUrl ? (
-              <Image
-                source={{ uri: creator.thumbAvatarUrl ?? creator.avatarUrl ?? undefined }}
-                style={StyleSheet.absoluteFill}
-                cachePolicy="memory-disk"
-                contentFit="cover"
-                transition={120}
-              />
-            ) : (
-              <Text style={styles.challengerAvatarLetter}>
-                {(creator.displayName?.[0] ?? '?').toUpperCase()}
-              </Text>
+        <View style={styles.challengerRow}>
+          <TouchableOpacity
+            style={styles.challengerLeft}
+            activeOpacity={0.75}
+            onPress={() => router.push({ pathname: '/user/[id]', params: { id: creator.id } })}
+          >
+            <View style={[styles.challengerAvatar, { backgroundColor: avatarColor(creator.id) }]}>
+              {creator.thumbAvatarUrl || creator.avatarUrl ? (
+                <Image
+                  source={{ uri: creator.thumbAvatarUrl ?? creator.avatarUrl ?? undefined }}
+                  style={StyleSheet.absoluteFill}
+                  cachePolicy="memory-disk"
+                  contentFit="cover"
+                  transition={120}
+                />
+              ) : (
+                <Text style={styles.challengerAvatarLetter}>
+                  {(creator.displayName?.[0] ?? '?').toUpperCase()}
+                </Text>
+              )}
+            </View>
+            <View style={styles.challengerInfo}>
+              <Text style={styles.challengerName} numberOfLines={1}>{creator.displayName}</Text>
+              <Text style={styles.challengerTag}>👑 {t('challengerTag')}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <View style={styles.quickActions}>
+            <TouchableOpacity
+              style={styles.quickBtn}
+              onPress={handleShare}
+              activeOpacity={0.7}
+              accessibilityLabel={t('shareCta')}
+            >
+              <Ionicons name="share-social-outline" size={18} color="#FF7A3C" />
+            </TouchableOpacity>
+            {!isOwner && !isValidated && (
+              <TouchableOpacity
+                style={[styles.quickBtn, isParticipant && styles.quickBtnAcceptIn]}
+                onPress={handleAccept}
+                activeOpacity={0.7}
+                disabled={acceptBusy}
+                accessibilityLabel={isParticipant ? t('acceptedCta') : t('acceptCta')}
+              >
+                {acceptBusy
+                  ? <ActivityIndicator color={isParticipant ? Colors.white : '#FF7A3C'} size="small" />
+                  : <Ionicons
+                      name={isParticipant ? 'checkmark' : 'add'}
+                      size={20}
+                      color={isParticipant ? Colors.white : '#FF7A3C'}
+                    />}
+              </TouchableOpacity>
             )}
           </View>
-          <View style={styles.challengerInfo}>
-            <Text style={styles.challengerName} numberOfLines={1}>{creator.displayName}</Text>
-            <Text style={styles.challengerTag}>👑 {t('challengerTag')}</Text>
-          </View>
-        </TouchableOpacity>
+        </View>
       )}
 
       {/* Other participants — only render the strip when somebody has
@@ -417,14 +433,7 @@ export default function ChallengeChatScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Share — full-width pill, brand orange. Always rendered so users can
-          rally friends regardless of status (open or validated). Sits as its
-          own row above the chat so it reads as a primary social action, not
-          a secondary header icon (the small-header-action rule from CLAUDE.md). */}
-      <TouchableOpacity style={styles.shareRow} activeOpacity={0.85} onPress={handleShare}>
-        <Ionicons name="share-social-outline" size={18} color="#FF7A3C" />
-        <Text style={styles.shareText}>{t('shareCta')}</Text>
-      </TouchableOpacity>
+      {/* Share + Accept moved into the challenger row above. */}
 
       {/* Message error banner */}
       {msgError && (
@@ -629,20 +638,6 @@ const styles = StyleSheet.create({
   },
   ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
 
-  acceptBtn: {
-    marginTop: Spacing.xs,
-    backgroundColor: '#FF7A3C',
-    borderRadius:    Radius.full,
-    paddingVertical: Spacing.md,
-    alignItems:      'center',
-  },
-  acceptBtnSecondary: {
-    backgroundColor: 'rgba(255,122,60,0.14)',
-    borderWidth:     1,
-    borderColor:     'rgba(255,122,60,0.30)',
-  },
-  acceptBtnText: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.white },
-
   // Challenger row — the creator, distinguished from regular participants
   // with a 👑 pill in brand orange. Bigger avatar (44px) so the originating
   // user reads as the anchor of the défi.
@@ -651,15 +646,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
     borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
+  // Left half of the row stays tappable as a profile link; right half
+  // hosts the inline quick actions.
+  challengerLeft: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           Spacing.sm,
+    flex:          1,
+  },
   challengerAvatar: {
     width: 44, height: 44, borderRadius: 22,
     alignItems: 'center', justifyContent: 'center',
     overflow: 'hidden',
   },
   challengerAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 18 },
-  challengerInfo: { flex: 1, gap: 2 },
+  challengerInfo: { flex: 1, gap: 2, minWidth: 0 },
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
   challengerTag:  { fontSize: 11, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.3 },
+
+  // Inline quick-action buttons — 36px round, brand-orange ghost.
+  // Accept-in flips to filled to confirm "you're in".
+  quickActions: { flexDirection: 'row', gap: 8 },
+  quickBtn: {
+    width:           36,
+    height:          36,
+    borderRadius:    18,
+    alignItems:      'center',
+    justifyContent:  'center',
+    backgroundColor: 'rgba(255,122,60,0.10)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,122,60,0.30)',
+  },
+  quickBtnAcceptIn: {
+    backgroundColor: '#FF7A3C',
+    borderColor:     '#FF7A3C',
+  },
 
   // Members (other participants, not the creator)
   membersStrip: {
@@ -668,25 +689,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
   membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
-
-  // Share row — full-width tinted pill, brand orange. Sized to read as a
-  // primary CTA (not a header icon), without competing with Accept which
-  // gets the solid-orange filled treatment.
-  shareRow: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'center',
-    gap:               8,
-    marginHorizontal:  Spacing.md,
-    marginTop:         Spacing.sm,
-    marginBottom:      Spacing.xs,
-    paddingVertical:   Spacing.sm + 2,
-    borderRadius:      Radius.full,
-    backgroundColor:   'rgba(255,122,60,0.10)',
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.30)',
-  },
-  shareText: { fontSize: FontSizes.sm, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.2 },
 
   // Chat
   listContent:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },

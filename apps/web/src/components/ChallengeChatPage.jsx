@@ -331,7 +331,9 @@ export default function ChallengeChatPage({
 
       {/* Challenger — explicitly distinguished from other participants. The
           crown emoji + Challenger pill make the originating user visible at
-          a glance. */}
+          a glance. Quick actions (Share, Accept) sit on the right of the
+          row so they read as the user's "what now" panel instead of
+          competing big pills below. */}
       {creator && (
         <div className="challenge-creator-row">
           <span
@@ -345,6 +347,29 @@ export default function ChallengeChatPage({
           <div className="challenge-creator-info">
             <span className="challenge-creator-name">{creator.displayName}</span>
             <span className="challenge-creator-tag">👑 {t('challengerTag')}</span>
+          </div>
+          <div className="challenge-creator-actions">
+            <button
+              type="button"
+              className="challenge-quick-btn challenge-quick-btn--share"
+              onClick={handleShare}
+              title={t('shareCta')}
+              aria-label={t('shareCta')}
+            >
+              <span aria-hidden="true">↗</span>
+            </button>
+            {!isValidated && !isOwner && (
+              <button
+                type="button"
+                className={`challenge-quick-btn challenge-quick-btn--accept${isParticipant ? ' challenge-quick-btn--accept-in' : ''}`}
+                onClick={handleAccept}
+                disabled={busy === 'accept'}
+                title={isParticipant ? t('acceptedCta') : t('acceptCta')}
+                aria-label={isParticipant ? t('acceptedCta') : t('acceptCta')}
+              >
+                <span aria-hidden="true">{busy === 'accept' ? '…' : (isParticipant ? '✓' : '+')}</span>
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -366,21 +391,15 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* Share row — always visible, brand-orange tinted pill. Lives above
-          the chat so it reads as a primary social action ("rally friends")
-          rather than a small header icon. The toast fires only when the
-          browser has no Web Share API (desktop fallback to clipboard). */}
-      <div className="challenge-share-row">
-        <button type="button" className="challenge-share-btn" onClick={handleShare}>
-          <span aria-hidden="true">↗</span>
-          <span>{t('shareCta')}</span>
-        </button>
-        {shareToast && (
-          <span className="challenge-share-toast" role="status">
-            {t('shareCopied')}
-          </span>
-        )}
-      </div>
+      {/* Share + Accept moved into the .challenge-creator-row above as
+          icon-only quick buttons. The toast (copy-link fallback) still
+          fires on desktop, but now appears as a small status pill below
+          the participants strip. */}
+      {shareToast && (
+        <p className="challenge-share-toast challenge-share-toast--inline" role="status">
+          {t('shareCopied')}
+        </p>
+      )}
 
       {/* Owner actions — Validate is the primary ownership move so it gets
           a full-width orange CTA (matches the Accept button used by non-
@@ -415,20 +434,7 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* Non-creator Accept CTA — kept as the prominent orange brand button
-          because it's the primary first-time-visitor action. Hidden once the
-          challenge is validated (no more accepting an archived challenge). */}
-      {!isValidated && !isOwner && (
-        <div className="challenge-actions">
-          <button
-            className={`challenge-accept-btn ${isParticipant ? 'challenge-accept-btn--in' : ''}`}
-            onClick={handleAccept}
-            disabled={busy === 'accept'}
-          >
-            {busy === 'accept' ? '…' : (isParticipant ? t('acceptedCta') : t('acceptCta'))}
-          </button>
-        </div>
-      )}
+      {/* Accept moved into the .challenge-creator-row above (icon-only). */}
 
       {/* Messages */}
       <div className="topic-chat-feed" ref={feedRef}>
