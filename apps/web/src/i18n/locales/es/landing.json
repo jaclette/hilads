@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Reta a la ciudad",
+    "title": "Sé el local que mueve la ciudad",
     "tagline": "Conoces los spots. Reta a los locales o exploradores a encontrarlos.",
     "bullets": [
       "Reta a locales o exploradores — comida, lugar, cultura o ayuda",
       "Lleva a la gente a los lugares que amas",
       "Conviértete en el local que recuerdan"
     ],
-    "cta": "Reta a la ciudad"
+    "cta": "Mueve tu ciudad"
   },
   "exploring": {
     "badge": "🧭 Explorando",

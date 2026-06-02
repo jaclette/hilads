@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Hamunin ang siyudad",
+    "title": "Maging ang lokal na nagpapakilos sa siyudad",
     "tagline": "Alam mo ang mga spot. Hamunin ang mga lokal o explorer na hanapin ang mga ito.",
     "bullets": [
       "Hamunin ang mga lokal o explorer — pagkain, lugar, kultura o tulong",
       "Dalhin ang mga tao sa mga spot na mahal mo",
       "Maging ang lokal na natatandaan ng mga tao"
     ],
-    "cta": "Hamunin ang siyudad"
+    "cta": "Pakilusin ang siyudad mo"
   },
   "exploring": {
     "badge": "🧭 Nag-e-explore",

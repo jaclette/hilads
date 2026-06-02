@@ -30,14 +30,14 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Défie la ville",
+    "title": "Sois le local qui fait vivre la ville",
     "tagline": "Tu connais les spots. Défie les locaux ou les explorateurs de les trouver.",
     "bullets": [
       "Défie les locaux ou les explorateurs — bouffe, lieu, culture ou aide",
       "Fais venir les gens dans les spots que tu aimes",
       "Deviens le local que les gens retiennent"
     ],
-    "cta": "Défie la ville"
+    "cta": "Fais vivre ta ville"
   },
   "exploring": {
     "badge": "🧭 Exploration",
