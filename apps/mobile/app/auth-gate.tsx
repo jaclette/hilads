@@ -19,8 +19,8 @@ type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' |
 
 const GATE_EMOJI: Record<GateReason, string> = {
   view_profile:    '👻',
-  join_hangout:    '⚡',
-  create_hangout:  '⚡',
+  join_hangout:    '🗣️',
+  create_hangout:  '🗣️',
   create_event:    '🎉',
   create_challenge: '🔥',
   send_dm:         '💬',

@@ -102,7 +102,7 @@ export default function CreateTopicScreen() {
           <View style={styles.headerCenter}><Text style={styles.headerTitle}>{t('limitHeader')}</Text></View>
         </View>
         <View style={styles.limitWrap}>
-          <Text style={styles.limitEmoji}>⚡</Text>
+          <Text style={styles.limitEmoji}>🗣️</Text>
           <Text style={styles.limitTitle}>{t('limitTitle')}</Text>
           <Text style={styles.limitSub}>
             {t('limitSub', { title: limitTopic.title })}

@@ -180,13 +180,13 @@ const GUEST_GATE_COPY = {
   },
   join_hangout: {
     pageTitle: 'Join a hangout',
-    emoji:     '⚡',
+    emoji:     '🗣️',
     title:     "Ghosts can browse, but can't join hangouts.",
     sub:       'Sign up to join hangouts, save your name, and get notified when people want to meet.',
   },
   create_hangout: {
     pageTitle: 'Start a hangout',
-    emoji:     '⚡',
+    emoji:     '🗣️',
     title:     "Ghosts can browse, but can't host.",
     sub:       'Sign up to start a hangout, save your name, and get people to join you.',
   },
@@ -5881,7 +5881,7 @@ export default function App() {
                 openCreateHangout()
               }}
             >
-              <span className="create-chooser-icon">⚡</span>
+              <span className="create-chooser-icon">🗣️</span>
               <span className="create-chooser-label">
                 <strong>{t('create.hangoutTitle')}</strong>
                 <span>{t('create.hangoutSub')}</span>

@@ -91,7 +91,7 @@ function FilterEmptyState({
           : t('hangoutTalk')}
       </Text>
 
-      {/* Pulse-filter-only CTA — mirrors web's centered blue "Start a pulse ⚡"
+      {/* Pulse-filter-only CTA — mirrors web's centered blue "Start a pulse 🗣️"
           button in the empty state (apps/web App.jsx ~3884). */}
       {filter === 'topics' && onStartPulse && (
         <TouchableOpacity

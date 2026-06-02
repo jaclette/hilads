@@ -60,7 +60,7 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
           <span className="page-title">{t('create.limitHeader')}</span>
         </div>
         <div className="topic-gated">
-          <span className="topic-gated-emoji">⚡</span>
+          <span className="topic-gated-emoji">🗣️</span>
           <strong className="topic-gated-title">{t('create.limitTitle')}</strong>
           <span className="topic-gated-sub">
             {t('create.limitSub', { title: limitTopic.title })}

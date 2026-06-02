@@ -105,7 +105,7 @@ export function CreateSheet({ visible, onClose, onSelectChallenge, onSelectEvent
             onPress={() => handleOption(onSelectTopic)}
           >
             <View style={[styles.optionIcon, styles.optionIconTopic]}>
-              <Text style={styles.optionEmoji}>⚡</Text>
+              <Text style={styles.optionEmoji}>🗣️</Text>
             </View>
             <View style={styles.optionBody}>
               <Text style={styles.optionLabel}>{t('create.hangoutLabel')}</Text>
