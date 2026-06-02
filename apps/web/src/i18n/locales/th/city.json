@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "เปิดชาเลนจ์",
       "title": "ผีดูได้ แต่ท้าไม่ได้",
-      "sub": "สมัครเพื่อเปิดชาเลนจ์ให้คนท้องถิ่นหรือผู้สำรวจ และยืนยันมัน"
+      "sub": "สมัครเพื่อเปิดชาเลนจ์ให้คนท้องถิ่นหรือนักเดินทาง และยืนยันมัน"
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} การตอบกลับ",
     "replies_other": "{{count}} การตอบกลับ",
     "challengeLocals": "🔥 {{name}} ท้าทายคนท้องถิ่น: {{title}}",
-    "challengeExplorers": "🔥 {{name}} ท้าทายผู้สำรวจ: {{title}}",
+    "challengeExplorers": "🔥 {{name}} ท้าทายนักเดินทาง: {{title}}",
     "challengeCta": "ดู →",
     "challengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\""
   },

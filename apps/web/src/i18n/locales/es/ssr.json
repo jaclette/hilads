@@ -1,13 +1,13 @@
 {
   "home": {
-    "title": "Hilads — Conecta con locales y exploradores a través de retos",
-    "description": "Eres local o explorador. Lanza un reto — comida, lugar, cultura, ayuda — y conoce a quien lo acepte. En tiempo real, sin registro.",
+    "title": "Hilads — Conecta con locales y viajeros a través de retos",
+    "description": "Eres local o viajero. Lanza un reto — comida, lugar, cultura, ayuda — y conoce a quien lo acepte. En tiempo real, sin registro.",
     "h1": "Reta a la ciudad.",
-    "intro": "Hilads conecta a locales y exploradores en cada ciudad a través de retos. Lanza uno para el otro lado — elige un tipo, ponle un título, mira cómo la gente lo acepta. Una vez hecho, el creador valida. En tiempo real, sin registro.",
+    "intro": "Hilads conecta a locales y viajeros en cada ciudad a través de retos. Lanza uno para el otro lado — elige un tipo, ponle un título, mira cómo la gente lo acepta. Una vez hecho, el creador valida. En tiempo real, sin registro.",
     "aboutHeading": "Cómo funciona Hilads",
     "aboutBody": "Elige tu ciudad. Lanza un reto para el otro lado, o acepta uno que te llame la atención. Conoce a locales y viajeros a través de lo que realmente quieres hacer — comida, lugar, cultura, ayuda. Hilads hace que cada ciudad se sienta viva, ahora mismo.",
     "citiesCta": "Explorar todas las ciudades de Hilads",
-    "subhead": "🔥 Locales y exploradores se conectan a través de retos."
+    "subhead": "🔥 Locales y viajeros se conectan a través de retos."
   },
   "brand": "Hilads",
   "dateLocale": "es-ES",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "+ {count} retos abiertos para aceptar.",
     "openChallengesHeading": "Retos abiertos en {city}",
     "challengeForLocals": "para locales",
-    "challengeForExplorers": "para exploradores"
+    "challengeForExplorers": "para viajeros"
   },
   "past": {
     "title": "Actividad pasada en {city} | Hilads",
@@ -154,11 +154,11 @@
     "title": "{title} — reto en {city} | Hilads",
     "titleNoCity": "{title} — reto en Hilads",
     "descLocals": "{title} — reto para locales de {city}. Acepta el reto, conoce a viajeros, sin registro.",
-    "descExplorers": "{title} — reto para exploradores en {city}. Acepta el reto, conoce a locales, sin registro.",
+    "descExplorers": "{title} — reto para viajeros en {city}. Acepta el reto, conoce a locales, sin registro.",
     "descGeneric": "{title} — acepta el reto en Hilads y conoce a locales o viajeros en {city}.",
     "h1Tag": "Reto",
     "audienceLocals": "Para locales de {city}",
-    "audienceExplorers": "Para exploradores en {city}",
+    "audienceExplorers": "Para viajeros en {city}",
     "validatedBadge": "✓ Validado",
     "openBadge": "Abierto",
     "typeLabel": "Tipo:",
@@ -170,7 +170,7 @@
     "participantsMany": "{count} personas lo aceptaron",
     "noParticipants": "Sé la primera persona en aceptar.",
     "aboutHeading": "Sobre este reto",
-    "aboutBody": "En Hilads, locales y exploradores conectan a través de retos. Elige un tipo — comida, lugar, cultura, ayuda — ponle un título y mira cómo la gente lo acepta. Una vez completado, el creador valida el reto.",
+    "aboutBody": "En Hilads, locales y viajeros conectan a través de retos. Elige un tipo — comida, lugar, cultura, ayuda — ponle un título y mira cómo la gente lo acepta. Una vez completado, el creador valida el reto.",
     "cityLink": "Ver qué pasa en {city}",
     "removed": "Este reto ha sido eliminado."
   }

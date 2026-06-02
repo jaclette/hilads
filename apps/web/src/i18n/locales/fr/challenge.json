@@ -4,7 +4,7 @@
   "audience": "Pour qui ?",
   "aud": {
     "locals": "Locaux",
-    "explorers": "Explorateurs"
+    "explorers": "Voyageurs"
   },
   "type": "Type",
   "tp": {
@@ -31,7 +31,7 @@
   "validatedBadge": "Validé",
   "openBadge": "Ouvert",
   "forLocals": "Pour les locaux",
-  "forExplorers": "Pour les explorateurs",
+  "forExplorers": "Pour les voyageurs",
   "notFound": "Défi introuvable",
   "typeBadge": {
     "food": "Défi bouffe",

@@ -7,7 +7,7 @@
     "aboutHeading": "Hiladsの使い方",
     "aboutBody": "街を選ぼう。反対側のためにチャレンジを始めるか、あなたに響くものを受け入れよう。本当にやりたいことを通して、ローカルや旅行者と出会える — 食、場所、文化、ヘルプ。Hilads はすべての街を、今この瞬間、生きた場所に変える。",
     "citiesCta": "Hiladsのすべての街を見る",
-    "subhead": "🔥 ローカルとエクスプローラーが挑戦でつながる場所。"
+    "subhead": "🔥 ローカルと旅行者が挑戦でつながる場所。"
   },
   "brand": "Hilads",
   "dateLocale": "ja-JP",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "さらに {count} 件の挑戦が受付中。",
     "openChallengesHeading": "{city} の挑戦中",
     "challengeForLocals": "ローカル向け",
-    "challengeForExplorers": "エクスプローラー向け"
+    "challengeForExplorers": "旅行者向け"
   },
   "past": {
     "title": "{city}の過去の活動 | Hilads",

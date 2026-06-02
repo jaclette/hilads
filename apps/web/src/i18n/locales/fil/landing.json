@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Buhay ang siyudad sa paligid mo.\nHamunin ang mga lokal o explorer, sumali sa nangyayari, o buksan ang sarili mong spot."
+    "sub": "Buhay ang siyudad sa paligid mo.\nHamunin ang mga lokal o biyahero, sumali sa nangyayari, o buksan ang sarili mong spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",
@@ -31,9 +31,9 @@
   "local": {
     "badge": "🌍 Local",
     "title": "Maging ang lokal na nagpapakilos sa siyudad",
-    "tagline": "Alam mo ang mga spot. Hamunin ang mga lokal o explorer na hanapin ang mga ito.",
+    "tagline": "Alam mo ang mga spot. Hamunin ang mga lokal o biyahero na hanapin ang mga ito.",
     "bullets": [
-      "Hamunin ang mga lokal o explorer — pagkain, lugar, kultura o tulong",
+      "Hamunin ang mga lokal o biyahero — pagkain, lugar, kultura o tulong",
       "Dalhin ang mga tao sa mga spot na mahal mo",
       "Maging ang lokal na natatandaan ng mga tao"
     ],

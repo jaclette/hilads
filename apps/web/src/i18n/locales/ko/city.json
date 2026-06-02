@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "도전 던지기",
       "title": "고스트는 둘러볼 수 있지만 도전은 못 던져요.",
-      "sub": "가입해서 로컬이나 익스플로러에게 도전을 던지고 검증하세요."
+      "sub": "가입해서 로컬이나 여행자에게 도전을 던지고 검증하세요."
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "답글 {{count}}개",
     "replies_other": "답글 {{count}}개",
     "challengeLocals": "🔥 {{name}} 님이 로컬에게 도전: {{title}}",
-    "challengeExplorers": "🔥 {{name}} 님이 익스플로러에게 도전: {{title}}",
+    "challengeExplorers": "🔥 {{name}} 님이 여행자에게 도전: {{title}}",
     "challengeCta": "보기 →",
     "challengeValidated": "🏆 도전 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요."
   },

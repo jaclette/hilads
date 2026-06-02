@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "发起挑战",
       "title": "幽灵能浏览，但不能发起挑战。",
-      "sub": "注册以向本地人或探索者发起挑战，并验证它。"
+      "sub": "注册以向本地人或旅行者发起挑战，并验证它。"
     }
   },
   "welcome": {
@@ -142,11 +142,11 @@
     "eventTitle": "创建活动",
     "eventSub": "策划一件别人可以加入的事",
     "challengeTitle": "发起挑战",
-    "challengeSub": "本地人和探索者 — 通过一个挑战连接",
+    "challengeSub": "本地人和旅行者 — 通过一个挑战连接",
     "challengePageTitle": "发起挑战",
     "challengeAudience": "给谁?",
     "challengeAudLocals": "本地人",
-    "challengeAudExplorers": "探索者",
+    "challengeAudExplorers": "旅行者",
     "challengeType": "类型",
     "challengeTypeFood": "美食",
     "challengeTypePlace": "地点",
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} 条回复",
     "replies_other": "{{count}} 条回复",
     "challengeLocals": "🔥 {{name}} 向本地人发起挑战：{{title}}",
-    "challengeExplorers": "🔥 {{name}} 向探索者发起挑战：{{title}}",
+    "challengeExplorers": "🔥 {{name}} 向旅行者发起挑战：{{title}}",
     "challengeCta": "查看 →",
     "challengeValidated": "🏆 挑战完成！{{name}} 验证了 \"{{title}}\"。"
   },

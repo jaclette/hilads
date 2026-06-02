@@ -7,7 +7,7 @@
     "aboutHeading": "Come funziona Hilads",
     "aboutBody": "Scegli la tua città. Lancia una sfida per l'altro lato, o accetta una che ti parla. Incontra local e viaggiatori attraverso ciò che vuoi davvero fare — cibo, posto, cultura, aiuto. Hilads fa sentire viva ogni città, proprio adesso.",
     "citiesCta": "Esplora tutte le città di Hilads",
-    "subhead": "🔥 Locali ed esploratori si connettono attraverso le sfide."
+    "subhead": "🔥 Locali ed viaggiatori si connettono attraverso le sfide."
   },
   "brand": "Hilads",
   "dateLocale": "it-IT",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "+ {count} sfide aperte da accettare.",
     "openChallengesHeading": "Sfide aperte a {city}",
     "challengeForLocals": "per i locali",
-    "challengeForExplorers": "per gli esploratori"
+    "challengeForExplorers": "per i viaggiatori"
   },
   "past": {
     "title": "Attività passata a {city} | Hilads",
@@ -154,11 +154,11 @@
     "title": "{title} — sfida a {city} | Hilads",
     "titleNoCity": "{title} — sfida su Hilads",
     "descLocals": "{title} — sfida per i local di {city}. Accetta la sfida, incontra viaggiatori, senza registrazione.",
-    "descExplorers": "{title} — sfida per gli esploratori a {city}. Accetta la sfida, incontra local, senza registrazione.",
+    "descExplorers": "{title} — sfida per i viaggiatori a {city}. Accetta la sfida, incontra local, senza registrazione.",
     "descGeneric": "{title} — accetta la sfida su Hilads e incontra local o viaggiatori a {city}.",
     "h1Tag": "Sfida",
     "audienceLocals": "Per i local di {city}",
-    "audienceExplorers": "Per gli esploratori a {city}",
+    "audienceExplorers": "Per i viaggiatori a {city}",
     "validatedBadge": "✓ Validata",
     "openBadge": "Aperta",
     "typeLabel": "Tipo:",
@@ -170,7 +170,7 @@
     "participantsMany": "{count} persone hanno accettato",
     "noParticipants": "Sii il primo ad accettare.",
     "aboutHeading": "Su questa sfida",
-    "aboutBody": "Su Hilads, local ed esploratori si connettono attraverso le sfide. Scegli un tipo — cibo, posto, cultura, aiuto — dagli un titolo e guarda la gente accettarla. Una volta completata, il creatore valida la sfida.",
+    "aboutBody": "Su Hilads, local ed viaggiatori si connettono attraverso le sfide. Scegli un tipo — cibo, posto, cultura, aiuto — dagli un titolo e guarda la gente accettarla. Una volta completata, il creatore valida la sfida.",
     "cityLink": "Vedi cosa succede a {city}",
     "removed": "Questa sfida è stata rimossa."
   }

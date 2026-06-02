@@ -1,10 +1,10 @@
 {
   "home": {
-    "title": "Hilads — Connect with locals & explorers through challenges",
-    "description": "You're a local or an explorer. Launch a challenge — food, place, culture, help — and meet people who accept. Real-time, no sign-up.",
+    "title": "Hilads — Connect with locals & travelers through challenges",
+    "description": "You're a local or an traveler. Launch a challenge — food, place, culture, help — and meet people who accept. Real-time, no sign-up.",
     "h1": "Challenge the city.",
-    "subhead": "🔥 Where locals and explorers connect through challenges.",
-    "intro": "Hilads connects locals and explorers in every city through challenges. Drop one for the other side — pick a type, give it a title, watch people accept. Once it's done, the creator validates. Real-time, no sign-up.",
+    "subhead": "🔥 Where locals and travelers connect through challenges.",
+    "intro": "Hilads connects locals and travelers in every city through challenges. Drop one for the other side — pick a type, give it a title, watch people accept. Once it's done, the creator validates. Real-time, no sign-up.",
     "aboutHeading": "How Hilads works",
     "aboutBody": "Pick your city. Launch a challenge for the other side, or accept one that speaks to you. Meet locals and travelers through what you actually want to do — food, place, culture, help. Hilads makes every city feel alive, right now.",
     "citiesCta": "Browse all Hilads cities"
@@ -67,11 +67,11 @@
     "title": "{title} — challenge in {city} | Hilads",
     "titleNoCity": "{title} — challenge on Hilads",
     "descLocals": "{title} — challenge for locals of {city}. Accept the challenge, meet travelers, no sign-up.",
-    "descExplorers": "{title} — challenge for explorers in {city}. Accept the challenge, meet locals, no sign-up.",
+    "descExplorers": "{title} — challenge for travelers in {city}. Accept the challenge, meet locals, no sign-up.",
     "descGeneric": "{title} — accept the challenge on Hilads and meet locals or travelers in {city}.",
     "h1Tag": "Challenge",
     "audienceLocals": "For locals of {city}",
-    "audienceExplorers": "For explorers in {city}",
+    "audienceExplorers": "For travelers in {city}",
     "validatedBadge": "✓ Validated",
     "openBadge": "Open",
     "typeLabel": "Type:",
@@ -83,7 +83,7 @@
     "participantsMany": "{count} people accepted",
     "noParticipants": "Be the first to accept.",
     "aboutHeading": "About this challenge",
-    "aboutBody": "On Hilads, locals and explorers connect through challenges. Pick a type — food, place, culture, help — give it a title, and watch people accept. Once completed, the creator validates the challenge.",
+    "aboutBody": "On Hilads, locals and travelers connect through challenges. Pick a type — food, place, culture, help — give it a title, and watch people accept. Once completed, the creator validates the challenge.",
     "cityLink": "See what's happening in {city}",
     "removed": "This challenge has been removed."
   },
@@ -147,7 +147,7 @@
     "descChallengeSuffix": "+ {count} open challenges to take on.",
     "openChallengesHeading": "Open challenges in {city}",
     "challengeForLocals": "for locals",
-    "challengeForExplorers": "for explorers"
+    "challengeForExplorers": "for travelers"
   },
   "past": {
     "title": "Past activity in {city} | Hilads",

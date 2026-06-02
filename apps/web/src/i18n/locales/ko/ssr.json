@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads 사용법",
     "aboutBody": "도시를 선택하세요. 반대편을 위한 챌린지를 만들거나, 마음에 드는 챌린지를 수락하세요. 정말로 하고 싶은 일을 통해 로컬과 여행자를 만나세요 — 음식, 장소, 문화, 도움. Hilads는 모든 도시를 지금 이 순간 살아있는 곳으로 만듭니다.",
     "citiesCta": "모든 Hilads 도시 둘러보기",
-    "subhead": "🔥 로컬과 익스플로러가 도전으로 연결되는 곳."
+    "subhead": "🔥 로컬과 여행자가 도전으로 연결되는 곳."
   },
   "brand": "Hilads",
   "dateLocale": "ko-KR",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "도전 {count}개가 더 열려 있어요.",
     "openChallengesHeading": "{city}의 진행 중 도전",
     "challengeForLocals": "로컬용",
-    "challengeForExplorers": "익스플로러용"
+    "challengeForExplorers": "여행자용"
   },
   "past": {
     "title": "{city}의 지난 활동 | Hilads",

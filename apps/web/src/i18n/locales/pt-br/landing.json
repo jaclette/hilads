@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "A cidade está viva ao seu redor.\nDesafie os locais ou exploradores, entre num rolê, ou abra seu próprio spot."
+    "sub": "A cidade está viva ao seu redor.\nDesafie os locais ou viajantes, entre num rolê, ou abra seu próprio spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} pessoa por aqui agora mesmo",
@@ -31,9 +31,9 @@
   "local": {
     "badge": "🌍 Local",
     "title": "Seja o local que move a cidade",
-    "tagline": "Você conhece os spots. Desafie os locais ou exploradores a encontrá-los.",
+    "tagline": "Você conhece os spots. Desafie os locais ou viajantes a encontrá-los.",
     "bullets": [
-      "Desafie locais ou exploradores — comida, lugar, cultura ou ajuda",
+      "Desafie locais ou viajantes — comida, lugar, cultura ou ajuda",
       "Leve as pessoas pros lugares que você ama",
       "Vire o local que as pessoas lembram"
     ],

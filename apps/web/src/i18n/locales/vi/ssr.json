@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads hoạt động thế nào",
     "aboutBody": "Chọn thành phố của bạn. Tạo một thử thách cho phía bên kia, hoặc chấp nhận một thử thách mà bạn thích. Gặp người địa phương và du khách qua những gì bạn thực sự muốn làm — ăn uống, địa điểm, văn hóa, giúp đỡ. Hilads làm cho mỗi thành phố trở nên sống động, ngay bây giờ.",
     "citiesCta": "Khám phá tất cả thành phố trên Hilads",
-    "subhead": "🔥 Nơi người địa phương và người khám phá kết nối qua thử thách."
+    "subhead": "🔥 Nơi người địa phương và du khách kết nối qua thử thách."
   },
   "_note": "Vietnamese SSR strings are DRAFTS — pending native review.",
   "brand": "Hilads",
@@ -124,7 +124,7 @@
     "descChallengeSuffix": "+ {count} thử thách đang chờ bạn tham gia.",
     "openChallengesHeading": "Thử thách đang mở tại {city}",
     "challengeForLocals": "dành cho người địa phương",
-    "challengeForExplorers": "dành cho người khám phá"
+    "challengeForExplorers": "dành cho du khách"
   },
   "past": {
     "title": "Hoạt động đã qua tại {city} | Hilads",

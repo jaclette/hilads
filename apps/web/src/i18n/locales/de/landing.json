@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Die Stadt lebt um dich herum.\nFordere die Locals oder Explorer heraus, mach mit oder eröffne deinen Spot."
+    "sub": "Die Stadt lebt um dich herum.\nFordere die Locals oder Reisende heraus, mach mit oder eröffne deinen Spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} Person ist gerade unterwegs",
@@ -31,9 +31,9 @@
   "local": {
     "badge": "🌍 Local",
     "title": "Sei der Local, der die Stadt am Laufen hält",
-    "tagline": "Du kennst die Spots. Fordere Locals oder Explorer heraus, sie zu finden.",
+    "tagline": "Du kennst die Spots. Fordere Locals oder Reisende heraus, sie zu finden.",
     "bullets": [
-      "Fordere Locals oder Explorer heraus — Food, Ort, Kultur oder Hilfe",
+      "Fordere Locals oder Reisende heraus — Food, Ort, Kultur oder Hilfe",
       "Bring Leute an die Orte, die du liebst",
       "Werde der Local, an den sich Leute erinnern"
     ],

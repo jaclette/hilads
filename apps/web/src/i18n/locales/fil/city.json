@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Mag-launch ng challenge",
       "title": "Pwede tumingin ang ghosts, pero hindi makakahamon.",
-      "sub": "Mag-sign up para mag-launch ng challenge sa mga lokal o explorer at i-validate ito."
+      "sub": "Mag-sign up para mag-launch ng challenge sa mga lokal o biyahero at i-validate ito."
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} tugon",
     "replies_other": "{{count}} tugon",
     "challengeLocals": "🔥 Hinahamon ni {{name}} ang mga lokal: {{title}}",
-    "challengeExplorers": "🔥 Hinahamon ni {{name}} ang mga explorer: {{title}}",
+    "challengeExplorers": "🔥 Hinahamon ni {{name}} ang mga biyahero: {{title}}",
     "challengeCta": "Tingnan →",
     "challengeValidated": "🏆 Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\"."
   },

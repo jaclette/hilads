@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "चुनौती लॉन्च करो",
       "title": "भूत देख सकते हैं, चुनौती नहीं दे सकते।",
-      "sub": "साइन अप करो ताकि लोकल्स या एक्सप्लोरर्स को चुनौती दे सको और उसे मान्यता दे सको।"
+      "sub": "साइन अप करो ताकि लोकल्स या यात्रियों को चुनौती दे सको और उसे मान्यता दे सको।"
     }
   },
   "welcome": {
@@ -142,11 +142,11 @@
     "eventTitle": "एक इवेंट बनाएं",
     "eventSub": "कुछ ऐसा प्लान करें जिसमें दूसरे शामिल हो सकें",
     "challengeTitle": "चैलेंज लॉन्च करें",
-    "challengeSub": "लोकल्स और एक्सप्लोरर्स — एक चैलेंज से जुड़ें",
+    "challengeSub": "लोकल्स और यात्रियों — एक चैलेंज से जुड़ें",
     "challengePageTitle": "एक चैलेंज बनाएं",
     "challengeAudience": "किसके लिए?",
     "challengeAudLocals": "लोकल्स",
-    "challengeAudExplorers": "एक्सप्लोरर्स",
+    "challengeAudExplorers": "यात्रियों",
     "challengeType": "टाइप",
     "challengeTypeFood": "फ़ूड",
     "challengeTypePlace": "जगह",
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} जवाब",
     "replies_other": "{{count}} जवाब",
     "challengeLocals": "🔥 {{name}} ने स्थानीयों को चुनौती दी: {{title}}",
-    "challengeExplorers": "🔥 {{name}} ने एक्सप्लोरर्स को चुनौती दी: {{title}}",
+    "challengeExplorers": "🔥 {{name}} ने यात्रियों को चुनौती दी: {{title}}",
     "challengeCta": "देखें →",
     "challengeValidated": "🏆 चुनौती पूरी! {{name}} ने \"{{title}}\" को मान्य किया।"
   },

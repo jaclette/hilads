@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "La ciudad está viva a tu alrededor.\nReta a los locales o exploradores, únete a lo que pasa, o abre tu propio spot."
+    "sub": "La ciudad está viva a tu alrededor.\nReta a los locales o viajeros, únete a lo que pasa, o abre tu propio spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persona por aquí ahora mismo",
@@ -31,9 +31,9 @@
   "local": {
     "badge": "🌍 Local",
     "title": "Sé el local que mueve la ciudad",
-    "tagline": "Conoces los spots. Reta a los locales o exploradores a encontrarlos.",
+    "tagline": "Conoces los spots. Reta a los locales o viajeros a encontrarlos.",
     "bullets": [
-      "Reta a locales o exploradores — comida, lugar, cultura o ayuda",
+      "Reta a locales o viajeros — comida, lugar, cultura o ayuda",
       "Lleva a la gente a los lugares que amas",
       "Conviértete en el local que recuerdan"
     ],

@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "發起挑戰",
       "title": "幽靈能瀏覽，但不能發起挑戰。",
-      "sub": "註冊以向本地人或探索者發起挑戰，並驗證它。"
+      "sub": "註冊以向本地人或旅行者發起挑戰，並驗證它。"
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} 則回覆",
     "replies_other": "{{count}} 則回覆",
     "challengeLocals": "🔥 {{name}} 向本地人發起挑戰：{{title}}",
-    "challengeExplorers": "🔥 {{name}} 向探索者發起挑戰：{{title}}",
+    "challengeExplorers": "🔥 {{name}} 向旅行者發起挑戰：{{title}}",
     "challengeCta": "查看 →",
     "challengeValidated": "🏆 挑戰完成！{{name}} 驗證了「{{title}}」。"
   },

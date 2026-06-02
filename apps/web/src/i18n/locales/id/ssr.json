@@ -7,7 +7,7 @@
     "aboutHeading": "Cara kerja Hilads",
     "aboutBody": "Pilih kotamu. Buat tantangan untuk sisi lain, atau terima yang menarik bagimu. Temui local dan pelancong lewat apa yang benar-benar ingin kamu lakukan — makanan, tempat, budaya, bantuan. Hilads membuat setiap kota terasa hidup, saat ini juga.",
     "citiesCta": "Jelajahi semua kota di Hilads",
-    "subhead": "🔥 Tempat warga lokal dan penjelajah terhubung lewat tantangan."
+    "subhead": "🔥 Tempat warga lokal dan pelancong terhubung lewat tantangan."
   },
   "brand": "Hilads",
   "dateLocale": "id-ID",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "+ {count} tantangan terbuka untuk diterima.",
     "openChallengesHeading": "Tantangan terbuka di {city}",
     "challengeForLocals": "untuk warga lokal",
-    "challengeForExplorers": "untuk para penjelajah"
+    "challengeForExplorers": "untuk para pelancong"
   },
   "past": {
     "title": "Aktivitas lampau di {city} | Hilads",

@@ -4,7 +4,7 @@
   "audience": "لمن؟",
   "aud": {
     "locals": "المحليون",
-    "explorers": "المستكشفون"
+    "explorers": "المسافرون"
   },
   "type": "النوع",
   "tp": {
@@ -31,7 +31,7 @@
   "validatedBadge": "مُتحقق",
   "openBadge": "مفتوح",
   "forLocals": "للمحليين",
-  "forExplorers": "للمستكشفين",
+  "forExplorers": "للمسافرين",
   "notFound": "لم يُعثر على التحدي",
   "typeBadge": {
     "food": "تحدي طعام",

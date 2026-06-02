@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Kota hidup di sekitarmu.\nTantang warga lokal atau para penjelajah, ikut yang sedang berlangsung, atau buka spot-mu sendiri."
+    "sub": "Kota hidup di sekitarmu.\nTantang warga lokal atau para pelancong, ikut yang sedang berlangsung, atau buka spot-mu sendiri."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",
@@ -31,9 +31,9 @@
   "local": {
     "badge": "🌍 Local",
     "title": "Jadilah warga lokal yang menggerakkan kota",
-    "tagline": "Kamu tahu spot-spotnya. Tantang warga lokal atau penjelajah untuk menemukannya.",
+    "tagline": "Kamu tahu spot-spotnya. Tantang warga lokal atau pelancong untuk menemukannya.",
     "bullets": [
-      "Tantang warga lokal atau penjelajah — makanan, tempat, budaya atau bantuan",
+      "Tantang warga lokal atau pelancong — makanan, tempat, budaya atau bantuan",
       "Bawa orang ke spot favoritmu",
       "Jadi orang lokal yang diingat orang"
     ],

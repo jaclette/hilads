@@ -4,7 +4,7 @@
   "audience": "Per chi?",
   "aud": {
     "locals": "Local",
-    "explorers": "Esploratori"
+    "explorers": "Viaggiatori"
   },
   "type": "Tipo",
   "tp": {
@@ -31,7 +31,7 @@
   "validatedBadge": "Validata",
   "openBadge": "Aperta",
   "forLocals": "Per i local",
-  "forExplorers": "Per gli esploratori",
+  "forExplorers": "Per i viaggiatori",
   "notFound": "Sfida non trovata",
   "typeBadge": {
     "food": "Sfida cibo",

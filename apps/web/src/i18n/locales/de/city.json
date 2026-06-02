@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Challenge starten",
       "title": "Ghosts schauen zu, aber sie fordern niemanden heraus.",
-      "sub": "Registriere dich, um eine Challenge an Locals oder Explorer zu starten und sie zu validieren."
+      "sub": "Registriere dich, um eine Challenge an Locals oder Reisende zu starten und sie zu validieren."
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} Antwort",
     "replies_other": "{{count}} Antworten",
     "challengeLocals": "🔥 {{name}} fordert die Locals heraus: {{title}}",
-    "challengeExplorers": "🔥 {{name}} fordert die Explorer heraus: {{title}}",
+    "challengeExplorers": "🔥 {{name}} fordert die Reisende heraus: {{title}}",
     "challengeCta": "Ansehen →",
     "challengeValidated": "🏆 Challenge geschafft! {{name}} hat \"{{title}}\" validiert."
   },

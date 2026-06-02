@@ -10,7 +10,7 @@
     "f2": "📅 Organize um evento na sua cidade",
     "f3": "💬 Mande uma mensagem privada para qualquer pessoa",
     "f4": "📍 Veja quem está por perto, ao vivo",
-    "f5": "🤝 Conecte-se com locais e exploradores",
+    "f5": "🤝 Conecte-se com locais e viajantes",
     "cta": "Bora 🚀"
   },
   "onboarding": {
@@ -28,7 +28,7 @@
     "createAccount": "Criar uma conta",
     "fallbackCity": "sua cidade",
     "slideChallengeTitle": "Conectem-se através de desafios",
-    "slideChallengeBody": "Você é local ou explorador. Lance um desafio para o outro lado — escolha um tipo, dê um título, veja as pessoas aceitarem. Valide quando terminar."
+    "slideChallengeBody": "Você é local ou viajante. Lance um desafio para o outro lado — escolha um tipo, dê um título, veja as pessoas aceitarem. Valide quando terminar."
   },
   "share": {
     "title": "Compartilhe algo 👀",

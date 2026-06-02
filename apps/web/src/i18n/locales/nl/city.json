@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Challenge starten",
       "title": "Ghosts kijken toe, maar dagen niet uit.",
-      "sub": "Maak een account aan om locals of explorers uit te dagen en de challenge te valideren."
+      "sub": "Maak een account aan om locals of reizigers uit te dagen en de challenge te valideren."
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} reactie",
     "replies_other": "{{count}} reacties",
     "challengeLocals": "🔥 {{name}} daagt de locals uit: {{title}}",
-    "challengeExplorers": "🔥 {{name}} daagt de explorers uit: {{title}}",
+    "challengeExplorers": "🔥 {{name}} daagt de reizigers uit: {{title}}",
     "challengeCta": "Bekijk →",
     "challengeValidated": "🏆 Challenge volbracht! {{name}} heeft \"{{title}}\" gevalideerd."
   },

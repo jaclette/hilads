@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Lançar um desafio",
       "title": "Fantasmas olham, mas não desafiam.",
-      "sub": "Cadastre-se para lançar um desafio para locais ou exploradores e validá-lo."
+      "sub": "Cadastre-se para lançar um desafio para locais ou viajantes e validá-lo."
     }
   },
   "welcome": {
@@ -142,11 +142,11 @@
     "eventTitle": "Criar um evento",
     "eventSub": "Planeje algo para outros participarem",
     "challengeTitle": "Lançar um desafio",
-    "challengeSub": "Locais & exploradores — conectem-se através de um desafio",
+    "challengeSub": "Locais & viajantes — conectem-se através de um desafio",
     "challengePageTitle": "Criar um desafio",
     "challengeAudience": "Para quem?",
     "challengeAudLocals": "Locais",
-    "challengeAudExplorers": "Exploradores",
+    "challengeAudExplorers": "Viajantes",
     "challengeType": "Tipo",
     "challengeTypeFood": "Comida",
     "challengeTypePlace": "Lugar",
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} resposta",
     "replies_other": "{{count}} respostas",
     "challengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
-    "challengeExplorers": "🔥 {{name}} desafia os exploradores: {{title}}",
+    "challengeExplorers": "🔥 {{name}} desafia os viajantes: {{title}}",
     "challengeCta": "Ver →",
     "challengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\"."
   },

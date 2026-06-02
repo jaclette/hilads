@@ -84,6 +84,6 @@
   "photoSavePermBody": "اسمح بالوصول إلى الصور لحفظها.",
   "photoSavePermSettings": "اسمح بالوصول إلى الصور من الإعدادات.",
   "bannerChallengeLocals": "🔥 {{name}} يتحدّى السكان المحليين: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} يتحدّى المستكشفين: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} يتحدّى المسافرين: {{title}}",
   "bannerChallengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\"."
 }

@@ -4,7 +4,7 @@
   "audience": "किसके लिए?",
   "aud": {
     "locals": "लोकल्स",
-    "explorers": "एक्सप्लोरर्स"
+    "explorers": "यात्रियों"
   },
   "type": "टाइप",
   "tp": {
@@ -31,7 +31,7 @@
   "validatedBadge": "वैलिडेटेड",
   "openBadge": "ओपन",
   "forLocals": "लोकल्स के लिए",
-  "forExplorers": "एक्सप्लोरर्स के लिए",
+  "forExplorers": "यात्रियों के लिए",
   "notFound": "चैलेंज नहीं मिला",
   "typeBadge": {
     "food": "फ़ूड चैलेंज",

@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "إطلاق تحدٍّ",
       "title": "الأشباح يتصفّحون، لكنهم لا يطلقون تحدّيات.",
-      "sub": "سجّل لإطلاق تحدٍّ للسكان المحليين أو المستكشفين والتحقّق منه."
+      "sub": "سجّل لإطلاق تحدٍّ للسكان المحليين أو المسافرين والتحقّق منه."
     }
   },
   "welcome": {
@@ -158,7 +158,7 @@
     "challengePageTitle": "أنشئ تحديًا",
     "challengeAudience": "لمن؟",
     "challengeAudLocals": "المحليون",
-    "challengeAudExplorers": "المستكشفون",
+    "challengeAudExplorers": "المسافرون",
     "challengeType": "النوع",
     "challengeTypeFood": "طعام",
     "challengeTypePlace": "مكان",
@@ -238,7 +238,7 @@
     "replies_many": "{{count}} ردًّا",
     "replies_other": "{{count}} رد",
     "challengeLocals": "🔥 {{name}} يتحدّى السكان المحليين: {{title}}",
-    "challengeExplorers": "🔥 {{name}} يتحدّى المستكشفين: {{title}}",
+    "challengeExplorers": "🔥 {{name}} يتحدّى المسافرين: {{title}}",
     "challengeCta": "عرض →",
     "challengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\"."
   },

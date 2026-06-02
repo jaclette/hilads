@@ -194,7 +194,7 @@ const GUEST_GATE_COPY = {
     pageTitle: 'Launch a challenge',
     emoji:     '🔥',
     title:     "Ghosts can browse, but can't challenge.",
-    sub:       'Sign up to launch a challenge for locals or explorers, and own its validation.',
+    sub:       'Sign up to launch a challenge for locals or travelers, and own its validation.',
   },
 }
 
@@ -4172,7 +4172,7 @@ export default function App() {
             }
 
             // Challenge feed item — parallel shape to events. The text key
-            // varies by target audience (locals vs explorers); tapping
+            // varies by target audience (locals vs travelers); tapping
             // "Voir →" opens the ChallengeChatPage via setActiveChallenge.
             if (item.type === 'challenge') {
               const challenge = cityChallenges.find(c => c.id === item.challengeId)

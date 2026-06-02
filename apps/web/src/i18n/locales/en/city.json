@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Launch a challenge",
       "title": "Ghosts can browse, but can't challenge.",
-      "sub": "Sign up to launch a challenge for locals or explorers, and own its validation."
+      "sub": "Sign up to launch a challenge for locals or travelers, and own its validation."
     }
   },
   "welcome": {
@@ -142,11 +142,11 @@
     "eventTitle": "Create an event",
     "eventSub": "Plan something others can join",
     "challengeTitle": "Launch a challenge",
-    "challengeSub": "Locals & explorers — connect through a challenge",
+    "challengeSub": "Locals & travelers — connect through a challenge",
     "challengePageTitle": "Create a challenge",
     "challengeAudience": "Who's it for?",
     "challengeAudLocals": "Locals",
-    "challengeAudExplorers": "Explorers",
+    "challengeAudExplorers": "Travelers",
     "challengeType": "Type",
     "challengeTypeFood": "Food",
     "challengeTypePlace": "Place",
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} reply",
     "replies_other": "{{count}} replies",
     "challengeLocals": "🔥 {{name}} challenges the locals: {{title}}",
-    "challengeExplorers": "🔥 {{name}} challenges the explorers: {{title}}",
+    "challengeExplorers": "🔥 {{name}} challenges the travelers: {{title}}",
     "challengeCta": "View →",
     "challengeValidated": "🏆 Challenge done! {{name}} validated \"{{title}}\"."
   },

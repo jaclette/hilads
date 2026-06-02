@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "La città è viva intorno a te.\nSfida i locali o gli esploratori, unisciti a ciò che succede, o apri il tuo spot."
+    "sub": "La città è viva intorno a te.\nSfida i locali o i viaggiatori, unisciti a ciò che succede, o apri il tuo spot."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persona in giro proprio ora",
@@ -31,9 +31,9 @@
   "local": {
     "badge": "🌍 Locale",
     "title": "Sii il locale che fa vivere la città",
-    "tagline": "Conosci i posti. Sfida i locali o gli esploratori a trovarli.",
+    "tagline": "Conosci i posti. Sfida i locali o i viaggiatori a trovarli.",
     "bullets": [
-      "Sfida locali o esploratori — cibo, luogo, cultura o aiuto",
+      "Sfida locali o viaggiatori — cibo, luogo, cultura o aiuto",
       "Porta le persone nei posti che ami",
       "Diventa il locale che le persone ricordano"
     ],

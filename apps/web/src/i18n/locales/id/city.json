@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Luncurkan tantangan",
       "title": "Hantu boleh lihat, tapi tak bisa menantang.",
-      "sub": "Daftar untuk meluncurkan tantangan ke warga lokal atau penjelajah dan memvalidasinya."
+      "sub": "Daftar untuk meluncurkan tantangan ke warga lokal atau pelancong dan memvalidasinya."
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} balasan",
     "replies_other": "{{count}} balasan",
     "challengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
-    "challengeExplorers": "🔥 {{name}} menantang para penjelajah: {{title}}",
+    "challengeExplorers": "🔥 {{name}} menantang para pelancong: {{title}}",
     "challengeCta": "Lihat →",
     "challengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\"."
   },

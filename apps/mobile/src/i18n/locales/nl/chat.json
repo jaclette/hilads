@@ -84,6 +84,6 @@
   "photoSavePermBody": "Geef toegang tot foto's om afbeeldingen op te slaan.",
   "photoSavePermSettings": "Geef in Instellingen toegang tot foto's om afbeeldingen op te slaan.",
   "bannerChallengeLocals": "🔥 {{name}} daagt de locals uit: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} daagt de explorers uit: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} daagt de reizigers uit: {{title}}",
   "bannerChallengeValidated": "🏆 Challenge volbracht! {{name}} heeft \"{{title}}\" gevalideerd."
 }

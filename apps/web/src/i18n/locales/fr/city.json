@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Lancer un défi",
       "title": "Les fantômes peuvent regarder, pas défier.",
-      "sub": "Inscris-toi pour lancer un défi aux locaux ou aux explorateurs et le valider."
+      "sub": "Inscris-toi pour lancer un défi aux locaux ou aux voyageurs et le valider."
     }
   },
   "welcome": {
@@ -142,11 +142,11 @@
     "eventTitle": "Créer un événement",
     "eventSub": "Organise quelque chose à rejoindre",
     "challengeTitle": "Lancer un défi",
-    "challengeSub": "Locaux & explorateurs — connectez-vous par un défi",
+    "challengeSub": "Locaux & voyageurs — connectez-vous par un défi",
     "challengePageTitle": "Lance un défi",
     "challengeAudience": "Pour qui ?",
     "challengeAudLocals": "Locaux",
-    "challengeAudExplorers": "Explorateurs",
+    "challengeAudExplorers": "Voyageurs",
     "challengeType": "Type",
     "challengeTypeFood": "Bouffe",
     "challengeTypePlace": "Lieu",
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} réponse",
     "replies_other": "{{count}} réponses",
     "challengeLocals": "🔥 {{name}} défie les locaux : {{title}}",
-    "challengeExplorers": "🔥 {{name}} défie les explorateurs : {{title}}",
+    "challengeExplorers": "🔥 {{name}} défie les voyageurs : {{title}}",
     "challengeCta": "Voir →",
     "challengeValidated": "🏆 Défi accompli ! {{name}} a validé « {{title}} »."
   },

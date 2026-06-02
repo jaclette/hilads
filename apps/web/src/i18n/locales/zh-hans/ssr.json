@@ -1,13 +1,13 @@
 {
   "home": {
-    "title": "Hilads — 通过挑战连接本地人和探索者",
-    "description": "你是本地人或探索者。发起一个挑战 — 美食、地点、文化、帮助 — 与接受的人见面。实时,无需注册。",
+    "title": "Hilads — 通过挑战连接本地人和旅行者",
+    "description": "你是本地人或旅行者。发起一个挑战 — 美食、地点、文化、帮助 — 与接受的人见面。实时,无需注册。",
     "h1": "向城市发起挑战。",
-    "intro": "Hilads 通过挑战在每个城市连接本地人和探索者。为另一方发起一个 — 选择类型,起个标题,看着人们接受。完成后,创建者验证。实时,无需注册。",
+    "intro": "Hilads 通过挑战在每个城市连接本地人和旅行者。为另一方发起一个 — 选择类型,起个标题,看着人们接受。完成后,创建者验证。实时,无需注册。",
     "aboutHeading": "Hilads 怎么用",
     "aboutBody": "选择你的城市。为另一方发起一个挑战,或接受一个吸引你的挑战。通过你真正想做的事情认识本地人和旅行者 — 美食、地点、文化、帮助。Hilads 让每个城市此刻就感觉生机勃勃。",
     "citiesCta": "浏览所有 Hilads 城市",
-    "subhead": "🔥 本地人与探索者通过挑战相连。"
+    "subhead": "🔥 本地人与旅行者通过挑战相连。"
   },
   "brand": "Hilads",
   "dateLocale": "zh-CN",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "另有 {count} 个挑战等你接受。",
     "openChallengesHeading": "{city}的进行中挑战",
     "challengeForLocals": "面向本地人",
-    "challengeForExplorers": "面向探索者"
+    "challengeForExplorers": "面向旅行者"
   },
   "past": {
     "title": "{city}的过往活动 | Hilads",
@@ -154,11 +154,11 @@
     "title": "{title} — {city} 的挑战 | Hilads",
     "titleNoCity": "{title} — Hilads 上的挑战",
     "descLocals": "{title} — 给 {city} 本地人的挑战。接受挑战,认识旅行者,无需注册。",
-    "descExplorers": "{title} — 给 {city} 探索者的挑战。接受挑战,认识本地人,无需注册。",
+    "descExplorers": "{title} — 给 {city} 旅行者的挑战。接受挑战,认识本地人,无需注册。",
     "descGeneric": "{title} — 在 Hilads 接受挑战,在 {city} 认识本地人或旅行者。",
     "h1Tag": "挑战",
     "audienceLocals": "给 {city} 的本地人",
-    "audienceExplorers": "给 {city} 的探索者",
+    "audienceExplorers": "给 {city} 的旅行者",
     "validatedBadge": "✓ 已验证",
     "openBadge": "开放",
     "typeLabel": "类型:",
@@ -170,7 +170,7 @@
     "participantsMany": "{count} 人接受了",
     "noParticipants": "第一个接受吧。",
     "aboutHeading": "关于这个挑战",
-    "aboutBody": "在 Hilads,本地人和探索者通过挑战连接。选择一种类型 — 美食、地点、文化、帮助 — 起个标题,看着人们接受。完成后,创建者验证挑战。",
+    "aboutBody": "在 Hilads,本地人和旅行者通过挑战连接。选择一种类型 — 美食、地点、文化、帮助 — 起个标题,看着人们接受。完成后,创建者验证挑战。",
     "cityLink": "查看 {city} 正在发生什么",
     "removed": "此挑战已被删除。"
   }

@@ -4,7 +4,7 @@
   "audience": "给谁?",
   "aud": {
     "locals": "本地人",
-    "explorers": "探索者"
+    "explorers": "旅行者"
   },
   "type": "类型",
   "tp": {
@@ -31,7 +31,7 @@
   "validatedBadge": "已验证",
   "openBadge": "开放",
   "forLocals": "给本地人",
-  "forExplorers": "给探索者",
+  "forExplorers": "给旅行者",
   "notFound": "未找到挑战",
   "typeBadge": {
     "food": "美食挑战",

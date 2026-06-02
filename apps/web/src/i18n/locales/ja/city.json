@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "挑戦を立てる",
       "title": "ゴーストは見れるけど、挑戦は立てられない。",
-      "sub": "登録してローカルやエクスプローラーに挑戦を立て、検証しよう。"
+      "sub": "登録してローカルや旅行者に挑戦を立て、検証しよう。"
     }
   },
   "welcome": {
@@ -222,7 +222,7 @@
     "replies_one": "{{count}}件の返信",
     "replies_other": "{{count}}件の返信",
     "challengeLocals": "🔥 {{name}} がローカル向けに挑戦：{{title}}",
-    "challengeExplorers": "🔥 {{name}} がエクスプローラー向けに挑戦：{{title}}",
+    "challengeExplorers": "🔥 {{name}} が旅行者向けに挑戦：{{title}}",
     "challengeCta": "見る →",
     "challengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。"
   },

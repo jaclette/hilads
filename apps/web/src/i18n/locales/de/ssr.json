@@ -7,7 +7,7 @@
     "aboutHeading": "So funktioniert Hilads",
     "aboutBody": "Wähle deine Stadt. Starte eine Challenge für die andere Seite, oder nimm eine an, die dich anspricht. Triff Locals und Reisende durch das, was du wirklich tun willst — Essen, Ort, Kultur, Hilfe. Hilads lässt jede Stadt lebendig wirken, genau jetzt.",
     "citiesCta": "Alle Hilads-Städte durchstöbern",
-    "subhead": "🔥 Wo Locals und Explorer durch Challenges zusammenkommen."
+    "subhead": "🔥 Wo Locals und Reisende durch Challenges zusammenkommen."
   },
   "brand": "Hilads",
   "dateLocale": "de-DE",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "+ {count} offene Challenges zum Annehmen.",
     "openChallengesHeading": "Offene Challenges in {city}",
     "challengeForLocals": "für Locals",
-    "challengeForExplorers": "für Explorer"
+    "challengeForExplorers": "für Reisende"
   },
   "past": {
     "title": "Vergangene Aktivität in {city} | Hilads",

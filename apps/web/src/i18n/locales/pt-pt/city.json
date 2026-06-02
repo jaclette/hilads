@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Lançar um desafio",
       "title": "Fantasmas vêem, mas não desafiam.",
-      "sub": "Cria conta para lançar um desafio a locais ou exploradores e validá-lo."
+      "sub": "Cria conta para lançar um desafio a locais ou viajantes e validá-lo."
     }
   },
   "welcome": {
@@ -142,11 +142,11 @@
     "eventTitle": "Criar um evento",
     "eventSub": "Organiza algo a que se possam juntar",
     "challengeTitle": "Lançar um desafio",
-    "challengeSub": "Locais & exploradores — liguem-se através de um desafio",
+    "challengeSub": "Locais & viajantes — liguem-se através de um desafio",
     "challengePageTitle": "Criar um desafio",
     "challengeAudience": "Para quem?",
     "challengeAudLocals": "Locais",
-    "challengeAudExplorers": "Exploradores",
+    "challengeAudExplorers": "Viajantes",
     "challengeType": "Tipo",
     "challengeTypeFood": "Comida",
     "challengeTypePlace": "Sítio",
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} resposta",
     "replies_other": "{{count}} respostas",
     "challengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
-    "challengeExplorers": "🔥 {{name}} desafia os exploradores: {{title}}",
+    "challengeExplorers": "🔥 {{name}} desafia os viajantes: {{title}}",
     "challengeCta": "Ver →",
     "challengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\"."
   },

@@ -7,7 +7,7 @@
     "aboutHeading": "Zo werkt Hilads",
     "aboutBody": "Kies je stad. Start een challenge voor de andere kant, of neem er een aan die je aanspreekt. Ontmoet locals en reizigers via wat je echt wilt doen — eten, plek, cultuur, hulp. Hilads laat elke stad nu meteen levend aanvoelen.",
     "citiesCta": "Blader door alle Hilads-steden",
-    "subhead": "🔥 Waar locals en explorers samenkomen via challenges."
+    "subhead": "🔥 Waar locals en reizigers samenkomen via challenges."
   },
   "brand": "Hilads",
   "dateLocale": "nl-NL",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "+ {count} open challenges om aan te nemen.",
     "openChallengesHeading": "Open challenges in {city}",
     "challengeForLocals": "voor locals",
-    "challengeForExplorers": "voor explorers"
+    "challengeForExplorers": "voor reizigers"
   },
   "past": {
     "title": "Eerdere activiteit in {city} | Hilads",

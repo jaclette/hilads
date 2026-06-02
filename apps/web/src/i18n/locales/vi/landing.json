@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Thành phố đang sống quanh bạn.\nThách dân địa phương hoặc người khám phá, tham gia hoạt động, hoặc mở spot riêng."
+    "sub": "Thành phố đang sống quanh bạn.\nThách dân địa phương hoặc du khách, tham gia hoạt động, hoặc mở spot riêng."
   },
   "join": {
     "peopleLive_other": "🔥 {{count}} người đang ở quanh đây",
@@ -27,9 +27,9 @@
   "local": {
     "badge": "🌍 Người địa phương",
     "title": "Hãy là người địa phương dẫn dắt thành phố",
-    "tagline": "Bạn biết những spot. Thách dân địa phương hoặc người khám phá tìm ra chúng.",
+    "tagline": "Bạn biết những spot. Thách dân địa phương hoặc du khách tìm ra chúng.",
     "bullets": [
-      "Thách dân địa phương hoặc người khám phá — đồ ăn, nơi chốn, văn hóa hoặc giúp đỡ",
+      "Thách dân địa phương hoặc du khách — đồ ăn, nơi chốn, văn hóa hoặc giúp đỡ",
       "Đưa người ta đến những spot bạn yêu",
       "Trở thành người địa phương mà mọi người nhớ đến"
     ],

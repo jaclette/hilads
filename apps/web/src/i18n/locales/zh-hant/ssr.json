@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads 怎麼用",
     "aboutBody": "選擇你的城市。為另一方發起一個挑戰,或接受一個吸引你的挑戰。透過你真正想做的事認識在地人和旅人 — 美食、地點、文化、幫助。Hilads 讓每個城市此刻都感覺生氣勃勃。",
     "citiesCta": "瀏覽所有 Hilads 城市",
-    "subhead": "🔥 本地人與探索者透過挑戰相連。"
+    "subhead": "🔥 本地人與旅行者透過挑戰相連。"
   },
   "brand": "Hilads",
   "dateLocale": "zh-Hant-TW",
@@ -123,7 +123,7 @@
     "descChallengeSuffix": "另有 {count} 個挑戰等你接受。",
     "openChallengesHeading": "{city}的進行中挑戰",
     "challengeForLocals": "面向本地人",
-    "challengeForExplorers": "面向探索者"
+    "challengeForExplorers": "面向旅行者"
   },
   "past": {
     "title": "{city}的過往活動 | Hilads",

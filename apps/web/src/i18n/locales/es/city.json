@@ -25,7 +25,7 @@
     "create_challenge": {
       "pageTitle": "Lanzar un reto",
       "title": "Los fantasmas miran, pero no retan.",
-      "sub": "Regístrate para lanzar un reto a locales o exploradores y validarlo."
+      "sub": "Regístrate para lanzar un reto a locales o viajeros y validarlo."
     }
   },
   "welcome": {
@@ -142,11 +142,11 @@
     "eventTitle": "Crear un evento",
     "eventSub": "Organiza algo a lo que unirse",
     "challengeTitle": "Lanzar un reto",
-    "challengeSub": "Locales y exploradores — conecten a través de un reto",
+    "challengeSub": "Locales y viajeros — conecten a través de un reto",
     "challengePageTitle": "Crear un reto",
     "challengeAudience": "¿Para quién?",
     "challengeAudLocals": "Locales",
-    "challengeAudExplorers": "Exploradores",
+    "challengeAudExplorers": "Viajeros",
     "challengeType": "Tipo",
     "challengeTypeFood": "Comida",
     "challengeTypePlace": "Lugar",
@@ -222,7 +222,7 @@
     "replies_one": "{{count}} respuesta",
     "replies_other": "{{count}} respuestas",
     "challengeLocals": "🔥 {{name}} reta a los locales: {{title}}",
-    "challengeExplorers": "🔥 {{name}} reta a los exploradores: {{title}}",
+    "challengeExplorers": "🔥 {{name}} reta a los viajeros: {{title}}",
     "challengeCta": "Ver →",
     "challengeValidated": "🏆 ¡Reto cumplido! {{name}} validó \"{{title}}\"."
   },
