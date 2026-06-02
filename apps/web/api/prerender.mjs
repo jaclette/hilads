@@ -593,12 +593,10 @@ function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, ve
   } else {
     description = T(locale, 'city.descLow', { city })
   }
-  // Append a "+ N défis lancés" suffix when the city has open challenges.
-  // The base description tier reads on its own; the suffix is added text
-  // (not a tier replacement) so we don't lose the events-based phrasing.
-  if (challengeCount > 0) {
-    description += ' ' + T(locale, 'city.descChallengeSuffix', { count: challengeCount })
-  }
+  // (descChallengeSuffix was a tail "+ N défis" appended on top of the
+  // events-led description. The base tiers now lead with défi as a category
+  // anchor, so the suffix would double-reference and risk SERP truncation.
+  // challengeCount stays in the signature for the noindex decision below.)
 
   // noindex only when there's truly nothing of substance: zero upcoming
   // events AND zero seeded venues AND zero chat messages AND zero open

@@ -83,9 +83,9 @@
   },
   "city": {
     "title": "Wat speelt er lokaal in {city} {timeframe} — evenementen, meetups en locals om te ontmoeten | Hilads",
-    "descHigh": "{count}+ evenementen in {city} deze week — meetups, etentjes, rooftop hangouts. Live chat met locals die nu online zijn. Geen aanmelding.",
-    "descMid": "Vanavond in {city}: meetups, etentjes en hangouts met locals en reizigers. Live chat + zie wie er nu online is. Geen aanmelding.",
-    "descLow": "Zie wie er nu in {city} is en wat er vanavond gebeurt — live city chat, meetups, hangouts. Real-time, geen aanmelding.",
+    "descHigh": "Doe mee aan een lokale challenge in {city} deze week — {count}+ events om aan te sluiten, live citychat. Geen aanmelding.",
+    "descMid": "Doe mee aan een challenge of meetup in {city} vanavond — etentjes, rooftops, live citychat. Geen aanmelding.",
+    "descLow": "Doe mee aan een lokale challenge of zie wie er nu in {city} is — live citychat, meetups, real-time activiteit. Geen aanmelding.",
     "h1": "{timeframe} in {city}",
     "introEventsOne": "1 komend evenement",
     "introEventsMany": "{count} komende evenementen",

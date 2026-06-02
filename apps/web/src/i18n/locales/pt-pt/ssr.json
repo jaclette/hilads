@@ -83,9 +83,9 @@
   },
   "city": {
     "title": "O que está a acontecer perto de ti em {city} {timeframe} — eventos, encontros e locais para conhecer | Hilads",
-    "descHigh": "{count}+ eventos em {city} esta semana — encontros, jantares, convívios em rooftops. Chat ao vivo com locais online agora. Sem registo.",
-    "descMid": "Esta noite em {city}: encontros, jantares e convívios com locais e viajantes. Chat ao vivo + vê quem está online agora. Sem registo.",
-    "descLow": "Vê quem está em {city} agora e o que se passa esta noite — chat ao vivo da cidade, encontros, convívios. Em tempo real, sem registo.",
+    "descHigh": "Aceita um desafio local em {city} esta semana — {count}+ eventos para ir, chat ao vivo com locais. Sem registo.",
+    "descMid": "Aceita um desafio ou junta-te a um plano em {city} esta noite — jantares, saídas, chat ao vivo da cidade. Sem registo.",
+    "descLow": "Aceita um desafio local ou vê quem está em {city} agora — chat ao vivo, encontros, atividade em tempo real. Sem registo.",
     "h1": "{timeframe} em {city}",
     "introEventsOne": "1 evento em breve",
     "introEventsMany": "{count} eventos em breve",

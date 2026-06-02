@@ -107,9 +107,9 @@
   },
   "city": {
     "title": "What is happening locally in {city} {timeframe} — events, meetups and locals to meet | Hilads",
-    "descHigh": "{count}+ events in {city} this week — meetups, dinners, rooftop hangouts. Live chat with locals online right now. No sign-up.",
-    "descMid": "Tonight in {city}: meetups, dinners and hangouts with locals and travelers. Live chat + see who's online right now. No sign-up.",
-    "descLow": "See who's in {city} right now and what's happening tonight — live city chat, meetups, hangouts. Real-time, no sign-up.",
+    "descHigh": "Take on a local challenge in {city} this week — {count}+ events to join, live city chat with people online now. No signup.",
+    "descMid": "Take on a défi or join a meetup in {city} tonight — dinners, rooftop hangs, live city chat. No signup.",
+    "descLow": "Take on a local challenge or see who's in {city} right now — live city chat, meetups, real-time activity. No signup.",
     "h1": "{timeframe} in {city}",
     "introEventsOne": "1 upcoming event",
     "introEventsMany": "{count} upcoming events",
