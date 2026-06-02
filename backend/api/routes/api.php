@@ -7524,10 +7524,15 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate', function (arra
         error_log('[challenges] validate notif fanout failed (non-fatal): ' . $e->getMessage());
     }
 
-    // Live update so the feed flips the badge without a refetch.
+    // Live update so the feed flips the badge without a refetch + injects
+    // a "Challenge done!" pill into the city chat. Enriched with the
+    // creator's display name (same fallback as the create broadcast).
     try {
         $cityIntId = (int) substr($updated['city_id'], 5);
-        broadcastChallengeValidatedToWs($cityIntId, $updated);
+        broadcastChallengeValidatedToWs(
+            $cityIntId,
+            array_merge($updated, ['nickname' => $creatorName ?? 'Someone']),
+        );
     } catch (\Throwable $e) {
         error_log('[challenges] ws validate broadcast failed (non-fatal): ' . $e->getMessage());
     }

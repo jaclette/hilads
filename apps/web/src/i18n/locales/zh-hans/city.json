@@ -223,7 +223,8 @@
     "replies_other": "{{count}} 条回复",
     "challengeLocals": "🔥 {{name}} 向本地人发起挑战：{{title}}",
     "challengeExplorers": "🔥 {{name}} 向探索者发起挑战：{{title}}",
-    "challengeCta": "查看 →"
+    "challengeCta": "查看 →",
+    "challengeValidated": "🏆 挑战完成！{{name}} 验证了 \"{{title}}\"。"
   },
   "replyPreview": {
     "photo": "📷 照片"

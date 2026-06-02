@@ -84,5 +84,6 @@
   "photoSavePermBody": "อนุญาตการเข้าถึง Photos เพื่อบันทึกรูป",
   "photoSavePermSettings": "เปิดอนุญาตเข้าถึง Photos ในการตั้งค่า เพื่อบันทึกรูป",
   "bannerChallengeLocals": "🔥 {{name}} ท้าทายคนท้องถิ่น: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} ท้าทายผู้สำรวจ: {{title}}"
+  "bannerChallengeExplorers": "🔥 {{name}} ท้าทายผู้สำรวจ: {{title}}",
+  "bannerChallengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\""
 }

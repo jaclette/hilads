@@ -223,7 +223,8 @@
     "replies_other": "{{count}} replies",
     "challengeLocals": "🔥 {{name}} challenges the locals: {{title}}",
     "challengeExplorers": "🔥 {{name}} challenges the explorers: {{title}}",
-    "challengeCta": "View →"
+    "challengeCta": "View →",
+    "challengeValidated": "🏆 Challenge done! {{name}} validated \"{{title}}\"."
   },
   "replyPreview": {
     "photo": "📷 Photo"

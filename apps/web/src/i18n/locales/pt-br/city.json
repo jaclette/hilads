@@ -223,7 +223,8 @@
     "replies_other": "{{count}} respostas",
     "challengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
     "challengeExplorers": "🔥 {{name}} desafia os exploradores: {{title}}",
-    "challengeCta": "Ver →"
+    "challengeCta": "Ver →",
+    "challengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\"."
   },
   "replyPreview": {
     "photo": "📷 Foto"

@@ -84,5 +84,6 @@
   "photoSavePermBody": "请允许照片访问以保存图片。",
   "photoSavePermSettings": "请在设置中允许照片访问以保存图片。",
   "bannerChallengeLocals": "🔥 {{name}} 向本地人发起挑战：{{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} 向探索者发起挑战：{{title}}"
+  "bannerChallengeExplorers": "🔥 {{name}} 向探索者发起挑战：{{title}}",
+  "bannerChallengeValidated": "🏆 挑战完成！{{name}} 验证了 \"{{title}}\"。"
 }

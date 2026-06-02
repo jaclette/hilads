@@ -223,7 +223,8 @@
     "replies_other": "답글 {{count}}개",
     "challengeLocals": "🔥 {{name}} 님이 로컬에게 도전: {{title}}",
     "challengeExplorers": "🔥 {{name}} 님이 익스플로러에게 도전: {{title}}",
-    "challengeCta": "보기 →"
+    "challengeCta": "보기 →",
+    "challengeValidated": "🏆 도전 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요."
   },
   "replyPreview": {
     "photo": "📷 사진"

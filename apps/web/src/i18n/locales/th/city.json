@@ -223,7 +223,8 @@
     "replies_other": "{{count}} การตอบกลับ",
     "challengeLocals": "🔥 {{name}} ท้าทายคนท้องถิ่น: {{title}}",
     "challengeExplorers": "🔥 {{name}} ท้าทายผู้สำรวจ: {{title}}",
-    "challengeCta": "ดู →"
+    "challengeCta": "ดู →",
+    "challengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\""
   },
   "replyPreview": {
     "photo": "📷 รูปภาพ"

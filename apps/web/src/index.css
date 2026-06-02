@@ -3680,6 +3680,14 @@ html, body, #root {
   border-color: rgba(255, 122, 60, 0.30);
 }
 
+/* Validated-challenge variant — green tint (same hue as the validated
+   status badge on the détail screen) so the celebration pill is visually
+   distinct from the orange creation pill of the same challenge. */
+.feed-prompt--challenge-validated {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.30);
+}
+
 /* ── Owner prompt card — shown in event feed for creators ── */
 
 .feed-owner-prompt {

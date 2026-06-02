@@ -2413,6 +2413,29 @@ export default function App() {
         setCityChallenges(prev => prev.some(c => c.id === challenge.id) ? prev : [...prev, challenge])
       })
 
+      // Socket: handle challenge_validated — inject a separate celebration
+      // pill ("🏆 Challenge done!") into the city feed. Independent from the
+      // original creation pill — both are timeline-worthy events. Dedup by
+      // id since the same validation arrives once per session.
+      socket.on('challenge_validated', ({ channelId, challenge }) => {
+        if (String(channelId) !== String(activeChannelRef.current)) return
+        if (!challenge?.id) return
+        const id = `challenge-validated-${challenge.id}`
+        setFeed(prev => {
+          if (prev.some(f => f.id === id)) return prev
+          return [...prev, {
+            type:        'challenge_validated',
+            id,
+            challengeId: challenge.id,
+            title:       challenge.title,
+            nickname:    challenge.nickname,
+          }]
+        })
+        // Also flip the in-memory challenge status so other surfaces (NOW
+        // strip, detail page) reflect the new state if the user navigates.
+        setCityChallenges(prev => prev.map(c => c.id === challenge.id ? challenge : c))
+      })
+
       // Socket: handle newTopic — append pill directly from WS payload.
       socket.on('newTopic', ({ channelId, topic }) => {
         if (String(channelId) !== String(activeChannelRef.current)) return
@@ -4157,6 +4180,25 @@ export default function App() {
               return (
                 <div key={item.id} className={`feed-prompt feed-prompt--challenge${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
                   <span className="feed-prompt-text">{t(textKey, { name: item.nickname, title: item.title })}</span>
+                  <button
+                    className="feed-prompt-btn"
+                    onClick={() => challenge && setActiveChallenge(challenge)}
+                  >
+                    {t('feedNew.challengeCta')}
+                  </button>
+                </div>
+              )
+            }
+
+            // Validated-challenge celebration — fires when the owner flips
+            // the challenge to validated. Independent pill from the original
+            // creation one (both stay visible in the timeline). Same Voir →
+            // CTA so users can land on the archived chat.
+            if (item.type === 'challenge_validated') {
+              const challenge = cityChallenges.find(c => c.id === item.challengeId)
+              return (
+                <div key={item.id} className={`feed-prompt feed-prompt--challenge-validated${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
+                  <span className="feed-prompt-text">{t('feedNew.challengeValidated', { name: item.nickname, title: item.title })}</span>
                   <button
                     className="feed-prompt-btn"
                     onClick={() => challenge && setActiveChallenge(challenge)}

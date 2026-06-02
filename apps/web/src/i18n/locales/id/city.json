@@ -223,7 +223,8 @@
     "replies_other": "{{count}} balasan",
     "challengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
     "challengeExplorers": "🔥 {{name}} menantang para penjelajah: {{title}}",
-    "challengeCta": "Lihat →"
+    "challengeCta": "Lihat →",
+    "challengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\"."
   },
   "replyPreview": {
     "photo": "📷 Foto"

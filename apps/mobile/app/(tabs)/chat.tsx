@@ -465,7 +465,30 @@ export default function ChatTab() {
       }]);
     });
 
-    return () => { offChallenge(); };
+    // WS: challenge validated — celebration pill, separate from the creation
+    // pill so both events stay in the timeline. Dedup id is per-challenge
+    // (not per-validation) since validate is idempotent.
+    const seenValidatedKey = (id: string) => `challenge-validated-${id}`;
+    const offValidated = socket.on('challenge_validated', (data: Record<string, unknown>) => {
+      if (String(data.channelId) !== String(channelId)) return;
+      const ch = data.challenge as Record<string, unknown> | undefined;
+      const id = (ch?.id ?? '') as string;
+      if (!id) return;
+      const itemId = seenValidatedKey(id);
+      setChallengeFeedItems(prev => {
+        if (prev.some(p => p.id === itemId)) return prev;
+        return [...prev, {
+          id:          itemId,
+          type:        'challenge_validated' as const,
+          challengeId: id,
+          content:     (ch?.title as string) ?? '',
+          nickname:    (ch?.nickname as string) ?? '',
+          createdAt:   Date.now() / 1000,
+        }];
+      });
+    });
+
+    return () => { offChallenge(); offValidated(); };
   }, [channelId]);
 
   const loadFn = useCallback(

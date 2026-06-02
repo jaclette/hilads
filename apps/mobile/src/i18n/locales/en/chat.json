@@ -84,5 +84,6 @@
   "promptCreate": "🎉 Got a plan tonight?",
   "promptCreateCta": "Create event",
   "bannerChallengeLocals": "🔥 {{name}} challenges the locals: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} challenges the explorers: {{title}}"
+  "bannerChallengeExplorers": "🔥 {{name}} challenges the explorers: {{title}}",
+  "bannerChallengeValidated": "🏆 Challenge done! {{name}} validated \"{{title}}\"."
 }

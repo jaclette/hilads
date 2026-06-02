@@ -266,7 +266,7 @@ export interface MentionRef {
 export interface Message {
   id?: string;                    // absent on some system messages
   channelId?: string;
-  type: 'text' | 'system' | 'image' | 'event' | 'topic' | 'challenge' | 'activity' | 'prompt' | 'join_request';
+  type: 'text' | 'system' | 'image' | 'event' | 'topic' | 'challenge' | 'challenge_validated' | 'activity' | 'prompt' | 'join_request';
   event?: string;                 // system message subtype: 'join' | etc.
   subtype?: string;               // activity/prompt subtype: 'crowd' | 'explore' | 'photo' | 'create-event'
   cta?: string;                   // prompt CTA button label

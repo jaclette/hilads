@@ -84,5 +84,6 @@
   "photoSavePermBody": "Permita o acesso às fotos para salvar imagens.",
   "photoSavePermSettings": "Permita o acesso às fotos em Configurações para salvar imagens.",
   "bannerChallengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} desafia os exploradores: {{title}}"
+  "bannerChallengeExplorers": "🔥 {{name}} desafia os exploradores: {{title}}",
+  "bannerChallengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\"."
 }

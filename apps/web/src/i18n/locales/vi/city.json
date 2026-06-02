@@ -217,7 +217,8 @@
     "replies_other": "{{count}} trả lời",
     "challengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",
     "challengeExplorers": "🔥 {{name}} thách người khám phá: {{title}}",
-    "challengeCta": "Xem →"
+    "challengeCta": "Xem →",
+    "challengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\"."
   },
   "replyPreview": {
     "photo": "📷 Ảnh"

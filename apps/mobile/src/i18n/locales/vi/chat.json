@@ -84,5 +84,6 @@
   "photoSavePermBody": "Cho phép truy cập Ảnh để lưu hình.",
   "photoSavePermSettings": "Cho phép truy cập Ảnh trong Cài đặt để lưu hình.",
   "bannerChallengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} thách người khám phá: {{title}}"
+  "bannerChallengeExplorers": "🔥 {{name}} thách người khám phá: {{title}}",
+  "bannerChallengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\"."
 }

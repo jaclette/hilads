@@ -84,5 +84,6 @@
   "photoSavePermBody": "Izinkan akses foto untuk menyimpan gambar.",
   "photoSavePermSettings": "Izinkan akses foto di Pengaturan untuk menyimpan gambar.",
   "bannerChallengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} menantang para penjelajah: {{title}}"
+  "bannerChallengeExplorers": "🔥 {{name}} menantang para penjelajah: {{title}}",
+  "bannerChallengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\"."
 }

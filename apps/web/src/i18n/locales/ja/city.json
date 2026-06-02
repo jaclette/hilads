@@ -223,7 +223,8 @@
     "replies_other": "{{count}}件の返信",
     "challengeLocals": "🔥 {{name}} がローカル向けに挑戦：{{title}}",
     "challengeExplorers": "🔥 {{name}} がエクスプローラー向けに挑戦：{{title}}",
-    "challengeCta": "見る →"
+    "challengeCta": "見る →",
+    "challengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。"
   },
   "replyPreview": {
     "photo": "📷 写真"

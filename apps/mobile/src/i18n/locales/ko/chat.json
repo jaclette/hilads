@@ -84,5 +84,6 @@
   "photoSavePermBody": "이미지를 저장하려면 사진 접근을 허용해 주세요.",
   "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요.",
   "bannerChallengeLocals": "🔥 {{name}} 님이 로컬에게 도전: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} 님이 익스플로러에게 도전: {{title}}"
+  "bannerChallengeExplorers": "🔥 {{name}} 님이 익스플로러에게 도전: {{title}}",
+  "bannerChallengeValidated": "🏆 도전 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요."
 }

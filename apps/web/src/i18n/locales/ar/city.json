@@ -239,7 +239,8 @@
     "replies_other": "{{count}} رد",
     "challengeLocals": "🔥 {{name}} يتحدّى السكان المحليين: {{title}}",
     "challengeExplorers": "🔥 {{name}} يتحدّى المستكشفين: {{title}}",
-    "challengeCta": "عرض →"
+    "challengeCta": "عرض →",
+    "challengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\"."
   },
   "replyPreview": {
     "photo": "📷 صورة"

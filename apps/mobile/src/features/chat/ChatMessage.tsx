@@ -494,7 +494,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // AnimatedEventPill which owns its own opacity). Hook runs unconditionally;
   // `enabled` gates it. cancelDismiss() is wired into the CTAs below.
   const cancelDismiss = useAutoDismissFade({
-    enabled: autoDismiss && (message.type === 'topic' || message.type === 'challenge' || message.type === 'prompt' || message.type === 'activity'),
+    enabled: autoDismiss && (message.type === 'topic' || message.type === 'challenge' || message.type === 'challenge_validated' || message.type === 'prompt' || message.type === 'activity'),
     id: message.id ?? '',
     onDismiss: onAutoDismiss,
   });
@@ -579,6 +579,31 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               onPress={() => { cancelDismiss(); if (message.challengeId) router.push(`/challenge/${message.challengeId}`); }}
             >
               <Text style={styles.challengeJoinText}>→</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </>
+    );
+  }
+
+  // ── Challenge validated celebration — green pill, "🏆 Challenge done!
+  // {name} validated …". Lives next to the original creation pill (both
+  // are timeline events; we don't replace the older one).
+  if (message.type === 'challenge_validated') {
+    return (
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
+          <View style={styles.challengeValidatedPill}>
+            <Text style={styles.challengeValidatedText} numberOfLines={2}>
+              {t('bannerChallengeValidated', { name: message.nickname, title: message.content })}
+            </Text>
+            <TouchableOpacity
+              style={styles.challengeValidatedBtn}
+              activeOpacity={0.8}
+              onPress={() => { cancelDismiss(); if (message.challengeId) router.push(`/challenge/${message.challengeId}`); }}
+            >
+              <Text style={styles.challengeValidatedBtnText}>→</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>
@@ -1020,6 +1045,42 @@ const styles = StyleSheet.create({
     flexShrink:        0,
   },
   challengeJoinText: {
+    color:      '#fff',
+    fontSize:   15,
+    fontWeight: '700',
+  },
+
+  // Validated-celebration variant — green tint (same hue as the validated
+  // status badge on the détail screen) so the two challenge pills for the
+  // same id read as distinct timeline events.
+  challengeValidatedPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
+    backgroundColor:   'rgba(74,222,128,0.12)',
+    borderWidth:       1,
+    borderColor:       'rgba(74,222,128,0.30)',
+    borderRadius:      22,
+    paddingHorizontal: 16,
+    paddingVertical:   12,
+    maxWidth:          '82%',
+  },
+  challengeValidatedText: {
+    flexShrink:  1,
+    fontSize:    16,
+    fontWeight:  '600',
+    color:       Colors.text,
+    lineHeight:  22,
+    marginRight: 10,
+  },
+  challengeValidatedBtn: {
+    backgroundColor:   'rgba(74,222,128,0.28)',
+    borderRadius:      12,
+    paddingHorizontal: 11,
+    paddingVertical:   4,
+    flexShrink:        0,
+  },
+  challengeValidatedBtnText: {
     color:      '#fff',
     fontSize:   15,
     fontWeight: '700',

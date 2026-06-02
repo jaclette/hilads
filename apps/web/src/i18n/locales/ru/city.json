@@ -231,7 +231,8 @@
     "replies_other": "{{count}} ответов",
     "challengeLocals": "🔥 {{name}} бросает вызов местным: {{title}}",
     "challengeExplorers": "🔥 {{name}} бросает вызов исследователям: {{title}}",
-    "challengeCta": "Смотреть →"
+    "challengeCta": "Смотреть →",
+    "challengeValidated": "🏆 Вызов выполнен! {{name}} подтвердил «{{title}}»."
   },
   "replyPreview": {
     "photo": "📷 Фото"
