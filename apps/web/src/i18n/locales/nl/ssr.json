@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Over Hilads",
     "aboutHiladsBody": "Hilads is een live sociale laag over steden wereldwijd. Open de app, kijk wie er nu in de buurt is, doe met één tik mee aan een evenement of host je eigen. Geen vriendenlijst die je eerst moet opbouwen.",
     "aboutHiladsInHeading": "Over Hilads in {city}",
-    "seeOnHilads": "Bekijk {link} op Hilads."
+    "seeOnHilads": "Bekijk {link} op Hilads.",
+    "seeChallengesSentence": "Of doe {link} op Hilads.",
+    "seeChallengesLink": "een open challenge in {city}"
   },
   "event": {
     "title": "{title} — ontmoet locals en reizigers | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} in {city} · {total} op Hilads",
     "title": "{label} in {city}",
-    "descMany": "{total} {label} in {city} op dit moment. Kijk wie er gaat en doe met één tik mee — in realtime, zonder aanmelding.",
-    "descSomeUpcoming": "{label} in {city} op Hilads. {count} binnenkort — ontmoet locals en reizigers met één tik.",
-    "descSomeBrowse": "{label} in {city} op Hilads. Verken de locaties — ontmoet locals en reizigers met één tik.",
-    "descFew": "Op zoek naar {label} in {city}? Hilads laat zien wat er echt op de planning staat vanavond. Klein maar echt.",
+    "descMany": "{total} {label} in {city} nu. Plus open challenges om aan te nemen — ontmoet locals en reizigers, real-time, geen aanmelding.",
+    "descSomeUpcoming": "{label} in {city} op Hilads. {count} aankomend + challenges om aan te nemen — ontmoet locals en reizigers in één tik.",
+    "descSomeBrowse": "{label} in {city} op Hilads. Verken plekken, doe mee aan een lokale challenge, ontmoet locals en reizigers in één tik.",
+    "descFew": "Op zoek naar {label} in {city}? Hilads toont wat er vanavond is + challenges van locals. Klein maar echt.",
     "introEvents": "{count} {label} binnenkort",
     "introVenuesOne": "1 locatie",
     "introVenuesMany": "{count} locaties",

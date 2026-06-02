@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Tentang Hilads",
     "aboutHiladsBody": "Hilads adalah lapisan sosial real-time di atas kota-kota di seluruh dunia. Buka app, lihat siapa yang ada di sekitar sekarang, gabung ke acara dengan satu ketuk, atau jadi host sendiri. Tidak perlu membangun daftar teman dulu.",
     "aboutHiladsInHeading": "Tentang Hilads di {city}",
-    "seeOnHilads": "Lihat {link} di Hilads."
+    "seeOnHilads": "Lihat {link} di Hilads.",
+    "seeChallengesSentence": "Atau terima {link} di Hilads.",
+    "seeChallengesLink": "tantangan terbuka di {city}"
   },
   "event": {
     "title": "{title} — temui local dan pelancong | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} di {city} · {total} di Hilads",
     "title": "{label} di {city}",
-    "descMany": "{total} {label} di {city} sekarang. Lihat siapa yang ikut dan gabung dengan satu ketuk — real-time, tanpa daftar.",
-    "descSomeUpcoming": "{label} di {city} di Hilads. {count} mendatang — temui local dan pelancong dengan satu ketuk.",
-    "descSomeBrowse": "{label} di {city} di Hilads. Jelajahi tempat — temui local dan pelancong dengan satu ketuk.",
-    "descFew": "Mencari {label} di {city}? Hilads menampilkan yang benar-benar ada malam ini. Kecil tapi nyata.",
+    "descMany": "{total} {label} di {city} sekarang. Plus tantangan terbuka untuk diterima — temui warga lokal dan pelancong, real-time, tanpa daftar.",
+    "descSomeUpcoming": "{label} di {city} di Hilads. {count} akan datang + tantangan untuk diterima — temui warga lokal dan pelancong dalam satu ketukan.",
+    "descSomeBrowse": "{label} di {city} di Hilads. Jelajahi tempat, terima tantangan lokal, temui warga lokal dan pelancong dalam satu ketukan.",
+    "descFew": "Cari {label} di {city}? Hilads daftar apa yang ada malam ini + tantangan dari warga lokal. Kecil tapi nyata.",
     "introEvents": "{count} {label} mendatang",
     "introVenuesOne": "1 tempat",
     "introVenuesMany": "{count} tempat",

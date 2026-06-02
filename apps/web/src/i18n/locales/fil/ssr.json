@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Tungkol sa Hilads",
     "aboutHiladsBody": "Ang Hilads ay isang live na social layer sa ibabaw ng mga lungsod sa buong mundo. Buksan ang app, tingnan kung sino ang nasa paligid ngayon mismo, sumali sa isang event sa isang tap, o mag-host ng sarili mo. Walang friends list na kailangang buuin muna.",
     "aboutHiladsInHeading": "Tungkol sa Hilads sa {city}",
-    "seeOnHilads": "Tingnan ang {link} sa Hilads."
+    "seeOnHilads": "Tingnan ang {link} sa Hilads.",
+    "seeChallengesSentence": "O tanggapin ang {link} sa Hilads.",
+    "seeChallengesLink": "bukas na challenge sa {city}"
   },
   "event": {
     "title": "{title} — makilala ang mga local at biyahero | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} sa {city} · {total} sa Hilads",
     "title": "{label} sa {city}",
-    "descMany": "{total} {label} sa {city} ngayon mismo. Tingnan kung sino ang sasama at sumali sa isang tap — real-time, walang sign-up.",
-    "descSomeUpcoming": "{label} sa {city} sa Hilads. {count} ang paparating — makilala ang mga local at biyahero sa isang tap.",
-    "descSomeBrowse": "{label} sa {city} sa Hilads. Mag-browse ng mga lugar — makilala ang mga local at biyahero sa isang tap.",
-    "descFew": "Naghahanap ng {label} sa {city}? Inililista ng Hilads ang aktwal na nangyayari ngayong gabi. Maliit pero totoo.",
+    "descMany": "{total} {label} sa {city} ngayon. Plus bukas na challenges — makilala ang mga lokal at biyahero, real-time, walang signup.",
+    "descSomeUpcoming": "{label} sa {city} sa Hilads. {count} paparating + challenges — makilala ang mga lokal at biyahero sa isang tap.",
+    "descSomeBrowse": "{label} sa {city} sa Hilads. Tingnan ang mga lugar, tanggapin ang lokal na challenge, makilala ang mga lokal at biyahero sa isang tap.",
+    "descFew": "Hinahanap ang {label} sa {city}? Lista ng Hilads kung anong meron ngayong gabi + mga challenge ng mga lokal. Maliit pero totoo.",
     "introEvents": "{count} paparating na {label}",
     "introVenuesOne": "1 lugar",
     "introVenuesMany": "{count} lugar",

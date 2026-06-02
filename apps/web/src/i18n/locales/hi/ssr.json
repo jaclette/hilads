@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Hilads के बारे में",
     "aboutHiladsBody": "Hilads दुनिया भर के शहरों पर एक रियल-टाइम सोशल लेयर है। ऐप खोलें, देखें अभी आसपास कौन है, एक टैप में किसी इवेंट में शामिल हों, या अपना खुद का होस्ट करें। पहले कोई दोस्तों की लिस्ट बनाने की ज़रूरत नहीं।",
     "aboutHiladsInHeading": "{city} में Hilads के बारे में",
-    "seeOnHilads": "Hilads पर {link} देखें।"
+    "seeOnHilads": "Hilads पर {link} देखें।",
+    "seeChallengesSentence": "या Hilads पर {link} स्वीकारो।",
+    "seeChallengesLink": "{city} में एक खुली चुनौती"
   },
   "event": {
     "title": "{title} — लोकल और ट्रैवलर से मिलो | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{city} में {label} · Hilads पर {total}",
     "title": "{city} में {label}",
-    "descMany": "अभी {city} में {total} {label}। देखें कौन जा रहा है और एक टैप में शामिल हों — रियल-टाइम, बिना साइन-अप।",
-    "descSomeUpcoming": "Hilads पर {city} में {label}। {count} आने वाले — एक टैप में लोकल और ट्रैवलर से मिलें।",
-    "descSomeBrowse": "Hilads पर {city} में {label}। जगहें ब्राउज़ करें — एक टैप में लोकल और ट्रैवलर से मिलें।",
-    "descFew": "{city} में {label} ढूंढ रहे हैं? Hilads दिखाता है कि आज रात असल में क्या हो रहा है। छोटा पर असली।",
+    "descMany": "{city} में अभी {total} {label}. साथ ही खुली चुनौतियाँ — स्थानीयों और यात्रियों से मिलो, रियल-टाइम, बिना साइनअप।",
+    "descSomeUpcoming": "{city} में {label} Hilads पर। {count} आने वाले + चुनौतियाँ — एक टैप में स्थानीयों और यात्रियों से मिलो।",
+    "descSomeBrowse": "{city} में {label} Hilads पर। जगहें देखो, स्थानीय चुनौती लो, एक टैप में स्थानीयों और यात्रियों से मिलो।",
+    "descFew": "{city} में {label} ढूँढ रहे हो? Hilads आज रात क्या है + स्थानीयों की चुनौतियाँ दिखाता है। छोटा पर असली।",
     "introEvents": "{count} आने वाले {label}",
     "introVenuesOne": "1 जगह",
     "introVenuesMany": "{count} जगहें",

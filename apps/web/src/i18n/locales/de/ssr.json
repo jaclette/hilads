@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Über Hilads",
     "aboutHiladsBody": "Hilads ist eine soziale Echtzeitschicht über Städten weltweit. Öffne die App, sieh, wer gerade um dich herum ist, tritt mit einem Tippen einem Event bei oder veranstalte dein eigenes. Keine Freundesliste, die du erst aufbauen musst.",
     "aboutHiladsInHeading": "Über Hilads in {city}",
-    "seeOnHilads": "Sieh {link} auf Hilads."
+    "seeOnHilads": "Sieh {link} auf Hilads.",
+    "seeChallengesSentence": "Oder nimm {link} auf Hilads an.",
+    "seeChallengesLink": "eine offene Challenge in {city}"
   },
   "event": {
     "title": "{title} — triff Locals und Reisende | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} in {city} · {total} auf Hilads",
     "title": "{label} in {city}",
-    "descMany": "{total} {label} in {city} gerade jetzt. Sieh, wer dabei ist, und mach mit einem Tippen mit — in Echtzeit, ohne Registrierung.",
-    "descSomeUpcoming": "{label} in {city} auf Hilads. {count} demnächst — triff Locals und Reisende mit einem Tippen.",
-    "descSomeBrowse": "{label} in {city} auf Hilads. Durchstöbere die Locations — triff Locals und Reisende mit einem Tippen.",
-    "descFew": "Suchst du {label} in {city}? Hilads zeigt, was heute Abend wirklich los ist. Klein, aber echt.",
+    "descMany": "{total} {label} in {city} jetzt. Dazu offene Challenges zum Annehmen — triff Locals und Reisende, in Echtzeit, ohne Anmeldung.",
+    "descSomeUpcoming": "{label} in {city} auf Hilads. {count} kommend + Challenges zum Annehmen — triff Locals und Reisende in einem Tap.",
+    "descSomeBrowse": "{label} in {city} auf Hilads. Stöbere durch Orte, nimm eine lokale Challenge an, triff Locals und Reisende in einem Tap.",
+    "descFew": "Suchst du {label} in {city}? Hilads listet, was heute Abend läuft + Challenges von Locals. Klein, aber echt.",
     "introEvents": "{count} kommende {label}",
     "introVenuesOne": "1 Location",
     "introVenuesMany": "{count} Locations",

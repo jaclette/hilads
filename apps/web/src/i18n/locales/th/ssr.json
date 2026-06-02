@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "เกี่ยวกับ Hilads",
     "aboutHiladsBody": "Hilads คือชั้นสังคมแบบเรียลไทม์ที่ทับซ้อนอยู่บนเมืองต่างๆ ทั่วโลก เปิดแอป ดูว่าใครอยู่แถวนี้ตอนนี้ เข้าร่วมกิจกรรมได้ในแตะเดียว หรือจัดงานของคุณเอง ไม่ต้องสร้างรายชื่อเพื่อนก่อน",
     "aboutHiladsInHeading": "เกี่ยวกับ Hilads ใน {city}",
-    "seeOnHilads": "ดู {link} บน Hilads"
+    "seeOnHilads": "ดู {link} บน Hilads",
+    "seeChallengesSentence": "หรือรับ {link} บน Hilads",
+    "seeChallengesLink": "ชาเลนจ์ที่เปิดอยู่ใน {city}"
   },
   "event": {
     "title": "{title} — เจอคนท้องถิ่นและนักเดินทาง | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} ใน {city} · {total} บน Hilads",
     "title": "{label} ใน {city}",
-    "descMany": "{total} {label} ใน {city} ตอนนี้ ดูว่าใครจะไปและเข้าร่วมได้ในแตะเดียว — เรียลไทม์ ไม่ต้องสมัคร",
-    "descSomeUpcoming": "{label} ใน {city} บน Hilads {count} กำลังจะมาถึง — พบกับคนท้องถิ่นและนักเดินทางในแตะเดียว",
-    "descSomeBrowse": "{label} ใน {city} บน Hilads เลือกดูสถานที่ — พบกับคนท้องถิ่นและนักเดินทางในแตะเดียว",
-    "descFew": "กำลังมองหา {label} ใน {city} อยู่ใช่ไหม? Hilads แสดงสิ่งที่เกิดขึ้นจริงคืนนี้ เล็กแต่จริง",
+    "descMany": "{total} {label} ใน {city} ตอนนี้ พร้อมชาเลนจ์ที่เปิดอยู่ — พบคนท้องถิ่นและนักเดินทาง เรียลไทม์ ไม่ต้องสมัคร",
+    "descSomeUpcoming": "{label} ใน {city} บน Hilads. {count} ที่กำลังมา + ชาเลนจ์ — พบคนท้องถิ่นและนักเดินทางในแตะเดียว",
+    "descSomeBrowse": "{label} ใน {city} บน Hilads. ดูสถานที่, รับชาเลนจ์ท้องถิ่น, พบคนท้องถิ่นและนักเดินทางในแตะเดียว",
+    "descFew": "หา {label} ใน {city}? Hilads รวบรวมว่ามีอะไรคืนนี้ + ชาเลนจ์จากคนท้องถิ่น เล็กแต่จริง",
     "introEvents": "{count} {label} กำลังจะมาถึง",
     "introVenuesOne": "1 สถานที่",
     "introVenuesMany": "{count} สถานที่",

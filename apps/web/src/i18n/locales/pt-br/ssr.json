@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Sobre a Hilads",
     "aboutHiladsBody": "A Hilads é uma camada social em tempo real sobre as cidades do mundo todo. Abra o app, veja quem está por perto agora mesmo, participe de um evento com um toque ou organize o seu. Sem lista de amigos para montar antes.",
     "aboutHiladsInHeading": "Sobre a Hilads em {city}",
-    "seeOnHilads": "Veja {link} na Hilads."
+    "seeOnHilads": "Veja {link} na Hilads.",
+    "seeChallengesSentence": "Ou topa {link} no Hilads.",
+    "seeChallengesLink": "um desafio aberto em {city}"
   },
   "event": {
     "title": "{title} — conheça moradores e viajantes | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} em {city} · {total} na Hilads",
     "title": "{label} em {city}",
-    "descMany": "{total} {label} em {city} agora mesmo. Veja quem vai e participe com um toque — em tempo real, sem cadastro.",
-    "descSomeUpcoming": "{label} em {city} na Hilads. {count} em breve — conheça locais e viajantes com um toque.",
-    "descSomeBrowse": "{label} em {city} na Hilads. Explore os locais — conheça locais e viajantes com um toque.",
-    "descFew": "Procurando {label} em {city}? A Hilads mostra o que realmente rola hoje à noite. Pequeno, mas de verdade.",
+    "descMany": "{total} {label} em {city} agora. Mais desafios abertos pra topar — conheça locais e viajantes, em tempo real, sem cadastro.",
+    "descSomeUpcoming": "{label} em {city} no Hilads. {count} chegando + desafios pra topar — conheça locais e viajantes num toque.",
+    "descSomeBrowse": "{label} em {city} no Hilads. Explore lugares, topa um desafio local, conheça locais e viajantes num toque.",
+    "descFew": "Procurando {label} em {city}? Hilads mostra o que tá rolando hoje + desafios dos locais pra topar. Pequeno mas real.",
     "introEvents": "{count} {label} em breve",
     "introVenuesOne": "1 local",
     "introVenuesMany": "{count} locais",

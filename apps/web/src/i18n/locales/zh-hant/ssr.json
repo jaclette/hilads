@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "關於 Hilads",
     "aboutHiladsBody": "Hilads 是覆蓋在全球城市之上的即時社交層。開啟 app，看看現在誰在附近，一鍵加入活動，或舉辦你自己的活動。不必先建立好友名單。",
     "aboutHiladsInHeading": "關於 {city} 的 Hilads",
-    "seeOnHilads": "在 Hilads 上查看 {link}。"
+    "seeOnHilads": "在 Hilads 上查看 {link}。",
+    "seeChallengesSentence": "或在 Hilads 上接受{link}。",
+    "seeChallengesLink": "{city}的一個進行中挑戰"
   },
   "event": {
     "title": "{title} — 結識在地人和旅人 | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{city} 的 {label} · Hilads 上有 {total} 個",
     "title": "{city} 的 {label}",
-    "descMany": "現在 {city} 有 {total} 個 {label}。看看有誰參加，一鍵加入 — 即時、免註冊。",
-    "descSomeUpcoming": "Hilads 上 {city} 的 {label}。{count} 個即將登場 — 一鍵認識在地人和旅人。",
-    "descSomeBrowse": "Hilads 上 {city} 的 {label}。瀏覽場地 — 一鍵認識在地人和旅人。",
-    "descFew": "在 {city} 尋找 {label}？Hilads 列出今晚真正在進行的活動。雖小但真實。",
+    "descMany": "{city}現在有 {total} {label}。還有進行中的挑戰可接受 — 結識本地人和旅行者，即時，無需註冊。",
+    "descSomeUpcoming": "{city}的{label}在 Hilads 上。{count} 即將開始 + 挑戰可接受 — 一鍵結識本地人和旅行者。",
+    "descSomeBrowse": "{city}的{label}在 Hilads 上。瀏覽場所，接受本地挑戰，一鍵結識本地人和旅行者。",
+    "descFew": "在{city}找 {label}？Hilads 列出今晚有什麼 + 本地人發起的挑戰。小而真實。",
     "introEvents": "{count} 個即將登場的 {label}",
     "introVenuesOne": "1 個場地",
     "introVenuesMany": "{count} 個場地",

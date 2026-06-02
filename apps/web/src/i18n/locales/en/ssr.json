@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "About Hilads",
     "aboutHiladsBody": "Hilads is a live social layer over cities worldwide. Open the app, see who's around right now, join an event in one tap, or host your own. No friends list to build first.",
     "aboutHiladsInHeading": "About Hilads in {city}",
-    "seeOnHilads": "See {link} on Hilads."
+    "seeOnHilads": "See {link} on Hilads.",
+    "seeChallengesSentence": "Or take on {link} on Hilads.",
+    "seeChallengesLink": "an open challenge in {city}"
   },
   "event": {
     "title": "{title} — meet locals and travelers | Hilads",
@@ -88,10 +90,10 @@
   "category": {
     "titleCount": "{label} in {city} · {total} on Hilads",
     "title": "{label} in {city}",
-    "descMany": "{total} {label} in {city} right now. See who's going and join in one tap — real-time, no sign-up.",
-    "descSomeUpcoming": "{city} {label} on Hilads. {count} upcoming — meet locals and travelers in one tap.",
-    "descSomeBrowse": "{city} {label} on Hilads. Browse venues — meet locals and travelers in one tap.",
-    "descFew": "Looking for {label} in {city}? Hilads lists what's actually on tonight. Small but real.",
+    "descMany": "{total} {label} in {city} right now. Plus open challenges to take on — meet locals and travelers, real-time, no sign-up.",
+    "descSomeUpcoming": "{city} {label} on Hilads. {count} upcoming + challenges to take on — meet locals and travelers in one tap.",
+    "descSomeBrowse": "{city} {label} on Hilads. Browse venues, take on local challenges, meet locals and travelers in one tap.",
+    "descFew": "Looking for {label} in {city}? Hilads lists what's on tonight + challenges from locals to take on. Small but real.",
     "introEvents": "{count} upcoming {label}",
     "introVenuesOne": "1 venue",
     "introVenuesMany": "{count} venues",

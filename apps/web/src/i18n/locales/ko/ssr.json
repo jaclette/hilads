@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Hilads 소개",
     "aboutHiladsBody": "Hilads는 전 세계 도시 위에 펼쳐진 실시간 소셜 레이어예요. 앱을 열고, 지금 누가 근처에 있는지 보고, 한 번의 탭으로 이벤트에 참여하거나 직접 호스트하세요. 먼저 만들어야 할 친구 목록 같은 건 없어요.",
     "aboutHiladsInHeading": "{city}의 Hilads 소개",
-    "seeOnHilads": "Hilads에서 {link}을(를) 확인하세요."
+    "seeOnHilads": "Hilads에서 {link}을(를) 확인하세요.",
+    "seeChallengesSentence": "또는 Hilads에서 {link} 받아.",
+    "seeChallengesLink": "{city}의 진행 중 도전"
   },
   "event": {
     "title": "{title} — 로컬과 여행자를 만나보세요 | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{city}의 {label} · Hilads에 {total}개",
     "title": "{city}의 {label}",
-    "descMany": "지금 {city}에 {label} {total}개가 있어요. 누가 가는지 보고 한 번의 탭으로 참여하세요 — 실시간, 가입 필요 없음.",
-    "descSomeUpcoming": "Hilads에서 {city}의 {label}. {count}개 예정 — 한 번의 탭으로 로컬과 여행자를 만나보세요.",
-    "descSomeBrowse": "Hilads에서 {city}의 {label}. 장소를 둘러보세요 — 한 번의 탭으로 로컬과 여행자를 만나보세요.",
-    "descFew": "{city}에서 {label}을(를) 찾고 있나요? Hilads는 오늘 밤 실제로 열리는 걸 보여줘요. 작지만 진짜예요.",
+    "descMany": "지금 {city}에 {total}개의 {label}. 진행 중 도전도 — 로컬과 여행자를 만나기, 실시간, 가입 없이.",
+    "descSomeUpcoming": "{city} {label} on Hilads. {count}개 예정 + 도전 — 한 번의 탭으로 로컬과 여행자를 만나기.",
+    "descSomeBrowse": "{city} {label} on Hilads. 장소 둘러보기, 로컬 도전 받기, 한 번의 탭으로 로컬과 여행자를 만나기.",
+    "descFew": "{city}에서 {label} 찾으세요? Hilads는 오늘 밤 진행 중인 일 + 로컬의 도전을 보여줘. 작지만 진짜.",
     "introEvents": "다가오는 {label} {count}개",
     "introVenuesOne": "장소 1개",
     "introVenuesMany": "장소 {count}개",

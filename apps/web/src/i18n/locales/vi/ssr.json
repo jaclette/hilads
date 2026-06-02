@@ -17,7 +17,9 @@
     "aboutHiladsHeading": "Về Hilads",
     "aboutHiladsBody": "Hilads là một lớp xã hội thời gian thực phủ lên các thành phố trên toàn thế giới. Mở ứng dụng, xem ai đang ở quanh đây ngay bây giờ, tham gia một sự kiện chỉ với một chạm, hoặc tự tổ chức. Không cần xây dựng danh sách bạn bè trước.",
     "aboutHiladsInHeading": "Về Hilads ở {city}",
-    "seeOnHilads": "Xem {link} trên Hilads."
+    "seeOnHilads": "Xem {link} trên Hilads.",
+    "seeChallengesSentence": "Hoặc nhận {link} trên Hilads.",
+    "seeChallengesLink": "một thử thách đang mở tại {city}"
   },
   "event": {
     "title": "{title} — gặp gỡ người địa phương và du khách | Hilads",
@@ -65,10 +67,10 @@
   "category": {
     "titleCount": "{label} ở {city} · {total} trên Hilads",
     "title": "{label} ở {city}",
-    "descMany": "{total} {label} ở {city} ngay bây giờ. Xem ai sẽ đi và tham gia chỉ với một chạm — thời gian thực, không cần đăng ký.",
-    "descSomeUpcoming": "{label} ở {city} trên Hilads. {count} sắp tới — gặp gỡ người địa phương và du khách chỉ với một chạm.",
-    "descSomeBrowse": "{label} ở {city} trên Hilads. Duyệt các địa điểm — gặp gỡ người địa phương và du khách chỉ với một chạm.",
-    "descFew": "Đang tìm {label} ở {city}? Hilads liệt kê những gì thực sự đang diễn ra tối nay. Nhỏ nhưng thật.",
+    "descMany": "{total} {label} tại {city} ngay bây giờ. Cộng thêm thử thách đang mở để nhận — gặp người địa phương và du khách, thời gian thực, không cần đăng ký.",
+    "descSomeUpcoming": "{label} tại {city} trên Hilads. {count} sắp tới + thử thách để nhận — gặp người địa phương và du khách trong một chạm.",
+    "descSomeBrowse": "{label} tại {city} trên Hilads. Khám phá địa điểm, nhận một thử thách địa phương, gặp người địa phương và du khách trong một chạm.",
+    "descFew": "Tìm {label} tại {city}? Hilads liệt kê những gì đang diễn ra tối nay + thử thách từ người địa phương. Nhỏ nhưng thật.",
     "introEvents": "{count} {label} sắp tới",
     "introVenuesOne": "1 địa điểm",
     "introVenuesMany": "{count} địa điểm",

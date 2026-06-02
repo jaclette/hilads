@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "О Hilads",
     "aboutHiladsBody": "Hilads — это живой социальный слой над городами по всему миру. Открой приложение, посмотри, кто рядом прямо сейчас, присоединись к событию в одно касание или устрой своё. Не нужно сначала собирать список друзей.",
     "aboutHiladsInHeading": "О Hilads в городе {city}",
-    "seeOnHilads": "Смотри {link} на Hilads."
+    "seeOnHilads": "Смотри {link} на Hilads.",
+    "seeChallengesSentence": "Или прими {link} на Hilads.",
+    "seeChallengesLink": "открытый вызов в {city}"
   },
   "event": {
     "title": "{title} — знакомься с местными и путешественниками | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} в городе {city} · {total} на Hilads",
     "title": "{label} в городе {city}",
-    "descMany": "{total} {label} в городе {city} прямо сейчас. Смотри, кто идёт, и присоединяйся в одно касание — в реальном времени, без регистрации.",
-    "descSomeUpcoming": "{label} в городе {city} на Hilads. {count} впереди — знакомься с местными и путешественниками в одно касание.",
-    "descSomeBrowse": "{label} в городе {city} на Hilads. Просматривай места — знакомься с местными и путешественниками в одно касание.",
-    "descFew": "Ищешь {label} в городе {city}? Hilads показывает то, что реально происходит сегодня вечером. Немного, но по-настоящему.",
+    "descMany": "{total} {label} в {city} прямо сейчас. Плюс открытые вызовы — знакомься с местными и путешественниками, в реальном времени, без регистрации.",
+    "descSomeUpcoming": "{label} в {city} на Hilads. {count} в ближайшее + вызовы — знакомься с местными и путешественниками в один тап.",
+    "descSomeBrowse": "{label} в {city} на Hilads. Смотри места, прими местный вызов, знакомься с местными и путешественниками в один тап.",
+    "descFew": "Ищешь {label} в {city}? Hilads показывает, что сегодня вечером + вызовы от местных. Маленький, но настоящий.",
     "introEvents": "{count} {label} впереди",
     "introVenuesOne": "1 место",
     "introVenuesMany": "{count} мест",

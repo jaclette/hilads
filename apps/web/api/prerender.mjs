@@ -1247,8 +1247,15 @@ function composeEventBody(payload, otherEvents, locale = 'en') {
   const cityLink = city && citySlug
     ? `<p>${T(locale, 'common.seeOnHilads', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'event.otherThingsLink', { city: htmlEscape(city) })}</a>` })}</p>`
     : ''
+  // Internal-link nudge toward challenges in the same city — gives the
+  // /challenge/{slug}-{id} URLs an inbound link from the high-volume event
+  // page. Same pattern as the cityLink right above; the link target is the
+  // city page (which now has an "Open challenges" section).
+  const challengesLink = city && citySlug
+    ? `<p>${T(locale, 'common.seeChallengesSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'common.seeChallengesLink', { city: htmlEscape(city) })}</a>` })}</p>`
+    : ''
 
-  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsHeading')}</h2><p>${T(locale, 'common.aboutHiladsBody')}</p>${cityLink}</section>`
+  const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsHeading')}</h2><p>${T(locale, 'common.aboutHiladsBody')}</p>${cityLink}${challengesLink}</section>`
 
   return [
     `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; } .ssr-past-badge { display: inline-block; background: #2a2a2a; color: #bbb; font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; margin: 0 0 0.5rem; }</style>`,
@@ -1301,10 +1308,15 @@ function composeVenueBody(payload, otherVenues, locale = 'en') {
   const cityLink = city && citySlug
     ? `<p>${T(locale, 'venue.whatsHappeningSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'venue.whatsHappeningLink', { city: htmlEscape(city) })}</a>` })}</p>`
     : ''
+  // Mirror of the composeEventBody nudge — same paragraph pattern so venue
+  // pages push internal authority toward /challenge/{slug}-{id} too.
+  const challengesLink = city && citySlug
+    ? `<p>${T(locale, 'common.seeChallengesSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'common.seeChallengesLink', { city: htmlEscape(city) })}</a>` })}</p>`
+    : ''
 
   const evergreen = isBar
-    ? `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutBar', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}</section>`
-    : `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutCafe', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}</section>`
+    ? `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutBar', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}${challengesLink}</section>`
+    : `<section><h2>${T(locale, 'venue.aboutHeading')}</h2><p>${T(locale, 'venue.aboutCafe', { name: htmlEscape(v.name), city: htmlEscape(city) })}</p>${cityLink}${challengesLink}</section>`
 
   return [
     `<style>${SSR_CITY_STYLES} .ssr-breadcrumb { font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem; }</style>`,

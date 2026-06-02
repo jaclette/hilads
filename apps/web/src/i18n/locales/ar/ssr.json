@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "عن Hilads",
     "aboutHiladsBody": "Hilads هو طبقة اجتماعية حية فوق المدن حول العالم. افتح التطبيق، وانظر من حولك الآن، وانضم إلى فعالية بنقرة واحدة، أو استضِف فعاليتك الخاصة. لا حاجة لبناء قائمة أصدقاء أولًا.",
     "aboutHiladsInHeading": "عن Hilads في {city}",
-    "seeOnHilads": "شاهد {link} على Hilads."
+    "seeOnHilads": "شاهد {link} على Hilads.",
+    "seeChallengesSentence": "أو اقبل {link} على Hilads.",
+    "seeChallengesLink": "تحدّياً مفتوحاً في {city}"
   },
   "event": {
     "title": "{title} — تعرّف على المحليين والمسافرين | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{label} في {city} · {total} على Hilads",
     "title": "{label} في {city}",
-    "descMany": "{total} {label} في {city} الآن. شاهد من سيذهب وانضم بنقرة واحدة — في الوقت الفعلي، دون تسجيل.",
-    "descSomeUpcoming": "{label} في {city} على Hilads. {count} قادمة — تعرّف على المحليين والمسافرين بنقرة واحدة.",
-    "descSomeBrowse": "{label} في {city} على Hilads. تصفّح الأماكن — تعرّف على المحليين والمسافرين بنقرة واحدة.",
-    "descFew": "تبحث عن {label} في {city}؟ يعرض Hilads ما يحدث فعلًا الليلة. صغير لكنه حقيقي.",
+    "descMany": "{total} {label} في {city} الآن. مع تحديات مفتوحة لقبولها — التقِ بالسكان المحليين والمسافرين، فورياً، بلا تسجيل.",
+    "descSomeUpcoming": "{label} في {city} على Hilads. {count} قادم + تحديات للقبول — التقِ بالسكان المحليين والمسافرين بنقرة.",
+    "descSomeBrowse": "{label} في {city} على Hilads. تصفّح الأماكن، اقبل تحدّياً محلياً، التقِ بالسكان المحليين والمسافرين بنقرة.",
+    "descFew": "تبحث عن {label} في {city}؟ Hilads يعرض ما يحدث الليلة + تحديات من السكان المحليين. صغير لكن حقيقي.",
     "introEvents": "{count} {label} قادمة",
     "introVenuesOne": "مكان واحد",
     "introVenuesMany": "{count} أماكن",

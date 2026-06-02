@@ -16,7 +16,9 @@
     "aboutHiladsHeading": "Hiladsについて",
     "aboutHiladsBody": "Hiladsは世界中の街に広がるリアルタイムの社会レイヤーです。アプリを開けば、今この街に誰がいるかが分かり、ワンタップでイベントに参加したり、自分で開いたりできます。まず友達リストを作る必要はありません。",
     "aboutHiladsInHeading": "{city}のHiladsについて",
-    "seeOnHilads": "{link}をHiladsで見る。"
+    "seeOnHilads": "{link}をHiladsで見る。",
+    "seeChallengesSentence": "または Hilads で{link}を受けよう。",
+    "seeChallengesLink": "{city}の挑戦"
   },
   "event": {
     "title": "{title} — ローカルと旅行者に出会う | Hilads",
@@ -64,10 +66,10 @@
   "category": {
     "titleCount": "{city}の{label} · Hiladsに{total}件",
     "title": "{city}の{label}",
-    "descMany": "今{city}に{label}が{total}件。誰が行くかを見て、ワンタップで参加 — リアルタイム、登録不要。",
-    "descSomeUpcoming": "{city}の{label}をHiladsで。{count}件が今後 — ワンタップでローカルや旅行者と出会えます。",
-    "descSomeBrowse": "{city}の{label}をHiladsで。会場を見てみよう — ワンタップでローカルや旅行者と出会えます。",
-    "descFew": "{city}で{label}をお探し？Hiladsは今夜実際に開かれているものを掲載します。小さくても本物。",
+    "descMany": "{city}に今 {total} 件の{label}。さらに挑戦も受付中 — ローカルや旅行者と出会う、リアルタイム、登録不要。",
+    "descSomeUpcoming": "{city}の{label}は Hilads で。{count} 件予定 + 挑戦も受付中 — ワンタップでローカルや旅行者と出会う。",
+    "descSomeBrowse": "{city}の{label}は Hilads で。場所を見て、ローカル挑戦を受け、ワンタップでローカルや旅行者と出会う。",
+    "descFew": "{city}で {label} を探してる？Hilads は今夜の予定 + ローカルからの挑戦を載せてる。小さいけど本物。",
     "introEvents": "今後の{label}が{count}件",
     "introVenuesOne": "1件の会場",
     "introVenuesMany": "{count}件の会場",
