@@ -120,7 +120,7 @@ export type NowItem =
 // Use FeedItem instead of NowItem for the Now screen rendering.
 
 export interface FeedItem {
-  kind:             'event' | 'topic';
+  kind:             'event' | 'topic' | 'challenge';
   id:               string;
   title:            string;
   description:      string | null;   // event location/venue OR topic description
@@ -154,6 +154,13 @@ export interface FeedItem {
   category?:      string;
   message_count?: number;
   city_id?:       string;
+
+  // ── Challenge-only fields (present when kind === 'challenge') ─────────────
+  // Subset of Challenge — enough for ChallengeCard to render in past archive.
+  challenge_type?: ChallengeType;
+  audience?:       ChallengeAudience;
+  status?:         'open' | 'validated';
+  validated_at?:   number | null;
 }
 
 // ── Event chat unread state ───────────────────────────────────────────────────

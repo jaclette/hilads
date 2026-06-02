@@ -11,5 +11,6 @@
   "apply": "Aplicar",
   "emptyTitle": "Aún no hay nada aquí",
   "emptyRecentSub": "Los eventos y quedadas pasados aparecerán aquí cuando la ciudad tenga algo de historial.",
-  "emptyWindowSub": "Ningún evento ni quedada en este periodo. Prueba con un rango más amplio."
+  "emptyWindowSub": "Ningún evento ni quedada en este periodo. Prueba con un rango más amplio.",
+  "filterChallenges": "🏆 Retos"
 }

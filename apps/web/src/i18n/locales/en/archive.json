@@ -1,7 +1,17 @@
 {
   "title": "What happened",
-  "filters": { "all": "All", "events": "🔥 Events", "pulses": "🗣️ Hangouts" },
-  "range": { "recent": "Recent", "last7": "Last 7 days", "last14": "Last 14 days", "custom": "Custom" },
+  "filters": {
+    "all": "All",
+    "events": "🔥 Events",
+    "pulses": "🗣️ Hangouts",
+    "challenges": "🏆 Challenges"
+  },
+  "range": {
+    "recent": "Recent",
+    "last7": "Last 7 days",
+    "last14": "Last 14 days",
+    "custom": "Custom"
+  },
   "picker": {
     "pickEnd": "Now pick the end day",
     "pickStart": "Pick a start day (up to {{max}} days)",

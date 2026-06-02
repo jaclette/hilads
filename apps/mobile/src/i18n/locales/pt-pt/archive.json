@@ -11,5 +11,6 @@
   "apply": "Aplicar",
   "emptyTitle": "Ainda não há nada aqui",
   "emptyRecentSub": "Os eventos e convívios passados aparecerão aqui quando a cidade tiver algum histórico.",
-  "emptyWindowSub": "Nenhum evento ou convívio neste período. Tenta um intervalo mais alargado."
+  "emptyWindowSub": "Nenhum evento ou convívio neste período. Tenta um intervalo mais alargado.",
+  "filterChallenges": "🏆 Desafios"
 }

@@ -1,7 +1,17 @@
 {
   "title": "Cosa è successo",
-  "filters": { "all": "Tutto", "events": "🔥 Eventi", "pulses": "🗣️ Ritrovi" },
-  "range": { "recent": "Recenti", "last7": "Ultimi 7 giorni", "last14": "Ultimi 14 giorni", "custom": "Personalizzato" },
+  "filters": {
+    "all": "Tutto",
+    "events": "🔥 Eventi",
+    "pulses": "🗣️ Ritrovi",
+    "challenges": "🏆 Sfide"
+  },
+  "range": {
+    "recent": "Recenti",
+    "last7": "Ultimi 7 giorni",
+    "last14": "Ultimi 14 giorni",
+    "custom": "Personalizzato"
+  },
   "picker": {
     "pickEnd": "Ora scegli il giorno di fine",
     "pickStart": "Scegli un giorno di inizio (fino a {{max}} giorni)",

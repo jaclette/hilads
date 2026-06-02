@@ -15,6 +15,7 @@ import type { FeedItem } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { EventCard } from '@/components/EventCard';
 import { TopicCard } from '@/components/TopicCard';
+import { ChallengeCard } from '@/components/ChallengeCard';
 
 // ── Date helpers ────────────────────────────────────────────────────────────
 
@@ -39,7 +40,7 @@ function prettyRange(from: string, to: string): string {
 
 type RangeKey  = 'recent' | '7' | '14' | 'custom';
 type Range     = { key: RangeKey; from?: string; to?: string };
-type FilterType = 'both' | 'hangouts' | 'pulses';
+type FilterType = 'both' | 'hangouts' | 'pulses' | 'challenges';
 
 const PAGE = 12;
 
@@ -265,7 +266,7 @@ export default function PastArchiveScreen() {
 
       {/* Type filter */}
       <View style={styles.filterBar}>
-        {(['both', 'hangouts', 'pulses'] as const).map(f => (
+        {(['both', 'hangouts', 'pulses', 'challenges'] as const).map(f => (
           <TouchableOpacity
             key={f}
             style={[styles.filterPill, type === f && styles.filterPillActive]}
@@ -273,7 +274,10 @@ export default function PastArchiveScreen() {
             activeOpacity={0.75}
           >
             <Text style={[styles.filterPillText, type === f && styles.filterPillTextActive]}>
-              {f === 'both' ? t('filterAll') : f === 'hangouts' ? '🔥 Events' : '🗣️ Hangouts'}
+              {f === 'both'       ? t('filterAll')
+                : f === 'hangouts' ? '🔥 Events'
+                : f === 'pulses'   ? '🗣️ Hangouts'
+                :                    t('filterChallenges')}
             </Text>
           </TouchableOpacity>
         ))}
@@ -340,6 +344,17 @@ export default function PastArchiveScreen() {
                   topic={item as FeedItem & { kind: 'topic' }}
                   pastMode
                   onPress={() => { track('topic_opened', { topicId: item.id, from: 'archive' }); router.push(`/topic/${item.id}`); }}
+                />
+              );
+            }
+            if (item.kind === 'challenge') {
+              // ChallengeCard expects a Challenge object — the past endpoint
+              // returns one with the same shape (id, title, challenge_type,
+              // audience, status, participant_count, participants_preview).
+              return (
+                <ChallengeCard
+                  challenge={item as unknown as import('@/types').Challenge}
+                  onPress={() => { track('challenge_opened', { challengeId: item.id, from: 'archive' }); router.push(`/challenge/${item.id}`); }}
                 />
               );
             }

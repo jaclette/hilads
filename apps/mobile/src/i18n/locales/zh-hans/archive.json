@@ -11,5 +11,6 @@
   "apply": "应用",
   "emptyTitle": "这里还什么都没有",
   "emptyRecentSub": "当城市有了一些历史记录后，过往的活动和聚会会显示在这里。",
-  "emptyWindowSub": "此时间段内没有活动或聚会。试试更大的范围。"
+  "emptyWindowSub": "此时间段内没有活动或聚会。试试更大的范围。",
+  "filterChallenges": "🏆 挑战"
 }

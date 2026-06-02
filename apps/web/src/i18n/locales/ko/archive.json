@@ -1,7 +1,17 @@
 {
   "title": "지난 활동",
-  "filters": { "all": "전체", "events": "🔥 이벤트", "pulses": "🗣️ 모임" },
-  "range": { "recent": "최근", "last7": "최근 7일", "last14": "최근 14일", "custom": "직접 설정" },
+  "filters": {
+    "all": "전체",
+    "events": "🔥 이벤트",
+    "pulses": "🗣️ 모임",
+    "challenges": "🏆 도전"
+  },
+  "range": {
+    "recent": "최근",
+    "last7": "최근 7일",
+    "last14": "최근 14일",
+    "custom": "직접 설정"
+  },
   "picker": {
     "pickEnd": "이제 종료일을 선택하세요",
     "pickStart": "시작일을 선택하세요 (최대 {{max}}일)",

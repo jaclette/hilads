@@ -1,7 +1,17 @@
 {
   "title": "Ano ang nangyari",
-  "filters": { "all": "Lahat", "events": "🔥 Events", "pulses": "🗣️ Tambayan" },
-  "range": { "recent": "Kamakailan", "last7": "Huling 7 araw", "last14": "Huling 14 araw", "custom": "Custom" },
+  "filters": {
+    "all": "Lahat",
+    "events": "🔥 Events",
+    "pulses": "🗣️ Tambayan",
+    "challenges": "🏆 Mga challenge"
+  },
+  "range": {
+    "recent": "Kamakailan",
+    "last7": "Huling 7 araw",
+    "last14": "Huling 14 araw",
+    "custom": "Custom"
+  },
   "picker": {
     "pickEnd": "Ngayon piliin ang huling araw",
     "pickStart": "Pumili ng unang araw (hanggang {{max}} araw)",

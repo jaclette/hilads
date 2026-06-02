@@ -1,7 +1,17 @@
 {
   "title": "O que aconteceu",
-  "filters": { "all": "Tudo", "events": "🔥 Eventos", "pulses": "🗣️ Convívios" },
-  "range": { "recent": "Recente", "last7": "Últimos 7 dias", "last14": "Últimos 14 dias", "custom": "Personalizado" },
+  "filters": {
+    "all": "Tudo",
+    "events": "🔥 Eventos",
+    "pulses": "🗣️ Convívios",
+    "challenges": "🏆 Desafios"
+  },
+  "range": {
+    "recent": "Recente",
+    "last7": "Últimos 7 dias",
+    "last14": "Últimos 14 dias",
+    "custom": "Personalizado"
+  },
   "picker": {
     "pickEnd": "Agora escolhe o dia de fim",
     "pickStart": "Escolhe um dia de início (até {{max}} dias)",

@@ -11,5 +11,6 @@
   "apply": "Anwenden",
   "emptyTitle": "Hier ist noch nichts",
   "emptyRecentSub": "Vergangene Events und Treffen erscheinen hier, sobald die Stadt etwas Verlauf hat.",
-  "emptyWindowSub": "Keine Events oder Treffen in diesem Zeitraum. Versuche einen größeren Bereich."
+  "emptyWindowSub": "Keine Events oder Treffen in diesem Zeitraum. Versuche einen größeren Bereich.",
+  "filterChallenges": "🏆 Challenges"
 }

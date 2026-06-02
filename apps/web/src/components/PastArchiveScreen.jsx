@@ -109,7 +109,9 @@ function RangeModal({ tz, initial, onApply, onClose }) {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-export default function PastArchiveScreen({ channelId, timezone, cityName, onBack, onSelectEvent, onSelectTopic }) {
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+
+export default function PastArchiveScreen({ channelId, timezone, cityName, onBack, onSelectEvent, onSelectTopic, onSelectChallenge }) {
   const { t } = useTranslation('archive')
   const tz = timezone || 'UTC'
 
@@ -186,6 +188,32 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
     )
   }
 
+  function renderChallengeRow(ch) {
+    const icon = CHALLENGE_TYPE_ICONS[ch.challenge_type] ?? '🔥'
+    return (
+      <button key={`challenge-${ch.id}`} className="city-row event-row-card challenge-row-card"
+        onClick={() => onSelectChallenge && onSelectChallenge(ch)}>
+        <div className="er-header">
+          <span className="er-title">{icon} {ch.title}</span>
+          {/* Reuse keys from the challenge namespace to avoid duplicating
+              30+ strings across 19 archive.json files for things that
+              already live in challenge.json. */}
+          <span className="er-going er-going--challenge">{t('noun', { ns: 'challenge' })}</span>
+        </div>
+        <div className="er-badges">
+          <span className="challenge-badge challenge-badge--audience">
+            {ch.audience === 'locals'
+              ? t('forLocals',    { ns: 'challenge' })
+              : t('forExplorers', { ns: 'challenge' })}
+          </span>
+          <span className="challenge-badge challenge-badge--validated">
+            ✓ {t('validatedBadge', { ns: 'challenge' })}
+          </span>
+        </div>
+      </button>
+    )
+  }
+
   function renderTopicRow(topic) {
     const icon    = CATEGORY_ICONS[topic.category] ?? '💬'
     const replies = topic.message_count ?? 0
@@ -220,7 +248,7 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
 
       {/* Type filter */}
       <div className="archive-filter-bar">
-        {[['both', 'all'], ['hangouts', 'events'], ['pulses', 'pulses']].map(([k, lk]) => (
+        {[['both', 'all'], ['hangouts', 'events'], ['pulses', 'pulses'], ['challenges', 'challenges']].map(([k, lk]) => (
           <button key={k} type="button"
             className={`archive-pill${type === k ? ' active' : ''}`}
             onClick={() => setType(k)}>{t(`filters.${lk}`)}</button>
@@ -268,7 +296,11 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
 
         {status === 'ok' && items.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '10px' }}>
-            {items.map(item => (item.kind === 'topic' ? renderTopicRow(item) : renderEventRow(item)))}
+            {items.map(item =>
+              item.kind === 'topic'     ? renderTopicRow(item)
+              : item.kind === 'challenge' ? renderChallengeRow(item)
+              :                             renderEventRow(item)
+            )}
             {cursor != null && (
               <button type="button" className="archive-load-more" onClick={loadMore} disabled={loadingMore}>
                 {loadingMore ? t('loading') : t('loadMore')}

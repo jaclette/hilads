@@ -1,7 +1,17 @@
 {
   "title": "これまでの出来事",
-  "filters": { "all": "すべて", "events": "🔥 イベント", "pulses": "🗣️ 集まり" },
-  "range": { "recent": "最近", "last7": "過去7日間", "last14": "過去14日間", "custom": "カスタム" },
+  "filters": {
+    "all": "すべて",
+    "events": "🔥 イベント",
+    "pulses": "🗣️ 集まり",
+    "challenges": "🏆 挑戦"
+  },
+  "range": {
+    "recent": "最近",
+    "last7": "過去7日間",
+    "last14": "過去14日間",
+    "custom": "カスタム"
+  },
   "picker": {
     "pickEnd": "終了日を選んでください",
     "pickStart": "開始日を選んでください（最大{{max}}日）",

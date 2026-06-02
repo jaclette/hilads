@@ -1,7 +1,17 @@
 {
   "title": "Hoạt động đã qua",
-  "filters": { "all": "Tất cả", "events": "🔥 Sự kiện", "pulses": "🗣️ Tụ tập" },
-  "range": { "recent": "Gần đây", "last7": "7 ngày qua", "last14": "14 ngày qua", "custom": "Tùy chỉnh" },
+  "filters": {
+    "all": "Tất cả",
+    "events": "🔥 Sự kiện",
+    "pulses": "🗣️ Tụ tập",
+    "challenges": "🏆 Thử thách"
+  },
+  "range": {
+    "recent": "Gần đây",
+    "last7": "7 ngày qua",
+    "last14": "14 ngày qua",
+    "custom": "Tùy chỉnh"
+  },
   "picker": {
     "pickEnd": "Giờ chọn ngày kết thúc",
     "pickStart": "Chọn ngày bắt đầu (tối đa {{max}} ngày)",

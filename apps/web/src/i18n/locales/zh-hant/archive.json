@@ -1,7 +1,17 @@
 {
   "title": "回顧",
-  "filters": { "all": "全部", "events": "🔥 活動", "pulses": "🗣️ 聚會" },
-  "range": { "recent": "最近", "last7": "過去 7 天", "last14": "過去 14 天", "custom": "自訂" },
+  "filters": {
+    "all": "全部",
+    "events": "🔥 活動",
+    "pulses": "🗣️ 聚會",
+    "challenges": "🏆 挑戰"
+  },
+  "range": {
+    "recent": "最近",
+    "last7": "過去 7 天",
+    "last14": "過去 14 天",
+    "custom": "自訂"
+  },
   "picker": {
     "pickEnd": "接著選擇結束日",
     "pickStart": "選擇開始日（最多 {{max}} 天）",

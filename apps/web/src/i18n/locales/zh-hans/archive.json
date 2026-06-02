@@ -1,7 +1,17 @@
 {
   "title": "已发生",
-  "filters": { "all": "全部", "events": "🔥 活动", "pulses": "🗣️ 聚会" },
-  "range": { "recent": "最近", "last7": "最近 7 天", "last14": "最近 14 天", "custom": "自定义" },
+  "filters": {
+    "all": "全部",
+    "events": "🔥 活动",
+    "pulses": "🗣️ 聚会",
+    "challenges": "🏆 挑战"
+  },
+  "range": {
+    "recent": "最近",
+    "last7": "最近 7 天",
+    "last14": "最近 14 天",
+    "custom": "自定义"
+  },
   "picker": {
     "pickEnd": "现在选择结束日期",
     "pickStart": "选择一个开始日期（最多 {{max}} 天）",

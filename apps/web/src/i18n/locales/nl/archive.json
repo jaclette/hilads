@@ -1,7 +1,17 @@
 {
   "title": "Wat er gebeurd is",
-  "filters": { "all": "Alles", "events": "🔥 Evenementen", "pulses": "🗣️ Meetups" },
-  "range": { "recent": "Recent", "last7": "Laatste 7 dagen", "last14": "Laatste 14 dagen", "custom": "Aangepast" },
+  "filters": {
+    "all": "Alles",
+    "events": "🔥 Evenementen",
+    "pulses": "🗣️ Meetups",
+    "challenges": "🏆 Challenges"
+  },
+  "range": {
+    "recent": "Recent",
+    "last7": "Laatste 7 dagen",
+    "last14": "Laatste 14 dagen",
+    "custom": "Aangepast"
+  },
   "picker": {
     "pickEnd": "Kies nu de einddag",
     "pickStart": "Kies een startdag (tot {{max}} dagen)",

@@ -1,7 +1,17 @@
 {
   "title": "O que rolou",
-  "filters": { "all": "Tudo", "events": "🔥 Eventos", "pulses": "🗣️ Rolês" },
-  "range": { "recent": "Recente", "last7": "Últimos 7 dias", "last14": "Últimos 14 dias", "custom": "Personalizado" },
+  "filters": {
+    "all": "Tudo",
+    "events": "🔥 Eventos",
+    "pulses": "🗣️ Rolês",
+    "challenges": "🏆 Desafios"
+  },
+  "range": {
+    "recent": "Recente",
+    "last7": "Últimos 7 dias",
+    "last14": "Últimos 14 dias",
+    "custom": "Personalizado"
+  },
   "picker": {
     "pickEnd": "Agora escolha o dia final",
     "pickStart": "Escolha um dia inicial (até {{max}} dias)",

@@ -1,7 +1,17 @@
 {
   "title": "Activité passée",
-  "filters": { "all": "Tout", "events": "🔥 Événements", "pulses": "🗣️ Sorties" },
-  "range": { "recent": "Récent", "last7": "7 derniers jours", "last14": "14 derniers jours", "custom": "Perso" },
+  "filters": {
+    "all": "Tout",
+    "events": "🔥 Événements",
+    "pulses": "🗣️ Sorties",
+    "challenges": "🏆 Défis"
+  },
+  "range": {
+    "recent": "Récent",
+    "last7": "7 derniers jours",
+    "last14": "14 derniers jours",
+    "custom": "Perso"
+  },
   "picker": {
     "pickEnd": "Choisis maintenant le jour de fin",
     "pickStart": "Choisis un jour de début (jusqu'à {{max}} jours)",

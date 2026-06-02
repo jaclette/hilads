@@ -1,7 +1,17 @@
 {
   "title": "Apa yang terjadi",
-  "filters": { "all": "Semua", "events": "🔥 Acara", "pulses": "🗣️ Nongkrong" },
-  "range": { "recent": "Terbaru", "last7": "7 hari terakhir", "last14": "14 hari terakhir", "custom": "Khusus" },
+  "filters": {
+    "all": "Semua",
+    "events": "🔥 Acara",
+    "pulses": "🗣️ Nongkrong",
+    "challenges": "🏆 Tantangan"
+  },
+  "range": {
+    "recent": "Terbaru",
+    "last7": "7 hari terakhir",
+    "last14": "14 hari terakhir",
+    "custom": "Khusus"
+  },
   "picker": {
     "pickEnd": "Sekarang pilih hari akhir",
     "pickStart": "Pilih hari mulai (hingga {{max}} hari)",

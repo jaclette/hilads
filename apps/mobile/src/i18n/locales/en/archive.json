@@ -11,5 +11,6 @@
   "apply": "Apply",
   "emptyTitle": "Nothing here yet",
   "emptyRecentSub": "Past events and hangouts will show up here once the city has some history.",
-  "emptyWindowSub": "No events or hangouts in this window. Try a wider range."
+  "emptyWindowSub": "No events or hangouts in this window. Try a wider range.",
+  "filterChallenges": "🏆 Challenges"
 }

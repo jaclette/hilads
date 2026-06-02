@@ -1,7 +1,17 @@
 {
   "title": "Actividad pasada",
-  "filters": { "all": "Todo", "events": "🔥 Eventos", "pulses": "🗣️ Quedadas" },
-  "range": { "recent": "Reciente", "last7": "Últimos 7 días", "last14": "Últimos 14 días", "custom": "Personalizado" },
+  "filters": {
+    "all": "Todo",
+    "events": "🔥 Eventos",
+    "pulses": "🗣️ Quedadas",
+    "challenges": "🏆 Retos"
+  },
+  "range": {
+    "recent": "Reciente",
+    "last7": "Últimos 7 días",
+    "last14": "Últimos 14 días",
+    "custom": "Personalizado"
+  },
   "picker": {
     "pickEnd": "Ahora elige el día de fin",
     "pickStart": "Elige un día de inicio (hasta {{max}} días)",

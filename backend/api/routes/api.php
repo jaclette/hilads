@@ -354,6 +354,18 @@ function normalizeFeedTopic(array $t, int $now): array
     ]);
 }
 
+// Past archive entry for a validated challenge — mirrors normalizeFeedEvent /
+// normalizeFeedTopic so the /past endpoint can return a homogeneous FeedItem
+// array regardless of source. Validated challenges are evergreen (no expiry),
+// so active_now is always false in this archive context.
+function normalizeFeedChallenge(array $c, int $now): array
+{
+    return array_merge($c, [
+        'kind'       => 'challenge',
+        'active_now' => false,
+    ]);
+}
+
 // ── Conversation broadcast helper ─────────────────────────────────────────────
 // Fire-and-forget: tells the WS server to push a newConversationMessage event.
 function broadcastConversationMessageToWs(string $conversationId, array $message): void
@@ -3799,7 +3811,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     if ($channelId === false) Response::json(['error' => 'Invalid channelId'], 400);
 
-    $type   = in_array($_GET['type'] ?? 'both', ['both', 'hangouts', 'pulses'], true) ? $_GET['type'] : 'both';
+    $type   = in_array($_GET['type'] ?? 'both', ['both', 'hangouts', 'pulses', 'challenges'], true) ? $_GET['type'] : 'both';
     $limit  = max(1, min(20, (int) ($_GET['limit'] ?? 10)));
     $before = isset($_GET['before']) && ctype_digit((string) $_GET['before']) ? (int) $_GET['before'] : null;
 
@@ -3823,9 +3835,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params
         } catch (\Throwable) { $fromTs = $toTs = null; }
     }
 
+    // Each fetch is gated so the three filter shortcuts ('hangouts', 'pulses',
+    // 'challenges') skip the other two source queries. 'both' = all three.
     $now      = time();
-    $hangouts = $type !== 'pulses'   ? EventRepository::getPastOneOff($channelId, $before, $limit, $fromTs, $toTs) : [];
-    $pulses   = $type !== 'hangouts' ? TopicRepository::getPastByCity($channelId, $before, $limit, $fromTs, $toTs) : [];
+    $hangouts = in_array($type, ['both', 'hangouts'],   true) ? EventRepository::getPastOneOff($channelId, $before, $limit, $fromTs, $toTs) : [];
+    $pulses   = in_array($type, ['both', 'pulses'],     true) ? TopicRepository::getPastByCity($channelId, $before, $limit, $fromTs, $toTs) : [];
+    $challenges = in_array($type, ['both', 'challenges'], true)
+        ? ChallengeRepository::getValidatedByCity('city_' . $channelId, $limit, $before)
+        : [];
 
     // Attach participant_count + avatar preview to hangouts (mirror the now feed).
     if (!empty($hangouts)) {
@@ -3842,11 +3859,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params
         unset($h);
     }
 
-    // Normalize to the shared FeedItem shape (kind = event|topic) the cards use,
-    // tag a recency sort key, merge, sort newest-first, slice to the page size.
+    // Normalize to the shared FeedItem shape (kind = event|topic|challenge)
+    // the cards use, tag a recency sort key, merge, sort newest-first, slice
+    // to the page size. Challenges use validated_at as their recency anchor
+    // (mirrors the order returned by getValidatedByCity).
     $items = [];
-    foreach ($hangouts as $h) { $fi = normalizeFeedEvent($h, $now); $fi['_sort'] = (int) ($h['ends_at'] ?? 0); $items[] = $fi; }
-    foreach ($pulses   as $p) { $fi = normalizeFeedTopic($p, $now); $fi['_sort'] = (int) ($p['expires_at'] ?? 0); $items[] = $fi; }
+    foreach ($hangouts   as $h) { $fi = normalizeFeedEvent($h, $now);     $fi['_sort'] = (int) ($h['ends_at']      ?? 0); $items[] = $fi; }
+    foreach ($pulses     as $p) { $fi = normalizeFeedTopic($p, $now);     $fi['_sort'] = (int) ($p['expires_at']   ?? 0); $items[] = $fi; }
+    foreach ($challenges as $c) { $fi = normalizeFeedChallenge($c, $now); $fi['_sort'] = (int) ($c['validated_at'] ?? $c['created_at'] ?? 0); $items[] = $fi; }
     usort($items, static fn($a, $b) => $b['_sort'] <=> $a['_sort']);
     $items = array_slice($items, 0, $limit);
 

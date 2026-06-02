@@ -5099,6 +5099,7 @@ export default function App() {
           onBack={() => { setShowPastArchive(false); if (city) pushUrl(`/city/${cityToSlug(city)}`) }}
           onSelectEvent={(event) => { setShowPastArchive(false); handleSelectEvent(event) }}
           onSelectTopic={(topic) => { setShowPastArchive(false); setActiveTopic(topic) }}
+          onSelectChallenge={(challenge) => { setShowPastArchive(false); setActiveChallenge(challenge) }}
         />
       )}
 

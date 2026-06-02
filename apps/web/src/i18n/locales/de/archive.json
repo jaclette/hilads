@@ -1,7 +1,17 @@
 {
   "title": "Was passiert ist",
-  "filters": { "all": "Alle", "events": "🔥 Events", "pulses": "🗣️ Treffen" },
-  "range": { "recent": "Kürzlich", "last7": "Letzte 7 Tage", "last14": "Letzte 14 Tage", "custom": "Benutzerdefiniert" },
+  "filters": {
+    "all": "Alle",
+    "events": "🔥 Events",
+    "pulses": "🗣️ Treffen",
+    "challenges": "🏆 Challenges"
+  },
+  "range": {
+    "recent": "Kürzlich",
+    "last7": "Letzte 7 Tage",
+    "last14": "Letzte 14 Tage",
+    "custom": "Benutzerdefiniert"
+  },
   "picker": {
     "pickEnd": "Wähle jetzt den Endtag",
     "pickStart": "Wähle einen Starttag (bis zu {{max}} Tage)",
