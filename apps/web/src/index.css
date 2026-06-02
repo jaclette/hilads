@@ -10736,6 +10736,15 @@ body.has-app-promo-banner .page-header {
 .challenge-chat-header .topic-chat-header-center {
   text-align: center;
 }
+/* Vertically center the 3 children (back / title / emoji). The base
+   .topic-chat-header uses flex-start because TopicChatPage stacks an icon
+   row above the title in its center column; challenges have a single line
+   of title text, so flex-start makes the title sit visibly higher than the
+   back chevron and emoji glyph. Long titles still wrap freely and the
+   centered alignment scales gracefully to multi-line. */
+.challenge-chat-header {
+  align-items: center;
+}
 
 /* Share row — full-width tinted pill, brand orange. Mirrors the mobile
    shareRow style. Toast appears inline on the clipboard-fallback path. */
