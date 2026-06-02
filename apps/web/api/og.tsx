@@ -317,7 +317,7 @@ function FallbackCard() {
           Hilads
         </div>
         <div style={{ display: 'flex', fontSize: 46, color: TEXT, fontWeight: 600 }}>
-          Feel local. Anywhere.
+          Challenge the city. Anywhere.
         </div>
         <div style={{ display: 'flex', fontSize: 30, color: MUTED, fontWeight: 500 }}>
           See who's around. Join what's happening now.

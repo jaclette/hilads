@@ -2859,7 +2859,7 @@ export default function App() {
         </div>
         <div className="header-top-center">
           <Logo variant="icon" size="md" />
-          <span className="header-tagline">Feel local. Anywhere.</span>
+          <span className="header-tagline">Challenge the city. Anywhere.</span>
         </div>
         <div className="header-top-right">
           {withShare && city && (
@@ -3750,7 +3750,7 @@ export default function App() {
       <div className={className}>
         <div className="header-hero-brand">
           <Logo variant="icon" size="lg" />
-          <span className="header-tagline">Feel local. Anywhere.</span>
+          <span className="header-tagline">Challenge the city. Anywhere.</span>
         </div>
         <div className="header-hero-city">
           <div className="header-city-line">

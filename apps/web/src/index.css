@@ -747,7 +747,7 @@ html, body, #root {
   white-space: normal;   /* override the old hero rule that set nowrap */
   overflow: visible;
   text-overflow: unset;
-  /* Narrow enough to wrap "Feel local." / "Anywhere." on separate lines */
+  /* Narrow enough to wrap "Challenge the city." / "Anywhere." on separate lines */
   max-width: 76px;
 }
 

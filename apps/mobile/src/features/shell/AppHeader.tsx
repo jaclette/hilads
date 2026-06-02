@@ -4,7 +4,7 @@
  *
  * Contains:
  *   - Left:   notification bell with unread badge (registered users only)
- *   - Center: Hilads logo + "Feel local. Anywhere." tagline to its right
+ *   - Center: Hilads logo + "Challenge the city. Anywhere." tagline to its right
  *   - Right:  optional tab-specific extra(s) (e.g. Share on MY CITY),
  *             then the DM icon with unread badge (registered users only)
  *
@@ -12,7 +12,7 @@
  * Tab-specific elements (city selector, chips, filter pills, titles) render
  * BELOW this component inside each tab's own header container.
  *
- * The "Feel local. Anywhere." tagline mirrors the web persistent header
+ * The "Challenge the city. Anywhere." tagline mirrors the web persistent header
  * (`.header-tagline`): ~11px, white at 50% opacity, wrapping onto two lines at
  * maxWidth 76. (Previously dropped over an Apple Guideline 4 "microscopic text"
  * note; restored at product request for parity with the web header.)
@@ -121,7 +121,7 @@ export function AppHeader({ rightExtra }: Props) {
         <View style={styles.iconGlow}>
           <HiladsIcon size={36} />
         </View>
-        <Text style={styles.tagline}>Feel local. Anywhere.</Text>
+        <Text style={styles.tagline}>Challenge the city. Anywhere.</Text>
       </View>
 
       {/* Right: tab-specific extras + DM icon */}
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     elevation:     10,
   },
   // Mirrors the web `.header-tagline` (index.css): ~11px, white at 50% opacity,
-  // wrapping onto two lines ("Feel local." / "Anywhere.") at maxWidth 76.
+  // wrapping onto two lines ("Challenge the city." / "Anywhere.") at maxWidth 76.
   tagline: {
     fontSize:      11,
     lineHeight:    14,

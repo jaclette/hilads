@@ -415,7 +415,7 @@ export default function LandingPage({
 
         {/* Brand tagline — fixed English, never translated. */}
         <h1 className="lp-hero-h1">
-          Feel local.<br />Anywhere.
+          Challenge the city.<br />Anywhere.
         </h1>
 
         <p className="lp-hero-sub">
@@ -599,7 +599,7 @@ export default function LandingPage({
       <footer className="lp-footer">
         <Logo variant="icon" size="sm" />
         {/* Brand tagline — fixed English. */}
-        <span className="lp-footer-tagline">Feel local. Anywhere.</span>
+        <span className="lp-footer-tagline">Challenge the city. Anywhere.</span>
       </footer>
 
     </div>
