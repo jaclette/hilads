@@ -5,8 +5,8 @@
   "join": {
     "peopleLive_one": "🔥 {{count}} 人此刻正在出来玩",
     "peopleLive_other": "🔥 {{count}} 人此刻正在出来玩",
-    "events_one": "🔥 {{count}} 个活动进行中",
-    "events_other": "🔥 {{count}} 个活动进行中",
+    "events_one": "🎉 {{count}} 个活动进行中",
+    "events_other": "🎉 {{count}} 个活动进行中",
     "hangouts_one": "🗣️ {{count}} 个聚会活跃中",
     "hangouts_other": "🗣️ {{count}} 个聚会活跃中",
     "replies_one": "{{count}} 条回复",

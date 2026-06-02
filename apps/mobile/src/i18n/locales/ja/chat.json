@@ -15,7 +15,7 @@
   "beginning": "会話のはじまり",
   "emptyTitle": "人が集まってきています",
   "emptySub": "最初にあいさつしよう 👇",
-  "bannerNewEvent": "🔥 新しいイベント：{{title}}",
+  "bannerNewEvent": "🎉 新しいイベント：{{title}}",
   "join": "参加",
   "joinArrow": "参加 →",
   "tapMaps": "タップしてマップで開く",

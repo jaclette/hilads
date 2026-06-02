@@ -2,9 +2,9 @@
   "title": "Wat er gebeurd is",
   "filters": {
     "all": "Alles",
-    "events": "🔥 Evenementen",
+    "events": "🎉 Evenementen",
     "pulses": "🗣️ Meetups",
-    "challenges": "🏆 Challenges"
+    "challenges": "🔥 Challenges"
   },
   "range": {
     "recent": "Recent",

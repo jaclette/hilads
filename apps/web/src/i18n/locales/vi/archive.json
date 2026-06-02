@@ -2,9 +2,9 @@
   "title": "Hoạt động đã qua",
   "filters": {
     "all": "Tất cả",
-    "events": "🔥 Sự kiện",
+    "events": "🎉 Sự kiện",
     "pulses": "🗣️ Tụ tập",
-    "challenges": "🏆 Thử thách"
+    "challenges": "🔥 Thử thách"
   },
   "range": {
     "recent": "Gần đây",

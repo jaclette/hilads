@@ -217,7 +217,7 @@
     "edit": "✏️ แก้ไขกิจกรรม"
   },
   "feedNew": {
-    "event": "🔥 กิจกรรมใหม่: {{title}}",
+    "event": "🎉 กิจกรรมใหม่: {{title}}",
     "join": "เข้าร่วม",
     "replies_one": "{{count}} การตอบกลับ",
     "replies_other": "{{count}} การตอบกลับ",

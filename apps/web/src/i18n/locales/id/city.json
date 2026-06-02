@@ -217,7 +217,7 @@
     "edit": "✏️ Edit acara"
   },
   "feedNew": {
-    "event": "🔥 Acara baru: {{title}}",
+    "event": "🎉 Acara baru: {{title}}",
     "join": "Gabung",
     "replies_one": "{{count}} balasan",
     "replies_other": "{{count}} balasan",

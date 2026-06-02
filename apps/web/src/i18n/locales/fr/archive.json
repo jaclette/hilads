@@ -2,9 +2,9 @@
   "title": "Activité passée",
   "filters": {
     "all": "Tout",
-    "events": "🔥 Événements",
+    "events": "🎉 Événements",
     "pulses": "🗣️ Sorties",
-    "challenges": "🏆 Défis"
+    "challenges": "🔥 Défis"
   },
   "range": {
     "recent": "Récent",

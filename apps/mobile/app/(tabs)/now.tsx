@@ -81,7 +81,7 @@ function FilterEmptyState({
   }
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyEmoji}>{filter === 'events' ? '🔥' : '🗣️'}</Text>
+      <Text style={styles.emptyEmoji}>{filter === 'events' ? '🎉' : '🗣️'}</Text>
       <Text style={styles.emptyTitle}>
         {filter === 'events' ? t('noEvents') : t('noHangouts')}
       </Text>

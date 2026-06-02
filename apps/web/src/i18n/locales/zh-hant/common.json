@@ -91,7 +91,7 @@
     "thunder": "雷雨"
   },
   "time": {
-    "happeningNow": "🔥 正在進行",
+    "happeningNow": "🎉 正在進行",
     "inMin": "🔥 {{count}} 分鐘後",
     "today": "今天",
     "tomorrow": "明天",

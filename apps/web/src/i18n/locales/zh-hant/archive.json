@@ -2,9 +2,9 @@
   "title": "回顧",
   "filters": {
     "all": "全部",
-    "events": "🔥 活動",
+    "events": "🎉 活動",
     "pulses": "🗣️ 聚會",
-    "challenges": "🏆 挑戰"
+    "challenges": "🔥 挑戰"
   },
   "range": {
     "recent": "最近",

@@ -217,7 +217,7 @@
     "edit": "✏️ I-edit ang event"
   },
   "feedNew": {
-    "event": "🔥 Bagong event: {{title}}",
+    "event": "🎉 Bagong event: {{title}}",
     "join": "Sumali",
     "replies_one": "{{count}} tugon",
     "replies_other": "{{count}} tugon",

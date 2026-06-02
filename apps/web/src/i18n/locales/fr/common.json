@@ -91,7 +91,7 @@
     "thunder": "orage"
   },
   "time": {
-    "happeningNow": "🔥 en ce moment",
+    "happeningNow": "🎉 en ce moment",
     "inMin": "🔥 dans {{count}} min",
     "today": "Aujourd'hui",
     "tomorrow": "Demain",

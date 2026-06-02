@@ -2,9 +2,9 @@
   "title": "What happened",
   "filters": {
     "all": "All",
-    "events": "🔥 Events",
+    "events": "🎉 Events",
     "pulses": "🗣️ Hangouts",
-    "challenges": "🏆 Challenges"
+    "challenges": "🔥 Challenges"
   },
   "range": {
     "recent": "Recent",

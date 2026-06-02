@@ -91,7 +91,7 @@
     "thunder": "onweer"
   },
   "time": {
-    "happeningNow": "🔥 nu bezig",
+    "happeningNow": "🎉 nu bezig",
     "inMin": "🔥 over {{count}} min",
     "today": "Vandaag",
     "tomorrow": "Morgen",

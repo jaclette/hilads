@@ -2,9 +2,9 @@
   "title": "ما الذي حدث",
   "filters": {
     "all": "الكل",
-    "events": "🔥 فعاليات",
+    "events": "🎉 فعاليات",
     "pulses": "🗣️ لقاءات",
-    "challenges": "🏆 التحديات"
+    "challenges": "🔥 التحديات"
   },
   "range": {
     "recent": "الأحدث",

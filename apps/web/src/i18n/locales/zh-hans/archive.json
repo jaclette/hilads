@@ -2,9 +2,9 @@
   "title": "已发生",
   "filters": {
     "all": "全部",
-    "events": "🔥 活动",
+    "events": "🎉 活动",
     "pulses": "🗣️ 聚会",
-    "challenges": "🏆 挑战"
+    "challenges": "🔥 挑战"
   },
   "range": {
     "recent": "最近",

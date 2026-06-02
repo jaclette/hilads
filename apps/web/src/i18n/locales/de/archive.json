@@ -2,9 +2,9 @@
   "title": "Was passiert ist",
   "filters": {
     "all": "Alle",
-    "events": "🔥 Events",
+    "events": "🎉 Events",
     "pulses": "🗣️ Treffen",
-    "challenges": "🏆 Challenges"
+    "challenges": "🔥 Challenges"
   },
   "range": {
     "recent": "Kürzlich",

@@ -5,8 +5,8 @@
   "join": {
     "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",
     "peopleLive_other": "🔥 {{count}} orang sedang nongkrong sekarang",
-    "events_one": "🔥 {{count}} acara berlangsung",
-    "events_other": "🔥 {{count}} acara berlangsung",
+    "events_one": "🎉 {{count}} acara berlangsung",
+    "events_other": "🎉 {{count}} acara berlangsung",
     "hangouts_one": "🗣️ {{count}} nongkrong aktif",
     "hangouts_other": "🗣️ {{count}} nongkrong aktif",
     "replies_one": "{{count}} balasan",

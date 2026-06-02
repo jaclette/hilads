@@ -212,7 +212,7 @@
     "edit": "✏️ Sửa sự kiện"
   },
   "feedNew": {
-    "event": "🔥 Sự kiện mới: {{title}}",
+    "event": "🎉 Sự kiện mới: {{title}}",
     "join": "Tham gia",
     "replies_other": "{{count}} trả lời",
     "challengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",

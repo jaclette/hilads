@@ -217,7 +217,7 @@
     "edit": "✏️ Edit event"
   },
   "feedNew": {
-    "event": "🔥 New event: {{title}}",
+    "event": "🎉 New event: {{title}}",
     "join": "Join",
     "replies_one": "{{count}} reply",
     "replies_other": "{{count}} replies",

@@ -2,9 +2,9 @@
   "title": "Cosa è successo",
   "filters": {
     "all": "Tutto",
-    "events": "🔥 Eventi",
+    "events": "🎉 Eventi",
     "pulses": "🗣️ Ritrovi",
-    "challenges": "🏆 Sfide"
+    "challenges": "🔥 Sfide"
   },
   "range": {
     "recent": "Recenti",

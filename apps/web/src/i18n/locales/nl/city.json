@@ -217,7 +217,7 @@
     "edit": "✏️ Evenement bewerken"
   },
   "feedNew": {
-    "event": "🔥 Nieuw evenement: {{title}}",
+    "event": "🎉 Nieuw evenement: {{title}}",
     "join": "Meedoen",
     "replies_one": "{{count}} reactie",
     "replies_other": "{{count}} reacties",

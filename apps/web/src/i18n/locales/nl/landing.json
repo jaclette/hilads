@@ -5,8 +5,8 @@
   "join": {
     "peopleLive_one": "🔥 {{count}} persoon hangt nu rond",
     "peopleLive_other": "🔥 {{count}} mensen hangen nu rond",
-    "events_one": "🔥 {{count}} evenement bezig",
-    "events_other": "🔥 {{count}} evenementen bezig",
+    "events_one": "🎉 {{count}} evenement bezig",
+    "events_other": "🎉 {{count}} evenementen bezig",
     "hangouts_one": "🗣️ {{count}} meetup actief",
     "hangouts_other": "🗣️ {{count}} meetups actief",
     "replies_one": "{{count}} reactie",

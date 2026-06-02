@@ -2,9 +2,9 @@
   "title": "Apa yang terjadi",
   "filters": {
     "all": "Semua",
-    "events": "🔥 Acara",
+    "events": "🎉 Acara",
     "pulses": "🗣️ Nongkrong",
-    "challenges": "🏆 Tantangan"
+    "challenges": "🔥 Tantangan"
   },
   "range": {
     "recent": "Terbaru",

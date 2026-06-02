@@ -2,9 +2,9 @@
   "title": "지난 활동",
   "filters": {
     "all": "전체",
-    "events": "🔥 이벤트",
+    "events": "🎉 이벤트",
     "pulses": "🗣️ 모임",
-    "challenges": "🏆 도전"
+    "challenges": "🔥 도전"
   },
   "range": {
     "recent": "최근",

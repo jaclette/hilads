@@ -2,9 +2,9 @@
   "title": "สิ่งที่เกิดขึ้น",
   "filters": {
     "all": "ทั้งหมด",
-    "events": "🔥 กิจกรรม",
+    "events": "🎉 กิจกรรม",
     "pulses": "🗣️ นัดเจอ",
-    "challenges": "🏆 ชาเลนจ์"
+    "challenges": "🔥 ชาเลนจ์"
   },
   "range": {
     "recent": "ล่าสุด",

@@ -217,7 +217,7 @@
     "edit": "✏️ イベントを編集"
   },
   "feedNew": {
-    "event": "🔥 新しいイベント：{{title}}",
+    "event": "🎉 新しいイベント：{{title}}",
     "join": "参加",
     "replies_one": "{{count}}件の返信",
     "replies_other": "{{count}}件の返信",

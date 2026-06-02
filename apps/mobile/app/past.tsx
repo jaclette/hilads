@@ -275,7 +275,7 @@ export default function PastArchiveScreen() {
           >
             <Text style={[styles.filterPillText, type === f && styles.filterPillTextActive]}>
               {f === 'both'       ? t('filterAll')
-                : f === 'hangouts' ? '🔥 Events'
+                : f === 'hangouts' ? '🎉 Events'
                 : f === 'pulses'   ? '🗣️ Hangouts'
                 :                    t('filterChallenges')}
             </Text>

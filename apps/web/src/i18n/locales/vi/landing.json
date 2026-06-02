@@ -4,7 +4,7 @@
   },
   "join": {
     "peopleLive_other": "🔥 {{count}} người đang ở quanh đây",
-    "events_other": "🔥 {{count}} sự kiện đang diễn ra",
+    "events_other": "🎉 {{count}} sự kiện đang diễn ra",
     "hangouts_other": "🗣️ {{count}} tụ tập đang hoạt động",
     "replies_other": "{{count}} trả lời",
     "pickCity": "Chọn một thành phố\nvà tham gia",

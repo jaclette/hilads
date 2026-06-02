@@ -5,8 +5,8 @@
   "join": {
     "peopleLive_one": "🔥 今{{count}}人が集まっています",
     "peopleLive_other": "🔥 今{{count}}人が集まっています",
-    "events_one": "🔥 {{count}}件のイベントが開催中",
-    "events_other": "🔥 {{count}}件のイベントが開催中",
+    "events_one": "🎉 {{count}}件のイベントが開催中",
+    "events_other": "🎉 {{count}}件のイベントが開催中",
     "hangouts_one": "🗣️ {{count}}件の集まりがアクティブ",
     "hangouts_other": "🗣️ {{count}}件の集まりがアクティブ",
     "replies_one": "{{count}}件の返信",

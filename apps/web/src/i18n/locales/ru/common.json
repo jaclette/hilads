@@ -91,7 +91,7 @@
     "thunder": "гроза"
   },
   "time": {
-    "happeningNow": "🔥 прямо сейчас",
+    "happeningNow": "🎉 прямо сейчас",
     "inMin": "🔥 через {{count}} мин",
     "today": "Сегодня",
     "tomorrow": "Завтра",

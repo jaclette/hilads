@@ -217,7 +217,7 @@
     "edit": "✏️ 编辑活动"
   },
   "feedNew": {
-    "event": "🔥 新活动：{{title}}",
+    "event": "🎉 新活动：{{title}}",
     "join": "加入",
     "replies_one": "{{count}} 条回复",
     "replies_other": "{{count}} 条回复",

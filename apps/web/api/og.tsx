@@ -255,7 +255,7 @@ function CityCard({ city, country, slug, eventCount, onlineCount }: any) {
         </div>
 
         <div style={{ display: 'flex', gap: 20, marginTop: 10 }}>
-          <Stat icon="🔥" label="events live"   value={eventCount  > 0 ? String(eventCount)  : '—'} />
+          <Stat icon="🎉" label="events live"   value={eventCount  > 0 ? String(eventCount)  : '—'} />
           <Stat icon="👥" label="here right now" value={onlineCount > 0 ? String(onlineCount) : '—'} />
           <Stat icon="✨" label="real-time"     value="LIVE" />
         </div>

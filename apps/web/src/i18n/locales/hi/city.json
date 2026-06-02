@@ -217,7 +217,7 @@
     "edit": "✏️ इवेंट एडिट करें"
   },
   "feedNew": {
-    "event": "🔥 नया इवेंट: {{title}}",
+    "event": "🎉 नया इवेंट: {{title}}",
     "join": "शामिल हों",
     "replies_one": "{{count}} जवाब",
     "replies_other": "{{count}} जवाब",

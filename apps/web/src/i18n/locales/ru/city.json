@@ -223,7 +223,7 @@
     "edit": "✏️ Изменить событие"
   },
   "feedNew": {
-    "event": "🔥 Новое событие: {{title}}",
+    "event": "🎉 Новое событие: {{title}}",
     "join": "Присоединиться",
     "replies_one": "{{count}} ответ",
     "replies_few": "{{count}} ответа",

@@ -3481,7 +3481,7 @@ export default function App() {
         const id = `event-msg-${event.id}`
         setFeed(prev => {
           if (prev.some(f => f.id === id)) return prev
-          return [...prev, { type: 'event', id, eventId: event.id, title: event.title, text: `🔥 New event: ${event.title}`, cta: 'Join' }]
+          return [...prev, { type: 'event', id, eventId: event.id, title: event.title, text: `🎉 New event: ${event.title}`, cta: 'Join' }]
         })
       })
     }

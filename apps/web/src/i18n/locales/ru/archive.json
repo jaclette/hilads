@@ -2,9 +2,9 @@
   "title": "Что было",
   "filters": {
     "all": "Всё",
-    "events": "🔥 События",
+    "events": "🎉 События",
     "pulses": "🗣️ Тусовки",
-    "challenges": "🏆 Вызовы"
+    "challenges": "🔥 Вызовы"
   },
   "range": {
     "recent": "Недавнее",

@@ -91,7 +91,7 @@
     "thunder": "雷雨"
   },
   "time": {
-    "happeningNow": "🔥 開催中",
+    "happeningNow": "🎉 開催中",
     "inMin": "🔥 あと{{count}}分",
     "today": "今日",
     "tomorrow": "明日",
