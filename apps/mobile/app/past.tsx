@@ -266,7 +266,7 @@ export default function PastArchiveScreen() {
 
       {/* Type filter */}
       <View style={styles.filterBar}>
-        {(['both', 'hangouts', 'pulses', 'challenges'] as const).map(f => (
+        {(['both', 'challenges', 'pulses', 'hangouts'] as const).map(f => (
           <TouchableOpacity
             key={f}
             style={[styles.filterPill, type === f && styles.filterPillActive]}

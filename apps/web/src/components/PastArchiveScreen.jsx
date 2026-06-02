@@ -248,7 +248,7 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
 
       {/* Type filter */}
       <div className="archive-filter-bar">
-        {[['both', 'all'], ['hangouts', 'events'], ['pulses', 'pulses'], ['challenges', 'challenges']].map(([k, lk]) => (
+        {[['both', 'all'], ['challenges', 'challenges'], ['pulses', 'pulses'], ['hangouts', 'events']].map(([k, lk]) => (
           <button key={k} type="button"
             className={`archive-pill${type === k ? ' active' : ''}`}
             onClick={() => setType(k)}>{t(`filters.${lk}`)}</button>
