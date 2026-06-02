@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, AppState,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +17,7 @@ import {
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { MembersSheet } from '@/components/MembersSheet';
+import { avatarColor } from '@/lib/avatarColors';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
@@ -247,27 +249,45 @@ export default function ChallengeChatScreen() {
   const typeIcon = TYPE_ICONS[challenge.challenge_type] ?? '🔥';
   const isValidated = challenge.status === 'validated';
 
+  // Web parity: separate the creator (Challenger) from the rest of the
+  // participants. The creator match uses the same ownership rule as isOwner
+  // (registered user_id OR guest_id). API returns the creator inside the
+  // participants list (auto-joined at create time), so we just partition.
+  const creator = useMemo(
+    () => participants.find(p =>
+      (challenge.created_by && p.id === challenge.created_by) ||
+      (challenge.guest_id   && p.id === challenge.guest_id)
+    ),
+    [participants, challenge.created_by, challenge.guest_id],
+  );
+  const otherParticipants = useMemo(
+    () => participants.filter(p => p !== creator),
+    [participants, creator],
+  );
+
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Nav */}
+      {/* Nav — web parity: back pill | centered title | large type emoji on
+          the right. The emoji is sized to roughly match the back pill so the
+          title stays visually centered; no need for a manual spacer. */}
       <View style={styles.nav}>
         <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
           <Ionicons name="chevron-back" size={18} color={Colors.text} />
           <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
         </TouchableOpacity>
         <View style={styles.navCenter}>
-          <Text style={styles.navIcon}>{typeIcon}</Text>
           <Text style={styles.navTitle} numberOfLines={2}>{challenge.title}</Text>
         </View>
-        {/* Spacer for symmetry with the back pill */}
-        <View style={{ width: 64 }} />
+        <Text style={styles.navEmoji} accessibilityElementsHidden importantForAccessibility="no">{typeIcon}</Text>
       </View>
 
-      {/* Hero — badge row + audience pill + (validated) check + owner actions */}
+      {/* Hero — type-specific badge ("DÉFI BOUFFE" / "DÉFI LIEU" / ...) +
+          audience pill + (validated) check + owner actions. The badge label
+          uses the typeBadge.* keys instead of the generic "Lance un défi". */}
       <View style={styles.hero}>
         <View style={styles.badgeRow}>
           <View style={styles.kindBadge}>
-            <Text style={styles.kindBadgeText}>{t('createTitle').toUpperCase()}</Text>
+            <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
           </View>
           <View style={styles.audiencePill}>
             <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
@@ -326,17 +346,49 @@ export default function ChallengeChatScreen() {
         )}
       </View>
 
-      {/* Members strip — tappable opens the full list. Same component pattern
-          as Hangouts/Events for visual consistency. */}
-      {participants.length > 0 && (
+      {/* Challenger — the originating user, called out separately so the
+          person who launched the défi is recognisable at a glance (👑 pill).
+          Tapping opens the creator's profile, same as on a member tile. */}
+      {creator && (
+        <TouchableOpacity
+          style={styles.challengerRow}
+          activeOpacity={0.75}
+          onPress={() => router.push({ pathname: '/user/[id]', params: { id: creator.id } })}
+        >
+          <View style={[styles.challengerAvatar, { backgroundColor: avatarColor(creator.id) }]}>
+            {creator.thumbAvatarUrl || creator.avatarUrl ? (
+              <Image
+                source={{ uri: creator.thumbAvatarUrl ?? creator.avatarUrl ?? undefined }}
+                style={StyleSheet.absoluteFill}
+                cachePolicy="memory-disk"
+                contentFit="cover"
+                transition={120}
+              />
+            ) : (
+              <Text style={styles.challengerAvatarLetter}>
+                {(creator.displayName?.[0] ?? '?').toUpperCase()}
+              </Text>
+            )}
+          </View>
+          <View style={styles.challengerInfo}>
+            <Text style={styles.challengerName} numberOfLines={1}>{creator.displayName}</Text>
+            <Text style={styles.challengerTag}>👑 {t('challengerTag')}</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+
+      {/* Other participants — only render the strip when somebody has
+          actually accepted (besides the creator). Tapping opens the full
+          members sheet. */}
+      {otherParticipants.length > 0 && (
         <TouchableOpacity style={styles.membersStrip} activeOpacity={0.75} onPress={() => setMembersOpen(true)}>
           <AttendeeAvatars
-            preview={participants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
-            total={participants.length}
+            preview={otherParticipants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
+            total={otherParticipants.length}
             borderColor={Colors.bg}
           />
           <Text style={styles.membersLabel}>
-            {participants.length === 1 ? participants[0].displayName : `${participants.length}`}
+            {t('participantsLabel')} · {otherParticipants.length}
           </Text>
         </TouchableOpacity>
       )}
@@ -471,9 +523,11 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
   },
   backPillText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '700' },
-  navCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, justifyContent: 'center' },
-  navIcon:   { fontSize: 18, lineHeight: 20 },
-  navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, flexShrink: 1 },
+  navCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, flexShrink: 1, textAlign: 'center' },
+  // Sized to roughly match the back-pill width so the title stays centered
+  // without needing a manual right-side spacer.
+  navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 64, textAlign: 'center' },
 
   // Hero (badge + audience + status + actions)
   hero: {
@@ -535,7 +589,25 @@ const styles = StyleSheet.create({
   },
   acceptBtnText: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.white },
 
-  // Members
+  // Challenger row — the creator, distinguished from regular participants
+  // with a 👑 pill in brand orange. Bigger avatar (44px) so the originating
+  // user reads as the anchor of the défi.
+  challengerRow: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
+    borderBottomWidth: 1, borderBottomColor: Colors.border,
+  },
+  challengerAvatar: {
+    width: 44, height: 44, borderRadius: 22,
+    alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  challengerAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 18 },
+  challengerInfo: { flex: 1, gap: 2 },
+  challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  challengerTag:  { fontSize: 11, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.3 },
+
+  // Members (other participants, not the creator)
   membersStrip: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
