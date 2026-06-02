@@ -19,16 +19,14 @@
   "saveChanges": "Salva modifiche",
   "errSave": "Impossibile salvare",
   "errStart": "Impossibile lanciare la sfida",
-  "validateTitle": "Validare questa sfida?",
-  "validateBody": "Una volta validata, la sfida va negli archivi. Chi l'ha accettata riceve una notifica.",
-  "validateConfirm": "Valida",
-  "validateCancel": "Non ancora",
   "deleteTitle": "Eliminare la sfida?",
   "deleteBody": "La sfida viene rimossa per tutti. Non può essere annullato.",
   "deleteConfirm": "Elimina",
   "acceptCta": "Accetta la sfida",
   "acceptedCta": "Accettata ✓",
   "validatedBadge": "Validata",
+  "statusInProgress": "Sfida in corso",
+  "statusAccomplished": "Sfida vinta",
   "openBadge": "Aperta",
   "forLocals": "Per i local",
   "forExplorers": "Per i viaggiatori",
@@ -70,6 +68,5 @@
       "Dove riparare lo schermo del telefono"
     ]
   },
-  "validateLong": "Valida la sfida",
   "beFirstToAccept": "Sii il primo ad accettare"
 }

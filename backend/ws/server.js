@@ -33,6 +33,7 @@
  *                    POST /broadcast/new-topic            { channelId, topic }
  *                    POST /broadcast/new-challenge        { channelId, challenge }
  *                    POST /broadcast/challenge-validated  { channelId, challenge }
+ *                    POST /broadcast/challenge-unvalidated { channelId, challenge }
  *                    POST /broadcast/user-event           { userId, event, payload }
  *
  * All events are JSON objects with an `event` field.
@@ -574,6 +575,13 @@ function handleBroadcastRequest(req, res) {
         broadcastChallengeValidated(channelId, challenge)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/challenge-unvalidated') {
+        const { channelId, challenge } = JSON.parse(body)
+        const room = rooms.get(channelId)
+        console.log(`[internal] broadcast challenge-unvalidated channelId=${channelId} challengeId=${challenge?.id} roomSize=${room ? room.size : 0}`)
+        broadcastChallengeUnvalidated(channelId, challenge)
+        res.writeHead(200); res.end('ok')
+
       } else if (req.method === 'POST' && req.url === '/broadcast/reaction') {
         const { channelId, messageId, reactions } = JSON.parse(body)
         console.log(`[internal] broadcast reaction channelId=${JSON.stringify(channelId)} msgId=${messageId}`)
@@ -750,6 +758,18 @@ function broadcastChallengeValidated(channelId, challenge) {
     if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
   console.log(`[WS][emit] event=challenge_validated target=city:${channelId} recipients=${recipients}/${room.size}`)
+}
+
+// Reverse — validated → open. Owner tapped the status pill to undo a mistake.
+function broadcastChallengeUnvalidated(channelId, challenge) {
+  const room = rooms.get(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'challenge_unvalidated', channelId, challenge })
+  let recipients = 0
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=challenge_unvalidated target=city:${channelId} recipients=${recipients}/${room.size}`)
 }
 
 // ── Message broadcast ───────────────────────────────────────────────────────────

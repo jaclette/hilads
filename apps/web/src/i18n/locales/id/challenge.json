@@ -19,16 +19,14 @@
   "saveChanges": "Simpan perubahan",
   "errSave": "Gagal menyimpan",
   "errStart": "Gagal meluncurkan tantangan",
-  "validateTitle": "Validasi tantangan ini?",
-  "validateBody": "Setelah divalidasi, tantangan masuk ke arsip. Semua yang menerima akan diberi tahu.",
-  "validateConfirm": "Validasi",
-  "validateCancel": "Belum",
   "deleteTitle": "Hapus tantangan?",
   "deleteBody": "Tantangan akan dihapus untuk semua orang. Tidak bisa dibatalkan.",
   "deleteConfirm": "Hapus",
   "acceptCta": "Terima tantangan",
   "acceptedCta": "Diterima ✓",
   "validatedBadge": "Tervalidasi",
+  "statusInProgress": "Tantangan berlangsung",
+  "statusAccomplished": "Tantangan kelar",
   "openBadge": "Terbuka",
   "forLocals": "Untuk local",
   "forExplorers": "Untuk pelancong",
@@ -70,6 +68,5 @@
       "Tempat memperbaiki layar HP"
     ]
   },
-  "validateLong": "Validasi tantangan",
   "beFirstToAccept": "Jadilah yang pertama menerima"
 }

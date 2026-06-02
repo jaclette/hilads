@@ -19,16 +19,14 @@
   "saveChanges": "Lưu thay đổi",
   "errSave": "Không thể lưu thay đổi",
   "errStart": "Không thể tạo thử thách",
-  "validateTitle": "Xác nhận thử thách này?",
-  "validateBody": "Sau khi xác nhận, thử thách chuyển vào lịch sử. Mọi người chấp nhận sẽ nhận được thông báo.",
-  "validateConfirm": "Xác nhận",
-  "validateCancel": "Chưa",
   "deleteTitle": "Xóa thử thách?",
   "deleteBody": "Thử thách sẽ bị xóa cho mọi người. Không thể hoàn tác.",
   "deleteConfirm": "Xóa",
   "acceptCta": "Chấp nhận thử thách",
   "acceptedCta": "Đã chấp nhận ✓",
   "validatedBadge": "Đã xác nhận",
+  "statusInProgress": "Thử thách đang diễn ra",
+  "statusAccomplished": "Thử thách hoàn thành",
   "openBadge": "Mở",
   "forLocals": "Cho người địa phương",
   "forExplorers": "Cho du khách",
@@ -70,6 +68,5 @@
       "Nơi sửa màn hình điện thoại"
     ]
   },
-  "validateLong": "Xác nhận thử thách",
   "beFirstToAccept": "Hãy là người đầu tiên nhận"
 }

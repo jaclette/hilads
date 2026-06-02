@@ -19,16 +19,14 @@
   "saveChanges": "Änderungen speichern",
   "errSave": "Speichern fehlgeschlagen",
   "errStart": "Challenge konnte nicht gestartet werden",
-  "validateTitle": "Diese Challenge validieren?",
-  "validateBody": "Einmal validiert, wandert die Challenge in das Archiv. Alle, die angenommen haben, werden benachrichtigt.",
-  "validateConfirm": "Validieren",
-  "validateCancel": "Noch nicht",
   "deleteTitle": "Challenge löschen?",
   "deleteBody": "Die Challenge wird für alle entfernt. Nicht rückgängig zu machen.",
   "deleteConfirm": "Löschen",
   "acceptCta": "Challenge annehmen",
   "acceptedCta": "Angenommen ✓",
   "validatedBadge": "Validiert",
+  "statusInProgress": "Challenge läuft",
+  "statusAccomplished": "Challenge gerockt",
   "openBadge": "Offen",
   "forLocals": "Für Locals",
   "forExplorers": "Für Reisende",
@@ -70,6 +68,5 @@
       "Wo man hier ein Handy-Display reparieren lässt"
     ]
   },
-  "validateLong": "Challenge validieren",
   "beFirstToAccept": "Sei der Erste, der annimmt"
 }

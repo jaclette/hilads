@@ -19,16 +19,14 @@
   "saveChanges": "บันทึก",
   "errSave": "บันทึกไม่สำเร็จ",
   "errStart": "ไม่สามารถเริ่มชาเลนจ์ได้",
-  "validateTitle": "ยืนยันชาเลนจ์นี้?",
-  "validateBody": "เมื่อยืนยันแล้ว ชาเลนจ์จะย้ายไปยังชาเลนจ์ที่ผ่านมา ทุกคนที่รับจะได้รับการแจ้งเตือน",
-  "validateConfirm": "ยืนยัน",
-  "validateCancel": "ยังก่อน",
   "deleteTitle": "ลบชาเลนจ์?",
   "deleteBody": "ชาเลนจ์จะถูกลบสำหรับทุกคน ไม่สามารถยกเลิกได้",
   "deleteConfirm": "ลบ",
   "acceptCta": "รับชาเลนจ์",
   "acceptedCta": "รับแล้ว ✓",
   "validatedBadge": "ยืนยันแล้ว",
+  "statusInProgress": "ชาเลนจ์กำลังดำเนินอยู่",
+  "statusAccomplished": "ชาเลนจ์สำเร็จ",
   "openBadge": "เปิด",
   "forLocals": "สำหรับคนท้องถิ่น",
   "forExplorers": "สำหรับนักสำรวจ",
@@ -70,6 +68,5 @@
       "ที่ซ่อมหน้าจอมือถือ"
     ]
   },
-  "validateLong": "ยืนยันชาเลนจ์",
   "beFirstToAccept": "เป็นคนแรกที่รับชาเลนจ์"
 }

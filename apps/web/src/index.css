@@ -3696,28 +3696,46 @@ html, body, #root {
   gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.challenge-validate-cta {
+/* Inline status pill — third badge on the kind+audience row. Filled (not
+   tinted like the other two) so it carries more visual weight; reads as
+   both a status indicator and a tappable owner control. */
+.challenge-badge--status {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 13px 18px;
+  gap: 4px;
   background: #FF7A3C;
   color: #fff;
-  border: none;
-  border-radius: 999px;
-  font-size: 15px;
+  border: 1px solid rgba(255, 122, 60, 0.55);
   font-weight: 800;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(255, 122, 60, 0.22);
+  padding: 3px 10px;
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s ease, transform 0.1s ease;
 }
-.challenge-validate-cta:hover  { background: #ff8753; }
-.challenge-validate-cta:active { transform: scale(0.99); }
-.challenge-validate-cta:disabled { opacity: 0.6; cursor: default; }
+.challenge-badge--status:hover  { background: #ff8753; }
+.challenge-badge--status:active { transform: scale(0.98); }
+.challenge-badge--status:disabled { opacity: 0.6; cursor: default; }
+
+.challenge-badge--status-done {
+  background: #22c55e;
+  border-color: rgba(34, 197, 94, 0.55);
+}
+.challenge-badge--status-done:hover { background: #2dd16a; }
+
+/* Read-only for non-owners — full opacity (it's a status, not a disabled
+   button) but no hover lift / pointer cursor. */
+.challenge-badge--status.challenge-badge--readonly,
+.challenge-badge--status.challenge-badge--readonly:hover,
+.challenge-badge--status.challenge-badge--readonly:active {
+  cursor: default;
+  transform: none;
+  background: #FF7A3C;
+}
+.challenge-badge--status.challenge-badge--readonly.challenge-badge--status-done,
+.challenge-badge--status.challenge-badge--readonly.challenge-badge--status-done:hover {
+  background: #22c55e;
+}
 
 .challenge-owner-secondary {
   display: flex;

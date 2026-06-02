@@ -19,16 +19,14 @@
   "saveChanges": "I-save ang mga pagbabago",
   "errSave": "Hindi na-save",
   "errStart": "Hindi nailunsad ang challenge",
-  "validateTitle": "I-validate ang challenge na ito?",
-  "validateBody": "Pagkatapos i-validate, mapupunta ang challenge sa mga nakaraan. Maa-abisuhan ang lahat ng tumanggap.",
-  "validateConfirm": "I-validate",
-  "validateCancel": "Hindi pa",
   "deleteTitle": "Tanggalin ang challenge?",
   "deleteBody": "Tatanggalin ang challenge para sa lahat. Hindi na maibabalik.",
   "deleteConfirm": "Tanggalin",
   "acceptCta": "Tanggapin ang challenge",
   "acceptedCta": "Tinanggap ✓",
   "validatedBadge": "Validated",
+  "statusInProgress": "Challenge ongoing",
+  "statusAccomplished": "Challenge tapos",
   "openBadge": "Bukas",
   "forLocals": "Para sa mga local",
   "forExplorers": "Para sa mga biyahero",
@@ -70,6 +68,5 @@
       "Saan magpapaayos ng phone screen"
     ]
   },
-  "validateLong": "I-validate ang challenge",
   "beFirstToAccept": "Mauna kang tumanggap"
 }

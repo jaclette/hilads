@@ -19,16 +19,14 @@
   "saveChanges": "حفظ التغييرات",
   "errSave": "تعذر الحفظ",
   "errStart": "تعذر إطلاق التحدي",
-  "validateTitle": "التحقق من هذا التحدي؟",
-  "validateBody": "بعد التحقق، ينتقل التحدي إلى التحديات السابقة. يتم إخطار كل من قبله.",
-  "validateConfirm": "تحقق",
-  "validateCancel": "ليس بعد",
   "deleteTitle": "حذف التحدي؟",
   "deleteBody": "سيُحذف التحدي للجميع. لا يمكن التراجع.",
   "deleteConfirm": "حذف",
   "acceptCta": "اقبل التحدي",
   "acceptedCta": "تم القبول ✓",
   "validatedBadge": "مُتحقق",
+  "statusInProgress": "التحدي جارٍ",
+  "statusAccomplished": "تم إنجاز التحدي",
   "openBadge": "مفتوح",
   "forLocals": "للمحليين",
   "forExplorers": "للمسافرين",
@@ -70,6 +68,5 @@
       "أين أصلح شاشة الهاتف"
     ]
   },
-  "validateLong": "تحقّق من التحدّي",
   "beFirstToAccept": "كن أوّل من يقبل"
 }

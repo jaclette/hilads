@@ -19,16 +19,14 @@
   "saveChanges": "Enregistrer",
   "errSave": "Impossible d'enregistrer",
   "errStart": "Impossible de lancer le défi",
-  "validateTitle": "Valider ce défi ?",
-  "validateBody": "Une fois validé, le défi passe dans les défis passés. Toutes les personnes qui l'ont accepté reçoivent une notif.",
-  "validateConfirm": "Valider",
-  "validateCancel": "Pas encore",
   "deleteTitle": "Supprimer le défi ?",
   "deleteBody": "Le défi sera supprimé pour tout le monde. Action irréversible.",
   "deleteConfirm": "Supprimer",
   "acceptCta": "Relever le défi",
   "acceptedCta": "Relevé ✓",
   "validatedBadge": "Validé",
+  "statusInProgress": "Défi en cours",
+  "statusAccomplished": "Défi relevé",
   "openBadge": "Ouvert",
   "forLocals": "Pour les locaux",
   "forExplorers": "Pour les voyageurs",
@@ -70,6 +68,5 @@
       "Où réparer un écran de téléphone"
     ]
   },
-  "validateLong": "Valider le défi",
   "beFirstToAccept": "Sois le premier à relever"
 }

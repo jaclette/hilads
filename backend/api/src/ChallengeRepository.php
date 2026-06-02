@@ -102,10 +102,16 @@ class ChallengeRepository
         $limit = max(1, min(200, $limit));
         $pdo   = Database::pdo();
 
+        // 24h grace window: validated challenges stay in the active feed for 1 day
+        // after validated_at, so the city sees "Défi relevé" status before it
+        // drops into the past archive. After 24h, getValidatedByCity() picks it up.
         $stmt = $pdo->prepare(self::SELECT . "
             WHERE cc.city_id = :city_id
               AND c.status   = 'active'
-              AND cc.status  = 'open'
+              AND (
+                cc.status = 'open'
+                OR (cc.status = 'validated' AND cc.validated_at > now() - interval '1 day')
+              )
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.validated_at, cc.created_at
@@ -128,7 +134,9 @@ class ChallengeRepository
     {
         $limit  = max(1, min(100, $limit));
         $params = ['city_id' => $cityId];
-        $where  = "cc.city_id = :city_id AND c.status = 'active' AND cc.status = 'validated'";
+        // Past archive — only challenges that are past the 24h grace window
+        // (otherwise they're still showing in the active feed via getByCity()).
+        $where  = "cc.city_id = :city_id AND c.status = 'active' AND cc.status = 'validated' AND cc.validated_at <= now() - interval '1 day'";
         if ($beforeTs !== null) {
             $where             .= " AND cc.validated_at < to_timestamp(:before)";
             $params['before']   = $beforeTs;
@@ -348,6 +356,29 @@ class ChallengeRepository
                 validated_at = COALESCE(validated_at, now()),
                 updated_at   = now()
             WHERE channel_id = :id AND status = 'open'
+        ")->execute(['id' => $challengeId]);
+
+        return self::findById($challengeId);
+    }
+
+    /**
+     * Reverse of validate(): flip 'validated' → 'open'. Used when the creator
+     * marked the challenge done by mistake. validated_at is wiped so the
+     * 24h grace window resets cleanly if they re-validate later.
+     */
+    public static function unvalidate(
+        string $challengeId,
+        string $guestId,
+        ?string $userId
+    ): ?array {
+        if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
+
+        Database::pdo()->prepare("
+            UPDATE channel_challenges
+            SET status = 'open',
+                validated_at = NULL,
+                updated_at   = now()
+            WHERE channel_id = :id AND status = 'validated'
         ")->execute(['id' => $challengeId]);
 
         return self::findById($challengeId);

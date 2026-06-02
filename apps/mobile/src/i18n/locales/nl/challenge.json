@@ -19,16 +19,14 @@
   "saveChanges": "Wijzigingen opslaan",
   "errSave": "Opslaan mislukt",
   "errStart": "Challenge kon niet worden gestart",
-  "validateTitle": "Deze challenge valideren?",
-  "validateBody": "Eenmaal gevalideerd komt de challenge in het archief. Iedereen die hem aannam krijgt een melding.",
-  "validateConfirm": "Valideren",
-  "validateCancel": "Nog niet",
   "deleteTitle": "Challenge verwijderen?",
   "deleteBody": "De challenge wordt voor iedereen verwijderd. Kan niet ongedaan worden gemaakt.",
   "deleteConfirm": "Verwijderen",
   "acceptCta": "Neem de challenge aan",
   "acceptedCta": "Aangenomen ✓",
   "validatedBadge": "Gevalideerd",
+  "statusInProgress": "Challenge bezig",
+  "statusAccomplished": "Challenge geflikt",
   "openBadge": "Open",
   "forLocals": "Voor locals",
   "forExplorers": "Voor reizigers",
@@ -70,6 +68,5 @@
       "Waar ik een telefoonscherm kan laten maken"
     ]
   },
-  "validateLong": "Challenge valideren",
   "beFirstToAccept": "Wees de eerste die meedoet"
 }

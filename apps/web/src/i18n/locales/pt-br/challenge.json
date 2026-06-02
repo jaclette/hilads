@@ -19,16 +19,14 @@
   "saveChanges": "Salvar alterações",
   "errSave": "Não foi possível salvar",
   "errStart": "Não foi possível lançar o desafio",
-  "validateTitle": "Validar este desafio?",
-  "validateBody": "Depois de validado, o desafio vai para os desafios passados. Quem aceitou recebe uma notificação.",
-  "validateConfirm": "Validar",
-  "validateCancel": "Agora não",
   "deleteTitle": "Excluir desafio?",
   "deleteBody": "O desafio é removido para todos. Não pode ser desfeito.",
   "deleteConfirm": "Excluir",
   "acceptCta": "Aceitar o desafio",
   "acceptedCta": "Aceito ✓",
   "validatedBadge": "Validado",
+  "statusInProgress": "Desafio em andamento",
+  "statusAccomplished": "Desafio mandado bem",
   "openBadge": "Aberto",
   "forLocals": "Para locais",
   "forExplorers": "Para viajantes",
@@ -70,6 +68,5 @@
       "Onde consertar a tela do celular"
     ]
   },
-  "validateLong": "Validar o desafio",
   "beFirstToAccept": "Seja o primeiro a topar"
 }

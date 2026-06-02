@@ -605,6 +605,20 @@ export async function validateChallenge(challengeId, guestId) {
   return res.json() // updated challenge object
 }
 
+export async function unvalidateChallenge(challengeId, guestId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/unvalidate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to unvalidate challenge')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

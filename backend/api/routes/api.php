@@ -301,6 +301,12 @@ function broadcastChallengeValidatedToWs(int $channelId, array $challenge): void
     postToWs('/broadcast/challenge-validated', ['channelId' => $channelId, 'challenge' => $challenge]);
 }
 
+function broadcastChallengeUnvalidatedToWs(int $channelId, array $challenge): void
+{
+    error_log("[ws-broadcast] → challenge-unvalidated channelId={$channelId} challengeId=" . ($challenge['id'] ?? 'null'));
+    postToWs('/broadcast/challenge-unvalidated', ['channelId' => $channelId, 'challenge' => $challenge]);
+}
+
 
 // ── Now-feed DTO helpers ──────────────────────────────────────────────────────
 // Normalize raw repository rows into a consistent FeedItem shape consumed by
@@ -7560,6 +7566,42 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate', function (arra
     AnalyticsService::defer('validated_challenge', $userId ?? $guestId, [
         'challenge_id' => $challengeId,
     ]);
+
+    Response::json($updated);
+});
+
+// POST /api/v1/challenges/{challengeId}/unvalidate
+// Creator flips status back: 'validated' → 'open'. Used when they tapped the
+// status CTA by mistake. No notifications (silent undo). Broadcasts the WS
+// event so live feeds + open detail screens flip back without a refetch.
+$router->add('POST', '/api/v1/challenges/{challengeId}/unvalidate', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $body    = Request::json();
+    $guestId = $body['guestId'] ?? null;
+    if (!isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId is required'], 400);
+    }
+
+    $currentUser = AuthService::currentUser();
+    $userId      = $currentUser['id'] ?? null;
+    $updated     = ChallengeRepository::unvalidate($challengeId, $guestId, $userId);
+    if ($updated === null) {
+        Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
+    }
+
+    try {
+        $cityIntId = (int) substr($updated['city_id'], 5);
+        broadcastChallengeUnvalidatedToWs(
+            $cityIntId,
+            array_merge($updated, ['nickname' => $currentUser['display_name'] ?? 'Someone']),
+        );
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws unvalidate broadcast failed (non-fatal): ' . $e->getMessage());
+    }
 
     Response::json($updated);
 });

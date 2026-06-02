@@ -14,7 +14,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
   fetchChallengeById, fetchChallengeMessages, sendChallengeMessage,
   fetchChallengeParticipants, toggleChallengeParticipation, validateChallenge,
-  deleteChallenge,
+  unvalidateChallenge, deleteChallenge,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -89,7 +89,7 @@ export default function ChallengeChatPage({
   const [messages,     setMessages]     = useState([])
   const [composer,     setComposer]     = useState('')
   const [sending,      setSending]      = useState(false)
-  const [busy,         setBusy]         = useState(null) // 'accept' | 'validate' | null
+  const [busy,         setBusy]         = useState(null) // 'accept' | 'status' | 'delete' | null
   const [loading,      setLoading]      = useState(true)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
   const feedRef    = useRef(null)
@@ -170,10 +170,12 @@ export default function ChallengeChatPage({
         return [...prev, m].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
       })
     })
-    const offValidated = socket.on('challenge_validated', (data) => {
+    const onStatusFlip = (data) => {
       if (data.challenge?.id === id) setChallenge(data.challenge)
-    })
-    return () => { offMsg(); offValidated(); socket.leaveChallenge(id, sessionId) }
+    }
+    const offValidated   = socket.on('challenge_validated',   onStatusFlip)
+    const offUnvalidated = socket.on('challenge_unvalidated', onStatusFlip)
+    return () => { offMsg(); offValidated(); offUnvalidated(); socket.leaveChallenge(id, sessionId) }
   }, [id, socket, sessionId])
 
   // Auto-scroll to bottom on new message.
@@ -195,18 +197,21 @@ export default function ChallengeChatPage({
     }
   }, [id, guest, nickname, busy, loadParticipants, loadChallenge])
 
-  const handleValidate = useCallback(async () => {
-    if (!guest?.guestId || busy) return
-    setBusy('validate')
+  const handleToggleStatus = useCallback(async () => {
+    if (!guest?.guestId || busy || !challenge) return
+    const wasValidated = challenge.status === 'validated'
+    setBusy('status')
     try {
-      const updated = await validateChallenge(id, guest.guestId)
+      const updated = wasValidated
+        ? await unvalidateChallenge(id, guest.guestId)
+        : await validateChallenge(id, guest.guestId)
       setChallenge(updated)
     } catch (e) {
       window.alert(t('errSave'))
     } finally {
       setBusy(null)
     }
-  }, [id, guest, busy, t])
+  }, [id, guest, busy, challenge, t])
 
   // Delete: confirm before destructive action (this one IS destructive — not
   // the same as Validate). Closes the page on success.
@@ -314,19 +319,38 @@ export default function ChallengeChatPage({
         <span className="challenge-header-emoji" aria-hidden="true">{typeIcon}</span>
       </div>
 
-      {/* Description band — type badge ("DÉFI BOUFFE") + audience pill
-          + (when applicable) validated badge. Sits where the hangout
-          description text sits. */}
+      {/* Description band — type badge + audience pill + status pill.
+          Status is the third pill on the same row to keep the hero compact.
+          The status pill is the source of truth for the challenge state and
+          is visible to everyone; only the owner can tap it (toggles open ⇄
+          validated). Filled orange/green so it stands out from the tinted
+          kind/audience badges. */}
       <div className="topic-chat-desc challenge-meta-row">
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-        {isValidated && (
-          <span className="challenge-badge challenge-badge--validated">
-            ✓ {t('validatedBadge')}
-          </span>
-        )}
+        <button
+          type="button"
+          className={[
+            'challenge-badge',
+            'challenge-badge--status',
+            isValidated && 'challenge-badge--status-done',
+            !isOwner    && 'challenge-badge--readonly',
+          ].filter(Boolean).join(' ')}
+          onClick={isOwner ? handleToggleStatus : undefined}
+          disabled={isOwner && busy !== null}
+          aria-disabled={!isOwner}
+          tabIndex={isOwner ? 0 : -1}
+          aria-label={isValidated ? t('statusAccomplished') : t('statusInProgress')}
+        >
+          {busy === 'status' ? '…' : (
+            <>
+              <span aria-hidden="true">{isValidated ? '✓' : '⏳'}</span>
+              <span>{isValidated ? t('statusAccomplished') : t('statusInProgress')}</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Challenger — explicitly distinguished from other participants. The
@@ -412,26 +436,10 @@ export default function ChallengeChatPage({
         </p>
       )}
 
-      {/* Owner actions — Validate is the primary ownership move so it gets
-          a full-width orange CTA (matches the Accept button used by non-
-          owners). Edit + Delete demote to small icon ghosts below. */}
+      {/* Owner housekeeping — Edit + Delete only. The status CTA lives above
+          (visible to everyone, tappable only for the owner). */}
       {isOwner && (
         <div className="challenge-owner-actions">
-          {!isValidated && (
-            <button
-              type="button"
-              className="challenge-validate-cta"
-              onClick={handleValidate}
-              disabled={busy !== null}
-            >
-              {busy === 'validate' ? '…' : (
-                <>
-                  <span aria-hidden="true">✓</span>
-                  <span>{t('validateLong')}</span>
-                </>
-              )}
-            </button>
-          )}
           <div className="challenge-owner-secondary">
             <button type="button" className="challenge-owner-iconbtn" onClick={handleEdit} disabled={busy !== null}>
               <span aria-hidden="true">✏️</span>

@@ -19,16 +19,14 @@
   "saveChanges": "Guardar cambios",
   "errSave": "No se pudo guardar",
   "errStart": "No se pudo lanzar el reto",
-  "validateTitle": "¿Validar este reto?",
-  "validateBody": "Una vez validado, el reto pasa a los retos pasados. Todos los que lo aceptaron reciben una notificación.",
-  "validateConfirm": "Validar",
-  "validateCancel": "Aún no",
   "deleteTitle": "¿Eliminar reto?",
   "deleteBody": "El reto se elimina para todos. No se puede deshacer.",
   "deleteConfirm": "Eliminar",
   "acceptCta": "Aceptar el reto",
   "acceptedCta": "Aceptado ✓",
   "validatedBadge": "Validado",
+  "statusInProgress": "Reto en curso",
+  "statusAccomplished": "Reto conseguido",
   "openBadge": "Abierto",
   "forLocals": "Para locales",
   "forExplorers": "Para viajeros",
@@ -70,6 +68,5 @@
       "Dónde reparar la pantalla del móvil"
     ]
   },
-  "validateLong": "Validar el reto",
   "beFirstToAccept": "Sé el primero en aceptar"
 }

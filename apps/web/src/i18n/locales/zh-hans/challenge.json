@@ -19,16 +19,14 @@
   "saveChanges": "保存修改",
   "errSave": "保存失败",
   "errStart": "无法发起挑战",
-  "validateTitle": "验证这个挑战?",
-  "validateBody": "验证后,挑战进入过往挑战。每个接受的人都会收到通知。",
-  "validateConfirm": "验证",
-  "validateCancel": "暂不",
   "deleteTitle": "删除挑战?",
   "deleteBody": "挑战将对所有人删除。无法撤销。",
   "deleteConfirm": "删除",
   "acceptCta": "接受挑战",
   "acceptedCta": "已接受 ✓",
   "validatedBadge": "已验证",
+  "statusInProgress": "挑战进行中",
+  "statusAccomplished": "挑战搞定",
   "openBadge": "开放",
   "forLocals": "给本地人",
   "forExplorers": "给旅行者",
@@ -70,6 +68,5 @@
       "哪里可以修手机屏幕"
     ]
   },
-  "validateLong": "验证挑战",
   "beFirstToAccept": "第一个接受挑战"
 }

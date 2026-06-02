@@ -19,16 +19,14 @@
   "saveChanges": "Сохранить изменения",
   "errSave": "Не удалось сохранить",
   "errStart": "Не удалось запустить челлендж",
-  "validateTitle": "Подтвердить челлендж?",
-  "validateBody": "После подтверждения челлендж переходит в архив. Все принявшие получат уведомление.",
-  "validateConfirm": "Подтвердить",
-  "validateCancel": "Пока нет",
   "deleteTitle": "Удалить челлендж?",
   "deleteBody": "Челлендж будет удалён для всех. Отменить нельзя.",
   "deleteConfirm": "Удалить",
   "acceptCta": "Принять челлендж",
   "acceptedCta": "Принято ✓",
   "validatedBadge": "Подтверждён",
+  "statusInProgress": "Челлендж в процессе",
+  "statusAccomplished": "Челлендж сделан",
   "openBadge": "Открыт",
   "forLocals": "Для местных",
   "forExplorers": "Для путешественников",
@@ -70,6 +68,5 @@
       "Где починить экран телефона"
     ]
   },
-  "validateLong": "Подтвердить вызов",
   "beFirstToAccept": "Прими первым"
 }

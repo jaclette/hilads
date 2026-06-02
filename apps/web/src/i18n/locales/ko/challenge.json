@@ -19,16 +19,14 @@
   "saveChanges": "변경 사항 저장",
   "errSave": "저장하지 못했습니다",
   "errStart": "챌린지를 시작하지 못했습니다",
-  "validateTitle": "이 챌린지를 검증?",
-  "validateBody": "검증되면 챌린지가 지난 챌린지로 이동합니다. 수락한 모든 사람이 알림을 받습니다.",
-  "validateConfirm": "검증",
-  "validateCancel": "아직",
   "deleteTitle": "챌린지 삭제?",
   "deleteBody": "챌린지가 모두에게서 삭제됩니다. 되돌릴 수 없습니다.",
   "deleteConfirm": "삭제",
   "acceptCta": "챌린지 수락",
   "acceptedCta": "수락됨 ✓",
   "validatedBadge": "검증됨",
+  "statusInProgress": "챌린지 진행 중",
+  "statusAccomplished": "챌린지 성공",
   "openBadge": "열림",
   "forLocals": "로컬을 위해",
   "forExplorers": "여행자를 위해",
@@ -70,6 +68,5 @@
       "폰 화면을 고칠 곳"
     ]
   },
-  "validateLong": "도전 검증하기",
   "beFirstToAccept": "가장 먼저 도전을 받아보세요"
 }

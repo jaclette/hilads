@@ -122,6 +122,11 @@ export async function validateChallenge(challengeId: string, guestId: string): P
   return api.post<Challenge>(`/challenges/${challengeId}/validate`, { guestId });
 }
 
+/** Owner-only: flip status validated → open. Silent undo (no notifications). */
+export async function unvalidateChallenge(challengeId: string, guestId: string): Promise<Challenge> {
+  return api.post<Challenge>(`/challenges/${challengeId}/unvalidate`, { guestId });
+}
+
 /** Accept / leave a challenge. Returns the new count + whether the caller is in. */
 export async function toggleChallengeParticipation(
   challengeId: string,

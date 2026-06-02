@@ -19,16 +19,14 @@
   "saveChanges": "変更を保存",
   "errSave": "保存できませんでした",
   "errStart": "チャレンジを開始できませんでした",
-  "validateTitle": "このチャレンジを確認?",
-  "validateBody": "確認すると、チャレンジは過去のチャレンジに移ります。受け入れた全員に通知が届きます。",
-  "validateConfirm": "確認",
-  "validateCancel": "まだ",
   "deleteTitle": "チャレンジを削除?",
   "deleteBody": "チャレンジは全員から削除されます。元に戻せません。",
   "deleteConfirm": "削除",
   "acceptCta": "チャレンジを受ける",
   "acceptedCta": "受けた ✓",
   "validatedBadge": "確認済み",
+  "statusInProgress": "チャレンジ進行中",
+  "statusAccomplished": "チャレンジ達成",
   "openBadge": "オープン",
   "forLocals": "ローカル向け",
   "forExplorers": "旅行者向け",
@@ -70,6 +68,5 @@
       "スマホ画面を直せる場所"
     ]
   },
-  "validateLong": "挑戦を承認する",
   "beFirstToAccept": "最初に挑戦を受けよう"
 }

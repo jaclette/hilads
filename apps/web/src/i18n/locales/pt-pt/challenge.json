@@ -19,16 +19,14 @@
   "saveChanges": "Guardar alterações",
   "errSave": "Não foi possível guardar",
   "errStart": "Não foi possível lançar o desafio",
-  "validateTitle": "Validar este desafio?",
-  "validateBody": "Depois de validado, o desafio vai para os desafios passados. Quem aceitou recebe uma notificação.",
-  "validateConfirm": "Validar",
-  "validateCancel": "Agora não",
   "deleteTitle": "Eliminar desafio?",
   "deleteBody": "O desafio é removido para todos. Não pode ser desfeito.",
   "deleteConfirm": "Eliminar",
   "acceptCta": "Aceitar o desafio",
   "acceptedCta": "Aceite ✓",
   "validatedBadge": "Validado",
+  "statusInProgress": "Desafio a decorrer",
+  "statusAccomplished": "Desafio cumprido",
   "openBadge": "Aberto",
   "forLocals": "Para locais",
   "forExplorers": "Para viajantes",
@@ -70,6 +68,5 @@
       "Onde reparar o ecrã do telemóvel"
     ]
   },
-  "validateLong": "Validar o desafio",
   "beFirstToAccept": "Sê o primeiro a aceitar"
 }

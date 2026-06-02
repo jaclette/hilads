@@ -19,16 +19,14 @@
   "saveChanges": "儲存變更",
   "errSave": "儲存失敗",
   "errStart": "無法發起挑戰",
-  "validateTitle": "驗證這個挑戰?",
-  "validateBody": "驗證後,挑戰會進入過往挑戰。所有接受的人都會收到通知。",
-  "validateConfirm": "驗證",
-  "validateCancel": "暫不",
   "deleteTitle": "刪除挑戰?",
   "deleteBody": "挑戰將對所有人刪除。無法復原。",
   "deleteConfirm": "刪除",
   "acceptCta": "接受挑戰",
   "acceptedCta": "已接受 ✓",
   "validatedBadge": "已驗證",
+  "statusInProgress": "挑戰進行中",
+  "statusAccomplished": "挑戰搞定",
   "openBadge": "開放",
   "forLocals": "給在地人",
   "forExplorers": "給旅人",
@@ -70,6 +68,5 @@
       "哪裡可以修手機螢幕"
     ]
   },
-  "validateLong": "驗證挑戰",
   "beFirstToAccept": "第一個接受挑戰"
 }

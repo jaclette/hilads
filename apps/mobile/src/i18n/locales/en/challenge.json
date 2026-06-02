@@ -19,16 +19,14 @@
   "saveChanges": "Save changes",
   "errSave": "Failed to save changes",
   "errStart": "Failed to launch challenge",
-  "validateTitle": "Validate this challenge?",
-  "validateBody": "Once validated, the challenge moves to past challenges. Everyone who accepted gets notified.",
-  "validateConfirm": "Validate",
-  "validateCancel": "Not yet",
   "deleteTitle": "Delete challenge?",
   "deleteBody": "This removes the challenge for everyone. This cannot be undone.",
   "deleteConfirm": "Delete",
   "acceptCta": "Accept the challenge",
   "acceptedCta": "Accepted ✓",
   "validatedBadge": "Validated",
+  "statusInProgress": "Challenge in progress",
+  "statusAccomplished": "Challenge nailed",
   "openBadge": "Open",
   "forLocals": "For locals",
   "forExplorers": "For travelers",
@@ -70,6 +68,5 @@
       "Where to fix a phone screen"
     ]
   },
-  "validateLong": "Validate the challenge",
   "beFirstToAccept": "Be the first to accept"
 }

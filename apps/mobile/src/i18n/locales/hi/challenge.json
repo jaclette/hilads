@@ -19,16 +19,14 @@
   "saveChanges": "बदलाव सेव करें",
   "errSave": "सेव नहीं हो सका",
   "errStart": "चैलेंज लॉन्च नहीं हो सका",
-  "validateTitle": "इस चैलेंज को वैलिडेट करें?",
-  "validateBody": "वैलिडेट होने पर चैलेंज पुराने चैलेंजेस में चला जाता है। स्वीकार करने वाले सभी को नोटिफ़िकेशन मिलता है।",
-  "validateConfirm": "वैलिडेट करें",
-  "validateCancel": "अभी नहीं",
   "deleteTitle": "चैलेंज डिलीट करें?",
   "deleteBody": "चैलेंज सबके लिए हट जाएगा। वापस नहीं किया जा सकता।",
   "deleteConfirm": "डिलीट करें",
   "acceptCta": "चैलेंज स्वीकार करें",
   "acceptedCta": "स्वीकार किया ✓",
   "validatedBadge": "वैलिडेटेड",
+  "statusInProgress": "चुनौती जारी है",
+  "statusAccomplished": "चुनौती पूरी की",
   "openBadge": "ओपन",
   "forLocals": "लोकल्स के लिए",
   "forExplorers": "यात्रियों के लिए",
@@ -70,6 +68,5 @@
       "फ़ोन की स्क्रीन कहाँ ठीक करूँ"
     ]
   },
-  "validateLong": "चुनौती को मान्य करें",
   "beFirstToAccept": "सबसे पहले स्वीकारो"
 }

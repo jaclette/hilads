@@ -13,7 +13,7 @@ import { socket } from '@/lib/socket';
 import {
   fetchChallengeById, fetchChallengeParticipants, fetchChallengeMessages,
   sendChallengeMessage, sendChallengeImageMessage,
-  toggleChallengeParticipation, validateChallenge, deleteChallenge,
+  toggleChallengeParticipation, validateChallenge, unvalidateChallenge, deleteChallenge,
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { MembersSheet } from '@/components/MembersSheet';
@@ -117,21 +117,22 @@ export default function ChallengeChatScreen() {
     ]);
   }, [id, identity, router, t]);
 
-  const handleValidate = useCallback(async () => {
-    if (!identity) return;
-    // One-click validate — no Alert popup. The orange Validate button is its
-    // own confirmation; the extra dialog was friction per user feedback.
+  const handleToggleStatus = useCallback(async () => {
+    if (!identity || !challenge) return;
+    const wasValidated = challenge.status === 'validated';
     setValidateBusy(true);
     try {
-      const updated = await validateChallenge(id, identity.guestId);
+      const updated = wasValidated
+        ? await unvalidateChallenge(id, identity.guestId)
+        : await validateChallenge(id, identity.guestId);
       setChallenge(updated);
-      track('challenge_validated', { challengeId: id });
+      track(wasValidated ? 'challenge_unvalidated' : 'challenge_validated', { challengeId: id });
     } catch {
       Alert.alert(t('errSave'));
     } finally {
       setValidateBusy(false);
     }
-  }, [id, identity, t]);
+  }, [id, identity, challenge, t]);
 
   // ── Participant actions (non-owner) ──────────────────────────────────────────
 
@@ -227,14 +228,16 @@ export default function ChallengeChatScreen() {
     return () => socket.leaveChallenge(id, sessionId);
   }, [id, sessionId]);
 
-  // Listen for WS 'challenge_validated' for this exact challenge so the badge
-  // flips live when the creator validates from another device.
+  // Listen for WS status flips (validated ⇄ open) for this exact challenge
+  // so the pill flips live when the creator toggles from another device.
   useEffect(() => {
-    const off = socket.on('challenge_validated', (data: Record<string, unknown>) => {
+    const onUpdate = (data: Record<string, unknown>) => {
       const ch = data.challenge as Challenge | undefined;
       if (ch?.id === id) setChallenge(ch);
-    });
-    return off;
+    };
+    const offV = socket.on('challenge_validated',   onUpdate);
+    const offU = socket.on('challenge_unvalidated', onUpdate);
+    return () => { offV(); offU(); };
   }, [id]);
 
   // Web parity: separate the creator (Challenger) from the rest of the
@@ -309,9 +312,10 @@ export default function ChallengeChatScreen() {
         <Text style={styles.navEmoji} accessibilityElementsHidden importantForAccessibility="no">{typeIcon}</Text>
       </View>
 
-      {/* Hero — type-specific badge ("DÉFI BOUFFE" / "DÉFI LIEU" / ...) +
-          audience pill + (validated) check + owner actions. The badge label
-          uses the typeBadge.* keys instead of the generic "Lance un défi". */}
+      {/* Hero — type badge + audience pill + status pill (3rd on the same row
+          to save vertical space). The status pill is THE source of truth for
+          the challenge's state and is visible to EVERYONE. Owner taps it to
+          toggle (open ⇄ validated); non-owners see it as a read-only status. */}
       <View style={styles.hero}>
         <View style={styles.badgeRow}>
           <View style={styles.kindBadge}>
@@ -320,46 +324,40 @@ export default function ChallengeChatScreen() {
           <View style={styles.audiencePill}>
             <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
           </View>
-          {isValidated && (
-            <View style={styles.validatedBadge}>
-              <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
-            </View>
-          )}
+          <TouchableOpacity
+            style={[styles.statusPill, isValidated && styles.statusPillDone]}
+            onPress={isOwner ? handleToggleStatus : undefined}
+            activeOpacity={isOwner ? 0.7 : 1}
+            disabled={!isOwner || validateBusy}
+            accessibilityRole={isOwner ? 'button' : 'text'}
+            accessibilityLabel={isValidated ? t('statusAccomplished') : t('statusInProgress')}
+          >
+            {validateBusy
+              ? <ActivityIndicator color={Colors.white} size="small" />
+              : <>
+                  <Ionicons
+                    name={isValidated ? 'checkmark-circle' : 'time-outline'}
+                    size={12}
+                    color={Colors.white}
+                  />
+                  <Text style={styles.statusPillText} numberOfLines={1}>
+                    {isValidated ? t('statusAccomplished') : t('statusInProgress')}
+                  </Text>
+                </>}
+          </TouchableOpacity>
         </View>
 
-        {/* Owner actions — redesigned for hierarchy. Validate is the primary
-            ownership move (challenge done!), so it gets a full-width solid
-            orange CTA matching the Accept button style for non-owners. Edit
-            + Delete are housekeeping; demote them to small icon-only ghost
-            buttons below the CTA. */}
         {isOwner && (
-          <>
-            {!isValidated && (
-              <TouchableOpacity
-                style={styles.validateCta}
-                onPress={handleValidate}
-                activeOpacity={0.85}
-                disabled={validateBusy}
-              >
-                {validateBusy
-                  ? <ActivityIndicator color={Colors.white} size="small" />
-                  : <>
-                      <Ionicons name="checkmark-circle" size={18} color={Colors.white} />
-                      <Text style={styles.validateCtaText}>{t('validateLong')}</Text>
-                    </>}
-              </TouchableOpacity>
-            )}
-            <View style={styles.ownerSecondaryRow}>
-              <TouchableOpacity style={styles.ownerIconBtn} onPress={handleEdit} activeOpacity={0.75} accessibilityLabel={t('editTitle')}>
-                <Ionicons name="create-outline" size={16} color={Colors.muted} />
-                <Text style={styles.ownerIconLabel}>{t('editTitle')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.ownerIconBtn} onPress={handleDelete} activeOpacity={0.75} accessibilityLabel={t('deleteConfirm')}>
-                <Ionicons name="trash-outline" size={16} color={Colors.muted} />
-                <Text style={styles.ownerIconLabel}>{t('deleteConfirm')}</Text>
-              </TouchableOpacity>
-            </View>
-          </>
+          <View style={styles.ownerSecondaryRow}>
+            <TouchableOpacity style={styles.ownerIconBtn} onPress={handleEdit} activeOpacity={0.75} accessibilityLabel={t('editTitle')}>
+              <Ionicons name="create-outline" size={16} color={Colors.muted} />
+              <Text style={styles.ownerIconLabel}>{t('editTitle')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.ownerIconBtn} onPress={handleDelete} activeOpacity={0.75} accessibilityLabel={t('deleteConfirm')}>
+              <Ionicons name="trash-outline" size={16} color={Colors.muted} />
+              <Text style={styles.ownerIconLabel}>{t('deleteConfirm')}</Text>
+            </TouchableOpacity>
+          </View>
         )}
 
       </View>
@@ -625,27 +623,26 @@ const styles = StyleSheet.create({
   },
   audiencePillText: { fontSize: 11, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
 
-  validatedBadge: {
-    backgroundColor:   'rgba(34,197,94,0.10)',
+  // Status pill — third badge on the kind+audience row. Filled (not tinted)
+  // so it carries more visual weight than the other two; reads as both a
+  // status indicator AND a tappable owner control. Orange = in progress,
+  // green = accomplished (statusPillDone modifier).
+  statusPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               4,
+    backgroundColor:   '#FF7A3C',
     borderRadius:      Radius.full,
-    paddingHorizontal: 8, paddingVertical: 2,
-    borderWidth:       1, borderColor: 'rgba(34,197,94,0.20)',
+    paddingHorizontal: 10,
+    paddingVertical:   3,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.55)',
   },
-  validatedBadgeText: { fontSize: 11, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
-
-  // Primary owner CTA — full-width orange filled button. Mirrors the
-  // Accept CTA used by non-owners for consistent "primary action" rhythm.
-  validateCta: {
-    flexDirection:   'row',
-    alignItems:      'center',
-    justifyContent:  'center',
-    gap:             8,
-    marginTop:       Spacing.sm,
-    backgroundColor: '#FF7A3C',
-    borderRadius:    Radius.full,
-    paddingVertical: Spacing.md,
+  statusPillDone: {
+    backgroundColor: '#22c55e',
+    borderColor:     'rgba(34,197,94,0.55)',
   },
-  validateCtaText: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.white, letterSpacing: 0.2 },
+  statusPillText: { fontSize: 11, fontWeight: '800', color: Colors.white, letterSpacing: 0.3 },
 
   // Secondary housekeeping row — icon + small label, ghost styling so the
   // eye lands on the orange CTA above first.
