@@ -237,6 +237,31 @@ export default function ChallengeChatScreen() {
     return off;
   }, [id]);
 
+  // Web parity: separate the creator (Challenger) from the rest of the
+  // participants. The creator match uses the same ownership rule as isOwner
+  // (registered user_id OR guest_id). API returns the creator inside the
+  // participants list (auto-joined at create time), so we just partition.
+  //
+  // CRITICAL: these useMemo calls MUST sit above the conditional early
+  // returns below. Calling them after the early returns is a Rules of Hooks
+  // violation — first render (challengeLoading=true) returns before reaching
+  // them, the second render (challenge loaded) reaches them, hook count
+  // mismatch → React throws "Rendered more hooks than during the previous
+  // render" and the screen crashes.
+  const creator = useMemo(
+    () => challenge
+      ? participants.find(p =>
+          (challenge.created_by && p.id === challenge.created_by) ||
+          (challenge.guest_id   && p.id === challenge.guest_id)
+        )
+      : undefined,
+    [participants, challenge?.created_by, challenge?.guest_id],
+  );
+  const otherParticipants = useMemo(
+    () => participants.filter(p => p !== creator),
+    [participants, creator],
+  );
+
   // ── Render ──────────────────────────────────────────────────────────────────
 
   if (challengeLoading) {
@@ -267,22 +292,6 @@ export default function ChallengeChatScreen() {
   };
   const typeIcon = TYPE_ICONS[challenge.challenge_type] ?? '🔥';
   const isValidated = challenge.status === 'validated';
-
-  // Web parity: separate the creator (Challenger) from the rest of the
-  // participants. The creator match uses the same ownership rule as isOwner
-  // (registered user_id OR guest_id). API returns the creator inside the
-  // participants list (auto-joined at create time), so we just partition.
-  const creator = useMemo(
-    () => participants.find(p =>
-      (challenge.created_by && p.id === challenge.created_by) ||
-      (challenge.guest_id   && p.id === challenge.guest_id)
-    ),
-    [participants, challenge.created_by, challenge.guest_id],
-  );
-  const otherParticipants = useMemo(
-    () => participants.filter(p => p !== creator),
-    [participants, creator],
-  );
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
