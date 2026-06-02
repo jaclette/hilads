@@ -94,15 +94,17 @@ const styles = StyleSheet.create({
   },
   kindBadgeText: { fontSize: 9, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.5 },
 
+  // Violet tint so the audience target reads at a glance against the orange
+  // (kind/brand) and green (validated) pills it shares the row with.
   audiencePill: {
-    backgroundColor:   'rgba(255,255,255,0.06)',
+    backgroundColor:   'rgba(139,92,246,0.12)',
     borderRadius:      Radius.full,
     paddingHorizontal: 8,
     paddingVertical:   2,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
+    borderColor:       'rgba(139,92,246,0.32)',
   },
-  audiencePillText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
+  audiencePillText: { fontSize: 10, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
 
   validatedBadge: {
     backgroundColor:   'rgba(34,197,94,0.10)',
