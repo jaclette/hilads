@@ -1006,6 +1006,12 @@ run($pdo, "
     )
 ", 'challenge_participants');
 
+// Track edits + validations so /sitemap/challenges can emit a real <lastmod>
+// signal — without this, Google never knows a challenge changed after its
+// first crawl, so edits never bubble out. DEFAULT now() on ALTER means
+// existing rows get the migration timestamp (one re-crawl wave, then quiet).
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'channel_challenges.updated_at');
+
 // Main feed query: city_id + status + created_at DESC (NOW screen, top 5).
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_city_status ON channel_challenges (city_id, status, created_at DESC)", 'idx_channel_challenges_city_status');
 // Past-challenges feed (validated) per city.

@@ -7725,14 +7725,18 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
 // apps/web/api/sitemap.mjs to advertise /challenge/<slug>-<id> to crawlers.
 // LIMIT 40000 = one sitemap file; realistic counts are far below it.
 $router->add('GET', '/api/v1/sitemap/challenges', function () {
+    // updated_at is bumped on every edit + validate, so this is a real
+    // change-signal — Google re-crawls when the <lastmod> moves. Pre-migration
+    // rows defaulted to migration time, so they had a single "everything
+    // changed" wave once and then went quiet.
     $stmt = Database::pdo()->query("
         SELECT cc.channel_id                              AS id,
                cc.title                                   AS title,
-               EXTRACT(EPOCH FROM cc.created_at)::INTEGER AS updated_at
+               EXTRACT(EPOCH FROM cc.updated_at)::INTEGER AS updated_at
         FROM channel_challenges cc
         JOIN channels c ON c.id = cc.channel_id
         WHERE c.status = 'active'
-        ORDER BY cc.created_at DESC
+        ORDER BY cc.updated_at DESC
         LIMIT 40000
     ");
     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);

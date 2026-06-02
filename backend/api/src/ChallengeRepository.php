@@ -316,7 +316,7 @@ class ChallengeRepository
         $pdo = Database::pdo();
         $pdo->prepare("
             UPDATE channel_challenges
-            SET title = :t, challenge_type = :tp, audience = :a
+            SET title = :t, challenge_type = :tp, audience = :a, updated_at = now()
             WHERE channel_id = :id
         ")->execute(['t' => $title, 'tp' => $challengeType, 'a' => $audience, 'id' => $challengeId]);
 
@@ -344,7 +344,9 @@ class ChallengeRepository
 
         Database::pdo()->prepare("
             UPDATE channel_challenges
-            SET status = 'validated', validated_at = COALESCE(validated_at, now())
+            SET status = 'validated',
+                validated_at = COALESCE(validated_at, now()),
+                updated_at   = now()
             WHERE channel_id = :id AND status = 'open'
         ")->execute(['id' => $challengeId]);
 
