@@ -3861,7 +3861,7 @@ export default function App() {
             /* Event mode */
             <div className={`event-header${eventHeaderCollapsed ? ' event-header--collapsed' : ''}`}>
               <div className="event-header-top">
-                <BackButton onClick={handleBackToCity} label={city} className="event-back-btn" ariaLabel={`Back to ${city}`} />
+                <BackButton onClick={handleBackToCity} className="event-back-btn" ariaLabel={`Back to ${city}`} />
                 <div className="event-header-actions">
                   <ShareVibeBtn
                     eventId={activeEvent.id}
