@@ -6873,6 +6873,55 @@ img.pub-profile-avatar {
   color-scheme: dark;
 }
 
+/* Marquee placeholder — used by MarqueePlaceholderInput in CreateChallengePage.
+   The native placeholder is suppressed; this overlay sits over the input and
+   slides left-and-back when the localised text overflows the input width.
+   Animation only kicks in if --cef-marquee-shift is negative (computed in JS
+   from scrollWidth vs clientWidth); otherwise the wrap renders the text
+   statically. */
+.cef-input-wrap {
+  position: relative;
+}
+
+.cef-input-marquee {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  /* Match .cef-input padding so the overlay aligns pixel-perfect with where
+     real typed text would start. */
+  padding: 0 16px;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--muted);
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.cef-input-marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.cef-input-marquee--active .cef-input-marquee-text {
+  animation: cef-marquee-scroll 11s ease-in-out infinite;
+}
+
+@keyframes cef-marquee-scroll {
+  /* Sits at start for the first beat (so the user can read the head), slides
+     left to reveal the tail, holds, slides back. ease-in-out makes the edges
+     less abrupt than linear. */
+  0%, 12%   { transform: translateX(0); }
+  44%, 56%  { transform: translateX(var(--cef-marquee-shift, 0px)); }
+  88%, 100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cef-input-marquee--active .cef-input-marquee-text {
+    animation: none;
+  }
+}
+
 /* Tappable location field — opens the map picker (mirrors .cef-input) */
 .cef-loc-field {
   display: flex;

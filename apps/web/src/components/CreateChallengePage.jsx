@@ -33,6 +33,70 @@ const AUDIENCES = [
   { value: 'explorers', icon: '🧳' },
 ]
 
+/**
+ * Input with an animated marquee placeholder. When the placeholder text is
+ * wider than the input, the overlay slides left to reveal the end, then back.
+ * Native `placeholder` is suppressed; the overlay disappears as soon as the
+ * input has a value or is focused (so the user can actually type).
+ *
+ * Animation is a single ResizeObserver-keyed CSS variable — no JS-driven loop,
+ * the browser handles the easing. If the text fits, the animation collapses
+ * to a no-op (the variable resolves to 0px).
+ */
+function MarqueePlaceholderInput({ placeholder, value, onChange, ...rest }) {
+  const inputRef    = useRef(null)
+  const overlayRef  = useRef(null)
+  const textRef     = useRef(null)
+  const [focused,   setFocused]   = useState(false)
+  const [shiftPx,   setShiftPx]   = useState(0)
+
+  // Recompute the marquee shift whenever the placeholder text or container
+  // width changes. shift = how far we need to slide the text LEFT to bring
+  // the right edge into view, plus a small buffer.
+  useEffect(() => {
+    const overlay = overlayRef.current
+    const text    = textRef.current
+    if (!overlay || !text) return
+    const recalc = () => {
+      const overflow = text.scrollWidth - overlay.clientWidth
+      setShiftPx(overflow > 4 ? -(overflow + 8) : 0)
+    }
+    recalc()
+    const ro = new ResizeObserver(recalc)
+    ro.observe(overlay)
+    return () => ro.disconnect()
+  }, [placeholder])
+
+  const showOverlay = !value && !focused
+
+  return (
+    <div className="cef-input-wrap">
+      <input
+        ref={inputRef}
+        className="cef-input"
+        type="text"
+        value={value}
+        onChange={onChange}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        /* Suppress native placeholder — the overlay replaces it. */
+        placeholder=""
+        {...rest}
+      />
+      {showOverlay && (
+        <div
+          ref={overlayRef}
+          className={`cef-input-marquee${shiftPx < 0 ? ' cef-input-marquee--active' : ''}`}
+          style={{ '--cef-marquee-shift': `${shiftPx}px` }}
+          aria-hidden="true"
+        >
+          <span ref={textRef} className="cef-input-marquee-text">{placeholder}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function CreateChallengePage({ channelId, guest, account, editChallenge = null, onCreated, onUpdated, onBack }) {
   const { t } = useTranslation('city')
   const isEdit = !!editChallenge
@@ -131,15 +195,18 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
             </div>
           </div>
 
-          {/* Title */}
+          {/* Title — native placeholder is suppressed and overlayed by an
+              auto-marquee span. Long localised hints ("e.g. Bring me to your
+              favorite hidden coffee spot") overflow mobile-width inputs, so
+              the overlay slides left-and-back when it actually overflows.
+              Pure CSS animation; only activates via JS once we know the
+              measured widths. Hidden as soon as the user starts typing. */}
           <div className="cef-section">
             <label className="cef-label">{t('create.challengeTitleLabel')}</label>
-            <input
-              className="cef-input"
-              type="text"
+            <MarqueePlaceholderInput
+              placeholder={t('create.challengeTitlePlaceholder')}
               value={title}
               onChange={e => setTitle(e.target.value)}
-              placeholder={t('create.challengeTitlePlaceholder')}
               maxLength={100}
               autoFocus
             />
