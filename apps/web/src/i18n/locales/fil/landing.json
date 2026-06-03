@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Hinahamon ng mga local ang mga biyahero. Tinatanggap ng mga biyahero.\nNagkikita kayo IRL, totoong nababuhay ang siyudad."
+    "sub": "Naghahamunan ang mga local at biyahero.\nMagkita in person. Maranasan ang siyudad nang totoo."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",
@@ -52,7 +52,7 @@
   },
   "how": {
     "eyebrow": "Paano ito gumagana",
-    "title": "Tatlong hakbang para makilala ang mga local IRL.",
+    "title": "Tatlong hakbang para magkita in person.",
     "steps": [
       {
         "title": "Piliin ang side mo",
@@ -60,11 +60,11 @@
       },
       {
         "title": "Mag-launch o tanggapin ang challenge",
-        "desc": "Naglu-launch ang mga local ng food, place, culture o help challenges. Tinatanggap ng mga biyahero kung alin ang gusto nila."
+        "desc": "Pwedeng mag-launch ang sinuman ng food, place, culture o help challenge — para sa mga local o sa mga biyahero. Tinatanggap ito ng kabilang side."
       },
       {
-        "title": "Magkita kayo IRL",
-        "desc": "Mag-chat sa private thread, mag-set ng date, at magkita in person.\nTapos na ang tourist mode."
+        "title": "Magkita in person",
+        "desc": "Mag-chat sa private thread, mag-set ng date, at gawing totoo.\nTapos na ang tourist mode."
       }
     ]
   },
@@ -75,14 +75,14 @@
     "signupsNeeded": "kailangang mag-sign up"
   },
   "concept": {
-    "title": "Hindi isa pang social network.\nDahilan para magkita IRL.",
+    "title": "Hindi isa pang social network.\nDahilan para magkita in person.",
     "rules": [
       "Walang follower. Walang feed. Walang algorithm.",
-      "Naghahamon ang mga local. Tinatanggap ng mga biyahero. Nagkikita kayo in person.",
+      "Naghahamunan ang mga local at biyahero. Tinatanggap ito ng kabilang side.",
       "Totoong tao. Totoong lugar. Ngayon na."
     ]
   },
-  "seo": "Ang Hilads ay isang real-time social app kung saan hinahamon ng mga local ang mga biyahero na tuklasin ang siyudad nila sa totoong paraan. Tanggapin ang food, place o culture challenge mula sa isang local sa Paris, tanggapin ang isa sa Barcelona, o mag-launch ng iyo sa Lisbon — ginagawa ng Hilads na IRL meet-up ang bawat byahe. Walang kailangang account. Sumipot lang.",
+  "seo": "Ang Hilads ay isang real-time social app kung saan naghahamunan ang mga local at biyahero para tuklasin ang siyudad sa totoong paraan. Tanggapin ang food, place o culture challenge sa Paris, tanggapin ang isa sa Barcelona, o mag-launch ng iyo sa Lisbon — ginagawa ng Hilads na in-person meet-up ang bawat byahe. Walang kailangang account. Sumipot lang.",
   "download": {
     "eyebrow": "Mga mobile app",
     "title": "Ang lungsod mo sa bulsa mo.",

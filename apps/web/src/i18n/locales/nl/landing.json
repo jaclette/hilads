@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Locals dagen reizigers uit. Reizigers nemen het aan.\nJullie ontmoeten elkaar IRL, je beleeft de stad echt."
+    "sub": "Locals en reizigers dagen elkaar uit.\nKom persoonlijk samen. Beleef de stad echt."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persoon hangt nu rond",
@@ -52,7 +52,7 @@
   },
   "how": {
     "eyebrow": "Hoe het werkt",
-    "title": "Drie stappen om locals IRL te ontmoeten.",
+    "title": "Drie stappen om mensen persoonlijk te ontmoeten.",
     "steps": [
       {
         "title": "Kies je kant",
@@ -60,11 +60,11 @@
       },
       {
         "title": "Lanceer of neem een challenge aan",
-        "desc": "Locals lanceren food-, plek-, cultuur- of hulp-challenges. Reizigers accepteren die ze willen."
+        "desc": "Iedereen kan een food-, plek-, cultuur- of hulp-challenge lanceren — voor locals of voor reizigers. De andere kant pakt 'm op."
       },
       {
-        "title": "Ontmoet elkaar IRL",
-        "desc": "Chat in een privéthread, spreek een datum af en ontmoet elkaar in het echt.\nGeen toeristmodus meer."
+        "title": "Kom persoonlijk samen",
+        "desc": "Chat in een privéthread, spreek een datum af en maak het waar.\nGeen toeristmodus meer."
       }
     ]
   },
@@ -75,14 +75,14 @@
     "signupsNeeded": "aanmelding nodig"
   },
   "concept": {
-    "title": "Niet zomaar een sociaal netwerk.\nEen reden om IRL af te spreken.",
+    "title": "Niet zomaar een sociaal netwerk.\nEen reden om persoonlijk samen te komen.",
     "rules": [
       "Geen volgers. Geen feeds. Geen algoritmes.",
-      "Locals dagen uit. Reizigers accepteren. Je ontmoet elkaar in het echt.",
+      "Locals en reizigers dagen elkaar uit. De andere kant pakt 'm op.",
       "Echte mensen. Echte plekken. Nu."
     ]
   },
-  "seo": "Hilads is een realtime sociale app waar locals reizigers uitdagen om hun stad echt te ontdekken. Neem een food-, plek- of cultuur-challenge van een local in Parijs aan, accepteer er een in Barcelona, of lanceer je eigen in Lissabon — Hilads maakt van elke trip een IRL-ontmoeting. Geen account nodig. Gewoon komen.",
+  "seo": "Hilads is een realtime sociale app waar locals en reizigers elkaar uitdagen om de stad echt te ontdekken. Neem een food-, plek- of cultuur-challenge aan in Parijs, accepteer er een in Barcelona, of lanceer je eigen in Lissabon — Hilads maakt van elke trip een persoonlijke ontmoeting. Geen account nodig. Gewoon komen.",
   "download": {
     "eyebrow": "Mobiele apps",
     "title": "Jouw stad in je broekzak.",

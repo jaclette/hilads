@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Les locaux défient les voyageurs. Les voyageurs relèvent le défi.\nVous vous rencontrez dans la vraie vie, vous vivez la ville pour de vrai."
+    "sub": "Locaux et voyageurs se défient.\nRencontrez-vous en personne. Vivez la ville pour de vrai."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} personne dans le coin en ce moment",
@@ -52,7 +52,7 @@
   },
   "how": {
     "eyebrow": "Comment ça marche",
-    "title": "Trois étapes pour rencontrer des locaux dans la vraie vie.",
+    "title": "Trois étapes pour rencontrer du monde en personne.",
     "steps": [
       {
         "title": "Choisis ton camp",
@@ -60,11 +60,11 @@
       },
       {
         "title": "Lance ou relève un défi",
-        "desc": "Les locaux lancent des défis bouffe, lieu, culture ou aide. Les voyageurs acceptent ceux qu'ils veulent."
+        "desc": "N'importe qui peut lancer un défi bouffe, lieu, culture ou aide — pour les locaux ou pour les voyageurs. L'autre camp relève le défi."
       },
       {
-        "title": "Rencontre-vous IRL",
-        "desc": "Discutez dans un thread privé, fixez la date, et retrouvez-vous en vrai.\nFini le mode touriste."
+        "title": "Rencontrez-vous en personne",
+        "desc": "Discutez dans un thread privé, fixez la date, et faites-le.\nFini le mode touriste."
       }
     ]
   },
@@ -75,14 +75,14 @@
     "signupsNeeded": "inscription requise"
   },
   "concept": {
-    "title": "Pas un réseau social de plus.\nUne raison de se rencontrer IRL.",
+    "title": "Pas un réseau social de plus.\nUne raison de se rencontrer en personne.",
     "rules": [
       "Pas d'abonnés. Pas de fil. Pas d'algorithmes.",
-      "Les locaux défient. Les voyageurs acceptent. Vous vous rencontrez en vrai.",
+      "Locaux et voyageurs se défient. L'autre camp relève le défi.",
       "De vraies personnes. De vrais lieux. Maintenant."
     ]
   },
-  "seo": "Hilads est une app sociale en temps réel où les locaux défient les voyageurs de découvrir leur ville pour de vrai. Relève un défi bouffe, lieu ou culture lancé par un local à Paris, accepte-en un à Barcelone, ou lance le tien à Lisbonne — Hilads transforme chaque voyage en rencontre IRL. Sans compte. Juste viens.",
+  "seo": "Hilads est une app sociale en temps réel où locaux et voyageurs se défient pour découvrir la ville pour de vrai. Relève un défi bouffe, lieu ou culture à Paris, accepte-en un à Barcelone, ou lance le tien à Lisbonne — Hilads transforme chaque voyage en rencontre en personne. Sans compte. Juste viens.",
   "download": {
     "eyebrow": "Applis mobiles",
     "title": "Ta ville dans ta poche.",

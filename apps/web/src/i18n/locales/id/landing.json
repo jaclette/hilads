@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Local menantang pelancong. Pelancong menerima tantangan.\nKalian ketemu langsung, menjalani kota dengan sungguhan."
+    "sub": "Local dan pelancong saling menantang.\nKetemu langsung. Jalani kota betulan."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",
@@ -52,7 +52,7 @@
   },
   "how": {
     "eyebrow": "Cara kerjanya",
-    "title": "Tiga langkah ketemu local secara langsung.",
+    "title": "Tiga langkah ketemu orang secara langsung.",
     "steps": [
       {
         "title": "Pilih sisimu",
@@ -60,11 +60,11 @@
       },
       {
         "title": "Luncurkan atau terima tantangan",
-        "desc": "Local meluncurkan tantangan makanan, tempat, budaya atau bantuan. Pelancong menerima yang mereka mau."
+        "desc": "Siapa pun bisa meluncurkan tantangan makanan, tempat, budaya atau bantuan — untuk local atau pelancong. Sisi lain yang menerima."
       },
       {
         "title": "Ketemu langsung",
-        "desc": "Ngobrol di thread privat, atur tanggalnya, dan ketemu tatap muka.\nGak ada lagi mode turis."
+        "desc": "Ngobrol di thread privat, atur tanggalnya, dan wujudkan.\nGak ada lagi mode turis."
       }
     ]
   },
@@ -78,11 +78,11 @@
     "title": "Bukan jejaring sosial lain.\nAlasan buat ketemu langsung.",
     "rules": [
       "Tanpa pengikut. Tanpa feed. Tanpa algoritma.",
-      "Local menantang. Pelancong menerima. Kalian ketemu tatap muka.",
+      "Local dan pelancong saling menantang. Sisi lain yang menerima.",
       "Orang nyata. Tempat nyata. Sekarang juga."
     ]
   },
-  "seo": "Hilads adalah aplikasi sosial real-time tempat local menantang pelancong untuk menemukan kota mereka dengan cara sungguhan. Terima tantangan makanan, tempat atau budaya dari local di Paris, terima satu di Barcelona, atau luncurkan punyamu di Lisbon — Hilads mengubah setiap perjalanan jadi pertemuan langsung. Tanpa akun. Datang saja.",
+  "seo": "Hilads adalah aplikasi sosial real-time tempat local dan pelancong saling menantang untuk menemukan kota dengan cara sungguhan. Terima tantangan makanan, tempat atau budaya di Paris, terima satu di Barcelona, atau luncurkan punyamu di Lisbon — Hilads mengubah setiap perjalanan jadi pertemuan langsung. Tanpa akun. Datang saja.",
   "download": {
     "eyebrow": "Aplikasi mobile",
     "title": "Kotamu dalam genggaman.",

@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Los locales retan a los viajeros. Los viajeros aceptan el reto.\nOs encontráis en persona, vivís la ciudad de verdad."
+    "sub": "Los locales y los viajeros se retan entre sí.\nEncuéntrate en persona. Vive la ciudad de verdad."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persona por aquí ahora mismo",
@@ -52,7 +52,7 @@
   },
   "how": {
     "eyebrow": "Cómo funciona",
-    "title": "Tres pasos para conocer locales en persona.",
+    "title": "Tres pasos para conocer gente en persona.",
     "steps": [
       {
         "title": "Elige tu lado",
@@ -60,11 +60,11 @@
       },
       {
         "title": "Lanza o acepta un reto",
-        "desc": "Los locales lanzan retos de comida, lugar, cultura o ayuda. Los viajeros aceptan los que quieren."
+        "desc": "Cualquiera puede lanzar un reto de comida, lugar, cultura o ayuda — para locales o para viajeros. El otro lado lo acepta."
       },
       {
-        "title": "Os encontráis en persona",
-        "desc": "Chateáis en un hilo privado, fijáis la fecha y os encontráis cara a cara.\nSe acabó el modo turista."
+        "title": "Encuéntrate en persona",
+        "desc": "Chateáis en un hilo privado, fijáis la fecha y hacedlo realidad.\nSe acabó el modo turista."
       }
     ]
   },
@@ -78,11 +78,11 @@
     "title": "No es otra red social más.\nUna razón para encontrarse en persona.",
     "rules": [
       "Sin seguidores. Sin feed. Sin algoritmos.",
-      "Los locales retan. Los viajeros aceptan. Os encontráis en persona.",
+      "Los locales y los viajeros se retan entre sí. El otro lado acepta.",
       "Gente real. Lugares reales. Ahora."
     ]
   },
-  "seo": "Hilads es una app social en tiempo real donde los locales retan a los viajeros a descubrir su ciudad de verdad. Acepta un reto de comida, lugar o cultura de un local en París, acepta uno en Barcelona, o lanza el tuyo en Lisboa — Hilads convierte cada viaje en un encuentro en persona. Sin cuenta. Solo aparece.",
+  "seo": "Hilads es una app social en tiempo real donde locales y viajeros se retan entre sí para descubrir la ciudad de verdad. Acepta un reto de comida, lugar o cultura en París, acepta uno en Barcelona, o lanza el tuyo en Lisboa — Hilads convierte cada viaje en un encuentro en persona. Sin cuenta. Solo aparece.",
   "download": {
     "eyebrow": "Apps móviles",
     "title": "Tu ciudad en tu bolsillo.",
