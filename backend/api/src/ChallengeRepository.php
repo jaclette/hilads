@@ -511,33 +511,49 @@ class ChallengeRepository
         return (bool) $stmt->fetchColumn();
     }
 
+    // ── Acceptor reads (new model, PR2+) ─────────────────────────────────────
+    //
+    // These methods source from challenge_acceptances, NOT the legacy
+    // challenge_participants pool. The field names stay "participant" for
+    // backward compatibility with the API response shape used by mobile +
+    // web cards, but semantically these are now "acceptors" — people who
+    // took on the challenge via the new POST /accept flow.
+    //
+    // The creator is NOT in this list (they own the challenge, they don't
+    // accept it). 'rejected' acceptances are excluded — the relationship
+    // is closed, no longer an active "is taking on this challenge".
+
     public static function participantCount(string $challengeId): int
     {
-        $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM challenge_participants WHERE channel_id = ?");
+        $stmt = Database::pdo()->prepare("
+            SELECT COUNT(*) FROM challenge_acceptances
+            WHERE challenge_id = ? AND phase != 'rejected'
+        ");
         $stmt->execute([$challengeId]);
         return (int) $stmt->fetchColumn();
     }
 
-    /** Registered user_ids of a challenge's participants (for push fan-out on validate). */
+    /** Registered user_ids of a challenge's acceptors (push fan-out on validate). */
     public static function participantUserIds(string $challengeId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT user_id FROM challenge_participants WHERE channel_id = ? AND user_id IS NOT NULL
+            SELECT acceptor_user_id FROM challenge_acceptances
+            WHERE challenge_id = ? AND phase != 'rejected'
         ");
         $stmt->execute([$challengeId]);
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
-    /** Up to $limit participant avatar previews (most-recent-joined first). */
+    /** Up to $limit acceptor avatar previews (most-recent first). */
     public static function participantPreview(string $challengeId, int $limit = 5): array
     {
         $limit = max(1, min(20, $limit));
         $stmt  = Database::pdo()->prepare("
             SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
-            FROM challenge_participants cp
-            JOIN users u ON u.id = cp.user_id AND u.deleted_at IS NULL
-            WHERE cp.channel_id = ?
-            ORDER BY cp.joined_at DESC
+            FROM challenge_acceptances ca
+            JOIN users u ON u.id = ca.acceptor_user_id AND u.deleted_at IS NULL
+            WHERE ca.challenge_id = ? AND ca.phase != 'rejected'
+            ORDER BY ca.created_at DESC
             LIMIT " . $limit);
         $stmt->execute([$challengeId]);
         return array_map(static fn(array $r): array => [
@@ -554,19 +570,19 @@ class ChallengeRepository
         $limit = max(1, min(20, $limit));
         $in    = implode(',', array_fill(0, count($challengeIds), '?'));
         $stmt  = Database::pdo()->prepare("
-            SELECT channel_id, id, display_name, thumb_url, full_url FROM (
-                SELECT cp.channel_id, u.id, u.display_name,
+            SELECT challenge_id, id, display_name, thumb_url, full_url FROM (
+                SELECT ca.challenge_id, u.id, u.display_name,
                        u.profile_thumb_photo_url AS thumb_url,
                        u.profile_photo_url       AS full_url,
-                       row_number() OVER (PARTITION BY cp.channel_id ORDER BY cp.joined_at DESC) AS rn
-                FROM challenge_participants cp
-                JOIN users u ON u.id = cp.user_id AND u.deleted_at IS NULL
-                WHERE cp.channel_id IN ($in)
+                       row_number() OVER (PARTITION BY ca.challenge_id ORDER BY ca.created_at DESC) AS rn
+                FROM challenge_acceptances ca
+                JOIN users u ON u.id = ca.acceptor_user_id AND u.deleted_at IS NULL
+                WHERE ca.challenge_id IN ($in) AND ca.phase != 'rejected'
             ) t WHERE rn <= " . $limit);
         $stmt->execute(array_values($challengeIds));
         $map = [];
         foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
-            $map[$r['channel_id']][] = [
+            $map[$r['challenge_id']][] = [
                 'id'             => $r['id'],
                 'displayName'    => $r['display_name'] ?? 'Member',
                 'thumbAvatarUrl' => $r['thumb_url'] ?? $r['full_url'] ?? null,
@@ -581,46 +597,44 @@ class ChallengeRepository
         if (empty($challengeIds)) return [];
         $in   = implode(',', array_fill(0, count($challengeIds), '?'));
         $stmt = Database::pdo()->prepare("
-            SELECT channel_id, COUNT(*) AS cnt
-            FROM challenge_participants
-            WHERE channel_id IN ($in)
-            GROUP BY channel_id
+            SELECT challenge_id, COUNT(*) AS cnt
+            FROM challenge_acceptances
+            WHERE challenge_id IN ($in) AND phase != 'rejected'
+            GROUP BY challenge_id
         ");
         $stmt->execute(array_values($challengeIds));
         $map = [];
         foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
-            $map[$r['channel_id']] = (int) $r['cnt'];
+            $map[$r['challenge_id']] = (int) $r['cnt'];
         }
         return $map;
     }
 
     /**
-     * Full participant list for the members modal — canonical UserDTOs
-     * (id, displayName, username, avatarUrl, accountType, badges, vibe…),
-     * joined-order. Handles both registered users AND guests (challenges
-     * accept guest participants, unlike hangouts which are members-only).
+     * Full acceptor list for the members modal — canonical UserDTOs in
+     * accept-order. PR2+ acceptors are always registered users (the new
+     * /accept flow requires a session), so no guest branch here.
+     * 'rejected' acceptances are excluded.
      */
     public static function getParticipants(string $challengeId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT cp.user_id,
-                   cp.guest_id,
-                   cp.nickname AS guest_nickname,
-                   EXTRACT(EPOCH FROM cp.joined_at)::int AS joined_at,
+            SELECT ca.acceptor_user_id AS user_id,
+                   EXTRACT(EPOCH FROM ca.created_at)::int AS joined_at,
                    CASE WHEN u.deleted_at IS NULL THEN u.display_name      ELSE NULL END AS display_name,
                    CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url ELSE NULL END AS profile_photo_url,
                    CASE WHEN u.deleted_at IS NULL THEN u.vibe              ELSE NULL END AS vibe,
                    CASE WHEN u.deleted_at IS NULL THEN u.created_at        ELSE NULL END AS user_created_at
-            FROM challenge_participants cp
-            LEFT JOIN users u ON u.id = cp.user_id
-            WHERE cp.channel_id = ?
-            ORDER BY cp.joined_at ASC
+            FROM challenge_acceptances ca
+            LEFT JOIN users u ON u.id = ca.acceptor_user_id
+            WHERE ca.challenge_id = ? AND ca.phase != 'rejected'
+            ORDER BY ca.created_at ASC
         ");
         $stmt->execute([$challengeId]);
         return array_map(static function (array $r): array {
             $joinedAt = (int) $r['joined_at'];
-            // Registered user (with a live account) → full UserDTO.
-            if ($r['user_id'] !== null && $r['display_name'] !== null) {
+            // Live account → full UserDTO.
+            if ($r['display_name'] !== null) {
                 return array_merge(UserResource::fromUser([
                     'id'                => $r['user_id'],
                     'display_name'      => $r['display_name'],
@@ -630,15 +644,9 @@ class ChallengeRepository
                     'home_city'         => null,
                 ]), ['joinedAt' => $joinedAt]);
             }
-            // Registered user whose account was deleted → discreet placeholder.
-            if ($r['user_id'] !== null) {
-                return array_merge(UserResource::fromGuest($r['user_id'], 'Former member'), ['joinedAt' => $joinedAt]);
-            }
-            // Pure guest — show the nickname they used when accepting.
-            return array_merge(
-                UserResource::fromGuest($r['guest_id'], $r['guest_nickname'] ?? 'Guest'),
-                ['joinedAt' => $joinedAt],
-            );
+            // Account was deleted after accepting — discreet placeholder so
+            // the slot is preserved (cap math etc.) without surfacing PII.
+            return array_merge(UserResource::fromGuest($r['user_id'], 'Former member'), ['joinedAt' => $joinedAt]);
         }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
