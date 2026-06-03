@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
 /**
@@ -59,18 +60,23 @@ export default function DatePickerModal({
     onSubmit(startsAt, startsAt + 2 * 3600, venue.trim() || null)
   }
 
-  return (
+  // Portal to document.body so we escape the .full-page (z-index 200)
+  // stacking context — otherwise our z-index 2000 is contained within that
+  // context and the bottom-nav (z-index 300, sibling of .full-page in the
+  // body) ends up rendering ON TOP of the modal, hiding the Submit button.
+  return createPortal((
     <div
       onClick={onClose}
       style={{
         position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)',
         display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-        zIndex: 2000,  // above the bottom-nav (z-index ~1000 in app shell)
+        zIndex: 2000,
       }}
     >
       {/* Sheet — flex column: handle/header pinned top, content scrolls in
           the middle, Submit pinned bottom. paddingBottom clears the safe-area
-          home indicator (and the bottom-nav if the modal is shown over it). */}
+          home indicator AND the mobile bottom-nav (74px) so the Submit button
+          stays visible on phone-width layouts. */}
       <div
         onClick={e => e.stopPropagation()}
         style={{
@@ -136,7 +142,7 @@ export default function DatePickerModal({
         </div>
       </div>
     </div>
-  )
+  ), document.body)
 }
 
 const sectionLabel = {
