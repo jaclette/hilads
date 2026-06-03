@@ -220,6 +220,10 @@
     "creator": {
       "title": "Đang chờ ai đó nhận",
       "body": "Khi một du khách nhận thử thách, bạn sẽ chat ngay tại đây để lên lịch gặp nhau."
+    },
+    "full": {
+      "title": "Thử thách đã đầy",
+      "body": "Tất cả chỗ đã có người. Quay lại nếu có ai rút lui nhé."
     }
   }
 }

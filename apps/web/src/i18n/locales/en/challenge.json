@@ -220,6 +220,10 @@
     "creator": {
       "title": "Waiting for someone to take it on",
       "body": "When a traveler accepts, you'll chat with them right here to plan your meet-up."
+    },
+    "full": {
+      "title": "Challenge full",
+      "body": "All spots are taken. Check back if someone drops out."
     }
   }
 }

@@ -350,6 +350,16 @@ export default function ChallengeChatScreen() {
     [participants, creator],
   );
 
+  // Cap is full when accepted travelers reach the creator's max. The +
+  // button hides and the locked empty state morphs to "Challenge full".
+  // Owner / acceptors don't see this — they already have their thread.
+  const isFull = !!(
+    challenge &&
+    !isOwner &&
+    !myAcceptance &&
+    otherParticipants.length >= (challenge.max_participants ?? 3)
+  );
+
   // ── Render ──────────────────────────────────────────────────────────────────
 
   if (challengeLoading) {
@@ -538,13 +548,15 @@ export default function ChallengeChatScreen() {
                 </Text>
               </>
             ) : (
-              <Text style={styles.participantsEmpty}>{t('beFirstToAccept')}</Text>
+              <Text style={styles.participantsEmpty}>
+                {isFull ? t('accept.err.cap_reached.title') : t('beFirstToAccept')}
+              </Text>
             )}
           </TouchableOpacity>
-          {/* Accept (+) is only meaningful when the viewer has NO thread yet.
-              Once they have one, the inline chat below IS the conversation
-              surface — no navigation needed. */}
-          {!isOwner && !isValidated && !myThreadChannelId && (
+          {/* Accept (+) is only meaningful when the viewer has NO thread yet
+              AND there's room. Once they have one, the inline chat below IS
+              the conversation surface — no navigation needed. */}
+          {!isOwner && !isValidated && !myThreadChannelId && !isFull && (
             <TouchableOpacity
               style={styles.quickBtn}
               onPress={handleAccept}
@@ -631,12 +643,20 @@ export default function ChallengeChatScreen() {
              challenge has zero acceptors yet. Locked empty state explains why
              the chat is hidden + nudges the action that unlocks it. */
           <View style={styles.lockedWrap}>
-            <Text style={styles.lockedEmoji}>🔒</Text>
+            <Text style={styles.lockedEmoji}>{isFull ? '🚫' : '🔒'}</Text>
             <Text style={styles.lockedTitle}>
-              {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
+              {isOwner
+                ? t('locked.creator.title')
+                : isFull
+                  ? t('locked.full.title')
+                  : t('locked.visitor.title')}
             </Text>
             <Text style={styles.lockedBody}>
-              {isOwner ? t('locked.creator.body') : t('locked.visitor.body')}
+              {isOwner
+                ? t('locked.creator.body')
+                : isFull
+                  ? t('locked.full.body')
+                  : t('locked.visitor.body')}
             </Text>
           </View>
         )}

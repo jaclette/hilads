@@ -220,6 +220,10 @@
     "creator": {
       "title": "Wachten tot iemand 'm oppakt",
       "body": "Als een reiziger 'm aanneemt, chatten jullie hier om jullie afspraak te plannen."
+    },
+    "full": {
+      "title": "Challenge vol",
+      "body": "Alle plekken zijn bezet. Kom terug als iemand afhaakt."
     }
   }
 }

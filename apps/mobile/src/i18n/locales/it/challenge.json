@@ -220,6 +220,10 @@
     "creator": {
       "title": "In attesa che qualcuno la accetti",
       "body": "Quando un viaggiatore accetta, chatterete proprio qui per organizzare l'incontro."
+    },
+    "full": {
+      "title": "Sfida al completo",
+      "body": "I posti sono tutti presi. Ripassa se qualcuno si ritira."
     }
   }
 }

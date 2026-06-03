@@ -220,6 +220,10 @@
     "creator": {
       "title": "En attente d'un voyageur",
       "body": "Quand quelqu'un relève ton défi, vous discutez ici pour fixer votre rendez-vous."
+    },
+    "full": {
+      "title": "Défi complet",
+      "body": "Toutes les places sont prises. Reviens si quelqu'un se désiste."
     }
   }
 }

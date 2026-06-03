@@ -220,6 +220,10 @@
     "creator": {
       "title": "Hinihintay na may tumanggap",
       "body": "Kapag may biyaherong tumanggap, mag-uusap kayo dito mismo para mag-plano ng meet-up."
+    },
+    "full": {
+      "title": "Puno na ang challenge",
+      "body": "Wala nang slot. Balikan mo kung may aalis."
     }
   }
 }

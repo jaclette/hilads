@@ -220,6 +220,10 @@
     "creator": {
       "title": "Menunggu seseorang mengambilnya",
       "body": "Saat pelancong menerima, kalian akan chat di sini untuk atur kapan ketemuan."
+    },
+    "full": {
+      "title": "Tantangan penuh",
+      "body": "Semua slot sudah terisi. Cek lagi kalau ada yang mundur."
     }
   }
 }

@@ -348,6 +348,12 @@ export default function ChallengeChatPage({
   )
   const otherParticipants = participants.filter(p => p !== creator)
 
+  // Cap is full when accepted travelers reach the creator's max. The +
+  // button hides and the locked empty state morphs to "Challenge full".
+  // Owner / acceptors don't see this — they already have their thread.
+  const isFull = !isOwner && !myAcceptance &&
+    otherParticipants.length >= (challenge.max_participants ?? 3)
+
   return (
     <div className="full-page topic-chat-page">
       {/* Header — back | title (true-centered) | big type emoji (right column).
@@ -465,12 +471,14 @@ export default function ChallengeChatPage({
                 </span>
               </>
             ) : (
-              <span className="challenge-participants-empty">{t('beFirstToAccept')}</span>
+              <span className="challenge-participants-empty">
+                {isFull ? t('accept.err.cap_reached.title') : t('beFirstToAccept')}
+              </span>
             )}
           </div>
-          {/* Accept (+) only when there's no thread yet — once accepted, the
-              inline chat below IS the conversation surface. */}
-          {!isValidated && !isOwner && !myThreadChannelId && (
+          {/* Accept (+) only when there's no thread yet AND there's room.
+              Once accepted, the inline chat below IS the conversation surface. */}
+          {!isValidated && !isOwner && !myThreadChannelId && !isFull && (
             <button
               type="button"
               className="challenge-quick-btn challenge-quick-btn--accept"
@@ -521,12 +529,20 @@ export default function ChallengeChatPage({
           alignItems: 'center', justifyContent: 'center',
           padding: '32px 24px', textAlign: 'center', gap: 8,
         }}>
-          <span style={{ fontSize: 40, opacity: 0.7 }}>🔒</span>
+          <span style={{ fontSize: 40, opacity: 0.7 }}>{isFull ? '🚫' : '🔒'}</span>
           <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-            {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
+            {isOwner
+              ? t('locked.creator.title')
+              : isFull
+                ? t('locked.full.title')
+                : t('locked.visitor.title')}
           </h3>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-            {isOwner ? t('locked.creator.body') : t('locked.visitor.body')}
+            {isOwner
+              ? t('locked.creator.body')
+              : isFull
+                ? t('locked.full.body')
+                : t('locked.visitor.body')}
           </p>
         </div>
       )}

@@ -220,6 +220,10 @@
     "creator": {
       "title": "À espera que um viajante aceite",
       "body": "Quando alguém aceitar, conversam aqui mesmo para combinar o vosso encontro."
+    },
+    "full": {
+      "title": "Desafio cheio",
+      "body": "Todos os lugares estão ocupados. Volta se alguém desistir."
     }
   }
 }

@@ -220,6 +220,10 @@
     "creator": {
       "title": "Esperando a que alguien lo acepte",
       "body": "Cuando un viajero acepte, hablaréis aquí mismo para organizar vuestra quedada."
+    },
+    "full": {
+      "title": "Reto completo",
+      "body": "Todas las plazas están ocupadas. Vuelve si alguien se baja."
     }
   }
 }

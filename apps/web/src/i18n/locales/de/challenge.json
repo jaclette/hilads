@@ -220,6 +220,10 @@
     "creator": {
       "title": "Warten, bis jemand annimmt",
       "body": "Wenn ein Reisender annimmt, chattet ihr direkt hier, um euer Treffen zu planen."
+    },
+    "full": {
+      "title": "Challenge voll",
+      "body": "Alle Plätze sind vergeben. Schau wieder vorbei, falls jemand abspringt."
     }
   }
 }

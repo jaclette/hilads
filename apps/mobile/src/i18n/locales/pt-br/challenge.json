@@ -220,6 +220,10 @@
     "creator": {
       "title": "Esperando alguém topar",
       "body": "Quando um viajante topar, vocês conversam aqui mesmo pra combinar o encontro."
+    },
+    "full": {
+      "title": "Desafio cheio",
+      "body": "Todas as vagas foram preenchidas. Volte se alguém desistir."
     }
   }
 }
