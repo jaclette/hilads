@@ -223,7 +223,7 @@ export default function CreateChallengeScreen() {
             Stepper instead of slider because the range is 1-20 and discrete
             single-tap +/- is faster on mobile than a slider drag. Centred
             number for tap-target balance. */}
-        <Text style={styles.sectionLabel}>{t('maxParticipantsLabel')}</Text>
+        <Text style={styles.sectionLabel}>{t(`maxParticipantsLabel.${audience === 'locals' ? 'locals' : 'explorers'}`)}</Text>
         <View style={styles.stepperRow}>
           <TouchableOpacity
             style={[styles.stepperBtn, maxParticipants <= MAX_P_MIN && styles.stepperBtnDisabled]}

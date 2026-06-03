@@ -15,7 +15,10 @@
   },
   "titleLabel": "Tantanganmu",
   "titlePlaceholder": "mis. Ajak aku ke kafe favoritmu",
-  "maxParticipantsLabel": "Berapa pelancong maks?",
+  "maxParticipantsLabel": {
+    "locals": "Berapa local maks?",
+    "explorers": "Berapa pelancong maks?"
+  },
   "returnClauseLabel": "Lalu?",
   "returnClauseTemplates": {
     "food": "...dan ajak aku merasakannya bareng 🍜",

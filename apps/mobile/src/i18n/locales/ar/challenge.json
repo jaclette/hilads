@@ -15,7 +15,10 @@
   },
   "titleLabel": "تحديك",
   "titlePlaceholder": "مثال: خذني إلى مقهاك المفضل",
-  "maxParticipantsLabel": "كم عدد المسافرين كحد أقصى؟",
+  "maxParticipantsLabel": {
+    "locals": "كم عدد المحليين كحد أقصى؟",
+    "explorers": "كم عدد المسافرين كحد أقصى؟"
+  },
   "returnClauseLabel": "وبعدها؟",
   "returnClauseTemplates": {
     "food": "...وتعال شاركني إياه 🍜",

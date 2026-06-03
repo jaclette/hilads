@@ -15,7 +15,10 @@
   },
   "titleLabel": "Thử thách của bạn",
   "titlePlaceholder": "vd. Đưa tôi đến quán cà phê yêu thích của bạn",
-  "maxParticipantsLabel": "Tối đa bao nhiêu du khách?",
+  "maxParticipantsLabel": {
+    "locals": "Tối đa bao nhiêu người địa phương?",
+    "explorers": "Tối đa bao nhiêu du khách?"
+  },
   "returnClauseLabel": "Rồi sao nữa?",
   "returnClauseTemplates": {
     "food": "...rồi tới chia sẻ với tớ 🍜",

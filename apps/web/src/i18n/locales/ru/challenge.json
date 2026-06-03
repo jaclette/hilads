@@ -15,7 +15,10 @@
   },
   "titleLabel": "Твой челлендж",
   "titlePlaceholder": "напр. Отведи меня в своё любимое кафе",
-  "maxParticipantsLabel": "Сколько путешественников максимум?",
+  "maxParticipantsLabel": {
+    "locals": "Сколько местных максимум?",
+    "explorers": "Сколько путешественников максимум?"
+  },
   "returnClauseLabel": "А потом?",
   "returnClauseTemplates": {
     "food": "...и приходи поделиться этим со мной 🍜",

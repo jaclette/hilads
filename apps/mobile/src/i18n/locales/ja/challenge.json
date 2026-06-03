@@ -15,7 +15,10 @@
   },
   "titleLabel": "あなたのチャレンジ",
   "titlePlaceholder": "例:お気に入りのカフェに連れて行って",
-  "maxParticipantsLabel": "旅行者は最大何人?",
+  "maxParticipantsLabel": {
+    "locals": "ローカルは最大何人?",
+    "explorers": "旅行者は最大何人?"
+  },
   "returnClauseLabel": "それから?",
   "returnClauseTemplates": {
     "food": "…そして一緒にシェアしに来てください 🍜",

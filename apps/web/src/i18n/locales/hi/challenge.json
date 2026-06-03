@@ -15,7 +15,10 @@
   },
   "titleLabel": "तुम्हारा चैलेंज",
   "titlePlaceholder": "जैसे, मुझे अपनी पसंदीदा कॉफ़ी जगह ले चलो",
-  "maxParticipantsLabel": "अधिकतम कितने यात्री?",
+  "maxParticipantsLabel": {
+    "locals": "अधिकतम कितने लोकल्स?",
+    "explorers": "अधिकतम कितने यात्री?"
+  },
   "returnClauseLabel": "और फिर?",
   "returnClauseTemplates": {
     "food": "...और आकर मेरे साथ शेयर करो 🍜",

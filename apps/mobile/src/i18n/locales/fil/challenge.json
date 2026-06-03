@@ -15,7 +15,10 @@
   },
   "titleLabel": "Iyong challenge",
   "titlePlaceholder": "hal. Dalhin mo ako sa paborito mong coffee spot",
-  "maxParticipantsLabel": "Ilang biyahero max?",
+  "maxParticipantsLabel": {
+    "locals": "Ilang local max?",
+    "explorers": "Ilang biyahero max?"
+  },
   "returnClauseLabel": "Tapos?",
   "returnClauseTemplates": {
     "food": "...tapos puntahan mo ako para i-share 🍜",

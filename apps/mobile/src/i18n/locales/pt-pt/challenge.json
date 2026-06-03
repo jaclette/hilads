@@ -15,7 +15,10 @@
   },
   "titleLabel": "O teu desafio",
   "titlePlaceholder": "ex. Leva-me ao teu café favorito",
-  "maxParticipantsLabel": "Quantos viajantes no máximo?",
+  "maxParticipantsLabel": {
+    "locals": "Quantos locais no máximo?",
+    "explorers": "Quantos viajantes no máximo?"
+  },
   "returnClauseLabel": "E depois?",
   "returnClauseTemplates": {
     "food": "...e vem partilhar comigo 🍜",

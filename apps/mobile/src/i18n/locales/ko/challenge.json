@@ -15,7 +15,10 @@
   },
   "titleLabel": "당신의 챌린지",
   "titlePlaceholder": "예: 가장 좋아하는 카페로 데려가 주세요",
-  "maxParticipantsLabel": "여행자 최대 몇 명?",
+  "maxParticipantsLabel": {
+    "locals": "로컬 최대 몇 명?",
+    "explorers": "여행자 최대 몇 명?"
+  },
   "returnClauseLabel": "그다음은?",
   "returnClauseTemplates": {
     "food": "…그리고 와서 같이 나눠요 🍜",

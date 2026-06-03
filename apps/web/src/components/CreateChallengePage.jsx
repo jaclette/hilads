@@ -164,7 +164,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           {/* Max participants stepper — −/+ buttons flanking the number.
               Discrete steps are faster than a slider drag for a 1-20 range. */}
           <div className="cef-section">
-            <label className="cef-label">{t('maxParticipantsLabel', { ns: 'challenge' })}</label>
+            <label className="cef-label">{t(`maxParticipantsLabel.${audience === 'locals' ? 'locals' : 'explorers'}`, { ns: 'challenge' })}</label>
             <div className="cef-stepper">
               <button
                 type="button"

@@ -15,7 +15,10 @@
   },
   "titleLabel": "Deine Challenge",
   "titlePlaceholder": "z. B. Bring mich zu deinem Lieblings-Café",
-  "maxParticipantsLabel": "Wie viele Reisende max.?",
+  "maxParticipantsLabel": {
+    "locals": "Wie viele Locals max.?",
+    "explorers": "Wie viele Reisende max.?"
+  },
   "returnClauseLabel": "Und danach?",
   "returnClauseTemplates": {
     "food": "...und komm es mit mir teilen 🍜",

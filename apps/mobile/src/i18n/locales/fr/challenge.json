@@ -15,7 +15,10 @@
   },
   "titleLabel": "Ton défi",
   "titlePlaceholder": "ex. Emmène-moi dans ton spot café préféré",
-  "maxParticipantsLabel": "Combien de voyageurs max ?",
+  "maxParticipantsLabel": {
+    "locals": "Combien de locaux maximum ?",
+    "explorers": "Combien de voyageurs maximum ?"
+  },
   "returnClauseLabel": "Et après ?",
   "returnClauseTemplates": {
     "food": "...et viens me la faire goûter 🍜",

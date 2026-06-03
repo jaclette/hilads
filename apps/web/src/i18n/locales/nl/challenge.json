@@ -15,7 +15,10 @@
   },
   "titleLabel": "Jouw challenge",
   "titlePlaceholder": "bv. Breng me naar je favoriete koffieplek",
-  "maxParticipantsLabel": "Hoeveel reizigers max?",
+  "maxParticipantsLabel": {
+    "locals": "Hoeveel locals max?",
+    "explorers": "Hoeveel reizigers max?"
+  },
   "returnClauseLabel": "En dan?",
   "returnClauseTemplates": {
     "food": "...en kom het met me delen 🍜",

@@ -15,7 +15,10 @@
   },
   "titleLabel": "你的挑戰",
   "titlePlaceholder": "例如,帶我去你最愛的咖啡館",
-  "maxParticipantsLabel": "最多多少旅人?",
+  "maxParticipantsLabel": {
+    "locals": "最多多少在地人?",
+    "explorers": "最多多少旅人?"
+  },
   "returnClauseLabel": "然後呢?",
   "returnClauseTemplates": {
     "food": "……然後過來跟我一起分享 🍜",

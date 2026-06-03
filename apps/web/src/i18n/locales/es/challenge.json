@@ -15,7 +15,10 @@
   },
   "titleLabel": "Tu reto",
   "titlePlaceholder": "ej. Llévame a tu café favorito",
-  "maxParticipantsLabel": "¿Cuántos viajeros máximo?",
+  "maxParticipantsLabel": {
+    "locals": "¿Cuántos locales máximo?",
+    "explorers": "¿Cuántos viajeros máximo?"
+  },
   "returnClauseLabel": "¿Y luego?",
   "returnClauseTemplates": {
     "food": "...y ven a compartirlo conmigo 🍜",

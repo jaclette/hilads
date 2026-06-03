@@ -15,7 +15,10 @@
   },
   "titleLabel": "Your challenge",
   "titlePlaceholder": "e.g. Bring me to your favorite hidden coffee spot",
-  "maxParticipantsLabel": "How many travelers max?",
+  "maxParticipantsLabel": {
+    "locals": "How many locals max?",
+    "explorers": "How many travelers max?"
+  },
   "returnClauseLabel": "And then?",
   "returnClauseTemplates": {
     "food": "...and come share it with me 🍜",

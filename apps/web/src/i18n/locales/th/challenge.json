@@ -15,7 +15,10 @@
   },
   "titleLabel": "ชาเลนจ์ของคุณ",
   "titlePlaceholder": "เช่น พาฉันไปคาเฟ่ที่คุณชอบ",
-  "maxParticipantsLabel": "นักท่องเที่ยวสูงสุดกี่คน?",
+  "maxParticipantsLabel": {
+    "locals": "คนท้องถิ่นสูงสุดกี่คน?",
+    "explorers": "นักท่องเที่ยวสูงสุดกี่คน?"
+  },
   "returnClauseLabel": "แล้วยังไงต่อ?",
   "returnClauseTemplates": {
     "food": "...แล้วมาแชร์กับฉันด้วย 🍜",
