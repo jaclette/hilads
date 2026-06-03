@@ -132,7 +132,10 @@ export default function ThreadChatScreen() {
     const offP = socket.on('challenge_date_proposed',  onDateChange);
     const offW = socket.on('challenge_date_withdrawn', onDateChange);
     const offA = socket.on('challenge_date_approved',  onDateChange);
-    return () => { offP(); offW(); offA(); };
+    // PR4 — verdict pushes. Same shape (target acceptor's user-room).
+    const offV = socket.on('challenge_verdict_approved', onDateChange);
+    const offR = socket.on('challenge_verdict_rejected', onDateChange);
+    return () => { offP(); offW(); offA(); offV(); offR(); };
   }, [threadChannelId, loadSummary]);
 
   // ── Cancel acceptance ──────────────────────────────────────────────────────

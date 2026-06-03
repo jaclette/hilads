@@ -157,5 +157,37 @@
       "approveFailed": "Hindi na-approve. Subukan ulit.",
       "withdrawFailed": "Hindi na-withdraw. Subukan ulit."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Kumusta?",
+      "body": "Nakuha ba ni {{name}}?"
+    },
+    "acceptorWaiting": {
+      "title": "Hinihintay ang verdict",
+      "body": "Mama-mark ni {{name}} kung kumusta."
+    },
+    "approved": {
+      "title": "Tapos na ang challenge 🎉"
+    },
+    "rejected": {
+      "title": "Sarado na ang challenge"
+    },
+    "confirm": {
+      "approve": {
+        "title": "I-mark bilang tapos?",
+        "body": "Final na 'to — hindi mo na mababago.",
+        "confirm": "I-mark bilang tapos"
+      },
+      "reject": {
+        "title": "Isara nang walang verdict?",
+        "body": "Gamitin kung hindi talaga natuloy ang meetup. Final na 'to.",
+        "confirm": "Isara"
+      }
+    },
+    "err": {
+      "approveFailed": "Hindi na-approve. Subukan ulit.",
+      "rejectFailed": "Hindi na-close. Subukan ulit."
+    }
   }
 }

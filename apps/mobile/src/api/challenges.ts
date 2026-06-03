@@ -222,6 +222,18 @@ export async function approveDate(acceptanceId: string): Promise<{ acceptance: C
   );
 }
 
+// ── PR4: debrief verdict (creator only, after meetup ends) ──────────────────
+
+/** Creator approves the take-on as accomplished (post-debrief). Final state. */
+export async function approveChallenge(acceptanceId: string): Promise<ChallengeAcceptance> {
+  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/approve-challenge`, {});
+}
+
+/** Creator rejects (no-show / didn't really happen). Final state. */
+export async function rejectChallenge(acceptanceId: string): Promise<ChallengeAcceptance> {
+  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/reject-challenge`, {});
+}
+
 /** "My threads" — every relationship I'm in (as creator or acceptor). */
 export async function fetchMyAcceptances(): Promise<ChallengeThreadSummary[]> {
   const data = await api.get<{ threads: ChallengeThreadSummary[] }>('/me/acceptances');

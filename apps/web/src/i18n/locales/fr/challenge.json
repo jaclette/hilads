@@ -157,5 +157,37 @@
       "approveFailed": "Impossible d'approuver. Réessaie.",
       "withdrawFailed": "Impossible de retirer. Réessaie."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Ça s'est passé comment ?",
+      "body": "{{name}} l'a relevé ?"
+    },
+    "acceptorWaiting": {
+      "title": "En attente du verdict",
+      "body": "{{name}} va valider."
+    },
+    "approved": {
+      "title": "Défi relevé 🎉"
+    },
+    "rejected": {
+      "title": "Défi clôturé"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Valider comme accompli ?",
+        "body": "C'est définitif — tu ne pourras pas revenir en arrière.",
+        "confirm": "Valider"
+      },
+      "reject": {
+        "title": "Clôturer sans validation ?",
+        "body": "À utiliser si la rencontre n'a pas vraiment eu lieu. C'est définitif.",
+        "confirm": "Clôturer"
+      }
+    },
+    "err": {
+      "approveFailed": "Impossible de valider. Réessaie.",
+      "rejectFailed": "Impossible de clôturer. Réessaie."
+    }
   }
 }

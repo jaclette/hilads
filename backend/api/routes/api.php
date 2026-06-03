@@ -372,6 +372,18 @@ function broadcastChallengeDateWithdrawnToWs(string $targetUserId, array $payloa
     ]);
 }
 
+/** PR4 — debrief verdicts. Same shape as proposed/approved/withdrawn. */
+function broadcastChallengeVerdictToWs(string $targetUserId, string $verdict, array $payload): void
+{
+    $event = $verdict === 'approved' ? 'challenge_verdict_approved' : 'challenge_verdict_rejected';
+    error_log("[ws-broadcast] → {$event} target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => $event,
+        'payload' => $payload,
+    ]);
+}
+
 
 // ── Now-feed DTO helpers ──────────────────────────────────────────────────────
 // Normalize raw repository rows into a consistent FeedItem shape consumed by
@@ -8147,6 +8159,150 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
         'acceptance'       => $updated,
         'event_channel_id' => $eventChannelId,
     ]);
+});
+
+// ── PR4: debrief verdicts (approve / reject the challenge) ────────────────────
+
+/**
+ * Shared gate for both verdict routes. Returns [acceptance, challenge] on
+ * success, or short-circuits with the right error JSON. Both verdicts share:
+ *   - creator-only
+ *   - effective_phase must be 'debrief' (i.e. phase='scheduled' + meetup ended)
+ *
+ * effective_phase is recomputed server-side (the repo SELECT carries it) so
+ * the client can't bypass the gate by lying about when the event ended.
+ */
+function gateForVerdict(string $acceptanceId): array
+{
+    $authUser   = AuthService::requireAuth();
+    $userId     = $authUser['id'];
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if ($challenge['created_by'] !== $userId) {
+        Response::json(['error' => 'Only the challenge creator can decide the outcome'], 403);
+    }
+    if ($acceptance['effective_phase'] !== 'debrief') {
+        Response::json([
+            'error' => $acceptance['phase'] === 'scheduled'
+                ? "Wait until the meetup is over"
+                : "This take-on is already decided",
+            'code'  => 'phase_locked',
+        ], 409);
+    }
+    return [$acceptance, $challenge, $authUser];
+}
+
+// POST /api/v1/acceptances/{acceptanceId}/approve-challenge
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-challenge', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+    [$acceptance, $challenge, $authUser] = gateForVerdict($acceptanceId);
+
+    $updated = ChallengeAcceptanceRepository::approve($acceptanceId);
+    if ($updated === null) {
+        Response::json(['error' => 'Failed to approve'], 500);
+    }
+
+    // Push notif to the acceptor — they've earned a 🎉.
+    try {
+        $creatorName = $authUser['display_name'] ?? 'Someone';
+        $title       = $challenge['title'] ?? 'a challenge';
+        NotificationRepository::create(
+            $acceptance['acceptor_user_id'],
+            'challenge_verdict_approved',
+            '🎉 Challenge accomplished',
+            "{$creatorName} marked \"{$title}\" as done",
+            [
+                'acceptanceId'    => $acceptanceId,
+                'challengeId'     => $acceptance['challenge_id'],
+                'threadChannelId' => $acceptance['thread_channel_id'],
+                'senderUserId'    => $authUser['id'],
+                'senderName'      => $creatorName,
+            ],
+        );
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-challenge notif failed (non-fatal): ' . $e->getMessage());
+    }
+
+    try {
+        broadcastChallengeVerdictToWs($acceptance['acceptor_user_id'], 'approved', [
+            'acceptanceId'    => $acceptanceId,
+            'challengeId'     => $acceptance['challenge_id'],
+            'threadChannelId' => $acceptance['thread_channel_id'],
+            'acceptance'      => $updated,
+        ]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-challenge ws failed (non-fatal): ' . $e->getMessage());
+    }
+
+    AnalyticsService::defer('challenge_verdict_approved', $authUser['id'], [
+        'challenge_id'  => $acceptance['challenge_id'],
+        'acceptance_id' => $acceptanceId,
+    ]);
+
+    Response::json($updated);
+});
+
+// POST /api/v1/acceptances/{acceptanceId}/reject-challenge
+// "Reject" is the negative verdict — no-show, didn't really meet, etc.
+// Tone is gentler in copy (the acceptor sees "closed", not "rejected").
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-challenge', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+    [$acceptance, $challenge, $authUser] = gateForVerdict($acceptanceId);
+
+    $updated = ChallengeAcceptanceRepository::reject($acceptanceId);
+    if ($updated === null) {
+        Response::json(['error' => 'Failed to reject'], 500);
+    }
+
+    try {
+        $creatorName = $authUser['display_name'] ?? 'Someone';
+        $title       = $challenge['title'] ?? 'a challenge';
+        NotificationRepository::create(
+            $acceptance['acceptor_user_id'],
+            'challenge_verdict_rejected',
+            'Challenge closed',
+            "{$creatorName} closed \"{$title}\"",
+            [
+                'acceptanceId'    => $acceptanceId,
+                'challengeId'     => $acceptance['challenge_id'],
+                'threadChannelId' => $acceptance['thread_channel_id'],
+                'senderUserId'    => $authUser['id'],
+                'senderName'      => $creatorName,
+            ],
+        );
+    } catch (\Throwable $e) {
+        error_log('[challenges] reject-challenge notif failed (non-fatal): ' . $e->getMessage());
+    }
+
+    try {
+        broadcastChallengeVerdictToWs($acceptance['acceptor_user_id'], 'rejected', [
+            'acceptanceId'    => $acceptanceId,
+            'challengeId'     => $acceptance['challenge_id'],
+            'threadChannelId' => $acceptance['thread_channel_id'],
+            'acceptance'      => $updated,
+        ]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] reject-challenge ws failed (non-fatal): ' . $e->getMessage());
+    }
+
+    AnalyticsService::defer('challenge_verdict_rejected', $authUser['id'], [
+        'challenge_id'  => $acceptance['challenge_id'],
+        'acceptance_id' => $acceptanceId,
+    ]);
+
+    Response::json($updated);
 });
 
 // GET /api/v1/me/acceptances

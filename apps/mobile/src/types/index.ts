@@ -101,6 +101,9 @@ export interface ChallengeAcceptance {
   thread_channel_id:   string;
   debrief_event_id:    string | null;
   phase:               ChallengeAcceptancePhase;
+  /** PR4 — derived. Same as `phase` except 'scheduled' flips to 'debrief'
+   *  once the meetup's end time has passed. Clients render off this. */
+  effective_phase:     ChallengeAcceptancePhase;
   // PR3 — date concertation. Null until first proposal; rehydrated on every
   // propose/withdraw. date_approved_at is set when phase flips to 'scheduled'.
   proposed_starts_at:  number | null;
@@ -124,6 +127,8 @@ export interface ChallengeThreadSummary {
   thread_channel_id:    string;
   debrief_event_id:     string | null;
   phase:                ChallengeAcceptancePhase;
+  /** PR4 — see ChallengeAcceptance.effective_phase. */
+  effective_phase:      ChallengeAcceptancePhase;
   // PR3 proposal state — null when no proposal pending.
   proposed_starts_at:   number | null;
   proposed_ends_at:     number | null;
@@ -131,6 +136,9 @@ export interface ChallengeThreadSummary {
   proposed_by_user_id:  string | null;
   proposed_at:          number | null;
   date_approved_at:     number | null;
+  // PR4 — verdict timestamps.
+  approved_at:          number | null;
+  rejected_at:          number | null;
   created_at:           number;
   last_message_at:      number | null;
   last_message_content: string | null;

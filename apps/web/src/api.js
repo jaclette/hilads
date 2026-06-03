@@ -733,6 +733,36 @@ export async function approveDate(acceptanceId) {
   return res.json()
 }
 
+// ── PR4: debrief verdicts ───────────────────────────────────────────────────
+
+export async function approveChallenge(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/approve-challenge`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to approve challenge')
+  }
+  return res.json()
+}
+
+export async function rejectChallenge(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/reject-challenge`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to close challenge')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

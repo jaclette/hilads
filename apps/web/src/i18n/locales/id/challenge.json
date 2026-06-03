@@ -157,5 +157,37 @@
       "approveFailed": "Gagal menyetujui. Coba lagi.",
       "withdrawFailed": "Gagal menarik. Coba lagi."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Gimana tadi?",
+      "body": "{{name}} berhasil?"
+    },
+    "acceptorWaiting": {
+      "title": "Menunggu hasil",
+      "body": "{{name}} bakal tandai gimana hasilnya."
+    },
+    "approved": {
+      "title": "Tantangan berhasil 🎉"
+    },
+    "rejected": {
+      "title": "Tantangan ditutup"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Tandai sebagai berhasil?",
+        "body": "Ini final — kamu nggak bisa ubah lagi setelah ini.",
+        "confirm": "Tandai sebagai berhasil"
+      },
+      "reject": {
+        "title": "Tutup tanpa hasil?",
+        "body": "Pakai ini kalau pertemuannya nggak benar-benar terjadi. Ini final.",
+        "confirm": "Tutup"
+      }
+    },
+    "err": {
+      "approveFailed": "Gagal menyetujui. Coba lagi.",
+      "rejectFailed": "Gagal menutup. Coba lagi."
+    }
   }
 }

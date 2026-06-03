@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { proposeDate, withdrawProposal, approveDate } from '../api'
+import { proposeDate, withdrawProposal, approveDate, approveChallenge, rejectChallenge } from '../api'
 
 /**
  * PR3 — schedule band that sits between the thread chat feed and composer.
@@ -21,7 +21,8 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange }) {
   const hasProposal = thread.proposed_starts_at != null
   const iProposed   = hasProposal && thread.proposed_by_user_id === myUserId
   const iAmCreator  = thread.i_am_creator
-  const phase       = thread.phase
+  // PR4 — render off effective_phase ('scheduled' → 'debrief' once meetup ends).
+  const phase       = thread.effective_phase ?? thread.phase
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -47,6 +48,22 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange }) {
     finally { setBusy(null) }
   }
 
+  // PR4 — verdict (creator only, in debrief phase).
+  async function handleVerdict(kind) {
+    const ok = window.confirm(`${t(`debrief.confirm.${kind}.title`)}\n\n${t(`debrief.confirm.${kind}.body`)}`)
+    if (!ok) return
+    setBusy('verdict')
+    try {
+      if (kind === 'approve') await approveChallenge(thread.id)
+      else                    await rejectChallenge(thread.id)
+      onChange?.()
+    } catch {
+      window.alert(t(`debrief.err.${kind}Failed`))
+    } finally {
+      setBusy(null)
+    }
+  }
+
   // ── Render: phase='scheduled' ─────────────────────────────────────────────
   if (phase === 'scheduled' && thread.proposed_starts_at) {
     return (
@@ -62,7 +79,78 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange }) {
     )
   }
 
-  if (phase === 'debrief' || phase === 'approved' || phase === 'rejected') return null
+  // ── PR4: debrief (meetup over, creator decides) ─────────────────────────
+  if (phase === 'debrief') {
+    if (iAmCreator) {
+      return (
+        <div style={{ ...bandBase, ...bandDebrief }}>
+          <span style={{ fontSize: 16 }}>❓</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.creatorPrompt.title')}</div>
+            <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
+              {t('debrief.creatorPrompt.body', { name: thread.counterparty.displayName })}
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" onClick={() => handleVerdict('reject')} disabled={busy !== null}
+              title={t('debrief.confirm.reject.confirm')} style={iconBtnSecondary}>
+              {busy === 'verdict' ? '…' : '✕'}
+            </button>
+            <button type="button" onClick={() => handleVerdict('approve')} disabled={busy !== null}
+              title={t('debrief.confirm.approve.confirm')} style={iconBtnPrimary}>
+              {busy === 'verdict' ? '…' : '✓'}
+            </button>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div style={{ ...bandBase, ...bandDebrief }}>
+        <span style={{ fontSize: 16 }}>⏳</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.acceptorWaiting.title')}</div>
+          <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
+            {t('debrief.acceptorWaiting.body', { name: thread.counterparty.displayName })}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (phase === 'approved') {
+    return (
+      <div style={{ ...bandBase, ...bandScheduled }}>
+        <span style={{ fontSize: 18 }}>🎉</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('debrief.approved.title')}</div>
+          {thread.approved_at && (
+            <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
+              {formatVerdictDate(thread.approved_at)}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  if (phase === 'rejected') {
+    return (
+      <div style={{ ...bandBase, ...bandRejected }}>
+        <span style={{ fontSize: 16 }}>✕</span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.rejected.title')}</div>
+          {thread.rejected_at && (
+            <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
+              {formatVerdictDate(thread.rejected_at)}
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Defensive — unknown future phase. Hide rather than crash.
+  if (phase !== 'accepted' && phase !== 'scheduled') return null
 
   // ── Render: phase='accepted', no proposal ─────────────────────────────────
   if (!hasProposal) {
@@ -287,6 +375,12 @@ function DatePickerModal({ onClose, onSubmit, submitLabel, initialStartsAt, init
 
 // ── Helpers + inline styles ─────────────────────────────────────────────────
 
+function formatVerdictDate(unixSeconds) {
+  const d = new Date(unixSeconds * 1000)
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' · ' +
+         d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+}
+
 function formatDateLine(startsAt, endsAt, venue) {
   if (!startsAt) return ''
   const d = new Date(startsAt * 1000)
@@ -310,10 +404,16 @@ const bandBase = {
   borderBottom: '1px solid rgba(255,122,60,0.18)',
 }
 const bandProposal  = { background: 'rgba(255,122,60,0.10)' }
+const bandDebrief   = { background: 'rgba(255,122,60,0.10)' }
 const bandScheduled = {
   background:   'rgba(34,197,94,0.08)',
   borderTop:    '1px solid rgba(34,197,94,0.20)',
   borderBottom: '1px solid rgba(34,197,94,0.20)',
+}
+const bandRejected = {
+  background:   'rgba(255,255,255,0.03)',
+  borderTop:    '1px solid rgba(255,255,255,0.08)',
+  borderBottom: '1px solid rgba(255,255,255,0.08)',
 }
 
 const iconBtnPrimary = {

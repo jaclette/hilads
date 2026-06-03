@@ -157,5 +157,37 @@
       "approveFailed": "No se pudo aprobar. Inténtalo de nuevo.",
       "withdrawFailed": "No se pudo retirar. Inténtalo de nuevo."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "¿Qué tal salió?",
+      "body": "¿{{name}} lo logró?"
+    },
+    "acceptorWaiting": {
+      "title": "Esperando el veredicto",
+      "body": "{{name}} va a marcar cómo fue."
+    },
+    "approved": {
+      "title": "Reto cumplido 🎉"
+    },
+    "rejected": {
+      "title": "Reto cerrado"
+    },
+    "confirm": {
+      "approve": {
+        "title": "¿Marcar como cumplido?",
+        "body": "Esto es definitivo — no podrás cambiarlo después.",
+        "confirm": "Marcar como cumplido"
+      },
+      "reject": {
+        "title": "¿Cerrar sin veredicto?",
+        "body": "Úsalo si el encuentro no llegó a ocurrir. Esto es definitivo.",
+        "confirm": "Cerrar"
+      }
+    },
+    "err": {
+      "approveFailed": "No se pudo aprobar. Inténtalo de nuevo.",
+      "rejectFailed": "No se pudo cerrar. Inténtalo de nuevo."
+    }
   }
 }

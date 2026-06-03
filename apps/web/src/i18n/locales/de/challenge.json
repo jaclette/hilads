@@ -157,5 +157,37 @@
       "approveFailed": "Bestätigung fehlgeschlagen. Versuch's nochmal.",
       "withdrawFailed": "Zurückziehen fehlgeschlagen. Versuch's nochmal."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Wie war's?",
+      "body": "Hat {{name}} es geschafft?"
+    },
+    "acceptorWaiting": {
+      "title": "Warten auf das Urteil",
+      "body": "{{name}} bewertet gleich, wie es gelaufen ist."
+    },
+    "approved": {
+      "title": "Challenge gemeistert 🎉"
+    },
+    "rejected": {
+      "title": "Challenge beendet"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Als gemeistert markieren?",
+        "body": "Das ist endgültig — du kannst es danach nicht mehr ändern.",
+        "confirm": "Als gemeistert markieren"
+      },
+      "reject": {
+        "title": "Ohne Urteil beenden?",
+        "body": "Nimm das, wenn das Treffen nicht wirklich stattgefunden hat. Das ist endgültig.",
+        "confirm": "Beenden"
+      }
+    },
+    "err": {
+      "approveFailed": "Bestätigung fehlgeschlagen. Versuch's nochmal.",
+      "rejectFailed": "Konnte nicht beendet werden. Versuch's nochmal."
+    }
   }
 }

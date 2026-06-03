@@ -157,5 +157,37 @@
       "approveFailed": "Impossibile approvare. Riprova.",
       "withdrawFailed": "Impossibile ritirare. Riprova."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Com'è andata?",
+      "body": "{{name}} ce l'ha fatta?"
+    },
+    "acceptorWaiting": {
+      "title": "In attesa del verdetto",
+      "body": "{{name}} sta per dire com'è andata."
+    },
+    "approved": {
+      "title": "Sfida superata 🎉"
+    },
+    "rejected": {
+      "title": "Sfida chiusa"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Segnare come riuscita?",
+        "body": "È definitivo — non potrai più cambiarlo.",
+        "confirm": "Segna come riuscita"
+      },
+      "reject": {
+        "title": "Chiudere senza verdetto?",
+        "body": "Usalo se l'incontro non è davvero avvenuto. È definitivo.",
+        "confirm": "Chiudi"
+      }
+    },
+    "err": {
+      "approveFailed": "Impossibile approvare. Riprova.",
+      "rejectFailed": "Impossibile chiudere. Riprova."
+    }
   }
 }

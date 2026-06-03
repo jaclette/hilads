@@ -157,5 +157,37 @@
       "approveFailed": "Couldn't approve. Try again.",
       "withdrawFailed": "Couldn't withdraw. Try again."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "How did it go?",
+      "body": "Did {{name}} pull it off?"
+    },
+    "acceptorWaiting": {
+      "title": "Waiting for the verdict",
+      "body": "{{name}} will mark how it went."
+    },
+    "approved": {
+      "title": "Challenge accomplished 🎉"
+    },
+    "rejected": {
+      "title": "Challenge closed"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Mark as accomplished?",
+        "body": "This is final — you can't change it after.",
+        "confirm": "Mark as accomplished"
+      },
+      "reject": {
+        "title": "Close without verdict?",
+        "body": "Use this if the meetup didn't really happen. This is final.",
+        "confirm": "Close"
+      }
+    },
+    "err": {
+      "approveFailed": "Couldn't approve. Try again.",
+      "rejectFailed": "Couldn't close. Try again."
+    }
   }
 }

@@ -157,5 +157,37 @@
       "approveFailed": "승인하지 못했어요. 다시 시도해 주세요.",
       "withdrawFailed": "철회하지 못했어요. 다시 시도해 주세요."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "어땠어요?",
+      "body": "{{name}}님이 해냈어요?"
+    },
+    "acceptorWaiting": {
+      "title": "결과를 기다리는 중",
+      "body": "{{name}}님이 결과를 표시할 거예요."
+    },
+    "approved": {
+      "title": "챌린지 성공 🎉"
+    },
+    "rejected": {
+      "title": "챌린지 종료"
+    },
+    "confirm": {
+      "approve": {
+        "title": "성공으로 표시할까요?",
+        "body": "최종 결정이에요. 이후에는 바꿀 수 없어요.",
+        "confirm": "성공으로 표시"
+      },
+      "reject": {
+        "title": "결과 없이 종료할까요?",
+        "body": "만남이 실제로 이뤄지지 않았을 때 사용하세요. 최종 결정이에요.",
+        "confirm": "종료"
+      }
+    },
+    "err": {
+      "approveFailed": "승인하지 못했어요. 다시 시도해 주세요.",
+      "rejectFailed": "종료하지 못했어요. 다시 시도해 주세요."
+    }
   }
 }

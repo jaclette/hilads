@@ -157,5 +157,37 @@
       "approveFailed": "Không xác nhận được. Thử lại nhé.",
       "withdrawFailed": "Không rút lại được. Thử lại nhé."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Sao rồi?",
+      "body": "{{name}} làm được không?"
+    },
+    "acceptorWaiting": {
+      "title": "Đang chờ kết quả",
+      "body": "{{name}} sẽ đánh dấu kết quả."
+    },
+    "approved": {
+      "title": "Đã hoàn thành thử thách 🎉"
+    },
+    "rejected": {
+      "title": "Thử thách đã đóng"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Đánh dấu là hoàn thành?",
+        "body": "Đây là quyết định cuối cùng — sau đó không đổi được nữa.",
+        "confirm": "Đánh dấu hoàn thành"
+      },
+      "reject": {
+        "title": "Đóng mà không có kết quả?",
+        "body": "Dùng nếu buổi gặp thực sự không diễn ra. Đây là quyết định cuối.",
+        "confirm": "Đóng"
+      }
+    },
+    "err": {
+      "approveFailed": "Không xác nhận được. Thử lại nhé.",
+      "rejectFailed": "Không đóng được. Thử lại nhé."
+    }
   }
 }

@@ -157,5 +157,37 @@
       "approveFailed": "Goedkeuren mislukt. Probeer opnieuw.",
       "withdrawFailed": "Intrekken mislukt. Probeer opnieuw."
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "Hoe ging het?",
+      "body": "Heeft {{name}} het geflikt?"
+    },
+    "acceptorWaiting": {
+      "title": "Wachten op het oordeel",
+      "body": "{{name}} geeft zo aan hoe het ging."
+    },
+    "approved": {
+      "title": "Challenge gehaald 🎉"
+    },
+    "rejected": {
+      "title": "Challenge afgesloten"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Markeren als gehaald?",
+        "body": "Dit is definitief — je kunt het daarna niet meer veranderen.",
+        "confirm": "Markeer als gehaald"
+      },
+      "reject": {
+        "title": "Sluiten zonder oordeel?",
+        "body": "Gebruik dit als de afspraak eigenlijk niet doorging. Dit is definitief.",
+        "confirm": "Sluiten"
+      }
+    },
+    "err": {
+      "approveFailed": "Goedkeuren mislukt. Probeer opnieuw.",
+      "rejectFailed": "Sluiten mislukt. Probeer opnieuw."
+    }
   }
 }

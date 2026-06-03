@@ -157,5 +157,37 @@
       "approveFailed": "承認できませんでした。もう一度お試しください。",
       "withdrawFailed": "取り下げできませんでした。もう一度お試しください。"
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "どうでしたか?",
+      "body": "{{name}}さんはやり遂げましたか?"
+    },
+    "acceptorWaiting": {
+      "title": "判定を待っています",
+      "body": "{{name}}さんが結果をつけます。"
+    },
+    "approved": {
+      "title": "チャレンジ達成 🎉"
+    },
+    "rejected": {
+      "title": "チャレンジを終了しました"
+    },
+    "confirm": {
+      "approve": {
+        "title": "達成にしますか?",
+        "body": "これは最終決定です。あとから変更できません。",
+        "confirm": "達成にする"
+      },
+      "reject": {
+        "title": "判定なしで終了しますか?",
+        "body": "実際に集まりがなかった場合に使ってください。これは最終決定です。",
+        "confirm": "終了する"
+      }
+    },
+    "err": {
+      "approveFailed": "承認できませんでした。もう一度お試しください。",
+      "rejectFailed": "終了できませんでした。もう一度お試しください。"
+    }
   }
 }

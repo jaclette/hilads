@@ -118,8 +118,13 @@ export default function ThreadChatPage({
     const offProposed  = socket.on('challenge_date_proposed',  onDateChange)
     const offWithdrawn = socket.on('challenge_date_withdrawn', onDateChange)
     const offApproved  = socket.on('challenge_date_approved',  onDateChange)
+    // PR4 — verdict pushes (acceptor side; creator's UI updates via the
+    // approve/reject HTTP responses).
+    const offVerdictA  = socket.on('challenge_verdict_approved', onDateChange)
+    const offVerdictR  = socket.on('challenge_verdict_rejected', onDateChange)
     return () => {
       offMsg(); offCancelled(); offProposed(); offWithdrawn(); offApproved()
+      offVerdictA(); offVerdictR()
       socket.leaveChallengeThread(threadChannelId, sessionId)
     }
   }, [threadChannelId, socket, sessionId, onBack, t, loadSummary])

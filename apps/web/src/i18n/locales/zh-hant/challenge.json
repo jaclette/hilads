@@ -157,5 +157,37 @@
       "approveFailed": "無法確認，請再試一次。",
       "withdrawFailed": "無法撤回，請再試一次。"
     }
+  },
+  "debrief": {
+    "creatorPrompt": {
+      "title": "怎麼樣?",
+      "body": "{{name}}做到了嗎?"
+    },
+    "acceptorWaiting": {
+      "title": "等待結果",
+      "body": "{{name}}會標記結果。"
+    },
+    "approved": {
+      "title": "挑戰完成 🎉"
+    },
+    "rejected": {
+      "title": "挑戰已關閉"
+    },
+    "confirm": {
+      "approve": {
+        "title": "標記為完成?",
+        "body": "這是最終決定,之後無法更改。",
+        "confirm": "標記為完成"
+      },
+      "reject": {
+        "title": "不作判定就關閉?",
+        "body": "如果見面沒有真的發生,使用這個。這是最終決定。",
+        "confirm": "關閉"
+      }
+    },
+    "err": {
+      "approveFailed": "無法確認,請再試一次。",
+      "rejectFailed": "無法關閉,請再試一次。"
+    }
   }
 }

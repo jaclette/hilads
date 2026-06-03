@@ -28,6 +28,22 @@ class ChallengeAcceptanceRepository
 {
     public const ALLOWED_PHASES = ['accepted', 'scheduled', 'debrief', 'approved', 'rejected'];
 
+    // PR4 — derived `effective_phase` reflects when the debrief panel unlocks.
+    // `scheduled` flips to `debrief` once the meetup's end time is past. Both
+    // ends_at and now() are TIMESTAMPTZ (stored UTC), so the comparison is
+    // timezone-agnostic at the moment level — the city tz only matters for
+    // *display* of when something happens. If the proposal had no ends_at,
+    // we fall back to starts_at + 2h (the same default the UI uses).
+    private const EFFECTIVE_PHASE = "
+        CASE
+          WHEN ca.phase = 'scheduled'
+               AND ev.starts_at IS NOT NULL
+               AND COALESCE(ev.ends_at, ev.starts_at + interval '2 hours') < now()
+            THEN 'debrief'
+          ELSE ca.phase
+        END
+    ";
+
     private const SELECT = "
         SELECT
             ca.id,
@@ -36,6 +52,7 @@ class ChallengeAcceptanceRepository
             ca.thread_channel_id,
             ca.debrief_event_id,
             ca.phase,
+            (" . self::EFFECTIVE_PHASE . ")                     AS effective_phase,
             EXTRACT(EPOCH FROM ca.proposed_starts_at)::INTEGER  AS proposed_starts_at,
             EXTRACT(EPOCH FROM ca.proposed_ends_at)::INTEGER    AS proposed_ends_at,
             ca.proposed_venue,
@@ -47,6 +64,7 @@ class ChallengeAcceptanceRepository
             EXTRACT(EPOCH FROM ca.created_at)::INTEGER          AS created_at,
             EXTRACT(EPOCH FROM ca.updated_at)::INTEGER          AS updated_at
         FROM challenge_acceptances ca
+        LEFT JOIN channel_events ev ON ev.channel_id = ca.debrief_event_id
     ";
 
     private static function format(array $row): array
@@ -58,6 +76,11 @@ class ChallengeAcceptanceRepository
             'thread_channel_id'   => $row['thread_channel_id'],
             'debrief_event_id'    => $row['debrief_event_id'] ?? null,
             'phase'               => $row['phase'],
+            // PR4 — derived. Same as `phase` except 'scheduled' flips to
+            // 'debrief' once the meetup's end time is past. Clients render
+            // off effective_phase; the raw `phase` is kept for debugging
+            // + future "did this ever flip" audits.
+            'effective_phase'     => $row['effective_phase'] ?? $row['phase'],
             // PR3 — date concertation
             'proposed_starts_at'  => isset($row['proposed_starts_at']) ? (int) $row['proposed_starts_at'] : null,
             'proposed_ends_at'    => isset($row['proposed_ends_at'])   ? (int) $row['proposed_ends_at']   : null,
@@ -162,6 +185,7 @@ class ChallengeAcceptanceRepository
                 ca.thread_channel_id,
                 ca.debrief_event_id,
                 ca.phase,
+                (" . self::EFFECTIVE_PHASE . ")                      AS effective_phase,
                 EXTRACT(EPOCH FROM ca.proposed_starts_at)::INTEGER   AS proposed_starts_at,
                 EXTRACT(EPOCH FROM ca.proposed_ends_at)::INTEGER     AS proposed_ends_at,
                 ca.proposed_venue,
@@ -188,10 +212,12 @@ class ChallengeAcceptanceRepository
             JOIN channel_challenges cc ON cc.channel_id = ca.challenge_id
             JOIN users creator         ON creator.id    = cc.created_by
             JOIN users acceptor        ON acceptor.id   = ca.acceptor_user_id
+            LEFT JOIN channel_events ev ON ev.channel_id = ca.debrief_event_id
             LEFT JOIN messages m       ON m.channel_id  = ca.thread_channel_id
                                        AND m.type IN ('text','image')
             WHERE ca.acceptor_user_id = :uid OR cc.created_by = :uid
-            GROUP BY ca.id, cc.title, cc.challenge_type, cc.audience, cc.created_by,
+            GROUP BY ca.id, ev.starts_at, ev.ends_at,
+                     cc.title, cc.challenge_type, cc.audience, cc.created_by,
                      creator.display_name, creator.profile_thumb_photo_url,
                      acceptor.display_name, acceptor.profile_thumb_photo_url
             ORDER BY COALESCE(MAX(m.created_at), ca.created_at) DESC
@@ -213,6 +239,7 @@ class ChallengeAcceptanceRepository
                 'thread_channel_id'    => $r['thread_channel_id'],
                 'debrief_event_id'     => $r['debrief_event_id'] ?? null,
                 'phase'                => $r['phase'],
+                'effective_phase'      => $r['effective_phase'] ?? $r['phase'],
                 // PR3 proposal state (so the threads list can show "📅 awaiting", etc.)
                 'proposed_starts_at'   => isset($r['proposed_starts_at']) ? (int) $r['proposed_starts_at'] : null,
                 'proposed_ends_at'     => isset($r['proposed_ends_at'])   ? (int) $r['proposed_ends_at']   : null,
@@ -220,6 +247,8 @@ class ChallengeAcceptanceRepository
                 'proposed_by_user_id'  => $r['proposed_by_user_id'] ?? null,
                 'proposed_at'          => isset($r['proposed_at'])        ? (int) $r['proposed_at']        : null,
                 'date_approved_at'     => isset($r['date_approved_at'])   ? (int) $r['date_approved_at']   : null,
+                'approved_at'          => isset($r['approved_at'])        ? (int) $r['approved_at']        : null,
+                'rejected_at'          => isset($r['rejected_at'])        ? (int) $r['rejected_at']        : null,
                 'created_at'           => (int) $r['created_at'],
                 'last_message_at'      => isset($r['last_message_at']) ? (int) $r['last_message_at'] : null,
                 'last_message_content' => $r['last_message_content'],
@@ -417,6 +446,42 @@ class ChallengeAcceptanceRepository
             $pdo->rollBack();
             throw $e;
         }
+    }
+
+    // ── PR4: debrief approve / reject ────────────────────────────────────────
+
+    /**
+     * Creator approves the take-on after the meetup happened. Sets phase=
+     * 'approved' + approved_at. Caller MUST enforce: caller is the creator,
+     * effective_phase='debrief' (meetup has ended).
+     */
+    public static function approve(string $acceptanceId): ?array
+    {
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET phase       = 'approved',
+                approved_at = now(),
+                updated_at  = now()
+            WHERE id = :id AND phase = 'scheduled'
+        ")->execute(['id' => $acceptanceId]);
+        return self::findById($acceptanceId);
+    }
+
+    /**
+     * Creator rejects the take-on (no-show, didn't actually meet, etc.). Sets
+     * phase='rejected' + rejected_at. Same gate as approve(). Note this is
+     * the FINAL verdict on this acceptance — there's no path back.
+     */
+    public static function reject(string $acceptanceId): ?array
+    {
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET phase       = 'rejected',
+                rejected_at = now(),
+                updated_at  = now()
+            WHERE id = :id AND phase = 'scheduled'
+        ")->execute(['id' => $acceptanceId]);
+        return self::findById($acceptanceId);
     }
 
     /**
