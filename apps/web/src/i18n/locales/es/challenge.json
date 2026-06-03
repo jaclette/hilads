@@ -39,8 +39,8 @@
   "statusInProgress": "Reto en curso",
   "statusAccomplished": "Reto conseguido",
   "openBadge": "Abierto",
-  "forLocals": "Para locales",
-  "forExplorers": "Para viajeros",
+  "forLocals": "🏠 Para locales",
+  "forExplorers": "🧳 Para viajeros",
   "notFound": "Reto no encontrado",
   "typeBadge": {
     "food": "Reto comida",

@@ -39,8 +39,8 @@
   "statusInProgress": "Челлендж в процессе",
   "statusAccomplished": "Челлендж сделан",
   "openBadge": "Открыт",
-  "forLocals": "Для местных",
-  "forExplorers": "Для путешественников",
+  "forLocals": "🏠 Для местных",
+  "forExplorers": "🧳 Для путешественников",
   "notFound": "Челлендж не найден",
   "typeBadge": {
     "food": "Челлендж еды",

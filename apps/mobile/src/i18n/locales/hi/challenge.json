@@ -39,8 +39,8 @@
   "statusInProgress": "चुनौती जारी है",
   "statusAccomplished": "चुनौती पूरी की",
   "openBadge": "ओपन",
-  "forLocals": "लोकल्स के लिए",
-  "forExplorers": "यात्रियों के लिए",
+  "forLocals": "🏠 लोकल्स के लिए",
+  "forExplorers": "🧳 यात्रियों के लिए",
   "notFound": "चैलेंज नहीं मिला",
   "typeBadge": {
     "food": "फ़ूड चैलेंज",

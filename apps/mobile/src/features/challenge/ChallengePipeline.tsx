@@ -52,11 +52,15 @@ interface PipelineState {
 function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean): PipelineState {
   if (!acceptance) {
     // Visitor or creator without an own acceptance — educational view only.
+    // Visitors don't get a sub-CTA here: the participants row below already
+    // surfaces a labeled "Take on the challenge" button. Two CTAs side-by-
+    // side read as the same call repeated twice (was: pipeline "Take on" +
+    // a small + icon below). Creator still gets the passive "waiting" line.
     return {
       active: null,
       done: new Set(),
       rejected: false,
-      subCtaKey: iAmCreator ? 'pipeline.subcta.creatorWaiting' : 'pipeline.subcta.tapToAccept',
+      subCtaKey: iAmCreator ? 'pipeline.subcta.creatorWaiting' : '',
     };
   }
   const phase = acceptance.effective_phase ?? acceptance.phase;
@@ -175,16 +179,20 @@ export function ChallengePipeline({
         })}
       </View>
 
-      {/* Sub-CTA — current/next action hint */}
-      <View style={styles.subCtaRow}>
-        <Text style={styles.subCta} numberOfLines={1}>
-          {t(state.subCtaKey, {
-            ...(state.subCtaName ? { name: state.subCtaName } : {}),
-            ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
-          })}
-        </Text>
-        {interactive && <Ionicons name="chevron-forward" size={14} color="#FF7A3C" />}
-      </View>
+      {/* Sub-CTA — current/next action hint. Empty key (visitor without
+          acceptance) suppresses the row entirely — the participants row
+          below carries the prominent labeled accept button instead. */}
+      {!!state.subCtaKey && (
+        <View style={styles.subCtaRow}>
+          <Text style={styles.subCta} numberOfLines={1}>
+            {t(state.subCtaKey, {
+              ...(state.subCtaName ? { name: state.subCtaName } : {}),
+              ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
+            })}
+          </Text>
+          {interactive && <Ionicons name="chevron-forward" size={14} color="#FF7A3C" />}
+        </View>
+      )}
     </TouchableOpacity>
   );
 }

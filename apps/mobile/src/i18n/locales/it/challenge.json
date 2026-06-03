@@ -39,8 +39,8 @@
   "statusInProgress": "Sfida in corso",
   "statusAccomplished": "Sfida vinta",
   "openBadge": "Aperta",
-  "forLocals": "Per i local",
-  "forExplorers": "Per i viaggiatori",
+  "forLocals": "🏠 Per i local",
+  "forExplorers": "🧳 Per i viaggiatori",
   "notFound": "Sfida non trovata",
   "typeBadge": {
     "food": "Sfida cibo",

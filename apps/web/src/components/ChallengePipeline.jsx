@@ -22,11 +22,13 @@ function formatMeetupDate(unixSeconds) {
 
 function derive(acceptance, iAmCreator) {
   if (!acceptance) {
+    // Visitors don't get a sub-CTA here — the participants row below has the
+    // labeled "Take on the challenge" button. Two prompts read as a repeat.
     return {
       active: null,
       done:   new Set(),
       rejected: false,
-      subCtaKey: iAmCreator ? 'pipeline.subcta.creatorWaiting' : 'pipeline.subcta.tapToAccept',
+      subCtaKey: iAmCreator ? 'pipeline.subcta.creatorWaiting' : '',
     }
   }
   const phase  = acceptance.effective_phase ?? acceptance.phase
@@ -126,22 +128,25 @@ export default function ChallengePipeline({ acceptance, iAmCreator, onClick }) {
         })}
       </div>
 
-      {/* Sub-CTA */}
-      <div style={{
-        alignSelf: 'center',
-        display: 'inline-flex', alignItems: 'center', gap: 4,
-        padding: '6px 12px', borderRadius: 999,
-        background: 'rgba(255,122,60,0.08)',
-        border: '1px solid rgba(255,122,60,0.20)',
-      }}>
-        <span style={{ color: '#FF7A3C', fontWeight: 700, fontSize: 12 }}>
-          {t(state.subCtaKey, {
-            ...(state.subCtaName ? { name: state.subCtaName } : {}),
-            ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
-          })}
-        </span>
-        {interactive && <span style={{ color: '#FF7A3C', fontSize: 12 }}>›</span>}
-      </div>
+      {/* Sub-CTA — empty key suppresses the row (visitor with no acceptance:
+          the labeled accept button below handles the call to action). */}
+      {!!state.subCtaKey && (
+        <div style={{
+          alignSelf: 'center',
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          padding: '6px 12px', borderRadius: 999,
+          background: 'rgba(255,122,60,0.08)',
+          border: '1px solid rgba(255,122,60,0.20)',
+        }}>
+          <span style={{ color: '#FF7A3C', fontWeight: 700, fontSize: 12 }}>
+            {t(state.subCtaKey, {
+              ...(state.subCtaName ? { name: state.subCtaName } : {}),
+              ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
+            })}
+          </span>
+          {interactive && <span style={{ color: '#FF7A3C', fontSize: 12 }}>›</span>}
+        </div>
+      )}
     </div>
   )
 }

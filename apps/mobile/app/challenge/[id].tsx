@@ -525,19 +525,22 @@ export default function ChallengeChatScreen() {
         </View>
       )}
 
-      {/* Participants row — always rendered for visitors who can accept (so
-          the + Accept button has a home). For the owner only when somebody
-          else has accepted. The whole left side (avatars + label or empty
-          copy) is tappable to open the members sheet. */}
+      {/* Participants row — three layouts:
+            A) acceptors exist → avatars + count on the left, accept button on
+               the right (icon + label when the viewer can still take on).
+            B) no acceptors, viewer can take on → full-width prominent labeled
+               button (replaces the old "Be the first to accept" + small + duo).
+            C) full → "Challenge full" label, no button.
+          Skipped entirely for owners on a validated challenge (nothing to do). */}
       {(otherParticipants.length > 0 || (!isOwner && !isValidated)) && (
         <View style={styles.participantsRow}>
-          <TouchableOpacity
-            style={styles.participantsInfo}
-            activeOpacity={otherParticipants.length > 0 ? 0.75 : 1}
-            onPress={() => { if (otherParticipants.length > 0) setMembersOpen(true); }}
-          >
-            {otherParticipants.length > 0 ? (
-              <>
+          {otherParticipants.length > 0 ? (
+            <>
+              <TouchableOpacity
+                style={styles.participantsInfo}
+                activeOpacity={0.75}
+                onPress={() => setMembersOpen(true)}
+              >
                 <AttendeeAvatars
                   preview={otherParticipants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
                   total={otherParticipants.length}
@@ -546,27 +549,40 @@ export default function ChallengeChatScreen() {
                 <Text style={styles.membersLabel}>
                   {t('participantsLabel')} · {otherParticipants.length}
                 </Text>
-              </>
-            ) : (
-              <Text style={styles.participantsEmpty}>
-                {isFull ? t('accept.err.cap_reached.title') : t('beFirstToAccept')}
-              </Text>
-            )}
-          </TouchableOpacity>
-          {/* Accept (+) is only meaningful when the viewer has NO thread yet
-              AND there's room. Once they have one, the inline chat below IS
-              the conversation surface — no navigation needed. */}
-          {!isOwner && !isValidated && !myThreadChannelId && !isFull && (
+              </TouchableOpacity>
+              {!isOwner && !isValidated && !myThreadChannelId && !isFull && (
+                <TouchableOpacity
+                  style={styles.acceptCompact}
+                  onPress={handleAccept}
+                  activeOpacity={0.7}
+                  disabled={acceptBusy}
+                  accessibilityLabel={t('acceptCta')}
+                >
+                  {acceptBusy
+                    ? <ActivityIndicator color="#FF7A3C" size="small" />
+                    : <>
+                        <Ionicons name="add" size={18} color="#FF7A3C" />
+                        <Text style={styles.acceptCompactText}>{t('pipeline.subcta.tapToAccept')}</Text>
+                      </>}
+                </TouchableOpacity>
+              )}
+            </>
+          ) : isFull ? (
+            <Text style={styles.participantsEmpty}>{t('accept.err.cap_reached.title')}</Text>
+          ) : (
             <TouchableOpacity
-              style={styles.quickBtn}
+              style={styles.acceptCtaFull}
               onPress={handleAccept}
-              activeOpacity={0.7}
+              activeOpacity={0.85}
               disabled={acceptBusy}
               accessibilityLabel={t('acceptCta')}
             >
               {acceptBusy
                 ? <ActivityIndicator color="#FF7A3C" size="small" />
-                : <Ionicons name="add" size={20} color="#FF7A3C" />}
+                : <>
+                    <Ionicons name="add" size={20} color="#FF7A3C" />
+                    <Text style={styles.acceptCtaFullText}>{t('pipeline.subcta.tapToAccept')}</Text>
+                  </>}
             </TouchableOpacity>
           )}
         </View>
@@ -846,6 +862,31 @@ const styles = StyleSheet.create({
   },
   membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
   participantsEmpty: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
+
+  // Labeled Accept button — full-width when nobody has taken on yet (replaces
+  // the old "Be the first to accept" + tiny + duo) and compact when there are
+  // already acceptors (sits to the right of the avatars).
+  acceptCtaFull: {
+    flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: Spacing.md, paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,122,60,0.10)',
+    borderWidth: 1, borderColor: 'rgba(255,122,60,0.35)',
+  },
+  acceptCtaFullText: {
+    color: '#FF7A3C', fontWeight: '800', fontSize: FontSizes.sm,
+  },
+  acceptCompact: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    paddingHorizontal: 12, paddingVertical: 7,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,122,60,0.10)',
+    borderWidth: 1, borderColor: 'rgba(255,122,60,0.30)',
+  },
+  acceptCompactText: {
+    color: '#FF7A3C', fontWeight: '700', fontSize: FontSizes.xs ?? 12,
+  },
 
   // Inline thread chat
   chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },

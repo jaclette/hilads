@@ -39,8 +39,8 @@
   "statusInProgress": "ชาเลนจ์กำลังดำเนินอยู่",
   "statusAccomplished": "ชาเลนจ์สำเร็จ",
   "openBadge": "เปิด",
-  "forLocals": "สำหรับคนท้องถิ่น",
-  "forExplorers": "สำหรับนักสำรวจ",
+  "forLocals": "🏠 สำหรับคนท้องถิ่น",
+  "forExplorers": "🧳 สำหรับนักสำรวจ",
   "notFound": "ไม่พบชาเลนจ์",
   "typeBadge": {
     "food": "ชาเลนจ์อาหาร",

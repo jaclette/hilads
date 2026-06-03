@@ -39,8 +39,8 @@
   "statusInProgress": "挑战进行中",
   "statusAccomplished": "挑战搞定",
   "openBadge": "开放",
-  "forLocals": "给本地人",
-  "forExplorers": "给旅行者",
+  "forLocals": "🏠 给本地人",
+  "forExplorers": "🧳 给旅行者",
   "notFound": "未找到挑战",
   "typeBadge": {
     "food": "美食挑战",

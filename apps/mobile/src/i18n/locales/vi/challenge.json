@@ -39,8 +39,8 @@
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
   "openBadge": "Mở",
-  "forLocals": "Cho người địa phương",
-  "forExplorers": "Cho du khách",
+  "forLocals": "🏠 Cho người địa phương",
+  "forExplorers": "🧳 Cho du khách",
   "notFound": "Không tìm thấy thử thách",
   "typeBadge": {
     "food": "Thử thách ăn uống",

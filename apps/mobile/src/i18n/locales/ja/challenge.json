@@ -39,8 +39,8 @@
   "statusInProgress": "チャレンジ進行中",
   "statusAccomplished": "チャレンジ達成",
   "openBadge": "オープン",
-  "forLocals": "ローカル向け",
-  "forExplorers": "旅行者向け",
+  "forLocals": "🏠 ローカル向け",
+  "forExplorers": "🧳 旅行者向け",
   "notFound": "チャレンジが見つかりません",
   "typeBadge": {
     "food": "食チャレンジ",

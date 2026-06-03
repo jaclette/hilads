@@ -39,8 +39,8 @@
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",
   "openBadge": "Ouvert",
-  "forLocals": "Pour les locaux",
-  "forExplorers": "Pour les voyageurs",
+  "forLocals": "🏠 Pour les locaux",
+  "forExplorers": "🧳 Pour les voyageurs",
   "notFound": "Défi introuvable",
   "typeBadge": {
     "food": "Défi bouffe",

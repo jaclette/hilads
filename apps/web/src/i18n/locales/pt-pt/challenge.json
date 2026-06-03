@@ -39,8 +39,8 @@
   "statusInProgress": "Desafio a decorrer",
   "statusAccomplished": "Desafio cumprido",
   "openBadge": "Aberto",
-  "forLocals": "Para locais",
-  "forExplorers": "Para viajantes",
+  "forLocals": "🏠 Para locais",
+  "forExplorers": "🧳 Para viajantes",
   "notFound": "Desafio não encontrado",
   "typeBadge": {
     "food": "Desafio comida",

@@ -39,8 +39,8 @@
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",
   "openBadge": "Terbuka",
-  "forLocals": "Untuk local",
-  "forExplorers": "Untuk pelancong",
+  "forLocals": "🏠 Untuk local",
+  "forExplorers": "🧳 Untuk pelancong",
   "notFound": "Tantangan tidak ditemukan",
   "typeBadge": {
     "food": "Tantangan makanan",

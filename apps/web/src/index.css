@@ -11189,6 +11189,43 @@ body.has-app-promo-banner .page-header {
   font-weight: 500;
 }
 
+/* Labeled Accept button — replaces the old + icon to make the call to action
+   self-explanatory. Two variants:
+     --full    : sole CTA in the row when there are no acceptors yet
+     --compact : sits to the right of avatars + count when somebody's in */
+.challenge-accept-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: rgba(255, 122, 60, 0.10);
+  border: 1px solid rgba(255, 122, 60, 0.35);
+  color: #FF7A3C;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, transform 0.1s ease;
+  font-family: inherit;
+}
+.challenge-accept-pill:hover  { background: rgba(255, 122, 60, 0.18); }
+.challenge-accept-pill:active { transform: scale(0.98); }
+.challenge-accept-pill:disabled { opacity: 0.6; cursor: default; }
+
+.challenge-accept-pill--full {
+  flex: 1 1 auto;
+  height: 38px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+.challenge-accept-pill--compact {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+  letter-spacing: 0.1px;
+}
+
 /* Share is the only quick action that gets a label, because the verb
    ("Challenge your friends ✨" / "Lance-le à tes potes ✨" / …) is the
    social hook of the screen and needs to read at a glance. Accept stays

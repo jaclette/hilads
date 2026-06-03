@@ -39,8 +39,8 @@
   "statusInProgress": "التحدي جارٍ",
   "statusAccomplished": "تم إنجاز التحدي",
   "openBadge": "مفتوح",
-  "forLocals": "للمحليين",
-  "forExplorers": "للمسافرين",
+  "forLocals": "🏠 للمحليين",
+  "forExplorers": "🧳 للمسافرين",
   "notFound": "لم يُعثر على التحدي",
   "typeBadge": {
     "food": "تحدي طعام",

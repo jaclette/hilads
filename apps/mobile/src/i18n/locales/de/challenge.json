@@ -39,8 +39,8 @@
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",
   "openBadge": "Offen",
-  "forLocals": "Für Locals",
-  "forExplorers": "Für Reisende",
+  "forLocals": "🏠 Für Locals",
+  "forExplorers": "🧳 Für Reisende",
   "notFound": "Challenge nicht gefunden",
   "typeBadge": {
     "food": "Food Challenge",

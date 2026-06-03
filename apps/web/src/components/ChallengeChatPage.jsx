@@ -484,11 +484,16 @@ export default function ChallengeChatPage({
           when somebody else has accepted, since they can't accept their own
           challenge. For validated challenges, the row is shown if anyone
           accepted (acceptor history), without the button. */}
+      {/* Participants row — three layouts:
+            A) acceptors exist → avatars + count on left, labeled compact Accept on right.
+            B) no acceptors, viewer can take on → single full-width labeled Accept button.
+            C) full → "Challenge full" label, no button.
+          Skipped for owners on a validated challenge (nothing to do). */}
       {(otherParticipants.length > 0 || (!isOwner && !isValidated)) && (
         <div className="challenge-participants-row">
-          <div className="challenge-participants-info">
-            {otherParticipants.length > 0 ? (
-              <>
+          {otherParticipants.length > 0 ? (
+            <>
+              <div className="challenge-participants-info">
                 <AttendeeAvatars
                   preview={otherParticipants.slice(0, 5).map(p => ({
                     id: p.id, displayName: p.displayName,
@@ -499,25 +504,32 @@ export default function ChallengeChatPage({
                 <span className="topic-members-label">
                   {t('participantsLabel')} · {otherParticipants.length}
                 </span>
-              </>
-            ) : (
-              <span className="challenge-participants-empty">
-                {isFull ? t('accept.err.cap_reached.title') : t('beFirstToAccept')}
-              </span>
-            )}
-          </div>
-          {/* Accept (+) only when there's no thread yet AND there's room.
-              Once accepted, the inline chat below IS the conversation surface. */}
-          {!isValidated && !isOwner && !myThreadChannelId && !isFull && (
+              </div>
+              {!isValidated && !isOwner && !myThreadChannelId && !isFull && (
+                <button
+                  type="button"
+                  className="challenge-accept-pill challenge-accept-pill--compact"
+                  onClick={handleAccept}
+                  disabled={busy === 'accept'}
+                  aria-label={t('acceptCta')}
+                >
+                  <span aria-hidden="true">+</span>
+                  <span>{busy === 'accept' ? '…' : t('pipeline.subcta.tapToAccept')}</span>
+                </button>
+              )}
+            </>
+          ) : isFull ? (
+            <span className="challenge-participants-empty">{t('accept.err.cap_reached.title')}</span>
+          ) : (
             <button
               type="button"
-              className="challenge-quick-btn challenge-quick-btn--accept"
+              className="challenge-accept-pill challenge-accept-pill--full"
               onClick={handleAccept}
               disabled={busy === 'accept'}
-              title={t('acceptCta')}
               aria-label={t('acceptCta')}
             >
-              <span aria-hidden="true">{busy === 'accept' ? '…' : '+'}</span>
+              <span aria-hidden="true">+</span>
+              <span>{busy === 'accept' ? '…' : t('pipeline.subcta.tapToAccept')}</span>
             </button>
           )}
         </div>
