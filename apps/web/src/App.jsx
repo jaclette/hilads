@@ -5937,7 +5937,6 @@ export default function App() {
           onBack={() => setActiveChallenge(null)}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
-          onOpenThread={(threadId) => { setActiveChallenge(null); setActiveThreadChannelId(threadId) }}
           onNeedAuth={(reason) => { setActiveChallenge(null); setGuestGate({ reason }) }}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
@@ -5957,13 +5956,15 @@ export default function App() {
         />
       )}
 
-      {/* PR2 — "My challenge threads" index */}
+      {/* PR2 — "My challenge threads" index. Taps now route to the challenge
+          channel (where the inline thread chat lives) — single surface, no
+          intermediate /thread step. */}
       {showThreadsList && (
         <ThreadsListPage
           account={account}
           socket={socketRef.current}
           onBack={() => setShowThreadsList(false)}
-          onOpenThread={(threadId) => { setShowThreadsList(false); setActiveThreadChannelId(threadId) }}
+          onOpenChallenge={(c) => { setShowThreadsList(false); setActiveChallenge(c) }}
         />
       )}
 

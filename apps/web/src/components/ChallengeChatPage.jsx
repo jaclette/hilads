@@ -8,7 +8,7 @@
  * reply — all deferred to mobile or a follow-up commit if needed.
  */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
@@ -16,10 +16,12 @@ import {
   fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
+  fetchThreadMessages, sendThreadMessage,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
+import ThreadScheduleBlock from './ThreadScheduleBlock'
 
 // Slug builder — mirrors apps/web/api/sitemap.mjs:challengeSlug and
 // apps/mobile/src/lib/challengeSlug.ts. Kept inline since it's a single
@@ -57,6 +59,16 @@ function avatarColors(name = '') {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
+function toMs(ts) {
+  if (!ts) return 0
+  if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts
+  return new Date(typeof ts === 'string' ? ts.replace(' ', 'T') : ts).getTime()
+}
+function formatTime(ts) {
+  const ms = toMs(ts); if (!ms) return ''
+  return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
 export default function ChallengeChatPage({
   challenge: initialChallenge,
   guest,
@@ -65,8 +77,7 @@ export default function ChallengeChatPage({
   onBack,
   onEdit,
   onDeleted,
-  onOpenThread,   // PR2 — host (App.jsx) routes to ThreadChatPage on accept
-  onNeedAuth,    // PR2 — host routes guest to sign-up gate
+  onNeedAuth,    // host routes guest to sign-up gate
   socket,
   sessionId,
 }) {
@@ -81,6 +92,13 @@ export default function ChallengeChatPage({
   // challenge (visitor or creator on their own ad).
   const [myAcceptance, setMyAcceptance] = useState(null)
   const myThreadChannelId = myAcceptance?.thread_channel_id ?? null
+  // Inline thread chat — messages + composer state. Mount only when there's
+  // an active thread (myAcceptance != null).
+  const [messages, setMessages] = useState([])
+  const [composer, setComposer] = useState('')
+  const [sending,  setSending]  = useState(false)
+  const feedRef  = useRef(null)
+  const knownIds = useRef(new Set())
 
   const id = challenge?.id
 
@@ -141,27 +159,94 @@ export default function ChallengeChatPage({
 
   useEffect(() => { loadMyAcceptance() }, [loadMyAcceptance])
 
-  // PR2 — Accept flow. Three paths: already accepted → open thread; guest →
-  // bounce to auth; registered → POST /accept and route to the new thread.
+  // ── Inline thread chat — load + WS + auto-scroll. Mounts (data-wise) only
+  // when myAcceptance flips non-null. The JSX gates on the same condition.
+
+  useEffect(() => {
+    if (!myThreadChannelId) { setMessages([]); knownIds.current = new Set(); return }
+    let cancelled = false
+    fetchThreadMessages(myThreadChannelId, { limit: 50 }).then(data => {
+      if (cancelled) return
+      const msgs = (data.messages ?? []).sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
+      knownIds.current = new Set(msgs.map(m => m.id ?? `${m.guestId}:${m.createdAt}`))
+      setMessages(msgs)
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [myThreadChannelId])
+
+  useEffect(() => {
+    if (!socket || !sessionId || !myThreadChannelId) return
+    socket.joinChallengeThread(myThreadChannelId, sessionId)
+    const offMsg = socket.on('newMessage', (data) => {
+      if (data.channelId !== myThreadChannelId) return
+      const m = data.message; if (!m) return
+      const key = m.id ?? `${m.guestId}:${m.createdAt}`
+      if (knownIds.current.has(key)) return
+      knownIds.current.add(key)
+      setMessages(prev => {
+        const optIdx = prev.findIndex(x =>
+          typeof x.id === 'string' && x.id.startsWith('local-') &&
+          x.guestId === m.guestId && (x.content ?? '') === (m.content ?? '')
+        )
+        if (optIdx >= 0) { const c = [...prev]; c[optIdx] = m; return c }
+        return [...prev, m].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
+      })
+    })
+    return () => { offMsg(); socket.leaveChallengeThread(myThreadChannelId, sessionId) }
+  }, [myThreadChannelId, socket, sessionId])
+
+  // Refresh acceptance on any lifecycle push so the pipeline + schedule band update live.
+  useEffect(() => {
+    if (!socket) return
+    const onChange = () => loadMyAcceptance()
+    const off1 = socket.on('challenge_accepted',             onChange)
+    const off2 = socket.on('challenge_acceptance_cancelled', onChange)
+    const off3 = socket.on('challenge_date_proposed',        onChange)
+    const off4 = socket.on('challenge_date_withdrawn',       onChange)
+    const off5 = socket.on('challenge_date_approved',        onChange)
+    const off6 = socket.on('challenge_verdict_approved',     onChange)
+    const off7 = socket.on('challenge_verdict_rejected',     onChange)
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7() }
+  }, [socket, loadMyAcceptance])
+
+  useEffect(() => {
+    if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight
+  }, [messages.length])
+
+  const handleSendMessage = useCallback(async (e) => {
+    e.preventDefault()
+    const content = composer.trim()
+    if (!content || sending || !myThreadChannelId || !account?.id) return
+    setSending(true)
+    const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+    const optimistic = {
+      id: localId, channelId: myThreadChannelId,
+      userId: account.id, guestId: account.id,
+      nickname: account.display_name ?? 'You',
+      content, createdAt: Date.now() / 1000, status: 'sending',
+    }
+    setMessages(prev => [...prev, optimistic])
+    setComposer('')
+    try {
+      const sent = await sendThreadMessage(myThreadChannelId, content)
+      setMessages(prev => prev.map(m => m.id === localId ? sent : m))
+      knownIds.current.add(sent.id)
+    } catch {
+      setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
+    } finally { setSending(false) }
+  }, [composer, sending, myThreadChannelId, account])
+
+  // PR2 — Accept flow. The chat is INLINE now (no navigation): once accepted,
+  // myAcceptance becomes non-null and the chat block below mounts.
   const handleAccept = useCallback(async () => {
     if (busy) return
-
-    // Already accepted? Just open it.
-    if (myThreadChannelId) {
-      onOpenThread?.(myThreadChannelId)
-      return
-    }
-
-    if (!account?.id) {
-      onNeedAuth?.('accept_challenge')
-      return
-    }
+    if (myThreadChannelId) return  // already accepted — inline chat is right there
+    if (!account?.id) { onNeedAuth?.('accept_challenge'); return }
 
     setBusy('accept')
     try {
-      const acceptance = await acceptChallenge(id)
-      loadMyAcceptance()  // refresh pipeline state with the new 'accepted' phase
-      onOpenThread?.(acceptance.thread_channel_id)
+      await acceptChallenge(id)
+      loadMyAcceptance()  // refreshes pipeline + mounts the chat block
     } catch (err) {
       if (err instanceof AcceptChallengeError) {
         const titleKey = `accept.err.${err.code}.title`
@@ -174,7 +259,7 @@ export default function ChallengeChatPage({
     } finally {
       setBusy(null)
     }
-  }, [id, account?.id, busy, myThreadChannelId, onOpenThread, onNeedAuth, t])
+  }, [id, account?.id, busy, myThreadChannelId, onNeedAuth, loadMyAcceptance, t])
 
   const handleToggleStatus = useCallback(async () => {
     if (!guest?.guestId || busy || !challenge) return
@@ -375,16 +460,18 @@ export default function ChallengeChatPage({
               <span className="challenge-participants-empty">{t('beFirstToAccept')}</span>
             )}
           </div>
-          {!isValidated && !isOwner && (
+          {/* Accept (+) only when there's no thread yet — once accepted, the
+              inline chat below IS the conversation surface. */}
+          {!isValidated && !isOwner && !myThreadChannelId && (
             <button
               type="button"
-              className={`challenge-quick-btn challenge-quick-btn--accept${myThreadChannelId ? ' challenge-quick-btn--accept-in' : ''}`}
+              className="challenge-quick-btn challenge-quick-btn--accept"
               onClick={handleAccept}
               disabled={busy === 'accept'}
-              title={myThreadChannelId ? t('openThreadCta') : t('acceptCta')}
-              aria-label={myThreadChannelId ? t('openThreadCta') : t('acceptCta')}
+              title={t('acceptCta')}
+              aria-label={t('acceptCta')}
             >
-              <span aria-hidden="true">{busy === 'accept' ? '…' : (myThreadChannelId ? '💬' : '+')}</span>
+              <span aria-hidden="true">{busy === 'accept' ? '…' : '+'}</span>
             </button>
           )}
         </div>
@@ -417,10 +504,60 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* Public chat removed — per-acceptance threads (PR2+) are now the
-          only conversation surface. Visitors with no acceptance just see
-          the pipeline + Accept CTA above; acceptors tap the orange chat
-          bubble on the participants row to open their thread. */}
+      {/* Inline thread chat — mounts only when the viewer has an active
+          acceptance for this challenge. Replaces the old "navigate to
+          /thread" path: one screen, no second navigation step. */}
+      {myAcceptance && account?.id && (
+        <>
+          <div className="topic-chat-feed" ref={feedRef}>
+            {messages.length === 0 && (
+              <div className="topic-chat-empty">
+                <span className="topic-chat-empty-icon">👋</span>
+                <span>{t('thread.empty')}</span>
+              </div>
+            )}
+            {messages.map((m, idx) => {
+              const isMine    = (account?.id && m.userId === account.id) || (account?.id && m.guestId === account.id)
+              const prev      = messages[idx - 1]
+              const isGrouped = prev && (prev.userId === m.userId || prev.guestId === m.guestId)
+              const opacity   = m.status === 'failed' ? 0.5 : m.status === 'sending' ? 0.7 : 1
+              return (
+                <div key={m.id ?? idx} className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : ''].filter(Boolean).join(' ')}>
+                  {!isMine && !isGrouped && (
+                    <div className="msg-meta">
+                      <span className="msg-author">{m.nickname}</span>
+                    </div>
+                  )}
+                  <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''}`} style={{ opacity }}>
+                    <div className="msg-content"><span className="msg-text">{m.content}</span></div>
+                  </div>
+                  <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(m.createdAt)}</span>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Schedule band — propose/approve date, debrief verdict. */}
+          <ThreadScheduleBlock
+            thread={myAcceptance}
+            myUserId={account.id}
+            onChange={loadMyAcceptance}
+          />
+
+          <form onSubmit={handleSendMessage} className="topic-composer">
+            <input
+              type="text"
+              value={composer}
+              onChange={e => setComposer(e.target.value)}
+              placeholder={t('thread.empty')}
+              maxLength={1000}
+            />
+            <button type="submit" disabled={!composer.trim() || sending}>
+              {sending ? '…' : '➤'}
+            </button>
+          </form>
+        </>
+      )}
     </div>
   )
 }

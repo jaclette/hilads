@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, ActivityIndicator,
-  TouchableOpacity, StyleSheet, Alert,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,15 +14,21 @@ import {
   fetchChallengeById, fetchChallengeParticipants,
   validateChallenge, unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
+  fetchThreadMessages, sendThreadMessage, sendThreadImageMessage,
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
+import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { MembersSheet } from '@/components/MembersSheet';
+import { useMessages } from '@/hooks/useMessages';
+import { ChatMessage } from '@/features/chat/ChatMessage';
+import { ChatInput } from '@/features/chat/ChatInput';
 import { avatarColor } from '@/lib/avatarColors';
 import { shareLink } from '@/lib/shareLink';
+import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildChallengeUrl } from '@/constants';
-import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, UserDTO } from '@/types';
+import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
   food:    '🍜',
@@ -179,27 +185,22 @@ export default function ChallengeChatScreen() {
   const handleAccept = useCallback(async () => {
     if (acceptBusy) return;
 
-    // (1) Already accepted? Just open the thread.
-    if (myThreadChannelId) {
-      router.push(`/thread/${myThreadChannelId}` as never);
-      return;
-    }
+    // Already accepted? No-op — the inline chat is right here.
+    if (myThreadChannelId) return;
 
-    // (3) Guest? Send them to register first.
+    // Guest? Send them to register first.
     if (!account?.id) {
       router.push('/auth-gate?reason=accept_challenge' as never);
       return;
     }
 
-    // (2) Registered → call accept.
     setAcceptBusy(true);
     try {
-      const acceptance = await acceptChallenge(id);
-      // Refresh the full summary (effective_phase, proposal state, etc.)
-      // so the pipeline renders the new "accepted" state.
+      await acceptChallenge(id);
+      // Refresh the full summary — the pipeline flips to "Date" and the inline
+      // chat block mounts (both keyed off myAcceptance becoming non-null).
       loadMyAcceptance();
       track('challenge_take_on', { challengeId: id });
-      router.push(`/thread/${acceptance.thread_channel_id}` as never);
     } catch (err) {
       if (err instanceof AcceptChallengeError) {
         // Localized per error code. mode_* codes also offer to open the
@@ -248,6 +249,65 @@ export default function ChallengeChatScreen() {
     const offC = socket.on('challenge_acceptance_cancelled',  onAcceptanceChange);
     return () => { offA(); offC(); };
   }, [id, loadMyAcceptance]);
+
+  // PR3/4 — refresh on date/verdict changes (the schedule block + pipeline
+  // both render off myAcceptance, so we just reload it on any push).
+  useEffect(() => {
+    const onChange = () => loadMyAcceptance();
+    const off1 = socket.on('challenge_date_proposed',     onChange);
+    const off2 = socket.on('challenge_date_withdrawn',    onChange);
+    const off3 = socket.on('challenge_date_approved',     onChange);
+    const off4 = socket.on('challenge_verdict_approved',  onChange);
+    const off5 = socket.on('challenge_verdict_rejected',  onChange);
+    return () => { off1(); off2(); off3(); off4(); off5(); };
+  }, [loadMyAcceptance]);
+
+  // ── Inline thread chat ───────────────────────────────────────────────────
+  // The chat below is the per-acceptance THREAD chat (channels.type=
+  // 'challenge_thread'), folded into the challenge channel surface so users
+  // see + use one screen. `myAcceptance` is the viewer's thread on this
+  // challenge — for acceptors that's their relationship with the creator;
+  // for creators with N acceptances /me/acceptances returns the most-recently-
+  // active one (server ORDER BY last_message_at DESC) — good default.
+  const threadChannelId = myThreadChannelId;
+
+  const loadMessagesFn = useCallback(
+    (opts?: { beforeId?: string }) =>
+      threadChannelId
+        ? fetchThreadMessages(threadChannelId, opts)
+        : Promise.resolve({ messages: [], hasMore: false }),
+    [threadChannelId],
+  );
+  const postTextFn = useCallback(
+    (content: string): Promise<Message> =>
+      threadChannelId
+        ? sendThreadMessage(threadChannelId, content)
+        : Promise.reject(new Error('No thread')),
+    [threadChannelId],
+  );
+  const postImageFn = useCallback(
+    (imageUrl: string): Promise<Message> =>
+      threadChannelId
+        ? sendThreadImageMessage(threadChannelId, imageUrl)
+        : Promise.reject(new Error('No thread')),
+    [threadChannelId],
+  );
+
+  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending,
+          sendText, sendImage, loadOlder } = useMessages({
+    channelId: threadChannelId ?? '__no_thread__',
+    loadFn:    loadMessagesFn,
+    postTextFn,
+    postImageFn,
+  });
+
+  // Join the thread WS room (for live newMessage broadcasts) only when we
+  // actually have a thread to join. Leaves on unmount / thread change.
+  useEffect(() => {
+    if (!threadChannelId || !sessionId) return;
+    socket.joinChallengeThread(threadChannelId, sessionId);
+    return () => socket.leaveChallengeThread(threadChannelId, sessionId);
+  }, [threadChannelId, sessionId]);
 
   // Web parity: separate the creator (Challenger) from the rest of the
   // participants. The creator match uses the same ownership rule as isOwner
@@ -460,31 +520,87 @@ export default function ChallengeChatScreen() {
               <Text style={styles.participantsEmpty}>{t('beFirstToAccept')}</Text>
             )}
           </TouchableOpacity>
-          {!isOwner && !isValidated && (
+          {/* Accept (+) is only meaningful when the viewer has NO thread yet.
+              Once they have one, the inline chat below IS the conversation
+              surface — no navigation needed. */}
+          {!isOwner && !isValidated && !myThreadChannelId && (
             <TouchableOpacity
-              style={[styles.quickBtn, !!myThreadChannelId && styles.quickBtnAcceptIn]}
+              style={styles.quickBtn}
               onPress={handleAccept}
               activeOpacity={0.7}
               disabled={acceptBusy}
-              accessibilityLabel={myThreadChannelId ? t('openThreadCta') : t('acceptCta')}
+              accessibilityLabel={t('acceptCta')}
             >
               {acceptBusy
-                ? <ActivityIndicator color={myThreadChannelId ? Colors.white : '#FF7A3C'} size="small" />
-                : <Ionicons
-                    name={myThreadChannelId ? 'chatbubble-ellipses' : 'add'}
-                    size={20}
-                    color={myThreadChannelId ? Colors.white : '#FF7A3C'}
-                  />}
+                ? <ActivityIndicator color="#FF7A3C" size="small" />
+                : <Ionicons name="add" size={20} color="#FF7A3C" />}
             </TouchableOpacity>
           )}
         </View>
       )}
 
-      {/* Share + Accept moved into the challenger row above. */}
+      {/* Inline thread chat (was previously a separate /thread/[id] screen).
+          Mounts only when the viewer has an active acceptance for this
+          challenge — acceptors see their own thread, creators see their
+          most-recently-active acceptor's thread (server-ordered). */}
+      <KeyboardAvoidingView style={styles.flex} behavior="padding">
+        {myAcceptance && account?.id ? (
+          <>
+            <FlatList
+              data={messages}
+              keyExtractor={(m, i) => m.id ?? String(i)}
+              renderItem={({ item, index }) => {
+                const olderMsg = messages[index + 1];
+                const newerMsg = messages[index - 1];
+                const isGrouped = !!olderMsg && olderMsg.guestId === item.guestId && olderMsg.type !== 'system' && item.type !== 'system';
+                const showTime = item.type !== 'system' && (!newerMsg || newerMsg.guestId !== item.guestId || newerMsg.type === 'system');
+                const dateLabel = !isSameDay(item.createdAt, olderMsg?.createdAt) ? formatDateLabel(item.createdAt) : undefined;
+                return (
+                  <ChatMessage
+                    message={item}
+                    myGuestId={identity?.guestId}
+                    isGrouped={isGrouped}
+                    showTime={showTime}
+                    dateLabel={dateLabel}
+                  />
+                );
+              }}
+              inverted
+              contentContainerStyle={styles.chatList}
+              keyboardShouldPersistTaps="handled"
+              onEndReached={hasMore ? loadOlder : undefined}
+              onEndReachedThreshold={0.2}
+              ListFooterComponent={loadingOlder ? (
+                <View style={styles.loadingOlderWrap}><ActivityIndicator size="small" color={Colors.muted} /></View>
+              ) : null}
+              ListEmptyComponent={!msgsLoading ? (
+                <View style={styles.emptyChat}>
+                  <Text style={styles.emptyChatEmoji}>👋</Text>
+                  <Text style={styles.emptyChatText}>{t('thread.empty')}</Text>
+                </View>
+              ) : null}
+            />
 
-      {/* Spacer pushes the members sheet's anchor off the bottom edge so the
-          screen doesn't look unfinished now that the public chat is gone. */}
-      <View style={styles.flex} />
+            {/* Schedule band — propose/approve date, debrief verdict. */}
+            <ThreadScheduleBlock
+              thread={myAcceptance}
+              myUserId={account.id}
+              onChange={loadMyAcceptance}
+            />
+
+            <ChatInput
+              sending={sending}
+              onSendText={(text) => sendText(text, null)}
+              onSendImage={sendImage}
+            />
+          </>
+        ) : (
+          /* No active thread — visitor pre-accept, or creator with no acceptors yet.
+             The pipeline + Accept button above already tell the story; this is
+             just empty space that absorbs the keyboard-avoidance flex. */
+          <View />
+        )}
+      </KeyboardAvoidingView>
 
       {/* Members modal — opened by tapping the participants row above. */}
       <MembersSheet
@@ -652,4 +768,11 @@ const styles = StyleSheet.create({
   },
   membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
   participantsEmpty: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
+
+  // Inline thread chat
+  chatList:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },
+  loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
+  emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: 8 },
+  emptyChatEmoji:   { fontSize: 36 },
+  emptyChatText:    { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
 });

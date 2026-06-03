@@ -109,7 +109,7 @@ export default function ThreadsListScreen() {
               <TouchableOpacity
                 style={styles.row}
                 activeOpacity={0.75}
-                onPress={() => router.push(`/thread/${item.thread_channel_id}` as never)}
+                onPress={() => router.push(`/challenge/${item.challenge_id}` as never)}
               >
                 <View style={[styles.avatar, { backgroundColor: avatarColor(cp.id) }]}>
                   {cp.thumbAvatarUrl ? (

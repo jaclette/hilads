@@ -8,7 +8,8 @@ import BackButton from './BackButton'
  * (as creator OR acceptor) with last-message preview. Sorted by activity.
  *
  * Reached from the profile drawer / a "My threads" CTA. Mounted by App.jsx
- * with `account`; tapping a row calls `onOpenThread(threadChannelId)`.
+ * with `account`; tapping a row calls `onOpenChallenge(challenge)` which
+ * routes to the challenge channel where the inline thread chat lives.
  */
 
 const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
@@ -23,7 +24,7 @@ function avatarColors(name = '') {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-export default function ThreadsListPage({ account, socket, onBack, onOpenThread }) {
+export default function ThreadsListPage({ account, socket, onBack, onOpenChallenge }) {
   const { t } = useTranslation('challenge')
 
   const [threads, setThreads] = useState([])
@@ -85,7 +86,7 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenThread 
                 <li key={thr.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                   <button
                     type="button"
-                    onClick={() => onOpenThread?.(thr.thread_channel_id)}
+                    onClick={() => onOpenChallenge?.({ id: thr.challenge_id, title: thr.challenge_title, challenge_type: thr.challenge_type })}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', gap: 12,
                       padding: '12px 16px', background: 'transparent', border: 'none',
