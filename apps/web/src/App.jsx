@@ -5944,6 +5944,14 @@ export default function App() {
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
           onNeedAuth={(reason) => { setActiveChallenge(null); setGuestGate({ reason }) }}
+          onOpenMyProfile={() => {
+            // mode_required / mode_mismatch alert offers "Open my profile" —
+            // the profile drawer is where you switch local/exploring.
+            if (account?.id) {
+              setActiveChallenge(null);
+              setViewingProfile({ userId: account.id, nickname: account.display_name });
+            }
+          }}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
         />

@@ -80,6 +80,7 @@ export default function ChallengeChatPage({
   onEdit,
   onDeleted,
   onNeedAuth,    // host routes guest to sign-up gate
+  onOpenMyProfile, // host opens this user's profile drawer (used by mode_* error CTAs)
   socket,
   sessionId,
 }) {
@@ -89,6 +90,9 @@ export default function ChallengeChatPage({
   const [participants, setParticipants] = useState([])
   const [busy,         setBusy]         = useState(null) // 'accept' | 'status' | 'delete' | null
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
+  // Themed in-app alert. Replaces window.alert() (which renders the ugly
+  // "hilads.live says" browser modal). Shape: { emoji?, title, body, actionLabel?, onAction? }.
+  const [alertModal, setAlertModal] = useState(null)
   // PR2/3/4 — full acceptance summary. Drives the Accept button morph + the
   // ChallengePipeline rendering. Null when I have no acceptance for this
   // challenge (visitor or creator on their own ad).
@@ -257,15 +261,27 @@ export default function ChallengeChatPage({
       if (err instanceof AcceptChallengeError) {
         const titleKey = `accept.err.${err.code}.title`
         const bodyKey  = `accept.err.${err.code}.body`
-        const body     = t(bodyKey, { defaultValue: err.message })
-        window.alert(`${t(titleKey)}\n\n${body}`)
+        // mode_* codes get a "Open my profile" CTA — that's where you flip
+        // local/exploring. Other codes are dead-end OKs.
+        const isModeErr = err.code === 'mode_required' || err.code === 'mode_mismatch'
+        setAlertModal({
+          emoji: isModeErr ? '🧭' : '🚫',
+          title: t(titleKey),
+          body: t(bodyKey, { defaultValue: err.message }),
+          actionLabel: isModeErr && onOpenMyProfile ? t('accept.err.openSettings') : null,
+          onAction: isModeErr && onOpenMyProfile ? () => { setAlertModal(null); onOpenMyProfile() } : null,
+        })
       } else {
-        window.alert(`${t('accept.err.unknown.title')}\n\n${t('accept.err.unknown.body')}`)
+        setAlertModal({
+          emoji: '😬',
+          title: t('accept.err.unknown.title'),
+          body:  t('accept.err.unknown.body'),
+        })
       }
     } finally {
       setBusy(null)
     }
-  }, [id, account?.id, busy, myThreadChannelId, onNeedAuth, loadMyAcceptance, t])
+  }, [id, account?.id, busy, myThreadChannelId, onNeedAuth, onOpenMyProfile, loadMyAcceptance, t])
 
   const handleToggleStatus = useCallback(async () => {
     if (!guest?.guestId || busy || !challenge) return
@@ -277,7 +293,7 @@ export default function ChallengeChatPage({
         : await validateChallenge(id, guest.guestId)
       setChallenge(updated)
     } catch (e) {
-      window.alert(t('errSave'))
+      setAlertModal({ emoji: '😬', title: t('errSave'), body: '' })
     } finally {
       setBusy(null)
     }
@@ -293,7 +309,7 @@ export default function ChallengeChatPage({
       await deleteChallenge(id, guest.guestId)
       onDeleted?.()
     } catch {
-      window.alert(t('errSave'))
+      setAlertModal({ emoji: '😬', title: t('errSave'), body: '' })
     } finally {
       setBusy(null)
     }
@@ -608,10 +624,53 @@ export default function ChallengeChatPage({
           onSubmit={async (startsAt, endsAt, venue) => {
             setPickerOpen(false)
             try { await proposeDate(myAcceptance.id, startsAt, endsAt, venue); loadMyAcceptance() }
-            catch { window.alert(t('schedule.err.proposeFailed')) }
+            catch { setAlertModal({ emoji: '😬', title: t('schedule.err.proposeFailed'), body: '' }) }
           }}
           submitLabel={t('schedule.proposeCta')}
         />
+      )}
+
+      {/* Themed in-app alert (replaces the native browser alert).
+          Uses the existing .modal-overlay / .modal-panel skeleton; the
+          challenge-alert-* classes below add the centered emoji + tap target. */}
+      {alertModal && (
+        <div className="modal-overlay" onClick={() => setAlertModal(null)}>
+          <div className="modal-panel challenge-alert-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="challenge-alert-body">
+              {alertModal.emoji && <div className="challenge-alert-emoji">{alertModal.emoji}</div>}
+              <h3 className="challenge-alert-title">{alertModal.title}</h3>
+              {alertModal.body && <p className="challenge-alert-text">{alertModal.body}</p>}
+            </div>
+            <div className="challenge-alert-actions">
+              {alertModal.actionLabel && alertModal.onAction ? (
+                <>
+                  <button
+                    type="button"
+                    className="challenge-alert-btn"
+                    onClick={() => setAlertModal(null)}
+                  >
+                    {t('cancel', { ns: 'common', defaultValue: 'Cancel' })}
+                  </button>
+                  <button
+                    type="button"
+                    className="challenge-alert-btn challenge-alert-btn--primary"
+                    onClick={alertModal.onAction}
+                  >
+                    {alertModal.actionLabel}
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="challenge-alert-btn challenge-alert-btn--primary"
+                  onClick={() => setAlertModal(null)}
+                >
+                  OK
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

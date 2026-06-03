@@ -7359,6 +7359,92 @@ img.pub-profile-avatar {
   border-color: var(--accent);
 }
 
+/* Themed in-app alert used by ChallengeChatPage (replaces window.alert).
+   Sits inside the shared .modal-overlay / .modal-panel skeleton — only the
+   inner layout and the dual-button row are custom here. Mobile-first: stacked
+   buttons; on wider viewports the dual-button row sits side by side. */
+.challenge-alert-panel {
+  padding: 0;
+  max-width: 360px;
+}
+
+.challenge-alert-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 24px 18px;
+  gap: 8px;
+}
+
+.challenge-alert-emoji {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.challenge-alert-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.challenge-alert-text {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--muted2, #b3b3b3);
+}
+
+.challenge-alert-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 16px max(20px, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 480px) {
+  .challenge-alert-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+.challenge-alert-btn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, transform 0.06s;
+  min-width: 96px;
+  font-family: inherit;
+}
+
+.challenge-alert-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.challenge-alert-btn:active {
+  transform: scale(0.98);
+}
+
+.challenge-alert-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.challenge-alert-btn--primary:hover {
+  background: var(--accent);
+  filter: brightness(1.05);
+}
+
 /* Username (@-handle) picker — @ prefix + inline availability status */
 .username-input-row {
   display: flex;
