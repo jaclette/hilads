@@ -165,6 +165,7 @@ require_once __DIR__ . '/../src/VenueSeeder.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/TopicRepository.php';
 require_once __DIR__ . '/../src/ChallengeRepository.php';
+require_once __DIR__ . '/../src/ChallengeAcceptanceRepository.php';
 require_once __DIR__ . '/../src/VibeRepository.php';
 require_once __DIR__ . '/../src/ConversationRepository.php';
 require_once __DIR__ . '/../src/FriendRequestRepository.php';

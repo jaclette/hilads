@@ -76,5 +76,57 @@
       "哪里可以修手机屏幕"
     ]
   },
-  "beFirstToAccept": "第一个接受挑战"
+  "beFirstToAccept": "第一个接受挑战",
+  "openThreadCta": "打开会话",
+  "accept": {
+    "err": {
+      "openSettings": "打开设置",
+      "unknown": {
+        "title": "无法接受",
+        "body": "出错了。请再试一次。"
+      },
+      "not_creator": {
+        "title": "这是你自己的挑战",
+        "body": "这个挑战是你创建的 — 等别人来接受吧。"
+      },
+      "mode_required": {
+        "title": "先选择本地人或旅行者",
+        "body": "接受挑战前先在个人资料中设置你的模式。"
+      },
+      "mode_mismatch": {
+        "title": "这个挑战不适合你",
+        "body": "想接受的话,在个人资料里切换你的模式。"
+      },
+      "cap_reached": {
+        "title": "挑战已满"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "找不到会话",
+    "empty": "打声招呼 👋,约一下见面时间。",
+    "cancel": {
+      "creatorTitle": "取消这次take-on?",
+      "acceptorTitle": "放弃这个挑战?",
+      "body": "会话和聊天将被删除。如果改主意了,以后可以重新接受。",
+      "confirm": "取消",
+      "failed": "无法取消。请再试一次。"
+    },
+    "cancelledByOther": {
+      "title": "会话已取消",
+      "body": "对方取消了这次take-on。"
+    }
+  },
+  "threads": {
+    "title": "我的挑战会话",
+    "noMessagesYet": "还没有消息",
+    "empty": {
+      "title": "没有进行中的会话",
+      "body": "当你接受挑战或别人接受你的挑战时,对话会出现在这里。"
+    },
+    "guestGate": {
+      "title": "登录后查看会话",
+      "body": "会话是你和挑战发起者之间的1对1聊天。需要账号才能开始。"
+    }
+  }
 }

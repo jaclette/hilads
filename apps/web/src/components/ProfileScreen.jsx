@@ -531,6 +531,20 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         {/* ── Tab: Challenges (created + accepted) ── */}
         {activeTab === 'challenges' && (
           <div className="profile-card">
+            {/* PR2 — entry-point to per-acceptance threads */}
+            {onOpenThreads && (
+              <button
+                type="button"
+                className="my-event-row-body"
+                onClick={onOpenThreads}
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+              >
+                <span style={{ fontSize: 18 }}>💬</span>
+                <span style={{ flex: 1, textAlign: 'left', fontWeight: 700 }}>{t('threads.title', { ns: 'challenge' })}</span>
+                <span style={{ color: 'var(--muted, #b3b3b3)' }}>›</span>
+              </button>
+            )}
+
             {myChallenges.length === 0
               ? <p className="profile-tab-empty">{t('challenges.empty')}</p>
               : myChallenges.map(c => (

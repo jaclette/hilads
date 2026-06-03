@@ -76,5 +76,57 @@
       "Onde consertar a tela do celular"
     ]
   },
-  "beFirstToAccept": "Seja o primeiro a topar"
+  "beFirstToAccept": "Seja o primeiro a topar",
+  "openThreadCta": "Abrir thread",
+  "accept": {
+    "err": {
+      "openSettings": "Abrir configurações",
+      "unknown": {
+        "title": "Não foi possível aceitar",
+        "body": "Algo deu errado. Tente de novo."
+      },
+      "not_creator": {
+        "title": "É o seu próprio desafio",
+        "body": "Você criou esse desafio — espere alguém aceitar."
+      },
+      "mode_required": {
+        "title": "Escolha local ou viajante primeiro",
+        "body": "Defina seu modo no perfil antes de aceitar desafios."
+      },
+      "mode_mismatch": {
+        "title": "Esse desafio não é pra você",
+        "body": "Mude seu modo no perfil se quiser aceitar esse."
+      },
+      "cap_reached": {
+        "title": "Desafio cheio"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Thread não encontrado",
+    "empty": "Diga oi 👋 e combinem quando se encontrar.",
+    "cancel": {
+      "creatorTitle": "Cancelar esse take-on?",
+      "acceptorTitle": "Desistir desse desafio?",
+      "body": "O thread e o chat serão excluídos. Você pode aceitar de novo depois se mudar de ideia.",
+      "confirm": "Cancelar",
+      "failed": "Não foi possível cancelar. Tente de novo."
+    },
+    "cancelledByOther": {
+      "title": "Thread cancelado",
+      "body": "A outra pessoa cancelou esse take-on."
+    }
+  },
+  "threads": {
+    "title": "Meus threads de desafios",
+    "noMessagesYet": "Ainda sem mensagens",
+    "empty": {
+      "title": "Nenhum thread ativo",
+      "body": "Quando você aceitar um desafio ou alguém aceitar o seu, a conversa aparece aqui."
+    },
+    "guestGate": {
+      "title": "Entre para ver os threads",
+      "body": "Threads são conversas 1:1 entre você e o desafiador. Precisa de uma conta pra começar uma."
+    }
+  }
 }

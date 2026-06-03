@@ -76,5 +76,57 @@
       "Nơi sửa màn hình điện thoại"
     ]
   },
-  "beFirstToAccept": "Hãy là người đầu tiên nhận"
+  "beFirstToAccept": "Hãy là người đầu tiên nhận",
+  "openThreadCta": "Mở thread",
+  "accept": {
+    "err": {
+      "openSettings": "Mở cài đặt",
+      "unknown": {
+        "title": "Không nhận được",
+        "body": "Có lỗi xảy ra. Thử lại nhé."
+      },
+      "not_creator": {
+        "title": "Đây là challenge của bạn",
+        "body": "Bạn tạo challenge này — đợi người khác nhận nhé."
+      },
+      "mode_required": {
+        "title": "Chọn local hoặc traveler trước",
+        "body": "Đặt chế độ trong hồ sơ trước khi nhận challenge."
+      },
+      "mode_mismatch": {
+        "title": "Challenge này không dành cho bạn",
+        "body": "Đổi chế độ trong hồ sơ nếu muốn nhận challenge này."
+      },
+      "cap_reached": {
+        "title": "Challenge đã đầy"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Không tìm thấy thread",
+    "empty": "Chào hỏi 👋 và lên kế hoạch gặp nhau.",
+    "cancel": {
+      "creatorTitle": "Huỷ take-on này?",
+      "acceptorTitle": "Bỏ challenge này?",
+      "body": "Thread và chat sẽ bị xoá. Bạn có thể nhận lại sau nếu đổi ý.",
+      "confirm": "Huỷ",
+      "failed": "Không huỷ được. Thử lại nhé."
+    },
+    "cancelledByOther": {
+      "title": "Thread đã huỷ",
+      "body": "Người kia đã huỷ take-on này."
+    }
+  },
+  "threads": {
+    "title": "Thread challenge của tôi",
+    "noMessagesYet": "Chưa có tin nhắn",
+    "empty": {
+      "title": "Không có thread nào đang hoạt động",
+      "body": "Khi bạn nhận challenge hoặc ai đó nhận challenge của bạn, cuộc trò chuyện sẽ hiện ở đây."
+    },
+    "guestGate": {
+      "title": "Đăng nhập để xem thread",
+      "body": "Thread là cuộc trò chuyện 1:1 giữa bạn và người ra challenge. Cần tài khoản để bắt đầu."
+    }
+  }
 }

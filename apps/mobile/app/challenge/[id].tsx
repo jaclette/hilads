@@ -13,7 +13,8 @@ import { socket } from '@/lib/socket';
 import {
   fetchChallengeById, fetchChallengeParticipants, fetchChallengeMessages,
   sendChallengeMessage, sendChallengeImageMessage,
-  toggleChallengeParticipation, validateChallenge, unvalidateChallenge, deleteChallenge,
+  validateChallenge, unvalidateChallenge, deleteChallenge,
+  acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { MembersSheet } from '@/components/MembersSheet';
@@ -51,6 +52,9 @@ export default function ChallengeChatScreen() {
   const [acceptBusy,       setAcceptBusy]       = useState(false);
   const [validateBusy,     setValidateBusy]     = useState(false);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
+  // PR2 — if I (registered user) have an open acceptance on this challenge,
+  // the Accept (+) button morphs into "Open thread →". Loaded on mount.
+  const [myThreadChannelId, setMyThreadChannelId] = useState<string | null>(null);
 
   // Owner is either the registered creator OR the guest who created it.
   const isOwner = !!(
@@ -79,10 +83,23 @@ export default function ChallengeChatScreen() {
       .catch(() => {});
   }, [id]);
 
+  // Probe whether I already have an acceptance for this challenge — drives
+  // whether the Accept (+) button is shown or "Open thread →".
+  const loadMyAcceptance = useCallback(() => {
+    if (!id || !account?.id) { setMyThreadChannelId(null); return; }
+    fetchMyAcceptances()
+      .then(threads => {
+        const mine = threads.find(thr => thr.challenge_id === id);
+        setMyThreadChannelId(mine?.thread_channel_id ?? null);
+      })
+      .catch(() => setMyThreadChannelId(null));
+  }, [id, account?.id]);
+
   useEffect(() => {
     loadChallenge();
     loadParticipants();
-  }, [loadChallenge, loadParticipants]);
+    loadMyAcceptance();
+  }, [loadChallenge, loadParticipants, loadMyAcceptance]);
 
   // ── Owner actions ───────────────────────────────────────────────────────────
 
@@ -156,19 +173,61 @@ export default function ChallengeChatScreen() {
     }
   }, [challenge, t]);
 
+  /**
+   * PR2 — take-on flow.
+   *
+   * Three paths:
+   *   1. I already have a thread → just navigate to it.
+   *   2. I'm a registered user → call /accept; on success navigate to the
+   *      returned thread channel; on 403 show a tailored alert (mode prompt,
+   *      cap full, etc.).
+   *   3. I'm a guest → bounce to auth-gate (accept requires registration).
+   */
   const handleAccept = useCallback(async () => {
-    if (!identity || acceptBusy) return;
+    if (acceptBusy) return;
+
+    // (1) Already accepted? Just open the thread.
+    if (myThreadChannelId) {
+      router.push(`/thread/${myThreadChannelId}` as never);
+      return;
+    }
+
+    // (3) Guest? Send them to register first.
+    if (!account?.id) {
+      router.push('/auth-gate?reason=accept_challenge' as never);
+      return;
+    }
+
+    // (2) Registered → call accept.
     setAcceptBusy(true);
     try {
-      await toggleChallengeParticipation(id, identity.guestId, nickname || null);
-      loadParticipants();
-      // Refresh challenge so participant_count updates in the hero.
-      loadChallenge();
-      if (!isParticipant) track('challenge_accepted', { challengeId: id });
+      const acceptance = await acceptChallenge(id);
+      setMyThreadChannelId(acceptance.thread_channel_id);
+      track('challenge_take_on', { challengeId: id });
+      router.push(`/thread/${acceptance.thread_channel_id}` as never);
+    } catch (err) {
+      if (err instanceof AcceptChallengeError) {
+        // Localized per error code. mode_* codes also offer to open the
+        // settings screen so the user can switch mode in one tap.
+        if (err.code === 'mode_required' || err.code === 'mode_mismatch') {
+          Alert.alert(
+            t(`accept.err.${err.code}.title`),
+            t(`accept.err.${err.code}.body`),
+            [
+              { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+              { text: t('accept.err.openSettings'), onPress: () => router.push('/(tabs)/me' as never) },
+            ],
+          );
+        } else {
+          Alert.alert(t(`accept.err.${err.code}.title`), err.message);
+        }
+      } else {
+        Alert.alert(t('accept.err.unknown.title'), t('accept.err.unknown.body'));
+      }
     } finally {
       setAcceptBusy(false);
     }
-  }, [id, identity, nickname, acceptBusy, isParticipant, loadParticipants, loadChallenge]);
+  }, [id, account?.id, acceptBusy, myThreadChannelId, router, t]);
 
   // ── Messages ─────────────────────────────────────────────────────────────────
 
@@ -241,6 +300,19 @@ export default function ChallengeChatScreen() {
     const offU = socket.on('challenge_unvalidated', onUpdate);
     return () => { offV(); offU(); };
   }, [id]);
+
+  // PR2 — refresh acceptance state when someone takes on or cancels this
+  // challenge (server pushes to creator's user-room + acceptor's user-room).
+  useEffect(() => {
+    const onAcceptanceChange = (data: Record<string, unknown>) => {
+      const payload = data.payload as { challenge?: { id?: string }; challengeId?: string } | undefined;
+      const eventChallengeId = payload?.challenge?.id ?? payload?.challengeId;
+      if (eventChallengeId === id) loadMyAcceptance();
+    };
+    const offA = socket.on('challenge_accepted',              onAcceptanceChange);
+    const offC = socket.on('challenge_acceptance_cancelled',  onAcceptanceChange);
+    return () => { offA(); offC(); };
+  }, [id, loadMyAcceptance]);
 
   // Web parity: separate the creator (Challenger) from the rest of the
   // participants. The creator match uses the same ownership rule as isOwner
@@ -441,18 +513,18 @@ export default function ChallengeChatScreen() {
           </TouchableOpacity>
           {!isOwner && !isValidated && (
             <TouchableOpacity
-              style={[styles.quickBtn, isParticipant && styles.quickBtnAcceptIn]}
+              style={[styles.quickBtn, !!myThreadChannelId && styles.quickBtnAcceptIn]}
               onPress={handleAccept}
               activeOpacity={0.7}
               disabled={acceptBusy}
-              accessibilityLabel={isParticipant ? t('acceptedCta') : t('acceptCta')}
+              accessibilityLabel={myThreadChannelId ? t('openThreadCta') : t('acceptCta')}
             >
               {acceptBusy
-                ? <ActivityIndicator color={isParticipant ? Colors.white : '#FF7A3C'} size="small" />
+                ? <ActivityIndicator color={myThreadChannelId ? Colors.white : '#FF7A3C'} size="small" />
                 : <Ionicons
-                    name={isParticipant ? 'checkmark' : 'add'}
+                    name={myThreadChannelId ? 'chatbubble-ellipses' : 'add'}
                     size={20}
-                    color={isParticipant ? Colors.white : '#FF7A3C'}
+                    color={myThreadChannelId ? Colors.white : '#FF7A3C'}
                   />}
             </TouchableOpacity>
           )}

@@ -29,6 +29,7 @@ export type AnalyticsEvent =
   | 'challenge_accepted'
   | 'challenge_validated'
   | 'challenge_unvalidated'
+  | 'challenge_take_on'
   | 'calendar_day_tapped'
   | 'past_archive_opened'
   | 'past_archive_range'

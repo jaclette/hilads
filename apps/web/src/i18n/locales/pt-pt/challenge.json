@@ -76,5 +76,57 @@
       "Onde reparar o ecrã do telemóvel"
     ]
   },
-  "beFirstToAccept": "Sê o primeiro a aceitar"
+  "beFirstToAccept": "Sê o primeiro a aceitar",
+  "openThreadCta": "Abrir fio",
+  "accept": {
+    "err": {
+      "openSettings": "Abrir definições",
+      "unknown": {
+        "title": "Não foi possível aceitar",
+        "body": "Algo correu mal. Tenta novamente."
+      },
+      "not_creator": {
+        "title": "É o teu próprio desafio",
+        "body": "Tu criaste este desafio — espera que outra pessoa o aceite."
+      },
+      "mode_required": {
+        "title": "Escolhe local ou viajante primeiro",
+        "body": "Define o teu modo no perfil antes de aceitar desafios."
+      },
+      "mode_mismatch": {
+        "title": "Este desafio não é para ti",
+        "body": "Muda o teu modo no perfil se quiseres aceitá-lo."
+      },
+      "cap_reached": {
+        "title": "Desafio cheio"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Fio não encontrado",
+    "empty": "Diz olá 👋 e combinem quando se encontrar.",
+    "cancel": {
+      "creatorTitle": "Cancelar este take-on?",
+      "acceptorTitle": "Desistir deste desafio?",
+      "body": "O fio e o chat serão eliminados. Podes aceitar novamente mais tarde se mudares de ideias.",
+      "confirm": "Cancelar",
+      "failed": "Não foi possível cancelar. Tenta novamente."
+    },
+    "cancelledByOther": {
+      "title": "Fio cancelado",
+      "body": "A outra pessoa cancelou este take-on."
+    }
+  },
+  "threads": {
+    "title": "Os meus fios de desafios",
+    "noMessagesYet": "Ainda sem mensagens",
+    "empty": {
+      "title": "Nenhum fio ativo",
+      "body": "Quando aceitares um desafio ou alguém aceitar o teu, a conversa aparece aqui."
+    },
+    "guestGate": {
+      "title": "Entra para ver os fios",
+      "body": "Os fios são conversas 1:1 entre ti e o desafiador. Precisas de uma conta para começar um."
+    }
+  }
 }

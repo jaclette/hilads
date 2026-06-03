@@ -76,5 +76,57 @@
       "Saan magpapaayos ng phone screen"
     ]
   },
-  "beFirstToAccept": "Mauna kang tumanggap"
+  "beFirstToAccept": "Mauna kang tumanggap",
+  "openThreadCta": "Buksan ang thread",
+  "accept": {
+    "err": {
+      "openSettings": "Buksan ang settings",
+      "unknown": {
+        "title": "Hindi natanggap",
+        "body": "May nangyaring mali. Subukan ulit."
+      },
+      "not_creator": {
+        "title": "Sariling challenge mo ito",
+        "body": "Ikaw ang gumawa ng challenge na ito — hintayin mo ibang tao na tanggapin."
+      },
+      "mode_required": {
+        "title": "Pumili muna ng local o traveler",
+        "body": "I-set ang mode mo sa profile bago tumanggap ng challenges."
+      },
+      "mode_mismatch": {
+        "title": "Hindi para sa'yo ang challenge na ito",
+        "body": "Palitan ang mode mo sa profile kung gusto mong tanggapin ito."
+      },
+      "cap_reached": {
+        "title": "Puno na ang challenge"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Hindi mahanap ang thread",
+    "empty": "Mag-hi 👋 at mag-plan kung kailan kayo magkita.",
+    "cancel": {
+      "creatorTitle": "I-cancel ang take-on na ito?",
+      "acceptorTitle": "I-drop ang challenge na ito?",
+      "body": "Mabubura ang thread at chat. Pwede mong tanggapin ulit later kung magbago ang isip mo.",
+      "confirm": "I-cancel",
+      "failed": "Hindi na-cancel. Subukan ulit."
+    },
+    "cancelledByOther": {
+      "title": "Na-cancel ang thread",
+      "body": "Kinansela ng kabilang tao ang take-on na ito."
+    }
+  },
+  "threads": {
+    "title": "Mga challenge thread ko",
+    "noMessagesYet": "Wala pang messages",
+    "empty": {
+      "title": "Walang active na thread",
+      "body": "Kapag tumanggap ka ng challenge o may tumanggap ng sa'yo, lalabas dito ang conversation."
+    },
+    "guestGate": {
+      "title": "Mag-sign in para makita ang threads",
+      "body": "Mga threads ay 1:1 conversation sa pagitan mo at ng challenger. Kailangan mo ng account para magsimula."
+    }
+  }
 }

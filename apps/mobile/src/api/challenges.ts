@@ -1,8 +1,11 @@
-import { api } from './client';
+import { api, ApiError } from './client';
 import type {
   Challenge,
   ChallengeType,
   ChallengeAudience,
+  ChallengeAcceptance,
+  ChallengeThreadSummary,
+  AcceptFailureCode,
   Message,
   UserDTO,
 } from '@/types';
@@ -135,7 +138,9 @@ export async function unvalidateChallenge(challengeId: string, guestId: string):
   return api.post<Challenge>(`/challenges/${challengeId}/unvalidate`, { guestId });
 }
 
-/** Accept / leave a challenge. Returns the new count + whether the caller is in. */
+/** Accept / leave a challenge. Returns the new count + whether the caller is in.
+ *  LEGACY (PR1 pooled-acceptance model). Kept for backward-compat with the
+ *  live mobile build until the next app release. New code uses acceptChallenge(). */
 export async function toggleChallengeParticipation(
   challengeId: string,
   guestId: string,
@@ -145,6 +150,80 @@ export async function toggleChallengeParticipation(
     `/challenges/${challengeId}/participants/toggle`,
     { guestId, nickname },
   );
+}
+
+// ── PR2: per-acceptance thread model ─────────────────────────────────────────
+
+/** A 403 from /accept carries a `code` + (sometimes) `required_mode`. */
+export class AcceptChallengeError extends Error {
+  constructor(
+    public readonly code: AcceptFailureCode | 'unknown',
+    message: string,
+    public readonly requiredMode?: 'local' | 'exploring',
+  ) {
+    super(message);
+    this.name = 'AcceptChallengeError';
+  }
+}
+
+/**
+ * Take on a challenge — creates a thread channel + acceptance row.
+ * Idempotent: re-accepting returns the existing acceptance.
+ *
+ * Throws AcceptChallengeError on 403 with a typed `code` (not_creator /
+ * mode_required / mode_mismatch / cap_reached) so the UI can show a tailored
+ * message + (for mode_required/mode_mismatch) offer a quick mode-switch.
+ */
+export async function acceptChallenge(challengeId: string): Promise<ChallengeAcceptance> {
+  try {
+    return await api.post<ChallengeAcceptance>(`/challenges/${challengeId}/accept`, {});
+  } catch (err: unknown) {
+    if (err instanceof ApiError && err.body?.code) {
+      throw new AcceptChallengeError(err.body.code, err.body.error ?? err.message, err.body.required_mode);
+    }
+    throw err;
+  }
+}
+
+/** Cancel an acceptance (acceptor OR creator). Hard-deletes the thread.
+ *  Only allowed in phase='accepted' — PR3+ phases lock cancel (server 409). */
+export async function cancelAcceptance(acceptanceId: string): Promise<void> {
+  await api.post(`/acceptances/${acceptanceId}/cancel`, {});
+}
+
+/** "My threads" — every relationship I'm in (as creator or acceptor). */
+export async function fetchMyAcceptances(): Promise<ChallengeThreadSummary[]> {
+  const data = await api.get<{ threads: ChallengeThreadSummary[] }>('/me/acceptances');
+  return data.threads ?? [];
+}
+
+/** Creator's view of who took on a specific challenge. */
+export async function fetchChallengeAcceptances(challengeId: string): Promise<ChallengeAcceptance[]> {
+  const data = await api.get<{ acceptances: ChallengeAcceptance[] }>(`/challenges/${challengeId}/acceptances`);
+  return data.acceptances ?? [];
+}
+
+// ── Thread chat (per-acceptance 1:1 channel) ────────────────────────────────
+
+/** Paginated thread chat messages. Members-only (acceptor + creator). */
+export async function fetchThreadMessages(
+  threadChannelId: string,
+  opts: { beforeId?: string; limit?: number } = {},
+): Promise<{ messages: Message[]; hasMore: boolean }> {
+  const q = new URLSearchParams({ limit: String(opts.limit ?? 50) });
+  if (opts.beforeId) q.set('before_id', opts.beforeId);
+  const data = await api.get<{ messages: Message[]; hasMore?: boolean }>(
+    `/threads/${threadChannelId}/messages?${q}`,
+  );
+  return { messages: data.messages ?? [], hasMore: data.hasMore ?? false };
+}
+
+export async function sendThreadMessage(threadChannelId: string, content: string): Promise<Message> {
+  return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'text', content });
+}
+
+export async function sendThreadImageMessage(threadChannelId: string, imageUrl: string): Promise<Message> {
+  return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'image', imageUrl });
 }
 
 // ── Participants + chat (detail screen) ──────────────────────────────────────

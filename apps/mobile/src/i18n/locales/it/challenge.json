@@ -76,5 +76,57 @@
       "Dove riparare lo schermo del telefono"
     ]
   },
-  "beFirstToAccept": "Sii il primo ad accettare"
+  "beFirstToAccept": "Sii il primo ad accettare",
+  "openThreadCta": "Apri thread",
+  "accept": {
+    "err": {
+      "openSettings": "Apri impostazioni",
+      "unknown": {
+        "title": "Impossibile accettare",
+        "body": "Qualcosa è andato storto. Riprova."
+      },
+      "not_creator": {
+        "title": "È la tua sfida",
+        "body": "Hai creato tu questa sfida — aspetta che qualcun altro l'accetti."
+      },
+      "mode_required": {
+        "title": "Scegli local o viaggiatore prima",
+        "body": "Imposta la tua modalità nel profilo prima di accettare sfide."
+      },
+      "mode_mismatch": {
+        "title": "Non è la sfida per te",
+        "body": "Cambia modalità nel profilo se vuoi accettarla."
+      },
+      "cap_reached": {
+        "title": "Sfida al completo"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Thread non trovato",
+    "empty": "Saluta 👋 e organizzate quando vedervi.",
+    "cancel": {
+      "creatorTitle": "Annullare questo take-on?",
+      "acceptorTitle": "Mollare questa sfida?",
+      "body": "Il thread e la chat verranno eliminati. Puoi accettare di nuovo più tardi se cambi idea.",
+      "confirm": "Annulla",
+      "failed": "Annullamento non riuscito. Riprova."
+    },
+    "cancelledByOther": {
+      "title": "Thread annullato",
+      "body": "L'altra persona ha annullato questo take-on."
+    }
+  },
+  "threads": {
+    "title": "I miei thread di sfide",
+    "noMessagesYet": "Ancora nessun messaggio",
+    "empty": {
+      "title": "Nessun thread attivo",
+      "body": "Quando accetti una sfida o qualcuno accetta la tua, la conversazione appare qui."
+    },
+    "guestGate": {
+      "title": "Accedi per vedere i thread",
+      "body": "I thread sono conversazioni 1:1 tra te e chi ha lanciato la sfida. Ti serve un account per iniziarne uno."
+    }
+  }
 }

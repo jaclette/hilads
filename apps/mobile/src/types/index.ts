@@ -91,6 +91,43 @@ export interface Topic {
 export type ChallengeType     = 'food' | 'place' | 'culture' | 'help';
 export type ChallengeAudience = 'locals' | 'explorers';
 export type ChallengeStatus   = 'open' | 'validated';
+export type ChallengeAcceptancePhase = 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected';
+
+/** One challenge_acceptances row — the per-relationship thread (PR2). */
+export interface ChallengeAcceptance {
+  id:                 string;
+  challenge_id:       string;
+  acceptor_user_id:   string;
+  thread_channel_id:  string;
+  debrief_event_id:   string | null;
+  phase:              ChallengeAcceptancePhase;
+  approved_at:        number | null;
+  rejected_at:        number | null;
+  created_at:         number;
+  updated_at:         number;
+}
+
+/** Enriched thread row from GET /me/acceptances — for the "My threads" screen. */
+export interface ChallengeThreadSummary {
+  id:                   string;   // acceptance id
+  challenge_id:         string;
+  challenge_title:      string;
+  challenge_type:       ChallengeType;
+  thread_channel_id:    string;
+  phase:                ChallengeAcceptancePhase;
+  created_at:           number;
+  last_message_at:      number | null;
+  last_message_content: string | null;
+  i_am_creator:         boolean;
+  counterparty: {
+    id:             string;
+    displayName:    string;
+    thumbAvatarUrl: string | null;
+  };
+}
+
+/** Backend error code shape on accept-failure 403s. */
+export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached';
 
 export interface Challenge {
   id:                    string;

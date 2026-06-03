@@ -76,5 +76,57 @@
       "Où réparer un écran de téléphone"
     ]
   },
-  "beFirstToAccept": "Sois le premier à relever"
+  "beFirstToAccept": "Sois le premier à relever",
+  "openThreadCta": "Ouvrir le fil",
+  "accept": {
+    "err": {
+      "openSettings": "Ouvrir les réglages",
+      "unknown": {
+        "title": "Échec",
+        "body": "Quelque chose s'est mal passé. Réessaie."
+      },
+      "not_creator": {
+        "title": "C'est ton défi",
+        "body": "Tu as créé ce défi — attends que quelqu'un d'autre le relève."
+      },
+      "mode_required": {
+        "title": "Choisis local ou voyageur d'abord",
+        "body": "Définis ton mode dans ton profil avant de relever des défis."
+      },
+      "mode_mismatch": {
+        "title": "Pas pour toi celui-là",
+        "body": "Change ton mode dans ton profil si tu veux relever ce défi."
+      },
+      "cap_reached": {
+        "title": "Défi complet"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Fil introuvable",
+    "empty": "Dis bonjour 👋 et fixez une date pour vous retrouver.",
+    "cancel": {
+      "creatorTitle": "Annuler ce take-on ?",
+      "acceptorTitle": "Laisser tomber ce défi ?",
+      "body": "Le fil et le chat seront supprimés. Tu pourras relever à nouveau plus tard si tu changes d'avis.",
+      "confirm": "Annuler",
+      "failed": "Annulation impossible. Réessaie."
+    },
+    "cancelledByOther": {
+      "title": "Fil annulé",
+      "body": "L'autre personne a annulé ce take-on."
+    }
+  },
+  "threads": {
+    "title": "Mes fils de défis",
+    "noMessagesYet": "Pas encore de messages",
+    "empty": {
+      "title": "Aucun fil actif",
+      "body": "Quand tu relèves un défi ou que quelqu'un relève le tien, la conversation apparaît ici."
+    },
+    "guestGate": {
+      "title": "Connecte-toi pour voir les fils",
+      "body": "Les fils sont des conversations privées entre toi et le challenger. Il te faut un compte pour en démarrer un."
+    }
+  }
 }

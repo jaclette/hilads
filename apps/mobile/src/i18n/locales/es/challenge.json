@@ -76,5 +76,57 @@
       "Dónde reparar la pantalla del móvil"
     ]
   },
-  "beFirstToAccept": "Sé el primero en aceptar"
+  "beFirstToAccept": "Sé el primero en aceptar",
+  "openThreadCta": "Abrir hilo",
+  "accept": {
+    "err": {
+      "openSettings": "Abrir ajustes",
+      "unknown": {
+        "title": "No se pudo aceptar",
+        "body": "Algo salió mal. Inténtalo de nuevo."
+      },
+      "not_creator": {
+        "title": "Es tu propio reto",
+        "body": "Tú creaste este reto — espera a que otra persona lo acepte."
+      },
+      "mode_required": {
+        "title": "Elige local o viajero primero",
+        "body": "Configura tu modo en tu perfil antes de aceptar retos."
+      },
+      "mode_mismatch": {
+        "title": "Este reto no es para ti",
+        "body": "Cambia tu modo en tu perfil si quieres aceptarlo."
+      },
+      "cap_reached": {
+        "title": "Reto completo"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Hilo no encontrado",
+    "empty": "Saluda 👋 y planifica cuándo os veréis.",
+    "cancel": {
+      "creatorTitle": "¿Cancelar este take-on?",
+      "acceptorTitle": "¿Dejar este reto?",
+      "body": "El hilo y el chat se eliminarán. Puedes volver a aceptar más tarde si cambias de opinión.",
+      "confirm": "Cancelar",
+      "failed": "No se pudo cancelar. Inténtalo de nuevo."
+    },
+    "cancelledByOther": {
+      "title": "Hilo cancelado",
+      "body": "La otra persona canceló este take-on."
+    }
+  },
+  "threads": {
+    "title": "Mis hilos de retos",
+    "noMessagesYet": "Aún no hay mensajes",
+    "empty": {
+      "title": "Sin hilos activos",
+      "body": "Cuando aceptes un reto o alguien acepte el tuyo, la conversación aparecerá aquí."
+    },
+    "guestGate": {
+      "title": "Inicia sesión para ver los hilos",
+      "body": "Los hilos son conversaciones 1:1 entre tú y el retador. Necesitas una cuenta para empezar uno."
+    }
+  }
 }

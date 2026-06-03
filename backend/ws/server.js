@@ -85,6 +85,12 @@ const topicRooms = new Map()
 // would silently evict you from any open event.)
 const challengeRooms = new Map()
 
+// challengeThreadRooms: Map<threadChannelId, Map<sessionId, { sessionId, ws }>>.
+// PR2 — per-acceptance 1:1 thread channels (channels.type='challenge_thread').
+// Distinct from challengeRooms (the public chat on the challenge ad) so opening
+// a thread doesn't evict the user from the parent challenge's chat.
+const challengeThreadRooms = new Map()
+
 // dmRooms: Map<conversationId, Map<userId, { userId, ws }>>
 // Keyed by userId (not sessionId) because DMs are tied to registered accounts.
 const dmRooms = new Map()
@@ -386,6 +392,25 @@ function handleLeaveChallenge(ws, { challengeId, sessionId }) {
   if (room.size === 0) challengeRooms.delete(challengeId)
 }
 
+// ── Challenge thread room helpers (PR2) ────────────────────────────────────────
+// Same shape as challenge rooms — open membership for the 2 thread participants.
+// `threadChannelId` is the channels.id of type='challenge_thread'.
+
+function handleJoinChallengeThread(ws, { threadChannelId, sessionId }) {
+  if (!threadChannelId || !sessionId) return
+  if (!challengeThreadRooms.has(threadChannelId)) challengeThreadRooms.set(threadChannelId, new Map())
+  challengeThreadRooms.get(threadChannelId).set(sessionId, { sessionId, ws })
+  console.log(`[WS] joinChallengeThread: ${sessionId.slice(0, 8)} -> thread ${threadChannelId.slice(0, 8)} (${challengeThreadRooms.get(threadChannelId).size} in room)`)
+}
+
+function handleLeaveChallengeThread(ws, { threadChannelId, sessionId }) {
+  const room = challengeThreadRooms.get(threadChannelId)
+  if (!room) return
+  room.delete(sessionId)
+  console.log(`[WS] leaveChallengeThread: ${sessionId.slice(0, 8)} <- thread ${threadChannelId.slice(0, 8)} (${room.size} in room)`)
+  if (room.size === 0) challengeThreadRooms.delete(threadChannelId)
+}
+
 // ── DM conversation helpers ────────────────────────────────────────────────────
 
 function handleJoinConversation(ws, { conversationId, userId }) {
@@ -472,6 +497,14 @@ function removeWs(ws) {
       if (member.ws === ws) {
         room.delete(sessionId)
         if (room.size === 0) challengeRooms.delete(challengeId)
+      }
+    }
+  }
+  for (const [threadId, room] of challengeThreadRooms) {
+    for (const [sessionId, member] of room) {
+      if (member.ws === ws) {
+        room.delete(sessionId)
+        if (room.size === 0) challengeThreadRooms.delete(threadId)
       }
     }
   }
@@ -671,6 +704,8 @@ wss.on('connection', (ws, req) => {
       case 'leaveTopic':         return handleLeaveTopic(ws, msg)
       case 'joinChallenge':      return handleJoinChallenge(ws, msg)
       case 'leaveChallenge':     return handleLeaveChallenge(ws, msg)
+      case 'joinChallengeThread':  return handleJoinChallengeThread(ws, msg)
+      case 'leaveChallengeThread': return handleLeaveChallengeThread(ws, msg)
       case 'joinConversation':   return handleJoinConversation(ws, msg)
       case 'leaveConversation':  return handleLeaveConversation(ws, msg)
       case 'joinUser':           return handleJoinUser(ws, msg)
@@ -781,12 +816,13 @@ function broadcastNewMessage(channelId, message) {
   if (typeof channelId === 'number') {
     room = rooms.get(channelId); kind = 'city'
   } else {
-    // String channelId — could be an event, topic, or challenge room; check
-    // all three. Three independent rooms because users can sit in one of each
+    // String channelId — could be event/topic/challenge/challenge-thread room;
+    // check all four. Independent rooms because users can sit in one of each
     // simultaneously (auto-leave is per-room-type).
-    if (eventRooms.has(channelId))           { room = eventRooms.get(channelId);     kind = 'event' }
-    else if (topicRooms.has(channelId))      { room = topicRooms.get(channelId);     kind = 'topic' }
-    else if (challengeRooms.has(channelId))  { room = challengeRooms.get(channelId); kind = 'challenge' }
+    if (eventRooms.has(channelId))                 { room = eventRooms.get(channelId);           kind = 'event' }
+    else if (topicRooms.has(channelId))            { room = topicRooms.get(channelId);           kind = 'topic' }
+    else if (challengeRooms.has(channelId))        { room = challengeRooms.get(channelId);       kind = 'challenge' }
+    else if (challengeThreadRooms.has(channelId))  { room = challengeThreadRooms.get(channelId); kind = 'challenge_thread' }
   }
   if (!room) return
   const msg = JSON.stringify({ event: 'newMessage', channelId, message })

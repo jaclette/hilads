@@ -76,5 +76,57 @@
       "Waar ik een telefoonscherm kan laten maken"
     ]
   },
-  "beFirstToAccept": "Wees de eerste die meedoet"
+  "beFirstToAccept": "Wees de eerste die meedoet",
+  "openThreadCta": "Thread openen",
+  "accept": {
+    "err": {
+      "openSettings": "Instellingen openen",
+      "unknown": {
+        "title": "Accepteren mislukt",
+        "body": "Er ging iets mis. Probeer het opnieuw."
+      },
+      "not_creator": {
+        "title": "Het is jouw eigen challenge",
+        "body": "Jij hebt deze challenge gemaakt — wacht tot iemand anders 'm accepteert."
+      },
+      "mode_required": {
+        "title": "Kies eerst local of traveler",
+        "body": "Stel je modus in je profiel in voor je challenges accepteert."
+      },
+      "mode_mismatch": {
+        "title": "Niet de juiste kant",
+        "body": "Wissel je modus in je profiel als je deze wilt aanpakken."
+      },
+      "cap_reached": {
+        "title": "Challenge vol"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Thread niet gevonden",
+    "empty": "Zeg hoi 👋 en plan wanneer jullie afspreken.",
+    "cancel": {
+      "creatorTitle": "Deze take-on annuleren?",
+      "acceptorTitle": "Deze challenge laten vallen?",
+      "body": "De thread en chat worden verwijderd. Je kunt later opnieuw accepteren als je van gedachten verandert.",
+      "confirm": "Annuleren",
+      "failed": "Annuleren mislukt. Probeer het opnieuw."
+    },
+    "cancelledByOther": {
+      "title": "Thread geannuleerd",
+      "body": "De ander heeft deze take-on geannuleerd."
+    }
+  },
+  "threads": {
+    "title": "Mijn challenge-threads",
+    "noMessagesYet": "Nog geen berichten",
+    "empty": {
+      "title": "Geen actieve threads",
+      "body": "Als je een challenge accepteert of iemand de jouwe, verschijnt het gesprek hier."
+    },
+    "guestGate": {
+      "title": "Log in om threads te zien",
+      "body": "Threads zijn 1:1-gesprekken tussen jou en de challenger. Je hebt een account nodig om er een te starten."
+    }
+  }
 }

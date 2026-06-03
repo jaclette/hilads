@@ -26,6 +26,8 @@ import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
+import ThreadChatPage     from './components/ThreadChatPage'
+import ThreadsListPage    from './components/ThreadsListPage'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
 import { Marquee } from './components/Marquee'
@@ -1019,6 +1021,9 @@ export default function App() {
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
   const [editChallengeObj,    setEditChallengeObj]    = useState(null)  // challenge being edited (owner)
+  // PR2 — per-acceptance threads
+  const [activeThreadChannelId, setActiveThreadChannelId] = useState(null)  // opens ThreadChatPage
+  const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
   // Hangouts are members-only — gate guests to signup, otherwise open the channel.
@@ -5467,6 +5472,7 @@ export default function App() {
           onSelectEvent={(ev) => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
           onOpenHangout={(h) => { setShowProfileDrawer(false); openHangout(h) }}
           onOpenChallenge={(c) => { setShowProfileDrawer(false); setActiveChallenge(c) }}
+          onOpenThreads={() => { setShowProfileDrawer(false); setShowThreadsList(true) }}
           onDeleteEvent={async (ev) => {
             try {
               await deleteEvent(ev.id, guest?.guestId ?? '')
@@ -5931,8 +5937,33 @@ export default function App() {
           onBack={() => setActiveChallenge(null)}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
+          onOpenThread={(threadId) => { setActiveChallenge(null); setActiveThreadChannelId(threadId) }}
+          onNeedAuth={(reason) => { setActiveChallenge(null); setGuestGate({ reason }) }}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
+        />
+      )}
+
+      {/* PR2 — per-acceptance 1:1 thread chat */}
+      {activeThreadChannelId && (
+        <ThreadChatPage
+          threadChannelId={activeThreadChannelId}
+          guest={guest}
+          account={account}
+          onBack={() => setActiveThreadChannelId(null)}
+          onCancelled={() => setActiveThreadChannelId(null)}
+          socket={socketRef.current}
+          sessionId={PAGE_SESSION_ID}
+        />
+      )}
+
+      {/* PR2 — "My challenge threads" index */}
+      {showThreadsList && (
+        <ThreadsListPage
+          account={account}
+          socket={socketRef.current}
+          onBack={() => setShowThreadsList(false)}
+          onOpenThread={(threadId) => { setShowThreadsList(false); setActiveThreadChannelId(threadId) }}
         />
       )}
 

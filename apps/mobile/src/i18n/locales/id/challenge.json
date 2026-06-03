@@ -76,5 +76,57 @@
       "Tempat memperbaiki layar HP"
     ]
   },
-  "beFirstToAccept": "Jadilah yang pertama menerima"
+  "beFirstToAccept": "Jadilah yang pertama menerima",
+  "openThreadCta": "Buka thread",
+  "accept": {
+    "err": {
+      "openSettings": "Buka pengaturan",
+      "unknown": {
+        "title": "Gagal menerima",
+        "body": "Ada yang salah. Coba lagi."
+      },
+      "not_creator": {
+        "title": "Ini challenge kamu sendiri",
+        "body": "Kamu yang buat challenge ini — tunggu orang lain menerimanya."
+      },
+      "mode_required": {
+        "title": "Pilih local atau traveler dulu",
+        "body": "Atur mode kamu di profil sebelum menerima challenge."
+      },
+      "mode_mismatch": {
+        "title": "Challenge ini bukan untuk kamu",
+        "body": "Ganti mode kamu di profil kalau mau menerimanya."
+      },
+      "cap_reached": {
+        "title": "Challenge penuh"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Thread tidak ditemukan",
+    "empty": "Sapa dulu 👋 dan rencanain kapan ketemu.",
+    "cancel": {
+      "creatorTitle": "Batalkan take-on ini?",
+      "acceptorTitle": "Mundur dari challenge ini?",
+      "body": "Thread dan chat akan dihapus. Kamu bisa terima lagi nanti kalau berubah pikiran.",
+      "confirm": "Batalkan",
+      "failed": "Gagal membatalkan. Coba lagi."
+    },
+    "cancelledByOther": {
+      "title": "Thread dibatalkan",
+      "body": "Orang lain membatalkan take-on ini."
+    }
+  },
+  "threads": {
+    "title": "Thread challenge saya",
+    "noMessagesYet": "Belum ada pesan",
+    "empty": {
+      "title": "Tidak ada thread aktif",
+      "body": "Saat kamu menerima challenge atau seseorang menerima challengemu, percakapannya muncul di sini."
+    },
+    "guestGate": {
+      "title": "Masuk untuk melihat thread",
+      "body": "Thread adalah percakapan 1:1 antara kamu dan challenger. Kamu butuh akun untuk memulainya."
+    }
+  }
 }

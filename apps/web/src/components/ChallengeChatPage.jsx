@@ -13,8 +13,9 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
   fetchChallengeById, fetchChallengeMessages, sendChallengeMessage,
-  fetchChallengeParticipants, toggleChallengeParticipation, validateChallenge,
+  fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
+  acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -79,6 +80,8 @@ export default function ChallengeChatPage({
   onBack,
   onEdit,
   onDeleted,
+  onOpenThread,   // PR2 — host (App.jsx) routes to ThreadChatPage on accept
+  onNeedAuth,    // PR2 — host routes guest to sign-up gate
   socket,
   sessionId,
 }) {
@@ -92,6 +95,9 @@ export default function ChallengeChatPage({
   const [busy,         setBusy]         = useState(null) // 'accept' | 'status' | 'delete' | null
   const [loading,      setLoading]      = useState(true)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
+  // PR2 — if I (registered user) have an open acceptance, the Accept button
+  // morphs into "Open thread" and routes there instead of POST /accept.
+  const [myThreadChannelId, setMyThreadChannelId] = useState(null)
   const feedRef    = useRef(null)
   const knownIds   = useRef(new Set())
 
@@ -185,17 +191,53 @@ export default function ChallengeChatPage({
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
+  // PR2 — probe whether I have an acceptance for this challenge already, so
+  // the Accept button can show "Open thread" instead.
+  const loadMyAcceptance = useCallback(async () => {
+    if (!account?.id || !id) { setMyThreadChannelId(null); return }
+    try {
+      const threads = await fetchMyAcceptances()
+      const mine = threads.find(thr => thr.challenge_id === id)
+      setMyThreadChannelId(mine?.thread_channel_id ?? null)
+    } catch { setMyThreadChannelId(null) }
+  }, [id, account?.id])
+
+  useEffect(() => { loadMyAcceptance() }, [loadMyAcceptance])
+
+  // PR2 — Accept flow. Three paths: already accepted → open thread; guest →
+  // bounce to auth; registered → POST /accept and route to the new thread.
   const handleAccept = useCallback(async () => {
-    if (!guest?.guestId || busy) return
+    if (busy) return
+
+    // Already accepted? Just open it.
+    if (myThreadChannelId) {
+      onOpenThread?.(myThreadChannelId)
+      return
+    }
+
+    if (!account?.id) {
+      onNeedAuth?.('accept_challenge')
+      return
+    }
+
     setBusy('accept')
     try {
-      await toggleChallengeParticipation(id, guest.guestId, nickname || null)
-      await loadParticipants()
-      await loadChallenge()
+      const acceptance = await acceptChallenge(id)
+      setMyThreadChannelId(acceptance.thread_channel_id)
+      onOpenThread?.(acceptance.thread_channel_id)
+    } catch (err) {
+      if (err instanceof AcceptChallengeError) {
+        const titleKey = `accept.err.${err.code}.title`
+        const bodyKey  = `accept.err.${err.code}.body`
+        const body     = t(bodyKey, { defaultValue: err.message })
+        window.alert(`${t(titleKey)}\n\n${body}`)
+      } else {
+        window.alert(`${t('accept.err.unknown.title')}\n\n${t('accept.err.unknown.body')}`)
+      }
     } finally {
       setBusy(null)
     }
-  }, [id, guest, nickname, busy, loadParticipants, loadChallenge])
+  }, [id, account?.id, busy, myThreadChannelId, onOpenThread, onNeedAuth, t])
 
   const handleToggleStatus = useCallback(async () => {
     if (!guest?.guestId || busy || !challenge) return
@@ -414,13 +456,13 @@ export default function ChallengeChatPage({
           {!isValidated && !isOwner && (
             <button
               type="button"
-              className={`challenge-quick-btn challenge-quick-btn--accept${isParticipant ? ' challenge-quick-btn--accept-in' : ''}`}
+              className={`challenge-quick-btn challenge-quick-btn--accept${myThreadChannelId ? ' challenge-quick-btn--accept-in' : ''}`}
               onClick={handleAccept}
               disabled={busy === 'accept'}
-              title={isParticipant ? t('acceptedCta') : t('acceptCta')}
-              aria-label={isParticipant ? t('acceptedCta') : t('acceptCta')}
+              title={myThreadChannelId ? t('openThreadCta') : t('acceptCta')}
+              aria-label={myThreadChannelId ? t('openThreadCta') : t('acceptCta')}
             >
-              <span aria-hidden="true">{busy === 'accept' ? '…' : (isParticipant ? '✓' : '+')}</span>
+              <span aria-hidden="true">{busy === 'accept' ? '…' : (myThreadChannelId ? '💬' : '+')}</span>
             </button>
           )}
         </div>

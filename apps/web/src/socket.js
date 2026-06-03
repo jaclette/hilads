@@ -68,6 +68,7 @@ export function createSocket() {
   let pendingConversationJoin = null
   let pendingTopicJoin        = null
   let pendingChallengeJoin    = null
+  let pendingChallengeThreadJoin = null
   let pendingUserJoin         = null  // per-user channel for friend reqs etc.
 
   // ── Dispatch ────────────────────────────────────────────────────────────────
@@ -100,6 +101,7 @@ export function createSocket() {
       if (pendingConversationJoin) send({ event: 'joinConversation',  ...pendingConversationJoin })
       if (pendingTopicJoin)        send({ event: 'joinTopic',         ...pendingTopicJoin })
       if (pendingChallengeJoin)    send({ event: 'joinChallenge',     ...pendingChallengeJoin })
+      if (pendingChallengeThreadJoin) send({ event: 'joinChallengeThread', ...pendingChallengeThreadJoin })
       if (pendingUserJoin)         send({ event: 'joinUser',          ...pendingUserJoin })
 
       // Notify subscribers — useful for catch-up fetches after a disconnect gap
@@ -223,6 +225,17 @@ export function createSocket() {
     leaveChallenge(challengeId, sessionId) {
       pendingChallengeJoin = null
       send({ event: 'leaveChallenge', challengeId, sessionId })
+    },
+
+    /** Join a per-acceptance thread channel (PR2). 1:1 between creator + acceptor. */
+    joinChallengeThread(threadChannelId, sessionId) {
+      pendingChallengeThreadJoin = { threadChannelId, sessionId }
+      send({ event: 'joinChallengeThread', threadChannelId, sessionId })
+    },
+
+    leaveChallengeThread(threadChannelId, sessionId) {
+      pendingChallengeThreadJoin = null
+      send({ event: 'leaveChallengeThread', threadChannelId, sessionId })
     },
 
     /** Subscribe to real-time messages for a DM conversation. Replayed automatically on reconnect. */

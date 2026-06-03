@@ -727,6 +727,22 @@ export default function MeScreen() {
 
         {/* ── Tab: Challenges (created + accepted; owner tagged "Host") ── */}
         {!isGuest && activeTab === 'challenges' && (
+          <>
+            {/* PR2: entry-point to per-acceptance threads. Sits above the
+                list of created/accepted challenges so the user finds their
+                1:1 conversations quickly. */}
+            <TouchableOpacity
+              style={styles.friendReqRow}
+              onPress={() => router.push('/threads' as never)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.friendReqIcon}>
+                <Ionicons name="chatbubbles-outline" size={18} color={Colors.accent} />
+              </View>
+              <Text style={styles.friendReqLabel}>{t('threads.title', { ns: 'challenge' })}</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+            </TouchableOpacity>
+
           <View style={styles.eventsCard}>
             {myChallenges.length === 0 ? (
               <Text style={styles.eventsEmpty}>{t('noChallenges')}</Text>
@@ -754,6 +770,7 @@ export default function MeScreen() {
               </View>
             ))}
           </View>
+          </>
         )}
 
         {/* ── Tab: Hangouts (joined + owned; owner tagged "Host") ── */}

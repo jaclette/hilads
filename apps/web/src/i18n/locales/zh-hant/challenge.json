@@ -76,5 +76,57 @@
       "哪裡可以修手機螢幕"
     ]
   },
-  "beFirstToAccept": "第一個接受挑戰"
+  "beFirstToAccept": "第一個接受挑戰",
+  "openThreadCta": "開啟對話",
+  "accept": {
+    "err": {
+      "openSettings": "開啟設定",
+      "unknown": {
+        "title": "無法接受",
+        "body": "發生錯誤。請再試一次。"
+      },
+      "not_creator": {
+        "title": "這是你自己的挑戰",
+        "body": "這個挑戰是你建立的 — 等別人來接受吧。"
+      },
+      "mode_required": {
+        "title": "先選擇在地人或旅行者",
+        "body": "接受挑戰前先在個人檔案中設定你的模式。"
+      },
+      "mode_mismatch": {
+        "title": "這個挑戰不適合你",
+        "body": "想接受的話,在個人檔案裡切換你的模式。"
+      },
+      "cap_reached": {
+        "title": "挑戰已滿"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "找不到對話",
+    "empty": "打聲招呼 👋,約一下見面時間。",
+    "cancel": {
+      "creatorTitle": "取消這次take-on?",
+      "acceptorTitle": "放棄這個挑戰?",
+      "body": "對話和聊天將被刪除。如果改變主意了,之後可以重新接受。",
+      "confirm": "取消",
+      "failed": "無法取消。請再試一次。"
+    },
+    "cancelledByOther": {
+      "title": "對話已取消",
+      "body": "對方取消了這次take-on。"
+    }
+  },
+  "threads": {
+    "title": "我的挑戰對話",
+    "noMessagesYet": "還沒有訊息",
+    "empty": {
+      "title": "沒有進行中的對話",
+      "body": "當你接受挑戰或有人接受你的挑戰時,對話會出現在這裡。"
+    },
+    "guestGate": {
+      "title": "登入後查看對話",
+      "body": "對話是你和挑戰發起者之間的1對1聊天。需要帳號才能開始。"
+    }
+  }
 }

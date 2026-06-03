@@ -76,5 +76,57 @@
       "Where to fix a phone screen"
     ]
   },
-  "beFirstToAccept": "Be the first to accept"
+  "beFirstToAccept": "Be the first to accept",
+  "openThreadCta": "Open thread",
+  "accept": {
+    "err": {
+      "openSettings": "Open settings",
+      "unknown": {
+        "title": "Couldn't accept",
+        "body": "Something went wrong. Try again."
+      },
+      "not_creator": {
+        "title": "It's your own challenge",
+        "body": "You created this challenge — wait for someone else to accept it."
+      },
+      "mode_required": {
+        "title": "Pick local or traveler first",
+        "body": "Set your mode in your profile before accepting challenges."
+      },
+      "mode_mismatch": {
+        "title": "Wrong side of the challenge",
+        "body": "Switch your mode in your profile if you want to take this on."
+      },
+      "cap_reached": {
+        "title": "Challenge full"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "Thread not found",
+    "empty": "Say hi 👋 and plan when you'll meet up.",
+    "cancel": {
+      "creatorTitle": "Cancel this take-on?",
+      "acceptorTitle": "Drop this challenge?",
+      "body": "The thread and chat will be deleted. You can re-accept later if you change your mind.",
+      "confirm": "Cancel take-on",
+      "failed": "Couldn't cancel. Try again."
+    },
+    "cancelledByOther": {
+      "title": "Thread cancelled",
+      "body": "The other person cancelled this take-on."
+    }
+  },
+  "threads": {
+    "title": "My challenge threads",
+    "noMessagesYet": "No messages yet",
+    "empty": {
+      "title": "No active threads",
+      "body": "When you accept a challenge or someone accepts yours, the conversation shows up here."
+    },
+    "guestGate": {
+      "title": "Sign in to see threads",
+      "body": "Threads are 1:1 conversations between you and the challenger. You need an account to start one."
+    }
+  }
 }

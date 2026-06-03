@@ -76,5 +76,57 @@
       "폰 화면을 고칠 곳"
     ]
   },
-  "beFirstToAccept": "가장 먼저 도전을 받아보세요"
+  "beFirstToAccept": "가장 먼저 도전을 받아보세요",
+  "openThreadCta": "스레드 열기",
+  "accept": {
+    "err": {
+      "openSettings": "설정 열기",
+      "unknown": {
+        "title": "수락하지 못했어요",
+        "body": "문제가 발생했어요. 다시 시도해 주세요."
+      },
+      "not_creator": {
+        "title": "내가 만든 챌린지예요",
+        "body": "내가 만든 챌린지예요 — 다른 사람이 수락하길 기다려 주세요."
+      },
+      "mode_required": {
+        "title": "먼저 로컬 또는 트래블러를 선택해요",
+        "body": "챌린지를 수락하기 전에 프로필에서 모드를 설정해요."
+      },
+      "mode_mismatch": {
+        "title": "이 챌린지는 당신을 위한 게 아니에요",
+        "body": "수락하고 싶다면 프로필에서 모드를 바꿔 주세요."
+      },
+      "cap_reached": {
+        "title": "챌린지 정원이 찼어요"
+      }
+    }
+  },
+  "thread": {
+    "notFound": "스레드를 찾을 수 없어요",
+    "empty": "인사 👋 하고 만날 시간을 정해요.",
+    "cancel": {
+      "creatorTitle": "이 take-on을 취소할까요?",
+      "acceptorTitle": "이 챌린지를 포기할까요?",
+      "body": "스레드와 채팅이 삭제돼요. 마음이 바뀌면 나중에 다시 수락할 수 있어요.",
+      "confirm": "취소",
+      "failed": "취소하지 못했어요. 다시 시도해 주세요."
+    },
+    "cancelledByOther": {
+      "title": "스레드가 취소됐어요",
+      "body": "상대방이 이 take-on을 취소했어요."
+    }
+  },
+  "threads": {
+    "title": "내 챌린지 스레드",
+    "noMessagesYet": "아직 메시지가 없어요",
+    "empty": {
+      "title": "활성 스레드가 없어요",
+      "body": "챌린지를 수락하거나 누가 내 챌린지를 수락하면 대화가 여기에 나타나요."
+    },
+    "guestGate": {
+      "title": "스레드를 보려면 로그인하세요",
+      "body": "스레드는 챌린저와의 1:1 대화예요. 시작하려면 계정이 필요해요."
+    }
+  }
 }

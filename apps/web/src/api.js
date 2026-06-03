@@ -619,6 +619,76 @@ export async function unvalidateChallenge(challengeId, guestId) {
   return res.json()
 }
 
+// ── PR2 take-on flow ──────────────────────────────────────────────────────────
+
+/** Typed error from POST /accept — carries the backend `code` + (sometimes)
+ *  `requiredMode` so UI can show a tailored alert + offer a mode-switch. */
+export class AcceptChallengeError extends Error {
+  constructor(code, message, requiredMode) {
+    super(message)
+    this.name = 'AcceptChallengeError'
+    this.code = code           // 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached'
+    this.requiredMode = requiredMode  // 'local' | 'exploring' | undefined
+  }
+}
+
+export async function acceptChallenge(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/accept`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    if (data?.code) throw new AcceptChallengeError(data.code, data.error || 'Accept failed', data.required_mode)
+    throw new Error(data?.error || `Accept failed (HTTP ${res.status})`)
+  }
+  return res.json()  // ChallengeAcceptance row
+}
+
+export async function cancelAcceptance(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/cancel`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to cancel')
+  }
+}
+
+export async function fetchMyAcceptances() {
+  const res = await fetch(`${BASE}/me/acceptances`, { credentials: 'include' })
+  if (!res.ok) return []
+  const data = await res.json().catch(() => ({}))
+  return data.threads ?? []
+}
+
+export async function fetchThreadMessages(threadChannelId, { beforeId, limit = 50 } = {}) {
+  const params = new URLSearchParams({ limit: String(limit) })
+  if (beforeId) params.set('before_id', beforeId)
+  const res = await fetch(`${BASE}/threads/${encodeURIComponent(threadChannelId)}/messages?${params}`, { credentials: 'include' })
+  if (!res.ok) return { messages: [], hasMore: false }
+  return res.json()
+}
+
+export async function sendThreadMessage(threadChannelId, content) {
+  const res = await fetch(`${BASE}/threads/${encodeURIComponent(threadChannelId)}/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ type: 'text', content }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to send message')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

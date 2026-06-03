@@ -307,6 +307,35 @@ function broadcastChallengeUnvalidatedToWs(int $channelId, array $challenge): vo
     postToWs('/broadcast/challenge-unvalidated', ['channelId' => $channelId, 'challenge' => $challenge]);
 }
 
+/**
+ * PR2 — challenge take-on lifecycle. Both events use the generic /broadcast/user-event
+ * route on the WS server, which fans out to a single user's connected sessions.
+ * No new WS routes needed for accept/cancel notifications.
+ *
+ * Chat messages inside the thread channel (type='challenge_thread') use the
+ * existing /broadcast/message path; the WS server needs join/leave + a
+ * challengeThreadRooms map to route them (PR2.B).
+ */
+function broadcastChallengeAcceptedToWs(string $creatorUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-accepted target=user:{$creatorUserId} acceptanceId=" . ($payload['acceptance']['id'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $creatorUserId,
+        'event'   => 'challenge_accepted',
+        'payload' => $payload,
+    ]);
+}
+
+function broadcastChallengeAcceptanceCancelledToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-acceptance-cancelled target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_acceptance_cancelled',
+        'payload' => $payload,
+    ]);
+}
+
 
 // ── Now-feed DTO helpers ──────────────────────────────────────────────────────
 // Normalize raw repository rows into a consistent FeedItem shape consumed by
@@ -7693,6 +7722,296 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/toggle', fun
     }
 
     Response::json(['count' => $count, 'isIn' => $isIn]);
+});
+
+// ── Challenge acceptances (PR2 — new take-on flow) ────────────────────────────
+// The old /participants/toggle above is the legacy pooled-acceptance path
+// (kept for backward-compat with the live mobile build until the next app
+// release). The endpoints below are the new model: each accept creates a
+// 1:1 thread channel between creator + acceptor.
+
+// POST /api/v1/challenges/{challengeId}/accept
+// New take-on. Creates a challenge_acceptances row + a channels.type='challenge_thread'
+// row (the 1:1 chat). Idempotent — re-accepting returns the existing row.
+//
+// Gates (all 403 with `code` field for client to disambiguate):
+//   - not_creator       : you can't accept your own challenge
+//   - mode_required     : your users.mode is null — set it before accepting
+//   - mode_mismatch     : you're a local but the challenge is for travelers (or vice-versa)
+//   - cap_reached       : challenge already at max_participants
+$router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findById($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    // Gate: not the creator.
+    if ($challenge['created_by'] === $userId) {
+        Response::json(['error' => "You created this challenge — you can't accept it", 'code' => 'not_creator'], 403);
+    }
+
+    // Idempotency: already accepted? Return the existing acceptance (201 would
+    // be misleading; 200 = "you're already in, here's your acceptance").
+    $existing = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
+    if ($existing !== null) {
+        Response::json($existing);
+    }
+
+    // Gate: mode matches audience. audience='locals' → must have mode='local';
+    // audience='explorers' → must have mode='exploring'. Users with null mode
+    // must pick one first (the client handles the prompt).
+    $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
+    $actualMode   = $authUser['mode'] ?? null;
+    if (empty($actualMode)) {
+        Response::json([
+            'error'         => 'Set your mode (local or traveler) before accepting challenges',
+            'code'          => 'mode_required',
+            'required_mode' => $expectedMode,
+        ], 403);
+    }
+    if ($actualMode !== $expectedMode) {
+        $needLabel = $expectedMode === 'local' ? 'locals' : 'travelers';
+        Response::json([
+            'error'         => "Only {$needLabel} can accept this challenge",
+            'code'          => 'mode_mismatch',
+            'required_mode' => $expectedMode,
+        ], 403);
+    }
+
+    // Gate: cap. Non-rejected acceptances < max_participants.
+    $current = ChallengeAcceptanceRepository::countByChallenge($challengeId);
+    $cap     = (int) ($challenge['max_participants'] ?? 3);
+    if ($current >= $cap) {
+        Response::json([
+            'error' => "This challenge is full ({$current}/{$cap} travelers)",
+            'code'  => 'cap_reached',
+        ], 403);
+    }
+
+    enforceRateLimit('challenge_accept', 20, 3600, $userId);
+
+    try {
+        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId);
+    } catch (\Throwable $e) {
+        error_log('[challenges] accept failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to accept challenge'], 500);
+    }
+
+    // Live push to the creator so their threads list updates without polling.
+    try {
+        if (!empty($challenge['created_by'])) {
+            broadcastChallengeAcceptedToWs($challenge['created_by'], [
+                'acceptance' => $acceptance,
+                'challenge'  => [
+                    'id'             => $challenge['id'],
+                    'title'          => $challenge['title'],
+                    'challenge_type' => $challenge['challenge_type'],
+                ],
+                'acceptor' => [
+                    'id'             => $userId,
+                    'displayName'    => $authUser['display_name'] ?? null,
+                    'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+                ],
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws accept broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    AnalyticsService::defer('challenge_take_on', $userId, [
+        'challenge_id'  => $challengeId,
+        'acceptance_id' => $acceptance['id'],
+    ]);
+
+    Response::json($acceptance, 201);
+});
+
+// POST /api/v1/acceptances/{acceptanceId}/cancel
+// Either party can cancel — but only in phase 'accepted'. Hard-delete: the
+// thread channel goes (cascade kills messages + the acceptance row via FK).
+// PR3+ phases (scheduled, debrief, approved, rejected) return 409.
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/cancel', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    $isAcceptor = $acceptance['acceptor_user_id'] === $userId;
+    $isCreator  = $challenge['created_by'] === $userId;
+    if (!$isAcceptor && !$isCreator) {
+        Response::json(['error' => 'Not allowed'], 403);
+    }
+    if ($acceptance['phase'] !== 'accepted') {
+        Response::json([
+            'error' => "Can't cancel after a date is scheduled",
+            'code'  => 'phase_locked',
+        ], 409);
+    }
+
+    // Snapshot the IDs BEFORE delete — the cascade wipes them.
+    $otherUserId    = $isAcceptor ? $challenge['created_by'] : $acceptance['acceptor_user_id'];
+    $threadId       = $acceptance['thread_channel_id'];
+    $challengeIdSnap = $acceptance['challenge_id'];
+
+    if (!ChallengeAcceptanceRepository::cancel($acceptanceId)) {
+        Response::json(['error' => 'Failed to cancel'], 500);
+    }
+
+    try {
+        if ($otherUserId !== null) {
+            broadcastChallengeAcceptanceCancelledToWs($otherUserId, [
+                'cancelledBy'      => $userId,
+                'acceptanceId'     => $acceptanceId,
+                'challengeId'      => $challengeIdSnap,
+                'threadChannelId'  => $threadId,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws cancel broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json(['ok' => true]);
+});
+
+// GET /api/v1/me/acceptances
+// "My threads" — every acceptance where I'm either the acceptor OR the creator.
+// One enriched row per thread: challenge metadata + counter-party + last-message
+// preview. Sorted by last activity. Capped at 100 (bounded read for low egress).
+$router->add('GET', '/api/v1/me/acceptances', function () {
+    $authUser = AuthService::requireAuth();
+    Response::json([
+        'threads' => ChallengeAcceptanceRepository::getMineWithMeta($authUser['id']),
+    ]);
+});
+
+// GET /api/v1/challenges/{challengeId}/acceptances
+// Creator-only — list of who took on this challenge. For the challenge
+// detail "Threads" tab in the new UI.
+$router->add('GET', '/api/v1/challenges/{challengeId}/acceptances', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser  = AuthService::requireAuth();
+    $challenge = ChallengeRepository::findById($challengeId);
+    if ($challenge === null || $challenge['created_by'] !== $authUser['id']) {
+        Response::json(['error' => 'Not allowed'], 403);
+    }
+    Response::json([
+        'acceptances' => ChallengeAcceptanceRepository::getByChallenge($challengeId),
+    ]);
+});
+
+// ── Thread channel chat (PR2) ─────────────────────────────────────────────────
+// Same shape as the topic message endpoints, but the membership gate uses
+// challenge_acceptances (acceptor + creator are the 2 parties).
+
+// GET /api/v1/threads/{threadChannelId}/messages
+$router->add('GET', '/api/v1/threads/{threadChannelId}/messages', function (array $params) {
+    $tid = $params['threadChannelId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $tid)) {
+        Response::json(['error' => 'Invalid threadChannelId'], 400);
+    }
+    $viewer   = AuthService::requireAuth();
+    if (!ChallengeAcceptanceRepository::isThreadMember($tid, $viewer['id'])) {
+        Response::json(['error' => 'Not a thread member'], 403);
+    }
+    $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
+    $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
+    try {
+        $res = MessageRepository::getByChannel($tid, $beforeId ?: null, $limit);
+        Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
+    } catch (\Throwable $e) {
+        error_log('[thread-messages] GET failed tid=' . $tid . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to load messages'], 500);
+    }
+});
+
+// POST /api/v1/threads/{threadChannelId}/messages
+$router->add('POST', '/api/v1/threads/{threadChannelId}/messages', function (array $params) {
+    $tid = $params['threadChannelId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $tid)) {
+        Response::json(['error' => 'Invalid threadChannelId'], 400);
+    }
+    $viewer   = AuthService::requireAuth();
+    $viewerId = $viewer['id'];
+    if (!ChallengeAcceptanceRepository::isThreadMember($tid, $viewerId)) {
+        Response::json(['error' => 'Not a thread member'], 403);
+    }
+
+    $body     = Request::json() ?? [];
+    $type     = $body['type']     ?? 'text';
+    $content  = $body['content']  ?? null;
+    $imageUrl = $body['imageUrl'] ?? null;
+
+    if (!in_array($type, ['text', 'image'], true)) {
+        Response::json(['error' => 'type must be text or image'], 400);
+    }
+
+    enforceRateLimit('thread_message', 60, 300, $tid);
+
+    // Threads are registered-only (the acceptance flow gates this). The
+    // sender's display_name + a synthetic guestId carry through to existing
+    // helpers; the registered user_id is the real source of truth.
+    $nickname = mb_substr(trim(strip_tags((string) ($viewer['display_name'] ?? ''))), 0, 20);
+    if ($nickname === '') $nickname = 'Someone';
+    // MessageRepository expects a guest_id string column value; we pass the
+    // user's id here as a stable per-sender key so older read paths grouping
+    // by guest_id still work in thread chats.
+    $guestIdProxy = $viewerId;
+
+    try {
+        if ($type === 'image') {
+            if (empty($imageUrl) || !is_string($imageUrl)) {
+                Response::json(['error' => 'imageUrl is required for image messages'], 400);
+            }
+            $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+            if (!str_starts_with($imageUrl, $r2Base)) {
+                Response::json(['error' => 'Invalid image URL'], 400);
+            }
+            $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
+            if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
+                Response::json(['error' => 'Invalid image reference'], 400);
+            }
+            $message = MessageRepository::addImage($tid, $guestIdProxy, $nickname, $imageUrl, $viewerId);
+        } else {
+            if (empty($content) || !is_string($content)) {
+                Response::json(['error' => 'content is required'], 400);
+            }
+            if (strlen($content) > 1000) {
+                Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+            }
+            $message = MessageRepository::add($tid, $guestIdProxy, $nickname, $content, $viewerId);
+        }
+    } catch (\Throwable $e) {
+        error_log('[thread-msg] DB error tid=' . $tid . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to send message'], 500);
+    }
+
+    $message = enrichBroadcastMessage($message, $viewer);
+    broadcastMessageToWs($tid, $message);
+
+    Response::json($message, 201);
 });
 
 // GET /api/v1/users/{userId}/challenges — challenges the user created or
