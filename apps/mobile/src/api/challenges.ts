@@ -85,6 +85,8 @@ export async function createChallenge(
   title: string,
   challengeType: ChallengeType,
   audience: ChallengeAudience,
+  maxParticipants: number,
+  returnClause: string | null,
 ): Promise<Challenge> {
   return api.post<Challenge>(`/channels/${channelId}/challenges`, {
     guestId,
@@ -92,22 +94,28 @@ export async function createChallenge(
     title,
     challengeType,
     audience,
+    maxParticipants,
+    returnClause,
   });
 }
 
-/** Owner-only edit of a challenge's title / type / audience. Status is not editable here — use validateChallenge(). */
+/** Owner-only edit of a challenge's title / type / audience / cap / return clause. Status is not editable here — use validateChallenge(). */
 export async function updateChallenge(
   challengeId: string,
   guestId: string,
   title: string,
   challengeType: ChallengeType,
   audience: ChallengeAudience,
+  maxParticipants: number,
+  returnClause: string | null,
 ): Promise<Challenge> {
   return api.put<Challenge>(`/challenges/${challengeId}`, {
     guestId,
     title,
     challengeType,
     audience,
+    maxParticipants,
+    returnClause,
   });
 }
 

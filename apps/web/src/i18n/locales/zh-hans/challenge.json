@@ -15,6 +15,14 @@
   },
   "titleLabel": "你的挑战",
   "titlePlaceholder": "例如,带我去你最喜欢的咖啡馆",
+  "maxParticipantsLabel": "最多多少旅行者?",
+  "returnClauseLabel": "然后呢?",
+  "returnClauseTemplates": {
+    "food": "……然后过来跟我一起分享 🍜",
+    "place": "……然后你亲自带我去 🗺️",
+    "culture": "……然后我们见面聊聊 🎭",
+    "help": "……然后我们见面让我当面帮你 🙏"
+  },
   "createCta": "发起挑战 🔥",
   "saveChanges": "保存修改",
   "errSave": "保存失败",

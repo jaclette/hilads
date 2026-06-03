@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
   StyleSheet, ActivityIndicator,
@@ -24,6 +24,12 @@ const AUDIENCES: ChallengeAudience[] = ['locals', 'explorers'];
 // 🧳 as "they're passing through" for travelers.
 const AUDIENCE_ICONS: Record<ChallengeAudience, string> = { locals: '🏠', explorers: '🧳' };
 
+// Mirror backend ChallengeRepository::MAX_PARTICIPANTS_{MIN,MAX,DEFAULT}.
+// Bumping these requires updating the PHP constants too.
+const MAX_P_MIN     = 1;
+const MAX_P_MAX     = 20;
+const MAX_P_DEFAULT = 3;
+
 export default function CreateChallengeScreen() {
   const router = useRouter();
   const { t } = useTranslation('challenge');
@@ -35,6 +41,8 @@ export default function CreateChallengeScreen() {
     title?: string;
     type?: string;
     audience?: string;
+    maxParticipants?: string;
+    returnClause?: string;
   }>();
   const editId = typeof params.editId === 'string' ? params.editId : null;
 
@@ -44,12 +52,31 @@ export default function CreateChallengeScreen() {
   const initialAudience: ChallengeAudience = AUDIENCES.includes(params.audience as ChallengeAudience)
     ? (params.audience as ChallengeAudience)
     : 'locals';
+  const initialMaxParticipants = (() => {
+    const n = parseInt(params.maxParticipants ?? '', 10);
+    return Number.isFinite(n) && n >= MAX_P_MIN && n <= MAX_P_MAX ? n : MAX_P_DEFAULT;
+  })();
 
   const [audience, setAudience] = useState<ChallengeAudience>(initialAudience);
   const [type,     setType]     = useState<ChallengeType>(initialType);
   const [title,    setTitle]    = useState(typeof params.title === 'string' ? params.title : '');
+  const [maxParticipants, setMaxParticipants] = useState<number>(initialMaxParticipants);
+  // returnClause is pre-filled by the per-type template (see effect below)
+  // unless the user (a) is editing and the server has a stored value, or
+  // (b) has manually edited it. `returnClauseDirty` flips to true on the
+  // first manual edit, after which type switches stop overwriting it.
+  const [returnClause,      setReturnClause]      = useState<string>(typeof params.returnClause === 'string' ? params.returnClause : '');
+  const returnClauseDirty                         = useRef<boolean>(typeof params.returnClause === 'string' && params.returnClause.length > 0);
   const [submitting, setSubmitting] = useState(false);
   const [error,    setError]    = useState<string | null>(null);
+
+  // Re-template the return clause whenever the type changes, UNLESS the user
+  // has already edited it manually (we don't want to clobber a custom phrase).
+  useEffect(() => {
+    if (returnClauseDirty.current) return;
+    const template = t(`returnClauseTemplates.${type}`);
+    setReturnClause(template);
+  }, [type, t]);
 
   async function handleSubmit() {
     const trimmedTitle = title.trim();
@@ -57,10 +84,12 @@ export default function CreateChallengeScreen() {
     setSubmitting(true);
     setError(null);
 
+    const trimmedReturnClause = returnClause.trim() || null;
+
     // Edit path: PUT the existing challenge, then back.
     if (editId) {
       try {
-        await updateChallenge(editId, identity.guestId, trimmedTitle, type, audience);
+        await updateChallenge(editId, identity.guestId, trimmedTitle, type, audience, maxParticipants, trimmedReturnClause);
         router.back();
       } catch (err) {
         setError(err instanceof Error ? err.message : t('errSave'));
@@ -82,6 +111,8 @@ export default function CreateChallengeScreen() {
         trimmedTitle,
         type,
         audience,
+        maxParticipants,
+        trimmedReturnClause,
       );
       // Land the creator on the freshly-created challenge so they can share
       // it + watch participants accept in real time.
@@ -167,9 +198,51 @@ export default function CreateChallengeScreen() {
           placeholderTextColor={Colors.muted2}
           maxLength={100}
           autoFocus
+          returnKeyType="next"
+          blurOnSubmit={false}
+        />
+
+        {/* Return clause — the "...and come tell me about it in person" half.
+            Pre-filled by per-type template (food/place/culture/help). Editable
+            so the creator can sharpen it; first edit pins the value (type
+            switches stop overwriting it). Forces every challenge to lead to
+            a real meetup. */}
+        <Text style={styles.sectionLabel}>{t('returnClauseLabel')}</Text>
+        <TextInput
+          style={styles.input}
+          value={returnClause}
+          onChangeText={(v) => { returnClauseDirty.current = true; setReturnClause(v); }}
+          placeholder={t('returnClauseTemplates.food')}
+          placeholderTextColor={Colors.muted2}
+          maxLength={200}
           returnKeyType="done"
           onSubmitEditing={handleSubmit}
         />
+
+        {/* Max participants stepper — how many travelers can take this on.
+            Stepper instead of slider because the range is 1-20 and discrete
+            single-tap +/- is faster on mobile than a slider drag. Centred
+            number for tap-target balance. */}
+        <Text style={styles.sectionLabel}>{t('maxParticipantsLabel')}</Text>
+        <View style={styles.stepperRow}>
+          <TouchableOpacity
+            style={[styles.stepperBtn, maxParticipants <= MAX_P_MIN && styles.stepperBtnDisabled]}
+            activeOpacity={0.7}
+            disabled={maxParticipants <= MAX_P_MIN}
+            onPress={() => setMaxParticipants(Math.max(MAX_P_MIN, maxParticipants - 1))}
+          >
+            <Ionicons name="remove" size={20} color={Colors.text} />
+          </TouchableOpacity>
+          <Text style={styles.stepperValue}>{maxParticipants}</Text>
+          <TouchableOpacity
+            style={[styles.stepperBtn, maxParticipants >= MAX_P_MAX && styles.stepperBtnDisabled]}
+            activeOpacity={0.7}
+            disabled={maxParticipants >= MAX_P_MAX}
+            onPress={() => setMaxParticipants(Math.min(MAX_P_MAX, maxParticipants + 1))}
+          >
+            <Ionicons name="add" size={20} color={Colors.text} />
+          </TouchableOpacity>
+        </View>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -321,6 +394,32 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.sm + 4,
     fontSize:        FontSizes.md,
     color:           Colors.text,
+  },
+
+  // Stepper row for max_participants — −/+ buttons flanking the centred number.
+  stepperRow: {
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'center',
+    gap:            Spacing.md,
+  },
+  stepperBtn: {
+    width:           44,
+    height:          44,
+    borderRadius:    Radius.full,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    backgroundColor: Colors.bg2,
+    alignItems:      'center',
+    justifyContent:  'center',
+  },
+  stepperBtnDisabled: { opacity: 0.4 },
+  stepperValue: {
+    fontSize:   FontSizes.xl,
+    fontWeight: '800',
+    color:      Colors.text,
+    minWidth:   48,
+    textAlign:  'center',
   },
 
   errorText: {

@@ -23,6 +23,12 @@ class ChallengeRepository
     public const ALLOWED_AUDIENCES = ['locals', 'explorers'];
     public const ALLOWED_STATUSES  = ['open', 'validated'];
 
+    // max_participants bounds — the creator's cap on concurrent take-ons. 1 is
+    // a valid "exclusive" challenge; 20 is a sane ceiling to prevent abuse.
+    public const MAX_PARTICIPANTS_MIN     = 1;
+    public const MAX_PARTICIPANTS_MAX     = 20;
+    public const MAX_PARTICIPANTS_DEFAULT = 3;
+
     // ── Shared SELECT (challenge + message stats) ─────────────────────────────
 
     private const SELECT = "
@@ -35,6 +41,8 @@ class ChallengeRepository
             cc.challenge_type,
             cc.audience,
             cc.status,
+            cc.max_participants,
+            cc.return_clause,
             COUNT(m.id)                                            AS message_count,
             EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER         AS last_activity_at,
             EXTRACT(EPOCH FROM cc.validated_at)::INTEGER           AS validated_at,
@@ -55,6 +63,8 @@ class ChallengeRepository
             'challenge_type'       => $row['challenge_type'],
             'audience'             => $row['audience'],
             'status'               => $row['status'],
+            'max_participants'     => (int) ($row['max_participants'] ?? self::MAX_PARTICIPANTS_DEFAULT),
+            'return_clause'        => $row['return_clause'] ?? null,
             'message_count'        => (int) ($row['message_count'] ?? 0),
             'last_activity_at'     => isset($row['last_activity_at']) ? (int) $row['last_activity_at'] : null,
             'validated_at'         => isset($row['validated_at'])     ? (int) $row['validated_at']     : null,
@@ -114,6 +124,7 @@ class ChallengeRepository
               )
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
+                     cc.max_participants, cc.return_clause,
                      cc.validated_at, cc.created_at
             ORDER BY cc.created_at DESC
             LIMIT $limit
@@ -146,6 +157,7 @@ class ChallengeRepository
             WHERE $where
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
+                     cc.max_participants, cc.return_clause,
                      cc.validated_at, cc.created_at
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
             LIMIT $limit
@@ -164,6 +176,7 @@ class ChallengeRepository
               AND c.status = 'active'
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
+                     cc.max_participants, cc.return_clause,
                      cc.validated_at, cc.created_at
         ");
         $stmt->execute(['id' => $challengeId]);
@@ -186,6 +199,7 @@ class ChallengeRepository
         $stmt = $pdo->prepare("
             SELECT c.id, cc.city_id, cc.created_by, cc.guest_id, cc.title,
                    cc.challenge_type, cc.audience, cc.status,
+                   cc.max_participants, cc.return_clause,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS validated_at,
                    EXTRACT(EPOCH FROM cc.created_at)::INTEGER   AS created_at
             FROM channels c
@@ -224,6 +238,8 @@ class ChallengeRepository
                 'challenge_type'   => $ch['challenge_type'],
                 'audience'         => $ch['audience'],
                 'status'           => $ch['status'],
+                'max_participants' => $ch['max_participants'],
+                'return_clause'    => $ch['return_clause'],
                 'message_count'    => $stats['message_count']    ?? 0,
                 'last_activity_at' => $stats['last_activity_at'] ?? null,
                 'validated_at'     => $ch['validated_at'],
@@ -249,10 +265,22 @@ class ChallengeRepository
         ?string $nickname,
         string $title,
         string $challengeType,
-        string $audience
+        string $audience,
+        ?int $maxParticipants = null,
+        ?string $returnClause = null
     ): array {
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
+
+        // Clamp max_participants to the allowed band; default to 3 if unset.
+        $maxParticipants = $maxParticipants ?? self::MAX_PARTICIPANTS_DEFAULT;
+        $maxParticipants = max(self::MAX_PARTICIPANTS_MIN, min(self::MAX_PARTICIPANTS_MAX, $maxParticipants));
+
+        // Normalize return_clause: trim, treat empty string as null. Client is
+        // expected to send the per-type template pre-filled; nulls fall back to
+        // a generic clause at the display layer.
+        $returnClause = $returnClause !== null ? trim($returnClause) : null;
+        if ($returnClause === '') $returnClause = null;
 
         $pdo = Database::pdo();
         $id  = bin2hex(random_bytes(8));
@@ -269,17 +297,19 @@ class ChallengeRepository
         // expires_at uses the table default (2999 sentinel) — challenges are persistent.
         $pdo->prepare("
             INSERT INTO channel_challenges
-                (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status)
+                (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, max_participants, return_clause)
             VALUES
-                (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open')
+                (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :max_participants, :return_clause)
         ")->execute([
-            'channel_id'     => $id,
-            'city_id'        => $cityId,
-            'created_by'     => $userId,
-            'guest_id'       => $guestId,
-            'title'          => $title,
-            'challenge_type' => $challengeType,
-            'audience'       => $audience,
+            'channel_id'       => $id,
+            'city_id'          => $cityId,
+            'created_by'       => $userId,
+            'guest_id'         => $guestId,
+            'title'            => $title,
+            'challenge_type'   => $challengeType,
+            'audience'         => $audience,
+            'max_participants' => $maxParticipants,
+            'return_clause'    => $returnClause,
         ]);
 
         // Auto-join the creator (guests included).
@@ -294,6 +324,8 @@ class ChallengeRepository
             'challenge_type'       => $challengeType,
             'audience'             => $audience,
             'status'               => 'open',
+            'max_participants'     => $maxParticipants,
+            'return_clause'        => $returnClause,
             'message_count'        => 0,
             'last_activity_at'     => null,
             'validated_at'         => null,
@@ -304,9 +336,9 @@ class ChallengeRepository
     }
 
     /**
-     * Owner-gated edit of title / challenge_type / audience.
-     * Returns the updated challenge, or null if not found / not the owner.
-     * Status cannot be flipped here — use validate() instead.
+     * Owner-gated edit of title / challenge_type / audience / max_participants /
+     * return_clause. Returns the updated challenge, or null if not found /
+     * not the owner. Status cannot be flipped here — use validate() instead.
      */
     public static function update(
         string $challengeId,
@@ -314,19 +346,39 @@ class ChallengeRepository
         ?string $userId,
         string $title,
         string $challengeType,
-        string $audience
+        string $audience,
+        ?int $maxParticipants = null,
+        ?string $returnClause = null
     ): ?array {
         if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
 
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
 
+        $maxParticipants = $maxParticipants ?? self::MAX_PARTICIPANTS_DEFAULT;
+        $maxParticipants = max(self::MAX_PARTICIPANTS_MIN, min(self::MAX_PARTICIPANTS_MAX, $maxParticipants));
+
+        $returnClause = $returnClause !== null ? trim($returnClause) : null;
+        if ($returnClause === '') $returnClause = null;
+
         $pdo = Database::pdo();
         $pdo->prepare("
             UPDATE channel_challenges
-            SET title = :t, challenge_type = :tp, audience = :a, updated_at = now()
+            SET title = :t,
+                challenge_type = :tp,
+                audience = :a,
+                max_participants = :mp,
+                return_clause = :rc,
+                updated_at = now()
             WHERE channel_id = :id
-        ")->execute(['t' => $title, 'tp' => $challengeType, 'a' => $audience, 'id' => $challengeId]);
+        ")->execute([
+            't'  => $title,
+            'tp' => $challengeType,
+            'a'  => $audience,
+            'mp' => $maxParticipants,
+            'rc' => $returnClause,
+            'id' => $challengeId,
+        ]);
 
         // Keep the channel name in sync with the title (used as display name).
         $pdo->prepare("UPDATE channels SET name = :n, updated_at = now() WHERE id = :id")

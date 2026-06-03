@@ -15,6 +15,14 @@
   },
   "titleLabel": "Deine Challenge",
   "titlePlaceholder": "z. B. Bring mich zu deinem Lieblings-Café",
+  "maxParticipantsLabel": "Wie viele Reisende max.?",
+  "returnClauseLabel": "Und danach?",
+  "returnClauseTemplates": {
+    "food": "...und komm es mit mir teilen 🍜",
+    "place": "...und nimm mich selbst mit dahin 🗺️",
+    "culture": "...und wir treffen uns, um drüber zu reden 🎭",
+    "help": "...und wir treffen uns, damit ich persönlich helfen kann 🙏"
+  },
   "createCta": "Challenge starten 🔥",
   "saveChanges": "Änderungen speichern",
   "errSave": "Speichern fehlgeschlagen",

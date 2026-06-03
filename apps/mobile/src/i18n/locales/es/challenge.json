@@ -15,6 +15,14 @@
   },
   "titleLabel": "Tu reto",
   "titlePlaceholder": "ej. Llévame a tu café favorito",
+  "maxParticipantsLabel": "¿Cuántos viajeros máximo?",
+  "returnClauseLabel": "¿Y luego?",
+  "returnClauseTemplates": {
+    "food": "...y ven a compartirlo conmigo 🍜",
+    "place": "...y llévame tú mismo 🗺️",
+    "culture": "...y quedamos para hablarlo 🎭",
+    "help": "...y quedamos para que pueda ayudarte en persona 🙏"
+  },
   "createCta": "Lanzar reto 🔥",
   "saveChanges": "Guardar cambios",
   "errSave": "No se pudo guardar",

@@ -15,6 +15,14 @@
   },
   "titleLabel": "Thử thách của bạn",
   "titlePlaceholder": "vd. Đưa tôi đến quán cà phê yêu thích của bạn",
+  "maxParticipantsLabel": "Tối đa bao nhiêu du khách?",
+  "returnClauseLabel": "Rồi sao nữa?",
+  "returnClauseTemplates": {
+    "food": "...rồi tới chia sẻ với tớ 🍜",
+    "place": "...rồi tự cậu dẫn tớ đi 🗺️",
+    "culture": "...rồi gặp nhau để kể tớ nghe 🎭",
+    "help": "...rồi gặp nhau để tớ giúp trực tiếp 🙏"
+  },
   "createCta": "Tạo thử thách 🔥",
   "saveChanges": "Lưu thay đổi",
   "errSave": "Không thể lưu thay đổi",

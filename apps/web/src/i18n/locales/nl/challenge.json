@@ -15,6 +15,14 @@
   },
   "titleLabel": "Jouw challenge",
   "titlePlaceholder": "bv. Breng me naar je favoriete koffieplek",
+  "maxParticipantsLabel": "Hoeveel reizigers max?",
+  "returnClauseLabel": "En dan?",
+  "returnClauseTemplates": {
+    "food": "...en kom het met me delen 🍜",
+    "place": "...en neem me er zelf mee naartoe 🗺️",
+    "culture": "...en we spreken af om erover te praten 🎭",
+    "help": "...en we spreken af zodat ik persoonlijk kan helpen 🙏"
+  },
   "createCta": "Challenge starten 🔥",
   "saveChanges": "Wijzigingen opslaan",
   "errSave": "Opslaan mislukt",

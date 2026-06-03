@@ -101,6 +101,10 @@ export interface Challenge {
   challenge_type:        ChallengeType;
   audience:              ChallengeAudience;
   status:                ChallengeStatus;
+  /** Cap on concurrent take-ons (acceptances). 1-20, default 3. */
+  max_participants:      number;
+  /** "...and come share it with me" half of the prompt; pre-filled per type. Null = generic fallback. */
+  return_clause:         string | null;
   message_count:         number;
   last_activity_at:      number | null;   // unix timestamp
   validated_at:          number | null;   // unix timestamp; set when status flips to 'validated'

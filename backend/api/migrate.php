@@ -1032,4 +1032,54 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_type        ON chan
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_challenge_participants_channel ON challenge_participants (channel_id)", 'idx_challenge_participants_channel');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_challenge_participants_user    ON challenge_participants (user_id) WHERE user_id IS NOT NULL", 'idx_challenge_participants_user');
 
+// ── Challenge redesign (PR1: model + creation) ────────────────────────────────
+// The challenge is now an "ad" — a creator publishes it, multiple travelers
+// (or locals, depending on audience) can take it on. Each take-on opens its
+// own 1:1 thread channel (challenge_acceptances row). The persistent
+// challenge_challenges row carries the ad-level config (cap + return clause).
+//
+// PR1 is additive only. challenge_participants stays (still used by the
+// legacy pooled-acceptance flow). PR2 will migrate the acceptance flow to
+// challenge_acceptances and propose a data migration for any in-flight
+// challenge_participants rows.
+
+// max_participants: cap on concurrent take-ons. Default 3, editable by creator
+// in the form. NOT NULL with a default is safe — every existing row gets 3.
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS max_participants INT NOT NULL DEFAULT 3", 'channel_challenges.max_participants');
+
+// return_clause: the "...and come convince me" half of the prompt. Pre-filled
+// per type by the client (food/place/culture/help templates), editable by the
+// creator before submit. Nullable so we can shipped without backfilling old
+// challenges; the read path falls back to a generic clause for nulls.
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS return_clause TEXT", 'channel_challenges.return_clause');
+
+// ── Acceptances — one row per (challenge, acceptor) relationship ─────────────
+// Each row owns:
+//   - thread_channel_id: a new channels.type='challenge_thread' channel, the
+//     1:1 chat between creator + acceptor (parent_id=challenge.id)
+//   - debrief_event_id  (nullable): the channels.type='event' channel auto-
+//     created in phase 2 (parent_id=thread_channel_id, private to thread)
+//   - phase: accepted → scheduled → debrief (derived) → approved | rejected
+// UNIQUE (challenge, acceptor) enforces "one channel per relationship".
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_acceptances (
+        id                  TEXT        PRIMARY KEY,
+        challenge_id        TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        acceptor_user_id    TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        thread_channel_id   TEXT        NOT NULL UNIQUE REFERENCES channels(id) ON DELETE CASCADE,
+        debrief_event_id    TEXT        REFERENCES channels(id) ON DELETE SET NULL,
+        phase               TEXT        NOT NULL DEFAULT 'accepted',
+        approved_at         TIMESTAMPTZ,
+        rejected_at         TIMESTAMPTZ,
+        created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (challenge_id, acceptor_user_id)
+    )
+", 'challenge_acceptances');
+
+// Acceptor's thread list (mobile/web "my challenge threads" screen, PR2).
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_acceptor  ON challenge_acceptances (acceptor_user_id, created_at DESC)", 'idx_chacc_acceptor');
+// Per-challenge acceptances (creator's view of who took it on + cap check).
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_challenge ON challenge_acceptances (challenge_id,    created_at DESC)", 'idx_chacc_challenge');
+
 echo "\nDone.\n";

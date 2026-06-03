@@ -15,6 +15,14 @@
   },
   "titleLabel": "Ton défi",
   "titlePlaceholder": "ex. Emmène-moi dans ton spot café préféré",
+  "maxParticipantsLabel": "Combien de voyageurs max ?",
+  "returnClauseLabel": "Et après ?",
+  "returnClauseTemplates": {
+    "food": "...et viens me la faire goûter 🍜",
+    "place": "...et emmène-moi y faire un tour 🗺️",
+    "culture": "...et on se retrouve pour en parler 🎭",
+    "help": "...et on se retrouve pour le faire ensemble 🙏"
+  },
   "createCta": "Lancer le défi 🔥",
   "saveChanges": "Enregistrer",
   "errSave": "Impossible d'enregistrer",

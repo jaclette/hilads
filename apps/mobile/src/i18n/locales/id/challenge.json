@@ -15,6 +15,14 @@
   },
   "titleLabel": "Tantanganmu",
   "titlePlaceholder": "mis. Ajak aku ke kafe favoritmu",
+  "maxParticipantsLabel": "Berapa pelancong maks?",
+  "returnClauseLabel": "Lalu?",
+  "returnClauseTemplates": {
+    "food": "...dan ajak aku merasakannya bareng 🍜",
+    "place": "...dan kamu sendiri yang antar aku ke sana 🗺️",
+    "culture": "...dan kita ketemuan buat ngobrolin 🎭",
+    "help": "...dan kita ketemuan biar aku bisa bantu langsung 🙏"
+  },
   "createCta": "Luncurkan tantangan 🔥",
   "saveChanges": "Simpan perubahan",
   "errSave": "Gagal menyimpan",

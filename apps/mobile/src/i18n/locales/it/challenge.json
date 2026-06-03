@@ -15,6 +15,14 @@
   },
   "titleLabel": "La tua sfida",
   "titlePlaceholder": "es. Portami al tuo caffè preferito",
+  "maxParticipantsLabel": "Quanti viaggiatori al massimo?",
+  "returnClauseLabel": "E poi?",
+  "returnClauseTemplates": {
+    "food": "...e vieni a condividerlo con me 🍜",
+    "place": "...e portami tu lì 🗺️",
+    "culture": "...e ci vediamo per parlarne 🎭",
+    "help": "...e ci vediamo così posso aiutarti di persona 🙏"
+  },
   "createCta": "Lancia la sfida 🔥",
   "saveChanges": "Salva modifiche",
   "errSave": "Impossibile salvare",

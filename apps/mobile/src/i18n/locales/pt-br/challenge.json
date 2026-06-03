@@ -15,6 +15,14 @@
   },
   "titleLabel": "Seu desafio",
   "titlePlaceholder": "ex. Me leve ao seu café favorito",
+  "maxParticipantsLabel": "Quantos viajantes no máximo?",
+  "returnClauseLabel": "E depois?",
+  "returnClauseTemplates": {
+    "food": "...e vem dividir comigo 🍜",
+    "place": "...e me leva você mesmo 🗺️",
+    "culture": "...e a gente se encontra pra conversar sobre isso 🎭",
+    "help": "...e a gente se encontra pra eu te ajudar pessoalmente 🙏"
+  },
   "createCta": "Lançar desafio 🔥",
   "saveChanges": "Salvar alterações",
   "errSave": "Não foi possível salvar",

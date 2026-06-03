@@ -91,10 +91,12 @@ export default function ChallengeChatScreen() {
     router.push({
       pathname: '/challenge/create',
       params: {
-        editId:   challenge.id,
-        title:    challenge.title,
-        type:     challenge.challenge_type,
-        audience: challenge.audience,
+        editId:          challenge.id,
+        title:           challenge.title,
+        type:            challenge.challenge_type,
+        audience:        challenge.audience,
+        maxParticipants: String(challenge.max_participants),
+        returnClause:    challenge.return_clause ?? '',
       },
     } as never);
   }, [challenge, router]);

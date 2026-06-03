@@ -6912,6 +6912,37 @@ img.pub-profile-avatar {
   margin-top: -12px;
 }
 
+/* Stepper — used by CreateChallengePage for the max_participants field.
+   Round −/+ buttons flanking a centred number; thumb-friendly tap targets. */
+.cef-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+.cef-stepper-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  font-size: 20px;
+  font-weight: 800;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.cef-stepper-btn:hover  { background: rgba(255, 255, 255, 0.10); }
+.cef-stepper-btn:active { transform: scale(0.96); }
+.cef-stepper-btn:disabled { opacity: 0.4; cursor: default; }
+.cef-stepper-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+  min-width: 48px;
+  text-align: center;
+}
+
 .cef-submit {
   width: 100%;
   padding: 15px;
