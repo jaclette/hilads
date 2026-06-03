@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "Nasa {{city}} ka",
-    "slide1Body": "Ito ang live chat ng iyong city. Tingnan kung anong buzzing at mag-hi ka.",
-    "slide2Title": "I-tap ang 🔥",
-    "slide2Body": "Mga spontaneous na tambayan na puwede mong salihan ngayon, plus mga event na naka-plano sa paligid mo.",
-    "slide3Title": "Tingnan kung sino ang nandiyan",
-    "slide3Body": "Mga local at traveler sa iyong city, live ngayong minutong ito.",
-    "slide4Title": "Gawin mong sariling iyo",
-    "slide4Body": "Sa libreng account, puwede kang sumali sa mga tambayan, panatilihin ang pangalan mo, mag-add ng friends at ma-notify.",
+    "slide1Body": "Dito nagkikita ang mga local at traveler — sa pamamagitan ng totoong challenges.",
+    "slide2Title": "Hinahamon ng mga local ang traveler. At pabalik.",
+    "slide2Body": "🍜 Pinakamasarap na adobo · 📍 Tagong viewpoint · 🎭 Magsalita ng kaunting Filipino · 🙏 Tulong sa SIM. Totoong challenges na nagdadala sa totoong meet-up.",
+    "slide3Title": "Paano ito gumagana",
+    "slide3Body": "Tanggapin mo, magkasundo kayo sa date, magkita kayo IRL, ikuwento ang nangyari.",
+    "slide4Title": "Tanggapin ang una mong challenge",
+    "slide4Body": "Libreng account. Pumili ng pangalan. Sali na.",
     "skip": "Laktawan ✕",
     "next": "Next",
     "explore": "Mag-explore muna",
     "createAccount": "Gumawa ng account",
-    "fallbackCity": "iyong city",
-    "slideChallengeTitle": "Magkonekta sa pamamagitan ng mga challenge",
-    "slideChallengeBody": "Local ka o biyahero. Maglunsad ng challenge para sa kabilang panig — pumili ng uri, lagyan ng pamagat, tingnan ang mga tatanggap. I-validate kapag natapos na."
+    "fallbackCity": "iyong city"
   },
   "share": {
     "title": "Magbahagi ng kahit ano 👀",

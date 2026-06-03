@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "Estás em {{city}}",
-    "slide1Body": "Este é o chat ao vivo da tua cidade. Vê o que se passa e diz olá.",
-    "slide2Title": "Toca em 🔥",
-    "slide2Body": "Convívios espontâneos para te juntares já, além de eventos planeados perto de ti.",
-    "slide3Title": "Vê quem está por perto",
-    "slide3Body": "Locais e viajantes na tua cidade, ao vivo neste minuto.",
-    "slide4Title": "Faz à tua maneira",
-    "slide4Body": "Uma conta grátis deixa-te juntar a convívios, manter o teu nome, adicionar amigos e receber notificações.",
+    "slide1Body": "Locais e viajantes encontram-se aqui — através de desafios reais.",
+    "slide2Title": "Os locais desafiam os viajantes. E vice-versa.",
+    "slide2Body": "🍜 O melhor bacalhau · 📍 Um miradouro escondido · 🎭 Diz algo em português · 🙏 Ajuda com um cartão SIM. Desafios reais que levam a um encontro real.",
+    "slide3Title": "Como funciona",
+    "slide3Body": "Aceitas, combinam uma data juntos, encontram-se pessoalmente, contam a história.",
+    "slide4Title": "Aceita o teu primeiro",
+    "slide4Body": "Conta grátis. Escolhe um nome. Avança.",
     "skip": "Saltar ✕",
     "next": "Seguinte",
     "explore": "Explorar primeiro",
     "createAccount": "Criar uma conta",
-    "fallbackCity": "a tua cidade",
-    "slideChallengeTitle": "Liguem-se através de desafios",
-    "slideChallengeBody": "És local ou viajante. Lança um desafio para o outro lado — escolhe um tipo, dá-lhe um título, vê as pessoas aceitarem. Valida quando terminar."
+    "fallbackCity": "a tua cidade"
   },
   "share": {
     "title": "Partilha algo 👀",

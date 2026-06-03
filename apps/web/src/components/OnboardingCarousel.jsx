@@ -1,18 +1,23 @@
 import { useRef, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import ChallengePipeline from './ChallengePipeline'
 
 // First-time onboarding carousel for GUESTS. Shown once on first city-channel
 // arrival and re-openable via the header "?" button. Registered users never
 // see it (the caller only mounts it for guests). Lightweight: a CSS
 // scroll-snap track + dots, no animation libraries.
+//
+// Slide 3 swaps the emoji for an embedded <ChallengePipeline> in muted /
+// educational mode — same visual newcomers see on the challenge detail page,
+// so the onboarding doesn't sell something different from what ships.
 
 function slides(t, city) {
   const where = city || t('onboarding.fallbackCity', { defaultValue: 'your city' })
   return [
-    { emoji: '👋', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
-    { emoji: '🔥', title: t('onboarding.slide2Title'), body: t('onboarding.slide2Body') },
-    { emoji: '👀', title: t('onboarding.slide3Title'), body: t('onboarding.slide3Body') },
-    { emoji: '✨', title: t('onboarding.slide4Title'), body: t('onboarding.slide4Body') },
+    { emoji: '🌍', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
+    { emoji: '🤝', title: t('onboarding.slide2Title'),                  body: t('onboarding.slide2Body') },
+    { kind: 'pipeline', title: t('onboarding.slide3Title'),             body: t('onboarding.slide3Body') },
+    { emoji: '✨', title: t('onboarding.slide4Title'),                  body: t('onboarding.slide4Body') },
   ]
 }
 
@@ -47,7 +52,13 @@ export default function OnboardingCarousel({ city, onSignup, onClose }) {
       <div className="onboarding-track" ref={trackRef} onScroll={onScroll}>
         {SLIDES.map((s, i) => (
           <div className="onboarding-slide" key={i}>
-            <div className="onboarding-emoji">{s.emoji}</div>
+            {s.kind === 'pipeline' ? (
+              <div className="onboarding-pipeline-wrap" style={{ width: '100%', maxWidth: 360, marginBottom: 8 }}>
+                <ChallengePipeline acceptance={null} iAmCreator={false} />
+              </div>
+            ) : (
+              <div className="onboarding-emoji">{s.emoji}</div>
+            )}
             <h2 className="onboarding-title">{s.title}</h2>
             <p className="onboarding-body">{s.body}</p>
           </div>

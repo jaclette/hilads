@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "Sei a {{city}}",
-    "slide1Body": "Questa è la chat live della tua città. Guarda cosa si muove e saluta.",
-    "slide2Title": "Tocca 🔥",
-    "slide2Body": "Ritrovi spontanei a cui unirti subito, più eventi organizzati vicino a te.",
-    "slide3Title": "Guarda chi c'è in giro",
-    "slide3Body": "Gente del posto e viaggiatori nella tua città, in diretta in questo momento.",
-    "slide4Title": "Rendilo tuo",
-    "slide4Body": "Un account gratuito ti permette di unirti ai ritrovi, mantenere il tuo nome, aggiungere amici e ricevere notifiche.",
+    "slide1Body": "Local e viaggiatori si incontrano qui — attraverso sfide vere.",
+    "slide2Title": "I local sfidano i viaggiatori. E viceversa.",
+    "slide2Body": "🍜 La migliore carbonara · 📍 Un punto panoramico nascosto · 🎭 Dì qualcosa in italiano · 🙏 Aiuto con una SIM. Sfide vere che portano a un incontro vero.",
+    "slide3Title": "Come funziona",
+    "slide3Body": "Accettala, scegliete una data insieme, vi vedete dal vivo, raccontate la storia.",
+    "slide4Title": "Accetta la tua prima sfida",
+    "slide4Body": "Account gratuito. Scegli un nome. Buttati.",
     "skip": "Salta ✕",
     "next": "Avanti",
     "explore": "Esplora prima",
     "createAccount": "Crea un account",
-    "fallbackCity": "la tua città",
-    "slideChallengeTitle": "Connettetevi attraverso le sfide",
-    "slideChallengeBody": "Sei local o viaggiatore. Lancia una sfida per l'altro lato — scegli un tipo, dagli un titolo, guarda la gente accettarla. Valida quando è finita."
+    "fallbackCity": "la tua città"
   },
   "share": {
     "title": "Condividi qualcosa 👀",

@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "Você está em {{city}}",
-    "slide1Body": "Este é o chat ao vivo da sua cidade. Veja o que está rolando e mande um oi.",
-    "slide2Title": "Toque em 🔥",
-    "slide2Body": "Rolês espontâneos pra entrar agora mesmo, além de eventos planejados perto de você.",
-    "slide3Title": "Veja quem está por perto",
-    "slide3Body": "Moradores e viajantes na sua cidade, ao vivo neste minuto.",
-    "slide4Title": "Faça do seu jeito",
-    "slide4Body": "Uma conta grátis deixa você entrar em rolês, manter seu nome, adicionar amigos e receber notificações.",
+    "slide1Body": "Locais e viajantes se encontram aqui — através de desafios reais.",
+    "slide2Title": "Os locais desafiam os viajantes. E vice-versa.",
+    "slide2Body": "🍜 O melhor pão de queijo · 📍 Um mirante escondido · 🎭 Solte um português · 🙏 Ajude com um chip. Desafios reais que levam a um encontro real.",
+    "slide3Title": "Como funciona",
+    "slide3Body": "Você aceita, marcam uma data juntos, se encontram pessoalmente, contam a história.",
+    "slide4Title": "Aceite o primeiro",
+    "slide4Body": "Conta grátis. Escolha um nome. Bora.",
     "skip": "Pular ✕",
     "next": "Próximo",
     "explore": "Explorar primeiro",
     "createAccount": "Criar uma conta",
-    "fallbackCity": "sua cidade",
-    "slideChallengeTitle": "Conectem-se através de desafios",
-    "slideChallengeBody": "Você é local ou viajante. Lance um desafio para o outro lado — escolha um tipo, dê um título, veja as pessoas aceitarem. Valide quando terminar."
+    "fallbackCity": "sua cidade"
   },
   "share": {
     "title": "Compartilhe algo 👀",

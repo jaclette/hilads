@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "你正在{{city}}",
-    "slide1Body": "這是你所在城市的即時聊天。看看有什麼熱鬧，打個招呼吧。",
-    "slide2Title": "點擊 🔥",
-    "slide2Body": "可以馬上加入的臨時聚會，還有你身邊正在籌劃的活動。",
-    "slide3Title": "看看誰在附近",
-    "slide3Body": "此刻就在你城市裡的當地人和旅客。",
-    "slide4Title": "打造專屬於你的體驗",
-    "slide4Body": "免費註冊即可加入聚會、保留你的名字、新增好友並接收通知。",
+    "slide1Body": "在地人和旅人在這裡相遇 — 透過真實的挑戰。",
+    "slide2Title": "在地人挑戰旅人。反之亦然。",
+    "slide2Body": "🍜 最棒的牛肉麵 · 📍 隱藏觀景點 · 🎭 說幾句中文 · 🙏 幫忙搞 SIM 卡。真實的挑戰，帶來真實的見面。",
+    "slide3Title": "玩法",
+    "slide3Body": "接下挑戰，一起約個日子，線下見面，分享故事。",
+    "slide4Title": "接下你的第一個挑戰",
+    "slide4Body": "免費帳號。取個名字。加入吧。",
     "skip": "跳過 ✕",
     "next": "下一步",
     "explore": "先逛逛",
     "createAccount": "建立帳號",
-    "fallbackCity": "你的城市",
-    "slideChallengeTitle": "透過挑戰連結",
-    "slideChallengeBody": "你是在地人或旅人。為另一方發起一個挑戰 — 選擇類型,給它一個標題,看著人們接受。完成後驗證。"
+    "fallbackCity": "你的城市"
   },
   "share": {
     "title": "分享點什麼 👀",

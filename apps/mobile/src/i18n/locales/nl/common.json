@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "Je bent in {{city}}",
-    "slide1Body": "Dit is de live chat van je stad. Kijk wat er speelt en zeg hallo.",
-    "slide2Title": "Tik op 🔥",
-    "slide2Body": "Spontane meetups om nu meteen aan mee te doen, plus evenementen bij jou in de buurt.",
-    "slide3Title": "Zie wie er in de buurt is",
-    "slide3Body": "Locals en reizigers in jouw stad, live op dit moment.",
-    "slide4Title": "Maak het van jou",
-    "slide4Body": "Met een gratis account doe je mee aan meetups, behoud je je naam, voeg je vrienden toe en krijg je meldingen.",
+    "slide1Body": "Locals en reizigers ontmoeten elkaar hier — via echte challenges.",
+    "slide2Title": "Locals dagen reizigers uit. En andersom.",
+    "slide2Body": "🍜 De beste bitterballen · 📍 Een verborgen uitzichtpunt · 🎭 Spreek een beetje Nederlands · 🙏 Help met een SIM. Echte challenges die leiden tot een echte ontmoeting.",
+    "slide3Title": "Zo werkt het",
+    "slide3Body": "Neem 'm aan, prik samen een datum, ontmoet elkaar IRL, deel het verhaal.",
+    "slide4Title": "Neem je eerste aan",
+    "slide4Body": "Gratis account. Kies een naam. Duik erin.",
     "skip": "Overslaan ✕",
     "next": "Volgende",
     "explore": "Eerst verkennen",
     "createAccount": "Een account aanmaken",
-    "fallbackCity": "jouw stad",
-    "slideChallengeTitle": "Verbind via challenges",
-    "slideChallengeBody": "Je bent local of reiziger. Start een challenge voor de andere kant — kies een type, geef hem een titel, kijk wie hem aanneemt. Valideer wanneer klaar."
+    "fallbackCity": "jouw stad"
   },
   "share": {
     "title": "Deel iets 👀",

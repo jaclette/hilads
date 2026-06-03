@@ -15,20 +15,26 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 
-interface Slide { emoji: string; title: string; body: string }
+// kind='pipeline' slot embeds the lifecycle visual (the same component that
+// renders on the challenge detail screen) so newcomers see the actual journey,
+// not just text describing it. emoji is omitted for that slide.
+interface Slide {
+  emoji?: string;
+  title:  string;
+  body:   string;
+  kind?:  'pipeline';
+}
 
 function buildSlides(t: TFunction, city?: string | null): Slide[] {
-  const where = city || t('onboarding.fallbackCity', { defaultValue: 'your city' }); // localized fallback when no city yet
+  const where = city || t('onboarding.fallbackCity', { defaultValue: 'your city' });
   return [
-    { emoji: '👋', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
-    { emoji: '🔥', title: t('onboarding.slide2Title'), body: t('onboarding.slide2Body') },
-    { emoji: '👀', title: t('onboarding.slide3Title'), body: t('onboarding.slide3Body') },
-    // Phase 6 — new challenge-loop slide explaining the local ↔ explorer dynamic.
-    // Sits between "See who's around" and "Make it yours" so it's surfaced as
-    // the core value prop on the path to action.
-    { emoji: '🤝', title: t('onboarding.slideChallengeTitle'), body: t('onboarding.slideChallengeBody') },
-    { emoji: '✨', title: t('onboarding.slide4Title'), body: t('onboarding.slide4Body') },
+    { emoji: '🌍', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
+    { emoji: '🤝', title: t('onboarding.slide2Title'),                  body: t('onboarding.slide2Body') },
+    // Slide 3 has no emoji — the embedded pipeline IS the visual.
+    { kind: 'pipeline', title: t('onboarding.slide3Title'),             body: t('onboarding.slide3Body') },
+    { emoji: '✨', title: t('onboarding.slide4Title'),                  body: t('onboarding.slide4Body') },
   ];
 }
 
@@ -86,7 +92,13 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
         >
           {slides.map((s, i) => (
             <View key={i} style={[styles.slide, { width }]}>
-              <Text style={styles.emoji}>{s.emoji}</Text>
+              {s.kind === 'pipeline' ? (
+                <View style={styles.pipelineWrap}>
+                  <ChallengePipeline acceptance={null} iAmCreator={false} />
+                </View>
+              ) : (
+                <Text style={styles.emoji}>{s.emoji}</Text>
+              )}
               <Text style={styles.title}>{s.title}</Text>
               <Text style={styles.body}>{s.body}</Text>
             </View>
@@ -133,6 +145,10 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   emoji: { fontSize: 72, lineHeight: 80 },
+  // Slide 3 — embedded pipeline. Wider than the standard slide body so the
+  // 4 dots have room to breathe; ChallengePipeline already paints its own
+  // internal padding.
+  pipelineWrap: { width: '100%', maxWidth: 380, marginBottom: 8 },
   title: {
     fontSize: FontSizes.xl,
     fontWeight: '800',

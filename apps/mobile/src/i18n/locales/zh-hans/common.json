@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "你正在{{city}}",
-    "slide1Body": "这是你所在城市的实时聊天。看看有什么热闹，打个招呼吧。",
-    "slide2Title": "点击 🔥",
-    "slide2Body": "可以马上加入的临时聚会，还有你身边正在筹划的活动。",
-    "slide3Title": "看看谁在附近",
-    "slide3Body": "此刻就在你城市里的本地人和旅行者。",
-    "slide4Title": "打造专属于你的体验",
-    "slide4Body": "免费注册即可加入聚会、保留你的名字、添加好友并接收通知。",
+    "slide1Body": "本地人和旅行者在这里相遇 — 通过真实的挑战。",
+    "slide2Title": "本地人挑战旅行者。反之亦然。",
+    "slide2Body": "🍜 最棒的火锅 · 📍 隐藏观景点 · 🎭 说几句中文 · 🙏 帮忙搞 SIM 卡。真实的挑战，带来真实的见面。",
+    "slide3Title": "玩法",
+    "slide3Body": "接下挑战，一起定个日子，线下见面，分享故事。",
+    "slide4Title": "接下你的第一个挑战",
+    "slide4Body": "免费账号。起个名字。加入吧。",
     "skip": "跳过 ✕",
     "next": "下一步",
     "explore": "先逛逛",
     "createAccount": "创建账号",
-    "fallbackCity": "你的城市",
-    "slideChallengeTitle": "通过挑战连接",
-    "slideChallengeBody": "你是本地人或旅行者。为另一方发起一个挑战 — 选择类型,起个标题,看着人们接受。完成后验证。"
+    "fallbackCity": "你的城市"
   },
   "share": {
     "title": "分享点什么 👀",

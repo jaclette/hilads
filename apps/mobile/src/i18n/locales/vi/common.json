@@ -15,20 +15,18 @@
   },
   "onboarding": {
     "slide1Title": "Bạn đang ở {{city}}",
-    "slide1Body": "Đây là chat trực tiếp của thành phố bạn. Xem có gì đang sôi động và chào mọi người nhé.",
-    "slide2Title": "Chạm 🔥",
-    "slide2Body": "Những buổi tụ tập ngẫu hứng để tham gia ngay, cùng các sự kiện được lên kế hoạch quanh bạn.",
-    "slide3Title": "Xem ai đang ở gần",
-    "slide3Body": "Người địa phương và du khách trong thành phố bạn, trực tiếp ngay lúc này.",
-    "slide4Title": "Biến nó thành của bạn",
-    "slide4Body": "Tài khoản miễn phí giúp bạn tham gia tụ tập, giữ tên của mình, kết bạn và nhận thông báo.",
+    "slide1Body": "Người địa phương và du khách gặp nhau ở đây — qua những thử thách thực sự.",
+    "slide2Title": "Người địa phương thách du khách. Và ngược lại.",
+    "slide2Body": "🍜 Bánh mì ngon nhất · 📍 Điểm ngắm cảnh giấu · 🎭 Nói vài câu tiếng Việt · 🙏 Giúp với SIM. Những thử thách thật dẫn đến cuộc gặp thật.",
+    "slide3Title": "Cách thức hoạt động",
+    "slide3Body": "Bạn nhận lời, cùng nhau chọn ngày, gặp nhau ngoài đời, kể lại câu chuyện.",
+    "slide4Title": "Nhận thử thách đầu tiên",
+    "slide4Body": "Tài khoản miễn phí. Chọn một cái tên. Lao vào.",
     "skip": "Bỏ qua ✕",
     "next": "Tiếp",
     "explore": "Khám phá trước",
     "createAccount": "Tạo tài khoản",
-    "fallbackCity": "thành phố của bạn",
-    "slideChallengeTitle": "Kết nối qua những thử thách",
-    "slideChallengeBody": "Bạn là người địa phương hay du khách. Tạo một thử thách cho phía bên kia — chọn loại, đặt tiêu đề, xem mọi người chấp nhận. Xác nhận khi hoàn thành."
+    "fallbackCity": "thành phố của bạn"
   },
   "share": {
     "title": "Chia sẻ điều gì đó 👀",
