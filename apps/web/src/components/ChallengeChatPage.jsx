@@ -8,11 +8,11 @@
  * reply — all deferred to mobile or a follow-up commit if needed.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
-  fetchChallengeById, fetchChallengeMessages, sendChallengeMessage,
+  fetchChallengeById,
   fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
@@ -20,9 +20,6 @@ import {
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
-import MessageComposer from './MessageComposer'
-import { linkifyText, extractFirstUrl } from '../linkify.jsx'
-import LinkPreviewCard from './LinkPreviewCard'
 
 // Slug builder — mirrors apps/web/api/sitemap.mjs:challengeSlug and
 // apps/mobile/src/lib/challengeSlug.ts. Kept inline since it's a single
@@ -60,19 +57,6 @@ function avatarColors(name = '') {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-function toMs(ts) {
-  if (!ts) return 0
-  if (typeof ts === 'number') return ts < 1e10 ? ts * 1000 : ts
-  return new Date(typeof ts === 'string' ? ts.replace(' ', 'T') : ts).getTime()
-}
-
-function formatTime(ts) {
-  const ms = toMs(ts)
-  if (!ms) return ''
-  const d = new Date(ms)
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
 export default function ChallengeChatPage({
   challenge: initialChallenge,
   guest,
@@ -90,19 +74,13 @@ export default function ChallengeChatPage({
 
   const [challenge,    setChallenge]    = useState(initialChallenge)
   const [participants, setParticipants] = useState([])
-  const [messages,     setMessages]     = useState([])
-  const [composer,     setComposer]     = useState('')
-  const [sending,      setSending]      = useState(false)
   const [busy,         setBusy]         = useState(null) // 'accept' | 'status' | 'delete' | null
-  const [loading,      setLoading]      = useState(true)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
   // PR2/3/4 — full acceptance summary. Drives the Accept button morph + the
   // ChallengePipeline rendering. Null when I have no acceptance for this
   // challenge (visitor or creator on their own ad).
   const [myAcceptance, setMyAcceptance] = useState(null)
   const myThreadChannelId = myAcceptance?.thread_channel_id ?? null
-  const feedRef    = useRef(null)
-  const knownIds   = useRef(new Set())
 
   const id = challenge?.id
 
@@ -131,66 +109,23 @@ export default function ChallengeChatPage({
     setParticipants(data.participants || [])
   }, [id])
 
-  const loadMessages = useCallback(async () => {
-    if (!id) return
-    setLoading(true)
-    try {
-      const data = await fetchChallengeMessages(id, { limit: 50 })
-      const msgs = data.messages || []
-      knownIds.current = new Set(msgs.map(m => m.id ?? `${m.guestId}:${m.createdAt}`))
-      // API returns newest-last; we render oldest-first → sort by createdAt asc.
-      setMessages(msgs.sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
-    } finally {
-      setLoading(false)
-    }
-  }, [id])
-
   useEffect(() => {
     loadParticipants()
-    loadMessages()
-  }, [loadParticipants, loadMessages])
+  }, [loadParticipants])
 
-  // ── WS subscriptions — live messages + validate flip ───────────────────────
+  // ── WS subscriptions — challenge status flips (open ⇄ validated) only.
+  // Per-thread chat messages aren't on this surface anymore (PR4+) — the
+  // public chat that used to live here moved into per-acceptance threads.
 
   useEffect(() => {
-    if (!socket || !sessionId || !id) return
-    socket.joinChallenge(id, sessionId)
-    const offMsg = socket.on('newMessage', (data) => {
-      if (data.channelId !== id) return
-      const m = data.message
-      if (!m) return
-      const key = m.id ?? `${m.guestId}:${m.createdAt}`
-      if (knownIds.current.has(key)) return
-      knownIds.current.add(key)
-      setMessages(prev => {
-        // The WS broadcast almost always beats the HTTP response — when it
-        // does, replace the matching optimistic row instead of appending,
-        // otherwise we end up with the canonical msg twice (WS appended +
-        // HTTP-replaced optimistic both carry the same server id).
-        const optIdx = prev.findIndex(x =>
-          typeof x.id === 'string' && x.id.startsWith('local-') &&
-          x.guestId === m.guestId && (x.content ?? '') === (m.content ?? '')
-        )
-        if (optIdx >= 0) {
-          const copy = [...prev]
-          copy[optIdx] = m
-          return copy
-        }
-        return [...prev, m].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
-      })
-    })
+    if (!socket || !id) return
     const onStatusFlip = (data) => {
       if (data.challenge?.id === id) setChallenge(data.challenge)
     }
     const offValidated   = socket.on('challenge_validated',   onStatusFlip)
     const offUnvalidated = socket.on('challenge_unvalidated', onStatusFlip)
-    return () => { offMsg(); offValidated(); offUnvalidated(); socket.leaveChallenge(id, sessionId) }
-  }, [id, socket, sessionId])
-
-  // Auto-scroll to bottom on new message.
-  useEffect(() => {
-    if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight
-  }, [messages.length])
+    return () => { offValidated(); offUnvalidated() }
+  }, [id, socket])
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
@@ -299,32 +234,6 @@ export default function ChallengeChatPage({
     setShareToast(true)
     setTimeout(() => setShareToast(false), 1800)
   }, [challenge])
-
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault()
-    const content = composer.trim()
-    if (!content || sending || isValidated) return
-    if (!guest?.guestId || !nickname) return
-    setSending(true)
-    const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    // Optimistic insert.
-    const optimistic = {
-      id: localId, channelId: id, guestId: guest.guestId, nickname,
-      content, createdAt: Date.now() / 1000, status: 'sending',
-    }
-    setMessages(prev => [...prev, optimistic])
-    setComposer('')
-    try {
-      const sent = await sendChallengeMessage(id, guest.guestId, nickname, content)
-      // Server returns the canonical message — replace the optimistic row.
-      setMessages(prev => prev.map(m => m.id === localId ? sent : m))
-      knownIds.current.add(sent.id)
-    } catch (err) {
-      setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
-    } finally {
-      setSending(false)
-    }
-  }, [id, composer, sending, guest, nickname, isValidated])
 
   if (!challenge) {
     return (
@@ -508,71 +417,10 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* Accept moved into the .challenge-creator-row above (icon-only). */}
-
-      {/* Messages */}
-      <div className="topic-chat-feed" ref={feedRef}>
-        {loading && messages.length === 0 && (
-          <div className="topic-chat-empty">
-            <span className="topic-chat-empty-icon">💬</span>
-          </div>
-        )}
-        {!loading && messages.length === 0 && (
-          <div className="topic-chat-empty">
-            <span className="topic-chat-empty-icon">✨</span>
-            {/* Reuse hangout's generic chat-empty copy — semantically the
-                same ("no messages yet, be the first") and saves shipping
-                duplicate keys across 19 locales. */}
-            <strong>{t('feed.emptyTitle', { ns: 'hangout' })}</strong>
-            <span>{t('feed.emptySub',  { ns: 'hangout' })}</span>
-          </div>
-        )}
-        {messages.map((m, idx) => {
-          const isMine    = m.guestId === guest?.guestId
-          const prev      = messages[idx - 1]
-          const isGrouped = prev?.guestId === m.guestId
-          const [c1, c2]  = avatarColors(m.nickname)
-          const opacity   = m.status === 'failed' ? 0.5 : m.status === 'sending' ? 0.7 : 1
-          return (
-            <div
-              key={m.id ?? idx}
-              className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : ''].filter(Boolean).join(' ')}
-            >
-              {!isMine && !isGrouped && (
-                <div className="msg-meta">
-                  <span className="msg-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                    {(m.nickname ?? '?')[0].toUpperCase()}
-                  </span>
-                  <span className="msg-author" style={{ color: c1 }}>{m.nickname}</span>
-                </div>
-              )}
-              <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''}`} style={{ opacity }}>
-                <div className="msg-content">
-                  <span className="msg-text">{linkifyText(m.content || '')}</span>
-                  {(() => { const u = extractFirstUrl(m.content); return u ? <LinkPreviewCard url={u} /> : null })()}
-                </div>
-              </div>
-              <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(m.createdAt)}</span>
-            </div>
-          )
-        })}
-      </div>
-
-      {/* Composer — hidden when the challenge is validated; chat stays
-          readable but no new posts. Anyone (including guests) can post on an
-          open challenge — mirrors events, NOT the members-only hangout gate.
-          MessageComposer passes the raw input event to onChange (not the
-          string value), so we extract e.target.value here. */}
-      {!isValidated && guest?.guestId && nickname && (
-        <MessageComposer
-          value={composer}
-          onChange={(e) => setComposer(e.target.value)}
-          onSubmit={handleSubmit}
-          sending={sending}
-          placeholder={t('titlePlaceholder')}
-          showEmojiButton={false}
-        />
-      )}
+      {/* Public chat removed — per-acceptance threads (PR2+) are now the
+          only conversation surface. Visitors with no acceptance just see
+          the pipeline + Accept CTA above; acceptors tap the orange chat
+          bubble on the participants row to open their thread. */}
     </div>
   )
 }

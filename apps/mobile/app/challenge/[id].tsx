@@ -1,18 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, AppState,
+  View, Text, ActivityIndicator,
+  TouchableOpacity, StyleSheet, Alert,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import {
-  fetchChallengeById, fetchChallengeParticipants, fetchChallengeMessages,
-  sendChallengeMessage, sendChallengeImageMessage,
+  fetchChallengeById, fetchChallengeParticipants,
   validateChallenge, unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
 } from '@/api/challenges';
@@ -21,16 +20,9 @@ import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { MembersSheet } from '@/components/MembersSheet';
 import { avatarColor } from '@/lib/avatarColors';
 import { shareLink } from '@/lib/shareLink';
-import { useMessages } from '@/hooks/useMessages';
-import { ChatMessage } from '@/features/chat/ChatMessage';
-import { ChatInput } from '@/features/chat/ChatInput';
-import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
-import * as Clipboard from 'expo-clipboard';
-import i18n from '@/i18n';
-import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildChallengeUrl } from '@/constants';
-import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
+import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, UserDTO } from '@/types';
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
   food:    '🍜',
@@ -52,7 +44,6 @@ export default function ChallengeChatScreen() {
   const [membersOpen,      setMembersOpen]      = useState(false);
   const [acceptBusy,       setAcceptBusy]       = useState(false);
   const [validateBusy,     setValidateBusy]     = useState(false);
-  const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
   // PR2/3/4 — if I have an acceptance on this challenge, store the full
   // summary so the lifecycle pipeline can render my current phase + the
   // Accept button can morph into "Open thread →".
@@ -232,66 +223,6 @@ export default function ChallengeChatScreen() {
       setAcceptBusy(false);
     }
   }, [id, account?.id, acceptBusy, myThreadChannelId, loadMyAcceptance, router, t]);
-
-  // ── Messages ─────────────────────────────────────────────────────────────────
-
-  const loadFn = useCallback(
-    (opts?: { beforeId?: string }) => fetchChallengeMessages(id, opts),
-    [id],
-  );
-
-  const postTextFn = useCallback(
-    (content: string, _replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
-      if (!identity) return Promise.reject(new Error('Not ready'));
-      return sendChallengeMessage(id, identity.guestId, nickname, content, mentions);
-    },
-    [id, identity, nickname],
-  );
-
-  const postImageFn = useCallback(
-    (imageUrl: string): Promise<Message> => {
-      if (!identity) return Promise.reject(new Error('Not ready'));
-      return sendChallengeImageMessage(id, identity.guestId, nickname, imageUrl);
-    },
-    [id, identity, nickname],
-  );
-
-  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, reload, deleteMessage } = useMessages({
-    channelId: id,
-    loadFn,
-    postTextFn,
-    postImageFn,
-  });
-
-  // Join the WS challenge room while focused; leave on blur. Same pattern as
-  // topic chat — fallback poll only while WS is disconnected + app active.
-  const reloadRef = useRef(reload);
-  reloadRef.current = reload;
-  useFocusEffect(useCallback(() => {
-    // Refresh the challenge on focus so a recently-validated state shows
-    // immediately after returning from another tab.
-    loadChallenge();
-    let timer: ReturnType<typeof setInterval> | null = null;
-    const stop  = () => { if (timer !== null) { clearInterval(timer); timer = null; } };
-    const sync  = () => {
-      if (!socket.isConnected && AppState.currentState === 'active') {
-        if (timer === null) timer = setInterval(() => reloadRef.current(), 30_000);
-      } else stop();
-    };
-    sync();
-    const offDisc = socket.on('disconnected', sync);
-    const offConn = socket.on('connected',    () => { stop(); reloadRef.current(); });
-    const appSub  = AppState.addEventListener('change', s => {
-      if (s === 'active') { reloadRef.current(); sync(); } else stop();
-    });
-    return () => { stop(); offDisc(); offConn(); appSub.remove(); };
-  }, [loadChallenge]));
-
-  useEffect(() => {
-    if (!id || !sessionId) return;
-    socket.joinChallenge(id, sessionId);
-    return () => socket.leaveChallenge(id, sessionId);
-  }, [id, sessionId]);
 
   // Listen for WS status flips (validated ⇄ open) for this exact challenge
   // so the pill flips live when the creator toggles from another device.
@@ -551,67 +482,11 @@ export default function ChallengeChatScreen() {
 
       {/* Share + Accept moved into the challenger row above. */}
 
-      {/* Message error banner */}
-      {msgError && (
-        <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
-          <Text style={styles.errorBannerText}>{msgError}</Text>
-        </TouchableOpacity>
-      )}
+      {/* Spacer pushes the members sheet's anchor off the bottom edge so the
+          screen doesn't look unfinished now that the public chat is gone. */}
+      <View style={styles.flex} />
 
-      {/* Chat */}
-      <KeyboardAvoidingView style={styles.flex} behavior="padding">
-        <FlatList
-          data={messages}
-          keyExtractor={(m, i) => m.id ?? String(i)}
-          renderItem={({ item, index }) => {
-            const olderMsg = messages[index + 1];
-            const newerMsg = messages[index - 1];
-            const isGrouped = !!olderMsg && olderMsg.guestId === item.guestId && olderMsg.type !== 'system' && item.type !== 'system';
-            const showTime = item.type !== 'system' && (!newerMsg || newerMsg.guestId !== item.guestId || newerMsg.type === 'system');
-            const dateLabel = !isSameDay(item.createdAt, olderMsg?.createdAt) ? formatDateLabel(item.createdAt) : undefined;
-            return (
-              <ChatMessage
-                message={item}
-                myGuestId={identity?.guestId}
-                isGrouped={isGrouped}
-                showTime={showTime}
-                dateLabel={dateLabel}
-                onLongPress={(msg) => {
-                  if (!msg.id || msg.id.startsWith('local-')) return;
-                  setActionSheetMsg(msg);
-                }}
-              />
-            );
-          }}
-          inverted
-          contentContainerStyle={styles.listContent}
-          keyboardShouldPersistTaps="handled"
-          onEndReached={hasMore ? loadOlder : undefined}
-          onEndReachedThreshold={0.2}
-          ListFooterComponent={loadingOlder ? (
-            <View style={styles.loadingOlderWrap}><ActivityIndicator size="small" color={Colors.muted} /></View>
-          ) : null}
-          ListEmptyComponent={!msgsLoading ? (
-            <View style={styles.emptyChat}>
-              <Text style={styles.emptyChatText}>💬</Text>
-            </View>
-          ) : null}
-        />
-
-        {/* Disable the input when the challenge is validated — the chat is
-            preserved (read-only) so the conversation history stays intact. */}
-        {!isValidated && (
-          <ChatInput
-            sending={sending}
-            mentionContext="challenge"
-            mentionChannelId={id}
-            onSendText={(text, mentions) => sendText(text, null, mentions)}
-            onSendImage={sendImage}
-          />
-        )}
-      </KeyboardAvoidingView>
-
-      {/* Members modal */}
+      {/* Members modal — opened by tapping the participants row above. */}
       <MembersSheet
         visible={membersOpen}
         loading={false}
@@ -623,35 +498,6 @@ export default function ChallengeChatScreen() {
           setMembersOpen(false);
           router.push({ pathname: '/user/[id]', params: { id: uid } });
         }}
-      />
-
-      {/* Message long-press action sheet (copy / delete — challenges don't
-          support reactions in this cut, same as topic detail). */}
-      <MessageActionSheet
-        visible={actionSheetMsg !== null}
-        reactions={actionSheetMsg?.reactions ?? []}
-        onReact={() => {}}
-        onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
-        onDelete={(() => {
-          if (!actionSheetMsg) return undefined;
-          const mine = (account?.id && actionSheetMsg.userId === account.id) || (identity?.guestId && actionSheetMsg.guestId === identity.guestId);
-          return mine && !actionSheetMsg.deletedAt ? () => {
-            const msgId = actionSheetMsg.id!;
-            Alert.alert(
-              i18n.t('deleteConfirmTitle', { ns: 'chat' }),
-              i18n.t('deleteConfirmBody',  { ns: 'chat' }),
-              [
-                { text: i18n.t('deleteConfirmCancel', { ns: 'chat' }), style: 'cancel' },
-                { text: i18n.t('deleteConfirmCta',    { ns: 'chat' }), style: 'destructive',
-                  onPress: async () => {
-                    try { await deleteMessage(msgId); }
-                    catch { Alert.alert(i18n.t('deleteFailed', { ns: 'chat' })); }
-                  } },
-              ],
-            );
-          } : undefined;
-        })()}
-        onClose={() => setActionSheetMsg(null)}
       />
     </SafeAreaView>
   );
@@ -806,16 +652,4 @@ const styles = StyleSheet.create({
   },
   membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
   participantsEmpty: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
-
-  // Chat
-  listContent:      { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.md, gap: 4 },
-  loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
-  emptyChat:        { paddingVertical: 60, alignItems: 'center' },
-  emptyChatText:    { fontSize: 32, opacity: 0.3 },
-
-  errorBanner: {
-    backgroundColor: 'rgba(239,68,68,0.10)',
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-  },
-  errorBannerText: { fontSize: FontSizes.sm, color: Colors.red },
 });
