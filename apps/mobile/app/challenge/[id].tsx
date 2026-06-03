@@ -1,10 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, ActivityIndicator,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
 } from 'react-native';
 import { Image } from 'expo-image';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+// Read the tab-bar height directly from the context to avoid the throw
+// useBottomTabBarHeight does when called outside a Tab Navigator. Expo Router
+// pushes /challenge/[id] on top of (tabs) but the parent (tabs) navigator
+// stays mounted and its tab bar overlaps the screen's bottom edge — we need
+// to know that height to keep our chat input above it.
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -40,6 +46,10 @@ const TYPE_ICONS: Record<ChallengeType, string> = {
 export default function ChallengeChatScreen() {
   const router = useRouter();
   const { t } = useTranslation('challenge');
+  const insets = useSafeAreaInsets();
+  // Tab-bar height when our screen is nested under (tabs); 0 otherwise so
+  // routes opened from elsewhere don't get phantom dead space at the bottom.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
   const { id } = useLocalSearchParams<{ id: string }>();
   const { identity, account, sessionId } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
@@ -366,7 +376,7 @@ export default function ChallengeChatScreen() {
   const isValidated = challenge.status === 'validated';
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Nav — web parity: back pill | centered title | large type emoji on
           the right. The emoji is sized to roughly match the back pill so the
           title stays visually centered; no need for a manual spacer. */}
@@ -542,8 +552,15 @@ export default function ChallengeChatScreen() {
       {/* Inline thread chat (was previously a separate /thread/[id] screen).
           Mounts only when the viewer has an active acceptance for this
           challenge — acceptors see their own thread, creators see their
-          most-recently-active acceptor's thread (server-ordered). */}
-      <KeyboardAvoidingView style={styles.flex} behavior="padding">
+          most-recently-active acceptor's thread (server-ordered).
+          paddingBottom keeps the composer above the (tabs) bar that overlaps
+          this route's bottom edge (Expo Router quirk: parent tab bar isn't
+          unmounted when child routes are pushed). When this screen is reached
+          via a non-tabs path, tabBarHeight=0 — no dead space. */}
+      <KeyboardAvoidingView
+        style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
+        behavior="padding"
+      >
         {myAcceptance && account?.id ? (
           <>
             <FlatList
