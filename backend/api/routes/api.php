@@ -336,6 +336,42 @@ function broadcastChallengeAcceptanceCancelledToWs(string $targetUserId, array $
     ]);
 }
 
+/**
+ * PR3 — date concertation events. All three reuse /broadcast/user-event and
+ * fire to a single target user (the OTHER party of the thread). For sync
+ * across the proposer's own devices, the proposer fans-out client-side after
+ * the HTTP response — keeps server WS push to one packet per state change.
+ */
+function broadcastChallengeDateProposedToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-date-proposed target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_date_proposed',
+        'payload' => $payload,
+    ]);
+}
+
+function broadcastChallengeDateApprovedToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-date-approved target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_date_approved',
+        'payload' => $payload,
+    ]);
+}
+
+function broadcastChallengeDateWithdrawnToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-date-withdrawn target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_date_withdrawn',
+        'payload' => $payload,
+    ]);
+}
+
 
 // ── Now-feed DTO helpers ──────────────────────────────────────────────────────
 // Normalize raw repository rows into a consistent FeedItem shape consumed by
@@ -7891,6 +7927,226 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/cancel', function (arra
     }
 
     Response::json(['ok' => true]);
+});
+
+// ── Date concertation (PR3) ───────────────────────────────────────────────────
+
+// POST /api/v1/acceptances/{acceptanceId}/propose-date
+// Either party proposes; counter-proposals overwrite.
+// Body: {startsAt: unix_int, endsAt?: unix_int, venue?: string}
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    $isAcceptor = $acceptance['acceptor_user_id'] === $userId;
+    $isCreator  = $challenge['created_by'] === $userId;
+    if (!$isAcceptor && !$isCreator) {
+        Response::json(['error' => 'Not a thread member'], 403);
+    }
+    if ($acceptance['phase'] !== 'accepted') {
+        Response::json(['error' => "Can't change the date once it's scheduled", 'code' => 'phase_locked'], 409);
+    }
+
+    $body     = Request::json() ?? [];
+    $startsAt = filter_var($body['startsAt'] ?? null, FILTER_VALIDATE_INT);
+    $endsAt   = isset($body['endsAt']) ? filter_var($body['endsAt'], FILTER_VALIDATE_INT) : null;
+    $venue    = isset($body['venue']) && is_string($body['venue']) ? $body['venue'] : null;
+
+    if ($startsAt === false || $startsAt <= 0) {
+        Response::json(['error' => 'startsAt is required (unix timestamp)'], 400);
+    }
+    // 5 years out is the realistic ceiling — beyond that is almost certainly a
+    // client bug (ms vs s confusion, etc.). Also reject anything in the past
+    // by more than a day (clock skew + UX honesty).
+    $nowTs = time();
+    if ($startsAt < $nowTs - 86400) {
+        Response::json(['error' => 'startsAt is in the past'], 400);
+    }
+    if ($startsAt > $nowTs + 5 * 365 * 86400) {
+        Response::json(['error' => 'startsAt is too far in the future'], 400);
+    }
+    if ($endsAt !== false && $endsAt !== null) {
+        if ($endsAt <= $startsAt) {
+            Response::json(['error' => 'endsAt must be after startsAt'], 400);
+        }
+        if ($endsAt > $startsAt + 30 * 86400) {
+            Response::json(['error' => 'endsAt is more than 30 days after startsAt'], 400);
+        }
+    }
+
+    enforceRateLimit('challenge_propose_date', 30, 3600, $userId);
+
+    $updated = ChallengeAcceptanceRepository::proposeDate(
+        $acceptanceId,
+        $userId,
+        (int) $startsAt,
+        $endsAt === false || $endsAt === null ? null : (int) $endsAt,
+        $venue,
+    );
+    if ($updated === null) {
+        Response::json(['error' => 'Failed to propose'], 500);
+    }
+
+    // Push to the OTHER party (the proposer's own devices update via the
+    // HTTP response + a client-side fan-out / state set).
+    try {
+        $otherUserId = $isAcceptor ? $challenge['created_by'] : $acceptance['acceptor_user_id'];
+        if ($otherUserId !== null) {
+            broadcastChallengeDateProposedToWs($otherUserId, [
+                'acceptanceId'     => $acceptanceId,
+                'challengeId'      => $acceptance['challenge_id'],
+                'threadChannelId'  => $acceptance['thread_channel_id'],
+                'acceptance'       => $updated,
+                'proposedBy'       => $userId,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws propose-date broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json($updated);
+});
+
+// POST /api/v1/acceptances/{acceptanceId}/withdraw-proposal
+// Proposer-only — clears the current proposal. Phase stays 'accepted'.
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/withdraw-proposal', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+
+    $authUser   = AuthService::requireAuth();
+    $userId     = $authUser['id'];
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if ($acceptance['proposed_by_user_id'] !== $userId) {
+        Response::json(['error' => 'Only the proposer can withdraw'], 403);
+    }
+    if ($acceptance['phase'] !== 'accepted' || $acceptance['proposed_starts_at'] === null) {
+        Response::json(['error' => 'No active proposal'], 409);
+    }
+
+    $updated = ChallengeAcceptanceRepository::withdrawProposal($acceptanceId);
+
+    try {
+        $otherUserId = $acceptance['acceptor_user_id'] === $userId
+            ? $challenge['created_by']
+            : $acceptance['acceptor_user_id'];
+        if ($otherUserId !== null) {
+            broadcastChallengeDateWithdrawnToWs($otherUserId, [
+                'acceptanceId'    => $acceptanceId,
+                'challengeId'     => $acceptance['challenge_id'],
+                'threadChannelId' => $acceptance['thread_channel_id'],
+                'acceptance'      => $updated,
+                'withdrawnBy'     => $userId,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws withdraw-proposal broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json($updated);
+});
+
+// POST /api/v1/acceptances/{acceptanceId}/approve-date
+// CREATOR ONLY. Approves the current proposal, flips phase to 'scheduled',
+// creates the debrief event channel + system message in the thread with the
+// event card.
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+
+    $authUser   = AuthService::requireAuth();
+    $userId     = $authUser['id'];
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if ($challenge['created_by'] !== $userId) {
+        Response::json(['error' => 'Only the challenge creator can approve'], 403);
+    }
+    if ($acceptance['phase'] !== 'accepted') {
+        Response::json(['error' => 'Date already scheduled', 'code' => 'phase_locked'], 409);
+    }
+    if ($acceptance['proposed_starts_at'] === null) {
+        Response::json(['error' => 'No date proposed yet'], 409);
+    }
+
+    try {
+        $result = ChallengeAcceptanceRepository::approveDate($acceptanceId, (string) $challenge['title']);
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-date failed acc=' . $acceptanceId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to approve date'], 500);
+    }
+    if ($result === null) {
+        Response::json(['error' => 'Failed to approve date'], 500);
+    }
+    $updated        = $result['acceptance'];
+    $eventChannelId = $result['event_channel_id'];
+
+    // Insert the event card into the thread chat (type='event' message with
+    // the event channel ID — existing addEventAnnouncement helper does exactly
+    // this) so the thread shows "📅 Meet up scheduled" with a tappable card.
+    try {
+        $creatorName = $authUser['display_name'] ?? 'Someone';
+        $sysMsg = MessageRepository::addEventAnnouncement(
+            $acceptance['thread_channel_id'],
+            $eventChannelId,
+            (string) $challenge['title'],
+            $userId,        // guest_id slot — repurposed as the registered user's id
+            $creatorName,
+        );
+        // Broadcast as a normal message so the thread's WS subscribers see it.
+        broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws event-card insert failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // Push to the acceptor — their phase pill flips to "scheduled".
+    try {
+        if (!empty($acceptance['acceptor_user_id'])) {
+            broadcastChallengeDateApprovedToWs($acceptance['acceptor_user_id'], [
+                'acceptanceId'    => $acceptanceId,
+                'challengeId'     => $acceptance['challenge_id'],
+                'threadChannelId' => $acceptance['thread_channel_id'],
+                'eventChannelId'  => $eventChannelId,
+                'acceptance'      => $updated,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws approve-date broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json([
+        'acceptance'       => $updated,
+        'event_channel_id' => $eventChannelId,
+    ]);
 });
 
 // GET /api/v1/me/acceptances

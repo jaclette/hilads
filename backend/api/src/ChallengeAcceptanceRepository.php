@@ -36,26 +36,39 @@ class ChallengeAcceptanceRepository
             ca.thread_channel_id,
             ca.debrief_event_id,
             ca.phase,
-            EXTRACT(EPOCH FROM ca.approved_at)::INTEGER  AS approved_at,
-            EXTRACT(EPOCH FROM ca.rejected_at)::INTEGER  AS rejected_at,
-            EXTRACT(EPOCH FROM ca.created_at)::INTEGER   AS created_at,
-            EXTRACT(EPOCH FROM ca.updated_at)::INTEGER   AS updated_at
+            EXTRACT(EPOCH FROM ca.proposed_starts_at)::INTEGER  AS proposed_starts_at,
+            EXTRACT(EPOCH FROM ca.proposed_ends_at)::INTEGER    AS proposed_ends_at,
+            ca.proposed_venue,
+            ca.proposed_by_user_id,
+            EXTRACT(EPOCH FROM ca.proposed_at)::INTEGER         AS proposed_at,
+            EXTRACT(EPOCH FROM ca.date_approved_at)::INTEGER    AS date_approved_at,
+            EXTRACT(EPOCH FROM ca.approved_at)::INTEGER         AS approved_at,
+            EXTRACT(EPOCH FROM ca.rejected_at)::INTEGER         AS rejected_at,
+            EXTRACT(EPOCH FROM ca.created_at)::INTEGER          AS created_at,
+            EXTRACT(EPOCH FROM ca.updated_at)::INTEGER          AS updated_at
         FROM challenge_acceptances ca
     ";
 
     private static function format(array $row): array
     {
         return [
-            'id'                => $row['id'],
-            'challenge_id'      => $row['challenge_id'],
-            'acceptor_user_id'  => $row['acceptor_user_id'],
-            'thread_channel_id' => $row['thread_channel_id'],
-            'debrief_event_id'  => $row['debrief_event_id'] ?? null,
-            'phase'             => $row['phase'],
-            'approved_at'       => isset($row['approved_at']) ? (int) $row['approved_at'] : null,
-            'rejected_at'       => isset($row['rejected_at']) ? (int) $row['rejected_at'] : null,
-            'created_at'        => (int) $row['created_at'],
-            'updated_at'        => (int) $row['updated_at'],
+            'id'                  => $row['id'],
+            'challenge_id'        => $row['challenge_id'],
+            'acceptor_user_id'    => $row['acceptor_user_id'],
+            'thread_channel_id'   => $row['thread_channel_id'],
+            'debrief_event_id'    => $row['debrief_event_id'] ?? null,
+            'phase'               => $row['phase'],
+            // PR3 — date concertation
+            'proposed_starts_at'  => isset($row['proposed_starts_at']) ? (int) $row['proposed_starts_at'] : null,
+            'proposed_ends_at'    => isset($row['proposed_ends_at'])   ? (int) $row['proposed_ends_at']   : null,
+            'proposed_venue'      => $row['proposed_venue'] ?? null,
+            'proposed_by_user_id' => $row['proposed_by_user_id'] ?? null,
+            'proposed_at'         => isset($row['proposed_at'])        ? (int) $row['proposed_at']        : null,
+            'date_approved_at'    => isset($row['date_approved_at'])   ? (int) $row['date_approved_at']   : null,
+            'approved_at'         => isset($row['approved_at']) ? (int) $row['approved_at'] : null,
+            'rejected_at'         => isset($row['rejected_at']) ? (int) $row['rejected_at'] : null,
+            'created_at'          => (int) $row['created_at'],
+            'updated_at'          => (int) $row['updated_at'],
         ];
     }
 
@@ -149,6 +162,12 @@ class ChallengeAcceptanceRepository
                 ca.thread_channel_id,
                 ca.debrief_event_id,
                 ca.phase,
+                EXTRACT(EPOCH FROM ca.proposed_starts_at)::INTEGER   AS proposed_starts_at,
+                EXTRACT(EPOCH FROM ca.proposed_ends_at)::INTEGER     AS proposed_ends_at,
+                ca.proposed_venue,
+                ca.proposed_by_user_id,
+                EXTRACT(EPOCH FROM ca.proposed_at)::INTEGER          AS proposed_at,
+                EXTRACT(EPOCH FROM ca.date_approved_at)::INTEGER     AS date_approved_at,
                 EXTRACT(EPOCH FROM ca.approved_at)::INTEGER          AS approved_at,
                 EXTRACT(EPOCH FROM ca.rejected_at)::INTEGER          AS rejected_at,
                 EXTRACT(EPOCH FROM ca.created_at)::INTEGER           AS created_at,
@@ -192,7 +211,15 @@ class ChallengeAcceptanceRepository
                 'challenge_title'      => $r['challenge_title'],
                 'challenge_type'       => $r['challenge_type'],
                 'thread_channel_id'    => $r['thread_channel_id'],
+                'debrief_event_id'     => $r['debrief_event_id'] ?? null,
                 'phase'                => $r['phase'],
+                // PR3 proposal state (so the threads list can show "📅 awaiting", etc.)
+                'proposed_starts_at'   => isset($r['proposed_starts_at']) ? (int) $r['proposed_starts_at'] : null,
+                'proposed_ends_at'     => isset($r['proposed_ends_at'])   ? (int) $r['proposed_ends_at']   : null,
+                'proposed_venue'       => $r['proposed_venue'] ?? null,
+                'proposed_by_user_id'  => $r['proposed_by_user_id'] ?? null,
+                'proposed_at'          => isset($r['proposed_at'])        ? (int) $r['proposed_at']        : null,
+                'date_approved_at'     => isset($r['date_approved_at'])   ? (int) $r['date_approved_at']   : null,
                 'created_at'           => (int) $r['created_at'],
                 'last_message_at'      => isset($r['last_message_at']) ? (int) $r['last_message_at'] : null,
                 'last_message_content' => $r['last_message_content'],
@@ -242,6 +269,150 @@ class ChallengeAcceptanceRepository
 
             $pdo->commit();
             return self::findById($accId);
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
+
+    // ── PR3: date concertation ────────────────────────────────────────────────
+
+    /**
+     * Either party proposes a date (counter-proposals overwrite). Caller has
+     * already validated phase='accepted' and `proposerUserId` is a thread member.
+     *
+     * `endsAt` is nullable — if not given, the client default (start + 2h) is
+     * applied client-side before this call. Server doesn't impose one so the
+     * column stays NULL if neither side ever set it.
+     */
+    public static function proposeDate(
+        string $acceptanceId,
+        string $proposerUserId,
+        int    $startsAtUnix,
+        ?int   $endsAtUnix,
+        ?string $venue
+    ): ?array {
+        $venue = $venue !== null ? mb_substr(trim($venue), 0, 200) : null;
+        if ($venue === '') $venue = null;
+
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET proposed_starts_at  = to_timestamp(:starts),
+                proposed_ends_at    = CASE WHEN :ends_set THEN to_timestamp(:ends) ELSE NULL END,
+                proposed_venue      = :venue,
+                proposed_by_user_id = :uid,
+                proposed_at         = now(),
+                updated_at          = now()
+            WHERE id = :id AND phase = 'accepted'
+        ")->execute([
+            'id'       => $acceptanceId,
+            'starts'   => $startsAtUnix,
+            'ends_set' => $endsAtUnix !== null ? 1 : 0,
+            'ends'     => $endsAtUnix ?? 0,
+            'venue'    => $venue,
+            'uid'      => $proposerUserId,
+        ]);
+        return self::findById($acceptanceId);
+    }
+
+    /** Clear the current proposal (proposer only — caller enforces). */
+    public static function withdrawProposal(string $acceptanceId): ?array
+    {
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET proposed_starts_at  = NULL,
+                proposed_ends_at    = NULL,
+                proposed_venue      = NULL,
+                proposed_by_user_id = NULL,
+                proposed_at         = NULL,
+                updated_at          = now()
+            WHERE id = :id AND phase = 'accepted'
+        ")->execute(['id' => $acceptanceId]);
+        return self::findById($acceptanceId);
+    }
+
+    /**
+     * Creator approves the current proposal. Atomically:
+     *   1. Creates a debrief event channel (channels.type='event',
+     *      parent_id=thread.channel_id) + channel_events row with
+     *      source_type='challenge_debrief' (invisible to public city feeds —
+     *      those filter on source_type IN ('hilads','ticketmaster'))
+     *   2. Sets acceptance.debrief_event_id + date_approved_at + phase='scheduled'
+     *
+     * Caller MUST enforce: caller is the creator, phase='accepted', proposal
+     * fields are populated. Returns [acceptance, eventChannelId] on success;
+     * null if the acceptance can't be found.
+     */
+    public static function approveDate(string $acceptanceId, string $challengeTitle): ?array
+    {
+        $row = self::findById($acceptanceId);
+        if (!$row || $row['phase'] !== 'accepted' || $row['proposed_starts_at'] === null) {
+            return null;
+        }
+
+        // Resolve city_id from the parent challenge — denormalized onto the event
+        // row so future per-city event lookups can join cheaply if we ever want
+        // to surface debrief events on a private "my meetups" feed.
+        $pdo = Database::pdo();
+        $stmt = $pdo->prepare("SELECT city_id, created_by FROM channel_challenges WHERE channel_id = :id");
+        $stmt->execute(['id' => $row['challenge_id']]);
+        $cc = $stmt->fetch();
+        if (!$cc) return null;
+        $cityId    = $cc['city_id'];
+        $creatorId = $cc['created_by'];
+
+        $pdo->beginTransaction();
+        try {
+            $eventChannelId = bin2hex(random_bytes(8));
+
+            // 1a. channels row for the event. parent_id = thread (NOT city) so
+            // it doesn't appear in city channel queries. name = challenge title.
+            $pdo->prepare("
+                INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
+                VALUES (:id, 'event', :parent_id, :name, 'active', now(), now())
+            ")->execute([
+                'id'        => $eventChannelId,
+                'parent_id' => $row['thread_channel_id'],
+                'name'      => $challengeTitle,
+            ]);
+
+            // 1b. channel_events row. source_type='challenge_debrief' keeps it
+            // out of the public city event feeds (those filter on source_type
+            // IN ('hilads','ticketmaster')). expires_at defaults to NOT NULL
+            // table default; we set it explicitly to a sentinel so the row
+            // doesn't get aged out by any TTL cleanup.
+            $pdo->prepare("
+                INSERT INTO channel_events
+                    (channel_id, source_type, created_by, title, starts_at, ends_at, expires_at, city_id, venue)
+                VALUES
+                    (:id, 'challenge_debrief', :creator, :title,
+                     to_timestamp(:starts),
+                     CASE WHEN :ends_set THEN to_timestamp(:ends) ELSE NULL END,
+                     '2999-01-01T00:00:00Z'::timestamptz,
+                     :city_id, :venue)
+            ")->execute([
+                'id'       => $eventChannelId,
+                'creator'  => $creatorId,
+                'title'    => $challengeTitle,
+                'starts'   => $row['proposed_starts_at'],
+                'ends_set' => $row['proposed_ends_at'] !== null ? 1 : 0,
+                'ends'     => $row['proposed_ends_at'] ?? 0,
+                'city_id'  => $cityId,
+                'venue'    => $row['proposed_venue'],
+            ]);
+
+            // 2. Flip the acceptance to phase='scheduled' + record the event id.
+            $pdo->prepare("
+                UPDATE challenge_acceptances
+                SET phase             = 'scheduled',
+                    debrief_event_id  = :eid,
+                    date_approved_at  = now(),
+                    updated_at        = now()
+                WHERE id = :id AND phase = 'accepted'
+            ")->execute(['eid' => $eventChannelId, 'id' => $acceptanceId]);
+
+            $pdo->commit();
+            return ['acceptance' => self::findById($acceptanceId), 'event_channel_id' => $eventChannelId];
         } catch (\Throwable $e) {
             $pdo->rollBack();
             throw $e;

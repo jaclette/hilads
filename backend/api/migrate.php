@@ -1082,4 +1082,17 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_acceptor  ON challenge_acceptanc
 // Per-challenge acceptances (creator's view of who took it on + cap check).
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_challenge ON challenge_acceptances (challenge_id,    created_at DESC)", 'idx_chacc_challenge');
 
+// ── Challenge redesign — PR3: date concertation ──────────────────────────────
+// Either party proposes a date in the thread; the creator approves; on approve
+// the server creates a debrief event (channel_events with source_type=
+// 'challenge_debrief' so it stays out of public city event feeds) and sets
+// phase='scheduled'. Counter-proposals overwrite the previous proposal —
+// one active proposal per acceptance at a time.
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_starts_at  TIMESTAMPTZ", 'challenge_acceptances.proposed_starts_at');
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_ends_at    TIMESTAMPTZ", 'challenge_acceptances.proposed_ends_at');
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_venue      TEXT",        'challenge_acceptances.proposed_venue');
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_by_user_id TEXT REFERENCES users(id) ON DELETE SET NULL", 'challenge_acceptances.proposed_by_user_id');
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_at         TIMESTAMPTZ", 'challenge_acceptances.proposed_at');
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS date_approved_at    TIMESTAMPTZ", 'challenge_acceptances.date_approved_at');
+
 echo "\nDone.\n";
