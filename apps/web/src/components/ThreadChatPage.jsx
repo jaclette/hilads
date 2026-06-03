@@ -5,6 +5,7 @@ import {
   fetchThreadMessages, sendThreadMessage,
 } from '../api'
 import BackButton from './BackButton'
+import ThreadScheduleBlock from './ThreadScheduleBlock'
 
 /**
  * PR2 — per-acceptance thread chat (channels.type='challenge_thread'). 1:1
@@ -107,8 +108,21 @@ export default function ThreadChatPage({
         onBack?.()
       }
     })
-    return () => { offMsg(); offCancelled(); socket.leaveChallengeThread(threadChannelId, sessionId) }
-  }, [threadChannelId, socket, sessionId, onBack, t])
+    // PR3 — date concertation pushes (other party only; my own UI updates from
+    // the HTTP response). Each one refreshes the summary so the schedule band
+    // re-renders.
+    const onDateChange = (data) => {
+      const payload = data.payload ?? {}
+      if (payload.threadChannelId === threadChannelId) loadSummary()
+    }
+    const offProposed  = socket.on('challenge_date_proposed',  onDateChange)
+    const offWithdrawn = socket.on('challenge_date_withdrawn', onDateChange)
+    const offApproved  = socket.on('challenge_date_approved',  onDateChange)
+    return () => {
+      offMsg(); offCancelled(); offProposed(); offWithdrawn(); offApproved()
+      socket.leaveChallengeThread(threadChannelId, sessionId)
+    }
+  }, [threadChannelId, socket, sessionId, onBack, t, loadSummary])
 
   // Auto-scroll on new message.
   useEffect(() => {
@@ -234,9 +248,29 @@ export default function ThreadChatPage({
           </div>
         )}
         {messages.map((m, idx) => {
+          // PR3 — event-card system message (server inserts on date approve).
+          // Renders as a centred pill, not a user bubble. The schedule band
+          // above the composer carries the actionable state; this just leaves
+          // a marker in the chat history.
+          if (m.type === 'event') {
+            return (
+              <div key={m.id ?? idx} style={{ display: 'flex', justifyContent: 'center', margin: '8px 0' }}>
+                <div style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '8px 14px', borderRadius: 999,
+                  background: 'rgba(34,197,94,0.10)',
+                  border: '1px solid rgba(34,197,94,0.20)',
+                  color: '#4ade80', fontWeight: 700, fontSize: 12, letterSpacing: 0.2,
+                }}>
+                  📅 {m.content || 'Meet-up scheduled'}
+                </div>
+              </div>
+            )
+          }
+
           const isMine    = (account?.id && m.userId === account.id) || (account?.id && m.guestId === account.id)
           const prev      = messages[idx - 1]
-          const isGrouped = prev && (prev.userId === m.userId || prev.guestId === m.guestId)
+          const isGrouped = prev && prev.type !== 'event' && (prev.userId === m.userId || prev.guestId === m.guestId)
           const [ac1, ac2] = avatarColors(m.nickname ?? '')
           const opacity   = m.status === 'failed' ? 0.5 : m.status === 'sending' ? 0.7 : 1
           return (
@@ -257,6 +291,16 @@ export default function ThreadChatPage({
           )
         })}
       </div>
+
+      {/* PR3 — schedule band sits between the chat feed and the composer.
+          State-aware: propose / awaiting / approve / scheduled. */}
+      {account?.id && (
+        <ThreadScheduleBlock
+          thread={summary}
+          myUserId={account.id}
+          onChange={loadSummary}
+        />
+      )}
 
       {/* Composer */}
       <form onSubmit={handleSubmit} className="topic-composer">

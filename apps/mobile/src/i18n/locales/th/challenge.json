@@ -128,5 +128,34 @@
       "title": "ลงชื่อเข้าใช้เพื่อดูเธรด",
       "body": "เธรดคือบทสนทนา 1:1 ระหว่างคุณกับผู้สร้างชาเลนจ์ ต้องมีบัญชีถึงจะเริ่มได้"
     }
+  },
+  "schedule": {
+    "proposeCta": "เสนอวันที่ 📅",
+    "counterCta": "เสนอกลับ",
+    "you": "คุณ",
+    "iProposedTitle": "รอการยืนยัน",
+    "theyProposedTitle": "{{name}} เสนอวันมา",
+    "scheduled": {
+      "title": "นัดพบเรียบร้อย"
+    },
+    "withdraw": {
+      "title": "ถอนข้อเสนอ?",
+      "body": "วันที่คุณเสนอจะถูกลบ และอีกฝ่ายจะได้รับแจ้งเตือน",
+      "confirm": "ถอน"
+    },
+    "today": "วันนี้",
+    "tomorrow": "พรุ่งนี้",
+    "picker": {
+      "title": "เจอกันเมื่อไหร่?",
+      "whenLabel": "เมื่อไหร่",
+      "timeLabel": "เวลา",
+      "whereLabel": "ที่ไหน (ไม่บังคับ)",
+      "wherePlaceholder": "เช่น Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "เสนอวันที่ไม่สำเร็จ ลองอีกครั้ง",
+      "approveFailed": "ยืนยันไม่สำเร็จ ลองอีกครั้ง",
+      "withdrawFailed": "ถอนไม่สำเร็จ ลองอีกครั้ง"
+    }
   }
 }

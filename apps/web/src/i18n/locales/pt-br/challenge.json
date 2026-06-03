@@ -128,5 +128,34 @@
       "title": "Entre para ver os threads",
       "body": "Threads são conversas 1:1 entre você e o desafiador. Precisa de uma conta pra começar uma."
     }
+  },
+  "schedule": {
+    "proposeCta": "Propor uma data 📅",
+    "counterCta": "Contrapropor",
+    "you": "você",
+    "iProposedTitle": "Aguardando aprovação",
+    "theyProposedTitle": "{{name}} propôs",
+    "scheduled": {
+      "title": "Encontro marcado"
+    },
+    "withdraw": {
+      "title": "Retirar a proposta?",
+      "body": "Sua data proposta será apagada. A outra pessoa será notificada.",
+      "confirm": "Retirar"
+    },
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "picker": {
+      "title": "Quando vocês vão se encontrar?",
+      "whenLabel": "QUANDO",
+      "timeLabel": "HORA",
+      "whereLabel": "ONDE (OPCIONAL)",
+      "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Não foi possível propor a data. Tente de novo.",
+      "approveFailed": "Não foi possível aprovar. Tente de novo.",
+      "withdrawFailed": "Não foi possível retirar. Tente de novo."
+    }
   }
 }

@@ -128,5 +128,34 @@
       "title": "サインインしてスレッドを表示",
       "body": "スレッドはあなたとチャレンジャーの1対1の会話です。始めるにはアカウントが必要です。"
     }
+  },
+  "schedule": {
+    "proposeCta": "日程を提案する 📅",
+    "counterCta": "対案を出す",
+    "you": "あなた",
+    "iProposedTitle": "承認待ち",
+    "theyProposedTitle": "{{name}}さんが提案しました",
+    "scheduled": {
+      "title": "ミーティング設定済み"
+    },
+    "withdraw": {
+      "title": "提案を取り下げますか？",
+      "body": "提案した日程がクリアされます。相手に通知されます。",
+      "confirm": "取り下げる"
+    },
+    "today": "今日",
+    "tomorrow": "明日",
+    "picker": {
+      "title": "いつ会いますか？",
+      "whenLabel": "いつ",
+      "timeLabel": "時間",
+      "whereLabel": "どこで（任意）",
+      "wherePlaceholder": "例：Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "日程を提案できませんでした。もう一度お試しください。",
+      "approveFailed": "承認できませんでした。もう一度お試しください。",
+      "withdrawFailed": "取り下げできませんでした。もう一度お試しください。"
+    }
   }
 }

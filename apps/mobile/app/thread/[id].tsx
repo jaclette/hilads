@@ -19,6 +19,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import * as Clipboard from 'expo-clipboard';
 import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
@@ -118,6 +119,21 @@ export default function ThreadChatScreen() {
     });
     return off;
   }, [threadChannelId, router, t]);
+
+  // PR3 — date concertation events. Each one refreshes the summary so the
+  // schedule block re-renders with the latest proposal / scheduled state.
+  // Server only pushes to the OTHER party; the actor's own UI updates via
+  // the HTTP response handler in ThreadScheduleBlock.
+  useEffect(() => {
+    const onDateChange = (data: Record<string, unknown>) => {
+      const payload = data.payload as { threadChannelId?: string } | undefined;
+      if (payload?.threadChannelId === threadChannelId) loadSummary();
+    };
+    const offP = socket.on('challenge_date_proposed',  onDateChange);
+    const offW = socket.on('challenge_date_withdrawn', onDateChange);
+    const offA = socket.on('challenge_date_approved',  onDateChange);
+    return () => { offP(); offW(); offA(); };
+  }, [threadChannelId, loadSummary]);
 
   // ── Cancel acceptance ──────────────────────────────────────────────────────
   const handleCancel = useCallback(() => {
@@ -262,6 +278,17 @@ export default function ThreadChatScreen() {
             </View>
           ) : null}
         />
+
+        {/* PR3 — date concertation band sits between the chat feed and the
+            composer. It carries the propose / approve / scheduled state and
+            is the only place either party can set or change the meetup. */}
+        {account?.id && (
+          <ThreadScheduleBlock
+            thread={summary}
+            myUserId={account.id}
+            onChange={loadSummary}
+          />
+        )}
 
         <ChatInput
           sending={sending}

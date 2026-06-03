@@ -128,5 +128,34 @@
       "title": "스레드를 보려면 로그인하세요",
       "body": "스레드는 챌린저와의 1:1 대화예요. 시작하려면 계정이 필요해요."
     }
+  },
+  "schedule": {
+    "proposeCta": "날짜 제안하기 📅",
+    "counterCta": "대안 제안",
+    "you": "당신",
+    "iProposedTitle": "승인 대기 중",
+    "theyProposedTitle": "{{name}}님이 제안했어요",
+    "scheduled": {
+      "title": "만남 일정 확정"
+    },
+    "withdraw": {
+      "title": "제안을 철회할까요?",
+      "body": "제안한 날짜가 삭제돼요. 상대방에게 알림이 가요.",
+      "confirm": "철회"
+    },
+    "today": "오늘",
+    "tomorrow": "내일",
+    "picker": {
+      "title": "언제 만나요?",
+      "whenLabel": "언제",
+      "timeLabel": "시간",
+      "whereLabel": "어디서 (선택)",
+      "wherePlaceholder": "예: Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "날짜를 제안하지 못했어요. 다시 시도해 주세요.",
+      "approveFailed": "승인하지 못했어요. 다시 시도해 주세요.",
+      "withdrawFailed": "철회하지 못했어요. 다시 시도해 주세요."
+    }
   }
 }

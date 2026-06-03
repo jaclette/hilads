@@ -128,5 +128,34 @@
       "title": "Anmelden, um Threads zu sehen",
       "body": "Threads sind 1:1-Gespräche zwischen dir und dem Challenger. Du brauchst einen Account, um einen zu starten."
     }
+  },
+  "schedule": {
+    "proposeCta": "Termin vorschlagen 📅",
+    "counterCta": "Gegenvorschlag",
+    "you": "dir",
+    "iProposedTitle": "Warten auf Zustimmung",
+    "theyProposedTitle": "{{name}} hat vorgeschlagen",
+    "scheduled": {
+      "title": "Treffen geplant"
+    },
+    "withdraw": {
+      "title": "Vorschlag zurückziehen?",
+      "body": "Dein vorgeschlagener Termin wird gelöscht. Die andere Person wird benachrichtigt.",
+      "confirm": "Zurückziehen"
+    },
+    "today": "Heute",
+    "tomorrow": "Morgen",
+    "picker": {
+      "title": "Wann trefft ihr euch?",
+      "whenLabel": "WANN",
+      "timeLabel": "UHRZEIT",
+      "whereLabel": "WO (OPTIONAL)",
+      "wherePlaceholder": "z. B. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Termin konnte nicht vorgeschlagen werden. Versuch's nochmal.",
+      "approveFailed": "Bestätigung fehlgeschlagen. Versuch's nochmal.",
+      "withdrawFailed": "Zurückziehen fehlgeschlagen. Versuch's nochmal."
+    }
   }
 }

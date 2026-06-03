@@ -128,5 +128,34 @@
       "title": "Mag-sign in para makita ang threads",
       "body": "Mga threads ay 1:1 conversation sa pagitan mo at ng challenger. Kailangan mo ng account para magsimula."
     }
+  },
+  "schedule": {
+    "proposeCta": "Mag-propose ng petsa 📅",
+    "counterCta": "Counter-propose",
+    "you": "ka",
+    "iProposedTitle": "Naghihintay ng approval",
+    "theyProposedTitle": "Nag-propose si {{name}}",
+    "scheduled": {
+      "title": "Naka-schedule na ang meet-up"
+    },
+    "withdraw": {
+      "title": "I-withdraw ang proposal?",
+      "body": "Mabubura ang petsa na in-propose mo. Mae-notify sila.",
+      "confirm": "I-withdraw"
+    },
+    "today": "Ngayon",
+    "tomorrow": "Bukas",
+    "picker": {
+      "title": "Kailan kayo magkikita?",
+      "whenLabel": "KAILAN",
+      "timeLabel": "ORAS",
+      "whereLabel": "SAAN (OPTIONAL)",
+      "wherePlaceholder": "hal. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Hindi na-propose ang petsa. Subukan ulit.",
+      "approveFailed": "Hindi na-approve. Subukan ulit.",
+      "withdrawFailed": "Hindi na-withdraw. Subukan ulit."
+    }
   }
 }

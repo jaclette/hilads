@@ -128,5 +128,34 @@
       "title": "Đăng nhập để xem thread",
       "body": "Thread là cuộc trò chuyện 1:1 giữa bạn và người ra challenge. Cần tài khoản để bắt đầu."
     }
+  },
+  "schedule": {
+    "proposeCta": "Đề xuất ngày 📅",
+    "counterCta": "Đề xuất lại",
+    "you": "bạn",
+    "iProposedTitle": "Đang chờ xác nhận",
+    "theyProposedTitle": "{{name}} đã đề xuất",
+    "scheduled": {
+      "title": "Đã lên lịch gặp"
+    },
+    "withdraw": {
+      "title": "Rút lại đề xuất?",
+      "body": "Ngày bạn đề xuất sẽ bị xóa. Đối phương sẽ được thông báo.",
+      "confirm": "Rút lại"
+    },
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "picker": {
+      "title": "Khi nào gặp nhau?",
+      "whenLabel": "KHI NÀO",
+      "timeLabel": "GIỜ",
+      "whereLabel": "Ở ĐÂU (TÙY CHỌN)",
+      "wherePlaceholder": "vd. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Không đề xuất được ngày. Thử lại nhé.",
+      "approveFailed": "Không xác nhận được. Thử lại nhé.",
+      "withdrawFailed": "Không rút lại được. Thử lại nhé."
+    }
   }
 }

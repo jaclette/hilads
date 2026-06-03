@@ -128,5 +128,34 @@
       "title": "سجل الدخول لعرض المحادثات",
       "body": "المحادثات هي حوارات فردية بينك وبين صاحب التحدي. تحتاج إلى حساب لبدء واحدة."
     }
+  },
+  "schedule": {
+    "proposeCta": "اقترح موعدًا 📅",
+    "counterCta": "اقتراح مضاد",
+    "you": "أنت",
+    "iProposedTitle": "في انتظار الموافقة",
+    "theyProposedTitle": "اقترح {{name}}",
+    "scheduled": {
+      "title": "تم تحديد اللقاء"
+    },
+    "withdraw": {
+      "title": "سحب الاقتراح؟",
+      "body": "سيتم مسح الموعد الذي اقترحته، وسيتم إشعار الطرف الآخر.",
+      "confirm": "سحب"
+    },
+    "today": "اليوم",
+    "tomorrow": "غدًا",
+    "picker": {
+      "title": "متى ستلتقيان؟",
+      "whenLabel": "متى",
+      "timeLabel": "الوقت",
+      "whereLabel": "أين (اختياري)",
+      "wherePlaceholder": "مثل Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "تعذّر اقتراح الموعد. أعد المحاولة.",
+      "approveFailed": "تعذّرت الموافقة. أعد المحاولة.",
+      "withdrawFailed": "تعذّر السحب. أعد المحاولة."
+    }
   }
 }

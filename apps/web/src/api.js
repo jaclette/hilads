@@ -689,6 +689,50 @@ export async function sendThreadMessage(threadChannelId, content) {
   return res.json()
 }
 
+// ── PR3: date concertation ──────────────────────────────────────────────────
+
+export async function proposeDate(acceptanceId, startsAt, endsAt, venue) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/propose-date`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ startsAt, endsAt, venue }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to propose date')
+  }
+  return res.json()
+}
+
+export async function withdrawProposal(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/withdraw-proposal`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to withdraw')
+  }
+  return res.json()
+}
+
+export async function approveDate(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/approve-date`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to approve')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

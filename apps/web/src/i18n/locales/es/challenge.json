@@ -128,5 +128,34 @@
       "title": "Inicia sesión para ver los hilos",
       "body": "Los hilos son conversaciones 1:1 entre tú y el retador. Necesitas una cuenta para empezar uno."
     }
+  },
+  "schedule": {
+    "proposeCta": "Proponer una fecha 📅",
+    "counterCta": "Contraproponer",
+    "you": "ti",
+    "iProposedTitle": "Esperando que confirme",
+    "theyProposedTitle": "{{name}} propuso",
+    "scheduled": {
+      "title": "Encuentro programado"
+    },
+    "withdraw": {
+      "title": "¿Retirar la propuesta?",
+      "body": "Tu fecha propuesta se borrará. La otra persona será notificada.",
+      "confirm": "Retirar"
+    },
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "picker": {
+      "title": "¿Cuándo os veis?",
+      "whenLabel": "CUÁNDO",
+      "timeLabel": "HORA",
+      "whereLabel": "DÓNDE (OPCIONAL)",
+      "wherePlaceholder": "ej. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "No se pudo proponer la fecha. Inténtalo de nuevo.",
+      "approveFailed": "No se pudo aprobar. Inténtalo de nuevo.",
+      "withdrawFailed": "No se pudo retirar. Inténtalo de nuevo."
+    }
   }
 }

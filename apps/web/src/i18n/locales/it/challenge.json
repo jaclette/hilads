@@ -128,5 +128,34 @@
       "title": "Accedi per vedere i thread",
       "body": "I thread sono conversazioni 1:1 tra te e chi ha lanciato la sfida. Ti serve un account per iniziarne uno."
     }
+  },
+  "schedule": {
+    "proposeCta": "Proponi una data 📅",
+    "counterCta": "Controproponi",
+    "you": "te",
+    "iProposedTitle": "In attesa di conferma",
+    "theyProposedTitle": "{{name}} ha proposto",
+    "scheduled": {
+      "title": "Incontro programmato"
+    },
+    "withdraw": {
+      "title": "Ritirare la proposta?",
+      "body": "La tua data proposta verrà cancellata. L'altra persona riceverà una notifica.",
+      "confirm": "Ritira"
+    },
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "picker": {
+      "title": "Quando vi vedete?",
+      "whenLabel": "QUANDO",
+      "timeLabel": "ORA",
+      "whereLabel": "DOVE (OPZIONALE)",
+      "wherePlaceholder": "es. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Impossibile proporre la data. Riprova.",
+      "approveFailed": "Impossibile approvare. Riprova.",
+      "withdrawFailed": "Impossibile ritirare. Riprova."
+    }
   }
 }

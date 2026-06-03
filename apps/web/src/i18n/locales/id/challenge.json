@@ -128,5 +128,34 @@
       "title": "Masuk untuk melihat thread",
       "body": "Thread adalah percakapan 1:1 antara kamu dan challenger. Kamu butuh akun untuk memulainya."
     }
+  },
+  "schedule": {
+    "proposeCta": "Usulkan tanggal 📅",
+    "counterCta": "Usulkan balik",
+    "you": "kamu",
+    "iProposedTitle": "Menunggu persetujuan",
+    "theyProposedTitle": "{{name}} mengusulkan",
+    "scheduled": {
+      "title": "Pertemuan dijadwalkan"
+    },
+    "withdraw": {
+      "title": "Tarik usulan?",
+      "body": "Tanggal yang kamu usulkan akan dihapus. Dia akan diberi tahu.",
+      "confirm": "Tarik"
+    },
+    "today": "Hari ini",
+    "tomorrow": "Besok",
+    "picker": {
+      "title": "Kapan kalian bertemu?",
+      "whenLabel": "KAPAN",
+      "timeLabel": "JAM",
+      "whereLabel": "DI MANA (OPSIONAL)",
+      "wherePlaceholder": "mis. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Gagal mengusulkan tanggal. Coba lagi.",
+      "approveFailed": "Gagal menyetujui. Coba lagi.",
+      "withdrawFailed": "Gagal menarik. Coba lagi."
+    }
   }
 }

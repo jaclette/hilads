@@ -95,16 +95,24 @@ export type ChallengeAcceptancePhase = 'accepted' | 'scheduled' | 'debrief' | 'a
 
 /** One challenge_acceptances row — the per-relationship thread (PR2). */
 export interface ChallengeAcceptance {
-  id:                 string;
-  challenge_id:       string;
-  acceptor_user_id:   string;
-  thread_channel_id:  string;
-  debrief_event_id:   string | null;
-  phase:              ChallengeAcceptancePhase;
-  approved_at:        number | null;
-  rejected_at:        number | null;
-  created_at:         number;
-  updated_at:         number;
+  id:                  string;
+  challenge_id:        string;
+  acceptor_user_id:    string;
+  thread_channel_id:   string;
+  debrief_event_id:    string | null;
+  phase:               ChallengeAcceptancePhase;
+  // PR3 — date concertation. Null until first proposal; rehydrated on every
+  // propose/withdraw. date_approved_at is set when phase flips to 'scheduled'.
+  proposed_starts_at:  number | null;
+  proposed_ends_at:    number | null;
+  proposed_venue:      string | null;
+  proposed_by_user_id: string | null;
+  proposed_at:         number | null;
+  date_approved_at:    number | null;
+  approved_at:         number | null;
+  rejected_at:         number | null;
+  created_at:          number;
+  updated_at:          number;
 }
 
 /** Enriched thread row from GET /me/acceptances — for the "My threads" screen. */
@@ -114,7 +122,15 @@ export interface ChallengeThreadSummary {
   challenge_title:      string;
   challenge_type:       ChallengeType;
   thread_channel_id:    string;
+  debrief_event_id:     string | null;
   phase:                ChallengeAcceptancePhase;
+  // PR3 proposal state — null when no proposal pending.
+  proposed_starts_at:   number | null;
+  proposed_ends_at:     number | null;
+  proposed_venue:       string | null;
+  proposed_by_user_id:  string | null;
+  proposed_at:          number | null;
+  date_approved_at:     number | null;
   created_at:           number;
   last_message_at:      number | null;
   last_message_content: string | null;

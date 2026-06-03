@@ -128,5 +128,34 @@
       "title": "थ्रेड्स देखने के लिए साइन इन करें",
       "body": "थ्रेड्स आपके और चैलेंजर के बीच 1:1 बातचीत हैं। शुरू करने के लिए अकाउंट चाहिए।"
     }
+  },
+  "schedule": {
+    "proposeCta": "तारीख़ सुझाएँ 📅",
+    "counterCta": "जवाबी सुझाव",
+    "you": "आप",
+    "iProposedTitle": "मंज़ूरी का इंतज़ार",
+    "theyProposedTitle": "{{name}} ने सुझाया",
+    "scheduled": {
+      "title": "मुलाक़ात तय हुई"
+    },
+    "withdraw": {
+      "title": "सुझाव वापस लें?",
+      "body": "आपकी सुझाई तारीख़ हट जाएगी। उन्हें सूचित किया जाएगा।",
+      "confirm": "वापस लें"
+    },
+    "today": "आज",
+    "tomorrow": "कल",
+    "picker": {
+      "title": "आप कब मिल रहे हैं?",
+      "whenLabel": "कब",
+      "timeLabel": "समय",
+      "whereLabel": "कहाँ (वैकल्पिक)",
+      "wherePlaceholder": "जैसे Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "तारीख़ नहीं सुझा सके। फिर से कोशिश करें।",
+      "approveFailed": "मंज़ूर नहीं कर सके। फिर से कोशिश करें।",
+      "withdrawFailed": "वापस नहीं ले सके। फिर से कोशिश करें।"
+    }
   }
 }

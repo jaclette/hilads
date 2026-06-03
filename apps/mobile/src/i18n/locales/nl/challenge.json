@@ -128,5 +128,34 @@
       "title": "Log in om threads te zien",
       "body": "Threads zijn 1:1-gesprekken tussen jou en de challenger. Je hebt een account nodig om er een te starten."
     }
+  },
+  "schedule": {
+    "proposeCta": "Stel een datum voor 📅",
+    "counterCta": "Tegenvoorstel",
+    "you": "je",
+    "iProposedTitle": "Wachten op goedkeuring",
+    "theyProposedTitle": "{{name}} heeft voorgesteld",
+    "scheduled": {
+      "title": "Afspraak ingepland"
+    },
+    "withdraw": {
+      "title": "Voorstel intrekken?",
+      "body": "Je voorgestelde datum wordt gewist. De ander krijgt een melding.",
+      "confirm": "Intrekken"
+    },
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "picker": {
+      "title": "Wanneer zien jullie elkaar?",
+      "whenLabel": "WANNEER",
+      "timeLabel": "TIJD",
+      "whereLabel": "WAAR (OPTIONEEL)",
+      "wherePlaceholder": "bv. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Datum voorstellen mislukt. Probeer opnieuw.",
+      "approveFailed": "Goedkeuren mislukt. Probeer opnieuw.",
+      "withdrawFailed": "Intrekken mislukt. Probeer opnieuw."
+    }
   }
 }

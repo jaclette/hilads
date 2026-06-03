@@ -191,6 +191,37 @@ export async function cancelAcceptance(acceptanceId: string): Promise<void> {
   await api.post(`/acceptances/${acceptanceId}/cancel`, {});
 }
 
+// ── PR3: date concertation ──────────────────────────────────────────────────
+
+/** Either party proposes a meetup date. Counter-proposals overwrite the
+ *  previous proposal. `startsAt`/`endsAt` are unix timestamps (seconds). */
+export async function proposeDate(
+  acceptanceId: string,
+  startsAt: number,
+  endsAt: number | null,
+  venue: string | null,
+): Promise<ChallengeAcceptance> {
+  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/propose-date`, {
+    startsAt,
+    endsAt,
+    venue,
+  });
+}
+
+/** Proposer-only — clears the current proposal. Phase stays 'accepted'. */
+export async function withdrawProposal(acceptanceId: string): Promise<ChallengeAcceptance> {
+  return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/withdraw-proposal`, {});
+}
+
+/** Creator-only — approves the current proposal. Server creates the debrief
+ *  event channel + flips phase to 'scheduled' + inserts the thread event card. */
+export async function approveDate(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance; event_channel_id: string }> {
+  return api.post<{ acceptance: ChallengeAcceptance; event_channel_id: string }>(
+    `/acceptances/${acceptanceId}/approve-date`,
+    {},
+  );
+}
+
 /** "My threads" — every relationship I'm in (as creator or acceptor). */
 export async function fetchMyAcceptances(): Promise<ChallengeThreadSummary[]> {
   const data = await api.get<{ threads: ChallengeThreadSummary[] }>('/me/acceptances');

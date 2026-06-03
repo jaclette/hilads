@@ -128,5 +128,34 @@
       "title": "Sign in to see threads",
       "body": "Threads are 1:1 conversations between you and the challenger. You need an account to start one."
     }
+  },
+  "schedule": {
+    "proposeCta": "Propose a date 📅",
+    "counterCta": "Counter-propose",
+    "you": "you",
+    "iProposedTitle": "Waiting for them to approve",
+    "theyProposedTitle": "{{name}} proposed",
+    "scheduled": {
+      "title": "Meet-up scheduled"
+    },
+    "withdraw": {
+      "title": "Withdraw proposal?",
+      "body": "Your proposed date will be cleared. They'll be notified.",
+      "confirm": "Withdraw"
+    },
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "picker": {
+      "title": "When are you meeting?",
+      "whenLabel": "WHEN",
+      "timeLabel": "TIME",
+      "whereLabel": "WHERE (OPTIONAL)",
+      "wherePlaceholder": "e.g. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Couldn't propose the date. Try again.",
+      "approveFailed": "Couldn't approve. Try again.",
+      "withdrawFailed": "Couldn't withdraw. Try again."
+    }
   }
 }

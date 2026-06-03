@@ -128,5 +128,34 @@
       "title": "Entra para ver os fios",
       "body": "Os fios são conversas 1:1 entre ti e o desafiador. Precisas de uma conta para começar um."
     }
+  },
+  "schedule": {
+    "proposeCta": "Propor uma data 📅",
+    "counterCta": "Contrapropor",
+    "you": "ti",
+    "iProposedTitle": "À espera de aprovação",
+    "theyProposedTitle": "{{name}} propôs",
+    "scheduled": {
+      "title": "Encontro marcado"
+    },
+    "withdraw": {
+      "title": "Retirar a proposta?",
+      "body": "A tua data proposta será apagada. A outra pessoa será notificada.",
+      "confirm": "Retirar"
+    },
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "picker": {
+      "title": "Quando se vão encontrar?",
+      "whenLabel": "QUANDO",
+      "timeLabel": "HORA",
+      "whereLabel": "ONDE (OPCIONAL)",
+      "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Não foi possível propor a data. Tenta novamente.",
+      "approveFailed": "Não foi possível aprovar. Tenta novamente.",
+      "withdrawFailed": "Não foi possível retirar. Tenta novamente."
+    }
   }
 }

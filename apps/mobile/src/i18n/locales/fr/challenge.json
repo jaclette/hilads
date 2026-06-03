@@ -128,5 +128,34 @@
       "title": "Connecte-toi pour voir les fils",
       "body": "Les fils sont des conversations privées entre toi et le challenger. Il te faut un compte pour en démarrer un."
     }
+  },
+  "schedule": {
+    "proposeCta": "Proposer une date 📅",
+    "counterCta": "Contre-proposer",
+    "you": "toi",
+    "iProposedTitle": "En attente de validation",
+    "theyProposedTitle": "{{name}} propose",
+    "scheduled": {
+      "title": "Rencontre programmée"
+    },
+    "withdraw": {
+      "title": "Retirer la proposition ?",
+      "body": "Ta date proposée sera supprimée. L'autre personne sera notifiée.",
+      "confirm": "Retirer"
+    },
+    "today": "Aujourd'hui",
+    "tomorrow": "Demain",
+    "picker": {
+      "title": "Quand vous voyez-vous ?",
+      "whenLabel": "QUAND",
+      "timeLabel": "HEURE",
+      "whereLabel": "OÙ (OPTIONNEL)",
+      "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "Impossible de proposer la date. Réessaie.",
+      "approveFailed": "Impossible d'approuver. Réessaie.",
+      "withdrawFailed": "Impossible de retirer. Réessaie."
+    }
   }
 }

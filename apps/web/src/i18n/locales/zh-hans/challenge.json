@@ -128,5 +128,34 @@
       "title": "登录后查看会话",
       "body": "会话是你和挑战发起者之间的1对1聊天。需要账号才能开始。"
     }
+  },
+  "schedule": {
+    "proposeCta": "提议一个日期 📅",
+    "counterCta": "另提一个",
+    "you": "你",
+    "iProposedTitle": "等待对方确认",
+    "theyProposedTitle": "{{name}} 提议了",
+    "scheduled": {
+      "title": "见面已安排"
+    },
+    "withdraw": {
+      "title": "撤回提议?",
+      "body": "你提议的日期将被清除，对方会收到通知。",
+      "confirm": "撤回"
+    },
+    "today": "今天",
+    "tomorrow": "明天",
+    "picker": {
+      "title": "什么时候见面?",
+      "whenLabel": "什么时候",
+      "timeLabel": "时间",
+      "whereLabel": "在哪里（可选）",
+      "wherePlaceholder": "例如 Le Comptoir, 17 rue de la Paix"
+    },
+    "err": {
+      "proposeFailed": "无法提议日期，请再试一次。",
+      "approveFailed": "无法确认，请再试一次。",
+      "withdrawFailed": "无法撤回，请再试一次。"
+    }
   }
 }
