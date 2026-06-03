@@ -213,10 +213,10 @@ export async function withdrawProposal(acceptanceId: string): Promise<ChallengeA
   return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/withdraw-proposal`, {});
 }
 
-/** Creator-only — approves the current proposal. Server creates the debrief
- *  event channel + flips phase to 'scheduled' + inserts the thread event card. */
-export async function approveDate(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance; event_channel_id: string }> {
-  return api.post<{ acceptance: ChallengeAcceptance; event_channel_id: string }>(
+/** Creator-only — approves the current proposal. Flips phase to 'scheduled';
+ *  the thread chat IS the meet-up surface, no separate event row is created. */
+export async function approveDate(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance }> {
+  return api.post<{ acceptance: ChallengeAcceptance }>(
     `/acceptances/${acceptanceId}/approve-date`,
     {},
   );

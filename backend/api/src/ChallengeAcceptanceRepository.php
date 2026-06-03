@@ -30,15 +30,19 @@ class ChallengeAcceptanceRepository
 
     // PR4 — derived `effective_phase` reflects when the debrief panel unlocks.
     // `scheduled` flips to `debrief` once the meetup's end time is past. Both
-    // ends_at and now() are TIMESTAMPTZ (stored UTC), so the comparison is
-    // timezone-agnostic at the moment level — the city tz only matters for
-    // *display* of when something happens. If the proposal had no ends_at,
-    // we fall back to starts_at + 2h (the same default the UI uses).
+    // proposed_*_at and now() are TIMESTAMPTZ (stored UTC), so the comparison
+    // is timezone-agnostic at the moment level — the city tz only matters for
+    // *display* of when something happens. If the proposal had no ends_at, we
+    // fall back to starts_at + 2h (the same default the UI uses).
+    //
+    // Previously derived from a JOINed channel_events row, but date approval
+    // no longer creates an event — the proposed_starts_at/ends_at columns on
+    // the acceptance row are the source of truth.
     private const EFFECTIVE_PHASE = "
         CASE
           WHEN ca.phase = 'scheduled'
-               AND ev.starts_at IS NOT NULL
-               AND COALESCE(ev.ends_at, ev.starts_at + interval '2 hours') < now()
+               AND ca.proposed_starts_at IS NOT NULL
+               AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at + interval '2 hours') < now()
             THEN 'debrief'
           ELSE ca.phase
         END
@@ -64,7 +68,6 @@ class ChallengeAcceptanceRepository
             EXTRACT(EPOCH FROM ca.created_at)::INTEGER          AS created_at,
             EXTRACT(EPOCH FROM ca.updated_at)::INTEGER          AS updated_at
         FROM challenge_acceptances ca
-        LEFT JOIN channel_events ev ON ev.channel_id = ca.debrief_event_id
     ";
 
     private static function format(array $row): array
@@ -212,11 +215,10 @@ class ChallengeAcceptanceRepository
             JOIN channel_challenges cc ON cc.channel_id = ca.challenge_id
             JOIN users creator         ON creator.id    = cc.created_by
             JOIN users acceptor        ON acceptor.id   = ca.acceptor_user_id
-            LEFT JOIN channel_events ev ON ev.channel_id = ca.debrief_event_id
             LEFT JOIN messages m       ON m.channel_id  = ca.thread_channel_id
                                        AND m.type IN ('text','image')
             WHERE ca.acceptor_user_id = :uid OR cc.created_by = :uid
-            GROUP BY ca.id, ev.starts_at, ev.ends_at,
+            GROUP BY ca.id,
                      cc.title, cc.challenge_type, cc.audience, cc.created_by,
                      creator.display_name, creator.profile_thumb_photo_url,
                      acceptor.display_name, acceptor.profile_thumb_photo_url
@@ -361,16 +363,16 @@ class ChallengeAcceptanceRepository
     }
 
     /**
-     * Creator approves the current proposal. Atomically:
-     *   1. Creates a debrief event channel (channels.type='event',
-     *      parent_id=thread.channel_id) + channel_events row with
-     *      source_type='challenge_debrief' (invisible to public city feeds —
-     *      those filter on source_type IN ('hilads','ticketmaster'))
-     *   2. Sets acceptance.debrief_event_id + date_approved_at + phase='scheduled'
+     * Creator approves the current proposal. Flips phase to 'scheduled' and
+     * stamps date_approved_at. The thread chat IS the meet-up surface — no
+     * standalone event row is created (the previous design did, but the auto-
+     * "🎉 New event" system message was misleading in the thread + showed up
+     * elsewhere; the lifecycle now derives effective_phase=debrief directly
+     * from proposed_starts_at/ends_at on this row).
      *
      * Caller MUST enforce: caller is the creator, phase='accepted', proposal
-     * fields are populated. Returns [acceptance, eventChannelId] on success;
-     * null if the acceptance can't be found.
+     * fields are populated. Returns the updated acceptance, or null if the row
+     * can't be found / has already moved on.
      */
     public static function approveDate(string $acceptanceId, string $challengeTitle): ?array
     {
@@ -379,73 +381,15 @@ class ChallengeAcceptanceRepository
             return null;
         }
 
-        // Resolve city_id from the parent challenge — denormalized onto the event
-        // row so future per-city event lookups can join cheaply if we ever want
-        // to surface debrief events on a private "my meetups" feed.
-        $pdo = Database::pdo();
-        $stmt = $pdo->prepare("SELECT city_id, created_by FROM channel_challenges WHERE channel_id = :id");
-        $stmt->execute(['id' => $row['challenge_id']]);
-        $cc = $stmt->fetch();
-        if (!$cc) return null;
-        $cityId    = $cc['city_id'];
-        $creatorId = $cc['created_by'];
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET phase            = 'scheduled',
+                date_approved_at = now(),
+                updated_at       = now()
+            WHERE id = :id AND phase = 'accepted'
+        ")->execute(['id' => $acceptanceId]);
 
-        $pdo->beginTransaction();
-        try {
-            $eventChannelId = bin2hex(random_bytes(8));
-
-            // 1a. channels row for the event. parent_id = thread (NOT city) so
-            // it doesn't appear in city channel queries. name = challenge title.
-            $pdo->prepare("
-                INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
-                VALUES (:id, 'event', :parent_id, :name, 'active', now(), now())
-            ")->execute([
-                'id'        => $eventChannelId,
-                'parent_id' => $row['thread_channel_id'],
-                'name'      => $challengeTitle,
-            ]);
-
-            // 1b. channel_events row. source_type='challenge_debrief' keeps it
-            // out of the public city event feeds (those filter on source_type
-            // IN ('hilads','ticketmaster')). expires_at defaults to NOT NULL
-            // table default; we set it explicitly to a sentinel so the row
-            // doesn't get aged out by any TTL cleanup.
-            $pdo->prepare("
-                INSERT INTO channel_events
-                    (channel_id, source_type, created_by, title, starts_at, ends_at, expires_at, city_id, venue)
-                VALUES
-                    (:id, 'challenge_debrief', :creator, :title,
-                     to_timestamp(:starts),
-                     CASE WHEN :ends_set THEN to_timestamp(:ends) ELSE NULL END,
-                     '2999-01-01T00:00:00Z'::timestamptz,
-                     :city_id, :venue)
-            ")->execute([
-                'id'       => $eventChannelId,
-                'creator'  => $creatorId,
-                'title'    => $challengeTitle,
-                'starts'   => $row['proposed_starts_at'],
-                'ends_set' => $row['proposed_ends_at'] !== null ? 1 : 0,
-                'ends'     => $row['proposed_ends_at'] ?? 0,
-                'city_id'  => $cityId,
-                'venue'    => $row['proposed_venue'],
-            ]);
-
-            // 2. Flip the acceptance to phase='scheduled' + record the event id.
-            $pdo->prepare("
-                UPDATE challenge_acceptances
-                SET phase             = 'scheduled',
-                    debrief_event_id  = :eid,
-                    date_approved_at  = now(),
-                    updated_at        = now()
-                WHERE id = :id AND phase = 'accepted'
-            ")->execute(['eid' => $eventChannelId, 'id' => $acceptanceId]);
-
-            $pdo->commit();
-            return ['acceptance' => self::findById($acceptanceId), 'event_channel_id' => $eventChannelId];
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        return ['acceptance' => self::findById($acceptanceId)];
     }
 
     // ── PR4: debrief approve / reject ────────────────────────────────────────

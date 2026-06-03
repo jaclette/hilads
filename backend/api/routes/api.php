@@ -8081,9 +8081,10 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/withdraw-proposal', fun
 });
 
 // POST /api/v1/acceptances/{acceptanceId}/approve-date
-// CREATOR ONLY. Approves the current proposal, flips phase to 'scheduled',
-// creates the debrief event channel + system message in the thread with the
-// event card.
+// CREATOR ONLY. Approves the current proposal and flips phase to 'scheduled'.
+// The thread chat IS the meet-up surface — no event row, no system message
+// (previously inserted a "🎉 New event" card which was misleading inside the
+// thread; the pipeline's Meet step is the visible cue now).
 $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function (array $params) {
     $acceptanceId = $params['acceptanceId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
@@ -8119,26 +8120,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     if ($result === null) {
         Response::json(['error' => 'Failed to approve date'], 500);
     }
-    $updated        = $result['acceptance'];
-    $eventChannelId = $result['event_channel_id'];
-
-    // Insert the event card into the thread chat (type='event' message with
-    // the event channel ID — existing addEventAnnouncement helper does exactly
-    // this) so the thread shows "📅 Meet up scheduled" with a tappable card.
-    try {
-        $creatorName = $authUser['display_name'] ?? 'Someone';
-        $sysMsg = MessageRepository::addEventAnnouncement(
-            $acceptance['thread_channel_id'],
-            $eventChannelId,
-            (string) $challenge['title'],
-            $userId,        // guest_id slot — repurposed as the registered user's id
-            $creatorName,
-        );
-        // Broadcast as a normal message so the thread's WS subscribers see it.
-        broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
-    } catch (\Throwable $e) {
-        error_log('[challenges] ws event-card insert failed (non-fatal): ' . $e->getMessage());
-    }
+    $updated = $result['acceptance'];
 
     // Push to the acceptor — their phase pill flips to "scheduled".
     try {
@@ -8147,7 +8129,6 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
                 'acceptanceId'    => $acceptanceId,
                 'challengeId'     => $acceptance['challenge_id'],
                 'threadChannelId' => $acceptance['thread_channel_id'],
-                'eventChannelId'  => $eventChannelId,
                 'acceptance'      => $updated,
             ]);
         }
@@ -8155,10 +8136,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
         error_log('[challenges] ws approve-date broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
-    Response::json([
-        'acceptance'       => $updated,
-        'event_channel_id' => $eventChannelId,
-    ]);
+    Response::json(['acceptance' => $updated]);
 });
 
 // ── PR4: debrief verdicts (approve / reject the challenge) ────────────────────
