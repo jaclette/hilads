@@ -4781,7 +4781,7 @@ export default function App() {
                     >
                       <div className="er-header">
                         <span className="er-title">{typeIcon} {c.title}</span>
-                        <span className="er-going er-going--challenge">{t('noun', { ns: 'challenge' })}</span>
+                        <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`, { ns: 'challenge' })}</span>
                       </div>
                       <div className="er-badges">
                         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>

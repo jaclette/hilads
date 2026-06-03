@@ -197,8 +197,9 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
           <span className="er-title">{icon} {ch.title}</span>
           {/* Reuse keys from the challenge namespace to avoid duplicating
               30+ strings across 19 archive.json files for things that
-              already live in challenge.json. */}
-          <span className="er-going er-going--challenge">{t('noun', { ns: 'challenge' })}</span>
+              already live in challenge.json. Type-specific label (DÉFI
+              BOUFFE / FOOD CHALLENGE) so the kind reads at a glance. */}
+          <span className="er-going er-going--challenge">{t(`typeBadge.${ch.challenge_type}`, { ns: 'challenge' })}</span>
         </div>
         <div className="er-badges">
           <span className="challenge-badge challenge-badge--audience">

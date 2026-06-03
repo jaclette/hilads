@@ -41,10 +41,13 @@ export function ChallengeCard({
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
-      {/* Top row — entity badge + audience pill + (when validated) badge */}
+      {/* Top row — type-specific badge (DÉFI BOUFFE / FOOD CHALLENGE / etc.)
+          + audience pill + (when validated) badge. Type-specific instead of
+          generic so the scanner reads what kind of challenge it is without
+          opening the card. */}
       <View style={styles.kindRow}>
         <View style={styles.kindBadge}>
-          <Text style={styles.kindBadgeText}>{t('noun').toUpperCase()}</Text>
+          <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
         </View>
         <View style={styles.audiencePill}>
           <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
