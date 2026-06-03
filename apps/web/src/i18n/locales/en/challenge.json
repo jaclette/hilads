@@ -189,5 +189,27 @@
       "approveFailed": "Couldn't approve. Try again.",
       "rejectFailed": "Couldn't close. Try again."
     }
+  },
+  "closeCta": "Close challenge",
+  "reopenCta": "Reopen",
+  "pipeline": {
+    "step": {
+      "accept": "Accept",
+      "date": "Date",
+      "meet": "Meet",
+      "wrap": "Wrap up"
+    },
+    "subcta": {
+      "tapToAccept": "Take on the challenge",
+      "creatorWaiting": "Waiting for someone to take it on",
+      "proposeDate": "Propose a date →",
+      "dateAwaiting": "Waiting for the creator to approve",
+      "approveDate": "A date has been proposed →",
+      "meetSoon": "See you at the meet-up",
+      "creatorVerdict": "How did it go with {{name}}? →",
+      "acceptorWaitingVerdict": "Waiting for {{name}} to confirm",
+      "accomplished": "Challenge accomplished 🎉",
+      "closed": "Challenge closed"
+    }
   }
 }

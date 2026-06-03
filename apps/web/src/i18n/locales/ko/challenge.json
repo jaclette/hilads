@@ -189,5 +189,27 @@
       "approveFailed": "승인하지 못했어요. 다시 시도해 주세요.",
       "rejectFailed": "종료하지 못했어요. 다시 시도해 주세요."
     }
+  },
+  "closeCta": "챌린지 종료",
+  "reopenCta": "다시 열기",
+  "pipeline": {
+    "step": {
+      "accept": "수락",
+      "date": "날짜",
+      "meet": "만남",
+      "wrap": "마무리"
+    },
+    "subcta": {
+      "tapToAccept": "챌린지를 받아요",
+      "creatorWaiting": "받아 줄 사람을 기다리는 중",
+      "proposeDate": "날짜를 제안해요 →",
+      "dateAwaiting": "작성자의 승인을 기다리는 중",
+      "approveDate": "날짜가 제안됐어요 →",
+      "meetSoon": "만남에서 봐요",
+      "creatorVerdict": "{{name}}님과는 어땠어요? →",
+      "acceptorWaitingVerdict": "{{name}}님의 확인을 기다리는 중",
+      "accomplished": "챌린지 성공 🎉",
+      "closed": "챌린지 종료"
+    }
   }
 }

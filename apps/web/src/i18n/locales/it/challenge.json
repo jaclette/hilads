@@ -189,5 +189,27 @@
       "approveFailed": "Impossibile approvare. Riprova.",
       "rejectFailed": "Impossibile chiudere. Riprova."
     }
+  },
+  "closeCta": "Chiudi sfida",
+  "reopenCta": "Riapri",
+  "pipeline": {
+    "step": {
+      "accept": "Accetta",
+      "date": "Data",
+      "meet": "Vediamoci",
+      "wrap": "Resoconto"
+    },
+    "subcta": {
+      "tapToAccept": "Accetta la sfida",
+      "creatorWaiting": "In attesa che qualcuno la accetti",
+      "proposeDate": "Proponi una data →",
+      "dateAwaiting": "In attesa dell'approvazione del creatore",
+      "approveDate": "È stata proposta una data →",
+      "meetSoon": "Ci vediamo all'incontro",
+      "creatorVerdict": "Com'è andata con {{name}}? →",
+      "acceptorWaitingVerdict": "In attesa che {{name}} confermi",
+      "accomplished": "Sfida superata 🎉",
+      "closed": "Sfida chiusa"
+    }
   }
 }

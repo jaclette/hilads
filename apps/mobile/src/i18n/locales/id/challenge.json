@@ -189,5 +189,27 @@
       "approveFailed": "Gagal menyetujui. Coba lagi.",
       "rejectFailed": "Gagal menutup. Coba lagi."
     }
+  },
+  "closeCta": "Tutup tantangan",
+  "reopenCta": "Buka lagi",
+  "pipeline": {
+    "step": {
+      "accept": "Terima",
+      "date": "Tanggal",
+      "meet": "Ketemu",
+      "wrap": "Penutup"
+    },
+    "subcta": {
+      "tapToAccept": "Ambil tantangan ini",
+      "creatorWaiting": "Menunggu seseorang mengambilnya",
+      "proposeDate": "Usulkan tanggal →",
+      "dateAwaiting": "Menunggu persetujuan pembuat",
+      "approveDate": "Sebuah tanggal sudah diusulkan →",
+      "meetSoon": "Sampai jumpa di pertemuan",
+      "creatorVerdict": "Bagaimana dengan {{name}}? →",
+      "acceptorWaitingVerdict": "Menunggu konfirmasi dari {{name}}",
+      "accomplished": "Tantangan berhasil 🎉",
+      "closed": "Tantangan ditutup"
+    }
   }
 }

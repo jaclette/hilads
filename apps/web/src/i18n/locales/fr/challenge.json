@@ -189,5 +189,27 @@
       "approveFailed": "Impossible de valider. Réessaie.",
       "rejectFailed": "Impossible de clôturer. Réessaie."
     }
+  },
+  "closeCta": "Clôturer le défi",
+  "reopenCta": "Rouvrir",
+  "pipeline": {
+    "step": {
+      "accept": "Relever",
+      "date": "Date",
+      "meet": "Se voir",
+      "wrap": "Bilan"
+    },
+    "subcta": {
+      "tapToAccept": "Relève le défi",
+      "creatorWaiting": "En attente d'un voyageur",
+      "proposeDate": "Propose une date →",
+      "dateAwaiting": "En attente de validation du créateur",
+      "approveDate": "Une date a été proposée →",
+      "meetSoon": "À bientôt pour le rendez-vous",
+      "creatorVerdict": "Comment ça s'est passé avec {{name}} ? →",
+      "acceptorWaitingVerdict": "En attente de la validation de {{name}}",
+      "accomplished": "Défi relevé 🎉",
+      "closed": "Défi clôturé"
+    }
   }
 }

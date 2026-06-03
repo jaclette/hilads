@@ -189,5 +189,27 @@
       "approveFailed": "Não foi possível aprovar. Tente de novo.",
       "rejectFailed": "Não foi possível encerrar. Tente de novo."
     }
+  },
+  "closeCta": "Encerrar desafio",
+  "reopenCta": "Reabrir",
+  "pipeline": {
+    "step": {
+      "accept": "Aceitar",
+      "date": "Data",
+      "meet": "Encontrar",
+      "wrap": "Fechamento"
+    },
+    "subcta": {
+      "tapToAccept": "Topa o desafio",
+      "creatorWaiting": "Esperando alguém topar",
+      "proposeDate": "Propõe uma data →",
+      "dateAwaiting": "Esperando o criador aprovar",
+      "approveDate": "Uma data foi proposta →",
+      "meetSoon": "Até o encontro",
+      "creatorVerdict": "Como foi com {{name}}? →",
+      "acceptorWaitingVerdict": "Esperando {{name}} confirmar",
+      "accomplished": "Desafio concluído 🎉",
+      "closed": "Desafio encerrado"
+    }
   }
 }

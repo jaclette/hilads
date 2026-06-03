@@ -189,5 +189,27 @@
       "approveFailed": "تعذّرت الموافقة. أعد المحاولة.",
       "rejectFailed": "تعذّر الإغلاق. أعد المحاولة."
     }
+  },
+  "closeCta": "إغلاق التحدي",
+  "reopenCta": "إعادة الفتح",
+  "pipeline": {
+    "step": {
+      "accept": "قبول",
+      "date": "الموعد",
+      "meet": "اللقاء",
+      "wrap": "الخلاصة"
+    },
+    "subcta": {
+      "tapToAccept": "اقبل التحدي",
+      "creatorWaiting": "بانتظار من يقبله",
+      "proposeDate": "اقترح موعداً →",
+      "dateAwaiting": "بانتظار موافقة المنشئ",
+      "approveDate": "تم اقتراح موعد →",
+      "meetSoon": "نراك في اللقاء",
+      "creatorVerdict": "كيف سار اللقاء مع {{name}}؟ →",
+      "acceptorWaitingVerdict": "بانتظار تأكيد {{name}}",
+      "accomplished": "تم إنجاز التحدي 🎉",
+      "closed": "أُغلق التحدي"
+    }
   }
 }

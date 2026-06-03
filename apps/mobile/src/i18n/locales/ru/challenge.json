@@ -189,5 +189,27 @@
       "approveFailed": "Не удалось подтвердить. Попробуй ещё раз.",
       "rejectFailed": "Не удалось закрыть. Попробуй ещё раз."
     }
+  },
+  "closeCta": "Закрыть челлендж",
+  "reopenCta": "Открыть снова",
+  "pipeline": {
+    "step": {
+      "accept": "Принять",
+      "date": "Дата",
+      "meet": "Встреча",
+      "wrap": "Итог"
+    },
+    "subcta": {
+      "tapToAccept": "Прими челлендж",
+      "creatorWaiting": "Ждём, кто его примет",
+      "proposeDate": "Предложи дату →",
+      "dateAwaiting": "Ждём подтверждения автора",
+      "approveDate": "Тебе предложили дату →",
+      "meetSoon": "До встречи",
+      "creatorVerdict": "Как всё прошло с {{name}}? →",
+      "acceptorWaitingVerdict": "Ждём подтверждения от {{name}}",
+      "accomplished": "Челлендж пройден 🎉",
+      "closed": "Челлендж закрыт"
+    }
   }
 }

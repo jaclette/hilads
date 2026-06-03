@@ -189,5 +189,27 @@
       "approveFailed": "No se pudo aprobar. Inténtalo de nuevo.",
       "rejectFailed": "No se pudo cerrar. Inténtalo de nuevo."
     }
+  },
+  "closeCta": "Cerrar reto",
+  "reopenCta": "Reabrir",
+  "pipeline": {
+    "step": {
+      "accept": "Aceptar",
+      "date": "Fecha",
+      "meet": "Vernos",
+      "wrap": "Resumen"
+    },
+    "subcta": {
+      "tapToAccept": "Acepta el reto",
+      "creatorWaiting": "Esperando a que alguien lo acepte",
+      "proposeDate": "Propón una fecha →",
+      "dateAwaiting": "Esperando que el creador apruebe",
+      "approveDate": "Se ha propuesto una fecha →",
+      "meetSoon": "Nos vemos en la quedada",
+      "creatorVerdict": "¿Cómo fue con {{name}}? →",
+      "acceptorWaitingVerdict": "Esperando a que {{name}} confirme",
+      "accomplished": "Reto cumplido 🎉",
+      "closed": "Reto cerrado"
+    }
   }
 }

@@ -189,5 +189,27 @@
       "approveFailed": "Goedkeuren mislukt. Probeer opnieuw.",
       "rejectFailed": "Sluiten mislukt. Probeer opnieuw."
     }
+  },
+  "closeCta": "Challenge sluiten",
+  "reopenCta": "Heropenen",
+  "pipeline": {
+    "step": {
+      "accept": "Aannemen",
+      "date": "Datum",
+      "meet": "Afspreken",
+      "wrap": "Afronden"
+    },
+    "subcta": {
+      "tapToAccept": "Neem de challenge aan",
+      "creatorWaiting": "Wachten tot iemand 'm oppakt",
+      "proposeDate": "Stel een datum voor →",
+      "dateAwaiting": "Wachten op goedkeuring van de maker",
+      "approveDate": "Er is een datum voorgesteld →",
+      "meetSoon": "Tot bij de afspraak",
+      "creatorVerdict": "Hoe ging het met {{name}}? →",
+      "acceptorWaitingVerdict": "Wachten tot {{name}} bevestigt",
+      "accomplished": "Challenge gehaald 🎉",
+      "closed": "Challenge afgesloten"
+    }
   }
 }

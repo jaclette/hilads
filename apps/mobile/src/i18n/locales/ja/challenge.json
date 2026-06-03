@@ -189,5 +189,27 @@
       "approveFailed": "承認できませんでした。もう一度お試しください。",
       "rejectFailed": "終了できませんでした。もう一度お試しください。"
     }
+  },
+  "closeCta": "チャレンジを終了する",
+  "reopenCta": "再開する",
+  "pipeline": {
+    "step": {
+      "accept": "受ける",
+      "date": "日程",
+      "meet": "会う",
+      "wrap": "ふり返り"
+    },
+    "subcta": {
+      "tapToAccept": "チャレンジを受ける",
+      "creatorWaiting": "誰かが受けてくれるのを待っています",
+      "proposeDate": "日程を提案する →",
+      "dateAwaiting": "作成者の承認待ち",
+      "approveDate": "日程が提案されました →",
+      "meetSoon": "当日お会いしましょう",
+      "creatorVerdict": "{{name}}さんとはどうでしたか? →",
+      "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
+      "accomplished": "チャレンジ達成 🎉",
+      "closed": "チャレンジを終了しました"
+    }
   }
 }

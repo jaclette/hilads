@@ -189,5 +189,27 @@
       "approveFailed": "Hindi na-approve. Subukan ulit.",
       "rejectFailed": "Hindi na-close. Subukan ulit."
     }
+  },
+  "closeCta": "Isara ang challenge",
+  "reopenCta": "Buksan ulit",
+  "pipeline": {
+    "step": {
+      "accept": "Tanggapin",
+      "date": "Petsa",
+      "meet": "Magkita",
+      "wrap": "Tapusin"
+    },
+    "subcta": {
+      "tapToAccept": "Tanggapin ang challenge",
+      "creatorWaiting": "Hinihintay na may tumanggap",
+      "proposeDate": "Mag-suggest ng petsa →",
+      "dateAwaiting": "Hinihintay ang approval ng creator",
+      "approveDate": "May naka-propose na petsa →",
+      "meetSoon": "See you sa meet-up",
+      "creatorVerdict": "Kumusta kay {{name}}? →",
+      "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
+      "accomplished": "Tapos na ang challenge 🎉",
+      "closed": "Sarado na ang challenge"
+    }
   }
 }

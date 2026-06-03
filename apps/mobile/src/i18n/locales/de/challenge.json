@@ -189,5 +189,27 @@
       "approveFailed": "Bestätigung fehlgeschlagen. Versuch's nochmal.",
       "rejectFailed": "Konnte nicht beendet werden. Versuch's nochmal."
     }
+  },
+  "closeCta": "Challenge beenden",
+  "reopenCta": "Wieder öffnen",
+  "pipeline": {
+    "step": {
+      "accept": "Annehmen",
+      "date": "Termin",
+      "meet": "Treffen",
+      "wrap": "Abschluss"
+    },
+    "subcta": {
+      "tapToAccept": "Nimm die Challenge an",
+      "creatorWaiting": "Warten, bis jemand sie annimmt",
+      "proposeDate": "Schlag einen Termin vor →",
+      "dateAwaiting": "Warten auf Zustimmung des Erstellers",
+      "approveDate": "Ein Termin wurde vorgeschlagen →",
+      "meetSoon": "Bis zum Treffen",
+      "creatorVerdict": "Wie war's mit {{name}}? →",
+      "acceptorWaitingVerdict": "Warten, bis {{name}} bestätigt",
+      "accomplished": "Challenge gemeistert 🎉",
+      "closed": "Challenge beendet"
+    }
   }
 }

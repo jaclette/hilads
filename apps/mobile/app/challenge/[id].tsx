@@ -17,6 +17,7 @@ import {
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
+import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { MembersSheet } from '@/components/MembersSheet';
 import { avatarColor } from '@/lib/avatarColors';
 import { shareLink } from '@/lib/shareLink';
@@ -29,7 +30,7 @@ import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildChallengeUrl } from '@/constants';
-import type { Challenge, ChallengeType, ChallengeAudience, Message, UserDTO } from '@/types';
+import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
   food:    '🍜',
@@ -52,9 +53,11 @@ export default function ChallengeChatScreen() {
   const [acceptBusy,       setAcceptBusy]       = useState(false);
   const [validateBusy,     setValidateBusy]     = useState(false);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
-  // PR2 — if I (registered user) have an open acceptance on this challenge,
-  // the Accept (+) button morphs into "Open thread →". Loaded on mount.
-  const [myThreadChannelId, setMyThreadChannelId] = useState<string | null>(null);
+  // PR2/3/4 — if I have an acceptance on this challenge, store the full
+  // summary so the lifecycle pipeline can render my current phase + the
+  // Accept button can morph into "Open thread →".
+  const [myAcceptance, setMyAcceptance] = useState<ChallengeThreadSummary | null>(null);
+  const myThreadChannelId = myAcceptance?.thread_channel_id ?? null;
 
   // Owner is either the registered creator OR the guest who created it.
   const isOwner = !!(
@@ -84,15 +87,14 @@ export default function ChallengeChatScreen() {
   }, [id]);
 
   // Probe whether I already have an acceptance for this challenge — drives
-  // whether the Accept (+) button is shown or "Open thread →".
+  // the Accept (+) button morph AND the lifecycle pipeline below.
   const loadMyAcceptance = useCallback(() => {
-    if (!id || !account?.id) { setMyThreadChannelId(null); return; }
+    if (!id || !account?.id) { setMyAcceptance(null); return; }
     fetchMyAcceptances()
       .then(threads => {
-        const mine = threads.find(thr => thr.challenge_id === id);
-        setMyThreadChannelId(mine?.thread_channel_id ?? null);
+        setMyAcceptance(threads.find(thr => thr.challenge_id === id) ?? null);
       })
-      .catch(() => setMyThreadChannelId(null));
+      .catch(() => setMyAcceptance(null));
   }, [id, account?.id]);
 
   useEffect(() => {
@@ -202,7 +204,9 @@ export default function ChallengeChatScreen() {
     setAcceptBusy(true);
     try {
       const acceptance = await acceptChallenge(id);
-      setMyThreadChannelId(acceptance.thread_channel_id);
+      // Refresh the full summary (effective_phase, proposal state, etc.)
+      // so the pipeline renders the new "accepted" state.
+      loadMyAcceptance();
       track('challenge_take_on', { challengeId: id });
       router.push(`/thread/${acceptance.thread_channel_id}` as never);
     } catch (err) {
@@ -227,7 +231,7 @@ export default function ChallengeChatScreen() {
     } finally {
       setAcceptBusy(false);
     }
-  }, [id, account?.id, acceptBusy, myThreadChannelId, router, t]);
+  }, [id, account?.id, acceptBusy, myThreadChannelId, loadMyAcceptance, router, t]);
 
   // ── Messages ─────────────────────────────────────────────────────────────────
 
@@ -398,34 +402,48 @@ export default function ChallengeChatScreen() {
           <View style={styles.audiencePill}>
             <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
           </View>
-          <TouchableOpacity
-            style={[styles.statusPill, isValidated && styles.statusPillDone]}
-            onPress={isOwner ? handleToggleStatus : undefined}
-            activeOpacity={isOwner ? 0.7 : 1}
-            disabled={!isOwner || validateBusy}
-            accessibilityRole={isOwner ? 'button' : 'text'}
-            accessibilityLabel={isValidated ? t('statusAccomplished') : t('statusInProgress')}
-          >
-            {validateBusy
-              ? <ActivityIndicator color={Colors.white} size="small" />
-              : <>
-                  <Ionicons
-                    name={isValidated ? 'checkmark-circle' : 'time-outline'}
-                    size={12}
-                    color={Colors.white}
-                  />
-                  <Text style={styles.statusPillText} numberOfLines={1}>
-                    {isValidated ? t('statusAccomplished') : t('statusInProgress')}
-                  </Text>
-                </>}
-          </TouchableOpacity>
         </View>
+
+        {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
+            Visualises all 4 steps + highlights the viewer's current one. Tap
+            navigates to the thread where the actual actions live (date proposal,
+            verdict, etc). For visitors / creator-without-an-acceptance it's
+            educational only. */}
+        <ChallengePipeline
+          acceptance={myAcceptance}
+          iAmCreator={isOwner}
+          onPress={myThreadChannelId
+            ? () => router.push(`/thread/${myThreadChannelId}` as never)
+            : undefined}
+        />
 
         {isOwner && (
           <View style={styles.ownerSecondaryRow}>
             <TouchableOpacity style={styles.ownerIconBtn} onPress={handleEdit} activeOpacity={0.75} accessibilityLabel={t('editTitle')}>
               <Ionicons name="create-outline" size={16} color={Colors.muted} />
               <Text style={styles.ownerIconLabel}>{t('editTitle')}</Text>
+            </TouchableOpacity>
+            {/* Close-challenge — moved here from the old PR2 status-pill toggle.
+                Same /validate endpoint, just a smaller affordance now that the
+                pipeline owns the visible lifecycle. Green check icon when
+                already closed; tapping flips back. */}
+            <TouchableOpacity
+              style={styles.ownerIconBtn}
+              onPress={handleToggleStatus}
+              activeOpacity={0.75}
+              disabled={validateBusy}
+              accessibilityLabel={isValidated ? t('reopenCta') : t('closeCta')}
+            >
+              {validateBusy
+                ? <ActivityIndicator size="small" color={Colors.muted} />
+                : <Ionicons
+                    name={isValidated ? 'checkmark-circle' : 'lock-closed-outline'}
+                    size={16}
+                    color={isValidated ? '#22c55e' : Colors.muted}
+                  />}
+              <Text style={[styles.ownerIconLabel, isValidated && { color: '#22c55e' }]}>
+                {isValidated ? t('reopenCta') : t('closeCta')}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.ownerIconBtn} onPress={handleDelete} activeOpacity={0.75} accessibilityLabel={t('deleteConfirm')}>
               <Ionicons name="trash-outline" size={16} color={Colors.muted} />
@@ -697,26 +715,9 @@ const styles = StyleSheet.create({
   },
   audiencePillText: { fontSize: 11, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
 
-  // Status pill — third badge on the kind+audience row. Filled (not tinted)
-  // so it carries more visual weight than the other two; reads as both a
-  // status indicator AND a tappable owner control. Orange = in progress,
-  // green = accomplished (statusPillDone modifier).
-  statusPill: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               4,
-    backgroundColor:   '#FF7A3C',
-    borderRadius:      Radius.full,
-    paddingHorizontal: 10,
-    paddingVertical:   3,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.55)',
-  },
-  statusPillDone: {
-    backgroundColor: '#22c55e',
-    borderColor:     'rgba(34,197,94,0.55)',
-  },
-  statusPillText: { fontSize: 11, fontWeight: '800', color: Colors.white, letterSpacing: 0.3 },
+  // (Old status-pill styles removed — the ChallengePipeline component owns
+  // the lifecycle visual now. The close-challenge action moved to the
+  // owner-secondary row as a small ghost button.)
 
   // Secondary housekeeping row — icon + small label, ghost styling so the
   // eye lands on the orange CTA above first.

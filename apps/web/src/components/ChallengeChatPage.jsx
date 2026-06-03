@@ -19,6 +19,7 @@ import {
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
+import ChallengePipeline from './ChallengePipeline'
 import MessageComposer from './MessageComposer'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
 import LinkPreviewCard from './LinkPreviewCard'
@@ -95,9 +96,11 @@ export default function ChallengeChatPage({
   const [busy,         setBusy]         = useState(null) // 'accept' | 'status' | 'delete' | null
   const [loading,      setLoading]      = useState(true)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
-  // PR2 — if I (registered user) have an open acceptance, the Accept button
-  // morphs into "Open thread" and routes there instead of POST /accept.
-  const [myThreadChannelId, setMyThreadChannelId] = useState(null)
+  // PR2/3/4 — full acceptance summary. Drives the Accept button morph + the
+  // ChallengePipeline rendering. Null when I have no acceptance for this
+  // challenge (visitor or creator on their own ad).
+  const [myAcceptance, setMyAcceptance] = useState(null)
+  const myThreadChannelId = myAcceptance?.thread_channel_id ?? null
   const feedRef    = useRef(null)
   const knownIds   = useRef(new Set())
 
@@ -191,15 +194,14 @@ export default function ChallengeChatPage({
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
-  // PR2 — probe whether I have an acceptance for this challenge already, so
-  // the Accept button can show "Open thread" instead.
+  // PR2/3/4 — load my full thread summary for this challenge (drives the
+  // Accept button morph AND the pipeline rendering).
   const loadMyAcceptance = useCallback(async () => {
-    if (!account?.id || !id) { setMyThreadChannelId(null); return }
+    if (!account?.id || !id) { setMyAcceptance(null); return }
     try {
       const threads = await fetchMyAcceptances()
-      const mine = threads.find(thr => thr.challenge_id === id)
-      setMyThreadChannelId(mine?.thread_channel_id ?? null)
-    } catch { setMyThreadChannelId(null) }
+      setMyAcceptance(threads.find(thr => thr.challenge_id === id) ?? null)
+    } catch { setMyAcceptance(null) }
   }, [id, account?.id])
 
   useEffect(() => { loadMyAcceptance() }, [loadMyAcceptance])
@@ -223,7 +225,7 @@ export default function ChallengeChatPage({
     setBusy('accept')
     try {
       const acceptance = await acceptChallenge(id)
-      setMyThreadChannelId(acceptance.thread_channel_id)
+      loadMyAcceptance()  // refresh pipeline state with the new 'accepted' phase
       onOpenThread?.(acceptance.thread_channel_id)
     } catch (err) {
       if (err instanceof AcceptChallengeError) {
@@ -361,39 +363,50 @@ export default function ChallengeChatPage({
         <span className="challenge-header-emoji" aria-hidden="true">{typeIcon}</span>
       </div>
 
-      {/* Description band — type badge + audience pill + status pill.
-          Status is the third pill on the same row to keep the hero compact.
-          The status pill is the source of truth for the challenge state and
-          is visible to everyone; only the owner can tap it (toggles open ⇄
-          validated). Filled orange/green so it stands out from the tinted
-          kind/audience badges. */}
+      {/* Description band — type + audience badges only. The lifecycle
+          visualisation moved into <ChallengePipeline> below. */}
       <div className="topic-chat-desc challenge-meta-row">
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-        <button
-          type="button"
-          className={[
-            'challenge-badge',
-            'challenge-badge--status',
-            isValidated && 'challenge-badge--status-done',
-            !isOwner    && 'challenge-badge--readonly',
-          ].filter(Boolean).join(' ')}
-          onClick={isOwner ? handleToggleStatus : undefined}
-          disabled={isOwner && busy !== null}
-          aria-disabled={!isOwner}
-          tabIndex={isOwner ? 0 : -1}
-          aria-label={isValidated ? t('statusAccomplished') : t('statusInProgress')}
-        >
-          {busy === 'status' ? '…' : (
-            <>
-              <span aria-hidden="true">{isValidated ? '✓' : '⏳'}</span>
-              <span>{isValidated ? t('statusAccomplished') : t('statusInProgress')}</span>
-            </>
-          )}
-        </button>
       </div>
+
+      {/* Lifecycle pipeline (replaces the old "in progress / accomplished"
+          status pill). 4 dots, current step highlighted by the viewer's own
+          acceptance phase. Educational for visitors / creator-without-an-
+          acceptance. Tap navigates to the thread where the real actions are. */}
+      <ChallengePipeline
+        acceptance={myAcceptance}
+        iAmCreator={isOwner}
+        onClick={myThreadChannelId
+          ? () => onOpenThread?.(myThreadChannelId)
+          : undefined}
+      />
+
+      {/* Close-challenge — moved from the old status pill toggle. Same
+          /validate endpoint, just smaller affordance + only visible to the
+          creator now. Reopens via the same handler. */}
+      {isOwner && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 16px 12px' }}>
+          <button
+            type="button"
+            onClick={handleToggleStatus}
+            disabled={busy !== null}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '6px 12px', borderRadius: 999,
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.10)',
+              color: isValidated ? '#22c55e' : 'var(--muted, #b3b3b3)',
+              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            }}
+          >
+            <span aria-hidden="true">{isValidated ? '✓' : '🔒'}</span>
+            <span>{isValidated ? t('reopenCta') : t('closeCta')}</span>
+          </button>
+        </div>
+      )}
 
       {/* Challenger — explicitly distinguished from other participants. The
           crown emoji + Challenger pill make the originating user visible at
