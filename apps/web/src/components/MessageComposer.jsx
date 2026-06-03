@@ -36,6 +36,9 @@ export default function MessageComposer({
   maxLength = 1000,
   mentionSuggestions = [],
   onMentionSelect,
+  // Forwarded to the underlying input. Used by parents that want to collapse
+  // a header block when the composer is focused (keyboard opening).
+  onFocus,
 }) {
   const { t } = useTranslation('common')
   const attachDisabled = uploading || sending || spotLoading
@@ -108,6 +111,7 @@ export default function MessageComposer({
         type="text"
         value={value}
         onChange={onChange}
+        onFocus={onFocus}
         placeholder={placeholder}
         maxLength={maxLength}
         autoFocus={autoFocus}

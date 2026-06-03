@@ -106,6 +106,16 @@ export default function ChallengeChatPage({
   const [sending,  setSending]  = useState(false)
   const feedRef  = useRef(null)
   const knownIds = useRef(new Set())
+  // Collapse the badges / pipeline / participants block when the chat is
+  // scrolled OR the composer is focused — mirrors the event channel header
+  // collapse so the conversation gets vertical space when it matters.
+  const [headerCollapsed, setHeaderCollapsed] = useState(false)
+  const headerCollapsedRef = useRef(false)
+  const collapseHeader = (next) => {
+    if (next === headerCollapsedRef.current) return
+    headerCollapsedRef.current = next
+    setHeaderCollapsed(next)
+  }
   // Date picker opened from the pipeline sub-CTA when the viewer has an
   // acceptance but no proposal yet. Counter-propose has its own picker
   // inside ThreadScheduleBlock — they don't conflict.
@@ -399,6 +409,11 @@ export default function ChallengeChatPage({
         <span className="challenge-header-emoji" aria-hidden="true">{typeIcon}</span>
       </div>
 
+      {/* Collapsible region — badges + pipeline + owner actions + creator
+          row + participants row all live here. Shrinks (CSS-transitioned max-
+          height + opacity) when the chat is scrolled OR the composer is
+          focused, mirroring the event-channel pattern. */}
+      <div className={`challenge-collapsible${headerCollapsed ? ' challenge-collapsible--collapsed' : ''}`}>
       {/* Description band — type + audience badges only. The lifecycle
           visualisation moved into <ChallengePipeline> below. */}
       <div className="topic-chat-desc challenge-meta-row">
@@ -561,6 +576,7 @@ export default function ChallengeChatPage({
           </div>
         </div>
       )}
+      </div>{/* /.challenge-collapsible */}
 
       {/* Locked empty state — shown to visitors (registered or guest) and to
           creators whose challenge has no acceptors yet. Sits where the inline
@@ -594,7 +610,11 @@ export default function ChallengeChatPage({
           /thread" path: one screen, no second navigation step. */}
       {myAcceptance && account?.id && (
         <>
-          <div className="topic-chat-feed" ref={feedRef}>
+          <div
+            className="topic-chat-feed"
+            ref={feedRef}
+            onScroll={e => collapseHeader(e.currentTarget.scrollTop > 30)}
+          >
             {messages.length === 0 && (
               <div className="topic-chat-empty">
                 <span className="topic-chat-empty-icon">👋</span>
@@ -634,6 +654,7 @@ export default function ChallengeChatPage({
             value={composer}
             onChange={e => setComposer(e.target.value)}
             onSubmit={handleSendMessage}
+            onFocus={() => collapseHeader(true)}
             sending={sending}
             placeholder={t('thread.empty')}
             showEmojiButton={false}

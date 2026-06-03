@@ -1,6 +1,6 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  View, Text, ActivityIndicator,
+  View, Text, ActivityIndicator, Animated,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -360,6 +360,29 @@ export default function ChallengeChatScreen() {
     otherParticipants.length >= (challenge.max_participants ?? 3)
   );
 
+  // Collapse the badges / pipeline / participants block when the user starts
+  // scrolling the chat OR taps the composer (keyboard open). Mirror the
+  // event-channel pattern: secondary lines shrink to 0 + fade out, content
+  // padding tightens. 0 = expanded, 1 = collapsed. Driven by:
+  //   - FlatList onScroll (offset > 30 collapses)
+  //   - Composer focus (collapses; blur keeps it collapsed until next reset
+  //     trigger — user can scroll back to top to expand)
+  // The FlatList is inverted (newest at bottom): contentOffset.y > 0 means
+  // the user pulled UP into older messages, which is the cue to collapse.
+  const headerCollapse = useRef(new Animated.Value(0)).current;
+  const collapseTo = useCallback((next: 0 | 1) => {
+    Animated.timing(headerCollapse, {
+      toValue: next,
+      duration: 160,
+      useNativeDriver: false,
+    }).start();
+  }, [headerCollapse]);
+  const onChatScroll = useCallback((e: { nativeEvent: { contentOffset: { y: number } } }) => {
+    collapseTo(e.nativeEvent.contentOffset.y > 30 ? 1 : 0);
+  }, [collapseTo]);
+  const collapsibleMaxHeight = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [320, 0] });
+  const collapsibleOpacity   = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
+
   // ── Render ──────────────────────────────────────────────────────────────────
 
   if (challengeLoading) {
@@ -407,6 +430,12 @@ export default function ChallengeChatScreen() {
         <Text style={styles.navEmoji} accessibilityElementsHidden importantForAccessibility="no">{typeIcon}</Text>
       </View>
 
+      {/* Collapsible region — badges, pipeline, owner actions, challenger row
+          and participants row all live here. Shrinks to 0 (maxHeight + opacity
+          interpolation) when the chat is scrolled into older messages OR the
+          composer is focused. Mirrors the event channel collapse so the
+          conversation gets vertical space when it matters. */}
+      <Animated.View style={{ maxHeight: collapsibleMaxHeight, opacity: collapsibleOpacity, overflow: 'hidden' }}>
       {/* Hero — type badge + audience pill + status pill (3rd on the same row
           to save vertical space). The status pill is THE source of truth for
           the challenge's state and is visible to EVERYONE. Owner taps it to
@@ -587,6 +616,7 @@ export default function ChallengeChatScreen() {
           )}
         </View>
       )}
+      </Animated.View>
 
       {/* Inline thread chat (was previously a separate /thread/[id] screen).
           Mounts only when the viewer has an active acceptance for this
@@ -624,6 +654,8 @@ export default function ChallengeChatScreen() {
               inverted
               contentContainerStyle={styles.chatList}
               keyboardShouldPersistTaps="handled"
+              onScroll={onChatScroll}
+              scrollEventThrottle={32}
               onEndReached={hasMore ? loadOlder : undefined}
               onEndReachedThreshold={0.2}
               ListFooterComponent={loadingOlder ? (
@@ -650,6 +682,7 @@ export default function ChallengeChatScreen() {
 
             <ChatInput
               sending={sending}
+              onFocus={() => collapseTo(1)}
               onSendText={(text) => sendText(text, null)}
               onSendImage={sendImage}
             />

@@ -11189,6 +11189,21 @@ body.has-app-promo-banner .page-header {
   font-weight: 500;
 }
 
+/* Challenge collapsible header — badges + pipeline + creator row + participants
+   row. Smoothly shrinks to 0 height + fades when the user scrolls the chat or
+   focuses the composer (mirrors the event-channel collapse). Expand returns
+   when the user scrolls back to the top of the feed. */
+.challenge-collapsible {
+  max-height: 800px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.22s ease, opacity 0.18s ease;
+}
+.challenge-collapsible--collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
 /* Labeled Accept button — replaces the old + icon to make the call to action
    self-explanatory. Two variants:
      --full    : sole CTA in the row when there are no acceptors yet

@@ -72,9 +72,13 @@ interface Props {
   editing?:         { id: string; content: string } | null;
   onSubmitEdit?:    (text: string) => void;
   onCancelEdit?:    () => void;
+  /** Forwarded to the underlying TextInput. Parent can use this to react to
+      the keyboard opening (e.g. collapse a header block to give the chat
+      more vertical space). */
+  onFocus?:         () => void;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus }: Props) {
   const { t } = useTranslation('common');
   const { account, identity, onlineUsers } = useApp();
   // Presence mirror — read at suggest time so a guest joining/leaving doesn't
@@ -551,7 +555,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         blurOnSubmit={Platform.OS !== 'ios'}
         onSubmitEditing={Platform.OS !== 'ios' ? handleSend : undefined}
         editable={!busy}
-        onFocus={() => setShowEmoji(false)}
+        onFocus={() => { setShowEmoji(false); onFocus?.(); }}
         onBlur={() => { clearTypingTimer(); if (isTypingRef.current) { isTypingRef.current = false; onTypingStop?.(); } }}
       />
 
