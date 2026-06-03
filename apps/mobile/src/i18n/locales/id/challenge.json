@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Usulkan tanggal 📅",
     "counterCta": "Usulkan balik",
+    "editCta": "Ubah tanggal",
     "you": "kamu",
     "iProposedTitle": "Menunggu persetujuan",
     "theyProposedTitle": "{{name}} mengusulkan",
@@ -208,7 +209,7 @@
       "proposeDate": "Usulkan tanggal →",
       "dateAwaiting": "Menunggu persetujuan pembuat",
       "approveDate": "Sebuah tanggal sudah diusulkan →",
-      "meetSoon": "Sampai jumpa di pertemuan",
+      "meetSoon": "Sampai jumpa di {{date}}",
       "creatorVerdict": "Bagaimana dengan {{name}}? →",
       "acceptorWaitingVerdict": "Menunggu konfirmasi dari {{name}}",
       "accomplished": "Tantangan berhasil 🎉",

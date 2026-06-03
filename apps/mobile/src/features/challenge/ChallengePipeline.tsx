@@ -23,6 +23,16 @@ import type { ChallengeThreadSummary } from '@/types';
 type Step = 'accept' | 'date' | 'meet' | 'wrap';
 const STEPS: Step[] = ['accept', 'date', 'meet', 'wrap'];
 
+// Compact "Sat, Jun 6 · 9:30 PM" — locale-aware via Intl, kept short enough
+// to fit on a single sub-CTA line. The schedule band uses a more verbose
+// formatter (includes venue); this one is just for the pipeline preview.
+function formatMeetupDate(unixSeconds: number): string {
+  const d = new Date(unixSeconds * 1000);
+  const day  = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  const time = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return `${day} · ${time}`;
+}
+
 interface PipelineState {
   /** Which step is the active one. `null` when there's no acceptance to
    *  highlight (visitor / creator with no personal acceptance). */
@@ -35,6 +45,8 @@ interface PipelineState {
   subCtaKey: string;
   /** Optional interpolation arg for the subCTA key. */
   subCtaName?: string;
+  /** Optional date interpolation (formatted at the call site). */
+  subCtaDate?: string;
 }
 
 function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean): PipelineState {
@@ -67,6 +79,9 @@ function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean):
       done: new Set<Step>(['accept', 'date']),
       rejected: false,
       subCtaKey: 'pipeline.subcta.meetSoon',
+      subCtaDate: acceptance.proposed_starts_at
+        ? formatMeetupDate(acceptance.proposed_starts_at)
+        : undefined,
     };
   }
   if (phase === 'debrief') {
@@ -163,9 +178,10 @@ export function ChallengePipeline({
       {/* Sub-CTA — current/next action hint */}
       <View style={styles.subCtaRow}>
         <Text style={styles.subCta} numberOfLines={1}>
-          {state.subCtaName
-            ? t(state.subCtaKey, { name: state.subCtaName })
-            : t(state.subCtaKey)}
+          {t(state.subCtaKey, {
+            ...(state.subCtaName ? { name: state.subCtaName } : {}),
+            ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
+          })}
         </Text>
         {interactive && <Ionicons name="chevron-forward" size={14} color="#FF7A3C" />}
       </View>

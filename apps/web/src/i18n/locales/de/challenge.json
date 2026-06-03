@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Termin vorschlagen 📅",
     "counterCta": "Gegenvorschlag",
+    "editCta": "Datum ändern",
     "you": "dir",
     "iProposedTitle": "Warten auf Zustimmung",
     "theyProposedTitle": "{{name}} hat vorgeschlagen",
@@ -208,7 +209,7 @@
       "proposeDate": "Schlag einen Termin vor →",
       "dateAwaiting": "Warten auf Zustimmung des Erstellers",
       "approveDate": "Ein Termin wurde vorgeschlagen →",
-      "meetSoon": "Bis zum Treffen",
+      "meetSoon": "Wir sehen uns am {{date}}",
       "creatorVerdict": "Wie war's mit {{name}}? →",
       "acceptorWaitingVerdict": "Warten, bis {{name}} bestätigt",
       "accomplished": "Challenge gemeistert 🎉",

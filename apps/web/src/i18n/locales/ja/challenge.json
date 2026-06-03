@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "日程を提案する 📅",
     "counterCta": "対案を出す",
+    "editCta": "日付を変更",
     "you": "あなた",
     "iProposedTitle": "承認待ち",
     "theyProposedTitle": "{{name}}さんが提案しました",
@@ -208,7 +209,7 @@
       "proposeDate": "日程を提案する →",
       "dateAwaiting": "作成者の承認待ち",
       "approveDate": "日程が提案されました →",
-      "meetSoon": "当日お会いしましょう",
+      "meetSoon": "{{date}}に会いましょう",
       "creatorVerdict": "{{name}}さんとはどうでしたか? →",
       "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
       "accomplished": "チャレンジ達成 🎉",

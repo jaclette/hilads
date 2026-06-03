@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Stel een datum voor 📅",
     "counterCta": "Tegenvoorstel",
+    "editCta": "Datum wijzigen",
     "you": "je",
     "iProposedTitle": "Wachten op goedkeuring",
     "theyProposedTitle": "{{name}} heeft voorgesteld",
@@ -208,7 +209,7 @@
       "proposeDate": "Stel een datum voor →",
       "dateAwaiting": "Wachten op goedkeuring van de maker",
       "approveDate": "Er is een datum voorgesteld →",
-      "meetSoon": "Tot bij de afspraak",
+      "meetSoon": "Tot {{date}}",
       "creatorVerdict": "Hoe ging het met {{name}}? →",
       "acceptorWaitingVerdict": "Wachten tot {{name}} bevestigt",
       "accomplished": "Challenge gehaald 🎉",

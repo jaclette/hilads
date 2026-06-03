@@ -10,6 +10,16 @@ import { useTranslation } from 'react-i18next'
 const STEPS  = ['accept', 'date', 'meet', 'wrap']
 const ICONS  = { accept: '🤝', date: '📅', meet: '👋', wrap: '✨' }
 
+// Compact "Sat, Jun 6 · 9:30 PM" for the pipeline sub-CTA. The scheduled-
+// band uses a more verbose formatter (includes venue); this one is just for
+// the one-line preview.
+function formatMeetupDate(unixSeconds) {
+  const d = new Date(unixSeconds * 1000)
+  const day  = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+  const time = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+  return `${day} · ${time}`
+}
+
 function derive(acceptance, iAmCreator) {
   if (!acceptance) {
     return {
@@ -34,7 +44,13 @@ function derive(acceptance, iAmCreator) {
     }
   }
   if (phase === 'scheduled') {
-    return { active: 'meet', done: new Set(['accept', 'date']), rejected: false, subCtaKey: 'pipeline.subcta.meetSoon' }
+    return {
+      active: 'meet',
+      done: new Set(['accept', 'date']),
+      rejected: false,
+      subCtaKey: 'pipeline.subcta.meetSoon',
+      subCtaDate: acceptance.proposed_starts_at ? formatMeetupDate(acceptance.proposed_starts_at) : undefined,
+    }
   }
   if (phase === 'debrief') {
     return {
@@ -119,9 +135,10 @@ export default function ChallengePipeline({ acceptance, iAmCreator, onClick }) {
         border: '1px solid rgba(255,122,60,0.20)',
       }}>
         <span style={{ color: '#FF7A3C', fontWeight: 700, fontSize: 12 }}>
-          {state.subCtaName
-            ? t(state.subCtaKey, { name: state.subCtaName })
-            : t(state.subCtaKey)}
+          {t(state.subCtaKey, {
+            ...(state.subCtaName ? { name: state.subCtaName } : {}),
+            ...(state.subCtaDate ? { date: state.subCtaDate } : {}),
+          })}
         </span>
         {interactive && <span style={{ color: '#FF7A3C', fontSize: 12 }}>›</span>}
       </div>

@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Đề xuất ngày 📅",
     "counterCta": "Đề xuất lại",
+    "editCta": "Đổi ngày",
     "you": "bạn",
     "iProposedTitle": "Đang chờ xác nhận",
     "theyProposedTitle": "{{name}} đã đề xuất",
@@ -208,7 +209,7 @@
       "proposeDate": "Đề xuất một ngày →",
       "dateAwaiting": "Đang chờ người tạo duyệt",
       "approveDate": "Một ngày đã được đề xuất →",
-      "meetSoon": "Hẹn gặp lại",
+      "meetSoon": "Hẹn gặp lúc {{date}}",
       "creatorVerdict": "Buổi gặp với {{name}} thế nào? →",
       "acceptorWaitingVerdict": "Đang chờ {{name}} xác nhận",
       "accomplished": "Đã hoàn thành thử thách 🎉",

@@ -123,17 +123,47 @@ export function ThreadScheduleBlock({
   }
 
   // ── Render: phase='scheduled' (meetup in the future) ──────────────────────
+  // Either party can tap ✏️ to reschedule — the backend flips phase back to
+  // 'accepted', clears date_approved_at, and the other party re-approves
+  // the new proposal.
   if (phase === 'scheduled' && thread.proposed_starts_at) {
     return (
-      <View style={[styles.band, styles.bandScheduled]}>
-        <Ionicons name="checkmark-circle" size={18} color="#22c55e" />
-        <View style={styles.bandTextWrap}>
-          <Text style={styles.bandTitleScheduled}>{t('schedule.scheduled.title')}</Text>
-          <Text style={styles.bandSubtitle} numberOfLines={2}>
-            {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
-          </Text>
+      <>
+        <View style={[styles.band, styles.bandScheduled]}>
+          <Ionicons name="checkmark-circle" size={18} color="#22c55e" />
+          <View style={styles.bandTextWrap}>
+            <Text style={styles.bandTitleScheduled}>{t('schedule.scheduled.title')}</Text>
+            <Text style={styles.bandSubtitle} numberOfLines={2}>
+              {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.actionSecondary}
+            onPress={() => setPickerOpen(true)}
+            activeOpacity={0.85}
+            disabled={busy !== null}
+            accessibilityLabel={t('schedule.editCta')}
+          >
+            <Ionicons name="pencil" size={16} color={Colors.muted} />
+          </TouchableOpacity>
         </View>
-      </View>
+        {pickerOpen && (
+          <DatePickerModal
+            visible={pickerOpen}
+            onClose={() => setPickerOpen(false)}
+            onSubmit={async (startsAt, endsAt, venue) => {
+              setBusy('propose');
+              setPickerOpen(false);
+              try { await proposeDate(thread.id, startsAt, endsAt, venue); onChange?.(); }
+              catch { Alert.alert(t('schedule.err.proposeFailed')); }
+              finally { setBusy(null); }
+            }}
+            submitLabel={t('schedule.editCta')}
+            initialStartsAt={thread.proposed_starts_at}
+            initialVenue={thread.proposed_venue ?? undefined}
+          />
+        )}
+      </>
     );
   }
 

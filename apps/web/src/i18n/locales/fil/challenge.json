@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Mag-propose ng petsa 📅",
     "counterCta": "Counter-propose",
+    "editCta": "Palitan ang petsa",
     "you": "ka",
     "iProposedTitle": "Naghihintay ng approval",
     "theyProposedTitle": "Nag-propose si {{name}}",
@@ -208,7 +209,7 @@
       "proposeDate": "Mag-suggest ng petsa →",
       "dateAwaiting": "Hinihintay ang approval ng creator",
       "approveDate": "May naka-propose na petsa →",
-      "meetSoon": "See you sa meet-up",
+      "meetSoon": "See you on {{date}}",
       "creatorVerdict": "Kumusta kay {{name}}? →",
       "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
       "accomplished": "Tapos na ang challenge 🎉",

@@ -326,6 +326,12 @@ class ChallengeAcceptanceRepository
         $venue = $venue !== null ? mb_substr(trim($venue), 0, 200) : null;
         if ($venue === '') $venue = null;
 
+        // Works in BOTH phases:
+        //   - 'accepted'  → just write the (counter-)proposal.
+        //   - 'scheduled' → reschedule: flip phase back to 'accepted' and clear
+        //                   date_approved_at so the other party re-approves.
+        // After 'scheduled' (debrief / approved / rejected) the route guards
+        // against entry — see /propose-date handler.
         Database::pdo()->prepare("
             UPDATE challenge_acceptances
             SET proposed_starts_at  = to_timestamp(:starts),
@@ -333,8 +339,10 @@ class ChallengeAcceptanceRepository
                 proposed_venue      = :venue,
                 proposed_by_user_id = :uid,
                 proposed_at         = now(),
+                phase               = 'accepted',
+                date_approved_at    = NULL,
                 updated_at          = now()
-            WHERE id = :id AND phase = 'accepted'
+            WHERE id = :id AND phase IN ('accepted', 'scheduled')
         ")->execute([
             'id'       => $acceptanceId,
             'starts'   => $startsAtUnix,

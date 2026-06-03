@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "날짜 제안하기 📅",
     "counterCta": "대안 제안",
+    "editCta": "날짜 변경",
     "you": "당신",
     "iProposedTitle": "승인 대기 중",
     "theyProposedTitle": "{{name}}님이 제안했어요",
@@ -208,7 +209,7 @@
       "proposeDate": "날짜를 제안해요 →",
       "dateAwaiting": "작성자의 승인을 기다리는 중",
       "approveDate": "날짜가 제안됐어요 →",
-      "meetSoon": "만남에서 봐요",
+      "meetSoon": "{{date}}에 만나요",
       "creatorVerdict": "{{name}}님과는 어땠어요? →",
       "acceptorWaitingVerdict": "{{name}}님의 확인을 기다리는 중",
       "accomplished": "챌린지 성공 🎉",

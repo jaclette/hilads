@@ -7969,8 +7969,12 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
     if (!$isAcceptor && !$isCreator) {
         Response::json(['error' => 'Not a thread member'], 403);
     }
-    if ($acceptance['phase'] !== 'accepted') {
-        Response::json(['error' => "Can't change the date once it's scheduled", 'code' => 'phase_locked'], 409);
+    // 'accepted' = initial proposal/counter-proposal. 'scheduled' = either
+    // party reschedules an already-approved date — the repo flips it back to
+    // 'accepted' so the other party re-approves. After 'scheduled' (debrief /
+    // approved / rejected) the date is final.
+    if ($acceptance['phase'] !== 'accepted' && $acceptance['phase'] !== 'scheduled') {
+        Response::json(['error' => "Can't change the date at this stage", 'code' => 'phase_locked'], 409);
     }
 
     $body     = Request::json() ?? [];

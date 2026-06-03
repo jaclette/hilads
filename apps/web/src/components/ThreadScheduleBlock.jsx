@@ -91,17 +91,41 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   }
 
   // ── Render: phase='scheduled' ─────────────────────────────────────────────
+  // Either party can tap ✏️ to reschedule — the backend flips phase back to
+  // 'accepted', clears date_approved_at, and the other party re-approves the
+  // new proposal.
   if (phase === 'scheduled' && thread.proposed_starts_at) {
     return (
-      <div style={{ ...bandBase, ...bandScheduled }}>
-        <span style={{ fontSize: 16 }}>✅</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('schedule.scheduled.title')}</div>
-          <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-            {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
+      <>
+        <div style={{ ...bandBase, ...bandScheduled }}>
+          <span style={{ fontSize: 16 }}>✅</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('schedule.scheduled.title')}</div>
+            <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
+              {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            disabled={busy !== null}
+            title={t('schedule.editCta')}
+            style={iconBtnSecondary}
+          >
+            ✏️
+          </button>
         </div>
-      </div>
+        {pickerOpen && (
+          <DatePickerModal
+            onClose={() => setPickerOpen(false)}
+            onSubmit={handlePickerSubmit}
+            submitLabel={t('schedule.editCta')}
+            initialStartsAt={thread.proposed_starts_at}
+            initialVenue={thread.proposed_venue}
+          />
+        )}
+        <ConfirmDialog dialog={dialog} onClose={() => setDialog(null)} />
+      </>
     )
   }
 

@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Proposer une date 📅",
     "counterCta": "Contre-proposer",
+    "editCta": "Changer la date",
     "you": "toi",
     "iProposedTitle": "En attente de validation",
     "theyProposedTitle": "{{name}} propose",
@@ -208,7 +209,7 @@
       "proposeDate": "Propose une date →",
       "dateAwaiting": "En attente de validation du créateur",
       "approveDate": "Une date a été proposée →",
-      "meetSoon": "À bientôt pour le rendez-vous",
+      "meetSoon": "Rendez-vous le {{date}}",
       "creatorVerdict": "Comment ça s'est passé avec {{name}} ? →",
       "acceptorWaitingVerdict": "En attente de la validation de {{name}}",
       "accomplished": "Défi relevé 🎉",

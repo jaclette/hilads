@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Предложить дату 📅",
     "counterCta": "Встречное предложение",
+    "editCta": "Изменить дату",
     "you": "тобой",
     "iProposedTitle": "Ждём подтверждения",
     "theyProposedTitle": "{{name}} предлагает",
@@ -208,7 +209,7 @@
       "proposeDate": "Предложи дату →",
       "dateAwaiting": "Ждём подтверждения автора",
       "approveDate": "Тебе предложили дату →",
-      "meetSoon": "До встречи",
+      "meetSoon": "Увидимся {{date}}",
       "creatorVerdict": "Как всё прошло с {{name}}? →",
       "acceptorWaitingVerdict": "Ждём подтверждения от {{name}}",
       "accomplished": "Челлендж пройден 🎉",

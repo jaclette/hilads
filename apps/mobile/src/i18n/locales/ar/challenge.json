@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "اقترح موعدًا 📅",
     "counterCta": "اقتراح مضاد",
+    "editCta": "تغيير التاريخ",
     "you": "أنت",
     "iProposedTitle": "في انتظار الموافقة",
     "theyProposedTitle": "اقترح {{name}}",
@@ -208,7 +209,7 @@
       "proposeDate": "اقترح موعداً →",
       "dateAwaiting": "بانتظار موافقة المنشئ",
       "approveDate": "تم اقتراح موعد →",
-      "meetSoon": "نراك في اللقاء",
+      "meetSoon": "نراك في {{date}}",
       "creatorVerdict": "كيف سار اللقاء مع {{name}}؟ →",
       "acceptorWaitingVerdict": "بانتظار تأكيد {{name}}",
       "accomplished": "تم إنجاز التحدي 🎉",

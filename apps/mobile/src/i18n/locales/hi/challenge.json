@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "तारीख़ सुझाएँ 📅",
     "counterCta": "जवाबी सुझाव",
+    "editCta": "तारीख़ बदलें",
     "you": "आप",
     "iProposedTitle": "मंज़ूरी का इंतज़ार",
     "theyProposedTitle": "{{name}} ने सुझाया",
@@ -208,7 +209,7 @@
       "proposeDate": "एक तारीख सुझाएँ →",
       "dateAwaiting": "क्रिएटर की मंज़ूरी का इंतज़ार",
       "approveDate": "एक तारीख सुझाई गई है →",
-      "meetSoon": "मिलने पर मिलते हैं",
+      "meetSoon": "{{date}} को मिलते हैं",
       "creatorVerdict": "{{name}} के साथ कैसा रहा? →",
       "acceptorWaitingVerdict": "{{name}} की पुष्टि का इंतज़ार",
       "accomplished": "चैलेंज पूरा 🎉",

@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "提議一個日期 📅",
     "counterCta": "另提一個",
+    "editCta": "改約時間",
     "you": "你",
     "iProposedTitle": "等對方確認",
     "theyProposedTitle": "{{name}} 提議了",
@@ -208,7 +209,7 @@
       "proposeDate": "提議一個日期 →",
       "dateAwaiting": "等待發起人確認",
       "approveDate": "對方提議了一個日期 →",
-      "meetSoon": "見面時見",
+      "meetSoon": "{{date}} 見",
       "creatorVerdict": "和 {{name}} 見面如何？ →",
       "acceptorWaitingVerdict": "等待 {{name}} 確認",
       "accomplished": "挑戰完成 🎉",

@@ -135,6 +135,7 @@
   "schedule": {
     "proposeCta": "Propor uma data 📅",
     "counterCta": "Contrapropor",
+    "editCta": "Mudar a data",
     "you": "ti",
     "iProposedTitle": "À espera de aprovação",
     "theyProposedTitle": "{{name}} propôs",
@@ -208,7 +209,7 @@
       "proposeDate": "Propõe uma data →",
       "dateAwaiting": "À espera da aprovação do criador",
       "approveDate": "Foi proposta uma data →",
-      "meetSoon": "Até ao encontro",
+      "meetSoon": "Vemo-nos {{date}}",
       "creatorVerdict": "Como correu com {{name}}? →",
       "acceptorWaitingVerdict": "À espera que {{name}} confirme",
       "accomplished": "Desafio cumprido 🎉",
