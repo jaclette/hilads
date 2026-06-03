@@ -16,11 +16,13 @@ import {
   fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
-  fetchThreadMessages, sendThreadMessage,
+  fetchThreadMessages, sendThreadMessage, proposeDate,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
+import DatePickerModal from './DatePickerModal'
+import MessageComposer from './MessageComposer'
 import ThreadScheduleBlock from './ThreadScheduleBlock'
 
 // Slug builder — mirrors apps/web/api/sitemap.mjs:challengeSlug and
@@ -99,6 +101,10 @@ export default function ChallengeChatPage({
   const [sending,  setSending]  = useState(false)
   const feedRef  = useRef(null)
   const knownIds = useRef(new Set())
+  // Date picker opened from the pipeline sub-CTA when the viewer has an
+  // acceptance but no proposal yet. Counter-propose has its own picker
+  // inside ThreadScheduleBlock — they don't conflict.
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   const id = challenge?.id
 
@@ -373,9 +379,11 @@ export default function ChallengeChatPage({
       <ChallengePipeline
         acceptance={myAcceptance}
         iAmCreator={isOwner}
-        onClick={myThreadChannelId
-          ? () => onOpenThread?.(myThreadChannelId)
-          : undefined}
+        onClick={
+          myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
+            ? () => setPickerOpen(true)
+            : undefined
+        }
       />
 
       {/* Close-challenge — moved from the old status pill toggle. Same
@@ -542,21 +550,33 @@ export default function ChallengeChatPage({
             thread={myAcceptance}
             myUserId={account.id}
             onChange={loadMyAcceptance}
+            hideEmptyCta
           />
 
-          <form onSubmit={handleSendMessage} className="topic-composer">
-            <input
-              type="text"
-              value={composer}
-              onChange={e => setComposer(e.target.value)}
-              placeholder={t('thread.empty')}
-              maxLength={1000}
-            />
-            <button type="submit" disabled={!composer.trim() || sending}>
-              {sending ? '…' : '➤'}
-            </button>
-          </form>
+          <MessageComposer
+            value={composer}
+            onChange={e => setComposer(e.target.value)}
+            onSubmit={handleSendMessage}
+            sending={sending}
+            placeholder={t('thread.empty')}
+            showEmojiButton={false}
+          />
         </>
+      )}
+
+      {/* Date picker — opened by the pipeline's "Propose a date →" sub-CTA
+          (the inline schedule band's empty-state CTA is suppressed to avoid
+          duplication). */}
+      {pickerOpen && myAcceptance && (
+        <DatePickerModal
+          onClose={() => setPickerOpen(false)}
+          onSubmit={async (startsAt, endsAt, venue) => {
+            setPickerOpen(false)
+            try { await proposeDate(myAcceptance.id, startsAt, endsAt, venue); loadMyAcceptance() }
+            catch { window.alert(t('schedule.err.proposeFailed')) }
+          }}
+          submitLabel={t('schedule.proposeCta')}
+        />
       )}
     </div>
   )

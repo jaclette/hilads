@@ -25,6 +25,8 @@ import {
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
+import { DatePickerModal } from '@/features/challenge/DatePickerModal';
+import { proposeDate as proposeDateApi } from '@/api/challenges';
 import { MembersSheet } from '@/components/MembersSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -65,6 +67,10 @@ export default function ChallengeChatScreen() {
   // Accept button can morph into "Open thread →".
   const [myAcceptance, setMyAcceptance] = useState<ChallengeThreadSummary | null>(null);
   const myThreadChannelId = myAcceptance?.thread_channel_id ?? null;
+  // Picker for the FIRST proposal (no existing proposal yet). Counter-propose
+  // has its own picker inside ThreadScheduleBlock; this one is reached from
+  // the pipeline's "Propose a date →" sub-CTA so we don't double up.
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   // Owner is either the registered creator OR the guest who created it.
   const isOwner = !!(
@@ -406,16 +412,21 @@ export default function ChallengeChatScreen() {
         </View>
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
-            Visualises all 4 steps + highlights the viewer's current one. Tap
-            navigates to the thread where the actual actions live (date proposal,
-            verdict, etc). For visitors / creator-without-an-acceptance it's
-            educational only. */}
+            Visualises all 4 steps + highlights the viewer's current one.
+            Tap behaviour depends on state:
+              - acceptance exists + no proposal → opens the date picker (the
+                pipeline's "Propose a date →" sub-CTA is the only one we
+                surface; the bottom ScheduleBlock empty state is hidden)
+              - otherwise → no-op (informational). The thread chat is right
+                below this, no navigation needed. */}
         <ChallengePipeline
           acceptance={myAcceptance}
           iAmCreator={isOwner}
-          onPress={myThreadChannelId
-            ? () => router.push(`/thread/${myThreadChannelId}` as never)
-            : undefined}
+          onPress={
+            myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
+              ? () => setPickerOpen(true)
+              : undefined
+          }
         />
 
         {isOwner && (
@@ -598,11 +609,15 @@ export default function ChallengeChatScreen() {
               ) : null}
             />
 
-            {/* Schedule band — propose/approve date, debrief verdict. */}
+            {/* Schedule band — handles propose-pending / approve / debrief /
+                verdict states. The bare "Propose a date" empty state is
+                suppressed (hideEmptyCta) because the pipeline sub-CTA above
+                already says it and triggers the picker. */}
             <ThreadScheduleBlock
               thread={myAcceptance}
               myUserId={account.id}
               onChange={loadMyAcceptance}
+              hideEmptyCta
             />
 
             <ChatInput
@@ -618,6 +633,24 @@ export default function ChallengeChatScreen() {
           <View />
         )}
       </KeyboardAvoidingView>
+
+      {/* Date picker — opened by the pipeline's "Propose a date →" sub-CTA. */}
+      {myAcceptance && (
+        <DatePickerModal
+          visible={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          onSubmit={async (startsAtUnix, endsAtUnix, venue) => {
+            setPickerOpen(false);
+            try {
+              await proposeDateApi(myAcceptance.id, startsAtUnix, endsAtUnix, venue);
+              loadMyAcceptance();
+            } catch {
+              Alert.alert(t('schedule.err.proposeFailed'));
+            }
+          }}
+          submitLabel={t('schedule.proposeCta')}
+        />
+      )}
 
       {/* Members modal — opened by tapping the participants row above. */}
       <MembersSheet

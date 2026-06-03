@@ -1,12 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, Alert, ScrollView, ActivityIndicator,
+  View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { proposeDate, withdrawProposal, approveDate, approveChallenge, rejectChallenge } from '@/api/challenges';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { ChallengeThreadSummary } from '@/types';
+import { DatePickerModal } from './DatePickerModal';
 
 /**
  * PR3 — the "Schedule" band that sits above the chat input in /thread/[id].
@@ -27,10 +28,13 @@ export function ThreadScheduleBlock({
   thread,
   myUserId,
   onChange,            // called after any successful mutation — host refreshes the summary
+  hideEmptyCta = false, // when true + no proposal yet, render nothing (parent
+                       // owns that CTA via the pipeline's sub-CTA instead)
 }: {
   thread: ChallengeThreadSummary;
   myUserId: string;
   onChange: () => void;
+  hideEmptyCta?: boolean;
 }) {
   const { t }  = useTranslation('challenge');
   const [busy, setBusy] = useState<'propose' | 'approve' | 'withdraw' | 'verdict' | null>(null);
@@ -217,7 +221,11 @@ export function ThreadScheduleBlock({
   }
 
   // ── Render: phase='accepted', no proposal ──────────────────────────────────
+  // When hideEmptyCta is set, the parent (e.g. /challenge/[id]) owns the
+  // initial-propose action — it's reached via the pipeline's "Propose a date →"
+  // sub-CTA so we don't duplicate it here.
   if (!hasProposal) {
+    if (hideEmptyCta) return null;
     return (
       <>
         <View style={styles.band}>
@@ -294,158 +302,6 @@ export function ThreadScheduleBlock({
   );
 }
 
-// ── Date picker modal ────────────────────────────────────────────────────────
-
-const TIME_PRESETS = [
-  { key: '10:00', hours: 10, minutes: 0  },
-  { key: '12:30', hours: 12, minutes: 30 },
-  { key: '14:00', hours: 14, minutes: 0  },
-  { key: '17:00', hours: 17, minutes: 0  },
-  { key: '19:00', hours: 19, minutes: 0  },
-  { key: '21:30', hours: 21, minutes: 30 },
-];
-
-function DatePickerModal({
-  visible,
-  onClose,
-  onSubmit,
-  submitLabel,
-  initialStartsAt,
-  initialVenue,
-}: {
-  visible: boolean;
-  onClose: () => void;
-  onSubmit: (startsAtUnix: number, endsAtUnix: number | null, venue: string | null) => void;
-  submitLabel: string;
-  initialStartsAt?: number | null;
-  initialVenue?: string | null;
-}) {
-  const { t } = useTranslation('challenge');
-  // Day offsets 0..7. Selected day, selected time preset, venue text.
-  const [dayOffset, setDayOffset] = useState<number | null>(0);
-  const [timeKey,   setTimeKey]   = useState<string | null>('19:00');
-  const [venue,     setVenue]     = useState<string>(initialVenue ?? '');
-
-  // Pre-fill from existing proposal if any (counter-propose path).
-  // Note: doesn't preserve the exact previous time if not in the preset list —
-  // user will see "19:00" and can adjust.
-  useMemo(() => {
-    if (initialStartsAt) {
-      const d = new Date(initialStartsAt * 1000);
-      const todayMidnight = new Date(); todayMidnight.setHours(0, 0, 0, 0);
-      const offset = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - todayMidnight.getTime()) / 86400000);
-      if (offset >= 0 && offset <= 7) setDayOffset(offset);
-      const hh = d.getHours();
-      const mm = d.getMinutes();
-      const matched = TIME_PRESETS.find(p => p.hours === hh && p.minutes === mm);
-      if (matched) setTimeKey(matched.key);
-    }
-  }, [initialStartsAt]);
-
-  const dayLabels = useMemo(() => {
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    return Array.from({ length: 8 }, (_, i) => {
-      const d = new Date(today); d.setDate(today.getDate() + i);
-      const isWeekend = d.getDay() === 0 || d.getDay() === 6;
-      let label: string;
-      if (i === 0) label = t('schedule.today');
-      else if (i === 1) label = t('schedule.tomorrow');
-      else label = d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' });
-      return { offset: i, label, isWeekend };
-    });
-  }, [t]);
-
-  const canSubmit = dayOffset !== null && timeKey !== null;
-
-  function submit() {
-    if (dayOffset === null || timeKey === null) return;
-    const preset = TIME_PRESETS.find(p => p.key === timeKey)!;
-    const d = new Date(); d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + dayOffset);
-    d.setHours(preset.hours, preset.minutes, 0, 0);
-    const startsAt = Math.floor(d.getTime() / 1000);
-    const endsAt   = startsAt + 2 * 3600;  // default end = +2h
-    const cleanVenue = venue.trim() || null;
-    onSubmit(startsAt, endsAt, cleanVenue);
-  }
-
-  return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={modalStyles.backdrop}>
-        <View style={modalStyles.sheet}>
-          <View style={modalStyles.handle} />
-
-          <View style={modalStyles.header}>
-            <TouchableOpacity onPress={onClose} accessibilityLabel={t('cancel', { ns: 'common' })}>
-              <Ionicons name="close" size={22} color={Colors.muted} />
-            </TouchableOpacity>
-            <Text style={modalStyles.title}>{t('schedule.picker.title')}</Text>
-            <View style={{ width: 22 }} />
-          </View>
-
-          <ScrollView contentContainerStyle={modalStyles.scrollContent} keyboardShouldPersistTaps="handled">
-            {/* Day pills */}
-            <Text style={modalStyles.sectionLabel}>{t('schedule.picker.whenLabel')}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={modalStyles.pillsRow}>
-              {dayLabels.map(d => {
-                const selected = d.offset === dayOffset;
-                return (
-                  <TouchableOpacity
-                    key={d.offset}
-                    style={[modalStyles.pill, selected && modalStyles.pillSelected]}
-                    onPress={() => setDayOffset(d.offset)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[modalStyles.pillText, selected && modalStyles.pillTextSelected]}>{d.label}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-
-            {/* Time pills */}
-            <Text style={modalStyles.sectionLabel}>{t('schedule.picker.timeLabel')}</Text>
-            <View style={modalStyles.pillsGrid}>
-              {TIME_PRESETS.map(p => {
-                const selected = p.key === timeKey;
-                return (
-                  <TouchableOpacity
-                    key={p.key}
-                    style={[modalStyles.pill, selected && modalStyles.pillSelected]}
-                    onPress={() => setTimeKey(p.key)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[modalStyles.pillText, selected && modalStyles.pillTextSelected]}>{p.key}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            {/* Venue */}
-            <Text style={modalStyles.sectionLabel}>{t('schedule.picker.whereLabel')}</Text>
-            <TextInput
-              style={modalStyles.venueInput}
-              value={venue}
-              onChangeText={setVenue}
-              placeholder={t('schedule.picker.wherePlaceholder')}
-              placeholderTextColor={Colors.muted2}
-              maxLength={200}
-              returnKeyType="done"
-            />
-
-            <TouchableOpacity
-              style={[modalStyles.submit, !canSubmit && modalStyles.submitDisabled]}
-              onPress={submit}
-              disabled={!canSubmit}
-              activeOpacity={0.85}
-            >
-              <Text style={modalStyles.submitText}>{submitLabel}</Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
-  );
-}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -543,78 +399,3 @@ const styles = StyleSheet.create({
   },
 });
 
-const modalStyles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    justifyContent: 'flex-end',
-  },
-  sheet: {
-    backgroundColor: Colors.bg,
-    borderTopLeftRadius:  20,
-    borderTopRightRadius: 20,
-    paddingTop:           8,
-    maxHeight:            '85%',
-  },
-  handle: {
-    width: 40, height: 4, borderRadius: 2,
-    backgroundColor: Colors.muted2, opacity: 0.5,
-    alignSelf: 'center', marginBottom: 12,
-  },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md, paddingBottom: 12,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-  },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-
-  scrollContent: { padding: Spacing.md, gap: Spacing.sm, paddingBottom: Spacing.xl },
-
-  sectionLabel: {
-    fontSize: FontSizes.xs,
-    fontWeight: '700',
-    color: Colors.muted,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    marginTop: Spacing.sm,
-  },
-
-  pillsRow:  { gap: 8, paddingVertical: 4, paddingRight: Spacing.md },
-  pillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-
-  pill: {
-    paddingHorizontal: 14,
-    paddingVertical:   8,
-    borderRadius:      Radius.full,
-    backgroundColor:   Colors.bg2,
-    borderWidth:       1,
-    borderColor:       Colors.border,
-  },
-  pillSelected: {
-    backgroundColor: 'rgba(255,122,60,0.14)',
-    borderColor:     '#FF7A3C',
-  },
-  pillText: { color: Colors.muted, fontWeight: '600', fontSize: FontSizes.sm },
-  pillTextSelected: { color: '#FF7A3C', fontWeight: '800' },
-
-  venueInput: {
-    backgroundColor: Colors.bg2,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm + 2,
-    fontSize: FontSizes.md,
-    color: Colors.text,
-  },
-
-  submit: {
-    marginTop: Spacing.md,
-    backgroundColor: '#FF7A3C',
-    borderRadius: Radius.full,
-    paddingVertical: Spacing.md,
-    alignItems: 'center',
-  },
-  submitDisabled: { opacity: 0.45 },
-  submitText: { color: Colors.white, fontWeight: '800', fontSize: FontSizes.md, letterSpacing: 0.2 },
-});
