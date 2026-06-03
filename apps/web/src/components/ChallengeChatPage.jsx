@@ -512,6 +512,25 @@ export default function ChallengeChatPage({
         </div>
       )}
 
+      {/* Locked empty state — shown to visitors (registered or guest) and to
+          creators whose challenge has no acceptors yet. Sits where the inline
+          chat would be; the message explains why the chat is hidden. */}
+      {!myAcceptance && (
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          padding: '32px 24px', textAlign: 'center', gap: 8,
+        }}>
+          <span style={{ fontSize: 40, opacity: 0.7 }}>🔒</span>
+          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
+            {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
+          </h3>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
+            {isOwner ? t('locked.creator.body') : t('locked.visitor.body')}
+          </p>
+        </div>
+      )}
+
       {/* Inline thread chat — mounts only when the viewer has an active
           acceptance for this challenge. Replaces the old "navigate to
           /thread" path: one screen, no second navigation step. */}

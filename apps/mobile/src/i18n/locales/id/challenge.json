@@ -211,5 +211,15 @@
       "accomplished": "Tantangan berhasil 🎉",
       "closed": "Tantangan ditutup"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Terima tantangan untuk membuka chat",
+      "body": "Setelah kamu terima, kamu dan penantang dapat thread privat untuk atur kapan ketemuan."
+    },
+    "creator": {
+      "title": "Menunggu seseorang mengambilnya",
+      "body": "Saat pelancong menerima, kalian akan chat di sini untuk atur kapan ketemuan."
+    }
   }
 }

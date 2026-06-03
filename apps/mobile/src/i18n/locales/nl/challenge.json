@@ -211,5 +211,15 @@
       "accomplished": "Challenge gehaald 🎉",
       "closed": "Challenge afgesloten"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Neem de challenge aan om de chat te ontgrendelen",
+      "body": "Zodra je accepteert, krijgen jullie een privéthread om jullie afspraak te plannen."
+    },
+    "creator": {
+      "title": "Wachten tot iemand 'm oppakt",
+      "body": "Als een reiziger 'm aanneemt, chatten jullie hier om jullie afspraak te plannen."
+    }
   }
 }

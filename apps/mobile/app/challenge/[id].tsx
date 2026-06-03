@@ -627,10 +627,18 @@ export default function ChallengeChatScreen() {
             />
           </>
         ) : (
-          /* No active thread — visitor pre-accept, or creator with no acceptors yet.
-             The pipeline + Accept button above already tell the story; this is
-             just empty space that absorbs the keyboard-avoidance flex. */
-          <View />
+          /* No active thread — visitor (registered or guest), or a creator whose
+             challenge has zero acceptors yet. Locked empty state explains why
+             the chat is hidden + nudges the action that unlocks it. */
+          <View style={styles.lockedWrap}>
+            <Text style={styles.lockedEmoji}>🔒</Text>
+            <Text style={styles.lockedTitle}>
+              {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
+            </Text>
+            <Text style={styles.lockedBody}>
+              {isOwner ? t('locked.creator.body') : t('locked.visitor.body')}
+            </Text>
+          </View>
         )}
       </KeyboardAvoidingView>
 
@@ -825,4 +833,15 @@ const styles = StyleSheet.create({
   emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: 8 },
   emptyChatEmoji:   { fontSize: 36 },
   emptyChatText:    { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
+
+  // Locked state — shown to visitors / creators with no acceptances yet.
+  // Centered card-like block in the middle of the empty area below the
+  // participants row.
+  lockedWrap: {
+    flex: 1, alignItems: 'center', justifyContent: 'center',
+    paddingHorizontal: Spacing.xl, gap: 10,
+  },
+  lockedEmoji: { fontSize: 40, opacity: 0.7 },
+  lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'center' },
+  lockedBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', maxWidth: 320 },
 });

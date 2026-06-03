@@ -211,5 +211,15 @@
       "accomplished": "Challenge accomplished 🎉",
       "closed": "Challenge closed"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Take on the challenge to unlock the chat",
+      "body": "Once you accept, you and the challenger get a private thread to plan your meet-up."
+    },
+    "creator": {
+      "title": "Waiting for someone to take it on",
+      "body": "When a traveler accepts, you'll chat with them right here to plan your meet-up."
+    }
   }
 }

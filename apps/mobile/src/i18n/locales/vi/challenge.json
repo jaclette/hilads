@@ -211,5 +211,15 @@
       "accomplished": "Đã hoàn thành thử thách 🎉",
       "closed": "Thử thách đã đóng"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Nhận thử thách để mở khoá chat",
+      "body": "Khi bạn nhận, bạn và người tạo sẽ có một thread riêng để lên lịch gặp nhau."
+    },
+    "creator": {
+      "title": "Đang chờ ai đó nhận",
+      "body": "Khi một du khách nhận thử thách, bạn sẽ chat ngay tại đây để lên lịch gặp nhau."
+    }
   }
 }

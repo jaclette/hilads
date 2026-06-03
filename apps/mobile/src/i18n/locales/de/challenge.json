@@ -211,5 +211,15 @@
       "accomplished": "Challenge gemeistert 🎉",
       "closed": "Challenge beendet"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Nimm die Challenge an, um den Chat freizuschalten",
+      "body": "Sobald du annimmst, bekommt ihr einen privaten Thread, um euer Treffen zu planen."
+    },
+    "creator": {
+      "title": "Warten, bis jemand annimmt",
+      "body": "Wenn ein Reisender annimmt, chattet ihr direkt hier, um euer Treffen zu planen."
+    }
   }
 }

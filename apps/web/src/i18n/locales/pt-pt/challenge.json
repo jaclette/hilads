@@ -211,5 +211,15 @@
       "accomplished": "Desafio cumprido 🎉",
       "closed": "Desafio encerrado"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Aceita o desafio para desbloquear o chat",
+      "body": "Quando aceitares, ficam com um fio privado para combinar o vosso encontro."
+    },
+    "creator": {
+      "title": "À espera que um viajante aceite",
+      "body": "Quando alguém aceitar, conversam aqui mesmo para combinar o vosso encontro."
+    }
   }
 }

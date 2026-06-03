@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout' | 'create_challenge';
+type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout' | 'create_challenge' | 'accept_challenge';
 
 const GATE_EMOJI: Record<GateReason, string> = {
   view_profile:    '👻',
@@ -23,6 +23,7 @@ const GATE_EMOJI: Record<GateReason, string> = {
   create_hangout:  '🗣️',
   create_event:    '🎉',
   create_challenge: '🔥',
+  accept_challenge: '🤝',
   send_dm:         '💬',
 };
 

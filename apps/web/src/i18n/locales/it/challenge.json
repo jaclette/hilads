@@ -211,5 +211,15 @@
       "accomplished": "Sfida superata 🎉",
       "closed": "Sfida chiusa"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Accetta la sfida per sbloccare la chat",
+      "body": "Quando accetti, avrete un thread privato per organizzare il vostro incontro."
+    },
+    "creator": {
+      "title": "In attesa che qualcuno la accetti",
+      "body": "Quando un viaggiatore accetta, chatterete proprio qui per organizzare l'incontro."
+    }
   }
 }

@@ -211,5 +211,15 @@
       "accomplished": "Reto cumplido 🎉",
       "closed": "Reto cerrado"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Acepta el reto para desbloquear el chat",
+      "body": "Cuando aceptes, tendréis un hilo privado para organizar vuestra quedada."
+    },
+    "creator": {
+      "title": "Esperando a que alguien lo acepte",
+      "body": "Cuando un viajero acepte, hablaréis aquí mismo para organizar vuestra quedada."
+    }
   }
 }

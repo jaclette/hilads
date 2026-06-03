@@ -198,6 +198,12 @@ const GUEST_GATE_COPY = {
     title:     "Ghosts can browse, but can't challenge.",
     sub:       'Sign up to launch a challenge for locals or travelers, and own its validation.',
   },
+  accept_challenge: {
+    pageTitle: 'Accept a challenge',
+    emoji:     '🤝',
+    title:     "Ghosts can browse, but can't accept.",
+    sub:       "Sign up to take on a challenge, chat with the challenger, and plan when you'll meet IRL.",
+  },
 }
 
 function setPageMeta(title, description) {

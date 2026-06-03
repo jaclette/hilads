@@ -211,5 +211,15 @@
       "accomplished": "Défi relevé 🎉",
       "closed": "Défi clôturé"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Relève le défi pour débloquer le chat",
+      "body": "Une fois que tu acceptes, vous avez un fil privé pour fixer votre rendez-vous."
+    },
+    "creator": {
+      "title": "En attente d'un voyageur",
+      "body": "Quand quelqu'un relève ton défi, vous discutez ici pour fixer votre rendez-vous."
+    }
   }
 }

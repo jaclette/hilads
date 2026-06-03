@@ -211,5 +211,15 @@
       "accomplished": "Desafio concluído 🎉",
       "closed": "Desafio encerrado"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Topa o desafio para desbloquear o chat",
+      "body": "Quando você aceitar, vocês têm um chat privado para combinar o encontro."
+    },
+    "creator": {
+      "title": "Esperando alguém topar",
+      "body": "Quando um viajante topar, vocês conversam aqui mesmo pra combinar o encontro."
+    }
   }
 }

@@ -211,5 +211,15 @@
       "accomplished": "Tapos na ang challenge 🎉",
       "closed": "Sarado na ang challenge"
     }
+  },
+  "locked": {
+    "visitor": {
+      "title": "Tanggapin ang challenge para ma-unlock ang chat",
+      "body": "Kapag tinanggap mo, magkakaroon kayo ng challenger ng private thread para mag-plano ng meet-up."
+    },
+    "creator": {
+      "title": "Hinihintay na may tumanggap",
+      "body": "Kapag may biyaherong tumanggap, mag-uusap kayo dito mismo para mag-plano ng meet-up."
+    }
   }
 }
