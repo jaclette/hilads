@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -45,6 +47,13 @@ export function DatePickerModal({
   initialVenue,
 }: DatePickerProps) {
   const { t } = useTranslation('challenge');
+  const insets = useSafeAreaInsets();
+  // When the picker is shown over a tab-bar-bearing screen (e.g. /challenge/
+  // [id] which Expo Router pushes on top of (tabs)), this returns the tab
+  // bar height so we can keep the Submit button above it. Returns 0 when no
+  // Tabs ancestor is mounted — no phantom dead space elsewhere.
+  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
+  const bottomInset = tabBarHeight || insets.bottom;
   const [dayOffset, setDayOffset] = useState<number | null>(0);
   const [timeKey,   setTimeKey]   = useState<string | null>('19:00');
   const [venue,     setVenue]     = useState<string>(initialVenue ?? '');
@@ -86,7 +95,10 @@ export function DatePickerModal({
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        <View style={styles.sheet}>
+        {/* Sheet — header pinned top, content scrolls in the middle, Submit
+            pinned bottom. paddingBottom clears any bottom tab bar that's
+            mounted under us. */}
+        <View style={[styles.sheet, { paddingBottom: bottomInset + 8 }]}>
           <View style={styles.handle} />
 
           <View style={styles.header}>
@@ -142,16 +154,18 @@ export function DatePickerModal({
               maxLength={200}
               returnKeyType="done"
             />
-
-            <TouchableOpacity
-              style={[styles.submit, !canSubmit && styles.submitDisabled]}
-              onPress={submit}
-              disabled={!canSubmit}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.submitText}>{submitLabel}</Text>
-            </TouchableOpacity>
           </ScrollView>
+
+          {/* Submit — pinned to the sheet bottom, OUTSIDE the ScrollView so
+              it stays visible regardless of how tall the inner content is. */}
+          <TouchableOpacity
+            style={[styles.submit, !canSubmit && styles.submitDisabled]}
+            onPress={submit}
+            disabled={!canSubmit}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.submitText}>{submitLabel}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -176,7 +190,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: Colors.border,
   },
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  scrollContent: { padding: Spacing.md, gap: Spacing.sm, paddingBottom: Spacing.xl },
+  scrollContent: { padding: Spacing.md, gap: Spacing.sm },
   sectionLabel: {
     fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted,
     letterSpacing: 0.8, textTransform: 'uppercase', marginTop: Spacing.sm,
@@ -198,7 +212,8 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.md, color: Colors.text,
   },
   submit: {
-    marginTop: Spacing.md, backgroundColor: '#FF7A3C', borderRadius: Radius.full,
+    marginHorizontal: Spacing.md, marginTop: Spacing.sm,
+    backgroundColor: '#FF7A3C', borderRadius: Radius.full,
     paddingVertical: Spacing.md, alignItems: 'center',
   },
   submitDisabled: { opacity: 0.45 },

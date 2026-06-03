@@ -65,63 +65,75 @@ export default function DatePickerModal({
       style={{
         position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)',
         display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-        zIndex: 1000,
+        zIndex: 2000,  // above the bottom-nav (z-index ~1000 in app shell)
       }}
     >
+      {/* Sheet — flex column: handle/header pinned top, content scrolls in
+          the middle, Submit pinned bottom. paddingBottom clears the safe-area
+          home indicator (and the bottom-nav if the modal is shown over it). */}
       <div
         onClick={e => e.stopPropagation()}
         style={{
           background: 'var(--bg, #161210)', width: '100%', maxWidth: 480,
           borderTopLeftRadius: 20, borderTopRightRadius: 20,
-          padding: 16, maxHeight: '85vh', overflowY: 'auto',
+          maxHeight: '85vh', display: 'flex', flexDirection: 'column',
+          paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)',
         }}
       >
-        <div style={{ width: 40, height: 4, background: 'rgba(255,255,255,0.20)', borderRadius: 2, margin: '0 auto 12px' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--muted, #b3b3b3)', fontSize: 22, cursor: 'pointer' }}>×</button>
-          <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('schedule.picker.title')}</span>
-          <span style={{ width: 22 }} />
+        <div style={{ padding: '8px 16px 0' }}>
+          <div style={{ width: 40, height: 4, background: 'rgba(255,255,255,0.20)', borderRadius: 2, margin: '0 auto 12px' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--muted, #b3b3b3)', fontSize: 22, cursor: 'pointer' }}>×</button>
+            <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('schedule.picker.title')}</span>
+            <span style={{ width: 22 }} />
+          </div>
         </div>
 
-        <div style={sectionLabel}>{t('schedule.picker.whenLabel')}</div>
-        <div style={pillsRow}>
-          {dayLabels.map(d => (
-            <button
-              key={d.offset} type="button" onClick={() => setDayOffset(d.offset)}
-              style={d.offset === dayOffset ? pillSelected : pill}
-            >{d.label}</button>
-          ))}
+        {/* Scroll region */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 8px' }}>
+          <div style={sectionLabel}>{t('schedule.picker.whenLabel')}</div>
+          <div style={pillsRow}>
+            {dayLabels.map(d => (
+              <button
+                key={d.offset} type="button" onClick={() => setDayOffset(d.offset)}
+                style={d.offset === dayOffset ? pillSelected : pill}
+              >{d.label}</button>
+            ))}
+          </div>
+
+          <div style={sectionLabel}>{t('schedule.picker.timeLabel')}</div>
+          <div style={pillsGrid}>
+            {TIME_PRESETS.map(p => (
+              <button
+                key={p.key} type="button" onClick={() => setTimeKey(p.key)}
+                style={p.key === timeKey ? pillSelected : pill}
+              >{p.key}</button>
+            ))}
+          </div>
+
+          <div style={sectionLabel}>{t('schedule.picker.whereLabel')}</div>
+          <input
+            type="text" value={venue} onChange={e => setVenue(e.target.value)}
+            placeholder={t('schedule.picker.wherePlaceholder')} maxLength={200}
+            style={{
+              width: '100%', boxSizing: 'border-box',
+              background: 'var(--bg-2, #1f1a17)', border: '1px solid rgba(255,255,255,0.10)',
+              borderRadius: 10, padding: '10px 12px', color: 'var(--text, #fff)', fontSize: 14,
+            }}
+          />
         </div>
 
-        <div style={sectionLabel}>{t('schedule.picker.timeLabel')}</div>
-        <div style={pillsGrid}>
-          {TIME_PRESETS.map(p => (
-            <button
-              key={p.key} type="button" onClick={() => setTimeKey(p.key)}
-              style={p.key === timeKey ? pillSelected : pill}
-            >{p.key}</button>
-          ))}
+        {/* Pinned submit — flexShrink: 0 keeps it visible even when content scrolls */}
+        <div style={{ padding: '8px 16px 0', flexShrink: 0 }}>
+          <button
+            type="button" onClick={submit}
+            style={{
+              width: '100%',
+              background: '#FF7A3C', color: '#fff', border: 'none',
+              borderRadius: 999, padding: '13px', fontSize: 15, fontWeight: 800, cursor: 'pointer',
+            }}
+          >{submitLabel}</button>
         </div>
-
-        <div style={sectionLabel}>{t('schedule.picker.whereLabel')}</div>
-        <input
-          type="text" value={venue} onChange={e => setVenue(e.target.value)}
-          placeholder={t('schedule.picker.wherePlaceholder')} maxLength={200}
-          style={{
-            width: '100%', boxSizing: 'border-box',
-            background: 'var(--bg-2, #1f1a17)', border: '1px solid rgba(255,255,255,0.10)',
-            borderRadius: 10, padding: '10px 12px', color: 'var(--text, #fff)', fontSize: 14,
-          }}
-        />
-
-        <button
-          type="button" onClick={submit}
-          style={{
-            marginTop: 16, width: '100%',
-            background: '#FF7A3C', color: '#fff', border: 'none',
-            borderRadius: 999, padding: '13px', fontSize: 15, fontWeight: 800, cursor: 'pointer',
-          }}
-        >{submitLabel}</button>
       </div>
     </div>
   )
