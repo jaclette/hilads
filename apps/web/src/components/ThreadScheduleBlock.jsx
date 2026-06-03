@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { proposeDate, withdrawProposal, approveDate, approveChallenge, rejectChallenge } from '../api'
+import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 
 /**
@@ -18,6 +19,8 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   const { t } = useTranslation('challenge')
   const [busy, setBusy] = useState(null)            // 'propose' | 'approve' | 'withdraw' | null
   const [pickerOpen, setPickerOpen] = useState(false)
+  // Replaces the four window.alert / two window.confirm calls below.
+  const [dialog, setDialog] = useState(null)
 
   const hasProposal = thread.proposed_starts_at != null
   const iProposed   = hasProposal && thread.proposed_by_user_id === myUserId
@@ -30,39 +33,61 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   async function handleApprove() {
     setBusy('approve')
     try { await approveDate(thread.id); onChange?.() }
-    catch { window.alert(t('schedule.err.approveFailed')) }
+    catch { setDialog({ emoji: '😬', title: t('schedule.err.approveFailed') }) }
     finally { setBusy(null) }
   }
 
-  async function handleWithdraw() {
-    if (!window.confirm(`${t('schedule.withdraw.title')}\n\n${t('schedule.withdraw.body')}`)) return
-    setBusy('withdraw')
-    try { await withdrawProposal(thread.id); onChange?.() }
-    catch { window.alert(t('schedule.err.withdrawFailed')) }
-    finally { setBusy(null) }
+  function handleWithdraw() {
+    setDialog({
+      emoji: '↩️',
+      title: t('schedule.withdraw.title'),
+      body:  t('schedule.withdraw.body'),
+      primary: {
+        label: t('schedule.withdraw.confirm'),
+        destructive: true,
+        onPress: async () => {
+          setBusy('withdraw')
+          try { await withdrawProposal(thread.id); onChange?.() }
+          catch { setDialog({ emoji: '😬', title: t('schedule.err.withdrawFailed') }) }
+          finally { setBusy(null) }
+        },
+      },
+      secondary: {},
+    })
   }
 
   async function handlePickerSubmit(startsAt, endsAt, venue) {
     setBusy('propose'); setPickerOpen(false)
     try { await proposeDate(thread.id, startsAt, endsAt, venue); onChange?.() }
-    catch { window.alert(t('schedule.err.proposeFailed')) }
+    catch { setDialog({ emoji: '😬', title: t('schedule.err.proposeFailed') }) }
     finally { setBusy(null) }
   }
 
-  // PR4 — verdict (creator only, in debrief phase).
-  async function handleVerdict(kind) {
-    const ok = window.confirm(`${t(`debrief.confirm.${kind}.title`)}\n\n${t(`debrief.confirm.${kind}.body`)}`)
-    if (!ok) return
-    setBusy('verdict')
-    try {
-      if (kind === 'approve') await approveChallenge(thread.id)
-      else                    await rejectChallenge(thread.id)
-      onChange?.()
-    } catch {
-      window.alert(t(`debrief.err.${kind}Failed`))
-    } finally {
-      setBusy(null)
-    }
+  // PR4 — verdict (creator only, in debrief phase). Both kinds are final, so
+  // confirm before running. Reject is destructive.
+  function handleVerdict(kind) {
+    setDialog({
+      emoji: kind === 'approve' ? '🎉' : '🚫',
+      title: t(`debrief.confirm.${kind}.title`),
+      body:  t(`debrief.confirm.${kind}.body`),
+      primary: {
+        label: t(`debrief.confirm.${kind}.confirm`),
+        destructive: kind === 'reject',
+        onPress: async () => {
+          setBusy('verdict')
+          try {
+            if (kind === 'approve') await approveChallenge(thread.id)
+            else                    await rejectChallenge(thread.id)
+            onChange?.()
+          } catch {
+            setDialog({ emoji: '😬', title: t(`debrief.err.${kind}Failed`) })
+          } finally {
+            setBusy(null)
+          }
+        },
+      },
+      secondary: {},
+    })
   }
 
   // ── Render: phase='scheduled' ─────────────────────────────────────────────
@@ -84,25 +109,28 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   if (phase === 'debrief') {
     if (iAmCreator) {
       return (
-        <div style={{ ...bandBase, ...bandDebrief }}>
-          <span style={{ fontSize: 16 }}>❓</span>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.creatorPrompt.title')}</div>
-            <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-              {t('debrief.creatorPrompt.body', { name: thread.counterparty.displayName })}
+        <>
+          <div style={{ ...bandBase, ...bandDebrief }}>
+            <span style={{ fontSize: 16 }}>❓</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.creatorPrompt.title')}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
+                {t('debrief.creatorPrompt.body', { name: thread.counterparty.displayName })}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button type="button" onClick={() => handleVerdict('reject')} disabled={busy !== null}
+                title={t('debrief.confirm.reject.confirm')} style={iconBtnSecondary}>
+                {busy === 'verdict' ? '…' : '✕'}
+              </button>
+              <button type="button" onClick={() => handleVerdict('approve')} disabled={busy !== null}
+                title={t('debrief.confirm.approve.confirm')} style={iconBtnPrimary}>
+                {busy === 'verdict' ? '…' : '✓'}
+              </button>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button type="button" onClick={() => handleVerdict('reject')} disabled={busy !== null}
-              title={t('debrief.confirm.reject.confirm')} style={iconBtnSecondary}>
-              {busy === 'verdict' ? '…' : '✕'}
-            </button>
-            <button type="button" onClick={() => handleVerdict('approve')} disabled={busy !== null}
-              title={t('debrief.confirm.approve.confirm')} style={iconBtnPrimary}>
-              {busy === 'verdict' ? '…' : '✓'}
-            </button>
-          </div>
-        </div>
+          <ConfirmDialog dialog={dialog} onClose={() => setDialog(null)} />
+        </>
       )
     }
     return (
@@ -184,6 +212,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
             submitLabel={t('schedule.proposeCta')}
           />
         )}
+        <ConfirmDialog dialog={dialog} onClose={() => setDialog(null)} />
       </>
     )
   }
@@ -246,6 +275,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
           initialVenue={thread.proposed_venue}
         />
       )}
+      <ConfirmDialog dialog={dialog} onClose={() => setDialog(null)} />
     </>
   )
 }

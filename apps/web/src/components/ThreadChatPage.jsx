@@ -5,6 +5,7 @@ import {
   fetchThreadMessages, sendThreadMessage,
 } from '../api'
 import BackButton from './BackButton'
+import ConfirmDialog from './ConfirmDialog'
 import ThreadScheduleBlock from './ThreadScheduleBlock'
 
 /**
@@ -55,6 +56,9 @@ export default function ThreadChatPage({
   const [composer, setComposer]     = useState('')
   const [sending,  setSending]      = useState(false)
   const [cancelBusy, setCancelBusy] = useState(false)
+  // Themed alert/confirm — replaces native window.alert/confirm for the
+  // cancel flow + the WS "other party cancelled" push.
+  const [dialog, setDialog] = useState(null)
   const feedRef  = useRef(null)
   const knownIds = useRef(new Set())
 
@@ -104,8 +108,12 @@ export default function ThreadChatPage({
     const offCancelled = socket.on('challenge_acceptance_cancelled', (data) => {
       const payload = data.payload ?? {}
       if (payload.threadChannelId === threadChannelId) {
-        window.alert(`${t('thread.cancelledByOther.title')}\n\n${t('thread.cancelledByOther.body')}`)
-        onBack?.()
+        setDialog({
+          emoji: '✕',
+          title: t('thread.cancelledByOther.title'),
+          body:  t('thread.cancelledByOther.body'),
+          primary: { onPress: () => onBack?.() },
+        })
       }
     })
     // PR3 — date concertation pushes (other party only; my own UI updates from
@@ -161,21 +169,32 @@ export default function ThreadChatPage({
     }
   }, [threadChannelId, composer, sending, account])
 
-  const handleCancel = useCallback(async () => {
+  const handleCancel = useCallback(() => {
     if (!summary || cancelBusy) return
     const title = summary.i_am_creator
       ? t('thread.cancel.creatorTitle')
       : t('thread.cancel.acceptorTitle')
-    if (!window.confirm(`${title}\n\n${t('thread.cancel.body')}`)) return
-    setCancelBusy(true)
-    try {
-      await cancelAcceptance(summary.id)
-      onCancelled?.()
-    } catch {
-      window.alert(t('thread.cancel.failed'))
-    } finally {
-      setCancelBusy(false)
-    }
+    setDialog({
+      emoji: '✕',
+      title,
+      body:  t('thread.cancel.body'),
+      primary: {
+        label: t('thread.cancel.confirm'),
+        destructive: true,
+        onPress: async () => {
+          setCancelBusy(true)
+          try {
+            await cancelAcceptance(summary.id)
+            onCancelled?.()
+          } catch {
+            setDialog({ emoji: '😬', title: t('thread.cancel.failed') })
+          } finally {
+            setCancelBusy(false)
+          }
+        },
+      },
+      secondary: {},
+    })
   }, [summary, cancelBusy, t, onCancelled])
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -320,6 +339,7 @@ export default function ThreadChatPage({
           {sending ? '…' : '➤'}
         </button>
       </form>
+      <ConfirmDialog dialog={dialog} onClose={() => setDialog(null)} />
     </div>
   )
 }

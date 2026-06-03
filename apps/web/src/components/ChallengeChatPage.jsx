@@ -21,6 +21,7 @@ import {
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
+import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
 import ThreadScheduleBlock from './ThreadScheduleBlock'
@@ -268,8 +269,10 @@ export default function ChallengeChatPage({
           emoji: isModeErr ? '🧭' : '🚫',
           title: t(titleKey),
           body: t(bodyKey, { defaultValue: err.message }),
-          actionLabel: isModeErr && onOpenMyProfile ? t('accept.err.openSettings') : null,
-          onAction: isModeErr && onOpenMyProfile ? () => { setAlertModal(null); onOpenMyProfile() } : null,
+          primary: isModeErr && onOpenMyProfile
+            ? { label: t('accept.err.openSettings'), onPress: onOpenMyProfile }
+            : undefined,
+          secondary: isModeErr && onOpenMyProfile ? {} : undefined,
         })
       } else {
         setAlertModal({
@@ -301,18 +304,29 @@ export default function ChallengeChatPage({
 
   // Delete: confirm before destructive action (this one IS destructive — not
   // the same as Validate). Closes the page on success.
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
     if (!guest?.guestId || busy) return
-    if (!window.confirm(t('deleteBody'))) return
-    setBusy('delete')
-    try {
-      await deleteChallenge(id, guest.guestId)
-      onDeleted?.()
-    } catch {
-      setAlertModal({ emoji: '😬', title: t('errSave'), body: '' })
-    } finally {
-      setBusy(null)
-    }
+    setAlertModal({
+      emoji: '🗑️',
+      title: t('deleteTitle'),
+      body:  t('deleteBody'),
+      primary: {
+        label: t('deleteConfirm'),
+        destructive: true,
+        onPress: async () => {
+          setBusy('delete')
+          try {
+            await deleteChallenge(id, guest.guestId)
+            onDeleted?.()
+          } catch {
+            setAlertModal({ emoji: '😬', title: t('errSave'), body: '' })
+          } finally {
+            setBusy(null)
+          }
+        },
+      },
+      secondary: {},
+    })
   }, [id, guest, busy, t, onDeleted])
 
   // Edit: hand off to the parent (App.jsx) which opens the CreateChallengePage
@@ -630,48 +644,7 @@ export default function ChallengeChatPage({
         />
       )}
 
-      {/* Themed in-app alert (replaces the native browser alert).
-          Uses the existing .modal-overlay / .modal-panel skeleton; the
-          challenge-alert-* classes below add the centered emoji + tap target. */}
-      {alertModal && (
-        <div className="modal-overlay" onClick={() => setAlertModal(null)}>
-          <div className="modal-panel challenge-alert-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="challenge-alert-body">
-              {alertModal.emoji && <div className="challenge-alert-emoji">{alertModal.emoji}</div>}
-              <h3 className="challenge-alert-title">{alertModal.title}</h3>
-              {alertModal.body && <p className="challenge-alert-text">{alertModal.body}</p>}
-            </div>
-            <div className="challenge-alert-actions">
-              {alertModal.actionLabel && alertModal.onAction ? (
-                <>
-                  <button
-                    type="button"
-                    className="challenge-alert-btn"
-                    onClick={() => setAlertModal(null)}
-                  >
-                    {t('cancel', { ns: 'common', defaultValue: 'Cancel' })}
-                  </button>
-                  <button
-                    type="button"
-                    className="challenge-alert-btn challenge-alert-btn--primary"
-                    onClick={alertModal.onAction}
-                  >
-                    {alertModal.actionLabel}
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  className="challenge-alert-btn challenge-alert-btn--primary"
-                  onClick={() => setAlertModal(null)}
-                >
-                  OK
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog dialog={alertModal} onClose={() => setAlertModal(null)} />
     </div>
   )
 }

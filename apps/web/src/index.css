@@ -7494,6 +7494,16 @@ img.pub-profile-avatar {
   filter: brightness(1.05);
 }
 
+.challenge-alert-btn--danger {
+  background: #c24a38;
+  border-color: #c24a38;
+  color: #fff;
+}
+
+.challenge-alert-btn--danger:hover {
+  filter: brightness(1.07);
+}
+
 /* Username (@-handle) picker — @ prefix + inline availability status */
 .username-input-row {
   display: flex;
