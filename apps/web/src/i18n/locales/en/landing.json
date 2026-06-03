@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "The city is alive around you.\nChallenge the locals or the travelers, join what's on, or open your own spot."
+    "sub": "Locals challenge travelers. Travelers take it on.\nYou meet IRL, you live the city for real."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} person hanging out right now",
@@ -52,19 +52,19 @@
   },
   "how": {
     "eyebrow": "How it works",
-    "title": "Three steps to meet people near you.",
+    "title": "Three steps to meet locals IRL.",
     "steps": [
       {
-        "title": "Open the app",
-        "desc": "See who's around you and what's happening near you right now."
+        "title": "Pick your side",
+        "desc": "Local. You know the city.\nTraveler. You want to live it."
       },
       {
-        "title": "Pick your mode",
-        "desc": "Local. You know the city.\nExploring. You want to feel it."
+        "title": "Launch or take on a challenge",
+        "desc": "Locals launch food, place, culture or help challenges. Travelers accept the ones they want."
       },
       {
-        "title": "Jump in",
-        "desc": "Launch a challenge, join an event, or open your own spot. Real life starts here."
+        "title": "Meet IRL",
+        "desc": "Chat in a private thread, set the date, and meet in person.\nNo more tourist mode."
       }
     ]
   },
@@ -75,14 +75,14 @@
     "signupsNeeded": "sign-ups needed"
   },
   "concept": {
-    "title": "Not another social network.\nYour city, live.",
+    "title": "Not another social network.\nA reason to meet IRL.",
     "rules": [
       "No followers. No feeds. No algorithms.",
-      "Launch a challenge. See who's around. Join what's happening near you.",
+      "Locals challenge. Travelers accept. You meet in person.",
       "Real people. Real places. Right now."
     ]
   },
-  "seo": "Hilads is a real-time social app where you launch local challenges, meet people nearby and discover what's happening in your city. Take on a challenge from a local in Paris, find what's on tonight in Barcelona, or launch one in Lisbon — Hilads shows you the city, live. No account needed. Just show up.",
+  "seo": "Hilads is a real-time social app where locals challenge travelers to discover their city the real way. Take on a food, place or culture challenge from a local in Paris, accept one in Barcelona, or launch your own in Lisbon — Hilads turns every trip into an IRL meet-up. No account needed. Just show up.",
   "download": {
     "eyebrow": "Mobile apps",
     "title": "Your city in your pocket.",

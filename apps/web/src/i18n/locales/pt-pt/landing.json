@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "A cidade está viva à tua volta.\nDesafia os locais ou os viajantes, junta-te ao que se passa, ou abre o teu spot."
+    "sub": "Os locais desafiam os viajantes. Os viajantes aceitam o desafio.\nEncontram-se pessoalmente, vivem a cidade a sério."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} pessoa por aqui agora mesmo",
@@ -52,19 +52,19 @@
   },
   "how": {
     "eyebrow": "Como funciona",
-    "title": "Três passos para conheceres gente perto de ti.",
+    "title": "Três passos para conheceres locais pessoalmente.",
     "steps": [
       {
-        "title": "Abre a app",
-        "desc": "Vê quem está à tua volta e o que está a acontecer perto de ti agora."
+        "title": "Escolhe o teu lado",
+        "desc": "Local. Conheces a cidade.\nViajante. Queres vivê-la."
       },
       {
-        "title": "Escolhe o teu modo",
-        "desc": "Local. Conheces a cidade.\nA explorar. Queres senti-la."
+        "title": "Lança ou aceita um desafio",
+        "desc": "Os locais lançam desafios de comida, sítio, cultura ou ajuda. Os viajantes aceitam os que quiserem."
       },
       {
-        "title": "Junta-te",
-        "desc": "Lança um desafio, junta-te a um evento, ou abre o teu spot. A vida a sério começa aqui."
+        "title": "Encontrem-se pessoalmente",
+        "desc": "Conversem num chat privado, marquem a data e encontrem-se em pessoa.\nAcabou o modo turista."
       }
     ]
   },
@@ -75,14 +75,14 @@
     "signupsNeeded": "registos necessários"
   },
   "concept": {
-    "title": "Não é mais uma rede social.\nA tua cidade, ao vivo.",
+    "title": "Não é mais uma rede social.\nUma razão para se encontrarem pessoalmente.",
     "rules": [
       "Sem seguidores. Sem feeds. Sem algoritmos.",
-      "Lança um desafio. Vê quem está por perto. Junta-te ao que se passa.",
+      "Os locais desafiam. Os viajantes aceitam. Encontram-se pessoalmente.",
       "Pessoas reais. Lugares reais. Agora mesmo."
     ]
   },
-  "seo": "Hilads é uma app social em tempo real onde lanças desafios locais, conheces pessoas perto e descobres o que se passa na tua cidade. Aceita um desafio de um local em Paris, descobre o que há esta noite em Barcelona, ou lança o teu em Lisboa — Hilads mostra-te a cidade, em direto. Sem conta. Só aparecer.",
+  "seo": "Hilads é uma app social em tempo real onde os locais desafiam os viajantes a descobrir a cidade a sério. Aceita um desafio de comida, sítio ou cultura de um local em Paris, aceita um em Barcelona, ou lança o teu em Lisboa — Hilads transforma cada viagem num encontro presencial. Sem conta. Só aparecer.",
   "download": {
     "eyebrow": "Apps móveis",
     "title": "A tua cidade no bolso.",

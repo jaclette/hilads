@@ -31,9 +31,9 @@ function nl2br(text) {
 
 // Icon + number for the "How it works" steps — text (title/desc) comes from i18n.
 const HOW_META = [
-  { icon: '📍', num: '01' },
-  { icon: '🎯', num: '02' },
-  { icon: '✨', num: '03' },
+  { icon: '🌍', num: '01' },
+  { icon: '🔥', num: '02' },
+  { icon: '👋', num: '03' },
 ]
 
 // ── Join form card (shared between hero + footer CTA) ─────────────────────────
@@ -227,41 +227,44 @@ function LocalMockup() {
     <PhoneFrame>
       <div className="lp-app-header">
         <span className="lp-app-back">←</span>
-        <span className="lp-app-title">Host your spot</span>
+        <span className="lp-app-title">Launch a challenge</span>
       </div>
       <div className="lp-phone-body">
-        <div className="lp-mock-section-label">QUICK START</div>
+        <div className="lp-mock-section-label">WHO'S IT FOR?</div>
+        <div className="lp-mock-presets">
+          <div className="lp-mock-preset">
+            <span className="lp-mock-preset-emoji">🏠</span>
+            <span className="lp-mock-preset-label">Locals</span>
+          </div>
+          <div className="lp-mock-preset lp-mock-preset--on">
+            <span className="lp-mock-preset-emoji">🧳</span>
+            <span className="lp-mock-preset-label">Travelers</span>
+          </div>
+        </div>
+
+        <div className="lp-mock-section-label">TYPE</div>
         <div className="lp-mock-presets">
           <div className="lp-mock-preset lp-mock-preset--on">
-            <span className="lp-mock-preset-emoji">🏠</span>
-            <span className="lp-mock-preset-label">Daily spot</span>
+            <span className="lp-mock-preset-emoji">🍜</span>
+            <span className="lp-mock-preset-label">Food</span>
           </div>
           <div className="lp-mock-preset">
-            <span className="lp-mock-preset-emoji">🌙</span>
-            <span className="lp-mock-preset-label">Every eve</span>
+            <span className="lp-mock-preset-emoji">🗺️</span>
+            <span className="lp-mock-preset-label">Place</span>
           </div>
           <div className="lp-mock-preset">
-            <span className="lp-mock-preset-emoji">🎉</span>
-            <span className="lp-mock-preset-label">Weekends</span>
+            <span className="lp-mock-preset-emoji">🎭</span>
+            <span className="lp-mock-preset-label">Culture</span>
           </div>
         </div>
 
-        <div className="lp-mock-field-label">TITLE</div>
-        <div className="lp-mock-field">Friday drinks @ Le Marais</div>
+        <div className="lp-mock-field-label">YOUR CHALLENGE</div>
+        <div className="lp-mock-field">Find me the best ramen in town</div>
 
-        <div className="lp-mock-inline-row">
-          <span className="lp-mock-field-label">REPEAT</span>
-          <span className="lp-mock-toggle">Every day</span>
-        </div>
-
-        <div className="lp-mock-field-label">TIME</div>
-        <div className="lp-mock-time-row">
-          <span className="lp-mock-time">18:00</span>
-          <span className="lp-mock-time-sep">→</span>
-          <span className="lp-mock-time">21:00</span>
-        </div>
+        <div className="lp-mock-field-label">AND THEN?</div>
+        <div className="lp-mock-field">...and come share it with me 🍜</div>
       </div>
-      <div className="lp-mock-submit lp-mock-submit--local">Open your spot →</div>
+      <div className="lp-mock-submit lp-mock-submit--local">Launch challenge 🔥</div>
     </PhoneFrame>
   )
 }
@@ -280,42 +283,42 @@ function ExploringMockup() {
 
         <div className="lp-mock-card lp-mock-card--recurring">
           <div className="lp-mock-badges">
-            <span className="lp-mock-badge lp-mock-badge--recur">↻ Every Fri</span>
+            <span className="lp-mock-badge lp-mock-badge--recur">FOOD CHALLENGE</span>
             <span className="lp-mock-badge lp-mock-badge--live">LIVE</span>
           </div>
-          <div className="lp-mock-card-title">🍻 Drinks in District 1</div>
-          <div className="lp-mock-card-meta">📍 El Born · 18:00 → 22:00</div>
+          <div className="lp-mock-card-title">🍜 Find me the best ramen in town</div>
+          <div className="lp-mock-card-meta">by Marta · for travelers</div>
           <div className="lp-mock-card-footer">
-            <span className="lp-mock-going">12 going</span>
-            <span className="lp-mock-join lp-mock-join--live">Join</span>
+            <span className="lp-mock-going">2 / 3 taken on</span>
+            <span className="lp-mock-join lp-mock-join--live">Accept</span>
           </div>
         </div>
 
         <div className="lp-mock-card">
-          <div className="lp-mock-card-title">☕ Coffee &amp; chill</div>
-          <div className="lp-mock-card-meta">📍 Poblenou · 10:00</div>
+          <div className="lp-mock-card-title">🗺️ Show me the best sunset spot</div>
+          <div className="lp-mock-card-meta">by Luis · for travelers</div>
           <div className="lp-mock-card-footer">
-            <span className="lp-mock-going">5 here</span>
-            <span className="lp-mock-join">Join</span>
+            <span className="lp-mock-going">0 / 5 taken on</span>
+            <span className="lp-mock-join">Accept</span>
           </div>
         </div>
 
         <div className="lp-mock-card">
-          <div className="lp-mock-card-title">🎶 Live music tonight</div>
-          <div className="lp-mock-card-meta">📍 Gracia · 21:00</div>
+          <div className="lp-mock-card-title">🎭 A real local music night</div>
+          <div className="lp-mock-card-meta">by Sofia · for travelers</div>
           <div className="lp-mock-card-footer">
-            <span className="lp-mock-going">20 joined</span>
-            <span className="lp-mock-join">Join</span>
+            <span className="lp-mock-going">1 / 4 taken on</span>
+            <span className="lp-mock-join">Accept</span>
           </div>
         </div>
 
         <div className="lp-mock-activity">
           <span className="lp-mock-activity-dot" />
-          jack joined the city
+          jack accepted Marta's challenge
         </div>
 
       </div>
-      <div className="lp-mock-submit lp-mock-submit--exploring">See what's happening →</div>
+      <div className="lp-mock-submit lp-mock-submit--exploring">See live challenges →</div>
     </PhoneFrame>
   )
 }

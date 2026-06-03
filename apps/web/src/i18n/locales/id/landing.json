@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Kota hidup di sekitarmu.\nTantang warga lokal atau para pelancong, ikut yang sedang berlangsung, atau buka spot-mu sendiri."
+    "sub": "Local menantang pelancong. Pelancong menerima tantangan.\nKalian ketemu langsung, menjalani kota dengan sungguhan."
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",
@@ -52,19 +52,19 @@
   },
   "how": {
     "eyebrow": "Cara kerjanya",
-    "title": "Tiga langkah untuk bertemu orang di dekatmu.",
+    "title": "Tiga langkah ketemu local secara langsung.",
     "steps": [
       {
-        "title": "Buka aplikasinya",
-        "desc": "Lihat siapa yang ada di sekitarmu dan apa yang sedang terjadi di dekatmu sekarang."
+        "title": "Pilih sisimu",
+        "desc": "Local. Kamu kenal kotanya.\nPelancong. Kamu ingin menjalaninya."
       },
       {
-        "title": "Pilih mode-mu",
-        "desc": "Local. Kamu kenal kotanya.\nExploring. Kamu ingin merasakannya."
+        "title": "Luncurkan atau terima tantangan",
+        "desc": "Local meluncurkan tantangan makanan, tempat, budaya atau bantuan. Pelancong menerima yang mereka mau."
       },
       {
-        "title": "Gabung",
-        "desc": "Luncurkan tantangan, ikut acara, atau buka spot-mu sendiri. Hidup nyata mulai di sini."
+        "title": "Ketemu langsung",
+        "desc": "Ngobrol di thread privat, atur tanggalnya, dan ketemu tatap muka.\nGak ada lagi mode turis."
       }
     ]
   },
@@ -75,14 +75,14 @@
     "signupsNeeded": "pendaftaran dibutuhkan"
   },
   "concept": {
-    "title": "Bukan jejaring sosial lain.\nKotamu, live.",
+    "title": "Bukan jejaring sosial lain.\nAlasan buat ketemu langsung.",
     "rules": [
       "Tanpa pengikut. Tanpa feed. Tanpa algoritma.",
-      "Luncurkan tantangan. Lihat siapa yang ada. Ikut yang sedang berlangsung.",
+      "Local menantang. Pelancong menerima. Kalian ketemu tatap muka.",
       "Orang nyata. Tempat nyata. Sekarang juga."
     ]
   },
-  "seo": "Hilads adalah aplikasi sosial real-time tempat kamu meluncurkan tantangan lokal, bertemu orang terdekat, dan menemukan apa yang terjadi di kotamu. Terima tantangan warga lokal di Paris, cari acara malam ini di Barcelona, atau luncurkan punyamu di Lisbon — Hilads menunjukkan kota, secara langsung. Tanpa akun. Datang saja.",
+  "seo": "Hilads adalah aplikasi sosial real-time tempat local menantang pelancong untuk menemukan kota mereka dengan cara sungguhan. Terima tantangan makanan, tempat atau budaya dari local di Paris, terima satu di Barcelona, atau luncurkan punyamu di Lisbon — Hilads mengubah setiap perjalanan jadi pertemuan langsung. Tanpa akun. Datang saja.",
   "download": {
     "eyebrow": "Aplikasi mobile",
     "title": "Kotamu dalam genggaman.",

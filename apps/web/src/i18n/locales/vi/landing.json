@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Thành phố đang sống quanh bạn.\nThách dân địa phương hoặc du khách, tham gia hoạt động, hoặc mở spot riêng."
+    "sub": "Người địa phương thách du khách. Du khách nhận thử thách.\nMọi người gặp nhau ngoài đời, sống thành phố thật sự."
   },
   "join": {
     "peopleLive_other": "🔥 {{count}} người đang ở quanh đây",
@@ -48,19 +48,19 @@
   },
   "how": {
     "eyebrow": "Cách hoạt động",
-    "title": "Ba bước để gặp gỡ mọi người gần bạn.",
+    "title": "Ba bước để gặp người địa phương ngoài đời.",
     "steps": [
       {
-        "title": "Mở ứng dụng",
-        "desc": "Xem ai đang ở quanh bạn và điều gì đang diễn ra gần bạn ngay bây giờ."
+        "title": "Chọn phe của bạn",
+        "desc": "Người địa phương. Bạn rành thành phố.\nDu khách. Bạn muốn sống nó."
       },
       {
-        "title": "Chọn chế độ",
-        "desc": "Người địa phương. Bạn rành thành phố.\nKhám phá. Bạn muốn cảm nhận nó."
+        "title": "Tung hoặc nhận một thử thách",
+        "desc": "Người địa phương tung thử thách ăn uống, địa điểm, văn hoá hoặc giúp đỡ. Du khách nhận cái mình thích."
       },
       {
-        "title": "Tham gia",
-        "desc": "Tung một thử thách, tham gia sự kiện, hoặc mở spot riêng. Cuộc sống thật bắt đầu ở đây."
+        "title": "Gặp nhau ngoài đời",
+        "desc": "Nhắn trong thread riêng, chốt ngày, và gặp nhau trực tiếp.\nHết kiểu khách du lịch rồi."
       }
     ]
   },
@@ -71,14 +71,14 @@
     "signupsNeeded": "cần đăng ký"
   },
   "concept": {
-    "title": "Không phải một mạng xã hội khác.\nThành phố của bạn, trực tiếp.",
+    "title": "Không phải một mạng xã hội khác.\nMột lý do để gặp nhau ngoài đời.",
     "rules": [
       "Không người theo dõi. Không bảng tin. Không thuật toán.",
-      "Tung một thử thách. Xem ai đang ở quanh. Tham gia điều gì đang xảy ra.",
+      "Người địa phương thách. Du khách nhận. Mọi người gặp nhau trực tiếp.",
       "Người thật. Nơi thật. Ngay bây giờ."
     ]
   },
-  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi bạn tung thử thách địa phương, gặp gỡ người gần và khám phá thành phố. Nhận thử thách từ người địa phương ở Paris, tìm hoạt động tối nay ở Barcelona, hoặc tung của bạn ở Lisbon — Hilads cho bạn thấy thành phố, trực tiếp. Không cần tài khoản. Cứ đến.",
+  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi người địa phương thách du khách khám phá thành phố của họ theo cách thật. Nhận thử thách ăn uống, địa điểm hoặc văn hoá từ người địa phương ở Paris, nhận một thử thách ở Barcelona, hoặc tung của bạn ở Lisbon — Hilads biến mỗi chuyến đi thành một cuộc gặp ngoài đời. Không cần tài khoản. Cứ đến.",
   "download": {
     "eyebrow": "Ứng dụng di động",
     "title": "Thành phố của bạn trong túi.",
