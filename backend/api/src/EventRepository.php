@@ -761,44 +761,99 @@ class EventRepository
     ): ?array {
         $pdo = Database::pdo();
 
-        // Verify ownership before writing
+        // Verify ownership AND pull series_id / timezone in one query — we
+        // need both to decide whether this is a one-shot edit (clamp dates
+        // to the 48h/24h windows that prevent rogue future events) or a
+        // recurring edit (preserve the 2999 sentinel on expires_at + update
+        // event_series.starts_on / start_time / end_time so future
+        // occurrences shift too).
         if ($userId !== null) {
             $check = $pdo->prepare("
-                SELECT 1 FROM channel_events
-                WHERE channel_id = :id AND source_type = 'hilads'
-                  AND (guest_id = :guest_id OR created_by = :user_id)
+                SELECT ce.series_id, es.timezone AS series_tz
+                FROM channel_events ce
+                LEFT JOIN event_series es ON es.id = ce.series_id
+                WHERE ce.channel_id = :id AND ce.source_type = 'hilads'
+                  AND (ce.guest_id = :guest_id OR ce.created_by = :user_id)
             ");
             $check->execute(['id' => $eventId, 'guest_id' => $guestId, 'user_id' => $userId]);
         } else {
             $check = $pdo->prepare("
-                SELECT 1 FROM channel_events
-                WHERE channel_id = :id AND source_type = 'hilads' AND guest_id = :guest_id
+                SELECT ce.series_id, es.timezone AS series_tz
+                FROM channel_events ce
+                LEFT JOIN event_series es ON es.id = ce.series_id
+                WHERE ce.channel_id = :id AND ce.source_type = 'hilads'
+                  AND ce.guest_id = :guest_id
             ");
             $check->execute(['id' => $eventId, 'guest_id' => $guestId]);
         }
-        if (!$check->fetch()) return null;
+        $row = $check->fetch();
+        if (!$row) return null;
 
-        $now       = time();
-        $startsAt  = min($startsAt, $now + 48 * 3600);
-        $expiresAt = min($endsAt,   $startsAt + 24 * 3600);
+        $isRecurring = !empty($row['series_id']);
 
-        $pdo->prepare("
-            UPDATE channel_events
-            SET title      = :title,
-                location   = :location,
-                event_type = :type,
-                starts_at  = to_timestamp(:starts_at),
-                expires_at = to_timestamp(:expires_at),
-                updated_at = now()
-            WHERE channel_id = :id
-        ")->execute([
-            'title'      => $title,
-            'location'   => $locationHint,
-            'type'       => $type,
-            'starts_at'  => $startsAt,
-            'expires_at' => $expiresAt,
-            'id'         => $eventId,
-        ]);
+        if ($isRecurring) {
+            // Recurring: don't clamp the start (the owner can move the series
+            // to any future date) and don't touch expires_at (it's the 2999
+            // sentinel that keeps the canonical row from ageing out — clamping
+            // it would silently turn the series into a one-shot).
+            $pdo->prepare("
+                UPDATE channel_events
+                SET title      = :title,
+                    location   = :location,
+                    event_type = :type,
+                    starts_at  = to_timestamp(:starts_at),
+                    updated_at = now()
+                WHERE channel_id = :id
+            ")->execute([
+                'title'      => $title,
+                'location'   => $locationHint,
+                'type'       => $type,
+                'starts_at'  => $startsAt,
+                'id'         => $eventId,
+            ]);
+
+            // Shift the recurrence anchor + times of day so future occurrences
+            // pick up the new schedule. Compute date / time-of-day in the
+            // series timezone (NOT UTC — recurrence days are tz-aware).
+            $tz = $row['series_tz'] ?: 'UTC';
+            $pdo->prepare("
+                UPDATE event_series
+                SET starts_on  = (to_timestamp(:starts) AT TIME ZONE :tz)::date,
+                    start_time = (to_timestamp(:starts) AT TIME ZONE :tz)::time,
+                    end_time   = (to_timestamp(:ends)   AT TIME ZONE :tz)::time,
+                    updated_at = now()
+                WHERE id = :sid
+            ")->execute([
+                'starts' => $startsAt,
+                'ends'   => $endsAt,
+                'tz'     => $tz,
+                'sid'    => $row['series_id'],
+            ]);
+        } else {
+            // One-shot: clamp to keep the rules that protect against runaway
+            // dates (no events more than 48h in the future; max 24h length).
+            $now       = time();
+            $startsAt  = min($startsAt, $now + 48 * 3600);
+            $expiresAt = min($endsAt,   $startsAt + 24 * 3600);
+
+            $pdo->prepare("
+                UPDATE channel_events
+                SET title      = :title,
+                    location   = :location,
+                    event_type = :type,
+                    starts_at  = to_timestamp(:starts_at),
+                    expires_at = to_timestamp(:expires_at),
+                    updated_at = now()
+                WHERE channel_id = :id
+            ")->execute([
+                'title'      => $title,
+                'location'   => $locationHint,
+                'type'       => $type,
+                'starts_at'  => $startsAt,
+                'expires_at' => $expiresAt,
+                'id'         => $eventId,
+            ]);
+        }
 
         // Keep channel name in sync with title
         $pdo->prepare("
