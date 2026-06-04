@@ -152,12 +152,12 @@ if ($method === 'POST') {
             $startBasis = $newStartsAt ?? $event['starts_at'];
             $endBasis   = $newEndsAt   ?? $event['ends_at'] ?? $event['expires_at'];
 
+            // event_series has no updated_at column.
             $pdo->prepare("
                 UPDATE event_series
                 SET starts_on  = (:starts::timestamptz AT TIME ZONE :tz)::date,
                     start_time = (:starts::timestamptz AT TIME ZONE :tz)::time,
-                    end_time   = (:ends::timestamptz   AT TIME ZONE :tz)::time,
-                    updated_at = now()
+                    end_time   = (:ends::timestamptz   AT TIME ZONE :tz)::time
                 WHERE id = :sid
             ")->execute([
                 ':starts' => $startBasis,
@@ -204,7 +204,7 @@ if ($method === 'POST') {
             }
 
             if (!empty($seriesFields)) {
-                $seriesFields[] = 'updated_at = now()';
+                // event_series has no updated_at column.
                 $pdo->prepare(
                     'UPDATE event_series SET ' . implode(', ', $seriesFields) . ' WHERE id = :sid'
                 )->execute($seriesParams);

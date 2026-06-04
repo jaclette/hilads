@@ -820,12 +820,13 @@ class EventRepository
             // pick up the new schedule. Compute date / time-of-day in the
             // series timezone (NOT UTC — recurrence days are tz-aware).
             $tz = $row['series_tz'] ?: 'UTC';
+            // Note: event_series has no updated_at column (intentional —
+            // recurrence rules are append-rare and don't need a touched-at).
             $pdo->prepare("
                 UPDATE event_series
                 SET starts_on  = (to_timestamp(:starts) AT TIME ZONE :tz)::date,
                     start_time = (to_timestamp(:starts) AT TIME ZONE :tz)::time,
-                    end_time   = (to_timestamp(:ends)   AT TIME ZONE :tz)::time,
-                    updated_at = now()
+                    end_time   = (to_timestamp(:ends)   AT TIME ZONE :tz)::time
                 WHERE id = :sid
             ")->execute([
                 'starts' => $startsAt,
