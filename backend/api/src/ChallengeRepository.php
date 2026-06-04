@@ -23,11 +23,9 @@ class ChallengeRepository
     public const ALLOWED_AUDIENCES = ['locals', 'explorers'];
     public const ALLOWED_STATUSES  = ['open', 'validated'];
 
-    // max_participants bounds — the creator's cap on concurrent take-ons. 1 is
-    // a valid "exclusive" challenge; 20 is a sane ceiling to prevent abuse.
-    public const MAX_PARTICIPANTS_MIN     = 1;
-    public const MAX_PARTICIPANTS_MAX     = 20;
-    public const MAX_PARTICIPANTS_DEFAULT = 3;
+    // (Legacy) MAX_PARTICIPANTS_* constants removed when the model pivoted
+    // to 1:1 persistent. The column remains in channel_challenges for one
+    // release as a back-compat lever; nothing reads it now.
 
     // ── Shared SELECT (challenge + message stats) ─────────────────────────────
 
@@ -63,7 +61,10 @@ class ChallengeRepository
             'challenge_type'       => $row['challenge_type'],
             'audience'             => $row['audience'],
             'status'               => $row['status'],
-            'max_participants'     => (int) ($row['max_participants'] ?? self::MAX_PARTICIPANTS_DEFAULT),
+            // Legacy field — kept in the response shape for one release so old
+            // mobile/web builds don't blow up reading it. Always returns the
+            // stored DB value (or 3 as the historical default).
+            'max_participants'     => (int) ($row['max_participants'] ?? 3),
             'return_clause'        => $row['return_clause'] ?? null,
             'message_count'        => (int) ($row['message_count'] ?? 0),
             'last_activity_at'     => isset($row['last_activity_at']) ? (int) $row['last_activity_at'] : null,
@@ -266,15 +267,10 @@ class ChallengeRepository
         string $title,
         string $challengeType,
         string $audience,
-        ?int $maxParticipants = null,
         ?string $returnClause = null
     ): array {
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
-
-        // Clamp max_participants to the allowed band; default to 3 if unset.
-        $maxParticipants = $maxParticipants ?? self::MAX_PARTICIPANTS_DEFAULT;
-        $maxParticipants = max(self::MAX_PARTICIPANTS_MIN, min(self::MAX_PARTICIPANTS_MAX, $maxParticipants));
 
         // Normalize return_clause: trim, treat empty string as null. Client is
         // expected to send the per-type template pre-filled; nulls fall back to
@@ -295,11 +291,16 @@ class ChallengeRepository
         ]);
 
         // expires_at uses the table default (2999 sentinel) — challenges are persistent.
+        // max_participants column kept for back-compat (one-release reversible
+        // path) but no longer written — the DB default fills it. The new model
+        // is 1:1: one challenge has at most one active acceptance at a time;
+        // commit 2 wires that gate. The column will be dropped in a separate
+        // migration once the new model has run stable.
         $pdo->prepare("
             INSERT INTO channel_challenges
-                (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, max_participants, return_clause)
+                (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, return_clause)
             VALUES
-                (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :max_participants, :return_clause)
+                (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :return_clause)
         ")->execute([
             'channel_id'       => $id,
             'city_id'          => $cityId,
@@ -308,7 +309,6 @@ class ChallengeRepository
             'title'            => $title,
             'challenge_type'   => $challengeType,
             'audience'         => $audience,
-            'max_participants' => $maxParticipants,
             'return_clause'    => $returnClause,
         ]);
 
@@ -324,7 +324,6 @@ class ChallengeRepository
             'challenge_type'       => $challengeType,
             'audience'             => $audience,
             'status'               => 'open',
-            'max_participants'     => $maxParticipants,
             'return_clause'        => $returnClause,
             'message_count'        => 0,
             'last_activity_at'     => null,
@@ -336,9 +335,12 @@ class ChallengeRepository
     }
 
     /**
-     * Owner-gated edit of title / challenge_type / audience / max_participants /
-     * return_clause. Returns the updated challenge, or null if not found /
-     * not the owner. Status cannot be flipped here — use validate() instead.
+     * Owner-gated edit of title / challenge_type / audience / return_clause.
+     * Returns the updated challenge, or null if not found / not the owner.
+     * Status cannot be flipped here — use validate() instead.
+     *
+     * max_participants is no longer editable from the form (new 1:1 model);
+     * the column stays in the DB for back-compat but isn't touched here.
      */
     public static function update(
         string $challengeId,
@@ -347,16 +349,12 @@ class ChallengeRepository
         string $title,
         string $challengeType,
         string $audience,
-        ?int $maxParticipants = null,
         ?string $returnClause = null
     ): ?array {
         if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
 
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
-
-        $maxParticipants = $maxParticipants ?? self::MAX_PARTICIPANTS_DEFAULT;
-        $maxParticipants = max(self::MAX_PARTICIPANTS_MIN, min(self::MAX_PARTICIPANTS_MAX, $maxParticipants));
 
         $returnClause = $returnClause !== null ? trim($returnClause) : null;
         if ($returnClause === '') $returnClause = null;
@@ -367,7 +365,6 @@ class ChallengeRepository
             SET title = :t,
                 challenge_type = :tp,
                 audience = :a,
-                max_participants = :mp,
                 return_clause = :rc,
                 updated_at = now()
             WHERE channel_id = :id
@@ -375,7 +372,6 @@ class ChallengeRepository
             't'  => $title,
             'tp' => $challengeType,
             'a'  => $audience,
-            'mp' => $maxParticipants,
             'rc' => $returnClause,
             'id' => $challengeId,
         ]);

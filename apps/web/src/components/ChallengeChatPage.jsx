@@ -403,11 +403,10 @@ export default function ChallengeChatPage({
   )
   const otherParticipants = participants.filter(p => p !== creator)
 
-  // Cap is full when accepted travelers reach the creator's max. The +
-  // button hides and the locked empty state morphs to "Challenge full".
-  // Owner / acceptors don't see this — they already have their thread.
-  const isFull = !isOwner && !myAcceptance &&
-    otherParticipants.length >= (challenge.max_participants ?? 3)
+  // `isFull` retired with max_participants (1:1 model). Commit 2 introduces
+  // a 1:1 `inProgress` gate; for now the Accept button always renders for
+  // visitors with no own acceptance.
+  const isFull = false
 
   return (
     <div className="full-page topic-chat-page">

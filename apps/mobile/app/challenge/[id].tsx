@@ -140,7 +140,6 @@ export default function ChallengeChatScreen() {
         title:           challenge.title,
         type:            challenge.challenge_type,
         audience:        challenge.audience,
-        maxParticipants: String(challenge.max_participants),
         returnClause:    challenge.return_clause ?? '',
       },
     } as never);
@@ -365,15 +364,10 @@ export default function ChallengeChatScreen() {
     [participants, creator],
   );
 
-  // Cap is full when accepted travelers reach the creator's max. The +
-  // button hides and the locked empty state morphs to "Challenge full".
-  // Owner / acceptors don't see this — they already have their thread.
-  const isFull = !!(
-    challenge &&
-    !isOwner &&
-    !myAcceptance &&
-    otherParticipants.length >= (challenge.max_participants ?? 3)
-  );
+  // `isFull` retired — the cap model is gone. Commit 2 introduces a 1:1
+  // `inProgress` check that gates the Accept button on whether a non-terminal
+  // acceptance already exists. For now the button is always available to
+  // visitors with no own acceptance.
 
   // Collapse the badges / pipeline / participants block when the user starts
   // scrolling the chat OR taps the composer (keyboard open). Mirror the
@@ -596,7 +590,7 @@ export default function ChallengeChatScreen() {
                   {t('participantsLabel')} · {otherParticipants.length}
                 </Text>
               </TouchableOpacity>
-              {!isOwner && !isValidated && !myThreadChannelId && !isFull && (
+              {!isOwner && !isValidated && !myThreadChannelId && (
                 <TouchableOpacity
                   style={styles.acceptCompact}
                   onPress={handleAccept}
@@ -613,8 +607,6 @@ export default function ChallengeChatScreen() {
                 </TouchableOpacity>
               )}
             </>
-          ) : isFull ? (
-            <Text style={styles.participantsEmpty}>{t('accept.err.cap_reached.title')}</Text>
           ) : (
             <TouchableOpacity
               style={styles.acceptCtaFull}
@@ -787,20 +779,12 @@ export default function ChallengeChatScreen() {
             // Default — visitor or empty-creator state.
             return (
               <View style={styles.lockedWrap}>
-                <Text style={styles.lockedEmoji}>{isFull ? '🚫' : '🔒'}</Text>
+                <Text style={styles.lockedEmoji}>🔒</Text>
                 <Text style={styles.lockedTitle}>
-                  {isOwner
-                    ? t('locked.creator.title')
-                    : isFull
-                      ? t('locked.full.title')
-                      : t('locked.visitor.title')}
+                  {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
                 </Text>
                 <Text style={styles.lockedBody}>
-                  {isOwner
-                    ? t('locked.creator.body')
-                    : isFull
-                      ? t('locked.full.body')
-                      : t('locked.visitor.body')}
+                  {isOwner ? t('locked.creator.body')  : t('locked.visitor.body')}
                 </Text>
               </View>
             );

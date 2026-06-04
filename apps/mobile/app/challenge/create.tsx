@@ -24,12 +24,6 @@ const AUDIENCES: ChallengeAudience[] = ['locals', 'explorers'];
 // 🧳 as "they're passing through" for travelers.
 const AUDIENCE_ICONS: Record<ChallengeAudience, string> = { locals: '🏠', explorers: '🧳' };
 
-// Mirror backend ChallengeRepository::MAX_PARTICIPANTS_{MIN,MAX,DEFAULT}.
-// Bumping these requires updating the PHP constants too.
-const MAX_P_MIN     = 1;
-const MAX_P_MAX     = 20;
-const MAX_P_DEFAULT = 3;
-
 export default function CreateChallengeScreen() {
   const router = useRouter();
   const { t } = useTranslation('challenge');
@@ -41,7 +35,6 @@ export default function CreateChallengeScreen() {
     title?: string;
     type?: string;
     audience?: string;
-    maxParticipants?: string;
     returnClause?: string;
   }>();
   const editId = typeof params.editId === 'string' ? params.editId : null;
@@ -52,15 +45,10 @@ export default function CreateChallengeScreen() {
   const initialAudience: ChallengeAudience = AUDIENCES.includes(params.audience as ChallengeAudience)
     ? (params.audience as ChallengeAudience)
     : 'locals';
-  const initialMaxParticipants = (() => {
-    const n = parseInt(params.maxParticipants ?? '', 10);
-    return Number.isFinite(n) && n >= MAX_P_MIN && n <= MAX_P_MAX ? n : MAX_P_DEFAULT;
-  })();
 
   const [audience, setAudience] = useState<ChallengeAudience>(initialAudience);
   const [type,     setType]     = useState<ChallengeType>(initialType);
   const [title,    setTitle]    = useState(typeof params.title === 'string' ? params.title : '');
-  const [maxParticipants, setMaxParticipants] = useState<number>(initialMaxParticipants);
   // returnClause is pre-filled by the per-type template (see effect below)
   // unless the user (a) is editing and the server has a stored value, or
   // (b) has manually edited it. `returnClauseDirty` flips to true on the
@@ -89,7 +77,7 @@ export default function CreateChallengeScreen() {
     // Edit path: PUT the existing challenge, then back.
     if (editId) {
       try {
-        await updateChallenge(editId, identity.guestId, trimmedTitle, type, audience, maxParticipants, trimmedReturnClause);
+        await updateChallenge(editId, identity.guestId, trimmedTitle, type, audience, trimmedReturnClause);
         router.back();
       } catch (err) {
         setError(err instanceof Error ? err.message : t('errSave'));
@@ -111,7 +99,6 @@ export default function CreateChallengeScreen() {
         trimmedTitle,
         type,
         audience,
-        maxParticipants,
         trimmedReturnClause,
       );
       // Land the creator on the freshly-created challenge so they can share
@@ -219,30 +206,9 @@ export default function CreateChallengeScreen() {
           onSubmitEditing={handleSubmit}
         />
 
-        {/* Max participants stepper — how many travelers can take this on.
-            Stepper instead of slider because the range is 1-20 and discrete
-            single-tap +/- is faster on mobile than a slider drag. Centred
-            number for tap-target balance. */}
-        <Text style={styles.sectionLabel}>{t(`maxParticipantsLabel.${audience === 'locals' ? 'locals' : 'explorers'}`)}</Text>
-        <View style={styles.stepperRow}>
-          <TouchableOpacity
-            style={[styles.stepperBtn, maxParticipants <= MAX_P_MIN && styles.stepperBtnDisabled]}
-            activeOpacity={0.7}
-            disabled={maxParticipants <= MAX_P_MIN}
-            onPress={() => setMaxParticipants(Math.max(MAX_P_MIN, maxParticipants - 1))}
-          >
-            <Ionicons name="remove" size={20} color={Colors.text} />
-          </TouchableOpacity>
-          <Text style={styles.stepperValue}>{maxParticipants}</Text>
-          <TouchableOpacity
-            style={[styles.stepperBtn, maxParticipants >= MAX_P_MAX && styles.stepperBtnDisabled]}
-            activeOpacity={0.7}
-            disabled={maxParticipants >= MAX_P_MAX}
-            onPress={() => setMaxParticipants(Math.min(MAX_P_MAX, maxParticipants + 1))}
-          >
-            <Ionicons name="add" size={20} color={Colors.text} />
-          </TouchableOpacity>
-        </View>
+        {/* Max-participants stepper removed (1:1 model). A challenge is now
+            "available" until one taker is in progress, then frees back to
+            "available" after the meet-up. No cap to set. */}
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 

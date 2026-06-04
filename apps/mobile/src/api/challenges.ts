@@ -88,7 +88,6 @@ export async function createChallenge(
   title: string,
   challengeType: ChallengeType,
   audience: ChallengeAudience,
-  maxParticipants: number,
   returnClause: string | null,
 ): Promise<Challenge> {
   return api.post<Challenge>(`/channels/${channelId}/challenges`, {
@@ -97,19 +96,19 @@ export async function createChallenge(
     title,
     challengeType,
     audience,
-    maxParticipants,
     returnClause,
   });
 }
 
-/** Owner-only edit of a challenge's title / type / audience / cap / return clause. Status is not editable here — use validateChallenge(). */
+/** Owner-only edit of a challenge's title / type / audience / return clause.
+ *  Status is not editable here — use validateChallenge(). max_participants
+ *  is no longer accepted (1:1 model). */
 export async function updateChallenge(
   challengeId: string,
   guestId: string,
   title: string,
   challengeType: ChallengeType,
   audience: ChallengeAudience,
-  maxParticipants: number,
   returnClause: string | null,
 ): Promise<Challenge> {
   return api.put<Challenge>(`/challenges/${challengeId}`, {
@@ -117,7 +116,6 @@ export async function updateChallenge(
     title,
     challengeType,
     audience,
-    maxParticipants,
     returnClause,
   });
 }

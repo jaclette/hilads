@@ -4209,27 +4209,12 @@ export default function App() {
             if (item.type === 'challenge') {
               const challenge = cityChallenges.find(c => c.id === item.challengeId)
               const textKey   = item.audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
-              // Status snapshot from the live challenge. Hidden for validated
-              // (the dedicated 'challenge_validated' pill above is the
-              // celebration). Three states: open / N-of-max / full.
-              let statusBadge = null
-              if (challenge && challenge.status !== 'validated') {
-                const cnt = challenge.participant_count ?? 0
-                const max = challenge.max_participants ?? 3
-                const [e, txt] = cnt >= max
-                  ? ['🚫', t('card.full', { ns: 'challenge' })]
-                  : cnt > 0
-                    ? ['🤝', `${cnt}/${max}`]
-                    : ['🔓', t('card.open', { ns: 'challenge' })]
-                statusBadge = (
-                  <span className="feed-prompt-status">{e} {txt}</span>
-                )
-              }
+              // (Commit 1) Status sub-pill removed with max_participants.
+              // Commit 2 brings it back with 1:1 semantics.
               return (
                 <div key={item.id} className={`feed-prompt feed-prompt--challenge${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
                   <span className="feed-prompt-text">
                     {t(textKey, { name: item.nickname, title: item.title })}
-                    {statusBadge}
                   </span>
                   <button
                     className="feed-prompt-btn"
@@ -4837,26 +4822,14 @@ export default function App() {
                       </div>
                       <div className="er-badges">
                         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-                        {isValidated ? (
+                        {isValidated && (
                           <span className="challenge-badge challenge-badge--validated">
                             ✓ {t('validatedBadge', { ns: 'challenge' })}
                           </span>
-                        ) : (() => {
-                          // Status pill — open / N-of-max / full. Emoji carries
-                          // the meaning; the text complements it.
-                          const cnt = c.participant_count ?? 0
-                          const max = c.max_participants ?? 3
-                          const [e, txt] = cnt >= max
-                            ? ['🚫', t('card.full', { ns: 'challenge' })]
-                            : cnt > 0
-                              ? ['🤝', `${cnt}/${max}`]
-                              : ['🔓', t('card.open', { ns: 'challenge' })]
-                          return (
-                            <span className="challenge-badge challenge-badge--status">
-                              {e} {txt}
-                            </span>
-                          )
-                        })()}
+                        )}
+                        {/* (Commit 1) N/max status pill removed. Commit 2
+                            replaces it with the 1:1 Available/In progress
+                            badge. */}
                       </div>
                       <AttendeeAvatars
                         preview={c.participants_preview ?? []}

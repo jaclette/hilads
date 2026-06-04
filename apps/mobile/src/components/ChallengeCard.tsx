@@ -39,24 +39,10 @@ export function ChallengeCard({
     explorers: t('forExplorers'),
   };
 
-  // Status pill — only shown for open challenges (validated has its own
-  // green badge). Communicates "is this still takeable?":
-  //   - 0 acceptors        → "🔓 Open"
-  //   - 1..max-1 acceptors → "🤝 N/max"
-  //   - max acceptors      → "🚫 Full"
-  const count = challenge.participant_count ?? 0;
-  const max   = challenge.max_participants ?? 3;
-  let statusEmoji = '🔓';
-  let statusText  = t('card.open');
-  if (!isValidated) {
-    if (count >= max) {
-      statusEmoji = '🚫';
-      statusText  = t('card.full');
-    } else if (count > 0) {
-      statusEmoji = '🤝';
-      statusText  = `${count}/${max}`;
-    }
-  }
+  // Status pill — commit 1 simplification: only the validated badge stays.
+  // Commit 2 introduces "Available" / "In progress" / "Closed" semantics off
+  // the per-challenge active-acceptance gate. The legacy N/max / Full pill is
+  // gone with max_participants.
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
@@ -71,13 +57,9 @@ export function ChallengeCard({
         <View style={styles.audiencePill}>
           <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
         </View>
-        {isValidated ? (
+        {isValidated && (
           <View style={styles.validatedBadge}>
             <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
-          </View>
-        ) : (
-          <View style={styles.statusPill}>
-            <Text style={styles.statusPillText}>{statusEmoji} {statusText}</Text>
           </View>
         )}
       </View>

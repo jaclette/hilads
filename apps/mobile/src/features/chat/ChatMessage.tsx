@@ -568,21 +568,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     const textKey = message.audience === 'explorers'
       ? 'bannerChallengeExplorers'
       : 'bannerChallengeLocals';
-    // Status snapshot baked into the message at synthesis time. Three states:
-    //   open + 0 acceptors    → 🔓 + "Open"
-    //   open + some, not full → 🤝 + "N/max"
-    //   open + full           → 🚫 + "Full"
-    //   validated             → no status pill (the validated celebration is
-    //                           its own message type)
-    const cCount = message.challengeCount ?? 0;
-    const cMax   = message.challengeMax   ?? 3;
-    let cEmoji: string | null = null;
-    let cLabel: string | null = null;
-    if (message.challengeStatus !== 'validated') {
-      if (cCount >= cMax)       { cEmoji = '🚫'; cLabel = t('card.full'); }
-      else if (cCount > 0)      { cEmoji = '🤝'; cLabel = `${cCount}/${cMax}`; }
-      else                      { cEmoji = '🔓'; cLabel = t('card.open'); }
-    }
+    // (Commit 1) Status sub-pill removed alongside max_participants. Commit 2
+    // brings it back with 1:1 semantics (Available / In progress / Closed).
+    const cEmoji: string | null = null;
+    const cLabel: string | null = null;
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}

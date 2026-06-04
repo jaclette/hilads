@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { createChallenge, updateChallenge } from '../api'
 import BackButton from './BackButton'
 
-// Mirror backend ChallengeRepository::MAX_PARTICIPANTS_{MIN,MAX,DEFAULT}.
-const MAX_P_MIN     = 1
-const MAX_P_MAX     = 20
-const MAX_P_DEFAULT = 3
+// max_participants retired (1:1 model). Constants removed; the stepper UI
+// went with them.
 
 /**
  * Web equivalent of mobile's app/challenge/create.tsx. Same 3 fields per spec
@@ -105,7 +103,6 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   const [audience,        setAudience]        = useState(editChallenge?.audience         ?? 'locals')
   const [type,            setType]            = useState(editChallenge?.challenge_type   ?? 'food')
   const [title,           setTitle]           = useState(editChallenge?.title            ?? '')
-  const [maxParticipants, setMaxParticipants] = useState(editChallenge?.max_participants ?? MAX_P_DEFAULT)
   const [returnClause,    setReturnClause]    = useState(editChallenge?.return_clause    ?? '')
   // First user edit pins the return clause — type switches after that won't
   // overwrite it. In edit mode the stored clause is treated as pinned from the
@@ -130,11 +127,11 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
     setError(null)
     try {
       if (isEdit) {
-        const updated = await updateChallenge(editChallenge.id, guest.guestId, trimmed, type, audience, maxParticipants, trimmedClause)
+        const updated = await updateChallenge(editChallenge.id, guest.guestId, trimmed, type, audience, trimmedClause)
         onUpdated?.(updated)
       } else {
         const nickname = account?.display_name ?? guest?.nickname ?? null
-        const challenge = await createChallenge(channelId, guest.guestId, nickname, trimmed, type, audience, maxParticipants, trimmedClause)
+        const challenge = await createChallenge(channelId, guest.guestId, nickname, trimmed, type, audience, trimmedClause)
         onCreated?.(challenge)
       }
     } catch (err) {
@@ -228,28 +225,9 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
             />
           </div>
 
-          {/* Max participants stepper — −/+ buttons flanking the number.
-              Discrete steps are faster than a slider drag for a 1-20 range. */}
-          <div className="cef-section">
-            <label className="cef-label">{t(`maxParticipantsLabel.${audience === 'locals' ? 'locals' : 'explorers'}`, { ns: 'challenge' })}</label>
-            <div className="cef-stepper">
-              <button
-                type="button"
-                className="cef-stepper-btn"
-                onClick={() => setMaxParticipants(Math.max(MAX_P_MIN, maxParticipants - 1))}
-                disabled={maxParticipants <= MAX_P_MIN}
-                aria-label="−"
-              >−</button>
-              <span className="cef-stepper-value">{maxParticipants}</span>
-              <button
-                type="button"
-                className="cef-stepper-btn"
-                onClick={() => setMaxParticipants(Math.min(MAX_P_MAX, maxParticipants + 1))}
-                disabled={maxParticipants >= MAX_P_MAX}
-                aria-label="+"
-              >+</button>
-            </div>
-          </div>
+          {/* Max-participants stepper retired (1:1 model). A challenge serves
+              one taker at a time, freeing back to "available" after the meet-
+              up — no cap to configure. */}
 
           {error && <p className="cef-error">{error}</p>}
 

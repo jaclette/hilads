@@ -550,12 +550,12 @@ export async function toggleChallengeParticipation(challengeId, guestId, nicknam
   return res.json() // { count, isIn }
 }
 
-export async function updateChallenge(challengeId, guestId, title, challengeType, audience, maxParticipants, returnClause) {
+export async function updateChallenge(challengeId, guestId, title, challengeType, audience, returnClause) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, title, challengeType, audience, maxParticipants, returnClause }),
+    body: JSON.stringify({ guestId, title, challengeType, audience, returnClause }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
@@ -577,12 +577,12 @@ export async function deleteChallenge(challengeId, guestId) {
   }
 }
 
-export async function createChallenge(channelId, guestId, nickname, title, challengeType, audience, maxParticipants, returnClause) {
+export async function createChallenge(channelId, guestId, nickname, title, challengeType, audience, returnClause) {
   const res = await fetch(`${BASE}/channels/${encodeURIComponent(channelId)}/challenges`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, nickname, title, challengeType, audience, maxParticipants, returnClause }),
+    body: JSON.stringify({ guestId, nickname, title, challengeType, audience, returnClause }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

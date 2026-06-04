@@ -7433,7 +7433,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     $challengeType   = $body['challengeType']   ?? $body['type']     ?? null;
     $audience        = $body['audience']        ?? null;
     $nickname        = $body['nickname']        ?? null;
-    $maxParticipants = $body['maxParticipants'] ?? null;
+    // `maxParticipants` may still arrive from older clients — accept it
+    // silently but ignore (the model is 1:1 now; column stays at DB default).
     $returnClause    = $body['returnClause']    ?? null;
 
     enforceRateLimit('challenge_create', 5, 3600, (string) $channelId);
@@ -7457,19 +7458,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     if ($nickname !== null) {
         $nickname = mb_substr(trim(strip_tags((string) $nickname)), 0, 32) ?: null;
     }
-    // max_participants: int between MIN..MAX, default 3 (repo clamps too —
-    // belt + braces so the client gets a clear 400 on garbage rather than
-    // silent clamp).
-    if ($maxParticipants !== null) {
-        $maxParticipants = filter_var($maxParticipants, FILTER_VALIDATE_INT);
-        if ($maxParticipants === false
-            || $maxParticipants < ChallengeRepository::MAX_PARTICIPANTS_MIN
-            || $maxParticipants > ChallengeRepository::MAX_PARTICIPANTS_MAX) {
-            Response::json(['error' => 'maxParticipants must be an integer between '
-                . ChallengeRepository::MAX_PARTICIPANTS_MIN . ' and '
-                . ChallengeRepository::MAX_PARTICIPANTS_MAX], 400);
-        }
-    }
     if ($returnClause !== null) {
         $returnClause = mb_substr(trim(strip_tags((string) $returnClause)), 0, 200);
     }
@@ -7489,7 +7477,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             $title,
             $challengeType,
             $audience,
-            $maxParticipants,
             $returnClause,
         );
 
@@ -7564,7 +7551,7 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     $title           = $body['title']           ?? null;
     $challengeType   = $body['challengeType']   ?? $body['type'] ?? null;
     $audience        = $body['audience']        ?? null;
-    $maxParticipants = $body['maxParticipants'] ?? null;
+    // `maxParticipants` silently accepted but ignored (1:1 model).
     $returnClause    = $body['returnClause']    ?? null;
 
     if (!isValidGuestId($guestId)) {
@@ -7583,16 +7570,6 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     if (!in_array($audience, ChallengeRepository::allowedAudiences(), true)) {
         Response::json(['error' => 'audience invalid'], 400);
     }
-    if ($maxParticipants !== null) {
-        $maxParticipants = filter_var($maxParticipants, FILTER_VALIDATE_INT);
-        if ($maxParticipants === false
-            || $maxParticipants < ChallengeRepository::MAX_PARTICIPANTS_MIN
-            || $maxParticipants > ChallengeRepository::MAX_PARTICIPANTS_MAX) {
-            Response::json(['error' => 'maxParticipants must be an integer between '
-                . ChallengeRepository::MAX_PARTICIPANTS_MIN . ' and '
-                . ChallengeRepository::MAX_PARTICIPANTS_MAX], 400);
-        }
-    }
     if ($returnClause !== null) {
         $returnClause = mb_substr(trim(strip_tags((string) $returnClause)), 0, 200);
     }
@@ -7601,7 +7578,7 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     $updated = ChallengeRepository::update(
         $challengeId, $guestId, $userId,
         $title, $challengeType, $audience,
-        $maxParticipants, $returnClause,
+        $returnClause,
     );
     if ($updated === null) {
         Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
@@ -7845,16 +7822,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         ], 403);
     }
 
-    // Gate: cap. Non-rejected acceptances < max_participants.
-    $current = ChallengeAcceptanceRepository::countByChallenge($challengeId);
-    $cap     = (int) ($challenge['max_participants'] ?? 3);
-    if ($current >= $cap) {
-        Response::json([
-            'error' => "This challenge is full ({$current}/{$cap} travelers)",
-            'code'  => 'cap_reached',
-        ], 403);
-    }
-
+    // Cap gate removed — the model is 1:1 now. Commit 2 introduces a
+    // `hasActiveAcceptance()` gate that blocks new take-ons while one is in
+    // progress. During commit 1's window the field is unenforced; at low
+    // volume the worst case is a brief overlap.
     enforceRateLimit('challenge_accept', 20, 3600, $userId);
 
     try {
