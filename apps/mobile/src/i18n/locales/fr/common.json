@@ -28,6 +28,32 @@
     "createAccount": "Créer un compte",
     "fallbackCity": "ta ville"
   },
+  "challengeIntro": {
+    "title": "Comment marchent les défis",
+    "slide1": {
+      "title": "Les défis font de tes voyages des histoires",
+      "body": "Locaux et voyageurs se lancent des défis pour partager ce qui fait vibrer une ville — bouffe, lieux, culture, coup de main. La récompense ? Une vraie rencontre."
+    },
+    "slide2": {
+      "title": "Lance ton défi",
+      "body": "Bouffe, lieu, culture ou aide. Choisis pour qui c'est, combien de places, et la petite suite qui mène au rendez-vous."
+    },
+    "slide3": {
+      "title": "Quelqu'un le relève",
+      "body": "Ils envoient une demande. Tu valides et tu acceptes — ton fil privé s'ouvre pour discuter et planifier."
+    },
+    "slide4": {
+      "title": "Rencontre en vrai",
+      "body": "Choisissez une date qui vous va. La timeline suit chaque étape. Puis tu le fais — pour de vrai."
+    },
+    "slide5": {
+      "title": "Conclus le défi",
+      "body": "Après la rencontre, marque-le comme accompli. Ta ville, vécue pour de vrai — un défi à la fois."
+    },
+    "next": "Suivant",
+    "done": "C'est compris !",
+    "skip": "Passer ✕"
+  },
   "share": {
     "title": "Partage quelque chose 👀",
     "snap": "Prends une photo",

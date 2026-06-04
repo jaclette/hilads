@@ -28,6 +28,32 @@
     "createAccount": "Create an account",
     "fallbackCity": "your city"
   },
+  "challengeIntro": {
+    "title": "How challenges work",
+    "slide1": {
+      "title": "Challenges turn trips into stories",
+      "body": "Locals and travelers dare each other to share what makes a city real — food, places, culture, help. The reward? You meet in person."
+    },
+    "slide2": {
+      "title": "Launch your dare",
+      "body": "Food, place, culture or help. Pick who it's for, how many spots, and the little twist that ends in a meet-up."
+    },
+    "slide3": {
+      "title": "Someone takes it on",
+      "body": "They send a request. You review it and accept — your private thread unlocks so you can chat and plan."
+    },
+    "slide4": {
+      "title": "Meet in person",
+      "body": "Pick a date you both like. The pipeline tracks every step. Then make it happen — for real."
+    },
+    "slide5": {
+      "title": "Wrap it up",
+      "body": "After the meet-up, mark it accomplished. Your city, lived for real — one challenge at a time."
+    },
+    "next": "Next",
+    "done": "Got it!",
+    "skip": "Skip ✕"
+  },
   "share": {
     "title": "Share something 👀",
     "snap": "Snap a photo",

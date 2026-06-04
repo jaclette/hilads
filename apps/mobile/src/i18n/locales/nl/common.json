@@ -28,6 +28,32 @@
     "createAccount": "Een account aanmaken",
     "fallbackCity": "jouw stad"
   },
+  "challengeIntro": {
+    "title": "Zo werken challenges",
+    "slide1": {
+      "title": "Challenges maken van reizen verhalen",
+      "body": "Locals en reizigers dagen elkaar uit om te delen wat een stad echt maakt — eten, plekken, cultuur, hulp. De beloning? Jullie spreken persoonlijk af."
+    },
+    "slide2": {
+      "title": "Start je challenge",
+      "body": "Eten, plek, cultuur of hulp. Kies voor wie 'm is, hoeveel plekken, en de kleine twist die op een afspraak uitkomt."
+    },
+    "slide3": {
+      "title": "Iemand neemt 'm aan",
+      "body": "Ze sturen een verzoek. Jij bekijkt het en accepteert — jullie privéthread opent om te chatten en plannen."
+    },
+    "slide4": {
+      "title": "Spreek persoonlijk af",
+      "body": "Kies samen een datum die werkt. De timeline volgt elke stap. Dan maak je 't waar — echt."
+    },
+    "slide5": {
+      "title": "Sluit 'm af",
+      "body": "Na de afspraak markeer je 'm als volbracht. Jouw stad, écht beleefd — één challenge tegelijk."
+    },
+    "next": "Volgende",
+    "done": "Begrepen!",
+    "skip": "Overslaan ✕"
+  },
   "share": {
     "title": "Deel iets 👀",
     "snap": "Maak een foto",

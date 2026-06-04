@@ -83,6 +83,8 @@
   "promptPhotoCta": "Shoot",
   "promptCreate": "🎉 Got a plan tonight?",
   "promptCreateCta": "Create event",
+  "promptChallengeIntro": "🔥 New here? Learn how challenges work",
+  "promptChallengeIntroCta": "Show me",
   "bannerChallengeLocals": "🔥 {{name}} challenges the locals: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} challenges the travelers: {{title}}",
   "bannerChallengeValidated": "🏆 Challenge done! {{name}} validated \"{{title}}\"."

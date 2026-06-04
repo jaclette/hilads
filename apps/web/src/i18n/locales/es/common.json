@@ -34,6 +34,32 @@
     "createAccount": "Crear una cuenta",
     "fallbackCity": "tu ciudad"
   },
+  "challengeIntro": {
+    "title": "Cómo funcionan los retos",
+    "slide1": {
+      "title": "Los retos convierten viajes en historias",
+      "body": "Locales y viajeros se retan para compartir lo que hace real una ciudad — comida, lugares, cultura, ayuda. ¿La recompensa? Quedáis en persona."
+    },
+    "slide2": {
+      "title": "Lanza tu reto",
+      "body": "Comida, lugar, cultura o ayuda. Elige para quién es, cuántas plazas y el pequeño giro que termina en un encuentro."
+    },
+    "slide3": {
+      "title": "Alguien lo acepta",
+      "body": "Te mandan una solicitud. La revisas y aceptas — tu hilo privado se abre para chatear y organizar."
+    },
+    "slide4": {
+      "title": "Quedad en persona",
+      "body": "Elegid una fecha que os vaya bien. La línea de tiempo sigue cada paso. Luego lo hacéis — de verdad."
+    },
+    "slide5": {
+      "title": "Cierra el reto",
+      "body": "Tras el encuentro, márcalo como cumplido. Tu ciudad, vivida de verdad — un reto a la vez."
+    },
+    "next": "Siguiente",
+    "done": "¡Entendido!",
+    "skip": "Saltar ✕"
+  },
   "share": {
     "title": "Comparte algo 👀",
     "snap": "Haz una foto",

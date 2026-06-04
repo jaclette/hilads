@@ -34,6 +34,32 @@
     "createAccount": "Tạo tài khoản",
     "fallbackCity": "thành phố của bạn"
   },
+  "challengeIntro": {
+    "title": "Thử thách hoạt động thế nào",
+    "slide1": {
+      "title": "Thử thách biến chuyến đi thành câu chuyện",
+      "body": "Người địa phương và du khách thách nhau chia sẻ những gì làm nên một thành phố thật — đồ ăn, địa điểm, văn hoá, sự giúp đỡ. Phần thưởng? Gặp nhau trực tiếp."
+    },
+    "slide2": {
+      "title": "Tung thử thách của bạn",
+      "body": "Đồ ăn, địa điểm, văn hoá hay giúp đỡ. Chọn cho ai, bao nhiêu chỗ, và cái twist nho nhỏ kết thúc bằng một buổi gặp."
+    },
+    "slide3": {
+      "title": "Ai đó chấp nhận",
+      "body": "Họ gửi yêu cầu. Bạn xem rồi đồng ý — luồng riêng mở ra để hai bạn nhắn tin và lên kế hoạch."
+    },
+    "slide4": {
+      "title": "Gặp trực tiếp",
+      "body": "Chọn ngày hợp cả hai. Dòng thời gian theo dõi từng bước. Rồi cứ thế làm — thật sự."
+    },
+    "slide5": {
+      "title": "Hoàn tất thử thách",
+      "body": "Sau buổi gặp, đánh dấu hoàn thành. Thành phố của bạn, sống thật — từng thử thách một."
+    },
+    "next": "Tiếp",
+    "done": "Hiểu rồi!",
+    "skip": "Bỏ qua ✕"
+  },
   "share": {
     "title": "Chia sẻ điều gì đó 👀",
     "snap": "Chụp ảnh",

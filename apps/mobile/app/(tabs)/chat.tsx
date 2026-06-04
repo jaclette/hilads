@@ -45,6 +45,7 @@ import { Colors, FontSizes, Spacing, buildCityUrl } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
+import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
 import { localizeWeather } from '@/lib/weather';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
@@ -534,6 +535,8 @@ export default function ChatTab() {
   // Injected locally after join; never sent to the server.
 
   const [promptItems,    setPromptItems]    = useState<Message[]>([]);
+  // "How challenges work" carousel — opened from the challenge-intro prompt.
+  const [showChallengeIntro, setShowChallengeIntro] = useState(false);
   const promptsShownRef  = useRef(new Set<string>());
   const isActiveRef      = useRef(false);
   const messagesRef      = useRef(messages);
@@ -642,7 +645,23 @@ export default function ChatTab() {
       }]);
     }, 60_000);
 
-    promptTimersRef.current.push(t1, t2, t3);
+    // challenge-intro: 8s, drops a "Learn how challenges work" pill once per
+    // channel session. Independent of message count — the goal is to surface
+    // the explainer for newcomers, even in a chatty city. Tapping it opens
+    // the ChallengeIntroCarousel.
+    const t4 = setTimeout(() => {
+      if (!isActiveRef.current || promptsShownRef.current.has('challenge-intro')) return;
+      promptsShownRef.current.add('challenge-intro');
+      setPromptItems(prev => [...prev, {
+        id: `prompt-challenge-intro-${Date.now()}`, type: 'prompt' as const,
+        subtype: 'challenge-intro',
+        content: i18n.t('promptChallengeIntro', { ns: 'chat' }),
+        cta:     i18n.t('promptChallengeIntroCta', { ns: 'chat' }),
+        nickname: '', createdAt: Date.now() / 1000,
+      }]);
+    }, 8_000);
+
+    promptTimersRef.current.push(t1, t2, t3, t4);
   }
 
   // A reminder card finished fading (mount-guarded on the card) → drop it from
@@ -674,6 +693,8 @@ export default function ChatTab() {
       router.push('/event/create');
     } else if (subtype === 'explore') {
       router.push('/(tabs)/now');
+    } else if (subtype === 'challenge-intro') {
+      setShowChallengeIntro(true);
     }
   }
 
@@ -1103,6 +1124,13 @@ export default function ChatTab() {
         onDelete={actionSheetMsg && isOwnMessage(actionSheetMsg) && !actionSheetMsg.deletedAt
           ? () => handleDelete(actionSheetMsg) : undefined}
         onClose={() => setActionSheetMsg(null)}
+      />
+
+      {/* "How challenges work" carousel — opened from the challenge-intro
+          feed prompt. Stand-alone modal; doesn't interact with onboarding. */}
+      <ChallengeIntroCarousel
+        visible={showChallengeIntro}
+        onClose={() => setShowChallengeIntro(false)}
       />
     </SafeAreaView>
   );

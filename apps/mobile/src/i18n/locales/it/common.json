@@ -28,6 +28,32 @@
     "createAccount": "Crea un account",
     "fallbackCity": "la tua città"
   },
+  "challengeIntro": {
+    "title": "Come funzionano le sfide",
+    "slide1": {
+      "title": "Le sfide trasformano i viaggi in storie",
+      "body": "Locali e viaggiatori si sfidano a condividere ciò che rende viva una città — cibo, posti, cultura, aiuto. La ricompensa? Vi incontrate di persona."
+    },
+    "slide2": {
+      "title": "Lancia la tua sfida",
+      "body": "Cibo, posto, cultura o aiuto. Scegli per chi è, quanti posti e il piccolo twist che porta all'incontro."
+    },
+    "slide3": {
+      "title": "Qualcuno la accetta",
+      "body": "Ti mandano una richiesta. Tu controlli e accetti — il vostro thread privato si apre per chattare e organizzare."
+    },
+    "slide4": {
+      "title": "Incontratevi di persona",
+      "body": "Scegliete una data che va bene a entrambi. La timeline segue ogni passo. Poi lo fai — sul serio."
+    },
+    "slide5": {
+      "title": "Chiudi la sfida",
+      "body": "Dopo l'incontro, segnala come compiuta. La tua città, vissuta davvero — una sfida alla volta."
+    },
+    "next": "Avanti",
+    "done": "Capito!",
+    "skip": "Salta ✕"
+  },
   "share": {
     "title": "Condividi qualcosa 👀",
     "snap": "Scatta una foto",

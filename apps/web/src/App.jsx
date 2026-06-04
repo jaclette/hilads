@@ -30,6 +30,7 @@ import ThreadChatPage     from './components/ThreadChatPage'
 import ThreadsListPage    from './components/ThreadsListPage'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
+import ChallengeIntroCarousel from './components/ChallengeIntroCarousel'
 import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
 import AccountWelcome from './components/AccountWelcome'
@@ -948,6 +949,7 @@ export default function App() {
   const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
   const [showOnboarding, setShowOnboarding] = useState(false) // first-time guest carousel
+  const [showChallengeIntro, setShowChallengeIntro] = useState(false) // "how challenges work" carousel, opened from city-chat feed prompt
   const [showNotifications, setShowNotifications] = useState(false)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
@@ -1921,6 +1923,18 @@ export default function App() {
       })
     }, 15000)
 
+    // challenge-intro: 8s, fires once per session. Drops a "How challenges
+    // work" pill in the feed; tapping it opens the dedicated carousel. Same
+    // ephemeral lifecycle as the other prompts (auto-fades, NOW pulse).
+    setTimeout(() => {
+      if (!activeRef.current || activeEventIdRef.current) return
+      if (promptsShownRef.current.has('challenge-intro')) return
+      setFeed(prev => {
+        promptsShownRef.current.add('challenge-intro')
+        return [...prev, { type: 'prompt', subtype: 'challenge-intro', id: `prompt-challenge-intro-${Date.now()}`, text: '🔥 New here? Learn how challenges work', cta: 'Show me' }]
+      })
+    }, 8000)
+
     // photo: 30s, only if low activity
     setTimeout(() => {
       if (!activeRef.current || activeEventIdRef.current) return
@@ -1963,6 +1977,8 @@ export default function App() {
     } else if (item.subtype === 'new-event') {
       const event = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
       if (event) handleSelectEvent(event)
+    } else if (item.subtype === 'challenge-intro') {
+      setShowChallengeIntro(true)
     }
   }
 
@@ -4259,10 +4275,11 @@ export default function App() {
 
             if (item.type === 'prompt') {
               const promptTk = {
-                explore:        { text: t('prompt.exploreText'),    cta: t('prompt.exploreCta') },
-                photo:          { text: t('prompt.photoText'),      cta: t('prompt.shoot') },
-                'create-event': { text: t('prompt.createEventText'), cta: t('prompt.createEventCta') },
-                install:        { text: t('prompt.installText'),    cta: installPrompt.canUseNativePrompt ? t('prompt.installAdd') : t('prompt.installHow') },
+                explore:           { text: t('prompt.exploreText'),       cta: t('prompt.exploreCta') },
+                photo:             { text: t('prompt.photoText'),         cta: t('prompt.shoot') },
+                'create-event':    { text: t('prompt.createEventText'),    cta: t('prompt.createEventCta') },
+                'challenge-intro': { text: t('prompt.challengeIntroText'), cta: t('prompt.challengeIntroCta') },
+                install:           { text: t('prompt.installText'),       cta: installPrompt.canUseNativePrompt ? t('prompt.installAdd') : t('prompt.installHow') },
               }[item.subtype]
               return (
                 <div key={item.id} className={`feed-prompt${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
@@ -6057,6 +6074,13 @@ export default function App() {
         bursts={reactionBursts}
         onDone={id => setReactionBursts(prev => prev.filter(b => b.id !== id))}
       />
+
+      {/* "How challenges work" carousel — opened from the city-chat feed
+          prompt. Independent of the first-time onboarding (which covers
+          general intro). Can be triggered any time. */}
+      {showChallengeIntro && (
+        <ChallengeIntroCarousel onClose={() => setShowChallengeIntro(false)} />
+      )}
 
       {/* First-time guest onboarding carousel (also re-openable via header "?"). */}
       {showOnboarding && (

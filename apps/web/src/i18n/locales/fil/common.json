@@ -34,6 +34,32 @@
     "createAccount": "Gumawa ng account",
     "fallbackCity": "iyong city"
   },
+  "challengeIntro": {
+    "title": "Paano gumagana ang challenges",
+    "slide1": {
+      "title": "Ang challenges, nagiging stories ang biyahe",
+      "body": "Nag-cha-challenge ang mga locals at travelers para i-share kung ano talaga ang ginagawang totoo sa city — pagkain, lugar, kultura, tulong. Ang reward? Magkita kayo in person."
+    },
+    "slide2": {
+      "title": "I-launch ang challenge mo",
+      "body": "Pagkain, lugar, culture, o tulong. Pumili kung para kanino, ilang slots, at 'yung maliit na twist na nagtatapos sa meet-up."
+    },
+    "slide3": {
+      "title": "May tumanggap",
+      "body": "Magpapadala sila ng request. Tingnan mo at tanggapin — magbubukas ang private thread niyo para mag-chat at mag-plan."
+    },
+    "slide4": {
+      "title": "Magkita in person",
+      "body": "Pumili kayo ng date na okay sa inyong dalawa. Sinusundan ng timeline bawat step. Tapos gawin niyo na — for real."
+    },
+    "slide5": {
+      "title": "Tapusin ang challenge",
+      "body": "Pagkatapos ng meet-up, i-mark na accomplished. Ang city mo, talagang ginawa — isang challenge isang beses."
+    },
+    "next": "Sunod",
+    "done": "Gets!",
+    "skip": "Skip ✕"
+  },
   "share": {
     "title": "Magbahagi ng kahit ano 👀",
     "snap": "Kumuha ng litrato",

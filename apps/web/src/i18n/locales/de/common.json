@@ -34,6 +34,32 @@
     "createAccount": "Konto erstellen",
     "fallbackCity": "deine Stadt"
   },
+  "challengeIntro": {
+    "title": "So funktionieren Challenges",
+    "slide1": {
+      "title": "Challenges machen aus Reisen Geschichten",
+      "body": "Locals und Reisende fordern sich gegenseitig heraus, das echte Leben einer Stadt zu teilen — Essen, Orte, Kultur, Hilfe. Die Belohnung? Ihr trefft euch persönlich."
+    },
+    "slide2": {
+      "title": "Starte deine Challenge",
+      "body": "Essen, Ort, Kultur oder Hilfe. Wähl, für wen sie ist, wie viele Plätze und den kleinen Twist, der zum Treffen führt."
+    },
+    "slide3": {
+      "title": "Jemand nimmt sie an",
+      "body": "Sie schicken eine Anfrage. Du prüfst und nimmst sie an — euer privater Thread öffnet sich zum Chatten und Planen."
+    },
+    "slide4": {
+      "title": "Trefft euch persönlich",
+      "body": "Sucht ein Datum aus, das euch beiden passt. Die Timeline trackt jeden Schritt. Dann macht ihr's — wirklich."
+    },
+    "slide5": {
+      "title": "Schließ es ab",
+      "body": "Nach dem Treffen markier's als erledigt. Deine Stadt, wirklich erlebt — eine Challenge nach der anderen."
+    },
+    "next": "Weiter",
+    "done": "Verstanden!",
+    "skip": "Überspringen ✕"
+  },
   "share": {
     "title": "Teile etwas 👀",
     "snap": "Mach ein Foto",

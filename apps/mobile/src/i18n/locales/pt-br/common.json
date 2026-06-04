@@ -28,6 +28,32 @@
     "createAccount": "Criar uma conta",
     "fallbackCity": "sua cidade"
   },
+  "challengeIntro": {
+    "title": "Como funcionam os desafios",
+    "slide1": {
+      "title": "Desafios transformam viagens em histórias",
+      "body": "Locais e viajantes se desafiam pra mostrar o que faz uma cidade real — comida, lugares, cultura, ajuda. A recompensa? Vocês se encontram pessoalmente."
+    },
+    "slide2": {
+      "title": "Lança seu desafio",
+      "body": "Comida, lugar, cultura ou ajuda. Escolhe pra quem é, quantas vagas e a viradinha que termina num encontro."
+    },
+    "slide3": {
+      "title": "Alguém aceita",
+      "body": "Te mandam um pedido. Você revisa e aceita — sua thread privada abre pra conversar e planejar."
+    },
+    "slide4": {
+      "title": "Se encontrem pessoalmente",
+      "body": "Escolham uma data que role pra vocês. A timeline acompanha cada passo. Aí você faz acontecer — de verdade."
+    },
+    "slide5": {
+      "title": "Fecha o desafio",
+      "body": "Depois do encontro, marca como cumprido. Sua cidade, vivida de verdade — um desafio por vez."
+    },
+    "next": "Próximo",
+    "done": "Entendi!",
+    "skip": "Pular ✕"
+  },
   "share": {
     "title": "Compartilhe algo 👀",
     "snap": "Tire uma foto",
