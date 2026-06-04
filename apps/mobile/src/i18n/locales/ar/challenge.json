@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "اقبل التحدي",
       "creatorWaiting": "بانتظار من يقبله",
+      "creatorReviewPending": "ردّ على طلب {{name}} →",
+      "acceptorAwaitingReview": "بانتظار ردّ {{name}}",
       "proposeDate": "اقترح موعداً →",
       "dateAwaiting": "بانتظار موافقة المنشئ",
       "approveDate": "تم اقتراح موعد →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "بانتظار تأكيد {{name}}",
       "accomplished": "تم إنجاز التحدي 🎉",
       "closed": "أُغلق التحدي"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} يريد قبول تحدّيك",
+      "pendingBody": "اقبل لبدء الدردشة وتنسيق اللقاء، أو ارفض لتحرير المقعد.",
+      "approve": "قبول",
+      "reject": "رفض",
+      "approveFailed": "تعذّر القبول. حاول مرة أخرى.",
+      "rejectFailed": "تعذّر الرفض. حاول مرة أخرى."
+    },
+    "acceptor": {
+      "waitingTitle": "بانتظار الردّ",
+      "waitingBody": "سيقبل {{name}} طلبك أو يرفضه. ستصلك إشعار حين يقرّر.",
+      "rejectedTitle": "تم رفض الطلب",
+      "rejectedBody": "رفض {{name}} هذا الطلب. لا تزال تستطيع اختيار تحدٍّ آخر."
     }
   },
   "locked": {

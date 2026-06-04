@@ -372,6 +372,17 @@ function broadcastChallengeDateWithdrawnToWs(string $targetUserId, array $payloa
     ]);
 }
 
+/** PR5 — creator approved or rejected a pending take-on request. payload.decision = 'approved' | 'rejected' */
+function broadcastChallengeTakeOnReviewedToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-takeon-reviewed target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null') . ' decision=' . ($payload['decision'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_takeon_reviewed',
+        'payload' => $payload,
+    ]);
+}
+
 /** PR4 — debrief verdicts. Same shape as proposed/approved/withdrawn. */
 function broadcastChallengeVerdictToWs(string $targetUserId, string $verdict, array $payload): void
 {
@@ -7874,12 +7885,207 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         error_log('[challenges] ws accept broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
+    // Push notification to the creator — new take-on request needs review.
+    // Tapping the push opens the challenge page where the creator can
+    // accept/reject; no in-notification action buttons (the screen carries
+    // the full review UI with both buttons).
+    try {
+        if (!empty($challenge['created_by'])) {
+            $acceptorName = $authUser['display_name'] ?? 'Someone';
+            NotificationRepository::create(
+                $challenge['created_by'],
+                'challenge_takeon_request',
+                "🤝 New take-on request",
+                "{$acceptorName} wants to take on \"{$challenge['title']}\"",
+                [
+                    'challengeId'  => $challengeId,
+                    'acceptanceId' => $acceptance['id'],
+                    'acceptorName' => $acceptorName,
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] takeon-request push failed (non-fatal): ' . $e->getMessage());
+    }
+
     AnalyticsService::defer('challenge_take_on', $userId, [
         'challenge_id'  => $challengeId,
         'acceptance_id' => $acceptance['id'],
     ]);
 
     Response::json($acceptance, 201);
+});
+
+// ── PR5: pending take-on review (creator approve / reject) ──────────────────
+
+/**
+ * Shared validator for the two take-on review routes. Returns
+ * [acceptance, challenge, authUser] on success, or short-circuits with a JSON
+ * error. Gate: caller is the challenge creator, acceptance phase='pending'.
+ */
+function gateTakeOnReview(string $acceptanceId): array
+{
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if ($challenge['created_by'] !== $authUser['id']) {
+        Response::json(['error' => 'Only the challenge creator can review take-on requests'], 403);
+    }
+    if ($acceptance['phase'] !== 'pending') {
+        Response::json([
+            'error' => "This take-on isn't pending review",
+            'code'  => 'phase_locked',
+        ], 409);
+    }
+    return [$acceptance, $challenge, $authUser];
+}
+
+// POST /api/v1/acceptances/{acceptanceId}/approve-takeon
+// Creator accepts a pending take-on request → phase flips to 'accepted'.
+// The thread chat unlocks for the acceptor; a system message lands in the
+// thread; the acceptor gets a push.
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', function (array $params) {
+    [$acceptance, $challenge, $authUser] = gateTakeOnReview($params['acceptanceId'] ?? '');
+    $userId       = $authUser['id'];
+    $acceptanceId = $params['acceptanceId'];
+
+    try {
+        $updated = ChallengeAcceptanceRepository::approveTakeOn($acceptanceId);
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-takeon failed acc=' . $acceptanceId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to approve take-on'], 500);
+    }
+    if ($updated === null) {
+        Response::json(['error' => 'Failed to approve take-on'], 500);
+    }
+
+    // System message in the thread — "✅ X accepted your take-on. Let's plan!"
+    // Sent as a regular message of type='system' so it persists in history
+    // and shows up the moment the chat unlocks.
+    try {
+        $creatorName = $authUser['display_name'] ?? 'The creator';
+        $sysMsg = MessageRepository::addSystemMessage(
+            $acceptance['thread_channel_id'],
+            "✅ {$creatorName} accepted your take-on — let's plan the meet-up!",
+        );
+        broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-takeon system msg failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // WS broadcast to the acceptor — their UI flips from "Waiting..." to chat.
+    try {
+        if (!empty($acceptance['acceptor_user_id'])) {
+            broadcastChallengeTakeOnReviewedToWs($acceptance['acceptor_user_id'], [
+                'acceptanceId'    => $acceptanceId,
+                'challengeId'     => $acceptance['challenge_id'],
+                'threadChannelId' => $acceptance['thread_channel_id'],
+                'decision'        => 'approved',
+                'acceptance'      => $updated,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-takeon WS broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // Push to the acceptor — their take-on is now active.
+    try {
+        if (!empty($acceptance['acceptor_user_id'])) {
+            $creatorName = $authUser['display_name'] ?? 'The creator';
+            NotificationRepository::create(
+                $acceptance['acceptor_user_id'],
+                'challenge_takeon_approved',
+                "✅ Take-on accepted",
+                "{$creatorName} accepted your take-on of \"{$challenge['title']}\". Time to plan!",
+                [
+                    'challengeId'  => $acceptance['challenge_id'],
+                    'acceptanceId' => $acceptanceId,
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-takeon push failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json(['acceptance' => $updated]);
+});
+
+// POST /api/v1/acceptances/{acceptanceId}/reject-takeon
+// Creator declines a pending take-on request → phase flips to 'rejected'.
+// The thread chat stays hidden; a system message lands in the thread
+// (audit trail) and the acceptor gets a push.
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', function (array $params) {
+    [$acceptance, $challenge, $authUser] = gateTakeOnReview($params['acceptanceId'] ?? '');
+    $userId       = $authUser['id'];
+    $acceptanceId = $params['acceptanceId'];
+
+    try {
+        $updated = ChallengeAcceptanceRepository::rejectTakeOn($acceptanceId);
+    } catch (\Throwable $e) {
+        error_log('[challenges] reject-takeon failed acc=' . $acceptanceId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to reject take-on'], 500);
+    }
+    if ($updated === null) {
+        Response::json(['error' => 'Failed to reject take-on'], 500);
+    }
+
+    // System message in the thread — audit trail even though the chat
+    // doesn't unlock. The acceptor's "Waiting..." state morphs into a
+    // rejection notice that references this message.
+    try {
+        $creatorName = $authUser['display_name'] ?? 'The creator';
+        $sysMsg = MessageRepository::addSystemMessage(
+            $acceptance['thread_channel_id'],
+            "✕ {$creatorName} declined your take-on.",
+        );
+        broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
+    } catch (\Throwable $e) {
+        error_log('[challenges] reject-takeon system msg failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // WS broadcast + push to acceptor — same payload as approve, different decision.
+    try {
+        if (!empty($acceptance['acceptor_user_id'])) {
+            broadcastChallengeTakeOnReviewedToWs($acceptance['acceptor_user_id'], [
+                'acceptanceId'    => $acceptanceId,
+                'challengeId'     => $acceptance['challenge_id'],
+                'threadChannelId' => $acceptance['thread_channel_id'],
+                'decision'        => 'rejected',
+                'acceptance'      => $updated,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] reject-takeon WS broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    try {
+        if (!empty($acceptance['acceptor_user_id'])) {
+            $creatorName = $authUser['display_name'] ?? 'The creator';
+            NotificationRepository::create(
+                $acceptance['acceptor_user_id'],
+                'challenge_takeon_rejected',
+                "✕ Take-on declined",
+                "{$creatorName} declined your take-on of \"{$challenge['title']}\".",
+                [
+                    'challengeId'  => $acceptance['challenge_id'],
+                    'acceptanceId' => $acceptanceId,
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] reject-takeon push failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json(['acceptance' => $updated]);
 });
 
 // POST /api/v1/acceptances/{acceptanceId}/cancel
@@ -7909,7 +8115,10 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/cancel', function (arra
     if (!$isAcceptor && !$isCreator) {
         Response::json(['error' => 'Not allowed'], 403);
     }
-    if ($acceptance['phase'] !== 'accepted') {
+    // Cancel is allowed while the take-on is still under review ('pending')
+    // OR after acceptance but before a date is scheduled ('accepted'). Once a
+    // date is scheduled the chat history matters and we lock the row.
+    if ($acceptance['phase'] !== 'accepted' && $acceptance['phase'] !== 'pending') {
         Response::json([
             'error' => "Can't cancel after a date is scheduled",
             'code'  => 'phase_locked',

@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "챌린지를 받아요",
       "creatorWaiting": "받아 줄 사람을 기다리는 중",
+      "creatorReviewPending": "{{name}}님의 요청에 답해요 →",
+      "acceptorAwaitingReview": "{{name}}님의 답을 기다리는 중",
       "proposeDate": "날짜를 제안해요 →",
       "dateAwaiting": "작성자의 승인을 기다리는 중",
       "approveDate": "날짜가 제안됐어요 →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "{{name}}님의 확인을 기다리는 중",
       "accomplished": "챌린지 성공 🎉",
       "closed": "챌린지 종료"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}}님이 챌린지를 받고 싶어 해요",
+      "pendingBody": "수락하면 채팅을 시작하고 만남을 정할 수 있어요. 거절하면 자리가 다시 열려요.",
+      "approve": "수락",
+      "reject": "거절",
+      "approveFailed": "수락하지 못했어요. 다시 시도해 주세요.",
+      "rejectFailed": "거절하지 못했어요. 다시 시도해 주세요."
+    },
+    "acceptor": {
+      "waitingTitle": "답을 기다리는 중",
+      "waitingBody": "{{name}}님이 수락하거나 거절할 거예요. 결정되면 알림이 와요.",
+      "rejectedTitle": "거절됐어요",
+      "rejectedBody": "{{name}}님이 이 챌린지를 거절했어요. 다른 챌린지를 골라도 돼요."
     }
   },
   "locked": {

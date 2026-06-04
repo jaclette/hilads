@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Ambil tantangan ini",
       "creatorWaiting": "Menunggu seseorang mengambilnya",
+      "creatorReviewPending": "Tanggapi permintaan {{name}} →",
+      "acceptorAwaitingReview": "Menunggu jawaban {{name}}",
       "proposeDate": "Usulkan tanggal →",
       "dateAwaiting": "Menunggu persetujuan pembuat",
       "approveDate": "Sebuah tanggal sudah diusulkan →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Menunggu konfirmasi dari {{name}}",
       "accomplished": "Tantangan berhasil 🎉",
       "closed": "Tantangan ditutup"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} mau ambil tantanganmu",
+      "pendingBody": "Terima buat mulai ngobrol dan atur waktu ketemu, atau tolak biar slotnya kosong lagi.",
+      "approve": "Terima",
+      "reject": "Tolak",
+      "approveFailed": "Gagal menerima. Coba lagi.",
+      "rejectFailed": "Gagal menolak. Coba lagi."
+    },
+    "acceptor": {
+      "waitingTitle": "Menunggu jawaban",
+      "waitingBody": "{{name}} bakal terima atau tolak take-on kamu. Kamu dapat notif begitu dia memutuskan.",
+      "rejectedTitle": "Take-on ditolak",
+      "rejectedBody": "{{name}} menolak yang ini. Kamu masih bisa ambil tantangan lain."
     }
   },
   "locked": {

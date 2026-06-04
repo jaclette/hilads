@@ -763,6 +763,38 @@ export async function rejectChallenge(acceptanceId) {
   return res.json()
 }
 
+// ── PR5: pending take-on review (creator only) ────────────────────────────
+// Creator approves/rejects a pending take-on request. Approve flips the row
+// to 'accepted' (chat unlocks for the acceptor); reject flips to 'rejected'
+// (acceptor notified, slot reopens).
+export async function approveTakeOn(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/approve-takeon`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to approve take-on')
+  }
+  return res.json()
+}
+
+export async function rejectTakeOn(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/reject-takeon`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to reject take-on')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

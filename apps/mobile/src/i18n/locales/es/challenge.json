@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Acepta el reto",
       "creatorWaiting": "Esperando a que alguien lo acepte",
+      "creatorReviewPending": "Responde a la solicitud de {{name}} →",
+      "acceptorAwaitingReview": "Esperando la respuesta de {{name}}",
       "proposeDate": "Propón una fecha →",
       "dateAwaiting": "Esperando que el creador apruebe",
       "approveDate": "Se ha propuesto una fecha →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Esperando a que {{name}} confirme",
       "accomplished": "Reto cumplido 🎉",
       "closed": "Reto cerrado"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} quiere aceptar tu reto",
+      "pendingBody": "Acepta para empezar a chatear y organizar la quedada, o rechaza para liberar la plaza.",
+      "approve": "Aceptar",
+      "reject": "Rechazar",
+      "approveFailed": "No se pudo aceptar. Inténtalo de nuevo.",
+      "rejectFailed": "No se pudo rechazar. Inténtalo de nuevo."
+    },
+    "acceptor": {
+      "waitingTitle": "Esperando la respuesta",
+      "waitingBody": "{{name}} aceptará o rechazará tu petición. Recibirás una notificación cuando decida.",
+      "rejectedTitle": "Petición rechazada",
+      "rejectedBody": "{{name}} ha rechazado este. Todavía puedes elegir otro reto."
     }
   },
   "locked": {

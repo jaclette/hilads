@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "รับชาเลนจ์นี้",
       "creatorWaiting": "รอใครสักคนมารับ",
+      "creatorReviewPending": "ตอบคำขอของ {{name}} →",
+      "acceptorAwaitingReview": "รอ {{name}} ตอบกลับ",
       "proposeDate": "เสนอวันนัด →",
       "dateAwaiting": "รอผู้สร้างยืนยัน",
       "approveDate": "มีคนเสนอวันนัดแล้ว →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "รอ {{name}} ยืนยัน",
       "accomplished": "ทำชาเลนจ์สำเร็จ 🎉",
       "closed": "ปิดชาเลนจ์แล้ว"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} อยากรับชาเลนจ์ของคุณ",
+      "pendingBody": "ตอบรับเพื่อเริ่มแชทและนัดเจอ หรือปฏิเสธเพื่อปล่อยที่นั่งให้ว่าง",
+      "approve": "ตอบรับ",
+      "reject": "ปฏิเสธ",
+      "approveFailed": "ตอบรับไม่สำเร็จ ลองอีกครั้ง",
+      "rejectFailed": "ปฏิเสธไม่สำเร็จ ลองอีกครั้ง"
+    },
+    "acceptor": {
+      "waitingTitle": "รอคำตอบ",
+      "waitingBody": "{{name}} จะตอบรับหรือปฏิเสธคำขอของคุณ จะมีแจ้งเตือนเมื่อเขาตัดสินใจ",
+      "rejectedTitle": "คำขอถูกปฏิเสธ",
+      "rejectedBody": "{{name}} ปฏิเสธอันนี้ คุณยังเลือกชาเลนจ์อื่นได้นะ"
     }
   },
   "locked": {

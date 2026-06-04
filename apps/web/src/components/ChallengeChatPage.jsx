@@ -17,6 +17,7 @@ import {
   unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
   fetchThreadMessages, sendThreadMessage, proposeDate,
+  approveTakeOn, rejectTakeOn,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -170,11 +171,24 @@ export default function ChallengeChatPage({
 
   // PR2/3/4 — load my full thread summary for this challenge (drives the
   // Accept button morph AND the pipeline rendering).
+  // PR5 — for the creator with multiple acceptances on this challenge,
+  // prefer a 'pending' one so the review banner surfaces; otherwise a
+  // longer-running in-progress thread sorts above and the request gets
+  // missed.
   const loadMyAcceptance = useCallback(async () => {
     if (!account?.id || !id) { setMyAcceptance(null); return }
     try {
       const threads = await fetchMyAcceptances()
-      setMyAcceptance(threads.find(thr => thr.challenge_id === id) ?? null)
+      const mine = threads.filter(thr => thr.challenge_id === id)
+      if (mine.length === 0) { setMyAcceptance(null); return }
+      const priority = (t) => {
+        const p = t.effective_phase ?? t.phase
+        if (p === 'pending') return 0
+        if (p === 'accepted' || p === 'scheduled' || p === 'debrief') return 1
+        return 2
+      }
+      const sorted = [...mine].sort((a, b) => priority(a) - priority(b))
+      setMyAcceptance(sorted[0])
     } catch { setMyAcceptance(null) }
   }, [id, account?.id])
 
@@ -227,7 +241,8 @@ export default function ChallengeChatPage({
     const off5 = socket.on('challenge_date_approved',        onChange)
     const off6 = socket.on('challenge_verdict_approved',     onChange)
     const off7 = socket.on('challenge_verdict_rejected',     onChange)
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7() }
+    const off8 = socket.on('challenge_takeon_reviewed',      onChange)
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8() }
   }, [socket, loadMyAcceptance])
 
   useEffect(() => {
@@ -578,37 +593,119 @@ export default function ChallengeChatPage({
       )}
       </div>{/* /.challenge-collapsible */}
 
-      {/* Locked empty state — shown to visitors (registered or guest) and to
-          creators whose challenge has no acceptors yet. Sits where the inline
-          chat would be; the message explains why the chat is hidden. */}
-      {!myAcceptance && (
-        <div style={{
+      {/* Locked / pending / rejected state — chat hidden. Five branches:
+          - Creator + pending request → review banner with Accept/Reject
+          - Acceptor + pending         → "Waiting for review"
+          - Acceptor + rejected        → "Take-on declined"
+          - Visitor full / not-yet     → existing locked.visitor / locked.full
+          - Creator + no acceptance    → existing locked.creator
+        Pending/rejected take priority over the "no acceptance" branch. */}
+      {(() => {
+        const phase     = myAcceptance?.phase
+        const isPending = phase === 'pending'
+        const isRej     = phase === 'rejected'
+        const chatHidden = !myAcceptance || isPending || isRej
+
+        if (!chatHidden) return null
+
+        const lockedWrapStyle = {
           flex: 1, display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
           padding: '32px 24px', textAlign: 'center', gap: 8,
-        }}>
-          <span style={{ fontSize: 40, opacity: 0.7 }}>{isFull ? '🚫' : '🔒'}</span>
-          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-            {isOwner
-              ? t('locked.creator.title')
-              : isFull
-                ? t('locked.full.title')
-                : t('locked.visitor.title')}
-          </h3>
-          <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-            {isOwner
-              ? t('locked.creator.body')
-              : isFull
-                ? t('locked.full.body')
-                : t('locked.visitor.body')}
-          </p>
-        </div>
-      )}
+        }
+        const cpName = myAcceptance?.counterparty?.displayName ?? '?'
+
+        // Creator + pending → review banner with inline Accept / Reject.
+        if (isOwner && isPending && myAcceptance) {
+          return (
+            <div style={lockedWrapStyle}>
+              <span style={{ fontSize: 40 }}>🤝</span>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
+                {t('takeon.creator.pendingTitle', { name: cpName })}
+              </h3>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
+                {t('takeon.creator.pendingBody', { name: cpName })}
+              </p>
+              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                <button
+                  type="button"
+                  className="challenge-alert-btn"
+                  onClick={async () => {
+                    try { await rejectTakeOn(myAcceptance.id); loadMyAcceptance() }
+                    catch { setAlertModal({ emoji: '😬', title: t('takeon.creator.rejectFailed') }) }
+                  }}
+                >
+                  {t('takeon.creator.reject')}
+                </button>
+                <button
+                  type="button"
+                  className="challenge-alert-btn challenge-alert-btn--primary"
+                  onClick={async () => {
+                    try { await approveTakeOn(myAcceptance.id); loadMyAcceptance() }
+                    catch { setAlertModal({ emoji: '😬', title: t('takeon.creator.approveFailed') }) }
+                  }}
+                >
+                  {t('takeon.creator.approve')}
+                </button>
+              </div>
+            </div>
+          )
+        }
+
+        if (!isOwner && isPending) {
+          return (
+            <div style={lockedWrapStyle}>
+              <span style={{ fontSize: 40, opacity: 0.7 }}>⏳</span>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
+                {t('takeon.acceptor.waitingTitle')}
+              </h3>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
+                {t('takeon.acceptor.waitingBody', { name: cpName })}
+              </p>
+            </div>
+          )
+        }
+
+        if (!isOwner && isRej) {
+          return (
+            <div style={lockedWrapStyle}>
+              <span style={{ fontSize: 40, opacity: 0.7 }}>✕</span>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
+                {t('takeon.acceptor.rejectedTitle')}
+              </h3>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
+                {t('takeon.acceptor.rejectedBody', { name: cpName })}
+              </p>
+            </div>
+          )
+        }
+
+        // No acceptance at all — original locked state.
+        return (
+          <div style={lockedWrapStyle}>
+            <span style={{ fontSize: 40, opacity: 0.7 }}>{isFull ? '🚫' : '🔒'}</span>
+            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
+              {isOwner
+                ? t('locked.creator.title')
+                : isFull
+                  ? t('locked.full.title')
+                  : t('locked.visitor.title')}
+            </h3>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
+              {isOwner
+                ? t('locked.creator.body')
+                : isFull
+                  ? t('locked.full.body')
+                  : t('locked.visitor.body')}
+            </p>
+          </div>
+        )
+      })()}
 
       {/* Inline thread chat — mounts only when the viewer has an active
-          acceptance for this challenge. Replaces the old "navigate to
-          /thread" path: one screen, no second navigation step. */}
-      {myAcceptance && account?.id && (
+          acceptance for this challenge AND it's past the pending/rejected
+          gate. Replaces the old "navigate to /thread" path. */}
+      {myAcceptance && account?.id && myAcceptance.phase !== 'pending' && myAcceptance.phase !== 'rejected' && (
         <>
           <div
             className="topic-chat-feed"

@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Neem de challenge aan",
       "creatorWaiting": "Wachten tot iemand 'm oppakt",
+      "creatorReviewPending": "Reageer op het verzoek van {{name}} →",
+      "acceptorAwaitingReview": "Wachten op reactie van {{name}}",
       "proposeDate": "Stel een datum voor →",
       "dateAwaiting": "Wachten op goedkeuring van de maker",
       "approveDate": "Er is een datum voorgesteld →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Wachten tot {{name}} bevestigt",
       "accomplished": "Challenge gehaald 🎉",
       "closed": "Challenge afgesloten"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} wil jouw challenge aannemen",
+      "pendingBody": "Accepteer om te chatten en de afspraak te plannen, of wijs af om de plek vrij te geven.",
+      "approve": "Accepteren",
+      "reject": "Afwijzen",
+      "approveFailed": "Accepteren mislukt. Probeer opnieuw.",
+      "rejectFailed": "Afwijzen mislukt. Probeer opnieuw."
+    },
+    "acceptor": {
+      "waitingTitle": "Wachten op reactie",
+      "waitingBody": "{{name}} accepteert of wijst je take-on af. Je krijgt een push zodra ze beslissen.",
+      "rejectedTitle": "Take-on afgewezen",
+      "rejectedBody": "{{name}} heeft deze afgewezen. Je kunt nog steeds een andere challenge pakken."
     }
   },
   "locked": {

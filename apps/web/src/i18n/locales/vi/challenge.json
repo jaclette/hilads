@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Nhận thử thách này",
       "creatorWaiting": "Đang chờ ai đó nhận",
+      "creatorReviewPending": "Phản hồi yêu cầu của {{name}} →",
+      "acceptorAwaitingReview": "Đang chờ {{name}} phản hồi",
       "proposeDate": "Đề xuất một ngày →",
       "dateAwaiting": "Đang chờ người tạo duyệt",
       "approveDate": "Một ngày đã được đề xuất →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Đang chờ {{name}} xác nhận",
       "accomplished": "Đã hoàn thành thử thách 🎉",
       "closed": "Thử thách đã đóng"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} muốn nhận thử thách của bạn",
+      "pendingBody": "Chấp nhận để bắt đầu chat và lên kế hoạch gặp nhau, hoặc từ chối để giải phóng chỗ.",
+      "approve": "Chấp nhận",
+      "reject": "Từ chối",
+      "approveFailed": "Không chấp nhận được. Thử lại nhé.",
+      "rejectFailed": "Không từ chối được. Thử lại nhé."
+    },
+    "acceptor": {
+      "waitingTitle": "Đang chờ phản hồi",
+      "waitingBody": "{{name}} sẽ chấp nhận hoặc từ chối yêu cầu của bạn. Bạn sẽ nhận thông báo khi họ quyết định.",
+      "rejectedTitle": "Yêu cầu bị từ chối",
+      "rejectedBody": "{{name}} đã từ chối cái này. Bạn vẫn có thể chọn thử thách khác."
     }
   },
   "locked": {

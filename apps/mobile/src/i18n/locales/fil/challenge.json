@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Tanggapin ang challenge",
       "creatorWaiting": "Hinihintay na may tumanggap",
+      "creatorReviewPending": "I-review ang request ni {{name}} →",
+      "acceptorAwaitingReview": "Hinihintay si {{name}} mag-review",
       "proposeDate": "Mag-suggest ng petsa →",
       "dateAwaiting": "Hinihintay ang approval ng creator",
       "approveDate": "May naka-propose na petsa →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
       "accomplished": "Tapos na ang challenge 🎉",
       "closed": "Sarado na ang challenge"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "Gusto ni {{name}} tanggapin ang challenge mo",
+      "pendingBody": "Tanggapin para makapag-chat at mag-plano ng meet-up, o i-reject para ma-free ang slot.",
+      "approve": "Tanggapin",
+      "reject": "I-reject",
+      "approveFailed": "Hindi natanggap. Subukan ulit.",
+      "rejectFailed": "Hindi na-reject. Subukan ulit."
+    },
+    "acceptor": {
+      "waitingTitle": "Hinihintay ang sagot",
+      "waitingBody": "Tatanggapin o ire-reject ni {{name}} ang take-on mo. Ma-notify ka pag nag-decide na sila.",
+      "rejectedTitle": "Na-reject ang take-on",
+      "rejectedBody": "Na-reject ni {{name}} 'to. Pwede ka pa rin pumili ng ibang challenge."
     }
   },
   "locked": {

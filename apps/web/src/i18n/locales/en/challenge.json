@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Take on the challenge",
       "creatorWaiting": "Waiting for someone to take it on",
+      "creatorReviewPending": "Review {{name}}'s take-on request →",
+      "acceptorAwaitingReview": "Waiting for {{name}} to review",
       "proposeDate": "Propose a date →",
       "dateAwaiting": "Waiting for the creator to approve",
       "approveDate": "A date has been proposed →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Waiting for {{name}} to confirm",
       "accomplished": "Challenge accomplished 🎉",
       "closed": "Challenge closed"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} wants to take on your challenge",
+      "pendingBody": "Accept to start chatting and planning the meet-up, or reject to free the slot.",
+      "approve": "Accept",
+      "reject": "Reject",
+      "approveFailed": "Couldn't accept. Try again.",
+      "rejectFailed": "Couldn't reject. Try again."
+    },
+    "acceptor": {
+      "waitingTitle": "Waiting for review",
+      "waitingBody": "{{name}} will accept or reject your take-on. You'll get a push when they decide.",
+      "rejectedTitle": "Take-on declined",
+      "rejectedBody": "{{name}} declined this one. You can still pick another challenge."
     }
   },
   "locked": {

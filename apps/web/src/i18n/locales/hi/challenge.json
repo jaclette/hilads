@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "चैलेंज स्वीकारें",
       "creatorWaiting": "कोई इसे स्वीकारे इसका इंतज़ार है",
+      "creatorReviewPending": "{{name}} की रिक्वेस्ट का जवाब दें →",
+      "acceptorAwaitingReview": "{{name}} के जवाब का इंतज़ार",
       "proposeDate": "एक तारीख सुझाएँ →",
       "dateAwaiting": "क्रिएटर की मंज़ूरी का इंतज़ार",
       "approveDate": "एक तारीख सुझाई गई है →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "{{name}} की पुष्टि का इंतज़ार",
       "accomplished": "चैलेंज पूरा 🎉",
       "closed": "चैलेंज बंद"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} आपकी चुनौती लेना चाहते हैं",
+      "pendingBody": "स्वीकार करें ताकि चैट शुरू हो और मिलने का प्लान बने, या रिजेक्ट करें ताकि जगह खाली हो।",
+      "approve": "स्वीकार करें",
+      "reject": "रिजेक्ट करें",
+      "approveFailed": "स्वीकार नहीं कर सके। फिर से कोशिश करें।",
+      "rejectFailed": "रिजेक्ट नहीं कर सके। फिर से कोशिश करें।"
+    },
+    "acceptor": {
+      "waitingTitle": "जवाब का इंतज़ार",
+      "waitingBody": "{{name}} आपकी रिक्वेस्ट स्वीकार या रिजेक्ट करेंगे। फैसले पर आपको नोटिफिकेशन मिलेगा।",
+      "rejectedTitle": "रिक्वेस्ट रिजेक्ट हो गई",
+      "rejectedBody": "{{name}} ने इसे रिजेक्ट कर दिया। आप कोई और चैलेंज भी ले सकते हैं।"
     }
   },
   "locked": {

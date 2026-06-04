@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Прими челлендж",
       "creatorWaiting": "Ждём, кто его примет",
+      "creatorReviewPending": "Ответь на запрос {{name}} →",
+      "acceptorAwaitingReview": "Ждём ответа от {{name}}",
       "proposeDate": "Предложи дату →",
       "dateAwaiting": "Ждём подтверждения автора",
       "approveDate": "Тебе предложили дату →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Ждём подтверждения от {{name}}",
       "accomplished": "Челлендж пройден 🎉",
       "closed": "Челлендж закрыт"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} хочет принять твой челлендж",
+      "pendingBody": "Прими, чтобы начать чат и договориться о встрече, или откажи, чтобы освободить место.",
+      "approve": "Принять",
+      "reject": "Отклонить",
+      "approveFailed": "Не удалось принять. Попробуй ещё раз.",
+      "rejectFailed": "Не удалось отклонить. Попробуй ещё раз."
+    },
+    "acceptor": {
+      "waitingTitle": "Ждём ответа",
+      "waitingBody": "{{name}} примет или отклонит твой запрос. Пришлём уведомление, когда он решит.",
+      "rejectedTitle": "Запрос отклонён",
+      "rejectedBody": "{{name}} отклонил этот. Можешь выбрать другой челлендж."
     }
   },
   "locked": {

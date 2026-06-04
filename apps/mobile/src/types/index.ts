@@ -91,7 +91,7 @@ export interface Topic {
 export type ChallengeType     = 'food' | 'place' | 'culture' | 'help';
 export type ChallengeAudience = 'locals' | 'explorers';
 export type ChallengeStatus   = 'open' | 'validated';
-export type ChallengeAcceptancePhase = 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected';
+export type ChallengeAcceptancePhase = 'pending' | 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected';
 
 /** One challenge_acceptances row — the per-relationship thread (PR2). */
 export interface ChallengeAcceptance {

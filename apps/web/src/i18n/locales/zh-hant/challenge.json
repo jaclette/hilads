@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "接下這個挑戰",
       "creatorWaiting": "等人來接挑戰",
+      "creatorReviewPending": "回覆 {{name}} 的請求 →",
+      "acceptorAwaitingReview": "等待 {{name}} 回覆",
       "proposeDate": "提議一個日期 →",
       "dateAwaiting": "等待發起人確認",
       "approveDate": "對方提議了一個日期 →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "等待 {{name}} 確認",
       "accomplished": "挑戰完成 🎉",
       "closed": "挑戰已關閉"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} 想接下你的挑戰",
+      "pendingBody": "接受就能開始聊天、約線下見面；拒絕就把名額放出來。",
+      "approve": "接受",
+      "reject": "拒絕",
+      "approveFailed": "接受失敗，請再試一次。",
+      "rejectFailed": "拒絕失敗，請再試一次。"
+    },
+    "acceptor": {
+      "waitingTitle": "等待回覆",
+      "waitingBody": "{{name}} 會接受或拒絕你的請求。決定後你會收到推播。",
+      "rejectedTitle": "請求被拒絕",
+      "rejectedBody": "{{name}} 拒絕了這次。你還可以挑別的挑戰。"
     }
   },
   "locked": {

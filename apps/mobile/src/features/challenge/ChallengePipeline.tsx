@@ -68,6 +68,22 @@ function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean, 
   const phase = acceptance.effective_phase ?? acceptance.phase;
   const cpName = acceptance.counterparty.displayName;
 
+  // PR5 — pending = creator hasn't reviewed the take-on request yet. The
+  // Accept dot is the active step; the sub-CTA differs by side (acceptor
+  // waits, creator reviews). Acceptor pipeline is otherwise indistinguishable
+  // from a "no-acceptance" visitor (intentional — they can't proceed).
+  if (phase === 'pending') {
+    return {
+      active: 'accept',
+      done: new Set<Step>(),
+      rejected: false,
+      subCtaKey: iAmCreator
+        ? 'pipeline.subcta.creatorReviewPending'
+        : 'pipeline.subcta.acceptorAwaitingReview',
+      subCtaName: cpName,
+    };
+  }
+
   if (phase === 'accepted') {
     const hasProposal = acceptance.proposed_starts_at != null;
     return {

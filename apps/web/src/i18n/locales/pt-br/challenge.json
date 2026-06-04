@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Topa o desafio",
       "creatorWaiting": "Esperando alguém topar",
+      "creatorReviewPending": "Responda o pedido de {{name}} →",
+      "acceptorAwaitingReview": "Esperando a resposta de {{name}}",
       "proposeDate": "Propõe uma data →",
       "dateAwaiting": "Esperando o criador aprovar",
       "approveDate": "Uma data foi proposta →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "Esperando {{name}} confirmar",
       "accomplished": "Desafio concluído 🎉",
       "closed": "Desafio encerrado"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} quer topar seu desafio",
+      "pendingBody": "Aceite pra começar a conversar e combinar o encontro, ou recuse pra liberar a vaga.",
+      "approve": "Aceitar",
+      "reject": "Recusar",
+      "approveFailed": "Não foi possível aceitar. Tente de novo.",
+      "rejectFailed": "Não foi possível recusar. Tente de novo."
+    },
+    "acceptor": {
+      "waitingTitle": "Esperando a resposta",
+      "waitingBody": "{{name}} vai aceitar ou recusar seu pedido. Você recebe uma notificação quando ele decidir.",
+      "rejectedTitle": "Pedido recusado",
+      "rejectedBody": "{{name}} recusou esse. Você ainda pode topar outro desafio."
     }
   },
   "locked": {

@@ -26,7 +26,7 @@ import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
-import { proposeDate as proposeDateApi } from '@/api/challenges';
+import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { MembersSheet } from '@/components/MembersSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -101,11 +101,24 @@ export default function ChallengeChatScreen() {
 
   // Probe whether I already have an acceptance for this challenge — drives
   // the Accept (+) button morph AND the lifecycle pipeline below.
+  // When the viewer is the CREATOR with multiple acceptances on this
+  // challenge (some pending, some active, some rejected), prefer pending
+  // ones so the review banner surfaces — otherwise the creator could miss a
+  // request because an older, in-progress thread sorts above.
   const loadMyAcceptance = useCallback(() => {
     if (!id || !account?.id) { setMyAcceptance(null); return; }
     fetchMyAcceptances()
       .then(threads => {
-        setMyAcceptance(threads.find(thr => thr.challenge_id === id) ?? null);
+        const mine = threads.filter(thr => thr.challenge_id === id);
+        if (mine.length === 0) { setMyAcceptance(null); return; }
+        const priority = (t: ChallengeThreadSummary): number => {
+          const p = t.effective_phase ?? t.phase;
+          if (p === 'pending') return 0;   // creator needs to review
+          if (p === 'accepted' || p === 'scheduled' || p === 'debrief') return 1;
+          return 2;                         // approved / rejected — terminal
+        };
+        const sorted = [...mine].sort((a, b) => priority(a) - priority(b));
+        setMyAcceptance(sorted[0]);
       })
       .catch(() => setMyAcceptance(null));
   }, [id, account?.id]);
@@ -266,8 +279,9 @@ export default function ChallengeChatScreen() {
     return () => { offA(); offC(); };
   }, [id, loadMyAcceptance]);
 
-  // PR3/4 — refresh on date/verdict changes (the schedule block + pipeline
-  // both render off myAcceptance, so we just reload it on any push).
+  // PR3/4/5 — refresh on date/verdict/take-on-review pushes. Schedule block
+  // + pipeline + locked-state branches all read off myAcceptance, so a
+  // single reload is enough.
   useEffect(() => {
     const onChange = () => loadMyAcceptance();
     const off1 = socket.on('challenge_date_proposed',     onChange);
@@ -275,7 +289,8 @@ export default function ChallengeChatScreen() {
     const off3 = socket.on('challenge_date_approved',     onChange);
     const off4 = socket.on('challenge_verdict_approved',  onChange);
     const off5 = socket.on('challenge_verdict_rejected',  onChange);
-    return () => { off1(); off2(); off3(); off4(); off5(); };
+    const off6 = socket.on('challenge_takeon_reviewed',   onChange);
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); };
   }, [loadMyAcceptance]);
 
   // ── Inline thread chat ───────────────────────────────────────────────────
@@ -630,7 +645,7 @@ export default function ChallengeChatScreen() {
         style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
         behavior="padding"
       >
-        {myAcceptance && account?.id ? (
+        {myAcceptance && account?.id && myAcceptance.phase !== 'pending' && myAcceptance.phase !== 'rejected' ? (
           <>
             <FlatList
               /* Filter out type='event' messages — they were auto-injected by
@@ -692,26 +707,100 @@ export default function ChallengeChatScreen() {
             />
           </>
         ) : (
-          /* No active thread — visitor (registered or guest), or a creator whose
-             challenge has zero acceptors yet. Locked empty state explains why
-             the chat is hidden + nudges the action that unlocks it. */
-          <View style={styles.lockedWrap}>
-            <Text style={styles.lockedEmoji}>{isFull ? '🚫' : '🔒'}</Text>
-            <Text style={styles.lockedTitle}>
-              {isOwner
-                ? t('locked.creator.title')
-                : isFull
-                  ? t('locked.full.title')
-                  : t('locked.visitor.title')}
-            </Text>
-            <Text style={styles.lockedBody}>
-              {isOwner
-                ? t('locked.creator.body')
-                : isFull
-                  ? t('locked.full.body')
-                  : t('locked.visitor.body')}
-            </Text>
-          </View>
+          /* Locked / pending / rejected state — chat is hidden. Branches:
+             - Creator + pending acceptance → review banner with accept/reject buttons.
+             - Acceptor + pending           → "Waiting for review" state.
+             - Acceptor + rejected          → "Your take-on was declined" state.
+             - Visitor + cap full           → "Challenge full" state.
+             - Visitor + free slots         → "Take on the challenge" nudge.
+             - Creator + no acceptances     → "Waiting for someone to take it on" state. */
+          (() => {
+            const isPending  = myAcceptance?.phase === 'pending';
+            const isRejected = myAcceptance?.phase === 'rejected';
+
+            // Creator side — a pending request awaiting their review. Inline
+            // Accept / Reject buttons. Tapping fires the API, the WS push
+            // refreshes loadMyAcceptance, and the panel morphs into the chat.
+            if (isOwner && isPending && myAcceptance) {
+              const acceptorName = myAcceptance.counterparty.displayName || '?';
+              return (
+                <View style={styles.lockedWrap}>
+                  <Text style={styles.lockedEmoji}>🤝</Text>
+                  <Text style={styles.lockedTitle}>
+                    {t('takeon.creator.pendingTitle', { name: acceptorName })}
+                  </Text>
+                  <Text style={styles.lockedBody}>
+                    {t('takeon.creator.pendingBody', { name: acceptorName })}
+                  </Text>
+                  <View style={styles.takeonReviewActions}>
+                    <TouchableOpacity
+                      style={styles.takeonRejectBtn}
+                      onPress={async () => {
+                        try { await rejectTakeOn(myAcceptance.id); loadMyAcceptance(); }
+                        catch { Alert.alert(t('takeon.creator.rejectFailed')); }
+                      }}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.takeonRejectText}>{t('takeon.creator.reject')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.takeonAcceptBtn}
+                      onPress={async () => {
+                        try { await approveTakeOn(myAcceptance.id); loadMyAcceptance(); }
+                        catch { Alert.alert(t('takeon.creator.approveFailed')); }
+                      }}
+                      activeOpacity={0.85}
+                    >
+                      <Text style={styles.takeonAcceptText}>{t('takeon.creator.approve')}</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            }
+
+            // Acceptor — pending / rejected states.
+            if (!isOwner && isPending) {
+              const creatorName = myAcceptance?.counterparty.displayName || '?';
+              return (
+                <View style={styles.lockedWrap}>
+                  <Text style={styles.lockedEmoji}>⏳</Text>
+                  <Text style={styles.lockedTitle}>{t('takeon.acceptor.waitingTitle')}</Text>
+                  <Text style={styles.lockedBody}>{t('takeon.acceptor.waitingBody', { name: creatorName })}</Text>
+                </View>
+              );
+            }
+            if (!isOwner && isRejected) {
+              const creatorName = myAcceptance?.counterparty.displayName || '?';
+              return (
+                <View style={styles.lockedWrap}>
+                  <Text style={styles.lockedEmoji}>✕</Text>
+                  <Text style={styles.lockedTitle}>{t('takeon.acceptor.rejectedTitle')}</Text>
+                  <Text style={styles.lockedBody}>{t('takeon.acceptor.rejectedBody', { name: creatorName })}</Text>
+                </View>
+              );
+            }
+
+            // Default — visitor or empty-creator state.
+            return (
+              <View style={styles.lockedWrap}>
+                <Text style={styles.lockedEmoji}>{isFull ? '🚫' : '🔒'}</Text>
+                <Text style={styles.lockedTitle}>
+                  {isOwner
+                    ? t('locked.creator.title')
+                    : isFull
+                      ? t('locked.full.title')
+                      : t('locked.visitor.title')}
+                </Text>
+                <Text style={styles.lockedBody}>
+                  {isOwner
+                    ? t('locked.creator.body')
+                    : isFull
+                      ? t('locked.full.body')
+                      : t('locked.visitor.body')}
+                </Text>
+              </View>
+            );
+          })()
         )}
       </KeyboardAvoidingView>
 
@@ -942,4 +1031,30 @@ const styles = StyleSheet.create({
   lockedEmoji: { fontSize: 40, opacity: 0.7 },
   lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'center' },
   lockedBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', maxWidth: 320 },
+
+  // PR5 — creator's review banner inside the locked state. Inline Reject /
+  // Accept buttons let the creator triage without leaving the challenge page.
+  takeonReviewActions: {
+    flexDirection: 'row',
+    gap:           Spacing.sm,
+    marginTop:     Spacing.md,
+  },
+  takeonRejectBtn: {
+    paddingHorizontal: 16,
+    paddingVertical:   10,
+    borderRadius:      999,
+    backgroundColor:   'rgba(255,255,255,0.06)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.12)',
+  },
+  takeonRejectText: { color: Colors.muted, fontSize: FontSizes.sm, fontWeight: '700' },
+  takeonAcceptBtn: {
+    paddingHorizontal: 16,
+    paddingVertical:   10,
+    borderRadius:      999,
+    backgroundColor:   '#FF7A3C',
+    borderWidth:       1,
+    borderColor:       '#FF7A3C',
+  },
+  takeonAcceptText: { color: '#fff', fontSize: FontSizes.sm, fontWeight: '800' },
 });

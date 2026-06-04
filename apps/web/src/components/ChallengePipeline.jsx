@@ -34,6 +34,19 @@ function derive(acceptance, iAmCreator, locale) {
   const phase  = acceptance.effective_phase ?? acceptance.phase
   const cpName = acceptance.counterparty.displayName
 
+  // PR5 — pending = creator hasn't reviewed the take-on request yet.
+  if (phase === 'pending') {
+    return {
+      active: 'accept',
+      done: new Set(),
+      rejected: false,
+      subCtaKey: iAmCreator
+        ? 'pipeline.subcta.creatorReviewPending'
+        : 'pipeline.subcta.acceptorAwaitingReview',
+      subCtaName: cpName,
+    }
+  }
+
   if (phase === 'accepted') {
     const hasProposal = acceptance.proposed_starts_at != null
     return {

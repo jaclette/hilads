@@ -338,6 +338,30 @@ class MessageRepository
         ];
     }
 
+    /**
+     * Generic system message — used for in-thread audit lines like
+     * "✅ X accepted your take-on" / "✕ X declined your take-on" on the
+     * challenge take-on flow. `event` is a label that lets clients style or
+     * filter the bubble; content is the user-visible text. channel_id can be
+     * either an int (city) or a 16-char hex (thread channels).
+     */
+    public static function addSystemMessage(int|string $channelId, string $content, string $event = 'system'): array
+    {
+        $id = bin2hex(random_bytes(8));
+        Database::pdo()->prepare("
+            INSERT INTO messages (id, channel_id, type, event, content, nickname)
+            VALUES (?, ?, 'system', ?, ?, '')
+        ")->execute([$id, self::dbKey($channelId), $event, $content]);
+
+        return [
+            'id'        => $id,
+            'type'      => 'system',
+            'event'     => $event,
+            'content'   => $content,
+            'createdAt' => time(),
+        ];
+    }
+
     public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null): array
     {
         $id = bin2hex(random_bytes(8));

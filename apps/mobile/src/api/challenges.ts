@@ -222,6 +222,26 @@ export async function approveDate(acceptanceId: string): Promise<{ acceptance: C
   );
 }
 
+// ── PR5: pending take-on review (creator only) ──────────────────────────────
+
+/** Creator approves a pending take-on request → phase 'pending' → 'accepted'.
+ *  Unlocks the thread chat for the acceptor + pushes them. */
+export async function approveTakeOn(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance }> {
+  return api.post<{ acceptance: ChallengeAcceptance }>(
+    `/acceptances/${acceptanceId}/approve-takeon`,
+    {},
+  );
+}
+
+/** Creator declines a pending take-on request → phase 'pending' → 'rejected'.
+ *  Acceptor is notified. The slot reopens (rejected rows don't count). */
+export async function rejectTakeOn(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance }> {
+  return api.post<{ acceptance: ChallengeAcceptance }>(
+    `/acceptances/${acceptanceId}/reject-takeon`,
+    {},
+  );
+}
+
 // ── PR4: debrief verdict (creator only, after meetup ends) ──────────────────
 
 /** Creator approves the take-on as accomplished (post-debrief). Final state. */

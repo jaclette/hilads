@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "チャレンジを受ける",
       "creatorWaiting": "誰かが受けてくれるのを待っています",
+      "creatorReviewPending": "{{name}}さんのリクエストに返事しよう →",
+      "acceptorAwaitingReview": "{{name}}さんの返事を待っています",
       "proposeDate": "日程を提案する →",
       "dateAwaiting": "作成者の承認待ち",
       "approveDate": "日程が提案されました →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
       "accomplished": "チャレンジ達成 🎉",
       "closed": "チャレンジを終了しました"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}}さんがあなたのチャレンジを受けたいと言っています",
+      "pendingBody": "承認すればチャットを開始して会う日を決められます。断ると枠が再びオープンになります。",
+      "approve": "承認する",
+      "reject": "断る",
+      "approveFailed": "承認できませんでした。もう一度お試しください。",
+      "rejectFailed": "断れませんでした。もう一度お試しください。"
+    },
+    "acceptor": {
+      "waitingTitle": "返事を待っています",
+      "waitingBody": "{{name}}さんがあなたのリクエストに返事します。決まったらプッシュ通知が届きます。",
+      "rejectedTitle": "リクエストが断られました",
+      "rejectedBody": "{{name}}さんはこれを断りました。別のチャレンジを受けることもできます。"
     }
   },
   "locked": {

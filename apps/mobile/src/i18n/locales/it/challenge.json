@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Accetta la sfida",
       "creatorWaiting": "In attesa che qualcuno la accetti",
+      "creatorReviewPending": "Rispondi alla richiesta di {{name}} →",
+      "acceptorAwaitingReview": "In attesa della risposta di {{name}}",
       "proposeDate": "Proponi una data →",
       "dateAwaiting": "In attesa dell'approvazione del creatore",
       "approveDate": "È stata proposta una data →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "In attesa che {{name}} confermi",
       "accomplished": "Sfida superata 🎉",
       "closed": "Sfida chiusa"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} vuole accettare la tua sfida",
+      "pendingBody": "Accetta per iniziare a chattare e organizzare l'incontro, o rifiuta per liberare il posto.",
+      "approve": "Accetta",
+      "reject": "Rifiuta",
+      "approveFailed": "Impossibile accettare. Riprova.",
+      "rejectFailed": "Impossibile rifiutare. Riprova."
+    },
+    "acceptor": {
+      "waitingTitle": "In attesa della risposta",
+      "waitingBody": "{{name}} accetterà o rifiuterà il tuo take-on. Riceverai una notifica appena decide.",
+      "rejectedTitle": "Take-on rifiutato",
+      "rejectedBody": "{{name}} ha rifiutato questo. Puoi sempre sceglierne un'altra."
     }
   },
   "locked": {

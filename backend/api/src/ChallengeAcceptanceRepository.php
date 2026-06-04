@@ -286,11 +286,16 @@ class ChallengeAcceptanceRepository
                 VALUES (:id, 'challenge_thread', :parent_id, 'thread', 'active', now(), now())
             ")->execute(['id' => $threadId, 'parent_id' => $challengeId]);
 
+            // phase='pending' — the creator must approve the take-on request
+            // before the acceptor can chat. The thread channel is created
+            // upfront (so the WS room exists for both parties) but the chat
+            // surface is gated by phase on the client. Flips to 'accepted'
+            // via approveTakeOn() or to 'rejected' via rejectTakeOn().
             $pdo->prepare("
                 INSERT INTO challenge_acceptances
                     (id, challenge_id, acceptor_user_id, thread_channel_id, phase, created_at, updated_at)
                 VALUES
-                    (:id, :cid, :uid, :tcid, 'accepted', now(), now())
+                    (:id, :cid, :uid, :tcid, 'pending', now(), now())
             ")->execute([
                 'id'   => $accId,
                 'cid'  => $challengeId,
@@ -304,6 +309,45 @@ class ChallengeAcceptanceRepository
             $pdo->rollBack();
             throw $e;
         }
+    }
+
+    // ── PR5: pending take-on review (creator approve / reject) ───────────────
+
+    /**
+     * Creator approves a pending take-on request. Flips phase='pending' →
+     * 'accepted', unlocking the thread chat for the acceptor.
+     *
+     * Caller MUST enforce: caller is the challenge creator, phase='pending'.
+     * Returns the updated acceptance row, or null if it can't be flipped
+     * (already accepted, rejected, or missing).
+     */
+    public static function approveTakeOn(string $acceptanceId): ?array
+    {
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET phase      = 'accepted',
+                updated_at = now()
+            WHERE id = :id AND phase = 'pending'
+        ")->execute(['id' => $acceptanceId]);
+        return self::findById($acceptanceId);
+    }
+
+    /**
+     * Creator rejects a pending take-on request. Flips phase='pending' →
+     * 'rejected', closing the thread without unlocking the chat. Mirrors
+     * approveTakeOn(); slot reopens because rejected rows don't count
+     * against the cap (countByChallenge excludes them).
+     */
+    public static function rejectTakeOn(string $acceptanceId): ?array
+    {
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET phase       = 'rejected',
+                rejected_at = now(),
+                updated_at  = now()
+            WHERE id = :id AND phase = 'pending'
+        ")->execute(['id' => $acceptanceId]);
+        return self::findById($acceptanceId);
     }
 
     // ── PR3: date concertation ────────────────────────────────────────────────

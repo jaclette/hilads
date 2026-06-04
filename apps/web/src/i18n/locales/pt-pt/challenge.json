@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Aceita o desafio",
       "creatorWaiting": "À espera que alguém aceite",
+      "creatorReviewPending": "Responde ao pedido de {{name}} →",
+      "acceptorAwaitingReview": "À espera da resposta de {{name}}",
       "proposeDate": "Propõe uma data →",
       "dateAwaiting": "À espera da aprovação do criador",
       "approveDate": "Foi proposta uma data →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "À espera que {{name}} confirme",
       "accomplished": "Desafio cumprido 🎉",
       "closed": "Desafio encerrado"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} quer aceitar o teu desafio",
+      "pendingBody": "Aceita para começar a falar e combinar o encontro, ou recusa para libertar a vaga.",
+      "approve": "Aceitar",
+      "reject": "Recusar",
+      "approveFailed": "Não foi possível aceitar. Tenta novamente.",
+      "rejectFailed": "Não foi possível recusar. Tenta novamente."
+    },
+    "acceptor": {
+      "waitingTitle": "À espera da resposta",
+      "waitingBody": "{{name}} vai aceitar ou recusar o teu pedido. Recebes uma notificação quando decidir.",
+      "rejectedTitle": "Pedido recusado",
+      "rejectedBody": "{{name}} recusou este. Podes sempre aceitar outro desafio."
     }
   },
   "locked": {

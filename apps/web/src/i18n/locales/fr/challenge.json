@@ -210,6 +210,8 @@
     "subcta": {
       "tapToAccept": "Relève le défi",
       "creatorWaiting": "En attente d'un voyageur",
+      "creatorReviewPending": "Réponds à la demande de {{name}} →",
+      "acceptorAwaitingReview": "En attente de la réponse de {{name}}",
       "proposeDate": "Propose une date →",
       "dateAwaiting": "En attente de validation du créateur",
       "approveDate": "Une date a été proposée →",
@@ -218,6 +220,22 @@
       "acceptorWaitingVerdict": "En attente de la validation de {{name}}",
       "accomplished": "Défi relevé 🎉",
       "closed": "Défi clôturé"
+    }
+  },
+  "takeon": {
+    "creator": {
+      "pendingTitle": "{{name}} veut relever ton défi",
+      "pendingBody": "Accepte pour démarrer la conversation et fixer le rendez-vous, ou refuse pour libérer la place.",
+      "approve": "Accepter",
+      "reject": "Refuser",
+      "approveFailed": "Impossible d'accepter. Réessaie.",
+      "rejectFailed": "Impossible de refuser. Réessaie."
+    },
+    "acceptor": {
+      "waitingTitle": "En attente de la réponse",
+      "waitingBody": "{{name}} va accepter ou refuser ton défi. Tu recevras une notification quand ce sera décidé.",
+      "rejectedTitle": "Défi refusé",
+      "rejectedBody": "{{name}} a refusé celui-ci. Tu peux toujours en relever un autre."
     }
   },
   "locked": {
