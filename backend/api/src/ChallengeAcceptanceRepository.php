@@ -143,21 +143,58 @@ class ChallengeAcceptanceRepository
     }
 
     /**
-     * 1:1 gate — true iff this challenge currently has a non-terminal
-     * acceptance (pending / accepted / scheduled / debrief). Used by the
-     * /accept route to refuse a new take-on while one is in progress.
+     * Ghost-grace window — number of days a `scheduled` acceptance keeps
+     * holding the challenge after its meet-up end has passed with no
+     * verdict. Past this, the challenge frees back to available so a new
+     * traveler can take it on.
+     *
+     * Configurable here, intentionally a single source of truth (the EXISTS
+     * sub-select in ChallengeRepository::SELECT mirrors this value via
+     * IS_ACTIVE_SQL below — keep them in sync). Lower this to 3–4 in low-
+     * volume cities if challenges feel stuck too long; raise it for richer
+     * cities where verdicts arrive lazily.
+     */
+    public const GHOST_GRACE_DAYS = 7;
+
+    /**
+     * SQL fragment that selects "active" acceptances for the 1:1 gate.
+     *
+     * Active means: NOT in a terminal phase, AND not a ghosted scheduled row.
+     * A scheduled row is ghosted when its meet-up end (or start, if no end)
+     * is older than GHOST_GRACE_DAYS — i.e., the creator never marked a
+     * verdict and we don't want to lock the challenge forever. Pending /
+     * accepted rows never auto-ghost (no date yet to measure against).
+     *
+     * Used both here (hasActiveAcceptance) and in ChallengeRepository's
+     * `is_in_progress` EXISTS sub-select. Keep both call sites pointing at
+     * this same fragment so the gate and the UI never disagree.
+     *
+     * Caller must alias the table as `ca` in the surrounding query.
+     */
+    public const IS_ACTIVE_SQL = "
+        ca.phase NOT IN ('approved', 'rejected')
+        AND (
+            ca.phase <> 'scheduled'
+            OR COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) IS NULL
+            OR COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) >= now() - interval '" . self::GHOST_GRACE_DAYS . " days'
+        )
+    ";
+
+    /**
+     * 1:1 gate — true iff this challenge currently has an "active" acceptance
+     * (see IS_ACTIVE_SQL above). Used by the /accept route to refuse a new
+     * take-on while one is in progress.
      *
      * `approved` and `rejected` are terminal — they free the challenge back
-     * to available. `debrief` is still active because the meet-up is in
-     * flight; commit 3 will treat long-stale debrief as freed via a
-     * configurable grace window.
+     * to available. `scheduled` rows whose meet-up time is more than
+     * GHOST_GRACE_DAYS in the past are also treated as freed (ghosted taker).
      */
     public static function hasActiveAcceptance(string $challengeId): bool
     {
         $stmt = Database::pdo()->prepare("
-            SELECT 1 FROM challenge_acceptances
-            WHERE challenge_id = :id
-              AND phase NOT IN ('approved', 'rejected')
+            SELECT 1 FROM challenge_acceptances ca
+            WHERE ca.challenge_id = :id
+              AND " . self::IS_ACTIVE_SQL . "
             LIMIT 1
         ");
         $stmt->execute(['id' => $challengeId]);

@@ -29,9 +29,13 @@ class ChallengeRepository
 
     // ── Shared SELECT (challenge + message stats) ─────────────────────────────
 
-    // is_in_progress: true iff the challenge has a non-terminal acceptance
-    // (1:1 model — the slot is busy). EXISTS sub-select runs once per row;
-    // bounded by the LIMIT on the parent query (egress-safe).
+    // is_in_progress: true iff the challenge has an active acceptance
+    // (1:1 model — the slot is busy). The "active" rule is shared with
+    // ChallengeAcceptanceRepository::hasActiveAcceptance() via the
+    // IS_ACTIVE_SQL constant — both call sites stay aligned, so the UI flag
+    // and the /accept gate never disagree on what counts as in-progress.
+    // EXISTS sub-select runs once per row; bounded by the LIMIT on the
+    // parent query (egress-safe).
     private const SELECT = "
         SELECT
             c.id,
@@ -51,7 +55,7 @@ class ChallengeRepository
             EXISTS (
                 SELECT 1 FROM challenge_acceptances ca
                 WHERE ca.challenge_id = cc.channel_id
-                  AND ca.phase NOT IN ('approved', 'rejected')
+                  AND " . \ChallengeAcceptanceRepository::IS_ACTIVE_SQL . "
             )                                                       AS is_in_progress
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id

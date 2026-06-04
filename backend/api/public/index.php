@@ -57,6 +57,9 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/EventRedirectRepository.php';
     require_once __DIR__ . '/../src/Geocoder.php';
     require_once __DIR__ . '/../src/TopicRepository.php';
+    // Order matters: ChallengeAcceptanceRepository defines IS_ACTIVE_SQL,
+    // which ChallengeRepository's SELECT const references at class-load time.
+    require_once __DIR__ . '/../src/ChallengeAcceptanceRepository.php';
     require_once __DIR__ . '/../src/ChallengeRepository.php';
     require_once __DIR__ . '/../src/R2Uploader.php';
     // Push broadcast page needs these — both for the page itself and for the
@@ -164,8 +167,12 @@ require_once __DIR__ . '/../src/PlacesService.php';
 require_once __DIR__ . '/../src/VenueSeeder.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/TopicRepository.php';
-require_once __DIR__ . '/../src/ChallengeRepository.php';
+// ChallengeAcceptanceRepository loads first because ChallengeRepository's
+// private const SELECT references its IS_ACTIVE_SQL constant at class-load
+// time. Flipping the order yields a "class not found" fatal during
+// parse-time constant evaluation.
 require_once __DIR__ . '/../src/ChallengeAcceptanceRepository.php';
+require_once __DIR__ . '/../src/ChallengeRepository.php';
 require_once __DIR__ . '/../src/VibeRepository.php';
 require_once __DIR__ . '/../src/ConversationRepository.php';
 require_once __DIR__ . '/../src/FriendRequestRepository.php';
