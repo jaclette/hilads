@@ -10,17 +10,17 @@ import { useTranslation } from 'react-i18next'
 const STEPS  = ['accept', 'date', 'meet', 'wrap']
 const ICONS  = { accept: '🤝', date: '📅', meet: '👋', wrap: '✨' }
 
-// Compact "Sat, Jun 6 · 9:30 PM" for the pipeline sub-CTA. The scheduled-
-// band uses a more verbose formatter (includes venue); this one is just for
-// the one-line preview.
-function formatMeetupDate(unixSeconds) {
+// Compact "sam. 6 juin · 21:30" — locale-aware via Intl using the active
+// i18n language (NOT undefined, which falls back to the device locale and
+// reads English even for French-speaking users).
+function formatMeetupDate(unixSeconds, locale) {
   const d = new Date(unixSeconds * 1000)
-  const day  = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
-  const time = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })
+  const day  = d.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' })
+  const time = d.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' })
   return `${day} · ${time}`
 }
 
-function derive(acceptance, iAmCreator) {
+function derive(acceptance, iAmCreator, locale) {
   if (!acceptance) {
     // Visitors don't get a sub-CTA here — the participants row below has the
     // labeled "Take on the challenge" button. Two prompts read as a repeat.
@@ -51,7 +51,7 @@ function derive(acceptance, iAmCreator) {
       done: new Set(['accept', 'date']),
       rejected: false,
       subCtaKey: 'pipeline.subcta.meetSoon',
-      subCtaDate: acceptance.proposed_starts_at ? formatMeetupDate(acceptance.proposed_starts_at) : undefined,
+      subCtaDate: acceptance.proposed_starts_at ? formatMeetupDate(acceptance.proposed_starts_at, locale) : undefined,
     }
   }
   if (phase === 'debrief') {
@@ -70,8 +70,8 @@ function derive(acceptance, iAmCreator) {
 }
 
 export default function ChallengePipeline({ acceptance, iAmCreator, onClick }) {
-  const { t }   = useTranslation('challenge')
-  const state   = derive(acceptance, iAmCreator)
+  const { t, i18n } = useTranslation('challenge')
+  const state   = derive(acceptance, iAmCreator, i18n.language)
   const interactive = !!onClick && !!acceptance
 
   return (
@@ -92,10 +92,13 @@ export default function ChallengePipeline({ acceptance, iAmCreator, onClick }) {
           const connectorLit = state.done.has(STEPS[i - 1]) || state.active === step
           return (
             <div key={step} style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {/* Connector from prev dot */}
+              {/* Connector from prev dot — inset by DOT_RADIUS so the line
+                  stops at each dot's edge instead of crossing through. The
+                  dot is 30px wide, so half-width = 15. */}
               {i > 0 && (
                 <div style={{
                   position: 'absolute', top: 14, left: '-50%', right: '50%', height: 2,
+                  marginLeft: 15, marginRight: 15,
                   background: connectorLit ? '#FF7A3C' : 'rgba(255,255,255,0.10)',
                 }} />
               )}

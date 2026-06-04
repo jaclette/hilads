@@ -621,7 +621,7 @@ export default function ChallengeChatPage({
                 <span>{t('thread.empty')}</span>
               </div>
             )}
-            {messages.map((m, idx) => {
+            {messages.filter(m => m.type !== 'event').map((m, idx) => {
               const isMine    = (account?.id && m.userId === account.id) || (account?.id && m.guestId === account.id)
               const prev      = messages[idx - 1]
               const isGrouped = prev && (prev.userId === m.userId || prev.guestId === m.guestId)

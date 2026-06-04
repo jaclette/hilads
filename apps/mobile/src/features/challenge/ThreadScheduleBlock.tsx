@@ -36,7 +36,8 @@ export function ThreadScheduleBlock({
   onChange: () => void;
   hideEmptyCta?: boolean;
 }) {
-  const { t }  = useTranslation('challenge');
+  const { t, i18n }  = useTranslation('challenge');
+  const locale = i18n.language;
   const [busy, setBusy] = useState<'propose' | 'approve' | 'withdraw' | 'verdict' | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -134,7 +135,7 @@ export function ThreadScheduleBlock({
           <View style={styles.bandTextWrap}>
             <Text style={styles.bandTitleScheduled}>{t('schedule.scheduled.title')}</Text>
             <Text style={styles.bandSubtitle} numberOfLines={2}>
-              {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
+              {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue, locale, t)}
             </Text>
           </View>
           <TouchableOpacity
@@ -228,7 +229,7 @@ export function ThreadScheduleBlock({
         <View style={styles.bandTextWrap}>
           <Text style={styles.bandTitleScheduled}>{t('debrief.approved.title')}</Text>
           {thread.approved_at && (
-            <Text style={styles.bandSubtitle}>{formatVerdictDate(thread.approved_at)}</Text>
+            <Text style={styles.bandSubtitle}>{formatVerdictDate(thread.approved_at, locale)}</Text>
           )}
         </View>
       </View>
@@ -243,7 +244,7 @@ export function ThreadScheduleBlock({
         <View style={styles.bandTextWrap}>
           <Text style={styles.bandTitle}>{t('debrief.rejected.title')}</Text>
           {thread.rejected_at && (
-            <Text style={styles.bandSubtitle}>{formatVerdictDate(thread.rejected_at)}</Text>
+            <Text style={styles.bandSubtitle}>{formatVerdictDate(thread.rejected_at, locale)}</Text>
           )}
         </View>
       </View>
@@ -292,7 +293,7 @@ export function ThreadScheduleBlock({
               : t('schedule.theyProposedTitle', { name: proposerName })}
           </Text>
           <Text style={styles.bandSubtitle} numberOfLines={2}>
-            {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
+            {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue, locale, t)}
           </Text>
         </View>
         <View style={styles.bandActions}>
@@ -335,23 +336,32 @@ export function ThreadScheduleBlock({
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatVerdictDate(unixSeconds: number): string {
+function formatVerdictDate(unixSeconds: number, locale: string): string {
   const d = new Date(unixSeconds * 1000);
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' · ' +
-         d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString(locale, { month: 'short', day: 'numeric' }) + ' · ' +
+         d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
 }
 
-function formatDateLine(startsAt: number | null, endsAt: number | null, venue: string | null): string {
+// `locale` + `t` are threaded in from the component so we render the date in
+// the i18n language (not the device locale, which is often English even for
+// French-speaking users). Today/Tomorrow read from existing schedule keys.
+function formatDateLine(
+  startsAt: number | null,
+  endsAt: number | null,
+  venue: string | null,
+  locale: string,
+  t: (key: string) => string,
+): string {
   if (!startsAt) return '';
   const d = new Date(startsAt * 1000);
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
   const dayMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   let dayLabel: string;
-  if (dayMidnight.getTime() === today.getTime())         dayLabel = 'Today';
-  else if (dayMidnight.getTime() === tomorrow.getTime()) dayLabel = 'Tomorrow';
-  else dayLabel = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-  const timeLabel = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  if (dayMidnight.getTime() === today.getTime())         dayLabel = t('schedule.today');
+  else if (dayMidnight.getTime() === tomorrow.getTime()) dayLabel = t('schedule.tomorrow');
+  else dayLabel = d.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
+  const timeLabel = d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   const base = `${dayLabel} · ${timeLabel}`;
   return venue ? `${base} · ${venue}` : base;
 }

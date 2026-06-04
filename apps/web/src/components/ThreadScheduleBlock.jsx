@@ -16,7 +16,8 @@ import DatePickerModal from './DatePickerModal'
  *   phase ∈ {debrief, approved, rejected}     → nothing (PR4)
  */
 export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEmptyCta = false }) {
-  const { t } = useTranslation('challenge')
+  const { t, i18n } = useTranslation('challenge')
+  const locale = i18n.language
   const [busy, setBusy] = useState(null)            // 'propose' | 'approve' | 'withdraw' | null
   const [pickerOpen, setPickerOpen] = useState(false)
   // Replaces the four window.alert / two window.confirm calls below.
@@ -102,7 +103,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('schedule.scheduled.title')}</div>
             <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-              {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
+              {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue, locale, t)}
             </div>
           </div>
           <button
@@ -178,7 +179,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
           <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('debrief.approved.title')}</div>
           {thread.approved_at && (
             <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-              {formatVerdictDate(thread.approved_at)}
+              {formatVerdictDate(thread.approved_at, locale)}
             </div>
           )}
         </div>
@@ -194,7 +195,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
           <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.rejected.title')}</div>
           {thread.rejected_at && (
             <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-              {formatVerdictDate(thread.rejected_at)}
+              {formatVerdictDate(thread.rejected_at, locale)}
             </div>
           )}
         </div>
@@ -253,7 +254,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
               : t('schedule.theyProposedTitle', { name: thread.counterparty.displayName })}
           </div>
           <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-            {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue)}
+            {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue, locale, t)}
           </div>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
@@ -307,23 +308,25 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
 
 // ── Helpers + inline styles ─────────────────────────────────────────────────
 
-function formatVerdictDate(unixSeconds) {
+function formatVerdictDate(unixSeconds, locale) {
   const d = new Date(unixSeconds * 1000)
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' · ' +
-         d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleDateString(locale, { month: 'short', day: 'numeric' }) + ' · ' +
+         d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
 }
 
-function formatDateLine(startsAt, endsAt, venue) {
+// `locale` + `t` threaded in so dates render in the i18n language. Today/
+// Tomorrow read from existing schedule.today / schedule.tomorrow keys.
+function formatDateLine(startsAt, endsAt, venue, locale, t) {
   if (!startsAt) return ''
   const d = new Date(startsAt * 1000)
   const today = new Date(); today.setHours(0, 0, 0, 0)
   const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1)
   const dayMidnight = new Date(d.getFullYear(), d.getMonth(), d.getDate())
   let dayLabel
-  if (dayMidnight.getTime() === today.getTime())         dayLabel = 'Today'
-  else if (dayMidnight.getTime() === tomorrow.getTime()) dayLabel = 'Tomorrow'
-  else dayLabel = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
-  const timeLabel = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+  if (dayMidnight.getTime() === today.getTime())         dayLabel = t('schedule.today')
+  else if (dayMidnight.getTime() === tomorrow.getTime()) dayLabel = t('schedule.tomorrow')
+  else dayLabel = d.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' })
+  const timeLabel = d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
   const base = `${dayLabel} · ${timeLabel}`
   return venue ? `${base} · ${venue}` : base
 }

@@ -633,7 +633,11 @@ export default function ChallengeChatScreen() {
         {myAcceptance && account?.id ? (
           <>
             <FlatList
-              data={messages}
+              /* Filter out type='event' messages — they were auto-injected by
+                 the old approveDate flow as "🎉 New event" cards. The flow
+                 was removed, but historical rows linger; the thread chat is
+                 not the place to surface event invites. */
+              data={messages.filter(m => m.type !== 'event')}
               keyExtractor={(m, i) => m.id ?? String(i)}
               renderItem={({ item, index }) => {
                 const olderMsg = messages[index + 1];

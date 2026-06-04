@@ -23,13 +23,15 @@ import type { ChallengeThreadSummary } from '@/types';
 type Step = 'accept' | 'date' | 'meet' | 'wrap';
 const STEPS: Step[] = ['accept', 'date', 'meet', 'wrap'];
 
-// Compact "Sat, Jun 6 · 9:30 PM" — locale-aware via Intl, kept short enough
-// to fit on a single sub-CTA line. The schedule band uses a more verbose
-// formatter (includes venue); this one is just for the pipeline preview.
-function formatMeetupDate(unixSeconds: number): string {
+// Compact "sam. 6 juin · 21:30" — locale-aware via Intl using the active
+// i18n language (NOT undefined which falls back to the device locale, which
+// is often English even for French-speaking users). Kept short enough to fit
+// on a single sub-CTA line. The schedule band uses a more verbose formatter
+// (includes venue); this one is just for the pipeline preview.
+function formatMeetupDate(unixSeconds: number, locale: string): string {
   const d = new Date(unixSeconds * 1000);
-  const day  = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-  const time = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  const day  = d.toLocaleDateString(locale, { weekday: 'short', month: 'short', day: 'numeric' });
+  const time = d.toLocaleTimeString(locale, { hour: 'numeric', minute: '2-digit' });
   return `${day} · ${time}`;
 }
 
@@ -49,7 +51,7 @@ interface PipelineState {
   subCtaDate?: string;
 }
 
-function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean): PipelineState {
+function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean, locale: string): PipelineState {
   if (!acceptance) {
     // Visitor or creator without an own acceptance — educational view only.
     // Visitors don't get a sub-CTA here: the participants row below already
@@ -84,7 +86,7 @@ function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean):
       rejected: false,
       subCtaKey: 'pipeline.subcta.meetSoon',
       subCtaDate: acceptance.proposed_starts_at
-        ? formatMeetupDate(acceptance.proposed_starts_at)
+        ? formatMeetupDate(acceptance.proposed_starts_at, locale)
         : undefined,
     };
   }
@@ -130,8 +132,8 @@ export function ChallengePipeline({
   iAmCreator: boolean;
   onPress?: () => void;
 }) {
-  const { t } = useTranslation('challenge');
-  const state = derive(acceptance, iAmCreator);
+  const { t, i18n } = useTranslation('challenge');
+  const state = derive(acceptance, iAmCreator, i18n.language);
   const interactive = !!onPress && !!acceptance;
 
   return (
@@ -216,12 +218,16 @@ const styles = StyleSheet.create({
     position:      'relative',
   },
 
-  // Connector line — sits behind the dot, drawn at the dot's vertical centre.
+  // Connector line — drawn between dots, NOT through them. left/right span
+  // from the centre of the prev dot to the centre of this dot; the
+  // margins inset by DOT_SIZE/2 so the line stops at each dot's edge.
   connector: {
     position:     'absolute',
     top:          DOT_SIZE / 2 - 1,
     left:         '-50%',
     right:        '50%',
+    marginLeft:   DOT_SIZE / 2,
+    marginRight:  DOT_SIZE / 2,
     height:       2,
     backgroundColor: Colors.border,
   },

@@ -42,7 +42,7 @@ class ChallengeAcceptanceRepository
         CASE
           WHEN ca.phase = 'scheduled'
                AND ca.proposed_starts_at IS NOT NULL
-               AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at + interval '2 hours') < now()
+               AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) < now()
             THEN 'debrief'
           ELSE ca.phase
         END
