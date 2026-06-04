@@ -1983,6 +1983,8 @@ export default function App() {
   function isReminderCard(item) {
     return item.type === 'event'
       || item.type === 'topic'
+      || item.type === 'challenge'
+      || item.type === 'challenge_validated'
       || (item.type === 'prompt' && item.subtype !== 'install')
       || (item.type === 'activity' && item.subtype === 'crowd')
   }
@@ -4188,9 +4190,28 @@ export default function App() {
             if (item.type === 'challenge') {
               const challenge = cityChallenges.find(c => c.id === item.challengeId)
               const textKey   = item.audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
+              // Status snapshot from the live challenge. Hidden for validated
+              // (the dedicated 'challenge_validated' pill above is the
+              // celebration). Three states: open / N-of-max / full.
+              let statusBadge = null
+              if (challenge && challenge.status !== 'validated') {
+                const cnt = challenge.participant_count ?? 0
+                const max = challenge.max_participants ?? 3
+                const [e, txt] = cnt >= max
+                  ? ['🚫', t('card.full', { ns: 'challenge' })]
+                  : cnt > 0
+                    ? ['🤝', `${cnt}/${max}`]
+                    : ['🔓', t('card.open', { ns: 'challenge' })]
+                statusBadge = (
+                  <span className="feed-prompt-status">{e} {txt}</span>
+                )
+              }
               return (
                 <div key={item.id} className={`feed-prompt feed-prompt--challenge${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
-                  <span className="feed-prompt-text">{t(textKey, { name: item.nickname, title: item.title })}</span>
+                  <span className="feed-prompt-text">
+                    {t(textKey, { name: item.nickname, title: item.title })}
+                    {statusBadge}
+                  </span>
                   <button
                     className="feed-prompt-btn"
                     onClick={() => challenge && setActiveChallenge(challenge)}

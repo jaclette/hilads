@@ -440,6 +440,9 @@ export default function ChatTab() {
             content:     c.title,
             nickname:    creatorName,
             audience:    c.audience,
+            challengeStatus: c.status,
+            challengeCount:  c.participant_count ?? 0,
+            challengeMax:    c.max_participants ?? 3,
             createdAt:   now,
           });
         }
@@ -461,6 +464,9 @@ export default function ChatTab() {
         content:     (ch?.title as string) ?? '',
         nickname:    (ch?.nickname as string) ?? '',
         audience:    (ch?.audience as 'locals' | 'explorers') ?? 'locals',
+        challengeStatus: (ch?.status as 'open' | 'validated') ?? 'open',
+        challengeCount:  (ch?.participant_count as number | undefined) ?? 0,
+        challengeMax:    (ch?.max_participants as number | undefined) ?? 3,
         createdAt:   Date.now() / 1000,
       }]);
     });

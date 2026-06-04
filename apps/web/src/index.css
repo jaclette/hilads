@@ -3641,6 +3641,22 @@ html, body, #root {
   white-space: pre-line;
 }
 
+/* Status badge appended to the challenge feed prompt — open / N/max / full.
+   Inline so it wraps naturally under the announcement text on narrow widths. */
+.feed-prompt-status {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 7px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted2, #b3b3b3);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
+}
+
 .feed-prompt-btn {
   background: var(--accent);
   color: #fff;

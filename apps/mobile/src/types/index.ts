@@ -352,6 +352,11 @@ export interface Message {
   topicId?: string;               // for type === 'topic' synthetic feed items
   challengeId?: string;           // for type === 'challenge' synthetic feed items
   audience?: 'locals' | 'explorers'; // for type === 'challenge': picks the locale-aware verb template
+  // Snapshot of the challenge's open/full state at the time the feed pill is
+  // emitted. Drives the small status badge inside the chat card.
+  challengeStatus?: 'open' | 'validated';
+  challengeCount?: number;
+  challengeMax?: number;
   primaryBadge?: Badge;           // identity badge (ghost/fresh/crew)
   contextBadge?: Badge | null;    // city-specific badge (host = Legend)
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)

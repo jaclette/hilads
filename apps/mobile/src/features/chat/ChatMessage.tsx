@@ -565,14 +565,36 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     const textKey = message.audience === 'explorers'
       ? 'bannerChallengeExplorers'
       : 'bannerChallengeLocals';
+    // Status snapshot baked into the message at synthesis time. Three states:
+    //   open + 0 acceptors    → 🔓 + "Open"
+    //   open + some, not full → 🤝 + "N/max"
+    //   open + full           → 🚫 + "Full"
+    //   validated             → no status pill (the validated celebration is
+    //                           its own message type)
+    const cCount = message.challengeCount ?? 0;
+    const cMax   = message.challengeMax   ?? 3;
+    let cEmoji: string | null = null;
+    let cLabel: string | null = null;
+    if (message.challengeStatus !== 'validated') {
+      if (cCount >= cMax)       { cEmoji = '🚫'; cLabel = t('card.full'); }
+      else if (cCount > 0)      { cEmoji = '🤝'; cLabel = `${cCount}/${cMax}`; }
+      else                      { cEmoji = '🔓'; cLabel = t('card.open'); }
+    }
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}
         <Animated.View style={[styles.eventRow, { opacity, transform: [{ translateY }] }]}>
           <View style={styles.challengePill}>
-            <Text style={styles.challengeText} numberOfLines={2}>
-              {t(textKey, { name: message.nickname, title: message.content })}
-            </Text>
+            <View style={{ flex: 1, minWidth: 0 }}>
+              <Text style={styles.challengeText} numberOfLines={2}>
+                {t(textKey, { name: message.nickname, title: message.content })}
+              </Text>
+              {cEmoji && (
+                <View style={styles.challengeStatusPill}>
+                  <Text style={styles.challengeStatusPillText}>{cEmoji} {cLabel}</Text>
+                </View>
+              )}
+            </View>
             <TouchableOpacity
               style={styles.challengeJoinBtn}
               activeOpacity={0.8}
@@ -1043,6 +1065,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 11,
     paddingVertical:   4,
     flexShrink:        0,
+  },
+  // Status sub-pill under the challenge text. Neutral so it doesn't compete
+  // with the orange challenge pill background; emoji carries the meaning.
+  challengeStatusPill: {
+    alignSelf:         'flex-start',
+    marginTop:         6,
+    backgroundColor:   'rgba(0,0,0,0.20)',
+    borderRadius:      999,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.10)',
+  },
+  challengeStatusPillText: {
+    fontSize:      10,
+    fontWeight:    '700',
+    color:         Colors.muted,
+    letterSpacing: 0.3,
   },
   challengeJoinText: {
     color:      '#fff',

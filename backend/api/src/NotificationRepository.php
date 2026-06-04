@@ -378,8 +378,13 @@ class NotificationRepository
     }
 
     /**
-     * Notify all registered participants of a challenge, excluding one user.
+     * Notify all registered acceptors of a challenge, excluding one user.
      * Used when the creator validates the challenge (fan-out to acceptors).
+     *
+     * Reads from challenge_acceptances (the new model — one row per take-on).
+     * The legacy challenge_participants table is no longer the source of truth
+     * for take-on relationships; reading it here meant nobody got a push when
+     * the creator marked the challenge accomplished.
      */
     public static function notifyChallengeParticipants(
         string  $challengeId,
@@ -390,10 +395,12 @@ class NotificationRepository
         array   $data
     ): void {
         $stmt = Database::pdo()->prepare("
-            SELECT DISTINCT user_id FROM challenge_participants
-            WHERE channel_id = ?
-              AND user_id IS NOT NULL
-              AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
+            SELECT DISTINCT acceptor_user_id AS user_id
+            FROM challenge_acceptances
+            WHERE challenge_id = ?
+              AND acceptor_user_id IS NOT NULL
+              AND phase <> 'rejected'
+              AND (CAST(? AS text) IS NULL OR acceptor_user_id::text != CAST(? AS text))
         ");
         $stmt->execute([$challengeId, $excludeUserId, $excludeUserId]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
