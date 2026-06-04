@@ -54,7 +54,12 @@ class ChallengeRepository
             EXTRACT(EPOCH FROM cc.created_at)::INTEGER             AS created_at,
             EXISTS (
                 SELECT 1 FROM challenge_acceptances ca
-                WHERE ca.challenge_id = cc.channel_id
+                -- Correlate on c.id (in every GROUP BY clause below) rather
+                -- than cc.channel_id — Postgres rejects ungrouped, non-
+                -- aggregated outer references with GROUP BY queries. The two
+                -- columns are equal via the JOIN; ca.challenge_id's FK
+                -- references channels(id) so either works semantically.
+                WHERE ca.challenge_id = c.id
                   AND " . \ChallengeAcceptanceRepository::IS_ACTIVE_SQL . "
             )                                                       AS is_in_progress
         FROM channels c
