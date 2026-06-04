@@ -36,6 +36,10 @@
   "acceptCta": "اقبل التحدي",
   "acceptedCta": "تم القبول ✓",
   "validatedBadge": "مُتحقق",
+  "card": {
+    "open": "متاح",
+    "full": "ممتلئ"
+  },
   "statusInProgress": "التحدي جارٍ",
   "statusAccomplished": "تم إنجاز التحدي",
   "openBadge": "مفتوح",

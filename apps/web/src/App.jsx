@@ -4796,11 +4796,26 @@ export default function App() {
                       </div>
                       <div className="er-badges">
                         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-                        {isValidated && (
+                        {isValidated ? (
                           <span className="challenge-badge challenge-badge--validated">
                             ✓ {t('validatedBadge', { ns: 'challenge' })}
                           </span>
-                        )}
+                        ) : (() => {
+                          // Status pill — open / N-of-max / full. Emoji carries
+                          // the meaning; the text complements it.
+                          const cnt = c.participant_count ?? 0
+                          const max = c.max_participants ?? 3
+                          const [e, txt] = cnt >= max
+                            ? ['🚫', t('card.full', { ns: 'challenge' })]
+                            : cnt > 0
+                              ? ['🤝', `${cnt}/${max}`]
+                              : ['🔓', t('card.open', { ns: 'challenge' })]
+                          return (
+                            <span className="challenge-badge challenge-badge--status">
+                              {e} {txt}
+                            </span>
+                          )
+                        })()}
                       </div>
                       <AttendeeAvatars
                         preview={c.participants_preview ?? []}

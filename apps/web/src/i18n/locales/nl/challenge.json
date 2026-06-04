@@ -36,6 +36,10 @@
   "acceptCta": "Neem de challenge aan",
   "acceptedCta": "Aangenomen ✓",
   "validatedBadge": "Gevalideerd",
+  "card": {
+    "open": "Open",
+    "full": "Vol"
+  },
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",
   "openBadge": "Open",

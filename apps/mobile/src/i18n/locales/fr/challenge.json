@@ -36,6 +36,10 @@
   "acceptCta": "Relever le défi",
   "acceptedCta": "Relevé ✓",
   "validatedBadge": "Validé",
+  "card": {
+    "open": "Ouvert",
+    "full": "Complet"
+  },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",
   "openBadge": "Ouvert",

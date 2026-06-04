@@ -36,6 +36,10 @@
   "acceptCta": "Terima tantangan",
   "acceptedCta": "Diterima ✓",
   "validatedBadge": "Tervalidasi",
+  "card": {
+    "open": "Terbuka",
+    "full": "Penuh"
+  },
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",
   "openBadge": "Terbuka",

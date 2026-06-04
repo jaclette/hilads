@@ -36,6 +36,10 @@
   "acceptCta": "接受挑战",
   "acceptedCta": "已接受 ✓",
   "validatedBadge": "已验证",
+  "card": {
+    "open": "开放中",
+    "full": "已满"
+  },
   "statusInProgress": "挑战进行中",
   "statusAccomplished": "挑战搞定",
   "openBadge": "开放",

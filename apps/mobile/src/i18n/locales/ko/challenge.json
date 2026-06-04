@@ -36,6 +36,10 @@
   "acceptCta": "챌린지 수락",
   "acceptedCta": "수락됨 ✓",
   "validatedBadge": "검증됨",
+  "card": {
+    "open": "모집중",
+    "full": "마감"
+  },
   "statusInProgress": "챌린지 진행 중",
   "statusAccomplished": "챌린지 성공",
   "openBadge": "열림",

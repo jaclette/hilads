@@ -36,6 +36,10 @@
   "acceptCta": "Aceptar el reto",
   "acceptedCta": "Aceptado ✓",
   "validatedBadge": "Validado",
+  "card": {
+    "open": "Abierto",
+    "full": "Completo"
+  },
   "statusInProgress": "Reto en curso",
   "statusAccomplished": "Reto conseguido",
   "openBadge": "Abierto",

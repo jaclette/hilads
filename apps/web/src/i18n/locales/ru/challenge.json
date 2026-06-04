@@ -36,6 +36,10 @@
   "acceptCta": "Принять челлендж",
   "acceptedCta": "Принято ✓",
   "validatedBadge": "Подтверждён",
+  "card": {
+    "open": "Открыт",
+    "full": "Заполнен"
+  },
   "statusInProgress": "Челлендж в процессе",
   "statusAccomplished": "Челлендж сделан",
   "openBadge": "Открыт",

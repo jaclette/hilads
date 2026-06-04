@@ -36,6 +36,10 @@
   "acceptCta": "Chấp nhận thử thách",
   "acceptedCta": "Đã chấp nhận ✓",
   "validatedBadge": "Đã xác nhận",
+  "card": {
+    "open": "Đang mở",
+    "full": "Đã đầy"
+  },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
   "openBadge": "Mở",

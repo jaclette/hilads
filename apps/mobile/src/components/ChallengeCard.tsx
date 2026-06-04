@@ -39,6 +39,25 @@ export function ChallengeCard({
     explorers: t('forExplorers'),
   };
 
+  // Status pill — only shown for open challenges (validated has its own
+  // green badge). Communicates "is this still takeable?":
+  //   - 0 acceptors        → "🔓 Open"
+  //   - 1..max-1 acceptors → "🤝 N/max"
+  //   - max acceptors      → "🚫 Full"
+  const count = challenge.participant_count ?? 0;
+  const max   = challenge.max_participants ?? 3;
+  let statusEmoji = '🔓';
+  let statusText  = t('card.open');
+  if (!isValidated) {
+    if (count >= max) {
+      statusEmoji = '🚫';
+      statusText  = t('card.full');
+    } else if (count > 0) {
+      statusEmoji = '🤝';
+      statusText  = `${count}/${max}`;
+    }
+  }
+
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
       {/* Top row — type-specific badge (DÉFI BOUFFE / FOOD CHALLENGE / etc.)
@@ -52,9 +71,13 @@ export function ChallengeCard({
         <View style={styles.audiencePill}>
           <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
         </View>
-        {isValidated && (
+        {isValidated ? (
           <View style={styles.validatedBadge}>
             <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
+          </View>
+        ) : (
+          <View style={styles.statusPill}>
+            <Text style={styles.statusPillText}>{statusEmoji} {statusText}</Text>
           </View>
         )}
       </View>
@@ -118,6 +141,18 @@ const styles = StyleSheet.create({
     borderColor:       'rgba(34,197,94,0.20)',
   },
   validatedBadgeText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
+
+  // Status pill — neutral white-on-translucent (no extra color noise; the
+  // emoji carries the semantic). Sized to match the audience + kind pills.
+  statusPill: {
+    backgroundColor:   'rgba(255,255,255,0.06)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.12)',
+  },
+  statusPillText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
 
   titleRow:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
   titleEmoji: { fontSize: 22, lineHeight: 24 },

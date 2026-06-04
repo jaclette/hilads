@@ -36,6 +36,10 @@
   "acceptCta": "Challenge annehmen",
   "acceptedCta": "Angenommen ✓",
   "validatedBadge": "Validiert",
+  "card": {
+    "open": "Offen",
+    "full": "Voll"
+  },
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",
   "openBadge": "Offen",

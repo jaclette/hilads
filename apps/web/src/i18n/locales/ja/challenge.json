@@ -36,6 +36,10 @@
   "acceptCta": "チャレンジを受ける",
   "acceptedCta": "受けた ✓",
   "validatedBadge": "確認済み",
+  "card": {
+    "open": "受付中",
+    "full": "満員"
+  },
   "statusInProgress": "チャレンジ進行中",
   "statusAccomplished": "チャレンジ達成",
   "openBadge": "オープン",

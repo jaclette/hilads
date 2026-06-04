@@ -36,6 +36,10 @@
   "acceptCta": "Accetta la sfida",
   "acceptedCta": "Accettata ✓",
   "validatedBadge": "Validata",
+  "card": {
+    "open": "Aperta",
+    "full": "Completa"
+  },
   "statusInProgress": "Sfida in corso",
   "statusAccomplished": "Sfida vinta",
   "openBadge": "Aperta",

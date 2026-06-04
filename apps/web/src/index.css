@@ -10855,6 +10855,13 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(34, 197, 94, 0.20);
   color: #4ade80;
 }
+/* Status pill — neutral; emoji carries the semantic (🔓 Open / 🤝 N/M / 🚫 Full).
+   Sits next to the audience pill on challenge feed cards. */
+.challenge-badge--status {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--muted2, #b3b3b3);
+}
 
 .challenge-actions {
   padding: 10px 16px 12px;

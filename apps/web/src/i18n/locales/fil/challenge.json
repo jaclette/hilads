@@ -36,6 +36,10 @@
   "acceptCta": "Tanggapin ang challenge",
   "acceptedCta": "Tinanggap ✓",
   "validatedBadge": "Validated",
+  "card": {
+    "open": "Bukas",
+    "full": "Puno"
+  },
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",
   "openBadge": "Bukas",

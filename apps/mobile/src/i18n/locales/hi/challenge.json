@@ -36,6 +36,10 @@
   "acceptCta": "चैलेंज स्वीकार करें",
   "acceptedCta": "स्वीकार किया ✓",
   "validatedBadge": "वैलिडेटेड",
+  "card": {
+    "open": "खुला",
+    "full": "भरी"
+  },
   "statusInProgress": "चुनौती जारी है",
   "statusAccomplished": "चुनौती पूरी की",
   "openBadge": "ओपन",

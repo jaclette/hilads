@@ -36,6 +36,10 @@
   "acceptCta": "รับชาเลนจ์",
   "acceptedCta": "รับแล้ว ✓",
   "validatedBadge": "ยืนยันแล้ว",
+  "card": {
+    "open": "เปิดรับ",
+    "full": "เต็ม"
+  },
   "statusInProgress": "ชาเลนจ์กำลังดำเนินอยู่",
   "statusAccomplished": "ชาเลนจ์สำเร็จ",
   "openBadge": "เปิด",
