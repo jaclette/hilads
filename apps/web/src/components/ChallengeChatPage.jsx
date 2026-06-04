@@ -124,10 +124,17 @@ export default function ChallengeChatPage({
 
   const id = challenge?.id
 
-  // Owner = guest_id match OR registered user.id match. Mirrors mobile.
+  // Owner check — two mutually exclusive paths:
+  //   1. Challenge has a registered creator → strict account.id match. The
+  //      challenge's guest_id is incidental (captures whichever guest layer
+  //      backed the creator's signup) and must NOT be used here — same
+  //      guest_id can persist across signup/logout on a device, otherwise
+  //      a second account would falsely "own" the first's challenge.
+  //   2. Pure guest creation (created_by null) → fall back to guest_id.
   const isOwner = !!(
-    (account?.id     && challenge?.created_by && account.id     === challenge.created_by) ||
-    (guest?.guestId  && challenge?.guest_id   && guest.guestId  === challenge.guest_id)
+    challenge?.created_by != null
+      ? (account?.id && account.id === challenge.created_by)
+      : (guest?.guestId && challenge?.guest_id && guest.guestId === challenge.guest_id)
   )
   const isValidated = challenge?.status === 'validated'
   const isParticipant = !!(

@@ -72,10 +72,19 @@ export default function ChallengeChatScreen() {
   // the pipeline's "Propose a date →" sub-CTA so we don't double up.
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  // Owner is either the registered creator OR the guest who created it.
+  // Owner check — two paths, mutually exclusive:
+  //   1. Challenge has a registered creator → ownership is decided STRICTLY
+  //      by account.id. The challenge's guest_id is incidental (it captures
+  //      whichever guest session backed the creator's signup) and must NOT
+  //      be used as an ownership signal — the same guest_id can persist
+  //      across signup/logout on a device, which would otherwise let a
+  //      second account on that device falsely "own" the first's challenge.
+  //   2. Challenge has NO registered creator (pure guest creation) →
+  //      ownership is decided by guest_id, the only identifier on file.
   const isOwner = !!(
-    (account?.id && challenge?.created_by && account.id === challenge.created_by) ||
-    (identity?.guestId && challenge?.guest_id && identity.guestId === challenge.guest_id)
+    challenge?.created_by != null
+      ? (account?.id && account.id === challenge.created_by)
+      : (identity?.guestId && challenge?.guest_id && identity.guestId === challenge.guest_id)
   );
 
   // "Am I currently a participant?" — derived from the participant list.
