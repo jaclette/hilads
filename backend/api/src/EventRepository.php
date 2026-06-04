@@ -276,10 +276,14 @@ class EventRepository
 
         foreach ($stmt->fetchAll() as $row) {
             if (self::isCanonicalRecurring($row)) {
-                // Recurring: only show if today matches the rule; use today's times.
-                if (!EventSeriesRepository::matchesRecurrence(self::seriesFromRow($row), $today)) {
-                    continue;
-                }
+                // Recurring: only show if today is the series' next-or-current
+                // occurrence. nextOccurrenceDate clamps by starts_on / ends_on,
+                // so a series whose starts_on is in the future is correctly
+                // hidden until that date — and a series whose ends_on has
+                // passed disappears. matchesRecurrence alone doesn't fence the
+                // window (every "daily" series would match every day).
+                $next = EventSeriesRepository::nextOccurrenceDate(self::seriesFromRow($row), $today);
+                if ($next !== $today) continue;
                 $event = self::formatForDate($row, $today);
             } else {
                 $event = self::format($row);
