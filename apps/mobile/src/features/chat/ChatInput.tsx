@@ -76,9 +76,16 @@ interface Props {
       the keyboard opening (e.g. collapse a header block to give the chat
       more vertical space). */
   onFocus?:         () => void;
+  /** Fires when the TextInput blurs. Mirror of onFocus — parents can use it
+      to restore collapsed state when the keyboard closes. */
+  onBlur?:          () => void;
+  /** When true, the keyboard is dismissed after a successful text send. Used
+      by the challenge thread chat so the header re-expands on send. Defaults
+      to false (city/event chats keep the keyboard up for rapid replies). */
+  dismissOnSend?:   boolean;
 }
 
-export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus }: Props) {
+export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus, onBlur, dismissOnSend = false }: Props) {
   const { t } = useTranslation('common');
   const { account, identity, onlineUsers } = useApp();
   // Presence mirror — read at suggest time so a guest joining/leaving doesn't
@@ -255,6 +262,10 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     setSelectedMentions([]);
     setMentionQuery(null);
     setSuggestions([]);
+    // Parents that want the keyboard down on send (e.g. the challenge thread
+    // chat, so a collapsed header can re-expand) opt in via the prop. Other
+    // chats keep the keyboard up for rapid replies.
+    if (dismissOnSend) Keyboard.dismiss();
   }
 
   function insertEmoji(emoji: string) {
@@ -556,7 +567,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         onSubmitEditing={Platform.OS !== 'ios' ? handleSend : undefined}
         editable={!busy}
         onFocus={() => { setShowEmoji(false); onFocus?.(); }}
-        onBlur={() => { clearTypingTimer(); if (isTypingRef.current) { isTypingRef.current = false; onTypingStop?.(); } }}
+        onBlur={() => { clearTypingTimer(); if (isTypingRef.current) { isTypingRef.current = false; onTypingStop?.(); } onBlur?.(); }}
       />
 
       {/* ── Send button — web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}

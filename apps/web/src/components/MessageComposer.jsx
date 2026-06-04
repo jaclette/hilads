@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import IconPlus from './IconPlus'
 import EmojiPicker from './EmojiPicker'
@@ -39,13 +40,34 @@ export default function MessageComposer({
   // Forwarded to the underlying input. Used by parents that want to collapse
   // a header block when the composer is focused (keyboard opening).
   onFocus,
+  // Mirror of onFocus — fires on blur. Parents wire it to restore a
+  // collapsed header when the composer loses focus.
+  onBlur,
+  // When true, the input blurs after a successful submit. Used by the
+  // challenge thread chat so the header re-expands once the message is sent.
+  dismissOnSend = false,
 }) {
   const { t } = useTranslation('common')
   const attachDisabled = uploading || sending || spotLoading
   const sendDisabled   = sending || uploading || spotLoading || !value.trim()
 
+  // Wrap the parent's onSubmit so we can drop focus after sending. The input's
+  // onBlur then fires and the parent restores its collapsed header. Opt-in via
+  // dismissOnSend so chats that want the keyboard up (city / event) are
+  // unaffected.
+  const localInputRef = useRef(null)
+  const innerInputRef = inputRef ?? localInputRef
+  const handleSubmit = (e) => {
+    onSubmit?.(e)
+    if (dismissOnSend) {
+      // Defer to next tick so the parent's send handler runs first and we
+      // don't fight any pending re-renders that might re-focus the input.
+      setTimeout(() => innerInputRef.current?.blur(), 0)
+    }
+  }
+
   return (
-    <form className="dm-composer" onSubmit={onSubmit}>
+    <form className="dm-composer" onSubmit={handleSubmit}>
       {/* @mention autocomplete — floats above the composer while typing "@" */}
       {mentionSuggestions.length > 0 && (
         <div className="mention-dropdown">
@@ -106,12 +128,13 @@ export default function MessageComposer({
       )}
 
       <input
-        ref={inputRef}
+        ref={innerInputRef}
         className="dm-input"
         type="text"
         value={value}
         onChange={onChange}
         onFocus={onFocus}
+        onBlur={onBlur}
         placeholder={placeholder}
         maxLength={maxLength}
         autoFocus={autoFocus}

@@ -388,7 +388,9 @@ export default function ChallengeChatScreen() {
   const collapseTo = useCallback((next: 0 | 1) => {
     Animated.timing(headerCollapse, {
       toValue: next,
-      duration: 160,
+      // 240ms reads as a deliberate slide (160ms felt instant). useNativeDriver
+      // is off because we're animating maxHeight/opacity, not transform/opacity.
+      duration: 240,
       useNativeDriver: false,
     }).start();
   }, [headerCollapse]);
@@ -702,6 +704,8 @@ export default function ChallengeChatScreen() {
             <ChatInput
               sending={sending}
               onFocus={() => collapseTo(1)}
+              onBlur={() => collapseTo(0)}
+              dismissOnSend
               onSendText={(text) => sendText(text, null)}
               onSendImage={sendImage}
             />

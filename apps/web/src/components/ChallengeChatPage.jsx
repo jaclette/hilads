@@ -752,6 +752,8 @@ export default function ChallengeChatPage({
             onChange={e => setComposer(e.target.value)}
             onSubmit={handleSendMessage}
             onFocus={() => collapseHeader(true)}
+            onBlur={() => collapseHeader(false)}
+            dismissOnSend
             sending={sending}
             placeholder={t('thread.empty')}
             showEmojiButton={false}
