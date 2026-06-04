@@ -21,12 +21,14 @@ $stmt = $pdo->prepare("
         ce.expires_at,
         ce.location,
         ce.venue,
-        c.status   AS channel_status,
+        c.status      AS channel_status,
         c.parent_id,
-        p.name     AS city_name
+        p.name        AS city_name,
+        es.timezone   AS series_timezone
     FROM channel_events ce
-    JOIN channels c      ON c.id = ce.channel_id
-    LEFT JOIN channels p ON p.id = c.parent_id
+    JOIN channels c             ON c.id  = ce.channel_id
+    LEFT JOIN channels p        ON p.id  = c.parent_id
+    LEFT JOIN event_series es   ON es.id = ce.series_id
     WHERE ce.channel_id = :id AND c.type = 'event'
 ");
 $stmt->execute([':id' => $eventId]);
@@ -71,37 +73,37 @@ if ($method === 'POST') {
         $errors[] = 'Invalid status value.';
     }
 
-    // Time fields — only editable for one-shot events
-    if (!$isRecurring) {
-        $rawStartsAt  = trim($_POST['starts_at'] ?? '');
-        $rawEndsAt    = trim($_POST['ends_at'] ?? '');
-        $rawExpiresAt = trim($_POST['expires_at'] ?? '');
+    // Time fields — editable for both one-shot AND recurring events. For
+    // recurring, we additionally shift the series schedule (starts_on /
+    // start_time / end_time) below so future occurrences pick up the change.
+    $rawStartsAt  = trim($_POST['starts_at'] ?? '');
+    $rawEndsAt    = trim($_POST['ends_at'] ?? '');
+    $rawExpiresAt = trim($_POST['expires_at'] ?? '');
 
-        if ($rawStartsAt !== '') {
-            $ts = strtotime($rawStartsAt);
-            if ($ts === false) {
-                $errors[] = 'Invalid starts_at date format.';
-            } else {
-                $newStartsAt = date('Y-m-d H:i:sP', $ts);
-            }
+    if ($rawStartsAt !== '') {
+        $ts = strtotime($rawStartsAt);
+        if ($ts === false) {
+            $errors[] = 'Invalid starts_at date format.';
+        } else {
+            $newStartsAt = date('Y-m-d H:i:sP', $ts);
         }
+    }
 
-        if ($rawEndsAt !== '') {
-            $ts = strtotime($rawEndsAt);
-            if ($ts === false) {
-                $errors[] = 'Invalid ends_at date format.';
-            } else {
-                $newEndsAt = date('Y-m-d H:i:sP', $ts);
-            }
+    if ($rawEndsAt !== '') {
+        $ts = strtotime($rawEndsAt);
+        if ($ts === false) {
+            $errors[] = 'Invalid ends_at date format.';
+        } else {
+            $newEndsAt = date('Y-m-d H:i:sP', $ts);
         }
+    }
 
-        if ($rawExpiresAt !== '') {
-            $ts = strtotime($rawExpiresAt);
-            if ($ts === false) {
-                $errors[] = 'Invalid expires_at date format.';
-            } else {
-                $newExpiresAt = date('Y-m-d H:i:sP', $ts);
-            }
+    if ($rawExpiresAt !== '') {
+        $ts = strtotime($rawExpiresAt);
+        if ($ts === false) {
+            $errors[] = 'Invalid expires_at date format.';
+        } else {
+            $newExpiresAt = date('Y-m-d H:i:sP', $ts);
         }
     }
 
@@ -115,24 +117,51 @@ if ($method === 'POST') {
             ':id'       => $eventId,
         ];
 
-        if (!$isRecurring) {
-            if ($newStartsAt !== null) {
-                $updateFields[]            = 'starts_at = :starts_at';
-                $updateParams[':starts_at'] = $newStartsAt;
-            }
-            if ($newEndsAt !== null) {
-                $updateFields[]           = 'ends_at = :ends_at';
-                $updateParams[':ends_at']  = $newEndsAt;
-            }
-            if ($newExpiresAt !== null) {
-                $updateFields[]              = 'expires_at = :expires_at';
-                $updateParams[':expires_at']  = $newExpiresAt;
-            }
+        if ($newStartsAt !== null) {
+            $updateFields[]             = 'starts_at = :starts_at';
+            $updateParams[':starts_at'] = $newStartsAt;
+        }
+        if ($newEndsAt !== null) {
+            $updateFields[]           = 'ends_at = :ends_at';
+            $updateParams[':ends_at'] = $newEndsAt;
+        }
+        // For recurring rows we preserve the 2999 sentinel on expires_at by
+        // default — only let it be overridden if the admin explicitly typed a
+        // value. Sentinel keeps the canonical row from ageing out of feeds.
+        if ($newExpiresAt !== null) {
+            $updateFields[]              = 'expires_at = :expires_at';
+            $updateParams[':expires_at'] = $newExpiresAt;
         }
 
         $pdo->prepare(
             'UPDATE channel_events SET ' . implode(', ', $updateFields) . ' WHERE channel_id = :id'
         )->execute($updateParams);
+
+        // For recurring events, also shift the series schedule so future
+        // occurrences pick up the new times. Date and time-of-day are
+        // extracted in the series timezone (NOT UTC — recurrence days are
+        // tz-aware). Mirrors EventRepository::update's recurring branch.
+        if ($isRecurring && ($newStartsAt !== null || $newEndsAt !== null)) {
+            $tz = $event['series_timezone'] ?: 'UTC';
+            // Build the new start/end timestamps to extract from. Fall back to
+            // the row's existing values when one side was left blank.
+            $startBasis = $newStartsAt ?? $event['starts_at'];
+            $endBasis   = $newEndsAt   ?? $event['ends_at'] ?? $event['expires_at'];
+
+            $pdo->prepare("
+                UPDATE event_series
+                SET starts_on  = (:starts::timestamptz AT TIME ZONE :tz)::date,
+                    start_time = (:starts::timestamptz AT TIME ZONE :tz)::time,
+                    end_time   = (:ends::timestamptz   AT TIME ZONE :tz)::time,
+                    updated_at = now()
+                WHERE id = :sid
+            ")->execute([
+                ':starts' => $startBasis,
+                ':ends'   => $endBasis,
+                ':tz'     => $tz,
+                ':sid'    => $event['series_id'],
+            ]);
+        }
 
         // Update channel name (mirrors the title) and status
         $pdo->prepare("
@@ -174,9 +203,8 @@ admin_nav('/admin/events');
 
     <?php if ($isRecurring): ?>
         <div class="warning-box">
-            ⚠ This is a <strong>recurring event occurrence</strong> (series ID: <?= htmlspecialchars(substr($event['series_id'], 0, 16), ENT_QUOTES) ?>…).
-            Editing start/end times is disabled to avoid breaking automatically generated occurrences.
-            Only title, location, and venue can be changed here.
+            ⚠ This is a <strong>recurring event</strong> (series ID: <?= htmlspecialchars(substr($event['series_id'], 0, 16), ENT_QUOTES) ?>…).
+            Editing the start/end times here will <strong>shift the entire series schedule</strong> — future occurrences pick up the new date and time-of-day. <code>expires_at</code> should normally be left blank to preserve the far-future sentinel that keeps the canonical row alive.
         </div>
     <?php endif; ?>
 
@@ -248,40 +276,40 @@ admin_nav('/admin/events');
             >
         </div>
 
-        <?php if (!$isRecurring): ?>
-            <div class="form-group">
-                <label for="starts_at">Starts at</label>
-                <input
-                    type="datetime-local"
-                    id="starts_at"
-                    name="starts_at"
-                    value="<?= htmlspecialchars($_POST['starts_at'] ?? fmt_dt($event['starts_at']), ENT_QUOTES) ?>"
-                >
-                <div class="hint">Leave blank to keep current value</div>
-            </div>
+        <div class="form-group">
+            <label for="starts_at">Starts at<?= $isRecurring ? ' (shifts series anchor + first occurrence)' : '' ?></label>
+            <input
+                type="datetime-local"
+                id="starts_at"
+                name="starts_at"
+                value="<?= htmlspecialchars($_POST['starts_at'] ?? fmt_dt($event['starts_at']), ENT_QUOTES) ?>"
+            >
+            <div class="hint">Leave blank to keep current value<?= $isRecurring ? '. Series start_time + starts_on are updated to match.' : '' ?></div>
+        </div>
 
-            <div class="form-group">
-                <label for="ends_at">Ends at</label>
-                <input
-                    type="datetime-local"
-                    id="ends_at"
-                    name="ends_at"
-                    value="<?= htmlspecialchars($_POST['ends_at'] ?? fmt_dt($event['ends_at']), ENT_QUOTES) ?>"
-                >
-                <div class="hint">Leave blank to keep current value</div>
-            </div>
+        <div class="form-group">
+            <label for="ends_at">Ends at<?= $isRecurring ? ' (shifts series end_time)' : '' ?></label>
+            <input
+                type="datetime-local"
+                id="ends_at"
+                name="ends_at"
+                value="<?= htmlspecialchars($_POST['ends_at'] ?? fmt_dt($event['ends_at']), ENT_QUOTES) ?>"
+            >
+            <div class="hint">Leave blank to keep current value<?= $isRecurring ? '. Series end_time is updated to match.' : '' ?></div>
+        </div>
 
-            <div class="form-group">
-                <label for="expires_at">Expires at (disappears from listing)</label>
-                <input
-                    type="datetime-local"
-                    id="expires_at"
-                    name="expires_at"
-                    value="<?= htmlspecialchars($_POST['expires_at'] ?? fmt_dt($event['expires_at']), ENT_QUOTES) ?>"
-                >
-                <div class="hint">Leave blank to keep current value</div>
-            </div>
-        <?php endif; ?>
+        <div class="form-group">
+            <label for="expires_at">Expires at (disappears from listing)</label>
+            <input
+                type="datetime-local"
+                id="expires_at"
+                name="expires_at"
+                value="<?= htmlspecialchars($_POST['expires_at'] ?? fmt_dt($event['expires_at']), ENT_QUOTES) ?>"
+            >
+            <div class="hint"><?= $isRecurring
+                ? 'Leave blank for recurring events — overwriting the 2999 sentinel turns the canonical row into a one-shot and removes it from feeds.'
+                : 'Leave blank to keep current value' ?></div>
+        </div>
 
         <div class="form-group">
             <label for="status">Channel status</label>
