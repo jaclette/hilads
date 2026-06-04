@@ -352,11 +352,13 @@ admin_nav('/admin/events');
                 type="datetime-local"
                 id="expires_at"
                 name="expires_at"
-                value="<?= htmlspecialchars($_POST['expires_at'] ?? fmt_dt($event['expires_at']), ENT_QUOTES) ?>"
+                value="<?= htmlspecialchars($_POST['expires_at'] ?? ($isRecurring ? '' : fmt_dt($event['expires_at'])), ENT_QUOTES) ?>"
             >
-            <div class="hint"><?= $isRecurring
-                ? 'Leave blank for recurring events — overwriting the 2999 sentinel turns the canonical row into a one-shot and removes it from feeds.'
-                : 'Leave blank to keep current value' ?></div>
+            <div class="hint"><?php if ($isRecurring): ?>
+                <strong>Leave blank.</strong> Recurring events use a far-future sentinel for <code>expires_at</code> so the canonical row never ages out — typing anything here turns the series into a one-shot. Currently: <code><?= htmlspecialchars(fmt_dt($event['expires_at']), ENT_QUOTES) ?></code>.
+            <?php else: ?>
+                Leave blank to keep current value
+            <?php endif; ?></div>
         </div>
 
         <?php if ($isRecurring): ?>
