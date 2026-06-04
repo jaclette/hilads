@@ -2001,7 +2001,10 @@ export default function App() {
       || item.type === 'topic'
       || item.type === 'challenge'
       || item.type === 'challenge_validated'
-      || (item.type === 'prompt' && item.subtype !== 'install')
+      // 'install' and 'challenge-intro' are sticky prompts — install because
+      // the user might miss it on first reflow, challenge-intro because it's
+      // an explainer that should sit there until tapped.
+      || (item.type === 'prompt' && item.subtype !== 'install' && item.subtype !== 'challenge-intro')
       || (item.type === 'activity' && item.subtype === 'crowd')
   }
 

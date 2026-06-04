@@ -494,7 +494,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // AnimatedEventPill which owns its own opacity). Hook runs unconditionally;
   // `enabled` gates it. cancelDismiss() is wired into the CTAs below.
   const cancelDismiss = useAutoDismissFade({
-    enabled: autoDismiss && (message.type === 'topic' || message.type === 'challenge' || message.type === 'challenge_validated' || message.type === 'prompt' || message.type === 'activity'),
+    // The 'challenge-intro' prompt is intentionally sticky — it's an
+    // explainer pill, not a transient reminder. Stays visible until the
+    // user taps it (which removes it from the feed) or scrolls past.
+    enabled: autoDismiss && (message.type === 'topic' || message.type === 'challenge' || message.type === 'challenge_validated' || message.type === 'activity' || (message.type === 'prompt' && (message as { subtype?: string }).subtype !== 'challenge-intro')),
     id: message.id ?? '',
     onDismiss: onAutoDismiss,
   });
