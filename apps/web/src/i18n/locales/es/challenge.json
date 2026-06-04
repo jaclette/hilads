@@ -38,7 +38,9 @@
   "validatedBadge": "Validado",
   "card": {
     "open": "Abierto",
-    "full": "Completo"
+    "full": "Completo",
+    "available": "Disponible",
+    "inProgress": "En curso"
   },
   "statusInProgress": "Reto en curso",
   "statusAccomplished": "Reto conseguido",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Reto completo"
+      },
+      "in_progress": {
+        "title": "Alguien está en esto",
+        "body": "Otro viajero lo está aceptando ahora mismo. Vuelve cuando acabe — el reto se libera."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Reto completo",
       "body": "Todas las plazas están ocupadas. Vuelve si alguien se baja."
+    },
+    "inProgress": {
+      "title": "Alguien está con esto ahora",
+      "body": "Un viajero está aceptando este reto. Cuando acabe, volverá a estar libre — pásate pronto."
     }
   }
 }

@@ -38,7 +38,9 @@
   "validatedBadge": "Đã xác nhận",
   "card": {
     "open": "Đang mở",
-    "full": "Đã đầy"
+    "full": "Đã đầy",
+    "available": "Còn trống",
+    "inProgress": "Đang diễn ra"
   },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Challenge đã đầy"
+      },
+      "in_progress": {
+        "title": "Có người đang nhận rồi",
+        "body": "Một du khách khác đang nhận thử thách này. Quay lại khi họ xong nhé — thử thách sẽ mở lại."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Thử thách đã đầy",
       "body": "Tất cả chỗ đã có người. Quay lại nếu có ai rút lui nhé."
+    },
+    "inProgress": {
+      "title": "Có người đang nhận ngay bây giờ",
+      "body": "Một du khách đang nhận thử thách này. Khi họ xong, nó sẽ trống trở lại — ghé lại sớm nhé."
     }
   }
 }

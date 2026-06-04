@@ -38,7 +38,9 @@
   "validatedBadge": "Validé",
   "card": {
     "open": "Ouvert",
-    "full": "Complet"
+    "full": "Complet",
+    "available": "Disponible",
+    "inProgress": "En cours"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Défi complet"
+      },
+      "in_progress": {
+        "title": "Quelqu'un est déjà dessus",
+        "body": "Un autre voyageur est en train de le relever. Reviens quand ils auront fini — le défi se libère."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Défi complet",
       "body": "Toutes les places sont prises. Reviens si quelqu'un se désiste."
+    },
+    "inProgress": {
+      "title": "Quelqu'un est dessus en ce moment",
+      "body": "Un voyageur est en train de relever ce défi. Quand il aura fini, il sera de nouveau libre — repasse bientôt."
     }
   }
 }

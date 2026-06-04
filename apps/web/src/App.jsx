@@ -4822,14 +4822,17 @@ export default function App() {
                       </div>
                       <div className="er-badges">
                         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-                        {isValidated && (
+                        {isValidated ? (
                           <span className="challenge-badge challenge-badge--validated">
                             ✓ {t('validatedBadge', { ns: 'challenge' })}
                           </span>
+                        ) : (
+                          <span className="challenge-badge challenge-badge--status">
+                            {c.is_in_progress
+                              ? `⏳ ${t('card.inProgress', { ns: 'challenge' })}`
+                              : `🔓 ${t('card.available', { ns: 'challenge' })}`}
+                          </span>
                         )}
-                        {/* (Commit 1) N/max status pill removed. Commit 2
-                            replaces it with the 1:1 Available/In progress
-                            badge. */}
                       </div>
                       <AttendeeAvatars
                         preview={c.participants_preview ?? []}

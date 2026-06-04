@@ -151,7 +151,9 @@ export interface ChallengeThreadSummary {
 }
 
 /** Backend error code shape on accept-failure 403s. */
-export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached';
+// `cap_reached` retired with the 1:1 model — still listed for back-compat
+// in case an older API build returns it. `in_progress` is the new code.
+export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress';
 
 export interface Challenge {
   id:                    string;
@@ -162,10 +164,16 @@ export interface Challenge {
   challenge_type:        ChallengeType;
   audience:              ChallengeAudience;
   status:                ChallengeStatus;
-  /** Cap on concurrent take-ons (acceptances). 1-20, default 3. */
+  /** (Legacy) Cap on concurrent take-ons. Kept on the type for one release —
+   *  the 1:1 model uses `is_in_progress` instead. The column still exists in
+   *  the DB and is returned as-is for back-compat, but nothing reads it now. */
   max_participants:      number;
   /** "...and come share it with me" half of the prompt; pre-filled per type. Null = generic fallback. */
   return_clause:         string | null;
+  /** 1:1 model — true iff the challenge has a non-terminal acceptance right
+   *  now. Drives the Available / In progress / Validated pill and gates the
+   *  Accept (+) button. Backend computes via EXISTS over challenge_acceptances. */
+  is_in_progress?:       boolean;
   message_count:         number;
   last_activity_at:      number | null;   // unix timestamp
   validated_at:          number | null;   // unix timestamp; set when status flips to 'validated'

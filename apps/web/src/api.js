@@ -627,7 +627,7 @@ export class AcceptChallengeError extends Error {
   constructor(code, message, requiredMode) {
     super(message)
     this.name = 'AcceptChallengeError'
-    this.code = code           // 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached'
+    this.code = code           // 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' (legacy) | 'in_progress'
     this.requiredMode = requiredMode  // 'local' | 'exploring' | undefined
   }
 }

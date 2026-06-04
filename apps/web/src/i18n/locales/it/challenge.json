@@ -38,7 +38,9 @@
   "validatedBadge": "Validata",
   "card": {
     "open": "Aperta",
-    "full": "Completa"
+    "full": "Completa",
+    "available": "Disponibile",
+    "inProgress": "In corso"
   },
   "statusInProgress": "Sfida in corso",
   "statusAccomplished": "Sfida vinta",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Sfida al completo"
+      },
+      "in_progress": {
+        "title": "C'è già qualcuno",
+        "body": "Un altro viaggiatore la sta accettando proprio ora. Ripassa quando avranno finito — la sfida si libera."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Sfida al completo",
       "body": "I posti sono tutti presi. Ripassa se qualcuno si ritira."
+    },
+    "inProgress": {
+      "title": "Qualcuno la sta facendo ora",
+      "body": "Un viaggiatore sta accettando questa sfida. Quando avrà finito, sarà di nuovo libera — ripassa presto."
     }
   }
 }

@@ -38,7 +38,9 @@
   "validatedBadge": "검증됨",
   "card": {
     "open": "모집중",
-    "full": "마감"
+    "full": "마감",
+    "available": "모집중",
+    "inProgress": "진행 중"
   },
   "statusInProgress": "챌린지 진행 중",
   "statusAccomplished": "챌린지 성공",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "챌린지 정원이 찼어요"
+      },
+      "in_progress": {
+        "title": "지금 누가 하고 있어요",
+        "body": "다른 여행자가 지금 이 챌린지를 받고 있어요. 끝나면 다시 와요 — 챌린지가 다시 열려요."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "도전 마감",
       "body": "자리가 다 찼어요. 빠지는 사람이 있는지 다시 확인해 보세요."
+    },
+    "inProgress": {
+      "title": "지금 누가 하고 있어요",
+      "body": "여행자가 이 챌린지를 받고 있어요. 끝나면 다시 열려요 — 곧 다시 와봐요."
     }
   }
 }

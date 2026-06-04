@@ -128,8 +128,9 @@ class ChallengeAcceptanceRepository
     }
 
     /**
-     * Count of NON-rejected acceptances. Used by the cap check before create().
-     * Rejected acceptances don't count against the cap (the slot reopens).
+     * Count of NON-rejected acceptances. Used by the historical cap check.
+     * Kept for back-compat callers; the 1:1 model uses hasActiveAcceptance()
+     * below.
      */
     public static function countByChallenge(string $challengeId): int
     {
@@ -139,6 +140,28 @@ class ChallengeAcceptanceRepository
         ");
         $stmt->execute(['id' => $challengeId]);
         return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 1:1 gate — true iff this challenge currently has a non-terminal
+     * acceptance (pending / accepted / scheduled / debrief). Used by the
+     * /accept route to refuse a new take-on while one is in progress.
+     *
+     * `approved` and `rejected` are terminal — they free the challenge back
+     * to available. `debrief` is still active because the meet-up is in
+     * flight; commit 3 will treat long-stale debrief as freed via a
+     * configurable grace window.
+     */
+    public static function hasActiveAcceptance(string $challengeId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM challenge_acceptances
+            WHERE challenge_id = :id
+              AND phase NOT IN ('approved', 'rejected')
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $challengeId]);
+        return (bool) $stmt->fetchColumn();
     }
 
     /**

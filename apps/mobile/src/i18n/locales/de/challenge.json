@@ -38,7 +38,9 @@
   "validatedBadge": "Validiert",
   "card": {
     "open": "Offen",
-    "full": "Voll"
+    "full": "Voll",
+    "available": "Frei",
+    "inProgress": "Aktiv"
   },
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Challenge voll"
+      },
+      "in_progress": {
+        "title": "Da ist jemand dran",
+        "body": "Ein anderer Reisender nimmt sie gerade an. Schau wieder vorbei, wenn er fertig ist — dann ist die Challenge wieder frei."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Challenge voll",
       "body": "Alle Plätze sind vergeben. Schau wieder vorbei, falls jemand abspringt."
+    },
+    "inProgress": {
+      "title": "Da ist gerade jemand dran",
+      "body": "Ein Reisender nimmt diese Challenge gerade an. Wenn er fertig ist, ist sie wieder frei — schau bald wieder vorbei."
     }
   }
 }

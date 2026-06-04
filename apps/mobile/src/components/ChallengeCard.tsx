@@ -39,10 +39,12 @@ export function ChallengeCard({
     explorers: t('forExplorers'),
   };
 
-  // Status pill — commit 1 simplification: only the validated badge stays.
-  // Commit 2 introduces "Available" / "In progress" / "Closed" semantics off
-  // the per-challenge active-acceptance gate. The legacy N/max / Full pill is
-  // gone with max_participants.
+  // Status pill (1:1 model):
+  //   - Validated → ✓ green badge (existing)
+  //   - In progress → ⏳ neutral pill ("someone's on this one")
+  //   - Available → 🔓 neutral pill ("free to take on")
+  // The validated branch wins if both are true (closed is final).
+  const isInProgress = !isValidated && challenge.is_in_progress === true;
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
@@ -57,9 +59,17 @@ export function ChallengeCard({
         <View style={styles.audiencePill}>
           <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
         </View>
-        {isValidated && (
+        {isValidated ? (
           <View style={styles.validatedBadge}>
             <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
+          </View>
+        ) : isInProgress ? (
+          <View style={styles.statusPill}>
+            <Text style={styles.statusPillText}>⏳ {t('card.inProgress')}</Text>
+          </View>
+        ) : (
+          <View style={styles.statusPill}>
+            <Text style={styles.statusPillText}>🔓 {t('card.available')}</Text>
           </View>
         )}
       </View>

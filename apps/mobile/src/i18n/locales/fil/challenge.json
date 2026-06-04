@@ -38,7 +38,9 @@
   "validatedBadge": "Validated",
   "card": {
     "open": "Bukas",
-    "full": "Puno"
+    "full": "Puno",
+    "available": "Available",
+    "inProgress": "Ongoing"
   },
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Puno na ang challenge"
+      },
+      "in_progress": {
+        "title": "May tumanggap na nito",
+        "body": "May ibang biyaherong kumukuha ngayon. Balikan mo pag tapos na sila — magiging available ulit ang challenge."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Puno na ang challenge",
       "body": "Wala nang slot. Balikan mo kung may aalis."
+    },
+    "inProgress": {
+      "title": "May kumukuha na ngayon",
+      "body": "May biyaherong kumukuha ng challenge na ito. Pag tapos na sila, magiging available ulit — balikan mo soon."
     }
   }
 }

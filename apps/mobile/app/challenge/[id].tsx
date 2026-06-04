@@ -364,10 +364,15 @@ export default function ChallengeChatScreen() {
     [participants, creator],
   );
 
-  // `isFull` retired — the cap model is gone. Commit 2 introduces a 1:1
-  // `inProgress` check that gates the Accept button on whether a non-terminal
-  // acceptance already exists. For now the button is always available to
-  // visitors with no own acceptance.
+  // 1:1 gate — `inProgress` is true when the challenge has a non-terminal
+  // acceptance owned by someone else. Visitors don't see the Accept button
+  // (and see the in-progress locked state); the owner / current taker are
+  // unaffected because they already have their own acceptance row.
+  const inProgress = !!(
+    challenge?.is_in_progress &&
+    !isOwner &&
+    !myAcceptance
+  );
 
   // Collapse the badges / pipeline / participants block when the user starts
   // scrolling the chat OR taps the composer (keyboard open). Mirror the
@@ -590,7 +595,7 @@ export default function ChallengeChatScreen() {
                   {t('participantsLabel')} · {otherParticipants.length}
                 </Text>
               </TouchableOpacity>
-              {!isOwner && !isValidated && !myThreadChannelId && (
+              {!isOwner && !isValidated && !myThreadChannelId && !inProgress && (
                 <TouchableOpacity
                   style={styles.acceptCompact}
                   onPress={handleAccept}
@@ -607,6 +612,8 @@ export default function ChallengeChatScreen() {
                 </TouchableOpacity>
               )}
             </>
+          ) : inProgress ? (
+            <Text style={styles.participantsEmpty}>⏳ {t('card.inProgress')}</Text>
           ) : (
             <TouchableOpacity
               style={styles.acceptCtaFull}
@@ -776,7 +783,20 @@ export default function ChallengeChatScreen() {
               );
             }
 
-            // Default — visitor or empty-creator state.
+            // Visitor + challenge is in progress with someone else → show
+            // the "someone's on this one" state instead of the generic
+            // take-on nudge. Creator falls back to the regular branch.
+            if (!isOwner && inProgress) {
+              return (
+                <View style={styles.lockedWrap}>
+                  <Text style={styles.lockedEmoji}>⏳</Text>
+                  <Text style={styles.lockedTitle}>{t('locked.inProgress.title')}</Text>
+                  <Text style={styles.lockedBody}>{t('locked.inProgress.body')}</Text>
+                </View>
+              );
+            }
+
+            // Default — visitor (available) or empty-creator state.
             return (
               <View style={styles.lockedWrap}>
                 <Text style={styles.lockedEmoji}>🔒</Text>

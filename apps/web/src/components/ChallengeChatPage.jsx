@@ -403,10 +403,14 @@ export default function ChallengeChatPage({
   )
   const otherParticipants = participants.filter(p => p !== creator)
 
-  // `isFull` retired with max_participants (1:1 model). Commit 2 introduces
-  // a 1:1 `inProgress` gate; for now the Accept button always renders for
-  // visitors with no own acceptance.
-  const isFull = false
+  // 1:1 gate — true when the challenge has a non-terminal acceptance owned
+  // by someone else. Visitors don't see the Accept button + see the
+  // in-progress locked state. The current taker / owner have their own
+  // acceptance so they're unaffected.
+  const inProgress = !!(challenge.is_in_progress && !isOwner && !myAcceptance)
+  // Back-compat alias — some branches still read `isFull`. Same semantics
+  // for the JSX paths still in place (renamed in this commit).
+  const isFull = inProgress
 
   return (
     <div className="full-page topic-chat-page">
@@ -548,7 +552,7 @@ export default function ChallengeChatPage({
               )}
             </>
           ) : isFull ? (
-            <span className="challenge-participants-empty">{t('accept.err.cap_reached.title')}</span>
+            <span className="challenge-participants-empty">⏳ {t('card.inProgress')}</span>
           ) : (
             <button
               type="button"
@@ -679,23 +683,31 @@ export default function ChallengeChatPage({
           )
         }
 
-        // No acceptance at all — original locked state.
+        // No acceptance at all — branches:
+        //   - visitor + in_progress → "someone's on this one"
+        //   - visitor + available   → "take on the challenge to unlock chat"
+        //   - creator + no taker    → "waiting for someone to take it on"
+        if (!isOwner && inProgress) {
+          return (
+            <div style={lockedWrapStyle}>
+              <span style={{ fontSize: 40, opacity: 0.7 }}>⏳</span>
+              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
+                {t('locked.inProgress.title')}
+              </h3>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
+                {t('locked.inProgress.body')}
+              </p>
+            </div>
+          )
+        }
         return (
           <div style={lockedWrapStyle}>
-            <span style={{ fontSize: 40, opacity: 0.7 }}>{isFull ? '🚫' : '🔒'}</span>
+            <span style={{ fontSize: 40, opacity: 0.7 }}>🔒</span>
             <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-              {isOwner
-                ? t('locked.creator.title')
-                : isFull
-                  ? t('locked.full.title')
-                  : t('locked.visitor.title')}
+              {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
             </h3>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-              {isOwner
-                ? t('locked.creator.body')
-                : isFull
-                  ? t('locked.full.body')
-                  : t('locked.visitor.body')}
+              {isOwner ? t('locked.creator.body')  : t('locked.visitor.body')}
             </p>
           </div>
         )

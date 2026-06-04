@@ -7822,10 +7822,19 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         ], 403);
     }
 
-    // Cap gate removed — the model is 1:1 now. Commit 2 introduces a
-    // `hasActiveAcceptance()` gate that blocks new take-ons while one is in
-    // progress. During commit 1's window the field is unenforced; at low
-    // volume the worst case is a brief overlap.
+    // 1:1 gate — refuse a new take-on while the challenge has any
+    // non-terminal acceptance. The first taker holds the challenge until
+    // their meet-up wraps up (approved / rejected) or they cancel — at which
+    // point the row frees and the next traveler can take it on. Commit 3
+    // adds a lazy "ghosted taker" rule so a long-stale debrief also frees
+    // the challenge without manual intervention.
+    if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
+        Response::json([
+            'error' => "Someone's already on this one — check back when it's done",
+            'code'  => 'in_progress',
+        ], 403);
+    }
+
     enforceRateLimit('challenge_accept', 20, 3600, $userId);
 
     try {

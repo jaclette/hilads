@@ -38,7 +38,9 @@
   "validatedBadge": "Validado",
   "card": {
     "open": "Aberto",
-    "full": "Cheio"
+    "full": "Cheio",
+    "available": "Disponível",
+    "inProgress": "Em andamento"
   },
   "statusInProgress": "Desafio em andamento",
   "statusAccomplished": "Desafio mandado bem",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Desafio cheio"
+      },
+      "in_progress": {
+        "title": "Já tem alguém nessa",
+        "body": "Outro viajante está topando agora. Volta quando ele terminar — o desafio fica livre de novo."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Desafio cheio",
       "body": "Todas as vagas foram preenchidas. Volte se alguém desistir."
+    },
+    "inProgress": {
+      "title": "Já tem alguém nessa agora",
+      "body": "Um viajante está topando esse desafio. Quando terminar, fica livre de novo — passa aqui em breve."
     }
   }
 }

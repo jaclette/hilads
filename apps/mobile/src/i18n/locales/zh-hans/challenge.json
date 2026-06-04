@@ -38,7 +38,9 @@
   "validatedBadge": "已验证",
   "card": {
     "open": "开放中",
-    "full": "已满"
+    "full": "已满",
+    "available": "可接受",
+    "inProgress": "进行中"
   },
   "statusInProgress": "挑战进行中",
   "statusAccomplished": "挑战搞定",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "挑战已满"
+      },
+      "in_progress": {
+        "title": "已经有人在接了",
+        "body": "另一位旅行者正在接这个挑战。等他完成后再回来 — 挑战会重新开放。"
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "挑战已满",
       "body": "名额已满,有人退出再来看看。"
+    },
+    "inProgress": {
+      "title": "现在有人在接",
+      "body": "一位旅行者正在接这个挑战。等他完成后又会空出来 — 稍后再回来看看。"
     }
   }
 }

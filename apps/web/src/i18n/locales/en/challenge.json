@@ -38,7 +38,9 @@
   "validatedBadge": "Validated",
   "card": {
     "open": "Open",
-    "full": "Full"
+    "full": "Full",
+    "available": "Available",
+    "inProgress": "In progress"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Challenge full"
+      },
+      "in_progress": {
+        "title": "Someone's on this one",
+        "body": "Another traveler is taking it on right now. Check back when they wrap up — the challenge frees up."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Challenge full",
       "body": "All spots are taken. Check back if someone drops out."
+    },
+    "inProgress": {
+      "title": "Someone's on this one right now",
+      "body": "A traveler is taking on this challenge. When they wrap up, it'll be free again — check back soon."
     }
   }
 }

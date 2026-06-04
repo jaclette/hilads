@@ -29,6 +29,9 @@ class ChallengeRepository
 
     // ── Shared SELECT (challenge + message stats) ─────────────────────────────
 
+    // is_in_progress: true iff the challenge has a non-terminal acceptance
+    // (1:1 model — the slot is busy). EXISTS sub-select runs once per row;
+    // bounded by the LIMIT on the parent query (egress-safe).
     private const SELECT = "
         SELECT
             c.id,
@@ -44,7 +47,12 @@ class ChallengeRepository
             COUNT(m.id)                                            AS message_count,
             EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER         AS last_activity_at,
             EXTRACT(EPOCH FROM cc.validated_at)::INTEGER           AS validated_at,
-            EXTRACT(EPOCH FROM cc.created_at)::INTEGER             AS created_at
+            EXTRACT(EPOCH FROM cc.created_at)::INTEGER             AS created_at,
+            EXISTS (
+                SELECT 1 FROM challenge_acceptances ca
+                WHERE ca.challenge_id = cc.channel_id
+                  AND ca.phase NOT IN ('approved', 'rejected')
+            )                                                       AS is_in_progress
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id
         LEFT JOIN messages m ON m.channel_id = c.id AND m.type IN ('text', 'image')
@@ -70,6 +78,12 @@ class ChallengeRepository
             'last_activity_at'     => isset($row['last_activity_at']) ? (int) $row['last_activity_at'] : null,
             'validated_at'         => isset($row['validated_at'])     ? (int) $row['validated_at']     : null,
             'created_at'           => (int) $row['created_at'],
+            // 1:1 model state — true iff this challenge currently has a
+            // non-terminal acceptance. UI uses this to render Available /
+            // In progress / Validated and to gate the Accept button.
+            // Defaults to false on rows that pre-date the column (eg. cached
+            // formats) — safe because the route still rechecks at /accept.
+            'is_in_progress'       => isset($row['is_in_progress']) ? (bool) $row['is_in_progress'] : false,
             // Populated by batched queries; default so the field is always present.
             'participants_preview' => [],
             'participant_count'    => 0,

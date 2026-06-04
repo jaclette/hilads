@@ -38,7 +38,9 @@
   "validatedBadge": "Gevalideerd",
   "card": {
     "open": "Open",
-    "full": "Vol"
+    "full": "Vol",
+    "available": "Beschikbaar",
+    "inProgress": "Bezig"
   },
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Challenge vol"
+      },
+      "in_progress": {
+        "title": "Iemand is hier al mee bezig",
+        "body": "Een andere reiziger pakt 'm nu op. Kom terug als ze klaar zijn — dan komt de challenge weer vrij."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Challenge vol",
       "body": "Alle plekken zijn bezet. Kom terug als iemand afhaakt."
+    },
+    "inProgress": {
+      "title": "Iemand is hier nu mee bezig",
+      "body": "Een reiziger pakt deze challenge nu op. Als ze klaar zijn, komt 'ie weer vrij — kom snel terug."
     }
   }
 }

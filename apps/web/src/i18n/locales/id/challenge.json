@@ -38,7 +38,9 @@
   "validatedBadge": "Tervalidasi",
   "card": {
     "open": "Terbuka",
-    "full": "Penuh"
+    "full": "Penuh",
+    "available": "Tersedia",
+    "inProgress": "Berlangsung"
   },
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",
@@ -106,6 +108,10 @@
       },
       "cap_reached": {
         "title": "Challenge penuh"
+      },
+      "in_progress": {
+        "title": "Ada yang lagi ngambil",
+        "body": "Pelancong lain lagi ngambil ini sekarang. Cek lagi pas mereka selesai — challenge-nya bakal kosong lagi."
       }
     }
   },
@@ -250,6 +256,10 @@
     "full": {
       "title": "Tantangan penuh",
       "body": "Semua slot sudah terisi. Cek lagi kalau ada yang mundur."
+    },
+    "inProgress": {
+      "title": "Ada yang lagi ngambil sekarang",
+      "body": "Seorang pelancong lagi ngambil tantangan ini. Pas mereka selesai, bakal kosong lagi — cek lagi nanti."
     }
   }
 }
