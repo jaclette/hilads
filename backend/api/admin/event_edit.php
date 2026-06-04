@@ -21,10 +21,14 @@ $stmt = $pdo->prepare("
         ce.expires_at,
         ce.location,
         ce.venue,
-        c.status      AS channel_status,
+        c.status              AS channel_status,
         c.parent_id,
-        p.name        AS city_name,
-        es.timezone   AS series_timezone
+        p.name                AS city_name,
+        es.timezone           AS series_timezone,
+        es.recurrence_type    AS series_recurrence_type,
+        es.weekdays           AS series_weekdays,
+        es.interval_days      AS series_interval_days,
+        es.starts_on::TEXT    AS series_starts_on
     FROM channel_events ce
     JOIN channels c             ON c.id  = ce.channel_id
     LEFT JOIN channels p        ON p.id  = c.parent_id
@@ -161,6 +165,50 @@ if ($method === 'POST') {
                 ':tz'     => $tz,
                 ':sid'    => $event['series_id'],
             ]);
+        }
+
+        // For recurring events, also accept direct recurrence-rule edits
+        // (weekdays + interval_days). Used to repair existing series whose
+        // stored weekday no longer matches the visible series name (e.g. the
+        // mobile "init weekday = today" bug that mislabelled a Thursday
+        // series as a Wednesday one).
+        if ($isRecurring) {
+            $rawWeekdays = $_POST['weekdays'] ?? null;
+            $rawInterval = trim($_POST['interval_days'] ?? '');
+            $seriesFields = [];
+            $seriesParams = [':sid' => $event['series_id']];
+
+            // Weekdays only relevant for weekly series. Accept array of "0".."6"
+            // strings; persist as JSON. Empty array = no day selected; ignore.
+            if (is_array($rawWeekdays) && $event['series_recurrence_type'] === 'weekly') {
+                $clean = array_values(array_filter(
+                    array_map('intval', $rawWeekdays),
+                    fn($d) => $d >= 0 && $d <= 6
+                ));
+                if (!empty($clean)) {
+                    sort($clean);
+                    $clean = array_values(array_unique($clean));
+                    $seriesFields[]              = 'weekdays = :weekdays';
+                    $seriesParams[':weekdays']   = json_encode($clean);
+                }
+            }
+
+            // Interval only relevant for every_n_days. 2..365 mirrors the
+            // public create-series validation.
+            if ($rawInterval !== '' && $event['series_recurrence_type'] === 'every_n_days') {
+                $n = filter_var($rawInterval, FILTER_VALIDATE_INT, ['options' => ['min_range' => 2, 'max_range' => 365]]);
+                if ($n !== false) {
+                    $seriesFields[]                  = 'interval_days = :interval_days';
+                    $seriesParams[':interval_days']  = $n;
+                }
+            }
+
+            if (!empty($seriesFields)) {
+                $seriesFields[] = 'updated_at = now()';
+                $pdo->prepare(
+                    'UPDATE event_series SET ' . implode(', ', $seriesFields) . ' WHERE id = :sid'
+                )->execute($seriesParams);
+            }
         }
 
         // Update channel name (mirrors the title) and status
@@ -310,6 +358,51 @@ admin_nav('/admin/events');
                 ? 'Leave blank for recurring events — overwriting the 2999 sentinel turns the canonical row into a one-shot and removes it from feeds.'
                 : 'Leave blank to keep current value' ?></div>
         </div>
+
+        <?php if ($isRecurring): ?>
+            <?php
+                $currentWeekdays = !empty($event['series_weekdays'])
+                    ? (json_decode($event['series_weekdays'], true) ?: [])
+                    : [];
+                $postedWeekdays  = isset($_POST['weekdays']) && is_array($_POST['weekdays'])
+                    ? array_map('intval', $_POST['weekdays'])
+                    : null;
+                $shownWeekdays   = $postedWeekdays ?? $currentWeekdays;
+                $dayNames        = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            ?>
+
+            <div class="form-group">
+                <label>Recurrence pattern (<?= htmlspecialchars($event['series_recurrence_type'] ?? '?', ENT_QUOTES) ?>)</label>
+                <?php if ($event['series_recurrence_type'] === 'weekly'): ?>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">
+                        <?php foreach ($dayNames as $dow => $name): ?>
+                            <label style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #333;border-radius:6px;cursor:pointer;background:<?= in_array($dow, $shownWeekdays, true) ? '#3a2a18' : 'transparent' ?>">
+                                <input
+                                    type="checkbox"
+                                    name="weekdays[]"
+                                    value="<?= $dow ?>"
+                                    <?= in_array($dow, $shownWeekdays, true) ? 'checked' : '' ?>
+                                >
+                                <?= $name ?>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="hint">Currently: <strong><?= empty($currentWeekdays) ? '— (none)' : implode(' · ', array_map(fn($d) => $dayNames[$d] ?? '?', $currentWeekdays)) ?></strong>. Tick the days the series should repeat on.</div>
+                <?php elseif ($event['series_recurrence_type'] === 'every_n_days'): ?>
+                    <input
+                        type="number"
+                        name="interval_days"
+                        min="2"
+                        max="365"
+                        value="<?= htmlspecialchars((string) ($_POST['interval_days'] ?? $event['series_interval_days'] ?? ''), ENT_QUOTES) ?>"
+                        style="max-width:120px"
+                    >
+                    <div class="hint">Days between occurrences (2–365). Current: <strong><?= htmlspecialchars((string) ($event['series_interval_days'] ?? '—'), ENT_QUOTES) ?></strong></div>
+                <?php else: ?>
+                    <div class="hint">Daily — runs every day. Nothing to configure.</div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
         <div class="form-group">
             <label for="status">Channel status</label>
