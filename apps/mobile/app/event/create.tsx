@@ -469,7 +469,13 @@ export default function CreateEventScreen() {
               : repeat === 'every_n_days'
                 ? 'every_n_days'
                 : 'daily',
-            ...(repeat === 'weekly'       ? { weekdays: weekdays.length > 0 ? weekdays : [selectedDate.getDay()] } : {}),
+            // Weekly weekdays: presets like "weekends" set multi-day arrays
+            // explicitly — keep those. Otherwise (single-day default state),
+            // always re-derive from the picked start date so a user creating
+            // a "weekly" event on Wed but starting it next Thu gets a Thursday
+            // recurrence, not a Wednesday one. Mobile has no day-picker UI;
+            // the start date IS the weekday choice.
+            ...(repeat === 'weekly'       ? { weekdays: weekdays.length > 1 ? weekdays : [selectedDate.getDay()] } : {}),
             ...(repeat === 'every_n_days' ? { interval_days: iDays >= 2 ? iDays : 7 } : {}),
             // Anchors the recurrence series to the picked start date — so a
             // weekly series starting "next Saturday" actually starts then,
