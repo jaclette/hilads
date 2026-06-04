@@ -834,11 +834,14 @@ class EventRepository
                 'sid'    => $row['series_id'],
             ]);
         } else {
-            // One-shot: clamp to keep the rules that protect against runaway
-            // dates (no events more than 48h in the future; max 24h length).
+            // One-shot: clamp to the SAME bounds the create route enforces —
+            // up to 6 months ahead, max 24h length. Previously this was capped
+            // at +48h, which silently snapped any "move event to next week"
+            // edit back to today/tomorrow. The user picked a date in the form;
+            // honour it within the create-time limits.
             $now       = time();
-            $startsAt  = min($startsAt, $now + 48 * 3600);
-            $expiresAt = min($endsAt,   $startsAt + 24 * 3600);
+            $startsAt  = max($now - 3600, min($startsAt, $now + 180 * 86400));
+            $expiresAt = min($endsAt,     $startsAt + 24 * 3600);
 
             $pdo->prepare("
                 UPDATE channel_events
