@@ -562,11 +562,18 @@ export async function updateChallenge(challengeId, guestId, title, challengeType
       guestId, title, challengeType, audience, returnClause,
       targetCityChannelId: intl.targetCityChannelId ?? null,
       proofRequirements:   intl.proofRequirements ?? null,
+      // 'public' | 'friends' only; null/omitted = don't change. The server
+      // enforces "private not at input" — it's only reachable via the mutual
+      // privacy flow.
+      visibility:          intl.visibility ?? null,
     }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to update challenge')
+    const err  = new Error(data.error || 'Failed to update challenge')
+    err.code   = data.code  || null
+    err.field  = data.field || null
+    throw err
   }
   return res.json()
 }
@@ -597,13 +604,34 @@ export async function createChallenge(channelId, guestId, nickname, title, chall
       mode:                intl.mode ?? 'local',
       targetCityChannelId: intl.targetCityChannelId ?? null,
       proofRequirements:   intl.proofRequirements ?? null,
+      // 'public' | 'friends' only at create-time. Server forces 'public'
+      // on International rows regardless of what we send.
+      visibility:          intl.visibility ?? 'public',
     }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to create challenge')
+    const err  = new Error(data.error || 'Failed to create challenge')
+    err.code   = data.code  || null
+    err.field  = data.field || null
+    throw err
   }
   return res.json() // newly-created Challenge object
+}
+
+// Flip users.has_seen_public_optin to TRUE so the first-time public modal
+// stops showing. Server returns { ok, hasSeenPublicOptin }.
+export async function dismissPublicOptin() {
+  const res = await fetch(`${BASE}/me/dismiss-public-optin`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to dismiss opt-in')
+  }
+  return res.json()
 }
 
 export async function validateChallenge(challengeId, guestId) {

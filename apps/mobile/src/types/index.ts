@@ -451,6 +451,12 @@ export interface User {
    */
   eula_accepted_at?: string | null;
   /**
+   * Set to TRUE the first time the user dismisses the public-default opt-in
+   * modal on challenge create. Drives whether that modal appears on
+   * subsequent submits.
+   */
+  has_seen_public_optin?: boolean;
+  /**
    * Live source of truth for "what city is this user in." Server-side, updated
    * by the two-signal transition rule on /location/resolve and immediately by
    * manual switches via POST /me/city. Null when never resolved + no

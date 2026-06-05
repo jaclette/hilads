@@ -8,7 +8,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { createChallenge, updateChallenge } from '@/api/challenges';
+import { createChallenge, updateChallenge, dismissPublicOptin } from '@/api/challenges';
 import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
 import type { ChallengeType, ChallengeAudience, City } from '@/types';
@@ -77,6 +77,26 @@ export default function CreateChallengeScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
+  // Visibility — 'public' default; 'friends' opt-in. Private isn't settable
+  // here (server enforces); the mutual privacy flow is the only path.
+  type Visibility = 'public' | 'friends';
+  const initialVisibility: Visibility =
+    (typeof (params as { visibility?: string }).visibility === 'string'
+      && ['public', 'friends'].includes((params as { visibility?: string }).visibility as string))
+      ? ((params as { visibility: string }).visibility as Visibility)
+      : 'public';
+  const [visibility,        setVisibility]        = useState<Visibility>(initialVisibility);
+  const [optinOpen,         setOptinOpen]         = useState(false);
+  const [optinDismissing,   setOptinDismissing]   = useState(false);
+  const pendingSubmitRef                          = useRef<null | (() => Promise<void>)>(null);
+  const hasSeenPublicOptin                        = !!account?.has_seen_public_optin;
+
+  // International is always public — keep state in sync so the payload
+  // matches what the server will enforce.
+  useEffect(() => {
+    if (mode === 'international' && visibility !== 'public') setVisibility('public');
+  }, [mode, visibility]);
+
   // Re-template the return clause whenever the type changes, UNLESS the user
   // has already edited it manually (we don't want to clobber a custom phrase).
   useEffect(() => {
@@ -85,7 +105,7 @@ export default function CreateChallengeScreen() {
     setReturnClause(template);
   }, [type, t]);
 
-  async function handleSubmit() {
+  async function performSubmit() {
     const trimmedTitle = title.trim();
     if (!trimmedTitle || !city || !identity) return;
     setSubmitting(true);
@@ -94,6 +114,8 @@ export default function CreateChallengeScreen() {
     const trimmedReturnClause      = mode === 'local'        ? (returnClause.trim()      || null) : null;
     const trimmedProofRequirements = mode === 'international' ? (proofRequirements.trim() || null) : null;
     const targetChannelIdForSubmit = mode === 'international' ? (targetCity?.channelId ?? null)   : null;
+    // International is forced to 'public' server-side — match it here.
+    const visibilityForSubmit: Visibility = mode === 'international' ? 'public' : visibility;
 
     // Edit path: PUT the existing challenge, then back.
     if (editId) {
@@ -101,10 +123,15 @@ export default function CreateChallengeScreen() {
         await updateChallenge(editId, identity.guestId, trimmedTitle, type, audience, trimmedReturnClause, {
           targetCityChannelId: targetChannelIdForSubmit,
           proofRequirements:   trimmedProofRequirements,
+          visibility:          visibilityForSubmit,
         });
         router.back();
       } catch (err) {
-        setError(err instanceof Error ? err.message : t('errSave'));
+        // Moderation surface — translate to the user-facing string so it
+        // matches what the server is signalling.
+        const e = err as { code?: string; message?: string };
+        if (e?.code === 'moderation_blocked') setError(t('visibility.moderationBlocked'));
+        else setError(e?.message || t('errSave'));
       } finally {
         setSubmitting(false);
       }
@@ -128,6 +155,7 @@ export default function CreateChallengeScreen() {
           mode,
           targetCityChannelId: targetChannelIdForSubmit,
           proofRequirements:   trimmedProofRequirements,
+          visibility:          visibilityForSubmit,
         },
       );
       // Land the creator on the freshly-created challenge so they can share
@@ -136,10 +164,39 @@ export default function CreateChallengeScreen() {
       // creator is nudged to invite specific city members or share externally.
       router.replace(`/challenge/${created.id}?postCreate=1` as never);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errStart'));
+      const e = err as { code?: string; message?: string };
+      if (e?.code === 'moderation_blocked') setError(t('visibility.moderationBlocked'));
+      else setError(e?.message || t('errStart'));
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleSubmit() {
+    if (!title.trim() || submitting) return;
+    const wantsPublic = (mode === 'international') || visibility === 'public';
+    if (!editId && wantsPublic && !hasSeenPublicOptin) {
+      pendingSubmitRef.current = performSubmit;
+      setOptinOpen(true);
+      return;
+    }
+    await performSubmit();
+  }
+
+  async function handleOptinConfirm() {
+    setOptinDismissing(true);
+    try { await dismissPublicOptin(); } catch { /* best-effort */ }
+    setOptinDismissing(false);
+    setOptinOpen(false);
+    const next = pendingSubmitRef.current;
+    pendingSubmitRef.current = null;
+    if (next) await next();
+  }
+
+  function handleOptinSwitchToFriends() {
+    setVisibility('friends');
+    setOptinOpen(false);
+    pendingSubmitRef.current = null;
   }
 
   // Guest gate — challenge creation requires a registered account (mirrors
@@ -241,6 +298,38 @@ export default function CreateChallengeScreen() {
             <Text style={styles.sectionHint}>{t('intl.targetCityHint')}</Text>
           </>
         )}
+
+        {/* Visibility — Public default; Friends opt-in. Locked to Public
+            on International rows (server enforces; we keep state in sync). */}
+        <Text style={styles.sectionLabel}>{t('visibility.label')}</Text>
+        <View style={styles.audienceRow}>
+          {(['public', 'friends'] as Visibility[]).map(v => {
+            const selected = visibility === v;
+            const lockedFriends = v === 'friends' && mode === 'international';
+            return (
+              <TouchableOpacity
+                key={v}
+                style={[
+                  styles.audienceBtn,
+                  selected && styles.audienceBtnSelected,
+                  lockedFriends && { opacity: 0.4 },
+                ]}
+                onPress={() => !lockedFriends && setVisibility(v)}
+                activeOpacity={lockedFriends ? 1 : 0.7}
+                disabled={lockedFriends}
+              >
+                <Text style={[styles.audienceLabel, selected && styles.audienceLabelSelected]}>
+                  {t(`visibility.${v}`)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <Text style={styles.sectionHint}>
+          {mode === 'international'
+            ? t('visibility.intlLocked')
+            : t(visibility === 'public' ? 'visibility.publicHint' : 'visibility.friendsHint')}
+        </Text>
 
         {/* Type — 4 emoji squares (food / place / culture / help) */}
         <Text style={styles.sectionLabel}>{t('type')}</Text>
@@ -374,7 +463,58 @@ export default function CreateChallengeScreen() {
         onClose={() => setCityPickerOpen(false)}
         onSelect={(c) => { setTargetCity(c); setCityPickerOpen(false); }}
       />
+
+      {/* First-time public opt-in modal — shown once per user (server
+          flips has_seen_public_optin on confirm). Switching to Friends
+          from here is intentional and does NOT mark optin as seen. */}
+      <PublicOptinModal
+        visible={optinOpen}
+        dismissing={optinDismissing}
+        onConfirm={handleOptinConfirm}
+        onSwitchToFriends={handleOptinSwitchToFriends}
+        onClose={() => { setOptinOpen(false); pendingSubmitRef.current = null; }}
+      />
     </SafeAreaView>
+  );
+}
+
+function PublicOptinModal({
+  visible, dismissing, onConfirm, onSwitchToFriends, onClose,
+}: {
+  visible:           boolean;
+  dismissing:        boolean;
+  onConfirm:         () => void;
+  onSwitchToFriends: () => void;
+  onClose:           () => void;
+}) {
+  const { t } = useTranslation('challenge');
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.optinOverlay} onPress={onClose}>
+        <Pressable style={styles.optinPanel} onPress={(e) => e.stopPropagation()}>
+          <Text style={styles.optinTitle}>{t('visibility.optin.title')}</Text>
+          <Text style={styles.optinBody}>{t('visibility.optin.body')}</Text>
+          <TouchableOpacity
+            style={[styles.submitBtn, dismissing && styles.submitBtnDisabled]}
+            disabled={dismissing}
+            onPress={onConfirm}
+            activeOpacity={0.85}
+          >
+            {dismissing
+              ? <ActivityIndicator color={Colors.white} size="small" />
+              : <Text style={styles.submitBtnText}>{t('visibility.optin.cta')}</Text>}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.optinGhostBtn}
+            disabled={dismissing}
+            onPress={onSwitchToFriends}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.optinGhostText}>{t('visibility.optin.switchToFriends')}</Text>
+          </TouchableOpacity>
+        </Pressable>
+      </Pressable>
+    </Modal>
   );
 }
 
@@ -718,4 +858,38 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   exampleChipText: { color: Colors.text, fontSize: FontSizes.xs + 1 },
+
+  // First-time public opt-in modal.
+  optinOverlay: {
+    flex:            1,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+    justifyContent:  'center',
+    paddingHorizontal: Spacing.lg,
+  },
+  optinPanel: {
+    backgroundColor: Colors.bg2,
+    borderRadius:    Radius.lg,
+    padding:         Spacing.lg,
+    gap:             Spacing.sm,
+  },
+  optinTitle: {
+    fontSize:   FontSizes.lg,
+    fontWeight: '800',
+    color:      Colors.text,
+  },
+  optinBody: {
+    fontSize:   FontSizes.sm,
+    lineHeight: FontSizes.sm * 1.45,
+    color:      Colors.muted,
+  },
+  optinGhostBtn: {
+    marginTop:       Spacing.xs,
+    paddingVertical: Spacing.sm + 2,
+    alignItems:      'center',
+  },
+  optinGhostText: {
+    color:      Colors.muted2,
+    fontWeight: '600',
+    fontSize:   FontSizes.sm,
+  },
 });

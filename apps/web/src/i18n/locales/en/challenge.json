@@ -303,6 +303,22 @@
     "localHint": "In your city. Ends with an in-person meetup.",
     "internationalHint": "Anywhere in the world. They send proof, you validate from afar."
   },
+  "visibility": {
+    "label": "Who can see this?",
+    "public": "🌍 Public",
+    "friends": "👯 Friends",
+    "publicHint": "Anyone in the city can see and accept this.",
+    "friendsHint": "Only your friends and people you invite can see this.",
+    "intlLocked": "International challenges are always public.",
+    "moderationBlocked": "Your text was flagged — please rephrase.",
+    "optin": {
+      "title": "Heads up — this is public",
+      "body": "Public challenges show up in the city feed and on the public web. Your name and your challenge text will be visible to anyone — including non-members and search engines. You can flip to Friends below if you'd rather keep it tighter.",
+      "cta": "Got it, post it public",
+      "switchToFriends": "Make it Friends instead",
+      "dontShowAgain": "Don't show this again"
+    }
+  },
   "intl": {
     "targetCityLabel": "Target city",
     "targetCityAnywhere": "🌍 Anywhere in the world",

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { createChallenge, updateChallenge, fetchChannels } from '../api'
+import { createChallenge, updateChallenge, fetchChannels, dismissPublicOptin } from '../api'
 import BackButton from './BackButton'
 
 // max_participants retired (1:1 model). Constants removed; the stepper UI
@@ -95,7 +95,7 @@ function MarqueePlaceholderInput({ placeholder, value, onChange, ...rest }) {
   )
 }
 
-export default function CreateChallengePage({ channelId, guest, account, editChallenge = null, onCreated, onUpdated, onBack }) {
+export default function CreateChallengePage({ channelId, guest, account, editChallenge = null, onCreated, onUpdated, onBack, onPublicOptinDismissed }) {
   const { t } = useTranslation('city')
   const isEdit = !!editChallenge
 
@@ -125,6 +125,36 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   const [submitting, setSubmitting] = useState(false)
   const [error,      setError]      = useState(null)
 
+  // Visibility selector. International rows are always public — the toggle
+  // is rendered but locked, with a tooltip explaining why. Private isn't
+  // settable at input time (route enforces it; the mutual privacy flow is
+  // the only path) so the toggle here is two-state: public | friends.
+  const [visibility, setVisibility] = useState(() => {
+    if (editChallenge?.visibility === 'friends') return 'friends'
+    // 'private' rows (came from the mutual flow) read back to the form as
+    // a friends-default — the edit form can downgrade them, but never
+    // re-set to private here.
+    return 'public'
+  })
+
+  // First-time opt-in modal: when the user is about to submit a public
+  // challenge AND they've never seen this warning, intercept the submit
+  // and show the modal. Once they confirm (or flip to friends) we
+  // proceed; the dismiss endpoint marks the flag so we don't show again.
+  const [optinOpen,         setOptinOpen]         = useState(false)
+  const [optinDismissing,   setOptinDismissing]   = useState(false)
+  const pendingSubmitRef    = useRef(null)
+  const hasSeenPublicOptin  = !!account?.has_seen_public_optin
+
+  // Visibility is locked to 'public' whenever mode flips to International.
+  // Keep the state in sync so the submit payload always matches what the
+  // server will enforce anyway (defence: avoid a confusing rejection).
+  useEffect(() => {
+    if (mode === 'international' && visibility !== 'public') {
+      setVisibility('public')
+    }
+  }, [mode, visibility])
+
   // Re-template the return clause whenever the type changes, unless the user
   // has already edited it manually.
   useEffect(() => {
@@ -132,13 +162,14 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
     setReturnClause(t(`returnClauseTemplates.${type}`, { ns: 'challenge' }))
   }, [type, t])
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+  async function performSubmit() {
     const trimmed       = title.trim()
     const trimmedClause = mode === 'local'        ? (returnClause.trim()      || null) : null
     const trimmedProof  = mode === 'international' ? (proofRequirements.trim() || null) : null
     const targetForApi  = mode === 'international' ? (targetCity?.channelId ?? null)   : null
-    if (!trimmed || submitting) return
+    // International is forced to 'public' server-side — match it here so
+    // the payload is honest about the user's intent.
+    const visibilityForApi = mode === 'international' ? 'public' : visibility
     setSubmitting(true)
     setError(null)
     try {
@@ -146,6 +177,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
         const updated = await updateChallenge(editChallenge.id, guest.guestId, trimmed, type, audience, trimmedClause, {
           targetCityChannelId: targetForApi,
           proofRequirements:   trimmedProof,
+          visibility:          visibilityForApi,
         })
         onUpdated?.(updated)
       } else {
@@ -154,14 +186,62 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           mode,
           targetCityChannelId: targetForApi,
           proofRequirements:   trimmedProof,
+          visibility:          visibilityForApi,
         })
         onCreated?.(challenge)
       }
     } catch (err) {
-      setError(err?.message || t('create.challengeErrStart'))
+      // Moderation hit — surface a translation-aware message so the user
+      // knows to rephrase (the server never tells us which word matched).
+      if (err?.code === 'moderation_blocked') {
+        setError(t('visibility.moderationBlocked', { ns: 'challenge' }))
+      } else {
+        setError(err?.message || t('create.challengeErrStart'))
+      }
     } finally {
       setSubmitting(false)
     }
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!title.trim() || submitting) return
+
+    // Public + first-time → show the opt-in modal and stash a continuation.
+    // Friends + edit-flow + already-seen all bypass the modal.
+    const wantsPublic = (mode === 'international') || visibility === 'public'
+    if (!isEdit && wantsPublic && !hasSeenPublicOptin) {
+      pendingSubmitRef.current = performSubmit
+      setOptinOpen(true)
+      return
+    }
+    await performSubmit()
+  }
+
+  async function handleOptinConfirm() {
+    // Best-effort dismiss — never block the create on the dismiss call
+    // failing. The modal closes either way; the next session will just
+    // show it once more. Cheap and forgiving.
+    setOptinDismissing(true)
+    try {
+      await dismissPublicOptin()
+      onPublicOptinDismissed?.()
+    } catch { /* best-effort */ }
+    setOptinDismissing(false)
+    setOptinOpen(false)
+    const next = pendingSubmitRef.current
+    pendingSubmitRef.current = null
+    if (next) await next()
+  }
+
+  function handleOptinSwitchToFriends() {
+    setVisibility('friends')
+    setOptinOpen(false)
+    pendingSubmitRef.current = null
+    // The user explicitly chose Friends — we DON'T mark optin as seen
+    // (they didn't agree to Public, they ducked it). Next time they try
+    // Public, they'll see the modal again. That's the intended shape:
+    // the modal teaches what Public means; ducking is not learning.
   }
 
   return (
@@ -281,6 +361,40 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
             />
           </div>
 
+          {/* Visibility — two-state pill (Public / Friends). Locked to
+              Public when mode=international with a tooltip explaining why.
+              Private isn't settable here — only via the mutual privacy
+              flow once the challenge has an acceptor. */}
+          <div className="cef-section">
+            <p className="cef-label">{t('visibility.label', { ns: 'challenge' })}</p>
+            <div className="cef-segmented" role="radiogroup">
+              {['public', 'friends'].map(v => {
+                const selected = visibility === v
+                const isFriendsAndIntl = v === 'friends' && mode === 'international'
+                return (
+                  <button
+                    key={v}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    aria-disabled={isFriendsAndIntl}
+                    disabled={isFriendsAndIntl}
+                    title={isFriendsAndIntl ? t('visibility.intlLocked', { ns: 'challenge' }) : undefined}
+                    className={`cef-segment ${selected ? 'cef-segment--active' : ''} ${isFriendsAndIntl ? 'cef-segment--disabled' : ''}`}
+                    onClick={() => !isFriendsAndIntl && setVisibility(v)}
+                  >
+                    <span>{t(`visibility.${v}`, { ns: 'challenge' })}</span>
+                  </button>
+                )
+              })}
+            </div>
+            <p className="cef-hint">
+              {mode === 'international'
+                ? t('visibility.intlLocked', { ns: 'challenge' })
+                : t(visibility === 'public' ? 'visibility.publicHint' : 'visibility.friendsHint', { ns: 'challenge' })}
+            </p>
+          </div>
+
           {/* Return clause (Local only) — the "...and come tell me about
               it in person" half. Pre-filled per type; user-editable; first
               edit pins it. Forces every Local challenge to lead to a real
@@ -368,6 +482,49 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           onSelect={(c) => { setTargetCity(c); setCityPickerOpen(false) }}
         />
       )}
+
+      {optinOpen && (
+        <PublicOptinModal
+          dismissing={optinDismissing}
+          onConfirm={handleOptinConfirm}
+          onSwitchToFriends={handleOptinSwitchToFriends}
+          onClose={() => { setOptinOpen(false); pendingSubmitRef.current = null }}
+        />
+      )}
+    </div>
+  )
+}
+
+// First-time public opt-in modal. Shown once per user (the
+// has_seen_public_optin flag flips on the server when they confirm).
+// Switching to Friends from inside the modal does NOT mark optin as
+// seen — that's a duck, not a learning event.
+function PublicOptinModal({ dismissing, onConfirm, onSwitchToFriends, onClose }) {
+  const { t } = useTranslation('challenge')
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-panel modal-panel--challenge-optin" onClick={e => e.stopPropagation()}>
+        <h3 className="modal-title">{t('visibility.optin.title')}</h3>
+        <p className="modal-body">{t('visibility.optin.body')}</p>
+        <div className="modal-actions modal-actions--stack">
+          <button
+            type="button"
+            className="modal-btn modal-btn--primary"
+            disabled={dismissing}
+            onClick={onConfirm}
+          >
+            {dismissing ? '…' : t('visibility.optin.cta')}
+          </button>
+          <button
+            type="button"
+            className="modal-btn modal-btn--ghost"
+            disabled={dismissing}
+            onClick={onSwitchToFriends}
+          >
+            {t('visibility.optin.switchToFriends')}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

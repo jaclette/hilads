@@ -6071,6 +6071,12 @@ export default function App() {
           guest={guest}
           account={account}
           editChallenge={editChallengeObj}
+          onPublicOptinDismissed={() => {
+            // Optimistically flip the local account state so the user
+            // doesn't see the modal again this session even before their
+            // next /me refresh.
+            setAccount(prev => prev ? { ...prev, has_seen_public_optin: true } : prev)
+          }}
           onCreated={(ch) => {
             setShowCreateChallenge(false)
             setActiveChallenge(ch)

@@ -81,12 +81,17 @@ export async function fetchUserChallenges(userId: string): Promise<ProfileChalle
 
 // ── Writes ────────────────────────────────────────────────────────────────────
 
-/** Optional fields for International mode. All three are ignored by the
- *  server when `mode='local'`. `targetCityChannelId` null = "anywhere". */
+/** Optional fields for International mode + visibility (privacy layer).
+ *  Mode/target/proof fields are ignored by the server when `mode='local'`.
+ *  `targetCityChannelId` null = "anywhere". `visibility` is 'public' or
+ *  'friends' at input — 'private' is reachable only via the mutual privacy
+ *  flow once the challenge has an acceptor. Server forces 'public' on
+ *  International rows regardless of what we send. */
 export interface InternationalChallengeFields {
   mode?:                 'local' | 'international';
   targetCityChannelId?:  string | number | null;
   proofRequirements?:    string | null;
+  visibility?:           'public' | 'friends' | null;
 }
 
 export async function createChallenge(
@@ -109,6 +114,7 @@ export async function createChallenge(
     mode:                intl.mode ?? 'local',
     targetCityChannelId: intl.targetCityChannelId ?? null,
     proofRequirements:   intl.proofRequirements ?? null,
+    visibility:          intl.visibility ?? 'public',
   });
 }
 
@@ -134,7 +140,16 @@ export async function updateChallenge(
     returnClause,
     targetCityChannelId: intl.targetCityChannelId ?? null,
     proofRequirements:   intl.proofRequirements ?? null,
+    // null = don't change. 'public' | 'friends' only at input; the mutual
+    // privacy flow is the only path to 'private'.
+    visibility:          intl.visibility ?? null,
   });
+}
+
+/** Flip users.has_seen_public_optin to TRUE so the first-time public modal
+ *  stops showing for this user. One-shot endpoint, idempotent. */
+export async function dismissPublicOptin(): Promise<{ ok: boolean; hasSeenPublicOptin: boolean }> {
+  return api.post<{ ok: boolean; hasSeenPublicOptin: boolean }>(`/me/dismiss-public-optin`, {});
 }
 
 /** Owner-only soft-delete. */
