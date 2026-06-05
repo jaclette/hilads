@@ -544,6 +544,25 @@ export default function ChallengeChatScreen() {
           }
         />
 
+        {/* Owner re-invite CTA — only while the challenge is genuinely free.
+            Opens the same "seed it" sheet shown right after creation, so the
+            creator can ping more city members + re-share at any later moment.
+            Hidden once the challenge is in-progress or validated (the slot is
+            no longer available, no point inviting). */}
+        {isOwner && !isValidated && !challenge.is_in_progress && (
+          <TouchableOpacity
+            style={styles.ownerInviteCta}
+            onPress={() => setPostCreateOpen(true)}
+            activeOpacity={0.85}
+            accessibilityLabel={t('postCreate.ctaInvite', { city: challengeCityName ?? t('postCreate.thisCity') })}
+          >
+            <Ionicons name="people" size={16} color="#FF7A3C" />
+            <Text style={styles.ownerInviteCtaText} numberOfLines={1}>
+              {t('postCreate.ctaInvite', { city: challengeCityName ?? t('postCreate.thisCity') })}
+            </Text>
+          </TouchableOpacity>
+        )}
+
         {isOwner && (
           <View style={styles.ownerSecondaryRow}>
             <TouchableOpacity style={styles.ownerIconBtn} onPress={handleEdit} activeOpacity={0.75} accessibilityLabel={t('editTitle')}>
@@ -1001,6 +1020,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
+
+  // Primary owner CTA — "Challenge someone in {city}". Outlined orange to
+  // match the brand share pill above but bigger / more inviting so the eye
+  // lands on it when the challenge is still empty.
+  ownerInviteCta: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'center',
+    gap:               8,
+    paddingVertical:   Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
+    borderRadius:      Radius.full,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.4)',
+    backgroundColor:   'rgba(255,122,60,0.08)',
+    marginTop:         Spacing.sm,
+    alignSelf:         'center',
+  },
+  ownerInviteCtaText: { fontSize: FontSizes.sm, fontWeight: '700', color: '#FF7A3C', flexShrink: 1 },
 
   // Challenger row — the creator, distinguished from regular participants
   // with a 👑 pill in brand orange. Bigger avatar (44px) so the originating

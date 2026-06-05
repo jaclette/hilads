@@ -22,6 +22,7 @@ import {
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
+import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
@@ -121,6 +122,11 @@ export default function ChallengeChatPage({
   // acceptance but no proposal yet. Counter-propose has its own picker
   // inside ThreadScheduleBlock — they don't conflict.
   const [pickerOpen, setPickerOpen] = useState(false)
+  // Invite-people modal: owner can re-open the post-create flow at any time
+  // while the challenge is still free (same picker, same audience rule).
+  const [invitePeopleOpen, setInvitePeopleOpen] = useState(false)
+  const [cityChannelIdForInvite, setCityChannelIdForInvite] = useState(null)
+  const [cityNameForInvite,      setCityNameForInvite]      = useState(null)
 
   const id = challenge?.id
 
@@ -148,6 +154,10 @@ export default function ChallengeChatPage({
     if (!id) return
     const data = await fetchChallengeById(id).catch(() => null)
     if (data?.challenge) setChallenge(data.challenge)
+    // Stash city info for the invite-people modal so the picker can fetch
+    // members by mode + label the picker with the city.
+    if (data?.channelId != null) setCityChannelIdForInvite(String(data.channelId))
+    if (data?.cityName)          setCityNameForInvite(data.cityName)
   }, [id])
 
   const loadParticipants = useCallback(async () => {
@@ -484,6 +494,23 @@ export default function ChallengeChatPage({
       {/* Close-challenge — moved from the old status pill toggle. Same
           /validate endpoint, just smaller affordance + only visible to the
           creator now. Reopens via the same handler. */}
+      {/* Owner re-invite CTA — visible only while the challenge is genuinely
+          free (not in progress, not validated). Opens the same "seed it"
+          modal the user gets right after creation so they can re-ping more
+          city members or re-share at any later moment. */}
+      {isOwner && !isValidated && !challenge.is_in_progress && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 16px 4px' }}>
+          <button
+            type="button"
+            className="challenge-owner-invite-cta"
+            onClick={() => setInvitePeopleOpen(true)}
+          >
+            <span aria-hidden="true">👥</span>
+            <span>{t('postCreate.ctaInvite', { city: cityNameForInvite ?? t('postCreate.thisCity') })}</span>
+          </button>
+        </div>
+      )}
+
       {isOwner && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 16px 12px' }}>
           <button
@@ -805,6 +832,19 @@ export default function ChallengeChatPage({
       )}
 
       <ConfirmDialog dialog={alertModal} onClose={() => setAlertModal(null)} />
+
+      {/* Re-open the post-create flow at any time for the owner while the
+          challenge is free. Same component + same picker, same audience rule. */}
+      {invitePeopleOpen && (
+        <ChallengePostCreateModal
+          challenge={challenge}
+          cityChannelId={cityChannelIdForInvite}
+          cityName={cityNameForInvite}
+          currentUserId={account?.id ?? null}
+          onClose={() => setInvitePeopleOpen(false)}
+          onShare={handleShare}
+        />
+      )}
     </div>
   )
 }

@@ -11546,3 +11546,24 @@ body.has-app-promo-banner .page-header {
   object-fit: cover;
   flex-shrink: 0;
 }
+
+/* Owner-side "Challenge someone in {city}" CTA — visible on the challenge
+   detail page while the challenge is still free. Outlined orange so it
+   reads as a brand action without competing with the Accept primary CTA. */
+.challenge-owner-invite-cta {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,122,60,0.4);
+  background: rgba(255,122,60,0.08);
+  color: #FF7A3C;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.challenge-owner-invite-cta:hover { background: rgba(255,122,60,0.14); }
