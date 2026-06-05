@@ -101,12 +101,16 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
   // participants see the compact notifications toggle alongside the
   // members bar instead — the visibility line + per-message radio that
   // used to live here added noise without value for them.
+  //
+  // ORDER MATTERS: guard before any `privacy.*` read or the panel
+  // crashes the whole page while the GET /privacy request is still
+  // in flight on first mount.
+  if (!privacy)                  return null
+  if (!currentUserId)            return null
   const v          = privacy.currentVisibility ?? 'public'
-  const isCreator  = challenge?.created_by === currentUserId
+  const isCreator  = challenge?.created_by  === currentUserId
   const isAcceptor = privacy.acceptorUserId === currentUserId
-  if (!privacy)                     return null
-  if (!currentUserId)               return null
-  if (!isCreator && !isAcceptor)    return null
+  if (!isCreator && !isAcceptor) return null
 
   const showVote = mode === 'local' && v !== 'private'
 
