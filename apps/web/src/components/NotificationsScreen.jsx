@@ -32,6 +32,8 @@ const TYPE_ICONS = {
   friend_added:            '👋',  // legacy
   vibe_received:           '✨',
   profile_view:            '👀',
+  challenge_invitation:    '🤝',
+  challenge_takeon_request:'🤝',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────

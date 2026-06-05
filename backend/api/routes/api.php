@@ -8548,14 +8548,16 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
     $inviterName = $authUser['display_name'] ?? 'Someone';
     $title       = $challenge['title'] ?? '';
 
-    // Track three buckets so the client can tell the user what actually
-    // happened on resend:
-    //   sent     — push fired, invitee is now (re-)pending review
-    //   skipped  — invitee already accepted; we don't re-push (they're in)
-    //   failed   — exception path; logged + counted but invisible to the user
-    $sent     = [];
-    $skipped  = [];
-    $failed   = [];
+    // Every selected invitee gets a fresh push. We used to skip people whose
+    // invitation row was already 'accepted' on the assumption "they're in the
+    // flow, no need to re-ping" — but that broke the creator's mental model:
+    // they pick a name, hit send, see "Sent to 0", and assume the feature is
+    // broken. A prior acceptance can also be stale (the take-on may have
+    // since been cancelled / completed). The recipient is the better judge —
+    // we send, the rate limit (60/h per inviter) prevents abuse, the accept
+    // endpoint re-checks the take-on gates on tap.
+    $sent   = [];
+    $failed = [];
     foreach ($userIds as $inviteeId) {
         try {
             $res = ChallengeInvitationRepository::createOrTouch($challengeId, $inviter, $inviteeId);
@@ -8563,17 +8565,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
                 $failed[] = $inviteeId;
                 continue;
             }
-            // Already accepted — don't re-push, they're in the take-on flow.
-            if ($res['wasAccepted']) {
-                $skipped[] = $inviteeId;
-                continue;
-            }
             $invitation = $res['row'];
-            // In-app notification + push. Push payload carries invitationId so
-            // the mobile push category's Accept/Ignore actions can resolve the
-            // row server-side without an extra round-trip. Re-sends always
-            // fire a fresh push — the creator's intent on hitting send is
-            // "ping them again", not "be quiet about it".
             NotificationRepository::create(
                 $inviteeId,
                 'challenge_invitation',
@@ -8588,6 +8580,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
                 ],
             );
             $sent[] = $inviteeId;
+            error_log("[invite] sent challenge_invitation ch={$challengeId} from={$inviter} to={$inviteeId} invId=" . ($invitation['id'] ?? 'null'));
         } catch (\Throwable $e) {
             error_log('[challenges] invite send failed inv=' . $inviteeId . ': ' . $e->getMessage());
             $failed[] = $inviteeId;
@@ -8595,12 +8588,11 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
     }
 
     Response::json([
-        'invited'    => $sent,
-        'count'      => count($sent),
-        'skipped'    => count($skipped),
-        // `duplicates` kept for back-compat with the live client builds — equal
-        // to the count that didn't trigger a fresh push (accepted + errors).
-        'duplicates' => count($skipped) + count($failed),
+        'invited' => $sent,
+        'count'   => count($sent),
+        // `duplicates` kept for back-compat with older clients — now strictly
+        // equals failed (the only non-sent bucket).
+        'duplicates' => count($failed),
     ], 201);
 });
 
