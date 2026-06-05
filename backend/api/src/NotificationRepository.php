@@ -242,6 +242,9 @@ class NotificationRepository
             // close the loop on the invitation directly without the user
             // having to land in the app.
             'challenge_invitation'            => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            // Cross-city heads-up — tap lands the user on the challenge so
+            // they can decide whether to take it on.
+            'challenge_international_target'  => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/(tabs)/now',
             default                           => '/',
         };
     }
@@ -622,7 +625,13 @@ class NotificationRepository
         // city_join targets city *members* (current_city_id), not just whoever is
         // online this minute — a user wants "someone arrived in my city" for the
         // city they belong to whether or not the app is open right now.
-        $useCurrentCity = $type === 'new_event' || $type === 'city_join';
+        //
+        // challenge_international_target follows the same model: it's the
+        // cross-city heads-up fired to everyone whose current_city_id matches
+        // the target city when a creator in city A targets city B.
+        $useCurrentCity = $type === 'new_event'
+                       || $type === 'city_join'
+                       || $type === 'challenge_international_target';
 
         if ($useCurrentCity) {
             // current_city_last_confirmed_at TTL: 30 days. Users who haven't
@@ -676,6 +685,9 @@ class NotificationRepository
             // floor. city_join arrivals fire near-real-time (1 per 5s) so distinct
             // people arriving seconds apart each surface a notification + push; the
             // heavier new_event stays at 10 min so event creators can't spam.
+            // challenge_international_target rides the same 10-min window — a
+            // creator with a fresh challenge shouldn't be able to ping the same
+            // user twice in quick succession even by editing + re-creating.
             // MobilePushService applies the same per-type window to native push.
             if ($useCurrentCity) {
                 $window = $type === 'city_join' ? 5 : 600;

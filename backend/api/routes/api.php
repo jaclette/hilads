@@ -7536,6 +7536,48 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             error_log('[challenges] ws broadcast failed (non-fatal): ' . $e->getMessage());
         }
 
+        // ── Cross-city push fan-out (International with target_city_id) ─────
+        // Notify users whose current_city_id matches the target city. Uses
+        // NotificationRepository::notifyCityOnlineUsers which:
+        //   - drops dormant accounts (no positive city signal in 30 days)
+        //   - caps fan-out at CITY_PUSH_FANOUT_CAP per call
+        //   - rate-limits per (recipient, city, type) — 10 min window so a
+        //     re-create within minutes won't double-ping
+        //   - localizes the title+body per recipient (NotificationI18n
+        //     templates shipped in step 5)
+        // Excludes the creator from their own push, and skipped entirely for
+        // "anywhere" intl challenges (no target = no city to fan out to).
+        try {
+            if ($mode === 'international' && $targetCityId !== null) {
+                // Origin city name (used by the {originCity} placeholder
+                // in the localized push body). Lookup is cached in
+                // CityRepository so this is cheap.
+                $originCity = CityRepository::findById($channelId);
+                $targetInt  = (int) str_replace('city_', '', $targetCityId);
+                $targetCity = CityRepository::findById($targetInt);
+
+                NotificationRepository::notifyCityOnlineUsers(
+                    $targetCityId,
+                    $userId, // exclude the creator
+                    'challenge_international_target',
+                    "🌐 New cross-city challenge",
+                    'Someone in ' . ($originCity['name'] ?? 'another city')
+                        . ' wants a taker in ' . ($targetCity['name'] ?? 'your city'),
+                    [
+                        'challengeId'     => $challenge['id'],
+                        'challengeTitle' => $challenge['title'] ?? '',
+                        'challengeType'  => $challengeType,
+                        'mode'           => 'international',
+                        // Both city placeholders for NotificationI18n templates.
+                        'cityName'       => $targetCity['name']  ?? '',
+                        'originCityName' => $originCity['name'] ?? '',
+                    ],
+                );
+            }
+        } catch (\Throwable $e) {
+            error_log('[challenges] intl fan-out push failed (non-fatal): ' . $e->getMessage());
+        }
+
         AnalyticsService::defer('created_challenge', $userId ?? $guestId, [
             'challenge_id'   => $challenge['id'],
             'challenge_type' => $challengeType,
