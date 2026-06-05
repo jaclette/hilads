@@ -350,7 +350,30 @@
     "voteDeniedCta":  "Decline",
     "withdrawCta":    "Withdraw my vote",
     "needCounterparty": "Available once someone takes on this challenge.",
-    "errVote":      "Couldn't save your vote — try again."
+    "errVote":      "Couldn't save your vote — try again.",
+    "errSave":      "Couldn't save — try again.",
+    "notifTitle":   "Notifications for this challenge",
+    "notif": {
+      "milestones": "Milestones",
+      "all":        "Every message",
+      "off":        "Off"
+    },
+    "notifHint": {
+      "milestones": "Taker acceptance, proof submission, final validation.",
+      "all":        "Ping me for every new message in the channel.",
+      "off":        "Stay quiet — I'll check the channel myself."
+    },
+    "closedTitle":     "Close to new joins",
+    "closedBody":      "Existing participants stay. The Join button stops accepting new people until you re-open it.",
+    "closedCloseCta":  "Close the channel to new joins",
+    "closedReopenCta": "Re-open to new joins"
+  },
+  "members": {
+    "title":    "In the channel",
+    "empty":    "Nobody's joined yet — be the first.",
+    "kickCta":  "Remove",
+    "kickAria": "Remove {{name}} from the channel",
+    "errKick":  "Couldn't remove — try again."
   },
   "badge": {
     "challenger": "Challenger",

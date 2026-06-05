@@ -9552,8 +9552,9 @@ $router->add('GET', '/api/v1/users/{userId}/challenges', function (array $params
 });
 
 // GET /api/v1/challenges/{challengeId}/participants
-// Full participant list for the members modal. Public — same names/avatars
-// already shown in the card preview. Returns canonical UserDTOs.
+// LEGACY acceptor list — used by older read paths that want the active taker
+// row + display name. Kept for back-compat with the existing mobile build.
+// New code uses /channel-participants below.
 $router->add('GET', '/api/v1/challenges/{challengeId}/participants', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
@@ -9562,6 +9563,31 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants', function (a
     Response::json([
         'participants' => ChallengeRepository::getParticipants($challengeId),
         'count'        => ChallengeRepository::participantCount($challengeId),
+    ]);
+});
+
+// GET /api/v1/challenges/{challengeId}/channel-participants
+// Publicly visible list of channel members (people who clicked Join). Per
+// spec the list is open — anyone can see who's in. Creator + active taker
+// are NOT injected here (they have their own surfaces); a UI overlay
+// composes "Challenger / Taker / Members" client-side.
+//
+// Capped at 100; clients can paginate later if a single challenge ever
+// reaches that bound.
+$router->add('GET', '/api/v1/challenges/{challengeId}/channel-participants', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    // Visibility-aware: anon hitting a friends/private challenge gets 404
+    // (matches the rest of the surface; the list reveals existence too).
+    $viewerId  = AuthService::currentUser()['id'] ?? null;
+    if (ChallengeRepository::findById($challengeId, $viewerId) === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    Response::json([
+        'members' => ChallengeParticipantRepository::listForChannel($challengeId, 100),
+        'count'   => ChallengeParticipantRepository::countForChannel($challengeId),
     ]);
 });
 

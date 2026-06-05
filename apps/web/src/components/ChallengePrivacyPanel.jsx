@@ -4,7 +4,12 @@ import {
   fetchChallengePrivacy,
   voteChallengePrivacy,
   clearChallengePrivacyVote,
+  fetchMyChallengeParticipation,
+  setChallengeNotificationPreference,
+  setChallengeCloseToJoins,
 } from '../api'
+
+const NOTIF_OPTIONS = ['milestones', 'all', 'off']
 
 /**
  * Per-challenge privacy controls. Visible only to participants (creator or
@@ -28,21 +33,34 @@ import {
 export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisibilityChanged }) {
   const { t } = useTranslation('challenge')
 
-  const [privacy, setPrivacy] = useState(null) // { currentVisibility, myVote, ... }
-  const [busy,    setBusy]    = useState(null) // 'vote' | 'withdraw'
-  const [error,   setError]   = useState(null)
+  const [privacy,        setPrivacy]        = useState(null) // { currentVisibility, myVote, ... }
+  const [participation,  setParticipation]  = useState(null) // { isIn, notificationPreference }
+  const [busy,           setBusy]           = useState(null) // 'vote' | 'withdraw' | 'notif' | 'close'
+  const [error,          setError]          = useState(null)
+
+  // Local mirror of the close-to-joins flag so the toggle reflects state
+  // immediately on flip without waiting for the parent to re-fetch the
+  // challenge row.
+  const [closedToJoins, setClosedToJoins] = useState(() => !!challenge?.closed_to_new_joins)
+  useEffect(() => { setClosedToJoins(!!challenge?.closed_to_new_joins) }, [challenge?.closed_to_new_joins])
 
   const challengeId = challenge?.id ?? null
   const mode        = challenge?.mode ?? 'local'
 
-  // Initial load — also re-runs when the panel becomes relevant.
   const loadPrivacy = useCallback(async () => {
     if (!challengeId) return
     const data = await fetchChallengePrivacy(challengeId)
-    setPrivacy(data) // null is fine; UI hides the vote block
+    setPrivacy(data)
   }, [challengeId])
 
-  useEffect(() => { loadPrivacy() }, [loadPrivacy])
+  const loadParticipation = useCallback(async () => {
+    if (!challengeId || !currentUserId) { setParticipation(null); return }
+    const data = await fetchMyChallengeParticipation(challengeId)
+    setParticipation(data ?? null)
+  }, [challengeId, currentUserId])
+
+  useEffect(() => { loadPrivacy() },       [loadPrivacy])
+  useEffect(() => { loadParticipation() }, [loadParticipation])
 
   async function handleVote(vote) {
     if (busy) return
@@ -75,13 +93,45 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
     }
   }
 
-  // Non-participants get a 200 with isParticipant=false (the route used
-  // to 403; we keep the gate but stop logging a red error in the console).
-  // The Anonymize section is participants-only anyway, so the entire
-  // panel collapses to nothing for visitors and friends-only viewers.
-  if (!privacy) return null
-  if (privacy.isParticipant === false) return null
-  if (!currentUserId) return null
+  async function handleNotifChange(pref) {
+    if (busy) return
+    setBusy('notif')
+    setError(null)
+    try {
+      await setChallengeNotificationPreference(challengeId, pref)
+      // Optimistic; the server already validated the enum.
+      setParticipation(prev => prev ? { ...prev, notificationPreference: pref } : prev)
+    } catch (err) {
+      setError(err?.message || t('privacy.errSave'))
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  async function handleToggleClosed() {
+    if (busy) return
+    const next = !closedToJoins
+    setBusy('close')
+    setError(null)
+    try {
+      await setChallengeCloseToJoins(challengeId, next)
+      setClosedToJoins(next)
+      onVisibilityChanged?.(privacy?.currentVisibility ?? null)
+    } catch (err) {
+      setError(err?.message || t('privacy.errSave'))
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  // The panel renders for anyone in the channel — creator + active taker
+  // (privacy.isParticipant=true) get the mutual-vote block; channel joiners
+  // also see the visibility line + notification preference. Non-channel
+  // viewers collapse the whole surface.
+  const isInChannel = !!participation?.isIn
+  if (!privacy)         return null
+  if (!currentUserId)   return null
+  if (!isInChannel)     return null
 
   const v = privacy.currentVisibility ?? 'public'
   const isCreator  = challenge?.created_by === currentUserId
@@ -169,6 +219,53 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* Notification preference — any channel participant can tune this.
+          'milestones' (default) = taker accept + proof submit + final
+          validation. 'all' = every message. 'off' = silent (still has
+          read access). */}
+      <div className="challenge-privacy-notif">
+        <h4 className="challenge-privacy-subtitle">{t('privacy.notifTitle')}</h4>
+        <div className="challenge-privacy-notif-options" role="radiogroup">
+          {NOTIF_OPTIONS.map(opt => {
+            const selected = (participation?.notificationPreference ?? 'milestones') === opt
+            return (
+              <button
+                key={opt}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                disabled={busy === 'notif'}
+                className={`challenge-privacy-notif-opt ${selected ? 'challenge-privacy-notif-opt--active' : ''}`}
+                onClick={() => handleNotifChange(opt)}
+              >
+                <span className="challenge-privacy-notif-opt-label">{t(`privacy.notif.${opt}`)}</span>
+                <span className="challenge-privacy-notif-opt-hint">{t(`privacy.notifHint.${opt}`)}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Close-to-new-joins — creator-only toggle. Existing participants
+          stay; the Join CTA on the public detail page refuses new joins
+          while this is on. */}
+      {isCreator && (
+        <div className="challenge-privacy-closed">
+          <h4 className="challenge-privacy-subtitle">{t('privacy.closedTitle')}</h4>
+          <p className="challenge-privacy-hint">{t('privacy.closedBody')}</p>
+          <button
+            type="button"
+            className={`challenge-privacy-btn ${closedToJoins ? 'challenge-privacy-btn--primary' : 'challenge-privacy-btn--ghost'}`}
+            disabled={busy === 'close'}
+            onClick={handleToggleClosed}
+          >
+            {busy === 'close'
+              ? '…'
+              : (closedToJoins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta'))}
+          </button>
         </div>
       )}
 

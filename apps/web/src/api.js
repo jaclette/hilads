@@ -1668,6 +1668,17 @@ export async function fetchLinkPreview(url) {
 // 404 when caller isn't creator/acceptor; UI should hide the panel in that case.
 // ── Challenge participation (join / leave / moderation) ─────────────────────
 
+// Publicly visible channel members (people who clicked Join). Returns
+// { members: [{id, displayName, username, thumbAvatarUrl, joinedAt}], count }.
+// 404 when the viewer is out of visibility scope on a friends/private row.
+export async function fetchChannelParticipants(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/channel-participants`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return { members: [], count: 0 }
+  return res.json()
+}
+
 // "Am I in?" probe. Returns { isIn, isKicked, notificationPreference }.
 // Anon viewer always gets { isIn:false, reason:'anon' }.
 export async function fetchMyChallengeParticipation(challengeId) {

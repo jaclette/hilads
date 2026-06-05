@@ -27,6 +27,7 @@ import ChallengePipeline from './ChallengePipeline'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengePrivacyPanel from './ChallengePrivacyPanel'
+import ChallengeChannelMembers from './ChallengeChannelMembers'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
@@ -978,9 +979,21 @@ export default function ChallengeChatPage({
         />
       )}
 
-      {/* Privacy controls — only renders if the caller is a participant
-          (the server returns isParticipant=false for non-participants and the
-          panel hides itself). Mutual go-private + current-visibility live here. */}
+      {/* Publicly visible channel-member list. Renders for everyone (the
+          list itself is public per spec). Kick buttons surface only for
+          creator + active taker. The active taker is otherParticipants[0]
+          in the 1:1 model. */}
+      <ChallengeChannelMembers
+        challengeId={challenge.id}
+        currentUserId={account?.id ?? null}
+        isCreator={isOwner}
+        isActiveTaker={!!myAcceptance && myAcceptance.acceptor_user_id === account?.id}
+        onMembersChanged={() => loadParticipants()}
+      />
+
+      {/* Privacy controls — participants-only. Mutual go-private +
+          notification preference + close-to-new-joins live here (the
+          last two are wired in this PR). */}
       <ChallengePrivacyPanel
         challenge={challenge}
         currentUserId={account?.id ?? null}

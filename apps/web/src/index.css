@@ -12261,6 +12261,130 @@ body.has-app-promo-banner .page-header {
   .challenge-takeon-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }
 
+/* ── Channel members list (publicly visible, kick UI for creator/taker) ── */
+.challenge-members {
+  margin: 24px auto 0;
+  max-width: 640px;
+  padding: 18px 18px 20px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+}
+.challenge-members-title {
+  margin: 0 0 12px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+.challenge-members-empty {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.challenge-members-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.challenge-member {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 4px;
+}
+.challenge-member-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface2);
+}
+.challenge-member-avatar--blank {
+  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+}
+.challenge-member-name {
+  font-size: 0.94rem;
+  color: var(--text);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.challenge-member-kick {
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.challenge-member-kick:hover:not(:disabled) {
+  color: #fca5a5;
+  border-color: rgba(252, 165, 165, 0.30);
+}
+.challenge-member-kick:disabled { opacity: 0.5; cursor: progress; }
+.challenge-members-error {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+/* ── Notification-preference radio + close-to-joins block in privacy ────── */
+.challenge-privacy-notif,
+.challenge-privacy-closed {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.challenge-privacy-notif-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+.challenge-privacy-notif-opt {
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  -webkit-tap-highlight-color: transparent;
+}
+.challenge-privacy-notif-opt:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.challenge-privacy-notif-opt--active {
+  background: rgba(255, 122, 0, 0.10);
+  border-color: rgba(255, 122, 0, 0.42);
+}
+.challenge-privacy-notif-opt:disabled { opacity: 0.5; cursor: progress; }
+.challenge-privacy-notif-opt-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.challenge-privacy-notif-opt--active .challenge-privacy-notif-opt-label { color: #FFB37A; }
+.challenge-privacy-notif-opt-hint {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
 /* ── Participation gate — non-participant view ──────────────────────────── */
 .challenge-join-gate {
   margin: 24px auto 40px;
