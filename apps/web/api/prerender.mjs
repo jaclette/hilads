@@ -1399,10 +1399,27 @@ function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
     description = T(locale, descKey, { title: ch.title, city: cityName || '' }).trim()
   }
 
+  // Visibility-aware indexing:
+  //   - public  → indexable (default)
+  //   - friends → noindex (crawlers see the public-fallback row from the
+  //     backend's visibility-aware findById; without auth they'll get a
+  //     404. We still ship the page shell so a logged-in friend who
+  //     follows a direct link gets a clean SPA bootstrap. The noindex
+  //     keeps it out of Google.)
+  //   - private → noindex (404 to anon; same reasoning, defence in depth)
+  //
+  // The sitemap (backend /api/v1/sitemap/challenges) already filters
+  // public-only, so non-public URLs aren't actively advertised either.
+  // This noindex is the second line of defence for any URL leaked via
+  // direct share / referral.
+  const visibility = ch.visibility ?? 'public'
+  const noindex    = visibility !== 'public'
+
   return {
     title,
     description,
     url:   `${SITE_BASE}${canonicalPath}`,
+    noindex,
     // Reuse the city OG card so embeds aren't generic. A dedicated
     // /api/og?type=challenge can ship later.
     image: payload?.citySlug
@@ -1414,6 +1431,12 @@ function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
 function composeChallengeJsonLd(payload, canonicalUrl) {
   const ch = payload?.challenge
   if (!ch) return null
+
+  // Non-public rows skip structured data entirely. JSON-LD is a strong
+  // indexability signal; even with the robots:noindex tag in place we
+  // don't want a competing positive signal on the same page. Matches
+  // the visibility gate in composeChallengeMeta above.
+  if ((ch.visibility ?? 'public') !== 'public') return null
 
   const cityName        = payload?.cityName       || ''
   const country         = payload?.country        || ''
@@ -1526,6 +1549,13 @@ const CHALLENGE_TYPE_ICONS = {
 function composeChallengeBody(payload, locale = 'en') {
   const ch = payload?.challenge
   if (!ch) return null
+
+  // Non-public rows skip the SSR body entirely. Crawlers get only the
+  // noindex'd HTML shell; the SPA still boots for authenticated users
+  // (the visibility-aware findById gates whether they actually see the
+  // row). This keeps any leaked URL from caching the row's content in
+  // a CDN under the wrong indexability signal.
+  if ((ch.visibility ?? 'public') !== 'public') return null
   const lp        = localePrefixFor(locale)
   const cityName  = payload?.cityName || ''
   const citySlug  = payload?.citySlug || ''

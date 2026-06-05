@@ -263,6 +263,21 @@ function LocalMockup() {
 
         <div className="lp-mock-field-label">AND THEN?</div>
         <div className="lp-mock-field">...and come share it with me 🍜</div>
+
+        {/* Privacy pill — same Public / Friends shape as the real form, so
+            prospective users see the new control on the landing tile and
+            don't get surprised post-signup. Decorative; mirrors the live UI. */}
+        <div className="lp-mock-section-label">WHO CAN SEE THIS?</div>
+        <div className="lp-mock-presets">
+          <div className="lp-mock-preset lp-mock-preset--on">
+            <span className="lp-mock-preset-emoji">🌍</span>
+            <span className="lp-mock-preset-label">Public</span>
+          </div>
+          <div className="lp-mock-preset">
+            <span className="lp-mock-preset-emoji">👯</span>
+            <span className="lp-mock-preset-label">Friends</span>
+          </div>
+        </div>
       </div>
       <div className="lp-mock-submit lp-mock-submit--local">Launch challenge 🔥</div>
     </PhoneFrame>
