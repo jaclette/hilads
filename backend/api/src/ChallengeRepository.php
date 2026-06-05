@@ -224,7 +224,8 @@ class ChallengeRepository
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
-                     u.display_name, u.username, u.profile_thumb_photo_url
+                     u.display_name, u.username,
+                     u.profile_thumb_photo_url, u.profile_photo_url
             ORDER BY cc.created_at DESC
             LIMIT $limit
         ");
@@ -266,7 +267,8 @@ class ChallengeRepository
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
-                     u.display_name, u.username, u.profile_thumb_photo_url
+                     u.display_name, u.username,
+                     u.profile_thumb_photo_url, u.profile_photo_url
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
             LIMIT $limit
         ");
@@ -301,7 +303,8 @@ class ChallengeRepository
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
-                     u.display_name, u.username, u.profile_thumb_photo_url
+                     u.display_name, u.username,
+                     u.profile_thumb_photo_url, u.profile_photo_url
         ");
         $stmt->execute($params);
         $row = $stmt->fetch();
@@ -331,7 +334,8 @@ class ChallengeRepository
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
-                     u.display_name, u.username, u.profile_thumb_photo_url
+                     u.display_name, u.username,
+                     u.profile_thumb_photo_url, u.profile_photo_url
         ");
         $stmt->execute(['id' => $challengeId]);
         $row = $stmt->fetch();
