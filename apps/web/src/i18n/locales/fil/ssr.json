@@ -172,6 +172,10 @@
     "aboutHeading": "Tungkol sa challenge na ito",
     "aboutBody": "Sa Hilads, ang mga local at biyahero ay nagkokonekta sa pamamagitan ng mga challenge. Pumili ng uri — pagkain, lugar, kultura, tulong — lagyan ng pamagat at tingnan ang mga tatanggap. Kapag natapos na, vavalidahin ng gumawa ang challenge.",
     "cityLink": "Tingnan kung ano ang nangyayari sa {city}",
-    "removed": "Tinanggal na ang challenge na ito."
+    "removed": "Tinanggal na ang challenge na ito.",
+    "titleIntlDual": "{origin} → {target} · {title} — cross-city challenge sa Hilads",
+    "titleIntlAnywhere": "{title} — international challenge sa Hilads",
+    "descIntlDual": "{title} — challenge sa pagitan ng {origin} at {target}. Tanggapin, magpadala ng proof, vinavalidate ng creator mula sa malayo. Hilads.",
+    "descIntlAnywhere": "{title} — international challenge mula sa {origin}. Tanggapin kahit saan sa mundo, magpadala ng proof, vinavalidate ng creator. Hilads."
   }
 }

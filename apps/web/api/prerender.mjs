@@ -1363,17 +1363,41 @@ function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
   const ch = payload?.challenge
   if (!ch || !ch.title) return null
 
-  const cityName = payload?.cityName || ''
-  const title    = cityName
-    ? T(locale, 'challenge.title',       { title: ch.title, city: cityName })
-    : T(locale, 'challenge.titleNoCity', { title: ch.title })
+  const cityName       = payload?.cityName || ''
+  const targetCityName = payload?.targetCityName || ''
+  const isInternational = (ch.mode ?? 'local') === 'international'
 
-  // Audience-targeted description — surfaces the "for whom" angle which is
-  // the single most decision-relevant signal on a challenge page.
-  const descKey  = ch.audience === 'locals'    ? 'challenge.descLocals'
-                 : ch.audience === 'explorers' ? 'challenge.descExplorers'
-                 :                               'challenge.descGeneric'
-  const description = T(locale, descKey, { title: ch.title, city: cityName || '' }).trim()
+  // Title strategy:
+  //   - International with target  → "Paris → Tokyo · {title} — Hilads"
+  //     (dual-city in the SERP title is the gold for cross-city SEO; both
+  //     city queries can match this row.)
+  //   - International "anywhere"   → "{title} · International challenge — Hilads"
+  //   - Local with city            → existing "challenge.title" template
+  //   - No city                    → "challenge.titleNoCity"
+  let title
+  if (isInternational && targetCityName && cityName) {
+    title = T(locale, 'challenge.titleIntlDual',     { origin: cityName, target: targetCityName, title: ch.title })
+  } else if (isInternational) {
+    title = T(locale, 'challenge.titleIntlAnywhere', { title: ch.title })
+  } else if (cityName) {
+    title = T(locale, 'challenge.title',             { title: ch.title, city: cityName })
+  } else {
+    title = T(locale, 'challenge.titleNoCity',       { title: ch.title })
+  }
+
+  // Description strategy mirrors title — International gets its own variants;
+  // Local keeps the existing audience-targeted ones.
+  let description
+  if (isInternational && targetCityName) {
+    description = T(locale, 'challenge.descIntlDual', { origin: cityName, target: targetCityName, title: ch.title }).trim()
+  } else if (isInternational) {
+    description = T(locale, 'challenge.descIntlAnywhere', { origin: cityName, title: ch.title }).trim()
+  } else {
+    const descKey = ch.audience === 'locals'    ? 'challenge.descLocals'
+                  : ch.audience === 'explorers' ? 'challenge.descExplorers'
+                  :                               'challenge.descGeneric'
+    description = T(locale, descKey, { title: ch.title, city: cityName || '' }).trim()
+  }
 
   return {
     title,
@@ -1391,9 +1415,21 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
   const ch = payload?.challenge
   if (!ch) return null
 
-  const cityName = payload?.cityName || ''
+  const cityName        = payload?.cityName       || ''
+  const country         = payload?.country        || ''
+  const targetCityName  = payload?.targetCityName || ''
+  const targetCountry   = payload?.targetCountry  || ''
+  const isInternational = (ch.mode ?? 'local') === 'international'
+
   // CreativeWork — sidesteps the Event-requires-startDate problem while still
-  // exposing structured author/about/breadcrumb signals.
+  // exposing structured author / about / breadcrumb signals.
+  //
+  // International rows additionally emit:
+  //   locationCreated      — where the challenge originated (city A)
+  //   audience.geographicArea — recipient location (city B) when targeted,
+  //                             "Worldwide" semantic when target is null.
+  // Both are CreativeWork-native properties (audience.geographicArea is the
+  // canonical schema.org pattern for "this content targets people in X").
   const work = {
     '@type':       'CreativeWork',
     '@id':         canonicalUrl,
@@ -1410,8 +1446,59 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
       url:     SITE_BASE,
     },
     about:    cityName ? cityName : undefined,
-    keywords: ['challenge', cityName, ch.challenge_type, ch.audience].filter(Boolean).join(', '),
   }
+
+  if (isInternational) {
+    // Place node for the origin city — same shape as the existing about field
+    // but with @type:Place + addressLocality so Google can index it as a
+    // location rather than a free-text topic.
+    if (cityName) {
+      work.locationCreated = {
+        '@type':           'Place',
+        name:              cityName,
+        address: country ? { '@type': 'PostalAddress', addressLocality: cityName, addressCountry: country }
+                         : { '@type': 'PostalAddress', addressLocality: cityName },
+      }
+    }
+    // Recipient location — the target city if set, otherwise a Worldwide
+    // semantic. Both render as a CreativeWork.audience with geographicArea.
+    work.audience = {
+      '@type': 'Audience',
+      ...(targetCityName
+        ? {
+            geographicArea: {
+              '@type':           'Place',
+              name:              targetCityName,
+              address: targetCountry
+                ? { '@type': 'PostalAddress', addressLocality: targetCityName, addressCountry: targetCountry }
+                : { '@type': 'PostalAddress', addressLocality: targetCityName },
+            },
+            audienceType: 'travelers and locals in ' + targetCityName,
+          }
+        : { audienceType: 'travelers and locals worldwide' }),
+    }
+    // Cross-city keyword cluster — search queries like "Paris Tokyo
+    // challenge" should match this row. Filter blanks before joining.
+    work.keywords = [
+      'challenge',
+      'cross-city challenge',
+      'global challenge',
+      cityName,
+      targetCityName,
+      cityName && targetCityName ? `${cityName} vs ${targetCityName}` : null,
+      ch.challenge_type,
+    ].filter(Boolean).join(', ')
+  } else {
+    work.keywords = [
+      'challenge',
+      'local challenge',
+      ch.audience === 'explorers' ? 'traveler challenge' : null,
+      cityName,
+      ch.challenge_type,
+      ch.audience,
+    ].filter(Boolean).join(', ')
+  }
+
   // Drop undefined keys so the JSON-LD stays minimal.
   for (const k of Object.keys(work)) if (work[k] === undefined) delete work[k]
 

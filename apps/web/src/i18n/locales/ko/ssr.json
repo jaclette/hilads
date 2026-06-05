@@ -172,6 +172,10 @@
     "aboutHeading": "이 챌린지에 대해",
     "aboutBody": "Hilads에서는 로컬과 여행자가 챌린지를 통해 연결됩니다. 유형을 선택하고 — 음식, 장소, 문화, 도움 — 제목을 붙이고, 사람들이 수락하는 것을 보세요. 완료되면 작성자가 챌린지를 검증합니다.",
     "cityLink": "{city}에서 무슨 일이 일어나고 있는지 보기",
-    "removed": "이 챌린지는 제거되었습니다."
+    "removed": "이 챌린지는 제거되었습니다.",
+    "titleIntlDual": "{origin} → {target} · {title} — Hilads의 도시 간 챌린지",
+    "titleIntlAnywhere": "{title} — Hilads의 국제 챌린지",
+    "descIntlDual": "{title} — {origin}과 {target} 사이의 챌린지. 받아서 증거 보내면 작성자가 멀리서 승인. Hilads.",
+    "descIntlAnywhere": "{title} — {origin}에서 시작된 국제 챌린지. 세계 어디서든 받고 증거 보내면 작성자가 승인. Hilads."
   }
 }

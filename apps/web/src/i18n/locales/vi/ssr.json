@@ -173,6 +173,10 @@
     "aboutHeading": "Về thử thách này",
     "aboutBody": "Trên Hilads, người địa phương và du khách kết nối qua những thử thách. Chọn loại — ăn uống, địa điểm, văn hóa, giúp đỡ — đặt tiêu đề và xem mọi người chấp nhận. Khi hoàn thành, người tạo xác nhận thử thách.",
     "cityLink": "Xem điều gì đang diễn ra tại {city}",
-    "removed": "Thử thách này đã bị xóa."
+    "removed": "Thử thách này đã bị xóa.",
+    "titleIntlDual": "{origin} → {target} · {title} — thử thách giữa các thành phố trên Hilads",
+    "titleIntlAnywhere": "{title} — thử thách quốc tế trên Hilads",
+    "descIntlDual": "{title} — thử thách giữa {origin} và {target}. Nhận, gửi bằng chứng, người tạo duyệt từ xa. Hilads.",
+    "descIntlAnywhere": "{title} — thử thách quốc tế từ {origin}. Nhận ở bất cứ đâu trên thế giới, gửi bằng chứng, người tạo duyệt. Hilads."
   }
 }

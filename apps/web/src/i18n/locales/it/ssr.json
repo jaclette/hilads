@@ -172,6 +172,10 @@
     "aboutHeading": "Su questa sfida",
     "aboutBody": "Su Hilads, local ed viaggiatori si connettono attraverso le sfide. Scegli un tipo — cibo, posto, cultura, aiuto — dagli un titolo e guarda la gente accettarla. Una volta completata, il creatore valida la sfida.",
     "cityLink": "Vedi cosa succede a {city}",
-    "removed": "Questa sfida è stata rimossa."
+    "removed": "Questa sfida è stata rimossa.",
+    "titleIntlDual": "{origin} → {target} · {title} — sfida tra città su Hilads",
+    "titleIntlAnywhere": "{title} — sfida internazionale su Hilads",
+    "descIntlDual": "{title} — una sfida tra {origin} e {target}. Accettala, manda una prova, chi l'ha creata valida a distanza. Hilads.",
+    "descIntlAnywhere": "{title} — una sfida internazionale da {origin}. Accettala da qualsiasi parte del mondo, manda una prova, chi l'ha creata valida. Hilads."
   }
 }

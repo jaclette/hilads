@@ -172,6 +172,10 @@
     "aboutHeading": "Sobre este reto",
     "aboutBody": "En Hilads, locales y viajeros conectan a través de retos. Elige un tipo — comida, lugar, cultura, ayuda — ponle un título y mira cómo la gente lo acepta. Una vez completado, el creador valida el reto.",
     "cityLink": "Ver qué pasa en {city}",
-    "removed": "Este reto ha sido eliminado."
+    "removed": "Este reto ha sido eliminado.",
+    "titleIntlDual": "{origin} → {target} · {title} — reto entre ciudades en Hilads",
+    "titleIntlAnywhere": "{title} — reto internacional en Hilads",
+    "descIntlDual": "{title} — un reto entre {origin} y {target}. Acéptalo, envía una prueba, el creador valida a distancia. Hilads.",
+    "descIntlAnywhere": "{title} — un reto internacional desde {origin}. Acéptalo desde cualquier parte, envía una prueba, el creador valida. Hilads."
   }
 }

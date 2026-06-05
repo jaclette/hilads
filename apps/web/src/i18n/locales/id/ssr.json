@@ -172,6 +172,10 @@
     "aboutHeading": "Tentang tantangan ini",
     "aboutBody": "Di Hilads, local dan pelancong terhubung lewat tantangan. Pilih jenis — makanan, tempat, budaya, bantuan — beri judul, dan lihat orang menerima. Setelah selesai, pembuat memvalidasi tantangan.",
     "cityLink": "Lihat apa yang terjadi di {city}",
-    "removed": "Tantangan ini telah dihapus."
+    "removed": "Tantangan ini telah dihapus.",
+    "titleIntlDual": "{origin} → {target} · {title} — tantangan lintas kota di Hilads",
+    "titleIntlAnywhere": "{title} — tantangan internasional di Hilads",
+    "descIntlDual": "{title} — tantangan antara {origin} dan {target}. Terima, kirim bukti, pembuat memvalidasi dari jauh. Hilads.",
+    "descIntlAnywhere": "{title} — tantangan internasional dari {origin}. Terima di mana saja di dunia, kirim bukti, pembuat memvalidasi. Hilads."
   }
 }

@@ -172,6 +172,10 @@
     "aboutHeading": "關於這個挑戰",
     "aboutBody": "在 Hilads,在地人和旅人透過挑戰連結。選擇一種類型 — 美食、地點、文化、幫助 — 給它一個標題,看著人們接受。完成後,建立者驗證挑戰。",
     "cityLink": "看看 {city} 正在發生什麼",
-    "removed": "此挑戰已被移除。"
+    "removed": "此挑戰已被移除。",
+    "titleIntlDual": "{origin} → {target} · {title} — Hilads 跨城挑戰",
+    "titleIntlAnywhere": "{title} — Hilads 國際挑戰",
+    "descIntlDual": "{title} — {origin} 到 {target} 的跨城挑戰。接受挑戰，提交證據，發起人遠端驗證。Hilads。",
+    "descIntlAnywhere": "{title} — 來自 {origin} 的國際挑戰。世界任何地方都能接受，提交證據，發起人驗證。Hilads。"
   }
 }

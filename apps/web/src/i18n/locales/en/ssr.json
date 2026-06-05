@@ -85,7 +85,11 @@
     "aboutHeading": "About this challenge",
     "aboutBody": "On Hilads, locals and travelers connect through challenges. Pick a type — food, place, culture, help — give it a title, and watch people accept. Once completed, the creator validates the challenge.",
     "cityLink": "See what's happening in {city}",
-    "removed": "This challenge has been removed."
+    "removed": "This challenge has been removed.",
+    "titleIntlDual": "{origin} → {target} · {title} — cross-city challenge on Hilads",
+    "titleIntlAnywhere": "{title} — international challenge on Hilads",
+    "descIntlDual": "{title} — a cross-city challenge from {origin} to {target}. Take it on, send proof, the creator validates from afar. Hilads.",
+    "descIntlAnywhere": "{title} — an international challenge from {origin}. Take it on anywhere in the world, send proof, the creator validates. Hilads."
   },
   "category": {
     "titleCount": "{label} in {city} · {total} on Hilads",

@@ -172,6 +172,10 @@
     "aboutHeading": "Sobre este desafio",
     "aboutBody": "No Hilads, locais e viajantes ligam-se através de desafios. Escolhe um tipo — comida, sítio, cultura, ajuda — dá-lhe um título e vê as pessoas aceitarem. Quando concluído, o criador valida o desafio.",
     "cityLink": "Vê o que se passa em {city}",
-    "removed": "Este desafio foi removido."
+    "removed": "Este desafio foi removido.",
+    "titleIntlDual": "{origin} → {target} · {title} — desafio entre cidades no Hilads",
+    "titleIntlAnywhere": "{title} — desafio internacional no Hilads",
+    "descIntlDual": "{title} — um desafio entre {origin} e {target}. Aceita-o, envia uma prova, o criador valida à distância. Hilads.",
+    "descIntlAnywhere": "{title} — um desafio internacional desde {origin}. Aceita-o de qualquer parte do mundo, envia uma prova, o criador valida. Hilads."
   }
 }

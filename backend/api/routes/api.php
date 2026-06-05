@@ -7610,12 +7610,25 @@ $router->add('GET', '/api/v1/challenges/{challengeId}', function (array $params)
 
     $cityIntId = (int) substr($challenge['city_id'], 5);
     $city      = CityRepository::findById($cityIntId);
+
+    // For International challenges with a target_city_id, also return the
+    // target city's display info — used by the SSR prerender for the
+    // dual-city meta title ("Paris → Tokyo · …") and the JSON-LD
+    // recipientLocation node.
+    $targetCity = null;
+    if (!empty($challenge['target_city_id'])) {
+        $targetIntId = (int) substr($challenge['target_city_id'], 5);
+        $targetCity  = CityRepository::findById($targetIntId);
+    }
+
     Response::json([
-        'challenge' => $challenge,
-        'channelId' => $cityIntId,
-        'cityName'  => $city['name']     ?? null,
-        'country'   => $city['country']  ?? null,
-        'timezone'  => $city['timezone'] ?? 'UTC',
+        'challenge'      => $challenge,
+        'channelId'      => $cityIntId,
+        'cityName'       => $city['name']     ?? null,
+        'country'        => $city['country']  ?? null,
+        'timezone'       => $city['timezone'] ?? 'UTC',
+        'targetCityName' => $targetCity['name']    ?? null,
+        'targetCountry'  => $targetCity['country'] ?? null,
     ]);
 });
 

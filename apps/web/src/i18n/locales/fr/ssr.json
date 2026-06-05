@@ -85,7 +85,11 @@
     "aboutHeading": "À propos de ce défi",
     "aboutBody": "Sur Hilads, locaux et voyageurs se connectent par les défis. Choisis un type — bouffe, lieu, culture, aide — donne-lui un titre, et regarde les gens le relever. Une fois terminé, le créateur valide le défi.",
     "cityLink": "Voir ce qui se passe à {city}",
-    "removed": "Ce défi a été supprimé."
+    "removed": "Ce défi a été supprimé.",
+    "titleIntlDual": "{origin} → {target} · {title} — défi inter-villes sur Hilads",
+    "titleIntlAnywhere": "{title} — défi international sur Hilads",
+    "descIntlDual": "{title} — un défi entre {origin} et {target}. Relève-le, envoie une preuve, le créateur valide à distance. Hilads.",
+    "descIntlAnywhere": "{title} — un défi international depuis {origin}. Relève-le où que tu sois dans le monde, envoie une preuve, le créateur valide. Hilads."
   },
   "category": {
     "titleCount": "{label} à {city} · {total} sur Hilads",

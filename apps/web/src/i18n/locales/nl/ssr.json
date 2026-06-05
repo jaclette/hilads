@@ -172,6 +172,10 @@
     "aboutHeading": "Over deze challenge",
     "aboutBody": "Op Hilads verbinden locals en reizigers zich via challenges. Kies een type — eten, plek, cultuur, hulp — geef hem een titel en kijk wie hem aanneemt. Wanneer voltooid, valideert de starter de challenge.",
     "cityLink": "Bekijk wat er in {city} gebeurt",
-    "removed": "Deze challenge is verwijderd."
+    "removed": "Deze challenge is verwijderd.",
+    "titleIntlDual": "{origin} → {target} · {title} — cross-city challenge op Hilads",
+    "titleIntlAnywhere": "{title} — internationale challenge op Hilads",
+    "descIntlDual": "{title} — een challenge tussen {origin} en {target}. Neem hem aan, stuur bewijs, de maker bevestigt van afstand. Hilads.",
+    "descIntlAnywhere": "{title} — een internationale challenge uit {origin}. Neem hem overal ter wereld aan, stuur bewijs, de maker bevestigt. Hilads."
   }
 }

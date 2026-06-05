@@ -172,6 +172,10 @@
     "aboutHeading": "このチャレンジについて",
     "aboutBody": "Hilads では、ローカルと旅行者がチャレンジを通してつながる。タイプを選んで — 食、場所、文化、ヘルプ — タイトルをつけて、人々が受け入れるのを見よう。完了したら、作成者がチャレンジを確認する。",
     "cityLink": "{city} で何が起きているか見る",
-    "removed": "このチャレンジは削除されました。"
+    "removed": "このチャレンジは削除されました。",
+    "titleIntlDual": "{origin} → {target}・{title} — Hilads のクロスシティチャレンジ",
+    "titleIntlAnywhere": "{title} — Hilads の国際チャレンジ",
+    "descIntlDual": "{title} — {origin} と {target} のチャレンジ。受けて証拠を送ると、作成者が遠隔で承認する。Hilads。",
+    "descIntlAnywhere": "{title} — {origin} 発の国際チャレンジ。世界中どこからでも受け、証拠を送ると作成者が承認する。Hilads。"
   }
 }

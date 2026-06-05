@@ -172,6 +172,10 @@
     "aboutHeading": "حول هذا التحدي",
     "aboutBody": "على Hilads، يلتقي المحليون والمسافرون عبر التحديات. اختر نوعًا — طعام، مكان، ثقافة، مساعدة — أعطه عنوانًا وشاهد الناس يقبلونه. عند اكتماله، يتحقق المنشئ من التحدي.",
     "cityLink": "شاهد ما يحدث في {city}",
-    "removed": "تم حذف هذا التحدي."
+    "removed": "تم حذف هذا التحدي.",
+    "titleIntlDual": "{origin} ← {target} · {title} — تحدٍ بين المدن على Hilads",
+    "titleIntlAnywhere": "{title} — تحدٍّ دولي على Hilads",
+    "descIntlDual": "{title} — تحدٍّ بين {origin} و {target}. تقبّله، أرسل دليلًا، يصادق المُنشئ عن بُعد. Hilads.",
+    "descIntlAnywhere": "{title} — تحدٍّ دولي من {origin}. تقبّله من أي مكان في العالم، أرسل دليلًا، يصادق المُنشئ. Hilads."
   }
 }
