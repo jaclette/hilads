@@ -62,6 +62,8 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/ChallengeAcceptanceRepository.php';
     require_once __DIR__ . '/../src/ChallengeRepository.php';
     require_once __DIR__ . '/../src/ChallengeInvitationRepository.php';
+    require_once __DIR__ . '/../src/ChallengeProofRepository.php';
+    require_once __DIR__ . '/../src/ChallengeProofGeotag.php';
     require_once __DIR__ . '/../src/R2Uploader.php';
     // Push broadcast page needs these — both for the page itself and for the
     // deferred dispatch loop that runs after the response flushes.
@@ -175,6 +177,8 @@ require_once __DIR__ . '/../src/TopicRepository.php';
 require_once __DIR__ . '/../src/ChallengeAcceptanceRepository.php';
 require_once __DIR__ . '/../src/ChallengeRepository.php';
 require_once __DIR__ . '/../src/ChallengeInvitationRepository.php';
+require_once __DIR__ . '/../src/ChallengeProofRepository.php';
+require_once __DIR__ . '/../src/ChallengeProofGeotag.php';
 require_once __DIR__ . '/../src/VibeRepository.php';
 require_once __DIR__ . '/../src/ConversationRepository.php';
 require_once __DIR__ . '/../src/FriendRequestRepository.php';

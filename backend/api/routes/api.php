@@ -8556,6 +8556,361 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-challenge', func
     Response::json($updated);
 });
 
+// ── International challenge proofs ───────────────────────────────────────────
+// Acceptor submits a proof for an international challenge; creator approves
+// or rejects (with mandatory reason). Capped at 3 attempts per acceptance.
+// Geotag is verified server-side against the target city (if set) using
+// per-city tolerance with an env fallback.
+//
+//   POST /api/v1/acceptances/:id/submit-proof — acceptor only
+//   POST /api/v1/proofs/:id/approve           — creator only
+//   POST /api/v1/proofs/:id/reject            — creator only, body.reason
+
+/**
+ * Shared gate for proof submission. Returns [$acceptance, $challenge, $authUser]
+ * or short-circuits with a JSON error. Caller is the acceptor; challenge is
+ * international; phase is not terminal-rejected/-approved.
+ */
+function gateProofSubmit(string $acceptanceId): array
+{
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+    $authUser   = AuthService::requireAuth();
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    if ($acceptance['acceptor_user_id'] !== $authUser['id']) {
+        Response::json(['error' => 'Not your acceptance'], 403);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['mode'] ?? 'local') !== 'international') {
+        Response::json(['error' => 'Proof submission is only for international challenges', 'code' => 'wrong_mode'], 403);
+    }
+    if (in_array($acceptance['phase'] ?? '', ['approved', 'rejected'], true)) {
+        Response::json(['error' => 'This take-on is closed', 'code' => 'terminal'], 403);
+    }
+    return [$acceptance, $challenge, $authUser];
+}
+
+/**
+ * Shared gate for proof review (approve/reject). Returns [$proof, $acceptance,
+ * $challenge, $authUser]. Caller is the challenge creator.
+ */
+function gateProofReview(string $proofId): array
+{
+    if (!preg_match('/^[a-f0-9]{32}$/', $proofId)) {
+        Response::json(['error' => 'Invalid proofId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $proof    = ChallengeProofRepository::findById($proofId);
+    if ($proof === null) {
+        Response::json(['error' => 'Proof not found'], 404);
+    }
+    $acceptance = ChallengeAcceptanceRepository::findById($proof['acceptance_id']);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $authUser['id']) {
+        Response::json(['error' => 'Only the creator can review proofs'], 403);
+    }
+    return [$proof, $acceptance, $challenge, $authUser];
+}
+
+// POST /api/v1/acceptances/{acceptanceId}/submit-proof
+// body: { mediaUrl, mediaType: 'image'|'video', lat, lng }
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function (array $params) {
+    [$acceptance, $challenge, $authUser] = gateProofSubmit($params['acceptanceId'] ?? '');
+    $acceptanceId = $acceptance['id'];
+
+    $body = Request::json();
+    if (!is_array($body)) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+    $mediaUrl  = $body['mediaUrl']  ?? null;
+    $mediaType = $body['mediaType'] ?? null;
+    $latRaw    = $body['lat']       ?? null;
+    $lngRaw    = $body['lng']       ?? null;
+
+    if (!is_string($mediaUrl) || $mediaUrl === '') {
+        Response::json(['error' => 'mediaUrl is required'], 400);
+    }
+    if (!in_array($mediaType, ['image', 'video'], true)) {
+        Response::json(['error' => "mediaType must be 'image' or 'video'"], 400);
+    }
+    if (!is_numeric($latRaw) || !is_numeric($lngRaw)) {
+        Response::json(['error' => 'lat and lng are required and must be numeric'], 400);
+    }
+    $lat = (float) $latRaw;
+    $lng = (float) $lngRaw;
+    if ($lat < -90.0 || $lat > 90.0 || $lng < -180.0 || $lng > 180.0) {
+        Response::json(['error' => 'lat/lng out of range'], 400);
+    }
+
+    // 3-attempt cap. We enforce in the route (not the DB) so we can flex
+    // later without a migration. Bounded at the create-row level — no
+    // way for a client to bypass via concurrency unless they pre-stuff
+    // the table directly.
+    $attempts = ChallengeProofRepository::attemptCountByAcceptance($acceptanceId);
+    if ($attempts >= ChallengeProofRepository::MAX_ATTEMPTS) {
+        Response::json([
+            'error' => 'Maximum proof attempts reached',
+            'code'  => 'max_attempts',
+            'attempts' => $attempts,
+            'maxAttempts' => ChallengeProofRepository::MAX_ATTEMPTS,
+        ], 403);
+    }
+
+    // Geotag verification (only when target_city_id is set). The result is
+    // stored on the row so the creator's review UI can render "geotag
+    // verified ✓" or "geotag mismatch" without recomputing.
+    $geotagOk = ChallengeProofGeotag::verify($challenge['target_city_id'] ?? null, $lat, $lng);
+
+    enforceRateLimit('challenge_proof_submit', 10, 3600, $authUser['id']);
+
+    try {
+        $proof = ChallengeProofRepository::create($acceptanceId, $mediaUrl, $mediaType, $lat, $lng, $geotagOk);
+    } catch (\Throwable $e) {
+        error_log('[proof] insert failed acc=' . $acceptanceId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to submit proof'], 500);
+    }
+    if ($proof === null) {
+        Response::json(['error' => 'Failed to submit proof'], 500);
+    }
+
+    // Flip acceptance phase → 'proof_submitted' so the UI lifts the
+    // submission CTA and shows "waiting for verdict". We don't expose a
+    // dedicated repo method (one-line update); keep it inline for now.
+    Database::pdo()->prepare("
+        UPDATE challenge_acceptances SET phase = 'proof_submitted', updated_at = now()
+        WHERE id = ?
+    ")->execute([$acceptanceId]);
+
+    // Push to the creator — they have a proof to review. English placeholder
+    // body; step 5 wires NotificationI18n for the 18 non-EN locales.
+    try {
+        if (!empty($challenge['created_by'])) {
+            $acceptorName = $authUser['display_name'] ?? 'Someone';
+            NotificationRepository::create(
+                $challenge['created_by'],
+                'challenge_proof_submitted',
+                "📸 New proof to review",
+                "{$acceptorName} sent proof for \"{$challenge['title']}\"",
+                [
+                    'challengeId'    => $challenge['id'],
+                    'acceptanceId'   => $acceptanceId,
+                    'proofId'        => $proof['id'],
+                    'acceptorName'   => $acceptorName,
+                    'challengeTitle' => $challenge['title'] ?? '',
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[proof] submit push failed (non-fatal): ' . $e->getMessage());
+    }
+
+    AnalyticsService::defer('challenge_proof_submitted', $authUser['id'], [
+        'challenge_id'  => $challenge['id'],
+        'acceptance_id' => $acceptanceId,
+        'attempt'       => $attempts + 1,
+        'geotag_ok'     => $geotagOk,
+    ]);
+
+    Response::json([
+        'proof'       => $proof,
+        'attempt'     => $attempts + 1,
+        'maxAttempts' => ChallengeProofRepository::MAX_ATTEMPTS,
+    ], 201);
+});
+
+// POST /api/v1/proofs/{proofId}/approve
+$router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params) {
+    [$proof, $acceptance, $challenge, $authUser] = gateProofReview($params['proofId'] ?? '');
+    $proofId      = $proof['id'];
+    $acceptanceId = $acceptance['id'];
+
+    if ($proof['status'] !== 'pending') {
+        // Idempotent — already-terminal is a no-op success.
+        Response::json(['proof' => $proof]);
+    }
+
+    try {
+        $updated = ChallengeProofRepository::approve($proofId);
+    } catch (\Throwable $e) {
+        error_log('[proof] approve failed proof=' . $proofId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to approve'], 500);
+    }
+    if ($updated === null) {
+        Response::json(['error' => 'Failed to approve'], 500);
+    }
+
+    // Promote the parent acceptance to 'approved' — final state, mirror the
+    // Local verdict flow so client phase logic stays uniform.
+    Database::pdo()->prepare("
+        UPDATE challenge_acceptances
+        SET phase = 'approved', approved_at = now(), updated_at = now()
+        WHERE id = ?
+    ")->execute([$acceptanceId]);
+
+    // Push to the acceptor — they nailed it.
+    try {
+        if (!empty($acceptance['acceptor_user_id'])) {
+            $creatorName = $authUser['display_name'] ?? 'The creator';
+            NotificationRepository::create(
+                $acceptance['acceptor_user_id'],
+                'challenge_proof_approved',
+                "🎉 Proof approved",
+                "{$creatorName} approved your proof for \"{$challenge['title']}\"",
+                [
+                    'challengeId'    => $challenge['id'],
+                    'acceptanceId'   => $acceptanceId,
+                    'proofId'        => $proofId,
+                    'creatorName'    => $creatorName,
+                    'challengeTitle' => $challenge['title'] ?? '',
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[proof] approve push failed (non-fatal): ' . $e->getMessage());
+    }
+
+    AnalyticsService::defer('challenge_proof_approved', $authUser['id'], [
+        'challenge_id'  => $challenge['id'],
+        'acceptance_id' => $acceptanceId,
+        'proof_id'      => $proofId,
+    ]);
+
+    Response::json(['proof' => $updated]);
+});
+
+// POST /api/v1/proofs/{proofId}/reject
+// body: { reason: string (1–200 chars, required) }
+$router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params) {
+    [$proof, $acceptance, $challenge, $authUser] = gateProofReview($params['proofId'] ?? '');
+    $proofId      = $proof['id'];
+    $acceptanceId = $acceptance['id'];
+
+    $body   = Request::json();
+    $reason = $body['reason'] ?? null;
+    if (!is_string($reason)) {
+        Response::json(['error' => 'reason is required'], 400);
+    }
+    $reason = trim(strip_tags($reason));
+    if ($reason === '') {
+        Response::json(['error' => 'reason cannot be empty'], 400);
+    }
+    if (mb_strlen($reason) > 200) {
+        Response::json(['error' => 'reason must be 200 characters or fewer'], 400);
+    }
+
+    if ($proof['status'] !== 'pending') {
+        Response::json(['proof' => $proof]);
+    }
+
+    try {
+        $updated = ChallengeProofRepository::reject($proofId, $reason);
+    } catch (\Throwable $e) {
+        error_log('[proof] reject failed proof=' . $proofId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to reject'], 500);
+    }
+    if ($updated === null) {
+        Response::json(['error' => 'Failed to reject'], 500);
+    }
+
+    // If this rejection was the acceptor's MAX_ATTEMPTS-th try, terminally
+    // close the acceptance. Otherwise keep phase='proof_submitted' so the
+    // acceptor can re-submit (UI will offer "Try again" with attempts left).
+    $attempts = ChallengeProofRepository::attemptCountByAcceptance($acceptanceId);
+    $isFinal  = $attempts >= ChallengeProofRepository::MAX_ATTEMPTS;
+    if ($isFinal) {
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET phase = 'rejected', rejected_at = now(), updated_at = now()
+            WHERE id = ?
+        ")->execute([$acceptanceId]);
+    }
+
+    // Push to the acceptor — reason carries verbatim in the body so they
+    // know what to fix on re-submit.
+    try {
+        if (!empty($acceptance['acceptor_user_id'])) {
+            $creatorName = $authUser['display_name'] ?? 'The creator';
+            $body        = $isFinal
+                ? "{$creatorName} rejected your proof for \"{$challenge['title']}\" — no more attempts"
+                : "{$creatorName} rejected your proof for \"{$challenge['title']}\". Reason: {$reason}";
+            NotificationRepository::create(
+                $acceptance['acceptor_user_id'],
+                'challenge_proof_rejected',
+                "✕ Proof rejected",
+                $body,
+                [
+                    'challengeId'     => $challenge['id'],
+                    'acceptanceId'    => $acceptanceId,
+                    'proofId'         => $proofId,
+                    'creatorName'     => $creatorName,
+                    'challengeTitle'  => $challenge['title'] ?? '',
+                    'rejectionReason' => $reason,
+                    'attemptsLeft'    => max(0, ChallengeProofRepository::MAX_ATTEMPTS - $attempts),
+                    'isFinal'         => $isFinal,
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[proof] reject push failed (non-fatal): ' . $e->getMessage());
+    }
+
+    AnalyticsService::defer('challenge_proof_rejected', $authUser['id'], [
+        'challenge_id'  => $challenge['id'],
+        'acceptance_id' => $acceptanceId,
+        'proof_id'      => $proofId,
+        'is_final'      => $isFinal,
+        'attempts'      => $attempts,
+    ]);
+
+    Response::json([
+        'proof'        => $updated,
+        'isFinal'      => $isFinal,
+        'attemptsLeft' => max(0, ChallengeProofRepository::MAX_ATTEMPTS - $attempts),
+    ]);
+});
+
+// GET /api/v1/acceptances/{acceptanceId}/proofs
+// Both acceptor and creator can list — acceptor sees their attempts history;
+// creator sees the queue. Returns at most MAX_ATTEMPTS rows (bounded by FK).
+$router->add('GET', '/api/v1/acceptances/{acceptanceId}/proofs', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+    $authUser   = AuthService::requireAuth();
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    $isAcceptor = $acceptance['acceptor_user_id'] === $authUser['id'];
+    $isCreator  = ($challenge['created_by'] ?? null) === $authUser['id'];
+    if (!$isAcceptor && !$isCreator) {
+        Response::json(['error' => 'Not allowed'], 403);
+    }
+    Response::json([
+        'proofs'      => ChallengeProofRepository::listByAcceptance($acceptanceId),
+        'attempts'    => ChallengeProofRepository::attemptCountByAcceptance($acceptanceId),
+        'maxAttempts' => ChallengeProofRepository::MAX_ATTEMPTS,
+    ]);
+});
+
 // GET /api/v1/me/acceptances
 // "My threads" — every acceptance where I'm either the acceptor OR the creator.
 // One enriched row per thread: challenge metadata + counter-party + last-message
