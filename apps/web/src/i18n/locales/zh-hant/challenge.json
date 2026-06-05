@@ -281,5 +281,6 @@
   "invitation": {
     "accept": "接受",
     "ignore": "忽略"
-  }
+  },
+  "byCreator": "由 {{name}} 發起"
 }

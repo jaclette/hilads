@@ -48,6 +48,15 @@ class ChallengeRepository
             cc.status,
             cc.max_participants,
             cc.return_clause,
+            -- Creator's display info — surfaced on cards + detail header so
+            -- the user sees who owns a challenge. LEFT JOIN: pure-guest
+            -- challenges (created_by IS NULL) fall back to cc.guest_id /
+            -- nickname captured at create-time; we keep the JOIN on user_id
+            -- only because guest_id can collide across accounts on the same
+            -- device (see isOwner notes elsewhere).
+            u.display_name             AS creator_display_name,
+            u.username                 AS creator_username,
+            u.profile_thumb_photo_url  AS creator_thumb_avatar_url,
             COUNT(m.id)                                            AS message_count,
             EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER         AS last_activity_at,
             EXTRACT(EPOCH FROM cc.validated_at)::INTEGER           AS validated_at,
@@ -64,7 +73,8 @@ class ChallengeRepository
             )                                                       AS is_in_progress
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id
-        LEFT JOIN messages m ON m.channel_id = c.id AND m.type IN ('text', 'image')
+        LEFT JOIN users u           ON u.id = cc.created_by
+        LEFT JOIN messages m        ON m.channel_id = c.id AND m.type IN ('text', 'image')
     ";
 
     private static function format(array $row): array
@@ -93,6 +103,11 @@ class ChallengeRepository
             // Defaults to false on rows that pre-date the column (eg. cached
             // formats) — safe because the route still rechecks at /accept.
             'is_in_progress'       => isset($row['is_in_progress']) ? (bool) $row['is_in_progress'] : false,
+            // Creator display — null for pure-guest challenges (created_by IS NULL).
+            // Cards + the detail header render "by {creator_display_name}".
+            'creator_display_name'     => $row['creator_display_name']     ?? null,
+            'creator_username'         => $row['creator_username']         ?? null,
+            'creator_thumb_avatar_url' => $row['creator_thumb_avatar_url'] ?? null,
             // Populated by batched queries; default so the field is always present.
             'participants_preview' => [],
             'participant_count'    => 0,
@@ -149,7 +164,8 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.validated_at, cc.created_at
+                     cc.validated_at, cc.created_at,
+                     u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.created_at DESC
             LIMIT $limit
         ");
@@ -182,7 +198,8 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.validated_at, cc.created_at
+                     cc.validated_at, cc.created_at,
+                     u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
             LIMIT $limit
         ");
@@ -201,7 +218,8 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.validated_at, cc.created_at
+                     cc.validated_at, cc.created_at,
+                     u.display_name, u.username, u.profile_thumb_photo_url
         ");
         $stmt->execute(['id' => $challengeId]);
         $row = $stmt->fetch();

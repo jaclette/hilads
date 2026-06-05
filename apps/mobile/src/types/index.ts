@@ -178,6 +178,11 @@ export interface Challenge {
    *  now. Drives the Available / In progress / Validated pill and gates the
    *  Accept (+) button. Backend computes via EXISTS over challenge_acceptances. */
   is_in_progress?:       boolean;
+  /** Creator display info — null for pure-guest challenges. UI renders
+   *  "by {creator_display_name}" on cards + detail header. */
+  creator_display_name?:     string | null;
+  creator_username?:         string | null;
+  creator_thumb_avatar_url?: string | null;
   message_count:         number;
   last_activity_at:      number | null;   // unix timestamp
   validated_at:          number | null;   // unix timestamp; set when status flips to 'validated'

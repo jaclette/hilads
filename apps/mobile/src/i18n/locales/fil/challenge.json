@@ -281,5 +281,6 @@
   "invitation": {
     "accept": "Tanggapin",
     "ignore": "Huwag pansinin"
-  }
+  },
+  "byCreator": "ni {{name}}"
 }

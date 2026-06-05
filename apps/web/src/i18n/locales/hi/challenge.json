@@ -281,5 +281,6 @@
   "invitation": {
     "accept": "Accept",
     "ignore": "Ignore"
-  }
+  },
+  "byCreator": "{{name}} द्वारा"
 }

@@ -281,5 +281,6 @@
   "invitation": {
     "accept": "承諾",
     "ignore": "無視"
-  }
+  },
+  "byCreator": "{{name}} さん"
 }

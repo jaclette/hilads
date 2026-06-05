@@ -281,5 +281,6 @@
   "invitation": {
     "accept": "Chấp nhận",
     "ignore": "Bỏ qua"
-  }
+  },
+  "byCreator": "của {{name}}"
 }

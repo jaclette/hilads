@@ -4840,6 +4840,9 @@ export default function App() {
                           </span>
                         )}
                       </div>
+                      {c.creator_display_name && (
+                        <span className="er-host">{t('byCreator', { ns: 'challenge', name: c.creator_display_name })}</span>
+                      )}
                       <AttendeeAvatars
                         preview={c.participants_preview ?? []}
                         total={c.participant_count ?? 0}

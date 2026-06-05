@@ -62,6 +62,7 @@
   "shareInvite": "Take on this challenge with me!",
   "shareCopied": "Link copied ✓",
   "noun": "Challenge",
+  "byCreator": "by {{name}}",
   "examples": {
     "label": "Need ideas? Tap one",
     "food": [

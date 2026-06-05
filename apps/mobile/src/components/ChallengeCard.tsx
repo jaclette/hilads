@@ -1,8 +1,10 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import type { Challenge, ChallengeType, ChallengeAudience } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
+import { avatarColor } from '@/lib/avatarColors';
 
 // ── Shared challenge (défi) card ──────────────────────────────────────────────
 // Used by the NOW feed and the See-all screen so a challenge looks identical
@@ -81,6 +83,31 @@ export function ChallengeCard({
         <Text style={styles.titleEmoji}>{typeIcon}</Text>
         <Text style={styles.title} numberOfLines={2}>{challenge.title}</Text>
       </View>
+
+      {/* Creator — tiny avatar + "by {name}". Mirrors the "Hosted by X" line
+          on event cards so the scanner instantly knows who owns this. Hidden
+          for pure-guest challenges (no display name on file). */}
+      {challenge.creator_display_name ? (
+        <View style={styles.creatorRow}>
+          {challenge.creator_thumb_avatar_url ? (
+            <Image
+              source={{ uri: challenge.creator_thumb_avatar_url }}
+              style={styles.creatorAvatarImg}
+              cachePolicy="memory-disk"
+              contentFit="cover"
+            />
+          ) : (
+            <View style={[styles.creatorAvatarFallback, { backgroundColor: avatarColor(challenge.created_by ?? challenge.creator_display_name) }]}>
+              <Text style={styles.creatorAvatarFallbackText}>
+                {challenge.creator_display_name[0]?.toUpperCase() ?? '?'}
+              </Text>
+            </View>
+          )}
+          <Text style={styles.creatorText} numberOfLines={1}>
+            {t('byCreator', { name: challenge.creator_display_name })}
+          </Text>
+        </View>
+      ) : null}
 
       {/* Participants — same component as Hangouts/Events */}
       <AttendeeAvatars
@@ -164,4 +191,25 @@ const styles = StyleSheet.create({
   titleRow:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
   titleEmoji: { fontSize: 22, lineHeight: 24 },
   title:      { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 20 },
+
+  creatorRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           6,
+    marginTop:     2,
+  },
+  creatorAvatarImg: {
+    width:        16,
+    height:       16,
+    borderRadius: 8,
+  },
+  creatorAvatarFallback: {
+    width:        16,
+    height:       16,
+    borderRadius: 8,
+    alignItems:    'center',
+    justifyContent:'center',
+  },
+  creatorAvatarFallbackText: { fontSize: 9, fontWeight: '700', color: '#fff' },
+  creatorText: { fontSize: 11, fontWeight: '600', color: Colors.muted, flexShrink: 1 },
 });

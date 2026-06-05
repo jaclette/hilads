@@ -281,5 +281,6 @@
   "invitation": {
     "accept": "รับ",
     "ignore": "ข้าม"
-  }
+  },
+  "byCreator": "โดย {{name}}"
 }

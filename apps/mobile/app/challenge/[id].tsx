@@ -473,6 +473,21 @@ export default function ChallengeChatScreen() {
         </TouchableOpacity>
         <View style={styles.navCenter}>
           <Text style={styles.navTitle} numberOfLines={2}>{challenge.title}</Text>
+          {challenge.creator_display_name ? (
+            <View style={styles.navCreatorRow}>
+              {challenge.creator_thumb_avatar_url ? (
+                <Image
+                  source={{ uri: challenge.creator_thumb_avatar_url }}
+                  style={styles.navCreatorAvatar}
+                  cachePolicy="memory-disk"
+                  contentFit="cover"
+                />
+              ) : null}
+              <Text style={styles.navCreatorText} numberOfLines={1}>
+                {t('byCreator', { name: challenge.creator_display_name })}
+              </Text>
+            </View>
+          ) : null}
         </View>
         <Text style={styles.navEmoji} accessibilityElementsHidden importantForAccessibility="no">{typeIcon}</Text>
       </View>
@@ -917,8 +932,11 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
   },
   backPillText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '700' },
-  navCenter: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
   navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, flexShrink: 1, textAlign: 'center' },
+  navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
+  navCreatorAvatar: { width: 14, height: 14, borderRadius: 7 },
+  navCreatorText:   { fontSize: 11, fontWeight: '600', color: Colors.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
   // without needing a manual right-side spacer.
   navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 64, textAlign: 'center' },

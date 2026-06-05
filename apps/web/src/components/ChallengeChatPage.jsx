@@ -429,6 +429,14 @@ export default function ChallengeChatPage({
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
           <span className="topic-chat-header-title">{challenge.title}</span>
+          {challenge.creator_display_name && (
+            <span className="challenge-header-creator">
+              {challenge.creator_thumb_avatar_url
+                ? <img src={challenge.creator_thumb_avatar_url} alt="" className="challenge-header-creator-avatar" />
+                : null}
+              <span>{t('byCreator', { name: challenge.creator_display_name })}</span>
+            </span>
+          )}
         </div>
         <span className="challenge-header-emoji" aria-hidden="true">{typeIcon}</span>
       </div>

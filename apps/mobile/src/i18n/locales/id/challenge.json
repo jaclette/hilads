@@ -281,5 +281,6 @@
   "invitation": {
     "accept": "Terima",
     "ignore": "Abaikan"
-  }
+  },
+  "byCreator": "oleh {{name}}"
 }
