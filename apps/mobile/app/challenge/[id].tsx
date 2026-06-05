@@ -102,17 +102,48 @@ export default function ChallengeChatScreen() {
     (identity?.guestId && participants.some(p => p.id === identity.guestId))
   );
 
+  // Target city — only meaningful for International challenges. For Local
+  // challenges this stays null; the invite picker just uses the origin
+  // city below (the only city involved). For "anywhere" Intl (no target
+  // set), we also fall back to origin so the creator can at least invite
+  // their own city members manually.
+  const [challengeTargetCityName,    setChallengeTargetCityName]    = useState<string | null>(null);
+  const [challengeTargetCityChannel, setChallengeTargetCityChannel] = useState<string | null>(null);
+
   const loadChallenge = useCallback(() => {
     if (!id) return;
     fetchChallengeById(id)
-      .then(({ challenge: c, channelId, cityName }) => {
+      .then((data) => {
+        const { challenge: c, channelId, cityName } = data as {
+          challenge: Challenge;
+          channelId: number | null;
+          cityName: string | null;
+          targetCityName?: string | null;
+        };
         setChallenge(c);
         setChallengeCityName(cityName);
         setChallengeCityChannel(channelId != null ? String(channelId) : null);
+        // target_city_id format = 'city_<int>'; pull the int for the picker
+        // fetch and pair it with the targetCityName the API now returns.
+        const targetCityIdRaw = (c as { target_city_id?: string | null })?.target_city_id;
+        if (targetCityIdRaw) {
+          setChallengeTargetCityChannel(String(targetCityIdRaw).replace(/^city_/, ''));
+          setChallengeTargetCityName((data as { targetCityName?: string | null })?.targetCityName ?? null);
+        } else {
+          setChallengeTargetCityChannel(null);
+          setChallengeTargetCityName(null);
+        }
       })
       .catch(() => setChallenge(null))
       .finally(() => setChallengeLoading(false));
   }, [id]);
+
+  // For the invite CTA + post-create picker: International with a target
+  // city resolves to THAT city; Local (and "anywhere" Intl with no target)
+  // resolves to the origin city. Computed at render time so the labels +
+  // member-fetch always agree.
+  const inviteCityName    = challengeTargetCityName    ?? challengeCityName;
+  const inviteCityChannel = challengeTargetCityChannel ?? challengeCityChannel;
 
   const loadParticipants = useCallback(() => {
     if (!id) return;
@@ -516,9 +547,21 @@ export default function ChallengeChatScreen() {
           <View style={styles.kindBadge}>
             <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
           </View>
-          <View style={styles.audiencePill}>
-            <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
-          </View>
+          {/* Audience / mode pill — Local rows get the audience target
+              (locals vs travelers); International rows swap it for a 🌐
+              chip since audience doesn't apply (no IRL meetup). */}
+          {(challenge.mode ?? 'local') === 'international' ? (
+            <View style={styles.intlPill}>
+              <Text style={styles.intlPillText} numberOfLines={1}>
+                🌐 {t('mode.international')}
+                {challengeTargetCityName ? `  ·  ${challengeTargetCityName}` : ''}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.audiencePill}>
+              <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
+            </View>
+          )}
           {/* Share — always visible. Previously lived in the challenger row,
               which was hidden when there were no acceptors (1:1 model =
               no participants until someone takes on), so the CTA disappeared
@@ -578,11 +621,11 @@ export default function ChallengeChatScreen() {
             style={styles.ownerInviteCta}
             onPress={() => setPostCreateOpen(true)}
             activeOpacity={0.85}
-            accessibilityLabel={t('postCreate.ctaInvite', { city: challengeCityName ?? t('postCreate.thisCity') })}
+            accessibilityLabel={t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
           >
             <Ionicons name="people" size={16} color="#FF7A3C" />
             <Text style={styles.ownerInviteCtaText} numberOfLines={1}>
-              {t('postCreate.ctaInvite', { city: challengeCityName ?? t('postCreate.thisCity') })}
+              {t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
             </Text>
           </TouchableOpacity>
         )}
@@ -943,8 +986,8 @@ export default function ChallengeChatScreen() {
       <ChallengePostCreateSheet
         visible={postCreateOpen}
         challenge={challenge}
-        cityChannelId={challengeCityChannel}
-        cityName={challengeCityName}
+        cityChannelId={inviteCityChannel}
+        cityName={inviteCityName}
         currentUserId={account?.id ?? null}
         onClose={() => setPostCreateOpen(false)}
         onShare={handleShare}
@@ -1013,6 +1056,17 @@ const styles = StyleSheet.create({
     borderWidth:       1, borderColor: 'rgba(139,92,246,0.32)',
   },
   audiencePillText: { fontSize: 11, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
+
+  // International chip — cyan, distinct from audience violet so Local vs
+  // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
+  intlPill: {
+    backgroundColor:   'rgba(56,189,248,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8, paddingVertical: 2,
+    borderWidth:       1, borderColor: 'rgba(56,189,248,0.36)',
+    flexShrink:        1,
+  },
+  intlPillText: { fontSize: 11, fontWeight: '700', color: '#38bdf8', letterSpacing: 0.3 },
 
   // Share inline pill — same height/padding as the kind + audience pills so
   // the three sit on a single row without alignment drift. Orange brand tint

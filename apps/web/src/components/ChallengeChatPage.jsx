@@ -128,6 +128,10 @@ export default function ChallengeChatPage({
   const [invitePeopleOpen, setInvitePeopleOpen] = useState(false)
   const [cityChannelIdForInvite, setCityChannelIdForInvite] = useState(null)
   const [cityNameForInvite,      setCityNameForInvite]      = useState(null)
+  // Target city name — ONLY set when the challenge is International AND a
+  // target is specified. Used by the badge row so "anywhere" Intl doesn't
+  // mis-label the origin city as the target.
+  const [targetCityNameOnly,     setTargetCityNameOnly]     = useState(null)
 
   const id = challenge?.id
 
@@ -157,8 +161,21 @@ export default function ChallengeChatPage({
     if (data?.challenge) setChallenge(data.challenge)
     // Stash city info for the invite-people modal so the picker can fetch
     // members by mode + label the picker with the city.
-    if (data?.channelId != null) setCityChannelIdForInvite(String(data.channelId))
-    if (data?.cityName)          setCityNameForInvite(data.cityName)
+    //
+    // International with a target city: the picker should look in the
+    // TARGET city (where we want the taker to be), NOT the origin. Local
+    // and "anywhere" intl fall through to the origin city.
+    const ch              = data?.challenge
+    const targetCityIdRaw = ch?.target_city_id
+    if (targetCityIdRaw) {
+      setCityChannelIdForInvite(String(targetCityIdRaw).replace(/^city_/, ''))
+      setCityNameForInvite(data?.targetCityName ?? null)
+      setTargetCityNameOnly(data?.targetCityName ?? null)
+    } else {
+      if (data?.channelId != null) setCityChannelIdForInvite(String(data.channelId))
+      if (data?.cityName)          setCityNameForInvite(data.cityName)
+      setTargetCityNameOnly(null)
+    }
   }, [id])
 
   const loadParticipants = useCallback(async () => {
@@ -474,7 +491,16 @@ export default function ChallengeChatPage({
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
-        <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
+        {/* Audience vs Intl pill — same swap as the NOW card (step 8):
+            Local rows show the audience target, International rows show
+            🌐 + the target city (or "International" when no target). */}
+        {(challenge.mode ?? 'local') === 'international' ? (
+          <span className="challenge-badge challenge-badge--international">
+            🌐 {targetCityNameOnly || t('mode.international')}
+          </span>
+        ) : (
+          <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
+        )}
         <button
           type="button"
           className="challenge-share-pill challenge-share-pill--inline"
