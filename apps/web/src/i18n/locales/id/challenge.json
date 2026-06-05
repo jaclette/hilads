@@ -289,5 +289,25 @@
     "all": "Semua",
     "empty": "Tidak ada di kategori ini sekarang."
   },
-  "seeAllChallenges": "Lihat semua challenge →"
+  "seeAllChallenges": "Lihat semua challenge →",
+  "mode": {
+    "label": "Mode",
+    "local": "Lokal",
+    "international": "Internasional",
+    "localHint": "Di kotamu. Berakhir dengan pertemuan tatap muka.",
+    "internationalHint": "Di mana saja di dunia. Mereka kirim bukti, kamu validasi dari jauh."
+  },
+  "intl": {
+    "targetCityLabel": "Kota target",
+    "targetCityAnywhere": "🌍 Di mana saja di dunia",
+    "targetCityHint": "Biarkan \"Di mana saja\" untuk menjangkau pelancong di mana pun, atau pilih satu kota.",
+    "proofRequirementsLabel": "Bukti seperti apa?",
+    "proofRequirementsPlaceholder": "mis: foto makanan di siang hari, kamu masuk frame",
+    "proofRequirementsHint": "Yang menerima lihat ini sebelum kirim. Spesifik biar verdict-nya gampang.",
+    "cityPicker": {
+      "title": "Pilih kota target",
+      "searchPlaceholder": "Cari kota…",
+      "anywhere": "Di mana saja di dunia"
+    }
+  }
 }

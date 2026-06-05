@@ -289,5 +289,25 @@
     "all": "सभी",
     "empty": "इस श्रेणी में अभी कुछ नहीं।"
   },
-  "seeAllChallenges": "सभी चैलेंज देखें →"
+  "seeAllChallenges": "सभी चैलेंज देखें →",
+  "mode": {
+    "label": "मोड",
+    "local": "लोकल",
+    "international": "इंटरनेशनल",
+    "localHint": "अपने शहर में। आमने-सामने मिलने पर खत्म होता है।",
+    "internationalHint": "दुनिया में कहीं भी। वो प्रूफ भेजते हैं, आप दूर से वैलिडेट करते हैं।"
+  },
+  "intl": {
+    "targetCityLabel": "टारगेट शहर",
+    "targetCityAnywhere": "🌍 दुनिया में कहीं भी",
+    "targetCityHint": "\"कहीं भी\" छोड़ें ताकि हर जगह ट्रैवलर्स तक पहुंचे, या एक शहर चुनें।",
+    "proofRequirementsLabel": "क्या प्रूफ चाहिए?",
+    "proofRequirementsPlaceholder": "जैसे: डेलाइट में डिश की फोटो, आप फ्रेम में",
+    "proofRequirementsHint": "भेजने से पहले स्वीकार करने वाला यह देखेगा। फैसले को आसान करने के लिए स्पष्ट रहें।",
+    "cityPicker": {
+      "title": "टारगेट शहर चुनें",
+      "searchPlaceholder": "शहर खोजें…",
+      "anywhere": "दुनिया में कहीं भी"
+    }
+  }
 }

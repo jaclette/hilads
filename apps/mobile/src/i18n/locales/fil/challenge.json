@@ -289,5 +289,25 @@
     "all": "Lahat",
     "empty": "Wala sa kategoryang ito ngayon."
   },
-  "seeAllChallenges": "Tingnan lahat →"
+  "seeAllChallenges": "Tingnan lahat →",
+  "mode": {
+    "label": "Mode",
+    "local": "Lokal",
+    "international": "International",
+    "localHint": "Sa lungsod mo. Nagtatapos sa pagkikita nang personal.",
+    "internationalHint": "Kahit saan sa mundo. Magpapadala sila ng patunay, ikaw ang magvavalidate mula sa malayo."
+  },
+  "intl": {
+    "targetCityLabel": "Target na lungsod",
+    "targetCityAnywhere": "🌍 Kahit saan sa mundo",
+    "targetCityHint": "Iwanan sa \"Kahit saan\" para umabot kahit saan, o pumili ng isang lungsod.",
+    "proofRequirementsLabel": "Anong patunay ang gusto mo?",
+    "proofRequirementsPlaceholder": "hal. larawan ng ulam sa daylight, ikaw nasa frame",
+    "proofRequirementsHint": "Makikita ito ng tatanggap bago magsumite. Maging tiyak para madali ang verdict.",
+    "cityPicker": {
+      "title": "Pumili ng target na lungsod",
+      "searchPlaceholder": "Maghanap ng lungsod…",
+      "anywhere": "Kahit saan sa mundo"
+    }
+  }
 }

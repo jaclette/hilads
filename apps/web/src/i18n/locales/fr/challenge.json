@@ -289,5 +289,25 @@
     "all": "Toutes",
     "empty": "Rien dans cette catégorie pour le moment."
   },
-  "seeAllChallenges": "Voir tous les défis →"
+  "seeAllChallenges": "Voir tous les défis →",
+  "mode": {
+    "label": "Mode",
+    "local": "Local",
+    "international": "International",
+    "localHint": "Dans ta ville. Se termine par un rendez-vous IRL.",
+    "internationalHint": "N'importe où dans le monde. On t'envoie une preuve, tu valides à distance."
+  },
+  "intl": {
+    "targetCityLabel": "Ville cible",
+    "targetCityAnywhere": "🌍 N'importe où dans le monde",
+    "targetCityHint": "Laisse « N'importe où » pour toucher tout le monde, ou choisis une ville pour cibler.",
+    "proofRequirementsLabel": "Quelle preuve veux-tu ?",
+    "proofRequirementsPlaceholder": "ex : photo du plat en plein jour, toi dans le cadre",
+    "proofRequirementsHint": "Celui qui relève le voit avant d'envoyer. Sois précis pour faciliter la validation.",
+    "cityPicker": {
+      "title": "Choisis une ville cible",
+      "searchPlaceholder": "Cherche une ville…",
+      "anywhere": "N'importe où dans le monde"
+    }
+  }
 }

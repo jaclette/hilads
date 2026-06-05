@@ -81,6 +81,14 @@ export async function fetchUserChallenges(userId: string): Promise<ProfileChalle
 
 // ── Writes ────────────────────────────────────────────────────────────────────
 
+/** Optional fields for International mode. All three are ignored by the
+ *  server when `mode='local'`. `targetCityChannelId` null = "anywhere". */
+export interface InternationalChallengeFields {
+  mode?:                 'local' | 'international';
+  targetCityChannelId?:  string | number | null;
+  proofRequirements?:    string | null;
+}
+
 export async function createChallenge(
   channelId: string,
   guestId: string,
@@ -89,6 +97,7 @@ export async function createChallenge(
   challengeType: ChallengeType,
   audience: ChallengeAudience,
   returnClause: string | null,
+  intl: InternationalChallengeFields = {},
 ): Promise<Challenge> {
   return api.post<Challenge>(`/channels/${channelId}/challenges`, {
     guestId,
@@ -97,12 +106,17 @@ export async function createChallenge(
     challengeType,
     audience,
     returnClause,
+    mode:                intl.mode ?? 'local',
+    targetCityChannelId: intl.targetCityChannelId ?? null,
+    proofRequirements:   intl.proofRequirements ?? null,
   });
 }
 
 /** Owner-only edit of a challenge's title / type / audience / return clause.
  *  Status is not editable here — use validateChallenge(). max_participants
- *  is no longer accepted (1:1 model). */
+ *  is no longer accepted (1:1 model). Mode is also not editable — delete +
+ *  recreate is the expected path. International edit can re-target the city
+ *  and revise the proof requirements. */
 export async function updateChallenge(
   challengeId: string,
   guestId: string,
@@ -110,6 +124,7 @@ export async function updateChallenge(
   challengeType: ChallengeType,
   audience: ChallengeAudience,
   returnClause: string | null,
+  intl: Omit<InternationalChallengeFields, 'mode'> = {},
 ): Promise<Challenge> {
   return api.put<Challenge>(`/challenges/${challengeId}`, {
     guestId,
@@ -117,6 +132,8 @@ export async function updateChallenge(
     challengeType,
     audience,
     returnClause,
+    targetCityChannelId: intl.targetCityChannelId ?? null,
+    proofRequirements:   intl.proofRequirements ?? null,
   });
 }
 

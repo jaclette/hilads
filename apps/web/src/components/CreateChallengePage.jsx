@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { createChallenge, updateChallenge } from '../api'
+import { createChallenge, updateChallenge, fetchChannels } from '../api'
 import BackButton from './BackButton'
 
 // max_participants retired (1:1 model). Constants removed; the stepper UI
@@ -100,10 +100,24 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   const isEdit = !!editChallenge
 
   // Edit mode pre-populates from the existing challenge; create starts fresh.
+  const [mode,            setMode]            = useState(editChallenge?.mode             ?? 'local')
   const [audience,        setAudience]        = useState(editChallenge?.audience         ?? 'locals')
   const [type,            setType]            = useState(editChallenge?.challenge_type   ?? 'food')
   const [title,           setTitle]           = useState(editChallenge?.title            ?? '')
   const [returnClause,    setReturnClause]    = useState(editChallenge?.return_clause    ?? '')
+  // International-only state. Channel id for target city is stored as a
+  // string ('city_<int>' minus the prefix once we ship the picker UI, but
+  // for now we just use the numeric channel id like the rest of the API).
+  const [targetCity,      setTargetCity]      = useState(() => {
+    if (!editChallenge?.target_city_id) return null
+    // Server returns 'city_<int>' on the row; the picker stores the numeric
+    // channel id (string-form) to match how channelId is passed everywhere
+    // else on the client.
+    const numeric = String(editChallenge.target_city_id).replace(/^city_/, '')
+    return { channelId: numeric, name: '', country: '' }
+  })
+  const [cityPickerOpen,  setCityPickerOpen]  = useState(false)
+  const [proofRequirements, setProofRequirements] = useState(editChallenge?.proof_requirements ?? '')
   // First user edit pins the return clause — type switches after that won't
   // overwrite it. In edit mode the stored clause is treated as pinned from the
   // start (we never want to clobber what the creator already saved).
@@ -121,17 +135,26 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   async function handleSubmit(e) {
     e.preventDefault()
     const trimmed       = title.trim()
-    const trimmedClause = returnClause.trim() || null
+    const trimmedClause = mode === 'local'        ? (returnClause.trim()      || null) : null
+    const trimmedProof  = mode === 'international' ? (proofRequirements.trim() || null) : null
+    const targetForApi  = mode === 'international' ? (targetCity?.channelId ?? null)   : null
     if (!trimmed || submitting) return
     setSubmitting(true)
     setError(null)
     try {
       if (isEdit) {
-        const updated = await updateChallenge(editChallenge.id, guest.guestId, trimmed, type, audience, trimmedClause)
+        const updated = await updateChallenge(editChallenge.id, guest.guestId, trimmed, type, audience, trimmedClause, {
+          targetCityChannelId: targetForApi,
+          proofRequirements:   trimmedProof,
+        })
         onUpdated?.(updated)
       } else {
         const nickname = account?.display_name ?? guest?.nickname ?? null
-        const challenge = await createChallenge(channelId, guest.guestId, nickname, trimmed, type, audience, trimmedClause)
+        const challenge = await createChallenge(channelId, guest.guestId, nickname, trimmed, type, audience, trimmedClause, {
+          mode,
+          targetCityChannelId: targetForApi,
+          proofRequirements:   trimmedProof,
+        })
         onCreated?.(challenge)
       }
     } catch (err) {
@@ -151,23 +174,72 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
       <div className="page-body">
         <form className="cef-form" onSubmit={handleSubmit}>
 
-          {/* Audience — 2 pills filling the row */}
+          {/* Mode toggle — Local (hero) vs International. Edit mode locks
+              this — mode is not editable; delete+recreate is the path. */}
           <div className="cef-section">
-            <p className="cef-label">{t('create.challengeAudience')}</p>
+            <p className="cef-label">{t('mode.label', { ns: 'challenge' })}</p>
             <div className="cef-audience-row">
-              {AUDIENCES.map(a => (
-                <button
-                  key={a.value}
-                  type="button"
-                  className={`cef-audience-btn${audience === a.value ? ' selected' : ''}`}
-                  onClick={() => setAudience(a.value)}
-                >
-                  <span className="cef-audience-emoji" aria-hidden="true">{a.icon}</span>
-                  <span>{a.value === 'locals' ? t('create.challengeAudLocals') : t('create.challengeAudExplorers')}</span>
-                </button>
-              ))}
+              {['local', 'international'].map(m => {
+                const selected = mode === m
+                const locked   = isEdit && !selected
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    className={`cef-audience-btn${selected ? ' selected' : ''}${locked ? ' cef-audience-btn--locked' : ''}`}
+                    onClick={() => !isEdit && setMode(m)}
+                    disabled={locked}
+                  >
+                    <span className="cef-audience-emoji" aria-hidden="true">{m === 'local' ? '🏙️' : '🌐'}</span>
+                    <span>{t(`mode.${m}`, { ns: 'challenge' })}</span>
+                  </button>
+                )
+              })}
             </div>
+            <p className="cef-hint">
+              {mode === 'local'
+                ? t('mode.localHint',         { ns: 'challenge' })
+                : t('mode.internationalHint', { ns: 'challenge' })}
+            </p>
           </div>
+
+          {/* Audience (Local only) — 2 pills filling the row */}
+          {mode === 'local' && (
+            <div className="cef-section">
+              <p className="cef-label">{t('create.challengeAudience')}</p>
+              <div className="cef-audience-row">
+                {AUDIENCES.map(a => (
+                  <button
+                    key={a.value}
+                    type="button"
+                    className={`cef-audience-btn${audience === a.value ? ' selected' : ''}`}
+                    onClick={() => setAudience(a.value)}
+                  >
+                    <span className="cef-audience-emoji" aria-hidden="true">{a.icon}</span>
+                    <span>{a.value === 'locals' ? t('create.challengeAudLocals') : t('create.challengeAudExplorers')}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Target city (International only) — opens picker. Null = anywhere. */}
+          {mode === 'international' && (
+            <div className="cef-section">
+              <p className="cef-label">{t('intl.targetCityLabel', { ns: 'challenge' })}</p>
+              <button
+                type="button"
+                className="cef-city-picker-btn"
+                onClick={() => setCityPickerOpen(true)}
+              >
+                <span>{targetCity?.name
+                  ? `${targetCity.name}${targetCity.country ? ' · ' + targetCity.country : ''}`
+                  : t('intl.targetCityAnywhere', { ns: 'challenge' })}</span>
+                <span aria-hidden="true">›</span>
+              </button>
+              <p className="cef-hint">{t('intl.targetCityHint', { ns: 'challenge' })}</p>
+            </div>
+          )}
 
           {/* Type — 4 emoji squares */}
           <div className="cef-section">
@@ -209,21 +281,40 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
             />
           </div>
 
-          {/* Return clause — the "...and come tell me about it in person" half.
-              Pre-filled per type; user-editable; first edit pins it so type
-              switches stop overwriting. Forces every challenge to lead to a
-              real meetup (the heart of the redesign). */}
-          <div className="cef-section">
-            <label className="cef-label">{t('returnClauseLabel', { ns: 'challenge' })}</label>
-            <input
-              className="cef-input"
-              type="text"
-              value={returnClause}
-              onChange={e => { returnClauseDirty.current = true; setReturnClause(e.target.value) }}
-              placeholder={t('returnClauseTemplates.food', { ns: 'challenge' })}
-              maxLength={200}
-            />
-          </div>
+          {/* Return clause (Local only) — the "...and come tell me about
+              it in person" half. Pre-filled per type; user-editable; first
+              edit pins it. Forces every Local challenge to lead to a real
+              meetup (the heart of the redesign). */}
+          {mode === 'local' && (
+            <div className="cef-section">
+              <label className="cef-label">{t('returnClauseLabel', { ns: 'challenge' })}</label>
+              <input
+                className="cef-input"
+                type="text"
+                value={returnClause}
+                onChange={e => { returnClauseDirty.current = true; setReturnClause(e.target.value) }}
+                placeholder={t('returnClauseTemplates.food', { ns: 'challenge' })}
+                maxLength={200}
+              />
+            </div>
+          )}
+
+          {/* Proof requirements (International only) — creator-authored spec
+              shown to the acceptor before they submit their proof. */}
+          {mode === 'international' && (
+            <div className="cef-section">
+              <label className="cef-label">{t('intl.proofRequirementsLabel', { ns: 'challenge' })}</label>
+              <textarea
+                className="cef-input cef-textarea"
+                rows={3}
+                value={proofRequirements}
+                onChange={e => setProofRequirements(e.target.value)}
+                placeholder={t('intl.proofRequirementsPlaceholder', { ns: 'challenge' })}
+                maxLength={300}
+              />
+              <p className="cef-hint">{t('intl.proofRequirementsHint', { ns: 'challenge' })}</p>
+            </div>
+          )}
 
           {/* Max-participants stepper retired (1:1 model). A challenge serves
               one taker at a time, freeing back to "available" after the meet-
@@ -267,6 +358,99 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           })()}
 
         </form>
+      </div>
+
+      {cityPickerOpen && (
+        <TargetCityPicker
+          currentCityChannelId={channelId}
+          selected={targetCity}
+          onClose={() => setCityPickerOpen(false)}
+          onSelect={(c) => { setTargetCity(c); setCityPickerOpen(false) }}
+        />
+      )}
+    </div>
+  )
+}
+
+// ── Target city picker (International only) ─────────────────────────────────
+// Modal listing every available city (deduped, with the creator's own city
+// removed). "🌍 Anywhere" pinned at the top so the creator can clear the
+// selection in one click.
+
+function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect }) {
+  const { t } = useTranslation('challenge')
+  const [cities,  setCities]  = useState([])
+  const [loading, setLoading] = useState(true)
+  const [query,   setQuery]   = useState('')
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    fetchChannels()
+      .then(list => { if (active) setCities(list ?? []) })
+      .catch(() => { if (active) setCities([]) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [])
+
+  const filtered = useMemo(() => {
+    const pool = cities.filter(c => String(c.channelId) !== String(currentCityChannelId))
+    const q = query.trim().toLowerCase()
+    if (q === '') return pool
+    return pool.filter(c =>
+      (c.name ?? '').toLowerCase().includes(q)
+      || (c.country ?? '').toLowerCase().includes(q),
+    )
+  }, [cities, currentCityChannelId, query])
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-panel cef-city-modal" onClick={e => e.stopPropagation()}>
+        <div className="cef-city-modal-head">
+          <span className="cef-city-modal-title">{t('intl.cityPicker.title')}</span>
+          <button type="button" className="cef-city-modal-close" onClick={onClose}>✕</button>
+        </div>
+        <input
+          type="text"
+          className="cef-city-modal-search"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder={t('intl.cityPicker.searchPlaceholder')}
+        />
+        <div className="cef-city-modal-list">
+          {loading ? (
+            <div className="cef-city-modal-loading">…</div>
+          ) : (
+            <>
+              <button
+                type="button"
+                className={`cef-city-modal-row${selected === null ? ' selected' : ''}`}
+                onClick={() => onSelect(null)}
+              >
+                <span>🌍  {t('intl.cityPicker.anywhere')}</span>
+                {selected === null ? <span aria-hidden="true">✓</span> : null}
+              </button>
+              {filtered.map(c => {
+                const isSel = selected?.channelId === String(c.channelId)
+                return (
+                  <button
+                    key={c.channelId}
+                    type="button"
+                    className={`cef-city-modal-row${isSel ? ' selected' : ''}`}
+                    onClick={() => onSelect({
+                      channelId: String(c.channelId),
+                      name:      c.name,
+                      country:   c.country,
+                    })}
+                  >
+                    <span>{c.name}{c.country ? ` · ${c.country}` : ''}</span>
+                    {isSel ? <span aria-hidden="true">✓</span> : null}
+                  </button>
+                )
+              })}
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -289,5 +289,25 @@
     "all": "全部",
     "empty": "这个类别现在什么都没有。"
   },
-  "seeAllChallenges": "查看所有挑战 →"
+  "seeAllChallenges": "查看所有挑战 →",
+  "mode": {
+    "label": "模式",
+    "local": "本地",
+    "international": "国际",
+    "localHint": "在你的城市。以面对面会面结束。",
+    "internationalHint": "世界任何地方。他们提交证据，你远程验证。"
+  },
+  "intl": {
+    "targetCityLabel": "目标城市",
+    "targetCityAnywhere": "🌍 世界任何地方",
+    "targetCityHint": "保留\"任何地方\"可触达全球旅行者，或选择一个城市定向。",
+    "proofRequirementsLabel": "想要什么证据？",
+    "proofRequirementsPlaceholder": "例：日光下菜品照片，本人入镜",
+    "proofRequirementsHint": "接受者提交前会看到，写具体一点，验证更容易。",
+    "cityPicker": {
+      "title": "选择目标城市",
+      "searchPlaceholder": "搜索城市…",
+      "anywhere": "世界任何地方"
+    }
+  }
 }

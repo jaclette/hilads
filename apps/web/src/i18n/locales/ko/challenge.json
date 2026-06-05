@@ -289,5 +289,25 @@
     "all": "전체",
     "empty": "이 카테고리에 지금 없어."
   },
-  "seeAllChallenges": "전체 보기 →"
+  "seeAllChallenges": "전체 보기 →",
+  "mode": {
+    "label": "모드",
+    "local": "로컬",
+    "international": "국제",
+    "localHint": "너의 도시에서. 직접 만나는 걸로 끝나.",
+    "internationalHint": "세계 어디든. 증거를 보내면 너는 멀리서 승인해."
+  },
+  "intl": {
+    "targetCityLabel": "타겟 도시",
+    "targetCityAnywhere": "🌍 세계 어디든",
+    "targetCityHint": "\"어디든\"으로 두면 어디든 여행자에게 닿아. 도시를 골라서 좁힐 수도 있어.",
+    "proofRequirementsLabel": "어떤 증거를 원해?",
+    "proofRequirementsPlaceholder": "예: 자연광 아래 음식 사진, 본인이 프레임에 들어와 있음",
+    "proofRequirementsHint": "수락한 사람이 제출 전에 봐. 판정을 쉽게 하려면 구체적으로.",
+    "cityPicker": {
+      "title": "타겟 도시 고르기",
+      "searchPlaceholder": "도시 검색…",
+      "anywhere": "세계 어디든"
+    }
+  }
 }

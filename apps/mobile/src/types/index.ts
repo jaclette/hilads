@@ -174,6 +174,16 @@ export interface Challenge {
   max_participants:      number;
   /** "...and come share it with me" half of the prompt; pre-filled per type. Null = generic fallback. */
   return_clause:         string | null;
+  /** Mode discriminator — 'local' (default, IRL meetup) or 'international'
+   *  (cross-city, proof-based). Local challenges keep the existing audience
+   *  + return_clause flow; international rows use target_city_id + proof_requirements. */
+  mode?:                 'local' | 'international';
+  /** Target city for International mode. Null = "anywhere" (no fan-out).
+   *  Format: 'city_<int>' matching channels.id. Local rows: null. */
+  target_city_id?:       string | null;
+  /** Creator-authored proof spec shown to acceptors before they upload.
+   *  International only — null on local rows. */
+  proof_requirements?:   string | null;
   /** 1:1 model — true iff the challenge has a non-terminal acceptance right
    *  now. Drives the Available / In progress / Validated pill and gates the
    *  Accept (+) button. Backend computes via EXISTS over challenge_acceptances. */

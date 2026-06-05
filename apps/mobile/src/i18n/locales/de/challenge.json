@@ -289,5 +289,25 @@
     "all": "Alle",
     "empty": "Hier ist gerade nichts los."
   },
-  "seeAllChallenges": "Alle Challenges →"
+  "seeAllChallenges": "Alle Challenges →",
+  "mode": {
+    "label": "Modus",
+    "local": "Lokal",
+    "international": "International",
+    "localHint": "In deiner Stadt. Endet mit einem Treffen in Person.",
+    "internationalHint": "Überall auf der Welt. Sie schicken dir einen Beweis, du bestätigst aus der Ferne."
+  },
+  "intl": {
+    "targetCityLabel": "Zielstadt",
+    "targetCityAnywhere": "🌍 Überall auf der Welt",
+    "targetCityHint": "Lass \"Überall\" stehen, um Reisende überall zu erreichen, oder wähl eine Stadt.",
+    "proofRequirementsLabel": "Welcher Beweis?",
+    "proofRequirementsPlaceholder": "z. B. Foto des Gerichts bei Tageslicht, du im Bild",
+    "proofRequirementsHint": "Der/die Annehmende sieht das vor dem Senden. Sei präzise für ein einfaches Urteil.",
+    "cityPicker": {
+      "title": "Zielstadt wählen",
+      "searchPlaceholder": "Stadt suchen…",
+      "anywhere": "Überall auf der Welt"
+    }
+  }
 }

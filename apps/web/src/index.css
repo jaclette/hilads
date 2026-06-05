@@ -11662,3 +11662,110 @@ body.has-app-promo-banner .page-header {
   font-size: 18px;
   letter-spacing: 4px;
 }
+
+/* ── Challenge create — International mode UI ──────────────────────────────
+   Reuses the existing .cef-* skeleton; only adds the hint line, city-picker
+   button, and the picker modal. */
+
+.cef-hint {
+  font-size: 11px;
+  color: var(--muted2, #888);
+  margin: 4px 2px 0;
+  line-height: 1.35;
+}
+
+.cef-audience-btn--locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cef-textarea {
+  min-height: 76px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.cef-city-picker-btn {
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+}
+.cef-city-picker-btn:hover {
+  border-color: rgba(255, 122, 60, 0.4);
+}
+.cef-city-picker-btn > span:last-child {
+  color: var(--muted);
+  font-size: 18px;
+  margin-left: 12px;
+}
+
+/* Picker modal — sits inside .modal-overlay/.modal-panel slide-up. */
+.cef-city-modal {
+  padding: 14px 0 16px;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+.cef-city-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 10px;
+}
+.cef-city-modal-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.cef-city-modal-close {
+  appearance: none; cursor: pointer; border: 0; background: transparent;
+  color: var(--muted); font: inherit; font-size: 18px; font-weight: 700;
+  padding: 4px 8px;
+}
+.cef-city-modal-search {
+  margin: 0 16px 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+.cef-city-modal-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 0;
+}
+.cef-city-modal-loading,
+.cef-city-modal-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px 12px;
+  font-size: 14px;
+}
+.cef-city-modal-row {
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+}
+.cef-city-modal-row:hover { background: rgba(255, 255, 255, 0.04); }
+.cef-city-modal-row.selected { background: rgba(255, 122, 60, 0.10); color: #FF7A3C; }

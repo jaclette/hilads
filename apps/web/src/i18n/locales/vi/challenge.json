@@ -289,5 +289,25 @@
     "all": "Tất cả",
     "empty": "Không có gì trong mục này."
   },
-  "seeAllChallenges": "Xem tất cả thử thách →"
+  "seeAllChallenges": "Xem tất cả thử thách →",
+  "mode": {
+    "label": "Chế độ",
+    "local": "Trong thành phố",
+    "international": "Quốc tế",
+    "localHint": "Trong thành phố của bạn. Kết thúc bằng buổi gặp trực tiếp.",
+    "internationalHint": "Bất cứ đâu trên thế giới. Họ gửi bằng chứng, bạn duyệt từ xa."
+  },
+  "intl": {
+    "targetCityLabel": "Thành phố đích",
+    "targetCityAnywhere": "🌍 Bất kỳ đâu trên thế giới",
+    "targetCityHint": "Để \"Bất kỳ đâu\" để gửi đến mọi nơi, hoặc chọn một thành phố.",
+    "proofRequirementsLabel": "Bạn muốn bằng chứng gì?",
+    "proofRequirementsPlaceholder": "vd: ảnh món ăn dưới ánh sáng ban ngày, có bạn trong khung hình",
+    "proofRequirementsHint": "Người nhận sẽ thấy trước khi gửi. Càng cụ thể càng dễ duyệt sau này.",
+    "cityPicker": {
+      "title": "Chọn thành phố đích",
+      "searchPlaceholder": "Tìm thành phố…",
+      "anywhere": "Bất kỳ đâu trên thế giới"
+    }
+  }
 }

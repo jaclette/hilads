@@ -289,5 +289,25 @@
     "all": "All",
     "empty": "Nothing in this category right now."
   },
-  "seeAllChallenges": "See all challenges →"
+  "seeAllChallenges": "See all challenges →",
+  "mode": {
+    "label": "Mode",
+    "local": "Local",
+    "international": "International",
+    "localHint": "In your city. Ends with an in-person meetup.",
+    "internationalHint": "Anywhere in the world. They send proof, you validate from afar."
+  },
+  "intl": {
+    "targetCityLabel": "Target city",
+    "targetCityAnywhere": "🌍 Anywhere in the world",
+    "targetCityHint": "Leave as Anywhere to reach travelers everywhere, or pick a city for a focused fan-out.",
+    "proofRequirementsLabel": "What proof do you want?",
+    "proofRequirementsPlaceholder": "e.g. Photo of the dish in daylight, with you in frame",
+    "proofRequirementsHint": "The acceptor sees this before they submit. Be specific so the verdict is easy later.",
+    "cityPicker": {
+      "title": "Pick a target city",
+      "searchPlaceholder": "Search a city…",
+      "anywhere": "Anywhere in the world"
+    }
+  }
 }

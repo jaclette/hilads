@@ -289,5 +289,25 @@
     "all": "Alle",
     "empty": "Niets in deze categorie nu."
   },
-  "seeAllChallenges": "Alle challenges →"
+  "seeAllChallenges": "Alle challenges →",
+  "mode": {
+    "label": "Modus",
+    "local": "Lokaal",
+    "international": "Internationaal",
+    "localHint": "In jouw stad. Eindigt met een afspraak in persoon.",
+    "internationalHint": "Overal ter wereld. Zij sturen bewijs, jij beoordeelt van afstand."
+  },
+  "intl": {
+    "targetCityLabel": "Doelstad",
+    "targetCityAnywhere": "🌍 Waar dan ook ter wereld",
+    "targetCityHint": "Laat \"Waar dan ook\" staan om reizigers overal te bereiken, of kies een stad.",
+    "proofRequirementsLabel": "Welk bewijs wil je?",
+    "proofRequirementsPlaceholder": "bv. foto van het gerecht bij daglicht, jij in beeld",
+    "proofRequirementsHint": "De accepteerder ziet dit voor het verzenden. Wees specifiek voor een makkelijk oordeel.",
+    "cityPicker": {
+      "title": "Kies een doelstad",
+      "searchPlaceholder": "Zoek een stad…",
+      "anywhere": "Waar dan ook ter wereld"
+    }
+  }
 }

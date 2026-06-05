@@ -550,12 +550,19 @@ export async function toggleChallengeParticipation(challengeId, guestId, nicknam
   return res.json() // { count, isIn }
 }
 
-export async function updateChallenge(challengeId, guestId, title, challengeType, audience, returnClause) {
+// Optional `intl` carries International-mode fields: targetCityChannelId,
+// proofRequirements. Mode itself is not editable — delete + recreate. The
+// server ignores both fields on Local rows.
+export async function updateChallenge(challengeId, guestId, title, challengeType, audience, returnClause, intl = {}) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, title, challengeType, audience, returnClause }),
+    body: JSON.stringify({
+      guestId, title, challengeType, audience, returnClause,
+      targetCityChannelId: intl.targetCityChannelId ?? null,
+      proofRequirements:   intl.proofRequirements ?? null,
+    }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
@@ -577,12 +584,20 @@ export async function deleteChallenge(challengeId, guestId) {
   }
 }
 
-export async function createChallenge(channelId, guestId, nickname, title, challengeType, audience, returnClause) {
+// Optional `intl` carries International-mode fields: mode, targetCityChannelId,
+// proofRequirements. Server defaults mode to 'local' when omitted; Local rows
+// ignore the other two.
+export async function createChallenge(channelId, guestId, nickname, title, challengeType, audience, returnClause, intl = {}) {
   const res = await fetch(`${BASE}/channels/${encodeURIComponent(channelId)}/challenges`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ guestId, nickname, title, challengeType, audience, returnClause }),
+    body: JSON.stringify({
+      guestId, nickname, title, challengeType, audience, returnClause,
+      mode:                intl.mode ?? 'local',
+      targetCityChannelId: intl.targetCityChannelId ?? null,
+      proofRequirements:   intl.proofRequirements ?? null,
+    }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

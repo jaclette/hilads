@@ -289,5 +289,25 @@
     "all": "Todos",
     "empty": "Nada en esta categoría ahora mismo."
   },
-  "seeAllChallenges": "Ver todos los retos →"
+  "seeAllChallenges": "Ver todos los retos →",
+  "mode": {
+    "label": "Modo",
+    "local": "Local",
+    "international": "Internacional",
+    "localHint": "En tu ciudad. Termina con un encuentro en persona.",
+    "internationalHint": "En cualquier parte del mundo. Te envían una prueba, validas a distancia."
+  },
+  "intl": {
+    "targetCityLabel": "Ciudad objetivo",
+    "targetCityAnywhere": "🌍 Cualquier lugar del mundo",
+    "targetCityHint": "Déjalo en Cualquier lugar para llegar a viajeros en todas partes, o elige una ciudad.",
+    "proofRequirementsLabel": "¿Qué prueba quieres?",
+    "proofRequirementsPlaceholder": "ej. foto del plato a la luz del día, contigo en cuadro",
+    "proofRequirementsHint": "Quien lo acepte lo verá antes de enviar. Sé específico para facilitar el veredicto.",
+    "cityPicker": {
+      "title": "Elige una ciudad objetivo",
+      "searchPlaceholder": "Busca una ciudad…",
+      "anywhere": "Cualquier lugar del mundo"
+    }
+  }
 }

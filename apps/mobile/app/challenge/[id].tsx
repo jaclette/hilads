@@ -167,11 +167,19 @@ export default function ChallengeChatScreen() {
     router.push({
       pathname: '/challenge/create',
       params: {
-        editId:          challenge.id,
-        title:           challenge.title,
-        type:            challenge.challenge_type,
-        audience:        challenge.audience,
-        returnClause:    challenge.return_clause ?? '',
+        editId:              challenge.id,
+        title:               challenge.title,
+        type:                challenge.challenge_type,
+        audience:            challenge.audience,
+        returnClause:        challenge.return_clause ?? '',
+        // International fields — empty string when the challenge is Local so
+        // the form's defaults kick in. The create form ignores them on Local
+        // edits regardless (server enforces too).
+        mode:                challenge.mode ?? 'local',
+        targetCityChannelId: challenge.target_city_id
+          ? String(challenge.target_city_id).replace(/^city_/, '')
+          : '',
+        proofRequirements:   challenge.proof_requirements ?? '',
       },
     } as never);
   }, [challenge, router]);

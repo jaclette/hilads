@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator,
+  StyleSheet, ActivityIndicator, Modal, FlatList, Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -9,7 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { createChallenge, updateChallenge } from '@/api/challenges';
-import type { ChallengeType, ChallengeAudience } from '@/types';
+import { fetchChannels } from '@/api/channels';
+import { localizeCityName } from '@/i18n/cityName';
+import type { ChallengeType, ChallengeAudience, City } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 const TYPES: { value: ChallengeType; icon: string }[] = [
@@ -24,6 +26,12 @@ const AUDIENCES: ChallengeAudience[] = ['locals', 'explorers'];
 // 🧳 as "they're passing through" for travelers.
 const AUDIENCE_ICONS: Record<ChallengeAudience, string> = { locals: '🏠', explorers: '🧳' };
 
+// Mode toggle — Local is the hero (in-person meetup in this city); International
+// is the always-available alternative (cross-city, proof-based, no meetup).
+type ChallengeMode = 'local' | 'international';
+const MODES: ChallengeMode[] = ['local', 'international'];
+const MODE_ICONS: Record<ChallengeMode, string> = { local: '🏙️', international: '🌐' };
+
 export default function CreateChallengeScreen() {
   const router = useRouter();
   const { t } = useTranslation('challenge');
@@ -36,6 +44,9 @@ export default function CreateChallengeScreen() {
     type?: string;
     audience?: string;
     returnClause?: string;
+    mode?: string;
+    targetCityChannelId?: string;
+    proofRequirements?: string;
   }>();
   const editId = typeof params.editId === 'string' ? params.editId : null;
 
@@ -45,7 +56,11 @@ export default function CreateChallengeScreen() {
   const initialAudience: ChallengeAudience = AUDIENCES.includes(params.audience as ChallengeAudience)
     ? (params.audience as ChallengeAudience)
     : 'locals';
+  const initialMode: ChallengeMode = MODES.includes(params.mode as ChallengeMode)
+    ? (params.mode as ChallengeMode)
+    : 'local';
 
+  const [mode,     setMode]     = useState<ChallengeMode>(initialMode);
   const [audience, setAudience] = useState<ChallengeAudience>(initialAudience);
   const [type,     setType]     = useState<ChallengeType>(initialType);
   const [title,    setTitle]    = useState(typeof params.title === 'string' ? params.title : '');
@@ -55,6 +70,10 @@ export default function CreateChallengeScreen() {
   // first manual edit, after which type switches stop overwriting it.
   const [returnClause,      setReturnClause]      = useState<string>(typeof params.returnClause === 'string' ? params.returnClause : '');
   const returnClauseDirty                         = useRef<boolean>(typeof params.returnClause === 'string' && params.returnClause.length > 0);
+  // International-only state. targetCity null = "anywhere".
+  const [targetCity,        setTargetCity]        = useState<{ channelId: string; name: string; country: string } | null>(null);
+  const [cityPickerOpen,    setCityPickerOpen]    = useState(false);
+  const [proofRequirements, setProofRequirements] = useState<string>(typeof params.proofRequirements === 'string' ? params.proofRequirements : '');
   const [submitting, setSubmitting] = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
@@ -72,12 +91,17 @@ export default function CreateChallengeScreen() {
     setSubmitting(true);
     setError(null);
 
-    const trimmedReturnClause = returnClause.trim() || null;
+    const trimmedReturnClause      = mode === 'local'        ? (returnClause.trim()      || null) : null;
+    const trimmedProofRequirements = mode === 'international' ? (proofRequirements.trim() || null) : null;
+    const targetChannelIdForSubmit = mode === 'international' ? (targetCity?.channelId ?? null)   : null;
 
     // Edit path: PUT the existing challenge, then back.
     if (editId) {
       try {
-        await updateChallenge(editId, identity.guestId, trimmedTitle, type, audience, trimmedReturnClause);
+        await updateChallenge(editId, identity.guestId, trimmedTitle, type, audience, trimmedReturnClause, {
+          targetCityChannelId: targetChannelIdForSubmit,
+          proofRequirements:   trimmedProofRequirements,
+        });
         router.back();
       } catch (err) {
         setError(err instanceof Error ? err.message : t('errSave'));
@@ -100,6 +124,11 @@ export default function CreateChallengeScreen() {
         type,
         audience,
         trimmedReturnClause,
+        {
+          mode,
+          targetCityChannelId: targetChannelIdForSubmit,
+          proofRequirements:   trimmedProofRequirements,
+        },
       );
       // Land the creator on the freshly-created challenge so they can share
       // it + watch participants accept in real time. The ?postCreate=1 query
@@ -135,26 +164,83 @@ export default function CreateChallengeScreen() {
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
 
-        {/* Audience toggle — 2-pill row, full width, thumb-friendly */}
-        <Text style={styles.sectionLabel}>{t('audience')}</Text>
+        {/* Mode toggle — Local (hero) vs International. Local default. Edit
+            mode disables the toggle (mode is not editable; delete+recreate). */}
+        <Text style={styles.sectionLabel}>{t('mode.label')}</Text>
         <View style={styles.audienceRow}>
-          {AUDIENCES.map(a => {
-            const selected = audience === a;
+          {MODES.map(m => {
+            const selected = mode === m;
+            const disabled = editId !== null;
             return (
               <TouchableOpacity
-                key={a}
-                style={[styles.audienceBtn, selected && styles.audienceBtnSelected]}
-                onPress={() => setAudience(a)}
-                activeOpacity={0.7}
+                key={m}
+                style={[
+                  styles.audienceBtn,
+                  selected && styles.audienceBtnSelected,
+                  disabled  && !selected && { opacity: 0.4 },
+                ]}
+                onPress={() => !disabled && setMode(m)}
+                activeOpacity={disabled ? 1 : 0.7}
+                disabled={disabled}
               >
-                <Text style={styles.audienceEmoji}>{AUDIENCE_ICONS[a]}</Text>
+                <Text style={styles.audienceEmoji}>{MODE_ICONS[m]}</Text>
                 <Text style={[styles.audienceLabel, selected && styles.audienceLabelSelected]}>
-                  {t(`aud.${a}`)}
+                  {t(`mode.${m}`)}
                 </Text>
               </TouchableOpacity>
             );
           })}
         </View>
+        <Text style={styles.sectionHint}>
+          {mode === 'local' ? t('mode.localHint') : t('mode.internationalHint')}
+        </Text>
+
+        {/* Audience toggle (Local only) — 2-pill row, full width, thumb-friendly */}
+        {mode === 'local' && (
+          <>
+            <Text style={styles.sectionLabel}>{t('audience')}</Text>
+            <View style={styles.audienceRow}>
+              {AUDIENCES.map(a => {
+                const selected = audience === a;
+                return (
+                  <TouchableOpacity
+                    key={a}
+                    style={[styles.audienceBtn, selected && styles.audienceBtnSelected]}
+                    onPress={() => setAudience(a)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.audienceEmoji}>{AUDIENCE_ICONS[a]}</Text>
+                    <Text style={[styles.audienceLabel, selected && styles.audienceLabelSelected]}>
+                      {t(`aud.${a}`)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </>
+        )}
+
+        {/* Target city (International only) — opens a full-screen picker.
+            Null = "anywhere" (per spec decision: no fan-out, surfaces in
+            origin city + a future Discover tab). */}
+        {mode === 'international' && (
+          <>
+            <Text style={styles.sectionLabel}>{t('intl.targetCityLabel')}</Text>
+            <TouchableOpacity
+              style={styles.cityPickerBtn}
+              activeOpacity={0.75}
+              onPress={() => setCityPickerOpen(true)}
+            >
+              <Text style={styles.cityPickerText} numberOfLines={1}>
+                {targetCity
+                  ? `${targetCity.name} · ${targetCity.country}`
+                  : t('intl.targetCityAnywhere')}
+              </Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+            </TouchableOpacity>
+            <Text style={styles.sectionHint}>{t('intl.targetCityHint')}</Text>
+          </>
+        )}
 
         {/* Type — 4 emoji squares (food / place / culture / help) */}
         <Text style={styles.sectionLabel}>{t('type')}</Text>
@@ -191,22 +277,46 @@ export default function CreateChallengeScreen() {
           blurOnSubmit={false}
         />
 
-        {/* Return clause — the "...and come tell me about it in person" half.
-            Pre-filled by per-type template (food/place/culture/help). Editable
-            so the creator can sharpen it; first edit pins the value (type
-            switches stop overwriting it). Forces every challenge to lead to
-            a real meetup. */}
-        <Text style={styles.sectionLabel}>{t('returnClauseLabel')}</Text>
-        <TextInput
-          style={styles.input}
-          value={returnClause}
-          onChangeText={(v) => { returnClauseDirty.current = true; setReturnClause(v); }}
-          placeholder={t('returnClauseTemplates.food')}
-          placeholderTextColor={Colors.muted2}
-          maxLength={200}
-          returnKeyType="done"
-          onSubmitEditing={handleSubmit}
-        />
+        {/* Return clause (Local only) — the "...and come tell me about it
+            in person" half. Pre-filled by per-type template; first manual
+            edit pins the value. Forces every Local challenge to lead to a
+            real meetup. */}
+        {mode === 'local' && (
+          <>
+            <Text style={styles.sectionLabel}>{t('returnClauseLabel')}</Text>
+            <TextInput
+              style={styles.input}
+              value={returnClause}
+              onChangeText={(v) => { returnClauseDirty.current = true; setReturnClause(v); }}
+              placeholder={t('returnClauseTemplates.food')}
+              placeholderTextColor={Colors.muted2}
+              maxLength={200}
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
+            />
+          </>
+        )}
+
+        {/* Proof requirements (International only) — creator-authored
+            spec shown to the acceptor before they submit their proof.
+            "Photo of the dish, daylight, with you in frame" etc. */}
+        {mode === 'international' && (
+          <>
+            <Text style={styles.sectionLabel}>{t('intl.proofRequirementsLabel')}</Text>
+            <TextInput
+              style={[styles.input, styles.inputMultiline]}
+              value={proofRequirements}
+              onChangeText={setProofRequirements}
+              placeholder={t('intl.proofRequirementsPlaceholder')}
+              placeholderTextColor={Colors.muted2}
+              maxLength={300}
+              multiline
+              numberOfLines={3}
+              returnKeyType="done"
+            />
+            <Text style={styles.sectionHint}>{t('intl.proofRequirementsHint')}</Text>
+          </>
+        )}
 
         {/* Max-participants stepper removed (1:1 model). A challenge is now
             "available" until one taker is in progress, then frees back to
@@ -254,7 +364,124 @@ export default function CreateChallengeScreen() {
         })()}
 
       </ScrollView>
+
+      {/* City picker — full-page modal. "Anywhere" option pinned at top so
+          the creator can clear a previous selection in one tap. */}
+      <TargetCityPickerSheet
+        visible={cityPickerOpen}
+        currentCityChannelId={city?.channelId ?? null}
+        selected={targetCity}
+        onClose={() => setCityPickerOpen(false)}
+        onSelect={(c) => { setTargetCity(c); setCityPickerOpen(false); }}
+      />
     </SafeAreaView>
+  );
+}
+
+// ── Target city picker (International only) ──────────────────────────────────
+// Bottom-sheet modal that lists every city in the system (deduped) with a
+// "🌍 Anywhere" row pinned at the top so the creator can clear the choice
+// in one tap. Reuses the existing /channels endpoint that powers the
+// switch-city screen (already cached by the API layer).
+
+type TargetCityChoice = { channelId: string; name: string; country: string };
+
+function TargetCityPickerSheet({
+  visible, currentCityChannelId, selected, onClose, onSelect,
+}: {
+  visible:              boolean;
+  currentCityChannelId: string | null;
+  selected:             TargetCityChoice | null;
+  onClose:              () => void;
+  onSelect:             (c: TargetCityChoice | null) => void;
+}) {
+  const { t } = useTranslation('challenge');
+  const [cities,  setCities]  = useState<City[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [query,   setQuery]   = useState('');
+
+  useEffect(() => {
+    if (!visible) return;
+    let active = true;
+    setLoading(true);
+    fetchChannels()
+      .then(list => { if (active) setCities(list); })
+      .catch(() => { if (active) setCities([]); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [visible]);
+
+  const filtered = useMemo(() => {
+    // Drop the creator's own city — challenges that target the same city
+    // they're created from should just be Local, not International.
+    const pool = cities.filter(c => c.channelId !== currentCityChannelId);
+    const q = query.trim().toLowerCase();
+    if (q === '') return pool;
+    return pool.filter(c =>
+      (c.name ?? '').toLowerCase().includes(q)
+      || (c.country ?? '').toLowerCase().includes(q),
+    );
+  }, [cities, currentCityChannelId, query]);
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <Pressable style={styles.cityModalBackdrop} onPress={onClose} />
+      <View style={styles.cityModalSheet}>
+        <View style={styles.cityModalHandle} />
+        <View style={styles.cityModalHeader}>
+          <Text style={styles.cityModalTitle}>{t('intl.cityPicker.title')}</Text>
+          <TouchableOpacity onPress={onClose} hitSlop={12}>
+            <Text style={styles.cityModalClose}>✕</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TextInput
+          style={styles.cityModalSearch}
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('intl.cityPicker.searchPlaceholder')}
+          placeholderTextColor={Colors.muted2}
+          autoCapitalize="none"
+        />
+
+        {loading ? (
+          <ActivityIndicator color={Colors.muted} style={{ marginVertical: Spacing.lg }} />
+        ) : (
+          <FlatList
+            data={[{ channelId: '__anywhere__', name: '', country: '' } as City, ...filtered]}
+            keyExtractor={c => c.channelId}
+            keyboardShouldPersistTaps="handled"
+            renderItem={({ item }) => {
+              const isAnywhere = item.channelId === '__anywhere__';
+              const isSelected = isAnywhere
+                ? selected === null
+                : selected?.channelId === item.channelId;
+              return (
+                <TouchableOpacity
+                  style={[styles.cityModalRow, isSelected && styles.cityModalRowSelected]}
+                  onPress={() => {
+                    if (isAnywhere) onSelect(null);
+                    else onSelect({
+                      channelId: item.channelId,
+                      name:      localizeCityName(item.name) ?? item.name,
+                      country:   item.country,
+                    });
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.cityModalRowText}>
+                    {isAnywhere
+                      ? `🌍  ${t('intl.cityPicker.anywhere')}`
+                      : `${localizeCityName(item.name) ?? item.name} · ${item.country}`}
+                  </Text>
+                  {isSelected ? <Ionicons name="checkmark" size={18} color="#FF7A3C" /> : null}
+                </TouchableOpacity>
+              );
+            }}
+          />
+        )}
+      </View>
+    </Modal>
   );
 }
 
@@ -363,6 +590,67 @@ const styles = StyleSheet.create({
     fontSize:        FontSizes.md,
     color:           Colors.text,
   },
+  inputMultiline: {
+    minHeight:    80,
+    textAlignVertical: 'top',
+  },
+
+  // ── International-mode UI bits ──────────────────────────────────────────
+  sectionHint: {
+    fontSize:  FontSizes.xs + 1,
+    color:     Colors.muted2,
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  cityPickerBtn: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
+    backgroundColor:   Colors.bg2,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    borderRadius:      Radius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.sm + 4,
+  },
+  cityPickerText: { fontSize: FontSizes.md, color: Colors.text, flex: 1, marginRight: 8 },
+
+  cityModalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+  cityModalSheet: {
+    position: 'absolute', left: 0, right: 0, bottom: 0,
+    maxHeight: '85%',
+    backgroundColor: Colors.bg2,
+    borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
+    paddingBottom: Spacing.xl,
+  },
+  cityModalHandle: {
+    alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4,
+  },
+  cityModalHeader: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm,
+  },
+  cityModalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
+  cityModalClose: { fontSize: 18, color: Colors.muted, fontWeight: '700' },
+  cityModalSearch: {
+    marginHorizontal:  Spacing.md,
+    marginBottom:      Spacing.sm,
+    backgroundColor:   'rgba(255,255,255,0.06)',
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    borderRadius:      Radius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.sm,
+    fontSize:          FontSizes.md,
+    color:             Colors.text,
+  },
+  cityModalRow: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: Spacing.lg, paddingVertical: 12,
+  },
+  cityModalRowSelected: { backgroundColor: 'rgba(255,122,60,0.08)' },
+  cityModalRowText: { fontSize: FontSizes.md, color: Colors.text, flex: 1, marginRight: 8 },
 
   // Stepper row for max_participants — −/+ buttons flanking the centred number.
   stepperRow: {

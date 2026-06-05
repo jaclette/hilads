@@ -289,5 +289,25 @@
     "all": "ทั้งหมด",
     "empty": "ไม่มีอะไรในหมวดนี้ตอนนี้"
   },
-  "seeAllChallenges": "ดูทั้งหมด →"
+  "seeAllChallenges": "ดูทั้งหมด →",
+  "mode": {
+    "label": "โหมด",
+    "local": "ในเมือง",
+    "international": "นานาชาติ",
+    "localHint": "ในเมืองของคุณ จบที่การเจอกันตัวต่อตัว",
+    "internationalHint": "ที่ไหนก็ได้บนโลก เขาส่งหลักฐานมา คุณยืนยันจากระยะไกล"
+  },
+  "intl": {
+    "targetCityLabel": "เมืองเป้าหมาย",
+    "targetCityAnywhere": "🌍 ที่ไหนก็ได้ในโลก",
+    "targetCityHint": "ปล่อย \"ที่ไหนก็ได้\" เพื่อเข้าถึงทุกที่ หรือเลือกเมืองเฉพาะ",
+    "proofRequirementsLabel": "อยากได้หลักฐานแบบไหน?",
+    "proofRequirementsPlaceholder": "เช่น รูปอาหารตอนกลางวัน มีคุณอยู่ในกรอบ",
+    "proofRequirementsHint": "ผู้รับจะเห็นก่อนส่ง ระบุชัด ๆ จะตัดสินง่ายขึ้น",
+    "cityPicker": {
+      "title": "เลือกเมืองเป้าหมาย",
+      "searchPlaceholder": "ค้นหาเมือง…",
+      "anywhere": "ที่ไหนก็ได้ในโลก"
+    }
+  }
 }

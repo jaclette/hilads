@@ -289,5 +289,25 @@
     "all": "الكل",
     "empty": "لا شيء في هذه الفئة الآن."
   },
-  "seeAllChallenges": "عرض كل التحديات →"
+  "seeAllChallenges": "عرض كل التحديات →",
+  "mode": {
+    "label": "الوضع",
+    "local": "محلي",
+    "international": "دولي",
+    "localHint": "في مدينتك. ينتهي بلقاء شخصي.",
+    "internationalHint": "في أي مكان بالعالم. يرسلون دليلًا، وتُصادق عن بعد."
+  },
+  "intl": {
+    "targetCityLabel": "المدينة المستهدفة",
+    "targetCityAnywhere": "🌍 أي مكان في العالم",
+    "targetCityHint": "اترك \"أي مكان\" للوصول للمسافرين أينما كانوا، أو اختر مدينة محددة.",
+    "proofRequirementsLabel": "أي دليل تريد؟",
+    "proofRequirementsPlaceholder": "مثال: صورة للطبق في ضوء النهار، وأنت في الإطار",
+    "proofRequirementsHint": "يرى المتحدي هذا قبل الإرسال. كن دقيقًا لتسهيل الحكم لاحقًا.",
+    "cityPicker": {
+      "title": "اختر مدينة مستهدفة",
+      "searchPlaceholder": "ابحث عن مدينة…",
+      "anywhere": "أي مكان في العالم"
+    }
+  }
 }
