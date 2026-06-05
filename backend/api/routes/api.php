@@ -8548,16 +8548,32 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
     $inviterName = $authUser['display_name'] ?? 'Someone';
     $title       = $challenge['title'] ?? '';
 
-    $sent = [];
+    // Track three buckets so the client can tell the user what actually
+    // happened on resend:
+    //   sent     — push fired, invitee is now (re-)pending review
+    //   skipped  — invitee already accepted; we don't re-push (they're in)
+    //   failed   — exception path; logged + counted but invisible to the user
+    $sent     = [];
+    $skipped  = [];
+    $failed   = [];
     foreach ($userIds as $inviteeId) {
         try {
-            $invitation = ChallengeInvitationRepository::create($challengeId, $inviter, $inviteeId);
-            if ($invitation === null) {
-                continue; // already invited, idempotent skip
+            $res = ChallengeInvitationRepository::createOrTouch($challengeId, $inviter, $inviteeId);
+            if ($res === null) {
+                $failed[] = $inviteeId;
+                continue;
             }
+            // Already accepted — don't re-push, they're in the take-on flow.
+            if ($res['wasAccepted']) {
+                $skipped[] = $inviteeId;
+                continue;
+            }
+            $invitation = $res['row'];
             // In-app notification + push. Push payload carries invitationId so
             // the mobile push category's Accept/Ignore actions can resolve the
-            // row server-side without an extra round-trip.
+            // row server-side without an extra round-trip. Re-sends always
+            // fire a fresh push — the creator's intent on hitting send is
+            // "ping them again", not "be quiet about it".
             NotificationRepository::create(
                 $inviteeId,
                 'challenge_invitation',
@@ -8574,13 +8590,17 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
             $sent[] = $inviteeId;
         } catch (\Throwable $e) {
             error_log('[challenges] invite send failed inv=' . $inviteeId . ': ' . $e->getMessage());
+            $failed[] = $inviteeId;
         }
     }
 
     Response::json([
         'invited'    => $sent,
         'count'      => count($sent),
-        'duplicates' => count($userIds) - count($sent),
+        'skipped'    => count($skipped),
+        // `duplicates` kept for back-compat with the live client builds — equal
+        // to the count that didn't trigger a fresh push (accepted + errors).
+        'duplicates' => count($skipped) + count($failed),
     ], 201);
 });
 
