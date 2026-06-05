@@ -63,7 +63,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const [user,       setUser]       = useState(null)
   const [events,     setEvents]     = useState([])
   const [hangouts,   setHangouts]   = useState([])
-  const [challenges, setChallenges] = useState([])
+  const [challenges,      setChallenges]      = useState([])
+  const [challengeSubTab, setChallengeSubTab] = useState('all') // 'all' | 'local' | 'international'
   const [friends,    setFriends]    = useState([])
   const [error,      setError]      = useState(null)
   const [dmBusy,       setDmBusy]       = useState(false)
@@ -432,30 +433,60 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
           {/* Tab content — continues inside pub-profile-body below */}
 
             {/* Challenges tab */}
-            {activeTab === 'challenges' && (
-              <div className="pub-profile-events">
-                {challenges.length === 0
-                  ? <p className="pub-profile-tab-empty">{t('empty.challenges')}</p>
-                  : challenges.map(c => (
-                      <div
-                        key={c.id}
-                        className="pub-profile-event-row"
-                        onClick={() => onOpenChallenge ? onOpenChallenge(c) : undefined}
-                        style={{ cursor: onOpenChallenge ? 'pointer' : 'default' }}
+            {activeTab === 'challenges' && (() => {
+              const filteredChallenges = challengeSubTab === 'all'
+                ? challenges
+                : challenges.filter(c => (c.mode ?? 'local') === challengeSubTab)
+              return (
+                <div className="pub-profile-events">
+                  {/* Mode sub-tabs — All / Local / International. */}
+                  <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '0 0 8px' }}>
+                    {[
+                      { key: 'all',           emoji: '✨' },
+                      { key: 'local',         emoji: '🏙️' },
+                      { key: 'international', emoji: '🌐' },
+                    ].map(({ key, emoji }) => (
+                      <button
+                        key={key}
+                        type="button"
+                        role="tab"
+                        aria-selected={challengeSubTab === key}
+                        className={`challenge-type-chip${challengeSubTab === key ? ' challenge-type-chip--active' : ''}`}
+                        onClick={() => setChallengeSubTab(key)}
                       >
-                        <span className="pub-profile-event-icon">{CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'}</span>
-                        <div className="pub-profile-event-info">
-                          <span className="pub-profile-event-title">{c.title}</span>
-                          {c.status === 'validated' && (
-                            <span className="pub-profile-event-live">{t('validatedBadge', { ns: 'challenge' })}</span>
-                          )}
-                          {c.is_owner && <span className="profile-host-tag">{t('host')}</span>}
+                        <span aria-hidden="true">{emoji}</span>
+                        <span>{key === 'all'
+                          ? t('modeFilter.all', { ns: 'challenge' })
+                          : t(`mode.${key}`,    { ns: 'challenge' })}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {filteredChallenges.length === 0
+                    ? <p className="pub-profile-tab-empty">{t('empty.challenges')}</p>
+                    : filteredChallenges.map(c => (
+                        <div
+                          key={c.id}
+                          className="pub-profile-event-row"
+                          onClick={() => onOpenChallenge ? onOpenChallenge(c) : undefined}
+                          style={{ cursor: onOpenChallenge ? 'pointer' : 'default' }}
+                        >
+                          <span className="pub-profile-event-icon">{CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'}</span>
+                          <div className="pub-profile-event-info">
+                            <span className="pub-profile-event-title">
+                              {(c.mode ?? 'local') === 'international' ? '🌐 ' : ''}{c.title}
+                            </span>
+                            {c.status === 'validated' && (
+                              <span className="pub-profile-event-live">{t('validatedBadge', { ns: 'challenge' })}</span>
+                            )}
+                            {c.is_owner && <span className="profile-host-tag">{t('host')}</span>}
+                          </div>
                         </div>
-                      </div>
-                    ))
-                }
-              </div>
-            )}
+                      ))
+                  }
+                </div>
+              )
+            })()}
 
             {/* Events tab */}
             {activeTab === 'hangouts' && (

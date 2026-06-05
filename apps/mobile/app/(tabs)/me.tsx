@@ -152,6 +152,10 @@ export default function MeScreen() {
   const [myFriends,          setMyFriends]          = useState<UserDTO[]>([]);
   const [myHangouts,         setMyHangouts]         = useState<ProfileHangout[]>([]);
   const [myChallenges,       setMyChallenges]       = useState<ProfileChallenge[]>([]);
+  /** Sub-filter inside the Challenges tab — All / Local / International.
+   *  Asymmetric per spec (Local is the hero) but symmetric here because
+   *  the user might have lots of both kinds and needs a quick switcher. */
+  const [challengeSubTab,    setChallengeSubTab]    = useState<'all' | 'local' | 'international'>('all');
   const [friendsLoading,     setFriendsLoading]     = useState(false);
   const [myReceivedVibes,    setMyReceivedVibes]    = useState<UserVibe[]>([]);
   const [myVibeScore,        setMyVibeScore]        = useState<number | null>(null);
@@ -726,7 +730,13 @@ export default function MeScreen() {
         )}
 
         {/* ── Tab: Challenges (created + accepted; owner tagged "Host") ── */}
-        {!isGuest && activeTab === 'challenges' && (
+        {!isGuest && activeTab === 'challenges' && (() => {
+          // Filter by sub-tab (Local / International / All). Local default
+          // for rows that pre-date the migration (server returns 'local').
+          const filteredChallenges = challengeSubTab === 'all'
+            ? myChallenges
+            : myChallenges.filter(c => (c.mode ?? 'local') === challengeSubTab);
+          return (
           <>
             {/* PR2: entry-point to per-acceptance threads. Sits above the
                 list of created/accepted challenges so the user finds their
@@ -743,10 +753,32 @@ export default function MeScreen() {
               <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
             </TouchableOpacity>
 
+            {/* Mode sub-tabs — All / Local / International. */}
+            <View style={styles.subTabsRow}>
+              {(['all', 'local', 'international'] as const).map(key => {
+                const active = challengeSubTab === key;
+                const emoji  = key === 'all' ? '✨' : key === 'local' ? '🏙️' : '🌐';
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    style={[styles.subTabBtn, active && styles.subTabBtnActive]}
+                    onPress={() => setChallengeSubTab(key)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={[styles.subTabText, active && styles.subTabTextActive]}>
+                      {emoji} {key === 'all'
+                        ? t('modeFilter.all',   { ns: 'challenge' })
+                        : t(`mode.${key}`,      { ns: 'challenge' })}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
           <View style={styles.eventsCard}>
-            {myChallenges.length === 0 ? (
+            {filteredChallenges.length === 0 ? (
               <Text style={styles.eventsEmpty}>{t('noChallenges')}</Text>
-            ) : myChallenges.map((c, idx) => (
+            ) : filteredChallenges.map((c, idx) => (
               <View key={c.id}>
                 {idx > 0 && <View style={styles.divider} />}
                 <TouchableOpacity
@@ -758,6 +790,11 @@ export default function MeScreen() {
                   <View style={styles.eventInfo}>
                     <Text style={styles.eventTitle} numberOfLines={1}>{c.title}</Text>
                   </View>
+                  {(c.mode ?? 'local') === 'international' && (
+                    <View style={[styles.hostTag, { backgroundColor: 'rgba(56,189,248,0.10)', borderColor: 'rgba(56,189,248,0.30)' }]}>
+                      <Text style={[styles.hostTagText, { color: '#38bdf8' }]}>🌐</Text>
+                    </View>
+                  )}
                   {c.status === 'validated' && (
                     <View style={[styles.hostTag, { backgroundColor: 'rgba(34,197,94,0.10)', borderColor: 'rgba(34,197,94,0.20)' }]}>
                       <Text style={[styles.hostTagText, { color: '#4ade80' }]}>✓</Text>
@@ -771,7 +808,8 @@ export default function MeScreen() {
             ))}
           </View>
           </>
-        )}
+          )
+        })()}
 
         {/* ── Tab: Hangouts (joined + owned; owner tagged "Host") ── */}
         {!isGuest && activeTab === 'hangouts' && (
@@ -1421,6 +1459,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: 'rgba(96,165,250,0.25)',
   },
   hostTagText: { fontSize: 10, fontWeight: '700', color: '#60a5fa' },
+
+  // ── Sub-tabs (mode filter inside the Challenges tab) ──────────────────────
+  subTabsRow: {
+    flexDirection:    'row',
+    marginHorizontal: Spacing.md,
+    marginTop:        Spacing.xs,
+    gap:              6,
+  },
+  subTabBtn: {
+    paddingHorizontal: 10,
+    paddingVertical:   5,
+    borderRadius:      Radius.full,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.10)',
+    backgroundColor:   'rgba(255,255,255,0.04)',
+  },
+  subTabBtnActive: {
+    borderColor:     'rgba(255,122,60,0.45)',
+    backgroundColor: 'rgba(255,122,60,0.14)',
+  },
+  subTabText:       { fontSize: 12, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
+  subTabTextActive: { color: '#FF7A3C' },
 
   // ── Events / generic card ─────────────────────────────────────────────────
   eventsCard: {

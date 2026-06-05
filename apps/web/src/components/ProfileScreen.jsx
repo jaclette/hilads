@@ -121,6 +121,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [deleteLoading,     setDeleteLoading]     = useState(false)
   const [myHangouts,        setMyHangouts]        = useState([])
   const [myChallenges,      setMyChallenges]      = useState([])
+  const [challengeSubTab,   setChallengeSubTab]   = useState('all') // 'all' | 'local' | 'international'
 
   useEffect(() => {
     if (!account?.id) { setMyHangouts([]); return }
@@ -529,47 +530,77 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         )}
 
         {/* ── Tab: Challenges (created + accepted) ── */}
-        {activeTab === 'challenges' && (
-          <div className="profile-card">
-            {/* PR2 — entry-point to per-acceptance threads */}
-            {onOpenThreads && (
-              <button
-                type="button"
-                className="my-event-row-body"
-                onClick={onOpenThreads}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-              >
-                <span style={{ fontSize: 18 }}>💬</span>
-                <span style={{ flex: 1, textAlign: 'left', fontWeight: 700 }}>{t('threads.title', { ns: 'challenge' })}</span>
-                <span style={{ color: 'var(--muted, #b3b3b3)' }}>›</span>
-              </button>
-            )}
+        {activeTab === 'challenges' && (() => {
+          const filteredChallenges = challengeSubTab === 'all'
+            ? myChallenges
+            : myChallenges.filter(c => (c.mode ?? 'local') === challengeSubTab)
+          return (
+            <div className="profile-card">
+              {/* PR2 — entry-point to per-acceptance threads */}
+              {onOpenThreads && (
+                <button
+                  type="button"
+                  className="my-event-row-body"
+                  onClick={onOpenThreads}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 0', marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+                >
+                  <span style={{ fontSize: 18 }}>💬</span>
+                  <span style={{ flex: 1, textAlign: 'left', fontWeight: 700 }}>{t('threads.title', { ns: 'challenge' })}</span>
+                  <span style={{ color: 'var(--muted, #b3b3b3)' }}>›</span>
+                </button>
+              )}
 
-            {myChallenges.length === 0
-              ? <p className="profile-tab-empty">{t('challenges.empty')}</p>
-              : myChallenges.map(c => (
-                  <div key={c.id} className="my-event-row">
-                    <button className="my-event-row-body" onClick={() => onOpenChallenge?.(c)}>
-                      <span className="my-event-title">
-                        {CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'} {c.title}
-                      </span>
-                      <span className="my-event-meta">
-                        {c.audience === 'locals'
-                          ? t('forLocals',    { ns: 'challenge' })
-                          : t('forExplorers', { ns: 'challenge' })}
-                      </span>
-                      <span className={`my-event-badge${c.status === 'validated' ? ' my-event-badge--recurring' : ''}`}>
-                        {c.status === 'validated'
-                          ? t('validatedBadge', { ns: 'challenge' })
-                          : t('openBadge',      { ns: 'challenge' })}
-                      </span>
-                      {c.is_owner && <span className="profile-host-tag">{t('challenges.challenger')}</span>}
-                    </button>
-                  </div>
-                ))
-            }
-          </div>
-        )}
+              {/* Mode sub-tabs — All / Local / International. */}
+              <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '4px 0 8px' }}>
+                {[
+                  { key: 'all',           emoji: '✨' },
+                  { key: 'local',         emoji: '🏙️' },
+                  { key: 'international', emoji: '🌐' },
+                ].map(({ key, emoji }) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="tab"
+                    aria-selected={challengeSubTab === key}
+                    className={`challenge-type-chip${challengeSubTab === key ? ' challenge-type-chip--active' : ''}`}
+                    onClick={() => setChallengeSubTab(key)}
+                  >
+                    <span aria-hidden="true">{emoji}</span>
+                    <span>{key === 'all'
+                      ? t('modeFilter.all', { ns: 'challenge' })
+                      : t(`mode.${key}`,    { ns: 'challenge' })}</span>
+                  </button>
+                ))}
+              </div>
+
+              {filteredChallenges.length === 0
+                ? <p className="profile-tab-empty">{t('challenges.empty')}</p>
+                : filteredChallenges.map(c => (
+                    <div key={c.id} className="my-event-row">
+                      <button className="my-event-row-body" onClick={() => onOpenChallenge?.(c)}>
+                        <span className="my-event-title">
+                          {CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'} {c.title}
+                        </span>
+                        <span className="my-event-meta">
+                          {(c.mode ?? 'local') === 'international'
+                            ? `🌐 ${t('mode.international', { ns: 'challenge' })}`
+                            : (c.audience === 'locals'
+                                ? t('forLocals',    { ns: 'challenge' })
+                                : t('forExplorers', { ns: 'challenge' }))}
+                        </span>
+                        <span className={`my-event-badge${c.status === 'validated' ? ' my-event-badge--recurring' : ''}`}>
+                          {c.status === 'validated'
+                            ? t('validatedBadge', { ns: 'challenge' })
+                            : t('openBadge',      { ns: 'challenge' })}
+                        </span>
+                        {c.is_owner && <span className="profile-host-tag">{t('challenges.challenger')}</span>}
+                      </button>
+                    </div>
+                  ))
+              }
+            </div>
+          )
+        })()}
 
         {/* ── Tab: Hangouts ── */}
         {activeTab === 'hangouts' && (

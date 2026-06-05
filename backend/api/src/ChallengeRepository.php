@@ -275,6 +275,14 @@ class ChallengeRepository
     /**
      * Challenges a user created OR accepted — for the profile "Challenges" tab.
      * Includes is_owner flag. Most-recent first.
+     *
+     * Acceptance is sourced from BOTH:
+     *   - challenge_participants (legacy pooled-acceptance model) — kept for
+     *     back-compat with any pre-1:1 rows still in the table.
+     *   - challenge_acceptances (the 1:1 take-on model used since PR2) —
+     *     covers everyone who took on a challenge via the new flow.
+     * Without the second EXISTS, the profile would silently omit every
+     * challenge taken on after the model switch.
      */
     public static function getByUser(string $userId): array
     {
@@ -283,17 +291,21 @@ class ChallengeRepository
             SELECT c.id, cc.city_id, cc.created_by, cc.guest_id, cc.title,
                    cc.challenge_type, cc.audience, cc.status,
                    cc.max_participants, cc.return_clause,
+                   cc.mode, cc.target_city_id, cc.proof_requirements,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS validated_at,
                    EXTRACT(EPOCH FROM cc.created_at)::INTEGER   AS created_at
             FROM channels c
             JOIN channel_challenges cc ON cc.channel_id = c.id
             WHERE c.status = 'active'
               AND (cc.created_by = :owner_id
-                   OR EXISTS (SELECT 1 FROM challenge_participants cp WHERE cp.channel_id = c.id AND cp.user_id = :part_id))
+                   OR EXISTS (SELECT 1 FROM challenge_participants cp
+                              WHERE cp.channel_id = c.id AND cp.user_id = :part_id)
+                   OR EXISTS (SELECT 1 FROM challenge_acceptances ca
+                              WHERE ca.challenge_id = c.id AND ca.acceptor_user_id = :acc_id))
             ORDER BY cc.created_at DESC
             LIMIT 50
         ");
-        $stmt->execute(['owner_id' => $userId, 'part_id' => $userId]);
+        $stmt->execute(['owner_id' => $userId, 'part_id' => $userId, 'acc_id' => $userId]);
         $challenges = $stmt->fetchAll();
         if (empty($challenges)) return [];
 
@@ -313,20 +325,23 @@ class ChallengeRepository
         foreach ($challenges as $ch) {
             $stats         = $statsMap[$ch['id']] ?? null;
             $item          = self::format([
-                'id'               => $ch['id'],
-                'city_id'          => $ch['city_id'],
-                'created_by'       => $ch['created_by'],
-                'guest_id'         => $ch['guest_id'],
-                'title'            => $ch['title'],
-                'challenge_type'   => $ch['challenge_type'],
-                'audience'         => $ch['audience'],
-                'status'           => $ch['status'],
-                'max_participants' => $ch['max_participants'],
-                'return_clause'    => $ch['return_clause'],
-                'message_count'    => $stats['message_count']    ?? 0,
-                'last_activity_at' => $stats['last_activity_at'] ?? null,
-                'validated_at'     => $ch['validated_at'],
-                'created_at'       => $ch['created_at'],
+                'id'                 => $ch['id'],
+                'city_id'            => $ch['city_id'],
+                'created_by'         => $ch['created_by'],
+                'guest_id'           => $ch['guest_id'],
+                'title'              => $ch['title'],
+                'challenge_type'     => $ch['challenge_type'],
+                'audience'           => $ch['audience'],
+                'status'             => $ch['status'],
+                'max_participants'   => $ch['max_participants'],
+                'return_clause'      => $ch['return_clause'],
+                'mode'               => $ch['mode']               ?? 'local',
+                'target_city_id'     => $ch['target_city_id']     ?? null,
+                'proof_requirements' => $ch['proof_requirements'] ?? null,
+                'message_count'      => $stats['message_count']    ?? 0,
+                'last_activity_at'   => $stats['last_activity_at'] ?? null,
+                'validated_at'       => $ch['validated_at'],
+                'created_at'         => $ch['created_at'],
             ]);
             $item['is_owner'] = ($ch['created_by'] === $userId);
             $out[]            = $item;

@@ -121,7 +121,9 @@ export default function PublicProfileScreen() {
   const [user,         setUser]         = useState<PublicProfile | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
   const [hangouts,     setHangouts]     = useState<ProfileHangout[]>([]);
-  const [challenges,   setChallenges]   = useState<ProfileChallenge[]>([]);
+  const [challenges,      setChallenges]      = useState<ProfileChallenge[]>([]);
+  /** Sub-filter on the Défi tab (parallels me.tsx). */
+  const [challengeSubTab, setChallengeSubTab] = useState<'all' | 'local' | 'international'>('all');
   const [loading,      setLoading]      = useState(true);
   const [error,        setError]        = useState<string | null>(null);
   // 4-state machine driven by isFriend + pendingFriendRequest from the profile
@@ -542,31 +544,64 @@ export default function PublicProfileScreen() {
           </View>
 
             {/* Challenges tab */}
-            {activeTab === 'challenges' && (
-              challenges.length === 0 ? (
-                <Text style={styles.tabEmpty}>{t('noChallenges')}</Text>
-              ) : (
-                <View style={styles.eventList}>
-                  {challenges.map(c => (
-                    <TouchableOpacity
-                      key={c.id}
-                      style={styles.hangoutRow}
-                      activeOpacity={0.75}
-                      onPress={() => router.push(`/challenge/${c.id}` as never)}
-                    >
-                      <Text style={styles.hangoutIcon}>{CHALLENGE_ICONS[c.challenge_type] ?? '🔥'}</Text>
-                      <Text style={styles.hangoutTitle} numberOfLines={1}>{c.title}</Text>
-                      {c.status === 'validated' && (
-                        <View style={[styles.hostTag, { backgroundColor: 'rgba(34,197,94,0.10)', borderColor: 'rgba(34,197,94,0.20)' }]}>
-                          <Text style={[styles.hostTagText, { color: '#4ade80' }]}>✓</Text>
-                        </View>
-                      )}
-                      {c.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              )
-            )}
+            {activeTab === 'challenges' && (() => {
+              const filteredChallenges = challengeSubTab === 'all'
+                ? challenges
+                : challenges.filter(c => (c.mode ?? 'local') === challengeSubTab);
+              return (
+                <>
+                  {/* Mode sub-tabs — All / Local / International. */}
+                  <View style={styles.profileSubTabsRow}>
+                    {(['all', 'local', 'international'] as const).map(key => {
+                      const active = challengeSubTab === key;
+                      const emoji  = key === 'all' ? '✨' : key === 'local' ? '🏙️' : '🌐';
+                      return (
+                        <TouchableOpacity
+                          key={key}
+                          style={[styles.profileSubTabBtn, active && styles.profileSubTabBtnActive]}
+                          onPress={() => setChallengeSubTab(key)}
+                          activeOpacity={0.75}
+                        >
+                          <Text style={[styles.profileSubTabText, active && styles.profileSubTabTextActive]}>
+                            {emoji} {key === 'all'
+                              ? t('modeFilter.all', { ns: 'challenge' })
+                              : t(`mode.${key}`,    { ns: 'challenge' })}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                  {filteredChallenges.length === 0 ? (
+                    <Text style={styles.tabEmpty}>{t('noChallenges')}</Text>
+                  ) : (
+                    <View style={styles.eventList}>
+                      {filteredChallenges.map(c => (
+                        <TouchableOpacity
+                          key={c.id}
+                          style={styles.hangoutRow}
+                          activeOpacity={0.75}
+                          onPress={() => router.push(`/challenge/${c.id}` as never)}
+                        >
+                          <Text style={styles.hangoutIcon}>{CHALLENGE_ICONS[c.challenge_type] ?? '🔥'}</Text>
+                          <Text style={styles.hangoutTitle} numberOfLines={1}>{c.title}</Text>
+                          {(c.mode ?? 'local') === 'international' && (
+                            <View style={[styles.hostTag, { backgroundColor: 'rgba(56,189,248,0.10)', borderColor: 'rgba(56,189,248,0.30)' }]}>
+                              <Text style={[styles.hostTagText, { color: '#38bdf8' }]}>🌐</Text>
+                            </View>
+                          )}
+                          {c.status === 'validated' && (
+                            <View style={[styles.hostTag, { backgroundColor: 'rgba(34,197,94,0.10)', borderColor: 'rgba(34,197,94,0.20)' }]}>
+                              <Text style={[styles.hostTagText, { color: '#4ade80' }]}>✓</Text>
+                            </View>
+                          )}
+                          {c.is_owner && <View style={styles.hostTag}><Text style={styles.hostTagText}>{t('host')}</Text></View>}
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </>
+              );
+            })()}
 
             {/* Hangouts tab */}
             {activeTab === 'hangouts' && (
@@ -1119,6 +1154,21 @@ const styles = StyleSheet.create({
     textAlign:  'center',
     paddingVertical: Spacing.xl,
   },
+
+  // ── Profile sub-tabs (mode filter on the Défi list) ───────────────────────
+  profileSubTabsRow: { flexDirection: 'row', gap: 6, paddingBottom: 8 },
+  profileSubTabBtn: {
+    paddingHorizontal: 10, paddingVertical: 5,
+    borderRadius: Radius.full,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  profileSubTabBtnActive: {
+    borderColor: 'rgba(255,122,60,0.45)',
+    backgroundColor: 'rgba(255,122,60,0.14)',
+  },
+  profileSubTabText:       { fontSize: 12, fontWeight: '700', color: Colors.muted },
+  profileSubTabTextActive: { color: '#FF7A3C' },
 
   // ── Event list ────────────────────────────────────────────────────────────
   eventList: { gap: Spacing.xs },
