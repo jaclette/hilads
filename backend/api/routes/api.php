@@ -9353,97 +9353,10 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/ignore', function (arra
     Response::json($updated);
 });
 
-// ── Thread channel chat (PR2) ─────────────────────────────────────────────────
-// Same shape as the topic message endpoints, but the membership gate uses
-// challenge_acceptances (acceptor + creator are the 2 parties).
-
-// GET /api/v1/threads/{threadChannelId}/messages
-$router->add('GET', '/api/v1/threads/{threadChannelId}/messages', function (array $params) {
-    $tid = $params['threadChannelId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $tid)) {
-        Response::json(['error' => 'Invalid threadChannelId'], 400);
-    }
-    $viewer   = AuthService::requireAuth();
-    if (!ChallengeAcceptanceRepository::isThreadMember($tid, $viewer['id'])) {
-        Response::json(['error' => 'Not a thread member'], 403);
-    }
-    $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
-    $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
-    try {
-        $res = MessageRepository::getByChannel($tid, $beforeId ?: null, $limit);
-        Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
-    } catch (\Throwable $e) {
-        error_log('[thread-messages] GET failed tid=' . $tid . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to load messages'], 500);
-    }
-});
-
-// POST /api/v1/threads/{threadChannelId}/messages
-$router->add('POST', '/api/v1/threads/{threadChannelId}/messages', function (array $params) {
-    $tid = $params['threadChannelId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $tid)) {
-        Response::json(['error' => 'Invalid threadChannelId'], 400);
-    }
-    $viewer   = AuthService::requireAuth();
-    $viewerId = $viewer['id'];
-    if (!ChallengeAcceptanceRepository::isThreadMember($tid, $viewerId)) {
-        Response::json(['error' => 'Not a thread member'], 403);
-    }
-
-    $body     = Request::json() ?? [];
-    $type     = $body['type']     ?? 'text';
-    $content  = $body['content']  ?? null;
-    $imageUrl = $body['imageUrl'] ?? null;
-
-    if (!in_array($type, ['text', 'image'], true)) {
-        Response::json(['error' => 'type must be text or image'], 400);
-    }
-
-    enforceRateLimit('thread_message', 60, 300, $tid);
-
-    // Threads are registered-only (the acceptance flow gates this). The
-    // sender's display_name + a synthetic guestId carry through to existing
-    // helpers; the registered user_id is the real source of truth.
-    $nickname = mb_substr(trim(strip_tags((string) ($viewer['display_name'] ?? ''))), 0, 20);
-    if ($nickname === '') $nickname = 'Someone';
-    // MessageRepository expects a guest_id string column value; we pass the
-    // user's id here as a stable per-sender key so older read paths grouping
-    // by guest_id still work in thread chats.
-    $guestIdProxy = $viewerId;
-
-    try {
-        if ($type === 'image') {
-            if (empty($imageUrl) || !is_string($imageUrl)) {
-                Response::json(['error' => 'imageUrl is required for image messages'], 400);
-            }
-            $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
-            if (!str_starts_with($imageUrl, $r2Base)) {
-                Response::json(['error' => 'Invalid image URL'], 400);
-            }
-            $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
-            if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
-                Response::json(['error' => 'Invalid image reference'], 400);
-            }
-            $message = MessageRepository::addImage($tid, $guestIdProxy, $nickname, $imageUrl, $viewerId);
-        } else {
-            if (empty($content) || !is_string($content)) {
-                Response::json(['error' => 'content is required'], 400);
-            }
-            if (strlen($content) > 1000) {
-                Response::json(['error' => 'content must not exceed 1000 characters'], 400);
-            }
-            $message = MessageRepository::add($tid, $guestIdProxy, $nickname, $content, $viewerId);
-        }
-    } catch (\Throwable $e) {
-        error_log('[thread-msg] DB error tid=' . $tid . ': ' . $e->getMessage());
-        Response::json(['error' => 'Failed to send message'], 500);
-    }
-
-    $message = enrichBroadcastMessage($message, $viewer);
-    broadcastMessageToWs($tid, $message);
-
-    Response::json($message, 201);
-});
+// Thread message routes removed — the 1:1 chat between creator + acceptor
+// moved into the unified challenge channel (see /challenges/:id/messages).
+// Acceptances no longer get an auto-created thread channel; the column
+// stays on challenge_acceptances for historical rows but isn't surfaced.
 
 // GET /api/v1/users/{userId}/challenges — challenges the user created or
 // accepted, for the profile "Challenges" tab. Each item carries `is_owner`.

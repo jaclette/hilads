@@ -404,45 +404,23 @@ class ChallengeAcceptanceRepository
             $initialPhase = 'pending';
         }
 
-        $pdo = Database::pdo();
-        $pdo->beginTransaction();
-        try {
-            $threadId = bin2hex(random_bytes(8));
-            $accId    = bin2hex(random_bytes(8));
-
-            // Thread channel — type 'challenge_thread' is new in PR2. parent_id
-            // points at the challenge (NOT the city) so deleting the challenge
-            // cascades the thread + its messages. The 'thread' name is a
-            // placeholder; client renders "<challenge title> · <counter-party>".
-            $pdo->prepare("
-                INSERT INTO channels (id, type, parent_id, name, status, created_at, updated_at)
-                VALUES (:id, 'challenge_thread', :parent_id, 'thread', 'active', now(), now())
-            ")->execute(['id' => $threadId, 'parent_id' => $challengeId]);
-
-            // phase: 'pending' for Local (gated take-on review), 'accepted'
-            // for International (auto-approved — proof verdict is the gate).
-            // The thread channel is created upfront either way so the WS room
-            // exists for both parties; the client decides surface visibility
-            // based on phase + challenge.mode.
-            $pdo->prepare("
-                INSERT INTO challenge_acceptances
-                    (id, challenge_id, acceptor_user_id, thread_channel_id, phase, created_at, updated_at)
-                VALUES
-                    (:id, :cid, :uid, :tcid, :phase, now(), now())
-            ")->execute([
-                'id'    => $accId,
-                'cid'   => $challengeId,
-                'uid'   => $acceptorUserId,
-                'tcid'  => $threadId,
-                'phase' => $initialPhase,
-            ]);
-
-            $pdo->commit();
-            return self::findById($accId);
-        } catch (\Throwable $e) {
-            $pdo->rollBack();
-            throw $e;
-        }
+        // No more auto-thread channel — the 1:1 conversation moved to the
+        // unified public challenge channel. acceptances write NULL into
+        // thread_channel_id; the column stays for back-compat with rows
+        // created before this change but isn't read by the client anymore.
+        $accId = bin2hex(random_bytes(8));
+        Database::pdo()->prepare("
+            INSERT INTO challenge_acceptances
+                (id, challenge_id, acceptor_user_id, thread_channel_id, phase, created_at, updated_at)
+            VALUES
+                (:id, :cid, :uid, NULL, :phase, now(), now())
+        ")->execute([
+            'id'    => $accId,
+            'cid'   => $challengeId,
+            'uid'   => $acceptorUserId,
+            'phase' => $initialPhase,
+        ]);
+        return self::findById($accId);
     }
 
     // ── PR5: pending take-on review (creator approve / reject) ───────────────

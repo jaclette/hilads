@@ -116,9 +116,11 @@
       }
     }
   },
+  "chatPlaceholder": "Join the conversation…",
+  "messageCreator": "Message {{name}} privately",
   "thread": {
     "notFound": "Thread not found",
-    "empty": "Say hi 👋 and plan when you'll meet up.",
+    "empty": "Be the first to say something.",
     "cancel": {
       "creatorTitle": "Cancel this take-on?",
       "acceptorTitle": "Drop this challenge?",

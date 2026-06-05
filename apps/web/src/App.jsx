@@ -27,7 +27,6 @@ import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
 import ChallengePostCreateModal from './components/ChallengePostCreateModal'
-import ThreadChatPage     from './components/ThreadChatPage'
 import ThreadsListPage    from './components/ThreadsListPage'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
@@ -1045,7 +1044,9 @@ export default function App() {
   // Carries the new challenge so the modal can fetch city members + invite.
   const [postCreateChallenge, setPostCreateChallenge] = useState(null)
   // PR2 — per-acceptance threads
-  const [activeThreadChannelId, setActiveThreadChannelId] = useState(null)  // opens ThreadChatPage
+  // Thread chat retired in step D — the 1:1 surface moved into the
+  // unified public challenge channel. State + setter kept off the tree
+  // to avoid a dead handle lingering elsewhere.
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
@@ -6228,19 +6229,18 @@ export default function App() {
               setViewingProfile({ userId: account.id, nickname: account.display_name });
             }
           }}
-          socket={socketRef.current}
-          sessionId={PAGE_SESSION_ID}
-        />
-      )}
-
-      {/* PR2 — per-acceptance 1:1 thread chat */}
-      {activeThreadChannelId && (
-        <ThreadChatPage
-          threadChannelId={activeThreadChannelId}
-          guest={guest}
-          account={account}
-          onBack={() => setActiveThreadChannelId(null)}
-          onCancelled={() => setActiveThreadChannelId(null)}
+          onSendDm={account ? async (targetUserId) => {
+            // "Message creator" → standard DM. Reuses the same path the
+            // profile card uses (createOrGetDirectConversation), so the DM
+            // surfaces in the conversation drawer with the rest of the
+            // user's chats — no special challenge-DM concept.
+            try {
+              const { conversation, otherUser } = await createOrGetDirectConversation(targetUserId)
+              setActiveChallenge(null)
+              setShowConversations(true)
+              setActiveDm({ conversation, otherUser })
+            } catch { /* silent */ }
+          } : null}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
         />

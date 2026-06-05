@@ -799,6 +799,9 @@ export async function fetchMyAcceptances() {
   return data.threads ?? []
 }
 
+// Deprecated — kept for the historic mobile build still on the prior
+// release. New code uses fetchChallengeMessages on the public challenge
+// channel; thread channels are no longer auto-created on accept.
 export async function fetchThreadMessages(threadChannelId, { beforeId, limit = 50 } = {}) {
   const params = new URLSearchParams({ limit: String(limit) })
   if (beforeId) params.set('before_id', beforeId)

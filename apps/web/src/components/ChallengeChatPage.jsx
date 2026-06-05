@@ -16,7 +16,7 @@ import {
   fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
-  fetchThreadMessages, sendThreadMessage, proposeDate,
+  fetchChallengeMessages, sendChallengeMessage, proposeDate,
   approveTakeOn, rejectTakeOn,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
@@ -86,6 +86,7 @@ export default function ChallengeChatPage({
   onDeleted,
   onNeedAuth,    // host routes guest to sign-up gate
   onOpenMyProfile, // host opens this user's profile drawer (used by mode_* error CTAs)
+  onSendDm,        // host opens a 1:1 DM with the given userId
   socket,
   sessionId,
 }) {
@@ -102,9 +103,10 @@ export default function ChallengeChatPage({
   // ChallengePipeline rendering. Null when I have no acceptance for this
   // challenge (visitor or creator on their own ad).
   const [myAcceptance, setMyAcceptance] = useState(null)
-  const myThreadChannelId = myAcceptance?.thread_channel_id ?? null
-  // Inline thread chat — messages + composer state. Mount only when there's
-  // an active thread (myAcceptance != null).
+  // Unified challenge channel chat — replaces the prior 1:1 thread surface.
+  // The chat mounts for everyone (anon or registered); send is gated on
+  // a registered account at the route layer. Schedule + verdict UIs still
+  // gate on myAcceptance further down.
   const [messages, setMessages] = useState([])
   const [composer, setComposer] = useState('')
   const [sending,  setSending]  = useState(false)
@@ -237,26 +239,28 @@ export default function ChallengeChatPage({
 
   useEffect(() => { loadMyAcceptance() }, [loadMyAcceptance])
 
-  // ── Inline thread chat — load + WS + auto-scroll. Mounts (data-wise) only
-  // when myAcceptance flips non-null. The JSX gates on the same condition.
+  // ── Unified challenge channel chat — load + WS + auto-scroll. Mounts
+  // (data-wise) whenever we know the challenge id; the chat surface is
+  // public so anyone (including anon) can read. Send is still gated on a
+  // registered account in the composer + server.
 
   useEffect(() => {
-    if (!myThreadChannelId) { setMessages([]); knownIds.current = new Set(); return }
+    if (!id) { setMessages([]); knownIds.current = new Set(); return }
     let cancelled = false
-    fetchThreadMessages(myThreadChannelId, { limit: 50 }).then(data => {
+    fetchChallengeMessages(id, { limit: 50 }).then(data => {
       if (cancelled) return
       const msgs = (data.messages ?? []).sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
       knownIds.current = new Set(msgs.map(m => m.id ?? `${m.guestId}:${m.createdAt}`))
       setMessages(msgs)
     }).catch(() => {})
     return () => { cancelled = true }
-  }, [myThreadChannelId])
+  }, [id])
 
   useEffect(() => {
-    if (!socket || !sessionId || !myThreadChannelId) return
-    socket.joinChallengeThread(myThreadChannelId, sessionId)
+    if (!socket || !sessionId || !id) return
+    socket.joinChallenge(id, sessionId)
     const offMsg = socket.on('newMessage', (data) => {
-      if (data.channelId !== myThreadChannelId) return
+      if (data.channelId !== id) return
       const m = data.message; if (!m) return
       const key = m.id ?? `${m.guestId}:${m.createdAt}`
       if (knownIds.current.has(key)) return
@@ -270,8 +274,8 @@ export default function ChallengeChatPage({
         return [...prev, m].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt))
       })
     })
-    return () => { offMsg(); socket.leaveChallengeThread(myThreadChannelId, sessionId) }
-  }, [myThreadChannelId, socket, sessionId])
+    return () => { offMsg(); socket.leaveChallenge(id, sessionId) }
+  }, [id, socket, sessionId])
 
   // Refresh acceptance on any lifecycle push so the pipeline + schedule band update live.
   useEffect(() => {
@@ -295,11 +299,12 @@ export default function ChallengeChatPage({
   const handleSendMessage = useCallback(async (e) => {
     e.preventDefault()
     const content = composer.trim()
-    if (!content || sending || !myThreadChannelId || !account?.id) return
+    if (!content || sending || !id) return
+    if (!account?.id) { onNeedAuth?.('comment_challenge'); return }
     setSending(true)
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
     const optimistic = {
-      id: localId, channelId: myThreadChannelId,
+      id: localId, channelId: id,
       userId: account.id, guestId: account.id,
       nickname: account.display_name ?? 'You',
       content, createdAt: Date.now() / 1000, status: 'sending',
@@ -307,19 +312,22 @@ export default function ChallengeChatPage({
     setMessages(prev => [...prev, optimistic])
     setComposer('')
     try {
-      const sent = await sendThreadMessage(myThreadChannelId, content)
+      // Public challenge channel accepts guestId + nickname for parity with
+      // the city chat send shape — passing the account id as the guestId
+      // proxy keeps the existing message grouping stable for registered users.
+      const sent = await sendChallengeMessage(id, account.id, account.display_name ?? 'You', content)
       setMessages(prev => prev.map(m => m.id === localId ? sent : m))
       knownIds.current.add(sent.id)
     } catch {
       setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
     } finally { setSending(false) }
-  }, [composer, sending, myThreadChannelId, account])
+  }, [composer, sending, id, account, onNeedAuth])
 
-  // PR2 — Accept flow. The chat is INLINE now (no navigation): once accepted,
-  // myAcceptance becomes non-null and the chat block below mounts.
+  // PR2 — Accept flow. The chat is the public challenge channel; once
+  // accepted, the schedule/proof surfaces above mount on the same page.
   const handleAccept = useCallback(async () => {
     if (busy) return
-    if (myThreadChannelId) return  // already accepted — inline chat is right there
+    if (myAcceptance) return  // already a participant — nothing to do
     if (!account?.id) { onNeedAuth?.('accept_challenge'); return }
 
     setBusy('accept')
@@ -352,7 +360,7 @@ export default function ChallengeChatPage({
     } finally {
       setBusy(null)
     }
-  }, [id, account?.id, busy, myThreadChannelId, onNeedAuth, onOpenMyProfile, loadMyAcceptance, t])
+  }, [id, account?.id, busy, myAcceptance, onNeedAuth, onOpenMyProfile, loadMyAcceptance, t])
 
   const handleToggleStatus = useCallback(async () => {
     if (!guest?.guestId || busy || !challenge) return
@@ -652,7 +660,7 @@ export default function ChallengeChatPage({
                   {t('participantsLabel')} · {otherParticipants.length}
                 </span>
               </div>
-              {!isValidated && !isOwner && !myThreadChannelId && (
+              {!isValidated && !isOwner && !myAcceptance && (
                 <span className="challenge-cta-passive">
                   {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
                 </span>
@@ -701,40 +709,26 @@ export default function ChallengeChatPage({
       )}
       </div>{/* /.challenge-collapsible */}
 
-      {/* Locked / pending / rejected state — chat hidden. Five branches:
-          - Creator + pending request → review banner with Accept/Reject
-          - Acceptor + pending         → "Waiting for review"
-          - Acceptor + rejected        → "Take-on declined"
-          - Visitor full / not-yet     → existing locked.visitor / locked.full
-          - Creator + no acceptance    → existing locked.creator
-        Pending/rejected take priority over the "no acceptance" branch. */}
+      {/* Take-on review banners — surface ABOVE the chat instead of
+          replacing it. The chat is the public challenge channel now
+          (anyone can read/post); these banners give the participants
+          per-user context without locking the surface. */}
       {(() => {
         const phase     = myAcceptance?.phase
         const isPending = phase === 'pending'
         const isRej     = phase === 'rejected'
-        const chatHidden = !myAcceptance || isPending || isRej
+        const cpName    = myAcceptance?.counterparty?.displayName ?? '?'
 
-        if (!chatHidden) return null
-
-        const lockedWrapStyle = {
-          flex: 1, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          padding: '32px 24px', textAlign: 'center', gap: 8,
-        }
-        const cpName = myAcceptance?.counterparty?.displayName ?? '?'
-
-        // Creator + pending → review banner with inline Accept / Reject.
+        // Creator + pending take-on → inline Accept / Reject banner.
         if (isOwner && isPending && myAcceptance) {
           return (
-            <div style={lockedWrapStyle}>
-              <span style={{ fontSize: 40 }}>🤝</span>
-              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-                {t('takeon.creator.pendingTitle', { name: cpName })}
-              </h3>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-                {t('takeon.creator.pendingBody', { name: cpName })}
-              </p>
-              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <div className="challenge-takeon-banner">
+              <span className="challenge-takeon-emoji">🤝</span>
+              <div className="challenge-takeon-text">
+                <h3>{t('takeon.creator.pendingTitle', { name: cpName })}</h3>
+                <p>{t('takeon.creator.pendingBody', { name: cpName })}</p>
+              </div>
+              <div className="challenge-takeon-actions">
                 <button
                   type="button"
                   className="challenge-alert-btn"
@@ -759,70 +753,36 @@ export default function ChallengeChatPage({
             </div>
           )
         }
-
         if (!isOwner && isPending) {
           return (
-            <div style={lockedWrapStyle}>
-              <span style={{ fontSize: 40, opacity: 0.7 }}>⏳</span>
-              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-                {t('takeon.acceptor.waitingTitle')}
-              </h3>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-                {t('takeon.acceptor.waitingBody', { name: cpName })}
-              </p>
+            <div className="challenge-takeon-banner challenge-takeon-banner--muted">
+              <span className="challenge-takeon-emoji">⏳</span>
+              <div className="challenge-takeon-text">
+                <h3>{t('takeon.acceptor.waitingTitle')}</h3>
+                <p>{t('takeon.acceptor.waitingBody', { name: cpName })}</p>
+              </div>
             </div>
           )
         }
-
         if (!isOwner && isRej) {
           return (
-            <div style={lockedWrapStyle}>
-              <span style={{ fontSize: 40, opacity: 0.7 }}>✕</span>
-              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-                {t('takeon.acceptor.rejectedTitle')}
-              </h3>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-                {t('takeon.acceptor.rejectedBody', { name: cpName })}
-              </p>
+            <div className="challenge-takeon-banner challenge-takeon-banner--muted">
+              <span className="challenge-takeon-emoji">✕</span>
+              <div className="challenge-takeon-text">
+                <h3>{t('takeon.acceptor.rejectedTitle')}</h3>
+                <p>{t('takeon.acceptor.rejectedBody', { name: cpName })}</p>
+              </div>
             </div>
           )
         }
-
-        // No acceptance at all — branches:
-        //   - visitor + in_progress → "someone's on this one"
-        //   - visitor + available   → "take on the challenge to unlock chat"
-        //   - creator + no taker    → "waiting for someone to take it on"
-        if (!isOwner && inProgress) {
-          return (
-            <div style={lockedWrapStyle}>
-              <span style={{ fontSize: 40, opacity: 0.7 }}>⏳</span>
-              <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-                {t('locked.inProgress.title')}
-              </h3>
-              <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-                {t('locked.inProgress.body')}
-              </p>
-            </div>
-          )
-        }
-        return (
-          <div style={lockedWrapStyle}>
-            <span style={{ fontSize: 40, opacity: 0.7 }}>🔒</span>
-            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 800, color: 'var(--text, #fff)' }}>
-              {isOwner ? t('locked.creator.title') : t('locked.visitor.title')}
-            </h3>
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--muted, #b3b3b3)', maxWidth: 320 }}>
-              {isOwner ? t('locked.creator.body')  : t('locked.visitor.body')}
-            </p>
-          </div>
-        )
+        return null
       })()}
 
-      {/* Inline thread chat — mounts only when the viewer has an active
-          acceptance for this challenge AND it's past the pending/rejected
-          gate. Replaces the old "navigate to /thread" path. */}
-      {myAcceptance && account?.id && myAcceptance.phase !== 'pending' && myAcceptance.phase !== 'rejected' && (
-        <>
+      {/* Unified challenge channel chat — public, always mounted. Anyone
+          can read; posting requires a registered account (gated server-
+          side + by the composer's onFocus auth prompt). The
+          ThreadScheduleBlock + DM-to-creator surfaces sit alongside. */}
+      <>
           <div
             className="topic-chat-feed"
             ref={feedRef}
@@ -890,14 +850,27 @@ export default function ChallengeChatPage({
             value={composer}
             onChange={e => setComposer(e.target.value)}
             onSubmit={handleSendMessage}
-            onFocus={() => collapseHeader(true)}
+            onFocus={() => { collapseHeader(true); if (!account?.id) onNeedAuth?.('comment_challenge') }}
             onBlur={() => collapseHeader(false)}
             dismissOnSend
             sending={sending}
-            placeholder={t('thread.empty')}
+            placeholder={t('chatPlaceholder')}
             showEmojiButton={false}
           />
-        </>
+      </>
+
+      {/* "Message creator" — DM shortcut for the active taker. The thread
+          chat was the auto-private surface; now the public channel handles
+          coordination, and a private DM is opt-in via this button. The
+          DM uses the existing 1:1 DM system (App-level onSendDm prop). */}
+      {!isOwner && myAcceptance && account?.id && challenge.created_by && (
+        <button
+          type="button"
+          className="challenge-dm-creator"
+          onClick={() => onSendDm?.(challenge.created_by)}
+        >
+          💬 {t('messageCreator', { name: creator?.displayName ?? '—' })}
+        </button>
       )}
 
       {/* Date picker — opened by the pipeline's "Propose a date →" sub-CTA

@@ -1082,6 +1082,14 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_acceptor  ON challenge_acceptanc
 // Per-challenge acceptances (creator's view of who took it on + cap check).
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_challenge ON challenge_acceptances (challenge_id,    created_at DESC)", 'idx_chacc_challenge');
 
+// Step D rollback — challenge_thread channels are no longer auto-created on
+// accept. The 1:1 private chat moved to the unified public challenge channel
+// (badges distinguish roles). Existing acceptances keep their thread_channel_id
+// pointing at the historical thread row; new acceptances write NULL.
+// Drop NOT NULL so new INSERTs can land. The UNIQUE constraint still holds —
+// Postgres treats multiple NULLs as distinct under UNIQUE.
+run($pdo, "ALTER TABLE challenge_acceptances ALTER COLUMN thread_channel_id DROP NOT NULL", 'thread_channel_id nullable');
+
 // ── Challenge redesign — PR3: date concertation ──────────────────────────────
 // Either party proposes a date in the thread; the creator approves; on approve
 // the server creates a debrief event (channel_events with source_type=
