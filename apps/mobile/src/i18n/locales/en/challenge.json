@@ -148,6 +148,10 @@
     "on":  "Notifications on",
     "off": "Notifications off"
   },
+  "privacy": {
+    "closedCloseCta":  "Close to new joins",
+    "closedReopenCta": "Re-open to joins"
+  },
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",

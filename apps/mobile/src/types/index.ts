@@ -192,6 +192,12 @@ export interface Challenge {
    *  now. Drives the Available / In progress / Validated pill and gates the
    *  Accept (+) button. Backend computes via EXISTS over challenge_acceptances. */
   is_in_progress?:       boolean;
+  /** Privacy layer (web parity). 'public' default; 'friends' / 'private'
+   *  hide the row from sitemap + city feed for non-entitled viewers. */
+  visibility?:           'public' | 'friends' | 'private';
+  /** Creator-only freeze for the participation gate. When true, /join refuses
+   *  new joiners; existing participants stay. */
+  closed_to_new_joins?:  boolean;
   /** Creator display info — null for pure-guest challenges. UI renders
    *  "by {creator_display_name}" on cards + detail header. */
   creator_display_name?:     string | null;

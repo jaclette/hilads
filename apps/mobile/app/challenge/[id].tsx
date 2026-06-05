@@ -22,14 +22,16 @@ import {
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
+  setChallengeCloseToJoins,
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
+import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
 import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
-import { MembersSheet } from '@/components/MembersSheet';
+import { ChallengeChannelMembersSheet } from '@/features/challenge/ChallengeChannelMembersSheet';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -256,6 +258,23 @@ export default function ChallengeChatScreen() {
       setValidateBusy(false);
     }
   }, [id, identity, challenge, t]);
+
+  // Creator-only close-to-new-joins toggle. Existing participants stay;
+  // /join refuses new ones while this is on.
+  const [closeBusy, setCloseBusy] = useState(false);
+  const handleToggleClosedToJoins = useCallback(async () => {
+    if (!challenge || closeBusy) return;
+    const next = !challenge.closed_to_new_joins;
+    setCloseBusy(true);
+    try {
+      await setChallengeCloseToJoins(id, next);
+      setChallenge(prev => prev ? { ...prev, closed_to_new_joins: next } : prev);
+    } catch {
+      Alert.alert(t('errSave'));
+    } finally {
+      setCloseBusy(false);
+    }
+  }, [id, challenge, closeBusy, t]);
 
   // ── Participant actions (non-owner) ──────────────────────────────────────────
 
@@ -642,6 +661,10 @@ export default function ChallengeChatScreen() {
               <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('join.leaveCta')}</Text>
             </TouchableOpacity>
           )}
+          {/* Notifications on/off pill — participants only. */}
+          {iAmParticipant === true && account?.id && (
+            <ChallengeNotificationPill challengeId={id} currentUserId={account.id} />
+          )}
         </View>
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
@@ -727,6 +750,26 @@ export default function ChallengeChatScreen() {
             <TouchableOpacity style={styles.ownerIconBtn} onPress={handleDelete} activeOpacity={0.75} accessibilityLabel={t('deleteConfirm')}>
               <Ionicons name="trash-outline" size={16} color={Colors.muted} />
               <Text style={styles.ownerIconLabel}>{t('deleteConfirm')}</Text>
+            </TouchableOpacity>
+            {/* Close to new joins — existing participants stay, /join refuses
+                new ones. Per-challenge toggle, creator-only. */}
+            <TouchableOpacity
+              style={styles.ownerIconBtn}
+              onPress={handleToggleClosedToJoins}
+              activeOpacity={0.75}
+              disabled={closeBusy}
+              accessibilityLabel={challenge?.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
+            >
+              {closeBusy
+                ? <ActivityIndicator size="small" color={Colors.muted} />
+                : <Ionicons
+                    name={challenge?.closed_to_new_joins ? 'lock-closed' : 'lock-open-outline'}
+                    size={16}
+                    color={challenge?.closed_to_new_joins ? '#FFB37A' : Colors.muted}
+                  />}
+              <Text style={[styles.ownerIconLabel, challenge?.closed_to_new_joins && { color: '#FFB37A' }]} numberOfLines={1}>
+                {challenge?.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
+              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -1064,19 +1107,26 @@ export default function ChallengeChatScreen() {
         />
       )}
 
-      {/* Members modal — opened by tapping the participants row above. */}
-      <MembersSheet
-        visible={membersOpen}
-        loading={false}
-        participants={participants}
-        count={participants.length}
-        noun={t('createTitle')}
-        onClose={() => setMembersOpen(false)}
-        onSelect={(uid) => {
-          setMembersOpen(false);
-          router.push({ pathname: '/user/[id]', params: { id: uid } });
-        }}
-      />
+      {/* Channel members sheet — synthesizes Challenger + Taker rows
+          at the head from the challenge/acceptance context, then lists
+          joined participants. Kick button surfaces for creator +
+          active taker (server enforces too). */}
+      {challenge && (
+        <ChallengeChannelMembersSheet
+          visible={membersOpen}
+          challenge={challenge}
+          activeTaker={otherParticipants[0] ?? null}
+          currentUserId={account?.id ?? null}
+          isCreator={isOwner}
+          isActiveTaker={!!myAcceptance && !myAcceptance.i_am_creator}
+          onClose={() => setMembersOpen(false)}
+          onSelect={(uid) => {
+            setMembersOpen(false);
+            router.push({ pathname: '/user/[id]', params: { id: uid } });
+          }}
+          onMembersChanged={() => loadParticipants()}
+        />
+      )}
 
       {/* Post-create "seed it" sheet — first opens with two CTAs (invite city
           members / share externally), then morphs into a multi-select picker. */}
