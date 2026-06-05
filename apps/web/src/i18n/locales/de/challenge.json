@@ -211,7 +211,9 @@
       "accept": "Annehmen",
       "date": "Termin",
       "meet": "Treffen",
-      "wrap": "Abschluss"
+      "wrap": "Abschluss",
+      "proof": "Beweis",
+      "verdict": "Urteil"
     },
     "subcta": {
       "tapToAccept": "Nimm die Challenge an",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Wie war's mit {{name}}? →",
       "acceptorWaitingVerdict": "Warten, bis {{name}} bestätigt",
       "accomplished": "Challenge gemeistert 🎉",
-      "closed": "Challenge beendet"
+      "closed": "Challenge beendet",
+      "submitProof": "Beweis senden →",
+      "waitingForProof": "Warte auf den Beweis",
+      "reviewProof": "Beweis prüfen →",
+      "waitingForVerdict": "Warte auf das Urteil"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Zielstadt wählen",
       "searchPlaceholder": "Stadt suchen…",
       "anywhere": "Überall auf der Welt"
+    },
+    "proof": {
+      "requirementsLabel": "Was der/die Erstellende verlangt",
+      "submitCta": "Beweis senden",
+      "tryAgainCta": "Nochmal ({{count}} übrig)",
+      "waitingProof": "Warte auf den Beweis",
+      "waitingVerdict": "Warte auf das Urteil",
+      "approvedLine": "Challenge geschafft",
+      "closedLine": "Challenge geschlossen",
+      "lastReason": "Grund: {{reason}}",
+      "geotagOk": "Geotag bestätigt",
+      "geotagWarn": "Geotag außerhalb des Gebiets",
+      "approveCta": "Genehmigen",
+      "rejectCta": "Ablehnen",
+      "rejectModalTitle": "Beweis ablehnen",
+      "rejectModalHint": "{{count}} Versuch(e) übrig. Sag, was zu ändern ist.",
+      "reasonPlaceholder": "z. B. Foto unscharf, Gericht nicht erkennbar",
+      "rejectConfirm": "Ablehnung senden",
+      "reasonRequiredTitle": "Grund erforderlich",
+      "reasonRequiredBody": "Ein kurzer Grund (1–200 Zeichen) hilft.",
+      "permPhotoTitle": "Fotozugriff nötig",
+      "permPhotoBody": "Erlaube den Zugriff in den Einstellungen.",
+      "permGpsTitle": "Standort nötig",
+      "permGpsBody": "Geotag ist Pflicht. Aktiviere den Standort.",
+      "gpsFailTitle": "GPS nicht lesbar",
+      "gpsFailBody": "Versuch es draußen mit aktiviertem Standort.",
+      "submitFailTitle": "Senden fehlgeschlagen",
+      "submitFailBody": "Verbindung prüfen und nochmal versuchen.",
+      "reviewFailTitle": "Urteil nicht gespeichert"
     }
   }
 }

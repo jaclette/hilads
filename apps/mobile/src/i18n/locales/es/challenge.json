@@ -211,7 +211,9 @@
       "accept": "Aceptar",
       "date": "Fecha",
       "meet": "Vernos",
-      "wrap": "Resumen"
+      "wrap": "Resumen",
+      "proof": "Prueba",
+      "verdict": "Veredicto"
     },
     "subcta": {
       "tapToAccept": "Acepta el reto",
@@ -225,7 +227,11 @@
       "creatorVerdict": "¿Cómo fue con {{name}}? →",
       "acceptorWaitingVerdict": "Esperando a que {{name}} confirme",
       "accomplished": "Reto cumplido 🎉",
-      "closed": "Reto cerrado"
+      "closed": "Reto cerrado",
+      "submitProof": "Envía tu prueba →",
+      "waitingForProof": "Esperando la prueba",
+      "reviewProof": "Revisa la prueba →",
+      "waitingForVerdict": "Esperando el veredicto"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Elige una ciudad objetivo",
       "searchPlaceholder": "Busca una ciudad…",
       "anywhere": "Cualquier lugar del mundo"
+    },
+    "proof": {
+      "requirementsLabel": "Lo que pide el creador",
+      "submitCta": "Enviar tu prueba",
+      "tryAgainCta": "Reintentar ({{count}} restantes)",
+      "waitingProof": "Esperando la prueba",
+      "waitingVerdict": "Esperando el veredicto",
+      "approvedLine": "Reto cumplido",
+      "closedLine": "Reto cerrado",
+      "lastReason": "Motivo: {{reason}}",
+      "geotagOk": "Geoetiqueta verificada",
+      "geotagWarn": "Geoetiqueta fuera del área",
+      "approveCta": "Aprobar",
+      "rejectCta": "Rechazar",
+      "rejectModalTitle": "Rechazar esta prueba",
+      "rejectModalHint": "Le quedan {{count}} intento(s). Explica qué arreglar.",
+      "reasonPlaceholder": "ej. foto borrosa, no se ve el plato",
+      "rejectConfirm": "Enviar rechazo",
+      "reasonRequiredTitle": "Motivo requerido",
+      "reasonRequiredBody": "Un motivo corto (1–200 caracteres) ayuda al que acepta.",
+      "permPhotoTitle": "Acceso a fotos necesario",
+      "permPhotoBody": "Habilita el acceso a fotos en Ajustes para elegir una prueba.",
+      "permGpsTitle": "Ubicación necesaria",
+      "permGpsBody": "La geoetiqueta es obligatoria. Activa la ubicación en Ajustes.",
+      "gpsFailTitle": "No se pudo leer el GPS",
+      "gpsFailBody": "Inténtalo al aire libre o con la ubicación activada.",
+      "submitFailTitle": "No se pudo enviar",
+      "submitFailBody": "Revisa tu conexión e inténtalo de nuevo.",
+      "reviewFailTitle": "No se pudo guardar el veredicto"
     }
   }
 }

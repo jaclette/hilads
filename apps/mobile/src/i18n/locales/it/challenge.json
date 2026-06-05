@@ -211,7 +211,9 @@
       "accept": "Accetta",
       "date": "Data",
       "meet": "Vediamoci",
-      "wrap": "Resoconto"
+      "wrap": "Resoconto",
+      "proof": "Prova",
+      "verdict": "Verdetto"
     },
     "subcta": {
       "tapToAccept": "Accetta la sfida",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Com'è andata con {{name}}? →",
       "acceptorWaitingVerdict": "In attesa che {{name}} confermi",
       "accomplished": "Sfida superata 🎉",
-      "closed": "Sfida chiusa"
+      "closed": "Sfida chiusa",
+      "submitProof": "Invia la tua prova →",
+      "waitingForProof": "In attesa della prova",
+      "reviewProof": "Rivedi la prova →",
+      "waitingForVerdict": "In attesa del verdetto"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Scegli una città bersaglio",
       "searchPlaceholder": "Cerca una città…",
       "anywhere": "Ovunque nel mondo"
+    },
+    "proof": {
+      "requirementsLabel": "Cosa chiede chi ha creato la sfida",
+      "submitCta": "Invia la prova",
+      "tryAgainCta": "Riprova ({{count}} rimaste)",
+      "waitingProof": "In attesa della prova",
+      "waitingVerdict": "In attesa del verdetto",
+      "approvedLine": "Sfida completata",
+      "closedLine": "Sfida chiusa",
+      "lastReason": "Motivo: {{reason}}",
+      "geotagOk": "Geotag verificato",
+      "geotagWarn": "Geotag fuori area",
+      "approveCta": "Approva",
+      "rejectCta": "Rifiuta",
+      "rejectModalTitle": "Rifiuta questa prova",
+      "rejectModalHint": "Gli/le restano {{count}} tentativi. Spiega cosa sistemare.",
+      "reasonPlaceholder": "es. foto mossa, non si vede il piatto",
+      "rejectConfirm": "Invia rifiuto",
+      "reasonRequiredTitle": "Motivo richiesto",
+      "reasonRequiredBody": "Un motivo breve (1–200 caratteri) aiuta.",
+      "permPhotoTitle": "Serve l'accesso alle foto",
+      "permPhotoBody": "Abilitalo in Impostazioni.",
+      "permGpsTitle": "Serve la posizione",
+      "permGpsBody": "Il geotag è obbligatorio. Attiva la posizione.",
+      "gpsFailTitle": "GPS non disponibile",
+      "gpsFailBody": "Riprova all'aperto.",
+      "submitFailTitle": "Invio non riuscito",
+      "submitFailBody": "Controlla la connessione e riprova.",
+      "reviewFailTitle": "Verdetto non salvato"
     }
   }
 }

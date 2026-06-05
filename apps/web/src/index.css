@@ -11769,3 +11769,151 @@ body.has-app-promo-banner .page-header {
 }
 .cef-city-modal-row:hover { background: rgba(255, 255, 255, 0.04); }
 .cef-city-modal-row.selected { background: rgba(255, 122, 60, 0.10); color: #FF7A3C; }
+
+/* ── Challenge — International proof block ────────────────────────────────
+   Sits below the pipeline on the detail page for International challenges.
+   Renders three faces: submission CTA, pending media + verdict buttons,
+   terminal status line. */
+
+.proof-block {
+  margin: 4px 16px 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.proof-block--loading {
+  text-align: center;
+  color: var(--muted);
+  padding: 16px;
+}
+
+.proof-reqs {
+  border-left: 3px solid rgba(255, 122, 60, 0.5);
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.proof-reqs-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #FF7A3C;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.proof-reqs-text { font-size: 13px; color: var(--text); line-height: 1.4; }
+
+.proof-media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #000;
+}
+
+.proof-geotag {
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.proof-geotag--ok   { color: #4ade80; }
+.proof-geotag--warn { color: #fbbf24; }
+
+.proof-verdict-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+.proof-verdict-btn {
+  appearance: none;
+  cursor: pointer;
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+.proof-verdict-btn--approve { background: #22c55e; color: #fff; }
+.proof-verdict-btn--approve:hover:not(:disabled) { background: #16a34a; }
+.proof-verdict-btn--reject {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+}
+.proof-verdict-btn--reject:hover:not(:disabled) { background: rgba(239, 68, 68, 0.14); }
+.proof-verdict-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.proof-submit-btn {
+  appearance: none;
+  cursor: pointer;
+  display: inline-block;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: #FF7A3C;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  border: 0;
+  margin-top: 2px;
+}
+.proof-submit-btn:hover:not(.is-busy) { background: #ff8753; }
+.proof-submit-btn.is-busy { opacity: 0.5; cursor: wait; }
+
+.proof-terminal {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  padding: 4px 0;
+}
+.proof-reason { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.proof-error { font-size: 12px; color: #ef4444; margin: 4px 0 0; }
+
+.proof-reject-modal {
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.proof-reject-title { font-size: 16px; font-weight: 800; color: var(--text); margin: 0; }
+.proof-reject-hint  { font-size: 13px; color: var(--muted); margin: 0; }
+.proof-reason-input {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.proof-charcount { font-size: 11px; color: var(--muted2); text-align: right; }
+.proof-reject-submit {
+  appearance: none;
+  cursor: pointer;
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  border: 0;
+}
+.proof-reject-submit:hover:not(:disabled) { background: #dc2626; }
+.proof-reject-submit:disabled { opacity: 0.45; cursor: not-allowed; }

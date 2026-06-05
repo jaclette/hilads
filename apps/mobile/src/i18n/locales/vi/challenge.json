@@ -211,7 +211,9 @@
       "accept": "Nhận",
       "date": "Ngày",
       "meet": "Gặp nhau",
-      "wrap": "Tổng kết"
+      "wrap": "Tổng kết",
+      "proof": "Bằng chứng",
+      "verdict": "Phán quyết"
     },
     "subcta": {
       "tapToAccept": "Nhận thử thách này",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Buổi gặp với {{name}} thế nào? →",
       "acceptorWaitingVerdict": "Đang chờ {{name}} xác nhận",
       "accomplished": "Đã hoàn thành thử thách 🎉",
-      "closed": "Thử thách đã đóng"
+      "closed": "Thử thách đã đóng",
+      "submitProof": "Gửi bằng chứng →",
+      "waitingForProof": "Chờ bằng chứng",
+      "reviewProof": "Xem bằng chứng →",
+      "waitingForVerdict": "Chờ phán quyết"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Chọn thành phố đích",
       "searchPlaceholder": "Tìm thành phố…",
       "anywhere": "Bất kỳ đâu trên thế giới"
+    },
+    "proof": {
+      "requirementsLabel": "Người tạo yêu cầu",
+      "submitCta": "Gửi bằng chứng",
+      "tryAgainCta": "Thử lại (còn {{count}})",
+      "waitingProof": "Chờ bằng chứng",
+      "waitingVerdict": "Chờ phán quyết",
+      "approvedLine": "Thử thách hoàn thành",
+      "closedLine": "Thử thách đã đóng",
+      "lastReason": "Lý do: {{reason}}",
+      "geotagOk": "Đã xác minh vị trí",
+      "geotagWarn": "Vị trí ngoài khu vực",
+      "approveCta": "Chấp nhận",
+      "rejectCta": "Từ chối",
+      "rejectModalTitle": "Từ chối bằng chứng",
+      "rejectModalHint": "Còn {{count}} lần. Nói rõ cần sửa gì.",
+      "reasonPlaceholder": "vd: ảnh mờ, không thấy món",
+      "rejectConfirm": "Gửi từ chối",
+      "reasonRequiredTitle": "Cần lý do",
+      "reasonRequiredBody": "Lý do ngắn (1–200 ký tự) sẽ giúp.",
+      "permPhotoTitle": "Cần truy cập ảnh",
+      "permPhotoBody": "Bật trong Cài đặt.",
+      "permGpsTitle": "Cần vị trí",
+      "permGpsBody": "Bắt buộc vị trí. Bật trong Cài đặt.",
+      "gpsFailTitle": "Không đọc được GPS",
+      "gpsFailBody": "Thử ngoài trời.",
+      "submitFailTitle": "Không gửi được",
+      "submitFailBody": "Kiểm tra kết nối.",
+      "reviewFailTitle": "Không lưu được phán quyết"
     }
   }
 }

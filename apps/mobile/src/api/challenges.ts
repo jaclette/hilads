@@ -304,6 +304,62 @@ export async function sendThreadImageMessage(threadChannelId: string, imageUrl: 
   return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'image', imageUrl });
 }
 
+// ── International — proof submission ────────────────────────────────────────
+
+export interface ChallengeProof {
+  id:               string;
+  acceptance_id:    string;
+  media_url:        string;
+  media_type:       'image' | 'video';
+  geotag_lat:       number;
+  geotag_lng:       number;
+  geotag_verified:  boolean;
+  status:           'pending' | 'approved' | 'rejected';
+  rejection_reason: string | null;
+  submitted_at:     string;
+  reviewed_at:      string | null;
+}
+
+export interface ProofListResult {
+  proofs:       ChallengeProof[];
+  attempts:     number;
+  maxAttempts:  number;
+}
+
+export async function fetchProofs(acceptanceId: string): Promise<ProofListResult> {
+  return api.get<ProofListResult>(`/acceptances/${acceptanceId}/proofs`);
+}
+
+/** Acceptor submits a proof. Caller already has the media uploaded to R2
+ *  via uploadFile() and the GPS coords from expo-location. */
+export async function submitProof(
+  acceptanceId: string,
+  body: { mediaUrl: string; mediaType: 'image' | 'video'; lat: number; lng: number },
+): Promise<{ proof: ChallengeProof; attempt: number; maxAttempts: number }> {
+  return api.post<{ proof: ChallengeProof; attempt: number; maxAttempts: number }>(
+    `/acceptances/${acceptanceId}/submit-proof`,
+    body,
+  );
+}
+
+/** Creator approves the proof — terminal success. */
+export async function approveProof(proofId: string): Promise<{ proof: ChallengeProof }> {
+  return api.post<{ proof: ChallengeProof }>(`/proofs/${proofId}/approve`, {});
+}
+
+/** Creator rejects with a mandatory reason (1–200 chars). Returns whether
+ *  this was the acceptor's last attempt (`isFinal`) so the UI can switch
+ *  copy from "they can try again" to "challenge closed". */
+export async function rejectProof(
+  proofId: string,
+  reason: string,
+): Promise<{ proof: ChallengeProof; isFinal: boolean; attemptsLeft: number }> {
+  return api.post<{ proof: ChallengeProof; isFinal: boolean; attemptsLeft: number }>(
+    `/proofs/${proofId}/reject`,
+    { reason },
+  );
+}
+
 // ── Personal invitations ────────────────────────────────────────────────────
 
 /** Hand-pick city members to ping with a personal invitation to take this on. */

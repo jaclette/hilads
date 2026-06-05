@@ -211,7 +211,9 @@
       "accept": "รับ",
       "date": "วันนัด",
       "meet": "เจอกัน",
-      "wrap": "สรุป"
+      "wrap": "สรุป",
+      "proof": "หลักฐาน",
+      "verdict": "คำตัดสิน"
     },
     "subcta": {
       "tapToAccept": "รับชาเลนจ์นี้",
@@ -225,7 +227,11 @@
       "creatorVerdict": "เป็นไงบ้างกับ {{name}}? →",
       "acceptorWaitingVerdict": "รอ {{name}} ยืนยัน",
       "accomplished": "ทำชาเลนจ์สำเร็จ 🎉",
-      "closed": "ปิดชาเลนจ์แล้ว"
+      "closed": "ปิดชาเลนจ์แล้ว",
+      "submitProof": "ส่งหลักฐาน →",
+      "waitingForProof": "รอหลักฐาน",
+      "reviewProof": "ตรวจหลักฐาน →",
+      "waitingForVerdict": "รอคำตัดสิน"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "เลือกเมืองเป้าหมาย",
       "searchPlaceholder": "ค้นหาเมือง…",
       "anywhere": "ที่ไหนก็ได้ในโลก"
+    },
+    "proof": {
+      "requirementsLabel": "สิ่งที่ผู้สร้างขอ",
+      "submitCta": "ส่งหลักฐาน",
+      "tryAgainCta": "ลองอีก (เหลือ {{count}})",
+      "waitingProof": "รอหลักฐาน",
+      "waitingVerdict": "รอคำตัดสิน",
+      "approvedLine": "ทำชาเลนจ์สำเร็จ",
+      "closedLine": "ปิดชาเลนจ์",
+      "lastReason": "เหตุผล: {{reason}}",
+      "geotagOk": "ตรวจตำแหน่งแล้ว",
+      "geotagWarn": "ตำแหน่งนอกพื้นที่",
+      "approveCta": "อนุมัติ",
+      "rejectCta": "ปฏิเสธ",
+      "rejectModalTitle": "ปฏิเสธหลักฐานนี้",
+      "rejectModalHint": "เหลือ {{count}} ครั้ง บอกว่าต้องแก้อะไร",
+      "reasonPlaceholder": "เช่น ภาพเบลอ มองไม่เห็นอาหาร",
+      "rejectConfirm": "ส่งคำปฏิเสธ",
+      "reasonRequiredTitle": "ต้องบอกเหตุผล",
+      "reasonRequiredBody": "เหตุผลสั้น (1–200) ช่วยได้",
+      "permPhotoTitle": "ต้องการเข้าถึงรูป",
+      "permPhotoBody": "อนุญาตในการตั้งค่า",
+      "permGpsTitle": "ต้องการตำแหน่ง",
+      "permGpsBody": "ตำแหน่งจำเป็น เปิดในการตั้งค่า",
+      "gpsFailTitle": "อ่าน GPS ไม่ได้",
+      "gpsFailBody": "ลองข้างนอก",
+      "submitFailTitle": "ส่งไม่ได้",
+      "submitFailBody": "ตรวจการเชื่อมต่อ",
+      "reviewFailTitle": "บันทึกคำตัดสินไม่ได้"
     }
   }
 }

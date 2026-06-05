@@ -26,6 +26,7 @@ import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
+import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
 import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { MembersSheet } from '@/components/MembersSheet';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
@@ -545,12 +546,27 @@ export default function ChallengeChatScreen() {
         <ChallengePipeline
           acceptance={myAcceptance}
           iAmCreator={isOwner}
+          mode={challenge.mode ?? 'local'}
           onPress={
-            myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
+            (challenge.mode ?? 'local') === 'local'
+              && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
               ? () => setPickerOpen(true)
               : undefined
           }
         />
+
+        {/* International — proof submission + verdict block. Renders only
+            when there's an acceptance to act on; visitors and creators-
+            without-acceptance see no extra surface here (the pipeline
+            educates them passively). */}
+        {(challenge.mode ?? 'local') === 'international' && myAcceptance && (
+          <ChallengeProofBlock
+            acceptanceId={myAcceptance.id}
+            iAmCreator={isOwner}
+            iAmAcceptor={!isOwner}
+            proofRequirements={challenge.proof_requirements ?? null}
+          />
+        )}
 
         {/* Owner re-invite CTA — only while the challenge is genuinely free.
             Opens the same "seed it" sheet shown right after creation, so the
@@ -765,16 +781,18 @@ export default function ChallengeChatScreen() {
               ) : null}
             />
 
-            {/* Schedule band — handles propose-pending / approve / debrief /
-                verdict states. The bare "Propose a date" empty state is
-                suppressed (hideEmptyCta) because the pipeline sub-CTA above
-                already says it and triggers the picker. */}
-            <ThreadScheduleBlock
-              thread={myAcceptance}
-              myUserId={account.id}
-              onChange={loadMyAcceptance}
-              hideEmptyCta
-            />
+            {/* Schedule band — Local-only. International acceptances don't
+                have date concertation (no meetup); the proof block above
+                replaces this entirely. Hiding it here keeps the chat input
+                anchored right below the proof flow. */}
+            {(challenge.mode ?? 'local') === 'local' && (
+              <ThreadScheduleBlock
+                thread={myAcceptance}
+                myUserId={account.id}
+                onChange={loadMyAcceptance}
+                hideEmptyCta
+              />
+            )}
 
             <ChatInput
               sending={sending}

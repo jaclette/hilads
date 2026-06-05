@@ -211,7 +211,9 @@
       "accept": "Aannemen",
       "date": "Datum",
       "meet": "Afspreken",
-      "wrap": "Afronden"
+      "wrap": "Afronden",
+      "proof": "Bewijs",
+      "verdict": "Oordeel"
     },
     "subcta": {
       "tapToAccept": "Neem de challenge aan",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Hoe ging het met {{name}}? →",
       "acceptorWaitingVerdict": "Wachten tot {{name}} bevestigt",
       "accomplished": "Challenge gehaald 🎉",
-      "closed": "Challenge afgesloten"
+      "closed": "Challenge afgesloten",
+      "submitProof": "Stuur je bewijs →",
+      "waitingForProof": "Wachten op het bewijs",
+      "reviewProof": "Bewijs beoordelen →",
+      "waitingForVerdict": "Wachten op het oordeel"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Kies een doelstad",
       "searchPlaceholder": "Zoek een stad…",
       "anywhere": "Waar dan ook ter wereld"
+    },
+    "proof": {
+      "requirementsLabel": "Wat de maker vroeg",
+      "submitCta": "Bewijs sturen",
+      "tryAgainCta": "Opnieuw ({{count}} pogingen over)",
+      "waitingProof": "Wachten op het bewijs",
+      "waitingVerdict": "Wachten op het oordeel",
+      "approvedLine": "Challenge geslaagd",
+      "closedLine": "Challenge gesloten",
+      "lastReason": "Reden: {{reason}}",
+      "geotagOk": "Geotag geverifieerd",
+      "geotagWarn": "Geotag buiten het gebied",
+      "approveCta": "Goedkeuren",
+      "rejectCta": "Afwijzen",
+      "rejectModalTitle": "Dit bewijs afwijzen",
+      "rejectModalHint": "{{count}} poging(en) over. Zeg wat anders moet.",
+      "reasonPlaceholder": "bv. foto onscherp, gerecht niet zichtbaar",
+      "rejectConfirm": "Afwijzing sturen",
+      "reasonRequiredTitle": "Reden vereist",
+      "reasonRequiredBody": "Een korte reden (1–200 tekens) helpt.",
+      "permPhotoTitle": "Toegang tot foto's nodig",
+      "permPhotoBody": "Sta toegang toe in Instellingen.",
+      "permGpsTitle": "Locatie nodig",
+      "permGpsBody": "Geotag is verplicht. Zet locatie aan.",
+      "gpsFailTitle": "GPS niet leesbaar",
+      "gpsFailBody": "Probeer buiten.",
+      "submitFailTitle": "Versturen mislukt",
+      "submitFailBody": "Check je verbinding en probeer opnieuw.",
+      "reviewFailTitle": "Oordeel niet opgeslagen"
     }
   }
 }

@@ -211,7 +211,9 @@
       "accept": "接受",
       "date": "日期",
       "meet": "见面",
-      "wrap": "总结"
+      "wrap": "总结",
+      "proof": "证据",
+      "verdict": "判定"
     },
     "subcta": {
       "tapToAccept": "接下这个挑战",
@@ -225,7 +227,11 @@
       "creatorVerdict": "和 {{name}} 见面怎么样？ →",
       "acceptorWaitingVerdict": "等待 {{name}} 确认",
       "accomplished": "挑战完成 🎉",
-      "closed": "挑战已关闭"
+      "closed": "挑战已关闭",
+      "submitProof": "提交你的证据 →",
+      "waitingForProof": "等待证据",
+      "reviewProof": "审核证据 →",
+      "waitingForVerdict": "等待判定"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "选择目标城市",
       "searchPlaceholder": "搜索城市…",
       "anywhere": "世界任何地方"
+    },
+    "proof": {
+      "requirementsLabel": "发起人的要求",
+      "submitCta": "提交证据",
+      "tryAgainCta": "再试一次（剩 {{count}} 次）",
+      "waitingProof": "等待证据",
+      "waitingVerdict": "等待判定",
+      "approvedLine": "挑战完成",
+      "closedLine": "挑战关闭",
+      "lastReason": "原因：{{reason}}",
+      "geotagOk": "地理位置已验证",
+      "geotagWarn": "地理位置在区域外",
+      "approveCta": "通过",
+      "rejectCta": "驳回",
+      "rejectModalTitle": "驳回此证据",
+      "rejectModalHint": "剩 {{count}} 次。说明需要修改什么。",
+      "reasonPlaceholder": "例：照片模糊，看不清菜品",
+      "rejectConfirm": "发送驳回",
+      "reasonRequiredTitle": "需要原因",
+      "reasonRequiredBody": "简短原因（1–200 字）有助于。",
+      "permPhotoTitle": "需要照片权限",
+      "permPhotoBody": "在设置中允许访问。",
+      "permGpsTitle": "需要位置权限",
+      "permGpsBody": "地理位置必填。请开启定位。",
+      "gpsFailTitle": "无法读取 GPS",
+      "gpsFailBody": "请到户外重试。",
+      "submitFailTitle": "提交失败",
+      "submitFailBody": "检查网络后重试。",
+      "reviewFailTitle": "判定未保存"
     }
   }
 }

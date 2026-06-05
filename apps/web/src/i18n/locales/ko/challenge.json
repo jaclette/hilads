@@ -211,7 +211,9 @@
       "accept": "수락",
       "date": "날짜",
       "meet": "만남",
-      "wrap": "마무리"
+      "wrap": "마무리",
+      "proof": "증거",
+      "verdict": "판정"
     },
     "subcta": {
       "tapToAccept": "챌린지를 받아요",
@@ -225,7 +227,11 @@
       "creatorVerdict": "{{name}}님과는 어땠어요? →",
       "acceptorWaitingVerdict": "{{name}}님의 확인을 기다리는 중",
       "accomplished": "챌린지 성공 🎉",
-      "closed": "챌린지 종료"
+      "closed": "챌린지 종료",
+      "submitProof": "증거 보내기 →",
+      "waitingForProof": "증거 기다리는 중",
+      "reviewProof": "증거 확인 →",
+      "waitingForVerdict": "판정 기다리는 중"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "타겟 도시 고르기",
       "searchPlaceholder": "도시 검색…",
       "anywhere": "세계 어디든"
+    },
+    "proof": {
+      "requirementsLabel": "작성자가 요청한 것",
+      "submitCta": "증거 보내기",
+      "tryAgainCta": "다시 시도 ({{count}}회 남음)",
+      "waitingProof": "증거 기다리는 중",
+      "waitingVerdict": "판정 기다리는 중",
+      "approvedLine": "챌린지 완료",
+      "closedLine": "챌린지 종료",
+      "lastReason": "이유: {{reason}}",
+      "geotagOk": "지오태그 확인됨",
+      "geotagWarn": "지오태그가 범위 밖",
+      "approveCta": "승인",
+      "rejectCta": "거절",
+      "rejectModalTitle": "이 증거 거절",
+      "rejectModalHint": "{{count}}회 남음. 무엇을 고쳐야 할지 말해줘.",
+      "reasonPlaceholder": "예: 사진이 흐려서 음식이 안 보임",
+      "rejectConfirm": "거절 보내기",
+      "reasonRequiredTitle": "이유 필요",
+      "reasonRequiredBody": "짧은 이유(1–200자)가 도움돼.",
+      "permPhotoTitle": "사진 접근 필요",
+      "permPhotoBody": "설정에서 허용해.",
+      "permGpsTitle": "위치 필요",
+      "permGpsBody": "지오태그 필수. 위치를 켜.",
+      "gpsFailTitle": "GPS 읽기 실패",
+      "gpsFailBody": "실외에서 다시 시도.",
+      "submitFailTitle": "보내기 실패",
+      "submitFailBody": "연결 확인 후 다시.",
+      "reviewFailTitle": "판정 저장 실패"
     }
   }
 }

@@ -212,7 +212,9 @@
       "accept": "Accept",
       "date": "Date",
       "meet": "Meet",
-      "wrap": "Wrap up"
+      "wrap": "Wrap up",
+      "proof": "Proof",
+      "verdict": "Verdict"
     },
     "subcta": {
       "tapToAccept": "Take on the challenge",
@@ -226,7 +228,11 @@
       "creatorVerdict": "How did it go with {{name}}? →",
       "acceptorWaitingVerdict": "Waiting for {{name}} to confirm",
       "accomplished": "Challenge accomplished 🎉",
-      "closed": "Challenge closed"
+      "closed": "Challenge closed",
+      "submitProof": "Submit your proof →",
+      "waitingForProof": "Waiting for the proof",
+      "reviewProof": "Review the proof →",
+      "waitingForVerdict": "Waiting for the verdict"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Pick a target city",
       "searchPlaceholder": "Search a city…",
       "anywhere": "Anywhere in the world"
+    },
+    "proof": {
+      "requirementsLabel": "What the creator asked for",
+      "submitCta": "Submit your proof",
+      "tryAgainCta": "Try again ({{count}} left)",
+      "waitingProof": "Waiting for the proof",
+      "waitingVerdict": "Waiting for the verdict",
+      "approvedLine": "Challenge accomplished",
+      "closedLine": "Challenge closed",
+      "lastReason": "Reason: {{reason}}",
+      "geotagOk": "Geotag verified",
+      "geotagWarn": "Geotag outside the target area",
+      "approveCta": "Approve",
+      "rejectCta": "Reject",
+      "rejectModalTitle": "Reject this proof",
+      "rejectModalHint": "They have {{count}} attempt(s) left. Tell them what to fix.",
+      "reasonPlaceholder": "e.g. Photo is too blurry, can't see the dish",
+      "rejectConfirm": "Send rejection",
+      "reasonRequiredTitle": "Reason required",
+      "reasonRequiredBody": "A short reason (1–200 chars) helps the acceptor.",
+      "permPhotoTitle": "Photo access needed",
+      "permPhotoBody": "Enable photo library access in Settings to pick a proof.",
+      "permGpsTitle": "Location needed",
+      "permGpsBody": "Geotag is mandatory. Enable location in Settings.",
+      "gpsFailTitle": "Couldn't read GPS",
+      "gpsFailBody": "Try again outdoors or with location services on.",
+      "submitFailTitle": "Could not submit",
+      "submitFailBody": "Check your connection and try again.",
+      "reviewFailTitle": "Could not save verdict"
     }
   }
 }

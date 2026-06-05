@@ -211,7 +211,9 @@
       "accept": "स्वीकारें",
       "date": "तारीख",
       "meet": "मिलें",
-      "wrap": "समाप्ति"
+      "wrap": "समाप्ति",
+      "proof": "प्रूफ",
+      "verdict": "फैसला"
     },
     "subcta": {
       "tapToAccept": "चैलेंज स्वीकारें",
@@ -225,7 +227,11 @@
       "creatorVerdict": "{{name}} के साथ कैसा रहा? →",
       "acceptorWaitingVerdict": "{{name}} की पुष्टि का इंतज़ार",
       "accomplished": "चैलेंज पूरा 🎉",
-      "closed": "चैलेंज बंद"
+      "closed": "चैलेंज बंद",
+      "submitProof": "अपना प्रूफ भेजें →",
+      "waitingForProof": "प्रूफ का इंतज़ार",
+      "reviewProof": "प्रूफ देखें →",
+      "waitingForVerdict": "फैसले का इंतज़ार"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "टारगेट शहर चुनें",
       "searchPlaceholder": "शहर खोजें…",
       "anywhere": "दुनिया में कहीं भी"
+    },
+    "proof": {
+      "requirementsLabel": "क्रिएटर ने क्या मांगा",
+      "submitCta": "प्रूफ भेजें",
+      "tryAgainCta": "फिर कोशिश ({{count}} बचीं)",
+      "waitingProof": "प्रूफ का इंतज़ार",
+      "waitingVerdict": "फैसले का इंतज़ार",
+      "approvedLine": "चैलेंज पूरा",
+      "closedLine": "चैलेंज बंद",
+      "lastReason": "कारण: {{reason}}",
+      "geotagOk": "जियोटैग वेरीफाइड",
+      "geotagWarn": "जियोटैग एरिया से बाहर",
+      "approveCta": "मंज़ूर",
+      "rejectCta": "अस्वीकार",
+      "rejectModalTitle": "इस प्रूफ को अस्वीकार",
+      "rejectModalHint": "{{count}} कोशिशें बची हैं। बताएँ क्या ठीक करना है।",
+      "reasonPlaceholder": "जैसे: फोटो धुंधली, डिश नहीं दिख रही",
+      "rejectConfirm": "अस्वीकार भेजें",
+      "reasonRequiredTitle": "कारण ज़रूरी",
+      "reasonRequiredBody": "छोटा कारण (1–200) मदद करता है।",
+      "permPhotoTitle": "फोटो एक्सेस चाहिए",
+      "permPhotoBody": "सेटिंग्स में अनुमति दें।",
+      "permGpsTitle": "लोकेशन चाहिए",
+      "permGpsBody": "जियोटैग ज़रूरी। लोकेशन ऑन करें।",
+      "gpsFailTitle": "GPS नहीं पढ़ पाया",
+      "gpsFailBody": "खुले में दोबारा कोशिश।",
+      "submitFailTitle": "भेज नहीं पाए",
+      "submitFailBody": "कनेक्शन देखें।",
+      "reviewFailTitle": "फैसला सेव नहीं हुआ"
     }
   }
 }

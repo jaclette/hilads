@@ -211,7 +211,9 @@
       "accept": "Принять",
       "date": "Дата",
       "meet": "Встреча",
-      "wrap": "Итог"
+      "wrap": "Итог",
+      "proof": "Доказательство",
+      "verdict": "Вердикт"
     },
     "subcta": {
       "tapToAccept": "Прими челлендж",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Как всё прошло с {{name}}? →",
       "acceptorWaitingVerdict": "Ждём подтверждения от {{name}}",
       "accomplished": "Челлендж пройден 🎉",
-      "closed": "Челлендж закрыт"
+      "closed": "Челлендж закрыт",
+      "submitProof": "Отправь доказательство →",
+      "waitingForProof": "Ждём доказательство",
+      "reviewProof": "Проверить доказательство →",
+      "waitingForVerdict": "Ждём вердикт"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Выбери целевой город",
       "searchPlaceholder": "Найти город…",
       "anywhere": "Где угодно в мире"
+    },
+    "proof": {
+      "requirementsLabel": "Что просил создатель",
+      "submitCta": "Отправить доказательство",
+      "tryAgainCta": "Ещё раз ({{count}} попыток)",
+      "waitingProof": "Ждём доказательство",
+      "waitingVerdict": "Ждём вердикт",
+      "approvedLine": "Челлендж выполнен",
+      "closedLine": "Челлендж закрыт",
+      "lastReason": "Причина: {{reason}}",
+      "geotagOk": "Геометка подтверждена",
+      "geotagWarn": "Геометка вне зоны",
+      "approveCta": "Одобрить",
+      "rejectCta": "Отклонить",
+      "rejectModalTitle": "Отклонить доказательство",
+      "rejectModalHint": "Осталось {{count}} попыток. Скажи, что не так.",
+      "reasonPlaceholder": "напр. фото размытое, блюдо не видно",
+      "rejectConfirm": "Отправить отказ",
+      "reasonRequiredTitle": "Нужна причина",
+      "reasonRequiredBody": "Короткая причина (1–200) поможет.",
+      "permPhotoTitle": "Нужен доступ к фото",
+      "permPhotoBody": "Разреши в настройках.",
+      "permGpsTitle": "Нужна геолокация",
+      "permGpsBody": "Геометка обязательна. Включи геолокацию.",
+      "gpsFailTitle": "GPS недоступен",
+      "gpsFailBody": "Попробуй на улице.",
+      "submitFailTitle": "Не удалось отправить",
+      "submitFailBody": "Проверь связь и повтори.",
+      "reviewFailTitle": "Не удалось сохранить вердикт"
     }
   }
 }

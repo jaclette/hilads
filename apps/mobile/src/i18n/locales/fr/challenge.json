@@ -211,7 +211,9 @@
       "accept": "Relever",
       "date": "Date",
       "meet": "Se voir",
-      "wrap": "Bilan"
+      "wrap": "Bilan",
+      "proof": "Preuve",
+      "verdict": "Verdict"
     },
     "subcta": {
       "tapToAccept": "Relève le défi",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Comment ça s'est passé avec {{name}} ? →",
       "acceptorWaitingVerdict": "En attente de la validation de {{name}}",
       "accomplished": "Défi relevé 🎉",
-      "closed": "Défi clôturé"
+      "closed": "Défi clôturé",
+      "submitProof": "Envoie ta preuve →",
+      "waitingForProof": "En attente de la preuve",
+      "reviewProof": "Valider la preuve →",
+      "waitingForVerdict": "En attente du verdict"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Choisis une ville cible",
       "searchPlaceholder": "Cherche une ville…",
       "anywhere": "N'importe où dans le monde"
+    },
+    "proof": {
+      "requirementsLabel": "Ce que demande le créateur",
+      "submitCta": "Envoyer ta preuve",
+      "tryAgainCta": "Réessayer ({{count}} restantes)",
+      "waitingProof": "En attente de la preuve",
+      "waitingVerdict": "En attente du verdict",
+      "approvedLine": "Défi accompli",
+      "closedLine": "Défi clôturé",
+      "lastReason": "Raison : {{reason}}",
+      "geotagOk": "Géoloc vérifiée",
+      "geotagWarn": "Géoloc hors zone",
+      "approveCta": "Valider",
+      "rejectCta": "Refuser",
+      "rejectModalTitle": "Refuser cette preuve",
+      "rejectModalHint": "Il lui reste {{count}} tentative(s). Explique ce qui ne va pas.",
+      "reasonPlaceholder": "ex : photo floue, on ne voit pas le plat",
+      "rejectConfirm": "Envoyer le refus",
+      "reasonRequiredTitle": "Raison obligatoire",
+      "reasonRequiredBody": "Une courte raison (1–200 caractères) aide la personne qui a relevé.",
+      "permPhotoTitle": "Accès aux photos requis",
+      "permPhotoBody": "Active l'accès aux photos dans les Réglages pour choisir une preuve.",
+      "permGpsTitle": "Localisation requise",
+      "permGpsBody": "La géoloc est obligatoire. Active la localisation dans les Réglages.",
+      "gpsFailTitle": "GPS indisponible",
+      "gpsFailBody": "Réessaie en extérieur ou avec la localisation activée.",
+      "submitFailTitle": "Envoi impossible",
+      "submitFailBody": "Vérifie ta connexion et réessaie.",
+      "reviewFailTitle": "Verdict non enregistré"
     }
   }
 }

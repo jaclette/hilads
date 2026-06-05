@@ -211,7 +211,9 @@
       "accept": "Tanggapin",
       "date": "Petsa",
       "meet": "Magkita",
-      "wrap": "Tapusin"
+      "wrap": "Tapusin",
+      "proof": "Patunay",
+      "verdict": "Verdict"
     },
     "subcta": {
       "tapToAccept": "Tanggapin ang challenge",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Kumusta kay {{name}}? →",
       "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
       "accomplished": "Tapos na ang challenge 🎉",
-      "closed": "Sarado na ang challenge"
+      "closed": "Sarado na ang challenge",
+      "submitProof": "Ipadala ang patunay →",
+      "waitingForProof": "Naghihintay ng patunay",
+      "reviewProof": "Suriin ang patunay →",
+      "waitingForVerdict": "Naghihintay ng verdict"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Pumili ng target na lungsod",
       "searchPlaceholder": "Maghanap ng lungsod…",
       "anywhere": "Kahit saan sa mundo"
+    },
+    "proof": {
+      "requirementsLabel": "Hinihingi ng creator",
+      "submitCta": "Ipadala patunay",
+      "tryAgainCta": "Subukang muli ({{count}} natitira)",
+      "waitingProof": "Naghihintay ng patunay",
+      "waitingVerdict": "Naghihintay ng verdict",
+      "approvedLine": "Tapos na ang challenge",
+      "closedLine": "Sarado na ang challenge",
+      "lastReason": "Dahilan: {{reason}}",
+      "geotagOk": "Geotag verified",
+      "geotagWarn": "Geotag wala sa lugar",
+      "approveCta": "Aprubahan",
+      "rejectCta": "Tanggihan",
+      "rejectModalTitle": "Tanggihan ang patunay na ito",
+      "rejectModalHint": "{{count}} tangka pa. Sabihin ang kailangang ayusin.",
+      "reasonPlaceholder": "hal: malabo ang larawan, hindi makita ang pagkain",
+      "rejectConfirm": "Ipadala ang pagtanggi",
+      "reasonRequiredTitle": "Kailangan ng dahilan",
+      "reasonRequiredBody": "Maikling dahilan (1–200) tumutulong.",
+      "permPhotoTitle": "Kailangan ng photo access",
+      "permPhotoBody": "Pahintulutan sa Settings.",
+      "permGpsTitle": "Kailangan ng lokasyon",
+      "permGpsBody": "Kailangang-kailangan ang geotag.",
+      "gpsFailTitle": "Hindi mabasa ang GPS",
+      "gpsFailBody": "Subukan sa labas.",
+      "submitFailTitle": "Hindi naipadala",
+      "submitFailBody": "Tingnan ang koneksyon.",
+      "reviewFailTitle": "Hindi naitala ang verdict"
     }
   }
 }

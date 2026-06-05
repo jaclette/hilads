@@ -7,8 +7,9 @@ import { useTranslation } from 'react-i18next'
  * the full design rationale.
  */
 
-const STEPS  = ['accept', 'date', 'meet', 'wrap']
-const ICONS  = { accept: '🤝', date: '📅', meet: '👋', wrap: '✨' }
+const STEPS_LOCAL         = ['accept', 'date',  'meet',    'wrap']
+const STEPS_INTERNATIONAL = ['accept', 'proof', 'verdict']
+const ICONS  = { accept: '🤝', date: '📅', meet: '👋', wrap: '✨', proof: '📸', verdict: '⚖️' }
 
 // Compact "sam. 6 juin · 21:30" — locale-aware via Intl using the active
 // i18n language (NOT undefined, which falls back to the device locale and
@@ -20,7 +21,7 @@ function formatMeetupDate(unixSeconds, locale) {
   return `${day} · ${time}`
 }
 
-function derive(acceptance, iAmCreator, locale) {
+function derive(acceptance, iAmCreator, locale, isInternational) {
   if (!acceptance) {
     // Visitors don't get a sub-CTA here — the participants row below has the
     // labeled "Take on the challenge" button. Two prompts read as a repeat.
@@ -33,6 +34,29 @@ function derive(acceptance, iAmCreator, locale) {
   }
   const phase  = acceptance.effective_phase ?? acceptance.phase
   const cpName = acceptance.counterparty.displayName
+
+  if (isInternational) {
+    if (phase === 'accepted') {
+      return {
+        active: 'proof',
+        done: new Set(['accept']),
+        rejected: false,
+        subCtaKey: iAmCreator ? 'pipeline.subcta.waitingForProof' : 'pipeline.subcta.submitProof',
+      }
+    }
+    if (phase === 'proof_submitted') {
+      return {
+        active: 'verdict',
+        done: new Set(['accept', 'proof']),
+        rejected: false,
+        subCtaKey: iAmCreator ? 'pipeline.subcta.reviewProof' : 'pipeline.subcta.waitingForVerdict',
+      }
+    }
+    if (phase === 'approved') {
+      return { active: null, done: new Set(['accept', 'proof', 'verdict']), rejected: false, subCtaKey: 'pipeline.subcta.accomplished' }
+    }
+    return { active: null, done: new Set(['accept', 'proof']), rejected: true, subCtaKey: 'pipeline.subcta.closed' }
+  }
 
   // PR5 — pending = creator hasn't reviewed the take-on request yet.
   if (phase === 'pending') {
@@ -82,9 +106,12 @@ function derive(acceptance, iAmCreator, locale) {
   return { active: null, done: new Set(['accept', 'date', 'meet']), rejected: true, subCtaKey: 'pipeline.subcta.closed' }
 }
 
-export default function ChallengePipeline({ acceptance, iAmCreator, onClick }) {
+export default function ChallengePipeline({ acceptance, iAmCreator, mode = 'local', onClick }) {
   const { t, i18n } = useTranslation('challenge')
-  const state   = derive(acceptance, iAmCreator, i18n.language)
+  const isInternational = mode === 'international'
+  const STEPS = isInternational ? STEPS_INTERNATIONAL : STEPS_LOCAL
+  const REJECT_STEP = isInternational ? 'verdict' : 'wrap'
+  const state   = derive(acceptance, iAmCreator, i18n.language, isInternational)
   const interactive = !!onClick && !!acceptance
 
   return (
@@ -101,7 +128,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, onClick }) {
         {STEPS.map((step, i) => {
           const isDone   = state.done.has(step)
           const isActive = state.active === step
-          const isReject = state.rejected && step === 'wrap'
+          const isReject = state.rejected && step === REJECT_STEP
           const connectorLit = state.done.has(STEPS[i - 1]) || state.active === step
           return (
             <div key={step} style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

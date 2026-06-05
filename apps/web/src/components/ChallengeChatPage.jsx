@@ -22,6 +22,7 @@ import {
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
+import ChallengeProofBlock from './ChallengeProofBlock'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
@@ -492,12 +493,26 @@ export default function ChallengeChatPage({
       <ChallengePipeline
         acceptance={myAcceptance}
         iAmCreator={isOwner}
+        mode={challenge.mode ?? 'local'}
         onClick={
-          myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
+          (challenge.mode ?? 'local') === 'local'
+            && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
             ? () => setPickerOpen(true)
             : undefined
         }
       />
+
+      {/* International — proof submission + verdict surface. Renders only
+          when there's an acceptance; visitors and creators-without-acceptance
+          see no extra surface here (the pipeline above educates them). */}
+      {(challenge.mode ?? 'local') === 'international' && myAcceptance && (
+        <ChallengeProofBlock
+          acceptanceId={myAcceptance.id}
+          iAmCreator={isOwner}
+          iAmAcceptor={!isOwner}
+          proofRequirements={challenge.proof_requirements ?? null}
+        />
+      )}
 
       {/* Close-challenge — moved from the old status pill toggle. Same
           /validate endpoint, just smaller affordance + only visible to the
@@ -802,13 +817,16 @@ export default function ChallengeChatPage({
             })}
           </div>
 
-          {/* Schedule band — propose/approve date, debrief verdict. */}
-          <ThreadScheduleBlock
-            thread={myAcceptance}
-            myUserId={account.id}
-            onChange={loadMyAcceptance}
-            hideEmptyCta
-          />
+          {/* Schedule band — Local only. International has the proof block
+              above as its action surface and no date concertation. */}
+          {(challenge.mode ?? 'local') === 'local' && (
+            <ThreadScheduleBlock
+              thread={myAcceptance}
+              myUserId={account.id}
+              onChange={loadMyAcceptance}
+              hideEmptyCta
+            />
+          )}
 
           <MessageComposer
             value={composer}

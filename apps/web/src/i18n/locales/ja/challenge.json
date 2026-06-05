@@ -211,7 +211,9 @@
       "accept": "受ける",
       "date": "日程",
       "meet": "会う",
-      "wrap": "ふり返り"
+      "wrap": "ふり返り",
+      "proof": "証拠",
+      "verdict": "判定"
     },
     "subcta": {
       "tapToAccept": "チャレンジを受ける",
@@ -225,7 +227,11 @@
       "creatorVerdict": "{{name}}さんとはどうでしたか? →",
       "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
       "accomplished": "チャレンジ達成 🎉",
-      "closed": "チャレンジを終了しました"
+      "closed": "チャレンジを終了しました",
+      "submitProof": "証拠を提出 →",
+      "waitingForProof": "証拠待ち",
+      "reviewProof": "証拠を確認 →",
+      "waitingForVerdict": "判定待ち"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "ターゲットの街を選ぶ",
       "searchPlaceholder": "街を検索…",
       "anywhere": "世界中どこでも"
+    },
+    "proof": {
+      "requirementsLabel": "作成者の要件",
+      "submitCta": "証拠を提出",
+      "tryAgainCta": "もう一度（残り{{count}}回）",
+      "waitingProof": "証拠待ち",
+      "waitingVerdict": "判定待ち",
+      "approvedLine": "チャレンジ達成",
+      "closedLine": "チャレンジ終了",
+      "lastReason": "理由: {{reason}}",
+      "geotagOk": "ジオタグ確認済み",
+      "geotagWarn": "ジオタグが範囲外",
+      "approveCta": "承認",
+      "rejectCta": "拒否",
+      "rejectModalTitle": "この証拠を拒否",
+      "rejectModalHint": "残り {{count}} 回。何を直すか伝えて。",
+      "reasonPlaceholder": "例：ぼやけている、料理が見えない",
+      "rejectConfirm": "拒否を送信",
+      "reasonRequiredTitle": "理由が必要",
+      "reasonRequiredBody": "短い理由（1〜200字）が助けになる。",
+      "permPhotoTitle": "写真アクセスが必要",
+      "permPhotoBody": "設定でアクセスを許可。",
+      "permGpsTitle": "位置情報が必要",
+      "permGpsBody": "ジオタグは必須。位置情報をオンに。",
+      "gpsFailTitle": "GPSが読めない",
+      "gpsFailBody": "屋外で再試行。",
+      "submitFailTitle": "送信失敗",
+      "submitFailBody": "接続を確認して再試行。",
+      "reviewFailTitle": "判定を保存できなかった"
     }
   }
 }

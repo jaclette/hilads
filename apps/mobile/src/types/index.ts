@@ -91,7 +91,7 @@ export interface Topic {
 export type ChallengeType     = 'food' | 'place' | 'culture' | 'help';
 export type ChallengeAudience = 'locals' | 'explorers';
 export type ChallengeStatus   = 'open' | 'validated';
-export type ChallengeAcceptancePhase = 'pending' | 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected';
+export type ChallengeAcceptancePhase = 'pending' | 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected' | 'proof_submitted';
 
 /** One challenge_acceptances row — the per-relationship thread (PR2). */
 export interface ChallengeAcceptance {
@@ -124,6 +124,10 @@ export interface ChallengeThreadSummary {
   challenge_id:         string;
   challenge_title:      string;
   challenge_type:       ChallengeType;
+  /** Surfaced by getMineWithMeta so the threads list can branch the
+   *  pipeline rendering (Local: 4-step; International: 3-step). */
+  challenge_mode?:           'local' | 'international';
+  challenge_target_city_id?: string | null;
   thread_channel_id:    string;
   debrief_event_id:     string | null;
   phase:                ChallengeAcceptancePhase;

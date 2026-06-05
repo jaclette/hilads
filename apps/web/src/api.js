@@ -662,6 +662,58 @@ export async function acceptChallenge(challengeId) {
   return res.json()  // ChallengeAcceptance row
 }
 
+// ── International — proof submission ────────────────────────────────────────
+
+export async function fetchProofs(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/proofs`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return { proofs: [], attempts: 0, maxAttempts: 3 }
+  return res.json()
+}
+
+export async function submitProof(acceptanceId, { mediaUrl, mediaType, lat, lng }) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/submit-proof`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ mediaUrl, mediaType, lat, lng }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to submit proof')
+  }
+  return res.json() // { proof, attempt, maxAttempts }
+}
+
+export async function approveProof(proofId) {
+  const res = await fetch(`${BASE}/proofs/${encodeURIComponent(proofId)}/approve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to approve proof')
+  }
+  return res.json() // { proof }
+}
+
+export async function rejectProof(proofId, reason) {
+  const res = await fetch(`${BASE}/proofs/${encodeURIComponent(proofId)}/reject`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ reason }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to reject proof')
+  }
+  return res.json() // { proof, isFinal, attemptsLeft }
+}
+
 // ── Personal challenge invitations ──────────────────────────────────────────
 
 export async function inviteToChallenge(challengeId, userIds) {

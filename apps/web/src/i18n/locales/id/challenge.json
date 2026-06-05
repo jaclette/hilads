@@ -211,7 +211,9 @@
       "accept": "Terima",
       "date": "Tanggal",
       "meet": "Ketemu",
-      "wrap": "Penutup"
+      "wrap": "Penutup",
+      "proof": "Bukti",
+      "verdict": "Keputusan"
     },
     "subcta": {
       "tapToAccept": "Ambil tantangan ini",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Bagaimana dengan {{name}}? →",
       "acceptorWaitingVerdict": "Menunggu konfirmasi dari {{name}}",
       "accomplished": "Tantangan berhasil 🎉",
-      "closed": "Tantangan ditutup"
+      "closed": "Tantangan ditutup",
+      "submitProof": "Kirim bukti →",
+      "waitingForProof": "Menunggu bukti",
+      "reviewProof": "Tinjau bukti →",
+      "waitingForVerdict": "Menunggu keputusan"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Pilih kota target",
       "searchPlaceholder": "Cari kota…",
       "anywhere": "Di mana saja di dunia"
+    },
+    "proof": {
+      "requirementsLabel": "Yang diminta pembuat",
+      "submitCta": "Kirim bukti",
+      "tryAgainCta": "Coba lagi (sisa {{count}})",
+      "waitingProof": "Menunggu bukti",
+      "waitingVerdict": "Menunggu keputusan",
+      "approvedLine": "Tantangan selesai",
+      "closedLine": "Tantangan ditutup",
+      "lastReason": "Alasan: {{reason}}",
+      "geotagOk": "Geotag terverifikasi",
+      "geotagWarn": "Geotag di luar area",
+      "approveCta": "Setujui",
+      "rejectCta": "Tolak",
+      "rejectModalTitle": "Tolak bukti ini",
+      "rejectModalHint": "Sisa {{count}} percobaan. Beri tahu yang perlu diperbaiki.",
+      "reasonPlaceholder": "mis. foto buram, makanan tidak terlihat",
+      "rejectConfirm": "Kirim penolakan",
+      "reasonRequiredTitle": "Alasan diperlukan",
+      "reasonRequiredBody": "Alasan singkat (1–200) membantu.",
+      "permPhotoTitle": "Butuh akses foto",
+      "permPhotoBody": "Izinkan di Pengaturan.",
+      "permGpsTitle": "Butuh lokasi",
+      "permGpsBody": "Geotag wajib. Aktifkan lokasi.",
+      "gpsFailTitle": "GPS tidak terbaca",
+      "gpsFailBody": "Coba di luar.",
+      "submitFailTitle": "Gagal kirim",
+      "submitFailBody": "Cek koneksi.",
+      "reviewFailTitle": "Keputusan gagal disimpan"
     }
   }
 }

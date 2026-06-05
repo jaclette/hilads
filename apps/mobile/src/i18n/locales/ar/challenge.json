@@ -211,7 +211,9 @@
       "accept": "قبول",
       "date": "الموعد",
       "meet": "اللقاء",
-      "wrap": "الخلاصة"
+      "wrap": "الخلاصة",
+      "proof": "دليل",
+      "verdict": "حكم"
     },
     "subcta": {
       "tapToAccept": "اقبل التحدي",
@@ -225,7 +227,11 @@
       "creatorVerdict": "كيف سار اللقاء مع {{name}}؟ →",
       "acceptorWaitingVerdict": "بانتظار تأكيد {{name}}",
       "accomplished": "تم إنجاز التحدي 🎉",
-      "closed": "أُغلق التحدي"
+      "closed": "أُغلق التحدي",
+      "submitProof": "أرسل دليلك →",
+      "waitingForProof": "بانتظار الدليل",
+      "reviewProof": "راجع الدليل →",
+      "waitingForVerdict": "بانتظار الحكم"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "اختر مدينة مستهدفة",
       "searchPlaceholder": "ابحث عن مدينة…",
       "anywhere": "أي مكان في العالم"
+    },
+    "proof": {
+      "requirementsLabel": "ما طلبه المُنشئ",
+      "submitCta": "إرسال الدليل",
+      "tryAgainCta": "أعد المحاولة (تبقّى {{count}})",
+      "waitingProof": "بانتظار الدليل",
+      "waitingVerdict": "بانتظار الحكم",
+      "approvedLine": "تم إنجاز التحدي",
+      "closedLine": "تم إغلاق التحدي",
+      "lastReason": "السبب: {{reason}}",
+      "geotagOk": "تم التحقق من الموقع",
+      "geotagWarn": "الموقع خارج المنطقة",
+      "approveCta": "قبول",
+      "rejectCta": "رفض",
+      "rejectModalTitle": "رفض هذا الدليل",
+      "rejectModalHint": "تبقّى {{count}} محاولة. اشرح ما يجب تعديله.",
+      "reasonPlaceholder": "مثال: الصورة ضبابية، الطبق غير واضح",
+      "rejectConfirm": "إرسال الرفض",
+      "reasonRequiredTitle": "السبب مطلوب",
+      "reasonRequiredBody": "سبب قصير (1–200 حرف) يساعد.",
+      "permPhotoTitle": "يلزم الوصول للصور",
+      "permPhotoBody": "فعّله من الإعدادات.",
+      "permGpsTitle": "يلزم الموقع",
+      "permGpsBody": "الموقع إلزامي. فعّله من الإعدادات.",
+      "gpsFailTitle": "تعذّر قراءة GPS",
+      "gpsFailBody": "حاول في الخارج.",
+      "submitFailTitle": "تعذّر الإرسال",
+      "submitFailBody": "تحقّق من الاتصال.",
+      "reviewFailTitle": "تعذّر حفظ الحكم"
     }
   }
 }

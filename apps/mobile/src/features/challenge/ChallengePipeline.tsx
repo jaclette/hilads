@@ -20,8 +20,9 @@ import type { ChallengeThreadSummary } from '@/types';
  * acceptances in N states. Picking one "current state" for the whole ad
  * doesn't reflect reality. Each viewer sees their own journey.
  */
-type Step = 'accept' | 'date' | 'meet' | 'wrap';
-const STEPS: Step[] = ['accept', 'date', 'meet', 'wrap'];
+type Step = 'accept' | 'date' | 'meet' | 'wrap' | 'proof' | 'verdict';
+const STEPS_LOCAL:         Step[] = ['accept', 'date', 'meet', 'wrap'];
+const STEPS_INTERNATIONAL: Step[] = ['accept', 'proof', 'verdict'];
 
 // Compact "sam. 6 juin · 21:30" — locale-aware via Intl using the active
 // i18n language (NOT undefined which falls back to the device locale, which
@@ -51,7 +52,12 @@ interface PipelineState {
   subCtaDate?: string;
 }
 
-function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean, locale: string): PipelineState {
+function derive(
+  acceptance: ChallengeThreadSummary | null,
+  iAmCreator: boolean,
+  locale: string,
+  isInternational: boolean,
+): PipelineState {
   if (!acceptance) {
     // Visitor or creator without an own acceptance — educational view only.
     // Visitors don't get a sub-CTA here: the participants row below already
@@ -68,6 +74,50 @@ function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean, 
   const phase = acceptance.effective_phase ?? acceptance.phase;
   const cpName = acceptance.counterparty.displayName;
 
+  // ── International ───────────────────────────────────────────────────────
+  // No 'pending' (auto-approved at take-on). No date concertation. Phases:
+  //   accepted → acceptor uploads proof   → 'proof' is the active step
+  //   proof_submitted → creator verdicts  → 'verdict' is the active step
+  //   approved/rejected → terminal
+  if (isInternational) {
+    if (phase === 'accepted') {
+      return {
+        active: 'proof',
+        done: new Set<Step>(['accept']),
+        rejected: false,
+        subCtaKey: iAmCreator
+          ? 'pipeline.subcta.waitingForProof'
+          : 'pipeline.subcta.submitProof',
+      };
+    }
+    if (phase === 'proof_submitted') {
+      return {
+        active: 'verdict',
+        done: new Set<Step>(['accept', 'proof']),
+        rejected: false,
+        subCtaKey: iAmCreator
+          ? 'pipeline.subcta.reviewProof'
+          : 'pipeline.subcta.waitingForVerdict',
+      };
+    }
+    if (phase === 'approved') {
+      return {
+        active: null,
+        done: new Set<Step>(['accept', 'proof', 'verdict']),
+        rejected: false,
+        subCtaKey: 'pipeline.subcta.accomplished',
+      };
+    }
+    // rejected
+    return {
+      active: null,
+      done: new Set<Step>(['accept', 'proof']),
+      rejected: true,
+      subCtaKey: 'pipeline.subcta.closed',
+    };
+  }
+
+  // ── Local (existing flow) ───────────────────────────────────────────────
   // PR5 — pending = creator hasn't reviewed the take-on request yet. The
   // Accept dot is the active step; the sub-CTA differs by side (acceptor
   // waits, creator reviews). Acceptor pipeline is otherwise indistinguishable
@@ -133,23 +183,32 @@ function derive(acceptance: ChallengeThreadSummary | null, iAmCreator: boolean, 
 }
 
 const STEP_ICONS: Record<Step, string> = {
-  accept: '🤝',
-  date:   '📅',
-  meet:   '👋',
-  wrap:   '✨',
+  accept:  '🤝',
+  date:    '📅',
+  meet:    '👋',
+  wrap:    '✨',
+  proof:   '📸',
+  verdict: '⚖️',
 };
 
 export function ChallengePipeline({
   acceptance,
   iAmCreator,
+  mode = 'local',
   onPress,
 }: {
   acceptance: ChallengeThreadSummary | null;
   iAmCreator: boolean;
+  mode?: 'local' | 'international';
   onPress?: () => void;
 }) {
   const { t, i18n } = useTranslation('challenge');
-  const state = derive(acceptance, iAmCreator, i18n.language);
+  const isInternational = mode === 'international';
+  const STEPS = isInternational ? STEPS_INTERNATIONAL : STEPS_LOCAL;
+  const state = derive(acceptance, iAmCreator, i18n.language, isInternational);
+  // Step that should render in red on a final 'rejected' state (last step
+  // before terminal — wrap for Local, verdict for International).
+  const REJECT_STEP: Step = isInternational ? 'verdict' : 'wrap';
   const interactive = !!onPress && !!acceptance;
 
   return (
@@ -164,7 +223,7 @@ export function ChallengePipeline({
         {STEPS.map((step, i) => {
           const isDone   = state.done.has(step);
           const isActive = state.active === step;
-          const isReject = state.rejected && step === 'wrap';
+          const isReject = state.rejected && step === REJECT_STEP;
           const dotStyle =
             isReject ? styles.dotRejected
             : isDone ? styles.dotDone

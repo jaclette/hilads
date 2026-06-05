@@ -211,7 +211,9 @@
       "accept": "Aceitar",
       "date": "Data",
       "meet": "Encontrar",
-      "wrap": "Fechamento"
+      "wrap": "Fechamento",
+      "proof": "Prova",
+      "verdict": "Veredicto"
     },
     "subcta": {
       "tapToAccept": "Topa o desafio",
@@ -225,7 +227,11 @@
       "creatorVerdict": "Como foi com {{name}}? →",
       "acceptorWaitingVerdict": "Esperando {{name}} confirmar",
       "accomplished": "Desafio concluído 🎉",
-      "closed": "Desafio encerrado"
+      "closed": "Desafio encerrado",
+      "submitProof": "Envia sua prova →",
+      "waitingForProof": "Esperando a prova",
+      "reviewProof": "Revise a prova →",
+      "waitingForVerdict": "Esperando o veredicto"
     }
   },
   "takeon": {
@@ -308,6 +314,35 @@
       "title": "Escolha uma cidade-alvo",
       "searchPlaceholder": "Buscar uma cidade…",
       "anywhere": "Qualquer lugar do mundo"
+    },
+    "proof": {
+      "requirementsLabel": "O que o criador pediu",
+      "submitCta": "Enviar prova",
+      "tryAgainCta": "Tentar de novo ({{count}} restantes)",
+      "waitingProof": "Esperando a prova",
+      "waitingVerdict": "Esperando o veredicto",
+      "approvedLine": "Desafio cumprido",
+      "closedLine": "Desafio encerrado",
+      "lastReason": "Motivo: {{reason}}",
+      "geotagOk": "Geotag verificado",
+      "geotagWarn": "Geotag fora da área",
+      "approveCta": "Aprovar",
+      "rejectCta": "Rejeitar",
+      "rejectModalTitle": "Rejeitar esta prova",
+      "rejectModalHint": "Restam {{count}} tentativa(s). Diz o que precisa ajustar.",
+      "reasonPlaceholder": "ex.: foto borrada, não dá pra ver o prato",
+      "rejectConfirm": "Enviar rejeição",
+      "reasonRequiredTitle": "Motivo obrigatório",
+      "reasonRequiredBody": "Um motivo curto (1–200 caracteres) ajuda.",
+      "permPhotoTitle": "Acesso às fotos",
+      "permPhotoBody": "Ative nas Configurações para escolher uma prova.",
+      "permGpsTitle": "Localização necessária",
+      "permGpsBody": "O geotag é obrigatório. Ative a localização.",
+      "gpsFailTitle": "GPS indisponível",
+      "gpsFailBody": "Tente ao ar livre.",
+      "submitFailTitle": "Não foi possível enviar",
+      "submitFailBody": "Verifique a conexão e tente de novo.",
+      "reviewFailTitle": "Não foi possível salvar o veredicto"
     }
   }
 }
