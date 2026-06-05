@@ -12091,3 +12091,239 @@ body.has-app-promo-banner .page-header {
   letter-spacing: 0;
   color: var(--text);
 }
+
+/* ── Visibility badge on challenge detail meta row ───────────────────────── */
+.challenge-badge--visibility {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.challenge-badge--visibility-friends {
+  background: rgba(147, 197, 253, 0.12);
+  color: #93c5fd;
+  border-color: rgba(147, 197, 253, 0.3);
+}
+.challenge-badge--visibility-private {
+  background: rgba(252, 165, 165, 0.10);
+  color: #fca5a5;
+  border-color: rgba(252, 165, 165, 0.3);
+}
+
+/* ── Challenge privacy panel (mutual go-private + anonymize) ─────────────── */
+.challenge-privacy {
+  margin: 24px auto 0;
+  max-width: 640px;
+  padding: 20px 18px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.challenge-privacy-title {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+.challenge-privacy-subtitle {
+  margin: 12px 0 2px;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.challenge-privacy-line {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.challenge-privacy-line--public  { color: var(--text); }
+.challenge-privacy-line--friends { color: #93c5fd; }
+.challenge-privacy-line--private { color: #fca5a5; }
+.challenge-privacy-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.challenge-privacy-status {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+.challenge-privacy-status--prompt {
+  color: var(--text);
+  font-weight: 700;
+}
+.challenge-privacy-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.challenge-privacy-btn {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.challenge-privacy-btn--primary {
+  background: var(--accent);
+  color: #1a0f00;
+  border: none;
+}
+.challenge-privacy-btn--primary:disabled { opacity: 0.5; cursor: progress; }
+.challenge-privacy-btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.challenge-privacy-btn--ghost:hover { border-color: rgba(255, 255, 255, 0.22); }
+.challenge-privacy-anon {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.challenge-privacy-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+
+/* ── Challenge comments lane (spectator chatter on public rows) ──────────── */
+.challenge-comments {
+  margin: 24px auto 32px;
+  max-width: 640px;
+  padding: 20px 18px max(22px, env(safe-area-inset-bottom));
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+}
+.challenge-comments-title {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted2);
+}
+.challenge-comments-subtitle {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.challenge-comments-off {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.challenge-comments-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.challenge-comments-input {
+  flex: 1;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.95rem;
+}
+.challenge-comments-input:focus {
+  outline: none;
+  border-color: rgba(255, 122, 0, 0.45);
+}
+.challenge-comments-send {
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #1a0f00;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.challenge-comments-send:disabled { opacity: 0.5; cursor: progress; }
+.challenge-comments-signin {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.challenge-comments-empty {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.challenge-comments-error {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+.challenge-comments-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.challenge-comment {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+.challenge-comment--hidden { opacity: 0.55; }
+.challenge-comment-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface2);
+}
+.challenge-comment-avatar--blank {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+}
+.challenge-comment-body { min-width: 0; }
+.challenge-comment-author {
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.challenge-comment-text {
+  margin: 2px 0 0;
+  font-size: 0.93rem;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.challenge-comment-actions {
+  display: flex;
+  gap: 6px;
+}
+.challenge-comment-btn {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.challenge-comment-btn:hover {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.2);
+}

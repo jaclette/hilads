@@ -311,6 +311,11 @@
     "friendsHint": "Only your friends and people you invite can see this.",
     "intlLocked": "International challenges are always public.",
     "moderationBlocked": "Your text was flagged — please rephrase.",
+    "badge": {
+      "public":  "🌍 Public",
+      "friends": "👯 Friends",
+      "private": "🔒 Private"
+    },
     "optin": {
       "title": "Heads up — this is public",
       "body": "Public challenges show up in the city feed and on the public web. Your name and your challenge text will be visible to anyone — including non-members and search engines. You can flip to Friends below if you'd rather keep it tighter.",
@@ -318,6 +323,42 @@
       "switchToFriends": "Make it Friends instead",
       "dontShowAgain": "Don't show this again"
     }
+  },
+  "privacy": {
+    "panelTitle": "Privacy",
+    "currentPublic":  "This challenge is public — anyone can see it.",
+    "currentFriends": "This challenge is shared with friends only.",
+    "currentPrivate": "This challenge is private — only you two can see it.",
+    "intlNote": "International challenges are always public.",
+    "goPrivateCta": "Go private (both must agree)",
+    "myVoteAgreed":   "You voted yes — waiting for the other person.",
+    "myVoteDenied":   "You declined. Tap below to change your mind.",
+    "otherVoteAgreed": "They voted yes — your turn to decide.",
+    "otherVoteDenied": "They declined.",
+    "voteAgreedCta":  "Agree — go private",
+    "voteDeniedCta":  "Decline",
+    "withdrawCta":    "Withdraw my vote",
+    "needCounterparty": "Available once someone takes on this challenge.",
+    "anonymizeTitle":      "Anonymize my name",
+    "anonymizeBody":       "Replace your name and avatar with “Anonymous” on this challenge. You still get notifications and can still act on it.",
+    "anonymizeCta":         "Anonymize me",
+    "anonymizedBadge":      "You are anonymized here",
+    "removeAnonymizeCta":   "Show my name again",
+    "errVote":      "Couldn't save your vote — try again.",
+    "errAnonymize": "Couldn't update — try again."
+  },
+  "comments": {
+    "title": "Comments",
+    "subtitle": "Public chatter on this challenge — separate from the private thread between the challenger and the taker.",
+    "placeholder": "Say something nice…",
+    "sendCta": "Post",
+    "empty": "Be the first to comment.",
+    "disabledFriends": "Comments are off — this challenge isn't public.",
+    "disabledPrivate": "Comments are off — this challenge is private.",
+    "hidden": "This comment was hidden by the challenger.",
+    "deleteCta": "Delete",
+    "hideCta":   "Hide (creator)",
+    "loginToComment": "Sign in to leave a comment."
   },
   "intl": {
     "targetCityLabel": "Target city",

@@ -24,6 +24,8 @@ import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
+import ChallengePrivacyPanel from './ChallengePrivacyPanel'
+import ChallengeCommentsLane from './ChallengeCommentsLane'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
@@ -501,6 +503,22 @@ export default function ChallengeChatPage({
         ) : (
           <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
         )}
+        {/* Visibility badge — Public is the default and we only surface it
+            when explicitly non-public, OR when the row is private (the only
+            case where the owner+acceptor really need to see "🔒"). Public
+            is the assumed surface so we keep the row uncluttered. */}
+        {(() => {
+          const v = challenge.visibility ?? 'public'
+          if (v === 'public') return null
+          return (
+            <span
+              className={`challenge-badge challenge-badge--visibility challenge-badge--visibility-${v}`}
+              title={t(`visibility.${v}Hint`, { ns: 'challenge', defaultValue: '' })}
+            >
+              {t(`visibility.badge.${v}`, { ns: 'challenge' })}
+            </span>
+          )
+        })()}
         <button
           type="button"
           className="challenge-share-pill challenge-share-pill--inline"
@@ -882,6 +900,27 @@ export default function ChallengeChatPage({
           submitLabel={t('schedule.proposeCta')}
         />
       )}
+
+      {/* Privacy controls — only renders if the caller is a participant
+          (the server's privacy endpoint 404s for non-participants and the
+          panel hides itself). Mutual go-private + anonymize-me live here. */}
+      <ChallengePrivacyPanel
+        challenge={challenge}
+        currentUserId={account?.id ?? null}
+        onVisibilityChanged={() => loadChallenge()}
+      />
+
+      {/* Spectator comments — public surface only. Renders the "off" note
+          on friends/private so non-participants understand the discussion
+          exists; this is the natural place to engage on a public row when
+          you can't take it on yourself. */}
+      <ChallengeCommentsLane
+        challengeId={challenge.id}
+        visibility={challenge.visibility ?? 'public'}
+        currentUserId={account?.id ?? null}
+        isOwner={isOwner}
+        onNeedAuth={onNeedAuth}
+      />
 
       <ConfirmDialog dialog={alertModal} onClose={() => setAlertModal(null)} />
 

@@ -4981,6 +4981,17 @@ export default function App() {
                           : (
                             <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
                           )}
+                        {/* Visibility badge — only renders for non-public rows
+                            so the NOW card stays uncluttered on the common case. */}
+                        {(() => {
+                          const v = c.visibility ?? 'public'
+                          if (v === 'public') return null
+                          return (
+                            <span className={`challenge-badge challenge-badge--visibility challenge-badge--visibility-${v}`}>
+                              {t(`visibility.badge.${v}`, { ns: 'challenge' })}
+                            </span>
+                          )
+                        })()}
                         {isValidated ? (
                           <span className="challenge-badge challenge-badge--validated">
                             ✓ {t('validatedBadge', { ns: 'challenge' })}

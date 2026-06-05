@@ -1656,3 +1656,130 @@ export async function fetchLinkPreview(url) {
   const data = await res.json()
   return data?.preview ?? null
 }
+
+// ── Challenge privacy (mutual go-private + anonymize-me) ─────────────────────
+
+// Returns:
+//   { currentVisibility, myVote, creatorVote, acceptorVote, acceptorUserId,
+//     canVote, votes: [...] }
+// 404 when caller isn't creator/acceptor; UI should hide the panel in that case.
+export async function fetchChallengePrivacy(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/privacy`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return null
+  return res.json()
+}
+
+export async function voteChallengePrivacy(challengeId, vote) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/privacy/vote`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ vote }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err  = new Error(data.error || 'Failed to vote')
+    err.code   = data.code || null
+    throw err
+  }
+  return res.json() // { ok, myVote, flippedToPrivate, visibility }
+}
+
+export async function clearChallengePrivacyVote(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/privacy/vote`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to clear vote')
+  }
+  return res.json()
+}
+
+export async function anonymizeMeOnChallenge(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/anonymize-me`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to anonymize')
+  }
+  return res.json() // { ok, anonymized: true }
+}
+
+export async function unanonymizeMeOnChallenge(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/anonymize-me`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to undo')
+  }
+  return res.json()
+}
+
+export async function fetchIsAnonymizedOnChallenge(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/anonymize-me`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return { anonymized: false }
+  return res.json()
+}
+
+// ── Challenge comments (spectator lane on public rows) ───────────────────────
+
+export async function fetchChallengeComments(challengeId, { before = null, limit = 50 } = {}) {
+  const qs = new URLSearchParams()
+  if (before) qs.set('before', before)
+  qs.set('limit', String(limit))
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/comments?${qs.toString()}`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return { comments: [], hasMore: false, disabled: true }
+  return res.json() // { comments, hasMore, disabled, reason? }
+}
+
+export async function postChallengeComment(challengeId, body) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/comments`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ body }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err  = new Error(data.error || 'Failed to post comment')
+    err.code   = data.code || null
+    throw err
+  }
+  return res.json() // formatted comment row
+}
+
+export async function deleteMyChallengeComment(challengeId, commentId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/comments/${commentId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to delete')
+  }
+  return res.json()
+}
+
+export async function hideChallengeComment(challengeId, commentId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/comments/${commentId}/hide`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to hide')
+  }
+  return res.json()
+}
