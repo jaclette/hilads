@@ -625,6 +625,10 @@ class AuthService
             // re-prompt modal on launch (Apple G1.2 — existing users must
             // accept once after the moderation update ships).
             'eula_accepted_at'  => $user['eula_accepted_at'] ?? null,
+            // Challenge privacy round-2: TRUE once the user has dismissed
+            // the first-time public-default opt-in modal. The challenge
+            // create form gates the modal on this flag.
+            'has_seen_public_optin' => (bool) ($user['has_seen_public_optin'] ?? false),
             'isAmbassador'      => $isAmbassador,
             'ambassadorPicks'   => $isAmbassador ? (object) $picks : null,
         ]);

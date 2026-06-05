@@ -55,6 +55,10 @@ class ChallengeRepository
             cc.mode,
             cc.target_city_id,
             cc.proof_requirements,
+            -- Visibility (privacy round 2). 'public' default; 'friends' / 'private'
+            -- gate the row out of sitemap, public city feed, and crawler-visible
+            -- surfaces at the route layer.
+            cc.visibility,
             -- Creator's display info — surfaced on cards + detail header so
             -- the user sees who owns a challenge. LEFT JOIN: pure-guest
             -- challenges (created_by IS NULL) fall back to cc.guest_id /
@@ -117,6 +121,8 @@ class ChallengeRepository
             'mode'                 => $row['mode']               ?? 'local',
             'target_city_id'       => $row['target_city_id']     ?? null,
             'proof_requirements'   => $row['proof_requirements'] ?? null,
+            // Visibility — 'public' default for pre-migration rows.
+            'visibility'           => $row['visibility']         ?? 'public',
             // Creator display — null for pure-guest challenges (created_by IS NULL).
             // Cards + the detail header render "by {creator_display_name}".
             'creator_display_name'     => $row['creator_display_name']     ?? null,
@@ -201,6 +207,7 @@ class ChallengeRepository
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
                      cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.visibility,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.created_at DESC
@@ -238,6 +245,7 @@ class ChallengeRepository
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
                      cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.visibility,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
@@ -259,6 +267,7 @@ class ChallengeRepository
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
                      cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.visibility,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
         ");
@@ -356,7 +365,11 @@ class ChallengeRepository
      * Auto-joins the creator as the first participant (mirror events).
      * Returns the freshly-built challenge via findById (consistent shape).
      */
-    public const ALLOWED_MODES = ['local', 'international'];
+    public const ALLOWED_MODES         = ['local', 'international'];
+    /** Values acceptable at CREATE / EDIT time. 'private' is intentionally
+     *  excluded — it's reachable only via the mutual privacy_requests flow
+     *  (PR #4). Smuggling it via the body would bypass the mutual gate. */
+    public const ALLOWED_VISIBILITIES_AT_INPUT = ['public', 'friends'];
 
     public static function create(
         string $cityId,
@@ -369,11 +382,13 @@ class ChallengeRepository
         ?string $returnClause = null,
         string $mode = 'local',
         ?string $targetCityId = null,
-        ?string $proofRequirements = null
+        ?string $proofRequirements = null,
+        string $visibility = 'public'
     ): array {
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
         if (!in_array($mode,          self::ALLOWED_MODES,     true)) $mode          = 'local';
+        if (!in_array($visibility,    self::ALLOWED_VISIBILITIES_AT_INPUT, true)) $visibility = 'public';
 
         // Normalize return_clause: trim, treat empty string as null. Client is
         // expected to send the per-type template pre-filled; nulls fall back to
@@ -389,12 +404,15 @@ class ChallengeRepository
         //     keep the column populated (NOT NULL) but force a stable value
         //     so int'l rows don't accidentally surface in audience-filtered
         //     queries written for local.
+        //   - visibility forced 'public' on international (defeats cross-city
+        //     model otherwise — covered in the spec, enforced server-side).
         if ($mode !== 'international') {
             $targetCityId      = null;
             $proofRequirements = null;
         } else {
             $proofRequirements = $proofRequirements !== null ? trim($proofRequirements) : null;
             if ($proofRequirements === '') $proofRequirements = null;
+            $visibility = 'public';
         }
 
         $pdo = Database::pdo();
@@ -418,10 +436,10 @@ class ChallengeRepository
         $pdo->prepare("
             INSERT INTO channel_challenges
                 (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, return_clause,
-                 mode, target_city_id, proof_requirements)
+                 mode, target_city_id, proof_requirements, visibility)
             VALUES
                 (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :return_clause,
-                 :mode, :target_city_id, :proof_requirements)
+                 :mode, :target_city_id, :proof_requirements, :visibility)
         ")->execute([
             'channel_id'         => $id,
             'city_id'            => $cityId,
@@ -434,6 +452,7 @@ class ChallengeRepository
             'mode'               => $mode,
             'target_city_id'     => $targetCityId,
             'proof_requirements' => $proofRequirements,
+            'visibility'         => $visibility,
         ]);
 
         // Auto-join the creator (guests included).
@@ -452,6 +471,7 @@ class ChallengeRepository
             'mode'                 => $mode,
             'target_city_id'       => $targetCityId,
             'proof_requirements'   => $proofRequirements,
+            'visibility'           => $visibility,
             'message_count'        => 0,
             'last_activity_at'     => null,
             'validated_at'         => null,
@@ -478,7 +498,8 @@ class ChallengeRepository
         string $audience,
         ?string $returnClause = null,
         ?string $targetCityId = null,
-        ?string $proofRequirements = null
+        ?string $proofRequirements = null,
+        ?string $visibility = null
     ): ?array {
         if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
 
@@ -494,9 +515,12 @@ class ChallengeRepository
         // expected path is delete + recreate. We do let International creators
         // re-target the city + adjust the proof requirements (common edits).
         $pdo = Database::pdo();
-        $modeRow = $pdo->prepare("SELECT mode FROM channel_challenges WHERE channel_id = :id");
+        $modeRow = $pdo->prepare("SELECT mode, visibility FROM channel_challenges WHERE channel_id = :id");
         $modeRow->execute(['id' => $challengeId]);
-        $currentMode = $modeRow->fetchColumn() ?: 'local';
+        $current = $modeRow->fetch(\PDO::FETCH_ASSOC) ?: ['mode' => 'local', 'visibility' => 'public'];
+        $currentMode       = $current['mode']       ?: 'local';
+        $currentVisibility = $current['visibility'] ?: 'public';
+
         if ($currentMode !== 'international') {
             // Local rows ignore international-only fields on edit.
             $targetCityId      = null;
@@ -504,6 +528,28 @@ class ChallengeRepository
         } else {
             $proofRequirements = $proofRequirements !== null ? trim($proofRequirements) : null;
             if ($proofRequirements === '') $proofRequirements = null;
+        }
+
+        // Visibility-on-edit rules:
+        //   - International stays 'public' forever — block any attempt to
+        //     flip it from the edit form (defence in depth; the route layer
+        //     also rejects).
+        //   - Local can toggle between 'public' and 'friends' here.
+        //   - 'private' is NOT settable at edit time — only via the mutual
+        //     privacy_requests flow in PR #4. If the row is already 'private'
+        //     (from the mutual flow), the creator can still revert it back
+        //     to 'public' or 'friends' via this edit path; the mutual flow
+        //     is one-way "open the private door together", not a lock.
+        //   - When the client omits visibility entirely, keep the current
+        //     value (typical edit doesn't touch visibility).
+        $nextVisibility = $currentVisibility;
+        if ($visibility !== null) {
+            if ($currentMode === 'international') {
+                $nextVisibility = 'public';
+            } elseif (in_array($visibility, self::ALLOWED_VISIBILITIES_AT_INPUT, true)) {
+                $nextVisibility = $visibility;
+            }
+            // unrecognised value → silently keep current (already validated upstream too)
         }
 
         $pdo->prepare("
@@ -514,6 +560,7 @@ class ChallengeRepository
                 return_clause      = :rc,
                 target_city_id     = :tci,
                 proof_requirements = :pr,
+                visibility         = :viz,
                 updated_at         = now()
             WHERE channel_id = :id
         ")->execute([
@@ -523,6 +570,7 @@ class ChallengeRepository
             'rc'  => $returnClause,
             'tci' => $targetCityId,
             'pr'  => $proofRequirements,
+            'viz' => $nextVisibility,
             'id'  => $challengeId,
         ]);
 
@@ -815,4 +863,5 @@ class ChallengeRepository
     public static function allowedTypes(): array     { return self::ALLOWED_TYPES; }
     public static function allowedAudiences(): array { return self::ALLOWED_AUDIENCES; }
     public static function allowedModes(): array     { return self::ALLOWED_MODES; }
+    public static function allowedVisibilitiesAtInput(): array { return self::ALLOWED_VISIBILITIES_AT_INPUT; }
 }

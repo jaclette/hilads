@@ -2009,6 +2009,22 @@ $router->add('POST', '/api/v1/me/city', function () {
     Response::json(['ok' => true, 'channelId' => $channelId]);
 });
 
+// POST /api/v1/me/dismiss-public-optin
+// Called once when the user dismisses the first-time public-default opt-in
+// modal on the challenge create form. Flips users.has_seen_public_optin to
+// TRUE so we never show the modal again to this user. Idempotent — calling
+// again is a no-op.
+//
+// Body: none (or empty {}). Auth required (the modal only shows to logged-
+// in users; guests can't create challenges anyway).
+$router->add('POST', '/api/v1/me/dismiss-public-optin', function () {
+    $user = AuthService::requireAuth();
+    Database::pdo()
+        ->prepare("UPDATE users SET has_seen_public_optin = TRUE WHERE id = ?")
+        ->execute([$user['id']]);
+    Response::json(['ok' => true, 'hasSeenPublicOptin' => true]);
+});
+
 // ── Deep link / share resolution ──────────────────────────────────────────────
 
 // GET /api/v1/cities/by-slug/{slug}
@@ -7441,6 +7457,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     $mode               = $body['mode']               ?? 'local';
     $targetChannelIdRaw = $body['targetCityChannelId'] ?? null;
     $proofRequirements  = $body['proofRequirements']   ?? null;
+    // Visibility — older clients omit it; default 'public'. Only 'public' /
+    // 'friends' accepted at create-time; 'private' is reachable only via
+    // the mutual privacy_requests flow (PR #4) post-acceptance.
+    $visibility         = $body['visibility']          ?? 'public';
 
     enforceRateLimit('challenge_create', 5, 3600, (string) $channelId);
 
@@ -7462,6 +7482,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     }
     if (!in_array($mode, ChallengeRepository::ALLOWED_MODES, true)) {
         Response::json(['error' => 'mode must be one of: ' . implode(', ', ChallengeRepository::ALLOWED_MODES)], 400);
+    }
+    if (!in_array($visibility, ChallengeRepository::allowedVisibilitiesAtInput(), true)) {
+        // 'private' explicitly excluded — the route surfaces a tailored message
+        // so a future client doesn't waste cycles wondering why the flip fails.
+        Response::json([
+            'error' => "visibility must be 'public' or 'friends' at create-time; 'private' is reachable only via the mutual privacy flow",
+            'code'  => 'visibility_invalid',
+        ], 400);
     }
     if ($nickname !== null) {
         $nickname = mb_substr(trim(strip_tags((string) $nickname)), 0, 32) ?: null;
@@ -7508,6 +7536,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             $mode,
             $targetCityId,
             $proofRequirements,
+            $visibility,
         );
 
         try {
@@ -7583,6 +7612,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             'challenge_type' => $challengeType,
             'audience'       => $audience,
             'mode'           => $mode,
+            // Resolved visibility — `create()` may have overridden the input
+            // ('public' forced on international), so analytics reflects the
+            // post-write state, not the body.
+            'visibility'     => $challenge['visibility'] ?? 'public',
             'target_city_id' => $targetCityId,
             'city_id'        => $channelId,
             'is_guest'       => $userId === null,
@@ -7657,6 +7690,10 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     // proof requirements can be revised. Mode itself is NOT editable here.
     $targetChannelIdRaw = $body['targetCityChannelId'] ?? null;
     $proofRequirements  = $body['proofRequirements']   ?? null;
+    // Visibility — optional on edit. null = "don't change". Only 'public'
+    // and 'friends' accepted; 'private' is reachable only via the mutual
+    // privacy_requests flow. The repo also forces 'public' on International.
+    $visibilityRaw      = $body['visibility']          ?? null;
 
     if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -7679,6 +7716,14 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     }
     if ($proofRequirements !== null) {
         $proofRequirements = mb_substr(trim(strip_tags((string) $proofRequirements)), 0, 300);
+    }
+    if ($visibilityRaw !== null && !in_array($visibilityRaw, ChallengeRepository::allowedVisibilitiesAtInput(), true)) {
+        // Mirror the POST error so an admin tool wiring up edit knows why
+        // a 'private' attempt fails.
+        Response::json([
+            'error' => "visibility must be 'public' or 'friends' on edit; 'private' is reachable only via the mutual privacy flow",
+            'code'  => 'visibility_invalid',
+        ], 400);
     }
 
     // Optional target-city change. Validated only if the row is actually
@@ -7705,6 +7750,7 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
         $returnClause,
         $targetCityId,
         $proofRequirements,
+        $visibilityRaw,
     );
     if ($updated === null) {
         Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
